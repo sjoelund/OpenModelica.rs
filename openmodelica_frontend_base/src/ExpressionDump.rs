@@ -404,7 +404,7 @@ pub fn printCrefsFromExpStr(mut e: Arc<DAE::Exp>) -> Result<ArcStr> {
     Ok(s)
 }
 
-pub fn printExp2Str<Type_a: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut stringDelimiter: ArcStr, mut opcreffunc: Option<(Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Type_a) -> Result<ArcStr> + 'static>, Type_a)>, mut opcallfunc: Option<Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArcStr, Option<(Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Type_a) -> Result<ArcStr> + 'static>, Type_a)>) -> Result<ArcStr> + 'static>>) -> Result<ArcStr> {
+pub fn printExp2Str<Type_a: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut stringDelimiter: ArcStr, mut opcreffunc: Option<(Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Type_a) -> Result<ArcStr> + 'static>, Type_a)>, mut opcallfunc: Option<Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArcStr, Option<(Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Type_a) -> Result<ArcStr> + 'static>, Type_a)>) -> Result<ArcStr> + 'static>>) -> ArcStr {
     pub type printComponentRefStrFunc<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Type_a) -> Result<ArcStr> + 'static>;
 
     pub type printCallFunc<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArcStr, Option<(Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Type_a) -> Result<ArcStr> + 'static>, Type_a)>) -> Result<ArcStr> + 'static>;
@@ -505,13 +505,13 @@ pub fn printExp2Str<Type_a: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut strin
                     let mut p2: i32 = 0;
                     let mut p: i32 = 0;
                     sym = (binopSymbol(op.clone())?).clone();
-                    s1 = (printExp2Str(e1.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())?).clone();
-                    s2 = (printExp2Str(e2.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())?).clone();
+                    s1 = (printExp2Str(e1.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())).clone();
+                    s2 = (printExp2Str(e2.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())).clone();
                     p = expPriority(e.clone());
                     p1 = expPriority(e1.clone());
                     p2 = expPriority(e2.clone());
-                    s1_1 = (parenthesize((s1.clone()).clone(), p1.clone(), p.clone(), false)?).clone();
-                    s2_1 = (parenthesize((s2.clone()).clone(), p2.clone(), p.clone(), true)?).clone();
+                    s1_1 = (parenthesize((s1.clone()).clone(), p1.clone(), p.clone(), false)).clone();
+                    s2_1 = (parenthesize((s2.clone()).clone(), p2.clone(), p.clone(), true)).clone();
                     s = stringAppendList(list![(s1_1.clone()).clone(), (sym.clone()).clone(), (s2_1.clone()).clone()]);
                     Ok(s.clone())
                 }
@@ -528,10 +528,10 @@ pub fn printExp2Str<Type_a: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut strin
                     let mut p1: i32 = 0;
                     let mut p: i32 = 0;
                     sym = (unaryopSymbol(op.clone())?).clone();
-                    s = (printExp2Str(e1.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())?).clone();
+                    s = (printExp2Str(e1.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())).clone();
                     p = expPriority(e.clone());
                     p1 = expPriority(e1.clone());
-                    s_1 = (parenthesize((s.clone()).clone(), p1.clone(), p.clone(), true)?).clone();
+                    s_1 = (parenthesize((s.clone()).clone(), p1.clone(), p.clone(), true)).clone();
                     s_2 = (stringAppend((sym.clone()).clone(), (s_1.clone()).clone())).clone();
                     Ok(s_2.clone())
                 }
@@ -551,13 +551,13 @@ pub fn printExp2Str<Type_a: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut strin
                     let mut p2: i32 = 0;
                     let mut p: i32 = 0;
                     sym = (lbinopSymbol(op.clone())?).clone();
-                    s1 = (printExp2Str(e1.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())?).clone();
-                    s2 = (printExp2Str(e2.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())?).clone();
+                    s1 = (printExp2Str(e1.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())).clone();
+                    s2 = (printExp2Str(e2.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())).clone();
                     p = expPriority(e.clone());
                     p1 = expPriority(e1.clone());
                     p2 = expPriority(e2.clone());
-                    s1_1 = (parenthesize((s1.clone()).clone(), p1.clone(), p.clone(), false)?).clone();
-                    s2_1 = (parenthesize((s2.clone()).clone(), p2.clone(), p.clone(), true)?).clone();
+                    s1_1 = (parenthesize((s1.clone()).clone(), p1.clone(), p.clone(), false)).clone();
+                    s2_1 = (parenthesize((s2.clone()).clone(), p2.clone(), p.clone(), true)).clone();
                     s = stringAppendList(list![(s1_1.clone()).clone(), (sym.clone()).clone(), (s2_1.clone()).clone()]);
                     Ok(s.clone())
                 }
@@ -574,10 +574,10 @@ pub fn printExp2Str<Type_a: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut strin
                     let mut p1: i32 = 0;
                     let mut p: i32 = 0;
                     sym = (lunaryopSymbol(op.clone())?).clone();
-                    s = (printExp2Str(e1.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())?).clone();
+                    s = (printExp2Str(e1.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())).clone();
                     p = expPriority(e.clone());
                     p1 = expPriority(e1.clone());
-                    s_1 = (parenthesize((s.clone()).clone(), p1.clone(), p.clone(), false)?).clone();
+                    s_1 = (parenthesize((s.clone()).clone(), p1.clone(), p.clone(), false)).clone();
                     s_2 = (stringAppend((sym.clone()).clone(), (s_1.clone()).clone())).clone();
                     Ok(s_2.clone())
                 }
@@ -597,13 +597,13 @@ pub fn printExp2Str<Type_a: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut strin
                     let mut p2: i32 = 0;
                     let mut p: i32 = 0;
                     sym = (relopSymbol(op.clone())?).clone();
-                    s1 = (printExp2Str(e1.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())?).clone();
-                    s2 = (printExp2Str(e2.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())?).clone();
+                    s1 = (printExp2Str(e1.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())).clone();
+                    s2 = (printExp2Str(e2.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())).clone();
                     p = expPriority(e.clone());
                     p1 = expPriority(e1.clone());
                     p2 = expPriority(e2.clone());
-                    s1_1 = (parenthesize((s1.clone()).clone(), p1.clone(), p.clone(), false)?).clone();
-                    s2_1 = (parenthesize((s2.clone()).clone(), p2.clone(), p.clone(), true)?).clone();
+                    s1_1 = (parenthesize((s1.clone()).clone(), p1.clone(), p.clone(), false)).clone();
+                    s2_1 = (parenthesize((s2.clone()).clone(), p2.clone(), p.clone(), true)).clone();
                     s = stringAppendList(list![(s1_1.clone()).clone(), (sym.clone()).clone(), (s2_1.clone()).clone()]);
                     Ok(s.clone())
                 }
@@ -624,16 +624,16 @@ pub fn printExp2Str<Type_a: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut strin
                     let mut pt: i32 = 0;
                     let mut pf: i32 = 0;
                     let mut p: i32 = 0;
-                    cs = (printExp2Str(cond.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())?).clone();
-                    ts = (printExp2Str(tb.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())?).clone();
-                    fs = (printExp2Str(fb.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())?).clone();
+                    cs = (printExp2Str(cond.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())).clone();
+                    ts = (printExp2Str(tb.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())).clone();
+                    fs = (printExp2Str(fb.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())).clone();
                     p = expPriority(e.clone());
                     pc = expPriority(cond.clone());
                     pt = expPriority(tb.clone());
                     pf = expPriority(fb.clone());
-                    cs_1 = (parenthesize((cs.clone()).clone(), pc.clone(), p.clone(), false)?).clone();
-                    ts_1 = (parenthesize((ts.clone()).clone(), pt.clone(), p.clone(), false)?).clone();
-                    fs_1 = (parenthesize((fs.clone()).clone(), pf.clone(), p.clone(), false)?).clone();
+                    cs_1 = (parenthesize((cs.clone()).clone(), pc.clone(), p.clone(), false)).clone();
+                    ts_1 = (parenthesize((ts.clone()).clone(), pt.clone(), p.clone(), false)).clone();
+                    fs_1 = (parenthesize((fs.clone()).clone(), pf.clone(), p.clone(), false)).clone();
                     r#str = stringAppendList(list![(literal!("if ")).clone(), (cs_1.clone()).clone(), (literal!(" then ")).clone(), (ts_1.clone()).clone(), (literal!(" else ")).clone(), (fs_1.clone()).clone()]);
                     Ok(r#str.clone())
                 }
@@ -657,7 +657,7 @@ pub fn printExp2Str<Type_a: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut strin
                     let mut fs: ArcStr = arcstr::literal!("");
                     let mut argstr: ArcStr = arcstr::literal!("");
                     fs = (AbsynUtil::pathString(AbsynUtil::makeNotFullyQualified(fcn.clone()), (literal!(".")).clone(), true, false)?).clone();
-                    argstr = stringDelimitList(List::map3(args.clone(), (std::sync::Arc::new(printExp2Str) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArcStr, _, _) -> Result<ArcStr> + 'static>), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())?, (literal!(",")).clone());
+                    argstr = stringDelimitList(List::map3(args.clone(), std::sync::Arc::new(fnptr!(printExp2Str, Arc<DAE::Exp>, ArcStr, _, _)), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())?, (literal!(",")).clone());
                     s = stringAppendList(list![(fs.clone()).clone(), (literal!("(")).clone(), (argstr.clone()).clone(), (literal!(")")).clone()]);
                     Ok(s.clone())
                 }
@@ -671,7 +671,7 @@ pub fn printExp2Str<Type_a: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut strin
                     let mut fs: ArcStr = arcstr::literal!("");
                     let mut argstr: ArcStr = arcstr::literal!("");
                     fs = (AbsynUtil::pathString(AbsynUtil::makeNotFullyQualified(fcn.clone()), (literal!(".")).clone(), true, false)?).clone();
-                    argstr = stringDelimitList(List::map3(args.clone(), (std::sync::Arc::new(printExp2Str) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArcStr, _, _) -> Result<ArcStr> + 'static>), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())?, (literal!(",")).clone());
+                    argstr = stringDelimitList(List::map3(args.clone(), std::sync::Arc::new(fnptr!(printExp2Str, Arc<DAE::Exp>, ArcStr, _, _)), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())?, (literal!(",")).clone());
                     s = stringAppendList(list![(literal!("function ")).clone(), (fs.clone()).clone(), (literal!("(")).clone(), (argstr.clone()).clone(), (literal!(")")).clone()]);
                     Ok(s.clone())
                 }
@@ -682,7 +682,7 @@ pub fn printExp2Str<Type_a: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut strin
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::ARRAY { array: es, .. }, _, _) => {
                     let mut s: ArcStr = arcstr::literal!("");
-                    s = stringDelimitList(List::map3(es.clone(), (std::sync::Arc::new(printExp2Str) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArcStr, _, _) -> Result<ArcStr> + 'static>), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())?, (literal!(",")).clone());
+                    s = stringDelimitList(List::map3(es.clone(), std::sync::Arc::new(fnptr!(printExp2Str, Arc<DAE::Exp>, ArcStr, _, _)), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())?, (literal!(",")).clone());
                     s = stringAppendList(list![(literal!("{")).clone(), (s.clone()).clone(), (literal!("}")).clone()]);
                     Ok(s.clone())
                 }
@@ -693,7 +693,7 @@ pub fn printExp2Str<Type_a: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut strin
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::TUPLE { PR: es }, _, _) => {
                     let mut s: ArcStr = arcstr::literal!("");
-                    s = stringDelimitList(List::map3(es.clone(), (std::sync::Arc::new(printExp2Str) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArcStr, _, _) -> Result<ArcStr> + 'static>), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())?, (literal!(",")).clone());
+                    s = stringDelimitList(List::map3(es.clone(), std::sync::Arc::new(fnptr!(printExp2Str, Arc<DAE::Exp>, ArcStr, _, _)), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())?, (literal!(",")).clone());
                     s = stringAppendList(list![(literal!("(")).clone(), (s.clone()).clone(), (literal!(")")).clone()]);
                     Ok(s.clone())
                 }
@@ -722,13 +722,13 @@ pub fn printExp2Str<Type_a: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut strin
                     let mut p: i32 = 0;
                     let mut pstop: i32 = 0;
                     let mut pstart: i32 = 0;
-                    s1 = (printExp2Str(start.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())?).clone();
-                    s3 = (printExp2Str(stop.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())?).clone();
+                    s1 = (printExp2Str(start.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())).clone();
+                    s3 = (printExp2Str(stop.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())).clone();
                     p = expPriority(e.clone());
                     pstart = expPriority(start.clone());
                     pstop = expPriority(stop.clone());
-                    s1_1 = (parenthesize((s1.clone()).clone(), pstart.clone(), p.clone(), false)?).clone();
-                    s3_1 = (parenthesize((s3.clone()).clone(), pstop.clone(), p.clone(), false)?).clone();
+                    s1_1 = (parenthesize((s1.clone()).clone(), pstart.clone(), p.clone(), false)).clone();
+                    s3_1 = (parenthesize((s3.clone()).clone(), pstop.clone(), p.clone(), false)).clone();
                     s = stringAppendList(list![(s1_1.clone()).clone(), (literal!(":")).clone(), (s3_1.clone()).clone()]);
                     Ok(s.clone())
                 }
@@ -749,16 +749,16 @@ pub fn printExp2Str<Type_a: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut strin
                     let mut pstop: i32 = 0;
                     let mut pstart: i32 = 0;
                     let mut pstep: i32 = 0;
-                    s1 = (printExp2Str(start.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())?).clone();
-                    s2 = (printExp2Str(step.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())?).clone();
-                    s3 = (printExp2Str(stop.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())?).clone();
+                    s1 = (printExp2Str(start.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())).clone();
+                    s2 = (printExp2Str(step.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())).clone();
+                    s3 = (printExp2Str(stop.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())).clone();
                     p = expPriority(e.clone());
                     pstart = expPriority(start.clone());
                     pstop = expPriority(stop.clone());
                     pstep = expPriority(step.clone());
-                    s1_1 = (parenthesize((s1.clone()).clone(), pstart.clone(), p.clone(), false)?).clone();
-                    s3_1 = (parenthesize((s3.clone()).clone(), pstop.clone(), p.clone(), false)?).clone();
-                    s2_1 = (parenthesize((s2.clone()).clone(), pstep.clone(), p.clone(), false)?).clone();
+                    s1_1 = (parenthesize((s1.clone()).clone(), pstart.clone(), p.clone(), false)).clone();
+                    s3_1 = (parenthesize((s3.clone()).clone(), pstop.clone(), p.clone(), false)).clone();
+                    s2_1 = (parenthesize((s2.clone()).clone(), pstep.clone(), p.clone(), false)).clone();
                     s = stringAppendList(list![(s1_1.clone()).clone(), (literal!(":")).clone(), (s2_1.clone()).clone(), (literal!(":")).clone(), (s3_1.clone()).clone()]);
                     Ok(s.clone())
                 }
@@ -772,7 +772,7 @@ pub fn printExp2Str<Type_a: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut strin
                     let mut res: ArcStr = arcstr::literal!("");
                     let mut r#str: ArcStr = arcstr::literal!("");
                     r#str = (TypesDump::unparseType(tp.clone())?).clone();
-                    s = (printExp2Str(e.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())?).clone();
+                    s = (printExp2Str(e.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())).clone();
                     res = stringAppendList(list![(literal!("DAE.CAST(")).clone(), (r#str.clone()).clone(), (literal!(", ")).clone(), (s.clone()).clone(), (literal!(")")).clone()]);
                     Ok(res.clone())
                 }
@@ -799,9 +799,9 @@ pub fn printExp2Str<Type_a: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut strin
     });
                     p = expPriority(e.clone());
                     pe1 = expPriority(e1.clone());
-                    s1 = (printExp2Str(e1.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())?).clone();
-                    s1_1 = (parenthesize((s1.clone()).clone(), pe1.clone(), p.clone(), false)?).clone();
-                    s4 = stringDelimitList(List::map3(aexpl.clone(), (std::sync::Arc::new(printExp2Str) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArcStr, _, _) -> Result<ArcStr> + 'static>), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())?, (literal!(",")).clone());
+                    s1 = (printExp2Str(e1.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())).clone();
+                    s1_1 = (parenthesize((s1.clone()).clone(), pe1.clone(), p.clone(), false)).clone();
+                    s4 = stringDelimitList(List::map3(aexpl.clone(), std::sync::Arc::new(fnptr!(printExp2Str, Arc<DAE::Exp>, ArcStr, _, _)), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())?, (literal!(",")).clone());
                     s_4 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*s1_1.clone()); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*s4.clone()); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone();
                     Ok(s_4.clone())
                 }
@@ -814,8 +814,8 @@ pub fn printExp2Str<Type_a: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut strin
                     let mut r#str: ArcStr = arcstr::literal!("");
                     let mut crstr: ArcStr = arcstr::literal!("");
                     let mut dimstr: ArcStr = arcstr::literal!("");
-                    crstr = (printExp2Str(cr.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())?).clone();
-                    dimstr = (printExp2Str(dim.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())?).clone();
+                    crstr = (printExp2Str(cr.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())).clone();
+                    dimstr = (printExp2Str(dim.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())).clone();
                     r#str = stringAppendList(list![(literal!("size(")).clone(), (crstr.clone()).clone(), (literal!(",")).clone(), (dimstr.clone()).clone(), (literal!(")")).clone()]);
                     Ok(r#str.clone())
                 }
@@ -827,7 +827,7 @@ pub fn printExp2Str<Type_a: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut strin
                 (Deref @ DAE::Exp::SIZE { exp: cr, sz: None }, _, _) => {
                     let mut r#str: ArcStr = arcstr::literal!("");
                     let mut crstr: ArcStr = arcstr::literal!("");
-                    crstr = (printExp2Str(cr.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())?).clone();
+                    crstr = (printExp2Str(cr.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())).clone();
                     r#str = stringAppendList(list![(literal!("size(")).clone(), (crstr.clone()).clone(), (literal!(")")).clone()]);
                     Ok(r#str.clone())
                 }
@@ -842,7 +842,7 @@ pub fn printExp2Str<Type_a: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut strin
                     let mut expstr: ArcStr = arcstr::literal!("");
                     let mut iterstr: ArcStr = arcstr::literal!("");
                     fs = AbsynUtil::pathStringNoQual(fcn.clone(), (literal!(".")).clone(), false, false)?;
-                    expstr = (printExp2Str(exp.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())?).clone();
+                    expstr = (printExp2Str(exp.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())).clone();
                     iterstr = stringDelimitList(List::map(riters.clone(), (std::sync::Arc::new(reductionIteratorStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ReductionIterator>) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone());
                     r#str = stringAppendList(list![(literal!("<reduction>")).clone(), (fs.clone()).clone(), (literal!("(")).clone(), (expstr.clone()).clone(), (literal!(" for ")).clone(), (iterstr.clone()).clone(), (literal!(")")).clone()]);
                     Ok(r#str.clone())
@@ -854,7 +854,7 @@ pub fn printExp2Str<Type_a: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut strin
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::META_TUPLE { listExp: es }, _, _) => {
                     let mut s: ArcStr = arcstr::literal!("");
-                    s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Tuple")); __mm_s.push_str(&*printExp2Str(Arc::new(DAE::Exp::TUPLE { PR: es.clone() }), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())?); ArcStr::from(__mm_s) }).clone();
+                    s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Tuple")); __mm_s.push_str(&*printExp2Str(Arc::new(DAE::Exp::TUPLE { PR: es.clone() }), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())); ArcStr::from(__mm_s) }).clone();
                     Ok(s.clone())
                 }
                 _ => bail!("nomatch"),
@@ -864,7 +864,7 @@ pub fn printExp2Str<Type_a: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut strin
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::LIST { valList: es }, _, _) => {
                     let mut s: ArcStr = arcstr::literal!("");
-                    s = stringDelimitList(List::map3(es.clone(), (std::sync::Arc::new(printExp2Str) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArcStr, _, _) -> Result<ArcStr> + 'static>), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())?, (literal!(",")).clone());
+                    s = stringDelimitList(List::map3(es.clone(), std::sync::Arc::new(fnptr!(printExp2Str, Arc<DAE::Exp>, ArcStr, _, _)), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())?, (literal!(",")).clone());
                     s = stringAppendList(list![(literal!("List(")).clone(), (s.clone()).clone(), (literal!(")")).clone()]);
                     Ok(s.clone())
                 }
@@ -877,8 +877,8 @@ pub fn printExp2Str<Type_a: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut strin
                     let mut s_2: ArcStr = arcstr::literal!("");
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut s2: ArcStr = arcstr::literal!("");
-                    s1 = (printExp2Str(e1.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())?).clone();
-                    s2 = (printExp2Str(e2.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())?).clone();
+                    s1 = (printExp2Str(e1.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())).clone();
+                    s2 = (printExp2Str(e2.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())).clone();
                     s_2 = stringAppendList(list![(literal!("listCons(")).clone(), (s1.clone()).clone(), (literal!(",")).clone(), (s2.clone()).clone(), (literal!(")")).clone()]);
                     Ok(s_2.clone())
                 }
@@ -898,7 +898,7 @@ pub fn printExp2Str<Type_a: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut strin
                 (Deref @ DAE::Exp::META_OPTION { exp: Some(e1) }, _, _) => {
                     let mut s_1: ArcStr = arcstr::literal!("");
                     let mut s1: ArcStr = arcstr::literal!("");
-                    s1 = (printExp2Str(e1.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())?).clone();
+                    s1 = (printExp2Str(e1.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())).clone();
                     s_1 = stringAppendList(list![(literal!("SOME(")).clone(), (s1.clone()).clone(), (literal!(")")).clone()]);
                     Ok(s_1.clone())
                 }
@@ -910,7 +910,7 @@ pub fn printExp2Str<Type_a: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut strin
                 (Deref @ DAE::Exp::BOX { exp: e1 }, _, _) => {
                     let mut s_1: ArcStr = arcstr::literal!("");
                     let mut s1: ArcStr = arcstr::literal!("");
-                    s1 = (printExp2Str(e1.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())?).clone();
+                    s1 = (printExp2Str(e1.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())).clone();
                     s_1 = stringAppendList(list![(literal!("#(")).clone(), (s1.clone()).clone(), (literal!(")")).clone()]);
                     Ok(s_1.clone())
                 }
@@ -922,7 +922,7 @@ pub fn printExp2Str<Type_a: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut strin
                 (Deref @ DAE::Exp::UNBOX { exp: e1, ty: _ }, _, _) => {
                     let mut s_1: ArcStr = arcstr::literal!("");
                     let mut s1: ArcStr = arcstr::literal!("");
-                    s1 = (printExp2Str(e1.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())?).clone();
+                    s1 = (printExp2Str(e1.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())).clone();
                     s_1 = stringAppendList(list![(literal!("unbox(")).clone(), (s1.clone()).clone(), (literal!(")")).clone()]);
                     Ok(s_1.clone())
                 }
@@ -936,7 +936,7 @@ pub fn printExp2Str<Type_a: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut strin
                     let mut fs: ArcStr = arcstr::literal!("");
                     let mut argstr: ArcStr = arcstr::literal!("");
                     fs = (AbsynUtil::pathString(fcn.clone(), (literal!(".")).clone(), true, false)?).clone();
-                    argstr = stringDelimitList(List::map3(args.clone(), (std::sync::Arc::new(printExp2Str) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArcStr, _, _) -> Result<ArcStr> + 'static>), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())?, (literal!(",")).clone());
+                    argstr = stringDelimitList(List::map3(args.clone(), std::sync::Arc::new(fnptr!(printExp2Str, Arc<DAE::Exp>, ArcStr, _, _)), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())?, (literal!(",")).clone());
                     s = stringAppendList(list![(fs.clone()).clone(), (literal!("(")).clone(), (argstr.clone()).clone(), (literal!(")")).clone()]);
                     Ok(s.clone())
                 }
@@ -951,7 +951,7 @@ pub fn printExp2Str<Type_a: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut strin
                     let mut s2: ArcStr = arcstr::literal!("");
                     let mut s3: ArcStr = arcstr::literal!("");
                     s1 = (printMatchType(matchTy.clone())?).clone();
-                    s2 = (printExp2Str(Arc::new(DAE::Exp::TUPLE { PR: es.clone() }), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())?).clone();
+                    s2 = (printExp2Str(Arc::new(DAE::Exp::TUPLE { PR: es.clone() }), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())).clone();
                     s3 = stringAppendList(List::map(cases.clone(), (std::sync::Arc::new(printCase2Str) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::MatchCase>) -> Result<ArcStr> + 'static>))?);
                     s = stringAppendList(list![(s1.clone()).clone(), (s2.clone()).clone(), (literal!("\n")).clone(), (s3.clone()).clone(), (literal!("  end ")).clone(), (s1.clone()).clone()]);
                     Ok(s.clone())
@@ -962,7 +962,7 @@ pub fn printExp2Str<Type_a: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut strin
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::SHARED_LITERAL { exp: e, .. }, _, _) => {
-                    Ok(printExp2Str(e.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())?)
+                    Ok(printExp2Str(e.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -991,9 +991,9 @@ pub fn printExp2Str<Type_a: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut strin
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     }).clone();
-    Ok(outString)
+    outString
 }
 
 fn printExpTypeStr(mut inExp: Arc<DAE::Exp>) -> ArcStr {
@@ -1088,14 +1088,14 @@ fn printCase2Str(mut matchCase: Arc<DAE::MatchCase>) -> Result<ArcStr> {
             let mut bodyStr: ArcStr = arcstr::literal!("");
             patternsStr = (patternStr(Arc::new(DAE::Pattern::PAT_META_TUPLE { patterns: patterns.clone() }))?).clone();
             resultStr = (ExpressionBasics::printExpStr(result.clone())?).clone();
-            bodyStr = stringAppendList(List::map1(body.clone(), (std::sync::Arc::new(DAEDump::ppStmtStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>, i32) -> Result<ArcStr> + 'static>), 8)?);
+            bodyStr = stringAppendList(List::map1(body.clone(), (std::sync::Arc::new(fnptr!(DAEDump::ppStmtStr, Arc<DAE::Statement>, i32)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>, i32) -> Result<ArcStr> + 'static>), 8)?);
             stringAppendList(list![(literal!("    case ")).clone(), (patternsStr.clone()).clone(), (literal!("\n      algorithm\n")).clone(), (bodyStr.clone()).clone(), (literal!("      then ")).clone(), (resultStr.clone()).clone(), (literal!(";\n")).clone()])
         },
         Deref @ DAE::MatchCase { patterns, body, result: None, .. } => {
             let mut patternsStr: ArcStr = arcstr::literal!("");
             let mut bodyStr: ArcStr = arcstr::literal!("");
             patternsStr = (patternStr(Arc::new(DAE::Pattern::PAT_META_TUPLE { patterns: patterns.clone() }))?).clone();
-            bodyStr = stringAppendList(List::map1(body.clone(), (std::sync::Arc::new(DAEDump::ppStmtStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>, i32) -> Result<ArcStr> + 'static>), 8)?);
+            bodyStr = stringAppendList(List::map1(body.clone(), (std::sync::Arc::new(fnptr!(DAEDump::ppStmtStr, Arc<DAE::Statement>, i32)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>, i32) -> Result<ArcStr> + 'static>), 8)?);
             stringAppendList(list![(literal!("    case ")).clone(), (patternsStr.clone()).clone(), (literal!("\n      algorithm\n")).clone(), (bodyStr.clone()).clone(), (literal!("      then fail();\n")).clone()])
         },
         _ => bail!("match: no arm matched"),
@@ -1160,11 +1160,11 @@ pub fn expPriority(mut inExp: Arc<DAE::Exp>) -> i32 {
 
 pub fn printRowStr(mut es_1: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut stringDelimiter: ArcStr) -> Result<ArcStr> {
     let mut s: ArcStr;
-    s = stringDelimitList(List::map3(es_1.clone(), (std::sync::Arc::new(printExp2Str::<()>) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArcStr, _, _) -> Result<ArcStr> + 'static>), (stringDelimiter.clone()).clone(), None, None)?, (literal!(",")).clone());
+    s = stringDelimitList(List::map3(es_1.clone(), std::sync::Arc::new(fnptr!(printExp2Str::<()>, Arc<DAE::Exp>, ArcStr, _, _)), (stringDelimiter.clone()).clone(), None, None)?, (literal!(",")).clone());
     Ok(s)
 }
 
-pub fn dumpExpGraphviz(mut inExp: Arc<DAE::Exp>) -> Result<Arc<Graphviz::Node>> {
+pub fn dumpExpGraphviz(mut inExp: Arc<DAE::Exp>) -> Arc<Graphviz::Node> {
     let mut outNode: Arc<Graphviz::Node>;
     outNode = 'mc: {
         let __mc_input = inExp.clone();
@@ -1226,8 +1226,8 @@ pub fn dumpExpGraphviz(mut inExp: Arc<DAE::Exp>) -> Result<Arc<Graphviz::Node>> 
                     let mut lt: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
                     let mut rt: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
                     sym = (binopSymbol(op.clone())?).clone();
-                    lt = dumpExpGraphviz(e1.clone())?;
-                    rt = dumpExpGraphviz(e2.clone())?;
+                    lt = dumpExpGraphviz(e1.clone());
+                    rt = dumpExpGraphviz(e2.clone());
                     Ok(Arc::new(Graphviz::Node::LNODE { type_: (literal!("BINARY")).clone(), labelLst: list![(sym.clone()).clone()], attributes: metamodelica::nil(), children: list![lt.clone(), rt.clone()] }))
                 }
                 _ => bail!("nomatch"),
@@ -1239,7 +1239,7 @@ pub fn dumpExpGraphviz(mut inExp: Arc<DAE::Exp>) -> Result<Arc<Graphviz::Node>> 
                     let mut sym: ArcStr = arcstr::literal!("");
                     let mut ct: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
                     sym = (unaryopSymbol(op.clone())?).clone();
-                    ct = dumpExpGraphviz(e.clone())?;
+                    ct = dumpExpGraphviz(e.clone());
                     Ok(Arc::new(Graphviz::Node::LNODE { type_: (literal!("UNARY")).clone(), labelLst: list![(sym.clone()).clone()], attributes: metamodelica::nil(), children: list![ct.clone()] }))
                 }
                 _ => bail!("nomatch"),
@@ -1252,8 +1252,8 @@ pub fn dumpExpGraphviz(mut inExp: Arc<DAE::Exp>) -> Result<Arc<Graphviz::Node>> 
                     let mut lt: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
                     let mut rt: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
                     sym = (lbinopSymbol(op.clone())?).clone();
-                    lt = dumpExpGraphviz(e1.clone())?;
-                    rt = dumpExpGraphviz(e2.clone())?;
+                    lt = dumpExpGraphviz(e1.clone());
+                    rt = dumpExpGraphviz(e2.clone());
                     Ok(Arc::new(Graphviz::Node::LNODE { type_: (literal!("LBINARY")).clone(), labelLst: list![(sym.clone()).clone()], attributes: metamodelica::nil(), children: list![lt.clone(), rt.clone()] }))
                 }
                 _ => bail!("nomatch"),
@@ -1265,7 +1265,7 @@ pub fn dumpExpGraphviz(mut inExp: Arc<DAE::Exp>) -> Result<Arc<Graphviz::Node>> 
                     let mut sym: ArcStr = arcstr::literal!("");
                     let mut ct: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
                     sym = (lunaryopSymbol(op.clone())?).clone();
-                    ct = dumpExpGraphviz(e.clone())?;
+                    ct = dumpExpGraphviz(e.clone());
                     Ok(Arc::new(Graphviz::Node::LNODE { type_: (literal!("LUNARY")).clone(), labelLst: list![(sym.clone()).clone()], attributes: metamodelica::nil(), children: list![ct.clone()] }))
                 }
                 _ => bail!("nomatch"),
@@ -1278,8 +1278,8 @@ pub fn dumpExpGraphviz(mut inExp: Arc<DAE::Exp>) -> Result<Arc<Graphviz::Node>> 
                     let mut lt: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
                     let mut rt: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
                     sym = (relopSymbol(op.clone())?).clone();
-                    lt = dumpExpGraphviz(e1.clone())?;
-                    rt = dumpExpGraphviz(e2.clone())?;
+                    lt = dumpExpGraphviz(e1.clone());
+                    rt = dumpExpGraphviz(e2.clone());
                     Ok(Arc::new(Graphviz::Node::LNODE { type_: (literal!("RELATION")).clone(), labelLst: list![(sym.clone()).clone()], attributes: metamodelica::nil(), children: list![lt.clone(), rt.clone()] }))
                 }
                 _ => bail!("nomatch"),
@@ -1291,9 +1291,9 @@ pub fn dumpExpGraphviz(mut inExp: Arc<DAE::Exp>) -> Result<Arc<Graphviz::Node>> 
                     let mut ct: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
                     let mut tt: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
                     let mut ft: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
-                    ct = dumpExpGraphviz(cond.clone())?;
-                    tt = dumpExpGraphviz(t.clone())?;
-                    ft = dumpExpGraphviz(f.clone())?;
+                    ct = dumpExpGraphviz(cond.clone());
+                    tt = dumpExpGraphviz(t.clone());
+                    ft = dumpExpGraphviz(f.clone());
                     Ok(Arc::new(Graphviz::Node::NODE { type_: (literal!("IFEXP")).clone(), attributes: metamodelica::nil(), children: list![ct.clone(), tt.clone(), ft.clone()] }))
                 }
                 _ => bail!("nomatch"),
@@ -1305,7 +1305,7 @@ pub fn dumpExpGraphviz(mut inExp: Arc<DAE::Exp>) -> Result<Arc<Graphviz::Node>> 
                     let mut fs: ArcStr = arcstr::literal!("");
                     let mut argnodes: Arc<metamodelica::List<Arc<Graphviz::Node>>> = metamodelica::nil();
                     fs = (AbsynUtil::pathString(fcn.clone(), (literal!(".")).clone(), true, false)?).clone();
-                    argnodes = List::map(args.clone(), (std::sync::Arc::new(dumpExpGraphviz) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<Graphviz::Node>> + 'static>))?;
+                    argnodes = List::map(args.clone(), (std::sync::Arc::new(fnptr!(dumpExpGraphviz, Arc<DAE::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<Graphviz::Node>> + 'static>))?;
                     Ok(Arc::new(Graphviz::Node::LNODE { type_: (literal!("CALL")).clone(), labelLst: list![(fs.clone()).clone()], attributes: metamodelica::nil(), children: argnodes.clone() }))
                 }
                 _ => bail!("nomatch"),
@@ -1315,7 +1315,7 @@ pub fn dumpExpGraphviz(mut inExp: Arc<DAE::Exp>) -> Result<Arc<Graphviz::Node>> 
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::PARTEVALFUNCTION { expList: args, .. } => {
                     let mut argnodes: Arc<metamodelica::List<Arc<Graphviz::Node>>> = metamodelica::nil();
-                    argnodes = List::map(args.clone(), (std::sync::Arc::new(dumpExpGraphviz) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<Graphviz::Node>> + 'static>))?;
+                    argnodes = List::map(args.clone(), (std::sync::Arc::new(fnptr!(dumpExpGraphviz, Arc<DAE::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<Graphviz::Node>> + 'static>))?;
                     Ok(Arc::new(Graphviz::Node::NODE { type_: (literal!("PARTEVALFUNCTION")).clone(), attributes: metamodelica::nil(), children: argnodes.clone() }))
                 }
                 _ => bail!("nomatch"),
@@ -1325,7 +1325,7 @@ pub fn dumpExpGraphviz(mut inExp: Arc<DAE::Exp>) -> Result<Arc<Graphviz::Node>> 
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::ARRAY { array: es, .. } => {
                     let mut nodes: Arc<metamodelica::List<Arc<Graphviz::Node>>> = metamodelica::nil();
-                    nodes = List::map(es.clone(), (std::sync::Arc::new(dumpExpGraphviz) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<Graphviz::Node>> + 'static>))?;
+                    nodes = List::map(es.clone(), (std::sync::Arc::new(fnptr!(dumpExpGraphviz, Arc<DAE::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<Graphviz::Node>> + 'static>))?;
                     Ok(Arc::new(Graphviz::Node::NODE { type_: (literal!("ARRAY")).clone(), attributes: metamodelica::nil(), children: nodes.clone() }))
                 }
                 _ => bail!("nomatch"),
@@ -1335,7 +1335,7 @@ pub fn dumpExpGraphviz(mut inExp: Arc<DAE::Exp>) -> Result<Arc<Graphviz::Node>> 
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::TUPLE { PR: es } => {
                     let mut nodes: Arc<metamodelica::List<Arc<Graphviz::Node>>> = metamodelica::nil();
-                    nodes = List::map(es.clone(), (std::sync::Arc::new(dumpExpGraphviz) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<Graphviz::Node>> + 'static>))?;
+                    nodes = List::map(es.clone(), (std::sync::Arc::new(fnptr!(dumpExpGraphviz, Arc<DAE::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<Graphviz::Node>> + 'static>))?;
                     Ok(Arc::new(Graphviz::Node::NODE { type_: (literal!("TUPLE")).clone(), attributes: metamodelica::nil(), children: nodes.clone() }))
                 }
                 _ => bail!("nomatch"),
@@ -1358,9 +1358,9 @@ pub fn dumpExpGraphviz(mut inExp: Arc<DAE::Exp>) -> Result<Arc<Graphviz::Node>> 
                     let mut t1: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
                     let mut t2: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
                     let mut t3: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
-                    t1 = dumpExpGraphviz(start.clone())?;
+                    t1 = dumpExpGraphviz(start.clone());
                     t2 = Arc::new(Graphviz::Node::NODE { type_: (literal!(":")).clone(), attributes: metamodelica::nil(), children: metamodelica::nil() });
-                    t3 = dumpExpGraphviz(stop.clone())?;
+                    t3 = dumpExpGraphviz(stop.clone());
                     Ok(Arc::new(Graphviz::Node::NODE { type_: (literal!("RANGE")).clone(), attributes: metamodelica::nil(), children: list![t1.clone(), t2.clone(), t3.clone()] }))
                 }
                 _ => bail!("nomatch"),
@@ -1372,9 +1372,9 @@ pub fn dumpExpGraphviz(mut inExp: Arc<DAE::Exp>) -> Result<Arc<Graphviz::Node>> 
                     let mut t1: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
                     let mut t2: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
                     let mut t3: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
-                    t1 = dumpExpGraphviz(start.clone())?;
-                    t2 = dumpExpGraphviz(step.clone())?;
-                    t3 = dumpExpGraphviz(stop.clone())?;
+                    t1 = dumpExpGraphviz(start.clone());
+                    t2 = dumpExpGraphviz(step.clone());
+                    t3 = dumpExpGraphviz(stop.clone());
                     Ok(Arc::new(Graphviz::Node::NODE { type_: (literal!("RANGE")).clone(), attributes: metamodelica::nil(), children: list![t1.clone(), t2.clone(), t3.clone()] }))
                 }
                 _ => bail!("nomatch"),
@@ -1386,7 +1386,7 @@ pub fn dumpExpGraphviz(mut inExp: Arc<DAE::Exp>) -> Result<Arc<Graphviz::Node>> 
                     let mut tystr: ArcStr = arcstr::literal!("");
                     let mut ct: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
                     tystr = (TypesDump::unparseType(ty.clone())?).clone();
-                    ct = dumpExpGraphviz(e.clone())?;
+                    ct = dumpExpGraphviz(e.clone());
                     Ok(Arc::new(Graphviz::Node::LNODE { type_: (literal!("CAST")).clone(), labelLst: list![(tystr.clone()).clone()], attributes: metamodelica::nil(), children: list![ct.clone()] }))
                 }
                 _ => bail!("nomatch"),
@@ -1398,7 +1398,7 @@ pub fn dumpExpGraphviz(mut inExp: Arc<DAE::Exp>) -> Result<Arc<Graphviz::Node>> 
                     let mut s: ArcStr = arcstr::literal!("");
                     let mut istr: ArcStr = arcstr::literal!("");
                     let mut ct: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
-                    ct = dumpExpGraphviz(e.clone())?;
+                    ct = dumpExpGraphviz(e.clone());
                     istr = (intString(i.clone())).clone();
                     s = stringAppendList(list![(literal!("[")).clone(), (istr.clone()).clone(), (literal!("]")).clone()]);
                     Ok(Arc::new(Graphviz::Node::LNODE { type_: (literal!("ASUB")).clone(), labelLst: list![(s.clone()).clone()], attributes: metamodelica::nil(), children: list![ct.clone()] }))
@@ -1411,8 +1411,8 @@ pub fn dumpExpGraphviz(mut inExp: Arc<DAE::Exp>) -> Result<Arc<Graphviz::Node>> 
                 Deref @ DAE::Exp::SIZE { exp: cr, sz: Some(dim) } => {
                     let mut crt: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
                     let mut dimt: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
-                    crt = dumpExpGraphviz(cr.clone())?;
-                    dimt = dumpExpGraphviz(dim.clone())?;
+                    crt = dumpExpGraphviz(cr.clone());
+                    dimt = dumpExpGraphviz(dim.clone());
                     Ok(Arc::new(Graphviz::Node::NODE { type_: (literal!("SIZE")).clone(), attributes: metamodelica::nil(), children: list![crt.clone(), dimt.clone()] }))
                 }
                 _ => bail!("nomatch"),
@@ -1422,7 +1422,7 @@ pub fn dumpExpGraphviz(mut inExp: Arc<DAE::Exp>) -> Result<Arc<Graphviz::Node>> 
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::SIZE { exp: cr, sz: None } => {
                     let mut crt: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
-                    crt = dumpExpGraphviz(cr.clone())?;
+                    crt = dumpExpGraphviz(cr.clone());
                     Ok(Arc::new(Graphviz::Node::NODE { type_: (literal!("SIZE")).clone(), attributes: metamodelica::nil(), children: list![crt.clone()] }))
                 }
                 _ => bail!("nomatch"),
@@ -1435,8 +1435,8 @@ pub fn dumpExpGraphviz(mut inExp: Arc<DAE::Exp>) -> Result<Arc<Graphviz::Node>> 
                     let mut expt: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
                     let mut itert: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
                     fs = (AbsynUtil::pathString(fcn.clone(), (literal!(".")).clone(), true, false)?).clone();
-                    expt = dumpExpGraphviz(exp.clone())?;
-                    itert = dumpExpGraphviz(iterexp.clone())?;
+                    expt = dumpExpGraphviz(exp.clone());
+                    itert = dumpExpGraphviz(iterexp.clone());
                     Ok(Arc::new(Graphviz::Node::LNODE { type_: (literal!("REDUCTION")).clone(), labelLst: list![(fs.clone()).clone()], attributes: metamodelica::nil(), children: list![expt.clone(), itert.clone()] }))
                 }
                 _ => bail!("nomatch"),
@@ -1450,9 +1450,9 @@ pub fn dumpExpGraphviz(mut inExp: Arc<DAE::Exp>) -> Result<Arc<Graphviz::Node>> 
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outNode)
+    outNode
 }
 
 pub fn dumpExpStr(mut inExp: Arc<DAE::Exp>, mut inInteger: i32) -> Result<ArcStr> {
@@ -2079,7 +2079,7 @@ fn printExpIfDiff(mut e1: Arc<DAE::Exp>, mut e2: Arc<DAE::Exp>) -> Result<ArcStr
     Ok(s)
 }
 
-pub fn printArraySizes(mut inLst: Arc<metamodelica::List<Option<i32>>>) -> Result<ArcStr> {
+pub fn printArraySizes(mut inLst: Arc<metamodelica::List<Option<i32>>>) -> ArcStr {
     let mut out: ArcStr;
     out = ('mc: {
         let __mc_input = inLst.clone();
@@ -2096,7 +2096,7 @@ pub fn printArraySizes(mut inLst: Arc<metamodelica::List<Option<i32>>>) -> Resul
                 Deref @ metamodelica::List::Cons { head: Some(x), tail: lst } => {
                     let mut s: ArcStr = arcstr::literal!("");
                     let mut s2: ArcStr = arcstr::literal!("");
-                    s = (printArraySizes(lst.clone())?).clone();
+                    s = (printArraySizes(lst.clone())).clone();
                     s2 = (intString(x.clone())).clone();
                     s = stringAppendList(list![(s2.clone()).clone(), (s.clone()).clone()]);
                     Ok(s.clone())
@@ -2108,15 +2108,15 @@ pub fn printArraySizes(mut inLst: Arc<metamodelica::List<Option<i32>>>) -> Resul
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: lst } => {
                     let mut s: ArcStr = arcstr::literal!("");
-                    s = (printArraySizes(lst.clone())?).clone();
+                    s = (printArraySizes(lst.clone())).clone();
                     Ok(s.clone())
                 }
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     }).clone();
-    Ok(out)
+    out
 }
 
 pub fn typeOfString(mut inExp: Arc<DAE::Exp>) -> Result<ArcStr> {
@@ -2225,7 +2225,7 @@ pub fn printExp(mut e: Arc<DAE::Exp>) -> Result<()> {
     Ok(())
 }
 
-pub fn parenthesize(mut inString1: ArcStr, mut inInteger2: i32, mut inInteger3: i32, mut rightOpParenthesis: bool) -> Result<ArcStr> {
+pub fn parenthesize(mut inString1: ArcStr, mut inInteger2: i32, mut inInteger3: i32, mut rightOpParenthesis: bool) -> ArcStr {
     let mut outString: ArcStr;
     outString = ('mc: {
         let __mc_input = (inString1.clone(), inInteger2.clone(), inInteger3.clone(), rightOpParenthesis.clone());
@@ -2247,9 +2247,9 @@ pub fn parenthesize(mut inString1: ArcStr, mut inInteger2: i32, mut inInteger3: 
             let (mut r#str, _, _, _) = __mc_input.clone() else { bail!("nomatch") };
             Ok(r#str.clone())
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     }).clone();
-    Ok(outString)
+    outString
 }
 
 pub fn clockKindString(mut inClockKind: Arc<DAE::ClockKind>) -> Result<ArcStr> {

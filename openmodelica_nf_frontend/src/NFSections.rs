@@ -430,7 +430,7 @@ pub fn toStream(mut sections: Arc<NFSections>, mut indent: ArcStr, mut s: IOStre
                 s = IOStream::append(s.clone(), (literal!(")")).clone())?;
             }
             if isSome(var_field!((*sections).ann, NFSections::EXTERNAL).clone()) {
-                s = IOStream::append(s.clone(), (DAEDumpTypes::dumpCompAnnotationStr(Some(Arc::new(SCode::Comment { annotation_: var_field!((*sections).ann, NFSections::EXTERNAL).clone(), comment: None })))?).clone())?;
+                s = IOStream::append(s.clone(), (DAEDumpTypes::dumpCompAnnotationStr(Some(Arc::new(SCode::Comment { annotation_: var_field!((*sections).ann, NFSections::EXTERNAL).clone(), comment: None })))).clone())?;
             }
             s = IOStream::append(s.clone(), (literal!(";\n")).clone())?;
             ()

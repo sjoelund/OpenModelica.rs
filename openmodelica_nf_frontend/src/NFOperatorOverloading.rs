@@ -125,7 +125,7 @@ pub fn instOperatorFunctions(mut node: Arc<InstNode::InstNode>, mut context: i32
 
 pub fn checkOperatorRestrictions(mut operatorNode: Arc<InstNode::InstNode>) -> Result<()> {
     if !(SCodeUtil::isElementEncapsulated(InstNode::definition(operatorNode.clone())?)) {
-        Error::addSourceMessage(Error::OPERATOR_NOT_ENCAPSULATED.clone(), list![(AbsynUtil::pathString(InstNode::fullPath(operatorNode.clone(), false)?, (literal!(".")).clone(), true, false)?).clone()], InstNode::info(operatorNode.clone())?)?;
+        Error::addSourceMessage(Error::OPERATOR_NOT_ENCAPSULATED.clone(), list![(AbsynUtil::pathString(InstNode::fullPath(operatorNode.clone(), false)?, (literal!(".")).clone(), true, false)?).clone()], InstNode::info(operatorNode.clone()))?;
         bail!("fail");
     }
     Ok(())
@@ -152,7 +152,7 @@ pub fn lookupOperatorFunctionsInType(mut operatorName: ArcStr, mut ty: Arc<Type:
                 }
             }
             if is_defined.clone() {
-                (fn_ref, _, _) = Function::instFunctionRef(fn_ref.clone(), InstContext::NO_CONTEXT.clone(), InstNode::info(node.clone())?)?;
+                (fn_ref, _, _) = Function::instFunctionRef(fn_ref.clone(), InstContext::NO_CONTEXT.clone(), InstNode::info(node.clone()))?;
                 functions = Function::typeRefCache(fn_ref.clone(), InstContext::FUNCTION.clone())?;
             } else {
                 functions = metamodelica::nil();

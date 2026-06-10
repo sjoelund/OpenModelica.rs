@@ -126,7 +126,7 @@ pub fn typeDerivative(mut fnDer: Arc<NFFunctionDerivative>) -> Result<()> {
     let mut var: Variability;
     let mut info: SourceInfo;
     Function::typeNodeCache(fnDer.derivativeFn.clone(), InstContext::FUNCTION.clone())?;
-    info = InstNode::info(fnDer.derivedFn.clone())?;
+    info = InstNode::info(fnDer.derivedFn.clone());
     (order, order_ty, var, _) = Typing::typeExp(fnDer.order.clone(), InstContext::FUNCTION.clone(), info.clone(), false)?;
     (order, _, mk) = TypeCheck::matchTypes(order_ty.clone(), crate::NFType::interned_INTEGER(), order.clone(), TypeCheck::DEFAULT_OPTIONS.clone())?;
     if TypeCheck::isIncompatibleMatch(mk.clone()) {
@@ -190,7 +190,7 @@ pub fn toSubMod(mut fnDer: Arc<NFFunctionDerivative>) -> Result<Arc<SCode::SubMo
     let mut order: i32;
     let mut info: SourceInfo;
     let mut func: Arc<Function::Function>;
-    info = InstNode::info(fnDer.derivedFn.clone())?;
+    info = InstNode::info(fnDer.derivedFn.clone());
     let __pa0 = ::match_deref::match_deref! { match &(fnDer.order.clone()) {
         Deref @ Expression::INTEGER { value: __pa0 } => __pa0.clone(),
         _ => bail!("pattern mismatch"),

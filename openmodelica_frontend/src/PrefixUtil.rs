@@ -873,7 +873,7 @@ fn prefixExpCref(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: I
         _ => bail!("pattern mismatch"),
     } };
     cr = __pa0.clone();
-    (is_iter, cache) = Lookup::isIterator(inCache.clone(), inEnv.clone(), cr.clone())?;
+    (is_iter, cache) = Lookup::isIterator(inCache.clone(), inEnv.clone(), cr.clone());
     (outCache, outCref) = prefixExpCref2(cache.clone(), inEnv.clone(), inIH.clone(), is_iter.clone(), inCref.clone(), inPrefix.clone())?;
     Ok((outCache, outCref))
 }
@@ -1136,7 +1136,7 @@ pub fn prefixExpressionsInType(mut inCache: FCore::Cache, mut inEnv: FCore::Grap
                 _ => {
                     let mut outCache: FCore::Cache = outCache.clone();
                     let mut outTy: Arc<DAE::Type> = outTy.clone();
-                    let (__pa0, (__pa1, _, _, _)) = Types::traverseType(inTy.clone(), (inCache.clone(), inEnv.clone(), inIH.clone(), inPre.clone()), (std::sync::Arc::new(prefixArrayDimensions) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>, (FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::Prefix)) -> Result<(Arc<DAE::Type>, (FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::Prefix))> + 'static>))?;
+                    let (__pa0, (__pa1, _, _, _)) = Types::traverseType(inTy.clone(), (inCache.clone(), inEnv.clone(), inIH.clone(), inPre.clone()), (std::sync::Arc::new(fnptr!(prefixArrayDimensions, Arc<DAE::Type>, (FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::Prefix))) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>, (FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::Prefix)) -> Result<(Arc<DAE::Type>, (FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::Prefix))> + 'static>))?;
                     outTy = __pa0.clone();
                     outCache = __pa1.clone();
                     Ok(((outCache.clone(), outTy.clone()), outCache.clone(), outTy.clone()))
@@ -1149,14 +1149,14 @@ pub fn prefixExpressionsInType(mut inCache: FCore::Cache, mut inEnv: FCore::Grap
     Ok((outCache, outTy))
 }
 
-fn prefixArrayDimensions(mut ty: Arc<DAE::Type>, mut tpl: (FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::Prefix)) -> Result<(Arc<DAE::Type>, (FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::Prefix))> {
+fn prefixArrayDimensions(mut ty: Arc<DAE::Type>, mut tpl: (FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::Prefix)) -> (Arc<DAE::Type>, (FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::Prefix)) {
     let mut oty: Arc<DAE::Type> = ty.clone();
     let mut otpl: (FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::Prefix);
     (oty, otpl) = (::match_deref::match_deref! { match &((oty.clone(), tpl.clone())) {
         (Deref @ DAE::Type::T_ARRAY { .. }, (cache, env, ih, pre)) => {
             let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
             let mut cache = (*cache).clone();
-            (cache, dims) = prefixDimensions(cache.clone(), env.clone(), ih.clone(), pre.clone(), var_field!((*oty).dims, DAE::Type::T_ARRAY).clone())?;
+            (cache, dims) = prefixDimensions(cache.clone(), env.clone(), ih.clone(), pre.clone(), var_field!((*oty).dims, DAE::Type::T_ARRAY).clone());
             assign_variant_field!(oty => DAE::Type::T_ARRAY; dims = dims.clone());
             (oty.clone(), (cache.clone(), env.clone(), ih.clone(), pre.clone()))
         },
@@ -1165,10 +1165,10 @@ fn prefixArrayDimensions(mut ty: Arc<DAE::Type>, mut tpl: (FCore::Cache, FCore::
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Ok((oty, otpl))
+    (oty, otpl)
 }
 
-pub fn prefixDimensions(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inPre: DAE::Prefix, mut inDims: Arc<metamodelica::List<Arc<DAE::Dimension>>>) -> Result<(FCore::Cache, Arc<metamodelica::List<Arc<DAE::Dimension>>>)> {
+pub fn prefixDimensions(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inPre: DAE::Prefix, mut inDims: Arc<metamodelica::List<Arc<DAE::Dimension>>>) -> (FCore::Cache, Arc<metamodelica::List<Arc<DAE::Dimension>>>) {
     let mut outCache: FCore::Cache;
     let mut outDims: Arc<metamodelica::List<Arc<DAE::Dimension>>>;
     (outCache, outDims) = 'mc: {
@@ -1188,7 +1188,7 @@ pub fn prefixDimensions(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut 
                     let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
                     let mut e = (*e).clone();
                     (cache, e) = prefixExpWork(inCache.clone(), inEnv.clone(), inIH.clone(), e.clone(), inPre.clone())?;
-                    (cache, new) = prefixDimensions(cache.clone(), inEnv.clone(), inIH.clone(), inPre.clone(), rest.clone())?;
+                    (cache, new) = prefixDimensions(cache.clone(), inEnv.clone(), inIH.clone(), inPre.clone(), rest.clone());
                     Ok((cache.clone(), metamodelica::cons(Arc::new(DAE::Dimension::DIM_EXP { exp: e.clone() }), new.clone())))
                 }
                 _ => bail!("nomatch"),
@@ -1199,15 +1199,15 @@ pub fn prefixDimensions(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut 
                 Deref @ metamodelica::List::Cons { head: d, tail: rest } => {
                     let mut new: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
                     let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
-                    (cache, new) = prefixDimensions(inCache.clone(), inEnv.clone(), inIH.clone(), inPre.clone(), rest.clone())?;
+                    (cache, new) = prefixDimensions(inCache.clone(), inEnv.clone(), inIH.clone(), inPre.clone(), rest.clone());
                     Ok((cache.clone(), metamodelica::cons(d.clone(), new.clone())))
                 }
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outCache, outDims))
+    (outCache, outDims)
 }
 
 pub fn isPrefix(mut prefix: DAE::Prefix) -> bool {

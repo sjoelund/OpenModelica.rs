@@ -576,7 +576,7 @@ fn unparseDescription(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>
             let mut s2: ArcStr = arcstr::literal!("");
             let mut s4: ArcStr = arcstr::literal!("");
             s1 = (unparseDescription(xs.clone())?).clone();
-            s2 = (unparseArrayDescription(vallst.clone())?).clone();
+            s2 = (unparseArrayDescription(vallst.clone())).clone();
             s4 = (stringAppend((s2.clone()).clone(), (s1.clone()).clone())).clone();
             r#str = (stringAppend((s4.clone()).clone(), (literal!(" \n")).clone())).clone();
             r#str.clone()
@@ -589,7 +589,7 @@ fn unparseDescription(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>
     Ok(outString)
 }
 
-fn unparseArrayDescription(mut lst: Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<ArcStr> {
+fn unparseArrayDescription(mut lst: Arc<metamodelica::List<Arc<Values::Value>>>) -> ArcStr {
     let mut r#str: ArcStr;
     let mut pt: ArcStr;
     let mut s1: ArcStr;
@@ -606,9 +606,9 @@ fn unparseArrayDescription(mut lst: Arc<metamodelica::List<Arc<Values::Value>>>)
     s3 = (intString(i1.clone())).clone();
     s4 = (stringAppend((s2.clone()).clone(), (s3.clone()).clone())).clone();
     s5 = (stringAppend((s4.clone()).clone(), (literal!(" ")).clone())).clone();
-    s6 = (unparseDimSizes(lst.clone())?).clone();
+    s6 = (unparseDimSizes(lst.clone())).clone();
     r#str = (stringAppend((s5.clone()).clone(), (s6.clone()).clone())).clone();
-    Ok(r#str)
+    r#str
 }
 
 fn unparsePrimType(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>>) -> ArcStr {
@@ -655,7 +655,7 @@ fn unparseNumDims(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>>, m
     }
 }
 
-fn unparseDimSizes(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<ArcStr> {
+fn unparseDimSizes(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>>) -> ArcStr {
     let mut outString: ArcStr;
     outString = ('mc: {
         let __mc_input = inValueLst.clone();
@@ -670,7 +670,7 @@ fn unparseDimSizes(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>>) 
                     i1 = (lst.clone().len() as i32);
                     s1 = (intString(i1.clone())).clone();
                     s2 = (stringAppend((s1.clone()).clone(), (literal!(" ")).clone())).clone();
-                    s3 = (unparseDimSizes(vals.clone())?).clone();
+                    s3 = (unparseDimSizes(vals.clone())).clone();
                     res = (stringAppend((s2.clone()).clone(), (s3.clone()).clone())).clone();
                     Ok(res.clone())
                 }
@@ -689,8 +689,8 @@ fn unparseDimSizes(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>>) 
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     }).clone();
-    Ok(outString)
+    outString
 }
 

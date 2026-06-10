@@ -228,7 +228,7 @@ fn symSolverUpdateStates(mut inExp: Arc<DAE::Exp>, mut inTl: (Arc<metamodelica::
 fn symSolverAppendStringToStates(mut inCr: Arc<DAE::ComponentRef>, mut incr_lst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut orderedVars: BackendDAE::Variables) -> Result<(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)> {
     let mut outExp: Arc<DAE::Exp> = Expression::crefExp(inCr.clone())?;
     let mut outcr_lst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = incr_lst.clone();
-    if BackendVariable::isState(inCr.clone(), orderedVars.clone())? {
+    if BackendVariable::isState(inCr.clone(), orderedVars.clone()) {
         outExp = Expression::crefExp(ComponentReference::appendStringLastIdent((literal!("$Old")).clone(), inCr.clone())?)?;
         outcr_lst = List::unionElt(inCr.clone(), incr_lst.clone());
     }

@@ -455,7 +455,7 @@ fn addVarToEnv(mut inVariable: InteractiveTypes::Variable, mut inEnv: FCore::Gra
             cref = ComponentReferenceBasics::makeCrefIdent((id.clone()).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), metamodelica::nil());
             empty_env = FGraph::empty();
             Lookup::lookupVar(FCore::emptyCache(), env.clone(), cref.clone())?;
-            env = FGraph::updateComp(env.clone(), Arc::new(DAE::Var { name: (id.clone()).clone(), attributes: DAE::dummyAttrVar().clone(), ty: tp.clone(), binding: Arc::new(DAE::Binding::VALBOUND { valBound: v.clone(), source: openmodelica_frontend_types::DAE::BindingSource::BINDING_FROM_DEFAULT_VALUE }), bind_from_outside: false, constOfForIteratorRange: None }), openmodelica_frontend_dump::FCore::Status::VAR_TYPED, empty_env.clone())?;
+            env = FGraph::updateComp(env.clone(), Arc::new(DAE::Var { name: (id.clone()).clone(), attributes: DAE::dummyAttrVar().clone(), ty: tp.clone(), binding: Arc::new(DAE::Binding::VALBOUND { valBound: v.clone(), source: openmodelica_frontend_types::DAE::BindingSource::BINDING_FROM_DEFAULT_VALUE }), bind_from_outside: false, constOfForIteratorRange: None }), openmodelica_frontend_dump::FCore::Status::VAR_TYPED, empty_env.clone());
             Ok(env.clone())
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {

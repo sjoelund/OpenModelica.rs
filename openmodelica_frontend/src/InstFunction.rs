@@ -290,7 +290,7 @@ pub fn implicitFunctionInstantiation(mut inCache: FCore::Cache, mut inEnv: FCore
         (_, env, _, _, _, Deref @ SCode::Element::CLASS { name: n, .. }, _) => {
             let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
             Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- Inst.implicitFunctionInstantiation failed ")); __mm_s.push_str(&*n.clone()); ArcStr::from(__mm_s) }).clone())?;
-            Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("  Scope: ")); __mm_s.push_str(&*FGraph::printGraphPathStr(env.clone())?); ArcStr::from(__mm_s) }).clone())?;
+            Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("  Scope: ")); __mm_s.push_str(&*FGraph::printGraphPathStr(env.clone())); ArcStr::from(__mm_s) }).clone())?;
             bail!("fail")
         },
         _ => bail!("match: no arm matched"),
@@ -341,13 +341,13 @@ fn implicitFunctionInstantiation2(mut inCache: FCore::Cache, mut inEnv: FCore::G
                     env_1 = env.clone();
                     (cache, fpath) = Inst::makeFullyQualifiedIdent(cache.clone(), env_1.clone(), (n.clone()).clone(), Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }))?;
                     cmt = InstUtil::extractComment(daeElts.clone())?;
-                    derFuncs = InstUtil::getDeriveAnnotation(cd.clone(), cmt.clone(), fpath.clone(), cache.clone(), cenv.clone(), ih.clone(), pre.clone(), info.clone())?;
+                    derFuncs = InstUtil::getDeriveAnnotation(cd.clone(), cmt.clone(), fpath.clone(), cache.clone(), cenv.clone(), ih.clone(), pre.clone(), info.clone());
                     cache = instantiateDerivativeFuncs(cache.clone(), env.clone(), ih.clone(), derFuncs.clone(), fpath.clone(), info.clone())?;
                     ty1 = InstUtil::setFullyQualifiedTypename(ty.clone(), fpath.clone());
                     checkExtObjOutput(ty1.clone(), info.clone())?;
                     env_1 = FGraph::mkTypeNode(env_1.clone(), (n.clone()).clone(), ty1.clone())?;
                     source = ElementSource::createElementSource(info.clone(), FGraph::getScopePath(env.clone())?, pre.clone(), (DAE::emptyCref().clone(), DAE::emptyCref().clone()))?;
-                    inlineType = InstBasics::commentIsInlineFunc(cmt.clone())?;
+                    inlineType = InstBasics::commentIsInlineFunc(cmt.clone());
                     partialPrefixBool = SCodeUtil::partialBool(partialPrefix.clone())?;
                     daeElts = InstUtil::optimizeFunctionCheckForLocals(fpath.clone(), daeElts.clone(), None, metamodelica::nil(), metamodelica::nil(), metamodelica::nil())?;
                     InstUtil::checkFunctionDefUse(daeElts.clone(), info.clone())?;
@@ -398,7 +398,7 @@ fn implicitFunctionInstantiation2(mut inCache: FCore::Cache, mut inEnv: FCore::G
                     List::map2_0(daeElts.clone(), (std::sync::Arc::new(InstUtil::checkFunctionElement) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>, bool, SourceInfo) -> Result<()> + 'static>), true, info.clone())?;
                     (cache, fpath) = Inst::makeFullyQualifiedIdent(cache.clone(), env.clone(), (n.clone()).clone(), Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }))?;
                     cmt = InstUtil::extractComment(daeElts.clone())?;
-                    derFuncs = InstUtil::getDeriveAnnotation(cd.clone(), cmt.clone(), fpath.clone(), cache.clone(), env.clone(), ih.clone(), pre.clone(), info.clone())?;
+                    derFuncs = InstUtil::getDeriveAnnotation(cd.clone(), cmt.clone(), fpath.clone(), cache.clone(), env.clone(), ih.clone(), pre.clone(), info.clone());
                     cache = instantiateDerivativeFuncs(cache.clone(), env.clone(), ih.clone(), derFuncs.clone(), fpath.clone(), info.clone())?;
                     ty1 = InstUtil::setFullyQualifiedTypename(ty.clone(), fpath.clone());
                     checkExtObjOutput(ty1.clone(), info.clone())?;
@@ -438,7 +438,7 @@ fn implicitFunctionInstantiation2(mut inCache: FCore::Cache, mut inEnv: FCore::G
                 (_, env, _, _, _, Deref @ SCode::Element::CLASS { name: n, .. }, _) => {
                     let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
                     Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- Inst.implicitFunctionInstantiation2 failed ")); __mm_s.push_str(&*n.clone()); ArcStr::from(__mm_s) }).clone())?;
-                    Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("  Scope: ")); __mm_s.push_str(&*FGraph::printGraphPathStr(env.clone())?); ArcStr::from(__mm_s) }).clone())?;
+                    Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("  Scope: ")); __mm_s.push_str(&*FGraph::printGraphPathStr(env.clone())); ArcStr::from(__mm_s) }).clone())?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -451,7 +451,7 @@ fn implicitFunctionInstantiation2(mut inCache: FCore::Cache, mut inEnv: FCore::G
 
 fn instantiateDerivativeFuncs(mut cache: FCore::Cache, mut env: FCore::Graph, mut ih: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut funcs: Arc<metamodelica::List<DAE::FunctionDefinition>>, mut path: Arc<Absyn::Path>, mut info: SourceInfo) -> Result<FCore::Cache> {
     let mut outCache: FCore::Cache;
-    outCache = instantiateDerivativeFuncs2(cache.clone(), env.clone(), ih.clone(), DAEUtil::getDerivativePaths(funcs.clone())?, path.clone(), info.clone())?;
+    outCache = instantiateDerivativeFuncs2(cache.clone(), env.clone(), ih.clone(), DAEUtil::getDerivativePaths(funcs.clone()), path.clone(), info.clone())?;
     Ok(outCache)
 }
 
@@ -515,7 +515,7 @@ fn instantiateDerivativeFuncs2(mut inCache: FCore::Cache, mut inEnv: FCore::Grap
                     } };
                     p = __pa0.clone();
                     fun = (AbsynUtil::pathString(p.clone(), (literal!(".")).clone(), true, false)?).clone();
-                    scope = (FGraph::printGraphPathStr(inEnv.clone())?).clone();
+                    scope = (FGraph::printGraphPathStr(inEnv.clone())).clone();
                     Error::addSourceMessage(Error::LOOKUP_FUNCTION_ERROR.clone(), list![(fun.clone()).clone(), (scope.clone()).clone()], info.clone())?;
                     Ok(bail!("fail"))
                 }
@@ -609,7 +609,7 @@ pub fn implicitFunctionTypeInstantiation(mut inCache: FCore::Cache, mut inEnv: F
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _, _, Deref @ SCode::Element::CLASS { name: id, .. }) => {
                     let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
-                    Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- Inst.implicitFunctionTypeInstantiation failed ")); __mm_s.push_str(&*id.clone()); __mm_s.push_str(&*literal!("\nenv: ")); __mm_s.push_str(&*FGraph::getGraphNameStr(inEnv.clone())?); __mm_s.push_str(&*literal!("\nelelement: ")); __mm_s.push_str(&*SCodeDump::unparseElementStr(inClass.clone(), SCodeDump::defaultOptions.clone())?); ArcStr::from(__mm_s) }).clone())?;
+                    Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- Inst.implicitFunctionTypeInstantiation failed ")); __mm_s.push_str(&*id.clone()); __mm_s.push_str(&*literal!("\nenv: ")); __mm_s.push_str(&*FGraph::getGraphNameStr(inEnv.clone())); __mm_s.push_str(&*literal!("\nelelement: ")); __mm_s.push_str(&*SCodeDump::unparseElementStr(inClass.clone(), SCodeDump::defaultOptions.clone())?); ArcStr::from(__mm_s) }).clone())?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -791,7 +791,7 @@ pub fn getRecordConstructorFunction(mut inCache: FCore::Cache, mut inEnv: FCore:
                     (_, recordCl, recordEnv) = Lookup::lookupClass(inCache.clone(), inEnv.clone(), inPath.clone(), None)?;
                     let true = (SCodeUtil::isRecord(recordCl.clone())) else { bail!("pattern mismatch") };
                     name = (SCodeUtil::getElementName(recordCl.clone())?).clone();
-                    newName = (FGraph::getInstanceOriginalName(recordEnv.clone(), (name.clone()).clone())?).clone();
+                    newName = (FGraph::getInstanceOriginalName(recordEnv.clone(), (name.clone()).clone())).clone();
                     recordCl = SCodeUtil::setClassName((newName.clone()).clone(), recordCl.clone())?;
                     (cache, _, _, _, _, _, recType, _, _, _) = Inst::instClass(inCache.clone(), recordEnv.clone(), InnerOuter::emptyInstHierarchy().clone(), UnitAbsynBuilder::emptyInstStore(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), openmodelica_frontend_types::DAE::Prefix::NOPRE, recordCl.clone(), metamodelica::nil(), true, openmodelica_frontend_inst::InstTypes::CallingScope::INNER_CALL, ConnectionGraph::EMPTY().clone(), Connect::emptySet().clone())?;
                     let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(recType.clone()) {
@@ -839,7 +839,7 @@ pub fn getRecordConstructorFunction(mut inCache: FCore::Cache, mut inEnv: FCore:
     Ok((outCache, outFunc))
 }
 
-pub fn addRecordConstructorFunction(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inType: Arc<DAE::Type>, mut inInfo: SourceInfo) -> Result<FCore::Cache> {
+pub fn addRecordConstructorFunction(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inType: Arc<DAE::Type>, mut inInfo: SourceInfo) -> FCore::Cache {
     let mut outCache: FCore::Cache;
     outCache = 'mc: {
         let __mc_input = (inCache.clone(), inType.clone());
@@ -891,9 +891,9 @@ pub fn addRecordConstructorFunction(mut inCache: FCore::Cache, mut inEnv: FCore:
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outCache)
+    outCache
 }
 
 fn isElementImportantForFunction(mut elt: Arc<SCode::Element>) -> bool {

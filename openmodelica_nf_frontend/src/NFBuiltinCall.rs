@@ -426,7 +426,7 @@ fn typeOverloadedStringCall(mut overloadedType: Arc<Type::NFType>, mut args: Arc
         typeBuiltinStringCall(call.clone(), context.clone(), info.clone())?;
         bail!("fail");
     }
-    (fn_ref, _, _) = Function::instFunctionRef(fn_ref.clone(), context.clone(), InstNode::info(recopnode.clone())?)?;
+    (fn_ref, _, _) = Function::instFunctionRef(fn_ref.clone(), context.clone(), InstNode::info(recopnode.clone()))?;
     candidates = Function::typeRefCache(fn_ref.clone(), InstContext::FUNCTION.clone())?;
     matchedFunctions = Function::matchFunctionsSilent(candidates.clone(), args.clone(), namedArgs.clone(), context.clone(), info.clone(), true)?;
     exactMatches = MatchedFunction::getExactMatches(matchedFunctions.clone());
@@ -1848,7 +1848,7 @@ fn typeSampleCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: Sourc
     args = __pa1.clone();
     namedArgs = __pa2.clone();
     recopnode = ComponentRef::node(fn_ref.clone())?;
-    (fn_ref, _, _) = Function::instFunctionRef(fn_ref.clone(), context.clone(), InstNode::info(recopnode.clone())?)?;
+    (fn_ref, _, _) = Function::instFunctionRef(fn_ref.clone(), context.clone(), InstNode::info(recopnode.clone()))?;
     let (__pa3, __pa4) = ::match_deref::match_deref! { match &(Function::typeRefCache(fn_ref.clone(), InstContext::FUNCTION.clone())?) {
         Deref @ metamodelica::List::Cons { head: __pa3, tail: Deref @ metamodelica::List::Cons { head: __pa4, tail: Deref @ metamodelica::List::Nil } } => (__pa3.clone(), __pa4.clone()),
         _ => bail!("pattern mismatch"),

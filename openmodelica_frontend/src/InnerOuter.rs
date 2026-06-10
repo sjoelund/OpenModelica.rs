@@ -270,11 +270,11 @@ pub fn handleInnerOuterEquations(mut io: Absyn::InnerOuter, mut inDae: DAE::DAEl
 
 pub fn changeInnerOuterInOuterConnect(mut sets: DAE::Connect::Sets) -> Result<DAE::Connect::Sets> {
     let mut sets: DAE::Connect::Sets = sets;
-    sets.outerConnects = List::map(sets.outerConnects.clone(), (std::sync::Arc::new(changeInnerOuterInOuterConnect2) as std::sync::Arc<dyn ::std::ops::Fn(DAE::Connect::OuterConnect) -> Result<DAE::Connect::OuterConnect> + 'static>))?;
+    sets.outerConnects = List::map(sets.outerConnects.clone(), (std::sync::Arc::new(fnptr!(changeInnerOuterInOuterConnect2, DAE::Connect::OuterConnect)) as std::sync::Arc<dyn ::std::ops::Fn(DAE::Connect::OuterConnect) -> Result<DAE::Connect::OuterConnect> + 'static>))?;
     Ok(sets)
 }
 
-fn changeInnerOuterInOuterConnect2(mut inOC: DAE::Connect::OuterConnect) -> Result<DAE::Connect::OuterConnect> {
+fn changeInnerOuterInOuterConnect2(mut inOC: DAE::Connect::OuterConnect) -> DAE::Connect::OuterConnect {
     let mut outOC: DAE::Connect::OuterConnect;
     outOC = 'mc: {
         let __mc_input = inOC.clone();
@@ -298,9 +298,9 @@ fn changeInnerOuterInOuterConnect2(mut inOC: DAE::Connect::OuterConnect) -> Resu
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(inOC.clone())
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outOC)
+    outOC
 }
 
 pub fn retrieveOuterConnections(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: InstHierarchy, mut inPrefix: DAE::Prefix, mut inSets: DAE::Connect::Sets, mut inTopCall: bool, mut inCGraph: ConnectionGraph::ConnectionGraph) -> Result<(DAE::Connect::Sets, Arc<metamodelica::List<DAE::Connect::OuterConnect>>, ConnectionGraph::ConnectionGraph)> {
@@ -315,7 +315,7 @@ pub fn retrieveOuterConnections(mut inCache: FCore::Cache, mut inEnv: FCore::Gra
     Ok((outSets, outInnerOuterConnects, outCGraph))
 }
 
-fn removeInnerPrefixFromCref(mut inPrefix: DAE::Prefix, mut inCref: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> {
+fn removeInnerPrefixFromCref(mut inPrefix: DAE::Prefix, mut inCref: Arc<DAE::ComponentRef>) -> Arc<DAE::ComponentRef> {
     let mut outCref: Arc<DAE::ComponentRef>;
     outCref = 'mc: {
         let __mc_input = inPrefix.clone();
@@ -335,9 +335,9 @@ fn removeInnerPrefixFromCref(mut inPrefix: DAE::Prefix, mut inCref: Arc<DAE::Com
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(inCref.clone())
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outCref)
+    outCref
 }
 
 fn retrieveOuterConnections2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: InstHierarchy, mut inPrefix: DAE::Prefix, mut inOuterConnects: Arc<metamodelica::List<DAE::Connect::OuterConnect>>, mut inSets: DAE::Connect::Sets, mut inTopCall: bool, mut inCGraph: ConnectionGraph::ConnectionGraph) -> Result<(Arc<metamodelica::List<DAE::Connect::OuterConnect>>, DAE::Connect::Sets, Arc<metamodelica::List<DAE::Connect::OuterConnect>>, ConnectionGraph::ConnectionGraph)> {
@@ -370,8 +370,8 @@ fn retrieveOuterConnections2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph,
                     (inner1, outer1) = lookupVarInnerOuterAttr(inCache.clone(), inEnv.clone(), inIH.clone(), cr1.clone(), cr2.clone())?;
                     let true = (inner1.clone()) else { bail!("pattern mismatch") };
                     let false = (outer1.clone()) else { bail!("pattern mismatch") };
-                    cr1 = removeInnerPrefixFromCref(inPrefix.clone(), cr1.clone())?;
-                    cr2 = removeInnerPrefixFromCref(inPrefix.clone(), cr2.clone())?;
+                    cr1 = removeInnerPrefixFromCref(inPrefix.clone(), cr1.clone());
+                    cr2 = removeInnerPrefixFromCref(inPrefix.clone(), cr2.clone());
                     (sets, added) = ConnectUtil::addOuterConnectToSets(cr1.clone(), cr2.clone(), io1.clone(), io2.clone(), f1.clone(), f2.clone(), sets.clone(), info.clone())?;
                     (sets, graph) = addOuterConnectIfEmpty(inCache.clone(), inEnv.clone(), inIH.clone(), inPrefix.clone(), sets.clone(), added.clone(), cr1.clone(), io1.clone(), f1.clone(), cr2.clone(), io2.clone(), f2.clone(), info.clone(), graph.clone())?;
                     (rest_oc, sets, ioc, graph) = retrieveOuterConnections2(inCache.clone(), inEnv.clone(), inIH.clone(), inPrefix.clone(), rest_oc.clone(), sets.clone(), inTopCall.clone(), graph.clone())?;
@@ -683,7 +683,7 @@ fn lookupInnerInIH(mut inTIH: TopInstance, mut inPrefix: DAE::Prefix, mut inComp
     Ok(outInstInner)
 }
 
-pub fn modificationOnOuter(mut cache: FCore::Cache, mut env: FCore::Graph, mut ih: InstHierarchy, mut prefix: DAE::Prefix, mut componentName: ArcStr, mut cr: Arc<DAE::ComponentRef>, mut inMod: Arc<DAE::Mod>, mut io: Absyn::InnerOuter, mut r#impl: bool, mut inInfo: SourceInfo) -> Result<bool> {
+pub fn modificationOnOuter(mut cache: FCore::Cache, mut env: FCore::Graph, mut ih: InstHierarchy, mut prefix: DAE::Prefix, mut componentName: ArcStr, mut cr: Arc<DAE::ComponentRef>, mut inMod: Arc<DAE::Mod>, mut io: Absyn::InnerOuter, mut r#impl: bool, mut inInfo: SourceInfo) -> bool {
     let mut modd: bool;
     modd = 'mc: {
         let __mc_input = (inMod.clone(), io.clone());
@@ -710,9 +710,9 @@ pub fn modificationOnOuter(mut cache: FCore::Cache, mut env: FCore::Graph, mut i
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(modd)
+    modd
 }
 
 pub fn switchInnerToOuterInGraph(mut inEnv: FCore::Graph, mut inCr: Arc<DAE::ComponentRef>) -> Result<FCore::Graph> {
@@ -948,7 +948,7 @@ pub fn updateSMHierarchy(mut smState: Arc<DAE::ComponentRef>, mut inIH: InstHier
     Ok(outIH)
 }
 
-pub fn addClassIfInner(mut inClass: Arc<SCode::Element>, mut inPrefix: DAE::Prefix, mut inScope: FCore::Graph, mut inIH: InstHierarchy) -> Result<InstHierarchy> {
+pub fn addClassIfInner(mut inClass: Arc<SCode::Element>, mut inPrefix: DAE::Prefix, mut inScope: FCore::Graph, mut inIH: InstHierarchy) -> InstHierarchy {
     let mut outIH: InstHierarchy = metamodelica::nil();
     outIH = 'mc: {
         let __mc_input = inClass.clone();
@@ -958,7 +958,7 @@ pub fn addClassIfInner(mut inClass: Arc<SCode::Element>, mut inPrefix: DAE::Pref
                     let mut scopeName: ArcStr = arcstr::literal!("");
                     let mut outIH: Arc<metamodelica::List<TopInstance>> = outIH.clone();
                     let true = (AbsynUtil::isInner(io.clone())) else { bail!("pattern mismatch") };
-                    scopeName = (FGraph::getGraphNameStr(inScope.clone())?).clone();
+                    scopeName = (FGraph::getGraphNameStr(inScope.clone())).clone();
                     outIH = updateInstHierarchy(inIH.clone(), inPrefix.clone(), io.clone(), InstInner { innerPrefix: inPrefix.clone(), name: (name.clone()).clone(), io: io.clone(), fullName: (name.clone()).clone(), typePath: Arc::new(Absyn::Path::IDENT { name: (name.clone()).clone() }), scope: (scopeName.clone()).clone(), instResult: None, outers: metamodelica::nil(), innerElement: Some(inClass.clone()) })?;
                     Ok((outIH.clone(), outIH.clone()))
                 }
@@ -973,9 +973,9 @@ pub fn addClassIfInner(mut inClass: Arc<SCode::Element>, mut inPrefix: DAE::Pref
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outIH)
+    outIH
 }
 
 pub fn addOuterPrefixToIH(mut inIH: InstHierarchy, mut inOuterComponentRef: Arc<DAE::ComponentRef>, mut inInnerComponentRef: Arc<DAE::ComponentRef>) -> Result<InstHierarchy> {
@@ -1119,7 +1119,7 @@ pub fn getExistingInnerDeclarations(mut inIH: InstHierarchy, mut inEnv: FCore::G
     let mut innerDeclarations: ArcStr;
     innerDeclarations = ((::match_deref::match_deref! { match &(inIH.clone()) {
         Deref @ metamodelica::List::Nil => {
-            { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("There are no 'inner' components defined in the model in any of the parent scopes of 'outer' component's scope: ")); __mm_s.push_str(&*FGraph::printGraphPathStr(inEnv.clone())?); __mm_s.push_str(&*literal!(".")); ArcStr::from(__mm_s) }
+            { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("There are no 'inner' components defined in the model in any of the parent scopes of 'outer' component's scope: ")); __mm_s.push_str(&*FGraph::printGraphPathStr(inEnv.clone())); __mm_s.push_str(&*literal!(".")); ArcStr::from(__mm_s) }
         },
         Deref @ metamodelica::List::Cons { head: TopInstance { path: _, ht, outerPrefixes: _, sm: _ }, tail: _ } => {
             let mut inners: Arc<metamodelica::List<InstInner>> = metamodelica::nil();

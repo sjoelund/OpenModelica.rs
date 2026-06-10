@@ -211,7 +211,7 @@ fn getExpandableConnectorsInConnector(mut c1: Arc<Connector::NFConnector>) -> Re
                 let mut n = n.clone();
                 ty = InstNode::getType(n.clone())?;
                 name = ComponentRef::prefixCref(n.clone(), ty.clone(), metamodelica::nil(), par_name.clone());
-                ecl = metamodelica::cons(Connector::fromCref(name.clone(), ty.clone(), ElementSource::createElementSource(InstNode::info(n.clone())?, None, openmodelica_frontend_types::DAE::Prefix::NOPRE, (DAE::emptyCref().clone(), DAE::emptyCref().clone()))?)?, ecl.clone());
+                ecl = metamodelica::cons(Connector::fromCref(name.clone(), ty.clone(), ElementSource::createElementSource(InstNode::info(n.clone()), None, openmodelica_frontend_types::DAE::Prefix::NOPRE, (DAE::emptyCref().clone(), DAE::emptyCref().clone()))?)?, ecl.clone());
             }
             ecl.clone()
         },

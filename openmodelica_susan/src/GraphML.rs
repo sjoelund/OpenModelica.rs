@@ -646,12 +646,12 @@ pub fn getAttributeByNameAndTarget(mut iAttributeName: ArcStr, mut iAttributeTar
     oAttribute = (match iGraphInfo.clone() {
         GraphInfo::GRAPHINFO { attributes: mut __esc_attributes, .. } => {
             attributes = __esc_attributes.clone();
-            tmpRes = getAttributeByNameAndTargetTail(attributes.clone(), (iAttributeName.clone()).clone(), iAttributeTarget.clone())?;
+            tmpRes = getAttributeByNameAndTargetTail(attributes.clone(), (iAttributeName.clone()).clone(), iAttributeTarget.clone());
             tmpRes.clone()
         },
         GraphInfo::GRAPHINFO { attributes: mut __esc_attributes, .. } => {
             attributes = __esc_attributes.clone();
-            tmpRes = getAttributeByNameAndTargetTail(attributes.clone(), (iAttributeName.clone()).clone(), iAttributeTarget.clone())?;
+            tmpRes = getAttributeByNameAndTargetTail(attributes.clone(), (iAttributeName.clone()).clone(), iAttributeTarget.clone());
             tmpRes.clone()
         },
         _ => bail!("match: no arm matched"),
@@ -659,7 +659,7 @@ pub fn getAttributeByNameAndTarget(mut iAttributeName: ArcStr, mut iAttributeTar
     Ok(oAttribute)
 }
 
-fn getAttributeByNameAndTargetTail(mut iList: Arc<metamodelica::List<Attribute>>, mut iAttributeName: ArcStr, mut iAttributeTarget: AttributeTarget) -> Result<Option<(Attribute, i32)>> {
+fn getAttributeByNameAndTargetTail(mut iList: Arc<metamodelica::List<Attribute>>, mut iAttributeName: ArcStr, mut iAttributeTarget: AttributeTarget) -> Option<(Attribute, i32)> {
     let mut oAttribute: Option<(Attribute, i32)>;
     let mut rest: Arc<metamodelica::List<Attribute>> = metamodelica::nil();
     let mut attIdx: i32 = 0;
@@ -683,7 +683,7 @@ fn getAttributeByNameAndTargetTail(mut iList: Arc<metamodelica::List<Attribute>>
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: head, tail: rest } => {
                     let mut tmpAttribute: Option<(Attribute, i32)> = tmpAttribute.clone();
-                    tmpAttribute = getAttributeByNameAndTargetTail(rest.clone(), (iAttributeName.clone()).clone(), iAttributeTarget.clone())?;
+                    tmpAttribute = getAttributeByNameAndTargetTail(rest.clone(), (iAttributeName.clone()).clone(), iAttributeTarget.clone());
                     Ok((tmpAttribute.clone(), tmpAttribute.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -697,9 +697,9 @@ fn getAttributeByNameAndTargetTail(mut iList: Arc<metamodelica::List<Attribute>>
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(oAttribute)
+    oAttribute
 }
 
 fn compareAttributeTargets(mut iTarget1: AttributeTarget, mut iTarget2: AttributeTarget) -> Result<bool> {

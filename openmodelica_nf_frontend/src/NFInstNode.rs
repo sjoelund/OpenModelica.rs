@@ -1137,7 +1137,7 @@ pub mod InstNode {
         Ok(node)
     }
 
-    pub fn info(mut node: Arc<InstNode>) -> Result<SourceInfo> {
+    pub fn info(mut node: Arc<InstNode>) -> SourceInfo {
         let mut info: SourceInfo;
         info = 'mc: {
         let __mc_input = node.clone();
@@ -1168,7 +1168,7 @@ pub mod InstNode {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ COMPONENT_NODE { .. } => {
-                    Ok(self::info(var_field!((*node).parent, InstNode::COMPONENT_NODE).clone())?)
+                    Ok(self::info(var_field!((*node).parent, InstNode::COMPONENT_NODE).clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1181,9 +1181,9 @@ pub mod InstNode {
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-        Ok(info)
+        info
     }
 
     pub fn getType(mut node: Arc<InstNode>) -> Result<Arc<Type::NFType>> {
@@ -1705,7 +1705,7 @@ pub mod InstNode {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    Error::addMultiSourceMessage(Error::DUPLICATE_ELEMENTS_NOT_IDENTICAL.clone(), list![(toString(n1.clone())?).clone(), (toString(n2.clone())?).clone()], list![info(n1.clone())?, info(n2.clone())?])?;
+                    Error::addMultiSourceMessage(Error::DUPLICATE_ELEMENTS_NOT_IDENTICAL.clone(), list![(toString(n1.clone())?).clone(), (toString(n2.clone())?).clone()], list![info(n1.clone()), info(n2.clone())])?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),

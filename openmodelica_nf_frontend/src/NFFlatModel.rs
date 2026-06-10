@@ -725,7 +725,7 @@ pub fn reconstructRecordInstance(mut recordName: Arc<ComponentRef::NFComponentRe
         record_exp = Expression::makeRecord(InstNode::scopePath(InstNode::classScope(record_node.clone()), InstNode::ScopeType::RELATIVE.clone(), false)?, record_ty.clone(), field_exps.clone());
         record_binding = Binding::makeFlat(record_exp.clone(), Component::variability(record_comp.clone())?, Binding::Source::GENERATED.clone(), Binding::NO_CONFIDENCE.clone());
     }
-    recordVar = Arc::new(Variable::NFVariable { name: recordName.clone(), ty: record_ty.clone(), binding: record_binding.clone(), visibility: InstNode::visibility(record_node.clone()), attributes: Component::getAttributes(record_comp.clone()), typeAttributes: metamodelica::nil(), children: variables.clone(), comment: Component::comment(record_comp.clone())?, info: InstNode::info(record_node.clone())?, backendinfo: NFBackendExtension::DUMMY_BACKEND_INFO().clone() });
+    recordVar = Arc::new(Variable::NFVariable { name: recordName.clone(), ty: record_ty.clone(), binding: record_binding.clone(), visibility: InstNode::visibility(record_node.clone()), attributes: Component::getAttributes(record_comp.clone()), typeAttributes: metamodelica::nil(), children: variables.clone(), comment: Component::comment(record_comp.clone())?, info: InstNode::info(record_node.clone()), backendinfo: NFBackendExtension::DUMMY_BACKEND_INFO().clone() });
     Ok(recordVar)
 }
 
@@ -1067,7 +1067,7 @@ pub fn hasArrayConnections(mut flatModel: Arc<NFFlatModel>, mut minSize: i32) ->
     let mut hasArrays: bool = false;
     for mut eq in &*flatModel.equations.clone() {
         let mut eq = eq.clone();
-        if Equation::contains(eq.clone(), (std::sync::Arc::new(fnptr!(Equation::isConnect, Arc<Equation::NFEquation>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::NFEquation>) -> Result<bool> + 'static>))? && Equation::sizeOf(eq.clone())? >= minSize.clone() {
+        if Equation::contains(eq.clone(), (std::sync::Arc::new(fnptr!(Equation::isConnect, Arc<Equation::NFEquation>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::NFEquation>) -> Result<bool> + 'static>))? && Equation::sizeOf(eq.clone()) >= minSize.clone() {
             hasArrays = true;
             return Ok(hasArrays.clone());
         }

@@ -566,7 +566,7 @@ fn omcTearing(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<BackendDAE:
     mt1 = arrayCreate(size.clone(), metamodelica::nil());
     mark = getDependenciesOfVars(othercomps.clone(), ass1.clone(), ass2.clone(), m.clone(), mt1.clone(), columark.clone(), mark.clone())?;
     (residual, mark) = sortResidualDepentOnTVars(residual.clone(), tvars.clone(), ass1.clone(), m.clone(), mt1.clone(), columark.clone(), mark.clone())?;
-    (ocomp, outRunMatching) = omcTearing4(jacType.clone(), isyst.clone(), ishared.clone(), subsyst.clone(), tvars.clone(), residual.clone(), ass1.clone(), ass2.clone(), othercomps.clone(), eindex.clone(), vindx.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), columark.clone(), mark.clone(), mixedSystem.clone())?;
+    (ocomp, outRunMatching) = omcTearing4(jacType.clone(), isyst.clone(), ishared.clone(), subsyst.clone(), tvars.clone(), residual.clone(), ass1.clone(), ass2.clone(), othercomps.clone(), eindex.clone(), vindx.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), columark.clone(), mark.clone(), mixedSystem.clone());
     if Flags::isSet(Flags::TEARING_DUMP.clone())? || Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
         metamodelica::print((if (outRunMatching.clone()) {literal!("\nStatus:\nOk system torn\n\n")} else {literal!("\nStatus:\nSystem not torn\n\n")}).clone());
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\n* TEARING RESULTS:\n*\n* No of equations in strong component: ")); __mm_s.push_str(&*intString(size.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
@@ -934,7 +934,7 @@ fn omcTearingSelectTearingVar(mut vars: BackendDAE::Variables, mut ass1: metamod
                         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nPoints after 'calcVarWeights':\n")); __mm_s.push_str(&*stringDelimitList(List::mapArray(points.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
                     }
                     eqns = Matching::getUnassigned(metamodelica::arrayLength(m.clone()), ass2.clone(), metamodelica::nil());
-                    points = List::fold2(eqns.clone(), (std::sync::Arc::new(addEqnWeights) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>, metamodelica::Array<i32>, metamodelica::Array<i32>) -> Result<metamodelica::Array<i32>> + 'static>), m.clone(), ass1.clone(), points.clone())?;
+                    points = List::fold2(eqns.clone(), (std::sync::Arc::new(fnptr!(addEqnWeights, i32, metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>, metamodelica::Array<i32>, metamodelica::Array<i32>)) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>, metamodelica::Array<i32>, metamodelica::Array<i32>) -> Result<metamodelica::Array<i32>> + 'static>), m.clone(), ass1.clone(), points.clone())?;
                     if Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
                         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Points after 'addEqnWeights':\n")); __mm_s.push_str(&*stringDelimitList(List::mapArray(points.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
                     }
@@ -1052,7 +1052,7 @@ fn solvabilityWeights(mut solva: BackendDAE::Solvability) -> i32 {
     i
 }
 
-fn addEqnWeights(mut e: i32, mut m: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>, mut ass1: metamodelica::Array<i32>, mut iPoints: metamodelica::Array<i32>) -> Result<metamodelica::Array<i32>> {
+fn addEqnWeights(mut e: i32, mut m: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>, mut ass1: metamodelica::Array<i32>, mut iPoints: metamodelica::Array<i32>) -> metamodelica::Array<i32> {
     let mut oPoints: metamodelica::Array<i32>;
     oPoints = 'mc: {
         let __mc_input = iPoints.clone();
@@ -1075,9 +1075,9 @@ fn addEqnWeights(mut e: i32, mut m: metamodelica::Array<Arc<metamodelica::List<(
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(iPoints.clone())
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(oPoints)
+    oPoints
 }
 
 fn isAssignedSaveEnhanced(mut ass: metamodelica::Array<i32>, mut inTpl: (i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)) -> bool {
@@ -1319,7 +1319,7 @@ fn omcTearing3(mut unassigned: Arc<metamodelica::List<i32>>, mut unsolvables: Ar
     Ok((outTVars, oMark))
 }
 
-fn omcTearing4(mut jacType: BackendDAE::JacobianType, mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<BackendDAE::Shared>, mut subsyst: Arc<BackendDAE::EqSystem>, mut tvars: Arc<metamodelica::List<i32>>, mut residual: Arc<metamodelica::List<i32>>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<i32>, mut othercomps: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut eindex: Arc<metamodelica::List<i32>>, mut vindx: Arc<metamodelica::List<i32>>, mut mapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mapIncRowEqn: metamodelica::Array<i32>, mut columark: metamodelica::Array<i32>, mut mark: i32, mut mixedSystem: bool) -> Result<(Arc<BackendDAE::StrongComponent>, bool)> {
+fn omcTearing4(mut jacType: BackendDAE::JacobianType, mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<BackendDAE::Shared>, mut subsyst: Arc<BackendDAE::EqSystem>, mut tvars: Arc<metamodelica::List<i32>>, mut residual: Arc<metamodelica::List<i32>>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<i32>, mut othercomps: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut eindex: Arc<metamodelica::List<i32>>, mut vindx: Arc<metamodelica::List<i32>>, mut mapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mapIncRowEqn: metamodelica::Array<i32>, mut columark: metamodelica::Array<i32>, mut mark: i32, mut mixedSystem: bool) -> (Arc<BackendDAE::StrongComponent>, bool) {
     let mut ocomp: Arc<BackendDAE::StrongComponent>;
     let mut outRunMatching: bool;
     (ocomp, outRunMatching) = 'mc: {
@@ -1350,9 +1350,9 @@ fn omcTearing4(mut jacType: BackendDAE::JacobianType, mut isyst: Arc<BackendDAE:
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok((Arc::new(BackendDAE::StrongComponent::TORNSYSTEM { strictTearingSet: BackendDAE::TearingSet { tearingvars: metamodelica::nil(), residualequations: metamodelica::nil(), innerEquations: metamodelica::nil(), jac: openmodelica_backend_types::BackendDAE::Jacobian::interned_EMPTY_JACOBIAN() }, casualTearingSet: None, linear: false, mixedSystem: mixedSystem.clone() }), false))
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((ocomp, outRunMatching))
+    (ocomp, outRunMatching)
 }
 
 fn omcTearing4_1(mut othercomps: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut ass2: metamodelica::Array<i32>, mut mapIncRowEqn: metamodelica::Array<i32>, mut eindxarr: metamodelica::Array<i32>, mut varindxarr: metamodelica::Array<i32>, mut columark: metamodelica::Array<i32>, mut mark: i32) -> Result<Arc<metamodelica::List<BackendDAE::InnerEquation>>> {

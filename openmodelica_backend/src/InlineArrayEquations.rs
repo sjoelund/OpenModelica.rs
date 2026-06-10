@@ -65,11 +65,11 @@ use openmodelica_util_datatypes_basic::List;
 // =============================================================================
 pub fn inlineArrayEqn(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut outDAE: Arc<BackendDAE::BackendDAE>;
-    (outDAE, _) = BackendDAEUtil::mapEqSystemAndFold(inDAE.clone(), (std::sync::Arc::new(inlineArrayEqn1) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, bool) -> Result<(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, bool)> + 'static>), false)?;
+    (outDAE, _) = BackendDAEUtil::mapEqSystemAndFold(inDAE.clone(), (std::sync::Arc::new(fnptr!(inlineArrayEqn1, Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, bool)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, bool) -> Result<(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, bool)> + 'static>), false)?;
     Ok(outDAE)
 }
 
-fn inlineArrayEqn1(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc<BackendDAE::Shared>, mut inOptimized: bool) -> Result<(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, bool)> {
+fn inlineArrayEqn1(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc<BackendDAE::Shared>, mut inOptimized: bool) -> (Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, bool) {
     let mut outEqSystem: Arc<BackendDAE::EqSystem>;
     let mut outShared: Arc<BackendDAE::Shared> = inShared.clone();
     let mut outOptimized: bool;
@@ -81,7 +81,7 @@ fn inlineArrayEqn1(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc<
                     let mut eqnLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
                     let mut orderedEqs = (*orderedEqs).clone();
                     eqnLst = BackendEquation::equationList(orderedEqs.clone())?;
-                    let __pa0 = ::match_deref::match_deref! { match &(getScalarArrayEqns(eqnLst.clone())?) {
+                    let __pa0 = ::match_deref::match_deref! { match &(getScalarArrayEqns(eqnLst.clone())) {
                         (__pa0, true) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -100,36 +100,36 @@ fn inlineArrayEqn1(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc<
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outEqSystem, outShared, outOptimized))
+    (outEqSystem, outShared, outOptimized)
 }
 
-pub fn getScalarArrayEqns(mut inEqnLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) -> Result<(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, bool)> {
+pub fn getScalarArrayEqns(mut inEqnLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) -> (Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, bool) {
     let mut outEqnLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
     let mut outFound: bool;
-    (outEqnLst, outFound) = getScalarArrayEqns0(inEqnLst.clone(), metamodelica::nil(), false)?;
-    Ok((outEqnLst, outFound))
+    (outEqnLst, outFound) = getScalarArrayEqns0(inEqnLst.clone(), metamodelica::nil(), false);
+    (outEqnLst, outFound)
 }
 
-fn getScalarArrayEqns0(mut inEqnLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut inAccEqnLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut inFound: bool) -> Result<(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, bool)> {
+fn getScalarArrayEqns0(mut inEqnLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut inAccEqnLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut inFound: bool) -> (Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, bool) {
     '__tco: loop {
         ::match_deref::match_deref! { match &(inEqnLst.clone()) {
         Deref @ metamodelica::List::Nil => {
-            return Ok((inAccEqnLst.clone().reverse(), inFound.clone()))
+            return (inAccEqnLst.clone().reverse(), inFound.clone())
         },
         Deref @ metamodelica::List::Cons { head: eqn, tail: eqns } => {
             let mut eqns1: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
             let mut b: bool = false;
-            (eqns1, b) = getScalarArrayEqns1(eqn.clone(), inAccEqnLst.clone())?;
+            (eqns1, b) = getScalarArrayEqns1(eqn.clone(), inAccEqnLst.clone());
             { (inEqnLst, inAccEqnLst, inFound) = (eqns.clone(), eqns1.clone(), b.clone() || inFound.clone()); continue '__tco; }
         },
-        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+        _ => unreachable!("tail-call lowered match: no arm matched"),
     } }
     }
 }
 
-fn getScalarArrayEqns1(mut inEqn: Arc<BackendDAE::Equation>, mut inAccEqnLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) -> Result<(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, bool)> {
+fn getScalarArrayEqns1(mut inEqn: Arc<BackendDAE::Equation>, mut inAccEqnLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) -> (Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, bool) {
     let mut outEqnLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
     let mut outFound: bool;
     (outEqnLst, outFound) = 'mc: {
@@ -143,20 +143,20 @@ fn getScalarArrayEqns1(mut inEqn: Arc<BackendDAE::Equation>, mut inAccEqnLst: Ar
                     let mut ea2: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
                     let mut eqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
                     if Expression::isArray(lhs.clone()) || Expression::isMatrix(lhs.clone()) {
-                        ea1 = Expression::flattenArrayExpToList(lhs.clone())?;
+                        ea1 = Expression::flattenArrayExpToList(lhs.clone());
                     } else {
-                        (e1, _) = Expression::extendArrExp(lhs.clone(), false)?;
+                        (e1, _) = Expression::extendArrExp(lhs.clone(), false);
                         (e1, _) = ExpressionSimplify::simplify(e1.clone())?;
                         let true = (Expression::isArray(e1.clone()) || Expression::isMatrix(e1.clone())) else { bail!("pattern mismatch") };
-                        ea1 = Expression::flattenArrayExpToList(e1.clone())?;
+                        ea1 = Expression::flattenArrayExpToList(e1.clone());
                     }
                     if Expression::isArray(rhs.clone()) || Expression::isMatrix(rhs.clone()) {
-                        ea2 = Expression::flattenArrayExpToList(rhs.clone())?;
+                        ea2 = Expression::flattenArrayExpToList(rhs.clone());
                     } else {
-                        (e2, _) = Expression::extendArrExp(rhs.clone(), false)?;
+                        (e2, _) = Expression::extendArrExp(rhs.clone(), false);
                         (e2, _) = ExpressionSimplify::simplify(e2.clone())?;
                         let true = (Expression::isArray(e2.clone()) || Expression::isMatrix(e2.clone())) else { bail!("pattern mismatch") };
-                        ea2 = Expression::flattenArrayExpToList(e2.clone())?;
+                        ea2 = Expression::flattenArrayExpToList(e2.clone());
                     }
                     (_, eqns) = List::threadFold3(ea1.clone(), ea2.clone(), (std::sync::Arc::new(generateScalarArrayEqns2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>, Arc<DAE::ElementSource>, BackendDAE::EquationAttributes, Arc<DAE::EquationExp>, (i32, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>)) -> Result<(i32, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>)> + 'static>), source.clone(), attr.clone(), Arc::new(DAE::EquationExp::EQUALITY_EXPS { lhs: lhs.clone(), rhs: rhs.clone() }), (1, inAccEqnLst.clone()))?;
                     Ok((eqns.clone(), true))
@@ -186,9 +186,9 @@ fn getScalarArrayEqns1(mut inEqn: Arc<BackendDAE::Equation>, mut inAccEqnLst: Ar
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outEqnLst, outFound))
+    (outEqnLst, outFound)
 }
 
 fn generateScalarArrayEqns2(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>, mut inSource: Arc<DAE::ElementSource>, mut eqAttr: BackendDAE::EquationAttributes, mut eqExp: Arc<DAE::EquationExp>, mut iEqns: (i32, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>)) -> Result<(i32, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>)> {
@@ -203,7 +203,7 @@ fn generateScalarArrayEqns2(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>
                     let mut source: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
                     tp = Expression::r#typeof(inExp1.clone())?;
                     let true = (DAEUtil::expTypeComplex(tp.clone())) else { bail!("pattern mismatch") };
-                    size = Expression::sizeOf(tp.clone())?;
+                    size = Expression::sizeOf(tp.clone());
                     source = ElementSource::addSymbolicTransformation(inSource.clone(), Arc::new(DAE::SymbolicOperation::OP_SCALARIZE { before: eqExp.clone(), index: i.clone(), after: Arc::new(DAE::EquationExp::EQUALITY_EXPS { lhs: inExp1.clone(), rhs: inExp2.clone() }) }))?;
                     Ok((i.clone() + 1, metamodelica::cons(Arc::new(BackendDAE::Equation::COMPLEX_EQUATION { size: size.clone(), left: inExp1.clone(), right: inExp2.clone(), source: source.clone(), attr: eqAttr.clone() }), eqns.clone())))
                 }
@@ -223,7 +223,7 @@ fn generateScalarArrayEqns2(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>
                     dims = Expression::arrayDimension(tp.clone());
                     tp = DAEUtil::expTypeElementType(tp.clone());
                     if DAEUtil::expTypeComplex(tp.clone()) {
-                        recordSize = Some(Expression::sizeOf(tp.clone())?);
+                        recordSize = Some(Expression::sizeOf(tp.clone()));
                     } else {
                         recordSize = None;
                     }

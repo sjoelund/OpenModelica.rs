@@ -192,7 +192,7 @@ pub fn fromCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut attr: Arc<Attri
     node = ComponentRef::node(cref.clone())?;
     ty = ComponentRef::getSubscriptedType(cref.clone(), true)?;
     vis = InstNode::visibility(node.clone());
-    info = InstNode::info(node.clone())?;
+    info = InstNode::info(node.clone());
     if !(Type::isExternalObject(ty.clone())) {
         children = (::match_deref::match_deref! { match &(Type::arrayElementType(ty.clone())) {
         Deref @ Type::COMPLEX { cls: __esc_class_node, .. } => {

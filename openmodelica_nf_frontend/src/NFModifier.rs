@@ -996,7 +996,7 @@ pub mod Modifier {
         Ok(r#mod)
     }
 
-    pub fn lookupModifier(mut modName: ArcStr, mut modifier: Arc<Modifier>) -> Result<Arc<Modifier>> {
+    pub fn lookupModifier(mut modName: ArcStr, mut modifier: Arc<Modifier>) -> Arc<Modifier> {
         let mut subMod: Arc<Modifier>;
         subMod = 'mc: {
         let __mc_input = modifier.clone();
@@ -1016,9 +1016,9 @@ pub mod Modifier {
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-        Ok(subMod)
+        subMod
     }
 
     pub fn name(mut modifier: Arc<Modifier>) -> Result<ArcStr> {
@@ -1031,15 +1031,15 @@ pub mod Modifier {
         Ok(name)
     }
 
-    pub fn info(mut modifier: Arc<Modifier>) -> Result<SourceInfo> {
+    pub fn info(mut modifier: Arc<Modifier>) -> SourceInfo {
         let mut info: SourceInfo;
         info = (::match_deref::match_deref! { match &(modifier.clone()) {
         Deref @ MODIFIER { .. } => var_field!((*modifier).info, Modifier::MODIFIER).clone(),
-        Deref @ REDECLARE { .. } => InstNode::info(var_field!((*modifier).element, Modifier::REDECLARE).clone())?,
+        Deref @ REDECLARE { .. } => InstNode::info(var_field!((*modifier).element, Modifier::REDECLARE).clone()),
         _ => Absyn::dummyInfo.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        Ok(info)
+        info
     }
 
     pub fn hasBinding(mut modifier: Arc<Modifier>) -> bool {
@@ -1338,7 +1338,7 @@ pub mod Modifier {
     fn checkFinalOverride(mut innerFinal: SCode::Final, mut outerMod: Arc<Modifier>, mut innerInfo: SourceInfo) -> Result<()> {
         let () = (match innerFinal.clone() {
         SCode::Final::FINAL { .. } => {
-            Error::addMultiSourceMessage(Error::FINAL_COMPONENT_OVERRIDE.clone(), list![(name(outerMod.clone())?).clone(), (toString(outerMod.clone(), false)?).clone()], list![info(outerMod.clone())?, innerInfo.clone()])?;
+            Error::addMultiSourceMessage(Error::FINAL_COMPONENT_OVERRIDE.clone(), list![(name(outerMod.clone())?).clone(), (toString(outerMod.clone(), false)?).clone()], list![info(outerMod.clone()), innerInfo.clone()])?;
             bail!("fail")
         },
         _ => (),
@@ -1360,7 +1360,7 @@ pub mod Modifier {
         },
         _ => {
             comp_name = stringDelimitList(metamodelica::cons((self::name(mod1.clone())?).clone(), prefix.clone()).reverse(), (literal!(".")).clone());
-            Error::addMultiSourceMessage(Error::DUPLICATE_MODIFICATIONS.clone(), list![(comp_name.clone()).clone(), (ModifierScope::toString(scope.clone())?).clone()], list![info(mod1.clone())?, info(mod2.clone())?])?;
+            Error::addMultiSourceMessage(Error::DUPLICATE_MODIFICATIONS.clone(), list![(comp_name.clone()).clone(), (ModifierScope::toString(scope.clone())?).clone()], list![info(mod1.clone()), info(mod2.clone())])?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

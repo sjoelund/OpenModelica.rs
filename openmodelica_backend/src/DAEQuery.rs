@@ -375,8 +375,8 @@ fn adjacencyRow(mut inVariables: BackendDAE::Variables, mut inEquation: Arc<Back
                     let mut lst1: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut lst2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut res: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    lst1 = adjacencyRowExp(e1.clone(), vars.clone())?;
-                    lst2 = adjacencyRowExp(e2.clone(), vars.clone())?;
+                    lst1 = adjacencyRowExp(e1.clone(), vars.clone());
+                    lst2 = adjacencyRowExp(e2.clone(), vars.clone());
                     res = listAppend(lst1.clone(), lst2.clone());
                     Ok(res.clone())
                 }
@@ -389,8 +389,8 @@ fn adjacencyRow(mut inVariables: BackendDAE::Variables, mut inEquation: Arc<Back
                     let mut lst1: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut lst2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut res: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    lst1 = adjacencyRowExp(e1.clone(), vars.clone())?;
-                    lst2 = adjacencyRowExp(e2.clone(), vars.clone())?;
+                    lst1 = adjacencyRowExp(e1.clone(), vars.clone());
+                    lst2 = adjacencyRowExp(e2.clone(), vars.clone());
                     res = listAppend(lst1.clone(), lst2.clone());
                     Ok(res.clone())
                 }
@@ -403,8 +403,8 @@ fn adjacencyRow(mut inVariables: BackendDAE::Variables, mut inEquation: Arc<Back
                     let mut lst1: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut lst2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut res: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    lst1 = adjacencyRowExp(e1.clone(), vars.clone())?;
-                    lst2 = adjacencyRowExp(e2.clone(), vars.clone())?;
+                    lst1 = adjacencyRowExp(e1.clone(), vars.clone());
+                    lst2 = adjacencyRowExp(e2.clone(), vars.clone());
                     res = listAppend(lst1.clone(), lst2.clone());
                     Ok(res.clone())
                 }
@@ -417,8 +417,8 @@ fn adjacencyRow(mut inVariables: BackendDAE::Variables, mut inEquation: Arc<Back
                     let mut lst1: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut lst2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut res: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    lst1 = adjacencyRowExp(Expression::crefExp(cr.clone())?, vars.clone())?;
-                    lst2 = adjacencyRowExp(e.clone(), vars.clone())?;
+                    lst1 = adjacencyRowExp(Expression::crefExp(cr.clone())?, vars.clone());
+                    lst2 = adjacencyRowExp(e.clone(), vars.clone());
                     res = listAppend(lst1.clone(), lst2.clone());
                     Ok(res.clone())
                 }
@@ -431,8 +431,8 @@ fn adjacencyRow(mut inVariables: BackendDAE::Variables, mut inEquation: Arc<Back
                     let mut lst1: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut lst2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut res: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    lst1 = adjacencyRowExp(Expression::crefExp(cr.clone())?, vars.clone())?;
-                    lst2 = adjacencyRowExp(e.clone(), vars.clone())?;
+                    lst1 = adjacencyRowExp(Expression::crefExp(cr.clone())?, vars.clone());
+                    lst2 = adjacencyRowExp(e.clone(), vars.clone());
                     res = listAppend(lst1.clone(), lst2.clone());
                     Ok(res.clone())
                 }
@@ -443,7 +443,7 @@ fn adjacencyRow(mut inVariables: BackendDAE::Variables, mut inEquation: Arc<Back
             ::match_deref::match_deref! { match &__mc_input {
                 (vars, Deref @ BackendDAE::Equation::RESIDUAL_EQUATION { exp: e, .. }) => {
                     let mut res: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    res = adjacencyRowExp(e.clone(), vars.clone())?;
+                    res = adjacencyRowExp(e.clone(), vars.clone());
                     Ok(res.clone())
                 }
                 _ => bail!("nomatch"),
@@ -460,8 +460,8 @@ fn adjacencyRow(mut inVariables: BackendDAE::Variables, mut inEquation: Arc<Back
                     let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
                     (cr, e2) = BackendEquation::getWhenEquationExpr(we.clone())?;
                     e1 = Expression::crefExp(cr.clone())?;
-                    lst1 = adjacencyRowExp(e1.clone(), vars.clone())?;
-                    lst2 = adjacencyRowExp(e2.clone(), vars.clone())?;
+                    lst1 = adjacencyRowExp(e1.clone(), vars.clone());
+                    lst2 = adjacencyRowExp(e2.clone(), vars.clone());
                     res = listAppend(lst1.clone(), lst2.clone());
                     Ok(res.clone())
                 }
@@ -475,7 +475,7 @@ fn adjacencyRow(mut inVariables: BackendDAE::Variables, mut inEquation: Arc<Back
                     let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
                     let mut lstres: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>> = metamodelica::nil();
                     expl = Algorithm::getAllExps(alg.clone())?;
-                    lstres = List::map1(expl.clone(), (std::sync::Arc::new(adjacencyRowExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, BackendDAE::Variables) -> Result<Arc<metamodelica::List<ArcStr>>> + 'static>), vars.clone())?;
+                    lstres = List::map1(expl.clone(), (std::sync::Arc::new(fnptr!(adjacencyRowExp, Arc<DAE::Exp>, BackendDAE::Variables)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, BackendDAE::Variables) -> Result<Arc<metamodelica::List<ArcStr>>> + 'static>), vars.clone())?;
                     res_1 = List::flatten(lstres.clone())?;
                     Ok(res_1.clone())
                 }
@@ -582,7 +582,7 @@ fn adjacencyRow(mut inVariables: BackendDAE::Variables, mut inEquation: Arc<Back
 //         {};
 //   end matchcontinue;
 // end adjacencyRowStmts;
-fn adjacencyRowExp(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDAE::Variables) -> Result<Arc<metamodelica::List<ArcStr>>> {
+fn adjacencyRowExp(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDAE::Variables) -> Arc<metamodelica::List<ArcStr>> {
     let mut outStringLst: Arc<metamodelica::List<ArcStr>>;
     outStringLst = 'mc: {
         let __mc_input = (inExp.clone(), inVariables.clone());
@@ -674,8 +674,8 @@ fn adjacencyRowExp(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDAE::Variab
                     let mut pStr: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut s1: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut s2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    s1 = adjacencyRowExp(e1.clone(), vars.clone())?;
-                    s2 = adjacencyRowExp(e2.clone(), vars.clone())?;
+                    s1 = adjacencyRowExp(e1.clone(), vars.clone());
+                    s2 = adjacencyRowExp(e2.clone(), vars.clone());
                     pStr = listAppend(s1.clone(), s2.clone());
                     Ok(pStr.clone())
                 }
@@ -686,7 +686,7 @@ fn adjacencyRowExp(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDAE::Variab
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::UNARY { exp: e, .. }, vars) => {
                     let mut pStr: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    pStr = adjacencyRowExp(e.clone(), vars.clone())?;
+                    pStr = adjacencyRowExp(e.clone(), vars.clone());
                     Ok(pStr.clone())
                 }
                 _ => bail!("nomatch"),
@@ -698,8 +698,8 @@ fn adjacencyRowExp(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDAE::Variab
                     let mut pStr: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut s1: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut s2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    s1 = adjacencyRowExp(e1.clone(), vars.clone())?;
-                    s2 = adjacencyRowExp(e2.clone(), vars.clone())?;
+                    s1 = adjacencyRowExp(e1.clone(), vars.clone());
+                    s2 = adjacencyRowExp(e2.clone(), vars.clone());
                     pStr = listAppend(s1.clone(), s2.clone());
                     Ok(pStr.clone())
                 }
@@ -710,7 +710,7 @@ fn adjacencyRowExp(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDAE::Variab
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::LUNARY { exp: e, .. }, vars) => {
                     let mut pStr: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    pStr = adjacencyRowExp(e.clone(), vars.clone())?;
+                    pStr = adjacencyRowExp(e.clone(), vars.clone());
                     Ok(pStr.clone())
                 }
                 _ => bail!("nomatch"),
@@ -722,8 +722,8 @@ fn adjacencyRowExp(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDAE::Variab
                     let mut pStr: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut s1: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut s2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    s1 = adjacencyRowExp(e1.clone(), vars.clone())?;
-                    s2 = adjacencyRowExp(e2.clone(), vars.clone())?;
+                    s1 = adjacencyRowExp(e1.clone(), vars.clone());
+                    s2 = adjacencyRowExp(e2.clone(), vars.clone());
                     pStr = listAppend(s1.clone(), s2.clone());
                     Ok(pStr.clone())
                 }
@@ -744,12 +744,12 @@ fn adjacencyRowExp(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDAE::Variab
                     let mut ss3: ArcStr = arcstr::literal!("");
                     let mut opStr: ArcStr = arcstr::literal!("");
                     opStr = (ExpressionDump::relopSymbol(op1.clone())?).clone();
-                    s = (printExpStr(ee2.clone())?).clone();
-                    s1 = adjacencyRowExp(e1.clone(), vars.clone())?;
+                    s = (printExpStr(ee2.clone())).clone();
+                    s1 = adjacencyRowExp(e1.clone(), vars.clone());
                     ss1 = (getAdjacencyRow(s1.clone())).clone();
-                    s2 = adjacencyRowExp(e2.clone(), vars.clone())?;
+                    s2 = adjacencyRowExp(e2.clone(), vars.clone());
                     ss2 = (getAdjacencyRow(s2.clone())).clone();
-                    s3 = adjacencyRowExp(e3.clone(), vars.clone())?;
+                    s3 = adjacencyRowExp(e3.clone(), vars.clone());
                     ss3 = (getAdjacencyRow(s3.clone())).clone();
                     ss = stringAppendList(list![(literal!("{'if', ")).clone(), (s.clone()).clone(), (literal!(",'")).clone(), (opStr.clone()).clone(), (literal!("' {")).clone(), (ss1.clone()).clone(), (literal!("}")).clone(), (literal!(",{")).clone(), (ss2.clone()).clone(), (literal!("},")).clone(), (ss3.clone()).clone(), (literal!("}")).clone()]);
                     pStr = list![(ss.clone()).clone()];
@@ -770,13 +770,13 @@ fn adjacencyRowExp(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDAE::Variab
                     let mut ss2: ArcStr = arcstr::literal!("");
                     let mut ss3: ArcStr = arcstr::literal!("");
                     let mut sb: ArcStr = arcstr::literal!("");
-                    printExpStr(e1.clone())?;
+                    printExpStr(e1.clone());
                     sb = stringAppendList(list![(literal!("'true',")).clone(), (literal!("'=='")).clone()]);
-                    s1 = adjacencyRowExp(e1.clone(), vars.clone())?;
+                    s1 = adjacencyRowExp(e1.clone(), vars.clone());
                     ss1 = (getAdjacencyRow(s1.clone())).clone();
-                    s2 = adjacencyRowExp(e2.clone(), vars.clone())?;
+                    s2 = adjacencyRowExp(e2.clone(), vars.clone());
                     ss2 = (getAdjacencyRow(s2.clone())).clone();
-                    s3 = adjacencyRowExp(e3.clone(), vars.clone())?;
+                    s3 = adjacencyRowExp(e3.clone(), vars.clone());
                     ss3 = (getAdjacencyRow(s3.clone())).clone();
                     ss = stringAppendList(list![(literal!("{'if', ")).clone(), (sb.clone()).clone(), (literal!(",")).clone(), (literal!("{")).clone(), (ss1.clone()).clone(), (literal!("}")).clone(), (literal!(",{")).clone(), (ss2.clone()).clone(), (literal!("},")).clone(), (ss3.clone()).clone(), (literal!("}")).clone()]);
                     pStr = list![(ss.clone()).clone()];
@@ -798,11 +798,11 @@ fn adjacencyRowExp(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDAE::Variab
                     let mut ss3: ArcStr = arcstr::literal!("");
                     let mut sb: ArcStr = arcstr::literal!("");
                     sb = stringAppendList(list![(literal!("'true',")).clone(), (literal!("'=='")).clone()]);
-                    s1 = adjacencyRowExp(e1.clone(), vars.clone())?;
+                    s1 = adjacencyRowExp(e1.clone(), vars.clone());
                     ss1 = (getAdjacencyRow(s1.clone())).clone();
-                    s2 = adjacencyRowExp(e2.clone(), vars.clone())?;
+                    s2 = adjacencyRowExp(e2.clone(), vars.clone());
                     ss2 = (getAdjacencyRow(s2.clone())).clone();
-                    s3 = adjacencyRowExp(e3.clone(), vars.clone())?;
+                    s3 = adjacencyRowExp(e3.clone(), vars.clone());
                     ss3 = (getAdjacencyRow(s3.clone())).clone();
                     ss = stringAppendList(list![(literal!("{'if', ")).clone(), (sb.clone()).clone(), (literal!(" {")).clone(), (ss1.clone()).clone(), (literal!("}")).clone(), (literal!(",{")).clone(), (ss2.clone()).clone(), (literal!("},")).clone(), (ss3.clone()).clone(), (literal!("}")).clone()]);
                     pStr = list![(ss.clone()).clone()];
@@ -823,12 +823,12 @@ fn adjacencyRowExp(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDAE::Variab
                     let mut ss2: ArcStr = arcstr::literal!("");
                     let mut ss3: ArcStr = arcstr::literal!("");
                     let mut sb: ArcStr = arcstr::literal!("");
-                    sb = (printExpStr(e1.clone())?).clone();
-                    s1 = adjacencyRowExp(e1.clone(), vars.clone())?;
+                    sb = (printExpStr(e1.clone())).clone();
+                    s1 = adjacencyRowExp(e1.clone(), vars.clone());
                     ss1 = (getAdjacencyRow(s1.clone())).clone();
-                    s2 = adjacencyRowExp(e2.clone(), vars.clone())?;
+                    s2 = adjacencyRowExp(e2.clone(), vars.clone());
                     ss2 = (getAdjacencyRow(s2.clone())).clone();
-                    s3 = adjacencyRowExp(e3.clone(), vars.clone())?;
+                    s3 = adjacencyRowExp(e3.clone(), vars.clone());
                     ss3 = (getAdjacencyRow(s3.clone())).clone();
                     ss = stringAppendList(list![(literal!("{'if', ")).clone(), (literal!("'")).clone(), (sb.clone()).clone(), (literal!("' {")).clone(), (ss1.clone()).clone(), (literal!("}")).clone(), (literal!(",{")).clone(), (ss2.clone()).clone(), (literal!("},")).clone(), (ss3.clone()).clone(), (literal!("}")).clone()]);
                     pStr = list![(ss.clone()).clone()];
@@ -892,7 +892,7 @@ fn adjacencyRowExp(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDAE::Variab
                 (Deref @ DAE::Exp::CALL { expLst: expl, .. }, vars) => {
                     let mut pStr: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut lst: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>> = metamodelica::nil();
-                    lst = List::map1(expl.clone(), (std::sync::Arc::new(adjacencyRowExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, BackendDAE::Variables) -> Result<Arc<metamodelica::List<ArcStr>>> + 'static>), vars.clone())?;
+                    lst = List::map1(expl.clone(), (std::sync::Arc::new(fnptr!(adjacencyRowExp, Arc<DAE::Exp>, BackendDAE::Variables)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, BackendDAE::Variables) -> Result<Arc<metamodelica::List<ArcStr>>> + 'static>), vars.clone())?;
                     pStr = List::flatten(lst.clone())?;
                     Ok(pStr.clone())
                 }
@@ -904,7 +904,7 @@ fn adjacencyRowExp(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDAE::Variab
                 (Deref @ DAE::Exp::ARRAY { array: expl, .. }, vars) => {
                     let mut pStr: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut lst: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>> = metamodelica::nil();
-                    lst = List::map1(expl.clone(), (std::sync::Arc::new(adjacencyRowExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, BackendDAE::Variables) -> Result<Arc<metamodelica::List<ArcStr>>> + 'static>), vars.clone())?;
+                    lst = List::map1(expl.clone(), (std::sync::Arc::new(fnptr!(adjacencyRowExp, Arc<DAE::Exp>, BackendDAE::Variables)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, BackendDAE::Variables) -> Result<Arc<metamodelica::List<ArcStr>>> + 'static>), vars.clone())?;
                     pStr = List::flatten(lst.clone())?;
                     Ok(pStr.clone())
                 }
@@ -934,7 +934,7 @@ fn adjacencyRowExp(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDAE::Variab
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::CAST { exp: e, .. }, vars) => {
                     let mut pStr: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    pStr = adjacencyRowExp(e.clone(), vars.clone())?;
+                    pStr = adjacencyRowExp(e.clone(), vars.clone());
                     Ok(pStr.clone())
                 }
                 _ => bail!("nomatch"),
@@ -944,7 +944,7 @@ fn adjacencyRowExp(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDAE::Variab
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::ASUB { exp: e, .. }, vars) => {
                     let mut pStr: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    pStr = adjacencyRowExp(e.clone(), vars.clone())?;
+                    pStr = adjacencyRowExp(e.clone(), vars.clone());
                     Ok(pStr.clone())
                 }
                 _ => bail!("nomatch"),
@@ -956,7 +956,7 @@ fn adjacencyRowExp(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDAE::Variab
                     let mut pStr: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut s1: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut lst: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>> = metamodelica::nil();
-                    s1 = adjacencyRowExp(e1.clone(), vars.clone())?;
+                    s1 = adjacencyRowExp(e1.clone(), vars.clone());
                     lst = List::map1(iters.clone(), (std::sync::Arc::new(adjacencyRowIter) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ReductionIterator>, BackendDAE::Variables) -> Result<Arc<metamodelica::List<ArcStr>>> + 'static>), vars.clone())?;
                     pStr = List::flatten(metamodelica::cons(s1.clone(), lst.clone()))?;
                     Ok(pStr.clone())
@@ -972,9 +972,9 @@ fn adjacencyRowExp(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDAE::Variab
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outStringLst)
+    outStringLst
 }
 
 fn adjacencyRowIter(mut iter: Arc<DAE::ReductionIterator>, mut vars: BackendDAE::Variables) -> Result<Arc<metamodelica::List<ArcStr>>> {
@@ -983,12 +983,12 @@ fn adjacencyRowIter(mut iter: Arc<DAE::ReductionIterator>, mut vars: BackendDAE:
         Deref @ DAE::ReductionIterator { guardExp: Some(e1), exp: e2, .. } => {
             let mut s1: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
             let mut s2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            s1 = adjacencyRowExp(e1.clone(), vars.clone())?;
-            s2 = adjacencyRowExp(e2.clone(), vars.clone())?;
+            s1 = adjacencyRowExp(e1.clone(), vars.clone());
+            s2 = adjacencyRowExp(e2.clone(), vars.clone());
             listAppend(s1.clone(), s2.clone())
         },
         Deref @ DAE::ReductionIterator { exp: e1, .. } => {
-            adjacencyRowExp(e1.clone(), vars.clone())?
+            adjacencyRowExp(e1.clone(), vars.clone())
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1006,7 +1006,7 @@ fn adjacencyRowMatrixExp(mut inTplExpExpBooleanLstLst: Arc<metamodelica::List<Ar
             let mut pStr: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
             let mut res1_1: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
             let mut res2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            res1 = List::map1(expl_1.clone(), (std::sync::Arc::new(adjacencyRowExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, BackendDAE::Variables) -> Result<Arc<metamodelica::List<ArcStr>>> + 'static>), vars.clone())?;
+            res1 = List::map1(expl_1.clone(), (std::sync::Arc::new(fnptr!(adjacencyRowExp, Arc<DAE::Exp>, BackendDAE::Variables)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, BackendDAE::Variables) -> Result<Arc<metamodelica::List<ArcStr>>> + 'static>), vars.clone())?;
             res2 = adjacencyRowMatrixExp(es.clone(), vars.clone())?;
             res1_1 = List::flatten(res1.clone())?;
             pStr = listAppend(res1_1.clone(), res2.clone());
@@ -1017,9 +1017,9 @@ fn adjacencyRowMatrixExp(mut inTplExpExpBooleanLstLst: Arc<metamodelica::List<Ar
     Ok(outStringLst)
 }
 
-fn printExpStr(mut e: Arc<DAE::Exp>) -> Result<ArcStr> {
+fn printExpStr(mut e: Arc<DAE::Exp>) -> ArcStr {
     let mut s: ArcStr;
-    s = (ExpressionDump::printExp2Str::<()>(e.clone(), (literal!("'")).clone(), None, None)?).clone();
-    Ok(s)
+    s = (ExpressionDump::printExp2Str::<()>(e.clone(), (literal!("'")).clone(), None, None)).clone();
+    s
 }
 

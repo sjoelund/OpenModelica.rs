@@ -139,7 +139,7 @@ pub fn mkClassNode(mut inClass: Arc<SCode::Element>, mut inPrefix: DAE::Prefix, 
     Ok(outGraph)
 }
 
-pub fn mkConstrainClass(mut inElement: Arc<SCode::Element>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
+pub fn mkConstrainClass(mut inElement: Arc<SCode::Element>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Graph {
     let mut outGraph: Graph;
     outGraph = 'mc: {
         let __mc_input = (inElement.clone(), inGraph.clone());
@@ -179,9 +179,9 @@ pub fn mkConstrainClass(mut inElement: Arc<SCode::Element>, mut inParentRef: Ref
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outGraph)
+    outGraph
 }
 
 pub fn mkModNode(mut inName: Name, mut inMod: Arc<SCode::Mod>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
@@ -296,7 +296,7 @@ pub fn mkBindingNode(mut inBinding: Option<Arc<Absyn::Exp>>, mut inParentRef: Re
     Ok(outGraph)
 }
 
-fn mkClassChildren(mut inClassDef: Arc<SCode::ClassDef>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
+fn mkClassChildren(mut inClassDef: Arc<SCode::ClassDef>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Graph {
     let mut outGraph: Graph;
     outGraph = 'mc: {
         let __mc_input = (inClassDef.clone(), inGraph.clone());
@@ -320,7 +320,7 @@ fn mkClassChildren(mut inClassDef: Arc<SCode::ClassDef>, mut inParentRef: Ref, m
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ SCode::ClassDef::CLASS_EXTENDS { composition: cdef, modifications: m }, g) => {
                     let mut g = (*g).clone();
-                    g = mkClassChildren(cdef.clone(), inParentRef.clone(), inKind.clone(), g.clone())?;
+                    g = mkClassChildren(cdef.clone(), inParentRef.clone(), inKind.clone(), g.clone());
                     g = mkModNode((arcstr::literal!(FNode::modNodeName)).clone(), m.clone(), inParentRef.clone(), inKind.clone(), g.clone())?;
                     g = mkRefNode((arcstr::literal!(FNode::refNodeName)).clone(), metamodelica::nil(), inParentRef.clone(), g.clone())?;
                     Ok(g.clone())
@@ -368,9 +368,9 @@ fn mkClassChildren(mut inClassDef: Arc<SCode::ClassDef>, mut inParentRef: Ref, m
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outGraph)
+    outGraph
 }
 
 pub fn mkElementNode(mut inElement: Arc<SCode::Element>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {

@@ -843,7 +843,7 @@ pub fn getModelInstanceAnnotation(mut className: ArcStr, mut filter: Arc<metamod
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }))?, Arc::new(Values::Value::BOOL { boolean: prettyPrint.clone() })], dummyMsg.clone())?) {
+    })), Arc::new(Values::Value::BOOL { boolean: prettyPrint.clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
@@ -1079,7 +1079,7 @@ pub fn sortStrings(mut arr: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metam
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }))?], dummyMsg.clone())?;
+    }))], dummyMsg.clone())?;
     res = ({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut res_arr_iter in (ValuesUtil::arrayValues(res_arr.clone())?).into_iter().cloned() {
@@ -1106,11 +1106,11 @@ pub fn checkInterfaceOfPackages(mut cl: ArcStr, mut dependencyMatrix: Arc<metamo
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }))?;
+    }));
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }))?], dummyMsg.clone())?) {
+    }))], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
@@ -1182,7 +1182,7 @@ pub fn runScriptParallel(mut scripts: Arc<metamodelica::List<ArcStr>>, mut numTh
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }))?, Arc::new(Values::Value::INTEGER { integer: numThreads.clone() }), Arc::new(Values::Value::BOOL { boolean: useThreads.clone() })], dummyMsg.clone())?;
+    })), Arc::new(Values::Value::INTEGER { integer: numThreads.clone() }), Arc::new(Values::Value::BOOL { boolean: useThreads.clone() })], dummyMsg.clone())?;
     res = ({
         let mut __acc: Arc<metamodelica::List<bool>> = metamodelica::nil();
         for mut res_arr_iter in (ValuesUtil::arrayValues(res_arr.clone())?).into_iter().cloned() {
@@ -2296,28 +2296,28 @@ pub fn setComponentProperties(mut className: ArcStr, mut componentName: ArcStr, 
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }))?, ValuesMake::makeArray(({
+    })), ValuesMake::makeArray(({
         let mut __acc: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
         for mut variability_iter in (variability.clone()).into_iter().cloned() {
             let __x = Arc::new(Values::Value::STRING { string: (variability_iter.clone()).clone() });
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }))?, ValuesMake::makeArray(({
+    })), ValuesMake::makeArray(({
         let mut __acc: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
         for mut innerOuter_iter in (innerOuter.clone()).into_iter().cloned() {
             let __x = Arc::new(Values::Value::BOOL { boolean: innerOuter_iter.clone() });
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }))?, ValuesMake::makeArray(({
+    })), ValuesMake::makeArray(({
         let mut __acc: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
         for mut direction_iter in (direction.clone()).into_iter().cloned() {
             let __x = Arc::new(Values::Value::STRING { string: (direction_iter.clone()).clone() });
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }))?], dummyMsg.clone())?) {
+    }))], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
@@ -2640,7 +2640,7 @@ pub fn diffSimulationResults(mut actualFile: ArcStr, mut expectedFile: ArcStr, m
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }))?, Arc::new(Values::Value::BOOL { boolean: keepEqualResults.clone() })], dummyMsg.clone())?) {
+    })), Arc::new(Values::Value::BOOL { boolean: keepEqualResults.clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::TUPLE { valueLst: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: __pa0 }, tail: Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Nil } } }) => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
@@ -2669,7 +2669,7 @@ pub fn deltaSimulationResults(mut filename: ArcStr, mut reffilename: ArcStr, mut
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }))?], dummyMsg.clone())?) {
+    }))], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::REAL { real: __pa0 }) => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
@@ -2687,7 +2687,7 @@ pub fn compareSimulationResults(mut filename: ArcStr, mut reffilename: ArcStr, m
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }))?], dummyMsg.clone())?;
+    }))], dummyMsg.clone())?;
     res = ({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut res_arr_iter in (ValuesUtil::arrayValues(res_arr.clone())?).into_iter().cloned() {
@@ -2711,7 +2711,7 @@ pub fn filterSimulationResults(mut inFile: ArcStr, mut outFile: ArcStr, mut vars
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }))?, Arc::new(Values::Value::INTEGER { integer: numberOfIntervals.clone() }), Arc::new(Values::Value::BOOL { boolean: removeDescription.clone() }), Arc::new(Values::Value::BOOL { boolean: hintReadAllVars.clone() })], dummyMsg.clone())?) {
+    })), Arc::new(Values::Value::INTEGER { integer: numberOfIntervals.clone() }), Arc::new(Values::Value::BOOL { boolean: removeDescription.clone() }), Arc::new(Values::Value::BOOL { boolean: hintReadAllVars.clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
@@ -2756,21 +2756,21 @@ pub fn plotAll(mut externalWindow: bool, mut fileName: ArcStr, mut title: ArcStr
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }))?, ValuesMake::makeArray(({
+    })), ValuesMake::makeArray(({
         let mut __acc: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
         for mut yRange_iter in (yRange.clone()).into_iter().cloned() {
             let __x = Arc::new(Values::Value::REAL { real: yRange_iter.clone() });
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }))?, Arc::new(Values::Value::REAL { real: curveWidth.clone() }), Arc::new(Values::Value::INTEGER { integer: curveStyle.clone() }), Arc::new(Values::Value::STRING { string: (legendPosition.clone()).clone() }), Arc::new(Values::Value::STRING { string: (footer.clone()).clone() }), Arc::new(Values::Value::BOOL { boolean: autoScale.clone() }), Arc::new(Values::Value::BOOL { boolean: forceOMPlot.clone() }), Arc::new(Values::Value::STRING { string: (yAxis.clone()).clone() }), Arc::new(Values::Value::STRING { string: (yLabelRight.clone()).clone() }), ValuesMake::makeArray(({
+    })), Arc::new(Values::Value::REAL { real: curveWidth.clone() }), Arc::new(Values::Value::INTEGER { integer: curveStyle.clone() }), Arc::new(Values::Value::STRING { string: (legendPosition.clone()).clone() }), Arc::new(Values::Value::STRING { string: (footer.clone()).clone() }), Arc::new(Values::Value::BOOL { boolean: autoScale.clone() }), Arc::new(Values::Value::BOOL { boolean: forceOMPlot.clone() }), Arc::new(Values::Value::STRING { string: (yAxis.clone()).clone() }), Arc::new(Values::Value::STRING { string: (yLabelRight.clone()).clone() }), ValuesMake::makeArray(({
         let mut __acc: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
         for mut yRangeRight_iter in (yRangeRight.clone()).into_iter().cloned() {
             let __x = Arc::new(Values::Value::REAL { real: yRangeRight_iter.clone() });
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }))?], dummyMsg.clone())?) {
+    }))], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
@@ -3063,7 +3063,7 @@ pub fn buildModelFMU(mut className: ArcStr, mut version: ArcStr, mut fmuType: Ar
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }))?, Arc::new(Values::Value::BOOL { boolean: includeResources.clone() })], dummyMsg.clone())?) {
+    })), Arc::new(Values::Value::BOOL { boolean: includeResources.clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::STRING { string: __pa0 }) => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
@@ -3080,7 +3080,7 @@ pub fn translateModelFMU(mut className: ArcStr, mut version: ArcStr, mut fmuType
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }))?, Arc::new(Values::Value::BOOL { boolean: includeResources.clone() })], dummyMsg.clone())?) {
+    })), Arc::new(Values::Value::BOOL { boolean: includeResources.clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
@@ -3122,18 +3122,18 @@ pub fn solveLinearSystem(mut A: Arc<metamodelica::List<Arc<metamodelica::List<me
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }))?;
+    }));
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }))?, ValuesMake::makeArray(({
+    })), ValuesMake::makeArray(({
         let mut __acc: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
         for mut B_iter in (B.clone()).into_iter().cloned() {
             let __x = Arc::new(Values::Value::REAL { real: B_iter.clone() });
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }))?], dummyMsg.clone())?) {
+    }))], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::TUPLE { valueLst: Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { integer: __pa1 }, tail: Deref @ metamodelica::List::Nil } } }) => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
@@ -3432,7 +3432,7 @@ pub fn loadModel(mut className: ArcStr, mut priorityVersion: Arc<metamodelica::L
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }))?, Arc::new(Values::Value::BOOL { boolean: notify.clone() }), Arc::new(Values::Value::STRING { string: (languageStandard.clone()).clone() }), Arc::new(Values::Value::BOOL { boolean: requireExactVersion.clone() })], dummyMsg.clone())?) {
+    })), Arc::new(Values::Value::BOOL { boolean: notify.clone() }), Arc::new(Values::Value::STRING { string: (languageStandard.clone()).clone() }), Arc::new(Values::Value::BOOL { boolean: requireExactVersion.clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
@@ -4330,7 +4330,7 @@ pub fn system_parallel(mut callStr: Arc<metamodelica::List<ArcStr>>, mut numThre
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }))?, Arc::new(Values::Value::INTEGER { integer: numThreads.clone() })], dummyMsg.clone())?;
+    })), Arc::new(Values::Value::INTEGER { integer: numThreads.clone() })], dummyMsg.clone())?;
     res = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut res_arr_iter in (ValuesUtil::arrayValues(res_arr.clone())?).into_iter().cloned() {
@@ -4479,7 +4479,7 @@ pub fn loadFiles(mut fileNames: Arc<metamodelica::List<ArcStr>>, mut encoding: A
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }))?, Arc::new(Values::Value::STRING { string: (encoding.clone()).clone() }), Arc::new(Values::Value::INTEGER { integer: numThreads.clone() }), Arc::new(Values::Value::BOOL { boolean: uses.clone() }), Arc::new(Values::Value::BOOL { boolean: notify.clone() }), Arc::new(Values::Value::BOOL { boolean: requireExactVersion.clone() }), Arc::new(Values::Value::BOOL { boolean: allowWithin.clone() })], dummyMsg.clone())?) {
+    })), Arc::new(Values::Value::STRING { string: (encoding.clone()).clone() }), Arc::new(Values::Value::INTEGER { integer: numThreads.clone() }), Arc::new(Values::Value::BOOL { boolean: uses.clone() }), Arc::new(Values::Value::BOOL { boolean: notify.clone() }), Arc::new(Values::Value::BOOL { boolean: requireExactVersion.clone() }), Arc::new(Values::Value::BOOL { boolean: allowWithin.clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::BOOL { boolean: __pa0 }) => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };

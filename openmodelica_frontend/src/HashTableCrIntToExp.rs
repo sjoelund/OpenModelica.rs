@@ -80,7 +80,7 @@ fn hashFunc(mut tpl: Key) -> Result<i32> {
     Ok(res)
 }
 
-fn keyEqual(mut tpl1: Key, mut tpl2: Key) -> Result<bool> {
+fn keyEqual(mut tpl1: Key, mut tpl2: Key) -> bool {
     let mut res: bool;
     res = 'mc: {
         let __mc_input = (tpl1.clone(), tpl2.clone());
@@ -101,9 +101,9 @@ fn keyEqual(mut tpl1: Key, mut tpl2: Key) -> Result<bool> {
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(res)
+    res
 }
 
 fn printKey(mut tpl: Key) -> Result<ArcStr> {
@@ -120,7 +120,7 @@ pub fn emptyHashTable() -> HashTable {
 
 pub fn emptyHashTableSized(mut size: i32) -> HashTable {
     let mut hashTable: HashTable;
-    hashTable = BaseHashTable::emptyHashTableWork(size.clone(), ((std::sync::Arc::new(hashFunc) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::ComponentRef>, i32)) -> Result<i32> + 'static>), (std::sync::Arc::new(keyEqual) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::ComponentRef>, i32), (Arc<DAE::ComponentRef>, i32)) -> Result<bool> + 'static>), (std::sync::Arc::new(printKey) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::ComponentRef>, i32)) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(ExpressionBasics::printExpStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>)));
+    hashTable = BaseHashTable::emptyHashTableWork(size.clone(), ((std::sync::Arc::new(hashFunc) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::ComponentRef>, i32)) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(keyEqual, (Arc<DAE::ComponentRef>, i32), (Arc<DAE::ComponentRef>, i32))) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::ComponentRef>, i32), (Arc<DAE::ComponentRef>, i32)) -> Result<bool> + 'static>), (std::sync::Arc::new(printKey) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::ComponentRef>, i32)) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(ExpressionBasics::printExpStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>)));
     hashTable
 }
 

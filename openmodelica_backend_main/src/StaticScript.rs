@@ -153,7 +153,7 @@ pub fn getSimulationArguments(mut inCache: FCore::Cache, mut inEnv: FCore::Graph
             checkSimulationArguments(args.clone(), (callName.clone()).clone(), info.clone())?;
             exp = Static::elabCodeExp(crexp.clone(), cache.clone(), env.clone(), openmodelica_frontend_types::DAE::CodeType::C_TYPENAME, info.clone())?;
             (cache, v) = Ceval::ceval(cache.clone(), env.clone(), exp.clone(), true, Absyn::Msg::MSG { info: info.clone() }, 0)?;
-            let __pa0 = ::match_deref::match_deref! { match &(CevalScript::evalCodeTypeName(v.clone(), env.clone())?) {
+            let __pa0 = ::match_deref::match_deref! { match &(CevalScript::evalCodeTypeName(v.clone(), env.clone())) {
                 Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_TYPENAME { path: __pa0 } } => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
@@ -446,7 +446,7 @@ fn elabCallInteractive_work(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
                 (cache, _, Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "checkExamplePackages", .. }, Deref @ metamodelica::List::Nil, args, _, _) => {
                     let mut excludeList: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
                     let mut excludeListSize: i32 = 0;
-                    excludeList = Static::getOptionalNamedArgExpList((literal!("exclude")).clone(), args.clone())?;
+                    excludeList = Static::getOptionalNamedArgExpList((literal!("exclude")).clone(), args.clone());
                     excludeListSize = (excludeList.clone().len() as i32);
                     Ok((cache.clone(), Expression::makePureBuiltinCall((literal!("checkExamplePackages")).clone(), list![Arc::new(DAE::Exp::ARRAY { ty: Arc::new(DAE::Type::T_ARRAY { ty: DAE::T_UNKNOWN_DEFAULT().clone(), dims: list![Arc::new(DAE::Dimension::DIM_INTEGER { integer: excludeListSize.clone() })] }), scalar: false, array: excludeList.clone() })], DAE::T_STRING_DEFAULT().clone()), DAE::Properties::PROP { type_: DAE::T_BOOL_DEFAULT().clone(), constFlag: openmodelica_frontend_types::DAE::Const::C_CONST }))
                 }
@@ -458,7 +458,7 @@ fn elabCallInteractive_work(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
                 (cache, _, Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "checkExamplePackages", .. }, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::STRING { value: r#str }, tail: Deref @ metamodelica::List::Nil }, args, _, _) => {
                     let mut excludeList: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
                     let mut excludeListSize: i32 = 0;
-                    excludeList = Static::getOptionalNamedArgExpList((literal!("exclude")).clone(), args.clone())?;
+                    excludeList = Static::getOptionalNamedArgExpList((literal!("exclude")).clone(), args.clone());
                     excludeListSize = (excludeList.clone().len() as i32);
                     Ok((cache.clone(), Expression::makePureBuiltinCall((literal!("checkExamplePackages")).clone(), list![Arc::new(DAE::Exp::ARRAY { ty: Arc::new(DAE::Type::T_ARRAY { ty: DAE::T_UNKNOWN_DEFAULT().clone(), dims: list![Arc::new(DAE::Dimension::DIM_INTEGER { integer: excludeListSize.clone() })] }), scalar: false, array: excludeList.clone() }), Arc::new(DAE::Exp::SCONST { string: (r#str.clone()).clone() })], DAE::T_STRING_DEFAULT().clone()), DAE::Properties::PROP { type_: DAE::T_BOOL_DEFAULT().clone(), constFlag: openmodelica_frontend_types::DAE::Const::C_CONST }))
                 }
@@ -472,7 +472,7 @@ fn elabCallInteractive_work(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
                     let mut excludeListSize: i32 = 0;
                     let mut className: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     className = AbsynUtil::crefToPath(cr.clone())?;
-                    excludeList = Static::getOptionalNamedArgExpList((literal!("exclude")).clone(), args.clone())?;
+                    excludeList = Static::getOptionalNamedArgExpList((literal!("exclude")).clone(), args.clone());
                     excludeListSize = (excludeList.clone().len() as i32);
                     Ok((cache.clone(), Expression::makePureBuiltinCall((literal!("checkExamplePackages")).clone(), list![Arc::new(DAE::Exp::ARRAY { ty: Arc::new(DAE::Type::T_ARRAY { ty: DAE::T_UNKNOWN_DEFAULT().clone(), dims: list![Arc::new(DAE::Dimension::DIM_INTEGER { integer: excludeListSize.clone() })] }), scalar: false, array: excludeList.clone() }), Arc::new(DAE::Exp::CODE { code: Arc::new(Absyn::CodeNode::C_TYPENAME { path: className.clone() }), ty: DAE::T_UNKNOWN_DEFAULT().clone() })], DAE::T_STRING_DEFAULT().clone()), DAE::Properties::PROP { type_: DAE::T_BOOL_DEFAULT().clone(), constFlag: openmodelica_frontend_types::DAE::Const::C_CONST }))
                 }
@@ -486,7 +486,7 @@ fn elabCallInteractive_work(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
                     let mut excludeListSize: i32 = 0;
                     let mut className: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     className = AbsynUtil::crefToPath(cr.clone())?;
-                    excludeList = Static::getOptionalNamedArgExpList((literal!("exclude")).clone(), args.clone())?;
+                    excludeList = Static::getOptionalNamedArgExpList((literal!("exclude")).clone(), args.clone());
                     excludeListSize = (excludeList.clone().len() as i32);
                     Ok((cache.clone(), Expression::makePureBuiltinCall((literal!("checkExamplePackages")).clone(), list![Arc::new(DAE::Exp::ARRAY { ty: Arc::new(DAE::Type::T_ARRAY { ty: DAE::T_UNKNOWN_DEFAULT().clone(), dims: list![Arc::new(DAE::Dimension::DIM_INTEGER { integer: excludeListSize.clone() })] }), scalar: false, array: excludeList.clone() }), Arc::new(DAE::Exp::CODE { code: Arc::new(Absyn::CodeNode::C_TYPENAME { path: className.clone() }), ty: DAE::T_UNKNOWN_DEFAULT().clone() }), Arc::new(DAE::Exp::SCONST { string: (r#str.clone()).clone() })], DAE::T_STRING_DEFAULT().clone()), DAE::Properties::PROP { type_: DAE::T_BOOL_DEFAULT().clone(), constFlag: openmodelica_frontend_types::DAE::Const::C_CONST }))
                 }

@@ -260,7 +260,7 @@ pub fn tplMainTest(mut inFile: ArcStr) -> Result<()> {
                     notPassedCnt = testStringEquality((r#str.clone()).clone(), (literal!("package Susan\n\npublic import Tpl;\n\npublic import TplAbsyn;\n\npublic function pathIdent\n  input Tpl.Text in_txt;\n  input TplAbsyn.PathIdent in_i_it;\n\n  output Tpl.Text out_txt;\nalgorithm\n  out_txt :=\n  matchcontinue(in_txt, in_i_it)\n    local\n      Tpl.Text txt;\n\n    case ( txt,\n           TplAbsyn.IDENT(ident = i_ident) )\n      local\n        TplAbsyn.Ident i_ident;\n      algorithm\n        txt = Tpl.writeStr(txt, i_ident);\n      then txt;\n\n    case ( txt,\n           TplAbsyn.PATH_IDENT(ident = i_ident, path = i_path) )\n      local\n        TplAbsyn.PathIdent i_path;\n        TplAbsyn.Ident i_ident;\n      algorithm\n        txt = Tpl.writeStr(txt, i_ident);\n        txt = Tpl.writeTok(txt, Tpl.ST_STRING(\".\"));\n        txt = pathIdent(txt, i_path);\n      then txt;\n\n    else in_txt;\n  end matchcontinue;\nend pathIdent;\n\nprotected function lm_2\n  input Tpl.Text in_txt;\n  input TplAbsyn.TypedIdents in_items;\n\n  output Tpl.Text out_txt;\nalgorithm\n  out_txt :=\n  matchcontinue(in_txt, in_items)\n    local\n      Tpl.Text txt;\n\n    case ( txt,\n           {} )\n      then txt;\n\n    case ( txt,\n           (i_id, i_pid) :: rest )\n      local\n        TplAbsyn.TypedIdents rest;\n        TplAbsyn.PathIdent i_pid;\n        TplAbsyn.Ident i_id;\n      algorithm\n        txt = pathIdent(txt, i_pid);\n        txt = Tpl.writeTok(txt, Tpl.ST_STRING(\" \"));\n        txt = Tpl.writeStr(txt, i_id);\n        txt = Tpl.writeTok(txt, Tpl.ST_STRING(\";\"));\n        txt = Tpl.nextIter(txt);\n        txt = lm_2(txt, rest);\n      then txt;\n\n    case ( txt,\n           _ :: rest )\n      local\n        TplAbsyn.TypedIdents rest;\n      algorithm\n        txt = lm_2(txt, rest);\n      then txt;\n  end matchcontinue;\nend lm_2;\n\npublic function typedIdents\n  input Tpl.Text txt;\n  input TplAbsyn.TypedIdents i_decls;\n\n  output Tpl.Text out_txt;\nalgorithm\n  out_txt := Tpl.pushIter(txt, Tpl.ITER_OPTIONS(0, NONE(), SOME(Tpl.ST_NEW_LINE()), 0, 0, Tpl.ST_NEW_LINE(), 0, Tpl.ST_NEW_LINE()));\n  out_txt := lm_2(out_txt, i_decls);\n  out_txt := Tpl.popIter(out_txt);\nend typedIdents;\n\nend Susan;")).clone(), false, false, (literal!("transformAST - pathIdent() + typedIdents()")).clone(), notPassedCnt.clone())?;
                     r#str = (literal!("// Hej Susan\n/*this is another dance with Susan */\n/* event I will /*nest*/ into */ //and still comment\n      Susan lives!")).clone();
                     chars = stringListStringChar((r#str.clone()).clone());
-                    (chars, _) = TplParser::interleave(chars.clone(), TplParser::makeStartLineInfo(chars.clone(), (literal!("in memory test")).clone())?)?;
+                    (chars, _) = TplParser::interleave(chars.clone(), TplParser::makeStartLineInfo(chars.clone(), (literal!("in memory test")).clone())?);
                     strOut = (stringCharListString(chars.clone())).clone();
                     notPassedCnt = testStringEquality((strOut.clone()).clone(), (literal!("Susan lives!")).clone(), true, true, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("TplParser.interleave \n\"")); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\"\n")); ArcStr::from(__mm_s) }).clone(), notPassedCnt.clone())?;
                     r#str = (literal!("(Susan)")).clone();
@@ -550,7 +550,7 @@ pub fn tplMainTest(mut inFile: ArcStr) -> Result<()> {
                     (lnum, colnum) = TplParser::getPosition(chars.clone(), TplParser::LineInfo { parseInfo: TplParser::ParseInfo { fileName: (literal!("test - no file")).clone(), errors: metamodelica::nil(), wasFatalError: false }, lineNumber: 11, lineLength: llen.clone(), startOfLineChars: chars.clone() })?;
                     notPassedCnt = testStringEquality(({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(lnum.clone())); __mm_s.push_str(&*literal!(",")); __mm_s.push_str(&*intString(colnum.clone())); __mm_s.push_str(&*literal!(" of ")); __mm_s.push_str(&*intString(llen.clone())); ArcStr::from(__mm_s) }).clone(), (literal!("11,3 of 8")).clone(), true, true, (literal!("TplParser.charsTillEndOfLine and getPosition \n")).clone(), notPassedCnt.clone())?;
                     txt = emptyTxt.clone();
-                    txt = statement(txt.clone(), Arc::new(Statement::WHILE { condition: Arc::new(Exp::BINARY { lhs: Arc::new(Exp::VARIABLE { name: (literal!("x")).clone() }), op: crate::TplMain::Operator::LESS, rhs: Arc::new(Exp::ICONST { value: 20 }) }), statements: list![Arc::new(Statement::ASSIGN { lhs: Arc::new(Exp::VARIABLE { name: (literal!("x")).clone() }), rhs: Arc::new(Exp::BINARY { lhs: Arc::new(Exp::VARIABLE { name: (literal!("x")).clone() }), op: crate::TplMain::Operator::PLUS, rhs: Arc::new(Exp::BINARY { lhs: Arc::new(Exp::VARIABLE { name: (literal!("y")).clone() }), op: crate::TplMain::Operator::TIMES, rhs: Arc::new(Exp::ICONST { value: 2 }) }) }) })] }))?;
+                    txt = statement(txt.clone(), Arc::new(Statement::WHILE { condition: Arc::new(Exp::BINARY { lhs: Arc::new(Exp::VARIABLE { name: (literal!("x")).clone() }), op: crate::TplMain::Operator::LESS, rhs: Arc::new(Exp::ICONST { value: 20 }) }), statements: list![Arc::new(Statement::ASSIGN { lhs: Arc::new(Exp::VARIABLE { name: (literal!("x")).clone() }), rhs: Arc::new(Exp::BINARY { lhs: Arc::new(Exp::VARIABLE { name: (literal!("x")).clone() }), op: crate::TplMain::Operator::PLUS, rhs: Arc::new(Exp::BINARY { lhs: Arc::new(Exp::VARIABLE { name: (literal!("y")).clone() }), op: crate::TplMain::Operator::TIMES, rhs: Arc::new(Exp::ICONST { value: 2 }) }) }) })] }));
                     r#str = (Tpl::textString(txt.clone())?).clone();
                     notPassedCnt = testStringEquality((r#str.clone()).clone(), (literal!("while((x < 20)) {\n  x = (x + (y * 2));\n}")).clone(), true, true, (literal!("Paper Example statement()")).clone(), notPassedCnt.clone())?;
                     txt = emptyTxt.clone();
@@ -647,7 +647,7 @@ fn lm_1(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Statemen
             ::match_deref::match_deref! { match &__mc_input {
                 (txt, Deref @ metamodelica::List::Cons { head: i_it, tail: rest }) => {
                     let mut txt = (*txt).clone();
-                    txt = statement(txt.clone(), i_it.clone())?;
+                    txt = statement(txt.clone(), i_it.clone());
                     txt = Tpl::nextIter(txt.clone())?;
                     txt = lm_1(txt.clone(), rest.clone())?;
                     Ok(txt.clone())
@@ -670,7 +670,7 @@ fn lm_1(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Statemen
     Ok(out_txt)
 }
 
-pub fn statement(mut in_txt: Tpl::Text, mut in_i_it: Arc<Statement>) -> Result<Tpl::Text> {
+pub fn statement(mut in_txt: Tpl::Text, mut in_i_it: Arc<Statement>) -> Tpl::Text {
     let mut out_txt: Tpl::Text;
     out_txt = 'mc: {
         let __mc_input = (in_txt.clone(), in_i_it.clone());
@@ -678,9 +678,9 @@ pub fn statement(mut in_txt: Tpl::Text, mut in_i_it: Arc<Statement>) -> Result<T
             ::match_deref::match_deref! { match &__mc_input {
                 (txt, Deref @ Statement::ASSIGN { lhs: i_lhs, rhs: i_rhs }) => {
                     let mut txt = (*txt).clone();
-                    txt = exp(txt.clone(), i_lhs.clone())?;
+                    txt = exp(txt.clone(), i_lhs.clone());
                     txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" = ")).clone() }))?;
-                    txt = exp(txt.clone(), i_rhs.clone())?;
+                    txt = exp(txt.clone(), i_rhs.clone());
                     txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
                     Ok(txt.clone())
                 }
@@ -692,7 +692,7 @@ pub fn statement(mut in_txt: Tpl::Text, mut in_i_it: Arc<Statement>) -> Result<T
                 (txt, Deref @ Statement::WHILE { condition: i_condition, statements: i_statements }) => {
                     let mut txt = (*txt).clone();
                     txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("while(")).clone() }))?;
-                    txt = exp(txt.clone(), i_condition.clone())?;
+                    txt = exp(txt.clone(), i_condition.clone());
                     txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(") {\n")).clone() }))?;
                     txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
                     txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(crate::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: crate::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: crate::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -714,12 +714,12 @@ pub fn statement(mut in_txt: Tpl::Text, mut in_i_it: Arc<Statement>) -> Result<T
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(out_txt)
+    out_txt
 }
 
-pub fn exp(mut in_txt: Tpl::Text, mut in_i_it: Arc<Exp>) -> Result<Tpl::Text> {
+pub fn exp(mut in_txt: Tpl::Text, mut in_i_it: Arc<Exp>) -> Tpl::Text {
     let mut out_txt: Tpl::Text;
     out_txt = 'mc: {
         let __mc_input = (in_txt.clone(), in_i_it.clone());
@@ -748,11 +748,11 @@ pub fn exp(mut in_txt: Tpl::Text, mut in_i_it: Arc<Exp>) -> Result<Tpl::Text> {
                 (txt, Deref @ Exp::BINARY { lhs: i_lhs, op: i_op, rhs: i_rhs }) => {
                     let mut txt = (*txt).clone();
                     txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(")).clone() }))?;
-                    txt = exp(txt.clone(), i_lhs.clone())?;
+                    txt = exp(txt.clone(), i_lhs.clone());
                     txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() }))?;
-                    txt = oper(txt.clone(), i_op.clone())?;
+                    txt = oper(txt.clone(), i_op.clone());
                     txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() }))?;
-                    txt = exp(txt.clone(), i_rhs.clone())?;
+                    txt = exp(txt.clone(), i_rhs.clone());
                     txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(")")).clone() }))?;
                     Ok(txt.clone())
                 }
@@ -767,12 +767,12 @@ pub fn exp(mut in_txt: Tpl::Text, mut in_i_it: Arc<Exp>) -> Result<Tpl::Text> {
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(out_txt)
+    out_txt
 }
 
-pub fn oper(mut in_txt: Tpl::Text, mut in_i_it: Operator) -> Result<Tpl::Text> {
+pub fn oper(mut in_txt: Tpl::Text, mut in_i_it: Operator) -> Tpl::Text {
     let mut out_txt: Tpl::Text;
     out_txt = 'mc: {
         let __mc_input = (in_txt.clone(), in_i_it.clone());
@@ -795,9 +795,9 @@ pub fn oper(mut in_txt: Tpl::Text, mut in_i_it: Operator) -> Result<Tpl::Text> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(in_txt.clone())
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(out_txt)
+    out_txt
 }
 
 /* **************************/

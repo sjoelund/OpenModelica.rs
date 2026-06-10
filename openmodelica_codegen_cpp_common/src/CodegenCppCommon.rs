@@ -2517,7 +2517,7 @@ pub fn checkDimension(mut txt: Tpl::Text, mut a_dims: Arc<metamodelica::List<Arc
     let mut ret_2: i32;
     let mut ret_1: Arc<metamodelica::List<i32>>;
     let mut l_dimstr: Tpl::Text;
-    ret_1 = Expression::dimensionsList(a_dims.clone())?;
+    ret_1 = Expression::dimensionsList(a_dims.clone());
     l_dimstr = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(",")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
     l_dimstr = lm_137(l_dimstr.clone(), ret_1.clone())?;
     l_dimstr = Tpl::popIter(l_dimstr.clone())?;
@@ -2545,7 +2545,7 @@ fn lm_140(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<i32>>) -> Result
 pub fn checkExpDimension(mut txt: Tpl::Text, mut a_dims: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut ret_0: Arc<metamodelica::List<i32>>;
-    ret_0 = Expression::expDimensionsList(a_dims.clone())?;
+    ret_0 = Expression::expDimensionsList(a_dims.clone());
     out_txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(",")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
     out_txt = lm_140(out_txt.clone(), ret_0.clone())?;
     out_txt = Tpl::popIter(out_txt.clone())?;
@@ -6236,7 +6236,7 @@ pub fn daeExpMatrixRow(mut txt: Tpl::Text, mut a_matrix: Arc<metamodelica::List<
     let mut ret_1: bool;
     let mut ret_0: Arc<metamodelica::List<Arc<DAE::Exp>>>;
     ret_0 = List::flatten(a_matrix.clone())?;
-    ret_1 = Expression::isCrefListWithEqualIdents(ret_0.clone())?;
+    ret_1 = Expression::isCrefListWithEqualIdents(ret_0.clone());
     (out_txt, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = fun_250(txt.clone(), ret_1.clone(), a_matrix.clone(), a_context.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone())?;
     Ok((out_txt, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName))
 }

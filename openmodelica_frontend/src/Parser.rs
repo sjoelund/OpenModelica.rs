@@ -212,18 +212,18 @@ fn parallelParseFilesWork(mut filenames: Arc<metamodelica::List<ArcStr>>, mut en
         partialResults = ({
         let mut __acc: Arc<metamodelica::List<ParserResult>> = metamodelica::nil();
         for mut t in (workList.clone()).into_iter().cloned() {
-            let __x = loadFileThread(t.clone())?;
+            let __x = loadFileThread(t.clone());
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     });
     } else {
-        partialResults = System::launchParallelTasks(std::cmp::min(8, numThreads.clone()), workList.clone(), (std::sync::Arc::new(loadFileThread) as std::sync::Arc<dyn ::std::ops::Fn((ArcStr, ArcStr, ArcStr, Option<i32>)) -> Result<ParserResult> + 'static>))?;
+        partialResults = System::launchParallelTasks(std::cmp::min(8, numThreads.clone()), workList.clone(), (std::sync::Arc::new(fnptr!(loadFileThread, (ArcStr, ArcStr, ArcStr, Option<i32>))) as std::sync::Arc<dyn ::std::ops::Fn((ArcStr, ArcStr, ArcStr, Option<i32>)) -> Result<ParserResult> + 'static>))?;
     }
     Ok(partialResults)
 }
 
-fn loadFileThread(mut inFileEncoding: (ArcStr, ArcStr, ArcStr, Option<i32>)) -> Result<ParserResult> {
+fn loadFileThread(mut inFileEncoding: (ArcStr, ArcStr, ArcStr, Option<i32>)) -> ParserResult {
     let mut result: ParserResult;
     result = 'mc: {
         let __mc_input = inFileEncoding.clone();
@@ -235,12 +235,12 @@ fn loadFileThread(mut inFileEncoding: (ArcStr, ArcStr, ArcStr, Option<i32>)) -> 
             let (mut filename, _, _, _) = __mc_input.clone() else { bail!("nomatch") };
             Ok(ParserResult { filename: (filename.clone()).clone(), program: None })
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
     if ErrorExt::getNumMessages() > 0 {
         ErrorExt::moveMessagesToParentThread();
     }
-    Ok(result)
+    result
 }
 
 pub fn checkLicenseAndFeatures(mut c1: Arc<Absyn::Class>, mut lveInstance: Option<i32>) -> Result<bool> {
@@ -248,7 +248,7 @@ pub fn checkLicenseAndFeatures(mut c1: Arc<Absyn::Class>, mut lveInstance: Optio
     let mut orFeatures: Arc<metamodelica::List<ArcStr>>;
     let mut andFeatures: Arc<metamodelica::List<ArcStr>>;
     result = true;
-    orFeatures = getFeaturesAnnotation(c1.clone())?;
+    orFeatures = getFeaturesAnnotation(c1.clone());
     for mut orFeature in &*orFeatures.clone() {
         let mut orFeature = orFeature.clone();
         andFeatures = Util::stringSplitAtChar((orFeature.clone()).clone(), (literal!(" ")).clone())?;
@@ -267,12 +267,12 @@ pub fn checkLicenseAndFeatures(mut c1: Arc<Absyn::Class>, mut lveInstance: Optio
     Ok(result)
 }
 
-fn getLicenseAnnotation(mut className: Arc<Absyn::Class>) -> Result<(ArcStr, ArcStr)> {
+fn getLicenseAnnotation(mut className: Arc<Absyn::Class>) -> (ArcStr, ArcStr) {
     let mut license: (ArcStr, ArcStr);
     let mut opt_license: Option<(ArcStr, ArcStr)>;
-    opt_license = AbsynUtil::getNamedAnnotationInClass(className.clone(), Arc::new(Absyn::Path::IDENT { name: (literal!("Protection")).clone() }), (std::sync::Arc::new(getLicenseAnnotationWork1) as std::sync::Arc<dyn ::std::ops::Fn(Option<Arc<Absyn::Modification>>) -> Result<(ArcStr, ArcStr)> + 'static>))?;
+    opt_license = AbsynUtil::getNamedAnnotationInClass(className.clone(), Arc::new(Absyn::Path::IDENT { name: (literal!("Protection")).clone() }), (std::sync::Arc::new(getLicenseAnnotationWork1) as std::sync::Arc<dyn ::std::ops::Fn(Option<Arc<Absyn::Modification>>) -> Result<(ArcStr, ArcStr)> + 'static>));
     license = Util::getOptionOrDefault(opt_license.clone(), (literal!(""), literal!("")));
-    Ok(license)
+    license
 }
 
 fn getLicenseAnnotationWork1(mut r#mod: Option<Arc<Absyn::Modification>>) -> Result<(ArcStr, ArcStr)> {
@@ -361,12 +361,12 @@ fn getLicenseAnnotationLicenseFile(mut eltArgs: Arc<metamodelica::List<Arc<Absyn
     }
 }
 
-fn getFeaturesAnnotation(mut className: Arc<Absyn::Class>) -> Result<Arc<metamodelica::List<ArcStr>>> {
+fn getFeaturesAnnotation(mut className: Arc<Absyn::Class>) -> Arc<metamodelica::List<ArcStr>> {
     let mut features: Arc<metamodelica::List<ArcStr>>;
     let mut opt_featuresList: Option<Arc<metamodelica::List<ArcStr>>>;
-    opt_featuresList = AbsynUtil::getNamedAnnotationInClass(className.clone(), Arc::new(Absyn::Path::IDENT { name: (literal!("Protection")).clone() }), (std::sync::Arc::new(getFeaturesAnnotationList) as std::sync::Arc<dyn ::std::ops::Fn(Option<Arc<Absyn::Modification>>) -> Result<Arc<metamodelica::List<ArcStr>>> + 'static>))?;
+    opt_featuresList = AbsynUtil::getNamedAnnotationInClass(className.clone(), Arc::new(Absyn::Path::IDENT { name: (literal!("Protection")).clone() }), (std::sync::Arc::new(getFeaturesAnnotationList) as std::sync::Arc<dyn ::std::ops::Fn(Option<Arc<Absyn::Modification>>) -> Result<Arc<metamodelica::List<ArcStr>>> + 'static>));
     features = Util::getOptionOrDefault(opt_featuresList.clone(), metamodelica::nil());
-    Ok(features)
+    features
 }
 
 fn getFeaturesAnnotationList(mut r#mod: Option<Arc<Absyn::Modification>>) -> Result<Arc<metamodelica::List<ArcStr>>> {

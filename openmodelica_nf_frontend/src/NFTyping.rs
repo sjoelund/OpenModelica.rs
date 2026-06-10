@@ -294,7 +294,7 @@ pub fn typeClassType(mut clsNode: Arc<InstNode::InstNode>, mut componentBinding:
         },
         Deref @ Class::INSTANCED_CLASS { .. } => var_field!((*cls).ty, Class::NFClass::INSTANCED_CLASS).clone(),
         Deref @ Class::EXPANDED_DERIVED { .. } => {
-            typeDimensions(var_field!((*cls).dims, Class::NFClass::EXPANDED_DERIVED).clone(), clsNode.clone(), componentBinding.clone(), context.clone(), InstNode::info(clsNode.clone())?)?;
+            typeDimensions(var_field!((*cls).dims, Class::NFClass::EXPANDED_DERIVED).clone(), clsNode.clone(), componentBinding.clone(), context.clone(), InstNode::info(clsNode.clone()))?;
             ty = typeClassType(var_field!((*cls).baseClass, Class::NFClass::EXPANDED_DERIVED).clone(), componentBinding.clone(), context.clone(), instanceNode.clone())?;
             ty = Type::liftArrayLeftList(ty.clone(), Arc::new(var_field!((*cls).dims, Class::NFClass::EXPANDED_DERIVED).clone().borrow().iter().cloned().collect::<metamodelica::List<_>>()));
             ty_cls = Arc::new(Class::NFClass::TYPED_DERIVED { ty: ty.clone(), baseClass: var_field!((*cls).baseClass, Class::NFClass::EXPANDED_DERIVED).clone(), restriction: var_field!((*cls).restriction, Class::NFClass::EXPANDED_DERIVED).clone() });
@@ -341,7 +341,7 @@ pub fn makeConnectorType(mut ctree: Arc<ClassTree::ClassTree>, mut isExpandable:
             } else if intBitAnd(cty.clone(), ConnectorType::POTENTIAL.clone()) > 0 {
                 pots = metamodelica::cons(c.clone(), pots.clone());
             } else {
-                Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Invalid connector type on component ")); __mm_s.push_str(&*InstNode::name(c.clone())?); ArcStr::from(__mm_s) }).clone(), InstNode::info(c.clone())?)?;
+                Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Invalid connector type on component ")); __mm_s.push_str(&*InstNode::name(c.clone())?); ArcStr::from(__mm_s) }).clone(), InstNode::info(c.clone()))?;
                 bail!("fail");
             }
         }
@@ -373,10 +373,10 @@ pub fn checkConnectorTypeBalance(mut component: Arc<InstNode::InstNode>) -> Resu
         return Ok(());
     }
     if pots.clone() != flows.clone() && !(Flags::isConfigFlagSet(Flags::ALLOW_NON_STANDARD_MODELICA.clone(), (literal!("unbalancedModel")).clone())?) {
-        Error::addStrictMessage(Error::UNBALANCED_CONNECTOR.clone(), list![(InstNode::name(component.clone())?).clone(), ArcStr::from(::std::format!("{}", pots.clone())), ArcStr::from(::std::format!("{}", flows.clone()))], InstNode::info(component.clone())?)?;
+        Error::addStrictMessage(Error::UNBALANCED_CONNECTOR.clone(), list![(InstNode::name(component.clone())?).clone(), ArcStr::from(::std::format!("{}", pots.clone())), ArcStr::from(::std::format!("{}", flows.clone()))], InstNode::info(component.clone()))?;
     }
     if streams.clone() > 0 && flows.clone() != 1 {
-        Error::addSourceMessage(Error::MISMATCHED_FLOW_IN_STREAM_CONNECTOR.clone(), list![(InstNode::name(component.clone())?).clone(), ArcStr::from(::std::format!("{}", flows.clone()))], InstNode::info(component.clone())?)?;
+        Error::addSourceMessage(Error::MISMATCHED_FLOW_IN_STREAM_CONNECTOR.clone(), list![(InstNode::name(component.clone())?).clone(), ArcStr::from(::std::format!("{}", flows.clone()))], InstNode::info(component.clone()))?;
         bail!("fail");
     }
     Ok(())
@@ -495,7 +495,7 @@ pub fn checkComponentStreamAttribute(mut cty: i32, mut ty: Arc<Type::NFType>, mu
     if Prefixes::ConnectorType::isFlowOrStream(cty.clone()) {
         ety = Type::arrayElementType(ty.clone());
         if !(Type::isReal(ety.clone())? || Type::isComplex(ety.clone())) {
-            Error::addSourceMessageAndFail(Error::NON_REAL_FLOW_OR_STREAM.clone(), list![(Prefixes::ConnectorType::toString(cty.clone())).clone(), (InstNode::name(component.clone())?).clone()], InstNode::info(component.clone())?)?;
+            Error::addSourceMessageAndFail(Error::NON_REAL_FLOW_OR_STREAM.clone(), list![(Prefixes::ConnectorType::toString(cty.clone())).clone(), (InstNode::name(component.clone())?).clone()], InstNode::info(component.clone()))?;
             unreachable!("Error.addSourceMessageAndFail always fails — caller-side flow-analysis hint");
         }
     }
@@ -716,8 +716,8 @@ pub fn simplifyDimExp(mut dimExp: Arc<Expression::NFExpression>) -> Result<Arc<E
     let mut dimExp: Arc<Expression::NFExpression> = dimExp;
     let mut exp: Arc<Expression::NFExpression>;
     dimExp = (::match_deref::match_deref! { match &(dimExp.clone()) {
-        Deref @ Expression::ARRAY { .. } if (Expression::arrayAllEqual(dimExp.clone())?) => Expression::arrayFirstScalar(dimExp.clone())?,
-        Deref @ Expression::SUBSCRIPTED_EXP { split: true, .. } if (Expression::isArray(var_field!((*dimExp).exp, Expression::NFExpression::SUBSCRIPTED_EXP).clone()) && Expression::arrayAllEqual(var_field!((*dimExp).exp, Expression::NFExpression::SUBSCRIPTED_EXP).clone())?) => Expression::arrayFirstScalar(var_field!((*dimExp).exp, Expression::NFExpression::SUBSCRIPTED_EXP).clone())?,
+        Deref @ Expression::ARRAY { .. } if (Expression::arrayAllEqual(dimExp.clone())) => Expression::arrayFirstScalar(dimExp.clone())?,
+        Deref @ Expression::SUBSCRIPTED_EXP { split: true, .. } if (Expression::isArray(var_field!((*dimExp).exp, Expression::NFExpression::SUBSCRIPTED_EXP).clone()) && Expression::arrayAllEqual(var_field!((*dimExp).exp, Expression::NFExpression::SUBSCRIPTED_EXP).clone())) => Expression::arrayFirstScalar(var_field!((*dimExp).exp, Expression::NFExpression::SUBSCRIPTED_EXP).clone())?,
         _ => dimExp.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -728,7 +728,7 @@ pub fn makeDimension(mut dimExp: Arc<Expression::NFExpression>, mut unevaledExp:
     let mut outDimension: Arc<Dimension::NFDimension>;
     let mut exp: Arc<Expression::NFExpression> = dimExp.clone();
     if Expression::isArray(exp.clone()) {
-        if Expression::arrayAllEqual(exp.clone())? {
+        if Expression::arrayAllEqual(exp.clone()) {
             exp = Expression::arrayFirstScalar(exp.clone())?;
         }
     }
@@ -2227,7 +2227,7 @@ pub fn typeClassSections(mut classNode: Arc<InstNode::InstNode>, mut context: i3
             Sections::map(sections.clone(), (std::sync::Arc::new({ let __pe_b1 = InstContext::set(context.clone(), InstContext::EQUATION.clone()); move |__pe_a0| typeEquation(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::NFEquation>) -> Result<Arc<Equation::NFEquation>> + 'static>), (std::sync::Arc::new({ let __pe_b1 = InstContext::set(context.clone(), InstContext::ALGORITHM.clone()); move |__pe_a0| typeAlgorithm(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Algorithm::NFAlgorithm>) -> Result<Arc<Algorithm::NFAlgorithm>> + 'static>), (std::sync::Arc::new({ let __pe_b1 = InstContext::set(initial_context.clone(), InstContext::EQUATION.clone()); move |__pe_a0| typeEquation(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::NFEquation>) -> Result<Arc<Equation::NFEquation>> + 'static>), (std::sync::Arc::new({ let __pe_b1 = InstContext::set(initial_context.clone(), InstContext::ALGORITHM.clone()); move |__pe_a0| typeAlgorithm(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Algorithm::NFAlgorithm>) -> Result<Arc<Algorithm::NFAlgorithm>> + 'static>))?
         },
         Deref @ Sections::EXTERNAL { .. } => {
-            Error::addSourceMessage(Error::TRANS_VIOLATION.clone(), list![(InstNode::name(classNode.clone())?).clone(), (Restriction::toString(var_field!((*cls).restriction, Class::NFClass::INSTANCED_CLASS).clone())).clone(), (literal!("external declaration")).clone()], InstNode::info(classNode.clone())?)?;
+            Error::addSourceMessage(Error::TRANS_VIOLATION.clone(), list![(InstNode::name(classNode.clone())?).clone(), (Restriction::toString(var_field!((*cls).restriction, Class::NFClass::INSTANCED_CLASS).clone())).clone(), (literal!("external declaration")).clone()], InstNode::info(classNode.clone()))?;
             bail!("fail")
         },
         _ => sections.clone(),
@@ -2272,11 +2272,11 @@ pub fn typeFunctionSections(mut classNode: Arc<InstNode::InstNode>, mut context:
             sections.clone()
         },
         Deref @ Sections::SECTIONS { .. } => {
-            Error::addSourceMessage(Error::MULTIPLE_SECTIONS_IN_FUNCTION.clone(), list![(InstNode::name(classNode.clone())?).clone()], InstNode::info(classNode.clone())?)?;
+            Error::addSourceMessage(Error::MULTIPLE_SECTIONS_IN_FUNCTION.clone(), list![(InstNode::name(classNode.clone())?).clone()], InstNode::info(classNode.clone()))?;
             bail!("fail")
         },
         Deref @ Sections::EXTERNAL { explicit: true, .. } => {
-            info = InstNode::info(classNode.clone())?;
+            info = InstNode::info(classNode.clone());
             assign_variant_field!(sections => Sections::NFSections::EXTERNAL;
                 args = ({
         let mut __acc: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
@@ -2376,7 +2376,7 @@ pub fn makeDefaultExternalCall(mut extDecl: Arc<Sections::NFSections>, mut fnNod
             single_output = (r#fn.outputs.clone().len() as i32) == 1;
             if single_output.clone() && Type::isArray(Function::returnType(r#fn.clone())) {
                 single_output = false;
-                Error::addSourceMessage(Error::EXT_FN_SINGLE_RETURN_ARRAY.clone(), list![(var_field!((*extDecl).language, Sections::NFSections::EXTERNAL).clone()).clone()], InstNode::info(fnNode.clone())?)?;
+                Error::addSourceMessage(Error::EXT_FN_SINGLE_RETURN_ARRAY.clone(), list![(var_field!((*extDecl).language, Sections::NFSections::EXTERNAL).clone()).clone()], InstNode::info(fnNode.clone()))?;
             }
             if single_output.clone() {
                 let __pa2 = ::match_deref::match_deref! { match &(r#fn.outputs.clone()) {

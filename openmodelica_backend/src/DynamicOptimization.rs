@@ -364,14 +364,14 @@ fn addConstraints2(mut inConstraintLst: Arc<metamodelica::List<Arc<DAE::Exp>>>, 
 pub fn inputDerivativesForDynOpt(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut outDAE: Arc<BackendDAE::BackendDAE>;
     if Config::acceptOptimicaGrammar()? || Flags::getConfigBool(Flags::GENERATE_DYN_OPTIMIZATION_PROBLEM.clone())? {
-        (outDAE, _) = BackendDAEUtil::mapEqSystemAndFold(inDAE.clone(), (std::sync::Arc::new(inputDerivativesForDynOptWork) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, bool) -> Result<(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, bool)> + 'static>), false)?;
+        (outDAE, _) = BackendDAEUtil::mapEqSystemAndFold(inDAE.clone(), (std::sync::Arc::new(fnptr!(inputDerivativesForDynOptWork, Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, bool)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, bool) -> Result<(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, bool)> + 'static>), false)?;
     } else {
         outDAE = inDAE.clone();
     }
     Ok(outDAE)
 }
 
-fn inputDerivativesForDynOptWork(mut isyst: Arc<BackendDAE::EqSystem>, mut inShared: Arc<BackendDAE::Shared>, mut inChanged: bool) -> Result<(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, bool)> {
+fn inputDerivativesForDynOptWork(mut isyst: Arc<BackendDAE::EqSystem>, mut inShared: Arc<BackendDAE::Shared>, mut inChanged: bool) -> (Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, bool) {
     let mut osyst: Arc<BackendDAE::EqSystem>;
     let mut outShared: Arc<BackendDAE::Shared> = inShared.clone();
     let mut outChanged: bool;
@@ -416,20 +416,20 @@ fn inputDerivativesForDynOptWork(mut isyst: Arc<BackendDAE::EqSystem>, mut inSha
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     }
     });
-    Ok((osyst, outShared, outChanged))
+    (osyst, outShared, outChanged)
 }
 
 fn traverserinputDerivativesForDynOpt(mut inExp: Arc<DAE::Exp>, mut itpl: (BackendDAE::Variables, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<BackendDAE::Var>>)) -> Result<(Arc<DAE::Exp>, (BackendDAE::Variables, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<BackendDAE::Var>>))> {
     let mut e: Arc<DAE::Exp>;
     let mut tpl: (BackendDAE::Variables, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<BackendDAE::Var>>);
-    (e, tpl) = Expression::traverseExpTopDown(inExp.clone(), (std::sync::Arc::new(traverserExpinputDerivativesForDynOpt) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (BackendDAE::Variables, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<BackendDAE::Var>>)) -> Result<(Arc<DAE::Exp>, bool, (BackendDAE::Variables, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<BackendDAE::Var>>))> + 'static>), itpl.clone())?;
+    (e, tpl) = Expression::traverseExpTopDown(inExp.clone(), (std::sync::Arc::new(fnptr!(traverserExpinputDerivativesForDynOpt, Arc<DAE::Exp>, (BackendDAE::Variables, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<BackendDAE::Var>>))) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (BackendDAE::Variables, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<BackendDAE::Var>>)) -> Result<(Arc<DAE::Exp>, bool, (BackendDAE::Variables, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<BackendDAE::Var>>))> + 'static>), itpl.clone())?;
     Ok((e, tpl))
 }
 
-fn traverserExpinputDerivativesForDynOpt(mut inExp: Arc<DAE::Exp>, mut tpl: (BackendDAE::Variables, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<BackendDAE::Var>>)) -> Result<(Arc<DAE::Exp>, bool, (BackendDAE::Variables, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<BackendDAE::Var>>))> {
+fn traverserExpinputDerivativesForDynOpt(mut inExp: Arc<DAE::Exp>, mut tpl: (BackendDAE::Variables, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<BackendDAE::Var>>)) -> (Arc<DAE::Exp>, bool, (BackendDAE::Variables, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<BackendDAE::Var>>)) {
     let mut outExp: Arc<DAE::Exp>;
     let mut cont: bool;
     let mut outTpl: (BackendDAE::Variables, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<BackendDAE::Var>>);
@@ -459,9 +459,9 @@ fn traverserExpinputDerivativesForDynOpt(mut inExp: Arc<DAE::Exp>, mut tpl: (Bac
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outExp, cont, outTpl))
+    (outExp, cont, outTpl)
 }
 
 // =============================================================================
@@ -511,12 +511,12 @@ fn findLoops1(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<BackendDAE:
     }
     for mut comp in &*inComps.clone() {
         let mut comp = comp.clone();
-        (osyst, oshared) = removeLoopsWork(osyst.clone(), oshared.clone(), comp.clone(), l2p_all.clone(), l2p_l.clone())?;
+        (osyst, oshared) = removeLoopsWork(osyst.clone(), oshared.clone(), comp.clone(), l2p_all.clone(), l2p_l.clone());
     }
     Ok((osyst, oshared, changed))
 }
 
-fn removeLoopsWork(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<BackendDAE::Shared>, mut icomp: Arc<BackendDAE::StrongComponent>, mut l2p_all: bool, mut l2p_l: bool) -> Result<(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>)> {
+fn removeLoopsWork(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<BackendDAE::Shared>, mut icomp: Arc<BackendDAE::StrongComponent>, mut l2p_all: bool, mut l2p_l: bool) -> (Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>) {
     let mut osyst: Arc<BackendDAE::EqSystem>;
     let mut oshared: Arc<BackendDAE::Shared>;
     (osyst, oshared) = 'mc: {
@@ -603,9 +603,9 @@ fn removeLoopsWork(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<Backen
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((osyst, oshared))
+    (osyst, oshared)
 }
 
 fn isConstOrlinear(mut jacType: BackendDAE::JacobianType) -> bool {
@@ -889,7 +889,7 @@ pub fn simplifyConstraints(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc
                                     oMin_con = unwrap_break_err!(ExpressionSimplify::simplify1o(oMin_con.clone()), '__try18);
                                     oMax_con = unwrap_break_err!(ExpressionSimplify::simplify1o(oMax_con.clone()), '__try18);
                                     var_con = unwrap_break_err!(BackendVariable::setVarMinMax(var_con.clone(), oMin_con.clone(), oMax_con.clone()), '__try18);
-                                    var_ = unwrap_break_err!(BackendVariable::mergeMinMaxAttribute(var_con.clone(), var_.clone(), false), '__try18);
+                                    var_ = BackendVariable::mergeMinMaxAttribute(var_con.clone(), var_.clone(), false);
                                     var_con = unwrap_break_err!(BackendVariable::setVarKind(var_con.clone(), openmodelica_backend_types::BackendDAE::VarKind::VARIABLE), '__try18);
                                     vars = unwrap_break_err!(BackendVariable::setVarAt(vars.clone(), vindx.clone(), var_con.clone()), '__try18);
                                     match '__try21: {

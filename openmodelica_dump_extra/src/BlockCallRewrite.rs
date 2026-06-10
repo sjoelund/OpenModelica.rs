@@ -471,7 +471,7 @@ fn getDefinition(mut id: ArcStr, mut instNo: i32, mut defs: Absyn::Program, mut 
     let mut found: bool;
     let mut newInstNo: i32;
     (newEqs, newModif, found, newInstNo) = (match defs.clone() {
-        Absyn::Program { .. } => parseClassesDefs((id.clone()).clone(), instNo.clone(), defs.classes.clone(), fargs.clone(), oldEqs.clone(), oldModif.clone())?,
+        Absyn::Program { .. } => parseClassesDefs((id.clone()).clone(), instNo.clone(), defs.classes.clone(), fargs.clone(), oldEqs.clone(), oldModif.clone()),
     });
     Ok((newEqs, newModif, found, newInstNo))
 }
@@ -479,7 +479,7 @@ fn getDefinition(mut id: ArcStr, mut instNo: i32, mut defs: Absyn::Program, mut 
 /* *
  Get the block definitions, go through all packages
  */
-fn parseClassesDefs(mut id: ArcStr, mut instNo: i32, mut classes: Arc<metamodelica::List<Arc<Absyn::Class>>>, mut fargs: Arc<Absyn::FunctionArgs>, mut oldEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, mut oldModif: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>) -> Result<(Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, bool, i32)> {
+fn parseClassesDefs(mut id: ArcStr, mut instNo: i32, mut classes: Arc<metamodelica::List<Arc<Absyn::Class>>>, mut fargs: Arc<Absyn::FunctionArgs>, mut oldEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, mut oldModif: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>) -> (Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, bool, i32) {
     let mut newEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>;
     let mut newModif: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
     let mut found: bool;
@@ -499,7 +499,7 @@ fn parseClassesDefs(mut id: ArcStr, mut instNo: i32, mut classes: Arc<metamodeli
                 Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Class { name: _, partialPrefix: _, finalPrefix: _, encapsulatedPrefix: _, restriction: Absyn::Restriction::R_PACKAGE { .. }, body: Deref @ Absyn::ClassDef::PARTS { typeVars: _, classAttrs: _, classParts, ann: _, comment: _ }, commentsBeforeClass: _, .. }, tail: _ } => {
                     let mut mods: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
                     let mut eqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
-                    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(lookThroughClasses((id.clone()).clone(), instNo.clone(), fargs.clone(), classParts.clone(), oldEqs.clone(), oldModif.clone())?) {
+                    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(lookThroughClasses((id.clone()).clone(), instNo.clone(), fargs.clone(), classParts.clone(), oldEqs.clone(), oldModif.clone())) {
                         (__pa0, __pa1, true) => (__pa0.clone(), __pa1.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -525,17 +525,17 @@ fn parseClassesDefs(mut id: ArcStr, mut instNo: i32, mut classes: Arc<metamodeli
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: r_classes } => {
-                    Ok(parseClassesDefs((id.clone()).clone(), instNo.clone(), r_classes.clone(), fargs.clone(), oldEqs.clone(), oldModif.clone())?)
+                    Ok(parseClassesDefs((id.clone()).clone(), instNo.clone(), r_classes.clone(), fargs.clone(), oldEqs.clone(), oldModif.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((newEqs, newModif, found, newInstNo))
+    (newEqs, newModif, found, newInstNo)
 }
 
-fn lookThroughClasses(mut id: ArcStr, mut instNo: i32, mut fargs: Arc<Absyn::FunctionArgs>, mut classes: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>, mut oldEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, mut oldModif: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>) -> Result<(Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, bool)> {
+fn lookThroughClasses(mut id: ArcStr, mut instNo: i32, mut fargs: Arc<Absyn::FunctionArgs>, mut classes: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>, mut oldEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, mut oldModif: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>) -> (Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, bool) {
     let mut newEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>;
     let mut newModif: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
     let mut found: bool;
@@ -554,7 +554,7 @@ fn lookThroughClasses(mut id: ArcStr, mut instNo: i32, mut fargs: Arc<Absyn::Fun
                 Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ClassPart::PUBLIC { contents: elems1 }, tail: _ } => {
                     let mut eq1: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
                     let mut modif: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
-                    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(lookThroughElems((id.clone()).clone(), instNo.clone(), fargs.clone(), elems1.clone(), oldEqs.clone(), oldModif.clone())?) {
+                    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(lookThroughElems((id.clone()).clone(), instNo.clone(), fargs.clone(), elems1.clone(), oldEqs.clone(), oldModif.clone())) {
                         (__pa0, __pa1, true) => (__pa0.clone(), __pa1.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -568,17 +568,17 @@ fn lookThroughClasses(mut id: ArcStr, mut instNo: i32, mut fargs: Arc<Absyn::Fun
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: r_classes } => {
-                    Ok(lookThroughClasses((id.clone()).clone(), instNo.clone(), fargs.clone(), r_classes.clone(), oldEqs.clone(), oldModif.clone())?)
+                    Ok(lookThroughClasses((id.clone()).clone(), instNo.clone(), fargs.clone(), r_classes.clone(), oldEqs.clone(), oldModif.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((newEqs, newModif, found))
+    (newEqs, newModif, found)
 }
 
-fn lookThroughElems(mut id: ArcStr, mut instNo: i32, mut fargs: Arc<Absyn::FunctionArgs>, mut elems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut oldEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, mut oldModif: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>) -> Result<(Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, bool)> {
+fn lookThroughElems(mut id: ArcStr, mut instNo: i32, mut fargs: Arc<Absyn::FunctionArgs>, mut elems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut oldEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, mut oldModif: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>) -> (Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, bool) {
     let mut newEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>;
     let mut newModif: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
     let mut found: bool;
@@ -609,7 +609,7 @@ fn lookThroughElems(mut id: ArcStr, mut instNo: i32, mut fargs: Arc<Absyn::Funct
                 Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementItem::ELEMENTITEM { element: Deref @ Absyn::Element::ELEMENT { finalPrefix: _, redeclareKeywords: _, innerOuter: _, specification: Deref @ Absyn::ElementSpec::CLASSDEF { replaceable_: _, class_: Deref @ Absyn::Class { name: _, partialPrefix: _, finalPrefix: _, encapsulatedPrefix: _, restriction: Absyn::Restriction::R_PACKAGE { .. }, body: Deref @ Absyn::ClassDef::PARTS { typeVars: _, classAttrs: _, classParts, ann: _, comment: _ }, commentsBeforeClass: _, .. } }, info: _, constrainClass: _ } }, tail: _ } => {
                     let mut eqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
                     let mut mods: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
-                    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(lookThroughClasses((id.clone()).clone(), instNo.clone(), fargs.clone(), classParts.clone(), oldEqs.clone(), oldModif.clone())?) {
+                    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(lookThroughClasses((id.clone()).clone(), instNo.clone(), fargs.clone(), classParts.clone(), oldEqs.clone(), oldModif.clone())) {
                         (__pa0, __pa1, true) => (__pa0.clone(), __pa1.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -623,14 +623,14 @@ fn lookThroughElems(mut id: ArcStr, mut instNo: i32, mut fargs: Arc<Absyn::Funct
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: r_elems } => {
-                    Ok(lookThroughElems((id.clone()).clone(), instNo.clone(), fargs.clone(), r_elems.clone(), oldEqs.clone(), oldModif.clone())?)
+                    Ok(lookThroughElems((id.clone()).clone(), instNo.clone(), fargs.clone(), r_elems.clone(), oldEqs.clone(), oldModif.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((newEqs, newModif, found))
+    (newEqs, newModif, found)
 }
 
 fn parseArgs(mut elemId: ArcStr, mut classes: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>, mut fargs: Arc<Absyn::FunctionArgs>, mut oldEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, mut oldModif: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>) -> Result<(Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, Arc<metamodelica::List<Arc<Absyn::ElementArg>>>)> {
@@ -758,7 +758,7 @@ fn matchNamedArgsClass(mut elemId: ArcStr, mut nargs: Arc<metamodelica::List<Arc
         (_, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::NamedArg { argName, argValue }, tail: r_nargs }) => {
             let mut eq1: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
             let mut modif: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
-            (eq1, modif) = matchNamedArgClass((elemId.clone()).clone(), (argName.clone()).clone(), argValue.clone(), classes.clone(), oldEqs.clone(), oldModif.clone())?;
+            (eq1, modif) = matchNamedArgClass((elemId.clone()).clone(), (argName.clone()).clone(), argValue.clone(), classes.clone(), oldEqs.clone(), oldModif.clone());
             { (elemId, nargs, classes, oldEqs, oldModif) = ((elemId.clone()).clone(), r_nargs.clone(), classes.clone(), eq1.clone(), modif.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
@@ -766,7 +766,7 @@ fn matchNamedArgsClass(mut elemId: ArcStr, mut nargs: Arc<metamodelica::List<Arc
     }
 }
 
-fn matchNamedArgClass(mut elemId: ArcStr, mut argName: ArcStr, mut argValue: Arc<Absyn::Exp>, mut classes: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>, mut oldEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, mut oldModif: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>) -> Result<(Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, Arc<metamodelica::List<Arc<Absyn::ElementArg>>>)> {
+fn matchNamedArgClass(mut elemId: ArcStr, mut argName: ArcStr, mut argValue: Arc<Absyn::Exp>, mut classes: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>, mut oldEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, mut oldModif: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>) -> (Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, Arc<metamodelica::List<Arc<Absyn::ElementArg>>>) {
     let mut newEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>;
     let mut newModif: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
     (newEqs, newModif) = 'mc: {
@@ -784,7 +784,7 @@ fn matchNamedArgClass(mut elemId: ArcStr, mut argName: ArcStr, mut argValue: Arc
                 Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ClassPart::PUBLIC { contents: elems1 }, tail: _ } => {
                     let mut eq1: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
                     let mut modif: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
-                    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(matchNamedArgElems((elemId.clone()).clone(), (argName.clone()).clone(), argValue.clone(), elems1.clone(), oldEqs.clone(), oldModif.clone())?) {
+                    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(matchNamedArgElems((elemId.clone()).clone(), (argName.clone()).clone(), argValue.clone(), elems1.clone(), oldEqs.clone(), oldModif.clone())) {
                         (__pa0, __pa1, true) => (__pa0.clone(), __pa1.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -798,17 +798,17 @@ fn matchNamedArgClass(mut elemId: ArcStr, mut argName: ArcStr, mut argValue: Arc
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: r_classes } => {
-                    Ok(matchNamedArgClass((elemId.clone()).clone(), (argName.clone()).clone(), argValue.clone(), r_classes.clone(), oldEqs.clone(), oldModif.clone())?)
+                    Ok(matchNamedArgClass((elemId.clone()).clone(), (argName.clone()).clone(), argValue.clone(), r_classes.clone(), oldEqs.clone(), oldModif.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((newEqs, newModif))
+    (newEqs, newModif)
 }
 
-fn matchNamedArgElems(mut elemId: ArcStr, mut argName: ArcStr, mut argValue: Arc<Absyn::Exp>, mut elems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut oldEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, mut oldModif: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>) -> Result<(Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, bool)> {
+fn matchNamedArgElems(mut elemId: ArcStr, mut argName: ArcStr, mut argValue: Arc<Absyn::Exp>, mut elems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut oldEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, mut oldModif: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>) -> (Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, bool) {
     let mut newEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>;
     let mut newModif: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
     let mut found: bool;
@@ -826,7 +826,7 @@ fn matchNamedArgElems(mut elemId: ArcStr, mut argName: ArcStr, mut argValue: Arc
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementItem::ELEMENTITEM { element: Deref @ Absyn::Element::ELEMENT { finalPrefix: _, redeclareKeywords: _, innerOuter: _, specification: Deref @ Absyn::ElementSpec::COMPONENTS { attributes: Absyn::ElementAttributes { flowPrefix: _, streamPrefix: _, parallelism: _, variability: Absyn::Variability::PARAM { .. }, direction: _, isField: _, .. }, typeSpec: _, components: comps }, info: _, constrainClass: _ } }, tail: _ } => {
                     let mut modif: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
-                    let __pa0 = ::match_deref::match_deref! { match &(matchParamNamedArg((argName.clone()).clone(), argValue.clone(), comps.clone(), oldModif.clone())?) {
+                    let __pa0 = ::match_deref::match_deref! { match &(matchParamNamedArg((argName.clone()).clone(), argValue.clone(), comps.clone(), oldModif.clone())) {
                         (__pa0, true) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -853,17 +853,17 @@ fn matchNamedArgElems(mut elemId: ArcStr, mut argName: ArcStr, mut argValue: Arc
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: r_elems } => {
-                    Ok(matchNamedArgElems((elemId.clone()).clone(), (argName.clone()).clone(), argValue.clone(), r_elems.clone(), oldEqs.clone(), oldModif.clone())?)
+                    Ok(matchNamedArgElems((elemId.clone()).clone(), (argName.clone()).clone(), argValue.clone(), r_elems.clone(), oldEqs.clone(), oldModif.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((newEqs, newModif, found))
+    (newEqs, newModif, found)
 }
 
-fn matchParamNamedArg(mut argName: ArcStr, mut argValue: Arc<Absyn::Exp>, mut comps: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, mut oldModif: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>) -> Result<(Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, bool)> {
+fn matchParamNamedArg(mut argName: ArcStr, mut argValue: Arc<Absyn::Exp>, mut comps: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, mut oldModif: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>) -> (Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, bool) {
     let mut newModif: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
     let mut found: bool;
     (newModif, found) = 'mc: {
@@ -890,14 +890,14 @@ fn matchParamNamedArg(mut argName: ArcStr, mut argValue: Arc<Absyn::Exp>, mut co
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: r_comps } => {
-                    Ok(matchParamNamedArg((argName.clone()).clone(), argValue.clone(), r_comps.clone(), oldModif.clone())?)
+                    Ok(matchParamNamedArg((argName.clone()).clone(), argValue.clone(), r_comps.clone(), oldModif.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((newModif, found))
+    (newModif, found)
 }
 
 fn matchVarNamedArg(mut elemId: ArcStr, mut argName: ArcStr, mut argValue: Arc<Absyn::Exp>, mut comps: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, mut oldEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>) -> (Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, bool) {

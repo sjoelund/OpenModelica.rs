@@ -803,7 +803,7 @@ fn fun_78(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_staticPrototypes: T
             let mut txt = (*txt).clone();
             let mut a_staticPrototypes = (*a_staticPrototypes).clone();
             txt_0 = CodegenUtil::underscorePath(Tpl::emptyTxt.clone(), a_name.clone())?;
-            ret_1 = SimCodeFunctionUtil::isBoxedFunction(a_fn.clone())?;
+            ret_1 = SimCodeFunctionUtil::isBoxedFunction(a_fn.clone());
             (txt, a_staticPrototypes) = functionHeaderBoxed(txt.clone(), (Tpl::textString(txt_0.clone())?).clone(), a_functionArguments.clone(), a_outVars.clone(), a_inFunc.clone(), ret_1.clone(), a_visibility.clone(), false, a_isSimulation.clone(), a_staticPrototypes.clone())?;
             (txt.clone(), a_staticPrototypes.clone())
         },
@@ -918,7 +918,7 @@ pub fn functionHeader(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimCodeFunction::F
             (txt, a_staticPrototypes) = functionHeaderNormal(txt.clone(), (Tpl::textString(txt_3.clone())?).clone(), i_funArgs.clone(), i_outVars.clone(), a_inFunc.clone(), i_visibility.clone(), true, a_isSimulation.clone(), a_staticPrototypes.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt_4 = CodegenUtil::underscorePath(Tpl::emptyTxt.clone(), i_name.clone())?;
-            ret_5 = SimCodeFunctionUtil::isBoxedFunction(i_fn.clone())?;
+            ret_5 = SimCodeFunctionUtil::isBoxedFunction(i_fn.clone());
             (txt, a_staticPrototypes) = functionHeaderBoxed(txt.clone(), (Tpl::textString(txt_4.clone())?).clone(), i_funArgs.clone(), i_outVars.clone(), a_inFunc.clone(), ret_5.clone(), i_visibility.clone(), true, a_isSimulation.clone(), a_staticPrototypes.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
@@ -935,7 +935,7 @@ pub fn functionHeader(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimCodeFunction::F
             (txt, a_staticPrototypes) = functionHeaderNormal(txt.clone(), (Tpl::textString(txt_6.clone())?).clone(), i_funArgs.clone(), i_outVars.clone(), a_inFunc.clone(), i_visibility.clone(), false, a_isSimulation.clone(), a_staticPrototypes.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt_7 = CodegenUtil::underscorePath(Tpl::emptyTxt.clone(), i_name.clone())?;
-            ret_8 = SimCodeFunctionUtil::isBoxedFunction(i_fn.clone())?;
+            ret_8 = SimCodeFunctionUtil::isBoxedFunction(i_fn.clone());
             (txt, a_staticPrototypes) = functionHeaderBoxed(txt.clone(), (Tpl::textString(txt_7.clone())?).clone(), i_funArgs.clone(), i_outVars.clone(), a_inFunc.clone(), ret_8.clone(), i_visibility.clone(), false, a_isSimulation.clone(), a_staticPrototypes.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
@@ -6902,14 +6902,14 @@ fn fun_326(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimCodeFunction::Function::Fu
         (txt, i_fn @ Deref @ SimCodeFunction::Function::FUNCTION { name: i_name, functionArguments: i_functionArguments, outVars: i_outVars, visibility: i_visibility, .. }, a_isSimulation) => {
             let mut ret_0: bool = false;
             let mut txt = (*txt).clone();
-            ret_0 = SimCodeFunctionUtil::isBoxedFunction(i_fn.clone())?;
+            ret_0 = SimCodeFunctionUtil::isBoxedFunction(i_fn.clone());
             txt = fun_324(txt.clone(), ret_0.clone(), a_isSimulation.clone(), i_visibility.clone(), i_outVars.clone(), i_functionArguments.clone(), i_name.clone())?;
             txt.clone()
         },
         (txt, i_fn @ Deref @ SimCodeFunction::Function::EXTERNAL_FUNCTION { name: i_name, funArgs: i_funArgs, outVars: i_outVars, visibility: i_visibility, .. }, a_isSimulation) => {
             let mut ret_1: bool = false;
             let mut txt = (*txt).clone();
-            ret_1 = SimCodeFunctionUtil::isBoxedFunction(i_fn.clone())?;
+            ret_1 = SimCodeFunctionUtil::isBoxedFunction(i_fn.clone());
             txt = fun_325(txt.clone(), ret_1.clone(), a_isSimulation.clone(), i_visibility.clone(), i_outVars.clone(), i_funArgs.clone(), i_name.clone())?;
             txt.clone()
         },
@@ -15746,7 +15746,7 @@ fn fun_611(mut in_txt: Tpl::Text, mut in_a_lit: Arc<DAE::Exp>, mut in_a_litindex
             l_dims = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             l_dims = lm_595(l_dims.clone(), ret_11.clone())?;
             l_dims = Tpl::popIter(l_dims.clone())?;
-            ret_13 = Expression::flattenArrayExpToList(i_lit.clone())?;
+            ret_13 = Expression::flattenArrayExpToList(i_lit.clone());
             l_data = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             l_data = lm_596(l_data.clone(), ret_13.clone())?;
             l_data = Tpl::popIter(l_data.clone())?;
@@ -15778,7 +15778,7 @@ fn fun_611(mut in_txt: Tpl::Text, mut in_a_lit: Arc<DAE::Exp>, mut in_a_litindex
             l_dims = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             l_dims = lm_598(l_dims.clone(), ret_17.clone())?;
             l_dims = Tpl::popIter(l_dims.clone())?;
-            ret_18 = Expression::flattenArrayExpToList(i_lit.clone())?;
+            ret_18 = Expression::flattenArrayExpToList(i_lit.clone());
             l_data = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             l_data = lm_599(l_data.clone(), ret_18.clone())?;
             l_data = Tpl::popIter(l_data.clone())?;
@@ -21932,7 +21932,7 @@ fn fun_804(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_dims: Arc<metamode
             l_dimsValuesStr = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             (l_dimsValuesStr, a_auxFunction, a_varDecls, a_preExp) = lm_801(l_dimsValuesStr.clone(), a_dims.clone(), a_auxFunction.clone(), a_varDecls.clone(), a_preExp.clone(), a_context.clone())?;
             l_dimsValuesStr = Tpl::popIter(l_dimsValuesStr.clone())?;
-            ret_13 = Expression::hasZeroDimension(a_dims.clone())?;
+            ret_13 = Expression::hasZeroDimension(a_dims.clone());
             (l_arrayData, a_auxFunction, a_varDecls, a_preExp) = fun_803(Tpl::emptyTxt.clone(), ret_13.clone(), a_type.clone(), a_auxFunction.clone(), a_varDecls.clone(), a_preExp.clone(), a_context.clone(), a_cr.clone())?;
             l_t = Tpl::writeText(Tpl::emptyTxt.clone(), a_type.clone())?;
             l_t = Tpl::writeTok(l_t.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_array_create(&")).clone() }))?;
@@ -22005,7 +22005,7 @@ fn fun_806(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_auxFunction: Tpl::
             let mut a_auxFunction = (*a_auxFunction).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             let mut a_preExp = (*a_preExp).clone();
-            ret_0 = ComponentReference::crefIsScalarWithVariableSubs(a_cr.clone())?;
+            ret_0 = ComponentReference::crefIsScalarWithVariableSubs(a_cr.clone());
             (txt, a_auxFunction, a_varDecls, a_preExp) = fun_805(txt.clone(), ret_0.clone(), a_auxFunction.clone(), a_varDecls.clone(), a_preExp.clone(), a_context.clone(), a_cr.clone(), a_ecr.clone())?;
             (txt.clone(), a_auxFunction.clone(), a_varDecls.clone(), a_preExp.clone())
         },
@@ -22085,7 +22085,7 @@ pub fn daeExpCrefRhsSimContext(mut in_txt: Tpl::Text, mut in_a_ecr: Arc<DAE::Exp
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             let mut a_auxFunction = (*a_auxFunction).clone();
-            ret_9 = ComponentReference::crefIsScalarWithAllConstSubs(i_cr.clone())?;
+            ret_9 = ComponentReference::crefIsScalarWithAllConstSubs(i_cr.clone());
             (txt, a_auxFunction, a_varDecls, a_preExp) = fun_806(txt.clone(), ret_9.clone(), a_auxFunction.clone(), a_varDecls.clone(), a_preExp.clone(), a_context.clone(), i_ecr.clone(), i_cr.clone())?;
             (txt.clone(), a_preExp.clone(), a_varDecls.clone(), a_auxFunction.clone())
         },
@@ -22750,7 +22750,7 @@ fn fun_828(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_wrapperArray: Tpl:
             l_dimsValuesStr = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             (l_dimsValuesStr, a_auxFunction, a_varDecls, a_preExp) = lm_825(l_dimsValuesStr.clone(), a_dims.clone(), a_auxFunction.clone(), a_varDecls.clone(), a_preExp.clone(), a_context.clone())?;
             l_dimsValuesStr = Tpl::popIter(l_dimsValuesStr.clone())?;
-            ret_5 = Expression::hasZeroDimension(a_dims.clone())?;
+            ret_5 = Expression::hasZeroDimension(a_dims.clone());
             (l_arrayData, a_auxFunction, a_varDecls, a_preExp) = fun_827(Tpl::emptyTxt.clone(), ret_5.clone(), a_type.clone(), a_auxFunction.clone(), a_varDecls.clone(), a_preExp.clone(), a_context.clone(), a_cr.clone())?;
             ret_7 = ComponentReference::crefStripSubs(a_cr.clone())?;
             (l_nosubname, a_auxFunction) = contextCrefIsPre(Tpl::emptyTxt.clone(), ret_7.clone(), a_context.clone(), a_auxFunction.clone(), a_isPre.clone())?;
@@ -22824,7 +22824,7 @@ fn fun_830(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_varDecls: Tpl::Tex
             let mut a_varDecls = (*a_varDecls).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_auxFunction = (*a_auxFunction).clone();
-            ret_0 = ComponentReference::crefIsScalarWithVariableSubs(a_cr.clone())?;
+            ret_0 = ComponentReference::crefIsScalarWithVariableSubs(a_cr.clone());
             (txt, a_varDecls, a_preExp, a_auxFunction) = fun_829(txt.clone(), ret_0.clone(), a_varDecls.clone(), a_preExp.clone(), a_isPre.clone(), a_auxFunction.clone(), a_context.clone(), a_cr.clone(), a_ecr.clone())?;
             (txt.clone(), a_varDecls.clone(), a_preExp.clone(), a_auxFunction.clone())
         },
@@ -22883,7 +22883,7 @@ pub fn daeExpCrefLhsSimContext(mut in_txt: Tpl::Text, mut in_a_ecr: Arc<DAE::Exp
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             let mut a_auxFunction = (*a_auxFunction).clone();
-            ret_5 = ComponentReference::crefIsScalarWithAllConstSubs(i_cr.clone())?;
+            ret_5 = ComponentReference::crefIsScalarWithAllConstSubs(i_cr.clone());
             (txt, a_varDecls, a_preExp, a_auxFunction) = fun_830(txt.clone(), ret_5.clone(), a_varDecls.clone(), a_preExp.clone(), a_isPre.clone(), a_auxFunction.clone(), a_context.clone(), i_ecr.clone(), i_cr.clone())?;
             (txt.clone(), a_preExp.clone(), a_varDecls.clone(), a_auxFunction.clone())
         },

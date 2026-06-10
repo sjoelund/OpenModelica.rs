@@ -436,7 +436,7 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
             File::write(file.clone(), (literal!("],\"uses\":[")).clone());
             serializeUses(file.clone(), crefs2.clone())?;
             File::write(file.clone(), (literal!("],\"equation\":[")).clone());
-            serializeList(file.clone(), var_field!((*eq).statements, SimCode::SimEqSystem::SES_ALGORITHM).clone(), (std::sync::Arc::new(serializeStatement) as std::sync::Arc<dyn ::std::ops::Fn(File::File, Arc<DAE::Statement>) -> Result<()> + 'static>))?;
+            serializeList(file.clone(), var_field!((*eq).statements, SimCode::SimEqSystem::SES_ALGORITHM).clone(), (std::sync::Arc::new(fnptr!(serializeStatement, File::File, Arc<DAE::Statement>)) as std::sync::Arc<dyn ::std::ops::Fn(File::File, Arc<DAE::Statement>) -> Result<()> + 'static>))?;
             File::write(file.clone(), (literal!("],\"source\":")).clone());
             serializeSource(file.clone(), Algorithm::getStatementSource(stmt.clone())?, withOperations.clone());
             File::write(file.clone(), (literal!("}")).clone());
@@ -458,7 +458,7 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
             File::write(file.clone(), (literal!("],\"uses\":[")).clone());
             serializeUses(file.clone(), crefs2.clone())?;
             File::write(file.clone(), (literal!("],\"equation\":[")).clone());
-            serializeList(file.clone(), var_field!((*eq).statements, SimCode::SimEqSystem::SES_INVERSE_ALGORITHM).clone(), (std::sync::Arc::new(serializeStatement) as std::sync::Arc<dyn ::std::ops::Fn(File::File, Arc<DAE::Statement>) -> Result<()> + 'static>))?;
+            serializeList(file.clone(), var_field!((*eq).statements, SimCode::SimEqSystem::SES_INVERSE_ALGORITHM).clone(), (std::sync::Arc::new(fnptr!(serializeStatement, File::File, Arc<DAE::Statement>)) as std::sync::Arc<dyn ::std::ops::Fn(File::File, Arc<DAE::Statement>) -> Result<()> + 'static>))?;
             File::write(file.clone(), (literal!("],\"source\":")).clone());
             serializeSource(file.clone(), Algorithm::getStatementSource(stmt.clone())?, withOperations.clone());
             File::write(file.clone(), (literal!("}")).clone());
@@ -857,11 +857,11 @@ fn serializeUses(mut file: File::File, mut crefs: Arc<metamodelica::List<Arc<DAE
     Ok(())
 }
 
-fn serializeStatement(mut file: File::File, mut stmt: Arc<DAE::Statement>) -> Result<()> {
+fn serializeStatement(mut file: File::File, mut stmt: Arc<DAE::Statement>) -> () {
     File::write(file.clone(), (literal!("\"")).clone());
-    File::writeEscape(file.clone(), (System::trim((DAEDump::ppStatementStr(stmt.clone())?).clone(), (literal!(" \u{c}\n\r\t\u{b}")).clone())).clone(), JSON.clone());
+    File::writeEscape(file.clone(), (System::trim((DAEDump::ppStatementStr(stmt.clone())).clone(), (literal!(" \u{c}\n\r\t\u{b}")).clone())).clone(), JSON.clone());
     File::write(file.clone(), (literal!("\"")).clone());
-    Ok(())
+    ()
 }
 
 fn serializeList<ArgType: Clone + 'static>(mut file: File::File, mut lst: Arc<metamodelica::List<ArgType>>, mut func: Arc<dyn ::std::ops::Fn(File::File, ArgType) -> Result<()> + 'static>) -> Result<()> {

@@ -134,7 +134,7 @@ pub fn fromCref(mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<Arc<NFVar
     vis = InstNode::visibility(node.clone());
     attr = Component::getAttributes(comp.clone());
     cmt = Component::comment(comp.clone())?;
-    info = InstNode::info(node.clone())?;
+    info = InstNode::info(node.clone());
     if ComponentRef::isIterator(cref.clone()) {
         binding = Binding::EMPTY_BINDING().clone();
         assign_field!(binfo.varKind = crate::NFBackendExtension::VariableKind::interned_ITERATOR());
@@ -372,7 +372,7 @@ pub fn isEncrypted(mut variable: Arc<NFVariable>) -> Result<bool> {
     let mut info: SourceInfo;
     name = variable.name.clone();
     while ComponentRef::isCref(name.clone()) {
-        info = InstNode::info(ComponentRef::node(name.clone())?)?;
+        info = InstNode::info(ComponentRef::node(name.clone())?);
         if StringUtil::endsWith(info.fileName.clone(), (literal!(".moc")).clone()) {
             isEncrypted = true;
             return Ok(isEncrypted.clone());

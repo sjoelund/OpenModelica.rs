@@ -1125,7 +1125,7 @@ pub fn joinPaths(mut child: ArcStr, mut parent: Arc<Absyn::Path>) -> Result<Arc<
     Ok(outPath)
 }
 
-pub fn getDefaultComponentPrefixesModStr(mut r#mod: Option<Arc<Absyn::Modification>>) -> Result<ArcStr> {
+pub fn getDefaultComponentPrefixesModStr(mut r#mod: Option<Arc<Absyn::Modification>>) -> ArcStr {
     let mut docStr: ArcStr = arcstr::literal!("");
     docStr = ('mc: {
         let __mc_input = r#mod.clone();
@@ -1147,9 +1147,9 @@ pub fn getDefaultComponentPrefixesModStr(mut r#mod: Option<Arc<Absyn::Modificati
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     }).clone();
-    Ok(docStr)
+    docStr
 }
 
 pub fn getNamedAnnotationExp<T: Clone + 'static>(mut inPath: Arc<Absyn::Path>, mut inProgram: Absyn::Program, mut id: Arc<Absyn::Path>, mut default: Option<T>, mut f: Arc<dyn ::std::ops::Fn(Option<Arc<Absyn::Modification>>) -> Result<T> + 'static>) -> Result<T> {
@@ -1164,7 +1164,7 @@ pub fn getNamedAnnotationExp<T: Clone + 'static>(mut inPath: Arc<Absyn::Path>, m
                     let mut cdef: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
                     let mut r#str: T;
                     cdef = getPathedClassInProgram(modelpath.clone(), p.clone(), false, false)?;
-                    let __pa0 = ::match_deref::match_deref! { match &(AbsynUtil::getNamedAnnotationInClass(cdef.clone(), id.clone(), f.clone())?) {
+                    let __pa0 = ::match_deref::match_deref! { match &(AbsynUtil::getNamedAnnotationInClass(cdef.clone(), id.clone(), f.clone())) {
                         Some(__pa0) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -1187,7 +1187,7 @@ pub fn getNamedAnnotationExp<T: Clone + 'static>(mut inPath: Arc<Absyn::Path>, m
     Ok(outString)
 }
 
-pub fn getFileDir(mut inComponentRef: Arc<Absyn::ComponentRef>, mut inProgram: Absyn::Program) -> Result<ArcStr> {
+pub fn getFileDir(mut inComponentRef: Arc<Absyn::ComponentRef>, mut inProgram: Absyn::Program) -> ArcStr {
     let mut outString: ArcStr;
     outString = ('mc: {
         let __mc_input = (inComponentRef.clone(), inProgram.clone());
@@ -1243,9 +1243,9 @@ pub fn getFileDir(mut inComponentRef: Arc<Absyn::ComponentRef>, mut inProgram: A
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     }).clone();
-    Ok(outString)
+    outString
 }
 
 pub fn getFullPathFromUri(mut program: Absyn::Program, mut uri: ArcStr, mut printError: bool) -> Result<ArcStr> {

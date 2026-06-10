@@ -163,7 +163,7 @@ pub fn newExtractionAlgorithm(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<
         (solvedEqsAndVarsInfo, matchedEqsLst) = getSolvedEquationAndVarsInfo(match1.clone());
         bindingEquations = getBindingEquation(currentSystem.clone(), mapIncRowEqn.clone())?;
         bindingEquations = List::flatten(List::map1r(bindingEquations.clone(), (std::sync::Arc::new(listGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), Arc::new(mapEqnIncRow.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>()))?)?;
-        (approximatedEquations, boundaryConditionEquations) = getEquationsTaggedApproximatedOrBoundaryCondition(BackendEquation::equationList(currentSystem.orderedEqs.clone())?, 1)?;
+        (approximatedEquations, boundaryConditionEquations) = getEquationsTaggedApproximatedOrBoundaryCondition(BackendEquation::equationList(currentSystem.orderedEqs.clone())?, 1);
         if debug.clone() {
             BackendDump::dumpEquationList(List::map1r(approximatedEquations.clone(), (std::sync::Arc::new(BackendEquation::get) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, i32) -> Result<Arc<BackendDAE::Equation>> + 'static>), currentSystem.orderedEqs.clone())?, (literal!("ApproximatedEquations")).clone())?;
             BackendDump::dumpEquationList(List::map1r(boundaryConditionEquations.clone(), (std::sync::Arc::new(BackendEquation::get) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, i32) -> Result<Arc<BackendDAE::Equation>> + 'static>), currentSystem.orderedEqs.clone())?, (literal!("boundaryConditionEquations")).clone())?;
@@ -499,7 +499,7 @@ pub fn extractBoundaryCondition(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Resul
         (solvedEqsAndVarsInfo, matchedEqsLst) = getSolvedEquationAndVarsInfo(match1.clone());
         bindingEquations = getBindingEquation(currentSystem.clone(), mapIncRowEqn.clone())?;
         bindingEquations = List::flatten(List::map1r(bindingEquations.clone(), (std::sync::Arc::new(listGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), Arc::new(mapEqnIncRow.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>()))?)?;
-        (approximatedEquations, boundaryConditionEquations) = getEquationsTaggedApproximatedOrBoundaryCondition(BackendEquation::equationList(currentSystem.orderedEqs.clone())?, 1)?;
+        (approximatedEquations, boundaryConditionEquations) = getEquationsTaggedApproximatedOrBoundaryCondition(BackendEquation::equationList(currentSystem.orderedEqs.clone())?, 1);
         if debug.clone() {
             BackendDump::dumpEquationList(List::map1r(approximatedEquations.clone(), (std::sync::Arc::new(BackendEquation::get) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, i32) -> Result<Arc<BackendDAE::Equation>> + 'static>), currentSystem.orderedEqs.clone())?, (literal!("ApproximatedEquations")).clone())?;
             BackendDump::dumpEquationList(List::map1r(boundaryConditionEquations.clone(), (std::sync::Arc::new(BackendEquation::get) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, i32) -> Result<Arc<BackendDAE::Equation>> + 'static>), currentSystem.orderedEqs.clone())?, (literal!("boundaryConditionEquations")).clone())?;
@@ -704,7 +704,7 @@ pub fn stateEstimation(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<Bac
         (solvedEqsAndVarsInfo, matchedEqsLst) = getSolvedEquationAndVarsInfo(match1.clone());
         bindingEquations = getBindingEquation(currentSystem.clone(), mapIncRowEqn.clone())?;
         bindingEquations = List::flatten(List::map1r(bindingEquations.clone(), (std::sync::Arc::new(listGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), Arc::new(mapEqnIncRow.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>()))?)?;
-        (approximatedEquations, boundaryConditionEquations) = getEquationsTaggedApproximatedOrBoundaryCondition(BackendEquation::equationList(currentSystem.orderedEqs.clone())?, 1)?;
+        (approximatedEquations, boundaryConditionEquations) = getEquationsTaggedApproximatedOrBoundaryCondition(BackendEquation::equationList(currentSystem.orderedEqs.clone())?, 1);
         if debug.clone() {
             BackendDump::dumpEquationList(List::map1r(approximatedEquations.clone(), (std::sync::Arc::new(BackendEquation::get) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, i32) -> Result<Arc<BackendDAE::Equation>> + 'static>), currentSystem.orderedEqs.clone())?, (literal!("ApproximatedEquations")).clone())?;
             BackendDump::dumpEquationList(List::map1r(boundaryConditionEquations.clone(), (std::sync::Arc::new(BackendEquation::get) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, i32) -> Result<Arc<BackendDAE::Equation>> + 'static>), currentSystem.orderedEqs.clone())?, (literal!("boundaryConditionEquations")).clone())?;
@@ -1401,7 +1401,7 @@ pub fn extractionAlgorithm(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc
         metamodelica::print((literal!("\n")).clone());
     }
     dumpListList(s_BLTBlocks.clone(), (literal!("BLT_BLOCKS")).clone())?;
-    (approximatedEquations, boundaryConditionEquations) = getEquationsTaggedApproximatedOrBoundaryCondition(BackendEquation::equationList(currentSystem.orderedEqs.clone())?, 1)?;
+    (approximatedEquations, boundaryConditionEquations) = getEquationsTaggedApproximatedOrBoundaryCondition(BackendEquation::equationList(currentSystem.orderedEqs.clone())?, 1);
     if debug.clone() {
         BackendDump::dumpEquationList(List::map1r(approximatedEquations.clone(), (std::sync::Arc::new(BackendEquation::get) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, i32) -> Result<Arc<BackendDAE::Equation>> + 'static>), currentSystem.orderedEqs.clone())?, (literal!("ApproximatedEquations")).clone())?;
         BackendDump::dumpEquationList(List::map1r(boundaryConditionEquations.clone(), (std::sync::Arc::new(BackendEquation::get) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, i32) -> Result<Arc<BackendDAE::Equation>> + 'static>), currentSystem.orderedEqs.clone())?, (literal!("boundaryConditionEquations")).clone())?;
@@ -2209,7 +2209,7 @@ pub fn dumpListList(mut lstLst: Arc<metamodelica::List<Arc<metamodelica::List<i3
     Ok(())
 }
 
-pub fn getEquationsTaggedApproximatedOrBoundaryCondition(mut eqs: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut index: i32) -> Result<(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)> {
+pub fn getEquationsTaggedApproximatedOrBoundaryCondition(mut eqs: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut index: i32) -> (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>) {
     let mut approximatedEquations: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut boundaryConditionEquations: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut isApproximateEquations: bool;
@@ -2218,7 +2218,7 @@ pub fn getEquationsTaggedApproximatedOrBoundaryCondition(mut eqs: Arc<metamodeli
     i = index.clone();
     for mut eq in &*eqs.clone() {
         let mut eq = eq.clone();
-        (isApproximateEquations, isConstantEquations) = isEquationTaggedApproximatedOrBoundaryCondition(eq.clone())?;
+        (isApproximateEquations, isConstantEquations) = isEquationTaggedApproximatedOrBoundaryCondition(eq.clone());
         if isApproximateEquations.clone() {
             approximatedEquations = metamodelica::cons(i.clone(), approximatedEquations.clone());
         } else if isConstantEquations.clone() {
@@ -2226,17 +2226,17 @@ pub fn getEquationsTaggedApproximatedOrBoundaryCondition(mut eqs: Arc<metamodeli
         }
         i = i.clone() + 1;
     }
-    Ok((approximatedEquations, boundaryConditionEquations))
+    (approximatedEquations, boundaryConditionEquations)
 }
 
-fn isEquationTaggedApproximatedOrBoundaryCondition(mut eqn: Arc<BackendDAE::Equation>) -> Result<(bool, bool)> {
+fn isEquationTaggedApproximatedOrBoundaryCondition(mut eqn: Arc<BackendDAE::Equation>) -> (bool, bool) {
     let mut approximatedEquations: bool;
     let mut boundaryConditionEquations: bool;
     (approximatedEquations, boundaryConditionEquations) = (::match_deref::match_deref! { match &(eqn.clone()) {
         Deref @ BackendDAE::Equation::EQUATION { source: Deref @ DAE::ElementSource { comment, .. }, .. } => {
             let mut isApproximatedEquation: bool = false;
             let mut isboundaryConditionEquations: bool = false;
-            (isApproximatedEquation, isboundaryConditionEquations) = isEquationTaggedApproximatedOrBoundaryConditionHelper(comment.clone())?;
+            (isApproximatedEquation, isboundaryConditionEquations) = isEquationTaggedApproximatedOrBoundaryConditionHelper(comment.clone());
             (isApproximatedEquation.clone(), isboundaryConditionEquations.clone())
         },
         _ => {
@@ -2244,10 +2244,10 @@ fn isEquationTaggedApproximatedOrBoundaryCondition(mut eqn: Arc<BackendDAE::Equa
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Ok((approximatedEquations, boundaryConditionEquations))
+    (approximatedEquations, boundaryConditionEquations)
 }
 
-fn isEquationTaggedApproximatedOrBoundaryConditionHelper(mut commentIn: Arc<metamodelica::List<Arc<SCode::Comment>>>) -> Result<(bool, bool)> {
+fn isEquationTaggedApproximatedOrBoundaryConditionHelper(mut commentIn: Arc<metamodelica::List<Arc<SCode::Comment>>>) -> (bool, bool) {
     let mut approximatedEquations: bool;
     let mut boundaryConditionEquations: bool;
     (approximatedEquations, boundaryConditionEquations) = 'mc: {
@@ -2265,8 +2265,8 @@ fn isEquationTaggedApproximatedOrBoundaryConditionHelper(mut commentIn: Arc<meta
                 Deref @ metamodelica::List::Cons { head: Deref @ SCode::Comment { annotation_: Some(Deref @ SCode::Annotation { modification: Deref @ SCode::Mod::MOD { subModLst, .. } }), .. }, tail: t } => {
                     let mut isApproximatedEquation: bool = false;
                     let mut isboundaryConditionEquation: bool = false;
-                    isApproximatedEquation = List::any(subModLst.clone(), (std::sync::Arc::new(fnptr!(isEquationTaggedApproximated, Arc<SCode::SubMod>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>) -> Result<bool> + 'static>))? || (isEquationTaggedApproximatedOrBoundaryConditionHelper(t.clone())?).0;
-                    isboundaryConditionEquation = List::any(subModLst.clone(), (std::sync::Arc::new(fnptr!(isEquationTaggedBoundaryCondition, Arc<SCode::SubMod>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>) -> Result<bool> + 'static>))? || (isEquationTaggedApproximatedOrBoundaryConditionHelper(t.clone())?).0;
+                    isApproximatedEquation = List::any(subModLst.clone(), (std::sync::Arc::new(fnptr!(isEquationTaggedApproximated, Arc<SCode::SubMod>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>) -> Result<bool> + 'static>))? || (isEquationTaggedApproximatedOrBoundaryConditionHelper(t.clone())).0;
+                    isboundaryConditionEquation = List::any(subModLst.clone(), (std::sync::Arc::new(fnptr!(isEquationTaggedBoundaryCondition, Arc<SCode::SubMod>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>) -> Result<bool> + 'static>))? || (isEquationTaggedApproximatedOrBoundaryConditionHelper(t.clone())).0;
                     Ok((isApproximatedEquation.clone(), isboundaryConditionEquation.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -2277,15 +2277,15 @@ fn isEquationTaggedApproximatedOrBoundaryConditionHelper(mut commentIn: Arc<meta
                 Deref @ metamodelica::List::Cons { head: _, tail: t } => {
                     let mut isApproximatedEquation: bool = false;
                     let mut isboundaryConditionEquation: bool = false;
-                    (isApproximatedEquation, isboundaryConditionEquation) = isEquationTaggedApproximatedOrBoundaryConditionHelper(t.clone())?;
+                    (isApproximatedEquation, isboundaryConditionEquation) = isEquationTaggedApproximatedOrBoundaryConditionHelper(t.clone());
                     Ok((isApproximatedEquation.clone(), isboundaryConditionEquation.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((approximatedEquations, boundaryConditionEquations))
+    (approximatedEquations, boundaryConditionEquations)
 }
 
 fn isEquationTaggedApproximated(mut m: Arc<SCode::SubMod>) -> bool {
@@ -2948,8 +2948,8 @@ fn dumpEquationString(mut inEquation: Arc<BackendDAE::Equation>) -> Result<ArcSt
             let mut s1: ArcStr = arcstr::literal!("");
             let mut s2: ArcStr = arcstr::literal!("");
             let mut res: ArcStr = arcstr::literal!("");
-            s1 = (ExpressionDump::printExp2Str::<()>(e1.clone(), (literal!("")).clone(), None, None)?).clone();
-            s2 = (ExpressionDump::printExp2Str::<()>(e2.clone(), (literal!("")).clone(), None, None)?).clone();
+            s1 = (ExpressionDump::printExp2Str::<()>(e1.clone(), (literal!("")).clone(), None, None)).clone();
+            s2 = (ExpressionDump::printExp2Str::<()>(e2.clone(), (literal!("")).clone(), None, None)).clone();
             res = stringAppendList(list![(s1.clone()).clone(), (literal!(" = ")).clone(), (s2.clone()).clone()]);
             res.clone()
         },
@@ -2957,8 +2957,8 @@ fn dumpEquationString(mut inEquation: Arc<BackendDAE::Equation>) -> Result<ArcSt
             let mut s1: ArcStr = arcstr::literal!("");
             let mut s2: ArcStr = arcstr::literal!("");
             let mut res: ArcStr = arcstr::literal!("");
-            s1 = (ExpressionDump::printExp2Str::<()>(e1.clone(), (literal!("")).clone(), None, None)?).clone();
-            s2 = (ExpressionDump::printExp2Str::<()>(e2.clone(), (literal!("")).clone(), None, None)?).clone();
+            s1 = (ExpressionDump::printExp2Str::<()>(e1.clone(), (literal!("")).clone(), None, None)).clone();
+            s2 = (ExpressionDump::printExp2Str::<()>(e2.clone(), (literal!("")).clone(), None, None)).clone();
             res = stringAppendList(list![(s1.clone()).clone(), (literal!(" = ")).clone(), (s2.clone()).clone()]);
             res.clone()
         },
@@ -2966,8 +2966,8 @@ fn dumpEquationString(mut inEquation: Arc<BackendDAE::Equation>) -> Result<ArcSt
             let mut s1: ArcStr = arcstr::literal!("");
             let mut s2: ArcStr = arcstr::literal!("");
             let mut res: ArcStr = arcstr::literal!("");
-            s1 = (ExpressionDump::printExp2Str::<()>(e1.clone(), (literal!("")).clone(), None, None)?).clone();
-            s2 = (ExpressionDump::printExp2Str::<()>(e2.clone(), (literal!("")).clone(), None, None)?).clone();
+            s1 = (ExpressionDump::printExp2Str::<()>(e1.clone(), (literal!("")).clone(), None, None)).clone();
+            s2 = (ExpressionDump::printExp2Str::<()>(e2.clone(), (literal!("")).clone(), None, None)).clone();
             res = stringAppendList(list![(s1.clone()).clone(), (literal!(" = ")).clone(), (s2.clone()).clone()]);
             res.clone()
         },
@@ -2978,7 +2978,7 @@ fn dumpEquationString(mut inEquation: Arc<BackendDAE::Equation>) -> Result<ArcSt
             s1 = (ComponentReferenceBasics::printComponentRefStr(cr.clone())?).clone();
             s1 = (System::stringReplace((s1.clone()).clone(), (literal!(".")).clone(), (literal!("_")).clone())?).clone();
             s1 = (System::stringReplace((s1.clone()).clone(), (literal!("$")).clone(), (literal!("")).clone())?).clone();
-            s2 = (ExpressionDump::printExp2Str::<()>(e2.clone(), (literal!("")).clone(), None, None)?).clone();
+            s2 = (ExpressionDump::printExp2Str::<()>(e2.clone(), (literal!("")).clone(), None, None)).clone();
             res = stringAppendList(list![(s1.clone()).clone(), (literal!(" = ")).clone(), (s2.clone()).clone()]);
             res.clone()
         },
@@ -2990,7 +2990,7 @@ fn dumpEquationString(mut inEquation: Arc<BackendDAE::Equation>) -> Result<ArcSt
         Deref @ BackendDAE::Equation::RESIDUAL_EQUATION { exp: e, .. } => {
             let mut s1: ArcStr = arcstr::literal!("");
             let mut res: ArcStr = arcstr::literal!("");
-            s1 = (ExpressionDump::printExp2Str::<()>(e.clone(), (literal!("")).clone(), None, None)?).clone();
+            s1 = (ExpressionDump::printExp2Str::<()>(e.clone(), (literal!("")).clone(), None, None)).clone();
             res = stringAppendList(list![(s1.clone()).clone(), (literal!("= 0")).clone()]);
             res.clone()
         },
@@ -3004,7 +3004,7 @@ fn dumpEquationString(mut inEquation: Arc<BackendDAE::Equation>) -> Result<ArcSt
             let mut s2: ArcStr = arcstr::literal!("");
             let mut s3: ArcStr = arcstr::literal!("");
             let mut res: ArcStr = arcstr::literal!("");
-            s1 = (ExpressionDump::printExp2Str::<()>(e1.clone(), (literal!("")).clone(), None, None)?).clone();
+            s1 = (ExpressionDump::printExp2Str::<()>(e1.clone(), (literal!("")).clone(), None, None)).clone();
             s2 = stringDelimitList(List::map(eqns.clone(), (std::sync::Arc::new(dumpEquationString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>) -> Result<ArcStr> + 'static>))?, (literal!("\n  ")).clone());
             s3 = stringAppendList(list![(literal!("if ")).clone(), (s1.clone()).clone(), (literal!(" then\n  ")).clone(), (s2.clone()).clone()]);
             res = (BackendDump::ifequationString(expl.clone(), eqnstrue.clone(), eqnsfalse.clone(), (s3.clone()).clone())?).clone();
@@ -3014,7 +3014,7 @@ fn dumpEquationString(mut inEquation: Arc<BackendDAE::Equation>) -> Result<ArcSt
             let mut s1: ArcStr = arcstr::literal!("");
             let mut s2: ArcStr = arcstr::literal!("");
             let mut res: ArcStr = arcstr::literal!("");
-            s1 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*ExpressionDump::printExp2Str::<()>(iter.clone(), (literal!("")).clone(), None, None)?); __mm_s.push_str(&*literal!(" in ")); __mm_s.push_str(&*ExpressionDump::printExp2Str::<()>(start.clone(), (literal!("")).clone(), None, None)?); __mm_s.push_str(&*literal!(" : ")); __mm_s.push_str(&*ExpressionDump::printExp2Str::<()>(stop.clone(), (literal!("")).clone(), None, None)?); ArcStr::from(__mm_s) }).clone();
+            s1 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*ExpressionDump::printExp2Str::<()>(iter.clone(), (literal!("")).clone(), None, None)); __mm_s.push_str(&*literal!(" in ")); __mm_s.push_str(&*ExpressionDump::printExp2Str::<()>(start.clone(), (literal!("")).clone(), None, None)); __mm_s.push_str(&*literal!(" : ")); __mm_s.push_str(&*ExpressionDump::printExp2Str::<()>(stop.clone(), (literal!("")).clone(), None, None)); ArcStr::from(__mm_s) }).clone();
             s2 = (dumpEquationString(eqn.clone())?).clone();
             res = stringAppendList(list![(literal!("for ")).clone(), (s1.clone()).clone(), (literal!(" loop\n    ")).clone(), (s2.clone()).clone(), (literal!("; end for; ")).clone()]);
             res.clone()

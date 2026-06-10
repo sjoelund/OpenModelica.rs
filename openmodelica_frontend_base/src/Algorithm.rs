@@ -226,7 +226,7 @@ pub fn makeAssignment(mut inExp1: Arc<DAE::Exp>, mut inProperties2: DAE::Propert
                     let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
                     lt = Types::getPropType(lprop.clone())?;
                     rt = Types::getPropType(rprop.clone())?;
-                    let false = (Types::equivtypes(lt.clone(), rt.clone())?) else { bail!("pattern mismatch") };
+                    let false = (Types::equivtypes(lt.clone(), rt.clone())) else { bail!("pattern mismatch") };
                     lhs_str = (ExpressionBasics::printExpStr(lhs.clone())?).clone();
                     rhs_str = (ExpressionBasics::printExpStr(rhs.clone())?).clone();
                     lt_str = (TypesDump::unparseTypeNoAttr(lt.clone())?).clone();
@@ -691,7 +691,7 @@ pub fn makeFor(mut inIdent: ArcStr, mut inExp: Arc<DAE::Exp>, mut inProperties: 
             ::match_deref::match_deref! { match &__mc_input {
                 (i, e, DAE::Properties::PROP { type_: Deref @ DAE::Type::T_ARRAY { ty: t, dims }, .. }, stmts) => {
                     let mut isArray: bool = false;
-                    isArray = Types::isNonscalarArray(t.clone(), dims.clone())?;
+                    isArray = Types::isNonscalarArray(t.clone(), dims.clone());
                     Ok(Arc::new(DAE::Statement::STMT_FOR { type_: t.clone(), iterIsArray: isArray.clone(), iter: (i.clone()).clone(), range: e.clone(), statementLst: stmts.clone(), source: source.clone() }))
                 }
                 _ => bail!("nomatch"),
@@ -743,7 +743,7 @@ pub fn makeParFor(mut inIdent: ArcStr, mut inExp: Arc<DAE::Exp>, mut inPropertie
             ::match_deref::match_deref! { match &__mc_input {
                 (i, e, DAE::Properties::PROP { type_: Deref @ DAE::Type::T_ARRAY { ty: t, dims }, .. }, stmts) => {
                     let mut isArray: bool = false;
-                    isArray = Types::isNonscalarArray(t.clone(), dims.clone())?;
+                    isArray = Types::isNonscalarArray(t.clone(), dims.clone());
                     Ok(Arc::new(DAE::Statement::STMT_PARFOR { type_: t.clone(), iterIsArray: isArray.clone(), iter: (i.clone()).clone(), range: e.clone(), statementLst: stmts.clone(), loopPrlVars: inLoopPrlVars.clone(), source: source.clone() }))
                 }
                 _ => bail!("nomatch"),
@@ -894,7 +894,7 @@ pub fn makeAssert(mut cond: Arc<DAE::Exp>, mut msg: Arc<DAE::Exp>, mut level: Ar
                     info = ElementSource::getElementSourceFileInfo(source.clone());
                     strExp = (ExpressionBasics::printExpStr(cond.clone())?).clone();
                     strTy = (TypesDump::unparseType(t1.clone())?).clone();
-                    Error::assertionOrAddSourceMessage(Types::isBooleanOrSubTypeBoolean(t1.clone())?, Error::EXP_TYPE_MISMATCH.clone(), list![(strExp.clone()).clone(), (literal!("Boolean")).clone(), (strTy.clone()).clone()], info.clone())?;
+                    Error::assertionOrAddSourceMessage(Types::isBooleanOrSubTypeBoolean(t1.clone()), Error::EXP_TYPE_MISMATCH.clone(), list![(strExp.clone()).clone(), (literal!("Boolean")).clone(), (strTy.clone()).clone()], info.clone())?;
                     strExp = (ExpressionBasics::printExpStr(msg.clone())?).clone();
                     strTy = (TypesDump::unparseType(t2.clone())?).clone();
                     Error::assertionOrAddSourceMessage(Types::isString(t2.clone()), Error::EXP_TYPE_MISMATCH.clone(), list![(strExp.clone()).clone(), (literal!("String")).clone(), (strTy.clone()).clone()], info.clone())?;

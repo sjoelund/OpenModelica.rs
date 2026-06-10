@@ -572,7 +572,7 @@ pub fn evaluateFunction(mut func: Arc<Function::Function>) -> Result<Arc<Functio
         is_con = Function::isDefaultRecordConstructor(func.clone());
         func = Function::mapExp(func.clone(), (std::sync::Arc::new({ let __pe_b1 = func.node.clone(); let __pe_b2 = is_con.clone(); move |__pe_a0| evaluateFuncExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>), (std::sync::Arc::new({ let __pe_b1 = func.node.clone(); let __pe_b2 = true; move |__pe_a0| evaluateFuncExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>), true, true)?;
         if is_con.clone() {
-            Record::checkLocalFieldOrder(func.locals.clone(), func.node.clone(), InstNode::info(func.node.clone())?)?;
+            Record::checkLocalFieldOrder(func.locals.clone(), func.node.clone(), InstNode::info(func.node.clone()))?;
         }
         for mut fn_der in &*func.derivatives.clone() {
             let mut fn_der = fn_der.clone();

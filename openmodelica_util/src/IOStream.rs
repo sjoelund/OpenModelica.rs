@@ -193,7 +193,7 @@ pub fn appendListStream(mut srcStream: IOStream, mut dstStream: IOStream) -> Res
     Ok(dstStream)
 }
 
-pub fn close(mut inStream: IOStream) -> Result<IOStream> {
+pub fn close(mut inStream: IOStream) -> IOStream {
     let mut outStream: IOStream;
     outStream = 'mc: {
         let __mc_input = inStream.clone();
@@ -206,9 +206,9 @@ pub fn close(mut inStream: IOStream) -> Result<IOStream> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(inStream.clone())
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outStream)
+    outStream
 }
 
 pub fn delete(mut inStream: IOStream) -> Result<()> {

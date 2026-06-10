@@ -178,7 +178,7 @@ pub fn info(mut component: Arc<NFComponent>) -> Result<SourceInfo> {
         Deref @ COMPONENT_DEF { .. } => SCodeUtil::elementInfo(var_field!((*component).definition, NFComponent::COMPONENT_DEF).clone()),
         Deref @ COMPONENT { .. } => var_field!((*component).info, NFComponent::COMPONENT).clone(),
         Deref @ ITERATOR { .. } => var_field!((*component).info, NFComponent::ITERATOR).clone(),
-        Deref @ TYPE_ATTRIBUTE { .. } => Modifier::info(var_field!((*component).modifier, NFComponent::TYPE_ATTRIBUTE).clone())?,
+        Deref @ TYPE_ATTRIBUTE { .. } => Modifier::info(var_field!((*component).modifier, NFComponent::TYPE_ATTRIBUTE).clone()),
         _ => bail!("match: no arm matched"),
     } });
     Ok(info)

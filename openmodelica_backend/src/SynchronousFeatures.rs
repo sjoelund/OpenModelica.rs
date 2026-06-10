@@ -436,7 +436,7 @@ fn markClockedStates(mut inSyst: Arc<BackendDAE::EqSystem>, mut inShared: Arc<Ba
     isDerVarArr = arrayCreate(BackendVariable::varsSize(inSyst.orderedVars.clone()), false);
     for mut cr in &*derVars.clone() {
         let mut cr = cr.clone();
-        varIxs = getVarIxs(cr.clone(), inSyst.orderedVars.clone())?;
+        varIxs = getVarIxs(cr.clone(), inSyst.orderedVars.clone());
         for mut idx in &*varIxs.clone() {
             let mut idx = idx.clone();
             metamodelica::arrayUpdate(isDerVarArr.clone(), idx.clone(), true)?;
@@ -464,7 +464,7 @@ fn markClockedStates(mut inSyst: Arc<BackendDAE::EqSystem>, mut inShared: Arc<Ba
     }
     for mut cr in &*prevVars.clone() {
         let mut cr = cr.clone();
-        varIxs = getVarIxs(cr.clone(), inSyst.orderedVars.clone())?;
+        varIxs = getVarIxs(cr.clone(), inSyst.orderedVars.clone());
         for mut idx in &*varIxs.clone() {
             let mut idx = idx.clone();
             metamodelica::arrayUpdate(isPrevVarArr.clone(), idx.clone(), true)?;
@@ -1903,7 +1903,7 @@ fn splitClockVars(mut inVars: BackendDAE::Variables) -> Result<(BackendDAE::Vari
     outClockVarsMask = arrayCreate(BackendVariable::varsSize(inVars.clone()), true);
     for mut i in 1..=BackendVariable::varsSize(inVars.clone()) {
         var = BackendVariable::getVarAt(inVars.clone(), i.clone())?;
-        if Types::isClockOrSubTypeClock(var.varType.clone())? {
+        if Types::isClockOrSubTypeClock(var.varType.clone()) {
             clockVars = metamodelica::cons(var.clone(), clockVars.clone());
             metamodelica::arrayUpdate(outClockVarsMask.clone(), i.clone(), false)?;
         }
@@ -2139,7 +2139,7 @@ fn substExp(mut inExps: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inEqs: Arc<m
     Ok(outTpl)
 }
 
-fn getVarIxs(mut inComp: Arc<DAE::ComponentRef>, mut inVariables: BackendDAE::Variables) -> Result<Arc<metamodelica::List<i32>>> {
+fn getVarIxs(mut inComp: Arc<DAE::ComponentRef>, mut inVariables: BackendDAE::Variables) -> Arc<metamodelica::List<i32>> {
     let mut outIntegerLst: Arc<metamodelica::List<i32>>;
     outIntegerLst = 'mc: {
         let __mc_input = inComp.clone();
@@ -2161,9 +2161,9 @@ fn getVarIxs(mut inComp: Arc<DAE::ComponentRef>, mut inVariables: BackendDAE::Va
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outIntegerLst)
+    outIntegerLst
 }
 
 fn baseClockPartitioning(mut inSyst: Arc<BackendDAE::EqSystem>, mut inShared: Arc<BackendDAE::Shared>) -> Result<(Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>>, Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>)> {
@@ -2234,7 +2234,7 @@ fn baseClockPartitioning(mut inSyst: Arc<BackendDAE::EqSystem>, mut inShared: Ar
         for mut refInfo in &*refsInfo.clone() {
             let mut refInfo = refInfo.clone();
             (cr, isClocked) = refInfo.clone();
-            varIxs = getVarIxs(cr.clone(), vars.clone())?;
+            varIxs = getVarIxs(cr.clone(), vars.clone());
             for mut i in &*varIxs.clone() {
                 let mut i = i.clone();
                 metamodelica::arrayUpdate(clockedVars.clone(), i.clone(), setClockedPartition(Some(isClocked.clone()), metamodelica::arrayGet(clockedVars.clone(), i.clone())?, Some(cr.clone()), info.clone())?)?;
@@ -2272,7 +2272,7 @@ fn baseClockPartitioning(mut inSyst: Arc<BackendDAE::EqSystem>, mut inShared: Ar
 
 fn isClockExp(mut inExp: Arc<DAE::Exp>) -> Result<bool> {
     let mut out: bool;
-    out = Types::isClockOrSubTypeClock(Expression::r#typeof(inExp.clone())?)?;
+    out = Types::isClockOrSubTypeClock(Expression::r#typeof(inExp.clone())?);
     Ok(out)
 }
 

@@ -1109,7 +1109,7 @@ pub fn loadRules() -> Result<()> {
     Ok(())
 }
 
-pub fn noRewriteRules() -> Result<bool> {
+pub fn noRewriteRules() -> bool {
     let mut noRules: bool;
     noRules = 'mc: {
         let __mc_input = ();
@@ -1125,12 +1125,12 @@ pub fn noRewriteRules() -> Result<bool> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(false)
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(noRules)
+    noRules
 }
 
-pub fn noRewriteRulesFrontEnd() -> Result<bool> {
+pub fn noRewriteRulesFrontEnd() -> bool {
     let mut noRules: bool;
     noRules = 'mc: {
         let __mc_input = ();
@@ -1154,12 +1154,12 @@ pub fn noRewriteRulesFrontEnd() -> Result<bool> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(false)
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(noRules)
+    noRules
 }
 
-pub fn noRewriteRulesBackEnd() -> Result<bool> {
+pub fn noRewriteRulesBackEnd() -> bool {
     let mut noRules: bool;
     noRules = 'mc: {
         let __mc_input = ();
@@ -1183,9 +1183,9 @@ pub fn noRewriteRulesBackEnd() -> Result<bool> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(false)
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(noRules)
+    noRules
 }
 
 pub fn loadRulesFromFile(mut inFile: ArcStr) -> Result<()> {

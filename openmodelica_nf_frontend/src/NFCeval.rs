@@ -376,7 +376,7 @@ pub fn evalComponentBinding(mut node: Arc<InstNode::InstNode>, mut cref: Arc<Com
     comp = InstNode::component(node.clone())?;
     binding = Component::getBinding(comp.clone());
     if Binding::isUnbound(binding.clone()) {
-        binding = makeComponentBinding(comp.clone(), node.clone(), Expression::toCref(defaultExp.clone())?, target.clone())?;
+        binding = makeComponentBinding(comp.clone(), node.clone(), Expression::toCref(defaultExp.clone())?, target.clone());
         if Binding::isUnbound(binding.clone()) {
             start_exp = evalComponentStartBinding(node.clone(), comp.clone(), cref.clone(), target.clone(), evalSubscripts.clone())?;
             if isSome(start_exp.clone()) {
@@ -419,7 +419,7 @@ pub fn evalComponentBinding(mut node: Arc<InstNode::InstNode>, mut cref: Arc<Com
         },
         Binding::EvalState::EVALUATED => var_field!((*binding).bindingExp, Binding::NFBinding::TYPED_BINDING).clone(),
         _ => {
-            Error::addSourceMessage(Error::CIRCULAR_PARAM.clone(), list![(InstNode::name(node.clone())?).clone(), (Prefixes::variabilityString(Component::variability(comp.clone())?)?).clone()], InstNode::info(node.clone())?)?;
+            Error::addSourceMessage(Error::CIRCULAR_PARAM.clone(), list![(InstNode::name(node.clone())?).clone(), (Prefixes::variabilityString(Component::variability(comp.clone())?)?).clone()], InstNode::info(node.clone()))?;
             bail!("fail")
         },
     });
@@ -603,7 +603,7 @@ pub fn evalComponentStartBinding(mut node: Arc<InstNode::InstNode>, mut comp: Ar
     Ok(outExp)
 }
 
-pub fn makeComponentBinding(mut component: Arc<Component::NFComponent>, mut node: Arc<InstNode::InstNode>, mut cref: Arc<ComponentRef::NFComponentRef>, mut target: Arc<EvalTarget::EvalTarget>) -> Result<Arc<Binding::NFBinding>> {
+pub fn makeComponentBinding(mut component: Arc<Component::NFComponent>, mut node: Arc<InstNode::InstNode>, mut cref: Arc<ComponentRef::NFComponentRef>, mut target: Arc<EvalTarget::EvalTarget>) -> Arc<Binding::NFBinding> {
     let mut binding: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     let mut rec_node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
@@ -658,9 +658,9 @@ pub fn makeComponentBinding(mut component: Arc<Component::NFComponent>, mut node
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(binding)
+    binding
 }
 
 pub fn makeRecordFieldBindingFromParent(mut cref: Arc<ComponentRef::NFComponentRef>, mut target: Arc<EvalTarget::EvalTarget>) -> Result<Arc<Expression::NFExpression>> {
@@ -3149,10 +3149,10 @@ fn printUnboundError(mut component: Arc<Component::NFComponent>, mut target: Arc
         _ => {
             if listMember(Component::variability(component.clone())?, list![Variability::STRUCTURAL_PARAMETER.clone(), Variability::PARAMETER.clone()]) && Util::getOptionOrDefault(Component::getEvaluateAnnotation(component.clone())?, false) {
                 if Component::isFixed(component.clone())? {
-                    Error::addMultiSourceMessage(Error::UNBOUND_PARAMETER_EVALUATE_TRUE.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*Expression::toString(exp.clone())?); __mm_s.push_str(&*literal!("(fixed = true)")); ArcStr::from(__mm_s) }).clone()], list![InstNode::info(ComponentRef::node(Expression::toCref(exp.clone())?)?)?, EvalTarget::getInfo(target.clone())])?;
+                    Error::addMultiSourceMessage(Error::UNBOUND_PARAMETER_EVALUATE_TRUE.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*Expression::toString(exp.clone())?); __mm_s.push_str(&*literal!("(fixed = true)")); ArcStr::from(__mm_s) }).clone()], list![InstNode::info(ComponentRef::node(Expression::toCref(exp.clone())?)?), EvalTarget::getInfo(target.clone())])?;
                 }
             } else {
-                Error::addMultiSourceMessage(Error::UNBOUND_CONSTANT.clone(), list![(Expression::toString(exp.clone())?).clone()], list![InstNode::info(ComponentRef::node(Expression::toCref(exp.clone())?)?)?, EvalTarget::getInfo(target.clone())])?;
+                Error::addMultiSourceMessage(Error::UNBOUND_CONSTANT.clone(), list![(Expression::toString(exp.clone())?).clone()], list![InstNode::info(ComponentRef::node(Expression::toCref(exp.clone())?)?), EvalTarget::getInfo(target.clone())])?;
                 bail!("fail");
             }
             ()

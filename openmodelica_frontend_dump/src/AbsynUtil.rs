@@ -1358,7 +1358,7 @@ pub fn suffixPath(mut inPath: Arc<Absyn::Path>, mut inSuffix: ArcStr) -> Result<
     Ok(outPath)
 }
 
-pub fn pathSuffixOf(mut suffix_path: Arc<Absyn::Path>, mut path: Arc<Absyn::Path>) -> Result<bool> {
+pub fn pathSuffixOf(mut suffix_path: Arc<Absyn::Path>, mut path: Arc<Absyn::Path>) -> bool {
     let mut res: bool;
     res = 'mc: {
         let __mc_input = path.clone();
@@ -1374,7 +1374,7 @@ pub fn pathSuffixOf(mut suffix_path: Arc<Absyn::Path>, mut path: Arc<Absyn::Path
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::Path::FULLYQUALIFIED { path: p } => {
-                    Ok(pathSuffixOf(suffix_path.clone(), p.clone())?)
+                    Ok(pathSuffixOf(suffix_path.clone(), p.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1382,7 +1382,7 @@ pub fn pathSuffixOf(mut suffix_path: Arc<Absyn::Path>, mut path: Arc<Absyn::Path
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::Path::QUALIFIED { path: p, .. } => {
-                    Ok(pathSuffixOf(suffix_path.clone(), p.clone())?)
+                    Ok(pathSuffixOf(suffix_path.clone(), p.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1395,15 +1395,15 @@ pub fn pathSuffixOf(mut suffix_path: Arc<Absyn::Path>, mut path: Arc<Absyn::Path
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(res)
+    res
 }
 
-pub fn pathSuffixOfr(mut path: Arc<Absyn::Path>, mut suffix_path: Arc<Absyn::Path>) -> Result<bool> {
+pub fn pathSuffixOfr(mut path: Arc<Absyn::Path>, mut suffix_path: Arc<Absyn::Path>) -> bool {
     let mut res: bool;
-    res = pathSuffixOf(suffix_path.clone(), path.clone())?;
-    Ok(res)
+    res = pathSuffixOf(suffix_path.clone(), path.clone());
+    res
 }
 
 pub fn pathToStringList(mut path: Arc<Absyn::Path>) -> Result<Arc<metamodelica::List<ArcStr>>> {
@@ -1537,7 +1537,7 @@ pub fn removePrefixOpt(mut prefixPath: Arc<Absyn::Path>, mut path: Arc<Absyn::Pa
     }
 }
 
-pub fn removePartialPrefix(mut inPrefix: Arc<Absyn::Path>, mut inPath: Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> {
+pub fn removePartialPrefix(mut inPrefix: Arc<Absyn::Path>, mut inPath: Arc<Absyn::Path>) -> Arc<Absyn::Path> {
     let mut outPath: Arc<Absyn::Path>;
     outPath = 'mc: {
         let __mc_input = inPrefix.clone();
@@ -1560,7 +1560,7 @@ pub fn removePartialPrefix(mut inPrefix: Arc<Absyn::Path>, mut inPath: Arc<Absyn
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::Path::FULLYQUALIFIED { .. } => {
-                    Ok(removePartialPrefix(var_field!((*inPrefix).path, Absyn::Path::FULLYQUALIFIED).clone(), inPath.clone())?)
+                    Ok(removePartialPrefix(var_field!((*inPrefix).path, Absyn::Path::FULLYQUALIFIED).clone(), inPath.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1573,9 +1573,9 @@ pub fn removePartialPrefix(mut inPrefix: Arc<Absyn::Path>, mut inPath: Arc<Absyn
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outPath)
+    outPath
 }
 
 pub fn getCrefsFromSubs(mut isubs: Arc<metamodelica::List<Arc<Absyn::Subscript>>>, mut includeSubs: bool, mut includeFunctions: bool) -> Result<Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>> {
@@ -2871,7 +2871,7 @@ pub fn canonIfExp(mut inExp: Arc<Absyn::Exp>) -> Result<Arc<Absyn::Exp>> {
     Ok(outExp)
 }
 
-pub fn onlyLiteralsInAnnotationMod(mut inMod: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>) -> Result<bool> {
+pub fn onlyLiteralsInAnnotationMod(mut inMod: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>) -> bool {
     let mut onlyLiterals: bool;
     onlyLiterals = 'mc: {
         let __mc_input = inMod.clone();
@@ -2886,7 +2886,7 @@ pub fn onlyLiteralsInAnnotationMod(mut inMod: Arc<metamodelica::List<Arc<Absyn::
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "interaction" }, .. }, tail: rest } => {
-                    Ok(onlyLiteralsInAnnotationMod(rest.clone())?)
+                    Ok(onlyLiteralsInAnnotationMod(rest.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -2894,7 +2894,7 @@ pub fn onlyLiteralsInAnnotationMod(mut inMod: Arc<metamodelica::List<Arc<Absyn::
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { modification: Some(Deref @ Absyn::Modification { elementArgLst: dive, eqMod }), .. }, tail: rest } => {
-                    Ok(onlyLiteralsInEqMod(eqMod.clone())? && onlyLiteralsInAnnotationMod(dive.clone())? && onlyLiteralsInAnnotationMod(rest.clone())?)
+                    Ok(onlyLiteralsInEqMod(eqMod.clone())? && onlyLiteralsInAnnotationMod(dive.clone()) && onlyLiteralsInAnnotationMod(rest.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -2902,7 +2902,7 @@ pub fn onlyLiteralsInAnnotationMod(mut inMod: Arc<metamodelica::List<Arc<Absyn::
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
-                    Ok(onlyLiteralsInAnnotationMod(rest.clone())?)
+                    Ok(onlyLiteralsInAnnotationMod(rest.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -2915,9 +2915,9 @@ pub fn onlyLiteralsInAnnotationMod(mut inMod: Arc<metamodelica::List<Arc<Absyn::
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(onlyLiterals)
+    onlyLiterals
 }
 
 pub fn onlyLiteralsInEqMod(mut eqMod: Arc<Absyn::EqMod>) -> Result<bool> {
@@ -3100,7 +3100,7 @@ pub fn subscriptExpOpt(mut inSub: Arc<Absyn::Subscript>) -> Result<Option<Arc<Ab
     Ok(outExpOpt)
 }
 
-pub fn crefInsertSubscriptLstLst(mut inExp: Arc<Absyn::Exp>, mut inLst: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Absyn::Subscript>>>>>) -> Result<(Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<Absyn::Subscript>>>>>)> {
+pub fn crefInsertSubscriptLstLst(mut inExp: Arc<Absyn::Exp>, mut inLst: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Absyn::Subscript>>>>>) -> (Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<Absyn::Subscript>>>>>) {
     let mut outExp: Arc<Absyn::Exp>;
     let mut outLst: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Absyn::Subscript>>>>>;
     (outExp, outLst) = 'mc: {
@@ -3123,9 +3123,9 @@ pub fn crefInsertSubscriptLstLst(mut inExp: Arc<Absyn::Exp>, mut inLst: Arc<meta
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outExp, outLst))
+    (outExp, outLst)
 }
 
 pub fn crefInsertSubscriptLstLst2(mut inCref: Arc<Absyn::ComponentRef>, mut inSubs: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Absyn::Subscript>>>>>) -> Result<Arc<Absyn::ComponentRef>> {
@@ -3524,7 +3524,7 @@ pub fn componentName(mut c: Arc<Absyn::ComponentItem>) -> Result<ArcStr> {
     Ok(name)
 }
 
-pub fn expContainsInitial(mut inExp: Arc<Absyn::Exp>) -> Result<bool> {
+pub fn expContainsInitial(mut inExp: Arc<Absyn::Exp>) -> bool {
     let mut hasInitial: bool;
     hasInitial = 'mc: {
         let __mc_input = inExp.clone();
@@ -3546,9 +3546,9 @@ pub fn expContainsInitial(mut inExp: Arc<Absyn::Exp>) -> Result<bool> {
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(hasInitial)
+    hasInitial
 }
 
 fn isInitialTraverseHelper(mut inExp: Arc<Absyn::Exp>, mut inBool: bool) -> (Arc<Absyn::Exp>, bool) {
@@ -4033,7 +4033,7 @@ pub fn lookupAnnotation(mut ann: Arc<Absyn::Annotation>, mut name: ArcStr) -> Re
     Ok(outMod)
 }
 
-pub fn getNamedAnnotationInClass<T: Clone + 'static>(mut inClass: Arc<Absyn::Class>, mut id: Arc<Absyn::Path>, mut f: Arc<dyn ::std::ops::Fn(Option<Arc<Absyn::Modification>>) -> Result<T> + 'static>) -> Result<Option<T>> {
+pub fn getNamedAnnotationInClass<T: Clone + 'static>(mut inClass: Arc<Absyn::Class>, mut id: Arc<Absyn::Path>, mut f: Arc<dyn ::std::ops::Fn(Option<Arc<Absyn::Modification>>) -> Result<T> + 'static>) -> Option<T> {
     pub type ModFunc<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Option<Arc<Absyn::Modification>>) -> Result<T> + 'static>;
 
     let mut outString: Option<T>;
@@ -4091,9 +4091,9 @@ pub fn getNamedAnnotationInClass<T: Clone + 'static>(mut inClass: Arc<Absyn::Cla
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outString)
+    outString
 }
 
 fn getNamedAnnotationStr<T: Clone + 'static>(mut inAbsynElementArgLst: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, mut id: Arc<Absyn::Path>, mut f: Arc<dyn ::std::ops::Fn(Option<Arc<Absyn::Modification>>) -> Result<T> + 'static>) -> Result<Option<T>> {
@@ -5136,7 +5136,7 @@ fn traverseClasses2<Arg: Clone + 'static>(mut inClasses: Arc<metamodelica::List<
                     let mut class_2: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
                     let mut classes_1: Arc<metamodelica::List<Arc<Absyn::Class>>> = metamodelica::nil();
                     (class_1, _, args_1) = visitor((class_.clone(), pa.clone(), args.clone()))?;
-                    (class_2, _, args_2) = traverseInnerClass(class_1.clone(), pa.clone(), visitor.clone(), args_1.clone(), traverse_prot.clone())?;
+                    (class_2, _, args_2) = traverseInnerClass(class_1.clone(), pa.clone(), visitor.clone(), args_1.clone(), traverse_prot.clone());
                     (classes_1, pa_3, args_3) = traverseClasses2(classes.clone(), pa.clone(), visitor.clone(), args_2.clone(), traverse_prot.clone())?;
                     Ok((metamodelica::cons(class_2.clone(), classes_1.clone()), pa_3.clone(), args_3.clone()))
                 }
@@ -5151,7 +5151,7 @@ fn traverseClasses2<Arg: Clone + 'static>(mut inClasses: Arc<metamodelica::List<
                     let mut args_3: Arg;
                     let mut class_2: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
                     let mut classes_1: Arc<metamodelica::List<Arc<Absyn::Class>>> = metamodelica::nil();
-                    (class_2, _, args_2) = traverseInnerClass(class_.clone(), pa.clone(), visitor.clone(), args.clone(), traverse_prot.clone())?;
+                    (class_2, _, args_2) = traverseInnerClass(class_.clone(), pa.clone(), visitor.clone(), args.clone(), traverse_prot.clone());
                     let true = (classHasLocalClasses(class_2.clone())?) else { bail!("pattern mismatch") };
                     (classes_1, pa_3, args_3) = traverseClasses2(classes.clone(), pa.clone(), visitor.clone(), args_2.clone(), traverse_prot.clone())?;
                     Ok((metamodelica::cons(class_2.clone(), classes_1.clone()), pa_3.clone(), args_3.clone()))
@@ -5191,24 +5191,24 @@ fn classHasLocalClasses(mut cl: Arc<Absyn::Class>) -> Result<bool> {
     let mut res: bool;
     res = (::match_deref::match_deref! { match &(cl.clone()) {
         Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::PARTS { classParts: parts, .. }, .. } => {
-            partsHasLocalClass(parts.clone())?
+            partsHasLocalClass(parts.clone())
         },
         Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::CLASS_EXTENDS { parts, .. }, .. } => {
-            partsHasLocalClass(parts.clone())?
+            partsHasLocalClass(parts.clone())
         },
         _ => bail!("match: no arm matched"),
     } });
     Ok(res)
 }
 
-fn partsHasLocalClass(mut inParts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<bool> {
+fn partsHasLocalClass(mut inParts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> bool {
     let mut res: bool;
     res = 'mc: {
         let __mc_input = inParts.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ClassPart::PUBLIC { contents: elts }, tail: _ } => {
-                    let true = (eltsHasLocalClass(elts.clone())?) else { bail!("pattern mismatch") };
+                    let true = (eltsHasLocalClass(elts.clone())) else { bail!("pattern mismatch") };
                     Ok(true)
                 }
                 _ => bail!("nomatch"),
@@ -5217,7 +5217,7 @@ fn partsHasLocalClass(mut inParts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ClassPart::PROTECTED { contents: elts }, tail: _ } => {
-                    let true = (eltsHasLocalClass(elts.clone())?) else { bail!("pattern mismatch") };
+                    let true = (eltsHasLocalClass(elts.clone())) else { bail!("pattern mismatch") };
                     Ok(true)
                 }
                 _ => bail!("nomatch"),
@@ -5226,7 +5226,7 @@ fn partsHasLocalClass(mut inParts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: parts } => {
-                    Ok(partsHasLocalClass(parts.clone())?)
+                    Ok(partsHasLocalClass(parts.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -5239,12 +5239,12 @@ fn partsHasLocalClass(mut inParts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(res)
+    res
 }
 
-fn eltsHasLocalClass(mut inElts: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>) -> Result<bool> {
+fn eltsHasLocalClass(mut inElts: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>) -> bool {
     let mut res: bool;
     res = 'mc: {
         let __mc_input = inElts.clone();
@@ -5259,7 +5259,7 @@ fn eltsHasLocalClass(mut inElts: Arc<metamodelica::List<Arc<Absyn::ElementItem>>
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: elts } => {
-                    Ok(eltsHasLocalClass(elts.clone())?)
+                    Ok(eltsHasLocalClass(elts.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -5272,12 +5272,12 @@ fn eltsHasLocalClass(mut inElts: Arc<metamodelica::List<Arc<Absyn::ElementItem>>
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(res)
+    res
 }
 
-fn traverseInnerClass<Arg: Clone + 'static>(mut inClass: Arc<Absyn::Class>, mut path: Option<Arc<Absyn::Path>>, mut visitor: Arc<dyn ::std::ops::Fn((Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg)) -> Result<(Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg)> + 'static>, mut arg: Arg, mut visitProtected: bool) -> Result<(Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg)> {
+fn traverseInnerClass<Arg: Clone + 'static>(mut inClass: Arc<Absyn::Class>, mut path: Option<Arc<Absyn::Path>>, mut visitor: Arc<dyn ::std::ops::Fn((Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg)) -> Result<(Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg)> + 'static>, mut arg: Arg, mut visitProtected: bool) -> (Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg) {
     pub type FuncType<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn((Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg)) -> Result<(Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg)> + 'static>;
 
     let mut outTpl: (Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg);
@@ -5385,11 +5385,11 @@ fn traverseInnerClass<Arg: Clone + 'static>(mut inClass: Arc<Absyn::Class>, mut 
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
     assign_field!(cls.body = cdef.clone());
     outTpl = (cls.clone(), opt_pa.clone(), args.clone());
-    Ok(outTpl)
+    outTpl
 }
 
 fn traverseInnerClassParts<Arg: Clone + 'static>(mut inClassParts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>, mut inPath: Option<Arc<Absyn::Path>>, mut visitor: Arc<dyn ::std::ops::Fn((Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg)) -> Result<(Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg)> + 'static>, mut inArg: Arg, mut visitProtected: bool) -> Result<(Arc<metamodelica::List<Arc<Absyn::ClassPart>>>, Option<Arc<Absyn::Path>>, Arg)> {
@@ -5445,7 +5445,7 @@ fn traverseInnerClassElements<Arg: Clone + 'static>(mut inElements: Arc<metamode
         Deref @ Absyn::ElementItem::ELEMENTITEM { element: __esc_el @ Deref @ Absyn::Element::ELEMENT { specification: __esc_spec @ Deref @ Absyn::ElementSpec::CLASSDEF { .. }, .. } } => {
             el = (*__esc_el).clone();
             spec = (*__esc_spec).clone();
-            (cl, _, arg) = traverseInnerClass(var_field!((*spec).class_, Absyn::ElementSpec::CLASSDEF).clone(), inPath.clone(), visitor.clone(), arg.clone(), visitProtected.clone())?;
+            (cl, _, arg) = traverseInnerClass(var_field!((*spec).class_, Absyn::ElementSpec::CLASSDEF).clone(), inPath.clone(), visitor.clone(), arg.clone(), visitProtected.clone());
             assign_variant_field!(spec => Absyn::ElementSpec::CLASSDEF; class_ = cl.clone());
             assign_variant_field!(el => Absyn::Element::ELEMENT; specification = spec.clone());
             assign_variant_field!(e => Absyn::ElementItem::ELEMENTITEM; element = el.clone());
@@ -5471,7 +5471,7 @@ fn traverseInnerClassElementspec<Arg: Clone + 'static>(mut inElementSpec: Arc<Ab
             let mut pa = (*pa).clone();
             let mut args = (*args).clone();
             (cl, _, args) = visitor((cl.clone(), pa.clone(), args.clone()))?;
-            (cl, pa, args) = traverseInnerClass(cl.clone(), pa.clone(), visitor.clone(), args.clone(), visitProtected.clone())?;
+            (cl, pa, args) = traverseInnerClass(cl.clone(), pa.clone(), visitor.clone(), args.clone(), visitProtected.clone());
             (Arc::new(Absyn::ElementSpec::CLASSDEF { replaceable_: repl.clone(), class_: cl.clone() }), pa.clone(), args.clone())
         },
         (Deref @ Absyn::ElementSpec::EXTENDS { .. }, pa, args) => {

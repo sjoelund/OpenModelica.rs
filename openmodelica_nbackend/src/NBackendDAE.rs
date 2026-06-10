@@ -1140,7 +1140,7 @@ fn lowerIfEquation(mut frontend_equation: Arc<FEquation::NFEquation>, mut init: 
         Deref @ FEquation::IF { branches, source, .. } => {
             let mut ifEqBody: Arc<IfEquationBody::IfEquationBody> = Arc::new(<IfEquationBody::IfEquationBody as ::std::default::Default>::default());
             let mut bodies: Arc<metamodelica::List<Arc<IfEquationBody::IfEquationBody>>> = metamodelica::nil();
-            if let Ok(__iflet0) = lowerIfEquationBody(branches.clone(), init.clone(), in_for.clone() || FEquation::sizeOf(frontend_equation.clone())? == 0) {
+            if let Ok(__iflet0) = lowerIfEquationBody(branches.clone(), init.clone(), in_for.clone() || FEquation::sizeOf(frontend_equation.clone()) == 0) {
                 ifEqBody = __iflet0;
             } else {
                 Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBackendDAE.lowerIfEquation")); __mm_s.push_str(&*literal!(" failed for:\n")); __mm_s.push_str(&*FEquation::toString(frontend_equation.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;

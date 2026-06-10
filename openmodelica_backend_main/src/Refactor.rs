@@ -79,7 +79,7 @@ fn refactorGraphAnnInClass(mut inClass: Arc<Absyn::Class>, mut inProgram: Absyn:
                     let mut outClass = (*outClass).clone();
                     cPath = Arc::new(Absyn::Path::IDENT { name: (n.clone()).clone() });
                     env = Interactive::getClassEnv(p.clone(), cPath.clone())?;
-                    resultClassDef = refactorGraphAnnInClassDef(d.clone(), p.clone(), cPath.clone(), env.clone())?;
+                    resultClassDef = refactorGraphAnnInClassDef(d.clone(), p.clone(), cPath.clone(), env.clone());
                     assign_field!(outClass.body = resultClassDef.clone());
                     Ok(outClass.clone())
                 }
@@ -93,7 +93,7 @@ fn refactorGraphAnnInClass(mut inClass: Arc<Absyn::Class>, mut inProgram: Absyn:
                     let mut cPath = (*cPath).clone();
                     cPath = AbsynUtil::joinPaths(cPath.clone(), Arc::new(Absyn::Path::IDENT { name: (n.clone()).clone() }))?;
                     env = Interactive::getClassEnv(p.clone(), cPath.clone())?;
-                    refactorGraphAnnInClassDef(d.clone(), p.clone(), cPath.clone(), env.clone())?;
+                    refactorGraphAnnInClassDef(d.clone(), p.clone(), cPath.clone(), env.clone());
                     Ok(outClass.clone())
                 }
                 _ => bail!("nomatch"),
@@ -104,7 +104,7 @@ fn refactorGraphAnnInClass(mut inClass: Arc<Absyn::Class>, mut inProgram: Absyn:
     Ok(outClass)
 }
 
-fn refactorGraphAnnInClassDef(mut inDef: Arc<Absyn::ClassDef>, mut inProgram: Absyn::Program, mut classPath: Arc<Absyn::Path>, mut inClassEnv: Interactive::GraphicEnvCache) -> Result<Arc<Absyn::ClassDef>> {
+fn refactorGraphAnnInClassDef(mut inDef: Arc<Absyn::ClassDef>, mut inProgram: Absyn::Program, mut classPath: Arc<Absyn::Path>, mut inClassEnv: Interactive::GraphicEnvCache) -> Arc<Absyn::ClassDef> {
     let mut outDef: Arc<Absyn::ClassDef>;
     outDef = 'mc: {
         let __mc_input = (inDef.clone(), inProgram.clone(), classPath.clone(), inClassEnv.clone());
@@ -136,9 +136,9 @@ fn refactorGraphAnnInClassDef(mut inDef: Arc<Absyn::ClassDef>, mut inProgram: Ab
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outDef)
+    outDef
 }
 
 fn refactorGraphAnnInClassParts(mut inParts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>, mut inProgram: Absyn::Program, mut classPath: Arc<Absyn::Path>, mut env: Interactive::GraphicEnvCache) -> Result<Arc<metamodelica::List<Arc<Absyn::ClassPart>>>> {
@@ -150,7 +150,7 @@ fn refactorGraphAnnInClassParts(mut inParts: Arc<metamodelica::List<Arc<Absyn::C
         (Deref @ metamodelica::List::Cons { head: firstPart, tail: restParts }, p, cPath) => {
             let mut resParts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
             let mut resultPart: Arc<Absyn::ClassPart> = Arc::new(<Absyn::ClassPart as ::std::default::Default>::default());
-            resultPart = refactorGraphAnnInClassPart(firstPart.clone(), p.clone(), cPath.clone(), env.clone())?;
+            resultPart = refactorGraphAnnInClassPart(firstPart.clone(), p.clone(), cPath.clone(), env.clone());
             resParts = refactorGraphAnnInClassParts(restParts.clone(), p.clone(), cPath.clone(), env.clone())?;
             metamodelica::cons(resultPart.clone(), resParts.clone())
         },
@@ -159,7 +159,7 @@ fn refactorGraphAnnInClassParts(mut inParts: Arc<metamodelica::List<Arc<Absyn::C
     Ok(outParts)
 }
 
-fn refactorGraphAnnInClassPart(mut inPart: Arc<Absyn::ClassPart>, mut inProgram: Absyn::Program, mut classPath: Arc<Absyn::Path>, mut inClassEnv: Interactive::GraphicEnvCache) -> Result<Arc<Absyn::ClassPart>> {
+fn refactorGraphAnnInClassPart(mut inPart: Arc<Absyn::ClassPart>, mut inProgram: Absyn::Program, mut classPath: Arc<Absyn::Path>, mut inClassEnv: Interactive::GraphicEnvCache) -> Arc<Absyn::ClassPart> {
     let mut outPart: Arc<Absyn::ClassPart>;
     outPart = 'mc: {
         let __mc_input = (inPart.clone(), inProgram.clone(), classPath.clone(), inClassEnv.clone());
@@ -187,7 +187,7 @@ fn refactorGraphAnnInClassPart(mut inPart: Arc<Absyn::ClassPart>, mut inProgram:
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::ClassPart::EQUATIONS { contents: eqContent }, p, cPath, env) => {
                     let mut resultEqContent: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
-                    resultEqContent = refactorGraphAnnInContentList(eqContent.clone(), (std::sync::Arc::new(refactorGraphAnnInEqItem) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::EquationItem>, Absyn::Program, Arc<Absyn::Path>, Interactive::GraphicEnvCache) -> Result<Arc<Absyn::EquationItem>> + 'static>), p.clone(), cPath.clone(), env.clone())?;
+                    resultEqContent = refactorGraphAnnInContentList(eqContent.clone(), (std::sync::Arc::new(fnptr!(refactorGraphAnnInEqItem, Arc<Absyn::EquationItem>, Absyn::Program, Arc<Absyn::Path>, Interactive::GraphicEnvCache)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::EquationItem>, Absyn::Program, Arc<Absyn::Path>, Interactive::GraphicEnvCache) -> Result<Arc<Absyn::EquationItem>> + 'static>), p.clone(), cPath.clone(), env.clone())?;
                     Ok(Arc::new(Absyn::ClassPart::EQUATIONS { contents: resultEqContent.clone() }))
                 }
                 _ => bail!("nomatch"),
@@ -197,7 +197,7 @@ fn refactorGraphAnnInClassPart(mut inPart: Arc<Absyn::ClassPart>, mut inProgram:
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::ClassPart::ALGORITHMS { contents: algContent }, p, cPath, env) => {
                     let mut resultAlgContent: Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>> = metamodelica::nil();
-                    resultAlgContent = refactorGraphAnnInContentList(algContent.clone(), (std::sync::Arc::new(refactorGraphAnnInAlgItem) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::AlgorithmItem>, Absyn::Program, Arc<Absyn::Path>, Interactive::GraphicEnvCache) -> Result<Arc<Absyn::AlgorithmItem>> + 'static>), p.clone(), cPath.clone(), env.clone())?;
+                    resultAlgContent = refactorGraphAnnInContentList(algContent.clone(), (std::sync::Arc::new(fnptr!(refactorGraphAnnInAlgItem, Arc<Absyn::AlgorithmItem>, Absyn::Program, Arc<Absyn::Path>, Interactive::GraphicEnvCache)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::AlgorithmItem>, Absyn::Program, Arc<Absyn::Path>, Interactive::GraphicEnvCache) -> Result<Arc<Absyn::AlgorithmItem>> + 'static>), p.clone(), cPath.clone(), env.clone())?;
                     Ok(Arc::new(Absyn::ClassPart::ALGORITHMS { contents: resultAlgContent.clone() }))
                 }
                 _ => bail!("nomatch"),
@@ -207,7 +207,7 @@ fn refactorGraphAnnInClassPart(mut inPart: Arc<Absyn::ClassPart>, mut inProgram:
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::ClassPart::INITIALEQUATIONS { contents: eqContent }, p, cPath, env) => {
                     let mut resultEqContent: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
-                    resultEqContent = refactorGraphAnnInContentList(eqContent.clone(), (std::sync::Arc::new(refactorGraphAnnInEqItem) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::EquationItem>, Absyn::Program, Arc<Absyn::Path>, Interactive::GraphicEnvCache) -> Result<Arc<Absyn::EquationItem>> + 'static>), p.clone(), cPath.clone(), env.clone())?;
+                    resultEqContent = refactorGraphAnnInContentList(eqContent.clone(), (std::sync::Arc::new(fnptr!(refactorGraphAnnInEqItem, Arc<Absyn::EquationItem>, Absyn::Program, Arc<Absyn::Path>, Interactive::GraphicEnvCache)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::EquationItem>, Absyn::Program, Arc<Absyn::Path>, Interactive::GraphicEnvCache) -> Result<Arc<Absyn::EquationItem>> + 'static>), p.clone(), cPath.clone(), env.clone())?;
                     Ok(Arc::new(Absyn::ClassPart::INITIALEQUATIONS { contents: resultEqContent.clone() }))
                 }
                 _ => bail!("nomatch"),
@@ -217,7 +217,7 @@ fn refactorGraphAnnInClassPart(mut inPart: Arc<Absyn::ClassPart>, mut inProgram:
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::ClassPart::INITIALALGORITHMS { contents: algContent }, p, cPath, env) => {
                     let mut resultAlgContent: Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>> = metamodelica::nil();
-                    resultAlgContent = refactorGraphAnnInContentList(algContent.clone(), (std::sync::Arc::new(refactorGraphAnnInAlgItem) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::AlgorithmItem>, Absyn::Program, Arc<Absyn::Path>, Interactive::GraphicEnvCache) -> Result<Arc<Absyn::AlgorithmItem>> + 'static>), p.clone(), cPath.clone(), env.clone())?;
+                    resultAlgContent = refactorGraphAnnInContentList(algContent.clone(), (std::sync::Arc::new(fnptr!(refactorGraphAnnInAlgItem, Arc<Absyn::AlgorithmItem>, Absyn::Program, Arc<Absyn::Path>, Interactive::GraphicEnvCache)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::AlgorithmItem>, Absyn::Program, Arc<Absyn::Path>, Interactive::GraphicEnvCache) -> Result<Arc<Absyn::AlgorithmItem>> + 'static>), p.clone(), cPath.clone(), env.clone())?;
                     Ok(Arc::new(Absyn::ClassPart::INITIALALGORITHMS { contents: resultAlgContent.clone() }))
                 }
                 _ => bail!("nomatch"),
@@ -231,9 +231,9 @@ fn refactorGraphAnnInClassPart(mut inPart: Arc<Absyn::ClassPart>, mut inProgram:
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outPart)
+    outPart
 }
 
 fn refactorGraphAnnInContentList<contentType: Clone + 'static>(mut inList: Arc<metamodelica::List<contentType>>, mut refactorGraphAnnInItem: Arc<dyn ::std::ops::Fn(contentType, Absyn::Program, Arc<Absyn::Path>, Interactive::GraphicEnvCache) -> Result<contentType> + 'static>, mut inProgram: Absyn::Program, mut classPath: Arc<Absyn::Path>, mut inClassEnv: Interactive::GraphicEnvCache) -> Result<Arc<metamodelica::List<contentType>>> {
@@ -269,7 +269,7 @@ fn refactorGraphAnnInElItem(mut inItem: Arc<Absyn::ElementItem>, mut inProgram: 
     Ok(outItem)
 }
 
-fn refactorGraphAnnInEqItem(mut inItem: Arc<Absyn::EquationItem>, mut inProgram: Absyn::Program, mut classPath: Arc<Absyn::Path>, mut inClassEnv: Interactive::GraphicEnvCache) -> Result<Arc<Absyn::EquationItem>> {
+fn refactorGraphAnnInEqItem(mut inItem: Arc<Absyn::EquationItem>, mut inProgram: Absyn::Program, mut classPath: Arc<Absyn::Path>, mut inClassEnv: Interactive::GraphicEnvCache) -> Arc<Absyn::EquationItem> {
     let mut outItem: Arc<Absyn::EquationItem>;
     outItem = 'mc: {
         let __mc_input = (inItem.clone(), inProgram.clone());
@@ -291,12 +291,12 @@ fn refactorGraphAnnInEqItem(mut inItem: Arc<Absyn::EquationItem>, mut inProgram:
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outItem)
+    outItem
 }
 
-fn refactorGraphAnnInAlgItem(mut inItem: Arc<Absyn::AlgorithmItem>, mut inProgram: Absyn::Program, mut classPath: Arc<Absyn::Path>, mut inClassEnv: Interactive::GraphicEnvCache) -> Result<Arc<Absyn::AlgorithmItem>> {
+fn refactorGraphAnnInAlgItem(mut inItem: Arc<Absyn::AlgorithmItem>, mut inProgram: Absyn::Program, mut classPath: Arc<Absyn::Path>, mut inClassEnv: Interactive::GraphicEnvCache) -> Arc<Absyn::AlgorithmItem> {
     let mut outItem: Arc<Absyn::AlgorithmItem>;
     outItem = 'mc: {
         let __mc_input = inItem.clone();
@@ -316,9 +316,9 @@ fn refactorGraphAnnInAlgItem(mut inItem: Arc<Absyn::AlgorithmItem>, mut inProgra
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outItem)
+    outItem
 }
 
 fn refactorGraphAnnInElement(mut inElement: Arc<Absyn::Element>, mut inProgram: Absyn::Program, mut classPath: Arc<Absyn::Path>, mut inClassEnv: Interactive::GraphicEnvCache) -> Result<Arc<Absyn::Element>> {
@@ -328,7 +328,7 @@ fn refactorGraphAnnInElement(mut inElement: Arc<Absyn::Element>, mut inProgram: 
             let mut resultSpec: Arc<Absyn::ElementSpec> = Arc::new(<Absyn::ElementSpec as ::std::default::Default>::default());
             let mut cc = (*cc).clone();
             cc = refactorConstrainClass(cc.clone(), p.clone(), cPath.clone(), env.clone())?;
-            resultSpec = refactorGraphAnnInElSpec(es.clone(), p.clone(), cPath.clone(), env.clone())?;
+            resultSpec = refactorGraphAnnInElSpec(es.clone(), p.clone(), cPath.clone(), env.clone());
             Arc::new(Absyn::Element::ELEMENT { finalPrefix: f.clone(), redeclareKeywords: rdk.clone(), innerOuter: io.clone(), specification: resultSpec.clone(), info: i.clone(), constrainClass: cc.clone() })
         },
         _ => bail!("match: no arm matched"),
@@ -341,7 +341,7 @@ fn refactorConstrainClass(mut inCC: Option<Arc<Absyn::ConstrainClass>>, mut inPr
     outCC = (::match_deref::match_deref! { match &((inCC.clone(), inProgram.clone(), classPath.clone(), inClassEnv.clone())) {
         (Some(Deref @ Absyn::ConstrainClass { elementSpec: es, comment: com }), p, cPath, env) => {
             let mut resultSpec: Arc<Absyn::ElementSpec> = Arc::new(<Absyn::ElementSpec as ::std::default::Default>::default());
-            resultSpec = refactorGraphAnnInElSpec(es.clone(), p.clone(), cPath.clone(), env.clone())?;
+            resultSpec = refactorGraphAnnInElSpec(es.clone(), p.clone(), cPath.clone(), env.clone());
             Some(Arc::new(Absyn::ConstrainClass { elementSpec: resultSpec.clone(), comment: com.clone() }))
         },
         (None, _, _, _) => {
@@ -352,7 +352,7 @@ fn refactorConstrainClass(mut inCC: Option<Arc<Absyn::ConstrainClass>>, mut inPr
     Ok(outCC)
 }
 
-fn refactorGraphAnnInElSpec(mut inSpec: Arc<Absyn::ElementSpec>, mut inProgram: Absyn::Program, mut classPath: Arc<Absyn::Path>, mut inClassEnv: Interactive::GraphicEnvCache) -> Result<Arc<Absyn::ElementSpec>> {
+fn refactorGraphAnnInElSpec(mut inSpec: Arc<Absyn::ElementSpec>, mut inProgram: Absyn::Program, mut classPath: Arc<Absyn::Path>, mut inClassEnv: Interactive::GraphicEnvCache) -> Arc<Absyn::ElementSpec> {
     let mut outSpec: Arc<Absyn::ElementSpec>;
     outSpec = 'mc: {
         let __mc_input = (inSpec.clone(), inProgram.clone(), classPath.clone(), inClassEnv.clone());
@@ -374,8 +374,8 @@ fn refactorGraphAnnInElSpec(mut inSpec: Arc<Absyn::ElementSpec>, mut inProgram: 
                     let mut at = (*at).clone();
                     let mut path = (*path).clone();
                     let mut z = (*z).clone();
-                    resultComp = refactorGraphAnnInComponentItem(firstComp.clone(), cPath.clone(), path.clone(), p.clone(), env.clone())?;
-                    let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(refactorGraphAnnInElSpec(Arc::new(Absyn::ElementSpec::COMPONENTS { attributes: at.clone(), typeSpec: Arc::new(Absyn::TypeSpec::TPATH { path: path.clone(), arrayDim: z.clone() }), components: restCompList.clone() }), p.clone(), cPath.clone(), env.clone())?) {
+                    resultComp = refactorGraphAnnInComponentItem(firstComp.clone(), cPath.clone(), path.clone(), p.clone(), env.clone());
+                    let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(refactorGraphAnnInElSpec(Arc::new(Absyn::ElementSpec::COMPONENTS { attributes: at.clone(), typeSpec: Arc::new(Absyn::TypeSpec::TPATH { path: path.clone(), arrayDim: z.clone() }), components: restCompList.clone() }), p.clone(), cPath.clone(), env.clone())) {
                         Deref @ Absyn::ElementSpec::COMPONENTS { attributes: __pa0, typeSpec: Deref @ Absyn::TypeSpec::TPATH { path: __pa1, arrayDim: __pa2 }, components: __pa3 } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -396,12 +396,12 @@ fn refactorGraphAnnInElSpec(mut inSpec: Arc<Absyn::ElementSpec>, mut inProgram: 
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outSpec)
+    outSpec
 }
 
-fn refactorGraphAnnInComponentItem(mut inCom: Arc<Absyn::ComponentItem>, mut classPath: Arc<Absyn::Path>, mut inPath: Arc<Absyn::Path>, mut inProgram: Absyn::Program, mut inClassEnv: Interactive::GraphicEnvCache) -> Result<Arc<Absyn::ComponentItem>> {
+fn refactorGraphAnnInComponentItem(mut inCom: Arc<Absyn::ComponentItem>, mut classPath: Arc<Absyn::Path>, mut inPath: Arc<Absyn::Path>, mut inProgram: Absyn::Program, mut inClassEnv: Interactive::GraphicEnvCache) -> Arc<Absyn::ComponentItem> {
     let mut outCom: Arc<Absyn::ComponentItem>;
     outCom = 'mc: {
         let __mc_input = (inCom.clone(), classPath.clone(), inPath.clone(), inProgram.clone(), inClassEnv.clone());
@@ -423,9 +423,9 @@ fn refactorGraphAnnInComponentItem(mut inCom: Arc<Absyn::ComponentItem>, mut cla
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outCom)
+    outCom
 }
 
 fn transformComponentAnnList(mut inArgs: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, mut inCon: Context, mut resultList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, mut classPath: Arc<Absyn::Path>, mut inPath: Arc<Absyn::Path>, mut inProgram: Absyn::Program, mut inClassEnv: Interactive::GraphicEnvCache) -> Result<Arc<metamodelica::List<Arc<Absyn::ElementArg>>>> {
@@ -449,7 +449,7 @@ fn transformComponentAnnList(mut inArgs: Arc<metamodelica::List<Arc<Absyn::Eleme
                     let mut rot: Option<metamodelica::Real> = None;
                     let mut res = (*res).clone();
                     let Absyn::R_CONNECTOR { .. } = (getRestrictionFromPath(cPath.clone(), path.clone(), p.clone(), env.clone())?) else { bail!("pattern mismatch") };
-                    rot = getRotationDegree(listAppend(res.clone(), rest.clone()))?;
+                    rot = getRotationDegree(listAppend(res.clone(), rest.clone()));
                     iconTrans = getIconTransformation(x1.clone(), y1.clone(), x2.clone(), y2.clone(), rot.clone(), cPath.clone(), path.clone(), p.clone(), env.clone())?;
                     diagramTrans = getDiagramTransformation(x1.clone(), y1.clone(), x2.clone(), y2.clone(), rot.clone(), cPath.clone(), path.clone(), p.clone(), env.clone())?;
                     trans = list![diagramTrans.clone(), iconTrans.clone()];
@@ -466,7 +466,7 @@ fn transformComponentAnnList(mut inArgs: Arc<metamodelica::List<Arc<Absyn::Eleme
                     let mut diagramTrans: Arc<Absyn::ElementArg> = Arc::new(<Absyn::ElementArg as ::std::default::Default>::default());
                     let mut rot: Option<metamodelica::Real> = None;
                     let mut res = (*res).clone();
-                    rot = getRotationDegree(listAppend(res.clone(), rest.clone()))?;
+                    rot = getRotationDegree(listAppend(res.clone(), rest.clone()));
                     diagramTrans = getDiagramTransformation(x1.clone(), y1.clone(), x2.clone(), y2.clone(), rot.clone(), cPath.clone(), path.clone(), p.clone(), env.clone())?;
                     res = transformComponentAnnList(rest.clone(), context.clone(), res.clone(), cPath.clone(), path.clone(), p.clone(), env.clone())?;
                     res = list![Arc::new(Absyn::ElementArg::MODIFICATION { finalPrefix: fi.clone(), eachPrefix: e.clone(), path: Arc::new(Absyn::Path::IDENT { name: (literal!("Placement")).clone() }), modification: Some(Arc::new(Absyn::Modification { elementArgLst: list![diagramTrans.clone()], eqMod: openmodelica_ast::Absyn::EqMod::interned_NOMOD() })), comment: com.clone(), info: info.clone() })];
@@ -501,7 +501,7 @@ fn getRestrictionFromPath(mut classPath: Arc<Absyn::Path>, mut inPath: Arc<Absyn
                     let mut cdef: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
                     let mut fullPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     let mut restriction: Absyn::Restriction = Absyn::Restriction::R_BLOCK;
-                    fullPath = fixPaths(cPath.clone(), path.clone())?;
+                    fullPath = fixPaths(cPath.clone(), path.clone());
                     cdef = ProgramUtil::getPathedClassInProgram(fullPath.clone(), p.clone(), false, false)?;
                     restriction = getRestrictionInClass(cdef.clone())?;
                     Ok(restriction.clone())
@@ -547,7 +547,7 @@ fn getRestrictionInClass(mut inClass: Arc<Absyn::Class>) -> Result<Absyn::Restri
     Ok(outRestriction)
 }
 
-fn getRotationDegree(mut inList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>) -> Result<Option<metamodelica::Real>> {
+fn getRotationDegree(mut inList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>) -> Option<metamodelica::Real> {
     let mut degrees: Option<metamodelica::Real>;
     degrees = 'mc: {
         let __mc_input = inList.clone();
@@ -573,15 +573,15 @@ fn getRotationDegree(mut inList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
                     let mut res: Option<metamodelica::Real> = None;
-                    res = getRotationDegree(rest.clone())?;
+                    res = getRotationDegree(rest.clone());
                     Ok(res.clone())
                 }
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(degrees)
+    degrees
 }
 
 fn getIconTransformation(mut ax1: Arc<Absyn::Exp>, mut ay1: Arc<Absyn::Exp>, mut ax2: Arc<Absyn::Exp>, mut ay2: Arc<Absyn::Exp>, mut inRotation: Option<metamodelica::Real>, mut classPath: Arc<Absyn::Path>, mut inPath: Arc<Absyn::Path>, mut inProg: Absyn::Program, mut inClassEnv: Interactive::GraphicEnvCache) -> Result<Arc<Absyn::ElementArg>> {
@@ -824,7 +824,7 @@ fn getCoordsInPath(mut classPath: Arc<Absyn::Path>, mut inPath: Arc<Absyn::Path>
                     let mut x2: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
                     let mut y2: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
                     let mut fullPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-                    fullPath = fixPaths(cPath.clone(), path.clone())?;
+                    fullPath = fixPaths(cPath.clone(), path.clone());
                     cdef = ProgramUtil::getPathedClassInProgram(fullPath.clone(), p.clone(), false, false)?;
                     (x1, y1, x2, y2) = getCoordsInClass(cdef.clone(), context.clone())?;
                     Ok((x1.clone(), y1.clone(), x2.clone(), y2.clone()))
@@ -1930,7 +1930,7 @@ fn cleanStyleAttrs2(mut inArgs: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>,
             resultList = removeFillPatternInList(resultList.clone());
             rest = setDefaultLineInList(rest.clone());
             resultList = setDefaultLineInList(resultList.clone());
-            (rest, resultList) = setDefaultFillColor(rest.clone(), resultList.clone())?;
+            (rest, resultList) = setDefaultFillColor(rest.clone(), resultList.clone());
             resultList = List::appendElt(arg.clone(), resultList.clone());
             { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
@@ -1942,7 +1942,7 @@ fn cleanStyleAttrs2(mut inArgs: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>,
             resultList = removeFillPatternInList(resultList.clone());
             rest = setDefaultLineInList(rest.clone());
             resultList = setDefaultLineInList(resultList.clone());
-            (rest, resultList) = setDefaultFillColor(rest.clone(), resultList.clone())?;
+            (rest, resultList) = setDefaultFillColor(rest.clone(), resultList.clone());
             resultList = List::appendElt(arg.clone(), resultList.clone());
             { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
@@ -2053,7 +2053,7 @@ fn removeFillPatternInList(mut inList: Arc<metamodelica::List<Arc<Absyn::Element
     outList
 }
 
-fn setDefaultFillColor(mut oldList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, mut transformedList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>) -> Result<(Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, Arc<metamodelica::List<Arc<Absyn::ElementArg>>>)> {
+fn setDefaultFillColor(mut oldList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, mut transformedList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>) -> (Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, Arc<metamodelica::List<Arc<Absyn::ElementArg>>>) {
     let mut oList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
     let mut tList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
     (oList, tList) = 'mc: {
@@ -2077,9 +2077,9 @@ fn setDefaultFillColor(mut oldList: Arc<metamodelica::List<Arc<Absyn::ElementArg
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((oList, tList))
+    (oList, tList)
 }
 
 fn isFillColorInList(mut inList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>) -> bool {
@@ -2264,7 +2264,7 @@ pub static thicknessMapList: std::sync::LazyLock<Arc<metamodelica::List<metamode
 
 pub static arrowMapList: std::sync::LazyLock<Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>> = std::sync::LazyLock::new(|| { list![list![(arcstr::literal!(None_)).clone(), (arcstr::literal!(None_)).clone()], list![(arcstr::literal!(None_)).clone(), (arcstr::literal!(Filled)).clone()], list![(arcstr::literal!(Filled)).clone(), (arcstr::literal!(None_)).clone()], list![(arcstr::literal!(Filled)).clone(), (arcstr::literal!(Filled)).clone()], list![(arcstr::literal!(None_)).clone(), (arcstr::literal!(Half)).clone()]] });
 
-fn fixPaths(mut inPath1: Arc<Absyn::Path>, mut inPath2: Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> {
+fn fixPaths(mut inPath1: Arc<Absyn::Path>, mut inPath2: Arc<Absyn::Path>) -> Arc<Absyn::Path> {
     let mut outPath: Arc<Absyn::Path>;
     outPath = 'mc: {
         let __mc_input = (inPath1.clone(), inPath2.clone());
@@ -2279,7 +2279,7 @@ fn fixPaths(mut inPath1: Arc<Absyn::Path>, mut inPath2: Arc<Absyn::Path>) -> Res
                     str2 = (AbsynUtil::pathFirstIdent(ip2.clone())?).clone();
                     let false = (stringEq((str1.clone()).clone(), (str2.clone()).clone())) else { bail!("pattern mismatch") };
                     p1 = AbsynUtil::stripLast(ip1.clone())?;
-                    out = fixPaths(p1.clone(), ip2.clone())?;
+                    out = fixPaths(p1.clone(), ip2.clone());
                     Ok(out.clone())
                 }
                 _ => bail!("nomatch"),
@@ -2310,8 +2310,8 @@ fn fixPaths(mut inPath1: Arc<Absyn::Path>, mut inPath2: Arc<Absyn::Path>) -> Res
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outPath)
+    outPath
 }
 

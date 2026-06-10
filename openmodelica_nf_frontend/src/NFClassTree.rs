@@ -554,7 +554,7 @@ pub mod ClassTree {
                 _ => bail!("pattern mismatch"),
             } };
             ext_def = __pa0.clone();
-            Error::addSourceMessage(Error::EXTENDS_LOOP.clone(), list![(SCodeUtil::getElementName(ext_def.clone())?).clone()], InstNode::info(clsNode.clone())?)?;
+            Error::addSourceMessage(Error::EXTENDS_LOOP.clone(), list![(SCodeUtil::getElementName(ext_def.clone())?).clone()], InstNode::info(clsNode.clone()))?;
             bail!("fail")
         },
         _ => {
@@ -1430,7 +1430,7 @@ pub mod ClassTree {
         _ => {
             n1 = findLocalConflictElement(newEntry.clone(), classTree.clone())?;
             n2 = findLocalConflictElement(oldEntry.clone(), classTree.clone())?;
-            Error::addMultiSourceMessage(Error::DOUBLE_DECLARATION_OF_ELEMENTS.clone(), list![(name.clone()).clone()], list![InstNode::info(n2.clone())?, InstNode::info(n1.clone())?])?;
+            Error::addMultiSourceMessage(Error::DOUBLE_DECLARATION_OF_ELEMENTS.clone(), list![(name.clone()).clone()], list![InstNode::info(n2.clone()), InstNode::info(n1.clone())])?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1484,7 +1484,7 @@ pub mod ClassTree {
 
     fn addEnumConflict(mut newEntry: Arc<LookupTree::Entry::Entry>, mut oldEntry: Arc<LookupTree::Entry::Entry>, mut name: ArcStr, mut literal: Arc<InstNode::InstNode>) -> Result<Arc<LookupTree::Entry::Entry>> {
         let mut entry: Arc<LookupTree::Entry::Entry>;
-        Error::addSourceMessage(Error::DOUBLE_DECLARATION_OF_ELEMENTS.clone(), list![(InstNode::name(literal.clone())?).clone()], InstNode::info(literal.clone())?)?;
+        Error::addSourceMessage(Error::DOUBLE_DECLARATION_OF_ELEMENTS.clone(), list![(InstNode::name(literal.clone())?).clone()], InstNode::info(literal.clone()))?;
         bail!("fail");
         Ok(entry)
     }
@@ -1899,9 +1899,9 @@ pub mod ClassTree {
             if entry.children.clone().is_empty() {
                 node = Mutable::access(node_ptr.clone());
                 if SCodeUtil::isClassExtends(InstNode::definition(node.clone())?) {
-                    Error::addSourceMessage(Error::CLASS_EXTENDS_TARGET_NOT_FOUND.clone(), list![(InstNode::name(node.clone())?).clone()], InstNode::info(node.clone())?)?;
+                    Error::addSourceMessage(Error::CLASS_EXTENDS_TARGET_NOT_FOUND.clone(), list![(InstNode::name(node.clone())?).clone()], InstNode::info(node.clone()))?;
                 } else {
-                    Error::addSourceMessage(Error::REDECLARE_NONEXISTING_ELEMENT.clone(), list![(InstNode::name(node.clone())?).clone()], InstNode::info(node.clone())?)?;
+                    Error::addSourceMessage(Error::REDECLARE_NONEXISTING_ELEMENT.clone(), list![(InstNode::name(node.clone())?).clone()], InstNode::info(node.clone()))?;
                 }
                 bail!("fail");
             }
@@ -1998,7 +1998,7 @@ pub mod ClassTree {
         let mut inner_node: Arc<InstNode::InstNode>;
         inner_node = Lookup::lookupInner(outerNode.clone(), scope.clone())?;
         if metamodelica::valueConstructor((&*outerNode.clone()))? != metamodelica::valueConstructor((&*inner_node.clone()))? {
-            Error::addMultiSourceMessage(Error::FOUND_WRONG_INNER_ELEMENT.clone(), list![(InstNode::typeName(inner_node.clone())?).clone(), (InstNode::name(outerNode.clone())?).clone(), (InstNode::typeName(outerNode.clone())?).clone()], list![InstNode::info(outerNode.clone())?, InstNode::info(inner_node.clone())?])?;
+            Error::addMultiSourceMessage(Error::FOUND_WRONG_INNER_ELEMENT.clone(), list![(InstNode::typeName(inner_node.clone())?).clone(), (InstNode::name(outerNode.clone())?).clone(), (InstNode::typeName(outerNode.clone())?).clone()], list![InstNode::info(outerNode.clone()), InstNode::info(inner_node.clone())])?;
             bail!("fail");
         }
         innerOuterNode = Arc::new(InstNode::InstNode::INNER_OUTER_NODE { innerNode: inner_node.clone(), outerNode: outerNode.clone() });
@@ -2012,11 +2012,11 @@ pub mod ClassTree {
             let () = (::match_deref::match_deref! { match &(def.clone()) {
         Deref @ SCode::ClassDef::DERIVED { modifications: Deref @ SCode::Mod::NOMOD { .. }, .. } => (),
         Deref @ SCode::ClassDef::DERIVED { .. } => {
-            Error::addSourceMessage(Error::OUTER_ELEMENT_MOD.clone(), list![(SCodeDump::printModStr(var_field!((*def).modifications, SCode::ClassDef::DERIVED).clone(), SCodeDump::defaultOptions.clone())?).clone(), (InstNode::name(outerCls.clone())?).clone()], InstNode::info(outerCls.clone())?)?;
+            Error::addSourceMessage(Error::OUTER_ELEMENT_MOD.clone(), list![(SCodeDump::printModStr(var_field!((*def).modifications, SCode::ClassDef::DERIVED).clone(), SCodeDump::defaultOptions.clone())?).clone(), (InstNode::name(outerCls.clone())?).clone()], InstNode::info(outerCls.clone()))?;
             bail!("fail")
         },
         _ => {
-            Error::addSourceMessage(Error::OUTER_LONG_CLASS.clone(), list![(InstNode::name(outerCls.clone())?).clone()], InstNode::info(outerCls.clone())?)?;
+            Error::addSourceMessage(Error::OUTER_LONG_CLASS.clone(), list![(InstNode::name(outerCls.clone())?).clone()], InstNode::info(outerCls.clone()))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2113,7 +2113,7 @@ pub mod ClassTree {
         SCode::Restriction::R_BLOCK { .. } => (),
         SCode::Restriction::R_CONNECTOR { .. } => (),
         _ => {
-            Error::addMultiSourceMessage(Error::NON_BREAKABLE_COMPONENT.clone(), list![(InstNode::name(node.clone())?).clone()], list![info.clone(), InstNode::info(node.clone())?])?;
+            Error::addMultiSourceMessage(Error::NON_BREAKABLE_COMPONENT.clone(), list![(InstNode::name(node.clone())?).clone()], list![info.clone(), InstNode::info(node.clone())])?;
             bail!("fail")
         },
     });

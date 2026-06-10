@@ -881,7 +881,7 @@ fn addPath(mut path: Arc<Absyn::Path>, mut tree: Arc<PathTree::Tree>) -> Result<
     Ok(tree)
 }
 
-fn lookupPath(mut path: Arc<Absyn::Path>, mut paths: Arc<PathTree::Tree>, mut exactMatch: bool, mut fullyQualified: bool) -> Result<bool> {
+fn lookupPath(mut path: Arc<Absyn::Path>, mut paths: Arc<PathTree::Tree>, mut exactMatch: bool, mut fullyQualified: bool) -> bool {
     let mut found: bool = false;
     let mut entry: Arc<PathEntry> = Arc::new(<PathEntry as ::std::default::Default>::default());
     found = 'mc: {
@@ -907,7 +907,7 @@ fn lookupPath(mut path: Arc<Absyn::Path>, mut paths: Arc<PathTree::Tree>, mut ex
                     } else if PathTree::isEmpty(entry.tree.clone()) && !(exactMatch.clone()) {
                         found = true;
                     } else {
-                        found = lookupPath(var_field!((*path).path, Absyn::Path::QUALIFIED).clone(), entry.tree.clone(), exactMatch.clone(), fullyQualified.clone())?;
+                        found = lookupPath(var_field!((*path).path, Absyn::Path::QUALIFIED).clone(), entry.tree.clone(), exactMatch.clone(), fullyQualified.clone());
                     }
                     Ok((found.clone(), entry.clone(), found.clone()))
                 }
@@ -917,7 +917,7 @@ fn lookupPath(mut path: Arc<Absyn::Path>, mut paths: Arc<PathTree::Tree>, mut ex
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::Path::FULLYQUALIFIED { .. } => {
-                    Ok(lookupPath(var_field!((*path).path, Absyn::Path::FULLYQUALIFIED).clone(), paths.clone(), exactMatch.clone(), true)?)
+                    Ok(lookupPath(var_field!((*path).path, Absyn::Path::FULLYQUALIFIED).clone(), paths.clone(), exactMatch.clone(), true))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -930,20 +930,20 @@ fn lookupPath(mut path: Arc<Absyn::Path>, mut paths: Arc<PathTree::Tree>, mut ex
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(found)
+    found
 }
 
 fn matchPath(mut path: Arc<Absyn::Path>, mut paths: Arc<Paths::Paths>, mut exactMatch: bool, mut info: SourceInfo, mut matches: Matches) -> Result<Matches> {
     let mut matches: Matches = matches;
-    if lookupPath(path.clone(), paths.tree.clone(), exactMatch.clone(), false)? {
+    if lookupPath(path.clone(), paths.tree.clone(), exactMatch.clone(), false) {
         matches = metamodelica::cons(Match { name: AbsynUtil::pathToCref(path.clone())?, scope: (Paths::currentPathStr(paths.clone())).clone(), info: info.clone() }, matches.clone());
     }
     Ok(matches)
 }
 
-fn lookupCref(mut cref: Arc<Absyn::ComponentRef>, mut paths: Arc<PathTree::Tree>, mut exactMatch: bool, mut fullyQualified: bool) -> Result<bool> {
+fn lookupCref(mut cref: Arc<Absyn::ComponentRef>, mut paths: Arc<PathTree::Tree>, mut exactMatch: bool, mut fullyQualified: bool) -> bool {
     let mut found: bool = false;
     let mut entry: Arc<PathEntry> = Arc::new(<PathEntry as ::std::default::Default>::default());
     found = 'mc: {
@@ -969,7 +969,7 @@ fn lookupCref(mut cref: Arc<Absyn::ComponentRef>, mut paths: Arc<PathTree::Tree>
                     } else if PathTree::isEmpty(entry.tree.clone()) && !(exactMatch.clone()) {
                         found = true;
                     } else {
-                        found = lookupCref(var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_QUAL).clone(), entry.tree.clone(), exactMatch.clone(), fullyQualified.clone())?;
+                        found = lookupCref(var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_QUAL).clone(), entry.tree.clone(), exactMatch.clone(), fullyQualified.clone());
                     }
                     Ok((found.clone(), entry.clone(), found.clone()))
                 }
@@ -979,7 +979,7 @@ fn lookupCref(mut cref: Arc<Absyn::ComponentRef>, mut paths: Arc<PathTree::Tree>
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { .. } => {
-                    Ok(lookupCref(var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone(), paths.clone(), exactMatch.clone(), true)?)
+                    Ok(lookupCref(var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone(), paths.clone(), exactMatch.clone(), true))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -992,17 +992,17 @@ fn lookupCref(mut cref: Arc<Absyn::ComponentRef>, mut paths: Arc<PathTree::Tree>
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(found)
+    found
 }
 
-fn matchCref(mut cref: Arc<Absyn::ComponentRef>, mut paths: Arc<Paths::Paths>, mut exactMatch: bool, mut info: SourceInfo, mut matches: Matches) -> Result<Matches> {
+fn matchCref(mut cref: Arc<Absyn::ComponentRef>, mut paths: Arc<Paths::Paths>, mut exactMatch: bool, mut info: SourceInfo, mut matches: Matches) -> Matches {
     let mut matches: Matches = matches;
-    if lookupCref(cref.clone(), paths.tree.clone(), exactMatch.clone(), false)? {
+    if lookupCref(cref.clone(), paths.tree.clone(), exactMatch.clone(), false) {
         matches = metamodelica::cons(Match { name: cref.clone(), scope: (Paths::currentPathStr(paths.clone())).clone(), info: info.clone() }, matches.clone());
     }
-    Ok(matches)
+    matches
 }
 
 fn shadowLocalNames(mut cls: Arc<Absyn::Class>, mut paths: Arc<Paths::Paths>) -> Result<Arc<Paths::Paths>> {
@@ -1285,7 +1285,7 @@ fn lookupInEqMod(mut eqMod: Arc<Absyn::EqMod>, mut paths: Arc<Paths::Paths>, mut
 fn lookupInExp(mut exp: Arc<Absyn::Exp>, mut paths: Arc<Paths::Paths>, mut exactMatch: bool, mut info: SourceInfo, mut matches: Matches) -> Result<Matches> {
     let mut matches: Matches = matches;
     matches = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Absyn::Exp::CREF { .. } => matchCref(var_field!((*exp).componentRef, Absyn::Exp::CREF).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?,
+        Deref @ Absyn::Exp::CREF { .. } => matchCref(var_field!((*exp).componentRef, Absyn::Exp::CREF).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone()),
         Deref @ Absyn::Exp::BINARY { .. } => {
             matches = lookupInExp(var_field!((*exp).exp1, Absyn::Exp::BINARY).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
             lookupInExp(var_field!((*exp).exp2, Absyn::Exp::BINARY).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?
@@ -1308,11 +1308,11 @@ fn lookupInExp(mut exp: Arc<Absyn::Exp>, mut paths: Arc<Paths::Paths>, mut exact
             matches.clone()
         },
         Deref @ Absyn::Exp::CALL { .. } => {
-            matches = matchCref(var_field!((*exp).function_, Absyn::Exp::CALL).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
+            matches = matchCref(var_field!((*exp).function_, Absyn::Exp::CALL).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone());
             lookupInFunctionArgs(var_field!((*exp).functionArgs, Absyn::Exp::CALL).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?
         },
         Deref @ Absyn::Exp::PARTEVALFUNCTION { .. } => {
-            matches = matchCref(var_field!((*exp).function_, Absyn::Exp::PARTEVALFUNCTION).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
+            matches = matchCref(var_field!((*exp).function_, Absyn::Exp::PARTEVALFUNCTION).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone());
             lookupInFunctionArgs(var_field!((*exp).functionArgs, Absyn::Exp::PARTEVALFUNCTION).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?
         },
         Deref @ Absyn::Exp::ARRAY { .. } => {
@@ -1359,7 +1359,7 @@ fn lookupInExp(mut exp: Arc<Absyn::Exp>, mut paths: Arc<Paths::Paths>, mut exact
 
 fn lookupInCref(mut cref: Arc<Absyn::ComponentRef>, mut paths: Arc<Paths::Paths>, mut exactMatch: bool, mut info: SourceInfo, mut matches: Matches) -> Result<Matches> {
     let mut matches: Matches = matches;
-    matches = matchCref(cref.clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
+    matches = matchCref(cref.clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone());
     matches = lookupInCrefSubs(cref.clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
     Ok(matches)
 }

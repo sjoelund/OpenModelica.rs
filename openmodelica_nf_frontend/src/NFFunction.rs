@@ -638,7 +638,7 @@ pub mod Function {
         let mut fn_elem: Arc<SCode::Element>;
         let mut params: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
         let mut stmts: Arc<metamodelica::List<Arc<SCode::Statement>>> = metamodelica::nil();
-        let mut info: SourceInfo = InstNode::info(enumNode.clone())?;
+        let mut info: SourceInfo = InstNode::info(enumNode.clone());
         let mut enum_name: ArcStr = InstNode::name(enumNode.clone())?;
         elem = InstNode::definition(InstNode::resolveInner(Class::lastBaseClass(enumNode.clone())?))?;
         fn_def = (::match_deref::match_deref! { match &(elem.clone()) {
@@ -902,7 +902,7 @@ pub mod Function {
             s = IOStream::append(s.clone(), (AbsynUtil::pathString(getDerivedFunctionName(r#fn.clone())?, (literal!(".")).clone(), true, false)?).clone())?;
             s = IOStream::append(s.clone(), (literal!(", ")).clone())?;
             s = IOStream::append(s.clone(), stringDelimitList(getDerivedInputNames(r#fn.clone())?, (literal!(", ")).clone()))?;
-            s = IOStream::append(s.clone(), (DAEDumpTypes::dumpCommentAnnotationStr(cmt.clone())?).clone())?;
+            s = IOStream::append(s.clone(), (DAEDumpTypes::dumpCommentAnnotationStr(cmt.clone())).clone())?;
             s = IOStream::append(s.clone(), (literal!(")")).clone())?;
         } else {
             fn_name = (AbsynUtil::pathString(r#fn.path.clone(), (literal!(".")).clone(), true, false)?).clone();
@@ -938,7 +938,7 @@ pub mod Function {
                 }
             }
             s = Sections::toStream(InstNode::getSections(r#fn.node.clone())?, (indent.clone()).clone(), s.clone())?;
-            s = IOStream::append(s.clone(), (DAEDumpTypes::dumpClassAnnotationStr(cmt.clone())?).clone())?;
+            s = IOStream::append(s.clone(), (DAEDumpTypes::dumpClassAnnotationStr(cmt.clone())).clone())?;
             s = IOStream::append(s.clone(), (indent.clone()).clone())?;
             s = IOStream::append(s.clone(), (literal!("end ")).clone())?;
             s = IOStream::append(s.clone(), (fn_name.clone()).clone())?;
@@ -1607,7 +1607,7 @@ pub mod Function {
         if !(InstContext::inRelaxed(fn_context.clone())) {
             checkUseBeforeAssign(r#fn.clone())?;
         }
-        assign_field!(r#fn.locals = sortLocals(r#fn.locals.clone(), InstNode::info(r#fn.node.clone())?)?);
+        assign_field!(r#fn.locals = sortLocals(r#fn.locals.clone(), InstNode::info(r#fn.node.clone()))?);
         Ok(r#fn)
     }
 
@@ -1619,7 +1619,7 @@ pub mod Function {
         if Expression::isImpureCall(exp.clone())? {
             pure = false;
             if Config::languageStandardAtLeast(Config::LanguageStandard::_3_3.clone())? {
-                Error::addSourceMessage(Error::PURE_FUNCTION_WITH_IMPURE_CALLS.clone(), list![(AbsynUtil::pathString(name(r#fn.clone()), (literal!(".")).clone(), true, false)?).clone(), (Expression::getName(exp.clone())?).clone()], InstNode::info(r#fn.node.clone())?)?;
+                Error::addSourceMessage(Error::PURE_FUNCTION_WITH_IMPURE_CALLS.clone(), list![(AbsynUtil::pathString(name(r#fn.clone()), (literal!(".")).clone(), true, false)?).clone(), (Expression::getName(exp.clone())?).clone()], InstNode::info(r#fn.node.clone()))?;
             }
         }
         Ok(pure)
@@ -1937,7 +1937,7 @@ pub mod Function {
         __acc.reverse()
     }), defs.clone());
         defs = metamodelica::cons(def.clone(), defs.clone());
-        daeFn = DAE::Function::FUNCTION { path: r#fn.path.clone(), functions: defs.clone(), type_: ty.clone(), visibility: vis.clone(), partialPrefix: par.clone(), isImpure: impr.clone(), inlineType: ity.clone(), unusedInputs: unused_inputs.clone(), source: ElementSource::createElementSource(InstNode::info(r#fn.node.clone())?, None, openmodelica_frontend_types::DAE::Prefix::NOPRE, (DAE::emptyCref().clone(), DAE::emptyCref().clone()))?, comment: SCodeUtil::getElementComment(InstNode::definition(r#fn.node.clone())?) };
+        daeFn = DAE::Function::FUNCTION { path: r#fn.path.clone(), functions: defs.clone(), type_: ty.clone(), visibility: vis.clone(), partialPrefix: par.clone(), isImpure: impr.clone(), inlineType: ity.clone(), unusedInputs: unused_inputs.clone(), source: ElementSource::createElementSource(InstNode::info(r#fn.node.clone()), None, openmodelica_frontend_types::DAE::Prefix::NOPRE, (DAE::emptyCref().clone(), DAE::emptyCref().clone()))?, comment: SCodeUtil::getElementComment(InstNode::definition(r#fn.node.clone())?) };
         Ok(daeFn)
     }
 
@@ -2195,7 +2195,7 @@ pub mod Function {
         comp = InstNode::component(InstNode::resolveOuter(component.clone()))?;
         io = Component::innerOuter(comp.clone())?;
         if io.clone() != InnerOuter::NOT_INNER_OUTER.clone() {
-            Error::addSourceMessage(Error::INNER_OUTER_FORMAL_PARAMETER.clone(), list![(Prefixes::innerOuterString(io.clone())).clone(), (InstNode::name(component.clone())?).clone()], InstNode::info(InstNode::resolveOuter(component.clone()))?)?;
+            Error::addSourceMessage(Error::INNER_OUTER_FORMAL_PARAMETER.clone(), list![(Prefixes::innerOuterString(io.clone())).clone(), (InstNode::name(component.clone())?).clone()], InstNode::info(InstNode::resolveOuter(component.clone())))?;
             bail!("fail");
         }
         let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(Component::getAttributes(comp.clone())) {
@@ -2206,18 +2206,18 @@ pub mod Function {
         direction = __pa1.clone();
         var = __pa2.clone();
         if Prefixes::ConnectorType::isFlowOrStream(cty.clone()) {
-            Error::addSourceMessage(Error::INNER_OUTER_FORMAL_PARAMETER.clone(), list![(Prefixes::ConnectorType::toString(cty.clone())).clone(), (InstNode::name(component.clone())?).clone()], InstNode::info(component.clone())?)?;
+            Error::addSourceMessage(Error::INNER_OUTER_FORMAL_PARAMETER.clone(), list![(Prefixes::ConnectorType::toString(cty.clone())).clone(), (InstNode::name(component.clone())?).clone()], InstNode::info(component.clone()))?;
             bail!("fail");
         }
         if checkVisibility.clone() {
             vis = InstNode::visibility(component.clone());
             if direction.clone() != Direction::NONE.clone() {
                 if vis.clone() == Visibility::PROTECTED.clone() {
-                    Error::addSourceMessage(Error::PROTECTED_FORMAL_FUNCTION_VAR.clone(), list![(InstNode::name(component.clone())?).clone()], InstNode::info(component.clone())?)?;
+                    Error::addSourceMessage(Error::PROTECTED_FORMAL_FUNCTION_VAR.clone(), list![(InstNode::name(component.clone())?).clone()], InstNode::info(component.clone()))?;
                     bail!("fail");
                 }
             } else if vis.clone() == Visibility::PUBLIC.clone() {
-                Error::addSourceMessageAsError(Error::NON_FORMAL_PUBLIC_FUNCTION_VAR.clone(), list![(InstNode::name(component.clone())?).clone()], InstNode::info(component.clone())?)?;
+                Error::addSourceMessageAsError(Error::NON_FORMAL_PUBLIC_FUNCTION_VAR.clone(), list![(InstNode::name(component.clone())?).clone()], InstNode::info(component.clone()))?;
                 bail!("fail");
             }
         }
@@ -2266,7 +2266,7 @@ pub mod Function {
         Ok(builtin)
     }
 
-    fn mergeFunctionAnnotations(mut comments: Arc<metamodelica::List<Arc<SCode::Comment>>>) -> Result<Arc<SCode::Comment>> {
+    fn mergeFunctionAnnotations(mut comments: Arc<metamodelica::List<Arc<SCode::Comment>>>) -> Arc<SCode::Comment> {
         let mut outComment: Arc<SCode::Comment>;
         let mut comment: Option<ArcStr> = None;
         let mut r#mod: Arc<SCode::Mod> = openmodelica_frontend_types::SCode::Mod::interned_NOMOD();
@@ -2279,7 +2279,7 @@ pub mod Function {
             r#mod = (::match_deref::match_deref! { match &(cmt.clone()) {
         Deref @ SCode::Comment { annotation_: Some(Deref @ SCode::Annotation { modification: __esc_mod2 }), .. } => {
             mod2 = (*__esc_mod2).clone();
-            SCodeUtil::mergeModifiers(mod2.clone(), r#mod.clone())?
+            SCodeUtil::mergeModifiers(mod2.clone(), r#mod.clone())
         },
         _ => r#mod.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2290,7 +2290,7 @@ pub mod Function {
         _ => Arc::new(SCode::Comment { annotation_: Some(Arc::new(SCode::Annotation { modification: r#mod.clone() })), comment: comment.clone() }),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        Ok(outComment)
+        outComment
     }
 
     fn makeAttributes(mut node: Arc<InstNode::InstNode>, mut inputs: Arc<metamodelica::List<Arc<InstNode::InstNode>>>, mut outputs: Arc<metamodelica::List<Arc<InstNode::InstNode>>>, mut comments: Arc<metamodelica::List<Arc<SCode::Comment>>>) -> Result<DAE::FunctionAttributes> {
@@ -2307,7 +2307,7 @@ pub mod Function {
         let SCode::Restriction::R_FUNCTION { functionRestriction: __pa0 } = (res.clone()) else { bail!("pattern mismatch") };
         fres = __pa0.clone();
         is_partial = InstNode::isPartial(node.clone())?;
-        cmt = mergeFunctionAnnotations(comments.clone())?;
+        cmt = mergeFunctionAnnotations(comments.clone());
         purity = InstBasics::getFunctionRestrictionPurity(SCodeUtil::getFunctionRestrictionPurity(fres.clone()), cmt.clone(), true)?;
         attr = 'mc: {
         let __mc_input = fres.clone();
@@ -2336,7 +2336,7 @@ pub mod Function {
         __acc.reverse()
     });
             name = (SCodeUtil::isBuiltinFunction(def.clone(), in_params.clone(), out_params.clone())?).clone();
-            inline_ty = InstBasics::commentIsInlineFunc(cmt.clone())?;
+            inline_ty = InstBasics::commentIsInlineFunc(cmt.clone());
             generateEvents = InstBasics::commentGenerateEvents(cmt.clone());
             has_unbox_args = hasUnboxArgsAnnotation(cmt.clone())?;
             Ok(DAE::FunctionAttributes { inline: inline_ty.clone(), generateEvents: generateEvents.clone(), purity: purity.clone(), isFunctionPointer: is_partial.clone(), isBuiltin: DAE::FunctionBuiltin::FUNCTION_BUILTIN { name: Some((name.clone()).clone()), unboxArgs: has_unbox_args.clone() }, functionParallelism: openmodelica_frontend_types::DAE::FunctionParallelism::FP_NON_PARALLEL })
@@ -2366,7 +2366,7 @@ pub mod Function {
         __acc.reverse()
     });
             name = (SCodeUtil::isBuiltinFunction(def.clone(), in_params.clone(), out_params.clone())?).clone();
-            inline_ty = InstBasics::commentIsInlineFunc(cmt.clone())?;
+            inline_ty = InstBasics::commentIsInlineFunc(cmt.clone());
             generateEvents = InstBasics::commentGenerateEvents(cmt.clone());
             has_unbox_args = hasUnboxArgsAnnotation(cmt.clone())?;
             Ok(DAE::FunctionAttributes { inline: inline_ty.clone(), generateEvents: generateEvents.clone(), purity: purity.clone(), isFunctionPointer: is_partial.clone(), isBuiltin: DAE::FunctionBuiltin::FUNCTION_BUILTIN { name: Some((name.clone()).clone()), unboxArgs: has_unbox_args.clone() }, functionParallelism: openmodelica_frontend_types::DAE::FunctionParallelism::FP_PARALLEL_FUNCTION })
@@ -2375,7 +2375,7 @@ pub mod Function {
             let SCode::FunctionRestriction::FR_PARALLEL_FUNCTION { .. } = __mc_input.clone() else { bail!("nomatch") };
             let mut inline_ty: DAE::InlineType = DAE::InlineType::AFTER_INDEX_RED_INLINE;
             let mut generateEvents: bool = false;
-            inline_ty = InstBasics::commentIsInlineFunc(cmt.clone())?;
+            inline_ty = InstBasics::commentIsInlineFunc(cmt.clone());
             generateEvents = InstBasics::commentGenerateEvents(cmt.clone());
             Ok(DAE::FunctionAttributes { inline: inline_ty.clone(), generateEvents: generateEvents.clone(), purity: purity.clone(), isFunctionPointer: is_partial.clone(), isBuiltin: getBuiltinPtr(cmt.clone())?, functionParallelism: openmodelica_frontend_types::DAE::FunctionParallelism::FP_PARALLEL_FUNCTION })
         })() { break 'mc __v; }
@@ -2388,7 +2388,7 @@ pub mod Function {
             let mut inline_ty: DAE::InlineType = DAE::InlineType::AFTER_INDEX_RED_INLINE;
             let mut generateEvents: bool = false;
             let mut purity: DAE::Purity = purity.clone();
-            inline_ty = InstBasics::commentIsInlineFunc(cmt.clone())?;
+            inline_ty = InstBasics::commentIsInlineFunc(cmt.clone());
             generateEvents = InstBasics::commentGenerateEvents(cmt.clone());
             if purity.clone() == DAE::Purity::UNDEFINED.clone() && Config::languageStandardAtLeast(Config::LanguageStandard::_3_3.clone())? {
                 purity = if (SCodeUtil::isExternalFunctionRestriction(fres.clone())) {DAE::Purity::IMPURE.clone()} else {DAE::Purity::PURE.clone()};
@@ -2416,7 +2416,7 @@ pub mod Function {
             let mut p = p.clone();
             ty = InstNode::getType(p.clone())?;
             if !(isValidParamType(ty.clone())?) {
-                Error::addSourceMessage(Error::INVALID_FUNCTION_VAR_TYPE.clone(), list![(Type::toString(ty.clone())?).clone(), (InstNode::name(p.clone())?).clone()], InstNode::info(p.clone())?)?;
+                Error::addSourceMessage(Error::INVALID_FUNCTION_VAR_TYPE.clone(), list![(Type::toString(ty.clone())?).clone(), (InstNode::name(p.clone())?).clone()], InstNode::info(p.clone()))?;
                 bail!("fail");
             }
         }
@@ -2465,7 +2465,7 @@ pub mod Function {
             node = (r#fn.inputs.clone()).get(i.clone())?;
             ty = InstNode::getType(node.clone())?;
             if !(Type::isReal(ty.clone())? && Type::isScalar(ty.clone())) {
-                Error::addSourceMessage(Error::PARTIAL_DERIVATIVE_INPUT_INVALID_TYPE.clone(), list![(InstNode::name(node.clone())?).clone(), (AbsynUtil::pathString(getDerivedFunctionName(r#fn.clone())?, (literal!(".")).clone(), true, false)?).clone()], InstNode::info(r#fn.node.clone())?)?;
+                Error::addSourceMessage(Error::PARTIAL_DERIVATIVE_INPUT_INVALID_TYPE.clone(), list![(InstNode::name(node.clone())?).clone(), (AbsynUtil::pathString(getDerivedFunctionName(r#fn.clone())?, (literal!(".")).clone(), true, false)?).clone()], InstNode::info(r#fn.node.clone()))?;
                 bail!("fail");
             }
         }
@@ -2696,9 +2696,9 @@ pub mod Function {
             let mut var = var.clone();
             if InstNode::isOutput(var.clone()) {
                 parent = InstNode::parent(var.clone());
-                sources = list![InstNode::info(var.clone())?];
+                sources = list![InstNode::info(var.clone())];
                 if InstNode::isBaseClass(parent.clone()) {
-                    sources = metamodelica::cons(InstNode::info(InstNode::getDerivedNode(parent.clone(), true))?, sources.clone());
+                    sources = metamodelica::cons(InstNode::info(InstNode::getDerivedNode(parent.clone(), true)), sources.clone());
                 }
                 Error::addMultiSourceMessage(Error::UNASSIGNED_FUNCTION_OUTPUT.clone(), list![(InstNode::name(var.clone())?).clone()], sources.clone())?;
             }

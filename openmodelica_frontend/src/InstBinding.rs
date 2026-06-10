@@ -111,7 +111,7 @@ fn instBinding(mut inMod: Arc<DAE::Mod>, mut inVarLst: Arc<metamodelica::List<Ar
                     optVal = __pa1.clone();
                     ty2 = __pa2.clone();
                     (e_1, _) = Types::matchType(e.clone(), ty2.clone(), expected_type.clone(), true)?;
-                    e_1 = InstUtil::checkUseConstValue(useConstValue.clone(), e_1.clone(), optVal.clone())?;
+                    e_1 = InstUtil::checkUseConstValue(useConstValue.clone(), e_1.clone(), optVal.clone());
                     Ok(Some(e_1.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -189,7 +189,7 @@ fn instBinding2(mut inMod: Arc<DAE::Mod>, mut inType: Arc<DAE::Type>, mut inInte
             optVal = __pa1.clone();
             ty2 = __pa2.clone();
             (e_1, _) = Types::matchType(e.clone(), ty2.clone(), etype.clone(), true)?;
-            e_1 = InstUtil::checkUseConstValue(useConstValue.clone(), e_1.clone(), optVal.clone())?;
+            e_1 = InstUtil::checkUseConstValue(useConstValue.clone(), e_1.clone(), optVal.clone());
             Some(e_1.clone())
         },
         (r#mod, etype, Deref @ metamodelica::List::Cons { head: index, tail: res }, bind_name) => {
@@ -310,7 +310,7 @@ pub fn instDaeVariableAttributes(mut inCache: FCore::Cache, mut inEnv: FCore::Gr
                     stateSelect_value = InstUtil::getStateSelectFromExpOption(exp_bind_select.clone());
                     exp_bind_uncertainty = instEnumerationBinding(r#mod.clone(), varLst.clone(), index_list.clone(), (literal!("uncertain")).clone(), uncertaintyType().clone(), true)?;
                     uncertainty_value = getUncertainFromExpOption(exp_bind_uncertainty.clone());
-                    distribution_value = instDistributionBinding(r#mod.clone(), varLst.clone(), index_list.clone(), (literal!("distribution")).clone(), false)?;
+                    distribution_value = instDistributionBinding(r#mod.clone(), varLst.clone(), index_list.clone(), (literal!("distribution")).clone(), false);
                     startOrigin = instStartOrigin(r#mod.clone(), varLst.clone(), (literal!("start")).clone())?;
                     Ok((cache.clone(), Some(Arc::new(DAE::VariableAttributes::VAR_ATTR_REAL { quantity: quantity_str.clone(), unit: unit_str.clone(), displayUnit: displayunit_str.clone(), min: min_val.clone(), max: max_val.clone(), start: start_val.clone(), fixed: fixed_val.clone(), nominal: nominal_val.clone(), stateSelectOption: stateSelect_value.clone(), uncertainOption: uncertainty_value.clone(), distributionOption: distribution_value.clone(), equationBound: None, isProtected: None, finalPrefix: None, startOrigin: startOrigin.clone() }))))
                 }
@@ -336,7 +336,7 @@ pub fn instDaeVariableAttributes(mut inCache: FCore::Cache, mut inEnv: FCore::Gr
                     fixed_val = instBinding(r#mod.clone(), varLst.clone(), DAE::T_BOOL_DEFAULT().clone(), index_list.clone(), (literal!("fixed")).clone(), true)?;
                     exp_bind_uncertainty = instEnumerationBinding(r#mod.clone(), varLst.clone(), index_list.clone(), (literal!("uncertain")).clone(), uncertaintyType().clone(), true)?;
                     uncertainty_value = getUncertainFromExpOption(exp_bind_uncertainty.clone());
-                    distribution_value = instDistributionBinding(r#mod.clone(), varLst.clone(), index_list.clone(), (literal!("distribution")).clone(), false)?;
+                    distribution_value = instDistributionBinding(r#mod.clone(), varLst.clone(), index_list.clone(), (literal!("distribution")).clone(), false);
                     startOrigin = instStartOrigin(r#mod.clone(), varLst.clone(), (literal!("start")).clone())?;
                     Ok((cache.clone(), Some(Arc::new(DAE::VariableAttributes::VAR_ATTR_INT { quantity: quantity_str.clone(), min: min_val.clone(), max: max_val.clone(), start: start_val.clone(), fixed: fixed_val.clone(), uncertainOption: uncertainty_value.clone(), distributionOption: distribution_value.clone(), equationBound: None, isProtected: None, finalPrefix: None, startOrigin: startOrigin.clone() }))))
                 }
@@ -427,7 +427,7 @@ fn instEnumerationBinding(mut inMod: Arc<DAE::Mod>, mut varLst: Arc<metamodelica
     Ok(outBinding)
 }
 
-fn instDistributionBinding(mut inMod: Arc<DAE::Mod>, mut varLst: Arc<metamodelica::List<Arc<DAE::Var>>>, mut inIntegerLst: Arc<metamodelica::List<i32>>, mut inString: ArcStr, mut useConstValue: bool) -> Result<Option<Arc<DAE::Distribution>>> {
+fn instDistributionBinding(mut inMod: Arc<DAE::Mod>, mut varLst: Arc<metamodelica::List<Arc<DAE::Var>>>, mut inIntegerLst: Arc<metamodelica::List<i32>>, mut inString: ArcStr, mut useConstValue: bool) -> Option<Arc<DAE::Distribution>> {
     let mut out: Option<Arc<DAE::Distribution>>;
     out = 'mc: {
         let __mc_input = (inMod.clone(), inIntegerLst.clone(), inString.clone());
@@ -514,9 +514,9 @@ fn instDistributionBinding(mut inMod: Arc<DAE::Mod>, mut varLst: Arc<metamodelic
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(out)
+    out
 }
 
 fn getUncertainFromExpOption(mut expOption: Option<Arc<DAE::Exp>>) -> Option<DAE::Uncertainty> {
@@ -607,7 +607,7 @@ pub fn instModEquation(mut inComponentRef: Arc<DAE::ComponentRef>, mut inType: A
                 _ => {
                     let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
                     Debug::trace((literal!("- InstBinding.instModEquation failed\n type: ")).clone())?;
-                    Debug::trace((TypesDump::printTypeStr(inType.clone())?).clone())?;
+                    Debug::trace((TypesDump::printTypeStr(inType.clone())).clone())?;
                     Debug::trace((literal!("\n  cref: ")).clone())?;
                     Debug::trace((ComponentReferenceBasics::printComponentRefStr(inComponentRef.clone())?).clone())?;
                     Debug::trace((literal!("\n mod:")).clone())?;
@@ -715,7 +715,7 @@ pub fn makeBinding(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inAtt
                     let mut v = (*v).clone();
                     c = Types::propAllConst(prop.clone())?;
                     tp = Types::getPropType(prop.clone())?;
-                    let false = (Types::equivtypes(tp.clone(), e_tp.clone())?) else { bail!("pattern mismatch") };
+                    let false = (Types::equivtypes(tp.clone(), e_tp.clone())) else { bail!("pattern mismatch") };
                     e_val_exp = ValuesUtil::valueExp(v.clone(), Some(e.clone()))?;
                     (e_1, _) = Types::matchType(e.clone(), tp.clone(), e_tp.clone(), false)?;
                     (e_1, _) = ExpressionSimplify::simplify(e_1.clone())?;
@@ -825,8 +825,8 @@ pub fn makeRecordBinding(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut
             } else {
                 ety = unwrap_break_err!(Types::simplifyType(ty.clone()), '__try0);
                 ty = Types::liftArrayListDims(ty.clone(), dims.clone());
-                scope = (unwrap_break_err!(FGraph::printGraphPathStr(inEnv.clone()), '__try0)).clone();
-                ty_str = (unwrap_break_err!(TypesDump::printTypeStr(ty.clone()), '__try0)).clone();
+                scope = (FGraph::printGraphPathStr(inEnv.clone())).clone();
+                ty_str = (TypesDump::printTypeStr(ty.clone())).clone();
                 exp = Arc::new(DAE::Exp::EMPTY { scope: (scope.clone()).clone(), name: Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (name.clone()).clone(), identType: ety.clone(), subscriptLst: metamodelica::nil() }), ty: ety.clone(), tyStr: (ty_str.clone()).clone() });
                 val = Arc::new(Values::Value::EMPTY { scope: (scope.clone()).clone(), name: (name.clone()).clone(), ty: unwrap_break_err!(Types::typeToValue(ty.clone()), '__try0), tyStr: (ty_str.clone()).clone() });
             }

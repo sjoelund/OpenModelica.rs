@@ -209,19 +209,19 @@ pub fn xsdateTimeXml(mut in_txt: Tpl::Text, mut in_a_dt: Util::DateTime) -> Resu
             let mut ret_0: ArcStr = arcstr::literal!("");
             txt = Tpl::writeStr(txt.clone(), (intString(i_year.clone())).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("-")).clone() }))?;
-            ret_0 = (SimCodeFunctionUtil::twodigit(i_mon.clone())?).clone();
+            ret_0 = (SimCodeFunctionUtil::twodigit(i_mon.clone())).clone();
             txt = Tpl::writeStr(txt.clone(), (ret_0.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("-")).clone() }))?;
-            ret_1 = (SimCodeFunctionUtil::twodigit(i_mday.clone())?).clone();
+            ret_1 = (SimCodeFunctionUtil::twodigit(i_mday.clone())).clone();
             txt = Tpl::writeStr(txt.clone(), (ret_1.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("T")).clone() }))?;
-            ret_2 = (SimCodeFunctionUtil::twodigit(i_hour.clone())?).clone();
+            ret_2 = (SimCodeFunctionUtil::twodigit(i_hour.clone())).clone();
             txt = Tpl::writeStr(txt.clone(), (ret_2.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(":")).clone() }))?;
-            ret_3 = (SimCodeFunctionUtil::twodigit(i_min.clone())?).clone();
+            ret_3 = (SimCodeFunctionUtil::twodigit(i_min.clone())).clone();
             txt = Tpl::writeStr(txt.clone(), (ret_3.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(":")).clone() }))?;
-            ret_4 = (SimCodeFunctionUtil::twodigit(i_sec.clone())?).clone();
+            ret_4 = (SimCodeFunctionUtil::twodigit(i_sec.clone())).clone();
             txt = Tpl::writeStr(txt.clone(), (ret_4.clone()).clone())?;
             txt.clone()
         },
@@ -6097,7 +6097,7 @@ pub fn scalarLhsCrefXml(mut in_txt: Tpl::Text, mut in_a_ecr: Arc<DAE::Exp>, mut 
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
-            ret_0 = SimCodeFunctionUtil::crefNoSub(i_ecr_componentRef.clone())?;
+            ret_0 = SimCodeFunctionUtil::crefNoSub(i_ecr_componentRef.clone());
             (txt, a_varDecls, a_preExp) = fun_277(txt.clone(), ret_0.clone(), i_ecr_componentRef.clone(), a_varDecls.clone(), a_preExp.clone(), a_context.clone(), i_ecr.clone())?;
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },

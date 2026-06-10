@@ -84,7 +84,7 @@ use openmodelica_util::ZeroMQ;
 use openmodelica_util_datatypes_basic::GCExt;
 use openmodelica_util_datatypes_basic::List;
 
-fn makeDebugResult(mut inFlag: Flags::DebugFlag, mut res: ArcStr) -> Result<ArcStr> {
+fn makeDebugResult(mut inFlag: Flags::DebugFlag, mut res: ArcStr) -> ArcStr {
     let mut res_1: ArcStr;
     res_1 = ('mc: {
         let __mc_input = inFlag.clone();
@@ -101,12 +101,12 @@ fn makeDebugResult(mut inFlag: Flags::DebugFlag, mut res: ArcStr) -> Result<ArcS
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(res.clone())
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     }).clone();
-    Ok(res_1)
+    res_1
 }
 
-fn parseCommand(mut inCommand: ArcStr) -> Result<(Option<GlobalScript::Statements>, Option<Absyn::Program>)> {
+fn parseCommand(mut inCommand: ArcStr) -> (Option<GlobalScript::Statements>, Option<Absyn::Program>) {
     let mut outStatements: Option<GlobalScript::Statements>;
     let mut outProgram: Option<Absyn::Program>;
     (outStatements, outProgram) = 'mc: {
@@ -130,9 +130,9 @@ fn parseCommand(mut inCommand: ArcStr) -> Result<(Option<GlobalScript::Statement
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok((None, None))
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outStatements, outProgram))
+    (outStatements, outProgram)
 }
 
 pub fn handleCommand(mut inCommand: ArcStr) -> Result<(bool, ArcStr)> {
@@ -146,10 +146,10 @@ pub fn handleCommand(mut inCommand: ArcStr) -> Result<(bool, ArcStr)> {
         outResult = (literal!("Ok\n")).clone();
     } else {
         outContinue = true;
-        (stmts, prog) = parseCommand((inCommand.clone()).clone())?;
+        (stmts, prog) = parseCommand((inCommand.clone()).clone());
         outResult = (handleCommand2(stmts.clone(), prog.clone(), (inCommand.clone()).clone())?).clone();
-        outResult = (makeDebugResult(Flags::DUMP.clone(), (outResult.clone()).clone())?).clone();
-        outResult = (makeDebugResult(Flags::DUMP_GRAPHVIZ.clone(), (outResult.clone()).clone())?).clone();
+        outResult = (makeDebugResult(Flags::DUMP.clone(), (outResult.clone()).clone())).clone();
+        outResult = (makeDebugResult(Flags::DUMP_GRAPHVIZ.clone(), (outResult.clone()).clone())).clone();
     }
     Ok((outContinue, outResult))
 }
@@ -174,7 +174,7 @@ fn handleCommand2(mut inStatements: Option<GlobalScript::Statements>, mut inProg
             table = SymbolTable::get();
             ast = table.ast.clone();
             vars = table.vars.clone();
-            prog2 = Interactive::addScope(prog.clone(), vars.clone())?;
+            prog2 = Interactive::addScope(prog.clone(), vars.clone());
             prog2 = ProgramUtil::updateProgram(prog2.clone(), ast.clone(), false)?;
             if Flags::isSet(Flags::DUMP.clone())? {
                 Debug::trace((literal!("\n--------------- Parsed program ---------------\n")).clone())?;

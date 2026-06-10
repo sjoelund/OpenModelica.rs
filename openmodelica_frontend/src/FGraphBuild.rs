@@ -133,15 +133,15 @@ pub fn mkClassNode(mut inClass: Arc<SCode::Element>, mut inParentRef: Ref, mut i
             (g, n) = FGraph::node(g.clone(), (name.clone()).clone(), list![inParentRef.clone()], FCore::Data::CL { e: cls.clone(), pre: openmodelica_frontend_types::DAE::Prefix::NOPRE, r#mod: openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), kind: inKind.clone(), status: openmodelica_frontend_dump::FCore::Status::VAR_UNTYPED });
             nr = FNode::toRef(n.clone());
             FNode::addChildRef(inParentRef.clone(), (name.clone()).clone(), nr.clone(), false)?;
-            g = mkConstrainClass(cls.clone(), nr.clone(), inKind.clone(), g.clone())?;
-            g = mkClassChildren((name.clone()).clone(), cdef.clone(), nr.clone(), inKind.clone(), g.clone())?;
+            g = mkConstrainClass(cls.clone(), nr.clone(), inKind.clone(), g.clone());
+            g = mkClassChildren((name.clone()).clone(), cdef.clone(), nr.clone(), inKind.clone(), g.clone());
             g.clone()
         },
     });
     Ok(outGraph)
 }
 
-pub fn mkConstrainClass(mut inElement: Arc<SCode::Element>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
+pub fn mkConstrainClass(mut inElement: Arc<SCode::Element>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Graph {
     let mut outGraph: Graph;
     outGraph = 'mc: {
         let __mc_input = (inElement.clone(), inGraph.clone());
@@ -183,9 +183,9 @@ pub fn mkConstrainClass(mut inElement: Arc<SCode::Element>, mut inParentRef: Ref
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outGraph)
+    outGraph
 }
 
 pub fn mkModNode(mut inName: Name, mut inMod: Arc<SCode::Mod>, mut inModScope: FCore::ModScope, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
@@ -302,7 +302,7 @@ pub fn mkBindingNode(mut inBinding: Option<Arc<Absyn::Exp>>, mut inParentRef: Re
     Ok(outGraph)
 }
 
-fn mkClassChildren(mut name: ArcStr, mut inClassDef: Arc<SCode::ClassDef>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
+fn mkClassChildren(mut name: ArcStr, mut inClassDef: Arc<SCode::ClassDef>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Graph {
     let mut outGraph: Graph;
     outGraph = 'mc: {
         let __mc_input = (inClassDef.clone(), inGraph.clone());
@@ -326,7 +326,7 @@ fn mkClassChildren(mut name: ArcStr, mut inClassDef: Arc<SCode::ClassDef>, mut i
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ SCode::ClassDef::CLASS_EXTENDS { composition: cdef, modifications: m }, g) => {
                     let mut g = (*g).clone();
-                    g = mkClassChildren((name.clone()).clone(), cdef.clone(), inParentRef.clone(), inKind.clone(), g.clone())?;
+                    g = mkClassChildren((name.clone()).clone(), cdef.clone(), inParentRef.clone(), inKind.clone(), g.clone());
                     g = mkModNode((arcstr::literal!(FNode::modNodeName)).clone(), m.clone(), FCore::ModScope::MS_CLASS_EXTENDS { name: (name.clone()).clone() }, inParentRef.clone(), inKind.clone(), g.clone())?;
                     Ok(g.clone())
                 }
@@ -374,9 +374,9 @@ fn mkClassChildren(mut name: ArcStr, mut inClassDef: Arc<SCode::ClassDef>, mut i
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outGraph)
+    outGraph
 }
 
 pub fn mkElementNode(mut inElement: Arc<SCode::Element>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
@@ -551,7 +551,7 @@ pub fn mkCompNode(mut inComp: Arc<SCode::Element>, mut inParentRef: Ref, mut inK
     g = mkDimsNode((arcstr::literal!(FNode::tydimsNodeName)).clone(), Some(tad.clone()), nr.clone(), inKind.clone(), g.clone())?;
     g = mkDimsNode((arcstr::literal!(FNode::dimsNodeName)).clone(), Some(ad.clone()), nr.clone(), inKind.clone(), g.clone())?;
     g = mkConditionNode(cnd.clone(), nr.clone(), inKind.clone(), g.clone())?;
-    g = mkConstrainClass(inComp.clone(), nr.clone(), inKind.clone(), g.clone())?;
+    g = mkConstrainClass(inComp.clone(), nr.clone(), inKind.clone(), g.clone());
     g = mkModNode((arcstr::literal!(FNode::modNodeName)).clone(), m.clone(), FCore::ModScope::MS_COMPONENT { name: (name.clone()).clone() }, nr.clone(), inKind.clone(), g.clone())?;
     outGraph = g.clone();
     Ok(outGraph)

@@ -698,8 +698,8 @@ fn implicitConstructAndMatch(mut candidates: Arc<metamodelica::List<Arc<Function
         in2 = __pa1.clone();
         arg1_ty = InstNode::getType(in1.clone())?;
         arg2_ty = InstNode::getType(in2.clone())?;
-        arg1_info = InstNode::info(in1.clone())?;
-        arg2_info = InstNode::info(in2.clone())?;
+        arg1_info = InstNode::info(in1.clone());
+        arg2_info = InstNode::info(in2.clone());
         (matchedfuncs, matched) = implicitConstructAndMatch2(inExp1.clone(), inType1.clone(), inExp2.clone(), arg1_ty.clone(), arg1_info.clone(), arg2_ty.clone(), arg2_info.clone(), InstNode::classScope(in2.clone()), r#fn.clone(), false, matchedfuncs.clone())?;
         if matched.clone() {
             continue;
@@ -1533,7 +1533,7 @@ pub fn typeCastRecord(mut expressions: Arc<metamodelica::List<Arc<Expression::NF
             } else {
                 ranges = metamodelica::cons(Dimension::toRange(d.clone())?, ranges.clone());
             }
-            iter = InstNode::newUniqueIterator(InstNode::info(node.clone())?, crate::NFType::interned_INTEGER());
+            iter = InstNode::newUniqueIterator(InstNode::info(node.clone()), crate::NFType::interned_INTEGER());
             iters = metamodelica::cons(iter.clone(), iters.clone());
             sub = Arc::new(Subscript::NFSubscript::INDEX { index: Arc::new(Expression::NFExpression::CREF { ty: crate::NFType::interned_INTEGER(), cref: ComponentRef::makeIterator(iter.clone(), crate::NFType::interned_INTEGER())? }) });
             subs = metamodelica::cons(sub.clone(), subs.clone());
@@ -2431,7 +2431,7 @@ pub fn printBindingTypeError(mut name: ArcStr, mut binding: Arc<Binding::NFBindi
     let mut comp_info: SourceInfo;
     let mut mk: MatchKind;
     binding_info = Binding::getInfo(binding.clone());
-    comp_info = InstNode::info(component.clone())?;
+    comp_info = InstNode::info(component.clone());
     if Type::isScalar(bindingType.clone()) && Type::isArray(componentType.clone()) {
         Error::addMultiSourceMessage(Error::MODIFIER_NON_ARRAY_TYPE_ERROR.clone(), list![(Binding::toString(binding.clone(), (literal!("")).clone())?).clone(), (name.clone()).clone()], list![binding_info.clone(), comp_info.clone()])?;
     } else {

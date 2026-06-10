@@ -525,11 +525,11 @@ pub fn binTreeintersection(mut bt1: Arc<BinTree>, mut bt2: Arc<BinTree>, mut iBt
     let mut oBt: Arc<BinTree>;
     let mut keys: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
     (keys, _) = bintreeToList(bt1.clone())?;
-    oBt = List::fold1(keys.clone(), (std::sync::Arc::new(binTreeintersection1) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<BinTree>, Arc<BinTree>) -> Result<Arc<BinTree>> + 'static>), bt2.clone(), iBt.clone())?;
+    oBt = List::fold1(keys.clone(), (std::sync::Arc::new(fnptr!(binTreeintersection1, Arc<DAE::ComponentRef>, Arc<BinTree>, Arc<BinTree>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<BinTree>, Arc<BinTree>) -> Result<Arc<BinTree>> + 'static>), bt2.clone(), iBt.clone())?;
     Ok(oBt)
 }
 
-fn binTreeintersection1(mut key: Arc<DAE::ComponentRef>, mut bt2: Arc<BinTree>, mut iBt: Arc<BinTree>) -> Result<Arc<BinTree>> {
+fn binTreeintersection1(mut key: Arc<DAE::ComponentRef>, mut bt2: Arc<BinTree>, mut iBt: Arc<BinTree>) -> Arc<BinTree> {
     let mut oBt: Arc<BinTree>;
     oBt = 'mc: {
         let __mc_input = iBt.clone();
@@ -552,8 +552,8 @@ fn binTreeintersection1(mut key: Arc<DAE::ComponentRef>, mut bt2: Arc<BinTree>, 
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(oBt)
+    oBt
 }
 

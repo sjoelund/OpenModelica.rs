@@ -92,7 +92,7 @@ fn printClass(mut inClass: Arc<Absyn::Class>) -> Result<Arc<Graphviz::Node>> {
             let mut rs: ArcStr = arcstr::literal!("");
             let mut nl: Arc<metamodelica::List<Arc<Graphviz::Node>>> = metamodelica::nil();
             rs = (AbsynUtil::restrString(r.clone())).clone();
-            nl = printParts(parts.clone())?;
+            nl = printParts(parts.clone());
             Arc::new(Graphviz::Node::NODE { type_: (rs.clone()).clone(), attributes: metamodelica::nil(), children: nl.clone() })
         },
         _ => bail!("match: no arm matched"),
@@ -100,7 +100,7 @@ fn printClass(mut inClass: Arc<Absyn::Class>) -> Result<Arc<Graphviz::Node>> {
     Ok(outNode)
 }
 
-fn printParts(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<Arc<metamodelica::List<Arc<Graphviz::Node>>>> {
+fn printParts(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Arc<metamodelica::List<Arc<Graphviz::Node>>> {
     let mut outNodeLst: Arc<metamodelica::List<Arc<Graphviz::Node>>>;
     outNodeLst = (::match_deref::match_deref! { match &(inAbsynClassPartLst.clone()) {
         Deref @ metamodelica::List::Nil => {
@@ -109,16 +109,16 @@ fn printParts(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPa
         Deref @ metamodelica::List::Cons { head: c, tail: cs } => {
             let mut node: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
             let mut nl: Arc<metamodelica::List<Arc<Graphviz::Node>>> = metamodelica::nil();
-            node = printClassPart(c.clone())?;
-            nl = printParts(cs.clone())?;
+            node = printClassPart(c.clone());
+            nl = printParts(cs.clone());
             metamodelica::cons(node.clone(), nl.clone())
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Ok(outNodeLst)
+    outNodeLst
 }
 
-fn printClassPart(mut inClassPart: Arc<Absyn::ClassPart>) -> Result<Arc<Graphviz::Node>> {
+fn printClassPart(mut inClassPart: Arc<Absyn::ClassPart>) -> Arc<Graphviz::Node> {
     let mut outNode: Arc<Graphviz::Node>;
     outNode = 'mc: {
         let __mc_input = inClassPart.clone();
@@ -156,7 +156,7 @@ fn printClassPart(mut inClassPart: Arc<Absyn::ClassPart>) -> Result<Arc<Graphviz
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::ClassPart::ALGORITHMS { contents: als } => {
                     let mut nl: Arc<metamodelica::List<Arc<Graphviz::Node>>> = metamodelica::nil();
-                    nl = printAlgorithms(als.clone())?;
+                    nl = printAlgorithms(als.clone());
                     Ok(Arc::new(Graphviz::Node::NODE { type_: (literal!("ALGORITHMS")).clone(), attributes: metamodelica::nil(), children: nl.clone() }))
                 }
                 _ => bail!("nomatch"),
@@ -170,9 +170,9 @@ fn printClassPart(mut inClassPart: Arc<Absyn::ClassPart>) -> Result<Arc<Graphviz
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outNode)
+    outNode
 }
 
 fn printElementitems(mut inAbsynElementItemLst: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>) -> Result<Arc<metamodelica::List<Arc<Graphviz::Node>>>> {
@@ -212,7 +212,7 @@ fn printElement(mut inElement: Arc<Absyn::Element>) -> Result<Arc<Graphviz::Node
             let mut fa: Graphviz::Attribute = <Graphviz::Attribute as ::std::default::Default>::default();
             let mut elsp: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
             fa = makeBoolAttr((literal!("final")).clone(), finalPrefix.clone());
-            elsp = printElementspec(spec.clone())?;
+            elsp = printElementspec(spec.clone());
             Arc::new(Graphviz::Node::NODE { type_: (literal!("ELEMENT")).clone(), attributes: list![fa.clone()], children: list![elsp.clone()] })
         },
         _ => bail!("match: no arm matched"),
@@ -228,7 +228,7 @@ fn printPath(mut p: Arc<Absyn::Path>) -> Result<Arc<Graphviz::Node>> {
     Ok(pn)
 }
 
-fn printElementspec(mut inElementSpec: Arc<Absyn::ElementSpec>) -> Result<Arc<Graphviz::Node>> {
+fn printElementspec(mut inElementSpec: Arc<Absyn::ElementSpec>) -> Arc<Graphviz::Node> {
     let mut outNode: Arc<Graphviz::Node>;
     outNode = 'mc: {
         let __mc_input = inElementSpec.clone();
@@ -275,9 +275,9 @@ fn printElementspec(mut inElementSpec: Arc<Absyn::ElementSpec>) -> Result<Arc<Gr
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outNode)
+    outNode
 }
 
 fn printComponents(mut inAbsynComponentItemLst: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>) -> Result<Arc<metamodelica::List<Arc<Graphviz::Node>>>> {
@@ -320,7 +320,7 @@ fn printEquations(mut inAbsynEquationItemLst: Arc<metamodelica::List<Arc<Absyn::
         Deref @ metamodelica::List::Cons { head: Deref @ Absyn::EquationItem::EQUATIONITEM { equation_: eq, .. }, tail: el } => {
             let mut node: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
             let mut nl: Arc<metamodelica::List<Arc<Graphviz::Node>>> = metamodelica::nil();
-            node = printEquation(eq.clone())?;
+            node = printEquation(eq.clone());
             nl = printEquations(el.clone())?;
             metamodelica::cons(node.clone(), nl.clone())
         },
@@ -329,7 +329,7 @@ fn printEquations(mut inAbsynEquationItemLst: Arc<metamodelica::List<Arc<Absyn::
     Ok(outNodeLst)
 }
 
-fn printEquation(mut inEquation: Arc<Absyn::Equation>) -> Result<Arc<Graphviz::Node>> {
+fn printEquation(mut inEquation: Arc<Absyn::Equation>) -> Arc<Graphviz::Node> {
     let mut outNode: Arc<Graphviz::Node>;
     outNode = 'mc: {
         let __mc_input = inEquation.clone();
@@ -393,7 +393,7 @@ fn printEquation(mut inEquation: Arc<Absyn::Equation>) -> Result<Arc<Graphviz::N
                     let mut es: ArcStr = arcstr::literal!("");
                     let mut eqn: Arc<metamodelica::List<Arc<Graphviz::Node>>> = metamodelica::nil();
                     eqn = printEquations(eqs.clone())?;
-                    es = (Dump::printIteratorsStr(iterators.clone())?).clone();
+                    es = (Dump::printIteratorsStr(iterators.clone())).clone();
                     Ok(Arc::new(Graphviz::Node::LNODE { type_: (literal!("EQ_FOR")).clone(), labelLst: list![(es.clone()).clone()], attributes: metamodelica::nil(), children: eqn.clone() }))
                 }
                 _ => bail!("nomatch"),
@@ -407,12 +407,12 @@ fn printEquation(mut inEquation: Arc<Absyn::Equation>) -> Result<Arc<Graphviz::N
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outNode)
+    outNode
 }
 
-fn printAlgorithms(mut inAbsynAlgorithmItemLst: Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>) -> Result<Arc<metamodelica::List<Arc<Graphviz::Node>>>> {
+fn printAlgorithms(mut inAbsynAlgorithmItemLst: Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>) -> Arc<metamodelica::List<Arc<Graphviz::Node>>> {
     let mut outNodeLst: Arc<metamodelica::List<Arc<Graphviz::Node>>>;
     outNodeLst = (::match_deref::match_deref! { match &(inAbsynAlgorithmItemLst.clone()) {
         Deref @ metamodelica::List::Nil => {
@@ -421,16 +421,16 @@ fn printAlgorithms(mut inAbsynAlgorithmItemLst: Arc<metamodelica::List<Arc<Absyn
         Deref @ metamodelica::List::Cons { head: e, tail: el } => {
             let mut node: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
             let mut nl: Arc<metamodelica::List<Arc<Graphviz::Node>>> = metamodelica::nil();
-            node = printAlgorithmitem(e.clone())?;
-            nl = printAlgorithms(el.clone())?;
+            node = printAlgorithmitem(e.clone());
+            nl = printAlgorithms(el.clone());
             metamodelica::cons(node.clone(), nl.clone())
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Ok(outNodeLst)
+    outNodeLst
 }
 
-fn printAlgorithmitem(mut inAlgorithmItem: Arc<Absyn::AlgorithmItem>) -> Result<Arc<Graphviz::Node>> {
+fn printAlgorithmitem(mut inAlgorithmItem: Arc<Absyn::AlgorithmItem>) -> Arc<Graphviz::Node> {
     let mut outNode: Arc<Graphviz::Node>;
     outNode = 'mc: {
         let __mc_input = inAlgorithmItem.clone();
@@ -438,7 +438,7 @@ fn printAlgorithmitem(mut inAlgorithmItem: Arc<Absyn::AlgorithmItem>) -> Result<
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::AlgorithmItem::ALGORITHMITEM { algorithm_: alg, .. } => {
                     let mut node: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
-                    node = printAlgorithm(alg.clone())?;
+                    node = printAlgorithm(alg.clone());
                     Ok(node.clone())
                 }
                 _ => bail!("nomatch"),
@@ -452,12 +452,12 @@ fn printAlgorithmitem(mut inAlgorithmItem: Arc<Absyn::AlgorithmItem>) -> Result<
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outNode)
+    outNode
 }
 
-fn printAlgorithm(mut inAlgorithm: Arc<Absyn::Algorithm>) -> Result<Arc<Graphviz::Node>> {
+fn printAlgorithm(mut inAlgorithm: Arc<Absyn::Algorithm>) -> Arc<Graphviz::Node> {
     let mut outNode: Arc<Graphviz::Node>;
     outNode = 'mc: {
         let __mc_input = inAlgorithm.clone();
@@ -477,9 +477,9 @@ fn printAlgorithm(mut inAlgorithm: Arc<Absyn::Algorithm>) -> Result<Arc<Graphviz
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outNode)
+    outNode
 }
 
 fn variabilitySymbol(mut inVariability: Absyn::Variability) -> Result<ArcStr> {

@@ -473,13 +473,13 @@ fn doBalance2<Key: Clone + 'static, Val: Clone + 'static>(mut inDiffIsNegative: 
     outNode = (::match_deref::match_deref! { match &((inDiffIsNegative.clone(), inNode.clone())) {
         (true, n) => {
             let mut n = (*n).clone();
-            n = doBalance3(n.clone())?;
+            n = doBalance3(n.clone());
             n = rotateLeft(n.clone())?;
             n.clone()
         },
         (false, n) => {
             let mut n = (*n).clone();
-            n = doBalance4(n.clone())?;
+            n = doBalance4(n.clone());
             n = rotateRight(n.clone())?;
             n.clone()
         },
@@ -488,7 +488,7 @@ fn doBalance2<Key: Clone + 'static, Val: Clone + 'static>(mut inDiffIsNegative: 
     Ok(outNode)
 }
 
-fn doBalance3<Key: Clone + 'static, Val: Clone + 'static>(mut inNode: Arc<Node<Key, Val>>) -> Result<Arc<Node<Key, Val>>> {
+fn doBalance3<Key: Clone + 'static, Val: Clone + 'static>(mut inNode: Arc<Node<Key, Val>>) -> Arc<Node<Key, Val>> {
     let mut outNode: Arc<Node<Key, Val>>;
     outNode = 'mc: {
         let __mc_input = inNode.clone();
@@ -515,12 +515,12 @@ fn doBalance3<Key: Clone + 'static, Val: Clone + 'static>(mut inNode: Arc<Node<K
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outNode)
+    outNode
 }
 
-fn doBalance4<Key: Clone + 'static, Val: Clone + 'static>(mut inNode: Arc<Node<Key, Val>>) -> Result<Arc<Node<Key, Val>>> {
+fn doBalance4<Key: Clone + 'static, Val: Clone + 'static>(mut inNode: Arc<Node<Key, Val>>) -> Arc<Node<Key, Val>> {
     let mut outNode: Arc<Node<Key, Val>>;
     outNode = 'mc: {
         let __mc_input = inNode.clone();
@@ -547,9 +547,9 @@ fn doBalance4<Key: Clone + 'static, Val: Clone + 'static>(mut inNode: Arc<Node<K
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outNode)
+    outNode
 }
 
 fn setRight<Key: Clone + 'static, Val: Clone + 'static>(mut node: Arc<Node<Key, Val>>, mut right: Arc<Node<Key, Val>>) -> Result<Arc<Node<Key, Val>>> {

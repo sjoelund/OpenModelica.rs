@@ -383,7 +383,7 @@ fn fixAliasVarsCausal2(mut inVar: BackendDAE::Var, mut inDAE: Arc<BackendDAE::Ba
             } };
             orderedVars = __pa3.clone();
             orderedEqs = __pa4.clone();
-            if unwrap_break_err!(BackendVariable::existsAnyVar(rightCrefs.clone(), orderedVars.clone(), false), '__try0) {
+            if BackendVariable::existsAnyVar(rightCrefs.clone(), orderedVars.clone(), false) {
                 orderedVars = unwrap_break_err!(BackendVariable::addVar(var.clone(), orderedVars.clone()), '__try0);
                 orderedEqs = unwrap_break_err!(BackendEquation::add(eqn.clone(), orderedEqs.clone()), '__try0);
                 eqs1 = metamodelica::cons(BackendDAEUtil::setEqSystEqs(unwrap_break_err!(BackendDAEUtil::setEqSystVars(eq.clone(), orderedVars.clone()), '__try0), orderedEqs.clone()), eqs1.clone());
@@ -440,7 +440,7 @@ fn fixKnownVarsCausal2(mut inVar: BackendDAE::Var, mut inDAE: Arc<BackendDAE::Ba
             } };
             orderedVars = __pa1.clone();
             orderedEqs = __pa2.clone();
-            if unwrap_break_err!(BackendVariable::existsAnyVar(rightCrefs.clone(), orderedVars.clone(), false), '__try0) {
+            if BackendVariable::existsAnyVar(rightCrefs.clone(), orderedVars.clone(), false) {
                 orderedVars = unwrap_break_err!(BackendVariable::addVar(var.clone(), orderedVars.clone()), '__try0);
                 orderedEqs = unwrap_break_err!(BackendEquation::add(eqn.clone(), orderedEqs.clone()), '__try0);
                 eqs1 = metamodelica::cons(BackendDAEUtil::setEqSystEqs(unwrap_break_err!(BackendDAEUtil::setEqSystVars(eq.clone(), orderedVars.clone()), '__try0), orderedEqs.clone()), eqs1.clone());
@@ -488,7 +488,7 @@ pub fn fastAcausal(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<Backend
     repl = BackendVarTransform::emptyReplacementsSized(size.clone());
     unReplaceable = HashSet::emptyHashSet();
     unReplaceable = BackendDAEUtil::foldEqSystem(inDAE.clone(), (std::sync::Arc::new(addUnreplaceable) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))> + 'static>), unReplaceable.clone())?;
-    (_, unReplaceable) = BackendDAEUtil::traverseBackendDAEExps(inDAE.clone(), (std::sync::Arc::new(Expression::traverseSubexpressionsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), ((std::sync::Arc::new(traverserExpUnreplaceable) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))) -> Result<(Arc<DAE::Exp>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)))> + 'static>), unReplaceable.clone()))?;
+    (_, unReplaceable) = BackendDAEUtil::traverseBackendDAEExps(inDAE.clone(), (std::sync::Arc::new(Expression::traverseSubexpressionsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), ((std::sync::Arc::new(fnptr!(traverserExpUnreplaceable, Arc<DAE::Exp>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)))) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))) -> Result<(Arc<DAE::Exp>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)))> + 'static>), unReplaceable.clone()))?;
     unReplaceable = addUnreplaceableFromWhens(inDAE.clone(), unReplaceable.clone())?;
     if Flags::isSet(Flags::DUMP_REPL.clone())? {
         BackendDump::dumpHashSet(unReplaceable.clone(), (literal!("Unreplaceable Crefs:")).clone())?;
@@ -553,7 +553,7 @@ fn fastAcausal1(mut inSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc<Backe
         (repl, globalFoundSimple, unReplaceable, maxTraversals, warnAliasConflicts) = inTpl.clone();
         eqnslst = unwrap_break_err!(BackendEquation::equationList(eqns.clone()), '__try0);
         mT = arrayCreate(BackendVariable::varsSize(vars.clone()), metamodelica::nil());
-        (_, _, eqnslst, simpleeqnslst, _, _, foundSimple) = unwrap_break_err!(List::fold(eqnslst.clone(), (std::sync::Arc::new(simpleEquationsFinder) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>, (BackendDAE::Variables, Arc<BackendDAE::Shared>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<SimpleContainer>>, i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, bool)) -> Result<(BackendDAE::Variables, Arc<BackendDAE::Shared>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<SimpleContainer>>, i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, bool)> + 'static>), (vars.clone(), inShared.clone(), metamodelica::nil(), metamodelica::nil(), 1, mT.clone(), false)), '__try0);
+        (_, _, eqnslst, simpleeqnslst, _, _, foundSimple) = unwrap_break_err!(List::fold(eqnslst.clone(), (std::sync::Arc::new(fnptr!(simpleEquationsFinder, Arc<BackendDAE::Equation>, (BackendDAE::Variables, Arc<BackendDAE::Shared>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<SimpleContainer>>, i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, bool))) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>, (BackendDAE::Variables, Arc<BackendDAE::Shared>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<SimpleContainer>>, i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, bool)) -> Result<(BackendDAE::Variables, Arc<BackendDAE::Shared>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<SimpleContainer>>, i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, bool)> + 'static>), (vars.clone(), inShared.clone(), metamodelica::nil(), metamodelica::nil(), 1, mT.clone(), false)), '__try0);
         (vars, outShared, repl, unReplaceable, eqnslst, globalFoundSimple, warnAliasConflicts) = unwrap_break_err!(causalFinder(foundSimple.clone(), simpleeqnslst.clone(), eqnslst.clone(), 1, maxTraversals.clone(), vars.clone(), inShared.clone(), repl.clone(), unReplaceable.clone(), mT.clone(), metamodelica::nil(), globalFoundSimple.clone(), warnAliasConflicts.clone()), '__try0);
         outSystem = unwrap_break_err!(updateSystem(globalFoundSimple.clone(), eqnslst.clone(), vars.clone(), repl.clone(), outSystem.clone()), '__try0);
         outTpl = (repl.clone(), globalFoundSimple.clone(), unReplaceable.clone(), maxTraversals.clone(), warnAliasConflicts.clone());
@@ -625,7 +625,7 @@ fn causalFinder1(mut finished: bool, mut b: bool, mut iEqnslst: Arc<metamodelica
             let mut simpleeqnslst: Arc<metamodelica::List<SimpleContainer>> = metamodelica::nil();
             let mut vars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
             let mut shared: Arc<BackendDAE::Shared> = Arc::new(<BackendDAE::Shared as ::std::default::Default>::default());
-            (vars, shared, eqnslst, simpleeqnslst, _, _, b1) = List::fold(iEqnslst.clone(), (std::sync::Arc::new(simpleEquationsFinder) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>, (BackendDAE::Variables, Arc<BackendDAE::Shared>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<SimpleContainer>>, i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, bool)) -> Result<(BackendDAE::Variables, Arc<BackendDAE::Shared>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<SimpleContainer>>, i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, bool)> + 'static>), (iVars.clone(), ishared.clone(), metamodelica::nil(), metamodelica::nil(), 1, iMT.clone(), false))?;
+            (vars, shared, eqnslst, simpleeqnslst, _, _, b1) = List::fold(iEqnslst.clone(), (std::sync::Arc::new(fnptr!(simpleEquationsFinder, Arc<BackendDAE::Equation>, (BackendDAE::Variables, Arc<BackendDAE::Shared>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<SimpleContainer>>, i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, bool))) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>, (BackendDAE::Variables, Arc<BackendDAE::Shared>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<SimpleContainer>>, i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, bool)) -> Result<(BackendDAE::Variables, Arc<BackendDAE::Shared>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<SimpleContainer>>, i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, bool)> + 'static>), (iVars.clone(), ishared.clone(), metamodelica::nil(), metamodelica::nil(), 1, iMT.clone(), false))?;
             (outVars, outShared, outRepl, outUnReplaceable, outEqnslst, _, warnAliasConflicts) = causalFinder(b1.clone(), simpleeqnslst.clone(), eqnslst.clone(), index.clone(), maxTraversals.clone(), vars.clone(), shared.clone(), iRepl.clone(), iUnreplaceable.clone(), iMT.clone(), iGlobalEqnslst.clone(), inGlobalFoundSimple.clone(), warnAliasConflicts.clone())?;
             (outVars.clone(), outShared.clone(), outRepl.clone(), outUnReplaceable.clone(), outEqnslst.clone())
         },
@@ -650,7 +650,7 @@ pub fn allAcausal(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendD
     repl = BackendVarTransform::emptyReplacementsSized(size.clone());
     unReplaceable = HashSet::emptyHashSet();
     unReplaceable = BackendDAEUtil::foldEqSystem(inDAE.clone(), (std::sync::Arc::new(addUnreplaceable) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))> + 'static>), unReplaceable.clone())?;
-    (_, unReplaceable) = BackendDAEUtil::traverseBackendDAEExps(inDAE.clone(), (std::sync::Arc::new(Expression::traverseSubexpressionsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), ((std::sync::Arc::new(traverserExpUnreplaceable) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))) -> Result<(Arc<DAE::Exp>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)))> + 'static>), unReplaceable.clone()))?;
+    (_, unReplaceable) = BackendDAEUtil::traverseBackendDAEExps(inDAE.clone(), (std::sync::Arc::new(Expression::traverseSubexpressionsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), ((std::sync::Arc::new(fnptr!(traverserExpUnreplaceable, Arc<DAE::Exp>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)))) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))) -> Result<(Arc<DAE::Exp>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)))> + 'static>), unReplaceable.clone()))?;
     unReplaceable = addUnreplaceableFromWhens(inDAE.clone(), unReplaceable.clone())?;
     if Flags::isSet(Flags::DUMP_REPL.clone())? {
         BackendDump::dumpHashSet(unReplaceable.clone(), (literal!("Unreplaceable Crefs:")).clone())?;
@@ -717,7 +717,7 @@ pub fn causal(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::
     repl = BackendVarTransform::emptyReplacementsSized(size.clone());
     unReplaceable = HashSet::emptyHashSet();
     unReplaceable = BackendDAEUtil::foldEqSystem(inDAE.clone(), (std::sync::Arc::new(addUnreplaceable) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))> + 'static>), unReplaceable.clone())?;
-    (_, unReplaceable) = BackendDAEUtil::traverseBackendDAEExps(inDAE.clone(), (std::sync::Arc::new(Expression::traverseSubexpressionsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), ((std::sync::Arc::new(traverserExpUnreplaceable) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))) -> Result<(Arc<DAE::Exp>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)))> + 'static>), unReplaceable.clone()))?;
+    (_, unReplaceable) = BackendDAEUtil::traverseBackendDAEExps(inDAE.clone(), (std::sync::Arc::new(Expression::traverseSubexpressionsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), ((std::sync::Arc::new(fnptr!(traverserExpUnreplaceable, Arc<DAE::Exp>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)))) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))) -> Result<(Arc<DAE::Exp>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)))> + 'static>), unReplaceable.clone()))?;
     unReplaceable = addUnreplaceableFromWhens(inDAE.clone(), unReplaceable.clone())?;
     unReplaceable = addUnreplaceableFromStateSets(inDAE.clone(), unReplaceable.clone())?;
     if Flags::isSet(Flags::DUMP_REPL.clone())? {
@@ -861,7 +861,7 @@ fn allCausalFinder(mut eqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>,
     let mut simpleeqnslst: Arc<metamodelica::List<SimpleContainer>>;
     (vars, shared, repl, unReplaceable, mt, globaleqnslst, b, warnAliasConflicts) = inTpl.clone();
     (eqnslst, b2) = BackendVarTransform::replaceEquations(eqns.clone(), repl.clone(), Some((std::sync::Arc::new(fnptr!(BackendVarTransform::skipPreChangeEdgeOperator, Arc<DAE::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>)))?;
-    (_, _, eqnslst, simpleeqnslst, _, _, b1) = List::fold(eqnslst.clone(), (std::sync::Arc::new(simpleEquationsFinder) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>, (BackendDAE::Variables, Arc<BackendDAE::Shared>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<SimpleContainer>>, i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, bool)) -> Result<(BackendDAE::Variables, Arc<BackendDAE::Shared>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<SimpleContainer>>, i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, bool)> + 'static>), (vars.clone(), shared.clone(), metamodelica::nil(), metamodelica::nil(), 1, mt.clone(), false))?;
+    (_, _, eqnslst, simpleeqnslst, _, _, b1) = List::fold(eqnslst.clone(), (std::sync::Arc::new(fnptr!(simpleEquationsFinder, Arc<BackendDAE::Equation>, (BackendDAE::Variables, Arc<BackendDAE::Shared>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<SimpleContainer>>, i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, bool))) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>, (BackendDAE::Variables, Arc<BackendDAE::Shared>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<SimpleContainer>>, i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, bool)) -> Result<(BackendDAE::Variables, Arc<BackendDAE::Shared>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<SimpleContainer>>, i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, bool)> + 'static>), (vars.clone(), shared.clone(), metamodelica::nil(), metamodelica::nil(), 1, mt.clone(), false))?;
     (vars, shared, repl, unReplaceable, eqnslst, globalFoundSimple, b3) = allCausalFinder1(b1.clone(), b2.clone(), simpleeqnslst.clone(), eqnslst.clone(), vars.clone(), shared.clone(), repl.clone(), unReplaceable.clone(), mt.clone(), globaleqnslst.clone(), b.clone(), warnAliasConflicts.clone())?;
     warnAliasConflicts = warnAliasConflicts.clone() || b3.clone();
     outTpl = (vars.clone(), shared.clone(), repl.clone(), unReplaceable.clone(), mt.clone(), eqnslst.clone(), globalFoundSimple.clone(), warnAliasConflicts.clone());
@@ -923,7 +923,7 @@ fn allCausalFinder2(mut b: bool, mut iEqnslst: Arc<metamodelica::List<Arc<Backen
             let mut simpleeqnslst: Arc<metamodelica::List<SimpleContainer>> = metamodelica::nil();
             let mut vars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
             let mut shared: Arc<BackendDAE::Shared> = Arc::new(<BackendDAE::Shared as ::std::default::Default>::default());
-            (vars, shared, eqnslst, simpleeqnslst, _, _, b1) = List::fold(iEqnslst.clone(), (std::sync::Arc::new(simpleEquationsFinder) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>, (BackendDAE::Variables, Arc<BackendDAE::Shared>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<SimpleContainer>>, i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, bool)) -> Result<(BackendDAE::Variables, Arc<BackendDAE::Shared>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<SimpleContainer>>, i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, bool)> + 'static>), (iVars.clone(), ishared.clone(), metamodelica::nil(), metamodelica::nil(), 1, iMT.clone(), false))?;
+            (vars, shared, eqnslst, simpleeqnslst, _, _, b1) = List::fold(iEqnslst.clone(), (std::sync::Arc::new(fnptr!(simpleEquationsFinder, Arc<BackendDAE::Equation>, (BackendDAE::Variables, Arc<BackendDAE::Shared>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<SimpleContainer>>, i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, bool))) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>, (BackendDAE::Variables, Arc<BackendDAE::Shared>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<SimpleContainer>>, i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, bool)) -> Result<(BackendDAE::Variables, Arc<BackendDAE::Shared>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<SimpleContainer>>, i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, bool)> + 'static>), (iVars.clone(), ishared.clone(), metamodelica::nil(), metamodelica::nil(), 1, iMT.clone(), false))?;
             allCausalFinder1(b1.clone(), false, simpleeqnslst.clone(), eqnslst.clone(), vars.clone(), shared.clone(), iRepl.clone(), iUnreplaceable.clone(), iMT.clone(), iGlobalEqnslst.clone(), globalFoundSimple.clone(), warnAliasConflicts.clone())?
         },
         _ => bail!("match: no arm matched"),
@@ -935,7 +935,7 @@ fn allCausalFinder2(mut b: bool, mut iEqnslst: Arc<metamodelica::List<Arc<Backen
 // functions to find simple equations
 //
 // =============================================================================
-fn simpleEquationsFinder(mut eqn: Arc<BackendDAE::Equation>, mut inTpl: AccTuple) -> Result<AccTuple> {
+fn simpleEquationsFinder(mut eqn: Arc<BackendDAE::Equation>, mut inTpl: AccTuple) -> AccTuple {
     let mut outTpl: AccTuple;
     outTpl = 'mc: {
         let __mc_input = (eqn.clone(), inTpl.clone());
@@ -1004,9 +1004,9 @@ fn simpleEquationsFinder(mut eqn: Arc<BackendDAE::Equation>, mut inTpl: AccTuple
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outTpl)
+    outTpl
 }
 
 fn simpleEquationAcausal(mut lhs: Arc<DAE::Exp>, mut rhs: Arc<DAE::Exp>, mut eqnAttributes: EquationSourceAndAttributes, mut selfCalled: bool, mut inTpl: AccTuple) -> Result<AccTuple> {
@@ -1167,7 +1167,7 @@ fn simpleArrayEquationAcausal(mut lhs: Arc<DAE::Exp>, mut rhs: Arc<DAE::Exp>, mu
                 continue;
             }
             eq = Arc::new(BackendDAE::Equation::WHEN_EQUATION { size: 0, whenEquation: Arc::new(BackendDAE::WhenEquation { condition: Arc::new(DAE::Exp::BCONST { bool: false }), whenStmtLst: list![BackendDAE::WhenOperator::ASSERT { condition: Arc::new(DAE::Exp::BCONST { bool: false }), message: Arc::new(DAE::Exp::SCONST { string: (literal!("Failed assertion exp is 0")).clone() }), level: DAE::ASSERTIONLEVEL_ERROR().clone(), source: source.clone() }], elsewhenPart: None }), source: source.clone(), attr: attr.clone() });
-            outTpl = simpleEquationsFinder(eq.clone(), outTpl.clone())?;
+            outTpl = simpleEquationsFinder(eq.clone(), outTpl.clone());
         }
         return Ok(outTpl.clone());
     }
@@ -1265,7 +1265,7 @@ fn generateEquation(mut lhs: Arc<DAE::Exp>, mut rhs: Arc<DAE::Exp>, mut ty: Arc<
                 ((source, eqAttr), (v, s, eqns, seqns, index, mT, b)) => {
                     if !((DAEUtil::expTypeComplex(ty.clone()))) { bail!("guard") }
                     let mut size: i32 = 0;
-                    size = Expression::sizeOf(ty.clone())?;
+                    size = Expression::sizeOf(ty.clone());
                     Ok((v.clone(), s.clone(), metamodelica::cons(Arc::new(BackendDAE::Equation::COMPLEX_EQUATION { size: size.clone(), left: lhs.clone(), right: rhs.clone(), source: source.clone(), attr: eqAttr.clone() }), eqns.clone()), seqns.clone(), index.clone(), mT.clone(), b.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1283,7 +1283,7 @@ fn generateEquation(mut lhs: Arc<DAE::Exp>, mut rhs: Arc<DAE::Exp>, mut ty: Arc<
                     ds = Expression::dimensionsSizes(dims.clone())?;
                     tp = DAEUtil::expTypeElementType(ty.clone());
                     if DAEUtil::expTypeComplex(tp.clone()) {
-                        recordSize = Some(Expression::sizeOf(tp.clone())?);
+                        recordSize = Some(Expression::sizeOf(tp.clone()));
                     } else {
                         recordSize = None;
                     }
@@ -1473,7 +1473,7 @@ fn getVars(mut cr: Arc<DAE::ComponentRef>, mut vars: BackendDAE::Variables, mut 
                     } };
                     oVars = __pa0.clone();
                     oIndexs = __pa1.clone();
-                    if ComponentReference::crefIsScalarWithVariableSubs(cr.clone())? {
+                    if ComponentReference::crefIsScalarWithVariableSubs(cr.clone()) {
                         oVars = metamodelica::nil();
                         oIndexs = metamodelica::nil();
                     }
@@ -1598,12 +1598,12 @@ fn timeIndependentEquationAcausal(mut lhs: Arc<DAE::Exp>, mut rhs: Arc<DAE::Exp>
                     let mut ilst: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let mut vlst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
                     let mut tree: Arc<AvlSetInt::Tree> = Arc::new(AvlSetInt::Tree::EMPTY);
-                    let __pa0 = ::match_deref::match_deref! { match &(Expression::traverseExpTopDown(lhs.clone(), (std::sync::Arc::new(traversingTimeVarsFinder) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (bool, BackendDAE::Variables, BackendDAE::Variables, bool, bool, Arc<metamodelica::List<i32>>)) -> Result<(Arc<DAE::Exp>, bool, (bool, BackendDAE::Variables, BackendDAE::Variables, bool, bool, Arc<metamodelica::List<i32>>))> + 'static>), (false, vars.clone(), globalKnownVars.clone(), false, false, metamodelica::nil()))?) {
+                    let __pa0 = ::match_deref::match_deref! { match &(Expression::traverseExpTopDown(lhs.clone(), (std::sync::Arc::new(fnptr!(traversingTimeVarsFinder, Arc<DAE::Exp>, (bool, BackendDAE::Variables, BackendDAE::Variables, bool, bool, Arc<metamodelica::List<i32>>))) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (bool, BackendDAE::Variables, BackendDAE::Variables, bool, bool, Arc<metamodelica::List<i32>>)) -> Result<(Arc<DAE::Exp>, bool, (bool, BackendDAE::Variables, BackendDAE::Variables, bool, bool, Arc<metamodelica::List<i32>>))> + 'static>), (false, vars.clone(), globalKnownVars.clone(), false, false, metamodelica::nil()))?) {
                         (_, (false, _, _, _, _, __pa0)) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
                     ilst = __pa0.clone();
-                    let __pa1 = ::match_deref::match_deref! { match &(Expression::traverseExpTopDown(rhs.clone(), (std::sync::Arc::new(traversingTimeVarsFinder) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (bool, BackendDAE::Variables, BackendDAE::Variables, bool, bool, Arc<metamodelica::List<i32>>)) -> Result<(Arc<DAE::Exp>, bool, (bool, BackendDAE::Variables, BackendDAE::Variables, bool, bool, Arc<metamodelica::List<i32>>))> + 'static>), (false, vars.clone(), globalKnownVars.clone(), false, false, ilst.clone()))?) {
+                    let __pa1 = ::match_deref::match_deref! { match &(Expression::traverseExpTopDown(rhs.clone(), (std::sync::Arc::new(fnptr!(traversingTimeVarsFinder, Arc<DAE::Exp>, (bool, BackendDAE::Variables, BackendDAE::Variables, bool, bool, Arc<metamodelica::List<i32>>))) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (bool, BackendDAE::Variables, BackendDAE::Variables, bool, bool, Arc<metamodelica::List<i32>>)) -> Result<(Arc<DAE::Exp>, bool, (bool, BackendDAE::Variables, BackendDAE::Variables, bool, bool, Arc<metamodelica::List<i32>>))> + 'static>), (false, vars.clone(), globalKnownVars.clone(), false, false, ilst.clone()))?) {
                         (_, (false, _, _, _, _, __pa1)) => __pa1.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -1644,7 +1644,7 @@ fn timeIndependentExpressionAcausal(mut exp: Arc<DAE::Exp>, mut eqnAttributes: E
                     let mut ilst: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let mut vlst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
                     let mut tree: Arc<AvlSetInt::Tree> = Arc::new(AvlSetInt::Tree::EMPTY);
-                    let __pa0 = ::match_deref::match_deref! { match &(Expression::traverseExpTopDown(exp.clone(), (std::sync::Arc::new(traversingTimeVarsFinder) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (bool, BackendDAE::Variables, BackendDAE::Variables, bool, bool, Arc<metamodelica::List<i32>>)) -> Result<(Arc<DAE::Exp>, bool, (bool, BackendDAE::Variables, BackendDAE::Variables, bool, bool, Arc<metamodelica::List<i32>>))> + 'static>), (false, vars.clone(), globalKnownVars.clone(), false, false, metamodelica::nil()))?) {
+                    let __pa0 = ::match_deref::match_deref! { match &(Expression::traverseExpTopDown(exp.clone(), (std::sync::Arc::new(fnptr!(traversingTimeVarsFinder, Arc<DAE::Exp>, (bool, BackendDAE::Variables, BackendDAE::Variables, bool, bool, Arc<metamodelica::List<i32>>))) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (bool, BackendDAE::Variables, BackendDAE::Variables, bool, bool, Arc<metamodelica::List<i32>>)) -> Result<(Arc<DAE::Exp>, bool, (bool, BackendDAE::Variables, BackendDAE::Variables, bool, bool, Arc<metamodelica::List<i32>>))> + 'static>), (false, vars.clone(), globalKnownVars.clone(), false, false, metamodelica::nil()))?) {
                         (_, (false, _, _, _, _, __pa0)) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -1683,7 +1683,7 @@ fn toplevelInputOrUnfixed(mut inVar: BackendDAE::Var) -> bool {
     b
 }
 
-fn traversingTimeVarsFinder(mut inExp: Arc<DAE::Exp>, mut inTuple: (bool, BackendDAE::Variables, BackendDAE::Variables, bool, bool, Arc<metamodelica::List<i32>>)) -> Result<(Arc<DAE::Exp>, bool, (bool, BackendDAE::Variables, BackendDAE::Variables, bool, bool, Arc<metamodelica::List<i32>>))> {
+fn traversingTimeVarsFinder(mut inExp: Arc<DAE::Exp>, mut inTuple: (bool, BackendDAE::Variables, BackendDAE::Variables, bool, bool, Arc<metamodelica::List<i32>>)) -> (Arc<DAE::Exp>, bool, (bool, BackendDAE::Variables, BackendDAE::Variables, bool, bool, Arc<metamodelica::List<i32>>)) {
     let mut outExp: Arc<DAE::Exp>;
     let mut cont: bool;
     let mut outTuple: (bool, BackendDAE::Variables, BackendDAE::Variables, bool, bool, Arc<metamodelica::List<i32>>);
@@ -1767,9 +1767,9 @@ fn traversingTimeVarsFinder(mut inExp: Arc<DAE::Exp>, mut inTuple: (bool, Backen
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outExp, cont, outTuple))
+    (outExp, cont, outTuple)
 }
 
 fn solveTimeIndependentAcausal(mut vlst: Arc<metamodelica::List<BackendDAE::Var>>, mut ilst: Arc<metamodelica::List<i32>>, mut lhs: Arc<DAE::Exp>, mut rhs: Arc<DAE::Exp>, mut eqnAttributes: EquationSourceAndAttributes, mut inTpl: AccTuple) -> Result<AccTuple> {
@@ -1788,7 +1788,7 @@ fn solveTimeIndependentAcausal(mut vlst: Arc<metamodelica::List<BackendDAE::Var>
         },
         (_, _, (source, eqAttr), (_, Deref @ BackendDAE::Shared { .. }, _, _, _, _, _)) => {
             let mut size: i32 = 0;
-            size = Expression::sizeOf(Expression::r#typeof(lhs.clone())?)?;
+            size = Expression::sizeOf(Expression::r#typeof(lhs.clone())?);
             let true = (intEq(size.clone(), (vlst.clone().len() as i32))) else { bail!("pattern mismatch") };
             solveTimeIndependentAcausal1(vlst.clone(), ilst.clone(), lhs.clone(), rhs.clone(), (source.clone(), eqAttr.clone()), inTpl.clone())?
         },
@@ -1891,7 +1891,7 @@ fn constOrAliasAcausal(mut var: BackendDAE::Var, mut i: i32, mut cr: Arc<DAE::Co
                     if !((!(Expression::isImpure(exp.clone())?) && !(Expression::containsRecordType(exp.clone())?))) { bail!("guard") }
                     let mut colum: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let mut exp2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    exp2 = EvaluateFunctions::evaluateConstantFunctionCallExp(exp.clone(), functions.clone(), false, Flags::getConfigInt(Flags::EVAL_RECURSION_LIMIT.clone())?)?;
+                    exp2 = EvaluateFunctions::evaluateConstantFunctionCallExp(exp.clone(), functions.clone(), false, Flags::getConfigInt(Flags::EVAL_RECURSION_LIMIT.clone())?);
                     if Flags::isSet(Flags::DEBUG_ALIAS.clone())? {
                         BackendDump::debugStrCrefStrExpStr((literal!("Const Equation (through Ceval, case 1) ")).clone(), cr.clone(), (literal!(" = ")).clone(), exp.clone(), (literal!(" found.\n")).clone())?;
                     }
@@ -2021,7 +2021,7 @@ fn getAlias1(mut visited: bool, mut containerIn: SimpleContainer, mut currIdx: i
             let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
             let SimpleContainer::ALIAS { cr1: __pa0, .. } = (({let __elt = containerArr.borrow()[(currIdx.clone()-1) as usize].clone(); __elt})) else { bail!("pattern mismatch") };
             cr = __pa0.clone();
-            let true = (Types::isIntegerOrRealOrSubTypeOfEither(ComponentReference::crefLastType(cr.clone())?)?) else { bail!("pattern mismatch") };
+            let true = (Types::isIntegerOrRealOrSubTypeOfEither(ComponentReference::crefLastType(cr.clone())?)) else { bail!("pattern mismatch") };
             Ok((None, None, None, iUnremovable.clone(), false))
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
@@ -2029,7 +2029,7 @@ fn getAlias1(mut visited: bool, mut containerIn: SimpleContainer, mut currIdx: i
             let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
             let SimpleContainer::ALIAS { cr1: __pa0, .. } = (({let __elt = containerArr.borrow()[(currIdx.clone()-1) as usize].clone(); __elt})) else { bail!("pattern mismatch") };
             cr = __pa0.clone();
-            let true = (Types::isIntegerOrRealOrSubTypeOfEither(ComponentReference::crefLastType(cr.clone())?)?) else { bail!("pattern mismatch") };
+            let true = (Types::isIntegerOrRealOrSubTypeOfEither(ComponentReference::crefLastType(cr.clone())?)) else { bail!("pattern mismatch") };
             Ok((None, None, None, Some(currIdx.clone()), false))
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
@@ -2115,14 +2115,14 @@ fn getAlias2(mut containerIn: SimpleContainer, mut currIdx: i32, mut prevVar: Op
             neg = boolOr(negatedCr1.clone(), negatedCr2.clone());
             adjEqs = List::removeOnTrue(currIdx.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), ({let __elt = iMT.borrow()[(i1.clone()-1) as usize].clone(); __elt}))?;
             v = BackendVariable::getVarAt(vars.clone(), i1.clone())?;
-            (replaceable_, replaceble1) = replaceableAlias(v.clone(), unReplaceable.clone())?;
+            (replaceable_, replaceble1) = replaceableAlias(v.clone(), unReplaceable.clone());
             state = BackendVariable::isStateVar(v.clone()) || BackendVariable::isClockedStateVar(v.clone());
             (rmax, smax, unremovable) = getAlias3(v.clone(), i1.clone(), state.clone(), replaceable_.clone() && replaceble1.clone(), currIdx.clone(), iRmax.clone(), iSmax.clone(), iUnremovable.clone())?;
             neg = if (neg.clone()) {!(negate.clone())} else {negate.clone()};
             (rmax, smax, unremovable, r#const, cont) = getAlias(adjEqs.clone(), Some(i1.clone()), mark.clone(), simpleeqnsarr.clone(), iMT.clone(), vars.clone(), unReplaceable.clone(), neg.clone(), stack.clone(), rmax.clone(), smax.clone(), unremovable.clone(), iConst.clone())?;
             adjEqs = List::removeOnTrue(currIdx.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), ({let __elt = iMT.borrow()[(i2.clone()-1) as usize].clone(); __elt}))?;
             v = BackendVariable::getVarAt(vars.clone(), i2.clone())?;
-            (replaceable_, replaceble1) = replaceableAlias(v.clone(), unReplaceable.clone())?;
+            (replaceable_, replaceble1) = replaceableAlias(v.clone(), unReplaceable.clone());
             state = BackendVariable::isStateVar(v.clone()) || BackendVariable::isClockedStateVar(v.clone());
             (rmax, smax, unremovable) = getAlias3(v.clone(), i2.clone(), state.clone(), replaceable_.clone() && replaceble1.clone(), currIdx.clone(), rmax.clone(), smax.clone(), unremovable.clone())?;
             if cont.clone() {
@@ -2147,7 +2147,7 @@ fn getAlias2(mut containerIn: SimpleContainer, mut currIdx: i32, mut prevVar: Op
             neg = boolOr(negatedCr1.clone(), negatedCr2.clone());
             adjEqs = List::removeOnTrue(currIdx.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), ({let __elt = iMT.borrow()[(i.clone()-1) as usize].clone(); __elt}))?;
             v = BackendVariable::getVarAt(vars.clone(), i.clone())?;
-            (replaceable_, replaceble1) = replaceableAlias(v.clone(), unReplaceable.clone())?;
+            (replaceable_, replaceble1) = replaceableAlias(v.clone(), unReplaceable.clone());
             state = BackendVariable::isStateVar(v.clone()) || BackendVariable::isClockedStateVar(v.clone());
             (rmax, smax, unremovable) = getAlias3(v.clone(), i.clone(), state.clone(), replaceable_.clone() && replaceble1.clone(), currIdx.clone(), iRmax.clone(), iSmax.clone(), iUnremovable.clone())?;
             neg = if (neg.clone()) {!(negate.clone())} else {negate.clone()};
@@ -2260,7 +2260,7 @@ fn setVisited(mut visited: i32, mut iS: SimpleContainer) -> Result<SimpleContain
     Ok(oS)
 }
 
-fn replaceableAlias(mut var: BackendDAE::Var, mut unReplaceable: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))) -> Result<(bool, bool)> {
+fn replaceableAlias(mut var: BackendDAE::Var, mut unReplaceable: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))) -> (bool, bool) {
     let mut res: bool;
     let mut res1: bool;
     (res, res1) = 'mc: {
@@ -2281,9 +2281,9 @@ fn replaceableAlias(mut var: BackendDAE::Var, mut unReplaceable: (metamodelica::
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok((false, false))
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((res, res1))
+    (res, res1)
 }
 
 fn handleSet(mut iRmax: Option<(i32, i32)>, mut iSmax: Option<(i32, i32)>, mut iUnremovable: Option<i32>, mut iConst: Option<i32>, mut mark: i32, mut simpleeqnsarr: metamodelica::Array<SimpleContainer>, mut iMT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut unReplaceable: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)), mut iVars: BackendDAE::Variables, mut iEqnslst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut ishared: Arc<BackendDAE::Shared>, mut iRepl: BackendVarTransform::VariableReplacements) -> Result<(BackendDAE::Variables, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<BackendDAE::Shared>, BackendVarTransform::VariableReplacements, bool)> {
@@ -2332,7 +2332,7 @@ fn handleSet(mut iRmax: Option<(i32, i32)>, mut iSmax: Option<(i32, i32)>, mut i
             exp = Expression::crefExp(cr2.clone())?;
             exp2 = negateExpression(negated.clone(), exp.clone(), exp.clone(), (literal!(" PARAMETERALIAS ")).clone())?;
             v = BackendVariable::getVarAt(iVars.clone(), i1.clone())?;
-            (replaceable_, replaceble1) = replaceableAlias(v.clone(), unReplaceable.clone())?;
+            (replaceable_, replaceble1) = replaceableAlias(v.clone(), unReplaceable.clone());
             (vars, eqnslst, shared, repl) = handleSetVar(replaceable_.clone() && replaceble1.clone(), Some(Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) })), v.clone(), i1.clone(), eqnAttributes.clone(), exp2.clone(), iMT.clone(), iVars.clone(), iEqnslst.clone(), ishared.clone(), iRepl.clone())?;
             expcr = Expression::crefExp(cr1.clone())?;
             pv = BackendVariable::getVarSharedAt(i2.clone(), ishared.clone())?;
@@ -2377,7 +2377,7 @@ fn handleSet(mut iRmax: Option<(i32, i32)>, mut iSmax: Option<(i32, i32)>, mut i
             exp = Expression::crefExp(DAE::crefTime().clone())?;
             exp1 = negateExpression(negated.clone(), exp.clone(), exp.clone(), (literal!(" timealias ")).clone())?;
             v = BackendVariable::getVarAt(iVars.clone(), i1.clone())?;
-            (replaceable_, replaceble1) = replaceableAlias(v.clone(), unReplaceable.clone())?;
+            (replaceable_, replaceble1) = replaceableAlias(v.clone(), unReplaceable.clone());
             dexp = negateExpression(negated.clone(), exp.clone(), Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(1.0_f64) }), (literal!(" timealias der ")).clone())?;
             (vars, eqnslst, shared, repl) = handleSetVar(replaceable_.clone() && replaceble1.clone(), Some(dexp.clone()), v.clone(), i1.clone(), eqnAttributes.clone(), exp1.clone(), iMT.clone(), iVars.clone(), iEqnslst.clone(), ishared.clone(), iRepl.clone())?;
             expcr = Expression::crefExp(cr1.clone())?;
@@ -2415,7 +2415,7 @@ fn handleSet(mut iRmax: Option<(i32, i32)>, mut iSmax: Option<(i32, i32)>, mut i
             let ref __pa5 @ BackendDAE::VAR { varName: ref __pa4, .. } = (BackendVariable::getVarAt(iVars.clone(), i.clone())?) else { bail!("pattern mismatch") };
             cr = __pa4.clone();
             v = __pa5.clone();
-            (replaceable_, replaceble1) = replaceableAlias(v.clone(), unReplaceable.clone())?;
+            (replaceable_, replaceble1) = replaceableAlias(v.clone(), unReplaceable.clone());
             (vars, shared, isState, eqnslst) = optMoveVarShared(replaceable_.clone(), v.clone(), i.clone(), eqnAttributes.clone(), exp.clone(), (std::sync::Arc::new(BackendVariable::addGlobalKnownVarDAE) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, Arc<BackendDAE::Shared>) -> Result<Arc<BackendDAE::Shared>> + 'static>), iMT.clone(), iVars.clone(), ishared.clone(), iEqnslst.clone())?;
             constExp = Expression::isConstValue(exp.clone())?;
             repl = if (replaceable_.clone() && constExp.clone() && replaceble1.clone()) {BackendVarTransform::addReplacement(iRepl.clone(), cr.clone(), exp.clone(), Some((std::sync::Arc::new(fnptr!(BackendVarTransform::skipPreChangeEdgeOperator, Arc<DAE::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>)))?} else {iRepl.clone()};
@@ -2455,8 +2455,8 @@ fn handleSet(mut iRmax: Option<(i32, i32)>, mut iSmax: Option<(i32, i32)>, mut i
             let ref __pa4 @ BackendDAE::VAR { varName: ref __pa3, .. } = (BackendVariable::getVarAt(iVars.clone(), i.clone())?) else { bail!("pattern mismatch") };
             cr = __pa3.clone();
             v = __pa4.clone();
-            exp = if (Types::isRealOrSubTypeReal(ComponentReference::crefLastType(cr.clone())?)?) {Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) })} else {Arc::new(DAE::Exp::ICONST { integer: 0 })};
-            (replaceable_, replaceble1) = replaceableAlias(v.clone(), unReplaceable.clone())?;
+            exp = if (Types::isRealOrSubTypeReal(ComponentReference::crefLastType(cr.clone())?)) {Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) })} else {Arc::new(DAE::Exp::ICONST { integer: 0 })};
+            (replaceable_, replaceble1) = replaceableAlias(v.clone(), unReplaceable.clone());
             (vars, shared, isState, eqnslst) = optMoveVarShared(replaceable_.clone(), v.clone(), i.clone(), eqnAttributes.clone(), exp.clone(), (std::sync::Arc::new(BackendVariable::addGlobalKnownVarDAE) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, Arc<BackendDAE::Shared>) -> Result<Arc<BackendDAE::Shared>> + 'static>), iMT.clone(), iVars.clone(), ishared.clone(), iEqnslst.clone())?;
             constExp = Expression::isConstValue(exp.clone())?;
             repl = if (replaceable_.clone() && constExp.clone() && replaceble1.clone()) {BackendVarTransform::addReplacement(iRepl.clone(), cr.clone(), exp.clone(), Some((std::sync::Arc::new(fnptr!(BackendVarTransform::skipPreChangeEdgeOperator, Arc<DAE::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>)))?} else {iRepl.clone()};
@@ -2697,7 +2697,7 @@ fn traverseAliasTree1(mut sc: SimpleContainer, mut r: i32, mut ilast: i32, mut e
             let ref __pa1 @ BackendDAE::VAR { varName: ref __pa0, .. } = (BackendVariable::getVarAt(iVars.clone(), i.clone())?) else { bail!("pattern mismatch") };
             cr = __pa0.clone();
             v = __pa1.clone();
-            (replaceable_, replaceble1) = replaceableAlias(v.clone(), unReplaceable.clone())?;
+            (replaceable_, replaceble1) = replaceableAlias(v.clone(), unReplaceable.clone());
             crexp = Expression::crefExp(cr.clone())?;
             globalnegated1 = if (negated.clone()) {!(globalnegated.clone())} else {globalnegated.clone()};
             exp1 = negateExpression(globalnegated1.clone(), exp.clone(), exp.clone(), (literal!(" ALIAS_1 ")).clone())?;
@@ -2786,7 +2786,7 @@ fn addVarSetAttributes(mut inVar: BackendDAE::Var, mut negate: bool, mut mark: i
     let mut startvalues: (i32, Arc<metamodelica::List<(Option<Arc<DAE::Exp>>, Arc<DAE::ComponentRef>)>>);
     (fixedset, startvalues, nominalset, minmaxset) = iAttributes.clone();
     fixed = BackendVariable::varFixed(inVar.clone());
-    start = BackendVariable::varStartValueOption(inVar.clone())?;
+    start = BackendVariable::varStartValueOption(inVar.clone());
     origin = BackendVariable::varStartOrigin(inVar.clone())?;
     (fixedset, startvalues) = addStartValue(fixed.clone(), fixedset.clone(), BackendVariable::varCref(inVar.clone())?, start.clone(), origin.clone(), negate.clone(), mark.clone(), simpleeqnsarr.clone(), startvalues.clone())?;
     nominalset = addNominalValue(inVar.clone(), nominalset.clone());
@@ -3075,7 +3075,7 @@ fn mergeMinMax(mut negate: bool, mut ominmax: Arc<metamodelica::List<Option<Arc<
         (false, Deref @ metamodelica::List::Cons { head: omin, tail: Deref @ metamodelica::List::Cons { head: omax, tail: Deref @ metamodelica::List::Nil } }) => {
             let mut minMax: (Option<Arc<DAE::Exp>>, Option<Arc<DAE::Exp>>) = (None, None);
             minMax = mergeMinMax1((omin.clone(), omax.clone()), ominmax1.clone())?;
-            checkMinMax(minMax.clone(), mark.clone(), simpleeqnsarr.clone())?;
+            checkMinMax(minMax.clone(), mark.clone(), simpleeqnsarr.clone());
             minMax.clone()
         },
         (true, Deref @ metamodelica::List::Cons { head: None, tail: Deref @ metamodelica::List::Cons { head: None, tail: Deref @ metamodelica::List::Nil } }) => {
@@ -3088,7 +3088,7 @@ fn mergeMinMax(mut negate: bool, mut ominmax: Arc<metamodelica::List<Option<Arc<
             min1 = negateExpression(true, min.clone(), min.clone(), (literal!(" min_1 ")).clone())?;
             max1 = negateExpression(true, max.clone(), max.clone(), (literal!(" max_1 ")).clone())?;
             minMax = mergeMinMax1((Some(max1.clone()), Some(min1.clone())), ominmax1.clone())?;
-            checkMinMax(minMax.clone(), mark.clone(), simpleeqnsarr.clone())?;
+            checkMinMax(minMax.clone(), mark.clone(), simpleeqnsarr.clone());
             minMax.clone()
         },
         (true, Deref @ metamodelica::List::Cons { head: None, tail: Deref @ metamodelica::List::Cons { head: Some(max), tail: Deref @ metamodelica::List::Nil } }) => {
@@ -3096,7 +3096,7 @@ fn mergeMinMax(mut negate: bool, mut ominmax: Arc<metamodelica::List<Option<Arc<
             let mut minMax: (Option<Arc<DAE::Exp>>, Option<Arc<DAE::Exp>>) = (None, None);
             max1 = negateExpression(true, max.clone(), max.clone(), (literal!(" max_2 ")).clone())?;
             minMax = mergeMinMax1((Some(max1.clone()), None), ominmax1.clone())?;
-            checkMinMax(minMax.clone(), mark.clone(), simpleeqnsarr.clone())?;
+            checkMinMax(minMax.clone(), mark.clone(), simpleeqnsarr.clone());
             minMax.clone()
         },
         (true, Deref @ metamodelica::List::Cons { head: Some(min), tail: Deref @ metamodelica::List::Cons { head: None, tail: Deref @ metamodelica::List::Nil } }) => {
@@ -3104,7 +3104,7 @@ fn mergeMinMax(mut negate: bool, mut ominmax: Arc<metamodelica::List<Option<Arc<
             let mut minMax: (Option<Arc<DAE::Exp>>, Option<Arc<DAE::Exp>>) = (None, None);
             min1 = negateExpression(true, min.clone(), min.clone(), (literal!(" min_2 ")).clone())?;
             minMax = mergeMinMax1((None, Some(min1.clone())), ominmax1.clone())?;
-            checkMinMax(minMax.clone(), mark.clone(), simpleeqnsarr.clone())?;
+            checkMinMax(minMax.clone(), mark.clone(), simpleeqnsarr.clone());
             minMax.clone()
         },
         _ => {
@@ -3138,7 +3138,7 @@ fn mergeMinMax1(mut ominmax: (Option<Arc<DAE::Exp>>, Option<Arc<DAE::Exp>>), mut
     Ok(minMax)
 }
 
-fn checkMinMax(mut minmax: (Option<Arc<DAE::Exp>>, Option<Arc<DAE::Exp>>), mut mark: i32, mut simpleeqnsarr: metamodelica::Array<SimpleContainer>) -> Result<()> {
+fn checkMinMax(mut minmax: (Option<Arc<DAE::Exp>>, Option<Arc<DAE::Exp>>), mut mark: i32, mut simpleeqnsarr: metamodelica::Array<SimpleContainer>) -> () {
     let () = 'mc: {
         let __mc_input = minmax.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -3169,9 +3169,9 @@ fn checkMinMax(mut minmax: (Option<Arc<DAE::Exp>>, Option<Arc<DAE::Exp>>), mut m
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(())
+    ()
 }
 
 fn handleVarSetAttributes(mut inAttributes: VarSetAttributes, mut inVar: BackendDAE::Var, mut inVars: BackendDAE::Variables, mut inShared: Arc<BackendDAE::Shared>) -> Result<(BackendDAE::Variables, bool)> {
@@ -3305,11 +3305,11 @@ fn replaceCrefWithBindExp(mut exp: Arc<DAE::Exp>, mut vars: BackendDAE::Variable
     let mut outExp: Arc<DAE::Exp>;
     let mut replaced: bool;
     let mut replaced_crefs: Arc<UnorderedSet::UnorderedSet<Arc<DAE::ComponentRef>>> = UnorderedSet::new((std::sync::Arc::new(ComponentReferenceBasics::hashComponentRef) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentReferenceBasics::crefEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>), 13);
-    (outExp, replaced) = Expression::traverseExpBottomUp(exp.clone(), (std::sync::Arc::new({ let __pe_b2 = vars.clone(); let __pe_b3 = replaced_crefs.clone(); move |__pe_a0, __pe_a1| replaceCrefWithBindExp_traverser(__pe_a0, __pe_a1, __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, bool) -> Result<(Arc<DAE::Exp>, bool)> + 'static>), false)?;
+    (outExp, replaced) = Expression::traverseExpBottomUp(exp.clone(), (std::sync::Arc::new({ let __pe_b2 = vars.clone(); let __pe_b3 = replaced_crefs.clone(); move |__pe_a0, __pe_a1| Ok(replaceCrefWithBindExp_traverser(__pe_a0, __pe_a1, __pe_b2.clone(), __pe_b3.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, bool) -> Result<(Arc<DAE::Exp>, bool)> + 'static>), false)?;
     Ok((outExp, replaced))
 }
 
-fn replaceCrefWithBindExp_traverser(mut exp: Arc<DAE::Exp>, mut replaced: bool, mut vars: BackendDAE::Variables, mut replacedCrefs: Arc<UnorderedSet::UnorderedSet<Arc<DAE::ComponentRef>>>) -> Result<(Arc<DAE::Exp>, bool)> {
+fn replaceCrefWithBindExp_traverser(mut exp: Arc<DAE::Exp>, mut replaced: bool, mut vars: BackendDAE::Variables, mut replacedCrefs: Arc<UnorderedSet::UnorderedSet<Arc<DAE::ComponentRef>>>) -> (Arc<DAE::Exp>, bool) {
     let mut outExp: Arc<DAE::Exp>;
     let mut outReplaced: bool;
     let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
@@ -3327,7 +3327,7 @@ fn replaceCrefWithBindExp_traverser(mut exp: Arc<DAE::Exp>, mut replaced: bool, 
                     } };
                     e = __pa0.clone();
                     UnorderedSet::add(cr.clone(), replacedCrefs.clone())?;
-                    (e, _) = Expression::traverseExpBottomUp(e.clone(), (std::sync::Arc::new({ let __pe_b2 = vars.clone(); let __pe_b3 = replacedCrefs.clone(); move |__pe_a0, __pe_a1| replaceCrefWithBindExp_traverser(__pe_a0, __pe_a1, __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, bool) -> Result<(Arc<DAE::Exp>, bool)> + 'static>), false)?;
+                    (e, _) = Expression::traverseExpBottomUp(e.clone(), (std::sync::Arc::new({ let __pe_b2 = vars.clone(); let __pe_b3 = replacedCrefs.clone(); move |__pe_a0, __pe_a1| Ok(replaceCrefWithBindExp_traverser(__pe_a0, __pe_a1, __pe_b2.clone(), __pe_b3.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, bool) -> Result<(Arc<DAE::Exp>, bool)> + 'static>), false)?;
                     Ok(((e.clone(), true), e.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -3349,9 +3349,9 @@ fn replaceCrefWithBindExp_traverser(mut exp: Arc<DAE::Exp>, mut replaced: bool, 
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outExp, outReplaced))
+    (outExp, outReplaced)
 }
 
 fn getZeroFreeValues(mut inTpl: (Option<Arc<DAE::Exp>>, Arc<DAE::ComponentRef>), mut iAcc: Arc<metamodelica::List<(Arc<DAE::Exp>, Arc<DAE::ComponentRef>)>>) -> Arc<metamodelica::List<(Arc<DAE::Exp>, Arc<DAE::ComponentRef>)>> {
@@ -3641,12 +3641,12 @@ fn removeSimpleEquationsShared(mut b: bool, mut inDAE: Arc<BackendDAE::BackendDA
                 BackendVarTransform::dumpExtendReplacements(repl.clone())?;
                 BackendVarTransform::dumpDerConstReplacements(repl.clone())?;
             }
-            let (_, (_, __pa0)) = BackendVariable::traverseBackendDAEVarsWithUpdate(aliasVars.clone(), (std::sync::Arc::new(replaceAliasVarTraverser) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, (BackendVarTransform::VariableReplacements, Arc<metamodelica::List<BackendDAE::Var>>)) -> Result<(BackendDAE::Var, (BackendVarTransform::VariableReplacements, Arc<metamodelica::List<BackendDAE::Var>>))> + 'static>), (repl.clone(), metamodelica::nil()))?;
+            let (_, (_, __pa0)) = BackendVariable::traverseBackendDAEVarsWithUpdate(aliasVars.clone(), (std::sync::Arc::new(fnptr!(replaceAliasVarTraverser, BackendDAE::Var, (BackendVarTransform::VariableReplacements, Arc<metamodelica::List<BackendDAE::Var>>))) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, (BackendVarTransform::VariableReplacements, Arc<metamodelica::List<BackendDAE::Var>>)) -> Result<(BackendDAE::Var, (BackendVarTransform::VariableReplacements, Arc<metamodelica::List<BackendDAE::Var>>))> + 'static>), (repl.clone(), metamodelica::nil()))?;
             varlst = __pa0.clone();
             aliasVars = List::fold(varlst.clone(), (std::sync::Arc::new(fixAliasConstBindings) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, BackendDAE::Variables) -> Result<BackendDAE::Variables> + 'static>), aliasVars.clone())?;
             assign_field!(shared.aliasVars = aliasVars.clone());
-            BackendVariable::traverseBackendDAEVarsWithUpdate(globalKnownVars.clone(), (std::sync::Arc::new(replaceVarTraverser) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, BackendVarTransform::VariableReplacements) -> Result<(BackendDAE::Var, BackendVarTransform::VariableReplacements)> + 'static>), repl.clone())?;
-            BackendVariable::traverseBackendDAEVarsWithUpdate(externalObjects.clone(), (std::sync::Arc::new(replaceVarTraverser) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, BackendVarTransform::VariableReplacements) -> Result<(BackendDAE::Var, BackendVarTransform::VariableReplacements)> + 'static>), repl.clone())?;
+            BackendVariable::traverseBackendDAEVarsWithUpdate(globalKnownVars.clone(), (std::sync::Arc::new(fnptr!(replaceVarTraverser, BackendDAE::Var, BackendVarTransform::VariableReplacements)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, BackendVarTransform::VariableReplacements) -> Result<(BackendDAE::Var, BackendVarTransform::VariableReplacements)> + 'static>), repl.clone())?;
+            BackendVariable::traverseBackendDAEVarsWithUpdate(externalObjects.clone(), (std::sync::Arc::new(fnptr!(replaceVarTraverser, BackendDAE::Var, BackendVarTransform::VariableReplacements)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, BackendVarTransform::VariableReplacements) -> Result<(BackendDAE::Var, BackendVarTransform::VariableReplacements)> + 'static>), repl.clone())?;
             (_, eqnslst, b1) = BackendEquation::traverseEquationArray(shared.initialEqs.clone(), (std::sync::Arc::new(replaceEquationTraverser) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>, (BackendVarTransform::VariableReplacements, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, bool)) -> Result<(Arc<BackendDAE::Equation>, (BackendVarTransform::VariableReplacements, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, bool))> + 'static>), (repl.clone(), metamodelica::nil(), false))?;
             assign_field!(shared.initialEqs = if (b1.clone()) {BackendEquation::listEquation(eqnslst.clone())?} else {shared.initialEqs.clone()});
             (_, eqnslst, _) = BackendEquation::traverseEquationArray(shared.removedEqs.clone(), (std::sync::Arc::new(replaceEquationTraverser) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>, (BackendVarTransform::VariableReplacements, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, bool)) -> Result<(Arc<BackendDAE::Equation>, (BackendVarTransform::VariableReplacements, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, bool))> + 'static>), (repl.clone(), metamodelica::nil(), false))?;
@@ -3672,13 +3672,13 @@ fn fixAliasConstBindings(mut iAVar: BackendDAE::Var, mut iAVars: BackendDAE::Var
     let mut avar: BackendDAE::Var;
     cr = BackendVariable::varCref(iAVar.clone())?;
     e = BackendVariable::varBindExp(iAVar.clone())?;
-    e = fixAliasConstBindings1(cr.clone(), e.clone(), iAVars.clone())?;
+    e = fixAliasConstBindings1(cr.clone(), e.clone(), iAVars.clone());
     avar = BackendVariable::setBindExp(iAVar.clone(), Some(e.clone()));
     oAVars = BackendVariable::addVar(avar.clone(), iAVars.clone())?;
     Ok(oAVars)
 }
 
-fn fixAliasConstBindings1(mut iCr: Arc<DAE::ComponentRef>, mut iExp: Arc<DAE::Exp>, mut iAVars: BackendDAE::Variables) -> Result<Arc<DAE::Exp>> {
+fn fixAliasConstBindings1(mut iCr: Arc<DAE::ComponentRef>, mut iExp: Arc<DAE::Exp>, mut iAVars: BackendDAE::Variables) -> Arc<DAE::Exp> {
     let mut oExp: Arc<DAE::Exp>;
     oExp = 'mc: {
         let __mc_input = iAVars.clone();
@@ -3696,18 +3696,18 @@ fn fixAliasConstBindings1(mut iCr: Arc<DAE::ComponentRef>, mut iExp: Arc<DAE::Ex
                 _ => bail!("pattern mismatch"),
             } };
             e = __pa1.clone();
-            Ok(fixAliasConstBindings1(cr.clone(), e.clone(), iAVars.clone())?)
+            Ok(fixAliasConstBindings1(cr.clone(), e.clone(), iAVars.clone()))
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(iExp.clone())
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(oExp)
+    oExp
 }
 
-fn replaceAliasVarTraverser(mut inVar: BackendDAE::Var, mut inTpl: (BackendVarTransform::VariableReplacements, Arc<metamodelica::List<BackendDAE::Var>>)) -> Result<(BackendDAE::Var, (BackendVarTransform::VariableReplacements, Arc<metamodelica::List<BackendDAE::Var>>))> {
+fn replaceAliasVarTraverser(mut inVar: BackendDAE::Var, mut inTpl: (BackendVarTransform::VariableReplacements, Arc<metamodelica::List<BackendDAE::Var>>)) -> (BackendDAE::Var, (BackendVarTransform::VariableReplacements, Arc<metamodelica::List<BackendDAE::Var>>)) {
     let mut outVar: BackendDAE::Var;
     let mut outTpl: (BackendVarTransform::VariableReplacements, Arc<metamodelica::List<BackendDAE::Var>>);
     (outVar, outTpl) = 'mc: {
@@ -3719,7 +3719,7 @@ fn replaceAliasVarTraverser(mut inVar: BackendDAE::Var, mut inTpl: (BackendVarTr
                     let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut b: bool = false;
                     let mut varlst = (*varlst).clone();
-                    let __pa0 = ::match_deref::match_deref! { match &(BackendVarTransform::replaceExp(e.clone(), repl.clone(), None)?) {
+                    let __pa0 = ::match_deref::match_deref! { match &(BackendVarTransform::replaceExp(e.clone(), repl.clone(), None)) {
                         (__pa0, true) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -3740,12 +3740,12 @@ fn replaceAliasVarTraverser(mut inVar: BackendDAE::Var, mut inTpl: (BackendVarTr
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outVar, outTpl))
+    (outVar, outTpl)
 }
 
-fn replaceVarTraverser(mut inVar: BackendDAE::Var, mut inRepl: BackendVarTransform::VariableReplacements) -> Result<(BackendDAE::Var, BackendVarTransform::VariableReplacements)> {
+fn replaceVarTraverser(mut inVar: BackendDAE::Var, mut inRepl: BackendVarTransform::VariableReplacements) -> (BackendDAE::Var, BackendVarTransform::VariableReplacements) {
     let mut outVar: BackendDAE::Var;
     let mut repl: BackendVarTransform::VariableReplacements = <BackendVarTransform::VariableReplacements as ::std::default::Default>::default();
     (outVar, repl) = 'mc: {
@@ -3755,7 +3755,7 @@ fn replaceVarTraverser(mut inVar: BackendDAE::Var, mut inRepl: BackendVarTransfo
                 (v @ BackendDAE::Var { bindExp: Some(e), .. }, repl) => {
                     let mut v1: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
                     let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let __pa0 = ::match_deref::match_deref! { match &(BackendVarTransform::replaceExp(e.clone(), repl.clone(), None)?) {
+                    let __pa0 = ::match_deref::match_deref! { match &(BackendVarTransform::replaceExp(e.clone(), repl.clone(), None)) {
                         (__pa0, true) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -3774,9 +3774,9 @@ fn replaceVarTraverser(mut inVar: BackendDAE::Var, mut inRepl: BackendVarTransfo
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outVar, repl))
+    (outVar, repl)
 }
 
 fn removeSimpleEquationsShared1(mut inSysts: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>>, mut inSysts1: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>>, mut repl: BackendVarTransform::VariableReplacements, mut statesetrepl: Option<BackendVarTransform::VariableReplacements>, mut aliasVars: BackendDAE::Variables) -> Result<Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>>> {
@@ -3833,10 +3833,10 @@ fn removeAliasVarsStateSets(mut iStateSets: Arc<metamodelica::List<BackendDAE::S
             repl = getAliasReplacements(iStatesetrepl.clone(), aliasVars.clone())?;
             hs = HashSet::emptyHashSet();
             hs = List::applyAndFold(statescandidates.clone(), (std::sync::Arc::new(BaseHashSet::add) as std::sync::Arc<dyn ::std::ops::Fn(_, _) -> Result<_> + 'static>), (std::sync::Arc::new(BackendVariable::varCref) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<Arc<DAE::ComponentRef>> + 'static>), hs.clone())?;
-            ovars = replaceOtherStateSetVars(ovars.clone(), vars.clone(), aliasVars.clone(), hs.clone(), metamodelica::nil())?;
+            ovars = replaceOtherStateSetVars(ovars.clone(), vars.clone(), aliasVars.clone(), hs.clone(), metamodelica::nil());
             (eqns, b) = BackendVarTransform::replaceEquations(eqns.clone(), repl.clone(), Some((std::sync::Arc::new(fnptr!(BackendVarTransform::skipPreChangeEdgeOperator, Arc<DAE::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>)))?;
             (oeqns, b1) = BackendVarTransform::replaceEquations(oeqns.clone(), repl.clone(), Some((std::sync::Arc::new(fnptr!(BackendVarTransform::skipPreChangeEdgeOperator, Arc<DAE::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>)))?;
-            oeqns = List::fold(oeqns.clone(), (std::sync::Arc::new(removeEqualLshRshEqns) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) -> Result<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>> + 'static>), metamodelica::nil())?;
+            oeqns = List::fold(oeqns.clone(), (std::sync::Arc::new(fnptr!(removeEqualLshRshEqns, Arc<BackendDAE::Equation>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) -> Result<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>> + 'static>), metamodelica::nil())?;
             oeqns = oeqns.clone().reverse();
             (stateSets, b, oStatesetrepl) = removeAliasVarsStateSets(stateSets.clone(), Some(repl.clone()), vars.clone(), aliasVars.clone(), metamodelica::cons(BackendDAE::StateSet { index: index.clone(), rang: rang.clone(), state: states.clone(), crA: crA.clone(), varA: varA.clone(), statescandidates: statescandidates.clone(), ovars: ovars.clone(), eqns: eqns.clone(), oeqns: oeqns.clone(), crJ: crJ.clone(), varJ: varJ.clone(), jacobian: jac.clone() }, iAcc.clone()), b.clone() || b1.clone())?;
             (stateSets.clone(), b.clone(), oStatesetrepl.clone())
@@ -3846,7 +3846,7 @@ fn removeAliasVarsStateSets(mut iStateSets: Arc<metamodelica::List<BackendDAE::S
     Ok((oStateSets, outB, oStatesetrepl))
 }
 
-fn removeEqualLshRshEqns(mut iEqn: Arc<BackendDAE::Equation>, mut iEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) -> Result<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>> {
+fn removeEqualLshRshEqns(mut iEqn: Arc<BackendDAE::Equation>, mut iEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) -> Arc<metamodelica::List<Arc<BackendDAE::Equation>>> {
     let mut oEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
     oEqns = 'mc: {
         let __mc_input = iEqn.clone();
@@ -3888,12 +3888,12 @@ fn removeEqualLshRshEqns(mut iEqn: Arc<BackendDAE::Equation>, mut iEqns: Arc<met
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(oEqns)
+    oEqns
 }
 
-fn replaceOtherStateSetVars(mut iVarLst: Arc<metamodelica::List<BackendDAE::Var>>, mut vars: BackendDAE::Variables, mut aliasVars: BackendDAE::Variables, mut hs: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)), mut iAcc: Arc<metamodelica::List<BackendDAE::Var>>) -> Result<Arc<metamodelica::List<BackendDAE::Var>>> {
+fn replaceOtherStateSetVars(mut iVarLst: Arc<metamodelica::List<BackendDAE::Var>>, mut vars: BackendDAE::Variables, mut aliasVars: BackendDAE::Variables, mut hs: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)), mut iAcc: Arc<metamodelica::List<BackendDAE::Var>>) -> Arc<metamodelica::List<BackendDAE::Var>> {
     let mut oVarLst: Arc<metamodelica::List<BackendDAE::Var>>;
     oVarLst = 'mc: {
         let __mc_input = iVarLst.clone();
@@ -3925,7 +3925,7 @@ fn replaceOtherStateSetVars(mut iVarLst: Arc<metamodelica::List<BackendDAE::Var>
                     b = BaseHashSet::has(cr.clone(), hs.clone())?;
                     (var, _) = BackendVariable::getVarSingle(cr.clone(), vars.clone())?;
                     varlst = List::consOnTrue(!(b.clone()), var.clone(), iAcc.clone());
-                    Ok(replaceOtherStateSetVars(varlst.clone(), vars.clone(), aliasVars.clone(), hs.clone(), varlst.clone())?)
+                    Ok(replaceOtherStateSetVars(varlst.clone(), vars.clone(), aliasVars.clone(), hs.clone(), varlst.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -3936,7 +3936,7 @@ fn replaceOtherStateSetVars(mut iVarLst: Arc<metamodelica::List<BackendDAE::Var>
                     let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
                     cr = BackendVariable::varCref(var.clone())?;
                     let true = (BaseHashSet::has(cr.clone(), hs.clone())?) else { bail!("pattern mismatch") };
-                    Ok(replaceOtherStateSetVars(varlst.clone(), vars.clone(), aliasVars.clone(), hs.clone(), iAcc.clone())?)
+                    Ok(replaceOtherStateSetVars(varlst.clone(), vars.clone(), aliasVars.clone(), hs.clone(), iAcc.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -3944,14 +3944,14 @@ fn replaceOtherStateSetVars(mut iVarLst: Arc<metamodelica::List<BackendDAE::Var>
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: var, tail: varlst } => {
-                    Ok(replaceOtherStateSetVars(varlst.clone(), vars.clone(), aliasVars.clone(), hs.clone(), metamodelica::cons(var.clone(), iAcc.clone()))?)
+                    Ok(replaceOtherStateSetVars(varlst.clone(), vars.clone(), aliasVars.clone(), hs.clone(), metamodelica::cons(var.clone(), iAcc.clone())))
                 }
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(oVarLst)
+    oVarLst
 }
 
 fn replaceOptimicaExps(mut icontraints: Arc<metamodelica::List<Arc<DAE::Constraint>>>, mut iclassAttributes: Arc<metamodelica::List<Arc<DAE::ClassAttributes>>>, mut irepl: BackendVarTransform::VariableReplacements) -> Result<(Arc<metamodelica::List<Arc<DAE::Constraint>>>, Arc<metamodelica::List<Arc<DAE::ClassAttributes>>>)> {
@@ -4013,7 +4013,7 @@ fn replaceOptimicaContraints(mut icontraints: Arc<metamodelica::List<Arc<DAE::Ex
         Deref @ metamodelica::List::Cons { head: e, tail: rest } => {
             let mut constraintLst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
             let mut e = (*e).clone();
-            let __pa0 = ::match_deref::match_deref! { match &(replaceExprTraverser((e.clone(), (irepl.clone(), metamodelica::nil(), false)))?) {
+            let __pa0 = ::match_deref::match_deref! { match &(replaceExprTraverser((e.clone(), (irepl.clone(), metamodelica::nil(), false)))) {
                 (_, (_, Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Nil }, _)) => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
@@ -4097,20 +4097,20 @@ fn replaceEquationTraverser(mut inEq: Arc<BackendDAE::Equation>, mut inTpl: (Bac
     Ok((outEq, outTpl))
 }
 
-fn replaceExprTraverser(mut inTpl: (Arc<DAE::Exp>, (BackendVarTransform::VariableReplacements, Arc<metamodelica::List<Arc<DAE::Exp>>>, bool))) -> Result<(Arc<DAE::Exp>, (BackendVarTransform::VariableReplacements, Arc<metamodelica::List<Arc<DAE::Exp>>>, bool))> {
+fn replaceExprTraverser(mut inTpl: (Arc<DAE::Exp>, (BackendVarTransform::VariableReplacements, Arc<metamodelica::List<Arc<DAE::Exp>>>, bool))) -> (Arc<DAE::Exp>, (BackendVarTransform::VariableReplacements, Arc<metamodelica::List<Arc<DAE::Exp>>>, bool)) {
     let mut outTpl: (Arc<DAE::Exp>, (BackendVarTransform::VariableReplacements, Arc<metamodelica::List<Arc<DAE::Exp>>>, bool));
     outTpl = (::match_deref::match_deref! { match &(inTpl.clone()) {
         (exp, (repl, exps, b)) => {
             let mut exp1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut b1: bool = false;
             let mut exps = (*exps).clone();
-            (exp1, b1) = BackendVarTransform::replaceExp(exp.clone(), repl.clone(), Some((std::sync::Arc::new(fnptr!(BackendVarTransform::skipPreChangeEdgeOperator, Arc<DAE::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>)))?;
+            (exp1, b1) = BackendVarTransform::replaceExp(exp.clone(), repl.clone(), Some((std::sync::Arc::new(fnptr!(BackendVarTransform::skipPreChangeEdgeOperator, Arc<DAE::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>)));
             exps = metamodelica::cons(exp1.clone(), exps.clone());
             (exp.clone(), (repl.clone(), exps.clone(), b.clone() || b1.clone()))
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Ok(outTpl)
+    outTpl
 }
 
 fn replaceOptExprTraverser(mut inTpl: (Option<Arc<DAE::Exp>>, (BackendVarTransform::VariableReplacements, Arc<metamodelica::List<Option<Arc<DAE::Exp>>>>, bool))) -> Result<(Option<Arc<DAE::Exp>>, (BackendVarTransform::VariableReplacements, Arc<metamodelica::List<Option<Arc<DAE::Exp>>>>, bool))> {
@@ -4125,7 +4125,7 @@ fn replaceOptExprTraverser(mut inTpl: (Option<Arc<DAE::Exp>>, (BackendVarTransfo
             let mut exp1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut b1: bool = false;
             let mut exps = (*exps).clone();
-            (exp1, b1) = BackendVarTransform::replaceExp(exp.clone(), repl.clone(), Some((std::sync::Arc::new(fnptr!(BackendVarTransform::skipPreChangeEdgeOperator, Arc<DAE::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>)))?;
+            (exp1, b1) = BackendVarTransform::replaceExp(exp.clone(), repl.clone(), Some((std::sync::Arc::new(fnptr!(BackendVarTransform::skipPreChangeEdgeOperator, Arc<DAE::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>)));
             if referenceEq(&*(exp1.clone()),&*(exp.clone())) {
                 exps = metamodelica::cons(expOpt.clone(), exps.clone());
             } else {
@@ -4245,7 +4245,7 @@ fn addUnreplaceableFromWhenEqn(mut inEq: Arc<BackendDAE::Equation>, mut inHs: (m
         (__esc_eqn @ Deref @ BackendDAE::Equation::ALGORITHM { alg: Deref @ DAE::Algorithm { statementLst: stmts }, .. }, __esc_hs) => {
             eqn = (*__esc_eqn).clone();
             hs = (*__esc_hs).clone();
-            hs = List::fold(stmts.clone(), (std::sync::Arc::new(addUnreplaceableFromWhenStmt) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))> + 'static>), hs.clone())?;
+            hs = List::fold(stmts.clone(), (std::sync::Arc::new(fnptr!(addUnreplaceableFromWhenStmt, Arc<DAE::Statement>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)))) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))> + 'static>), hs.clone())?;
             (eqn.clone(), hs.clone())
         },
         _ => {
@@ -4256,7 +4256,7 @@ fn addUnreplaceableFromWhenEqn(mut inEq: Arc<BackendDAE::Equation>, mut inHs: (m
     Ok((eqn, hs))
 }
 
-fn addUnreplaceableFromWhenStmt(mut inStmt: Arc<DAE::Statement>, mut inHS: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))> {
+fn addUnreplaceableFromWhenStmt(mut inStmt: Arc<DAE::Statement>, mut inHS: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))) -> (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)) {
     let mut outHS: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr));
     outHS = 'mc: {
         let __mc_input = inStmt.clone();
@@ -4275,7 +4275,7 @@ fn addUnreplaceableFromWhenStmt(mut inStmt: Arc<DAE::Statement>, mut inHS: (meta
                 Deref @ DAE::Statement::STMT_WHEN { statementLst: stmts, elseWhen: Some(stmt), .. } => {
                     let mut hs: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr));
                     hs = List::fold(stmts.clone(), (std::sync::Arc::new(addUnreplaceableFromStmt) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))> + 'static>), inHS.clone())?;
-                    hs = addUnreplaceableFromWhenStmt(stmt.clone(), hs.clone())?;
+                    hs = addUnreplaceableFromWhenStmt(stmt.clone(), hs.clone());
                     Ok(hs.clone())
                 }
                 _ => bail!("nomatch"),
@@ -4313,9 +4313,9 @@ fn addUnreplaceableFromWhenStmt(mut inStmt: Arc<DAE::Statement>, mut inHS: (meta
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outHS)
+    outHS
 }
 
 fn addUnreplaceableFromStmt(mut inStmt: Arc<DAE::Statement>, mut inHS: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))> {
@@ -4404,7 +4404,7 @@ fn addUnreplaceableFromWhenOps(mut inWhenOps: Arc<metamodelica::List<BackendDAE:
     }
 }
 
-fn traverserExpUnreplaceable(mut e: Arc<DAE::Exp>, mut unReplaceable: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))) -> Result<(Arc<DAE::Exp>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)))> {
+fn traverserExpUnreplaceable(mut e: Arc<DAE::Exp>, mut unReplaceable: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))) -> (Arc<DAE::Exp>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))) {
     let mut outExp: Arc<DAE::Exp>;
     let mut outHt: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr));
     (outExp, outHt) = 'mc: {
@@ -4440,9 +4440,9 @@ fn traverserExpUnreplaceable(mut e: Arc<DAE::Exp>, mut unReplaceable: (metamodel
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outExp, outHt))
+    (outExp, outHt)
 }
 
 fn traverseCrefUnreplaceable(mut inCref: Arc<DAE::ComponentRef>, mut preCref: Option<Arc<DAE::ComponentRef>>, mut iUnreplaceable: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))> {
@@ -4511,12 +4511,12 @@ fn negateExpression(mut negationFlag: bool, mut inExp: Arc<DAE::Exp>, mut inAlte
 
 fn performAliasEliminationBB(mut inDAE: Arc<BackendDAE::BackendDAE>, mut findAliases: bool) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut outDAE: Arc<BackendDAE::BackendDAE>;
-    outDAE = BackendDAEUtil::mapEqSystem(inDAE.clone(), (std::sync::Arc::new({ let __pe_b2 = findAliases.clone(); move |__pe_a0, __pe_a1| eliminateTrivialEquations(__pe_a0, __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>) -> Result<(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>)> + 'static>))?;
+    outDAE = BackendDAEUtil::mapEqSystem(inDAE.clone(), (std::sync::Arc::new({ let __pe_b2 = findAliases.clone(); move |__pe_a0, __pe_a1| Ok(eliminateTrivialEquations(__pe_a0, __pe_a1, __pe_b2.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>) -> Result<(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>)> + 'static>))?;
     outDAE = BackendDAEUtil::mapEqSystem(outDAE.clone(), (std::sync::Arc::new(getAliasAttributes) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>) -> Result<(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>)> + 'static>))?;
     Ok(outDAE)
 }
 
-fn eliminateTrivialEquations(mut inSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc<BackendDAE::Shared>, mut findAliases: bool) -> Result<(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>)> {
+fn eliminateTrivialEquations(mut inSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc<BackendDAE::Shared>, mut findAliases: bool) -> (Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>) {
     let mut outSystem: Arc<BackendDAE::EqSystem>;
     let mut outShared: Arc<BackendDAE::Shared>;
     (outSystem, outShared) = 'mc: {
@@ -4550,7 +4550,7 @@ fn eliminateTrivialEquations(mut inSystem: Arc<BackendDAE::EqSystem>, mut inShar
                     HTCrToExp = HashTableCrToExp::emptyHashTableSized(size.clone());
                     HTCrToCrEqLst = HashTableCrToCrEqLst::emptyHashTableSized(size.clone());
                     repl = BackendVarTransform::emptyReplacementsSized(size.clone());
-                    (_, HTCrToExp, HTCrToCrEqLst, eqList, simpleEqList) = BackendEquation::traverseEquationArray(orderedEqs.clone(), (std::sync::Arc::new({ let __pe_b2 = findAliases.clone(); move |__pe_a0, __pe_a1| findSimpleEquations(__pe_a0, __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>, (BackendDAE::Variables, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>)), (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)>>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)>>) -> Result<ArcStr> + 'static>)), Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>)) -> Result<(Arc<BackendDAE::Equation>, (BackendDAE::Variables, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>)), (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)>>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)>>) -> Result<ArcStr> + 'static>)), Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>))> + 'static>), (orderedVars.clone(), HTCrToExp.clone(), HTCrToCrEqLst.clone(), metamodelica::nil(), metamodelica::nil()))?;
+                    (_, HTCrToExp, HTCrToCrEqLst, eqList, simpleEqList) = BackendEquation::traverseEquationArray(orderedEqs.clone(), (std::sync::Arc::new({ let __pe_b2 = findAliases.clone(); move |__pe_a0, __pe_a1| Ok(findSimpleEquations(__pe_a0, __pe_a1, __pe_b2.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>, (BackendDAE::Variables, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>)), (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)>>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)>>) -> Result<ArcStr> + 'static>)), Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>)) -> Result<(Arc<BackendDAE::Equation>, (BackendDAE::Variables, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>)), (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)>>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)>>) -> Result<ArcStr> + 'static>)), Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>))> + 'static>), (orderedVars.clone(), HTCrToExp.clone(), HTCrToCrEqLst.clone(), metamodelica::nil(), metamodelica::nil()))?;
                     tplExp = BaseHashTable::hashTableList(HTCrToExp.clone())?;
                     tplCrEqLst = BaseHashTable::hashTableList(HTCrToCrEqLst.clone())?;
                     HTCrToExp = addRestCrefs(tplCrEqLst.clone(), HTCrToExp.clone(), HTCrToCrEqLst.clone())?;
@@ -4571,11 +4571,11 @@ fn eliminateTrivialEquations(mut inSystem: Arc<BackendDAE::EqSystem>, mut inShar
                     (remEqList, _) = BackendEquation::traverseExpsOfEquationList(remEqList.clone(), (std::sync::Arc::new(traverseExpTopDown) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>))) -> Result<(Arc<DAE::Exp>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>)))> + 'static>), HTCrToExp.clone())?;
                     assign_field!(shared.removedEqs = BackendEquation::listEquation(List::select(remEqList.clone(), (std::sync::Arc::new(fnptr!(BackendEquation::assertWithCondTrue, Arc<BackendDAE::Equation>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>) -> Result<bool> + 'static>))?)?);
                     repl = addVarReplacements(tplExp.clone(), repl.clone())?;
-                    let (__pa0, (_, __pa1)) = BackendVariable::traverseBackendDAEVarsWithUpdate(aliasVars.clone(), (std::sync::Arc::new(replaceAliasVarTraverser) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, (BackendVarTransform::VariableReplacements, Arc<metamodelica::List<BackendDAE::Var>>)) -> Result<(BackendDAE::Var, (BackendVarTransform::VariableReplacements, Arc<metamodelica::List<BackendDAE::Var>>))> + 'static>), (repl.clone(), metamodelica::nil()))?;
+                    let (__pa0, (_, __pa1)) = BackendVariable::traverseBackendDAEVarsWithUpdate(aliasVars.clone(), (std::sync::Arc::new(fnptr!(replaceAliasVarTraverser, BackendDAE::Var, (BackendVarTransform::VariableReplacements, Arc<metamodelica::List<BackendDAE::Var>>))) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, (BackendVarTransform::VariableReplacements, Arc<metamodelica::List<BackendDAE::Var>>)) -> Result<(BackendDAE::Var, (BackendVarTransform::VariableReplacements, Arc<metamodelica::List<BackendDAE::Var>>))> + 'static>), (repl.clone(), metamodelica::nil()))?;
                     aliasVars = __pa0.clone();
                     varlst = __pa1.clone();
                     aliasVars = List::fold(varlst.clone(), (std::sync::Arc::new(fixAliasConstBindings) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, BackendDAE::Variables) -> Result<BackendDAE::Variables> + 'static>), aliasVars.clone())?;
-                    (globalKnownVars, _) = BackendVariable::traverseBackendDAEVarsWithUpdate(globalKnownVars.clone(), (std::sync::Arc::new(replaceVarTraverser) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, BackendVarTransform::VariableReplacements) -> Result<(BackendDAE::Var, BackendVarTransform::VariableReplacements)> + 'static>), repl.clone())?;
+                    (globalKnownVars, _) = BackendVariable::traverseBackendDAEVarsWithUpdate(globalKnownVars.clone(), (std::sync::Arc::new(fnptr!(replaceVarTraverser, BackendDAE::Var, BackendVarTransform::VariableReplacements)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, BackendVarTransform::VariableReplacements) -> Result<(BackendDAE::Var, BackendVarTransform::VariableReplacements)> + 'static>), repl.clone())?;
                     if Flags::isSet(Flags::DUMP_REPL.clone())? {
                         tplExp = BaseHashTable::hashTableList(HTCrToExp.clone())?;
                         countAliasEquations = (tplExp.clone().len() as i32);
@@ -4610,9 +4610,9 @@ fn eliminateTrivialEquations(mut inSystem: Arc<BackendDAE::EqSystem>, mut inShar
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outSystem, outShared))
+    (outSystem, outShared)
 }
 
 fn moveVars(mut cr_exp_lst: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>, mut inAliasVars: BackendDAE::Variables, mut inVars: BackendDAE::Variables) -> (BackendDAE::Variables, BackendDAE::Variables) {
@@ -4666,12 +4666,12 @@ fn addVarReplacements(mut cr_exp_lst: Arc<metamodelica::List<(Arc<DAE::Component
 fn traverseExpTopDown(mut inExp: Arc<DAE::Exp>, mut inHTCrToExp: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>))) -> Result<(Arc<DAE::Exp>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>)))> {
     let mut outExp: Arc<DAE::Exp>;
     let mut outHTCrToExp: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (HashTableCrToExp::FuncHashCref, HashTableCrToExp::FuncCrefEqual, HashTableCrToExp::FuncCrefStr, HashTableCrToExp::FuncExpStr)) = inHTCrToExp.clone();
-    (outExp, _) = Expression::traverseExpTopDown(inExp.clone(), (std::sync::Arc::new(insertReplacementsInEquations) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>))) -> Result<(Arc<DAE::Exp>, bool, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>)))> + 'static>), inHTCrToExp.clone())?;
+    (outExp, _) = Expression::traverseExpTopDown(inExp.clone(), (std::sync::Arc::new(fnptr!(insertReplacementsInEquations, Arc<DAE::Exp>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>)))) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>))) -> Result<(Arc<DAE::Exp>, bool, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>)))> + 'static>), inHTCrToExp.clone())?;
     (outExp, _) = ExpressionSimplify::simplify(outExp.clone())?;
     Ok((outExp, outHTCrToExp))
 }
 
-fn insertReplacementsInEquations(mut inE1: Arc<DAE::Exp>, mut inHTCrToExp: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>))) -> Result<(Arc<DAE::Exp>, bool, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>)))> {
+fn insertReplacementsInEquations(mut inE1: Arc<DAE::Exp>, mut inHTCrToExp: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>))) -> (Arc<DAE::Exp>, bool, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>))) {
     let mut outE1: Arc<DAE::Exp>;
     let mut cont: bool;
     let mut outHTCrToExp: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (HashTableCrToExp::FuncHashCref, HashTableCrToExp::FuncCrefEqual, HashTableCrToExp::FuncCrefStr, HashTableCrToExp::FuncExpStr));
@@ -4699,9 +4699,9 @@ fn insertReplacementsInEquations(mut inE1: Arc<DAE::Exp>, mut inHTCrToExp: (meta
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outE1, cont, outHTCrToExp))
+    (outE1, cont, outHTCrToExp)
 }
 
 fn removeStateDerInfo(mut inVarList: Arc<metamodelica::List<BackendDAE::Var>>) -> Result<Arc<metamodelica::List<BackendDAE::Var>>> {
@@ -4717,7 +4717,7 @@ fn removeStateDerInfo(mut inVarList: Arc<metamodelica::List<BackendDAE::Var>>) -
     Ok(vars)
 }
 
-fn findSimpleEquations(mut inEq: Arc<BackendDAE::Equation>, mut inTuple: (BackendDAE::Variables, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>)), (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)>>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)>>) -> Result<ArcStr> + 'static>)), Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>), mut findAliases: bool) -> Result<(Arc<BackendDAE::Equation>, (BackendDAE::Variables, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>)), (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)>>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)>>) -> Result<ArcStr> + 'static>)), Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>))> {
+fn findSimpleEquations(mut inEq: Arc<BackendDAE::Equation>, mut inTuple: (BackendDAE::Variables, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>)), (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)>>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)>>) -> Result<ArcStr> + 'static>)), Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>), mut findAliases: bool) -> (Arc<BackendDAE::Equation>, (BackendDAE::Variables, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>)), (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)>>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)>>) -> Result<ArcStr> + 'static>)), Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>)) {
     let mut outEq: Arc<BackendDAE::Equation>;
     let mut outTuple: (BackendDAE::Variables, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (HashTableCrToExp::FuncHashCref, HashTableCrToExp::FuncCrefEqual, HashTableCrToExp::FuncCrefStr, HashTableCrToExp::FuncExpStr)), (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)>>)>>), i32, (HashTableCrToCrEqLst::FuncHashCref, HashTableCrToCrEqLst::FuncCrefEqual, HashTableCrToCrEqLst::FuncCrefStr, HashTableCrToCrEqLst::FuncExpStr)), Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>);
     (outEq, outTuple) = 'mc: {
@@ -4744,7 +4744,7 @@ fn findSimpleEquations(mut inEq: Arc<BackendDAE::Equation>, mut inTuple: (Backen
                     let mut eqList = (*eqList).clone();
                     let mut simpleEqList = (*simpleEqList).clone();
                     res = BackendEquation::getEquationRHS(eq.clone())?;
-                    let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(Expression::traverseExpTopDown(res.clone(), (std::sync::Arc::new(findCrefs) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, BackendDAE::Variables, i32, i32, bool)) -> Result<(Arc<DAE::Exp>, bool, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, BackendDAE::Variables, i32, i32, bool))> + 'static>), (metamodelica::nil(), vars.clone(), 0, 0, true))?) {
+                    let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(Expression::traverseExpTopDown(res.clone(), (std::sync::Arc::new(fnptr!(findCrefs, Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, BackendDAE::Variables, i32, i32, bool))) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, BackendDAE::Variables, i32, i32, bool)) -> Result<(Arc<DAE::Exp>, bool, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, BackendDAE::Variables, i32, i32, bool))> + 'static>), (metamodelica::nil(), vars.clone(), 0, 0, true))?) {
                         (_, (__pa0, _, __pa1, __pa2, true)) => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -4752,7 +4752,7 @@ fn findSimpleEquations(mut inEq: Arc<BackendDAE::Equation>, mut inTuple: (Backen
                     count = __pa1.clone();
                     paramCount = __pa2.clone();
                     res = BackendEquation::getEquationLHS(eq.clone())?;
-                    let (__pa3, __pa4) = ::match_deref::match_deref! { match &(Expression::traverseExpTopDown(res.clone(), (std::sync::Arc::new(findCrefs) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, BackendDAE::Variables, i32, i32, bool)) -> Result<(Arc<DAE::Exp>, bool, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, BackendDAE::Variables, i32, i32, bool))> + 'static>), (cr_lst.clone(), vars.clone(), count.clone(), paramCount.clone(), true))?) {
+                    let (__pa3, __pa4) = ::match_deref::match_deref! { match &(Expression::traverseExpTopDown(res.clone(), (std::sync::Arc::new(fnptr!(findCrefs, Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, BackendDAE::Variables, i32, i32, bool))) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, BackendDAE::Variables, i32, i32, bool)) -> Result<(Arc<DAE::Exp>, bool, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, BackendDAE::Variables, i32, i32, bool))> + 'static>), (cr_lst.clone(), vars.clone(), count.clone(), paramCount.clone(), true))?) {
                         (_, (__pa3, _, __pa4, _, true)) => (__pa3.clone(), __pa4.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -4768,9 +4768,9 @@ fn findSimpleEquations(mut inEq: Arc<BackendDAE::Equation>, mut inTuple: (Backen
                             _ => bail!("pattern mismatch"),
                         } };
                         cr = __pa5.clone();
-                        let false = (BackendVariable::isState(cr.clone(), vars.clone())?) else { bail!("pattern mismatch") };
-                        let false = (BackendVariable::isClockedState(cr.clone(), vars.clone())?) else { bail!("pattern mismatch") };
-                        let false = (BackendVariable::isOutput(cr.clone(), vars.clone())?) else { bail!("pattern mismatch") };
+                        let false = (BackendVariable::isState(cr.clone(), vars.clone())) else { bail!("pattern mismatch") };
+                        let false = (BackendVariable::isClockedState(cr.clone(), vars.clone())) else { bail!("pattern mismatch") };
+                        let false = (BackendVariable::isOutput(cr.clone(), vars.clone())) else { bail!("pattern mismatch") };
                         let false = (BackendVariable::isDiscrete(cr.clone(), vars.clone())?) else { bail!("pattern mismatch") };
                         exp1 = Expression::crefExp(cr.clone())?;
                         let true = (Types::isSimpleType(Expression::r#typeof(exp1.clone())?)) else { bail!("pattern mismatch") };
@@ -4796,9 +4796,9 @@ fn findSimpleEquations(mut inEq: Arc<BackendDAE::Equation>, mut inTuple: (Backen
                         } };
                         cr2 = __pa9.clone();
                         cr1 = __pa10.clone();
-                        let false = (BackendVariable::isState(cr1.clone(), vars.clone())? || BackendVariable::isState(cr2.clone(), vars.clone())?) else { bail!("pattern mismatch") };
-                        let false = (BackendVariable::isClockedState(cr1.clone(), vars.clone())? || BackendVariable::isClockedState(cr2.clone(), vars.clone())?) else { bail!("pattern mismatch") };
-                        let false = (BackendVariable::isOutput(cr1.clone(), vars.clone())? || BackendVariable::isOutput(cr2.clone(), vars.clone())?) else { bail!("pattern mismatch") };
+                        let false = (BackendVariable::isState(cr1.clone(), vars.clone()) || BackendVariable::isState(cr2.clone(), vars.clone())) else { bail!("pattern mismatch") };
+                        let false = (BackendVariable::isClockedState(cr1.clone(), vars.clone()) || BackendVariable::isClockedState(cr2.clone(), vars.clone())) else { bail!("pattern mismatch") };
+                        let false = (BackendVariable::isOutput(cr1.clone(), vars.clone()) || BackendVariable::isOutput(cr2.clone(), vars.clone())) else { bail!("pattern mismatch") };
                         let false = (BackendVariable::isDiscrete(cr1.clone(), vars.clone())? || BackendVariable::isDiscrete(cr2.clone(), vars.clone())?) else { bail!("pattern mismatch") };
                         exp1 = Expression::crefExp(cr1.clone())?;
                         let true = (Types::isSimpleType(Expression::r#typeof(exp1.clone())?)) else { bail!("pattern mismatch") };
@@ -4878,12 +4878,12 @@ fn findSimpleEquations(mut inEq: Arc<BackendDAE::Equation>, mut inTuple: (Backen
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outEq, outTuple))
+    (outEq, outTuple)
 }
 
-fn findCrefs(mut inE1: Arc<DAE::Exp>, mut inTuple: (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, BackendDAE::Variables, i32, i32, bool)) -> Result<(Arc<DAE::Exp>, bool, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, BackendDAE::Variables, i32, i32, bool))> {
+fn findCrefs(mut inE1: Arc<DAE::Exp>, mut inTuple: (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, BackendDAE::Variables, i32, i32, bool)) -> (Arc<DAE::Exp>, bool, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, BackendDAE::Variables, i32, i32, bool)) {
     let mut outE1: Arc<DAE::Exp>;
     let mut cont: bool;
     let mut outTuple: (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, BackendDAE::Variables, i32, i32, bool);
@@ -4965,9 +4965,9 @@ fn findCrefs(mut inE1: Arc<DAE::Exp>, mut inTuple: (Arc<metamodelica::List<Arc<D
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outE1, cont, outTuple))
+    (outE1, cont, outTuple)
 }
 
 fn addToCrAndEqLists(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::ComponentRef>, mut eq: Arc<BackendDAE::Equation>, mut inHTCrToCrEqLst: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)>>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)>>) -> Result<ArcStr> + 'static>))) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)>>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)>>) -> Result<ArcStr> + 'static>))> {
@@ -5011,7 +5011,7 @@ fn addToCrToExp(mut cr: Arc<DAE::ComponentRef>, mut eq: Arc<BackendDAE::Equation
             } };
             value = __pa0.clone();
             outHTCrToExp = BaseHashTable::add((cr.clone(), value.clone()), inHTCrToExp.clone())?;
-            outHTCrToExp = solveAllCrefs(cr.clone(), value.clone(), outHTCrToExp.clone(), inHTCrToCrEqLst.clone())?;
+            outHTCrToExp = solveAllCrefs(cr.clone(), value.clone(), outHTCrToExp.clone(), inHTCrToCrEqLst.clone());
             Ok((outHTCrToExp.clone(), value.clone()))
         })() { value = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
@@ -5026,7 +5026,7 @@ fn addToCrToExp(mut cr: Arc<DAE::ComponentRef>, mut eq: Arc<BackendDAE::Equation
     Ok(outHTCrToExp)
 }
 
-fn solveAllCrefs(mut cr: Arc<DAE::ComponentRef>, mut value: Arc<DAE::Exp>, mut inHTCrToExp: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>)), mut inHTCrToCrEqLst: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)>>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)>>) -> Result<ArcStr> + 'static>))) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>))> {
+fn solveAllCrefs(mut cr: Arc<DAE::ComponentRef>, mut value: Arc<DAE::Exp>, mut inHTCrToExp: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>)), mut inHTCrToCrEqLst: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)>>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)>>) -> Result<ArcStr> + 'static>))) -> (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>)) {
     let mut outHTCrToExp: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (HashTableCrToExp::FuncHashCref, HashTableCrToExp::FuncCrefEqual, HashTableCrToExp::FuncCrefStr, HashTableCrToExp::FuncExpStr));
     outHTCrToExp = 'mc: {
         let __mc_input = inHTCrToExp.clone();
@@ -5035,7 +5035,7 @@ fn solveAllCrefs(mut cr: Arc<DAE::ComponentRef>, mut value: Arc<DAE::Exp>, mut i
             let mut cr_eq_lst: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)>> = metamodelica::nil();
             if BaseHashTable::hasKey(cr.clone(), inHTCrToCrEqLst.clone())? {
                 cr_eq_lst = BaseHashTable::get(cr.clone(), inHTCrToCrEqLst.clone())?;
-                HTCrToExp = solveAllCrefs1(cr.clone(), value.clone(), cr_eq_lst.clone(), HTCrToExp.clone(), inHTCrToCrEqLst.clone())?;
+                HTCrToExp = solveAllCrefs1(cr.clone(), value.clone(), cr_eq_lst.clone(), HTCrToExp.clone(), inHTCrToCrEqLst.clone());
             }
             Ok(HTCrToExp.clone())
         })() { break 'mc __v; }
@@ -5044,12 +5044,12 @@ fn solveAllCrefs(mut cr: Arc<DAE::ComponentRef>, mut value: Arc<DAE::Exp>, mut i
             metamodelica::print((literal!("\n++++++++++ Error in RemoveSimpleEquations.solveAllCrefs ++++++++++\n")).clone());
             Ok(inHTCrToExp.clone())
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outHTCrToExp)
+    outHTCrToExp
 }
 
-fn solveAllCrefs1(mut cr: Arc<DAE::ComponentRef>, mut value: Arc<DAE::Exp>, mut cr_eq_lst: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)>>, mut inHTCrToExp: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>)), mut inHTCrToCrEqLst: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)>>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)>>) -> Result<ArcStr> + 'static>))) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>))> {
+fn solveAllCrefs1(mut cr: Arc<DAE::ComponentRef>, mut value: Arc<DAE::Exp>, mut cr_eq_lst: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)>>, mut inHTCrToExp: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>)), mut inHTCrToCrEqLst: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)>>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)>>) -> Result<ArcStr> + 'static>))) -> (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>)) {
     let mut outHTCrToExp: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (HashTableCrToExp::FuncHashCref, HashTableCrToExp::FuncCrefEqual, HashTableCrToExp::FuncCrefStr, HashTableCrToExp::FuncExpStr));
     outHTCrToExp = 'mc: {
         let __mc_input = (cr_eq_lst.clone(), inHTCrToExp.clone());
@@ -5080,7 +5080,7 @@ fn solveAllCrefs1(mut cr: Arc<DAE::ComponentRef>, mut value: Arc<DAE::Exp>, mut 
                         (res, _) = ExpressionSimplify::simplify(res.clone())?;
                         HTCrToExp = addToCrToExp(cr1.clone(), Arc::new(BackendDAE::Equation::EQUATION { exp: Expression::crefExp(cr1.clone())?, scalar: res.clone(), source: source.clone(), attr: eqAttr.clone() }), inHTCrToExp.clone(), inHTCrToCrEqLst.clone())?;
                     }
-                    HTCrToExp = solveAllCrefs1(cr.clone(), value.clone(), cr_eq_rest.clone(), HTCrToExp.clone(), inHTCrToCrEqLst.clone())?;
+                    HTCrToExp = solveAllCrefs1(cr.clone(), value.clone(), cr_eq_rest.clone(), HTCrToExp.clone(), inHTCrToCrEqLst.clone());
                     Ok(HTCrToExp.clone())
                 }
                 _ => bail!("nomatch"),
@@ -5095,9 +5095,9 @@ fn solveAllCrefs1(mut cr: Arc<DAE::ComponentRef>, mut value: Arc<DAE::Exp>, mut 
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outHTCrToExp)
+    outHTCrToExp
 }
 
 fn isCrefInValue(mut cr: Arc<DAE::ComponentRef>, mut value: Arc<DAE::Exp>) -> Result<bool> {
@@ -5117,7 +5117,7 @@ fn addRestCrefs(mut tplCrEqLst: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, 
             let mut tpl = tpl.clone();
             (cr1, cr_eq_lst) = tpl.clone();
             if !(unwrap_break_err!(BaseHashTable::hasKey(cr1.clone(), HTCrToExp.clone()), '__try0)) {
-                HTCrToExp = unwrap_break_err!(addThisCrefs(cr_eq_lst.clone(), HTCrToExp.clone(), inHTCrToCrEqLst.clone()), '__try0);
+                HTCrToExp = addThisCrefs(cr_eq_lst.clone(), HTCrToExp.clone(), inHTCrToCrEqLst.clone());
             }
         }
         Ok::<(), anyhow::Error>(())
@@ -5131,7 +5131,7 @@ fn addRestCrefs(mut tplCrEqLst: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, 
     Ok(HTCrToExp)
 }
 
-fn addThisCrefs(mut cr_eq_lst: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)>>, mut inHTCrToExp: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>)), mut inHTCrToCrEqLst: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)>>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)>>) -> Result<ArcStr> + 'static>))) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>))> {
+fn addThisCrefs(mut cr_eq_lst: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)>>, mut inHTCrToExp: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>)), mut inHTCrToCrEqLst: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)>>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)>>) -> Result<ArcStr> + 'static>))) -> (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>)) {
     let mut outHTCrToExp: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (HashTableCrToExp::FuncHashCref, HashTableCrToExp::FuncCrefEqual, HashTableCrToExp::FuncCrefStr, HashTableCrToExp::FuncExpStr));
     outHTCrToExp = 'mc: {
         let __mc_input = (cr_eq_lst.clone(), inHTCrToExp.clone());
@@ -5150,7 +5150,7 @@ fn addThisCrefs(mut cr_eq_lst: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, A
                     if !(BaseHashTable::hasKey(cr1.clone(), HTCrToExp.clone())?) {
                         HTCrToExp = addToCrToExp(cr1.clone(), eq.clone(), HTCrToExp.clone(), inHTCrToCrEqLst.clone())?;
                     }
-                    HTCrToExp = addThisCrefs(cr_eq_rest.clone(), HTCrToExp.clone(), inHTCrToCrEqLst.clone())?;
+                    HTCrToExp = addThisCrefs(cr_eq_rest.clone(), HTCrToExp.clone(), inHTCrToCrEqLst.clone());
                     Ok(HTCrToExp.clone())
                 }
                 _ => bail!("nomatch"),
@@ -5165,18 +5165,18 @@ fn addThisCrefs(mut cr_eq_lst: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, A
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outHTCrToExp)
+    outHTCrToExp
 }
 
 fn isSimple(mut inExp: Arc<DAE::Exp>) -> Result<bool> {
     let mut outIsSimple: bool;
-    (_, outIsSimple) = Expression::traverseExpTopDown(inExp.clone(), (std::sync::Arc::new(checkOperator) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, bool) -> Result<(Arc<DAE::Exp>, bool, bool)> + 'static>), true)?;
+    (_, outIsSimple) = Expression::traverseExpTopDown(inExp.clone(), (std::sync::Arc::new(fnptr!(checkOperator, Arc<DAE::Exp>, bool)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, bool) -> Result<(Arc<DAE::Exp>, bool, bool)> + 'static>), true)?;
     Ok(outIsSimple)
 }
 
-fn checkOperator(mut inExp: Arc<DAE::Exp>, mut inIsSimple: bool) -> Result<(Arc<DAE::Exp>, bool, bool)> {
+fn checkOperator(mut inExp: Arc<DAE::Exp>, mut inIsSimple: bool) -> (Arc<DAE::Exp>, bool, bool) {
     let mut outExp: Arc<DAE::Exp>;
     let mut cont: bool;
     let mut outIsSimple: bool;
@@ -5186,11 +5186,11 @@ fn checkOperator(mut inExp: Arc<DAE::Exp>, mut inIsSimple: bool) -> Result<(Arc<
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::BINARY { exp1, operator: op, exp2 } => {
                     let true = (checkOp(op.clone())) else { bail!("pattern mismatch") };
-                    ::match_deref::match_deref! { match &(checkOperator(exp1.clone(), inIsSimple.clone())?) {
+                    ::match_deref::match_deref! { match &(checkOperator(exp1.clone(), inIsSimple.clone())) {
                         (_, true, _) => (),
                         _ => bail!("pattern mismatch"),
                     } };
-                    ::match_deref::match_deref! { match &(checkOperator(exp2.clone(), inIsSimple.clone())?) {
+                    ::match_deref::match_deref! { match &(checkOperator(exp2.clone(), inIsSimple.clone())) {
                         (_, true, _) => (),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -5202,7 +5202,7 @@ fn checkOperator(mut inExp: Arc<DAE::Exp>, mut inIsSimple: bool) -> Result<(Arc<
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::UNARY { operator: _, exp: exp1 } => {
-                    Ok(checkOperator(exp1.clone(), inIsSimple.clone())?)
+                    Ok(checkOperator(exp1.clone(), inIsSimple.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -5210,7 +5210,7 @@ fn checkOperator(mut inExp: Arc<DAE::Exp>, mut inIsSimple: bool) -> Result<(Arc<
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::LUNARY { operator: _, exp: exp1 } => {
-                    Ok(checkOperator(exp1.clone(), inIsSimple.clone())?)
+                    Ok(checkOperator(exp1.clone(), inIsSimple.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -5263,9 +5263,9 @@ fn checkOperator(mut inExp: Arc<DAE::Exp>, mut inIsSimple: bool) -> Result<(Arc<
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outExp, cont, outIsSimple))
+    (outExp, cont, outIsSimple)
 }
 
 fn checkOp(mut inOp: DAE::Operator) -> bool {
@@ -5306,7 +5306,7 @@ fn determineAliasLst(mut inAliasVars: BackendDAE::Variables, mut inVars: Backend
             v = __pa3.clone();
             cr1 = unwrap_break_err!(BackendVariable::varCref(v.clone()), '__try2);
             e = unwrap_break_err!(BackendVariable::varBindExp(v.clone()), '__try2);
-            let (_, (__pa4, _, __pa5, _, _)) = unwrap_break_err!(Expression::traverseExpTopDown(e.clone(), (std::sync::Arc::new(findCrefs) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, BackendDAE::Variables, i32, i32, bool)) -> Result<(Arc<DAE::Exp>, bool, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, BackendDAE::Variables, i32, i32, bool))> + 'static>), (metamodelica::nil(), inVars.clone(), 0, 0, true)), '__try2);
+            let (_, (__pa4, _, __pa5, _, _)) = unwrap_break_err!(Expression::traverseExpTopDown(e.clone(), (std::sync::Arc::new(fnptr!(findCrefs, Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, BackendDAE::Variables, i32, i32, bool))) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, BackendDAE::Variables, i32, i32, bool)) -> Result<(Arc<DAE::Exp>, bool, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, BackendDAE::Variables, i32, i32, bool))> + 'static>), (metamodelica::nil(), inVars.clone(), 0, 0, true)), '__try2);
             cr_lst = __pa4.clone();
             count = __pa5.clone();
             let 1 = (count.clone()) else { break '__try2 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
@@ -5405,7 +5405,7 @@ fn setAttributes(mut tplCrEqLst: Arc<metamodelica::List<(Arc<DAE::ComponentRef>,
                     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NOMINAL: ")); __mm_s.push_str(&*unwrap_break_err!(ComponentReferenceBasics::printComponentRefStr(cr1.clone()), '__try0)); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*unwrap_break_err!(ExpressionBasics::printExpStr(e.clone()), '__try0)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                 }
             }
-            (HTStartExpToInt, HTNominalExpToInt) = unwrap_break_err!(getThisAttributes(cr1.clone(), cr_eq_lst.clone(), inAliasVars.clone(), HTStartExpToInt.clone(), HTNominalExpToInt.clone()), '__try0);
+            (HTStartExpToInt, HTNominalExpToInt) = getThisAttributes(cr1.clone(), cr_eq_lst.clone(), inAliasVars.clone(), HTStartExpToInt.clone(), HTNominalExpToInt.clone());
             tplExpIndList = unwrap_break_err!(BaseHashTable::hashTableList(HTStartExpToInt.clone()), '__try0);
             if !(tplExpIndList.clone().is_empty()) {
                 e = getDominantAttributeValue(tplExpIndList.clone());
@@ -5433,7 +5433,7 @@ fn setAttributes(mut tplCrEqLst: Arc<metamodelica::List<(Arc<DAE::ComponentRef>,
     outVars
 }
 
-fn getThisAttributes(mut cr: Arc<DAE::ComponentRef>, mut cr_eq_lst: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)>>, mut inAliasVars: BackendDAE::Variables, mut inHTStartExpToInt: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), mut inHTNominalExpToInt: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))) -> Result<((metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)))> {
+fn getThisAttributes(mut cr: Arc<DAE::ComponentRef>, mut cr_eq_lst: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)>>, mut inAliasVars: BackendDAE::Variables, mut inHTStartExpToInt: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), mut inHTNominalExpToInt: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))) -> ((metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))) {
     let mut outHTStartExpToInt: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (HashTableExpToIndex::FuncHashCref, HashTableExpToIndex::FuncCrefEqual, HashTableExpToIndex::FuncCrefStr, HashTableExpToIndex::FuncExpStr)) = inHTStartExpToInt.clone();
     let mut outHTNominalExpToInt: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (HashTableExpToIndex::FuncHashCref, HashTableExpToIndex::FuncCrefEqual, HashTableExpToIndex::FuncCrefStr, HashTableExpToIndex::FuncExpStr)) = inHTNominalExpToInt.clone();
     (outHTStartExpToInt, outHTNominalExpToInt) = 'mc: {
@@ -5507,7 +5507,7 @@ fn getThisAttributes(mut cr: Arc<DAE::ComponentRef>, mut cr_eq_lst: Arc<metamode
                             metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NOMINAL: ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(cr.clone())?); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e1.clone())?); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e2.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                         }
                     }
-                    (outHTStartExpToInt, outHTNominalExpToInt) = getThisAttributes(cr.clone(), cr_eq_rest.clone(), inAliasVars.clone(), outHTStartExpToInt.clone(), outHTNominalExpToInt.clone())?;
+                    (outHTStartExpToInt, outHTNominalExpToInt) = getThisAttributes(cr.clone(), cr_eq_rest.clone(), inAliasVars.clone(), outHTStartExpToInt.clone(), outHTNominalExpToInt.clone());
                     Ok(((outHTStartExpToInt.clone(), outHTNominalExpToInt.clone()), outHTNominalExpToInt.clone(), outHTStartExpToInt.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -5522,9 +5522,9 @@ fn getThisAttributes(mut cr: Arc<DAE::ComponentRef>, mut cr_eq_lst: Arc<metamode
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outHTStartExpToInt, outHTNominalExpToInt))
+    (outHTStartExpToInt, outHTNominalExpToInt)
 }
 
 fn getDominantAttributeValue(mut tplExpIndList: Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>) -> Arc<DAE::Exp> {
@@ -5544,7 +5544,7 @@ fn getDominantAttributeValue(mut tplExpIndList: Arc<metamodelica::List<(Arc<DAE:
     outE
 }
 
-fn dumpSimpleContainer(mut container: SimpleContainer) -> Result<ArcStr> {
+fn dumpSimpleContainer(mut container: SimpleContainer) -> ArcStr {
     let mut sOut: ArcStr;
     sOut = ('mc: {
         let __mc_input = container.clone();
@@ -5586,8 +5586,8 @@ fn dumpSimpleContainer(mut container: SimpleContainer) -> Result<ArcStr> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(literal!("----------"))
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     }).clone();
-    Ok(sOut)
+    sOut
 }
 

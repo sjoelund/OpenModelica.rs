@@ -224,7 +224,7 @@ fn removeSelfReferentialDims(mut inElement: Arc<DAE::Element>) -> Result<Arc<DAE
     outElement = (::match_deref::match_deref! { match &(inElement.clone()) {
         Deref @ DAE::Element::VAR { componentRef: cref @ Deref @ DAE::ComponentRef::CREF_IDENT { ident: name, .. }, kind: vk, direction: vd, parallelism: vp, protection: vv, ty, binding: bind, dims, connectorType: ct, source: es, variableAttributesOption: va, comment: cmt, innerOuter: io, encrypted: e } => {
             let mut dims = (*dims).clone();
-            dims = List::map1(dims.clone(), (std::sync::Arc::new(removeSelfReferentialDim) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Dimension>, ArcStr) -> Result<Arc<DAE::Dimension>> + 'static>), (name.clone()).clone())?;
+            dims = List::map1(dims.clone(), (std::sync::Arc::new(fnptr!(removeSelfReferentialDim, Arc<DAE::Dimension>, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Dimension>, ArcStr) -> Result<Arc<DAE::Dimension>> + 'static>), (name.clone()).clone())?;
             Arc::new(DAE::Element::VAR { componentRef: cref.clone(), kind: vk.clone(), direction: vd.clone(), parallelism: vp.clone(), protection: vv.clone(), ty: ty.clone(), binding: bind.clone(), dims: dims.clone(), connectorType: ct.clone(), source: es.clone(), variableAttributesOption: va.clone(), comment: cmt.clone(), innerOuter: io.clone(), encrypted: e.clone() })
         },
         _ => bail!("match: no arm matched"),
@@ -232,7 +232,7 @@ fn removeSelfReferentialDims(mut inElement: Arc<DAE::Element>) -> Result<Arc<DAE
     Ok(outElement)
 }
 
-fn removeSelfReferentialDim(mut inDim: Arc<DAE::Dimension>, mut inName: ArcStr) -> Result<Arc<DAE::Dimension>> {
+fn removeSelfReferentialDim(mut inDim: Arc<DAE::Dimension>, mut inName: ArcStr) -> Arc<DAE::Dimension> {
     let mut outDim: Arc<DAE::Dimension>;
     outDim = 'mc: {
         let __mc_input = inDim.clone();
@@ -255,9 +255,9 @@ fn removeSelfReferentialDim(mut inDim: Arc<DAE::Dimension>, mut inName: ArcStr) 
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outDim)
+    outDim
 }
 
 fn isCrefNamed(mut inName: ArcStr, mut inCref: Arc<DAE::ComponentRef>) -> bool {
@@ -394,7 +394,7 @@ fn assignExtOutputs(mut inArgs: Arc<metamodelica::List<DAE::ExtArg>>, mut inValu
             let mut cache = (*cache).clone();
             let mut env = (*env).clone();
             cr = evaluateExtOutputArg(arg.clone())?;
-            val = unliftExtOutputValue(cr.clone(), val.clone(), env.clone())?;
+            val = unliftExtOutputValue(cr.clone(), val.clone(), env.clone());
             (cache, env) = assignVariable(cr.clone(), val.clone(), cache.clone(), env.clone())?;
             { (inArgs, inValues, inCache, inEnv) = (rest_args.clone(), rest_vals.clone(), cache.clone(), env.clone()); continue '__tco; }
         },
@@ -403,7 +403,7 @@ fn assignExtOutputs(mut inArgs: Arc<metamodelica::List<DAE::ExtArg>>, mut inValu
     }
 }
 
-fn unliftExtOutputValue(mut inCref: Arc<DAE::ComponentRef>, mut inValue: Arc<Values::Value>, mut inEnv: FCore::Graph) -> Result<Arc<Values::Value>> {
+fn unliftExtOutputValue(mut inCref: Arc<DAE::ComponentRef>, mut inValue: Arc<Values::Value>, mut inEnv: FCore::Graph) -> Arc<Values::Value> {
     let mut outValue: Arc<Values::Value>;
     outValue = 'mc: {
         let __mc_input = inValue.clone();
@@ -419,7 +419,7 @@ fn unliftExtOutputValue(mut inCref: Arc<DAE::ComponentRef>, mut inValue: Arc<Val
                     } };
                     ty = __pa0.clone();
                     dims = __pa1.clone();
-                    let false = (Types::isNonscalarArray(ty.clone(), dims.clone())?) else { bail!("pattern mismatch") };
+                    let false = (Types::isNonscalarArray(ty.clone(), dims.clone())) else { bail!("pattern mismatch") };
                     vals = List::map(vals.clone(), (std::sync::Arc::new(ValuesUtil::arrayScalar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<Arc<Values::Value>> + 'static>))?;
                     Ok(Arc::new(Values::Value::ARRAY { valueLst: vals.clone(), dimLst: list![dim.clone()] }))
                 }
@@ -434,9 +434,9 @@ fn unliftExtOutputValue(mut inCref: Arc<DAE::ComponentRef>, mut inValue: Arc<Val
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outValue)
+    outValue
 }
 
 fn evaluateExternalFunc(mut inFuncName: ArcStr, mut inFuncArgs: Arc<metamodelica::List<DAE::ExtArg>>, mut inCache: FCore::Cache, mut inEnv: FCore::Graph) -> Result<(FCore::Cache, FCore::Graph)> {
@@ -1242,7 +1242,7 @@ fn evaluateStatement(mut inStatement: Arc<DAE::Statement>, mut inCache: FCore::C
         _ => {
             let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
             Debug::traceln((literal!("- CevalFunction.evaluateStatement failed for:")).clone())?;
-            Debug::traceln((DAEDump::ppStatementStr(inStatement.clone())?).clone())?;
+            Debug::traceln((DAEDump::ppStatementStr(inStatement.clone())).clone())?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1730,7 +1730,7 @@ fn extendEnvWithForScope(mut inIterName: ArcStr, mut inIterType: Arc<DAE::Type>,
     let mut outEnv: FCore::Graph;
     let mut outIterType: Arc<DAE::Type>;
     let mut outIterCref: Arc<DAE::ComponentRef>;
-    outIterType = Types::expTypetoTypesType(inIterType.clone())?;
+    outIterType = Types::expTypetoTypesType(inIterType.clone());
     outEnv = FGraph::addForIterator(inEnv.clone(), (inIterName.clone()).clone(), outIterType.clone(), openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(), openmodelica_frontend_types::SCode::Variability::CONST, Some(openmodelica_frontend_types::DAE::Const::C_CONST))?;
     outIterCref = ComponentReferenceBasics::makeCrefIdent((inIterName.clone()).clone(), inIterType.clone(), metamodelica::nil());
     Ok((outEnv, outIterType, outIterCref))
@@ -1885,7 +1885,7 @@ fn assignVariable(mut inCref: Arc<DAE::ComponentRef>, mut inNewValue: Arc<Values
                     (_, var, _, _, inst_status, env) = Lookup::lookupIdentLocal(inCache.clone(), inEnv.clone(), (id.clone()).clone())?;
                     (cache, env) = assignRecord(ety.clone(), inNewValue.clone(), inCache.clone(), env.clone())?;
                     var = updateRecordBinding(var.clone(), inNewValue.clone());
-                    env = FGraph::updateComp(inEnv.clone(), var.clone(), inst_status.clone(), env.clone())?;
+                    env = FGraph::updateComp(inEnv.clone(), var.clone(), inst_status.clone(), env.clone());
                     Ok((cache.clone(), env.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1932,7 +1932,7 @@ fn assignVariable(mut inCref: Arc<DAE::ComponentRef>, mut inNewValue: Arc<Values
                     (cache, env) = assignVariable(cr_rest.clone(), inNewValue.clone(), inCache.clone(), env.clone())?;
                     comp_id = (ComponentReferenceBasics::crefFirstIdent(cr_rest.clone())?).clone();
                     var = updateRecordComponentBinding(var.clone(), (comp_id.clone()).clone(), inNewValue.clone())?;
-                    env = FGraph::updateComp(inEnv.clone(), var.clone(), inst_status.clone(), env.clone())?;
+                    env = FGraph::updateComp(inEnv.clone(), var.clone(), inst_status.clone(), env.clone());
                     Ok((cache.clone(), env.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -2146,7 +2146,7 @@ fn updateVariableBinding(mut inVariableCref: Arc<DAE::ComponentRef>, mut inEnv: 
     let mut var: Arc<DAE::Var>;
     var_name = (ComponentReference::crefStr(inVariableCref.clone())?).clone();
     var = makeFunctionVariable((var_name.clone()).clone(), inType.clone(), Arc::new(DAE::Binding::VALBOUND { valBound: inNewValue.clone(), source: openmodelica_frontend_types::DAE::BindingSource::BINDING_FROM_DEFAULT_VALUE }));
-    outEnv = FGraph::updateComp(inEnv.clone(), var.clone(), openmodelica_frontend_dump::FCore::Status::VAR_TYPED, FGraph::empty())?;
+    outEnv = FGraph::updateComp(inEnv.clone(), var.clone(), openmodelica_frontend_dump::FCore::Status::VAR_TYPED, FGraph::empty());
     Ok(outEnv)
 }
 
@@ -2471,12 +2471,12 @@ fn boxReturnValue(mut inReturnValues: Arc<metamodelica::List<Arc<Values::Value>>
 fn sortFunctionVarsByDependency(mut inFuncVars: Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, mut inSource: Arc<DAE::ElementSource>) -> Result<Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>> {
     let mut outFuncVars: Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>;
     let mut cycles: Arc<metamodelica::List<((Arc<DAE::Element>, Option<Arc<Values::Value>>), Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>)>>;
-    (outFuncVars, cycles) = Graph::topologicalSort(Graph::buildGraph(inFuncVars.clone(), (std::sync::Arc::new(getElementDependencies) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::Element>, Option<Arc<Values::Value>>), Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>) -> Result<Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>> + 'static>), inFuncVars.clone())?, (std::sync::Arc::new(isElementEqual) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::Element>, Option<Arc<Values::Value>>), (Arc<DAE::Element>, Option<Arc<Values::Value>>)) -> Result<bool> + 'static>))?;
+    (outFuncVars, cycles) = Graph::topologicalSort(Graph::buildGraph(inFuncVars.clone(), (std::sync::Arc::new(fnptr!(getElementDependencies, (Arc<DAE::Element>, Option<Arc<Values::Value>>), Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>)) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::Element>, Option<Arc<Values::Value>>), Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>) -> Result<Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>> + 'static>), inFuncVars.clone())?, (std::sync::Arc::new(isElementEqual) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::Element>, Option<Arc<Values::Value>>), (Arc<DAE::Element>, Option<Arc<Values::Value>>)) -> Result<bool> + 'static>))?;
     checkCyclicalComponents(cycles.clone(), inSource.clone())?;
     Ok(outFuncVars)
 }
 
-fn getElementDependencies(mut inElement: FunctionVar, mut inAllElements: Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>) -> Result<Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>> {
+fn getElementDependencies(mut inElement: FunctionVar, mut inAllElements: Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>) -> Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>> {
     pub type Arg = (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>);
 
     let mut outDependencies: Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>;
@@ -2487,10 +2487,10 @@ fn getElementDependencies(mut inElement: FunctionVar, mut inAllElements: Arc<met
                 (Deref @ DAE::Element::VAR { binding: Some(bind_exp), dims, .. }, _) => {
                     let mut deps: Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>> = metamodelica::nil();
                     let mut arg: (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>) = (metamodelica::nil(), metamodelica::nil(), metamodelica::nil());
-                    let (_, ref __pa1 @ (_, ref __pa0, _)) = Expression::traverseExpBidir(bind_exp.clone(), (std::sync::Arc::new(getElementDependenciesTraverserEnter) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>)) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>))> + 'static>), (std::sync::Arc::new(getElementDependenciesTraverserExit) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>)) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>))> + 'static>), (inAllElements.clone(), metamodelica::nil(), metamodelica::nil()))?;
+                    let (_, ref __pa1 @ (_, ref __pa0, _)) = Expression::traverseExpBidir(bind_exp.clone(), (std::sync::Arc::new(fnptr!(getElementDependenciesTraverserEnter, Arc<DAE::Exp>, (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>))) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>)) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>))> + 'static>), (std::sync::Arc::new(getElementDependenciesTraverserExit) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>)) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>))> + 'static>), (inAllElements.clone(), metamodelica::nil(), metamodelica::nil()))?;
                     deps = __pa0.clone();
                     arg = __pa1.clone();
-                    let (_, (_, __pa2, _)) = List::mapFold(dims.clone(), (std::sync::Arc::new(getElementDependenciesFromDims) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Dimension>, (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>)) -> Result<(Arc<DAE::Dimension>, (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>))> + 'static>), arg.clone())?;
+                    let (_, (_, __pa2, _)) = List::mapFold(dims.clone(), (std::sync::Arc::new(fnptr!(getElementDependenciesFromDims, Arc<DAE::Dimension>, (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>))) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Dimension>, (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>)) -> Result<(Arc<DAE::Dimension>, (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>))> + 'static>), arg.clone())?;
                     deps = __pa2.clone();
                     Ok(deps.clone())
                 }
@@ -2501,7 +2501,7 @@ fn getElementDependencies(mut inElement: FunctionVar, mut inAllElements: Arc<met
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Element::VAR { dims, .. }, _) => {
                     let mut deps: Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>> = metamodelica::nil();
-                    let (_, (_, __pa0, _)) = List::mapFold(dims.clone(), (std::sync::Arc::new(getElementDependenciesFromDims) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Dimension>, (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>)) -> Result<(Arc<DAE::Dimension>, (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>))> + 'static>), (inAllElements.clone(), metamodelica::nil(), metamodelica::nil()))?;
+                    let (_, (_, __pa0, _)) = List::mapFold(dims.clone(), (std::sync::Arc::new(fnptr!(getElementDependenciesFromDims, Arc<DAE::Dimension>, (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>))) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Dimension>, (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>)) -> Result<(Arc<DAE::Dimension>, (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>))> + 'static>), (inAllElements.clone(), metamodelica::nil(), metamodelica::nil()))?;
                     deps = __pa0.clone();
                     Ok(deps.clone())
                 }
@@ -2516,12 +2516,12 @@ fn getElementDependencies(mut inElement: FunctionVar, mut inAllElements: Arc<met
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outDependencies)
+    outDependencies
 }
 
-fn getElementDependenciesFromDims(mut inDimension: Arc<DAE::Dimension>, mut inArg: (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>)) -> Result<(Arc<DAE::Dimension>, (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>))> {
+fn getElementDependenciesFromDims(mut inDimension: Arc<DAE::Dimension>, mut inArg: (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>)) -> (Arc<DAE::Dimension>, (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>)) {
     pub type Arg = (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>);
 
     let mut outDimension: Arc<DAE::Dimension>;
@@ -2534,7 +2534,7 @@ fn getElementDependenciesFromDims(mut inDimension: Arc<DAE::Dimension>, mut inAr
                     let mut arg: (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>) = (metamodelica::nil(), metamodelica::nil(), metamodelica::nil());
                     let mut dim_exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     dim_exp = Expression::dimensionSizeExp(inDimension.clone())?;
-                    (_, arg) = Expression::traverseExpBidir(dim_exp.clone(), (std::sync::Arc::new(getElementDependenciesTraverserEnter) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>)) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>))> + 'static>), (std::sync::Arc::new(getElementDependenciesTraverserExit) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>)) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>))> + 'static>), inArg.clone())?;
+                    (_, arg) = Expression::traverseExpBidir(dim_exp.clone(), (std::sync::Arc::new(fnptr!(getElementDependenciesTraverserEnter, Arc<DAE::Exp>, (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>))) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>)) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>))> + 'static>), (std::sync::Arc::new(getElementDependenciesTraverserExit) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>)) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>))> + 'static>), inArg.clone())?;
                     Ok((inDimension.clone(), arg.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -2548,12 +2548,12 @@ fn getElementDependenciesFromDims(mut inDimension: Arc<DAE::Dimension>, mut inAr
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outDimension, outArg))
+    (outDimension, outArg)
 }
 
-fn getElementDependenciesTraverserEnter(mut inExp: Arc<DAE::Exp>, mut inArg: (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>)) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>))> {
+fn getElementDependenciesTraverserEnter(mut inExp: Arc<DAE::Exp>, mut inArg: (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>)) -> (Arc<DAE::Exp>, (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>)) {
     pub type Arg = (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>);
 
     let mut outExp: Arc<DAE::Exp>;
@@ -2603,9 +2603,9 @@ fn getElementDependenciesTraverserEnter(mut inExp: Arc<DAE::Exp>, mut inArg: (Ar
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outExp, outArg))
+    (outExp, outArg)
 }
 
 fn getElementDependenciesTraverserExit(mut inExp: Arc<DAE::Exp>, mut inArg: (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>)) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>))> {

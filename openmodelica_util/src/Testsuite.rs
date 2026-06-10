@@ -88,7 +88,7 @@ fn friendly2(mut cond: bool, mut name: ArcStr) -> Result<ArcStr> {
     Ok(friendly)
 }
 
-pub fn friendlyPath(mut inPath: ArcStr) -> Result<ArcStr> {
+pub fn friendlyPath(mut inPath: ArcStr) -> ArcStr {
     let mut outPath: ArcStr;
     outPath = ('mc: {
         let __mc_input = ();
@@ -106,8 +106,8 @@ pub fn friendlyPath(mut inPath: ArcStr) -> Result<ArcStr> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(inPath.clone())
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     }).clone();
-    Ok(outPath)
+    outPath
 }
 

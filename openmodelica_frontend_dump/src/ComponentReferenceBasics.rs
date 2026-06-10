@@ -655,7 +655,7 @@ fn crefLexicalCompareSubsAtEnd2(mut inSubs1: Arc<metamodelica::List<i32>>, mut i
     Ok(res)
 }
 
-pub fn crefContainedIn(mut containerCref: Arc<DAE::ComponentRef>, mut containedCref: Arc<DAE::ComponentRef>) -> Result<bool> {
+pub fn crefContainedIn(mut containerCref: Arc<DAE::ComponentRef>, mut containedCref: Arc<DAE::ComponentRef>) -> bool {
     let mut outBoolean: bool;
     outBoolean = 'mc: {
         let __mc_input = (containerCref.clone(), containedCref.clone());
@@ -681,7 +681,7 @@ pub fn crefContainedIn(mut containerCref: Arc<DAE::ComponentRef>, mut containedC
                 (full @ Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: cr2, .. }, partOf) => {
                     let mut res: bool = false;
                     let false = (crefEqualNoStringCompare(full.clone(), partOf.clone())?) else { bail!("pattern mismatch") };
-                    res = crefContainedIn(cr2.clone(), partOf.clone())?;
+                    res = crefContainedIn(cr2.clone(), partOf.clone());
                     Ok(res.clone())
                 }
                 _ => bail!("nomatch"),
@@ -695,9 +695,9 @@ pub fn crefContainedIn(mut containerCref: Arc<DAE::ComponentRef>, mut containedC
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outBoolean)
+    outBoolean
 }
 
 pub fn crefPrefixOf(mut prefixCref: Arc<DAE::ComponentRef>, mut fullCref: Arc<DAE::ComponentRef>) -> Result<bool> {
@@ -754,7 +754,7 @@ pub fn crefNotInLst(mut cref: Arc<DAE::ComponentRef>, mut lst: Arc<metamodelica:
     Ok(b)
 }
 
-pub fn crefEqualVerySlowStringCompareDoNotUse(mut inComponentRef1: Arc<DAE::ComponentRef>, mut inComponentRef2: Arc<DAE::ComponentRef>) -> Result<bool> {
+pub fn crefEqualVerySlowStringCompareDoNotUse(mut inComponentRef1: Arc<DAE::ComponentRef>, mut inComponentRef2: Arc<DAE::ComponentRef>) -> bool {
     let mut outBoolean: bool;
     outBoolean = 'mc: {
         let __mc_input = (inComponentRef1.clone(), inComponentRef2.clone());
@@ -814,7 +814,7 @@ pub fn crefEqualVerySlowStringCompareDoNotUse(mut inComponentRef1: Arc<DAE::Comp
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::ComponentRef::CREF_QUAL { ident: n1, subscriptLst: idx1, componentRef: cr1, .. }, Deref @ DAE::ComponentRef::CREF_QUAL { ident: n2, subscriptLst: idx2, componentRef: cr2, .. }) => {
                     let true = (stringEq((n1.clone()).clone(), (n2.clone()).clone())) else { bail!("pattern mismatch") };
-                    let true = (crefEqualVerySlowStringCompareDoNotUse(cr1.clone(), cr2.clone())?) else { bail!("pattern mismatch") };
+                    let true = (crefEqualVerySlowStringCompareDoNotUse(cr1.clone(), cr2.clone())) else { bail!("pattern mismatch") };
                     let true = (ExpressionBasics::subscriptEqual(idx1.clone(), idx2.clone())?) else { bail!("pattern mismatch") };
                     Ok(true)
                 }
@@ -857,9 +857,9 @@ pub fn crefEqualVerySlowStringCompareDoNotUse(mut inComponentRef1: Arc<DAE::Comp
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outBoolean)
+    outBoolean
 }
 
 pub fn crefEqualNoStringCompare(mut inCref1: Arc<DAE::ComponentRef>, mut inCref2: Arc<DAE::ComponentRef>) -> Result<bool> {

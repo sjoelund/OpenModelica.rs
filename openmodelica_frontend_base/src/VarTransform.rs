@@ -252,12 +252,12 @@ pub fn applyReplacementsDAEElts(mut inDae: Arc<metamodelica::List<Arc<DAE::Eleme
         },
         Deref @ DAE::Element::ALGORITHM { algorithm_: Deref @ DAE::Algorithm { statementLst: stmts }, source } => {
             let mut stmts2: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
-            (stmts2, _) = replaceEquationsStmts(stmts.clone(), repl.clone(), condExpFunc.clone())?;
+            (stmts2, _) = replaceEquationsStmts(stmts.clone(), repl.clone(), condExpFunc.clone());
             Arc::new(DAE::Element::ALGORITHM { algorithm_: Arc::new(DAE::Algorithm { statementLst: stmts2.clone() }), source: source.clone() })
         },
         Deref @ DAE::Element::INITIALALGORITHM { algorithm_: Deref @ DAE::Algorithm { statementLst: stmts }, source } => {
             let mut stmts2: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
-            (stmts2, _) = replaceEquationsStmts(stmts.clone(), repl.clone(), condExpFunc.clone())?;
+            (stmts2, _) = replaceEquationsStmts(stmts.clone(), repl.clone(), condExpFunc.clone());
             Arc::new(DAE::Element::INITIALALGORITHM { algorithm_: Arc::new(DAE::Algorithm { statementLst: stmts2.clone() }), source: source.clone() })
         },
         Deref @ DAE::Element::COMP { ident: id, dAElist: elist, source, comment: cmt } => {
@@ -523,7 +523,7 @@ pub fn emptyReplacementsSized(mut size: i32) -> VariableReplacements {
     outVariableReplacements
 }
 
-pub fn replaceEquationsStmts(mut inAlgorithmStatementLst: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut repl: VariableReplacements, mut condExpFunc: Option<Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>>) -> Result<(Arc<metamodelica::List<Arc<DAE::Statement>>>, bool)> {
+pub fn replaceEquationsStmts(mut inAlgorithmStatementLst: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut repl: VariableReplacements, mut condExpFunc: Option<Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>>) -> (Arc<metamodelica::List<Arc<DAE::Statement>>>, bool) {
     pub type FuncTypeExp_ExpToBoolean = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>;
 
     let mut outAlgorithmStatementLst: Arc<metamodelica::List<Arc<DAE::Statement>>>;
@@ -549,7 +549,7 @@ pub fn replaceEquationsStmts(mut inAlgorithmStatementLst: Arc<metamodelica::List
                     (e_1, b1) = replaceExp(e.clone(), repl.clone(), condExpFunc.clone())?;
                     (e_2, b2) = replaceExp(e2.clone(), repl.clone(), condExpFunc.clone())?;
                     let true = (b1.clone() || b2.clone()) else { bail!("pattern mismatch") };
-                    (xs_1, _) = replaceEquationsStmts(xs.clone(), repl.clone(), condExpFunc.clone())?;
+                    (xs_1, _) = replaceEquationsStmts(xs.clone(), repl.clone(), condExpFunc.clone());
                     Ok((metamodelica::cons(Arc::new(DAE::Statement::STMT_ASSIGN { type_: tp.clone(), exp1: e_2.clone(), exp: e_1.clone(), source: source.clone() }), xs_1.clone()), true))
                 }
                 _ => bail!("nomatch"),
@@ -566,7 +566,7 @@ pub fn replaceEquationsStmts(mut inAlgorithmStatementLst: Arc<metamodelica::List
                     (e_1, b1) = replaceExp(e.clone(), repl.clone(), condExpFunc.clone())?;
                     (expl2, b2) = replaceExpList(expl1.clone(), repl.clone(), condExpFunc.clone())?;
                     let true = (b1.clone() || b2.clone()) else { bail!("pattern mismatch") };
-                    (xs_1, _) = replaceEquationsStmts(xs.clone(), repl.clone(), condExpFunc.clone())?;
+                    (xs_1, _) = replaceEquationsStmts(xs.clone(), repl.clone(), condExpFunc.clone());
                     Ok((metamodelica::cons(Arc::new(DAE::Statement::STMT_TUPLE_ASSIGN { type_: tp.clone(), expExpLst: expl2.clone(), exp: e_1.clone(), source: source.clone() }), xs_1.clone()), true))
                 }
                 _ => bail!("nomatch"),
@@ -583,7 +583,7 @@ pub fn replaceEquationsStmts(mut inAlgorithmStatementLst: Arc<metamodelica::List
                     (e_1, b1) = replaceExp(e1.clone(), repl.clone(), condExpFunc.clone())?;
                     (e_2, b2) = replaceExp(e2.clone(), repl.clone(), condExpFunc.clone())?;
                     let true = (b1.clone() || b2.clone()) else { bail!("pattern mismatch") };
-                    (xs_1, _) = replaceEquationsStmts(xs.clone(), repl.clone(), condExpFunc.clone())?;
+                    (xs_1, _) = replaceEquationsStmts(xs.clone(), repl.clone(), condExpFunc.clone());
                     Ok((metamodelica::cons(Arc::new(DAE::Statement::STMT_ASSIGN_ARR { type_: tp.clone(), lhs: e_1.clone(), exp: e_2.clone(), source: source.clone() }), xs_1.clone()), true))
                 }
                 _ => bail!("nomatch"),
@@ -599,11 +599,11 @@ pub fn replaceEquationsStmts(mut inAlgorithmStatementLst: Arc<metamodelica::List
                     let mut b2: bool = false;
                     let mut b3: bool = false;
                     let mut el_1: Arc<DAE::Else> = Arc::new(DAE::Else::NOELSE);
-                    (el_1, b1) = replaceEquationsElse(el.clone(), repl.clone(), condExpFunc.clone())?;
-                    (stmts2, b2) = replaceEquationsStmts(stmts.clone(), repl.clone(), condExpFunc.clone())?;
+                    (el_1, b1) = replaceEquationsElse(el.clone(), repl.clone(), condExpFunc.clone());
+                    (stmts2, b2) = replaceEquationsStmts(stmts.clone(), repl.clone(), condExpFunc.clone());
                     (e_1, b3) = replaceExp(e.clone(), repl.clone(), condExpFunc.clone())?;
                     let true = (b1.clone() || b2.clone() || b3.clone()) else { bail!("pattern mismatch") };
-                    (xs_1, _) = replaceEquationsStmts(xs.clone(), repl.clone(), condExpFunc.clone())?;
+                    (xs_1, _) = replaceEquationsStmts(xs.clone(), repl.clone(), condExpFunc.clone());
                     Ok((metamodelica::cons(Arc::new(DAE::Statement::STMT_IF { exp: e_1.clone(), statementLst: stmts2.clone(), else_: el_1.clone(), source: source.clone() }), xs_1.clone()), true))
                 }
                 _ => bail!("nomatch"),
@@ -617,10 +617,10 @@ pub fn replaceEquationsStmts(mut inAlgorithmStatementLst: Arc<metamodelica::List
                     let mut stmts2: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
                     let mut b1: bool = false;
                     let mut b2: bool = false;
-                    (stmts2, b1) = replaceEquationsStmts(stmts.clone(), repl.clone(), condExpFunc.clone())?;
+                    (stmts2, b1) = replaceEquationsStmts(stmts.clone(), repl.clone(), condExpFunc.clone());
                     (e_1, b2) = replaceExp(e.clone(), repl.clone(), condExpFunc.clone())?;
                     let true = (b1.clone() || b2.clone()) else { bail!("pattern mismatch") };
-                    (xs_1, _) = replaceEquationsStmts(xs.clone(), repl.clone(), condExpFunc.clone())?;
+                    (xs_1, _) = replaceEquationsStmts(xs.clone(), repl.clone(), condExpFunc.clone());
                     Ok((metamodelica::cons(Arc::new(DAE::Statement::STMT_FOR { type_: tp.clone(), iterIsArray: iterIsArray.clone(), iter: (id1.clone()).clone(), range: e_1.clone(), statementLst: stmts2.clone(), source: source.clone() }), xs_1.clone()), true))
                 }
                 _ => bail!("nomatch"),
@@ -634,10 +634,10 @@ pub fn replaceEquationsStmts(mut inAlgorithmStatementLst: Arc<metamodelica::List
                     let mut stmts2: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
                     let mut b1: bool = false;
                     let mut b2: bool = false;
-                    (stmts2, b1) = replaceEquationsStmts(stmts.clone(), repl.clone(), condExpFunc.clone())?;
+                    (stmts2, b1) = replaceEquationsStmts(stmts.clone(), repl.clone(), condExpFunc.clone());
                     (e_1, b2) = replaceExp(e.clone(), repl.clone(), condExpFunc.clone())?;
                     let true = (b1.clone() || b2.clone()) else { bail!("pattern mismatch") };
-                    (xs_1, _) = replaceEquationsStmts(xs.clone(), repl.clone(), condExpFunc.clone())?;
+                    (xs_1, _) = replaceEquationsStmts(xs.clone(), repl.clone(), condExpFunc.clone());
                     Ok((metamodelica::cons(Arc::new(DAE::Statement::STMT_WHILE { exp: e_1.clone(), statementLst: stmts2.clone(), source: source.clone() }), xs_1.clone()), true))
                 }
                 _ => bail!("nomatch"),
@@ -653,11 +653,11 @@ pub fn replaceEquationsStmts(mut inAlgorithmStatementLst: Arc<metamodelica::List
                     let mut b2: bool = false;
                     let mut b3: bool = false;
                     let mut ew_1: Option<Arc<DAE::Statement>> = None;
-                    (ew_1, b1) = replaceOptEquationsStmts(ew.clone(), repl.clone(), condExpFunc.clone())?;
-                    (stmts2, b2) = replaceEquationsStmts(stmts.clone(), repl.clone(), condExpFunc.clone())?;
+                    (ew_1, b1) = replaceOptEquationsStmts(ew.clone(), repl.clone(), condExpFunc.clone());
+                    (stmts2, b2) = replaceEquationsStmts(stmts.clone(), repl.clone(), condExpFunc.clone());
                     (e_1, b3) = replaceExp(e.clone(), repl.clone(), condExpFunc.clone())?;
                     let true = (b1.clone() || b2.clone() || b3.clone()) else { bail!("pattern mismatch") };
-                    (xs_1, _) = replaceEquationsStmts(xs.clone(), repl.clone(), condExpFunc.clone())?;
+                    (xs_1, _) = replaceEquationsStmts(xs.clone(), repl.clone(), condExpFunc.clone());
                     Ok((metamodelica::cons(Arc::new(DAE::Statement::STMT_WHEN { exp: e_1.clone(), conditions: conditions.clone(), initialCall: initialCall.clone(), statementLst: stmts2.clone(), elseWhen: ew_1.clone(), source: source.clone() }), xs_1.clone()), true))
                 }
                 _ => bail!("nomatch"),
@@ -677,7 +677,7 @@ pub fn replaceEquationsStmts(mut inAlgorithmStatementLst: Arc<metamodelica::List
                     (e_2, b2) = replaceExp(e2.clone(), repl.clone(), condExpFunc.clone())?;
                     (e_3, b3) = replaceExp(e3.clone(), repl.clone(), condExpFunc.clone())?;
                     let true = (b1.clone() || b2.clone() || b3.clone()) else { bail!("pattern mismatch") };
-                    (xs_1, _) = replaceEquationsStmts(xs.clone(), repl.clone(), condExpFunc.clone())?;
+                    (xs_1, _) = replaceEquationsStmts(xs.clone(), repl.clone(), condExpFunc.clone());
                     Ok((metamodelica::cons(Arc::new(DAE::Statement::STMT_ASSERT { cond: e_1.clone(), msg: e_2.clone(), level: e_3.clone(), source: source.clone() }), xs_1.clone()), true))
                 }
                 _ => bail!("nomatch"),
@@ -693,7 +693,7 @@ pub fn replaceEquationsStmts(mut inAlgorithmStatementLst: Arc<metamodelica::List
                         _ => bail!("pattern mismatch"),
                     } };
                     e_1 = __pa0.clone();
-                    (xs_1, _) = replaceEquationsStmts(xs.clone(), repl.clone(), condExpFunc.clone())?;
+                    (xs_1, _) = replaceEquationsStmts(xs.clone(), repl.clone(), condExpFunc.clone());
                     Ok((metamodelica::cons(Arc::new(DAE::Statement::STMT_TERMINATE { msg: e_1.clone(), source: source.clone() }), xs_1.clone()), true))
                 }
                 _ => bail!("nomatch"),
@@ -710,7 +710,7 @@ pub fn replaceEquationsStmts(mut inAlgorithmStatementLst: Arc<metamodelica::List
                     (e_1, b1) = replaceExp(e.clone(), repl.clone(), condExpFunc.clone())?;
                     (e_2, b2) = replaceExp(e2.clone(), repl.clone(), condExpFunc.clone())?;
                     let true = (b1.clone() || b2.clone()) else { bail!("pattern mismatch") };
-                    (xs_1, _) = replaceEquationsStmts(xs.clone(), repl.clone(), condExpFunc.clone())?;
+                    (xs_1, _) = replaceEquationsStmts(xs.clone(), repl.clone(), condExpFunc.clone());
                     Ok((metamodelica::cons(Arc::new(DAE::Statement::STMT_REINIT { var: e_1.clone(), value: e_2.clone(), source: source.clone() }), xs_1.clone()), true))
                 }
                 _ => bail!("nomatch"),
@@ -726,7 +726,7 @@ pub fn replaceEquationsStmts(mut inAlgorithmStatementLst: Arc<metamodelica::List
                         _ => bail!("pattern mismatch"),
                     } };
                     e_1 = __pa0.clone();
-                    (xs_1, _) = replaceEquationsStmts(xs.clone(), repl.clone(), condExpFunc.clone())?;
+                    (xs_1, _) = replaceEquationsStmts(xs.clone(), repl.clone(), condExpFunc.clone());
                     Ok((metamodelica::cons(Arc::new(DAE::Statement::STMT_NORETCALL { exp: e_1.clone(), source: source.clone() }), xs_1.clone()), true))
                 }
                 _ => bail!("nomatch"),
@@ -737,18 +737,18 @@ pub fn replaceEquationsStmts(mut inAlgorithmStatementLst: Arc<metamodelica::List
                 Deref @ metamodelica::List::Cons { head: x, tail: xs } => {
                     let mut xs_1: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
                     let mut b1: bool = false;
-                    (xs_1, b1) = replaceEquationsStmts(xs.clone(), repl.clone(), condExpFunc.clone())?;
+                    (xs_1, b1) = replaceEquationsStmts(xs.clone(), repl.clone(), condExpFunc.clone());
                     Ok((metamodelica::cons(x.clone(), xs_1.clone()), b1.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outAlgorithmStatementLst, replacementPerformed))
+    (outAlgorithmStatementLst, replacementPerformed)
 }
 
-fn replaceEquationsElse(mut inElse: Arc<DAE::Else>, mut repl: VariableReplacements, mut condExpFunc: Option<Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>>) -> Result<(Arc<DAE::Else>, bool)> {
+fn replaceEquationsElse(mut inElse: Arc<DAE::Else>, mut repl: VariableReplacements, mut condExpFunc: Option<Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>>) -> (Arc<DAE::Else>, bool) {
     pub type FuncTypeExp_ExpToBoolean = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>;
 
     let mut outElse: Arc<DAE::Else>;
@@ -764,8 +764,8 @@ fn replaceEquationsElse(mut inElse: Arc<DAE::Else>, mut repl: VariableReplacemen
                     let mut b1: bool = false;
                     let mut b2: bool = false;
                     let mut b3: bool = false;
-                    (el_1, b1) = replaceEquationsElse(el.clone(), repl.clone(), condExpFunc.clone())?;
-                    (st_1, b2) = replaceEquationsStmts(st.clone(), repl.clone(), condExpFunc.clone())?;
+                    (el_1, b1) = replaceEquationsElse(el.clone(), repl.clone(), condExpFunc.clone());
+                    (st_1, b2) = replaceEquationsStmts(st.clone(), repl.clone(), condExpFunc.clone());
                     (e_1, b3) = replaceExp(e.clone(), repl.clone(), condExpFunc.clone())?;
                     let true = (b1.clone() || b2.clone() || b3.clone()) else { bail!("pattern mismatch") };
                     Ok((Arc::new(DAE::Else::ELSEIF { exp: e_1.clone(), statementLst: st_1.clone(), else_: el_1.clone() }), true))
@@ -777,7 +777,7 @@ fn replaceEquationsElse(mut inElse: Arc<DAE::Else>, mut repl: VariableReplacemen
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Else::ELSE { statementLst: st } => {
                     let mut st_1: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
-                    let __pa0 = ::match_deref::match_deref! { match &(replaceEquationsStmts(st.clone(), repl.clone(), condExpFunc.clone())?) {
+                    let __pa0 = ::match_deref::match_deref! { match &(replaceEquationsStmts(st.clone(), repl.clone(), condExpFunc.clone())) {
                         (__pa0, true) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -795,12 +795,12 @@ fn replaceEquationsElse(mut inElse: Arc<DAE::Else>, mut repl: VariableReplacemen
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outElse, replacementPerformed))
+    (outElse, replacementPerformed)
 }
 
-fn replaceOptEquationsStmts(mut optStmt: Option<Arc<DAE::Statement>>, mut inVariableReplacements: VariableReplacements, mut condExpFunc: Option<Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>>) -> Result<(Option<Arc<DAE::Statement>>, bool)> {
+fn replaceOptEquationsStmts(mut optStmt: Option<Arc<DAE::Statement>>, mut inVariableReplacements: VariableReplacements, mut condExpFunc: Option<Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>>) -> (Option<Arc<DAE::Statement>>, bool) {
     pub type FuncTypeExp_ExpToBoolean = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>;
 
     let mut outAlgorithmStatementLst: Option<Arc<DAE::Statement>>;
@@ -811,7 +811,7 @@ fn replaceOptEquationsStmts(mut optStmt: Option<Arc<DAE::Statement>>, mut inVari
             ::match_deref::match_deref! { match &__mc_input {
                 Some(stmt) => {
                     let mut stmt2: Arc<DAE::Statement> = Arc::new(<DAE::Statement as ::std::default::Default>::default());
-                    let __pa0 = ::match_deref::match_deref! { match &(replaceEquationsStmts(list![stmt.clone()], inVariableReplacements.clone(), condExpFunc.clone())?) {
+                    let __pa0 = ::match_deref::match_deref! { match &(replaceEquationsStmts(list![stmt.clone()], inVariableReplacements.clone(), condExpFunc.clone())) {
                         (Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Nil }, true) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -829,9 +829,9 @@ fn replaceOptEquationsStmts(mut optStmt: Option<Arc<DAE::Statement>>, mut inVari
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outAlgorithmStatementLst, replacementPerformed))
+    (outAlgorithmStatementLst, replacementPerformed)
 }
 
 pub fn dumpReplacements(mut inVariableReplacements: VariableReplacements) -> Result<()> {
@@ -1059,8 +1059,8 @@ fn makeTransitive(mut repl: VariableReplacements, mut src: Arc<DAE::ComponentRef
             let mut dst_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut dst_2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut dst_3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            (repl_1, src_1, dst_1) = makeTransitive1(repl.clone(), src.clone(), dst.clone())?;
-            (repl_2, src_2, dst_2) = makeTransitive2(repl_1.clone(), src_1.clone(), dst_1.clone())?;
+            (repl_1, src_1, dst_1) = makeTransitive1(repl.clone(), src.clone(), dst.clone());
+            (repl_2, src_2, dst_2) = makeTransitive2(repl_1.clone(), src_1.clone(), dst_1.clone());
             (dst_3, _) = ExpressionSimplify::simplify1(dst_2.clone())?;
             (repl_2.clone(), src_2.clone(), dst_3.clone())
         },
@@ -1069,7 +1069,7 @@ fn makeTransitive(mut repl: VariableReplacements, mut src: Arc<DAE::ComponentRef
     Ok((outRepl, outSrc, outDst))
 }
 
-fn makeTransitive1(mut repl: VariableReplacements, mut src: Arc<DAE::ComponentRef>, mut dst: Arc<DAE::Exp>) -> Result<(VariableReplacements, Arc<DAE::ComponentRef>, Arc<DAE::Exp>)> {
+fn makeTransitive1(mut repl: VariableReplacements, mut src: Arc<DAE::ComponentRef>, mut dst: Arc<DAE::Exp>) -> (VariableReplacements, Arc<DAE::ComponentRef>, Arc<DAE::Exp>) {
     let mut outRepl: VariableReplacements;
     let mut outSrc: Arc<DAE::ComponentRef>;
     let mut outDst: Arc<DAE::Exp>;
@@ -1089,9 +1089,9 @@ fn makeTransitive1(mut repl: VariableReplacements, mut src: Arc<DAE::ComponentRe
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok((repl.clone(), src.clone(), dst.clone()))
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outRepl, outSrc, outDst))
+    (outRepl, outSrc, outDst)
 }
 
 fn makeTransitive12(mut lst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut repl: VariableReplacements, mut singleRepl: VariableReplacements) -> Result<VariableReplacements> {
@@ -1114,7 +1114,7 @@ fn makeTransitive12(mut lst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mu
     }
 }
 
-fn makeTransitive2(mut repl: VariableReplacements, mut src: Arc<DAE::ComponentRef>, mut dst: Arc<DAE::Exp>) -> Result<(VariableReplacements, Arc<DAE::ComponentRef>, Arc<DAE::Exp>)> {
+fn makeTransitive2(mut repl: VariableReplacements, mut src: Arc<DAE::ComponentRef>, mut dst: Arc<DAE::Exp>) -> (VariableReplacements, Arc<DAE::ComponentRef>, Arc<DAE::Exp>) {
     let mut outRepl: VariableReplacements;
     let mut outSrc: Arc<DAE::ComponentRef>;
     let mut outDst: Arc<DAE::Exp>;
@@ -1138,9 +1138,9 @@ fn makeTransitive2(mut repl: VariableReplacements, mut src: Arc<DAE::ComponentRe
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outRepl, outSrc, outDst))
+    (outRepl, outSrc, outDst)
 }
 
 pub fn getReplacement(mut inVariableReplacements: VariableReplacements, mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::Exp>> {
@@ -1174,7 +1174,7 @@ pub fn replaceExpOpt(mut inExp: Option<Arc<DAE::Exp>>, mut repl: VariableReplace
     Ok(outExp)
 }
 
-pub fn avoidDoubleHashLookup(mut inExp: Arc<DAE::Exp>, mut inType: Arc<DAE::Type>) -> Result<Arc<DAE::Exp>> {
+pub fn avoidDoubleHashLookup(mut inExp: Arc<DAE::Exp>, mut inType: Arc<DAE::Type>) -> Arc<DAE::Exp> {
     let mut outExp: Arc<DAE::Exp>;
     outExp = 'mc: {
         let __mc_input = inExp.clone();
@@ -1194,9 +1194,9 @@ pub fn avoidDoubleHashLookup(mut inExp: Arc<DAE::Exp>, mut inType: Arc<DAE::Type
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outExp)
+    outExp
 }
 
 pub fn replaceExpRepeated(mut e: Arc<DAE::Exp>, mut repl: VariableReplacements, mut func: Option<Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>>, mut maxIter: i32) -> Result<Arc<DAE::Exp>> {
@@ -1263,7 +1263,7 @@ fn replaceExpCref(mut inExp: Arc<DAE::Exp>, mut inVarReplacements: VariableRepla
         Deref @ DAE::Exp::CREF { componentRef: cr, .. } => {
             if '__try0: {
                 outExp = unwrap_break_err!(getReplacement(inVarReplacements.clone(), cr.clone()), '__try0);
-                outExp = unwrap_break_err!(avoidDoubleHashLookup(outExp.clone(), var_field!((*inExp).ty, DAE::Exp::CREF).clone()), '__try0);
+                outExp = avoidDoubleHashLookup(outExp.clone(), var_field!((*inExp).ty, DAE::Exp::CREF).clone());
                 replacementPerformed = true;
                 Ok::<(), anyhow::Error>(())
             }.is_err() {

@@ -355,7 +355,7 @@ fn qualifyExtendsPart(mut inName: ArcStr, mut inEnv: Env, mut inExtendsTable: Ex
     let mut oitem: Option<Arc<NFSCodeEnv::Item>>;
     let mut oenv: Option<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>>;
     let mut fe: bool;
-    (oitem, outPath, oenv, fe) = lookupSimpleName((inName.clone()).clone(), inEnv.clone(), inExtendsTable.clone())?;
+    (oitem, outPath, oenv, fe) = lookupSimpleName((inName.clone()).clone(), inEnv.clone(), inExtendsTable.clone());
     (outEnv, outErrorPath) = qualifyExtendsPart2(Arc::new(Absyn::Path::IDENT { name: (inName.clone()).clone() }), oitem.clone(), oenv.clone(), inEnv.clone(), inIsFirst.clone(), fe.clone(), inFullPath.clone())?;
     Ok((outPath, outEnv, outErrorPath))
 }
@@ -416,7 +416,7 @@ fn checkExtendsPart(mut inIsFirst: bool, mut inFromExtends: bool, mut inPartName
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _, Deref @ NFSCodeEnv::Item::VAR { .. }) => {
                     let mut part: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-                    part = NFSCodeEnv::mergePathWithEnvPath(inPartName.clone(), inFoundEnv.clone())?;
+                    part = NFSCodeEnv::mergePathWithEnvPath(inPartName.clone(), inFoundEnv.clone());
                     Ok(makeExtendsError(inBaseClass.clone(), part.clone(), (arcstr::literal!(BASECLASS_IS_VAR_ERROR)).clone())?)
                 }
                 _ => bail!("nomatch"),
@@ -495,7 +495,7 @@ pub fn printExtendsError2(mut inError: ArcStr, mut inBaseClass: Arc<Absyn::Path>
                     let mut env_str: ArcStr = arcstr::literal!("");
                     let true = (stringEq((inError.clone()).clone(), (arcstr::literal!(BASECLASS_NOT_FOUND_ERROR)).clone())) else { bail!("pattern mismatch") };
                     bc_str = (AbsynUtil::pathString(inBaseClass.clone(), (literal!(".")).clone(), true, false)?).clone();
-                    env_str = (NFSCodeEnv::getEnvName(inEnv.clone())?).clone();
+                    env_str = (NFSCodeEnv::getEnvName(inEnv.clone())).clone();
                     Error::addSourceMessage(Error::LOOKUP_BASECLASS_ERROR.clone(), list![(bc_str.clone()).clone(), (env_str.clone()).clone()], inInfo.clone())?;
                     Ok(())
                 }
@@ -511,7 +511,7 @@ pub fn printExtendsError2(mut inError: ArcStr, mut inBaseClass: Arc<Absyn::Path>
                     bc_str = (AbsynUtil::pathString(inBaseClass.clone(), (literal!(".")).clone(), true, false)?).clone();
                     Error::addSourceMessage(Error::INHERITED_EXTENDS.clone(), list![(bc_str.clone()).clone()], inInfo.clone())?;
                     exts = NFSCodeEnv::getEnvExtendsFromTable(inEnv.clone())?;
-                    printInheritedExtendsError((part.clone()).clone(), exts.clone(), inEnv.clone())?;
+                    printInheritedExtendsError((part.clone()).clone(), exts.clone(), inEnv.clone());
                     Ok(())
                 }
                 _ => bail!("nomatch"),
@@ -564,7 +564,7 @@ pub fn printExtendsError2(mut inError: ArcStr, mut inBaseClass: Arc<Absyn::Path>
     Ok(())
 }
 
-fn printInheritedExtendsError(mut inName: ArcStr, mut inExtends: Arc<metamodelica::List<Arc<NFSCodeEnv::Extends>>>, mut inEnv: Env) -> Result<()> {
+fn printInheritedExtendsError(mut inName: ArcStr, mut inExtends: Arc<metamodelica::List<Arc<NFSCodeEnv::Extends>>>, mut inEnv: Env) -> () {
     let () = 'mc: {
         let __mc_input = inExtends.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -591,7 +591,7 @@ fn printInheritedExtendsError(mut inName: ArcStr, mut inExtends: Arc<metamodelic
                     bc_str = (AbsynUtil::pathString(bc.clone(), (literal!(".")).clone(), true, false)?).clone();
                     Error::addSourceMessage(Error::ERROR_FROM_HERE.clone(), metamodelica::nil(), info1.clone())?;
                     Error::addSourceMessage(Error::EXTENDS_INHERITED_FROM_LOCAL_EXTENDS.clone(), list![(inName.clone()).clone(), (bc_str.clone()).clone()], info2.clone())?;
-                    printInheritedExtendsError((inName.clone()).clone(), rest_ext.clone(), inEnv.clone())?;
+                    printInheritedExtendsError((inName.clone()).clone(), rest_ext.clone(), inEnv.clone());
                     Ok(())
                 }
                 _ => bail!("nomatch"),
@@ -600,7 +600,7 @@ fn printInheritedExtendsError(mut inName: ArcStr, mut inExtends: Arc<metamodelic
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: rest_ext } => {
-                    printInheritedExtendsError((inName.clone()).clone(), rest_ext.clone(), inEnv.clone())?;
+                    printInheritedExtendsError((inName.clone()).clone(), rest_ext.clone(), inEnv.clone());
                     Ok(())
                 }
                 _ => bail!("nomatch"),
@@ -614,12 +614,12 @@ fn printInheritedExtendsError(mut inName: ArcStr, mut inExtends: Arc<metamodelic
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(())
+    ()
 }
 
-fn lookupSimpleName(mut inName: ArcStr, mut inEnv: Env, mut inExtendsTable: ExtendsTableArray) -> Result<(Option<Arc<NFSCodeEnv::Item>>, Option<Arc<Absyn::Path>>, Option<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>>, bool)> {
+fn lookupSimpleName(mut inName: ArcStr, mut inEnv: Env, mut inExtendsTable: ExtendsTableArray) -> (Option<Arc<NFSCodeEnv::Item>>, Option<Arc<Absyn::Path>>, Option<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>>, bool) {
     let mut outItem: Option<Arc<NFSCodeEnv::Item>>;
     let mut outPath: Option<Arc<Absyn::Path>>;
     let mut outEnv: Option<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>>;
@@ -646,7 +646,7 @@ fn lookupSimpleName(mut inName: ArcStr, mut inEnv: Env, mut inExtendsTable: Exte
                     let mut opt_env: Option<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>> = None;
                     let mut opt_path: Option<Arc<Absyn::Path>> = None;
                     NFSCodeLookup::frameNotEncapsulated(frame_type.clone())?;
-                    (opt_item, opt_path, opt_env, _) = lookupSimpleName((inName.clone()).clone(), env.clone(), inExtendsTable.clone())?;
+                    (opt_item, opt_path, opt_env, _) = lookupSimpleName((inName.clone()).clone(), env.clone(), inExtendsTable.clone());
                     Ok((opt_item.clone(), opt_path.clone(), opt_env.clone(), false))
                 }
                 _ => bail!("nomatch"),
@@ -660,9 +660,9 @@ fn lookupSimpleName(mut inName: ArcStr, mut inEnv: Env, mut inExtendsTable: Exte
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outItem, outPath, outEnv, outFromExtends))
+    (outItem, outPath, outEnv, outFromExtends)
 }
 
 fn lookupInLocalScope(mut inName: ArcStr, mut inEnv: Env, mut inExtendsTable: ExtendsTableArray) -> Result<(Option<Arc<NFSCodeEnv::Item>>, Option<Arc<Absyn::Path>>, Option<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>>, bool)> {
@@ -1013,7 +1013,7 @@ fn updateClassExtends(mut inClass: Arc<SCode::Element>, mut inEnv: Env, mut inCl
             } };
             mods = __pa0.clone();
             info = __pa1.clone();
-            (cls, env) = updateClassExtends2(inClass.clone(), (name.clone()).clone(), mods.clone(), info.clone(), inEnv.clone())?;
+            (cls, env) = updateClassExtends2(inClass.clone(), (name.clone()).clone(), mods.clone(), info.clone(), inEnv.clone());
             (cls.clone(), env.clone())
         },
         _ => {
@@ -1024,7 +1024,7 @@ fn updateClassExtends(mut inClass: Arc<SCode::Element>, mut inEnv: Env, mut inCl
     Ok((outClass, outEnv))
 }
 
-fn updateClassExtends2(mut inClass: Arc<SCode::Element>, mut inName: ArcStr, mut inMods: Arc<SCode::Mod>, mut inInfo: SourceInfo, mut inEnv: Env) -> Result<(Arc<SCode::Element>, Env)> {
+fn updateClassExtends2(mut inClass: Arc<SCode::Element>, mut inName: ArcStr, mut inMods: Arc<SCode::Mod>, mut inInfo: SourceInfo, mut inEnv: Env) -> (Arc<SCode::Element>, Env) {
     let mut outClass: Arc<SCode::Element>;
     let mut outEnv: Env;
     (outClass, outEnv) = 'mc: {
@@ -1057,9 +1057,9 @@ fn updateClassExtends2(mut inClass: Arc<SCode::Element>, mut inName: ArcStr, mut
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outClass, outEnv))
+    (outClass, outEnv)
 }
 
 fn lookupClassExtendsBaseClass(mut inName: ArcStr, mut inEnv: Env, mut inInfo: SourceInfo) -> Result<(Arc<Absyn::Path>, Item)> {
@@ -1117,7 +1117,7 @@ pub fn extendEnvWithClassExtends(mut inClassExtends: Arc<SCode::Element>, mut in
             let mut err_msg: ArcStr = arcstr::literal!("");
             info = SCodeUtil::elementInfo(inClassExtends.clone());
             el_str = (SCodeDump::unparseElementStr(inClassExtends.clone(), SCodeDump::defaultOptions.clone())?).clone();
-            env_str = (NFSCodeEnv::getEnvName(inEnv.clone())?).clone();
+            env_str = (NFSCodeEnv::getEnvName(inEnv.clone())).clone();
             err_msg = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSCodeFlattenRedeclare.extendEnvWithClassExtends failed on unknown element ")); __mm_s.push_str(&*el_str.clone()); __mm_s.push_str(&*literal!(" in ")); __mm_s.push_str(&*env_str.clone()); ArcStr::from(__mm_s) }).clone();
             Error::addSourceMessage(Error::INTERNAL_ERROR.clone(), list![(err_msg.clone()).clone()], info.clone())?;
             bail!("fail")

@@ -483,7 +483,7 @@ pub fn children(mut inNode: Node) -> Result<Children> {
     Ok(outChildren)
 }
 
-pub fn hasChild(mut inNode: Node, mut inName: Name) -> Result<bool> {
+pub fn hasChild(mut inNode: Node, mut inName: Name) -> bool {
     let mut b: bool;
     b = 'mc: {
         let __mc_input = inName.clone();
@@ -496,14 +496,14 @@ pub fn hasChild(mut inNode: Node, mut inName: Name) -> Result<bool> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(false)
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(b)
+    b
 }
 
 pub fn refHasChild(mut inRef: Ref, mut inName: Name) -> Result<bool> {
     let mut b: bool;
-    b = hasChild(fromRef(inRef.clone())?, (inName.clone()).clone())?;
+    b = hasChild(fromRef(inRef.clone())?, (inName.clone()).clone());
     Ok(b)
 }
 
@@ -655,7 +655,7 @@ pub fn dataStr(mut inData: Data) -> ArcStr {
     outStr
 }
 
-pub fn toStr(mut inNode: Node) -> Result<ArcStr> {
+pub fn toStr(mut inNode: Node) -> ArcStr {
     let mut outStr: ArcStr = arcstr::literal!("");
     outStr = ('mc: {
         let __mc_input = inNode.clone();
@@ -669,9 +669,9 @@ pub fn toStr(mut inNode: Node) -> Result<ArcStr> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(literal!("Unhandled node!"))
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     }).clone();
-    Ok(outStr)
+    outStr
 }
 
 pub fn toPathStr(mut inNode: Node) -> Result<ArcStr> {
@@ -1627,7 +1627,7 @@ pub fn getElementFromRef(mut inRef: Ref) -> Result<Arc<SCode::Element>> {
 pub fn isImplicitRefName(mut r: Ref) -> Result<bool> {
     let mut b: bool;
     b = (match r.clone() {
-        _ if (!(isRefTop(r.clone())?)) => FCore::isImplicitScope((refName(r.clone())?).clone())?,
+        _ if (!(isRefTop(r.clone())?)) => FCore::isImplicitScope((refName(r.clone())?).clone()),
         _ => false,
     });
     Ok(b)
@@ -1648,7 +1648,7 @@ pub fn refInstance(mut inRef: Ref) -> Result<Ref> {
     Ok(r)
 }
 
-pub fn isRefRefUnresolved(mut inRef: Ref) -> Result<bool> {
+pub fn isRefRefUnresolved(mut inRef: Ref) -> bool {
     let mut b: bool = false;
     b = 'mc: {
         let __mc_input = inRef.clone();
@@ -1663,15 +1663,15 @@ pub fn isRefRefUnresolved(mut inRef: Ref) -> Result<bool> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(true)
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(b)
+    b
 }
 
-pub fn isRefRefResolved(mut inRef: Ref) -> Result<bool> {
+pub fn isRefRefResolved(mut inRef: Ref) -> bool {
     let mut b: bool;
-    b = !(isRefRefUnresolved(inRef.clone())?);
-    Ok(b)
+    b = !(isRefRefUnresolved(inRef.clone()));
+    b
 }
 
 pub fn refRef(mut inRef: Ref) -> Result<Ref> {

@@ -94,14 +94,14 @@ pub fn ext(mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
     let mut og: Graph;
     og = (match ig.clone() {
         mut g => {
-            g = FNode::apply1(inRef.clone(), (std::sync::Arc::new(ext_one) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<FCore::Node>, FCore::Graph) -> Result<FCore::Graph> + 'static>), g.clone())?;
+            g = FNode::apply1(inRef.clone(), (std::sync::Arc::new(fnptr!(ext_one, ArcStr, metamodelica::Array<FCore::Node>, FCore::Graph)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<FCore::Node>, FCore::Graph) -> Result<FCore::Graph> + 'static>), g.clone())?;
             g.clone()
         },
     });
     Ok(og)
 }
 
-pub fn ext_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
+pub fn ext_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Graph {
     let mut og: Graph;
     og = 'mc: {
         let __mc_input = (inRef.clone(), ig.clone());
@@ -109,7 +109,7 @@ pub fn ext_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
             let (mut r, mut g) = __mc_input.clone() else { bail!("nomatch") };
             let true = (FNode::isRefExtends(r.clone())?) else { bail!("pattern mismatch") };
             let false = (FNode::isRefDerived(r.clone())?) else { bail!("pattern mismatch") };
-            let true = (FNode::isRefRefResolved(r.clone())?) else { bail!("pattern mismatch") };
+            let true = (FNode::isRefRefResolved(r.clone())) else { bail!("pattern mismatch") };
             Ok(g.clone())
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
@@ -147,30 +147,30 @@ pub fn ext_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(ig.clone())
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(og)
+    og
 }
 
 pub fn derived(mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
     let mut og: Graph;
     og = (match ig.clone() {
         mut g => {
-            g = FNode::apply1(inRef.clone(), (std::sync::Arc::new(derived_one) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<FCore::Node>, FCore::Graph) -> Result<FCore::Graph> + 'static>), g.clone())?;
+            g = FNode::apply1(inRef.clone(), (std::sync::Arc::new(fnptr!(derived_one, ArcStr, metamodelica::Array<FCore::Node>, FCore::Graph)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<FCore::Node>, FCore::Graph) -> Result<FCore::Graph> + 'static>), g.clone())?;
             g.clone()
         },
     });
     Ok(og)
 }
 
-pub fn derived_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
+pub fn derived_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Graph {
     let mut og: Graph;
     og = 'mc: {
         let __mc_input = (inRef.clone(), ig.clone());
         if let Ok(__v) = (|| -> Result<_> {
             let (mut r, mut g) = __mc_input.clone() else { bail!("nomatch") };
             let true = (FNode::isRefDerived(r.clone())?) else { bail!("pattern mismatch") };
-            let true = (FNode::isRefRefResolved(r.clone())?) else { bail!("pattern mismatch") };
+            let true = (FNode::isRefRefResolved(r.clone())) else { bail!("pattern mismatch") };
             Ok(g.clone())
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
@@ -208,30 +208,30 @@ pub fn derived_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Result<Grap
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(ig.clone())
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(og)
+    og
 }
 
 pub fn ty(mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
     let mut og: Graph;
     og = (match ig.clone() {
         mut g => {
-            g = FNode::apply1(inRef.clone(), (std::sync::Arc::new(ty_one) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<FCore::Node>, FCore::Graph) -> Result<FCore::Graph> + 'static>), g.clone())?;
+            g = FNode::apply1(inRef.clone(), (std::sync::Arc::new(fnptr!(ty_one, ArcStr, metamodelica::Array<FCore::Node>, FCore::Graph)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<FCore::Node>, FCore::Graph) -> Result<FCore::Graph> + 'static>), g.clone())?;
             g.clone()
         },
     });
     Ok(og)
 }
 
-pub fn ty_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
+pub fn ty_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Graph {
     let mut og: Graph;
     og = 'mc: {
         let __mc_input = (inRef.clone(), ig.clone());
         if let Ok(__v) = (|| -> Result<_> {
             let (mut r, mut g) = __mc_input.clone() else { bail!("nomatch") };
             let true = (FNode::isRefComponent(r.clone())?) else { bail!("pattern mismatch") };
-            let true = (FNode::isRefRefResolved(r.clone())?) else { bail!("pattern mismatch") };
+            let true = (FNode::isRefRefResolved(r.clone())) else { bail!("pattern mismatch") };
             Ok(g.clone())
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
@@ -267,30 +267,30 @@ pub fn ty_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(ig.clone())
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(og)
+    og
 }
 
 pub fn cc(mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
     let mut og: Graph;
     og = (match ig.clone() {
         mut g => {
-            g = FNode::apply1(inRef.clone(), (std::sync::Arc::new(cc_one) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<FCore::Node>, FCore::Graph) -> Result<FCore::Graph> + 'static>), g.clone())?;
+            g = FNode::apply1(inRef.clone(), (std::sync::Arc::new(fnptr!(cc_one, ArcStr, metamodelica::Array<FCore::Node>, FCore::Graph)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<FCore::Node>, FCore::Graph) -> Result<FCore::Graph> + 'static>), g.clone())?;
             g.clone()
         },
     });
     Ok(og)
 }
 
-pub fn cc_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
+pub fn cc_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Graph {
     let mut og: Graph;
     og = 'mc: {
         let __mc_input = (inRef.clone(), ig.clone());
         if let Ok(__v) = (|| -> Result<_> {
             let (mut r, mut g) = __mc_input.clone() else { bail!("nomatch") };
             let true = (FNode::isRefConstrainClass(r.clone())?) else { bail!("pattern mismatch") };
-            let true = (FNode::isRefRefResolved(r.clone())?) else { bail!("pattern mismatch") };
+            let true = (FNode::isRefRefResolved(r.clone())) else { bail!("pattern mismatch") };
             Ok(g.clone())
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
@@ -328,30 +328,30 @@ pub fn cc_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(ig.clone())
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(og)
+    og
 }
 
 pub fn clsext(mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
     let mut og: Graph;
     og = (match ig.clone() {
         mut g => {
-            g = FNode::apply1(inRef.clone(), (std::sync::Arc::new(clsext_one) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<FCore::Node>, FCore::Graph) -> Result<FCore::Graph> + 'static>), g.clone())?;
+            g = FNode::apply1(inRef.clone(), (std::sync::Arc::new(fnptr!(clsext_one, ArcStr, metamodelica::Array<FCore::Node>, FCore::Graph)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<FCore::Node>, FCore::Graph) -> Result<FCore::Graph> + 'static>), g.clone())?;
             g.clone()
         },
     });
     Ok(og)
 }
 
-pub fn clsext_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
+pub fn clsext_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Graph {
     let mut og: Graph;
     og = 'mc: {
         let __mc_input = (inRef.clone(), ig.clone());
         if let Ok(__v) = (|| -> Result<_> {
             let (mut r, mut g) = __mc_input.clone() else { bail!("nomatch") };
             let true = (FNode::isRefClassExtends(r.clone())?) else { bail!("pattern mismatch") };
-            let true = (FNode::isRefRefResolved(r.clone())?) else { bail!("pattern mismatch") };
+            let true = (FNode::isRefRefResolved(r.clone())) else { bail!("pattern mismatch") };
             Ok(g.clone())
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
@@ -402,30 +402,30 @@ pub fn clsext_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Result<Graph
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(ig.clone())
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(og)
+    og
 }
 
 pub fn cr(mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
     let mut og: Graph;
     og = (match ig.clone() {
         mut g => {
-            g = FNode::apply1(inRef.clone(), (std::sync::Arc::new(cr_one) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<FCore::Node>, FCore::Graph) -> Result<FCore::Graph> + 'static>), g.clone())?;
+            g = FNode::apply1(inRef.clone(), (std::sync::Arc::new(fnptr!(cr_one, ArcStr, metamodelica::Array<FCore::Node>, FCore::Graph)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<FCore::Node>, FCore::Graph) -> Result<FCore::Graph> + 'static>), g.clone())?;
             g.clone()
         },
     });
     Ok(og)
 }
 
-pub fn cr_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
+pub fn cr_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Graph {
     let mut og: Graph;
     og = 'mc: {
         let __mc_input = (inRef.clone(), ig.clone());
         if let Ok(__v) = (|| -> Result<_> {
             let (mut r, mut g) = __mc_input.clone() else { bail!("nomatch") };
             let true = (FNode::isRefCref(r.clone())?) else { bail!("pattern mismatch") };
-            let true = (FNode::isRefRefResolved(r.clone())?) else { bail!("pattern mismatch") };
+            let true = (FNode::isRefRefResolved(r.clone())) else { bail!("pattern mismatch") };
             Ok(g.clone())
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
@@ -457,30 +457,30 @@ pub fn cr_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(ig.clone())
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(og)
+    og
 }
 
 pub fn r#mod(mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
     let mut og: Graph;
     og = (match ig.clone() {
         mut g => {
-            g = FNode::apply1(inRef.clone(), (std::sync::Arc::new(mod_one) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<FCore::Node>, FCore::Graph) -> Result<FCore::Graph> + 'static>), g.clone())?;
+            g = FNode::apply1(inRef.clone(), (std::sync::Arc::new(fnptr!(mod_one, ArcStr, metamodelica::Array<FCore::Node>, FCore::Graph)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<FCore::Node>, FCore::Graph) -> Result<FCore::Graph> + 'static>), g.clone())?;
             g.clone()
         },
     });
     Ok(og)
 }
 
-pub fn mod_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
+pub fn mod_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Graph {
     let mut og: Graph;
     og = 'mc: {
         let __mc_input = (inRef.clone(), ig.clone());
         if let Ok(__v) = (|| -> Result<_> {
             let (mut r, mut g) = __mc_input.clone() else { bail!("nomatch") };
             let true = (FNode::isRefMod(r.clone())? && !(FNode::isRefModHolder(r.clone())?) && !(ClassInfUtil::isBasicTypeComponentName((FNode::refName(r.clone())?).clone()))) else { bail!("pattern mismatch") };
-            let true = (FNode::isRefRefResolved(r.clone())?) else { bail!("pattern mismatch") };
+            let true = (FNode::isRefRefResolved(r.clone())) else { bail!("pattern mismatch") };
             Ok(g.clone())
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
@@ -510,23 +510,23 @@ pub fn mod_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(ig.clone())
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(og)
+    og
 }
 
 pub fn elred(mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
     let mut og: Graph;
     og = (match ig.clone() {
         mut g => {
-            g = FNode::apply1(inRef.clone(), (std::sync::Arc::new(elred_one) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<FCore::Node>, FCore::Graph) -> Result<FCore::Graph> + 'static>), g.clone())?;
+            g = FNode::apply1(inRef.clone(), (std::sync::Arc::new(fnptr!(elred_one, ArcStr, metamodelica::Array<FCore::Node>, FCore::Graph)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<FCore::Node>, FCore::Graph) -> Result<FCore::Graph> + 'static>), g.clone())?;
             g.clone()
         },
     });
     Ok(og)
 }
 
-pub fn elred_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
+pub fn elred_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Graph {
     let mut og: Graph;
     og = 'mc: {
         let __mc_input = (inRef.clone(), ig.clone());
@@ -534,7 +534,7 @@ pub fn elred_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Result<Graph>
             let (mut r, mut g) = __mc_input.clone() else { bail!("nomatch") };
             let true = (FNode::isRefRedeclare(r.clone())?) else { bail!("pattern mismatch") };
             let true = (FNode::isRefClass(r.clone())? && !(FNode::isRefClassExtends(r.clone())?) || FNode::isRefComponent(r.clone())?) else { bail!("pattern mismatch") };
-            let true = (FNode::isRefRefResolved(r.clone())?) else { bail!("pattern mismatch") };
+            let true = (FNode::isRefRefResolved(r.clone())) else { bail!("pattern mismatch") };
             Ok(g.clone())
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
@@ -579,8 +579,8 @@ pub fn elred_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Result<Graph>
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(ig.clone())
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(og)
+    og
 }
 

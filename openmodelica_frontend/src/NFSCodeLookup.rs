@@ -470,9 +470,9 @@ pub fn lookupInBaseClasses3(mut inName: ArcStr, mut inBaseClass: Extends, mut in
             let mut opt_item: Option<Arc<NFSCodeEnv::Item>> = None;
             let mut opt_env: Option<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>> = None;
             (item, path, env) = lookupBaseClassName(bc.clone(), inEnv.clone(), info.clone())?;
-            let true = (checkVisitedScopes(inVisitedScopes.clone(), inEnv.clone(), path.clone())?) else { bail!("pattern mismatch") };
+            let true = (checkVisitedScopes(inVisitedScopes.clone(), inEnv.clone(), path.clone())) else { bail!("pattern mismatch") };
             item = NFSCodeEnv::setImportsInItemHidden(item.clone(), true)?;
-            (opt_item, opt_env) = NFSCodeFlattenRedeclare::replaceRedeclares(redecls.clone(), item.clone(), env.clone(), inEnvWithExtends.clone(), inReplaceRedeclares.clone())?;
+            (opt_item, opt_env) = NFSCodeFlattenRedeclare::replaceRedeclares(redecls.clone(), item.clone(), env.clone(), inEnvWithExtends.clone(), inReplaceRedeclares.clone());
             (opt_item, opt_path, opt_env) = lookupInBaseClasses4(Arc::new(Absyn::Path::IDENT { name: (inName.clone()).clone() }), opt_item.clone(), opt_env.clone())?;
             (opt_item.clone(), opt_path.clone(), opt_env.clone())
         },
@@ -481,7 +481,7 @@ pub fn lookupInBaseClasses3(mut inName: ArcStr, mut inBaseClass: Extends, mut in
     Ok((outItem, outPath, outEnv))
 }
 
-fn checkVisitedScopes(mut inVisitedScopes: Arc<metamodelica::List<ArcStr>>, mut inEnv: Env, mut inBaseClass: Arc<Absyn::Path>) -> Result<bool> {
+fn checkVisitedScopes(mut inVisitedScopes: Arc<metamodelica::List<ArcStr>>, mut inEnv: Env, mut inBaseClass: Arc<Absyn::Path>) -> bool {
     let mut outRes: bool;
     outRes = 'mc: {
         let __mc_input = inVisitedScopes.clone();
@@ -516,9 +516,9 @@ fn checkVisitedScopes(mut inVisitedScopes: Arc<metamodelica::List<ArcStr>>, mut 
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outRes)
+    outRes
 }
 
 fn lookupInBaseClasses4(mut inName: Arc<Absyn::Path>, mut inItem: Option<Arc<NFSCodeEnv::Item>>, mut inEnv: Option<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>>) -> Result<(Option<Arc<NFSCodeEnv::Item>>, Option<Arc<Absyn::Path>>, Option<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>>)> {
@@ -830,13 +830,13 @@ pub fn lookupBaseClasses(mut inName: ArcStr, mut inEnv: Env) -> Result<Arc<metam
         _ => bail!("pattern mismatch"),
     } };
     bcl = __pa0.clone();
-    (_, outBaseClasses) = List::fold22(bcl.clone(), (std::sync::Arc::new(lookupBaseClasses2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFSCodeEnv::Extends>, ArcStr, Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, Arc<metamodelica::List<Arc<NFSCodeEnv::Item>>>, Arc<metamodelica::List<Arc<Absyn::Path>>>) -> Result<(Arc<metamodelica::List<Arc<NFSCodeEnv::Item>>>, Arc<metamodelica::List<Arc<Absyn::Path>>>)> + 'static>), (inName.clone()).clone(), inEnv.clone(), metamodelica::nil(), metamodelica::nil())?;
+    (_, outBaseClasses) = List::fold22(bcl.clone(), (std::sync::Arc::new(fnptr!(lookupBaseClasses2, Arc<NFSCodeEnv::Extends>, ArcStr, Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, Arc<metamodelica::List<Arc<NFSCodeEnv::Item>>>, Arc<metamodelica::List<Arc<Absyn::Path>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFSCodeEnv::Extends>, ArcStr, Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, Arc<metamodelica::List<Arc<NFSCodeEnv::Item>>>, Arc<metamodelica::List<Arc<Absyn::Path>>>) -> Result<(Arc<metamodelica::List<Arc<NFSCodeEnv::Item>>>, Arc<metamodelica::List<Arc<Absyn::Path>>>)> + 'static>), (inName.clone()).clone(), inEnv.clone(), metamodelica::nil(), metamodelica::nil())?;
     let false = (outBaseClasses.clone().is_empty()) else { bail!("pattern mismatch") };
     outBaseClasses = outBaseClasses.clone().reverse();
     Ok(outBaseClasses)
 }
 
-fn lookupBaseClasses2(mut inBaseClass: Extends, mut inName: ArcStr, mut inEnv: Env, mut items: Arc<metamodelica::List<Arc<NFSCodeEnv::Item>>>, mut bcl: Arc<metamodelica::List<Arc<Absyn::Path>>>) -> Result<(Arc<metamodelica::List<Arc<NFSCodeEnv::Item>>>, Arc<metamodelica::List<Arc<Absyn::Path>>>)> {
+fn lookupBaseClasses2(mut inBaseClass: Extends, mut inName: ArcStr, mut inEnv: Env, mut items: Arc<metamodelica::List<Arc<NFSCodeEnv::Item>>>, mut bcl: Arc<metamodelica::List<Arc<Absyn::Path>>>) -> (Arc<metamodelica::List<Arc<NFSCodeEnv::Item>>>, Arc<metamodelica::List<Arc<Absyn::Path>>>) {
     let mut items: Arc<metamodelica::List<Arc<NFSCodeEnv::Item>>> = items;
     let mut bcl: Arc<metamodelica::List<Arc<Absyn::Path>>> = bcl;
     (items, bcl) = 'mc: {
@@ -862,9 +862,9 @@ fn lookupBaseClasses2(mut inBaseClass: Extends, mut inName: ArcStr, mut inEnv: E
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((items, bcl))
+    (items, bcl)
 }
 
 pub fn lookupInheritedName(mut inName: ArcStr, mut inEnv: Env) -> Result<(Item, Env)> {
@@ -888,7 +888,7 @@ pub fn lookupInheritedNameAndBC(mut inName: ArcStr, mut inEnv: Env) -> Result<(A
         _ => bail!("pattern mismatch"),
     } };
     bcl = __pa0.clone();
-    (outItems, outBaseClasses) = List::fold22(bcl.clone(), (std::sync::Arc::new(lookupBaseClasses2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFSCodeEnv::Extends>, ArcStr, Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, Arc<metamodelica::List<Arc<NFSCodeEnv::Item>>>, Arc<metamodelica::List<Arc<Absyn::Path>>>) -> Result<(Arc<metamodelica::List<Arc<NFSCodeEnv::Item>>>, Arc<metamodelica::List<Arc<Absyn::Path>>>)> + 'static>), (inName.clone()).clone(), inEnv.clone(), metamodelica::nil(), metamodelica::nil())?;
+    (outItems, outBaseClasses) = List::fold22(bcl.clone(), (std::sync::Arc::new(fnptr!(lookupBaseClasses2, Arc<NFSCodeEnv::Extends>, ArcStr, Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, Arc<metamodelica::List<Arc<NFSCodeEnv::Item>>>, Arc<metamodelica::List<Arc<Absyn::Path>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFSCodeEnv::Extends>, ArcStr, Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, Arc<metamodelica::List<Arc<NFSCodeEnv::Item>>>, Arc<metamodelica::List<Arc<Absyn::Path>>>) -> Result<(Arc<metamodelica::List<Arc<NFSCodeEnv::Item>>>, Arc<metamodelica::List<Arc<Absyn::Path>>>)> + 'static>), (inName.clone()).clone(), inEnv.clone(), metamodelica::nil(), metamodelica::nil())?;
     outBaseClasses = outBaseClasses.clone().reverse();
     outItems = outItems.clone().reverse();
     Ok((outItems, outBaseClasses))
@@ -928,7 +928,7 @@ pub fn lookupRedeclaredClassByItem(mut inItem: Item, mut inEnv: Env, mut inInfo:
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
-                    Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- NFSCodeLookup.lookupRedeclaredClassByItem failed on ")); __mm_s.push_str(&*NFSCodeEnv::getItemName(inItem.clone())?); __mm_s.push_str(&*literal!(" in ")); __mm_s.push_str(&*NFSCodeEnv::getEnvName(inEnv.clone())?); ArcStr::from(__mm_s) }).clone())?;
+                    Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- NFSCodeLookup.lookupRedeclaredClassByItem failed on ")); __mm_s.push_str(&*NFSCodeEnv::getItemName(inItem.clone())?); __mm_s.push_str(&*literal!(" in ")); __mm_s.push_str(&*NFSCodeEnv::getEnvName(inEnv.clone())); ArcStr::from(__mm_s) }).clone())?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -1012,7 +1012,7 @@ fn lookupRedeclaredClass2(mut inItem: Item, mut inRedeclarePrefix: SCode::Redecl
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
-                    Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- NFSCodeLookup.lookupRedeclaredClass2 failed on ")); __mm_s.push_str(&*NFSCodeEnv::getItemName(inItem.clone())?); __mm_s.push_str(&*literal!(" in ")); __mm_s.push_str(&*NFSCodeEnv::getEnvName(inEnv.clone())?); ArcStr::from(__mm_s) }).clone())?;
+                    Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- NFSCodeLookup.lookupRedeclaredClass2 failed on ")); __mm_s.push_str(&*NFSCodeEnv::getItemName(inItem.clone())?); __mm_s.push_str(&*literal!(" in ")); __mm_s.push_str(&*NFSCodeEnv::getEnvName(inEnv.clone())); ArcStr::from(__mm_s) }).clone())?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -1127,7 +1127,7 @@ fn lookupName(mut inName: Arc<Absyn::Path>, mut inEnv: Env, mut inLookupStrategy
                     let mut name_str: ArcStr = arcstr::literal!("");
                     let mut env_str: ArcStr = arcstr::literal!("");
                     name_str = (AbsynUtil::pathString(inName.clone(), (literal!(".")).clone(), true, false)?).clone();
-                    env_str = (NFSCodeEnv::getEnvName(inEnv.clone())?).clone();
+                    env_str = (NFSCodeEnv::getEnvName(inEnv.clone())).clone();
                     Error::addSourceMessage(error_id.clone(), list![(name_str.clone()).clone(), (env_str.clone()).clone()], inInfo.clone())?;
                     Ok(bail!("fail"))
                 }
@@ -1230,7 +1230,7 @@ pub fn lookupFunctionName(mut inName: Arc<Absyn::Path>, mut inEnv: Env, mut inIn
     Ok((outItem, outName, outEnv))
 }
 
-fn crefStripEnvPrefix(mut inCref: Arc<Absyn::ComponentRef>, mut inEnv: Env) -> Result<Arc<Absyn::ComponentRef>> {
+fn crefStripEnvPrefix(mut inCref: Arc<Absyn::ComponentRef>, mut inEnv: Env) -> Arc<Absyn::ComponentRef> {
     let mut outCref: Arc<Absyn::ComponentRef>;
     outCref = 'mc: {
         let __mc_input = inEnv.clone();
@@ -1267,9 +1267,9 @@ fn crefStripEnvPrefix(mut inCref: Arc<Absyn::ComponentRef>, mut inEnv: Env) -> R
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outCref)
+    outCref
 }
 
 fn crefStripEnvPrefix2(mut inCref: Arc<Absyn::ComponentRef>, mut inEnvPath: Arc<Absyn::Path>) -> Result<Arc<Absyn::ComponentRef>> {
@@ -1308,7 +1308,7 @@ fn crefStripEnvPrefix2(mut inCref: Arc<Absyn::ComponentRef>, mut inEnvPath: Arc<
     Ok(outCref)
 }
 
-pub fn lookupComponentRef(mut inCref: Arc<Absyn::ComponentRef>, mut inEnv: Env, mut inInfo: SourceInfo) -> Result<Arc<Absyn::ComponentRef>> {
+pub fn lookupComponentRef(mut inCref: Arc<Absyn::ComponentRef>, mut inEnv: Env, mut inInfo: SourceInfo) -> Arc<Absyn::ComponentRef> {
     let mut outCref: Arc<Absyn::ComponentRef>;
     outCref = 'mc: {
         let __mc_input = inCref.clone();
@@ -1334,7 +1334,7 @@ pub fn lookupComponentRef(mut inCref: Arc<Absyn::ComponentRef>, mut inEnv: Env, 
                     let mut cref: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
                     cref = NFSCodeFlattenImports::flattenComponentRefSubs(inCref.clone(), inEnv.clone(), inInfo.clone())?;
                     (cref, _) = lookupComponentRef2(cref.clone(), inEnv.clone())?;
-                    cref = crefStripEnvPrefix(cref.clone(), inEnv.clone())?;
+                    cref = crefStripEnvPrefix(cref.clone(), inEnv.clone());
                     Ok(cref.clone())
                 }
                 _ => bail!("nomatch"),
@@ -1348,9 +1348,9 @@ pub fn lookupComponentRef(mut inCref: Arc<Absyn::ComponentRef>, mut inEnv: Env, 
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outCref)
+    outCref
 }
 
 fn lookupComponentRef2(mut inCref: Arc<Absyn::ComponentRef>, mut inEnv: Env) -> Result<(Arc<Absyn::ComponentRef>, Env)> {
@@ -1455,7 +1455,7 @@ pub fn qualifyPath(mut inPath: Arc<Absyn::Path>, mut inEnv: Env, mut inInfo: Sou
                     let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     let mut env: Env = metamodelica::nil();
                     (_, path, env) = lookupName(inPath.clone(), inEnv.clone(), crate::NFSCodeLookup::LookupStrategy::NO_BUILTIN_TYPES, inInfo.clone(), inErrorType.clone())?;
-                    path = NFSCodeEnv::mergePathWithEnvPath(path.clone(), env.clone())?;
+                    path = NFSCodeEnv::mergePathWithEnvPath(path.clone(), env.clone());
                     path = AbsynUtil::makeFullyQualified(path.clone());
                     Ok(path.clone())
                 }
@@ -1466,7 +1466,7 @@ pub fn qualifyPath(mut inPath: Arc<Absyn::Path>, mut inEnv: Env, mut inInfo: Sou
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
-                    Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- NFSCodeLookup.qualifyPath failed on ")); __mm_s.push_str(&*AbsynUtil::pathString(inPath.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!(" in ")); __mm_s.push_str(&*NFSCodeEnv::getEnvName(inEnv.clone())?); ArcStr::from(__mm_s) }).clone())?;
+                    Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- NFSCodeLookup.qualifyPath failed on ")); __mm_s.push_str(&*AbsynUtil::pathString(inPath.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!(" in ")); __mm_s.push_str(&*NFSCodeEnv::getEnvName(inEnv.clone())); ArcStr::from(__mm_s) }).clone())?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),

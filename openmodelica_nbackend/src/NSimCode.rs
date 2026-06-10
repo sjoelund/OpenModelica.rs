@@ -486,7 +486,7 @@ pub mod SimCode {
         __acc.reverse()
     }))?, allSim.clone());
             inlineEquations = metamodelica::nil();
-            directory = (ProgramUtil::getFileDir(AbsynUtil::pathToCref(name.clone())?, program.clone())?).clone();
+            directory = (ProgramUtil::getFileDir(AbsynUtil::pathToCref(name.clone())?, program.clone())).clone();
             oldFunctionTree = ConvertDAE::convertFunctionTree(NFFlatten::FunctionTreeImpl::fromList(UnorderedMap::toList(funcMap.clone()), (std::sync::Arc::new(fnptr!(NFFlatten::FunctionTreeImpl::addConflictDefault, _, _, _)) as std::sync::Arc<dyn ::std::ops::Fn(_, _, _) -> Result<_> + 'static>))?)?;
             (libs, libPaths, externalFunctionIncludes, includeDirs, recordDecls, functions, _) = SimCodeUtilShared::createFunctions(program.clone(), oldFunctionTree.clone())?;
             makefileParams = OldSimCodeFunctionUtil::createMakefileParams(includeDirs.clone(), libs.clone(), libPaths.clone(), false, false)?;

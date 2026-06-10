@@ -291,11 +291,11 @@ pub fn checkDuplicateRedeclarations(mut inRedeclare: Arc<NFSCodeEnv::Redeclarati
     let mut el_name: ArcStr;
     let mut el_info: SourceInfo;
     (el_name, el_info) = NFSCodeEnv::getRedeclarationNameInfo(inRedeclare.clone())?;
-    let false = (checkDuplicateRedeclarations2((el_name.clone()).clone(), el_info.clone(), inRedeclarations.clone())?) else { bail!("pattern mismatch") };
+    let false = (checkDuplicateRedeclarations2((el_name.clone()).clone(), el_info.clone(), inRedeclarations.clone())) else { bail!("pattern mismatch") };
     Ok(())
 }
 
-fn checkDuplicateRedeclarations2(mut inRedeclareName: ArcStr, mut inRedeclareInfo: SourceInfo, mut inRedeclarations: Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>>) -> Result<bool> {
+fn checkDuplicateRedeclarations2(mut inRedeclareName: ArcStr, mut inRedeclareInfo: SourceInfo, mut inRedeclarations: Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>>) -> bool {
     let mut outIsDuplicate: bool;
     outIsDuplicate = 'mc: {
         let __mc_input = inRedeclarations.clone();
@@ -324,14 +324,14 @@ fn checkDuplicateRedeclarations2(mut inRedeclareName: ArcStr, mut inRedeclareInf
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: rest_redecls } => {
-                    Ok(checkDuplicateRedeclarations2((inRedeclareName.clone()).clone(), inRedeclareInfo.clone(), rest_redecls.clone())?)
+                    Ok(checkDuplicateRedeclarations2((inRedeclareName.clone()).clone(), inRedeclareInfo.clone(), rest_redecls.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outIsDuplicate)
+    outIsDuplicate
 }
 
 pub fn checkRecursiveComponentDeclaration(mut inComponentName: ArcStr, mut inComponentInfo: SourceInfo, mut inTypeEnv: Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, mut inTypeItem: Arc<NFSCodeEnv::Item>, mut inComponentEnv: Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>) -> Result<()> {
@@ -348,7 +348,7 @@ pub fn checkRecursiveComponentDeclaration(mut inComponentName: ArcStr, mut inCom
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _) => {
-                    let false = (NFSCodeEnv::envPrefixOf(inTypeEnv.clone(), inComponentEnv.clone())?) else { bail!("pattern mismatch") };
+                    let false = (NFSCodeEnv::envPrefixOf(inTypeEnv.clone(), inComponentEnv.clone())) else { bail!("pattern mismatch") };
                     Ok(())
                 }
                 _ => bail!("nomatch"),
@@ -400,7 +400,7 @@ pub fn checkRecursiveComponentDeclaration(mut inComponentName: ArcStr, mut inCom
     Ok(())
 }
 
-pub fn checkIdentNotEqTypeName(mut inIdent: ArcStr, mut inTypeName: Arc<Absyn::TypeSpec>, mut inInfo: SourceInfo) -> Result<bool> {
+pub fn checkIdentNotEqTypeName(mut inIdent: ArcStr, mut inTypeName: Arc<Absyn::TypeSpec>, mut inInfo: SourceInfo) -> bool {
     let mut outIsNotEq: bool;
     outIsNotEq = 'mc: {
         let __mc_input = (inIdent.clone(), inTypeName.clone());
@@ -422,9 +422,9 @@ pub fn checkIdentNotEqTypeName(mut inIdent: ArcStr, mut inTypeName: Arc<Absyn::T
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outIsNotEq)
+    outIsNotEq
 }
 
 pub fn checkComponentsEqual(mut inComponent1: Arc<NFInstTypes::Component>, mut inComponent2: Arc<NFInstTypes::Component>) -> () {

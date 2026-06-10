@@ -140,10 +140,10 @@ pub fn fromExp(mut exp: Arc<Expression::NFExpression>, mut var: Variability) -> 
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
         },
-        Deref @ Expression::ARRAY { .. } if (Expression::arrayAllEqual(exp.clone())?) => {
+        Deref @ Expression::ARRAY { .. } if (Expression::arrayAllEqual(exp.clone())) => {
             { (exp, var) = (Expression::arrayFirstScalar(exp.clone())?, var.clone()); continue '__tco; }
         },
-        Deref @ Expression::SUBSCRIPTED_EXP { split: true, .. } if (Expression::isArray(var_field!((*exp).exp, Expression::NFExpression::SUBSCRIPTED_EXP).clone()) && Expression::arrayAllEqual(var_field!((*exp).exp, Expression::NFExpression::SUBSCRIPTED_EXP).clone())?) => {
+        Deref @ Expression::SUBSCRIPTED_EXP { split: true, .. } if (Expression::isArray(var_field!((*exp).exp, Expression::NFExpression::SUBSCRIPTED_EXP).clone()) && Expression::arrayAllEqual(var_field!((*exp).exp, Expression::NFExpression::SUBSCRIPTED_EXP).clone())) => {
             { (exp, var) = (Expression::arrayFirstScalar(var_field!((*exp).exp, Expression::NFExpression::SUBSCRIPTED_EXP).clone())?, var.clone()); continue '__tco; }
         },
         _ => {

@@ -84,7 +84,7 @@ pub fn dumpSystem(mut inSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc<Bac
             let (__pa0, (_, __pa1)) = GraphML::addGraph((literal!("G")).clone(), false, graphInfo.clone())?;
             graphInfo = __pa0.clone();
             graph = __pa1.clone();
-            let (_, _, (__pa2, __pa3)) = BackendVariable::traverseBackendDAEVars(vars.clone(), (std::sync::Arc::new(addVarGraph) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, (bool, i32, (GraphML::GraphInfo, i32))) -> Result<(BackendDAE::Var, (bool, i32, (GraphML::GraphInfo, i32)))> + 'static>), (numberMode.clone(), 1, (graphInfo.clone(), graph.clone())))?;
+            let (_, _, (__pa2, __pa3)) = BackendVariable::traverseBackendDAEVars(vars.clone(), (std::sync::Arc::new(fnptr!(addVarGraph, BackendDAE::Var, (bool, i32, (GraphML::GraphInfo, i32)))) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, (bool, i32, (GraphML::GraphInfo, i32))) -> Result<(BackendDAE::Var, (bool, i32, (GraphML::GraphInfo, i32)))> + 'static>), (numberMode.clone(), 1, (graphInfo.clone(), graph.clone())))?;
             graphInfo = __pa2.clone();
             graph = __pa3.clone();
             neqns = BackendEquation::getNumberOfEquations(eqns.clone());
@@ -108,7 +108,7 @@ pub fn dumpSystem(mut inSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc<Bac
             let (__pa0, (_, __pa1)) = GraphML::addGraph((literal!("G")).clone(), false, graphInfo.clone())?;
             graphInfo = __pa0.clone();
             graph = __pa1.clone();
-            let (_, _, (__pa2, __pa3)) = BackendVariable::traverseBackendDAEVars(vars.clone(), (std::sync::Arc::new(addVarGraph) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, (bool, i32, (GraphML::GraphInfo, i32))) -> Result<(BackendDAE::Var, (bool, i32, (GraphML::GraphInfo, i32)))> + 'static>), (numberMode.clone(), 1, (graphInfo.clone(), graph.clone())))?;
+            let (_, _, (__pa2, __pa3)) = BackendVariable::traverseBackendDAEVars(vars.clone(), (std::sync::Arc::new(fnptr!(addVarGraph, BackendDAE::Var, (bool, i32, (GraphML::GraphInfo, i32)))) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, (bool, i32, (GraphML::GraphInfo, i32))) -> Result<(BackendDAE::Var, (bool, i32, (GraphML::GraphInfo, i32)))> + 'static>), (numberMode.clone(), 1, (graphInfo.clone(), graph.clone())))?;
             graphInfo = __pa2.clone();
             graph = __pa3.clone();
             neqns = BackendEquation::getNumberOfEquations(eqns.clone());
@@ -138,7 +138,7 @@ pub fn dumpSystem(mut inSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc<Bac
             let (__pa0, (_, __pa1)) = GraphML::addGraph((literal!("G")).clone(), false, graphInfo.clone())?;
             graphInfo = __pa0.clone();
             graph = __pa1.clone();
-            let (_, _, _, (__pa2, __pa3)) = BackendVariable::traverseBackendDAEVars(vars.clone(), (std::sync::Arc::new(addVarGraphMatch) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, (bool, i32, metamodelica::Array<i32>, (GraphML::GraphInfo, i32))) -> Result<(BackendDAE::Var, (bool, i32, metamodelica::Array<i32>, (GraphML::GraphInfo, i32)))> + 'static>), (numberMode.clone(), 1, vec1.clone(), (graphInfo.clone(), graph.clone())))?;
+            let (_, _, _, (__pa2, __pa3)) = BackendVariable::traverseBackendDAEVars(vars.clone(), (std::sync::Arc::new(fnptr!(addVarGraphMatch, BackendDAE::Var, (bool, i32, metamodelica::Array<i32>, (GraphML::GraphInfo, i32)))) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, (bool, i32, metamodelica::Array<i32>, (GraphML::GraphInfo, i32))) -> Result<(BackendDAE::Var, (bool, i32, metamodelica::Array<i32>, (GraphML::GraphInfo, i32)))> + 'static>), (numberMode.clone(), 1, vec1.clone(), (graphInfo.clone(), graph.clone())))?;
             graphInfo = __pa2.clone();
             graph = __pa3.clone();
             neqns = BackendEquation::equationArraySize(eqns.clone())?;
@@ -167,7 +167,7 @@ pub fn dumpSystem(mut inSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc<Bac
             let (__pa0, (_, __pa1)) = GraphML::addGraph((literal!("G")).clone(), false, graphInfo.clone())?;
             graphInfo = __pa0.clone();
             graph = __pa1.clone();
-            let (_, _, (__pa2, __pa3)) = BackendVariable::traverseBackendDAEVars(vars.clone(), (std::sync::Arc::new(addVarGraph) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, (bool, i32, (GraphML::GraphInfo, i32))) -> Result<(BackendDAE::Var, (bool, i32, (GraphML::GraphInfo, i32)))> + 'static>), (numberMode.clone(), 1, (graphInfo.clone(), graph.clone())))?;
+            let (_, _, (__pa2, __pa3)) = BackendVariable::traverseBackendDAEVars(vars.clone(), (std::sync::Arc::new(fnptr!(addVarGraph, BackendDAE::Var, (bool, i32, (GraphML::GraphInfo, i32)))) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, (bool, i32, (GraphML::GraphInfo, i32))) -> Result<(BackendDAE::Var, (bool, i32, (GraphML::GraphInfo, i32)))> + 'static>), (numberMode.clone(), 1, (graphInfo.clone(), graph.clone())))?;
             graphInfo = __pa2.clone();
             graph = __pa3.clone();
             neqns = BackendEquation::equationArraySize(eqns.clone())?;
@@ -205,7 +205,7 @@ pub fn dumpSystem(mut inSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc<Bac
     Ok(())
 }
 
-fn addVarGraph(mut inVar: BackendDAE::Var, mut inTpl: (bool, i32, (GraphML::GraphInfo, i32))) -> Result<(BackendDAE::Var, (bool, i32, (GraphML::GraphInfo, i32)))> {
+fn addVarGraph(mut inVar: BackendDAE::Var, mut inTpl: (bool, i32, (GraphML::GraphInfo, i32))) -> (BackendDAE::Var, (bool, i32, (GraphML::GraphInfo, i32))) {
     let mut outVar: BackendDAE::Var;
     let mut outTpl: (bool, i32, (GraphML::GraphInfo, i32));
     (outVar, outTpl) = 'mc: {
@@ -264,12 +264,12 @@ fn addVarGraph(mut inVar: BackendDAE::Var, mut inTpl: (bool, i32, (GraphML::Grap
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok((inVar.clone(), inTpl.clone()))
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outVar, outTpl))
+    (outVar, outTpl)
 }
 
-fn addVarGraphMatch(mut inVar: BackendDAE::Var, mut inTpl: (bool, i32, metamodelica::Array<i32>, (GraphML::GraphInfo, i32))) -> Result<(BackendDAE::Var, (bool, i32, metamodelica::Array<i32>, (GraphML::GraphInfo, i32)))> {
+fn addVarGraphMatch(mut inVar: BackendDAE::Var, mut inTpl: (bool, i32, metamodelica::Array<i32>, (GraphML::GraphInfo, i32))) -> (BackendDAE::Var, (bool, i32, metamodelica::Array<i32>, (GraphML::GraphInfo, i32))) {
     let mut outVar: BackendDAE::Var;
     let mut outTpl: (bool, i32, metamodelica::Array<i32>, (GraphML::GraphInfo, i32));
     (outVar, outTpl) = 'mc: {
@@ -328,9 +328,9 @@ fn addVarGraphMatch(mut inVar: BackendDAE::Var, mut inTpl: (bool, i32, metamodel
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok((inVar.clone(), inTpl.clone()))
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outVar, outTpl))
+    (outVar, outTpl)
 }
 
 fn addEqnGraph(mut inNode: i32, mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut mapIncRowEqn: metamodelica::Array<i32>, mut numberMode: bool, mut inGraph: (GraphML::GraphInfo, i32)) -> Result<(GraphML::GraphInfo, i32)> {
@@ -559,7 +559,7 @@ fn addCompsEdgesGraph(mut iComps: Arc<metamodelica::List<Arc<BackendDAE::StrongC
             (elst, vlst) = BackendDAETransform::getEquationAndSolvedVarIndxes(comp.clone())?;
             List::fold1r(vlst.clone(), Arc::new(arrayUpdate.clone()), mark.clone(), markarray.clone())?;
             vlst = getUsedVarsComp(elst.clone(), m.clone(), markarray.clone(), mark.clone())?;
-            (n, graph) = addCompEdgesGraph(vlst.clone(), varcomp.clone(), markarray.clone(), mark.clone() + 1, iN.clone(), id.clone(), iGraph.clone())?;
+            (n, graph) = addCompEdgesGraph(vlst.clone(), varcomp.clone(), markarray.clone(), mark.clone() + 1, iN.clone(), id.clone(), iGraph.clone());
             { (iComps, m, varcomp, iN, id, markarray, mark, iGraph) = (rest.clone(), m.clone(), varcomp.clone(), iN.clone() + 1, n.clone(), markarray.clone(), mark.clone() + 2, graph.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
@@ -580,7 +580,7 @@ fn getUsedVarsComp(mut iEqns: Arc<metamodelica::List<i32>>, mut m: metamodelica:
     Ok(oVars)
 }
 
-fn addCompEdgesGraph(mut iVars: Arc<metamodelica::List<i32>>, mut varcomp: metamodelica::Array<i32>, mut markarray: metamodelica::Array<i32>, mut mark: i32, mut iN: i32, mut id: i32, mut iGraph: GraphML::GraphInfo) -> Result<(i32, GraphML::GraphInfo)> {
+fn addCompEdgesGraph(mut iVars: Arc<metamodelica::List<i32>>, mut varcomp: metamodelica::Array<i32>, mut markarray: metamodelica::Array<i32>, mut mark: i32, mut iN: i32, mut id: i32, mut iGraph: GraphML::GraphInfo) -> (i32, GraphML::GraphInfo) {
     let mut oN: i32;
     let mut oGraph: GraphML::GraphInfo;
     (oN, oGraph) = 'mc: {
@@ -603,7 +603,7 @@ fn addCompEdgesGraph(mut iVars: Arc<metamodelica::List<i32>>, mut varcomp: metam
                     let false = (intEq(({let __elt = markarray.borrow()[(c.clone()-1) as usize].clone(); __elt}), mark.clone())) else { bail!("pattern mismatch") };
                     metamodelica::arrayUpdate(markarray.clone(), c.clone(), mark.clone())?;
                     (graph, _) = GraphML::addEdge(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("e")); __mm_s.push_str(&*intString(id.clone())); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("n")); __mm_s.push_str(&*intString(c.clone())); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("n")); __mm_s.push_str(&*intString(iN.clone())); ArcStr::from(__mm_s) }).clone(), (arcstr::literal!(GraphML::COLOR_BLACK)).clone(), openmodelica_susan::GraphML::LineType::LINE, GraphML::LINEWIDTH_STANDARD.clone(), false, metamodelica::nil(), (openmodelica_susan::GraphML::ArrowType::ARROWSTANDART, openmodelica_susan::GraphML::ArrowType::ARROWNONE), metamodelica::nil(), iGraph.clone())?;
-                    (n, graph) = addCompEdgesGraph(rest.clone(), varcomp.clone(), markarray.clone(), mark.clone(), iN.clone(), id.clone() + 1, graph.clone())?;
+                    (n, graph) = addCompEdgesGraph(rest.clone(), varcomp.clone(), markarray.clone(), mark.clone(), iN.clone(), id.clone() + 1, graph.clone());
                     Ok((n.clone(), graph.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -614,15 +614,15 @@ fn addCompEdgesGraph(mut iVars: Arc<metamodelica::List<i32>>, mut varcomp: metam
                 Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
                     let mut n: i32 = 0;
                     let mut graph: GraphML::GraphInfo = <GraphML::GraphInfo as ::std::default::Default>::default();
-                    (n, graph) = addCompEdgesGraph(rest.clone(), varcomp.clone(), markarray.clone(), mark.clone(), iN.clone(), id.clone(), iGraph.clone())?;
+                    (n, graph) = addCompEdgesGraph(rest.clone(), varcomp.clone(), markarray.clone(), mark.clone(), iN.clone(), id.clone(), iGraph.clone());
                     Ok((n.clone(), graph.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((oN, oGraph))
+    (oN, oGraph)
 }
 
 fn isUnMarked(mut ass: (metamodelica::Array<i32>, i32), mut indx: i32) -> bool {

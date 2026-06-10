@@ -67,7 +67,7 @@ pub fn checkModel(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<(i32, i3
         let mut v = v.clone();
         (variables, equations) = countVariableSize(v.clone(), variables.clone(), equations.clone())?;
     }
-    equations = equations.clone() + Equation::sizeOfList(flatModel.equations.clone())?;
+    equations = equations.clone() + Equation::sizeOfList(flatModel.equations.clone());
     for mut a in &*flatModel.algorithms.clone() {
         let mut a = a.clone();
         equations = equations.clone() + countAlgorithmSize(a.clone())?;

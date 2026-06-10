@@ -818,7 +818,7 @@ pub fn checkOnLoadMessage(mut p1: Absyn::Program) -> Result<()> {
     let mut classes: Arc<metamodelica::List<Arc<Absyn::Class>>>;
     let Absyn::PROGRAM { classes: __pa0, .. } = (p1.clone()) else { bail!("pattern mismatch") };
     classes = __pa0.clone();
-    List::map2(classes.clone(), (std::sync::Arc::new(AbsynUtil::getNamedAnnotationInClass) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Class>, Arc<Absyn::Path>, _) -> Result<_> + 'static>), Arc::new(Absyn::Path::IDENT { name: (literal!("__OpenModelica_messageOnLoad")).clone() }), (std::sync::Arc::new(checkOnLoadMessageWork) as std::sync::Arc<dyn ::std::ops::Fn(Option<Arc<Absyn::Modification>>) -> Result<i32> + 'static>))?;
+    List::map2(classes.clone(), std::sync::Arc::new(fnptr!(AbsynUtil::getNamedAnnotationInClass, Arc<Absyn::Class>, Arc<Absyn::Path>, _)), Arc::new(Absyn::Path::IDENT { name: (literal!("__OpenModelica_messageOnLoad")).clone() }), (std::sync::Arc::new(checkOnLoadMessageWork) as std::sync::Arc<dyn ::std::ops::Fn(Option<Arc<Absyn::Modification>>) -> Result<i32> + 'static>))?;
     Ok(())
 }
 

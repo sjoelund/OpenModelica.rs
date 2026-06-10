@@ -230,7 +230,7 @@ fn evaluateAnnotation_dispatch(mut absynProgram: Absyn::Program, mut classPath: 
                     let mut top: Arc<InstNode::InstNode> = top.clone();
                     let mut ty: Arc<Type::NFType> = ty.clone();
                     let mut var: Variability = var.clone();
-                    if AbsynUtil::onlyLiteralsInAnnotationMod(r#mod.clone())? {
+                    if AbsynUtil::onlyLiteralsInAnnotationMod(r#mod.clone()) {
                         (program, top) = mkTop(absynProgram.clone(), (annName.clone()).clone())?;
                         inst_cls = top.clone();
                     } else {
@@ -1163,7 +1163,7 @@ pub fn dumpJSONInstanceTree(mut tree: Arc<InstanceTree>, mut scope: Arc<InstNode
         sections = Class::getSections(InstNode::getClass(node.clone())?)?;
         json = dumpJSONEquations(sections.clone(), node.clone(), json.clone())?;
     }
-    json = JSON::addPair((literal!("source")).clone(), JSON::dumpJSONSourceInfo(InstNode::info(node.clone())?, true)?, json.clone())?;
+    json = JSON::addPair((literal!("source")).clone(), JSON::dumpJSONSourceInfo(InstNode::info(node.clone()), true)?, json.clone())?;
     Ok(json)
 }
 
@@ -1327,7 +1327,7 @@ pub fn dumpJSONReplaceableClass(mut cls: Arc<InstNode::InstNode>, mut scope: Arc
     node = InstNode::getRedeclaredNode(cls.clone());
     elem = InstNode::definition(node.clone())?;
     json = dumpJSONSCodeClass(elem.clone(), scope.clone(), node.clone(), true, json.clone())?;
-    json = JSON::addPair((literal!("source")).clone(), JSON::dumpJSONSourceInfo(InstNode::info(node.clone())?, true)?, json.clone())?;
+    json = JSON::addPair((literal!("source")).clone(), JSON::dumpJSONSourceInfo(InstNode::info(node.clone()), true)?, json.clone())?;
     Ok(json)
 }
 
@@ -1458,7 +1458,7 @@ pub fn dumpJSONEnumType(mut tree: Arc<InstanceTree>, mut enumNode: Arc<InstNode:
     comps = ClassTree::getComponents(Class::classTree(InstNode::getClass(node.clone())?)?)?;
     json_elems = dumpJSONEnumTypeLiterals(comps.clone(), InstNode::parent(node.clone()), json_elems.clone())?;
     json = JSON::addPair((literal!("elements")).clone(), json_elems.clone(), json.clone())?;
-    json = JSON::addPair((literal!("source")).clone(), JSON::dumpJSONSourceInfo(InstNode::info(node.clone())?, true)?, json.clone())?;
+    json = JSON::addPair((literal!("source")).clone(), JSON::dumpJSONSourceInfo(InstNode::info(node.clone()), true)?, json.clone())?;
     Ok(json)
 }
 
@@ -2124,7 +2124,7 @@ pub fn dumpJSONSCodeMod_impl(mut r#mod: Arc<SCode::Mod>, mut scope: Arc<InstNode
     Ok(json)
 }
 
-pub fn dumpJSONRedeclareType(mut element: Arc<SCode::Element>, mut scope: Arc<InstNode::InstNode>, mut json: Arc<JSON::JSON>) -> Result<Arc<JSON::JSON>> {
+pub fn dumpJSONRedeclareType(mut element: Arc<SCode::Element>, mut scope: Arc<InstNode::InstNode>, mut json: Arc<JSON::JSON>) -> Arc<JSON::JSON> {
     let mut json: Arc<JSON::JSON> = json;
     let mut path: Arc<Path> = Arc::new(<Path as ::std::default::Default>::default());
     let mut context: i32 = 0;
@@ -2155,9 +2155,9 @@ pub fn dumpJSONRedeclareType(mut element: Arc<SCode::Element>, mut scope: Arc<In
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(json)
+    json
 }
 
 pub fn dumpJSONSCodeElement(mut element: Arc<SCode::Element>, mut scope: Arc<InstNode::InstNode>, mut json: Arc<JSON::JSON>) -> Result<Arc<JSON::JSON>> {

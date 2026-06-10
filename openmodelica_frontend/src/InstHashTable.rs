@@ -111,7 +111,7 @@ pub enum CachedInstItem {
 }
 pub use self::CachedInstItem::{FUNC_instClassIn,FUNC_partialInstClassIn};
 
-pub fn addToInstCache(mut fullEnvPathPlusClass: Arc<Absyn::Path>, mut fullInstOpt: Option<CachedInstItem>, mut partialInstOpt: Option<CachedInstItem>) -> Result<()> {
+pub fn addToInstCache(mut fullEnvPathPlusClass: Arc<Absyn::Path>, mut fullInstOpt: Option<CachedInstItem>, mut partialInstOpt: Option<CachedInstItem>) -> () {
     let () = 'mc: {
         let __mc_input = (fullInstOpt.clone(), partialInstOpt.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -175,9 +175,9 @@ pub fn addToInstCache(mut fullEnvPathPlusClass: Arc<Absyn::Path>, mut fullInstOp
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(())
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(())
+    ()
 }
 
 pub type HashTableKeyFunctionsType = (FuncHashKey, FuncKeyEqual, FuncKeyStr, FuncValueStr);

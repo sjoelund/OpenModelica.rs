@@ -160,12 +160,12 @@ pub fn visualizationInfoXML(mut daeIn: Arc<BackendDAE::BackendDAE>, mut fileName
     globalKnownVarLst = BackendVariable::varList(globalKnownVars.clone())?;
     aliasVarLst = BackendVariable::varList(aliasVars.clone())?;
     allVarLst = List::flatten(List::mapMap(eqs.clone(), (std::sync::Arc::new(fnptr!(BackendVariable::daeVars, Arc<BackendDAE::EqSystem>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>) -> Result<BackendDAE::Variables> + 'static>), (std::sync::Arc::new(BackendVariable::varList) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables) -> Result<Arc<metamodelica::List<BackendDAE::Var>>> + 'static>))?)?;
-    (globalKnownVarLst, allVisuals) = List::fold(globalKnownVarLst.clone(), (std::sync::Arc::new(isVisualizationVarFold) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, (Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, ArcStr)>>)) -> Result<(Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, ArcStr)>>)> + 'static>), (metamodelica::nil(), metamodelica::nil()))?;
-    (allVarLst, allVisuals) = List::fold(allVarLst.clone(), (std::sync::Arc::new(isVisualizationVarFold) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, (Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, ArcStr)>>)) -> Result<(Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, ArcStr)>>)> + 'static>), (metamodelica::nil(), allVisuals.clone()))?;
-    (aliasVarLst, allVisuals) = List::fold(aliasVarLst.clone(), (std::sync::Arc::new(isVisualizationVarFold) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, (Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, ArcStr)>>)) -> Result<(Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, ArcStr)>>)> + 'static>), (metamodelica::nil(), allVisuals.clone()))?;
+    (globalKnownVarLst, allVisuals) = List::fold(globalKnownVarLst.clone(), (std::sync::Arc::new(fnptr!(isVisualizationVarFold, BackendDAE::Var, (Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, ArcStr)>>))) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, (Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, ArcStr)>>)) -> Result<(Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, ArcStr)>>)> + 'static>), (metamodelica::nil(), metamodelica::nil()))?;
+    (allVarLst, allVisuals) = List::fold(allVarLst.clone(), (std::sync::Arc::new(fnptr!(isVisualizationVarFold, BackendDAE::Var, (Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, ArcStr)>>))) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, (Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, ArcStr)>>)) -> Result<(Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, ArcStr)>>)> + 'static>), (metamodelica::nil(), allVisuals.clone()))?;
+    (aliasVarLst, allVisuals) = List::fold(aliasVarLst.clone(), (std::sync::Arc::new(fnptr!(isVisualizationVarFold, BackendDAE::Var, (Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, ArcStr)>>))) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, (Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, ArcStr)>>)) -> Result<(Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, ArcStr)>>)> + 'static>), (metamodelica::nil(), allVisuals.clone()))?;
     allVarLst = listAppend(globalKnownVarLst.clone(), listAppend(allVarLst.clone(), aliasVarLst.clone()));
     (visuals, _, _) = List::mapFold2(allVisuals.clone(), (std::sync::Arc::new(fillVisualizationObjects) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::ComponentRef>, ArcStr), Arc<metamodelica::List<BackendDAE::Var>>, Absyn::Program) -> Result<(Visualization, Arc<metamodelica::List<BackendDAE::Var>>, Absyn::Program)> + 'static>), allVarLst.clone(), program.clone())?;
-    visuals = List::map2(visuals.clone(), (std::sync::Arc::new(replaceVisualBinding) as std::sync::Arc<dyn ::std::ops::Fn(Visualization, BackendDAE::Variables, Absyn::Program) -> Result<Visualization> + 'static>), globalKnownVars.clone(), program.clone())?;
+    visuals = List::map2(visuals.clone(), (std::sync::Arc::new(fnptr!(replaceVisualBinding, Visualization, BackendDAE::Variables, Absyn::Program)) as std::sync::Arc<dyn ::std::ops::Fn(Visualization, BackendDAE::Variables, Absyn::Program) -> Result<Visualization> + 'static>), globalKnownVars.clone(), program.clone())?;
     dumpVis(metamodelica::arrayFromVec(visuals.clone().into_iter().cloned().collect()), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*fileName.clone()); __mm_s.push_str(&*literal!("_visual.xml")); ArcStr::from(__mm_s) }).clone())?;
     (globalKnownVars, _) = BackendVariable::traverseBackendDAEVarsWithUpdate(globalKnownVars.clone(), (std::sync::Arc::new(setVisVarsPublic) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, ArcStr) -> Result<(BackendDAE::Var, ArcStr)> + 'static>), (literal!("")).clone())?;
     (aliasVars, _) = BackendVariable::traverseBackendDAEVarsWithUpdate(aliasVars.clone(), (std::sync::Arc::new(setVisVarsPublic) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, ArcStr) -> Result<(BackendDAE::Var, ArcStr)> + 'static>), (literal!("")).clone())?;
@@ -173,7 +173,7 @@ pub fn visualizationInfoXML(mut daeIn: Arc<BackendDAE::BackendDAE>, mut fileName
     Ok(daeOut)
 }
 
-fn replaceVisualBinding(mut vis: Visualization, mut varArray: BackendDAE::Variables, mut program: Absyn::Program) -> Result<Visualization> {
+fn replaceVisualBinding(mut vis: Visualization, mut varArray: BackendDAE::Variables, mut program: Absyn::Program) -> Visualization {
     let mut vis: Visualization = vis;
     let () = 'mc: {
         let __mc_input = vis.clone();
@@ -211,9 +211,9 @@ fn replaceVisualBinding(mut vis: Visualization, mut varArray: BackendDAE::Variab
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(vis)
+    vis
 }
 
 fn getConstCrefBinding(mut cr: Arc<DAE::ComponentRef>, mut vars: BackendDAE::Variables) -> Result<Arc<DAE::Exp>> {
@@ -255,7 +255,7 @@ fn getConstCrefBinding(mut cr: Arc<DAE::ComponentRef>, mut vars: BackendDAE::Var
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        break '__try0 Err::<_, _>(anyhow::anyhow!("matchcontinue: no arm matched"))
     };
         Ok::<(), anyhow::Error>(())
     }.is_err() {
@@ -267,7 +267,7 @@ fn getConstCrefBinding(mut cr: Arc<DAE::ComponentRef>, mut vars: BackendDAE::Var
 fn setVisVarsPublic(mut inVar: BackendDAE::Var, mut dummyArgIn: ArcStr) -> Result<(BackendDAE::Var, ArcStr)> {
     let mut outVar: BackendDAE::Var = inVar.clone();
     let mut dummyArgOut: ArcStr = dummyArgIn.clone();
-    if isVisualizationVar(inVar.clone())? {
+    if isVisualizationVar(inVar.clone()) {
         outVar = makeVarPublicHideResultFalse(inVar.clone())?;
     }
     Ok((outVar, dummyArgOut))
@@ -312,7 +312,7 @@ fn setBindingForProtectedVars1(mut varIn: BackendDAE::Var, mut tplIn: (i32, meta
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (BackendDAE::Var { bindExp: None, values: Some(_), .. }, (idx, ass1, eqs)) => {
-                    if !((BackendVariable::isProtectedVar(varIn.clone()) && isVisualizationVar(varIn.clone())?)) { bail!("guard") }
+                    if !((BackendVariable::isProtectedVar(varIn.clone()) && isVisualizationVar(varIn.clone()))) { bail!("guard") }
                     let mut eq: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
                     let mut var: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
                     let mut exp1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -336,7 +336,7 @@ fn setBindingForProtectedVars1(mut varIn: BackendDAE::Var, mut tplIn: (i32, meta
             ::match_deref::match_deref! { match &__mc_input {
                 (_, (idx, ass1, eqs)) => {
                     let mut var: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
-                    if BackendVariable::isProtectedVar(varIn.clone()) && isVisualizationVar(varIn.clone())? {
+                    if BackendVariable::isProtectedVar(varIn.clone()) && isVisualizationVar(varIn.clone()) {
                         var = makeVarPublicHideResultFalse(varIn.clone())?;
                     } else {
                         var = varIn.clone();
@@ -361,7 +361,7 @@ fn fillVisualizationObjects(mut visVar: (Arc<DAE::ComponentRef>, ArcStr), mut al
     match '__try0: {
         (cref, vis_name) = visVar.clone();
         vis = unwrap_break_err!(newVisualizer(cref.clone(), (vis_name.clone()).clone()), '__try0);
-        (_, visOut) = unwrap_break_err!(List::fold2(allVarsIn.clone(), (std::sync::Arc::new(fillVisualizationObjects1) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, bool, Absyn::Program, (Arc<metamodelica::List<BackendDAE::Var>>, Visualization)) -> Result<(Arc<metamodelica::List<BackendDAE::Var>>, Visualization)> + 'static>), true, programIn.clone(), (metamodelica::nil(), vis.clone())), '__try0);
+        (_, visOut) = unwrap_break_err!(List::fold2(allVarsIn.clone(), (std::sync::Arc::new(fnptr!(fillVisualizationObjects1, BackendDAE::Var, bool, Absyn::Program, (Arc<metamodelica::List<BackendDAE::Var>>, Visualization))) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, bool, Absyn::Program, (Arc<metamodelica::List<BackendDAE::Var>>, Visualization)) -> Result<(Arc<metamodelica::List<BackendDAE::Var>>, Visualization)> + 'static>), true, programIn.clone(), (metamodelica::nil(), vis.clone())), '__try0);
         Ok::<_, anyhow::Error>((cref.clone(), vis.clone(), visOut.clone(), vis_name.clone()))
     } {
         Ok((__try0_o0, __try0_o1, __try0_o2, __try0_o3)) => {
@@ -410,7 +410,7 @@ fn makeCrefQualFromString(mut s: ArcStr) -> Result<Arc<DAE::ComponentRef>> {
     Ok(crefOut)
 }
 
-fn splitCrefAfter(mut crefIn: Arc<DAE::ComponentRef>, mut crefCut: Arc<DAE::ComponentRef>) -> Result<(Arc<DAE::ComponentRef>, bool)> {
+fn splitCrefAfter(mut crefIn: Arc<DAE::ComponentRef>, mut crefCut: Arc<DAE::ComponentRef>) -> (Arc<DAE::ComponentRef>, bool) {
     let mut crefOut: Arc<DAE::ComponentRef>;
     let mut wasCut: bool;
     (crefOut, wasCut) = 'mc: {
@@ -419,7 +419,7 @@ fn splitCrefAfter(mut crefIn: Arc<DAE::ComponentRef>, mut crefCut: Arc<DAE::Comp
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: crefIn1, .. }, Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: crefCut1, .. }) => {
                     let true = (ComponentReferenceBasics::crefFirstCrefEqual(crefIn.clone(), crefCut.clone())?) else { bail!("pattern mismatch") };
-                    Ok(splitCrefAfter(crefIn1.clone(), crefCut1.clone())?)
+                    Ok(splitCrefAfter(crefIn1.clone(), crefCut1.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -450,12 +450,12 @@ fn splitCrefAfter(mut crefIn: Arc<DAE::ComponentRef>, mut crefCut: Arc<DAE::Comp
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((crefOut, wasCut))
+    (crefOut, wasCut)
 }
 
-fn fillVisualizationObjects1(mut varIn: BackendDAE::Var, mut storeProtectedCrefs: bool, mut program: Absyn::Program, mut tplIn: (Arc<metamodelica::List<BackendDAE::Var>>, Visualization)) -> Result<(Arc<metamodelica::List<BackendDAE::Var>>, Visualization)> {
+fn fillVisualizationObjects1(mut varIn: BackendDAE::Var, mut storeProtectedCrefs: bool, mut program: Absyn::Program, mut tplIn: (Arc<metamodelica::List<BackendDAE::Var>>, Visualization)) -> (Arc<metamodelica::List<BackendDAE::Var>>, Visualization) {
     let mut tplOut: (Arc<metamodelica::List<BackendDAE::Var>>, Visualization);
     tplOut = 'mc: {
         let __mc_input = (varIn.clone(), tplIn.clone());
@@ -464,12 +464,12 @@ fn fillVisualizationObjects1(mut varIn: BackendDAE::Var, mut storeProtectedCrefs
                 (BackendDAE::Var { varName: cref, .. }, (vars, vis @ Visualization::SHAPE { ident, .. })) => {
                     let mut cref1: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
                     let mut filled_vis: Visualization = <Visualization as ::std::default::Default>::default();
-                    let __pa0 = ::match_deref::match_deref! { match &(splitCrefAfter(cref.clone(), ident.clone())?) {
+                    let __pa0 = ::match_deref::match_deref! { match &(splitCrefAfter(cref.clone(), ident.clone())) {
                         (__pa0, true) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
                     cref1 = __pa0.clone();
-                    filled_vis = fillShapeObject(cref1.clone(), varIn.clone(), storeProtectedCrefs.clone(), program.clone(), vis.clone())?;
+                    filled_vis = fillShapeObject(cref1.clone(), varIn.clone(), storeProtectedCrefs.clone(), program.clone(), vis.clone());
                     Ok((vars.clone(), filled_vis.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -480,12 +480,12 @@ fn fillVisualizationObjects1(mut varIn: BackendDAE::Var, mut storeProtectedCrefs
                 (BackendDAE::Var { varName: cref, .. }, (vars, vis @ Visualization::VECTOR { ident, .. })) => {
                     let mut cref1: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
                     let mut filled_vis: Visualization = <Visualization as ::std::default::Default>::default();
-                    let __pa0 = ::match_deref::match_deref! { match &(splitCrefAfter(cref.clone(), ident.clone())?) {
+                    let __pa0 = ::match_deref::match_deref! { match &(splitCrefAfter(cref.clone(), ident.clone())) {
                         (__pa0, true) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
                     cref1 = __pa0.clone();
-                    filled_vis = fillVectorObject(cref1.clone(), varIn.clone(), storeProtectedCrefs.clone(), program.clone(), vis.clone())?;
+                    filled_vis = fillVectorObject(cref1.clone(), varIn.clone(), storeProtectedCrefs.clone(), program.clone(), vis.clone());
                     Ok((vars.clone(), filled_vis.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -496,12 +496,12 @@ fn fillVisualizationObjects1(mut varIn: BackendDAE::Var, mut storeProtectedCrefs
                 (BackendDAE::Var { varName: cref, .. }, (vars, vis @ Visualization::SURFACE { ident, .. })) => {
                     let mut cref1: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
                     let mut filled_vis: Visualization = <Visualization as ::std::default::Default>::default();
-                    let __pa0 = ::match_deref::match_deref! { match &(splitCrefAfter(cref.clone(), ident.clone())?) {
+                    let __pa0 = ::match_deref::match_deref! { match &(splitCrefAfter(cref.clone(), ident.clone())) {
                         (__pa0, true) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
                     cref1 = __pa0.clone();
-                    filled_vis = fillSurfaceObject(cref1.clone(), varIn.clone(), storeProtectedCrefs.clone(), program.clone(), vis.clone())?;
+                    filled_vis = fillSurfaceObject(cref1.clone(), varIn.clone(), storeProtectedCrefs.clone(), program.clone(), vis.clone());
                     Ok((vars.clone(), filled_vis.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -518,9 +518,9 @@ fn fillVisualizationObjects1(mut varIn: BackendDAE::Var, mut storeProtectedCrefs
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(tplOut)
+    tplOut
 }
 
 fn getFullCADFilePath(mut sIn: ArcStr, mut program: Absyn::Program) -> Result<ArcStr> {
@@ -533,7 +533,7 @@ fn getFullCADFilePath(mut sIn: ArcStr, mut program: Absyn::Program) -> Result<Ar
     Ok(sOut)
 }
 
-fn fillShapeObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var, mut storeProtectedCrefs: bool, mut program: Absyn::Program, mut vis: Visualization) -> Result<Visualization> {
+fn fillShapeObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var, mut storeProtectedCrefs: bool, mut program: Absyn::Program, mut vis: Visualization) -> Visualization {
     let mut vis: Visualization = vis;
     let () = 'mc: {
         let __mc_input = (cref.clone(), vis.clone());
@@ -697,12 +697,12 @@ fn fillShapeObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var, m
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(vis)
+    vis
 }
 
-fn fillVectorObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var, mut storeProtectedCrefs: bool, mut program: Absyn::Program, mut vis: Visualization) -> Result<Visualization> {
+fn fillVectorObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var, mut storeProtectedCrefs: bool, mut program: Absyn::Program, mut vis: Visualization) -> Visualization {
     let mut vis: Visualization = vis;
     let () = 'mc: {
         let __mc_input = (cref.clone(), vis.clone());
@@ -813,12 +813,12 @@ fn fillVectorObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var, 
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(vis)
+    vis
 }
 
-fn fillSurfaceObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var, mut storeProtectedCrefs: bool, mut program: Absyn::Program, mut vis: Visualization) -> Result<Visualization> {
+fn fillSurfaceObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var, mut storeProtectedCrefs: bool, mut program: Absyn::Program, mut vis: Visualization) -> Visualization {
     let mut vis: Visualization = vis;
     let () = 'mc: {
         let __mc_input = (cref.clone(), vis.clone());
@@ -944,9 +944,9 @@ fn fillSurfaceObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var,
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(vis)
+    vis
 }
 
 fn getVariableBinding(mut var: BackendDAE::Var, mut storeProtectedCrefs: bool) -> Result<Arc<DAE::Exp>> {
@@ -989,7 +989,7 @@ fn printVisualization(mut vis: Visualization) -> Result<ArcStr> {
     Ok(s)
 }
 
-fn isVisualizationVar(mut var: BackendDAE::Var) -> Result<bool> {
+fn isVisualizationVar(mut var: BackendDAE::Var) -> bool {
     let mut isVisVar: bool;
     isVisVar = 'mc: {
         let __mc_input = var.clone();
@@ -998,19 +998,19 @@ fn isVisualizationVar(mut var: BackendDAE::Var) -> Result<bool> {
             let mut obj: ArcStr = arcstr::literal!("");
             let mut paths: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
             paths = ElementSource::getElementSourceTypes(source.clone());
-            (obj, _) = hasVisPath(paths.clone(), 1)?;
+            (obj, _) = hasVisPath(paths.clone(), 1);
             Ok(Util::stringNotEqual((obj.clone()).clone(), (literal!("")).clone()))
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(false)
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(isVisVar)
+    isVisVar
 }
 
-fn isVisualizationVarFold(mut var: BackendDAE::Var, mut tplIn: (Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, ArcStr)>>)) -> Result<(Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, ArcStr)>>)> {
+fn isVisualizationVarFold(mut var: BackendDAE::Var, mut tplIn: (Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, ArcStr)>>)) -> (Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, ArcStr)>>) {
     let mut tplOut: (Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, ArcStr)>>);
     tplOut = 'mc: {
         let __mc_input = (var.clone(), tplIn.clone());
@@ -1023,9 +1023,9 @@ fn isVisualizationVarFold(mut var: BackendDAE::Var, mut tplIn: (Arc<metamodelica
                     let mut paths: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
                     let mut crefs = (*crefs).clone();
                     paths = ElementSource::getElementSourceTypes(source.clone());
-                    (obj, idx) = hasVisPath(paths.clone(), 1)?;
+                    (obj, idx) = hasVisPath(paths.clone(), 1);
                     let true = (Util::stringNotEqual((obj.clone()).clone(), (literal!("")).clone())) else { bail!("pattern mismatch") };
-                    cref = ComponentReference::firstNCrefs(varName.clone(), idx.clone() - 1)?;
+                    cref = ComponentReference::firstNCrefs(varName.clone(), idx.clone() - 1);
                     crefs = List::unique(metamodelica::cons((cref.clone(), obj.clone()), crefs.clone()));
                     Ok((metamodelica::cons(var.clone(), varLst.clone()), crefs.clone()))
                 }
@@ -1040,12 +1040,12 @@ fn isVisualizationVarFold(mut var: BackendDAE::Var, mut tplIn: (Arc<metamodelica
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(tplOut)
+    tplOut
 }
 
-fn hasVisPath(mut pathsIn: Arc<metamodelica::List<Arc<Absyn::Path>>>, mut numIn: i32) -> Result<(ArcStr, i32)> {
+fn hasVisPath(mut pathsIn: Arc<metamodelica::List<Arc<Absyn::Path>>>, mut numIn: i32) -> (ArcStr, i32) {
     let mut visPath: ArcStr;
     let mut numOut: i32;
     (visPath, numOut) = 'mc: {
@@ -1061,7 +1061,7 @@ fn hasVisPath(mut pathsIn: Arc<metamodelica::List<Arc<Absyn::Path>>>, mut numIn:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Path::FULLYQUALIFIED { path }, tail: rest } => {
-                    Ok(hasVisPath(metamodelica::cons(path.clone(), rest.clone()), numIn.clone())?)
+                    Ok(hasVisPath(metamodelica::cons(path.clone(), rest.clone()), numIn.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1084,14 +1084,14 @@ fn hasVisPath(mut pathsIn: Arc<metamodelica::List<Arc<Absyn::Path>>>, mut numIn:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
-                    Ok(hasVisPath(rest.clone(), numIn.clone() + 1)?)
+                    Ok(hasVisPath(rest.clone(), numIn.clone() + 1))
                 }
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((visPath, numOut))
+    (visPath, numOut)
 }
 
 fn dumpVis(mut visIn: metamodelica::Array<Visualization>, mut iFileName: ArcStr) -> Result<()> {

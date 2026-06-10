@@ -70,7 +70,7 @@ use openmodelica_util::Util;
 use openmodelica_util_datatypes_basic::Array;
 use openmodelica_util_datatypes_basic::List;
 
-pub fn registerUnitWeights(mut cache: FCore::Cache, mut env: FCore::Graph, mut dae: DAE::DAElist) -> Result<()> {
+pub fn registerUnitWeights(mut cache: FCore::Cache, mut env: FCore::Graph, mut dae: DAE::DAElist) -> () {
     let mut paths: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
     let mut du: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
     let () = 'mc: {
@@ -84,16 +84,16 @@ pub fn registerUnitWeights(mut cache: FCore::Cache, mut env: FCore::Graph, mut d
             let mut du: Arc<metamodelica::List<Arc<SCode::Element>>> = du.clone();
             let mut paths: Arc<metamodelica::List<Arc<Absyn::Path>>> = paths.clone();
             paths = List::unionList(List::map(elts.clone(), (std::sync::Arc::new(fnptr!(DAEUtil::getClassList, Arc<DAE::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<Arc<metamodelica::List<Arc<Absyn::Path>>>> + 'static>))?)?;
-            du = List::unionList(List::map1(paths.clone(), (std::sync::Arc::new(retrieveUnitsFromEnv) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, (FCore::Cache, FCore::Graph)) -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> + 'static>), (cache.clone(), env.clone()))?)?;
-            registerUnitWeightDefineunits(du.clone())?;
+            du = List::unionList(List::map1(paths.clone(), (std::sync::Arc::new(fnptr!(retrieveUnitsFromEnv, Arc<Absyn::Path>, (FCore::Cache, FCore::Graph))) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, (FCore::Cache, FCore::Graph)) -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> + 'static>), (cache.clone(), env.clone()))?)?;
+            registerUnitWeightDefineunits(du.clone());
             Ok(((), du.clone(), paths.clone()))
         })() { du = __wb0; paths = __wb1; break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(())
+    ()
 }
 
-fn retrieveUnitsFromEnv(mut p: Arc<Absyn::Path>, mut tpl: (FCore::Cache, FCore::Graph)) -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> {
+fn retrieveUnitsFromEnv(mut p: Arc<Absyn::Path>, mut tpl: (FCore::Cache, FCore::Graph)) -> Arc<metamodelica::List<Arc<SCode::Element>>> {
     let mut du: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
     du = 'mc: {
         let __mc_input = tpl.clone();
@@ -113,18 +113,18 @@ fn retrieveUnitsFromEnv(mut p: Arc<Absyn::Path>, mut tpl: (FCore::Cache, FCore::
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(metamodelica::nil())
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(du)
+    du
 }
 
-fn registerUnitWeightDefineunits(mut du: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<()> {
+fn registerUnitWeightDefineunits(mut du: Arc<metamodelica::List<Arc<SCode::Element>>>) -> () {
     let () = 'mc: {
         let __mc_input = du.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Nil => {
-                    registerUnitWeightDefineunits2(list![Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("m")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: None, weight: None, info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("kg")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: None, weight: None, info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("s")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: None, weight: None, info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("A")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: None, weight: None, info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("k")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: None, weight: None, info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("mol")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: None, weight: None, info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("cd")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: None, weight: None, info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("rad")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: Some((literal!("m/m")).clone()), weight: None, info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("sr")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: Some((literal!("m2/m2")).clone()), weight: None, info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("Hz")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: Some((literal!("s-1")).clone()), weight: Some(metamodelica::OrderedFloat(0.8_f64)), info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("N")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: Some((literal!("m.kg.s-2")).clone()), weight: None, info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("Pa")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: Some((literal!("N/m2")).clone()), weight: None, info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("W")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: Some((literal!("J/s")).clone()), weight: None, info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("J")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: Some((literal!("N.m")).clone()), weight: None, info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("C")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: Some((literal!("s.A")).clone()), weight: None, info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("V")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: Some((literal!("W/A")).clone()), weight: None, info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("F")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: Some((literal!("C/V")).clone()), weight: None, info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("Ohm")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: Some((literal!("V/A")).clone()), weight: None, info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("S")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: Some((literal!("A/V")).clone()), weight: None, info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("Wb")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: Some((literal!("V.s")).clone()), weight: None, info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("T")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: Some((literal!("Wb/m2")).clone()), weight: None, info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("H")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: Some((literal!("Wb/A")).clone()), weight: None, info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("lm")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: Some((literal!("cd.sr")).clone()), weight: None, info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("lx")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: Some((literal!("lm/m2")).clone()), weight: None, info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("Bq")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: Some((literal!("s-1")).clone()), weight: Some(metamodelica::OrderedFloat(0.8_f64)), info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("Gy")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: Some((literal!("J/kg")).clone()), weight: None, info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("Sv")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: Some((literal!("cd.sr")).clone()), weight: None, info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("kat")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: Some((literal!("s-1.mol")).clone()), weight: None, info: SCodeUtil::dummyInfo.clone() })])?;
+                    registerUnitWeightDefineunits2(list![Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("m")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: None, weight: None, info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("kg")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: None, weight: None, info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("s")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: None, weight: None, info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("A")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: None, weight: None, info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("k")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: None, weight: None, info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("mol")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: None, weight: None, info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("cd")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: None, weight: None, info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("rad")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: Some((literal!("m/m")).clone()), weight: None, info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("sr")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: Some((literal!("m2/m2")).clone()), weight: None, info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("Hz")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: Some((literal!("s-1")).clone()), weight: Some(metamodelica::OrderedFloat(0.8_f64)), info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("N")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: Some((literal!("m.kg.s-2")).clone()), weight: None, info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("Pa")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: Some((literal!("N/m2")).clone()), weight: None, info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("W")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: Some((literal!("J/s")).clone()), weight: None, info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("J")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: Some((literal!("N.m")).clone()), weight: None, info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("C")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: Some((literal!("s.A")).clone()), weight: None, info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("V")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: Some((literal!("W/A")).clone()), weight: None, info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("F")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: Some((literal!("C/V")).clone()), weight: None, info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("Ohm")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: Some((literal!("V/A")).clone()), weight: None, info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("S")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: Some((literal!("A/V")).clone()), weight: None, info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("Wb")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: Some((literal!("V.s")).clone()), weight: None, info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("T")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: Some((literal!("Wb/m2")).clone()), weight: None, info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("H")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: Some((literal!("Wb/A")).clone()), weight: None, info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("lm")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: Some((literal!("cd.sr")).clone()), weight: None, info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("lx")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: Some((literal!("lm/m2")).clone()), weight: None, info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("Bq")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: Some((literal!("s-1")).clone()), weight: Some(metamodelica::OrderedFloat(0.8_f64)), info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("Gy")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: Some((literal!("J/kg")).clone()), weight: None, info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("Sv")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: Some((literal!("cd.sr")).clone()), weight: None, info: SCodeUtil::dummyInfo.clone() }), Arc::new(SCode::Element::DEFINEUNIT { name: (literal!("kat")).clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, exp: Some((literal!("s-1.mol")).clone()), weight: None, info: SCodeUtil::dummyInfo.clone() })]);
                     Ok(())
                 }
                 _ => bail!("nomatch"),
@@ -133,25 +133,25 @@ fn registerUnitWeightDefineunits(mut du: Arc<metamodelica::List<Arc<SCode::Eleme
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    registerUnitWeightDefineunits2(du.clone())?;
+                    registerUnitWeightDefineunits2(du.clone());
                     Ok(())
                 }
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(())
+    ()
 }
 
-fn registerUnitWeightDefineunits2(mut idu: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<()> {
+fn registerUnitWeightDefineunits2(mut idu: Arc<metamodelica::List<Arc<SCode::Element>>>) -> () {
     let () = 'mc: {
         let __mc_input = idu.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ SCode::Element::DEFINEUNIT { name: n, weight: Some(w), .. }, tail: du } => {
                     UnitParserExt::registerWeight((n.clone()).clone(), w.clone());
-                    registerUnitWeightDefineunits2(du.clone())?;
+                    registerUnitWeightDefineunits2(du.clone());
                     Ok(())
                 }
                 _ => bail!("nomatch"),
@@ -160,7 +160,7 @@ fn registerUnitWeightDefineunits2(mut idu: Arc<metamodelica::List<Arc<SCode::Ele
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ SCode::Element::DEFINEUNIT { weight: None, .. }, tail: du } => {
-                    registerUnitWeightDefineunits2(du.clone())?;
+                    registerUnitWeightDefineunits2(du.clone());
                     Ok(())
                 }
                 _ => bail!("nomatch"),
@@ -169,7 +169,7 @@ fn registerUnitWeightDefineunits2(mut idu: Arc<metamodelica::List<Arc<SCode::Ele
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: du } => {
-                    registerUnitWeightDefineunits2(du.clone())?;
+                    registerUnitWeightDefineunits2(du.clone());
                     Ok(())
                 }
                 _ => bail!("nomatch"),
@@ -183,12 +183,12 @@ fn registerUnitWeightDefineunits2(mut idu: Arc<metamodelica::List<Arc<SCode::Ele
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(())
+    ()
 }
 
-pub fn registerUnits(mut prg: Absyn::Program) -> Result<()> {
+pub fn registerUnits(mut prg: Absyn::Program) -> () {
     let () = 'mc: {
         let __mc_input = prg.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -200,12 +200,12 @@ pub fn registerUnits(mut prg: Absyn::Program) -> Result<()> {
             let false = (Flags::getConfigBool(Flags::UNIT_CHECKING.clone())?) else { bail!("pattern mismatch") };
             Ok(())
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(())
+    ()
 }
 
-fn registerUnitInClass(mut inTpl: (Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, i32)) -> Result<(Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, i32)> {
+fn registerUnitInClass(mut inTpl: (Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, i32)) -> (Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, i32) {
     let mut outTpl: (Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, i32);
     outTpl = 'mc: {
         let __mc_input = inTpl.clone();
@@ -230,9 +230,9 @@ fn registerUnitInClass(mut inTpl: (Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, 
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outTpl)
+    outTpl
 }
 
 fn registerDefineunits(mut elts: Arc<metamodelica::List<Arc<Absyn::Element>>>) -> Result<()> {
@@ -571,7 +571,7 @@ fn printUnit(mut unit: UnitAbsyn::Unit) -> Result<()> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 UnitAbsyn::Unit::SPECIFIED { specified: UnitAbsyn::SpecUnit { typeParameters: Deref @ metamodelica::List::Nil, units: baseunits } } => {
-                    metamodelica::print((printBaseUnitsStr(baseunits.clone())?).clone());
+                    metamodelica::print((printBaseUnitsStr(baseunits.clone())).clone());
                     metamodelica::print((literal!(" [")).clone());
                     metamodelica::print((unit2str(unit.clone())?).clone());
                     metamodelica::print((literal!("]")).clone());
@@ -584,7 +584,7 @@ fn printUnit(mut unit: UnitAbsyn::Unit) -> Result<()> {
             ::match_deref::match_deref! { match &__mc_input {
                 UnitAbsyn::Unit::SPECIFIED { specified: UnitAbsyn::SpecUnit { typeParameters: typeparams, units: baseunits } } => {
                     metamodelica::print(stringDelimitList(List::map(typeparams.clone(), (std::sync::Arc::new(printTypeParameterStr) as std::sync::Arc<dyn ::std::ops::Fn((MMath::Rational, UnitAbsyn::TypeParameter)) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone()));
-                    metamodelica::print((printBaseUnitsStr(baseunits.clone())?).clone());
+                    metamodelica::print((printBaseUnitsStr(baseunits.clone())).clone());
                     metamodelica::print((literal!(" [")).clone());
                     metamodelica::print((unit2str(unit.clone())?).clone());
                     metamodelica::print((literal!("]")).clone());
@@ -607,7 +607,7 @@ fn printUnit(mut unit: UnitAbsyn::Unit) -> Result<()> {
     Ok(())
 }
 
-fn printBaseUnitsStr(mut lst: Arc<metamodelica::List<MMath::Rational>>) -> Result<ArcStr> {
+fn printBaseUnitsStr(mut lst: Arc<metamodelica::List<MMath::Rational>>) -> ArcStr {
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = ('mc: {
         let __mc_input = lst.clone();
@@ -637,9 +637,9 @@ fn printBaseUnitsStr(mut lst: Arc<metamodelica::List<MMath::Rational>>) -> Resul
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     }).clone();
-    Ok(r#str)
+    r#str
 }
 
 fn printTypeParameterStr(mut typeParam: (MMath::Rational, UnitAbsyn::TypeParameter)) -> Result<ArcStr> {
@@ -768,7 +768,7 @@ pub fn buildUnitTerms(mut env: FCore::Graph, mut dae: DAE::DAElist) -> Result<(A
     Ok((terms, store, ht))
 }
 
-pub fn instAddStore(mut istore: UnitAbsyn::InstStore, mut itp: Arc<DAE::Type>, mut cr: Arc<DAE::ComponentRef>) -> Result<UnitAbsyn::InstStore> {
+pub fn instAddStore(mut istore: UnitAbsyn::InstStore, mut itp: Arc<DAE::Type>, mut cr: Arc<DAE::ComponentRef>) -> UnitAbsyn::InstStore {
     let mut outStore: UnitAbsyn::InstStore = UnitAbsyn::InstStore::NOSTORE;
     outStore = 'mc: {
         let __mc_input = (istore.clone(), itp.clone());
@@ -816,7 +816,7 @@ pub fn instAddStore(mut istore: UnitAbsyn::InstStore, mut itp: Arc<DAE::Type>, m
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (store, Deref @ DAE::Type::T_SUBTYPE_BASIC { complexType: tp, .. }) => {
-                    Ok(instAddStore(store.clone(), tp.clone(), cr.clone())?)
+                    Ok(instAddStore(store.clone(), tp.clone(), cr.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -829,9 +829,9 @@ pub fn instAddStore(mut istore: UnitAbsyn::InstStore, mut itp: Arc<DAE::Type>, m
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outStore)
+    outStore
 }
 
 pub fn storeSize(mut store: UnitAbsyn::Store) -> Result<i32> {
@@ -1836,8 +1836,8 @@ fn buildStores3(mut dae: DAE::DAElist, mut inStore: UnitAbsyn::Store, mut inHt: 
                 (DAE::DAElist { elementLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::EQUATION { exp: e1, scalar: e2, source: _ }, tail: elts } }, store, ht) => {
                     let mut store = (*store).clone();
                     let mut ht = (*ht).clone();
-                    (store, ht) = buildStoreExp(e1.clone(), store.clone(), ht.clone(), None)?;
-                    (store, ht) = buildStoreExp(e2.clone(), store.clone(), ht.clone(), None)?;
+                    (store, ht) = buildStoreExp(e1.clone(), store.clone(), ht.clone(), None);
+                    (store, ht) = buildStoreExp(e2.clone(), store.clone(), ht.clone(), None);
                     (store, ht) = buildStores3(DAE::DAElist { elementLst: elts.clone() }, store.clone(), ht.clone())?;
                     Ok((store.clone(), ht.clone()))
                 }
@@ -1860,7 +1860,7 @@ fn buildStores3(mut dae: DAE::DAElist, mut inStore: UnitAbsyn::Store, mut inHt: 
     Ok((outStore, outHt))
 }
 
-fn buildStoreExp(mut exp: Arc<DAE::Exp>, mut inStore: UnitAbsyn::Store, mut inHt: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), mut parentOp: Option<DAE::Operator>) -> Result<(UnitAbsyn::Store, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)))> {
+fn buildStoreExp(mut exp: Arc<DAE::Exp>, mut inStore: UnitAbsyn::Store, mut inHt: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), mut parentOp: Option<DAE::Operator>) -> (UnitAbsyn::Store, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))) {
     let mut outStore: UnitAbsyn::Store;
     let mut outHt: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, i32)>>), i32, (HashTable::FuncHashCref, HashTable::FuncCrefEqual, HashTable::FuncCrefStr, HashTable::FuncExpStr));
     (outStore, outHt) = 'mc: {
@@ -1908,8 +1908,8 @@ fn buildStoreExp(mut exp: Arc<DAE::Exp>, mut inStore: UnitAbsyn::Store, mut inHt
                 (Deref @ DAE::Exp::BINARY { exp1: e1, operator: op, exp2: e2 }, store, ht) => {
                     let mut store = (*store).clone();
                     let mut ht = (*ht).clone();
-                    (store, ht) = buildStoreExp(e1.clone(), store.clone(), ht.clone(), Some(op.clone()))?;
-                    (store, ht) = buildStoreExp(e2.clone(), store.clone(), ht.clone(), Some(op.clone()))?;
+                    (store, ht) = buildStoreExp(e1.clone(), store.clone(), ht.clone(), Some(op.clone()));
+                    (store, ht) = buildStoreExp(e2.clone(), store.clone(), ht.clone(), Some(op.clone()));
                     Ok((store.clone(), ht.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1920,7 +1920,7 @@ fn buildStoreExp(mut exp: Arc<DAE::Exp>, mut inStore: UnitAbsyn::Store, mut inHt
                 (Deref @ DAE::Exp::UNARY { operator: _, exp: e1 }, store, ht) => {
                     let mut store = (*store).clone();
                     let mut ht = (*ht).clone();
-                    (store, ht) = buildStoreExp(e1.clone(), store.clone(), ht.clone(), parentOp.clone())?;
+                    (store, ht) = buildStoreExp(e1.clone(), store.clone(), ht.clone(), parentOp.clone());
                     Ok((store.clone(), ht.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1931,8 +1931,8 @@ fn buildStoreExp(mut exp: Arc<DAE::Exp>, mut inStore: UnitAbsyn::Store, mut inHt
                 (Deref @ DAE::Exp::IFEXP { expCond: _, expThen: e1, expElse: e2 }, store, ht) => {
                     let mut store = (*store).clone();
                     let mut ht = (*ht).clone();
-                    (store, ht) = buildStoreExp(e1.clone(), store.clone(), ht.clone(), parentOp.clone())?;
-                    (store, ht) = buildStoreExp(e2.clone(), store.clone(), ht.clone(), parentOp.clone())?;
+                    (store, ht) = buildStoreExp(e1.clone(), store.clone(), ht.clone(), parentOp.clone());
+                    (store, ht) = buildStoreExp(e2.clone(), store.clone(), ht.clone(), parentOp.clone());
                     Ok((store.clone(), ht.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1946,9 +1946,9 @@ fn buildStoreExp(mut exp: Arc<DAE::Exp>, mut inStore: UnitAbsyn::Store, mut inHt
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outStore, outHt))
+    (outStore, outHt)
 }
 
 pub fn unitMultiply(mut u1: UnitAbsyn::Unit, mut u2: UnitAbsyn::Unit) -> Result<UnitAbsyn::Unit> {

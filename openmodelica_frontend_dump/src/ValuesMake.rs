@@ -94,7 +94,7 @@ pub fn makeList(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>>) -> 
     outValue
 }
 
-pub fn makeArray(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<Arc<Values::Value>> {
+pub fn makeArray(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>>) -> Arc<Values::Value> {
     let mut outValue: Arc<Values::Value>;
     outValue = 'mc: {
         let __mc_input = inValueLst.clone();
@@ -118,9 +118,9 @@ pub fn makeArray(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>>) ->
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outValue)
+    outValue
 }
 
 pub fn makeEmptyArray() -> Arc<Values::Value> {
@@ -130,25 +130,25 @@ pub fn makeEmptyArray() -> Arc<Values::Value> {
 
 pub fn makeStringArray(mut inReals: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<Values::Value>> {
     let mut outArray: Arc<Values::Value>;
-    outArray = makeArray(List::map(inReals.clone(), (std::sync::Arc::new(fnptr!(makeString, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<Arc<Values::Value>> + 'static>))?)?;
+    outArray = makeArray(List::map(inReals.clone(), (std::sync::Arc::new(fnptr!(makeString, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<Arc<Values::Value>> + 'static>))?);
     Ok(outArray)
 }
 
 pub fn makeIntArray(mut inInts: Arc<metamodelica::List<i32>>) -> Result<Arc<Values::Value>> {
     let mut outArray: Arc<Values::Value>;
-    outArray = makeArray(List::map(inInts.clone(), (std::sync::Arc::new(fnptr!(makeInteger, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<Arc<Values::Value>> + 'static>))?)?;
+    outArray = makeArray(List::map(inInts.clone(), (std::sync::Arc::new(fnptr!(makeInteger, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<Arc<Values::Value>> + 'static>))?);
     Ok(outArray)
 }
 
 pub fn makeRealArray(mut inReals: Arc<metamodelica::List<metamodelica::Real>>) -> Result<Arc<Values::Value>> {
     let mut outArray: Arc<Values::Value>;
-    outArray = makeArray(List::map(inReals.clone(), (std::sync::Arc::new(fnptr!(makeReal, metamodelica::Real)) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Real) -> Result<Arc<Values::Value>> + 'static>))?)?;
+    outArray = makeArray(List::map(inReals.clone(), (std::sync::Arc::new(fnptr!(makeReal, metamodelica::Real)) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Real) -> Result<Arc<Values::Value>> + 'static>))?);
     Ok(outArray)
 }
 
 pub fn makeRealMatrix(mut inReals: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>) -> Result<Arc<Values::Value>> {
     let mut outArray: Arc<Values::Value>;
-    outArray = makeArray(List::map(inReals.clone(), (std::sync::Arc::new(makeRealArray) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<metamodelica::Real>>) -> Result<Arc<Values::Value>> + 'static>))?)?;
+    outArray = makeArray(List::map(inReals.clone(), (std::sync::Arc::new(makeRealArray) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<metamodelica::Real>>) -> Result<Arc<Values::Value>> + 'static>))?);
     Ok(outArray)
 }
 
@@ -164,7 +164,7 @@ pub fn makeCodeTypeNameStr(mut r#str: ArcStr) -> Arc<Values::Value> {
     val
 }
 
-pub fn makeCodeTypeNameArray(mut paths: Arc<metamodelica::List<Arc<Absyn::Path>>>) -> Result<Arc<Values::Value>> {
+pub fn makeCodeTypeNameArray(mut paths: Arc<metamodelica::List<Arc<Absyn::Path>>>) -> Arc<Values::Value> {
     let mut val: Arc<Values::Value>;
     val = makeArray(({
         let mut __acc: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
@@ -173,7 +173,7 @@ pub fn makeCodeTypeNameArray(mut paths: Arc<metamodelica::List<Arc<Absyn::Path>>
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }))?;
-    Ok(val)
+    }));
+    val
 }
 

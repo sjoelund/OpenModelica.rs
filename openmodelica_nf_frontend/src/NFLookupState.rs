@@ -347,7 +347,7 @@ pub mod LookupState {
             let mut name_str: ArcStr = arcstr::literal!("");
             let mut info2: SourceInfo = <SourceInfo as ::std::default::Default>::default();
             name_str = (InstNode::name(node.clone())?).clone();
-            info2 = InstNode::info(node.clone())?;
+            info2 = InstNode::info(node.clone());
             Error::addSourceMessage(Error::NON_CLASS_IN_COMP_FUNC_NAME.clone(), list![(name_str.clone()).clone()], info2.clone())?;
             bail!("fail")
         },
@@ -386,7 +386,7 @@ pub mod LookupState {
             if !(InstContext::inRelaxed(context.clone()) || InstContext::inRedeclared(context.clone())) {
                 node2 = listHead(InstNode::scopeList(node.clone(), false, metamodelica::nil())?)?;
                 if InstNode::isComponent(node2.clone())? {
-                    Error::addMultiSourceMessage(Error::USE_OF_PARTIAL_CLASS.clone(), list![(InstNode::name(node2.clone())?).clone(), (InstNode::name(node.clone())?).clone(), (AbsynUtil::pathString(Class::constrainingClassPath(node.clone())?, (literal!(".")).clone(), true, false)?).clone()], list![InstNode::info(node.clone())?, InstNode::info(node2.clone())?])?;
+                    Error::addMultiSourceMessage(Error::USE_OF_PARTIAL_CLASS.clone(), list![(InstNode::name(node2.clone())?).clone(), (InstNode::name(node.clone())?).clone(), (AbsynUtil::pathString(Class::constrainingClassPath(node.clone())?, (literal!(".")).clone(), true, false)?).clone()], list![InstNode::info(node.clone()), InstNode::info(node2.clone())])?;
                 } else {
                     Error::addSourceMessage(Error::LOOKUP_IN_PARTIAL_CLASS.clone(), list![(InstNode::name(node.clone())?).clone()], info.clone())?;
                 }
@@ -395,11 +395,11 @@ pub mod LookupState {
             ()
         },
         (Deref @ ERROR { errorState: Deref @ NON_CONSTANT { .. } }, _) => {
-            Error::addMultiSourceMessage(Error::NON_CONSTANT_IN_ENCLOSING_SCOPE.clone(), list![(InstNode::name(node.clone())?).clone()], list![InstNode::info(node.clone())?, info.clone()])?;
+            Error::addMultiSourceMessage(Error::NON_CONSTANT_IN_ENCLOSING_SCOPE.clone(), list![(InstNode::name(node.clone())?).clone()], list![InstNode::info(node.clone()), info.clone()])?;
             bail!("fail")
         },
         (Deref @ ERROR { errorState: Deref @ NON_ENCAPSULATED { .. } }, _) => {
-            Error::addMultiSourceMessage(Error::NON_ENCAPSULATED_CLASS_ACCESS.clone(), list![(InstNode::name(InstNode::parent(node.clone()))?).clone(), (InstNode::name(node.clone())?).clone()], list![InstNode::info(node.clone())?, info.clone()])?;
+            Error::addMultiSourceMessage(Error::NON_ENCAPSULATED_CLASS_ACCESS.clone(), list![(InstNode::name(InstNode::parent(node.clone()))?).clone(), (InstNode::name(node.clone())?).clone()], list![InstNode::info(node.clone()), info.clone()])?;
             bail!("fail")
         },
         (_, Deref @ IMPORT { .. }) => {
@@ -469,7 +469,7 @@ pub mod LookupState {
         Deref @ BEGIN { .. } => (),
         _ => {
             if InstNode::isProtected(node.clone()) && !(Flags::isConfigFlagSet(Flags::ALLOW_NON_STANDARD_MODELICA.clone(), (literal!("protectedAccess")).clone())?) {
-                Error::addSourceMessage(Error::PROTECTED_ACCESS.clone(), list![(InstNode::name(node.clone())?).clone()], InstNode::info(node.clone())?)?;
+                Error::addSourceMessage(Error::PROTECTED_ACCESS.clone(), list![(InstNode::name(node.clone())?).clone()], InstNode::info(node.clone()))?;
                 bail!("fail");
             }
             ()

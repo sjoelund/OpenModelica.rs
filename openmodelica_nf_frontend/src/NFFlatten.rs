@@ -1041,7 +1041,7 @@ pub fn flatten(mut classInst: Arc<InstNode::InstNode>, mut classPath: Arc<Path>,
     settings = FlattenSettings { scalarize: Flags::isSet(Flags::NF_SCALARIZE.clone())?, arrayConnect: Flags::isSet(Flags::ARRAY_CONNECT.clone())?, nfAPI: Flags::isSet(Flags::NF_API.clone())?, relaxedErrorChecking: Flags::isSet(Flags::NF_API.clone())? || Flags::getConfigBool(Flags::CHECK_MODEL.clone())?, newBackend: Flags::getConfigBool(Flags::NEW_BACKEND.clone())?, vectorizeBindings: Flags::isSet(Flags::VECTORIZE_BINDINGS.clone())?, implicitStartAttribute: Flags::isConfigFlagSet(Flags::ALLOW_NON_STANDARD_MODELICA.clone(), (literal!("implicitParameterStartAttribute")).clone())?, minimalEval: Flags::getConfigString(Flags::EVALUATE_STRUCTURAL_PARAMETERS.clone())? != literal!("all") };
     prefix = Prefix::new(classInst.clone(), settings.vectorizeBindings.clone());
     sections = crate::NFSections::interned_EMPTY();
-    src = ElementSource::createElementSource(InstNode::info(classInst.clone())?, None, openmodelica_frontend_types::DAE::Prefix::NOPRE, (DAE::emptyCref().clone(), DAE::emptyCref().clone()))?;
+    src = ElementSource::createElementSource(InstNode::info(classInst.clone()), None, openmodelica_frontend_types::DAE::Prefix::NOPRE, (DAE::emptyCref().clone(), DAE::emptyCref().clone()))?;
     src = ElementSource::addCommentToSource(src.clone(), SCodeUtil::getElementComment(InstNode::definition(classInst.clone())?));
     deleted_vars = UnorderedSet::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
     (vars, sections) = flattenClass(InstNode::getClass(classInst.clone())?, prefix.clone(), Visibility::PUBLIC.clone(), None, metamodelica::nil(), sections.clone(), deleted_vars.clone(), settings.clone())?;
@@ -1258,7 +1258,7 @@ fn isDeletedComponent(mut condition: Arc<Binding::NFBinding>, mut prefix: Arc<Pr
         exp = Binding::getTypedExp(cond.clone())?;
         exp = Ceval::evalExp(exp.clone(), Ceval::EvalTarget::new(Binding::getInfo(cond.clone()), NFInstContext::CONDITION.clone(), None))?;
         exp = Expression::expandSplitIndices(exp.clone())?;
-        if Expression::arrayAllEqual(exp.clone())? {
+        if Expression::arrayAllEqual(exp.clone()) {
             exp = Expression::arrayFirstScalar(exp.clone())?;
         }
         isDeleted = (::match_deref::match_deref! { match &(exp.clone()) {
@@ -1536,7 +1536,7 @@ fn flattenComplexComponent(mut node: Arc<InstNode::InstNode>, mut comp: Arc<Comp
     let mut ty: Arc<Type::NFType>;
     let mut pre: Arc<Prefix::Prefix>;
     let mut info: SourceInfo;
-    info = InstNode::info(node.clone())?;
+    info = InstNode::info(node.clone());
     ty = flattenType(nodeTy.clone(), prefix.clone(), info.clone())?;
     dims = Type::arrayDims(ty.clone());
     binding = if (isSome(outerBinding.clone())) {Util::getOption(outerBinding.clone())?} else {Component::getBinding(comp.clone())};
@@ -1979,7 +1979,7 @@ pub fn makeIterators(mut prefix: Arc<ComponentRef::NFComponentRef>, mut dimensio
     prefix_node = ComponentRef::node(prefix.clone())?;
     for mut dim in &*dimensions.clone() {
         let mut dim = dim.clone();
-        iter = InstNode::newUniqueIterator(InstNode::info(prefix_node.clone())?, crate::NFType::interned_INTEGER());
+        iter = InstNode::newUniqueIterator(InstNode::info(prefix_node.clone()), crate::NFType::interned_INTEGER());
         iterators = metamodelica::cons(iter.clone(), iterators.clone());
         range = Expression::makeRange(Arc::new(Expression::NFExpression::INTEGER { value: 1 }), None, Dimension::sizeExp(dim.clone())?)?;
         ranges = metamodelica::cons(range.clone(), ranges.clone());
@@ -3428,7 +3428,7 @@ pub fn verifyDimension(mut dimension: Arc<Dimension::NFDimension>, mut component
     let () = (::match_deref::match_deref! { match &(dimension.clone()) {
         Deref @ Dimension::INTEGER { .. } => {
             if var_field!((*dimension).size, Dimension::NFDimension::INTEGER).clone() < 0 {
-                Error::addSourceMessage(Error::NEGATIVE_DIMENSION_INDEX.clone(), list![ArcStr::from(::std::format!("{}", var_field!((*dimension).size, Dimension::NFDimension::INTEGER).clone())), (InstNode::name(component.clone())?).clone()], InstNode::info(component.clone())?)?;
+                Error::addSourceMessage(Error::NEGATIVE_DIMENSION_INDEX.clone(), list![ArcStr::from(::std::format!("{}", var_field!((*dimension).size, Dimension::NFDimension::INTEGER).clone())), (InstNode::name(component.clone())?).clone()], InstNode::info(component.clone()))?;
                 bail!("fail");
             }
             ()

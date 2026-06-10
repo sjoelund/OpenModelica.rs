@@ -1853,7 +1853,7 @@ fn extendEnvWithElementItem(mut inElementItem: Arc<Absyn::ElementItem>, mut inEn
     Ok(outEnv)
 }
 
-pub fn getEnvName(mut inEnv: Env) -> Result<ArcStr> {
+pub fn getEnvName(mut inEnv: Env) -> ArcStr {
     let mut outString: ArcStr;
     outString = ('mc: {
         let __mc_input = inEnv.clone();
@@ -1875,9 +1875,9 @@ pub fn getEnvName(mut inEnv: Env) -> Result<ArcStr> {
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     }).clone();
-    Ok(outString)
+    outString
 }
 
 pub fn getEnvPath(mut inEnv: Env) -> Result<Arc<Absyn::Path>> {
@@ -1916,13 +1916,13 @@ pub fn getScopeName(mut inEnv: Env) -> Result<ArcStr> {
     }
 }
 
-pub fn envPrefixOf(mut inPrefixEnv: Env, mut inEnv: Env) -> Result<bool> {
+pub fn envPrefixOf(mut inPrefixEnv: Env, mut inEnv: Env) -> bool {
     let mut outIsPrefix: bool;
-    outIsPrefix = envPrefixOf2(inPrefixEnv.clone().reverse(), inEnv.clone().reverse())?;
-    Ok(outIsPrefix)
+    outIsPrefix = envPrefixOf2(inPrefixEnv.clone().reverse(), inEnv.clone().reverse());
+    outIsPrefix
 }
 
-pub fn envPrefixOf2(mut inPrefixEnv: Env, mut inEnv: Env) -> Result<bool> {
+pub fn envPrefixOf2(mut inPrefixEnv: Env, mut inEnv: Env) -> bool {
     let mut outIsPrefix: bool;
     outIsPrefix = 'mc: {
         let __mc_input = (inPrefixEnv.clone(), inEnv.clone());
@@ -1937,7 +1937,7 @@ pub fn envPrefixOf2(mut inPrefixEnv: Env, mut inEnv: Env) -> Result<bool> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ Frame { name: None, .. }, tail: rest1 }, Deref @ metamodelica::List::Cons { head: Deref @ Frame { name: None, .. }, tail: rest2 }) => {
-                    Ok(envPrefixOf2(rest1.clone(), rest2.clone())?)
+                    Ok(envPrefixOf2(rest1.clone(), rest2.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1946,7 +1946,7 @@ pub fn envPrefixOf2(mut inPrefixEnv: Env, mut inEnv: Env) -> Result<bool> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ Frame { name: Some(n1), .. }, tail: rest1 }, Deref @ metamodelica::List::Cons { head: Deref @ Frame { name: Some(n2), .. }, tail: rest2 }) => {
                     let true = (stringEqual((n1.clone()).clone(), (n2.clone()).clone())) else { bail!("pattern mismatch") };
-                    Ok(envPrefixOf2(rest1.clone(), rest2.clone())?)
+                    Ok(envPrefixOf2(rest1.clone(), rest2.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1959,9 +1959,9 @@ pub fn envPrefixOf2(mut inPrefixEnv: Env, mut inEnv: Env) -> Result<bool> {
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outIsPrefix)
+    outIsPrefix
 }
 
 pub fn envScopeNames(mut inEnv: Env) -> Result<Arc<metamodelica::List<ArcStr>>> {
@@ -1988,13 +1988,13 @@ pub fn envScopeNames2(mut inEnv: Env, mut inAccumNames: Arc<metamodelica::List<A
     }
 }
 
-pub fn envEqualPrefix(mut inEnv1: Env, mut inEnv2: Env) -> Result<Env> {
+pub fn envEqualPrefix(mut inEnv1: Env, mut inEnv2: Env) -> Env {
     let mut outPrefix: Env;
-    outPrefix = envEqualPrefix2(inEnv1.clone().reverse(), inEnv2.clone().reverse(), metamodelica::nil())?;
-    Ok(outPrefix)
+    outPrefix = envEqualPrefix2(inEnv1.clone().reverse(), inEnv2.clone().reverse(), metamodelica::nil());
+    outPrefix
 }
 
-pub fn envEqualPrefix2(mut inEnv1: Env, mut inEnv2: Env, mut inAccumEnv: Env) -> Result<Env> {
+pub fn envEqualPrefix2(mut inEnv1: Env, mut inEnv2: Env, mut inAccumEnv: Env) -> Env {
     let mut outPrefix: Env;
     outPrefix = 'mc: {
         let __mc_input = (inEnv1.clone(), inEnv2.clone());
@@ -2003,7 +2003,7 @@ pub fn envEqualPrefix2(mut inEnv1: Env, mut inEnv2: Env, mut inAccumEnv: Env) ->
                 (Deref @ metamodelica::List::Cons { head: frame @ Deref @ Frame { name: Some(name1), .. }, tail: rest_env1 }, Deref @ metamodelica::List::Cons { head: Deref @ Frame { name: Some(name2), .. }, tail: rest_env2 }) => {
                     let mut env: Env = metamodelica::nil();
                     let true = (stringEq((name1.clone()).clone(), (name2.clone()).clone())) else { bail!("pattern mismatch") };
-                    env = envEqualPrefix2(rest_env1.clone(), rest_env2.clone(), metamodelica::cons(frame.clone(), inAccumEnv.clone()))?;
+                    env = envEqualPrefix2(rest_env1.clone(), rest_env2.clone(), metamodelica::cons(frame.clone(), inAccumEnv.clone()));
                     Ok(env.clone())
                 }
                 _ => bail!("nomatch"),
@@ -2012,7 +2012,7 @@ pub fn envEqualPrefix2(mut inEnv1: Env, mut inEnv2: Env, mut inAccumEnv: Env) ->
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ Frame { name: None, .. }, tail: rest_env1 }, Deref @ metamodelica::List::Cons { head: Deref @ Frame { name: None, .. }, tail: rest_env2 }) => {
-                    Ok(envEqualPrefix2(rest_env1.clone(), rest_env2.clone(), inAccumEnv.clone())?)
+                    Ok(envEqualPrefix2(rest_env1.clone(), rest_env2.clone(), inAccumEnv.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -2025,9 +2025,9 @@ pub fn envEqualPrefix2(mut inEnv1: Env, mut inEnv2: Env, mut inAccumEnv: Env) ->
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outPrefix)
+    outPrefix
 }
 
 pub fn getItemInfo(mut inItem: Arc<Item>) -> Result<SourceInfo> {
@@ -2050,7 +2050,7 @@ pub fn getItemInfo(mut inItem: Arc<Item>) -> Result<SourceInfo> {
     }
 }
 
-pub fn itemStr(mut inItem: Arc<Item>) -> Result<ArcStr> {
+pub fn itemStr(mut inItem: Arc<Item>) -> ArcStr {
     let mut outName: ArcStr;
     outName = ('mc: {
         let __mc_input = inItem.clone();
@@ -2092,7 +2092,7 @@ pub fn itemStr(mut inItem: Arc<Item>) -> Result<ArcStr> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Item::REDECLARED_ITEM { item, .. } => {
                     let mut name: ArcStr = arcstr::literal!("");
-                    name = (itemStr(item.clone())?).clone();
+                    name = (itemStr(item.clone())).clone();
                     Ok({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("redeclared ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) })
                 }
                 _ => bail!("nomatch"),
@@ -2106,9 +2106,9 @@ pub fn itemStr(mut inItem: Arc<Item>) -> Result<ArcStr> {
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     }).clone();
-    Ok(outName)
+    outName
 }
 
 pub fn getItemName(mut inItem: Arc<Item>) -> Result<ArcStr> {
@@ -2282,7 +2282,7 @@ pub fn getEnvExtendsFromTable(mut inEnv: Env) -> Result<Arc<metamodelica::List<A
     Ok(outExtends)
 }
 
-pub fn getDerivedClassRedeclares(mut inDerivedName: ArcStr, mut inTypeSpec: Arc<Absyn::TypeSpec>, mut inEnv: Env) -> Result<Arc<metamodelica::List<Arc<Redeclaration>>>> {
+pub fn getDerivedClassRedeclares(mut inDerivedName: ArcStr, mut inTypeSpec: Arc<Absyn::TypeSpec>, mut inEnv: Env) -> Arc<metamodelica::List<Arc<Redeclaration>>> {
     let mut outRedeclarations: Arc<metamodelica::List<Arc<Redeclaration>>>;
     outRedeclarations = 'mc: {
         let __mc_input = inTypeSpec.clone();
@@ -2297,7 +2297,7 @@ pub fn getDerivedClassRedeclares(mut inDerivedName: ArcStr, mut inTypeSpec: Arc<
                     } };
                     bc = __pa0.clone();
                     rm = __pa1.clone();
-                    let true = (AbsynUtil::pathSuffixOf(path.clone(), bc.clone())?) else { bail!("pattern mismatch") };
+                    let true = (AbsynUtil::pathSuffixOf(path.clone(), bc.clone())) else { bail!("pattern mismatch") };
                     Ok(rm.clone())
                 }
                 _ => bail!("nomatch"),
@@ -2314,7 +2314,7 @@ pub fn getDerivedClassRedeclares(mut inDerivedName: ArcStr, mut inTypeSpec: Arc<
                     } };
                     bc = __pa0.clone();
                     rm = __pa1.clone();
-                    let false = (AbsynUtil::pathSuffixOf(path.clone(), bc.clone())?) else { bail!("pattern mismatch") };
+                    let false = (AbsynUtil::pathSuffixOf(path.clone(), bc.clone())) else { bail!("pattern mismatch") };
                     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Derived paths are not the same: ")); __mm_s.push_str(&*AbsynUtil::pathString(path.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!(" != ")); __mm_s.push_str(&*AbsynUtil::pathString(bc.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     Ok(rm.clone())
                 }
@@ -2329,9 +2329,9 @@ pub fn getDerivedClassRedeclares(mut inDerivedName: ArcStr, mut inTypeSpec: Arc<
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outRedeclarations)
+    outRedeclarations
 }
 
 pub fn setEnvExtendsTable(mut inExtendsTable: Arc<ExtendsTable>, mut inEnv: Env) -> Result<Env> {
@@ -2378,7 +2378,7 @@ pub fn setEnvClsAndVars(mut inTree: Arc<EnvTree::Tree>, mut inEnv: Env) -> Resul
     Ok(outEnv)
 }
 
-pub fn mergePathWithEnvPath(mut inPath: Arc<Absyn::Path>, mut inEnv: Env) -> Result<Arc<Absyn::Path>> {
+pub fn mergePathWithEnvPath(mut inPath: Arc<Absyn::Path>, mut inEnv: Env) -> Arc<Absyn::Path> {
     let mut outPath: Arc<Absyn::Path>;
     outPath = 'mc: {
         let __mc_input = inEnv.clone();
@@ -2402,12 +2402,12 @@ pub fn mergePathWithEnvPath(mut inPath: Arc<Absyn::Path>, mut inEnv: Env) -> Res
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outPath)
+    outPath
 }
 
-pub fn mergeTypeSpecWithEnvPath(mut inTS: Arc<Absyn::TypeSpec>, mut inEnv: Env) -> Result<Arc<Absyn::TypeSpec>> {
+pub fn mergeTypeSpecWithEnvPath(mut inTS: Arc<Absyn::TypeSpec>, mut inEnv: Env) -> Arc<Absyn::TypeSpec> {
     let mut outTS: Arc<Absyn::TypeSpec>;
     outTS = 'mc: {
         let __mc_input = inTS.clone();
@@ -2431,9 +2431,9 @@ pub fn mergeTypeSpecWithEnvPath(mut inTS: Arc<Absyn::TypeSpec>, mut inEnv: Env) 
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outTS)
+    outTS
 }
 
 pub fn prefixIdentWithEnv(mut inIdent: ArcStr, mut inEnv: Env) -> Result<Arc<Absyn::Path>> {

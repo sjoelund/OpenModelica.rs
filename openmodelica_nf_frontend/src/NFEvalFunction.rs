@@ -134,7 +134,7 @@ pub fn evaluateNormal(mut r#fn: Arc<Function::Function>, mut args: Arc<metamodel
     limit = Flags::getConfigInt(Flags::EVAL_RECURSION_LIMIT.clone())?;
     if call_count.clone() > limit.clone() {
         Pointer::update(call_counter.clone(), 0);
-        Error::addSourceMessage(Error::EVAL_RECURSION_LIMIT_REACHED.clone(), list![ArcStr::from(::std::format!("{}", limit.clone())), (AbsynUtil::pathString(Function::name(r#fn.clone()), (literal!(".")).clone(), true, false)?).clone()], InstNode::info(r#fn.node.clone())?)?;
+        Error::addSourceMessage(Error::EVAL_RECURSION_LIMIT_REACHED.clone(), list![ArcStr::from(::std::format!("{}", limit.clone())), (AbsynUtil::pathString(Function::name(r#fn.clone()), (literal!(".")).clone(), true, false)?).clone()], InstNode::info(r#fn.node.clone()))?;
         bail!("fail");
     }
     Pointer::update(call_counter.clone(), call_count.clone());
@@ -631,7 +631,7 @@ fn createResult(mut map: ArgumentMap, mut outputs: Arc<metamodelica::List<Arc<In
 fn assertAssignedOutput(mut outputNode: Arc<InstNode::InstNode>, mut value: Arc<Expression::NFExpression>) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(value.clone()) {
         Deref @ Expression::EMPTY { .. } => {
-            Error::addSourceMessageAsError(Error::UNASSIGNED_FUNCTION_OUTPUT.clone(), list![(InstNode::name(outputNode.clone())?).clone()], InstNode::info(outputNode.clone())?)?;
+            Error::addSourceMessageAsError(Error::UNASSIGNED_FUNCTION_OUTPUT.clone(), list![(InstNode::name(outputNode.clone())?).clone()], InstNode::info(outputNode.clone()))?;
             bail!("fail")
         },
         _ => (),
@@ -1103,7 +1103,7 @@ fn callExternalFunction(mut extName: ArcStr, mut r#fn: Arc<Function::Function>, 
     let mut res: Arc<Expression::NFExpression>;
     let mut output_vals: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
     let mut fn_handle: i32;
-    info = InstNode::info(r#fn.node.clone())?;
+    info = InstNode::info(r#fn.node.clone());
     checkExtReturnValue(outputRef.clone(), info.clone())?;
     pkg_name = (InstNode::name(InstNode::libraryScope(r#fn.node.clone())?)?).clone();
     fn_handle = loadLibraryFunction((pkg_name.clone()).clone(), (extName.clone()).clone(), extAnnotation.clone(), debug.clone(), info.clone())?;

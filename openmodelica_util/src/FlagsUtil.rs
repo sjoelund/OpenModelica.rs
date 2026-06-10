@@ -245,7 +245,7 @@ fn updateConfigFlagArray(mut inFlags: metamodelica::Array<Flags::FlagData>, mut 
     let Flags::CONFIG_FLAG { index: __pa0, .. } = (inFlag.clone()) else { bail!("pattern mismatch") };
     index = __pa0.clone();
     outFlags = metamodelica::arrayUpdate(inFlags.clone(), index.clone(), inValue.clone())?;
-    applySideEffects(inFlag.clone(), inValue.clone())?;
+    applySideEffects(inFlag.clone(), inValue.clone());
     Ok(outFlags)
 }
 
@@ -610,7 +610,7 @@ fn stringFlagData(mut inValue: ArcStr, mut inExpectedType: Flags::FlagData, mut 
                     let mut et: ArcStr = arcstr::literal!("");
                     let mut at: ArcStr = arcstr::literal!("");
                     et = (printExpectedTypeStr(inExpectedType.clone())?).clone();
-                    at = (printActualTypeStr((inValue.clone()).clone())?).clone();
+                    at = (printActualTypeStr((inValue.clone()).clone())).clone();
                     Error::addMessage(Error::INVALID_FLAG_TYPE.clone(), list![(inName.clone()).clone(), (et.clone()).clone(), (at.clone()).clone()])?;
                     Ok(bail!("fail"))
                 }
@@ -625,7 +625,7 @@ fn stringFlagData(mut inValue: ArcStr, mut inExpectedType: Flags::FlagData, mut 
                     let mut flags: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     flags = getValidStringOptions(options.clone())?;
                     et = stringDelimitList(flags.clone(), (literal!(", ")).clone());
-                    at = (printActualTypeStr((inValue.clone()).clone())?).clone();
+                    at = (printActualTypeStr((inValue.clone()).clone())).clone();
                     Error::addMessage(Error::INVALID_FLAG_TYPE_STRINGS.clone(), list![(inName.clone()).clone(), (et.clone()).clone(), (at.clone()).clone()])?;
                     Ok(bail!("fail"))
                 }
@@ -665,7 +665,7 @@ fn printExpectedTypeStr(mut inType: Flags::FlagData) -> Result<ArcStr> {
     Ok(outTypeStr)
 }
 
-fn printActualTypeStr(mut inType: ArcStr) -> Result<ArcStr> {
+fn printActualTypeStr(mut inType: ArcStr) -> ArcStr {
     let mut outTypeStr: ArcStr;
     outTypeStr = ('mc: {
         let __mc_input = inType.clone();
@@ -705,9 +705,9 @@ fn printActualTypeStr(mut inType: ArcStr) -> Result<ArcStr> {
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     }).clone();
-    Ok(outTypeStr)
+    outTypeStr
 }
 
 fn configFlagsIsEqualIndex(mut inFlag1: Flags::ConfigFlag, mut inFlag2: Flags::ConfigFlag) -> Result<bool> {
@@ -775,7 +775,7 @@ fn handleDeprecatedFlags() -> Result<()> {
     Ok(())
 }
 
-fn applySideEffects(mut inFlag: Flags::ConfigFlag, mut inValue: Flags::FlagData) -> Result<()> {
+fn applySideEffects(mut inFlag: Flags::ConfigFlag, mut inValue: Flags::FlagData) -> () {
     let () = 'mc: {
         let __mc_input = inValue.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -809,9 +809,9 @@ fn applySideEffects(mut inFlag: Flags::ConfigFlag, mut inValue: Flags::FlagData)
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(())
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(())
+    ()
 }
 
 pub fn setConfigValue(mut inFlag: Flags::ConfigFlag, mut inValue: Flags::FlagData) -> Result<()> {

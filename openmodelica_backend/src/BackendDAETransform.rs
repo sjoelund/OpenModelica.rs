@@ -228,7 +228,7 @@ fn analyseStrongComponentBlock(mut inComp: Arc<metamodelica::List<i32>>, mut inE
                     b1 = List::applyAndFold(crlst.clone(), (std::sync::Arc::new(fnptr!(boolAnd, bool, bool)) as std::sync::Arc<dyn ::std::ops::Fn(bool, bool) -> Result<bool> + 'static>), (std::sync::Arc::new(fnptr!(ComponentReference::isArrayElement, Arc<DAE::ComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<bool> + 'static>), true)?;
                     if !(b1.clone()) {
                         expLst = List::map(crlst.clone(), (std::sync::Arc::new(Expression::crefExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<Arc<DAE::Exp>> + 'static>))?;
-                        let true = (List::exist1(inEqnLst.clone(), (std::sync::Arc::new(crefsAreArray) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>, Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<bool> + 'static>), expLst.clone())?) else { bail!("pattern mismatch") };
+                        let true = (List::exist1(inEqnLst.clone(), (std::sync::Arc::new(fnptr!(crefsAreArray, Arc<BackendDAE::Equation>, Arc<metamodelica::List<Arc<DAE::Exp>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>, Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<bool> + 'static>), expLst.clone())?) else { bail!("pattern mismatch") };
                     }
                     Ok(list![Arc::new(BackendDAE::StrongComponent::SINGLEARRAY { eqn: compelem.clone(), vars: varindxs.clone() })])
                 }
@@ -291,8 +291,8 @@ fn analyseStrongComponentBlock(mut inComp: Arc<metamodelica::List<i32>>, mut inE
                     if !(Flags::isSet(Flags::DISABLE_JACSCC.clone())?) {
                         syst = BackendDAEUtil::createEqSystem(vars_1.clone(), eqns_1.clone(), metamodelica::nil(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
                         (m, mt) = BackendDAEUtil::adjacencyMatrix(syst.clone(), openmodelica_backend_types::BackendDAE::IndexType::ABSOLUTE, None, BackendDAEUtil::isInitializationDAE(ishared.clone()))?;
-                        (jac, shared) = SymbolicJacobian::calculateJacobian(vars_1.clone(), eqns_1.clone(), m.clone(), true, ishared.clone())?;
-                        (jac_tp, jacConstant) = SymbolicJacobian::analyzeJacobian(vars_1.clone(), eqns_1.clone(), jac.clone())?;
+                        (jac, shared) = SymbolicJacobian::calculateJacobian(vars_1.clone(), eqns_1.clone(), m.clone(), true, ishared.clone());
+                        (jac_tp, jacConstant) = SymbolicJacobian::analyzeJacobian(vars_1.clone(), eqns_1.clone(), jac.clone());
                         if jacConstant.clone() && isSome(jac.clone()) {
                             let true = (analyzeConstantJacobian(Util::getOption(jac.clone())?, metamodelica::arrayLength(mt.clone()), var_lst.clone(), eqn_lst.clone(), shared.clone())?) else { bail!("pattern mismatch") };
                         }
@@ -387,7 +387,7 @@ fn analyseStrongComponentBlock(mut inComp: Arc<metamodelica::List<i32>>, mut inE
     Ok(outComp)
 }
 
-fn crefsAreArray(mut eqIn: Arc<BackendDAE::Equation>, mut crefLst: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<bool> {
+fn crefsAreArray(mut eqIn: Arc<BackendDAE::Equation>, mut crefLst: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> bool {
     let mut isUnsolvable: bool;
     isUnsolvable = 'mc: {
         let __mc_input = eqIn.clone();
@@ -419,9 +419,9 @@ fn crefsAreArray(mut eqIn: Arc<BackendDAE::Equation>, mut crefLst: Arc<metamodel
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(isUnsolvable)
+    isUnsolvable
 }
 
 fn analyzeConstantJacobian(mut inJac: Arc<metamodelica::List<(i32, i32, Arc<BackendDAE::Equation>)>>, mut inSize: i32, mut inVars: Arc<metamodelica::List<BackendDAE::Var>>, mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut inShared: Arc<BackendDAE::Shared>) -> Result<bool> {
@@ -1042,7 +1042,7 @@ pub fn collapseArrayCrefExp<T: Clone + 'static + metamodelica::ReferenceEq>(mut 
     let mut ops: Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>>;
     let mut t: T;
     (ops, t) = inTpl.clone();
-    (outExp, t) = Expression::traverseExpTopDown(inExp.clone(), (std::sync::Arc::new(collapseArrayCrefExpWork) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), t.clone())?;
+    (outExp, t) = Expression::traverseExpTopDown(inExp.clone(), std::sync::Arc::new(fnptr!(collapseArrayCrefExpWork, Arc<DAE::Exp>, _)), t.clone())?;
     if !(ExpressionBasics::expEqual(inExp.clone(), outExp.clone())?) {
         outTpl = (metamodelica::cons(Arc::new(DAE::SymbolicOperation::SIMPLIFY { before: Arc::new(DAE::EquationExp::PARTIAL_EQUATION { exp: inExp.clone() }), after: Arc::new(DAE::EquationExp::PARTIAL_EQUATION { exp: outExp.clone() }) }), ops.clone()), t.clone());
     } else {
@@ -1051,7 +1051,7 @@ pub fn collapseArrayCrefExp<T: Clone + 'static + metamodelica::ReferenceEq>(mut 
     Ok((outExp, outTpl))
 }
 
-fn collapseArrayCrefExpWork<T: Clone + 'static>(mut e: Arc<DAE::Exp>, mut t: T) -> Result<(Arc<DAE::Exp>, bool, T)> {
+fn collapseArrayCrefExpWork<T: Clone + 'static>(mut e: Arc<DAE::Exp>, mut t: T) -> (Arc<DAE::Exp>, bool, T) {
     let mut e: Arc<DAE::Exp> = e;
     let mut cont: bool;
     let mut t: T = t;
@@ -1081,9 +1081,9 @@ fn collapseArrayCrefExpWork<T: Clone + 'static>(mut e: Arc<DAE::Exp>, mut t: T) 
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((e, cont, t))
+    (e, cont, t)
 }
 
 fn collapseArrayCrefExpWork2(mut e: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
@@ -1128,7 +1128,7 @@ fn collapseArrayCrefExpWork2(mut e: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
         __acc
     });
     let true = (len.clone() > 0) else { bail!("pattern mismatch") };
-    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(Expression::flattenArrayExpToList(e.clone())?) {
+    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(Expression::flattenArrayExpToList(e.clone())) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };

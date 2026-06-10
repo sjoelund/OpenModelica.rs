@@ -347,7 +347,7 @@ pub fn mergeRedeclaredClassPrefixes(mut origPrefs: Arc<Class::Prefixes::Prefixes
 }
 
 pub fn printRedeclarePrefixError(mut node: Arc<InstNode::InstNode>, mut prefix1: ArcStr, mut prefix2: ArcStr) -> Result<()> {
-    Error::addSourceMessageAndFail(Error::REDECLARE_MISMATCHED_PREFIX.clone(), list![(prefix1.clone()).clone(), (InstNode::name(node.clone())?).clone(), (prefix2.clone()).clone()], InstNode::info(node.clone())?)?;
+    Error::addSourceMessageAndFail(Error::REDECLARE_MISMATCHED_PREFIX.clone(), list![(prefix1.clone()).clone(), (InstNode::name(node.clone())?).clone(), (prefix2.clone()).clone()], InstNode::info(node.clone()))?;
     unreachable!("Error.addSourceMessageAndFail always fails — caller-side flow-analysis hint");
     Ok(())
 }
@@ -376,7 +376,7 @@ pub fn checkDeclaredComponentAttributes(mut attr: Arc<NFAttributes>, mut parentR
 }
 
 pub fn invalidComponentPrefixError(mut prefix: ArcStr, mut node: Arc<InstNode::InstNode>, mut restriction: Arc<Restriction::NFRestriction>) -> Result<()> {
-    Error::addSourceMessage(Error::INVALID_COMPONENT_PREFIX.clone(), list![(prefix.clone()).clone(), (InstNode::name(node.clone())?).clone(), (Restriction::toString(restriction.clone())).clone()], InstNode::info(node.clone())?)?;
+    Error::addSourceMessage(Error::INVALID_COMPONENT_PREFIX.clone(), list![(prefix.clone()).clone(), (InstNode::name(node.clone())?).clone(), (Restriction::toString(restriction.clone())).clone()], InstNode::info(node.clone()))?;
     Ok(())
 }
 
@@ -410,7 +410,7 @@ pub fn updateComponentConnectorType(mut attributes: Arc<NFAttributes>, mut restr
     if Prefixes::ConnectorType::isConnectorType(cty.clone()) {
         if Restriction::isConnector(restriction.clone()) {
             if attributes.variability.clone() < Variability::DISCRETE.clone() && !(InstContext::inRelaxed(context.clone())) && !(Class::isBuiltin(InstNode::getClass(component.clone())?)?) {
-                Error::addSourceMessage(Error::INVALID_CONNECTOR_VARIABILITY.clone(), list![(Prefixes::variabilityString(attributes.variability.clone())?).clone(), (InstNode::name(component.clone())?).clone()], InstNode::info(component.clone())?)?;
+                Error::addSourceMessage(Error::INVALID_CONNECTOR_VARIABILITY.clone(), list![(Prefixes::variabilityString(attributes.variability.clone())?).clone(), (InstNode::name(component.clone())?).clone()], InstNode::info(component.clone()))?;
                 bail!("fail");
             }
             if Restriction::isExpandableConnector(restriction.clone()) {
@@ -428,7 +428,7 @@ pub fn updateComponentConnectorType(mut attributes: Arc<NFAttributes>, mut restr
             assign_field!(attributes.connectorType = cty.clone());
         }
     } else if Prefixes::ConnectorType::isFlowOrStream(cty.clone()) && !(InstContext::inRedeclared(context.clone())) {
-        Error::addStrictMessage(Error::CONNECTOR_PREFIX_OUTSIDE_CONNECTOR.clone(), list![(Prefixes::ConnectorType::toString(cty.clone())).clone()], InstNode::info(component.clone())?)?;
+        Error::addStrictMessage(Error::CONNECTOR_PREFIX_OUTSIDE_CONNECTOR.clone(), list![(Prefixes::ConnectorType::toString(cty.clone())).clone()], InstNode::info(component.clone()))?;
         assign_field!(attributes.connectorType = Prefixes::ConnectorType::unsetFlowStream(cty.clone()));
     }
     Ok(attributes)

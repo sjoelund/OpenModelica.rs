@@ -640,7 +640,7 @@ fn lm_30(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(ArcStr, Ar
         (txt, Deref @ metamodelica::List::Cons { head: (i_nm, i_ts), tail: rest }, a_outArgs) => {
             let mut ret_0: bool = false;
             let mut txt = (*txt).clone();
-            ret_0 = TplAbsyn::isTupleListMember((i_nm.clone()).clone(), a_outArgs.clone())?;
+            ret_0 = TplAbsyn::isTupleListMember((i_nm.clone()).clone(), a_outArgs.clone());
             txt = fun_29(txt.clone(), ret_0.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() }))?;
             txt = typeSig(txt.clone(), i_ts.clone())?;
@@ -2048,7 +2048,7 @@ fn fun_94(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_sl: Arc<metamodelic
         (txt, _, a_sl) => {
             let mut ret_0: bool = false;
             let mut txt = (*txt).clone();
-            ret_0 = TplAbsyn::canBeEscapedUnquoted(a_sl.clone())?;
+            ret_0 = TplAbsyn::canBeEscapedUnquoted(a_sl.clone());
             txt = fun_93(txt.clone(), ret_0.clone(), a_sl.clone())?;
             txt.clone()
         },

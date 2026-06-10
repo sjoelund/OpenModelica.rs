@@ -560,7 +560,7 @@ pub fn initialGraphModelica(mut graph: FCore::Graph, mut mkTypeNode: Arc<dyn ::s
     let mut graph: FCore::Graph = graph;
     let enumeration2int: Arc<DAE::Type> = Arc::new(DAE::Type::T_FUNCTION { funcArg: list![Arc::new(DAE::FuncArg { name: (literal!("x")).clone(), ty: Arc::new(DAE::Type::T_ENUMERATION { index: None, path: Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }), names: metamodelica::nil(), literalVarLst: metamodelica::nil(), attributeLst: metamodelica::nil() }), r#const: openmodelica_frontend_types::DAE::Const::C_VAR, par: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, defaultBinding: None })], funcResultType: DAE::T_INTEGER_DEFAULT().clone(), functionAttributes: DAE::FUNCTION_ATTRIBUTES_BUILTIN.clone(), path: Arc::new(Absyn::Path::IDENT { name: (literal!("Integer")).clone() }) });
     graph = mkCompNode(timeComp.clone(), FGraph::top(graph.clone())?, openmodelica_frontend_dump::FCore::Kind::BUILTIN, graph.clone())?;
-    graph = FGraph::updateComp(graph.clone(), timeVar().clone(), openmodelica_frontend_dump::FCore::Status::VAR_UNTYPED, FGraph::empty())?;
+    graph = FGraph::updateComp(graph.clone(), timeVar().clone(), openmodelica_frontend_dump::FCore::Status::VAR_UNTYPED, FGraph::empty());
     graph = mkTypeNode(list![Arc::new(DAE::Type::T_FUNCTION { funcArg: list![Arc::new(DAE::FuncArg { name: (literal!("x")).clone(), ty: Arc::new(DAE::Type::T_ANYTYPE { anyClassType: Some(ClassInf::State::CONNECTOR { path: Arc::new(Absyn::Path::IDENT { name: (literal!("$dummy$")).clone() }), isExpandable: false }) }), r#const: openmodelica_frontend_types::DAE::Const::C_VAR, par: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, defaultBinding: None })], funcResultType: DAE::T_INTEGER_DEFAULT().clone(), functionAttributes: DAE::FUNCTION_ATTRIBUTES_BUILTIN.clone(), path: Arc::new(Absyn::Path::IDENT { name: (literal!("cardinality")).clone() }) }), Arc::new(DAE::Type::T_FUNCTION { funcArg: list![Arc::new(DAE::FuncArg { name: (literal!("x")).clone(), ty: Arc::new(DAE::Type::T_ANYTYPE { anyClassType: Some(ClassInf::State::CONNECTOR { path: Arc::new(Absyn::Path::IDENT { name: (literal!("$dummy$")).clone() }), isExpandable: true }) }), r#const: openmodelica_frontend_types::DAE::Const::C_VAR, par: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, defaultBinding: None })], funcResultType: DAE::T_INTEGER_DEFAULT().clone(), functionAttributes: DAE::FUNCTION_ATTRIBUTES_BUILTIN.clone(), path: Arc::new(Absyn::Path::IDENT { name: (literal!("cardinality")).clone() }) })], FGraph::top(graph.clone())?, (literal!("cardinality")).clone(), graph.clone())?;
     graph = mkTypeNode(list![enumeration2int.clone()], FGraph::top(graph.clone())?, (literal!("Integer")).clone(), graph.clone())?;
     graph = mkTypeNode(list![enumeration2int.clone()], FGraph::top(graph.clone())?, (literal!("EnumToInteger")).clone(), graph.clone())?;
@@ -585,13 +585,13 @@ pub fn initialGraphOptimica(mut graph: FCore::Graph, mut mkCompNode: Arc<dyn ::s
         return Ok(graph.clone());
     }
     graph = mkCompNode(objectiveVarComp.clone(), FGraph::top(graph.clone())?, openmodelica_frontend_dump::FCore::Kind::BUILTIN, graph.clone())?;
-    graph = FGraph::updateComp(graph.clone(), objectiveVar().clone(), openmodelica_frontend_dump::FCore::Status::VAR_UNTYPED, FGraph::empty())?;
+    graph = FGraph::updateComp(graph.clone(), objectiveVar().clone(), openmodelica_frontend_dump::FCore::Status::VAR_UNTYPED, FGraph::empty());
     graph = mkCompNode(objectiveIntegrandComp.clone(), FGraph::top(graph.clone())?, openmodelica_frontend_dump::FCore::Kind::BUILTIN, graph.clone())?;
-    graph = FGraph::updateComp(graph.clone(), objectiveIntegrandVar().clone(), openmodelica_frontend_dump::FCore::Status::VAR_UNTYPED, FGraph::empty())?;
+    graph = FGraph::updateComp(graph.clone(), objectiveIntegrandVar().clone(), openmodelica_frontend_dump::FCore::Status::VAR_UNTYPED, FGraph::empty());
     graph = mkCompNode(startTimeComp.clone(), FGraph::top(graph.clone())?, openmodelica_frontend_dump::FCore::Kind::BUILTIN, graph.clone())?;
-    graph = FGraph::updateComp(graph.clone(), startTimeVar().clone(), openmodelica_frontend_dump::FCore::Status::VAR_UNTYPED, FGraph::empty())?;
+    graph = FGraph::updateComp(graph.clone(), startTimeVar().clone(), openmodelica_frontend_dump::FCore::Status::VAR_UNTYPED, FGraph::empty());
     graph = mkCompNode(finalTimeComp.clone(), FGraph::top(graph.clone())?, openmodelica_frontend_dump::FCore::Kind::BUILTIN, graph.clone())?;
-    graph = FGraph::updateComp(graph.clone(), finalTimeVar().clone(), openmodelica_frontend_dump::FCore::Status::VAR_UNTYPED, FGraph::empty())?;
+    graph = FGraph::updateComp(graph.clone(), finalTimeVar().clone(), openmodelica_frontend_dump::FCore::Status::VAR_UNTYPED, FGraph::empty());
     Ok(graph)
 }
 

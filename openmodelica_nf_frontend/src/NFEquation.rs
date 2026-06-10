@@ -200,14 +200,14 @@ pub mod Branch {
         }
     }
 
-    pub fn sizeOf(mut branch: Arc<Branch>) -> Result<i32> {
+    pub fn sizeOf(mut branch: Arc<Branch>) -> i32 {
         let mut size: i32;
         size = (::match_deref::match_deref! { match &(branch.clone()) {
-        Deref @ BRANCH { .. } => sizeOfList(var_field!((*branch).body, Branch::BRANCH).clone())?,
+        Deref @ BRANCH { .. } => sizeOfList(var_field!((*branch).body, Branch::BRANCH).clone()),
         _ => 0,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        Ok(size)
+        size
     }
 
     pub fn toStream(mut branch: Arc<Branch>, mut header: ArcStr, mut potentialElse: bool, mut indent: ArcStr, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
@@ -1147,16 +1147,16 @@ pub fn isConnection(mut eq: Arc<NFEquation>) -> Result<bool> {
     Ok(res)
 }
 
-pub fn sizeOfList(mut eqs: Arc<metamodelica::List<Arc<NFEquation>>>) -> Result<i32> {
+pub fn sizeOfList(mut eqs: Arc<metamodelica::List<Arc<NFEquation>>>) -> i32 {
     let mut size: i32 = 0;
     for mut eq in &*eqs.clone() {
         let mut eq = eq.clone();
-        size = size.clone() + sizeOf(eq.clone())?;
+        size = size.clone() + sizeOf(eq.clone());
     }
-    Ok(size)
+    size
 }
 
-pub fn sizeOf(mut eq: Arc<NFEquation>) -> Result<i32> {
+pub fn sizeOf(mut eq: Arc<NFEquation>) -> i32 {
     let mut size: i32 = 0;
     size = 'mc: {
         let __mc_input = eq.clone();
@@ -1181,7 +1181,7 @@ pub fn sizeOf(mut eq: Arc<NFEquation>) -> Result<i32> {
                 Deref @ FOR { .. } => {
                     let mut size: i32 = size.clone();
                     size = Type::sizeOf(Expression::typeOf(Util::getOption(var_field!((*eq).range, NFEquation::FOR).clone())?), false)?;
-                    Ok((size.clone() * sizeOfList(var_field!((*eq).body, NFEquation::FOR).clone())?, size.clone()))
+                    Ok((size.clone() * sizeOfList(var_field!((*eq).body, NFEquation::FOR).clone()), size.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1189,7 +1189,7 @@ pub fn sizeOf(mut eq: Arc<NFEquation>) -> Result<i32> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ IF { .. } => {
-                    Ok(Branch::sizeOf(listHead(var_field!((*eq).branches, NFEquation::IF).clone())?)?)
+                    Ok(Branch::sizeOf(listHead(var_field!((*eq).branches, NFEquation::IF).clone())?))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1197,7 +1197,7 @@ pub fn sizeOf(mut eq: Arc<NFEquation>) -> Result<i32> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ WHEN { .. } => {
-                    Ok(Branch::sizeOf(listHead(var_field!((*eq).branches, NFEquation::WHEN).clone())?)?)
+                    Ok(Branch::sizeOf(listHead(var_field!((*eq).branches, NFEquation::WHEN).clone())?))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1210,9 +1210,9 @@ pub fn sizeOf(mut eq: Arc<NFEquation>) -> Result<i32> {
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(size)
+    size
 }
 
 pub fn toString(mut eq: Arc<NFEquation>, mut indent: ArcStr) -> Result<ArcStr> {

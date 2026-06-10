@@ -366,13 +366,13 @@ pub fn instantiateRootFunction(mut funcNode: Arc<InstNode::InstNode>, mut contex
     let mut flatModel: Arc<FlatModel::NFFlatModel>;
     let mut functions: Arc<Flatten::FunctionTreeImpl::Tree>;
     let mut flatString: ArcStr = literal!("");
-    Function::instFunctionNode(funcNode.clone(), context.clone(), InstNode::info(funcNode.clone())?)?;
+    Function::instFunctionNode(funcNode.clone(), context.clone(), InstNode::info(funcNode.clone()))?;
     functions = Flatten::FunctionTreeImpl::new();
     for mut r#fn in &*Function::typeNodeCache(funcNode.clone(), context.clone())? {
         let mut r#fn = r#fn.clone();
         functions = Flatten::flattenFunction(r#fn.clone(), functions.clone())?;
     }
-    flatModel = Arc::new(FlatModel::NFFlatModel { name: Arc::new(Path::IDENT { name: (InstNode::name(funcNode.clone())?).clone() }), variables: metamodelica::nil(), equations: metamodelica::nil(), initialEquations: metamodelica::nil(), algorithms: metamodelica::nil(), initialAlgorithms: metamodelica::nil(), source: ElementSource::createElementSource(InstNode::info(funcNode.clone())?, None, openmodelica_frontend_types::DAE::Prefix::NOPRE, (DAE::emptyCref().clone(), DAE::emptyCref().clone()))? });
+    flatModel = Arc::new(FlatModel::NFFlatModel { name: Arc::new(Path::IDENT { name: (InstNode::name(funcNode.clone())?).clone() }), variables: metamodelica::nil(), equations: metamodelica::nil(), initialEquations: metamodelica::nil(), algorithms: metamodelica::nil(), initialAlgorithms: metamodelica::nil(), source: ElementSource::createElementSource(InstNode::info(funcNode.clone()), None, openmodelica_frontend_types::DAE::Prefix::NOPRE, (DAE::emptyCref().clone(), DAE::emptyCref().clone()))? });
     Ok((flatModel, functions, flatString))
 }
 
@@ -711,7 +711,7 @@ pub fn checkReplaceableBaseClass(mut baseClasses: Arc<metamodelica::List<Arc<Ins
             } else {
                 name = (AbsynUtil::pathString(basePath.clone(), (literal!(".")).clone(), true, false)?).clone();
             }
-            Error::addMultiSourceMessage(Error::REPLACEABLE_BASE_CLASS.clone(), list![(InstNode::name(base.clone())?).clone(), (name.clone()).clone()], list![InstNode::info(base.clone())?, info.clone()])?;
+            Error::addMultiSourceMessage(Error::REPLACEABLE_BASE_CLASS.clone(), list![(InstNode::name(base.clone())?).clone(), (name.clone()).clone()], list![InstNode::info(base.clone()), info.clone()])?;
             bail!("fail");
         }
     }
@@ -730,7 +730,7 @@ pub fn expandExternalObject(mut clsTree: Arc<ClassTree::ClassTree>, mut node: Ar
 
 pub fn checkBuiltinTypeExtends(mut builtinExtends: Arc<InstNode::InstNode>, mut tree: Arc<ClassTree::ClassTree>, mut node: Arc<InstNode::InstNode>) -> Result<()> {
     if ClassTree::componentCount(tree.clone()) > 0 || ClassTree::extendsCount(tree.clone()) > 1 {
-        Error::addSourceMessage(Error::BUILTIN_EXTENDS_INVALID_ELEMENTS.clone(), list![(InstNode::name(builtinExtends.clone())?).clone()], InstNode::info(node.clone())?)?;
+        Error::addSourceMessage(Error::BUILTIN_EXTENDS_INVALID_ELEMENTS.clone(), list![(InstNode::name(builtinExtends.clone())?).clone()], InstNode::info(node.clone()))?;
         bail!("fail");
     }
     Ok(())
@@ -746,7 +746,7 @@ pub fn makeExternalObjectType(mut tree: Arc<ClassTree::ClassTree>, mut node: Arc
             let __range0 = var_field!((*tree).components, ClassTree::ClassTree::PARTIAL_TREE).clone().borrow().iter().cloned().collect::<Vec<_>>();
             for mut comp in __range0 {
                 if InstNode::isComponent(comp.clone())? {
-                    Error::addSourceMessage(Error::EXTERNAL_OBJECT_INVALID_ELEMENT.clone(), list![(InstNode::name(node.clone())?).clone(), (InstNode::name(comp.clone())?).clone()], InstNode::info(comp.clone())?)?;
+                    Error::addSourceMessage(Error::EXTERNAL_OBJECT_INVALID_ELEMENT.clone(), list![(InstNode::name(node.clone())?).clone(), (InstNode::name(comp.clone())?).clone()], InstNode::info(comp.clone()))?;
                     bail!("fail");
                 }
             }
@@ -759,7 +759,7 @@ pub fn makeExternalObjectType(mut tree: Arc<ClassTree::ClassTree>, mut node: Arc
                             _ => bail!("pattern mismatch"),
                         } };
                         base_path = __pa2.clone();
-                        Error::addSourceMessage(Error::EXTERNAL_OBJECT_INVALID_ELEMENT.clone(), list![(InstNode::name(node.clone())?).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("extends ")); __mm_s.push_str(&*AbsynUtil::pathString(base_path.clone(), (literal!(".")).clone(), true, false)?); ArcStr::from(__mm_s) }).clone()], InstNode::info(ext.clone())?)?;
+                        Error::addSourceMessage(Error::EXTERNAL_OBJECT_INVALID_ELEMENT.clone(), list![(InstNode::name(node.clone())?).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("extends ")); __mm_s.push_str(&*AbsynUtil::pathString(base_path.clone(), (literal!(".")).clone(), true, false)?); ArcStr::from(__mm_s) }).clone()], InstNode::info(ext.clone()))?;
                         bail!("fail");
                     }
                 }
@@ -778,18 +778,18 @@ pub fn makeExternalObjectType(mut tree: Arc<ClassTree::ClassTree>, mut node: Arc
             ()
         },
         _ => {
-            Error::addSourceMessage(Error::EXTERNAL_OBJECT_INVALID_ELEMENT.clone(), list![(InstNode::name(node.clone())?).clone(), (InstNode::name(cls.clone())?).clone()], InstNode::info(cls.clone())?)?;
+            Error::addSourceMessage(Error::EXTERNAL_OBJECT_INVALID_ELEMENT.clone(), list![(InstNode::name(node.clone())?).clone(), (InstNode::name(cls.clone())?).clone()], InstNode::info(cls.clone()))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
             }
             if InstNode::isEmpty(constructor.clone()) {
-                Error::addSourceMessage(Error::EXTERNAL_OBJECT_MISSING_STRUCTOR.clone(), list![(InstNode::name(node.clone())?).clone(), (literal!("constructor")).clone()], InstNode::info(node.clone())?)?;
+                Error::addSourceMessage(Error::EXTERNAL_OBJECT_MISSING_STRUCTOR.clone(), list![(InstNode::name(node.clone())?).clone(), (literal!("constructor")).clone()], InstNode::info(node.clone()))?;
                 bail!("fail");
             }
             if InstNode::isEmpty(destructor.clone()) {
-                Error::addSourceMessage(Error::EXTERNAL_OBJECT_MISSING_STRUCTOR.clone(), list![(InstNode::name(node.clone())?).clone(), (literal!("destructor")).clone()], InstNode::info(node.clone())?)?;
+                Error::addSourceMessage(Error::EXTERNAL_OBJECT_MISSING_STRUCTOR.clone(), list![(InstNode::name(node.clone())?).clone(), (literal!("destructor")).clone()], InstNode::info(node.clone()))?;
                 bail!("fail");
             }
             Arc::new(ComplexType::NFComplexType::EXTERNAL_OBJECT { constructor: constructor.clone(), destructor: destructor.clone() })
@@ -801,7 +801,7 @@ pub fn makeExternalObjectType(mut tree: Arc<ClassTree::ClassTree>, mut node: Arc
 
 pub fn checkElementNotReplaceable(mut node: Arc<InstNode::InstNode>) -> Result<()> {
     if SCodeUtil::isElementReplaceable(InstNode::definition(node.clone())?)? {
-        Error::addSourceMessage(Error::ELEMENT_REPLACEABLE_NOT_ALLOWED.clone(), list![(InstNode::name(node.clone())?).clone()], InstNode::info(node.clone())?)?;
+        Error::addSourceMessage(Error::ELEMENT_REPLACEABLE_NOT_ALLOWED.clone(), list![(InstNode::name(node.clone())?).clone()], InstNode::info(node.clone()))?;
         bail!("fail");
     }
     Ok(())
@@ -1034,7 +1034,7 @@ pub fn instExternalObjectStructors(mut ty: Arc<Type::NFType>, mut parent: Arc<In
         } };
         constructor = __pa0.clone();
         destructor = __pa1.clone();
-        info = InstNode::info(parent.clone())?;
+        info = InstNode::info(parent.clone());
         Function::instFunctionNode(constructor.clone(), context.clone(), info.clone())?;
         Function::instFunctionNode(destructor.clone(), context.clone(), info.clone())?;
     }
@@ -1101,7 +1101,7 @@ pub fn modifyExtends(mut extendsNode: Arc<InstNode::InstNode>, mut scope: Arc<In
             } };
             ext_node = __pa0.clone();
             if !(referenceEq(&*(InstNode::definition(extendsNode.clone())?),&*(InstNode::definition(ext_node.clone())?))) && !(Flags::isSet(Flags::MERGE_COMPONENTS.clone())?) {
-                Error::addMultiSourceMessage(Error::FOUND_OTHER_BASECLASS.clone(), list![(AbsynUtil::pathString(var_field!((*elem).baseClassPath, SCode::Element::EXTENDS).clone(), (literal!(".")).clone(), true, false)?).clone()], list![InstNode::info(extendsNode.clone())?, InstNode::info(ext_node.clone())?])?;
+                Error::addMultiSourceMessage(Error::FOUND_OTHER_BASECLASS.clone(), list![(AbsynUtil::pathString(var_field!((*elem).baseClassPath, SCode::Element::EXTENDS).clone(), (literal!(".")).clone(), true, false)?).clone()], list![InstNode::info(extendsNode.clone()), InstNode::info(ext_node.clone())])?;
                 bail!("fail");
             }
             ()
@@ -1215,7 +1215,7 @@ pub fn applyModifier(mut modifier: Arc<Modifier::Modifier>, mut cls: Arc<ClassTr
                     unwrap_break_err!(InstNode::componentApply(node.clone(), (std::sync::Arc::new(Component::mergeModifier) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Modifier::Modifier>, Arc<Component::NFComponent>) -> Result<Arc<Component::NFComponent>> + 'static>), r#mod.clone()), '__try0);
                     Ok::<(), anyhow::Error>(())
                 }.is_err() {
-                    Error::addSourceMessage(Error::MISSING_MODIFIED_ELEMENT.clone(), list![(Modifier::name(r#mod.clone())?).clone(), (InstNode::name(parent.clone())?).clone()], Modifier::info(r#mod.clone())?)?;
+                    Error::addSourceMessage(Error::MISSING_MODIFIED_ELEMENT.clone(), list![(Modifier::name(r#mod.clone())?).clone(), (InstNode::name(parent.clone())?).clone()], Modifier::info(r#mod.clone()))?;
                     if !(InstContext::inInstanceAPI(context.clone())) {
                         bail!("fail");
                     }
@@ -1247,7 +1247,7 @@ pub fn applyModifier(mut modifier: Arc<Modifier::Modifier>, mut cls: Arc<ClassTr
                     found = true;
                     node = InstNode::resolveOuter(node.clone());
                     if InstNode::isProtected(node.clone()) && !(InstNode::isExtends(parent.clone()) || InstNode::isBaseClass(parent.clone())) {
-                        Error::addMultiSourceMessage(Error::NF_MODIFY_PROTECTED.clone(), list![(InstNode::name(node.clone())?).clone(), (Modifier::toString(r#mod.clone(), true)?).clone()], list![Modifier::info(r#mod.clone())?, InstNode::info(node.clone())?])?;
+                        Error::addMultiSourceMessage(Error::NF_MODIFY_PROTECTED.clone(), list![(InstNode::name(node.clone())?).clone(), (Modifier::toString(r#mod.clone(), true)?).clone()], list![Modifier::info(r#mod.clone()), InstNode::info(node.clone())])?;
                         if InstContext::inInstanceAPI(context.clone()) {
                             continue;
                         } else {
@@ -1255,7 +1255,7 @@ pub fn applyModifier(mut modifier: Arc<Modifier::Modifier>, mut cls: Arc<ClassTr
                         }
                     }
                     if InstNode::isOnlyOuter(node.clone())? {
-                        Error::addSourceMessage(Error::OUTER_ELEMENT_MOD.clone(), list![(Modifier::toString(r#mod.clone(), false)?).clone(), (Modifier::name(r#mod.clone())?).clone()], Modifier::info(r#mod.clone())?)?;
+                        Error::addSourceMessage(Error::OUTER_ELEMENT_MOD.clone(), list![(Modifier::toString(r#mod.clone(), false)?).clone(), (Modifier::name(r#mod.clone())?).clone()], Modifier::info(r#mod.clone()))?;
                         if InstContext::inInstanceAPI(context.clone()) {
                             continue;
                         } else {
@@ -1272,7 +1272,7 @@ pub fn applyModifier(mut modifier: Arc<Modifier::Modifier>, mut cls: Arc<ClassTr
                     }
                 }
                 if !(found.clone()) && !(InstContext::inInstanceAPI(context.clone())) {
-                    Error::addSourceMessage(Error::MISSING_MODIFIED_ELEMENT.clone(), list![(Modifier::name(r#mod.clone())?).clone(), (InstNode::name(parent.clone())?).clone()], Modifier::info(r#mod.clone())?)?;
+                    Error::addSourceMessage(Error::MISSING_MODIFIED_ELEMENT.clone(), list![(Modifier::name(r#mod.clone())?).clone(), (InstNode::name(parent.clone())?).clone()], Modifier::info(r#mod.clone()))?;
                     bail!("fail");
                 }
             }
@@ -1378,7 +1378,7 @@ pub fn redeclareClass(mut redeclareNode: Arc<InstNode::InstNode>, mut originalNo
     let mut orig_opt: Option<Arc<InstNode::InstNode>>;
     let mut cls_tree: Arc<ClassTree::ClassTree> = Arc::new(ClassTree::EMPTY_TREE);
     if !(InstNode::isClass(redeclareNode.clone())?) {
-        Error::addMultiSourceMessage(Error::INVALID_REDECLARE_AS.clone(), list![(InstNode::typeName(originalNode.clone())?).clone(), (InstNode::name(originalNode.clone())?).clone(), (InstNode::typeName(redeclareNode.clone())?).clone()], list![InstNode::info(redeclareNode.clone())?, InstNode::info(originalNode.clone())?])?;
+        Error::addMultiSourceMessage(Error::INVALID_REDECLARE_AS.clone(), list![(InstNode::typeName(originalNode.clone())?).clone(), (InstNode::name(originalNode.clone())?).clone(), (InstNode::typeName(redeclareNode.clone())?).clone()], list![InstNode::info(redeclareNode.clone()), InstNode::info(originalNode.clone())])?;
         bail!("fail");
     }
     partialInstClass(originalNode.clone())?;
@@ -1394,7 +1394,7 @@ pub fn redeclareClass(mut redeclareNode: Arc<InstNode::InstNode>, mut originalNo
         new_cls = (::match_deref::match_deref! { match &(rdcl_cls.clone()) {
         Deref @ Class::PARTIAL_CLASS { .. } if (Class::isBuiltin(orig_cls.clone())?) => {
             if !(SCodeUtil::isEmptyClassDef(SCodeUtil::getClassDef(InstNode::definition(redeclareNode.clone())?)?)) {
-                Error::addSourceMessage(Error::BUILTIN_EXTENDS_INVALID_ELEMENTS.clone(), list![(InstNode::name(redeclareNode.clone())?).clone()], InstNode::info(redeclareNode.clone())?)?;
+                Error::addSourceMessage(Error::BUILTIN_EXTENDS_INVALID_ELEMENTS.clone(), list![(InstNode::name(redeclareNode.clone())?).clone()], InstNode::info(redeclareNode.clone()))?;
                 bail!("fail");
             }
             Class::setPrefixes(prefs.clone(), orig_cls.clone())?
@@ -1441,7 +1441,7 @@ pub fn redeclareEnum(mut redeclareClass: Arc<Class::NFClass>, mut originalClass:
         },
         (Deref @ Class::PARTIAL_BUILTIN { ty: Deref @ Type::ENUMERATION { literals: lits1, .. }, .. }, Deref @ Class::PARTIAL_BUILTIN { ty: Deref @ Type::ENUMERATION { literals: lits2, .. }, .. }) => {
             if !(lits2.clone().is_empty() || List::isEqualOnTrue(lits1.clone(), lits2.clone(), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>))?) {
-                Error::addMultiSourceMessage(Error::REDECLARE_ENUM_NON_SUBTYPE.clone(), list![(InstNode::name(originalNode.clone())?).clone()], list![InstNode::info(redeclareNode.clone())?, InstNode::info(originalNode.clone())?])?;
+                Error::addMultiSourceMessage(Error::REDECLARE_ENUM_NON_SUBTYPE.clone(), list![(InstNode::name(originalNode.clone())?).clone()], list![InstNode::info(redeclareNode.clone()), InstNode::info(originalNode.clone())])?;
                 bail!("fail");
             }
             assign_variant_field!(redeclaredClass => Class::NFClass::PARTIAL_BUILTIN;
@@ -1451,7 +1451,7 @@ pub fn redeclareEnum(mut redeclareClass: Arc<Class::NFClass>, mut originalClass:
             redeclaredClass.clone()
         },
         _ => {
-            Error::addMultiSourceMessage(Error::REDECLARE_CLASS_NON_SUBTYPE.clone(), list![(Restriction::toString(Class::restriction(originalClass.clone()))).clone(), (InstNode::name(originalNode.clone())?).clone()], list![InstNode::info(redeclareNode.clone())?, InstNode::info(originalNode.clone())?])?;
+            Error::addMultiSourceMessage(Error::REDECLARE_CLASS_NON_SUBTYPE.clone(), list![(Restriction::toString(Class::restriction(originalClass.clone()))).clone(), (InstNode::name(originalNode.clone())?).clone()], list![InstNode::info(redeclareNode.clone()), InstNode::info(originalNode.clone())])?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1654,7 +1654,7 @@ pub fn checkPartialComponent(mut compNode: Arc<InstNode::InstNode>, mut compAttr
             bail!("fail");
         }
     } else if isPartial.clone() && compAttr.innerOuter.clone() != InnerOuter::OUTER.clone() && !(InstContext::inRelaxed(context.clone())) {
-        Error::addMultiSourceMessage(Error::PARTIAL_COMPONENT_TYPE.clone(), list![(AbsynUtil::pathString(InstNode::scopePath(compNode.clone(), InstNode::ScopeType::RELATIVE.clone(), false)?, (literal!(".")).clone(), true, false)?).clone(), (InstNode::name(clsNode.clone())?).clone()], list![InstNode::info(clsNode.clone())?, info.clone()])?;
+        Error::addMultiSourceMessage(Error::PARTIAL_COMPONENT_TYPE.clone(), list![(AbsynUtil::pathString(InstNode::scopePath(compNode.clone(), InstNode::ScopeType::RELATIVE.clone(), false)?, (literal!(".")).clone(), true, false)?).clone(), (InstNode::name(clsNode.clone())?).clone()], list![InstNode::info(clsNode.clone()), info.clone()])?;
         bail!("fail");
     }
     Ok(())
@@ -1693,7 +1693,7 @@ pub fn redeclareComponent(mut redeclareNode: Arc<InstNode::InstNode>, mut origin
     let mut rdcl_node: Arc<InstNode::InstNode>;
     let mut rdcl_type: Arc<InstNodeType>;
     if !(InstNode::isComponent(redeclareNode.clone())?) {
-        Error::addMultiSourceMessage(Error::INVALID_REDECLARE_AS.clone(), list![(InstNode::typeName(originalNode.clone())?).clone(), (InstNode::name(originalNode.clone())?).clone(), (InstNode::typeName(redeclareNode.clone())?).clone()], list![InstNode::info(redeclareNode.clone())?, InstNode::info(originalNode.clone())?])?;
+        Error::addMultiSourceMessage(Error::INVALID_REDECLARE_AS.clone(), list![(InstNode::typeName(originalNode.clone())?).clone(), (InstNode::name(originalNode.clone())?).clone(), (InstNode::typeName(redeclareNode.clone())?).clone()], list![InstNode::info(redeclareNode.clone()), InstNode::info(originalNode.clone())])?;
         bail!("fail");
     }
     orig_node = InstNode::resolveInner(originalNode.clone());
@@ -1709,7 +1709,7 @@ pub fn redeclareComponent(mut redeclareNode: Arc<InstNode::InstNode>, mut origin
             orig_ty = (*__esc_orig_ty).clone();
             rdcl_ty = (*__esc_rdcl_ty).clone();
             if !(InstNode::isReplaceable(orig_node.clone())?) && !(InstContext::inInstanceAPI(context.clone())) && !(Type::isEqual(Type::arrayElementType(orig_ty.clone()), Type::arrayElementType(rdcl_ty.clone()))?) {
-                Error::addMultiSourceMessage(Error::REDECLARE_NON_REPLACEABLE.clone(), list![(InstNode::name(orig_node.clone())?).clone()], list![InstNode::info(orig_node.clone())?, InstNode::info(rdcl_node.clone())?])?;
+                Error::addMultiSourceMessage(Error::REDECLARE_NON_REPLACEABLE.clone(), list![(InstNode::name(orig_node.clone())?).clone()], list![InstNode::info(orig_node.clone()), InstNode::info(rdcl_node.clone())])?;
                 bail!("fail");
             }
             binding = Modifier::binding(outerMod.clone());
@@ -1717,7 +1717,7 @@ pub fn redeclareComponent(mut redeclareNode: Arc<InstNode::InstNode>, mut origin
                 binding = if (Binding::isBound(var_field!((*rdcl_comp).binding, Component::NFComponent::COMPONENT).clone())) {var_field!((*rdcl_comp).binding, Component::NFComponent::COMPONENT).clone()} else {var_field!((*orig_comp).binding, Component::NFComponent::COMPONENT).clone()};
             }
             if Binding::isBound(var_field!((*rdcl_comp).condition, Component::NFComponent::COMPONENT).clone()) {
-                Error::addSourceMessage(Error::REDECLARE_CONDITION.clone(), list![(InstNode::name(redeclareNode.clone())?).clone()], InstNode::info(redeclareNode.clone())?)?;
+                Error::addSourceMessage(Error::REDECLARE_CONDITION.clone(), list![(InstNode::name(redeclareNode.clone())?).clone()], InstNode::info(redeclareNode.clone()))?;
                 bail!("fail");
             }
             condition = var_field!((*orig_comp).condition, Component::NFComponent::COMPONENT).clone();
@@ -1747,7 +1747,7 @@ pub fn checkOuterComponentMod(mut node: Arc<InstNode::InstNode>, mut context: i3
     if AbsynUtil::isOnlyOuter(SCodeUtil::prefixesInnerOuter(SCodeUtil::elementPrefixes(elem.clone())?)?) {
         smod = SCodeUtil::componentMod(elem.clone());
         if !(SCodeUtil::isEmptyMod(smod.clone())) {
-            Error::addSourceMessage(Error::OUTER_ELEMENT_MOD.clone(), list![(SCodeDump::printModStr(smod.clone(), SCodeDump::defaultOptions.clone())?).clone(), (InstNode::name(outer_node.clone())?).clone()], InstNode::info(outer_node.clone())?)?;
+            Error::addSourceMessage(Error::OUTER_ELEMENT_MOD.clone(), list![(SCodeDump::printModStr(smod.clone(), SCodeDump::defaultOptions.clone())?).clone(), (InstNode::name(outer_node.clone())?).clone()], InstNode::info(outer_node.clone()))?;
             if !(InstContext::inInstanceAPI(context.clone())) {
                 bail!("fail");
             }
@@ -1809,7 +1809,7 @@ pub fn checkRecursiveDefinition(mut componentType: Arc<InstNode::InstNode>, mut 
         while !(InstNode::isEmpty(parent.clone())) {
             parent_type = InstNode::classScope(parent.clone());
             if referenceEq(&*(InstNode::definition(componentType.clone())?),&*(InstNode::definition(parent_type.clone())?)) {
-                Error::addSourceMessage(Error::RECURSIVE_DEFINITION.clone(), list![(InstNode::name(component.clone())?).clone(), (InstNode::name(InstNode::classScope(InstNode::parent(component.clone())))?).clone()], InstNode::info(component.clone())?)?;
+                Error::addSourceMessage(Error::RECURSIVE_DEFINITION.clone(), list![(InstNode::name(component.clone())?).clone(), (InstNode::name(InstNode::classScope(InstNode::parent(component.clone())))?).clone()], InstNode::info(component.clone()))?;
                 InstNode::componentApply(component.clone(), (std::sync::Arc::new(Component::setClassInstance) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, Arc<Component::NFComponent>) -> Result<Arc<Component::NFComponent>> + 'static>), crate::NFInstNode::InstNode::interned_EMPTY_NODE())?;
                 bail!("fail");
             }
@@ -1817,7 +1817,7 @@ pub fn checkRecursiveDefinition(mut componentType: Arc<InstNode::InstNode>, mut 
         }
     }
     if limitReached.clone() {
-        Error::addSourceMessage(Error::INST_RECURSION_LIMIT_REACHED.clone(), list![(AbsynUtil::pathString(InstNode::scopePath(component.clone(), InstNode::ScopeType::RELATIVE.clone(), false)?, (literal!(".")).clone(), true, false)?).clone()], InstNode::info(component.clone())?)?;
+        Error::addSourceMessage(Error::INST_RECURSION_LIMIT_REACHED.clone(), list![(AbsynUtil::pathString(InstNode::scopePath(component.clone(), InstNode::ScopeType::RELATIVE.clone(), false)?, (literal!(".")).clone(), true, false)?).clone()], InstNode::info(component.clone()))?;
         InstNode::componentApply(component.clone(), (std::sync::Arc::new(Component::setClassInstance) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, Arc<Component::NFComponent>) -> Result<Arc<Component::NFComponent>> + 'static>), crate::NFInstNode::InstNode::interned_EMPTY_NODE())?;
         bail!("fail");
     }
@@ -1837,7 +1837,7 @@ pub fn updateParameterBinding(mut node: Arc<InstNode::InstNode>, mut context: i3
     binding = Component::getTypeAttributeBinding(comp.clone(), (literal!("start")).clone());
     if Binding::isBound(binding.clone()) && !(Binding::hasTypeOrigin(binding.clone())?) {
         if !(InstContext::inRelaxed(context.clone())) {
-            Error::addSourceMessage(Error::UNBOUND_PARAMETER_WITH_START_VALUE_WARNING.clone(), list![(AbsynUtil::pathString(InstNode::scopePath(node.clone(), InstNode::ScopeType::RELATIVE.clone(), false)?, (literal!(".")).clone(), true, false)?).clone(), (Binding::toString(binding.clone(), (literal!("")).clone())?).clone()], InstNode::info(node.clone())?)?;
+            Error::addSourceMessage(Error::UNBOUND_PARAMETER_WITH_START_VALUE_WARNING.clone(), list![(AbsynUtil::pathString(InstNode::scopePath(node.clone(), InstNode::ScopeType::RELATIVE.clone(), false)?, (literal!(".")).clone(), true, false)?).clone(), (Binding::toString(binding.clone(), (literal!("")).clone())?).clone()], InstNode::info(node.clone()))?;
         }
         binding = Binding::unpropagate(binding.clone(), node.clone());
         if Binding::isEach(binding.clone()) {
@@ -1954,7 +1954,7 @@ pub fn instExpressions(mut node: Arc<InstNode::InstNode>, mut scope: Arc<InstNod
             } else if SCodeUtil::hasBooleanNamedAnnotationInClass(InstNode::definition(node.clone())?, (literal!("__OpenModelica_builtinType")).clone())? {
                 ty = Arc::new(Type::NFType::COMPLEX { cls: node.clone(), complexTy: crate::NFComplexType::interned_CLASS() });
             } else {
-                Error::addSourceMessage(Error::MISSING_TYPE_BASETYPE.clone(), list![(InstNode::name(node.clone())?).clone()], InstNode::info(node.clone())?)?;
+                Error::addSourceMessage(Error::MISSING_TYPE_BASETYPE.clone(), list![(InstNode::name(node.clone())?).clone()], InstNode::info(node.clone()))?;
                 bail!("fail");
             }
             cls_tree = ClassTree::flatten(cls_tree.clone())?;
@@ -1992,7 +1992,7 @@ pub fn instExpressions(mut node: Arc<InstNode::InstNode>, mut scope: Arc<InstNod
         Deref @ Class::EXPANDED_DERIVED { dims: __esc_dims, .. } => {
             dims = (*__esc_dims).clone();
             sections = instExpressions(var_field!((*cls).baseClass, Class::NFClass::EXPANDED_DERIVED).clone(), scope.clone(), sections.clone(), connectBreaks.clone(), context.clone(), settings.clone())?;
-            info = InstNode::info(node.clone())?;
+            info = InstNode::info(node.clone());
             for mut i in 1..=metamodelica::arrayLength(dims.clone()) {
                 {
                     let __cell0 = instDimension(({let __elt = dims.borrow()[(i.clone()-1) as usize].clone(); __elt}), context.clone(), settings.clone(), info.clone())?;
@@ -2067,9 +2067,9 @@ pub fn instRecordConstructor(mut node: Arc<InstNode::InstNode>, mut context: i32
         _ => {
             InstNode::cacheInitFunc(node.clone())?;
             if SCodeUtil::isOperatorRecord(InstNode::definition(node.clone())?) {
-                OperatorOverloading::instConstructor(InstNode::fullPath(node.clone(), false)?, node.clone(), context.clone(), InstNode::info(node.clone())?)?;
+                OperatorOverloading::instConstructor(InstNode::fullPath(node.clone(), false)?, node.clone(), context.clone(), InstNode::info(node.clone()))?;
             } else {
-                Record::instDefaultConstructor(InstNode::fullPath(node.clone(), false)?, node.clone(), context.clone(), InstNode::info(node.clone())?)?;
+                Record::instDefaultConstructor(InstNode::fullPath(node.clone(), false)?, node.clone(), context.clone(), InstNode::info(node.clone()))?;
             }
             ()
         },
@@ -2086,7 +2086,7 @@ pub fn instBuiltinAttribute(mut attribute: Arc<Modifier::Modifier>, mut node: Ar
             ()
         },
         Deref @ Modifier::REDECLARE { .. } => {
-            Error::addSourceMessage(Error::INVALID_REDECLARE_IN_BASIC_TYPE.clone(), list![(Modifier::name(attribute.clone())?).clone()], Modifier::info(attribute.clone())?)?;
+            Error::addSourceMessage(Error::INVALID_REDECLARE_IN_BASIC_TYPE.clone(), list![(Modifier::name(attribute.clone())?).clone()], Modifier::info(attribute.clone()))?;
             bail!("fail")
         },
         _ => {
@@ -2545,12 +2545,12 @@ pub fn instSections2(mut parts: Arc<SCode::ClassDef>, mut scope: Arc<InstNode::I
             instExternalDecl(ext_decl.clone(), scope.clone(), context.clone())?
         },
         (_, Deref @ Sections::EXTERNAL { .. }) if (SCodeUtil::classDefHasSections(parts.clone(), true)) => {
-            Error::addMultiSourceMessage(Error::MULTIPLE_SECTIONS_IN_FUNCTION.clone(), list![(InstNode::name(scope.clone())?).clone()], list![var_field!((*sections).info, Sections::NFSections::EXTERNAL).clone(), InstNode::info(scope.clone())?])?;
+            Error::addMultiSourceMessage(Error::MULTIPLE_SECTIONS_IN_FUNCTION.clone(), list![(InstNode::name(scope.clone())?).clone()], list![var_field!((*sections).info, Sections::NFSections::EXTERNAL).clone(), InstNode::info(scope.clone())])?;
             bail!("fail")
         },
         (Deref @ SCode::ClassDef::PARTS { externalDecl: Some(ext_decl), .. }, _) => {
             if SCodeUtil::classDefHasSections(parts.clone(), false) {
-                Error::addSourceMessage(Error::MULTIPLE_SECTIONS_IN_FUNCTION.clone(), list![(InstNode::name(scope.clone())?).clone()], InstNode::info(scope.clone())?)?;
+                Error::addSourceMessage(Error::MULTIPLE_SECTIONS_IN_FUNCTION.clone(), list![(InstNode::name(scope.clone())?).clone()], InstNode::info(scope.clone()))?;
                 bail!("fail");
             }
             instExternalDecl(ext_decl.clone(), scope.clone(), context.clone())?
@@ -2582,7 +2582,7 @@ pub fn instExternalDecl(mut extDecl: Arc<SCode::ExternalDecl>, mut scope: Arc<In
             let mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
             let mut ret_cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
             let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
-            info = InstNode::info(scope.clone())?;
+            info = InstNode::info(scope.clone());
             name = (Util::getOptionOrDefault(extDecl.funcName.clone(), (InstNode::name(scope.clone())?).clone())).clone();
             lang = (Util::getOptionOrDefault(extDecl.lang.clone(), (literal!("C")).clone())).clone();
             checkExternalDeclLanguage((lang.clone()).clone(), info.clone())?;
@@ -3080,7 +3080,7 @@ pub fn checkIteratorShadowing(mut name: ArcStr, mut scope: Arc<InstNode::InstNod
             for mut iter in &*var_field!((*scope).locals, InstNode::InstNode::IMPLICIT_SCOPE).clone() {
                 let mut iter = iter.clone();
                 if InstNode::name(iter.clone())? == name.clone() {
-                    Error::addMultiSourceMessage(Error::SHADOWED_ITERATOR.clone(), list![(name.clone()).clone()], list![InstNode::info(iter.clone())?, info.clone()])?;
+                    Error::addMultiSourceMessage(Error::SHADOWED_ITERATOR.clone(), list![(name.clone()).clone()], list![InstNode::info(iter.clone()), info.clone()])?;
                     return Ok(());
                 }
             }
@@ -3115,7 +3115,7 @@ pub fn insertGeneratedInners(mut node: Arc<InstNode::InstNode>, mut topScope: Ar
         name = (InstNode::name(n.clone())?).clone();
         checkTopLevelOuter((name.clone()).clone(), n.clone(), node.clone(), context.clone())?;
         if !(InstContext::inInstanceAPI(context.clone())) {
-            Error::addSourceMessage(Error::MISSING_INNER_ADDED.clone(), list![(InstNode::typeName(n.clone())?).clone(), (name.clone()).clone()], InstNode::info(n.clone())?)?;
+            Error::addSourceMessage(Error::MISSING_INNER_ADDED.clone(), list![(InstNode::typeName(n.clone())?).clone(), (name.clone()).clone()], InstNode::info(n.clone()))?;
         }
         if InstNode::isComponent(n.clone())? {
             instComponent(n.clone(), Attributes::DEFAULT_ATTR().clone(), crate::NFModifier::Modifier::interned_NOMOD(), true, 0, InstContext::CLASS.clone(), None, metamodelica::nil())?;
@@ -3126,7 +3126,7 @@ pub fn insertGeneratedInners(mut node: Arc<InstNode::InstNode>, mut topScope: Ar
                         _ => break '__try2 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
                     } };
                     r#str = __pa3.clone();
-                    unwrap_break_err!(Error::addSourceMessage(Error::MISSING_INNER_MESSAGE.clone(), list![(System::unescapedString((r#str.clone()).clone())).clone()], unwrap_break_err!(InstNode::info(n.clone()), '__try2)), '__try2);
+                    unwrap_break_err!(Error::addSourceMessage(Error::MISSING_INNER_MESSAGE.clone(), list![(System::unescapedString((r#str.clone()).clone())).clone()], InstNode::info(n.clone())), '__try2);
                     Ok::<(), anyhow::Error>(())
                 }.is_err() {
                 }
@@ -3154,12 +3154,12 @@ pub fn checkTopLevelOuter(mut name: ArcStr, mut outerNode: Arc<InstNode::InstNod
         if unwrap_break_err!(InstNode::isInner(node.clone()), '__try0) {
             is_error = !(InstContext::inRelaxed(context.clone()) || unwrap_break_err!(Flags::isConfigFlagSet(Flags::ALLOW_NON_STANDARD_MODELICA.clone(), (literal!("nonStdTopLevelOuter")).clone()), '__try0));
             if is_error.clone() {
-                unwrap_break_err!(Error::addSourceMessageAsError(Error::TOP_LEVEL_OUTER.clone(), list![(name.clone()).clone()], unwrap_break_err!(InstNode::info(node.clone()), '__try0)), '__try0);
+                unwrap_break_err!(Error::addSourceMessageAsError(Error::TOP_LEVEL_OUTER.clone(), list![(name.clone()).clone()], InstNode::info(node.clone())), '__try0);
             } else {
-                unwrap_break_err!(Error::addSourceMessage(Error::TOP_LEVEL_OUTER.clone(), list![(name.clone()).clone()], unwrap_break_err!(InstNode::info(node.clone()), '__try0)), '__try0);
+                unwrap_break_err!(Error::addSourceMessage(Error::TOP_LEVEL_OUTER.clone(), list![(name.clone()).clone()], InstNode::info(node.clone())), '__try0);
             }
         } else {
-            unwrap_break_err!(Error::addMultiSourceMessage(Error::MISSING_INNER_NAME_CONFLICT.clone(), list![(name.clone()).clone()], list![unwrap_break_err!(InstNode::info(node.clone()), '__try0), unwrap_break_err!(InstNode::info(outerNode.clone()), '__try0)]), '__try0);
+            unwrap_break_err!(Error::addMultiSourceMessage(Error::MISSING_INNER_NAME_CONFLICT.clone(), list![(name.clone()).clone()], list![InstNode::info(node.clone()), InstNode::info(outerNode.clone())]), '__try0);
             is_error = true;
         }
         Ok::<_, anyhow::Error>((is_error.clone(),))
@@ -3404,7 +3404,7 @@ pub fn markImplicitWhenExp_traverser(mut exp: Arc<Expression::NFExpression>) -> 
 
 pub fn checkPartialClass(mut node: Arc<InstNode::InstNode>, mut context: i32) -> Result<()> {
     if InstNode::isPartial(node.clone())? && !(InstContext::inRelaxed(context.clone())) {
-        Error::addSourceMessage(Error::INST_PARTIAL_CLASS.clone(), list![(InstNode::name(node.clone())?).clone()], InstNode::info(node.clone())?)?;
+        Error::addSourceMessage(Error::INST_PARTIAL_CLASS.clone(), list![(InstNode::name(node.clone())?).clone()], InstNode::info(node.clone()))?;
         bail!("fail");
     }
     Ok(())
@@ -3417,7 +3417,7 @@ pub fn checkInstanceRestriction(mut node: Arc<InstNode::InstNode>, mut path: Arc
     }
     elem = InstNode::definition(node.clone())?;
     if SCodeUtil::isFunction(elem.clone()) || SCodeUtil::isPackage(elem.clone()) {
-        Error::addSourceMessage(Error::INST_INVALID_RESTRICTION.clone(), list![(AbsynUtil::pathString(path.clone(), (literal!(".")).clone(), true, false)?).clone(), (SCodeDump::restrString(SCodeUtil::getClassRestriction(elem.clone())?)?).clone()], InstNode::info(node.clone())?)?;
+        Error::addSourceMessage(Error::INST_INVALID_RESTRICTION.clone(), list![(AbsynUtil::pathString(path.clone(), (literal!(".")).clone(), true, false)?).clone(), (SCodeDump::restrString(SCodeUtil::getClassRestriction(elem.clone())?)?).clone()], InstNode::info(node.clone()))?;
         bail!("fail");
     }
     Ok(())

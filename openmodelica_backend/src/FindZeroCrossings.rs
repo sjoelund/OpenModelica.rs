@@ -582,7 +582,7 @@ fn findZeroCrossings1(mut inSyst: Arc<BackendDAE::EqSystem>, mut inShared: Arc<B
                 comps = __pa8.clone();
                 ass1 = __pa9.clone();
                 ass2 = __pa10.clone();
-                comps = unwrap_break_err!(findZeroCrossingsinJacobians(comps.clone(), zero_crossings.clone(), relations.clone(), sampleLst.clone(), vars.clone(), globalKnownVars.clone()), '__try7);
+                comps = findZeroCrossingsinJacobians(comps.clone(), zero_crossings.clone(), relations.clone(), sampleLst.clone(), vars.clone(), globalKnownVars.clone());
                 assign_field!(
                     outSyst.orderedEqs = eqns1.clone(),
                     outSyst.matching = Arc::new(BackendDAE::Matching::MATCHING { ass1: ass1.clone(), ass2: ass2.clone(), comps: comps.clone() })
@@ -843,7 +843,7 @@ fn findZeroCrossingsIfEqns(mut inIfEqn: Arc<BackendDAE::Equation>, mut inZeroCro
     Ok((outIfEqn, outCountMathFunctions, outZeroCrossings, outrelationsinZC, outSamplesLst))
 }
 
-fn findZeroCrossingsinJacobians(mut inStrongComponents: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, mut zeroCrossingLst: BackendDAE::ZeroCrossingSet, mut relationsLst: DoubleEnded::MutableList<BackendDAE::ZeroCrossing>, mut samplesLst: BackendDAE::ZeroCrossingSet, mut allVariables: BackendDAE::Variables, mut globalKnownVars: BackendDAE::Variables) -> Result<Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>> {
+fn findZeroCrossingsinJacobians(mut inStrongComponents: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, mut zeroCrossingLst: BackendDAE::ZeroCrossingSet, mut relationsLst: DoubleEnded::MutableList<BackendDAE::ZeroCrossing>, mut samplesLst: BackendDAE::ZeroCrossingSet, mut allVariables: BackendDAE::Variables, mut globalKnownVars: BackendDAE::Variables) -> Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>> {
     let mut strongComponents: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>> = metamodelica::nil();
     let mut outComponent: Arc<BackendDAE::StrongComponent>;
     for mut component in &*inStrongComponents.clone() {
@@ -896,12 +896,12 @@ fn findZeroCrossingsinJacobians(mut inStrongComponents: Arc<metamodelica::List<A
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
         strongComponents = metamodelica::cons(outComponent.clone(), strongComponents.clone());
     }
     strongComponents = strongComponents.clone().reverse();
-    Ok(strongComponents)
+    strongComponents
 }
 
 fn replaceZCExpinFullJacobian(mut fullJac: Option<Arc<metamodelica::List<(i32, i32, Arc<BackendDAE::Equation>)>>>, mut zeroCrossingLst: BackendDAE::ZeroCrossingSet, mut relationsLst: DoubleEnded::MutableList<BackendDAE::ZeroCrossing>, mut samplesLst: BackendDAE::ZeroCrossingSet, mut allVariables: BackendDAE::Variables, mut globalKnownVars: BackendDAE::Variables) -> Result<Option<Arc<metamodelica::List<(i32, i32, Arc<BackendDAE::Equation>)>>>> {
@@ -972,7 +972,7 @@ fn replaceZeroCrossingsJacBackend(mut inBackendDAE: Arc<BackendDAE::BackendDAE>,
         comps = __pa2.clone();
         ass1 = __pa3.clone();
         ass2 = __pa4.clone();
-        comps = findZeroCrossingsinJacobians(comps.clone(), zeroCrossingLst.clone(), relationsLst.clone(), samplesLst.clone(), allVariables.clone(), globalKnownVars.clone())?;
+        comps = findZeroCrossingsinJacobians(comps.clone(), zeroCrossingLst.clone(), relationsLst.clone(), samplesLst.clone(), allVariables.clone(), globalKnownVars.clone());
         matching = Arc::new(BackendDAE::Matching::MATCHING { comps: comps.clone(), ass1: ass1.clone(), ass2: ass2.clone() });
         assign_field!(system.matching = matching.clone());
         outEqs = metamodelica::cons(system.clone(), outEqs.clone());
@@ -1938,7 +1938,7 @@ fn traverseStmtsExps(mut inStmts: Arc<metamodelica::List<Arc<DAE::Statement>>>, 
                 Ok::<(), anyhow::Error>(())
             }.is_ok() { bail!("failure(): body succeeded") }
             let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
-            metamodelica::print((DAEDump::ppStatementStr(x.clone())?).clone());
+            metamodelica::print((DAEDump::ppStatementStr(x.clone())).clone());
             metamodelica::print((literal!("Warning, not allowed to set the componentRef to a expression in FindZeroCrossings.traverseStmtsExps for ZeroCrosssing\n")).clone());
             (Arc::new(DAE::Statement::STMT_ASSIGN_ARR { type_: tp.clone(), lhs: e_2.clone(), exp: e_1.clone(), source: source.clone() }), extraArg.clone())
         },
@@ -2030,7 +2030,7 @@ fn traverseStmtsExps(mut inStmts: Arc<metamodelica::List<Arc<DAE::Statement>>>, 
             (Arc::new(DAE::Statement::STMT_FAILURE { body: stmts2.clone(), source: source.clone() }), extraArg.clone())
         },
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FindZeroCrossings.traverseStmtsExps")); __mm_s.push_str(&*literal!(" failed: ")); __mm_s.push_str(&*DAEDump::ppStatementStr(stmt.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/FindZeroCrossings.mo"))?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FindZeroCrossings.traverseStmtsExps")); __mm_s.push_str(&*literal!(" failed: ")); __mm_s.push_str(&*DAEDump::ppStatementStr(stmt.clone())); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/FindZeroCrossings.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

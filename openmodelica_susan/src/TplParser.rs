@@ -1071,7 +1071,7 @@ pub fn interleaveExpectChar(mut inChars: Arc<metamodelica::List<ArcStr>>, mut in
                     let mut c: ArcStr = arcstr::literal!("");
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(chars.clone()) {
                         Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
                         _ => bail!("pattern mismatch"),
@@ -1124,7 +1124,7 @@ pub fn takeKeywordChars(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inKeyw
     }
 }
 
-pub fn isKeyword(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inKeywordChars: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<metamodelica::List<ArcStr>>, bool)> {
+pub fn isKeyword(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inKeywordChars: Arc<metamodelica::List<ArcStr>>) -> (Arc<metamodelica::List<ArcStr>>, bool) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut isKeyword: bool;
     (outChars, isKeyword) = 'mc: {
@@ -1148,9 +1148,9 @@ pub fn isKeyword(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inKeywordChar
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outChars, isKeyword))
+    (outChars, isKeyword)
 }
 
 pub fn interleaveExpectKeyWord(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inKeywordChars: Arc<metamodelica::List<ArcStr>>, mut isFatal: bool) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo)> {
@@ -1163,8 +1163,8 @@ pub fn interleaveExpectKeyWord(mut inChars: Arc<metamodelica::List<ArcStr>>, mut
                 (chars, linfo, kwchars, _) => {
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    let __pa0 = ::match_deref::match_deref! { match &(isKeyword(chars.clone(), kwchars.clone())?) {
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    let __pa0 = ::match_deref::match_deref! { match &(isKeyword(chars.clone(), kwchars.clone())) {
                         (__pa0, true) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -1180,8 +1180,8 @@ pub fn interleaveExpectKeyWord(mut inChars: Arc<metamodelica::List<ArcStr>>, mut
                     let mut kw: ArcStr = arcstr::literal!("");
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    ::match_deref::match_deref! { match &(isKeyword(chars.clone(), kwchars.clone())?) {
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    ::match_deref::match_deref! { match &(isKeyword(chars.clone(), kwchars.clone())) {
                         (_, false) => (),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -1216,7 +1216,7 @@ pub fn interleaveExpectEndOfFile(mut inChars: Arc<metamodelica::List<ArcStr>>, m
             ::match_deref::match_deref! { match &__mc_input {
                 (chars, linfo) => {
                     let mut linfo = (*linfo).clone();
-                    let __pa0 = ::match_deref::match_deref! { match &(interleave(chars.clone(), linfo.clone())?) {
+                    let __pa0 = ::match_deref::match_deref! { match &(interleave(chars.clone(), linfo.clone())) {
                         (Deref @ metamodelica::List::Nil, __pa0) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -1231,7 +1231,7 @@ pub fn interleaveExpectEndOfFile(mut inChars: Arc<metamodelica::List<ArcStr>>, m
                 (chars, linfo) => {
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     linfo = parseError(chars.clone(), linfo.clone(), (literal!("Expected end of file at the position.")).clone(), false)?;
                     Ok((chars.clone(), linfo.clone()))
                 }
@@ -1337,7 +1337,7 @@ fn typeviewDefsFromInterfaceFile(mut interfaceName: Arc<TplAbsyn::PathIdent>, mu
             return Ok((astDefs.clone(), linfo.clone(), errOpt.clone(), cachedDefs.clone()));
         }
         (chars, linfo, errOpt) = unwrap_break_err!(openFile((file.clone()).clone()), '__try0);
-        (chars, linfo) = unwrap_break_err!(interleave(chars.clone(), linfo.clone()), '__try0);
+        (chars, linfo) = interleave(chars.clone(), linfo.clone());
         (chars, linfo, _, newAstDefs) = unwrap_break_err!(interfacePackage(chars.clone(), linfo.clone(), metamodelica::nil()), '__try0);
         (_, linfo) = unwrap_break_err!(interleaveExpectEndOfFile(chars.clone(), linfo.clone()), '__try0);
         if unwrap_break_err!(Flags::isSet(Flags::FAILTRACE.clone()), '__try0) {
@@ -1501,7 +1501,7 @@ interleave:  //i.e. space / comment
   |
   _ //just nothing
 */
-pub fn interleave(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo)> {
+pub fn interleave(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     (outChars, outLineInfo) = 'mc: {
@@ -1511,7 +1511,7 @@ pub fn interleave(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: 
                 (Deref @ metamodelica::List::Cons { head: Deref @ " ", tail: chars }, linfo) => {
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     Ok((chars.clone(), linfo.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1522,7 +1522,7 @@ pub fn interleave(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: 
                 (Deref @ metamodelica::List::Cons { head: Deref @ "\t", tail: chars }, linfo) => {
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     Ok((chars.clone(), linfo.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1534,7 +1534,7 @@ pub fn interleave(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: 
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
                     (chars, linfo) = toEndOfLine(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     Ok((chars.clone(), linfo.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1546,7 +1546,7 @@ pub fn interleave(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: 
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
                     (chars, linfo) = comment(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     Ok((chars.clone(), linfo.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1572,7 +1572,7 @@ pub fn interleave(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: 
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
                     (chars, linfo) = newLine(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     Ok((chars.clone(), linfo.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1586,9 +1586,9 @@ pub fn interleave(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: 
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outChars, outLineInfo))
+    (outChars, outLineInfo)
 }
 
 /*
@@ -1795,8 +1795,8 @@ pub fn pathIdent(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: L
             let mut chars = (*chars).clone();
             let mut linfo = (*linfo).clone();
             (chars, head) = identifier(chars.clone())?;
-            (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-            (chars, linfo, pid) = pathIdentPath(chars.clone(), linfo.clone(), (head.clone()).clone())?;
+            (chars, linfo) = interleave(chars.clone(), linfo.clone());
+            (chars, linfo, pid) = pathIdentPath(chars.clone(), linfo.clone(), (head.clone()).clone());
             (chars.clone(), linfo.clone(), pid.clone())
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1813,7 +1813,7 @@ pathIdentPath(head):
   |
   _ =>  IDENT(head)
 */
-pub fn pathIdentPath(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inHeadIdent: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<TplAbsyn::PathIdent>)> {
+pub fn pathIdentPath(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inHeadIdent: ArcStr) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<TplAbsyn::PathIdent>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outPathIdent: Arc<TplAbsyn::PathIdent>;
@@ -1825,7 +1825,7 @@ pub fn pathIdentPath(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInf
                     let mut pid: Arc<TplAbsyn::PathIdent> = Arc::new(<TplAbsyn::PathIdent as ::std::default::Default>::default());
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, pid) = pathIdent(chars.clone(), linfo.clone())?;
                     Ok((chars.clone(), linfo.clone(), Arc::new(TplAbsyn::PathIdent::PATH_IDENT { ident: (head.clone()).clone(), path: pid.clone() })))
                 }
@@ -1840,9 +1840,9 @@ pub fn pathIdentPath(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInf
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outChars, outLineInfo, outPathIdent))
+    (outChars, outLineInfo, outPathIdent)
 }
 
 pub fn identifierNoOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, ArcStr)> {
@@ -1892,8 +1892,8 @@ pub fn pathIdentNoOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineIn
             let mut chars = (*chars).clone();
             let mut linfo = (*linfo).clone();
             (chars, linfo, head) = identifierNoOpt(chars.clone(), linfo.clone())?;
-            (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-            (chars, linfo, pid) = pathIdentPath(chars.clone(), linfo.clone(), (head.clone()).clone())?;
+            (chars, linfo) = interleave(chars.clone(), linfo.clone());
+            (chars, linfo, pid) = pathIdentPath(chars.clone(), linfo.clone(), (head.clone()).clone());
             (chars.clone(), linfo.clone(), pid.clone())
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1926,17 +1926,17 @@ pub fn templPackage(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo
                     let mut linfo = (*linfo).clone();
                     let mut cachedDefs: Arc<CacheTree::Tree> = cachedDefs.clone();
                     (chars, linfo) = interleaveExpectKeyWord(chars.clone(), linfo.clone(), list![(literal!("p")).clone(), (literal!("a")).clone(), (literal!("c")).clone(), (literal!("k")).clone(), (literal!("a")).clone(), (literal!("g")).clone(), (literal!("e")).clone()], true)?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, pid) = pathIdentNoOpt(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = stringComment(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo, astDefs, templDefs, cachedDefs) = definitions(chars.clone(), linfo.clone(), metamodelica::nil(), metamodelica::nil(), cachedDefs.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo) = stringComment(chars.clone(), linfo.clone());
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo, astDefs, templDefs, cachedDefs) = definitions(chars.clone(), linfo.clone(), metamodelica::nil(), metamodelica::nil(), cachedDefs.clone());
                     astDefs = astDefs.clone().reverse();
                     templDefs = templDefs.clone().reverse();
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, annotationFooter) = self::annotationFooter(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo) = endDefPathIdent(chars.clone(), linfo.clone(), pid.clone())?;
                     Ok(((chars.clone(), linfo.clone(), TplAbsyn::TemplPackage { name: pid.clone(), astDefs: astDefs.clone(), templateDefs: templDefs.clone(), annotationFooter: (annotationFooter.clone()).clone() }), cachedDefs.clone()))
                 }
@@ -1976,7 +1976,7 @@ definitions(astDefs,templDefs):
 //  |
 //  error "Expecting 'end' | ['public' | 'protected' ] 'package' definition | template definition starting with an identifier."
 */
-pub fn definitions(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inAccASTDefs: Arc<metamodelica::List<TplAbsyn::ASTDef>>, mut inAccTemplDefs: Arc<metamodelica::List<(ArcStr, TplAbsyn::TemplateDef)>>, mut cachedDefs: Arc<CacheTree::Tree>) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<TplAbsyn::ASTDef>>, Arc<metamodelica::List<(ArcStr, TplAbsyn::TemplateDef)>>, Arc<CacheTree::Tree>)> {
+pub fn definitions(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inAccASTDefs: Arc<metamodelica::List<TplAbsyn::ASTDef>>, mut inAccTemplDefs: Arc<metamodelica::List<(ArcStr, TplAbsyn::TemplateDef)>>, mut cachedDefs: Arc<CacheTree::Tree>) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<TplAbsyn::ASTDef>>, Arc<metamodelica::List<(ArcStr, TplAbsyn::TemplateDef)>>, Arc<CacheTree::Tree>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outASTDefs: Arc<metamodelica::List<TplAbsyn::ASTDef>>;
@@ -2007,24 +2007,24 @@ pub fn definitions(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo:
                     let mut templDefs = (*templDefs).clone();
                     let mut cachedDefs: Arc<CacheTree::Tree> = cachedDefs.clone();
                     afterKeyword(chars.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     let __pa0 = ::match_deref::match_deref! { match &(chars.clone()) {
                         Deref @ metamodelica::List::Cons { head: Deref @ "i", tail: Deref @ metamodelica::List::Cons { head: Deref @ "n", tail: Deref @ metamodelica::List::Cons { head: Deref @ "t", tail: Deref @ metamodelica::List::Cons { head: Deref @ "e", tail: Deref @ metamodelica::List::Cons { head: Deref @ "r", tail: Deref @ metamodelica::List::Cons { head: Deref @ "f", tail: Deref @ metamodelica::List::Cons { head: Deref @ "a", tail: Deref @ metamodelica::List::Cons { head: Deref @ "c", tail: Deref @ metamodelica::List::Cons { head: Deref @ "e", tail: __pa0 } } } } } } } } } => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
                     chars = __pa0.clone();
                     afterKeyword(chars.clone())?;
-                    (startChars, startLinfo) = interleave(chars.clone(), linfo.clone())?;
+                    (startChars, startLinfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, pid) = pathIdentNoOpt(startChars.clone(), startLinfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = stringComment(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo) = stringComment(chars.clone(), linfo.clone());
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo) = semicolon(chars.clone(), linfo.clone())?;
                     (astDefs, linfoTV, errOptTV, cachedDefs) = typeviewDefsFromInterfaceFile(pid.clone(), astDefs.clone(), cachedDefs.clone())?;
                     linfo = parseErrorPrevPositionOpt(startChars.clone(), startLinfo.clone(), linfo.clone(), errOptTV.clone(), false)?;
                     linfo = mergeErrors(linfo.clone(), linfoTV.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo, astDefs, templDefs, cachedDefs) = definitions(chars.clone(), linfo.clone(), astDefs.clone(), templDefs.clone(), cachedDefs.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo, astDefs, templDefs, cachedDefs) = definitions(chars.clone(), linfo.clone(), astDefs.clone(), templDefs.clone(), cachedDefs.clone());
                     Ok(((chars.clone(), linfo.clone(), astDefs.clone(), templDefs.clone()), cachedDefs.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -2045,19 +2045,19 @@ pub fn definitions(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo:
                     let mut templDefs = (*templDefs).clone();
                     let mut cachedDefs: Arc<CacheTree::Tree> = cachedDefs.clone();
                     afterKeyword(chars.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (startChars, startLinfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (startChars, startLinfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, pid) = pathIdentNoOpt(startChars.clone(), startLinfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo, isUnqual) = unqualImportPostfix(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = stringComment(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo, isUnqual) = unqualImportPostfix(chars.clone(), linfo.clone());
+                    (chars, linfo) = stringComment(chars.clone(), linfo.clone());
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo) = semicolon(chars.clone(), linfo.clone())?;
                     (astDefs, linfoTV, errOptTV, cachedDefs) = typeviewDefsFromTemplateFile(pid.clone(), isUnqual.clone(), astDefs.clone(), cachedDefs.clone())?;
                     linfo = parseErrorPrevPositionOpt(startChars.clone(), startLinfo.clone(), linfo.clone(), errOptTV.clone(), false)?;
                     linfo = mergeErrors(linfo.clone(), linfoTV.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo, astDefs, templDefs, cachedDefs) = definitions(chars.clone(), linfo.clone(), astDefs.clone(), templDefs.clone(), cachedDefs.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo, astDefs, templDefs, cachedDefs) = definitions(chars.clone(), linfo.clone(), astDefs.clone(), templDefs.clone(), cachedDefs.clone());
                     Ok(((chars.clone(), linfo.clone(), astDefs.clone(), templDefs.clone()), cachedDefs.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -2074,8 +2074,8 @@ pub fn definitions(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo:
                     let mut templDefs = (*templDefs).clone();
                     let mut cachedDefs: Arc<CacheTree::Tree> = cachedDefs.clone();
                     (chars, linfo, name, td) = templDef(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo, astDefs, templDefs, cachedDefs) = definitions(chars.clone(), linfo.clone(), astDefs.clone(), metamodelica::cons((name.clone(), td.clone()), templDefs.clone()), cachedDefs.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo, astDefs, templDefs, cachedDefs) = definitions(chars.clone(), linfo.clone(), astDefs.clone(), metamodelica::cons((name.clone(), td.clone()), templDefs.clone()), cachedDefs.clone());
                     Ok(((chars.clone(), linfo.clone(), astDefs.clone(), templDefs.clone()), cachedDefs.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -2089,9 +2089,9 @@ pub fn definitions(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo:
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outChars, outLineInfo, outASTDefs, outTemplDefs, cachedDefs))
+    (outChars, outLineInfo, outASTDefs, outTemplDefs, cachedDefs)
 }
 
 /*
@@ -2100,7 +2100,7 @@ unqualImportPostfix:
   |
   _ => false
 */
-pub fn unqualImportPostfix(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, bool)> {
+pub fn unqualImportPostfix(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, bool) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outIsUnqual: bool;
@@ -2111,7 +2111,7 @@ pub fn unqualImportPostfix(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inL
                 (Deref @ metamodelica::List::Cons { head: Deref @ ".", tail: chars }, linfo) => {
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     let __pa0 = ::match_deref::match_deref! { match &(chars.clone()) {
                         Deref @ metamodelica::List::Cons { head: Deref @ "*", tail: __pa0 } => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -2130,9 +2130,9 @@ pub fn unqualImportPostfix(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inL
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outChars, outLineInfo, outIsUnqual))
+    (outChars, outLineInfo, outIsUnqual)
 }
 
 //optional, may fail
@@ -2146,7 +2146,7 @@ pub fn typeSig(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: Lin
             let mut chars = (*chars).clone();
             let mut linfo = (*linfo).clone();
             (chars, linfo, ts) = typeSig_base(chars.clone(), linfo.clone())?;
-            (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+            (chars, linfo) = interleave(chars.clone(), linfo.clone());
             (chars.clone(), linfo.clone(), ts.clone())
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2214,7 +2214,7 @@ pub fn typeSig_base(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo
                     let mut linfo = (*linfo).clone();
                     afterKeyword(chars.clone())?;
                     (chars, linfo) = interleaveExpectChar(chars.clone(), linfo.clone(), (literal!("<")).clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, tof) = typeSigNoOpt(chars.clone(), linfo.clone())?;
                     (chars, linfo) = interleaveExpectChar(chars.clone(), linfo.clone(), (literal!(">")).clone())?;
                     Ok((chars.clone(), linfo.clone(), Arc::new(TplAbsyn::TypeSignature::LIST_TYPE { ofType: tof.clone() })))
@@ -2230,7 +2230,7 @@ pub fn typeSig_base(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo
                     let mut linfo = (*linfo).clone();
                     afterKeyword(chars.clone())?;
                     (chars, linfo) = interleaveExpectChar(chars.clone(), linfo.clone(), (literal!("<")).clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, tof) = typeSigNoOpt(chars.clone(), linfo.clone())?;
                     (chars, linfo) = interleaveExpectChar(chars.clone(), linfo.clone(), (literal!(">")).clone())?;
                     Ok((chars.clone(), linfo.clone(), Arc::new(TplAbsyn::TypeSignature::OPTION_TYPE { ofType: tof.clone() })))
@@ -2247,10 +2247,10 @@ pub fn typeSig_base(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo
                     let mut linfo = (*linfo).clone();
                     afterKeyword(chars.clone())?;
                     (chars, linfo) = interleaveExpectChar(chars.clone(), linfo.clone(), (literal!("<")).clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, tof) = typeSigNoOpt(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo, restLst) = typeSig_restList(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo, restLst) = typeSig_restList(chars.clone(), linfo.clone());
                     (chars, linfo) = interleaveExpectChar(chars.clone(), linfo.clone(), (literal!(">")).clone())?;
                     Ok((chars.clone(), linfo.clone(), Arc::new(TplAbsyn::TypeSignature::TUPLE_TYPE { ofTypes: metamodelica::cons(tof.clone(), restLst.clone()) })))
                 }
@@ -2265,7 +2265,7 @@ pub fn typeSig_base(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo
                     let mut linfo = (*linfo).clone();
                     afterKeyword(chars.clone())?;
                     (chars, linfo) = interleaveExpectChar(chars.clone(), linfo.clone(), (literal!("<")).clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, tof) = typeSigNoOpt(chars.clone(), linfo.clone())?;
                     (chars, linfo) = interleaveExpectChar(chars.clone(), linfo.clone(), (literal!(">")).clone())?;
                     Ok((chars.clone(), linfo.clone(), Arc::new(TplAbsyn::TypeSignature::ARRAY_TYPE { ofType: tof.clone() })))
@@ -2298,7 +2298,7 @@ typeSig_restList:
     |
     _  => {}
 */
-pub fn typeSig_restList(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<Arc<TplAbsyn::TypeSignature>>>)> {
+pub fn typeSig_restList(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<Arc<TplAbsyn::TypeSignature>>>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outTypeSignatureList: Arc<metamodelica::List<Arc<TplAbsyn::TypeSignature>>>;
@@ -2311,10 +2311,10 @@ pub fn typeSig_restList(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLine
                     let mut tsLst: Arc<metamodelica::List<Arc<TplAbsyn::TypeSignature>>> = metamodelica::nil();
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, ts) = typeSigNoOpt(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo, tsLst) = typeSig_restList(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo, tsLst) = typeSig_restList(chars.clone(), linfo.clone());
                     Ok((chars.clone(), linfo.clone(), metamodelica::cons(ts.clone(), tsLst.clone())))
                 }
                 _ => bail!("nomatch"),
@@ -2328,9 +2328,9 @@ pub fn typeSig_restList(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLine
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outChars, outLineInfo, outTypeSignatureList))
+    (outChars, outLineInfo, outTypeSignatureList)
 }
 
 pub fn typeSigFromPathIdent(mut inPathIdent: Arc<TplAbsyn::PathIdent>) -> Arc<TplAbsyn::TypeSignature> {
@@ -2354,7 +2354,7 @@ publicProtected:
   |
   _ => true
 */
-pub fn publicProtected(mut inChars: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<metamodelica::List<ArcStr>>, bool)> {
+pub fn publicProtected(mut inChars: Arc<metamodelica::List<ArcStr>>) -> (Arc<metamodelica::List<ArcStr>>, bool) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outIsDefault: bool;
     (outChars, outIsDefault) = 'mc: {
@@ -2385,9 +2385,9 @@ pub fn publicProtected(mut inChars: Arc<metamodelica::List<ArcStr>>) -> Result<(
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outChars, outIsDefault))
+    (outChars, outIsDefault)
 }
 
 /*
@@ -2396,7 +2396,7 @@ stringComment:
   |
   _
 */
-pub fn stringComment(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo)> {
+pub fn stringComment(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     (outChars, outLineInfo) = 'mc: {
@@ -2422,9 +2422,9 @@ pub fn stringComment(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInf
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outChars, outLineInfo))
+    (outChars, outLineInfo)
 }
 
 /*
@@ -2583,13 +2583,13 @@ pub fn interfacePackage(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLine
                     let mut linfo = (*linfo).clone();
                     (chars, linfo) = interleaveExpectKeyWord(chars.clone(), linfo.clone(), list![(literal!("i")).clone(), (literal!("n")).clone(), (literal!("t")).clone(), (literal!("e")).clone(), (literal!("r")).clone(), (literal!("f")).clone(), (literal!("a")).clone(), (literal!("c")).clone(), (literal!("e")).clone()], true)?;
                     (chars, linfo) = interleaveExpectKeyWord(chars.clone(), linfo.clone(), list![(literal!("p")).clone(), (literal!("a")).clone(), (literal!("c")).clone(), (literal!("k")).clone(), (literal!("a")).clone(), (literal!("g")).clone(), (literal!("e")).clone()], true)?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, pid) = pathIdentNoOpt(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = stringComment(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo, astDefs) = typeviewDefs(chars.clone(), linfo.clone(), inAccASTDefs.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo) = stringComment(chars.clone(), linfo.clone());
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo, astDefs) = typeviewDefs(chars.clone(), linfo.clone(), inAccASTDefs.clone());
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo) = endDefPathIdent(chars.clone(), linfo.clone(), pid.clone())?;
                     Ok((chars.clone(), linfo.clone(), pid.clone(), astDefs.clone()))
                 }
@@ -2617,7 +2617,7 @@ typeviewDefs(astDefs):
   |
   _ => astDefs
 */
-pub fn typeviewDefs(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inAccASTDefs: Arc<metamodelica::List<TplAbsyn::ASTDef>>) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<TplAbsyn::ASTDef>>)> {
+pub fn typeviewDefs(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inAccASTDefs: Arc<metamodelica::List<TplAbsyn::ASTDef>>) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<TplAbsyn::ASTDef>>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outASTDefs: Arc<metamodelica::List<TplAbsyn::ASTDef>>;
@@ -2631,8 +2631,8 @@ pub fn typeviewDefs(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo
                     let mut linfo = (*linfo).clone();
                     let mut astDefs = (*astDefs).clone();
                     (chars, linfo, ad) = absynDef(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo, astDefs) = typeviewDefs(chars.clone(), linfo.clone(), metamodelica::cons(ad.clone(), astDefs.clone()))?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo, astDefs) = typeviewDefs(chars.clone(), linfo.clone(), metamodelica::cons(ad.clone(), astDefs.clone()));
                     Ok((chars.clone(), linfo.clone(), astDefs.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -2646,9 +2646,9 @@ pub fn typeviewDefs(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outChars, outLineInfo, outASTDefs))
+    (outChars, outLineInfo, outASTDefs)
 }
 
 /*
@@ -2669,21 +2669,21 @@ pub fn absynDef(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: Li
             let mut types: Arc<metamodelica::List<(ArcStr, TplAbsyn::TypeInfo)>> = metamodelica::nil();
             let mut chars = (*chars).clone();
             let mut linfo = (*linfo).clone();
-            (chars, isD) = publicProtected(chars.clone())?;
-            (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+            (chars, isD) = publicProtected(chars.clone());
+            (chars, linfo) = interleave(chars.clone(), linfo.clone());
             let __pa0 = ::match_deref::match_deref! { match &(chars.clone()) {
                 Deref @ metamodelica::List::Cons { head: Deref @ "p", tail: Deref @ metamodelica::List::Cons { head: Deref @ "a", tail: Deref @ metamodelica::List::Cons { head: Deref @ "c", tail: Deref @ metamodelica::List::Cons { head: Deref @ "k", tail: Deref @ metamodelica::List::Cons { head: Deref @ "a", tail: Deref @ metamodelica::List::Cons { head: Deref @ "g", tail: Deref @ metamodelica::List::Cons { head: Deref @ "e", tail: __pa0 } } } } } } } => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
             chars = __pa0.clone();
             afterKeyword(chars.clone())?;
-            (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+            (chars, linfo) = interleave(chars.clone(), linfo.clone());
             (chars, linfo, pid) = pathIdentNoOpt(chars.clone(), linfo.clone())?;
-            (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-            (chars, linfo) = stringComment(chars.clone(), linfo.clone())?;
-            (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-            (chars, linfo, types) = absynTypes(chars.clone(), linfo.clone())?;
-            (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+            (chars, linfo) = interleave(chars.clone(), linfo.clone());
+            (chars, linfo) = stringComment(chars.clone(), linfo.clone());
+            (chars, linfo) = interleave(chars.clone(), linfo.clone());
+            (chars, linfo, types) = absynTypes(chars.clone(), linfo.clone());
+            (chars, linfo) = interleave(chars.clone(), linfo.clone());
             (chars, linfo) = endDefPathIdent(chars.clone(), linfo.clone(), pid.clone())?;
             (chars.clone(), linfo.clone(), TplAbsyn::ASTDef { importPackage: pid.clone(), isDefault: isD.clone(), types: types.clone() })
         },
@@ -2709,10 +2709,10 @@ pub fn endDefPathIdent(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineI
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
                     afterKeyword(chars.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, pid) = pathIdentNoOpt(chars.clone(), linfo.clone())?;
                     let true = (pid.clone() == pidToMatch.clone()) else { bail!("pattern mismatch") };
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo) = semicolon(chars.clone(), linfo.clone())?;
                     Ok((chars.clone(), linfo.clone()))
                 }
@@ -2728,11 +2728,11 @@ pub fn endDefPathIdent(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineI
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
                     afterKeyword(chars.clone())?;
-                    (startChars, startLinfo) = interleave(chars.clone(), linfo.clone())?;
+                    (startChars, startLinfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, pid) = pathIdentNoOpt(startChars.clone(), startLinfo.clone())?;
                     let false = (pid.clone() == pidToMatch.clone()) else { bail!("pattern mismatch") };
                     linfo = parseErrorPrevPosition(startChars.clone(), startLinfo.clone(), linfo.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Unmatched ident for 'end'. Expected '")); __mm_s.push_str(&*TplAbsyn::pathIdentString(pidToMatch.clone())?); __mm_s.push_str(&*literal!("', but '")); __mm_s.push_str(&*TplAbsyn::pathIdentString(pid.clone())?); __mm_s.push_str(&*literal!("' found instead.")); ArcStr::from(__mm_s) }).clone(), false)?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo) = semicolon(chars.clone(), linfo.clone())?;
                     Ok((chars.clone(), linfo.clone()))
                 }
@@ -2743,7 +2743,7 @@ pub fn endDefPathIdent(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineI
             ::match_deref::match_deref! { match &__mc_input {
                 (chars, linfo, _) => {
                     let mut linfo = (*linfo).clone();
-                    ::match_deref::match_deref! { match &(isKeyword(chars.clone(), metamodelica::cons((literal!("e")).clone(), metamodelica::cons((literal!("n")).clone(), metamodelica::cons((literal!("d")).clone(), metamodelica::nil()))))?) {
+                    ::match_deref::match_deref! { match &(isKeyword(chars.clone(), metamodelica::cons((literal!("e")).clone(), metamodelica::cons((literal!("n")).clone(), metamodelica::cons((literal!("d")).clone(), metamodelica::nil()))))) {
                         (_, false) => (),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -2786,10 +2786,10 @@ pub fn endDefIdent(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo:
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
                     afterKeyword(chars.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, id) = identifierNoOpt(chars.clone(), linfo.clone())?;
                     let true = ((id.clone()).clone() == idToMatch.clone()) else { bail!("pattern mismatch") };
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo) = semicolon(chars.clone(), linfo.clone())?;
                     Ok((chars.clone(), linfo.clone()))
                 }
@@ -2805,11 +2805,11 @@ pub fn endDefIdent(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo:
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
                     afterKeyword(chars.clone())?;
-                    (startChars, startLinfo) = interleave(chars.clone(), linfo.clone())?;
+                    (startChars, startLinfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, id) = identifierNoOpt(startChars.clone(), startLinfo.clone())?;
                     let false = ((id.clone()).clone() == idToMatch.clone()) else { bail!("pattern mismatch") };
                     linfo = parseErrorPrevPosition(startChars.clone(), startLinfo.clone(), linfo.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Unmatched ident for 'end'. Expected '")); __mm_s.push_str(&*idToMatch.clone()); __mm_s.push_str(&*literal!("', but '")); __mm_s.push_str(&*id.clone()); __mm_s.push_str(&*literal!("' found instead.")); ArcStr::from(__mm_s) }).clone(), false)?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo) = semicolon(chars.clone(), linfo.clone())?;
                     Ok((chars.clone(), linfo.clone()))
                 }
@@ -2820,7 +2820,7 @@ pub fn endDefIdent(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo:
             ::match_deref::match_deref! { match &__mc_input {
                 (chars, linfo, _) => {
                     let mut linfo = (*linfo).clone();
-                    ::match_deref::match_deref! { match &(isKeyword(chars.clone(), metamodelica::cons((literal!("e")).clone(), metamodelica::cons((literal!("n")).clone(), metamodelica::cons((literal!("d")).clone(), metamodelica::nil()))))?) {
+                    ::match_deref::match_deref! { match &(isKeyword(chars.clone(), metamodelica::cons((literal!("e")).clone(), metamodelica::cons((literal!("n")).clone(), metamodelica::cons((literal!("d")).clone(), metamodelica::nil()))))) {
                         (_, false) => (),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -2852,7 +2852,7 @@ absynTypes:
   |
   _ => {}
 */
-pub fn absynTypes(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(ArcStr, TplAbsyn::TypeInfo)>>)> {
+pub fn absynTypes(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(ArcStr, TplAbsyn::TypeInfo)>>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outTypes: Arc<metamodelica::List<(ArcStr, TplAbsyn::TypeInfo)>>;
@@ -2866,8 +2866,8 @@ pub fn absynTypes(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: 
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
                     (chars, linfo, idti) = absynType(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo, types) = absynTypes(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo, types) = absynTypes(chars.clone(), linfo.clone());
                     Ok((chars.clone(), linfo.clone(), metamodelica::cons(idti.clone(), types.clone())))
                 }
                 _ => bail!("nomatch"),
@@ -2881,9 +2881,9 @@ pub fn absynTypes(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: 
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outChars, outLineInfo, outTypes))
+    (outChars, outLineInfo, outTypes)
 }
 
 /*
@@ -2921,11 +2921,11 @@ pub fn absynType(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: L
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
                     afterKeyword(chars.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, id) = identifierNoOpt(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = stringComment(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo) = stringComment(chars.clone(), linfo.clone());
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, rtags) = recordTags(chars.clone(), linfo.clone(), (id.clone()).clone())?;
                     Ok((chars.clone(), linfo.clone(), (id.clone(), TplAbsyn::TypeInfo::TI_UNION_TYPE { recTags: rtags.clone() })))
                 }
@@ -2959,19 +2959,19 @@ pub fn absynType(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: L
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
                     afterKeyword(chars.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, id) = identifierNoOpt(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = stringComment(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo, tyvars) = typeVars(chars.clone(), linfo.clone(), metamodelica::nil())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo, inargs) = inputFunArgs(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo, outargs) = outputFunArgs(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo, tyvars) = typeVars(chars.clone(), linfo.clone(), tyvars.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo) = stringComment(chars.clone(), linfo.clone());
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo, tyvars) = typeVars(chars.clone(), linfo.clone(), metamodelica::nil());
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo, inargs) = inputFunArgs(chars.clone(), linfo.clone());
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo, outargs) = outputFunArgs(chars.clone(), linfo.clone());
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo, tyvars) = typeVars(chars.clone(), linfo.clone(), tyvars.clone());
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo) = endDefIdent(chars.clone(), linfo.clone(), (id.clone()).clone())?;
                     Ok((chars.clone(), linfo.clone(), (id.clone(), TplAbsyn::TypeInfo::TI_FUN_TYPE { inArgs: inargs.clone(), outArgs: outargs.clone(), tyVars: tyvars.clone() })))
                 }
@@ -2986,13 +2986,13 @@ pub fn absynType(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: L
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
                     afterKeyword(chars.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, ts) = typeSigNoOpt(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, id) = identifierNoOpt(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = stringComment(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo) = stringComment(chars.clone(), linfo.clone());
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo) = semicolon(chars.clone(), linfo.clone())?;
                     Ok((chars.clone(), linfo.clone(), (id.clone(), TplAbsyn::TypeInfo::TI_CONST_TYPE { constType: ts.clone() })))
                 }
@@ -3007,14 +3007,14 @@ pub fn absynType(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: L
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
                     afterKeyword(chars.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, id) = identifierNoOpt(chars.clone(), linfo.clone())?;
                     (chars, linfo) = interleaveExpectChar(chars.clone(), linfo.clone(), (literal!("=")).clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, ts) = typeSigNoOpt(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = stringComment(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo) = stringComment(chars.clone(), linfo.clone());
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo) = semicolon(chars.clone(), linfo.clone())?;
                     Ok((chars.clone(), linfo.clone(), (id.clone(), TplAbsyn::TypeInfo::TI_ALIAS_TYPE { aliasType: ts.clone() })))
                 }
@@ -3044,13 +3044,13 @@ pub fn recordType(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: 
             let mut chars = (*chars).clone();
             let mut linfo = (*linfo).clone();
             afterKeyword(chars.clone())?;
-            (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+            (chars, linfo) = interleave(chars.clone(), linfo.clone());
             (chars, linfo, id) = identifierNoOpt(chars.clone(), linfo.clone())?;
-            (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-            (chars, linfo) = stringComment(chars.clone(), linfo.clone())?;
-            (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-            (chars, linfo, fields) = typeDecls(chars.clone(), linfo.clone())?;
-            (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+            (chars, linfo) = interleave(chars.clone(), linfo.clone());
+            (chars, linfo) = stringComment(chars.clone(), linfo.clone());
+            (chars, linfo) = interleave(chars.clone(), linfo.clone());
+            (chars, linfo, fields) = typeDecls(chars.clone(), linfo.clone());
+            (chars, linfo) = interleave(chars.clone(), linfo.clone());
             (chars, linfo) = endDefIdent(chars.clone(), linfo.clone(), (id.clone()).clone())?;
             (chars.clone(), linfo.clone(), (id.clone(), fields.clone()))
         },
@@ -3067,7 +3067,7 @@ typeDecls:
   |
   _ => {}
 */
-pub fn typeDecls(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>)> {
+pub fn typeDecls(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outTypeDecls: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>;
@@ -3091,14 +3091,14 @@ pub fn typeDecls(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: L
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
                     (chars, linfo, ts) = typeSig(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, id) = identifierNoOpt(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = stringComment(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo) = stringComment(chars.clone(), linfo.clone());
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo) = semicolon(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo, fields) = typeDecls(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo, fields) = typeDecls(chars.clone(), linfo.clone());
                     Ok((chars.clone(), linfo.clone(), metamodelica::cons((id.clone(), ts.clone()), fields.clone())))
                 }
                 _ => bail!("nomatch"),
@@ -3112,9 +3112,9 @@ pub fn typeDecls(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: L
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outChars, outLineInfo, outTypeDecls))
+    (outChars, outLineInfo, outTypeDecls)
 }
 
 /*
@@ -3137,7 +3137,7 @@ pub fn recordTags(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: 
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
                     (chars, linfo, rtag) = recordType(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, rtags) = recordTags(chars.clone(), linfo.clone(), (id.clone()).clone())?;
                     Ok((chars.clone(), linfo.clone(), metamodelica::cons(rtag.clone(), rtags.clone())))
                 }
@@ -3149,7 +3149,7 @@ pub fn recordTags(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: 
                 (chars, linfo) => {
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo) = endDefIdent(chars.clone(), linfo.clone(), (id.clone()).clone())?;
                     Ok((chars.clone(), linfo.clone(), metamodelica::nil()))
                 }
@@ -3180,7 +3180,7 @@ inputFunArgs:
   |
   _ => {}
 */
-pub fn inputFunArgs(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>)> {
+pub fn inputFunArgs(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outTypedIdents: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>;
@@ -3195,16 +3195,16 @@ pub fn inputFunArgs(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
                     afterKeyword(chars.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, ts) = typeSigNoOpt(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, id) = identifierNoOpt(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = stringComment(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo) = stringComment(chars.clone(), linfo.clone());
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo) = semicolon(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo, inargs) = inputFunArgs(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo, inargs) = inputFunArgs(chars.clone(), linfo.clone());
                     Ok((chars.clone(), linfo.clone(), metamodelica::cons((id.clone(), ts.clone()), inargs.clone())))
                 }
                 _ => bail!("nomatch"),
@@ -3218,9 +3218,9 @@ pub fn inputFunArgs(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outChars, outLineInfo, outTypedIdents))
+    (outChars, outLineInfo, outTypedIdents)
 }
 
 /*
@@ -3231,7 +3231,7 @@ outputFunArgs:
   |
   _ => {}
 */
-pub fn outputFunArgs(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>)> {
+pub fn outputFunArgs(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outTypedIdents: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>;
@@ -3246,16 +3246,16 @@ pub fn outputFunArgs(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInf
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
                     afterKeyword(chars.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, ts) = typeSigNoOpt(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, id) = identifierNoOpt(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = stringComment(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo) = stringComment(chars.clone(), linfo.clone());
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo) = semicolon(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo, outargs) = outputFunArgs(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo, outargs) = outputFunArgs(chars.clone(), linfo.clone());
                     Ok((chars.clone(), linfo.clone(), metamodelica::cons((id.clone(), ts.clone()), outargs.clone())))
                 }
                 _ => bail!("nomatch"),
@@ -3269,9 +3269,9 @@ pub fn outputFunArgs(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInf
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outChars, outLineInfo, outTypedIdents))
+    (outChars, outLineInfo, outTypedIdents)
 }
 
 /*
@@ -3282,7 +3282,7 @@ typeVars(tyvars):
   |
   _ => tyvars
 */
-pub fn typeVars(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inTyVars: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<ArcStr>>)> {
+pub fn typeVars(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inTyVars: Arc<metamodelica::List<ArcStr>>) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<ArcStr>>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outTyVars: Arc<metamodelica::List<ArcStr>>;
@@ -3297,13 +3297,13 @@ pub fn typeVars(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: Li
                     let mut tyvars = (*tyvars).clone();
                     afterKeyword(chars.clone())?;
                     (chars, linfo) = interleaveExpectKeyWord(chars.clone(), linfo.clone(), list![(literal!("t")).clone(), (literal!("y")).clone(), (literal!("p")).clone(), (literal!("e")).clone()], true)?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, id) = identifierNoOpt(chars.clone(), linfo.clone())?;
                     (chars, linfo) = interleaveExpectKeyWord(chars.clone(), linfo.clone(), list![(literal!("s")).clone(), (literal!("u")).clone(), (literal!("b")).clone(), (literal!("t")).clone(), (literal!("y")).clone(), (literal!("p")).clone(), (literal!("e")).clone(), (literal!("o")).clone(), (literal!("f")).clone()], true)?;
                     (chars, linfo) = interleaveExpectKeyWord(chars.clone(), linfo.clone(), list![(literal!("A")).clone(), (literal!("n")).clone(), (literal!("y")).clone()], true)?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo) = semicolon(chars.clone(), linfo.clone())?;
-                    (chars, linfo, tyvars) = typeVars(chars.clone(), linfo.clone(), metamodelica::cons((id.clone()).clone(), tyvars.clone()))?;
+                    (chars, linfo, tyvars) = typeVars(chars.clone(), linfo.clone(), metamodelica::cons((id.clone()).clone(), tyvars.clone()));
                     Ok((chars.clone(), linfo.clone(), tyvars.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -3317,9 +3317,9 @@ pub fn typeVars(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: Li
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outChars, outLineInfo, outTyVars))
+    (outChars, outLineInfo, outTyVars)
 }
 
 /*
@@ -3349,17 +3349,17 @@ pub fn templDef(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: Li
             let mut chars = (*chars).clone();
             let mut linfo = (*linfo).clone();
             afterKeyword(chars.clone())?;
-            (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+            (chars, linfo) = interleave(chars.clone(), linfo.clone());
             (chars, linfo, name) = identifierNoOpt(chars.clone(), linfo.clone())?;
             (chars, linfo) = interleaveExpectChar(chars.clone(), linfo.clone(), (literal!("(")).clone())?;
-            (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-            (chars, linfo, args) = templArgs(chars.clone(), linfo.clone())?;
+            (chars, linfo) = interleave(chars.clone(), linfo.clone());
+            (chars, linfo, args) = templArgs(chars.clone(), linfo.clone());
             (chars, linfo) = interleaveExpectChar(chars.clone(), linfo.clone(), (literal!(")")).clone())?;
-            (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-            (chars, linfo) = stringComment(chars.clone(), linfo.clone())?;
-            (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+            (chars, linfo) = interleave(chars.clone(), linfo.clone());
+            (chars, linfo) = stringComment(chars.clone(), linfo.clone());
+            (chars, linfo) = interleave(chars.clone(), linfo.clone());
             (chars, linfo, exp, lesc, resc) = templDef_Templ(chars.clone(), linfo.clone())?;
-            (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+            (chars, linfo) = interleave(chars.clone(), linfo.clone());
             (chars, linfo) = endDefIdent(chars.clone(), linfo.clone(), (name.clone()).clone())?;
             (chars.clone(), linfo.clone(), name.clone(), TplAbsyn::TemplateDef::TEMPLATE_DEF { args: args.clone(), lesc: (lesc.clone()).clone(), resc: (resc.clone()).clone(), exp: exp.clone() })
         },
@@ -3371,16 +3371,16 @@ pub fn templDef(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: Li
             let mut chars = (*chars).clone();
             let mut linfo = (*linfo).clone();
             afterKeyword(chars.clone())?;
-            (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+            (chars, linfo) = interleave(chars.clone(), linfo.clone());
             (chars, linfo, ctype) = constantType(chars.clone(), linfo.clone())?;
-            (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+            (chars, linfo) = interleave(chars.clone(), linfo.clone());
             (chars, linfo, name) = identifierNoOpt(chars.clone(), linfo.clone())?;
-            (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+            (chars, linfo) = interleave(chars.clone(), linfo.clone());
             (chars, linfo, td, ctypeLit) = templDef_Const(chars.clone(), linfo.clone())?;
             (chars, linfo) = checkConstantType(chars.clone(), linfo.clone(), ctype.clone(), ctypeLit.clone())?;
-            (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-            (chars, linfo) = stringComment(chars.clone(), linfo.clone())?;
-            (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+            (chars, linfo) = interleave(chars.clone(), linfo.clone());
+            (chars, linfo) = stringComment(chars.clone(), linfo.clone());
+            (chars, linfo) = interleave(chars.clone(), linfo.clone());
             (chars, linfo) = semicolon(chars.clone(), linfo.clone())?;
             (chars.clone(), linfo.clone(), name.clone(), td.clone())
         },
@@ -3411,7 +3411,7 @@ pub fn templDef_Const(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineIn
                     let mut st: Arc<Tpl::StringToken> = Arc::new(Tpl::StringToken::ST_NEW_LINE);
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, strRevList) = stringConstant(chars.clone(), linfo.clone())?;
                     st = makeStrTokFromRevStrList(strRevList.clone())?;
                     Ok((chars.clone(), linfo.clone(), TplAbsyn::TemplateDef::STR_TOKEN_DEF { value: st.clone() }, crate::TplAbsyn::TypeSignature::interned_STRING_TYPE()))
@@ -3426,7 +3426,7 @@ pub fn templDef_Const(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineIn
                     let mut litType: Arc<TplAbsyn::TypeSignature> = Arc::new(TplAbsyn::TypeSignature::BOOLEAN_TYPE);
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, r#str, litType) = literalConstant(chars.clone(), linfo.clone())?;
                     Ok((chars.clone(), linfo.clone(), TplAbsyn::TemplateDef::LITERAL_DEF { value: (r#str.clone()).clone(), litType: litType.clone() }, litType.clone()))
                 }
@@ -3569,7 +3569,7 @@ pub fn templDef_Templ(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineIn
                     let mut exp: (Arc<TplAbsyn::ExpressionBase>, SourceInfo) = (Arc::new(TplAbsyn::ExpressionBase::ERROR_EXP), <SourceInfo as ::std::default::Default>::default());
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, exp) = expression(chars.clone(), linfo.clone(), (literal!("<")).clone(), (literal!(">")).clone(), false)?;
                     Ok((chars.clone(), linfo.clone(), exp.clone(), literal!("<"), literal!(">")))
                 }
@@ -3620,7 +3620,7 @@ templArgs:
     |
     _  => {}
 */
-pub fn templArgs(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>)> {
+pub fn templArgs(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outArgs: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>;
@@ -3634,16 +3634,16 @@ pub fn templArgs(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: L
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
                     afterKeyword(chars.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     let __pa0 = ::match_deref::match_deref! { match &(chars.clone()) {
                         Deref @ metamodelica::List::Cons { head: Deref @ "&", tail: __pa0 } => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
                     chars = __pa0.clone();
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, name) = identifierNoOpt(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo, args) = templArgs_rest(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo, args) = templArgs_rest(chars.clone(), linfo.clone());
                     Ok((chars.clone(), linfo.clone(), metamodelica::cons((name.clone(), crate::TplAbsyn::TypeSignature::interned_TEXT_TYPE()), args.clone())))
                 }
                 _ => bail!("nomatch"),
@@ -3658,10 +3658,10 @@ pub fn templArgs(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: L
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
                     (chars, linfo, ts) = typeSig(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, name) = identifierNoOpt(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo, args) = templArgs_rest(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo, args) = templArgs_rest(chars.clone(), linfo.clone());
                     Ok((chars.clone(), linfo.clone(), metamodelica::cons((name.clone(), ts.clone()), args.clone())))
                 }
                 _ => bail!("nomatch"),
@@ -3675,9 +3675,9 @@ pub fn templArgs(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: L
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outChars, outLineInfo, outArgs))
+    (outChars, outLineInfo, outArgs)
 }
 
 /*
@@ -3760,7 +3760,7 @@ templArgs_rest
   |
   _  => {}
 */
-pub fn templArgs_rest(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>)> {
+pub fn templArgs_rest(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outArgs: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>;
@@ -3773,23 +3773,23 @@ pub fn templArgs_rest(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineIn
                     let mut args: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>> = metamodelica::nil();
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     let __pa0 = ::match_deref::match_deref! { match &(chars.clone()) {
                         Deref @ metamodelica::List::Cons { head: Deref @ "T", tail: Deref @ metamodelica::List::Cons { head: Deref @ "e", tail: Deref @ metamodelica::List::Cons { head: Deref @ "x", tail: Deref @ metamodelica::List::Cons { head: Deref @ "t", tail: __pa0 } } } } => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
                     chars = __pa0.clone();
                     afterKeyword(chars.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     let __pa2 = ::match_deref::match_deref! { match &(chars.clone()) {
                         Deref @ metamodelica::List::Cons { head: Deref @ "&", tail: __pa2 } => __pa2.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
                     chars = __pa2.clone();
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, name) = identifierNoOpt(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo, args) = templArgs_rest(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo, args) = templArgs_rest(chars.clone(), linfo.clone());
                     Ok((chars.clone(), linfo.clone(), metamodelica::cons((name.clone(), crate::TplAbsyn::TypeSignature::interned_TEXT_TYPE()), args.clone())))
                 }
                 _ => bail!("nomatch"),
@@ -3803,12 +3803,12 @@ pub fn templArgs_rest(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineIn
                     let mut rest: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>> = metamodelica::nil();
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, ts) = typeSigNoOpt(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, name) = identifierNoOpt(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo, rest) = templArgs_rest(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo, rest) = templArgs_rest(chars.clone(), linfo.clone());
                     Ok((chars.clone(), linfo.clone(), metamodelica::cons((name.clone(), ts.clone()), rest.clone())))
                 }
                 _ => bail!("nomatch"),
@@ -3822,9 +3822,9 @@ pub fn templArgs_rest(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineIn
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outChars, outLineInfo, outArgs))
+    (outChars, outLineInfo, outArgs)
 }
 
 /*
@@ -3893,7 +3893,7 @@ pub fn expression(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: 
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
                     (chars, linfo, exp, indexOffsetOption) = expressionNoOptions(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone())?;
-                    (chars, linfo, opts) = escapedOptions(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone())?;
+                    (chars, linfo, opts) = escapedOptions(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone());
                     opts = listAppend(indexOffsetOption.clone(), opts.clone());
                     exp = makeEscapedExp(chars.clone(), linfo.clone(), exp.clone(), opts.clone())?;
                     Ok((chars.clone(), linfo.clone(), exp.clone()))
@@ -3940,7 +3940,7 @@ escapedOptions(lesc,resc):
   _ => {}
 
 */
-pub fn escapedOptions(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(ArcStr, Option<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>)>>)> {
+pub fn escapedOptions(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(ArcStr, Option<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>)>>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outOptions: Arc<metamodelica::List<(ArcStr, Option<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>)>>;
@@ -3954,12 +3954,12 @@ pub fn escapedOptions(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineIn
                     let mut opts: Arc<metamodelica::List<(ArcStr, Option<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>)>> = metamodelica::nil();
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, id) = identifierNoOpt(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo, expOpt) = escOptionExp(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo, opts) = escapedOptions(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo, expOpt) = escOptionExp(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone());
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo, opts) = escapedOptions(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone());
                     Ok((chars.clone(), linfo.clone(), metamodelica::cons((id.clone(), expOpt.clone()), opts.clone())))
                 }
                 _ => bail!("nomatch"),
@@ -3973,9 +3973,9 @@ pub fn escapedOptions(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineIn
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outChars, outLineInfo, outOptions))
+    (outChars, outLineInfo, outOptions)
 }
 
 /*
@@ -3985,7 +3985,7 @@ escOptionExp(lesc,resc):
   |
   _ => NONE
 */
-pub fn escOptionExp(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Option<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>)> {
+pub fn escOptionExp(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Option<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outExpOption: Option<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>;
@@ -3997,7 +3997,7 @@ pub fn escOptionExp(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo
                     let mut exp: (Arc<TplAbsyn::ExpressionBase>, SourceInfo) = (Arc::new(TplAbsyn::ExpressionBase::ERROR_EXP), <SourceInfo as ::std::default::Default>::default());
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, exp) = expressionLet(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone())?;
                     Ok((chars.clone(), linfo.clone(), Some(exp.clone())))
                 }
@@ -4012,9 +4012,9 @@ pub fn escOptionExp(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outChars, outLineInfo, outExpOption))
+    (outChars, outLineInfo, outExpOption)
 }
 
 /* not optional
@@ -4033,8 +4033,8 @@ pub fn expressionNoOptions(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inL
             let mut chars = (*chars).clone();
             let mut linfo = (*linfo).clone();
             (chars, linfo, exp) = expressionLet(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone())?;
-            (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-            (chars, linfo, exp, outIndexOffsetOption) = mapTailOpt(chars.clone(), linfo.clone(), exp.clone(), (lesc.clone()).clone(), (resc.clone()).clone())?;
+            (chars, linfo) = interleave(chars.clone(), linfo.clone());
+            (chars, linfo, exp, outIndexOffsetOption) = mapTailOpt(chars.clone(), linfo.clone(), exp.clone(), (lesc.clone()).clone(), (resc.clone()).clone());
             (chars.clone(), linfo.clone(), exp.clone(), outIndexOffsetOption.clone())
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -4050,7 +4050,7 @@ mapTailOpt(headExp,lesc,resc):
   |
   _ => headExp
 */
-pub fn mapTailOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inHeadExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo), mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, (Arc<TplAbsyn::ExpressionBase>, SourceInfo), Arc<metamodelica::List<(ArcStr, Option<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>)>>)> {
+pub fn mapTailOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inHeadExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo), mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, (Arc<TplAbsyn::ExpressionBase>, SourceInfo), Arc<metamodelica::List<(ArcStr, Option<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>)>>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo);
@@ -4067,13 +4067,13 @@ pub fn mapTailOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: 
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
                     let mut outIndexOffsetOption: Arc<metamodelica::List<(ArcStr, Option<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>)>> = outIndexOffsetOption.clone();
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, mexp) = matchBinding(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo, idxNmOpt, outIndexOffsetOption) = indexedByOpt(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo, idxNmOpt, outIndexOffsetOption) = indexedByOpt(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone());
                     (chars, linfo) = interleaveExpectChar(chars.clone(), linfo.clone(), (literal!("=")).clone())?;
                     (chars, linfo) = expectChar(chars.clone(), linfo.clone(), (literal!(">")).clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, exp) = expressionLet(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone())?;
                     sinfo = tplSourceInfo(startPositionFromExp(headExp.clone())?, chars.clone(), linfo.clone())?;
                     Ok(((chars.clone(), linfo.clone(), (Arc::new(TplAbsyn::ExpressionBase::MAP { argExp: headExp.clone(), ofBinding: mexp.clone(), mapExp: exp.clone(), hasIndexIdentOpt: idxNmOpt.clone() }), sinfo.clone()), outIndexOffsetOption.clone()), outIndexOffsetOption.clone()))
@@ -4089,9 +4089,9 @@ pub fn mapTailOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: 
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outChars, outLineInfo, outExpression, outIndexOffsetOption))
+    (outChars, outLineInfo, outExpression, outIndexOffsetOption)
 }
 
 /*
@@ -4101,7 +4101,7 @@ indexedByOpt:
   |
   _ => NONE
 */
-pub fn indexedByOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Option<ArcStr>, Arc<metamodelica::List<(ArcStr, Option<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>)>>)> {
+pub fn indexedByOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Option<ArcStr>, Arc<metamodelica::List<(ArcStr, Option<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>)>>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outIndexNameOpt: Option<ArcStr>;
@@ -4116,10 +4116,10 @@ pub fn indexedByOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo
                     let mut linfo = (*linfo).clone();
                     let mut outIndexOffsetOption: Arc<metamodelica::List<(ArcStr, Option<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>)>> = outIndexOffsetOption.clone();
                     afterKeyword(chars.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, id) = identifierNoOpt(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo, outIndexOffsetOption) = fromOpt(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo, outIndexOffsetOption) = fromOpt(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone());
                     Ok(((chars.clone(), linfo.clone(), Some((id.clone()).clone()), outIndexOffsetOption.clone()), outIndexOffsetOption.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -4133,9 +4133,9 @@ pub fn indexedByOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outChars, outLineInfo, outIndexNameOpt, outIndexOffsetOption))
+    (outChars, outLineInfo, outIndexNameOpt, outIndexOffsetOption)
 }
 
 /*
@@ -4145,7 +4145,7 @@ fromOpt:
   |
   _ => {}
 */
-pub fn fromOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(ArcStr, Option<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>)>>)> {
+pub fn fromOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(ArcStr, Option<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>)>>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outIndexOffsetOption: Arc<metamodelica::List<(ArcStr, Option<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>)>>;
@@ -4158,7 +4158,7 @@ pub fn fromOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: Lin
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
                     afterKeyword(chars.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, exp) = expression_base(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone())?;
                     Ok((chars.clone(), linfo.clone(), list![(arcstr::literal!(TplAbsyn::indexOffsetOptionId), Some(exp.clone()))]))
                 }
@@ -4173,7 +4173,7 @@ pub fn fromOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: Lin
                     let mut linfo = (*linfo).clone();
                     afterKeyword(chars.clone())?;
                     linfo = parseError(chars.clone(), linfo.clone(), (literal!("Keyword 'from' was changed to 'fromindex', please update your source code here.")).clone(), false)?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, exp) = expression_base(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone())?;
                     Ok((chars.clone(), linfo.clone(), list![(arcstr::literal!(TplAbsyn::indexOffsetOptionId), Some(exp.clone()))]))
                 }
@@ -4188,9 +4188,9 @@ pub fn fromOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: Lin
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outChars, outLineInfo, outIndexOffsetOption))
+    (outChars, outLineInfo, outIndexOffsetOption)
 }
 
 /*
@@ -4215,9 +4215,9 @@ pub fn expressionLet(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInf
                     let mut lexp: (Arc<TplAbsyn::ExpressionBase>, SourceInfo) = (Arc::new(TplAbsyn::ExpressionBase::ERROR_EXP), <SourceInfo as ::std::default::Default>::default());
                     let mut sinfo: SourceInfo = <SourceInfo as ::std::default::Default>::default();
                     afterKeyword(startChars.clone())?;
-                    (chars, linfo) = interleave(startChars.clone(), startLInfo.clone())?;
+                    (chars, linfo) = interleave(startChars.clone(), startLInfo.clone());
                     (chars, linfo, lexp) = letExp(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, exp) = expressionLet(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone())?;
                     sinfo = tplSourceInfo(captureStartPosition(startChars.clone(), startLInfo.clone(), 3)?, chars.clone(), linfo.clone())?;
                     Ok((chars.clone(), linfo.clone(), (Arc::new(TplAbsyn::ExpressionBase::LET { letExp: lexp.clone(), exp: exp.clone() }), sinfo.clone())))
@@ -4327,17 +4327,17 @@ pub fn letExp(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: Line
                     let mut exp: (Arc<TplAbsyn::ExpressionBase>, SourceInfo) = (Arc::new(TplAbsyn::ExpressionBase::ERROR_EXP), <SourceInfo as ::std::default::Default>::default());
                     let mut id: ArcStr = arcstr::literal!("");
                     let mut sinfo: SourceInfo = <SourceInfo as ::std::default::Default>::default();
-                    (chars, linfo) = interleave(startChars.clone(), startLInfo.clone())?;
+                    (chars, linfo) = interleave(startChars.clone(), startLInfo.clone());
                     (chars, id) = identifier(chars.clone())?;
                     sinfo = tplSourceInfo(captureStartPosition(startChars.clone(), startLInfo.clone(), 1)?, chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     let __pa0 = ::match_deref::match_deref! { match &(chars.clone()) {
                         Deref @ metamodelica::List::Cons { head: Deref @ "=", tail: __pa0 } => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
                     chars = __pa0.clone();
                     (chars, linfo) = interleaveExpectKeyWord(chars.clone(), linfo.clone(), list![(literal!("b")).clone(), (literal!("u")).clone(), (literal!("f")).clone(), (literal!("f")).clone(), (literal!("e")).clone(), (literal!("r")).clone()], false)?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, exp) = expression(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone(), false)?;
                     Ok((chars.clone(), linfo.clone(), (Arc::new(TplAbsyn::ExpressionBase::TEXT_CREATE { name: (id.clone()).clone(), exp: exp.clone() }), sinfo.clone())))
                 }
@@ -4352,16 +4352,16 @@ pub fn letExp(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: Line
                     let mut exp: (Arc<TplAbsyn::ExpressionBase>, SourceInfo) = (Arc::new(TplAbsyn::ExpressionBase::ERROR_EXP), <SourceInfo as ::std::default::Default>::default());
                     let mut id: ArcStr = arcstr::literal!("");
                     let mut sinfo: SourceInfo = <SourceInfo as ::std::default::Default>::default();
-                    (chars, linfo) = interleave(startChars.clone(), startLInfo.clone())?;
+                    (chars, linfo) = interleave(startChars.clone(), startLInfo.clone());
                     (chars, id) = identifier(chars.clone())?;
                     sinfo = tplSourceInfo(captureStartPosition(startChars.clone(), startLInfo.clone(), 1)?, chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     let __pa0 = ::match_deref::match_deref! { match &(chars.clone()) {
                         Deref @ metamodelica::List::Cons { head: Deref @ "+", tail: Deref @ metamodelica::List::Cons { head: Deref @ "=", tail: __pa0 } } => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
                     chars = __pa0.clone();
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, exp) = expression(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone(), false)?;
                     Ok((chars.clone(), linfo.clone(), (Arc::new(TplAbsyn::ExpressionBase::TEXT_ADD { name: (id.clone()).clone(), exp: exp.clone() }), sinfo.clone())))
                 }
@@ -4373,7 +4373,7 @@ pub fn letExp(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: Line
                 (Deref @ metamodelica::List::Cons { head: Deref @ "&", tail: startChars }, startLInfo, _, _) => {
                     let mut chars: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut linfo: LineInfo = <LineInfo as ::std::default::Default>::default();
-                    (chars, linfo) = interleave(startChars.clone(), startLInfo.clone())?;
+                    (chars, linfo) = interleave(startChars.clone(), startLInfo.clone());
                     (chars, linfo, _) = identifierNoOpt(chars.clone(), linfo.clone())?;
                     linfo = parseError(chars.clone(), linfo.clone(), (literal!("Expecting a '=' or '+=' text variable creation/addition (&var = exp or &var += exp) at the position.")).clone(), true)?;
                     Ok((chars.clone(), linfo.clone(), (crate::TplAbsyn::ExpressionBase::interned_ERROR_EXP(), dummySourceInfo.clone())))
@@ -4390,9 +4390,9 @@ pub fn letExp(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: Line
                     let mut args: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>> = metamodelica::nil();
                     let mut sinfo: SourceInfo = <SourceInfo as ::std::default::Default>::default();
                     (chars, linfo) = interleaveExpectChar(startChars.clone(), startLInfo.clone(), (literal!("=")).clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, name) = pathIdentNoOpt(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(funCall(chars.clone(), linfo.clone(), name.clone(), (lesc.clone()).clone(), (resc.clone()).clone())?) {
                         (__pa0, __pa1, Deref @ TplAbsyn::ExpressionBase::FUN_CALL { name: __pa2, args: __pa3 }) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
                         _ => bail!("pattern mismatch"),
@@ -4413,7 +4413,7 @@ pub fn letExp(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: Line
                     let mut chars: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut linfo: LineInfo = <LineInfo as ::std::default::Default>::default();
                     (chars, linfo) = interleaveExpectChar(startChars.clone(), startLInfo.clone(), (literal!("=")).clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, _) = pathIdentNoOpt(chars.clone(), linfo.clone())?;
                     linfo = parseError(chars.clone(), linfo.clone(), (literal!("Expecting a non-return function call( let () = [package.]funName(args,...) ) at the position.")).clone(), true)?;
                     Ok((chars.clone(), linfo.clone(), (crate::TplAbsyn::ExpressionBase::interned_ERROR_EXP(), dummySourceInfo.clone())))
@@ -4431,9 +4431,9 @@ pub fn letExp(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: Line
                     let mut sinfo: SourceInfo = <SourceInfo as ::std::default::Default>::default();
                     (chars, linfo, id) = identifierNoOpt(startChars.clone(), startLInfo.clone())?;
                     sinfo = tplSourceInfo(captureStartPosition(startChars.clone(), startLInfo.clone(), 0)?, chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo) = interleaveExpectChar(chars.clone(), linfo.clone(), (literal!("=")).clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, exp) = expression(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone(), false)?;
                     Ok((chars.clone(), linfo.clone(), (Arc::new(TplAbsyn::ExpressionBase::TEXT_CREATE { name: (id.clone()).clone(), exp: exp.clone() }), sinfo.clone())))
                 }
@@ -4557,8 +4557,8 @@ pub fn expressionPlus(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineIn
             let mut chars = (*chars).clone();
             let mut linfo = (*linfo).clone();
             (chars, linfo, exp) = expression_base(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone())?;
-            (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-            (chars, linfo, exp) = plusTailOpt(chars.clone(), linfo.clone(), exp.clone(), (lesc.clone()).clone(), (resc.clone()).clone())?;
+            (chars, linfo) = interleave(chars.clone(), linfo.clone());
+            (chars, linfo, exp) = plusTailOpt(chars.clone(), linfo.clone(), exp.clone(), (lesc.clone()).clone(), (resc.clone()).clone());
             (chars.clone(), linfo.clone(), exp.clone())
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -4573,7 +4573,7 @@ plusTailOpt(lesc,resc,bexp):
   |
   _ => bexp
 */
-pub fn plusTailOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inBaseExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo), mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))> {
+pub fn plusTailOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inBaseExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo), mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, (Arc<TplAbsyn::ExpressionBase>, SourceInfo)) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo);
@@ -4587,10 +4587,10 @@ pub fn plusTailOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo:
                     let mut sinfo: SourceInfo = <SourceInfo as ::std::default::Default>::default();
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, exp) = expression_base(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo, expLst) = concatExp_rest(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo, expLst) = concatExp_rest(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone());
                     sinfo = tplSourceInfo(startPositionFromExp(bexp.clone())?, chars.clone(), linfo.clone())?;
                     Ok((chars.clone(), linfo.clone(), (Arc::new(TplAbsyn::ExpressionBase::TEMPLATE { items: metamodelica::cons(bexp.clone(), metamodelica::cons(exp.clone(), expLst.clone())), lquote: (literal!("+")).clone(), rquote: (literal!("")).clone() }), sinfo.clone())))
                 }
@@ -4605,9 +4605,9 @@ pub fn plusTailOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo:
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outChars, outLineInfo, outExpression))
+    (outChars, outLineInfo, outExpression)
 }
 
 /*
@@ -4616,7 +4616,7 @@ concatExp_rest(lesc,resc):
   |
   _ => {}
 */
-pub fn concatExp_rest(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>)> {
+pub fn concatExp_rest(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>;
@@ -4629,10 +4629,10 @@ pub fn concatExp_rest(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineIn
                     let mut expLst: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>> = metamodelica::nil();
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, exp) = expression_base(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo, expLst) = concatExp_rest(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo, expLst) = concatExp_rest(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone());
                     Ok((chars.clone(), linfo.clone(), metamodelica::cons(exp.clone(), expLst.clone())))
                 }
                 _ => bail!("nomatch"),
@@ -4646,9 +4646,9 @@ pub fn concatExp_rest(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineIn
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outChars, outLineInfo, outExpressionList))
+    (outChars, outLineInfo, outExpressionList)
 }
 
 /*
@@ -4730,7 +4730,7 @@ pub fn expression_base(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineI
                     let mut chars: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut linfo: LineInfo = <LineInfo as ::std::default::Default>::default();
                     let mut sinfo: SourceInfo = <SourceInfo as ::std::default::Default>::default();
-                    (chars, linfo) = interleave(startChars.clone(), startLInfo.clone())?;
+                    (chars, linfo) = interleave(startChars.clone(), startLInfo.clone());
                     let __pa0 = ::match_deref::match_deref! { match &(chars.clone()) {
                         Deref @ metamodelica::List::Cons { head: Deref @ "}", tail: __pa0 } => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -4750,10 +4750,10 @@ pub fn expression_base(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineI
                     let mut exp: (Arc<TplAbsyn::ExpressionBase>, SourceInfo) = (Arc::new(TplAbsyn::ExpressionBase::ERROR_EXP), <SourceInfo as ::std::default::Default>::default());
                     let mut expLst: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>> = metamodelica::nil();
                     let mut sinfo: SourceInfo = <SourceInfo as ::std::default::Default>::default();
-                    (chars, linfo) = interleave(startChars.clone(), startLInfo.clone())?;
+                    (chars, linfo) = interleave(startChars.clone(), startLInfo.clone());
                     (chars, linfo, exp) = expressionPlus(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo, expLst) = expressionList_rest(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo, expLst) = expressionList_rest(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone());
                     (chars, linfo) = interleaveExpectChar(chars.clone(), linfo.clone(), (literal!("}")).clone())?;
                     sinfo = tplSourceInfo(captureStartPosition(startChars.clone(), startLInfo.clone(), 1)?, chars.clone(), linfo.clone())?;
                     Ok((chars.clone(), linfo.clone(), (Arc::new(TplAbsyn::ExpressionBase::MAP_ARG_LIST { parts: metamodelica::cons(exp.clone(), expLst.clone()) }), sinfo.clone())))
@@ -4767,7 +4767,7 @@ pub fn expression_base(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineI
                     let mut chars: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut linfo: LineInfo = <LineInfo as ::std::default::Default>::default();
                     let mut exp: (Arc<TplAbsyn::ExpressionBase>, SourceInfo) = (Arc::new(TplAbsyn::ExpressionBase::ERROR_EXP), <SourceInfo as ::std::default::Default>::default());
-                    (chars, linfo) = interleave(startChars.clone(), startLInfo.clone())?;
+                    (chars, linfo) = interleave(startChars.clone(), startLInfo.clone());
                     (chars, linfo, exp) = expression(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone(), false)?;
                     (chars, linfo) = interleaveExpectChar(chars.clone(), linfo.clone(), (literal!(")")).clone())?;
                     Ok((chars.clone(), linfo.clone(), exp.clone()))
@@ -4782,7 +4782,7 @@ pub fn expression_base(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineI
                     let mut linfo: LineInfo = <LineInfo as ::std::default::Default>::default();
                     let mut id: ArcStr = arcstr::literal!("");
                     let mut sinfo: SourceInfo = <SourceInfo as ::std::default::Default>::default();
-                    (chars, linfo) = interleave(startChars.clone(), startLInfo.clone())?;
+                    (chars, linfo) = interleave(startChars.clone(), startLInfo.clone());
                     (chars, linfo, id) = identifierNoOpt(chars.clone(), linfo.clone())?;
                     sinfo = tplSourceInfo(captureStartPosition(startChars.clone(), startLInfo.clone(), 1)?, chars.clone(), linfo.clone())?;
                     Ok((chars.clone(), linfo.clone(), (Arc::new(TplAbsyn::ExpressionBase::BOUND_VALUE { boundPath: Arc::new(TplAbsyn::PathIdent::IDENT { ident: (id.clone()).clone() }) }), sinfo.clone())))
@@ -4799,8 +4799,8 @@ pub fn expression_base(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineI
                     let mut expB: Arc<TplAbsyn::ExpressionBase> = Arc::new(TplAbsyn::ExpressionBase::ERROR_EXP);
                     let mut sinfo: SourceInfo = <SourceInfo as ::std::default::Default>::default();
                     (chars, linfo, name) = pathIdent(startChars.clone(), startLInfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo, expB) = boundValueOrFunCall(chars.clone(), linfo.clone(), name.clone(), (lesc.clone()).clone(), (resc.clone()).clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo, expB) = boundValueOrFunCall(chars.clone(), linfo.clone(), name.clone(), (lesc.clone()).clone(), (resc.clone()).clone());
                     sinfo = tplSourceInfo(captureStartPosition(startChars.clone(), startLInfo.clone(), 0)?, chars.clone(), linfo.clone())?;
                     Ok((chars.clone(), linfo.clone(), (expB.clone(), sinfo.clone())))
                 }
@@ -4818,7 +4818,7 @@ boundValueOrFunCall(name,lesc,resc):
   |
   _ => BOUND_VALUE(name)
 */
-pub fn boundValueOrFunCall(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inName: Arc<TplAbsyn::PathIdent>, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<TplAbsyn::ExpressionBase>)> {
+pub fn boundValueOrFunCall(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inName: Arc<TplAbsyn::PathIdent>, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<TplAbsyn::ExpressionBase>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outExpressionBase: Arc<TplAbsyn::ExpressionBase>;
@@ -4844,9 +4844,9 @@ pub fn boundValueOrFunCall(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inL
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outChars, outLineInfo, outExpressionBase))
+    (outChars, outLineInfo, outExpressionBase)
 }
 
 /*
@@ -4868,7 +4868,7 @@ pub fn funCall(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: Lin
                 (Deref @ metamodelica::List::Cons { head: Deref @ "(", tail: chars }, linfo, name, _, _) => {
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     let __pa0 = ::match_deref::match_deref! { match &(chars.clone()) {
                         Deref @ metamodelica::List::Cons { head: Deref @ ")", tail: __pa0 } => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -4886,10 +4886,10 @@ pub fn funCall(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: Lin
                     let mut expLst: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>> = metamodelica::nil();
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, exp) = expressionPlus(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo, expLst) = expressionList_rest(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo, expLst) = expressionList_rest(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone());
                     (chars, linfo) = interleaveExpectChar(chars.clone(), linfo.clone(), (literal!(")")).clone())?;
                     Ok((chars.clone(), linfo.clone(), Arc::new(TplAbsyn::ExpressionBase::FUN_CALL { name: name.clone(), args: metamodelica::cons(exp.clone(), expLst.clone()) })))
                 }
@@ -4907,7 +4907,7 @@ expressionList_rest(lesc,resc):
   |
   _ => {}
 */
-pub fn expressionList_rest(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>)> {
+pub fn expressionList_rest(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>;
@@ -4920,10 +4920,10 @@ pub fn expressionList_rest(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inL
                     let mut expLst: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>> = metamodelica::nil();
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, exp) = expressionPlus(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo, expLst) = expressionList_rest(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo, expLst) = expressionList_rest(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone());
                     Ok((chars.clone(), linfo.clone(), metamodelica::cons(exp.clone(), expLst.clone())))
                 }
                 _ => bail!("nomatch"),
@@ -4937,9 +4937,9 @@ pub fn expressionList_rest(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inL
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outChars, outLineInfo, outExpressionList))
+    (outChars, outLineInfo, outExpressionList)
 }
 
 /*
@@ -4982,7 +4982,7 @@ pub fn stringConstant(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineIn
                     let mut stRevLst: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
-                    (chars, linfo, stRevLst) = escUnquotedChars(chars.clone(), linfo.clone(), metamodelica::nil(), list![(literal!("\n")).clone()])?;
+                    (chars, linfo, stRevLst) = escUnquotedChars(chars.clone(), linfo.clone(), metamodelica::nil(), list![(literal!("\n")).clone()]);
                     Ok((chars.clone(), linfo.clone(), stRevLst.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -4996,7 +4996,7 @@ pub fn stringConstant(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineIn
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
                     c = (escChar((c.clone()).clone())?).clone();
-                    (chars, linfo, stRevLst) = escUnquotedChars(chars.clone(), linfo.clone(), list![(c.clone()).clone()], metamodelica::nil())?;
+                    (chars, linfo, stRevLst) = escUnquotedChars(chars.clone(), linfo.clone(), list![(c.clone()).clone()], metamodelica::nil());
                     Ok((chars.clone(), linfo.clone(), stRevLst.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -5037,12 +5037,12 @@ pub fn literalConstant(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineI
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
                     (chars, pm) = plusMinus(chars.clone());
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, ds) = digits(chars.clone())?;
-                    (chars, dn, ts) = dotNumber(chars.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, ds) = digits(chars.clone());
+                    (chars, dn, ts) = dotNumber(chars.clone());
                     num = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*stringCharListString(ds.clone())); __mm_s.push_str(&*dn.clone()); ArcStr::from(__mm_s) }).clone();
                     let true = (((num.clone()).clone().len() as i32) > 0) else { bail!("pattern mismatch") };
-                    (chars, ex, ts) = exponent(chars.clone(), ts.clone())?;
+                    (chars, ex, ts) = exponent(chars.clone(), ts.clone());
                     num = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*pm.clone()); __mm_s.push_str(&*num.clone()); __mm_s.push_str(&*ex.clone()); ArcStr::from(__mm_s) }).clone();
                     Ok((chars.clone(), linfo.clone(), num.clone(), ts.clone()))
                 }
@@ -5072,7 +5072,7 @@ pub fn literalConstant(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineI
     Ok((outChars, outLineInfo, outConstantValue, outConstantType))
 }
 
-pub fn stripFirstNewLine(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo)> {
+pub fn stripFirstNewLine(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     (outChars, outLineInfo) = 'mc: {
@@ -5096,9 +5096,9 @@ pub fn stripFirstNewLine(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLin
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outChars, outLineInfo))
+    (outChars, outLineInfo)
 }
 
 pub fn rightVerbatimConstQuote(mut inLeftQuote: ArcStr) -> ArcStr {
@@ -5370,7 +5370,7 @@ escUnquotedChars(accChars,accStrList):
   _ => stringCharListString(listReverse(accChars)) :: accStrList
 
 */
-pub fn escUnquotedChars(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inAccChars: Arc<metamodelica::List<ArcStr>>, mut inAccStrList: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<ArcStr>>)> {
+pub fn escUnquotedChars(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inAccChars: Arc<metamodelica::List<ArcStr>>, mut inAccStrList: Arc<metamodelica::List<ArcStr>>) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<ArcStr>>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outStrRevList: Arc<metamodelica::List<ArcStr>>;
@@ -5384,7 +5384,7 @@ pub fn escUnquotedChars(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLine
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
                     r#str = (stringCharListString(metamodelica::cons((literal!("\n")).clone(), accChars.clone()).reverse())).clone();
-                    (chars, linfo, stRevLst) = escUnquotedChars(chars.clone(), linfo.clone(), metamodelica::nil(), metamodelica::cons((r#str.clone()).clone(), accStrList.clone()))?;
+                    (chars, linfo, stRevLst) = escUnquotedChars(chars.clone(), linfo.clone(), metamodelica::nil(), metamodelica::cons((r#str.clone()).clone(), accStrList.clone()));
                     Ok((chars.clone(), linfo.clone(), stRevLst.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -5398,7 +5398,7 @@ pub fn escUnquotedChars(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLine
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
                     c = (escChar((c.clone()).clone())?).clone();
-                    (chars, linfo, stRevLst) = escUnquotedChars(chars.clone(), linfo.clone(), metamodelica::cons((c.clone()).clone(), accChars.clone()), accStrList.clone())?;
+                    (chars, linfo, stRevLst) = escUnquotedChars(chars.clone(), linfo.clone(), metamodelica::cons((c.clone()).clone(), accChars.clone()), accStrList.clone());
                     Ok((chars.clone(), linfo.clone(), stRevLst.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -5414,9 +5414,9 @@ pub fn escUnquotedChars(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLine
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outChars, outLineInfo, outStrRevList))
+    (outChars, outLineInfo, outStrRevList)
 }
 
 pub fn makeStrTokFromRevStrList(mut inRevStrList: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<Tpl::StringToken>> {
@@ -5511,7 +5511,7 @@ digits:
   |
   _ => {}
 */
-pub fn digits(mut inChars: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>)> {
+pub fn digits(mut inChars: Arc<metamodelica::List<ArcStr>>) -> (Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outDigits: Arc<metamodelica::List<ArcStr>>;
     (outChars, outDigits) = 'mc: {
@@ -5524,7 +5524,7 @@ pub fn digits(mut inChars: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<metam
                     let mut chars = (*chars).clone();
                     i = stringCharInt((d.clone()).clone())?;
                     let true = (48 <= i.clone() && i.clone() <= 57) else { bail!("pattern mismatch") };
-                    (chars, ds) = digits(chars.clone())?;
+                    (chars, ds) = digits(chars.clone());
                     Ok((chars.clone(), metamodelica::cons((d.clone()).clone(), ds.clone())))
                 }
                 _ => bail!("nomatch"),
@@ -5538,9 +5538,9 @@ pub fn digits(mut inChars: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<metam
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outChars, outDigits))
+    (outChars, outDigits)
 }
 
 /*
@@ -5549,7 +5549,7 @@ dotNumber:
   |
   _ => INTEGER_TYPE()
 */
-pub fn dotNumber(mut inChars: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<metamodelica::List<ArcStr>>, ArcStr, Arc<TplAbsyn::TypeSignature>)> {
+pub fn dotNumber(mut inChars: Arc<metamodelica::List<ArcStr>>) -> (Arc<metamodelica::List<ArcStr>>, ArcStr, Arc<TplAbsyn::TypeSignature>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outDotNumber: ArcStr;
     let mut outLitType: Arc<TplAbsyn::TypeSignature>;
@@ -5561,7 +5561,7 @@ pub fn dotNumber(mut inChars: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<me
                     let mut dn: ArcStr = arcstr::literal!("");
                     let mut ds: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut chars = (*chars).clone();
-                    (chars, ds) = digits(chars.clone())?;
+                    (chars, ds) = digits(chars.clone());
                     ::match_deref::match_deref! { match &(ds.clone()) {
                         Deref @ metamodelica::List::Cons { head: _, tail: _ } => (),
                         _ => bail!("pattern mismatch"),
@@ -5580,9 +5580,9 @@ pub fn dotNumber(mut inChars: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<me
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outChars, outDotNumber, outLitType))
+    (outChars, outDotNumber, outLitType)
 }
 
 /*
@@ -5593,7 +5593,7 @@ exponent(typ):
   |
   => ("",typ)
 */
-pub fn exponent(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLitType: Arc<TplAbsyn::TypeSignature>) -> Result<(Arc<metamodelica::List<ArcStr>>, ArcStr, Arc<TplAbsyn::TypeSignature>)> {
+pub fn exponent(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLitType: Arc<TplAbsyn::TypeSignature>) -> (Arc<metamodelica::List<ArcStr>>, ArcStr, Arc<TplAbsyn::TypeSignature>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outExponent: ArcStr;
     let mut outLitType: Arc<TplAbsyn::TypeSignature>;
@@ -5607,7 +5607,7 @@ pub fn exponent(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLitType: Arc
                     let mut ds: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut chars = (*chars).clone();
                     (chars, pm) = plusMinus(chars.clone());
-                    (chars, ds) = digits(chars.clone())?;
+                    (chars, ds) = digits(chars.clone());
                     ::match_deref::match_deref! { match &(ds.clone()) {
                         Deref @ metamodelica::List::Cons { head: _, tail: _ } => (),
                         _ => bail!("pattern mismatch"),
@@ -5626,7 +5626,7 @@ pub fn exponent(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLitType: Arc
                     let mut ds: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut chars = (*chars).clone();
                     (chars, pm) = plusMinus(chars.clone());
-                    (chars, ds) = digits(chars.clone())?;
+                    (chars, ds) = digits(chars.clone());
                     ::match_deref::match_deref! { match &(ds.clone()) {
                         Deref @ metamodelica::List::Cons { head: _, tail: _ } => (),
                         _ => bail!("pattern mismatch"),
@@ -5645,9 +5645,9 @@ pub fn exponent(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLitType: Arc
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outChars, outExponent, outLitType))
+    (outChars, outExponent, outLitType)
 }
 
 /*
@@ -5874,7 +5874,7 @@ pub fn restOfTemplLine(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineI
             outChars = __pa2.clone();
             if inIsSingleQuote.clone() && char.clone() == literal!("'") {
                 expl = unwrap_break_err!(onTemplEnd(false, expl.clone(), ind_stack.clone(), aindent.clone(), lindent.clone(), acc_chars.clone()), '__try0);
-                outExpressionBase = unwrap_break_err!(makeTemplateFromExpList(expl.clone(), (literal!("'")).clone(), (literal!("'")).clone()), '__try0);
+                outExpressionBase = makeTemplateFromExpList(expl.clone(), (literal!("'")).clone(), (literal!("'")).clone());
                 return Ok((outChars.clone(), outLineInfo.clone(), outExpressionBase.clone()));
             }
             let (__pa3, __pa4) = ::match_deref::match_deref! { match &(outChars.clone()) {
@@ -5885,7 +5885,7 @@ pub fn restOfTemplLine(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineI
             chars = __pa4.clone();
             if !(inIsSingleQuote.clone()) && char.clone() == literal!(">") && next_char.clone() == literal!(">") {
                 expl = unwrap_break_err!(onTemplEnd(true, expl.clone(), ind_stack.clone(), aindent.clone(), lindent.clone(), acc_chars.clone()), '__try0);
-                outExpressionBase = unwrap_break_err!(makeTemplateFromExpList(expl.clone(), (literal!("<<")).clone(), (literal!(">>")).clone()), '__try0);
+                outExpressionBase = makeTemplateFromExpList(expl.clone(), (literal!("<<")).clone(), (literal!(">>")).clone());
                 outChars = chars.clone();
                 return Ok((outChars.clone(), outLineInfo.clone(), outExpressionBase.clone()));
             } else if char.clone() == literal!("\r") || char.clone() == literal!("\n") {
@@ -5895,7 +5895,7 @@ pub fn restOfTemplLine(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineI
                 (outChars, lindent) = lineIndent(outChars.clone(), 0);
                 acc_chars = metamodelica::nil();
             } else if char.clone() == inLeftEsc.clone() && next_char.clone() == literal!("%") {
-                (outChars, linfo) = unwrap_break_err!(interleave(chars.clone(), outLineInfo.clone()), '__try0);
+                (outChars, linfo) = interleave(chars.clone(), outLineInfo.clone());
                 let (__pa5, __pa6, __pa7) = ::match_deref::match_deref! { match &(outChars.clone()) {
                     Deref @ metamodelica::List::Cons { head: __pa5, tail: Deref @ metamodelica::List::Cons { head: __pa6, tail: __pa7 } } => (__pa5.clone(), __pa6.clone(), __pa7.clone()),
                     _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
@@ -5904,7 +5904,7 @@ pub fn restOfTemplLine(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineI
                 next_char = __pa6.clone();
                 chars = __pa7.clone();
                 if char.clone() == literal!("%") && next_char.clone() == inRightEsc.clone() {
-                    (outChars, outLineInfo, lindent) = unwrap_break_err!(dropNewLineAfterEmptyExp(chars.clone(), linfo.clone(), lindent.clone(), acc_chars.clone()), '__try0);
+                    (outChars, outLineInfo, lindent) = dropNewLineAfterEmptyExp(chars.clone(), linfo.clone(), lindent.clone(), acc_chars.clone());
                 } else {
                     (outChars, linfo, exp) = unwrap_break_err!(expression(outChars.clone(), linfo.clone(), (inLeftEsc.clone()).clone(), (inRightEsc.clone()).clone(), false), '__try0);
                     (outChars, linfo) = unwrap_break_err!(interleaveExpectChar(outChars.clone(), linfo.clone(), (literal!("%")).clone()), '__try0);
@@ -5926,7 +5926,7 @@ pub fn restOfTemplLine(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineI
     Ok((outChars, outLineInfo, outExpressionBase))
 }
 
-pub fn dropNewLineAfterEmptyExp(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLineIndent: i32, mut inAccStringChars: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, i32)> {
+pub fn dropNewLineAfterEmptyExp(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLineIndent: i32, mut inAccStringChars: Arc<metamodelica::List<ArcStr>>) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, i32) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outLineIndent: i32;
@@ -5953,12 +5953,12 @@ pub fn dropNewLineAfterEmptyExp(mut inChars: Arc<metamodelica::List<ArcStr>>, mu
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outChars, outLineInfo, outLineIndent))
+    (outChars, outLineInfo, outLineIndent)
 }
 
-pub fn makeTemplateFromExpList(mut inExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>, mut inLeftQuote: ArcStr, mut inRightQuote: ArcStr) -> Result<Arc<TplAbsyn::ExpressionBase>> {
+pub fn makeTemplateFromExpList(mut inExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>, mut inLeftQuote: ArcStr, mut inRightQuote: ArcStr) -> Arc<TplAbsyn::ExpressionBase> {
     let mut outExpressionBase: Arc<TplAbsyn::ExpressionBase>;
     outExpressionBase = 'mc: {
         let __mc_input = (inExpressionList.clone(), inLeftQuote.clone(), inRightQuote.clone());
@@ -5988,9 +5988,9 @@ pub fn makeTemplateFromExpList(mut inExpressionList: Arc<metamodelica::List<(Arc
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outExpressionBase)
+    outExpressionBase
 }
 
 pub fn onEscapedExp(mut inExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo), mut inExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>, mut inIndentStack: Arc<metamodelica::List<(i32, Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>)>>, mut inActualIndent: i32, mut inLineIndent: i32, mut inAccStringChars: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>, Arc<metamodelica::List<(i32, Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>)>>, i32, Option<ArcStr>)> {
@@ -6006,7 +6006,7 @@ pub fn onEscapedExp(mut inExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo
                     let mut expLst = (*expLst).clone();
                     let true = (intEq(lineInd.clone(), actInd.clone())) else { bail!("pattern mismatch") };
                     expLst = addAccStringChars(expLst.clone(), accChars.clone())?;
-                    expLst = finalizeLastStringToken(expLst.clone())?;
+                    expLst = finalizeLastStringToken(expLst.clone());
                     expLst = metamodelica::cons(exp.clone(), expLst.clone());
                     Ok((expLst.clone(), indStack.clone(), actInd.clone(), None))
                 }
@@ -6019,10 +6019,10 @@ pub fn onEscapedExp(mut inExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo
                     let mut expLst = (*expLst).clone();
                     let mut indStack = (*indStack).clone();
                     let true = (lineInd.clone() > actInd.clone()) else { bail!("pattern mismatch") };
-                    expLst = finalizeLastStringToken(expLst.clone())?;
+                    expLst = finalizeLastStringToken(expLst.clone());
                     indStack = metamodelica::cons((actInd.clone(), expLst.clone()), indStack.clone());
                     expLst = addAccStringChars(metamodelica::nil(), accChars.clone())?;
-                    expLst = finalizeLastStringToken(expLst.clone())?;
+                    expLst = finalizeLastStringToken(expLst.clone());
                     expLst = metamodelica::cons(exp.clone(), expLst.clone());
                     Ok((expLst.clone(), indStack.clone(), lineInd.clone(), None))
                 }
@@ -6054,7 +6054,7 @@ pub fn onEscapedExp(mut inExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo
                     let mut indStack = (*indStack).clone();
                     let mut actInd = (*actInd).clone();
                     let true = (lineInd.clone() < actInd.clone()) else { bail!("pattern mismatch") };
-                    expLst = finalizeLastStringToken(expLst.clone())?;
+                    expLst = finalizeLastStringToken(expLst.clone());
                     (expLst, indStack, actInd) = popIndentStack(expLst.clone(), indStack.clone(), actInd.clone(), lineInd.clone())?;
                     (expLst, indStack, actInd, errOpt) = onEscapedExp(exp.clone(), expLst.clone(), indStack.clone(), actInd.clone(), lineInd.clone(), accChars.clone())?;
                     Ok((expLst.clone(), indStack.clone(), lineInd.clone(), errOpt.clone()))
@@ -6193,7 +6193,7 @@ pub fn onNewLine(mut inExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn::Exp
                     let mut indStack = (*indStack).clone();
                     let mut actInd = (*actInd).clone();
                     let true = (lineInd.clone() < actInd.clone()) else { bail!("pattern mismatch") };
-                    expLst = finalizeLastStringToken(expLst.clone())?;
+                    expLst = finalizeLastStringToken(expLst.clone());
                     (expLst, indStack, actInd) = popIndentStack(expLst.clone(), indStack.clone(), actInd.clone(), lineInd.clone())?;
                     (expLst, indStack, actInd, errOpt) = onNewLine(expLst.clone(), indStack.clone(), actInd.clone(), lineInd.clone(), accChars.clone())?;
                     Ok((expLst.clone(), indStack.clone(), actInd.clone(), errOpt.clone()))
@@ -6226,7 +6226,7 @@ pub fn onTemplEnd(mut inDropLastNewLine: bool, mut inExpressionList: Arc<metamod
                     let mut expLst: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>> = metamodelica::nil();
                     let true = (lineInd.clone() >= baseInd.clone()) else { bail!("pattern mismatch") };
                     expLst = addAccStringChars(metamodelica::nil(), List::fill((literal!(" ")).clone(), lineInd.clone() - baseInd.clone()))?;
-                    expLst = finalizeLastStringToken(expLst.clone())?;
+                    expLst = finalizeLastStringToken(expLst.clone());
                     Ok(expLst.clone())
                 }
                 _ => bail!("nomatch"),
@@ -6250,7 +6250,7 @@ pub fn onTemplEnd(mut inDropLastNewLine: bool, mut inExpressionList: Arc<metamod
             ::match_deref::match_deref! { match &__mc_input {
                 (true, Deref @ metamodelica::List::Cons { head: (Deref @ TplAbsyn::ExpressionBase::STR_TOKEN { value: Deref @ Tpl::StringToken::ST_STRING_LIST { strList: strLst @ Deref @ metamodelica::List::Cons { head: Deref @ "", tail: _ }, lastHasNewLine: true } }, _), tail: expLst }, indStack, actInd, _, Deref @ metamodelica::List::Nil) => {
                     let mut expLst = (*expLst).clone();
-                    expLst = finalizeLastStringToken(metamodelica::cons((Arc::new(TplAbsyn::ExpressionBase::STR_TOKEN { value: Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: strLst.clone(), lastHasNewLine: false }) }), dummySourceInfo.clone()), expLst.clone()))?;
+                    expLst = finalizeLastStringToken(metamodelica::cons((Arc::new(TplAbsyn::ExpressionBase::STR_TOKEN { value: Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: strLst.clone(), lastHasNewLine: false }) }), dummySourceInfo.clone()), expLst.clone()));
                     let __pa0 = ::match_deref::match_deref! { match &(popIndentStack(expLst.clone(), indStack.clone(), actInd.clone(), 0)?) {
                         (__pa0, Deref @ metamodelica::List::Nil, _) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -6265,7 +6265,7 @@ pub fn onTemplEnd(mut inDropLastNewLine: bool, mut inExpressionList: Arc<metamod
             ::match_deref::match_deref! { match &__mc_input {
                 (true, expLst, indStack, actInd, _, Deref @ metamodelica::List::Nil) => {
                     let mut expLst = (*expLst).clone();
-                    expLst = finalizeLastStringToken(expLst.clone())?;
+                    expLst = finalizeLastStringToken(expLst.clone());
                     let __pa0 = ::match_deref::match_deref! { match &(popIndentStack(expLst.clone(), indStack.clone(), actInd.clone(), 0)?) {
                         (__pa0, Deref @ metamodelica::List::Nil, _) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -6284,7 +6284,7 @@ pub fn onTemplEnd(mut inDropLastNewLine: bool, mut inExpressionList: Arc<metamod
                     let true = (lineInd.clone() >= actInd.clone()) else { bail!("pattern mismatch") };
                     accChars = listAppend(accChars.clone(), List::fill((literal!(" ")).clone(), lineInd.clone() - actInd.clone()));
                     expLst = addAccStringChars(expLst.clone(), accChars.clone())?;
-                    expLst = finalizeLastStringToken(expLst.clone())?;
+                    expLst = finalizeLastStringToken(expLst.clone());
                     let __pa0 = ::match_deref::match_deref! { match &(popIndentStack(expLst.clone(), indStack.clone(), actInd.clone(), 0)?) {
                         (__pa0, Deref @ metamodelica::List::Nil, _) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -6315,7 +6315,7 @@ pub fn onTemplEnd(mut inDropLastNewLine: bool, mut inExpressionList: Arc<metamod
                     let mut indStack = (*indStack).clone();
                     let mut actInd = (*actInd).clone();
                     let true = (lineInd.clone() < actInd.clone()) else { bail!("pattern mismatch") };
-                    expLst = finalizeLastStringToken(expLst.clone())?;
+                    expLst = finalizeLastStringToken(expLst.clone());
                     (expLst, indStack, actInd) = popIndentStack(expLst.clone(), indStack.clone(), actInd.clone(), lineInd.clone())?;
                     expLst = onTemplEnd(dropLastNL.clone(), expLst.clone(), indStack.clone(), actInd.clone(), lineInd.clone(), accChars.clone())?;
                     Ok(expLst.clone())
@@ -6477,7 +6477,7 @@ pub fn addAccStringChars(mut inExpressionList: Arc<metamodelica::List<(Arc<TplAb
     Ok(outExpressionList)
 }
 
-pub fn finalizeLastStringToken(mut inExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>) -> Result<Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>> {
+pub fn finalizeLastStringToken(mut inExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>) -> Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>> {
     let mut outExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>;
     outExpressionList = 'mc: {
         let __mc_input = inExpressionList.clone();
@@ -6494,7 +6494,7 @@ pub fn finalizeLastStringToken(mut inExpressionList: Arc<metamodelica::List<(Arc
                         Ok::<(), anyhow::Error>(())
                     }.is_ok() { bail!("failure(): body succeeded") }
                     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*strNonNl.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
-                    expLst = finalizeLastStringToken(metamodelica::cons((Arc::new(TplAbsyn::ExpressionBase::STR_TOKEN { value: Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: metamodelica::cons((literal!("")).clone(), metamodelica::cons((r#str.clone()).clone(), strLst.clone())), lastHasNewLine: false }) }), dummySourceInfo.clone()), expLst.clone()))?;
+                    expLst = finalizeLastStringToken(metamodelica::cons((Arc::new(TplAbsyn::ExpressionBase::STR_TOKEN { value: Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: metamodelica::cons((literal!("")).clone(), metamodelica::cons((r#str.clone()).clone(), strLst.clone())), lastHasNewLine: false }) }), dummySourceInfo.clone()), expLst.clone()));
                     Ok(expLst.clone())
                 }
                 _ => bail!("nomatch"),
@@ -6504,7 +6504,7 @@ pub fn finalizeLastStringToken(mut inExpressionList: Arc<metamodelica::List<(Arc
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: (Deref @ TplAbsyn::ExpressionBase::STR_TOKEN { value: Deref @ Tpl::StringToken::ST_STRING_LIST { strList: Deref @ metamodelica::List::Cons { head: Deref @ "", tail: strLst }, lastHasNewLine: true } }, _), tail: expLst } => {
                     let mut expLst = (*expLst).clone();
-                    expLst = finalizeLastStringToken(metamodelica::cons((Arc::new(TplAbsyn::ExpressionBase::STR_TOKEN { value: Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: metamodelica::cons((literal!("")).clone(), metamodelica::cons((literal!("\n")).clone(), strLst.clone())), lastHasNewLine: false }) }), dummySourceInfo.clone()), expLst.clone()))?;
+                    expLst = finalizeLastStringToken(metamodelica::cons((Arc::new(TplAbsyn::ExpressionBase::STR_TOKEN { value: Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: metamodelica::cons((literal!("")).clone(), metamodelica::cons((literal!("\n")).clone(), strLst.clone())), lastHasNewLine: false }) }), dummySourceInfo.clone()), expLst.clone()));
                     Ok(expLst.clone())
                 }
                 _ => bail!("nomatch"),
@@ -6581,9 +6581,9 @@ pub fn finalizeLastStringToken(mut inExpressionList: Arc<metamodelica::List<(Arc
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outExpressionList)
+    outExpressionList
 }
 
 /*
@@ -6608,12 +6608,12 @@ pub fn conditionExp(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo
             let mut elseBrOpt: Option<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)> = None;
             let mut sinfo: SourceInfo = <SourceInfo as ::std::default::Default>::default();
             afterKeyword(startChars.clone())?;
-            (chars, linfo) = interleave(startChars.clone(), startLInfo.clone())?;
+            (chars, linfo) = interleave(startChars.clone(), startLInfo.clone());
             (chars, linfo, isNot, lhsExp, rhsMExpOpt) = condArgExp(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone())?;
-            (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+            (chars, linfo) = interleave(chars.clone(), linfo.clone());
             (chars, linfo, trueBr) = thenBranch(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone())?;
-            (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-            (chars, linfo, elseBrOpt) = elseBranch(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone())?;
+            (chars, linfo) = interleave(chars.clone(), linfo.clone());
+            (chars, linfo, elseBrOpt) = elseBranch(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone());
             sinfo = tplSourceInfo(captureStartPosition(startChars.clone(), startLInfo.clone(), 2)?, chars.clone(), linfo.clone())?;
             (chars.clone(), linfo.clone(), (Arc::new(TplAbsyn::ExpressionBase::CONDITION { isNot: isNot.clone(), lhsExp: lhsExp.clone(), rhsValue: rhsMExpOpt.clone(), trueBranch: trueBr.clone(), elseBranch: elseBrOpt.clone() }), sinfo.clone()))
         },
@@ -6635,7 +6635,7 @@ pub fn thenBranch(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: 
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
                     afterKeyword(chars.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, exp) = expressionLet(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone())?;
                     Ok((chars.clone(), linfo.clone(), exp.clone()))
                 }
@@ -6648,7 +6648,7 @@ pub fn thenBranch(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: 
                     let mut exp: (Arc<TplAbsyn::ExpressionBase>, SourceInfo) = (Arc::new(TplAbsyn::ExpressionBase::ERROR_EXP), <SourceInfo as ::std::default::Default>::default());
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
-                    ::match_deref::match_deref! { match &(isKeyword(chars.clone(), metamodelica::cons((literal!("t")).clone(), metamodelica::cons((literal!("h")).clone(), metamodelica::cons((literal!("e")).clone(), metamodelica::cons((literal!("n")).clone(), metamodelica::nil())))))?) {
+                    ::match_deref::match_deref! { match &(isKeyword(chars.clone(), metamodelica::cons((literal!("t")).clone(), metamodelica::cons((literal!("h")).clone(), metamodelica::cons((literal!("e")).clone(), metamodelica::cons((literal!("n")).clone(), metamodelica::nil())))))) {
                         (_, false) => (),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -6682,7 +6682,7 @@ elseBranch(lesc,resc):
   _ => NONE
 
 */
-pub fn elseBranch(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Option<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>)> {
+pub fn elseBranch(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Option<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outElseBranchOpt: Option<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>;
@@ -6695,7 +6695,7 @@ pub fn elseBranch(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: 
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
                     afterKeyword(chars.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, elseBr) = expressionLet(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone())?;
                     Ok((chars.clone(), linfo.clone(), Some(elseBr.clone())))
                 }
@@ -6710,9 +6710,9 @@ pub fn elseBranch(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: 
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outChars, outLineInfo, outElseBranchOpt))
+    (outChars, outLineInfo, outElseBranchOpt)
 }
 
 /*
@@ -6741,7 +6741,7 @@ pub fn condArgExp(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: 
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
                     afterKeyword(chars.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, lhsExp) = expressionPlus(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone())?;
                     Ok((chars.clone(), linfo.clone(), true, lhsExp.clone(), None))
                 }
@@ -6851,14 +6851,14 @@ pub fn matchExp(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: Li
             let mut elseLst: Arc<metamodelica::List<(Arc<TplAbsyn::MatchingExp>, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))>> = metamodelica::nil();
             let mut sinfo: SourceInfo = <SourceInfo as ::std::default::Default>::default();
             afterKeyword(startChars.clone())?;
-            (chars, linfo) = interleave(startChars.clone(), startLInfo.clone())?;
+            (chars, linfo) = interleave(startChars.clone(), startLInfo.clone());
             (chars, linfo, exp) = expressionIf(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone())?;
             (chars, linfo, mcaseLst) = matchCaseListNoOpt(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone())?;
-            (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-            (chars, linfo, elseLst) = matchElseCase(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone())?;
+            (chars, linfo) = interleave(chars.clone(), linfo.clone());
+            (chars, linfo, elseLst) = matchElseCase(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone());
             mcaseLst = listAppend(mcaseLst.clone(), elseLst.clone());
-            (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-            (chars, linfo) = matchEndMatch(chars.clone(), linfo.clone())?;
+            (chars, linfo) = interleave(chars.clone(), linfo.clone());
+            (chars, linfo) = matchEndMatch(chars.clone(), linfo.clone());
             sinfo = tplSourceInfo(captureStartPosition(startChars.clone(), startLInfo.clone(), 5)?, chars.clone(), linfo.clone())?;
             (chars.clone(), linfo.clone(), (Arc::new(TplAbsyn::ExpressionBase::MATCH { matchExp: exp.clone(), cases: mcaseLst.clone() }), sinfo.clone()))
         },
@@ -6886,11 +6886,11 @@ pub fn matchCase(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: L
             let mut chars = (*chars).clone();
             let mut linfo = (*linfo).clone();
             afterKeyword(chars.clone())?;
-            (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+            (chars, linfo) = interleave(chars.clone(), linfo.clone());
             (chars, linfo, mexp) = matchBinding(chars.clone(), linfo.clone())?;
-            (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-            (chars, linfo, mexpHeadList) = matchCaseHeads(chars.clone(), linfo.clone())?;
-            (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+            (chars, linfo) = interleave(chars.clone(), linfo.clone());
+            (chars, linfo, mexpHeadList) = matchCaseHeads(chars.clone(), linfo.clone());
+            (chars, linfo) = interleave(chars.clone(), linfo.clone());
             (chars, linfo, exp) = thenBranch(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone())?;
             matchCaseLst = makeMatchCaseLst(metamodelica::cons(mexp.clone(), mexpHeadList.clone()), exp.clone())?;
             (chars.clone(), linfo.clone(), matchCaseLst.clone())
@@ -6907,7 +6907,7 @@ matchElseCase(lesc,resc):
   |
   _ => {}
 */
-pub fn matchElseCase(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(Arc<TplAbsyn::MatchingExp>, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))>>)> {
+pub fn matchElseCase(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(Arc<TplAbsyn::MatchingExp>, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))>>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outMatchCaseLst: Arc<metamodelica::List<(Arc<TplAbsyn::MatchingExp>, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))>>;
@@ -6920,7 +6920,7 @@ pub fn matchElseCase(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInf
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
                     afterKeyword(chars.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, exp) = expressionLet(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone())?;
                     Ok((chars.clone(), linfo.clone(), list![(crate::TplAbsyn::MatchingExp::interned_REST_MATCH(), exp.clone())]))
                 }
@@ -6935,9 +6935,9 @@ pub fn matchElseCase(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInf
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outChars, outLineInfo, outMatchCaseLst))
+    (outChars, outLineInfo, outMatchCaseLst)
 }
 
 /*
@@ -6946,7 +6946,7 @@ matchEndMatch:
   |
   _
 */
-pub fn matchEndMatch(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo)> {
+pub fn matchEndMatch(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     (outChars, outLineInfo) = 'mc: {
@@ -6957,7 +6957,7 @@ pub fn matchEndMatch(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInf
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
                     afterKeyword(chars.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     let __pa0 = ::match_deref::match_deref! { match &(chars.clone()) {
                         Deref @ metamodelica::List::Cons { head: Deref @ "m", tail: Deref @ metamodelica::List::Cons { head: Deref @ "a", tail: Deref @ metamodelica::List::Cons { head: Deref @ "t", tail: Deref @ metamodelica::List::Cons { head: Deref @ "c", tail: Deref @ metamodelica::List::Cons { head: Deref @ "h", tail: __pa0 } } } } } => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -6977,9 +6977,9 @@ pub fn matchEndMatch(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInf
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outChars, outLineInfo))
+    (outChars, outLineInfo)
 }
 
 /*
@@ -6989,7 +6989,7 @@ matchCaseHeads(lesc,resc):
   |
   _ => {}
 */
-pub fn matchCaseHeads(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<Arc<TplAbsyn::MatchingExp>>>)> {
+pub fn matchCaseHeads(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<Arc<TplAbsyn::MatchingExp>>>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outMExpHeadLst: Arc<metamodelica::List<Arc<TplAbsyn::MatchingExp>>>;
@@ -7003,10 +7003,10 @@ pub fn matchCaseHeads(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineIn
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
                     afterKeyword(chars.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, mexp) = matchBinding(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo, mexpHeadList) = matchCaseHeads(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo, mexpHeadList) = matchCaseHeads(chars.clone(), linfo.clone());
                     Ok((chars.clone(), linfo.clone(), metamodelica::cons(mexp.clone(), mexpHeadList.clone())))
                 }
                 _ => bail!("nomatch"),
@@ -7020,9 +7020,9 @@ pub fn matchCaseHeads(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineIn
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outChars, outLineInfo, outMExpHeadLst))
+    (outChars, outLineInfo, outMExpHeadLst)
 }
 
 pub fn makeMatchCaseLst(mut inMExpHeadLst: Arc<metamodelica::List<Arc<TplAbsyn::MatchingExp>>>, mut inExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo)) -> Result<Arc<metamodelica::List<(Arc<TplAbsyn::MatchingExp>, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))>>> {
@@ -7048,7 +7048,7 @@ matchCaseList(lesc,resc):
   |
   _ => {}
 */
-pub fn matchCaseList(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(Arc<TplAbsyn::MatchingExp>, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))>>)> {
+pub fn matchCaseList(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(Arc<TplAbsyn::MatchingExp>, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))>>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outMatchCases: Arc<metamodelica::List<(Arc<TplAbsyn::MatchingExp>, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))>>;
@@ -7062,8 +7062,8 @@ pub fn matchCaseList(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInf
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
                     (chars, linfo, mcaseLst) = matchCase(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo, mcrest) = matchCaseList(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo, mcrest) = matchCaseList(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone());
                     mcaseLst = listAppend(mcaseLst.clone(), mcrest.clone());
                     Ok((chars.clone(), linfo.clone(), mcaseLst.clone()))
                 }
@@ -7078,9 +7078,9 @@ pub fn matchCaseList(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInf
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outChars, outLineInfo, outMatchCases))
+    (outChars, outLineInfo, outMatchCases)
 }
 
 pub fn matchCaseListNoOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(Arc<TplAbsyn::MatchingExp>, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))>>)> {
@@ -7095,7 +7095,7 @@ pub fn matchCaseListNoOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLi
                     let mut mcaseLst: Arc<metamodelica::List<(Arc<TplAbsyn::MatchingExp>, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))>> = metamodelica::nil();
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
-                    (chars, linfo, mcaseLst) = matchCaseList(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone())?;
+                    (chars, linfo, mcaseLst) = matchCaseList(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone());
                     ::match_deref::match_deref! { match &(mcaseLst.clone()) {
                         Deref @ metamodelica::List::Cons { head: _, tail: _ } => (),
                         _ => bail!("pattern mismatch"),
@@ -7109,7 +7109,7 @@ pub fn matchCaseListNoOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLi
             ::match_deref::match_deref! { match &__mc_input {
                 (chars, linfo, _, _) => {
                     let mut linfo = (*linfo).clone();
-                    ::match_deref::match_deref! { match &(isKeyword(chars.clone(), metamodelica::cons((literal!("c")).clone(), metamodelica::cons((literal!("a")).clone(), metamodelica::cons((literal!("s")).clone(), metamodelica::cons((literal!("e")).clone(), metamodelica::nil())))))?) {
+                    ::match_deref::match_deref! { match &(isKeyword(chars.clone(), metamodelica::cons((literal!("c")).clone(), metamodelica::cons((literal!("a")).clone(), metamodelica::cons((literal!("s")).clone(), metamodelica::cons((literal!("e")).clone(), metamodelica::nil())))))) {
                         (_, false) => (),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -7151,8 +7151,8 @@ pub fn matchBinding(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo
             let mut chars = (*chars).clone();
             let mut linfo = (*linfo).clone();
             (chars, linfo, headMExp) = matchBinding_base(chars.clone(), linfo.clone())?;
-            (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-            (chars, linfo, mexp) = matchBinding_tail(chars.clone(), linfo.clone(), headMExp.clone())?;
+            (chars, linfo) = interleave(chars.clone(), linfo.clone());
+            (chars, linfo, mexp) = matchBinding_tail(chars.clone(), linfo.clone(), headMExp.clone());
             (chars.clone(), linfo.clone(), mexp.clone())
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -7167,7 +7167,7 @@ matchBinding_tail(headMExp):
   |
   _ => headMExp
 */
-pub fn matchBinding_tail(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inHeadMatchingExp: Arc<TplAbsyn::MatchingExp>) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<TplAbsyn::MatchingExp>)> {
+pub fn matchBinding_tail(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inHeadMatchingExp: Arc<TplAbsyn::MatchingExp>) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<TplAbsyn::MatchingExp>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outMatchingExp: Arc<TplAbsyn::MatchingExp>;
@@ -7179,7 +7179,7 @@ pub fn matchBinding_tail(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLin
                     let mut restMExp: Arc<TplAbsyn::MatchingExp> = Arc::new(TplAbsyn::MatchingExp::NONE_MATCH);
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, restMExp) = matchBinding(chars.clone(), linfo.clone())?;
                     Ok((chars.clone(), linfo.clone(), Arc::new(TplAbsyn::MatchingExp::LIST_CONS_MATCH { head: headMExp.clone(), rest: restMExp.clone() })))
                 }
@@ -7194,9 +7194,9 @@ pub fn matchBinding_tail(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLin
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outChars, outLineInfo, outMatchingExp))
+    (outChars, outLineInfo, outMatchingExp)
 }
 
 /*
@@ -7241,8 +7241,8 @@ pub fn matchBinding_base(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLin
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
                     afterKeyword(chars.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo, mexp) = someBinding_rest(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo, mexp) = someBinding_rest(chars.clone(), linfo.clone());
                     Ok((chars.clone(), linfo.clone(), Arc::new(TplAbsyn::MatchingExp::SOME_MATCH { value: mexp.clone() })))
                 }
                 _ => bail!("nomatch"),
@@ -7254,8 +7254,8 @@ pub fn matchBinding_base(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLin
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
                     afterKeyword(chars.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = takeEmptyBraces(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo) = takeEmptyBraces(chars.clone(), linfo.clone());
                     Ok((chars.clone(), linfo.clone(), crate::TplAbsyn::MatchingExp::interned_NONE_MATCH()))
                 }
                 _ => bail!("nomatch"),
@@ -7268,10 +7268,10 @@ pub fn matchBinding_base(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLin
                     let mut mexp: Arc<TplAbsyn::MatchingExp> = Arc::new(TplAbsyn::MatchingExp::NONE_MATCH);
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, headMExp) = matchBinding(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo, mexp) = tupleOrSingleMatch(chars.clone(), linfo.clone(), headMExp.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo, mexp) = tupleOrSingleMatch(chars.clone(), linfo.clone(), headMExp.clone());
                     (chars, linfo) = interleaveExpectChar(chars.clone(), linfo.clone(), (literal!(")")).clone())?;
                     Ok((chars.clone(), linfo.clone(), mexp.clone()))
                 }
@@ -7283,7 +7283,7 @@ pub fn matchBinding_base(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLin
                 (Deref @ metamodelica::List::Cons { head: Deref @ "{", tail: chars }, linfo) => {
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     let __pa0 = ::match_deref::match_deref! { match &(chars.clone()) {
                         Deref @ metamodelica::List::Cons { head: Deref @ "}", tail: __pa0 } => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -7301,10 +7301,10 @@ pub fn matchBinding_base(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLin
                     let mut mrest: Arc<metamodelica::List<Arc<TplAbsyn::MatchingExp>>> = metamodelica::nil();
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, headMExp) = matchBinding(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo, mrest) = listMatch_rest(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo, mrest) = listMatch_rest(chars.clone(), linfo.clone());
                     (chars, linfo) = interleaveExpectChar(chars.clone(), linfo.clone(), (literal!("}")).clone())?;
                     Ok((chars.clone(), linfo.clone(), Arc::new(TplAbsyn::MatchingExp::LIST_MATCH { listElts: metamodelica::cons(headMExp.clone(), mrest.clone()) })))
                 }
@@ -7354,7 +7354,7 @@ pub fn matchBinding_base(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLin
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
                     (chars, linfo, pid) = pathIdent(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, mexp) = afterIdentBinding(chars.clone(), linfo.clone(), pid.clone())?;
                     Ok((chars.clone(), linfo.clone(), mexp.clone()))
                 }
@@ -7386,7 +7386,7 @@ someBinding_rest:
   |
   _ => SOME_MATCH(REST_MATCH())
 */
-pub fn someBinding_rest(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<TplAbsyn::MatchingExp>)> {
+pub fn someBinding_rest(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<TplAbsyn::MatchingExp>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outMatchingExp: Arc<TplAbsyn::MatchingExp>;
@@ -7397,7 +7397,7 @@ pub fn someBinding_rest(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLine
                 (Deref @ metamodelica::List::Cons { head: Deref @ "(", tail: chars }, linfo) => {
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     let __pa0 = ::match_deref::match_deref! { match &(chars.clone()) {
                         Deref @ metamodelica::List::Cons { head: Deref @ "_", tail: Deref @ metamodelica::List::Cons { head: Deref @ "_", tail: __pa0 } } => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -7415,7 +7415,7 @@ pub fn someBinding_rest(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLine
                     let mut mexp: Arc<TplAbsyn::MatchingExp> = Arc::new(TplAbsyn::MatchingExp::NONE_MATCH);
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, mexp) = matchBinding(chars.clone(), linfo.clone())?;
                     (chars, linfo) = interleaveExpectChar(chars.clone(), linfo.clone(), (literal!(")")).clone())?;
                     Ok((chars.clone(), linfo.clone(), mexp.clone()))
@@ -7431,9 +7431,9 @@ pub fn someBinding_rest(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLine
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outChars, outLineInfo, outMatchingExp))
+    (outChars, outLineInfo, outMatchingExp)
 }
 
 /*
@@ -7442,7 +7442,7 @@ takeEmptyBraces:
   |
   _
 */
-pub fn takeEmptyBraces(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo)> {
+pub fn takeEmptyBraces(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     (outChars, outLineInfo) = 'mc: {
@@ -7466,9 +7466,9 @@ pub fn takeEmptyBraces(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineI
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outChars, outLineInfo))
+    (outChars, outLineInfo)
 }
 
 /*
@@ -7479,7 +7479,7 @@ tupleOrSingleMatch(headMExp):
   _ => headMExp
 
 */
-pub fn tupleOrSingleMatch(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inHeadMatchingExp: Arc<TplAbsyn::MatchingExp>) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<TplAbsyn::MatchingExp>)> {
+pub fn tupleOrSingleMatch(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inHeadMatchingExp: Arc<TplAbsyn::MatchingExp>) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<TplAbsyn::MatchingExp>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outMatchingExp: Arc<TplAbsyn::MatchingExp>;
@@ -7492,10 +7492,10 @@ pub fn tupleOrSingleMatch(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLi
                     let mut mrest: Arc<metamodelica::List<Arc<TplAbsyn::MatchingExp>>> = metamodelica::nil();
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, secMExp) = matchBinding(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo, mrest) = listMatch_rest(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo, mrest) = listMatch_rest(chars.clone(), linfo.clone());
                     Ok((chars.clone(), linfo.clone(), Arc::new(TplAbsyn::MatchingExp::TUPLE_MATCH { tupleArgs: metamodelica::cons(headMExp.clone(), metamodelica::cons(secMExp.clone(), mrest.clone())) })))
                 }
                 _ => bail!("nomatch"),
@@ -7509,9 +7509,9 @@ pub fn tupleOrSingleMatch(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLi
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outChars, outLineInfo, outMatchingExp))
+    (outChars, outLineInfo, outMatchingExp)
 }
 
 /*
@@ -7522,7 +7522,7 @@ listMatch_rest:
   _ => {}
 
 */
-pub fn listMatch_rest(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<Arc<TplAbsyn::MatchingExp>>>)> {
+pub fn listMatch_rest(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<Arc<TplAbsyn::MatchingExp>>>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outMatchingExpListRest: Arc<metamodelica::List<Arc<TplAbsyn::MatchingExp>>>;
@@ -7535,10 +7535,10 @@ pub fn listMatch_rest(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineIn
                     let mut mrest: Arc<metamodelica::List<Arc<TplAbsyn::MatchingExp>>> = metamodelica::nil();
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, mexp) = matchBinding(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo, mrest) = listMatch_rest(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo, mrest) = listMatch_rest(chars.clone(), linfo.clone());
                     Ok((chars.clone(), linfo.clone(), metamodelica::cons(mexp.clone(), mrest.clone())))
                 }
                 _ => bail!("nomatch"),
@@ -7552,9 +7552,9 @@ pub fn listMatch_rest(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineIn
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outChars, outLineInfo, outMatchingExpListRest))
+    (outChars, outLineInfo, outMatchingExpListRest)
 }
 
 /*
@@ -7590,7 +7590,7 @@ pub fn afterIdentBinding(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLin
                 (Deref @ metamodelica::List::Cons { head: Deref @ "(", tail: chars }, linfo, pid) => {
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     let __pa0 = ::match_deref::match_deref! { match &(chars.clone()) {
                         Deref @ metamodelica::List::Cons { head: Deref @ ")", tail: __pa0 } => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -7606,7 +7606,7 @@ pub fn afterIdentBinding(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLin
                 (Deref @ metamodelica::List::Cons { head: Deref @ "(", tail: chars }, linfo, pid) => {
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     let __pa0 = ::match_deref::match_deref! { match &(chars.clone()) {
                         Deref @ metamodelica::List::Cons { head: Deref @ "_", tail: Deref @ metamodelica::List::Cons { head: Deref @ "_", tail: __pa0 } } => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -7625,10 +7625,10 @@ pub fn afterIdentBinding(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLin
                     let mut fbs: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::MatchingExp>)>> = metamodelica::nil();
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, fb) = fieldBinding(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo, fbs) = fieldBinding_rest(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo, fbs) = fieldBinding_rest(chars.clone(), linfo.clone());
                     (chars, linfo) = interleaveExpectChar(chars.clone(), linfo.clone(), (literal!(")")).clone())?;
                     Ok((chars.clone(), linfo.clone(), Arc::new(TplAbsyn::MatchingExp::RECORD_MATCH { tagName: pid.clone(), fieldMatchings: metamodelica::cons(fb.clone(), fbs.clone()) })))
                 }
@@ -7652,7 +7652,7 @@ pub fn afterIdentBinding(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLin
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
                     afterKeyword(chars.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, mexp) = matchBinding(chars.clone(), linfo.clone())?;
                     Ok((chars.clone(), linfo.clone(), Arc::new(TplAbsyn::MatchingExp::BIND_AS_MATCH { bindIdent: (id.clone()).clone(), matchingExp: mexp.clone() })))
                 }
@@ -7703,7 +7703,7 @@ pub fn fieldBinding(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo
                     let mut linfo = (*linfo).clone();
                     (chars, linfo, id) = identifierNoOpt(chars.clone(), linfo.clone())?;
                     (chars, linfo) = interleaveExpectChar(chars.clone(), linfo.clone(), (literal!("=")).clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, mexp) = matchBinding(chars.clone(), linfo.clone())?;
                     Ok((chars.clone(), linfo.clone(), (id.clone(), mexp.clone())))
                 }
@@ -7733,7 +7733,7 @@ fieldBinding_rest:
   _ => {}
 
 */
-pub fn fieldBinding_rest(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::MatchingExp>)>>)> {
+pub fn fieldBinding_rest(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::MatchingExp>)>>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outFieldBindingsRest: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::MatchingExp>)>>;
@@ -7746,10 +7746,10 @@ pub fn fieldBinding_rest(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLin
                     let mut fbs: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::MatchingExp>)>> = metamodelica::nil();
                     let mut chars = (*chars).clone();
                     let mut linfo = (*linfo).clone();
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
                     (chars, linfo, fb) = fieldBinding(chars.clone(), linfo.clone())?;
-                    (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
-                    (chars, linfo, fbs) = fieldBinding_rest(chars.clone(), linfo.clone())?;
+                    (chars, linfo) = interleave(chars.clone(), linfo.clone());
+                    (chars, linfo, fbs) = fieldBinding_rest(chars.clone(), linfo.clone());
                     Ok((chars.clone(), linfo.clone(), metamodelica::cons(fb.clone(), fbs.clone())))
                 }
                 _ => bail!("nomatch"),
@@ -7763,9 +7763,9 @@ pub fn fieldBinding_rest(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLin
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outChars, outLineInfo, outFieldBindingsRest))
+    (outChars, outLineInfo, outFieldBindingsRest)
 }
 
 /*

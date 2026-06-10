@@ -268,7 +268,7 @@ fn RValueType(mut rvalue: MidCode::RValue) -> Result<Arc<DAE::Type>> {
         MidCode::BinaryOp::NEQUAL { .. } => DAE::T_BOOL_DEFAULT().clone(),
         _ => var_field!(rvalue.lsrc, MidCode::RValue::BINARYOP).ty.clone(),
     }),
-        MidCode::RValue::UNARYOP { op: MidCode::UnaryOp::BOX { .. }, src: _ } => Types::boxIfUnboxedType(var_field!(rvalue.src, MidCode::RValue::UNARYOP).ty.clone())?,
+        MidCode::RValue::UNARYOP { op: MidCode::UnaryOp::BOX { .. }, src: _ } => Types::boxIfUnboxedType(var_field!(rvalue.src, MidCode::RValue::UNARYOP).ty.clone()),
         MidCode::RValue::UNARYOP { op: MidCode::UnaryOp::UNBOX { .. }, src: _ } => Types::unboxedType(var_field!(rvalue.src, MidCode::RValue::UNARYOP).ty.clone())?,
         MidCode::RValue::UNARYOP { op: _, .. } => var_field!(rvalue.src, MidCode::RValue::UNARYOP).ty.clone(),
         MidCode::RValue::LITERALINTEGER { value: _ } => DAE::T_INTEGER_DEFAULT().clone(),
@@ -508,7 +508,7 @@ fn StmtsToMid(mut daestmts: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut st
             ()
         },
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("DAE.Statement to Mid conversion failed ")); __mm_s.push_str(&*DAEDump::ppStatementStr(stmt.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("MidCode/DAEToMid.mo"))?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("DAE.Statement to Mid conversion failed ")); __mm_s.push_str(&*DAEDump::ppStatementStr(stmt.clone())); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("MidCode/DAEToMid.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

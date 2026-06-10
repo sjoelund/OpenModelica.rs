@@ -76,7 +76,7 @@ pub fn fixUniontype(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inSt
             if !((::match_deref::match_deref! { match &(e.clone()) {
         Deref @ SCode::Element::CLASS { restriction: SCode::Restriction::R_METARECORD { name: __esc_utPathOfRestriction, .. }, .. } => {
             utPathOfRestriction = (*__esc_utPathOfRestriction).clone();
-            AbsynUtil::pathSuffixOf(utPathOfRestriction.clone(), utPath.clone())?
+            AbsynUtil::pathSuffixOf(utPathOfRestriction.clone(), utPath.clone())
         },
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

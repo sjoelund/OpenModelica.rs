@@ -7140,7 +7140,21 @@ fn emit_exp<'a>(exp: &TypedExp, is_const: bool, ctx: &mut GenCtx, top_level: &'a
                     // ones that show up as differing match arms.
                     let has_typevars = inputs.iter().any(|i| ty_mentions_typevar(&i.ty))
                         || ty_mentions_typevar(output);
-                    if has_typevars {
+                    // Dropping the cast is only sound when the reference is
+                    // passed *directly* into a function-typed formal slot
+                    // (`expected_arg_fn_formal` is Some): there the argument
+                    // boundary unsizes the concrete `Arc<closure>` to the
+                    // formal's `Arc<dyn Fn>` shape, so the value need not
+                    // describe its own type. When the reference is instead
+                    // embedded in a larger value — a tuple/record element, or a
+                    // generic `ArgT` accumulator slot with no function formal in
+                    // scope (e.g. the `(fn, acc)` pair threaded through
+                    // `DAEUtil.traverseDAE`/`Expression.traverseSubexpressionsHelper`)
+                    // — nothing downstream unsizes it, so it must carry the
+                    // `Arc<dyn Fn>` type itself. The `_` placeholders in the
+                    // cast are then pinned by the surrounding context, exactly
+                    // as for a fallible reference (which always keeps the cast).
+                    if has_typevars && ctx.expected_arg_fn_formal.is_some() {
                         format!("std::sync::Arc::new({closure})")
                     } else {
                         format!("(std::sync::Arc::new({closure}) as std::sync::Arc<dyn ::std::ops::Fn({}) -> Result<{out_ty}> + 'static>)",
@@ -13503,6 +13517,17 @@ fn emit_match<'a>(kind: &MatchKind, input: &TypedExp, cases: &[TypedCase], as_bi
                 // arms. Override any inherited QMode::TryBlock for the arm's
                 // guard, body and result emission; restore afterwards.
                 let saved_qmode_mc_arm = std::mem::replace(&mut ctx.qmode, QMode::Function);
+                // The arm closure returns `Result<_>` no matter what the
+                // enclosing function returns: a failure inside the arm is
+                // *caught* by the matchcontinue (the next arm runs), so the
+                // fallibility analysis lets a function stay infallible
+                // despite fallible calls inside its arms (see
+                // `fallibility::McCheck`). Emission inside the closure must
+                // therefore use the fallible forms — `?` on fallible calls
+                // (propagating to the closure), `bail!` for `fail()`,
+                // `return Ok(..)` for `return` — even when the function
+                // itself is infallible. Restored alongside the QMode.
+                let saved_fallible_mc_arm = std::mem::replace(&mut ctx.current_fn_fallible, true);
                 // Function-scope variables (outputs *and* `protected` locals)
                 // this arm assigns as a *side effect* (rather than producing
                 // through the `then` result). Each arm is an IIFE closure whose
@@ -13799,6 +13824,7 @@ fn emit_match<'a>(kind: &MatchKind, input: &TypedExp, cases: &[TypedCase], as_bi
                 }
                 let result = emit_exp(&case.result, is_const, ctx, top_level);
                 ctx.qmode = saved_qmode_mc_arm;
+                ctx.current_fn_fallible = saved_fallible_mc_arm;
                 // Thread side-effected function outputs out of the arm closure.
                 // The closure returns `(then_result, out1, out2, …)`; the break
                 // site destructures it, writes each output back to the outer
@@ -13883,7 +13909,17 @@ fn emit_match<'a>(kind: &MatchKind, input: &TypedExp, cases: &[TypedCase], as_bi
                 ctx.mc_arm_result_unit = saved_mc_arm_result_unit;
                 ctx.match_refbound = saved_match_refbound_mc;
             }
-            s.push_str("        bail!(\"matchcontinue: no arm matched\")\n");
+            // Exhausting every arm raises a MetaModelica failure — exactly
+            // `fail()` semantics, so route through the same mode-aware
+            // lowering: `bail!` in a fallible function body, a labeled break
+            // inside a `try`/`else` block (the failure must be catchable by
+            // the surrounding else, not return out of the whole function),
+            // and a panic where no `Result` channel exists. The panic case is
+            // dead code when the fallibility analysis proved this
+            // matchcontinue safe (its infallible arms cover the scrutinee —
+            // see `fallibility::McCheck`), which is the only way a
+            // matchcontinue appears in an infallible function.
+            s.push_str(&format!("        {}\n", emit_diverging_fail("matchcontinue: no arm matched", is_const, ctx)));
             s.push_str("    }");
             s
         }

@@ -862,7 +862,7 @@ fn addBranchesToTable(mut table: CrefCrefTable, mut branches: Edges) -> Result<(
     Ok(())
 }
 
-fn ord(mut inEl1: PotentialRoot, mut inEl2: PotentialRoot) -> Result<bool> {
+fn ord(mut inEl1: PotentialRoot, mut inEl2: PotentialRoot) -> bool {
     let mut outBoolean: bool;
     outBoolean = 'mc: {
         let __mc_input = (inEl1.clone(), inEl2.clone());
@@ -888,12 +888,12 @@ fn ord(mut inEl1: PotentialRoot, mut inEl2: PotentialRoot) -> Result<bool> {
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outBoolean)
+    outBoolean
 }
 
-fn addPotentialRootsToTable(mut table: CrefCrefTable, mut potentialRoots: PotentialRoots, mut roots: DefiniteRoots, mut firstRoot: Arc<ComponentRef::NFComponentRef>) -> Result<DefiniteRoots> {
+fn addPotentialRootsToTable(mut table: CrefCrefTable, mut potentialRoots: PotentialRoots, mut roots: DefiniteRoots, mut firstRoot: Arc<ComponentRef::NFComponentRef>) -> DefiniteRoots {
     let mut outRoots: DefiniteRoots;
     outRoots = 'mc: {
         let __mc_input = potentialRoots.clone();
@@ -914,7 +914,7 @@ fn addPotentialRootsToTable(mut table: CrefCrefTable, mut potentialRoots: Potent
                     canon1 = canonical(table.clone(), potentialRoot.clone())?;
                     canon2 = canonical(table.clone(), firstRoot.clone())?;
                     let true = (connectCanonicalComponents(table.clone(), canon1.clone(), canon2.clone())?) else { bail!("pattern mismatch") };
-                    finalRoots = addPotentialRootsToTable(table.clone(), tail.clone(), metamodelica::cons(potentialRoot.clone(), roots.clone()), firstRoot.clone())?;
+                    finalRoots = addPotentialRootsToTable(table.clone(), tail.clone(), metamodelica::cons(potentialRoot.clone(), roots.clone()), firstRoot.clone());
                     Ok(finalRoots.clone())
                 }
                 _ => bail!("nomatch"),
@@ -924,15 +924,15 @@ fn addPotentialRootsToTable(mut table: CrefCrefTable, mut potentialRoots: Potent
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: tail } => {
                     let mut finalRoots: DefiniteRoots = metamodelica::nil();
-                    finalRoots = addPotentialRootsToTable(table.clone(), tail.clone(), roots.clone(), firstRoot.clone())?;
+                    finalRoots = addPotentialRootsToTable(table.clone(), tail.clone(), roots.clone(), firstRoot.clone());
                     Ok(finalRoots.clone())
                 }
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outRoots)
+    outRoots
 }
 
 fn addConnections(mut table: CrefCrefTable, mut inConnections: FlatEdges) -> (FlatEdges, FlatEdges) {
@@ -972,13 +972,13 @@ fn findResultGraph(mut inGraph: NFOCConnectionGraph, mut modelNameQualified: Arc
             connections = connections.clone().reverse();
             table = resultGraphWithRoots(definiteRoots.clone())?;
             addBranchesToTable(table.clone(), branches.clone())?;
-            orderedPotentialRoots = List::sort(potentialRoots.clone(), (std::sync::Arc::new(ord) as std::sync::Arc<dyn ::std::ops::Fn((Arc<ComponentRef::NFComponentRef>, metamodelica::Real), (Arc<ComponentRef::NFComponentRef>, metamodelica::Real)) -> Result<bool> + 'static>))?;
+            orderedPotentialRoots = List::sort(potentialRoots.clone(), (std::sync::Arc::new(fnptr!(ord, (Arc<ComponentRef::NFComponentRef>, metamodelica::Real), (Arc<ComponentRef::NFComponentRef>, metamodelica::Real))) as std::sync::Arc<dyn ::std::ops::Fn((Arc<ComponentRef::NFComponentRef>, metamodelica::Real), (Arc<ComponentRef::NFComponentRef>, metamodelica::Real)) -> Result<bool> + 'static>))?;
             if Flags::isSet(Flags::CGRAPH.clone())? {
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Ordered Potential Roots: ")); __mm_s.push_str(&*stringDelimitList(List::map(orderedPotentialRoots.clone(), (std::sync::Arc::new(printPotentialRootTuple) as std::sync::Arc<dyn ::std::ops::Fn((Arc<ComponentRef::NFComponentRef>, metamodelica::Real)) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             (connected, broken) = addConnections(table.clone(), connections.clone());
             dummyRoot = NFBuiltin::TIME_CREF().clone();
-            finalRoots = addPotentialRootsToTable(table.clone(), orderedPotentialRoots.clone(), definiteRoots.clone(), dummyRoot.clone())?;
+            finalRoots = addPotentialRootsToTable(table.clone(), orderedPotentialRoots.clone(), definiteRoots.clone(), dummyRoot.clone());
             brokenConnectsViaGraphViz = (generateGraphViz((modelNameQualified.clone()).clone(), definiteRoots.clone(), potentialRoots.clone(), uniqueRoots.clone(), branches.clone(), connections.clone(), finalRoots.clone(), broken.clone())?).clone();
             if stringEq((brokenConnectsViaGraphViz.clone()).clone(), (literal!("")).clone()) {
             } else {
@@ -1233,7 +1233,7 @@ fn evalConnectionsOperatorsHelper(mut exp: Arc<Expression::NFExpression>, mut ro
                 if unwrap_break_err!(Flags::isSet(Flags::CGRAPH.clone()), '__try0) {
                     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- NFOCConnectionGraph.evalConnectionsOperatorsHelper: Found Branche Partner ")); __mm_s.push_str(&*unwrap_break_err!(ComponentRef::toString(cref.clone()), '__try0)); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*unwrap_break_err!(ComponentRef::toString(cref1.clone()), '__try0)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                 }
-                result = unwrap_break_err!(getRooted(cref.clone(), cref1.clone(), rooted.clone()), '__try0);
+                result = getRooted(cref.clone(), cref1.clone(), rooted.clone());
                 if unwrap_break_err!(Flags::isSet(Flags::CGRAPH.clone()), '__try0) {
                     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- NFOCConnectionGraph.evalConnectionsOperatorsHelper: ")); __mm_s.push_str(&*unwrap_break_err!(Expression::toString(exp.clone()), '__try0)); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*boolString(result.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                 }
@@ -1306,7 +1306,7 @@ fn evalConnectionsOperatorsHelper(mut exp: Arc<Expression::NFExpression>, mut ro
     Ok(outExp)
 }
 
-fn getRooted(mut cref1: Arc<ComponentRef::NFComponentRef>, mut cref2: Arc<ComponentRef::NFComponentRef>, mut rooted: CrefIndexTable) -> Result<bool> {
+fn getRooted(mut cref1: Arc<ComponentRef::NFComponentRef>, mut cref2: Arc<ComponentRef::NFComponentRef>, mut rooted: CrefIndexTable) -> bool {
     let mut result: bool;
     result = 'mc: {
         let __mc_input = rooted.clone();
@@ -1330,9 +1330,9 @@ fn getRooted(mut cref1: Arc<ComponentRef::NFComponentRef>, mut cref2: Arc<Compon
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(result)
+    result
 }
 
 fn getEdge(mut cr: Arc<ComponentRef::NFComponentRef>, mut edges: Edges) -> Result<Arc<ComponentRef::NFComponentRef>> {

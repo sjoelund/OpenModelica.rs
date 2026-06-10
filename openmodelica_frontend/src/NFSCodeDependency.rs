@@ -98,7 +98,7 @@ fn analyseClass(mut inClassName: Arc<Absyn::Path>, mut inEnv: Env, mut inInfo: S
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
-            Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- NFSCodeDependency.analyseClass failed for ")); __mm_s.push_str(&*AbsynUtil::pathString(inClassName.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!(" in ")); __mm_s.push_str(&*NFSCodeEnv::getEnvName(inEnv.clone())?); ArcStr::from(__mm_s) }).clone())?;
+            Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- NFSCodeDependency.analyseClass failed for ")); __mm_s.push_str(&*AbsynUtil::pathString(inClassName.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!(" in ")); __mm_s.push_str(&*NFSCodeEnv::getEnvName(inEnv.clone())); ArcStr::from(__mm_s) }).clone())?;
             Ok(bail!("fail"))
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
@@ -124,7 +124,7 @@ fn lookupClass(mut inPath: Arc<Absyn::Path>, mut inEnv: Env, mut inBuiltinPossib
             let mut name_str: ArcStr = arcstr::literal!("");
             let mut env_str: ArcStr = arcstr::literal!("");
             name_str = (AbsynUtil::pathString(inPath.clone(), (literal!(".")).clone(), true, false)?).clone();
-            env_str = (NFSCodeEnv::getEnvName(inEnv.clone())?).clone();
+            env_str = (NFSCodeEnv::getEnvName(inEnv.clone())).clone();
             Error::addSourceMessage(error_id.clone(), list![(name_str.clone()).clone(), (env_str.clone()).clone()], inInfo.clone())?;
             Ok(bail!("fail"))
         })() { break 'mc __v; }
@@ -250,7 +250,7 @@ fn analyseItem(mut inItem: Item, mut inEnv: Env) -> Result<()> {
         },
         _ => {
             let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
-            Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- NFSCodeDependency.analyseItem failed on ")); __mm_s.push_str(&*NFSCodeEnv::getItemName(inItem.clone())?); __mm_s.push_str(&*literal!(" in ")); __mm_s.push_str(&*NFSCodeEnv::getEnvName(inEnv.clone())?); ArcStr::from(__mm_s) }).clone())?;
+            Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- NFSCodeDependency.analyseItem failed on ")); __mm_s.push_str(&*NFSCodeEnv::getItemName(inItem.clone())?); __mm_s.push_str(&*literal!(" in ")); __mm_s.push_str(&*NFSCodeEnv::getEnvName(inEnv.clone())); ArcStr::from(__mm_s) }).clone())?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -333,7 +333,7 @@ fn analyseItemNoStopOnUsed(mut inItem: Item, mut inEnv: Env) -> Result<()> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
-                    Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- NFSCodeDependency.analyseItemNoStopOnUsed failed on ")); __mm_s.push_str(&*NFSCodeEnv::getItemName(inItem.clone())?); __mm_s.push_str(&*literal!(" in ")); __mm_s.push_str(&*NFSCodeEnv::getEnvName(inEnv.clone())?); ArcStr::from(__mm_s) }).clone())?;
+                    Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- NFSCodeDependency.analyseItemNoStopOnUsed failed on ")); __mm_s.push_str(&*NFSCodeEnv::getItemName(inItem.clone())?); __mm_s.push_str(&*literal!(" in ")); __mm_s.push_str(&*NFSCodeEnv::getEnvName(inEnv.clone())); ArcStr::from(__mm_s) }).clone())?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -348,7 +348,7 @@ fn markItemAsUsed(mut inItem: Item, mut inEnv: Env) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(inItem.clone()) {
         Deref @ NFSCodeEnv::Item::VAR { isUsed: Some(is_used), .. } => {
             Mutable::update(is_used.clone(), true);
-            markEnvAsUsed(inEnv.clone())?;
+            markEnvAsUsed(inEnv.clone());
             ()
         },
         Deref @ NFSCodeEnv::Item::VAR { isUsed: None, .. } => {
@@ -356,7 +356,7 @@ fn markItemAsUsed(mut inItem: Item, mut inEnv: Env) -> Result<()> {
         },
         Deref @ NFSCodeEnv::Item::CLASS { env: Deref @ metamodelica::List::Cons { head: cls_env, tail: Deref @ metamodelica::List::Nil }, cls: Deref @ SCode::Element::CLASS { .. }, .. } => {
             markFrameAsUsed(cls_env.clone());
-            markEnvAsUsed(inEnv.clone())?;
+            markEnvAsUsed(inEnv.clone());
             ()
         },
         _ => bail!("match: no arm matched"),
@@ -378,7 +378,7 @@ fn markFrameAsUsed(mut inFrame: Arc<NFSCodeEnv::Frame>) -> () {
     ()
 }
 
-fn markEnvAsUsed(mut inEnv: Env) -> Result<()> {
+fn markEnvAsUsed(mut inEnv: Env) -> () {
     let () = 'mc: {
         let __mc_input = inEnv.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -387,7 +387,7 @@ fn markEnvAsUsed(mut inEnv: Env) -> Result<()> {
                     let false = (Mutable::access(is_used.clone())) else { bail!("pattern mismatch") };
                     markEnvAsUsed2(f.clone(), rest_env.clone())?;
                     Mutable::update(is_used.clone(), true);
-                    markEnvAsUsed(rest_env.clone())?;
+                    markEnvAsUsed(rest_env.clone());
                     Ok(())
                 }
                 _ => bail!("nomatch"),
@@ -401,9 +401,9 @@ fn markEnvAsUsed(mut inEnv: Env) -> Result<()> {
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(())
+    ()
 }
 
 fn markEnvAsUsed2(mut inFrame: Arc<NFSCodeEnv::Frame>, mut inEnv: Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>) -> Result<()> {
@@ -572,7 +572,7 @@ fn checkExternalObject(mut inElements: Arc<metamodelica::List<ArcStr>>, mut inEn
             let mut has_des: bool = false;
             has_con = List::isMemberOnTrue((literal!("constructor")).clone(), inElements.clone(), (std::sync::Arc::new(fnptr!(stringEqual, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>))?;
             has_des = List::isMemberOnTrue((literal!("destructor")).clone(), inElements.clone(), (std::sync::Arc::new(fnptr!(stringEqual, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>))?;
-            env_str = (NFSCodeEnv::getEnvName(inEnv.clone())?).clone();
+            env_str = (NFSCodeEnv::getEnvName(inEnv.clone())).clone();
             checkExternalObject2(inElements.clone(), has_con.clone(), has_des.clone(), (env_str.clone()).clone(), inInfo.clone())?;
             bail!("fail")
         },
@@ -670,7 +670,7 @@ fn analyseRedeclaredClass2(mut inItem: Item, mut inEnv: Env) -> Result<()> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
-                    Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- NFSCodeDependency.analyseRedeclaredClass2 failed for ")); __mm_s.push_str(&*NFSCodeEnv::getItemName(inItem.clone())?); __mm_s.push_str(&*literal!(" in ")); __mm_s.push_str(&*NFSCodeEnv::getEnvName(inEnv.clone())?); ArcStr::from(__mm_s) }).clone())?;
+                    Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- NFSCodeDependency.analyseRedeclaredClass2 failed for ")); __mm_s.push_str(&*NFSCodeEnv::getItemName(inItem.clone())?); __mm_s.push_str(&*literal!(" in ")); __mm_s.push_str(&*NFSCodeEnv::getEnvName(inEnv.clone())); ArcStr::from(__mm_s) }).clone())?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -723,7 +723,7 @@ fn analyseElement(mut inElement: Arc<SCode::Element>, mut inEnv: Env, mut inExte
             let mut ty_item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
             let mut ty_env: Env = metamodelica::nil();
             let mut redecls: Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>> = metamodelica::nil();
-            markAsUsedOnRestriction((name.clone()).clone(), inClassRestriction.clone(), inEnv.clone(), info.clone())?;
+            markAsUsedOnRestriction((name.clone()).clone(), inClassRestriction.clone(), inEnv.clone(), info.clone());
             analyseAttributes(attr.clone(), inEnv.clone(), info.clone())?;
             analyseTypeSpec(ty.clone(), inEnv.clone(), info.clone())?;
             (ty_item, _, ty_env) = NFSCodeLookup::lookupTypeSpec(ty.clone(), inEnv.clone(), info.clone())?;
@@ -793,7 +793,7 @@ fn analyseElement(mut inElement: Arc<SCode::Element>, mut inEnv: Env, mut inExte
     Ok(outExtends)
 }
 
-fn markAsUsedOnConstant(mut inName: ArcStr, mut inAttr: SCode::Attributes, mut inEnv: Env, mut inInfo: SourceInfo) -> Result<()> {
+fn markAsUsedOnConstant(mut inName: ArcStr, mut inAttr: SCode::Attributes, mut inEnv: Env, mut inInfo: SourceInfo) -> () {
     let () = 'mc: {
         let __mc_input = (inAttr.clone(), inEnv.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -820,12 +820,12 @@ fn markAsUsedOnConstant(mut inName: ArcStr, mut inAttr: SCode::Attributes, mut i
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(())
+    ()
 }
 
-fn markAsUsedOnRestriction(mut inName: ArcStr, mut inRestriction: SCode::Restriction, mut inEnv: Env, mut inInfo: SourceInfo) -> Result<()> {
+fn markAsUsedOnRestriction(mut inName: ArcStr, mut inRestriction: SCode::Restriction, mut inEnv: Env, mut inInfo: SourceInfo) -> () {
     let () = 'mc: {
         let __mc_input = inEnv.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -852,9 +852,9 @@ fn markAsUsedOnRestriction(mut inName: ArcStr, mut inRestriction: SCode::Restric
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(())
+    ()
 }
 
 fn markAsUsedOnRestriction2(mut inRestriction: SCode::Restriction) -> bool {
@@ -960,7 +960,7 @@ fn analyseSubMod(mut inSubMod: Arc<SCode::SubMod>, mut inEnv: (Arc<metamodelica:
 fn analyseNameMod(mut inIdent: ArcStr, mut inEnv: Env, mut inTypeEnv: Env, mut inMod: Arc<SCode::Mod>, mut inInfo: SourceInfo) -> Result<()> {
     let mut item: Option<Arc<NFSCodeEnv::Item>>;
     let mut env: Option<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>>;
-    (item, env) = lookupNameMod(Arc::new(Absyn::Path::IDENT { name: (inIdent.clone()).clone() }), inTypeEnv.clone(), inInfo.clone())?;
+    (item, env) = lookupNameMod(Arc::new(Absyn::Path::IDENT { name: (inIdent.clone()).clone() }), inTypeEnv.clone(), inInfo.clone());
     analyseNameMod2((inIdent.clone()).clone(), item.clone(), env.clone(), inEnv.clone(), inTypeEnv.clone(), inMod.clone(), inInfo.clone())?;
     Ok(())
 }
@@ -984,7 +984,7 @@ fn analyseNameMod2(mut inIdent: ArcStr, mut inItem: Option<Arc<NFSCodeEnv::Item>
     Ok(())
 }
 
-fn lookupNameMod(mut inPath: Arc<Absyn::Path>, mut inEnv: Env, mut inInfo: SourceInfo) -> Result<(Option<Arc<NFSCodeEnv::Item>>, Option<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>>)> {
+fn lookupNameMod(mut inPath: Arc<Absyn::Path>, mut inEnv: Env, mut inInfo: SourceInfo) -> (Option<Arc<NFSCodeEnv::Item>>, Option<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>>) {
     let mut outItem: Option<Arc<NFSCodeEnv::Item>>;
     let mut outEnv: Option<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>>;
     (outItem, outEnv) = 'mc: {
@@ -1001,9 +1001,9 @@ fn lookupNameMod(mut inPath: Arc<Absyn::Path>, mut inEnv: Env, mut inInfo: Sourc
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok((None, None))
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outItem, outEnv))
+    (outItem, outEnv)
 }
 
 fn analyseSubscript(mut inSubscript: Arc<Absyn::Subscript>, mut inEnv: Env, mut inInfo: SourceInfo) -> Result<()> {
@@ -1117,7 +1117,7 @@ fn analyseComment(mut inComment: Arc<SCode::Comment>, mut inEnv: Env, mut inInfo
 fn analyseAnnotation(mut inAnnotation: Arc<SCode::Annotation>, mut inEnv: Env, mut inInfo: SourceInfo) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(inAnnotation.clone()) {
         Deref @ SCode::Annotation { modification: Deref @ SCode::Mod::MOD { subModLst: sub_mods, .. } } => {
-            List::map2_0(sub_mods.clone(), (std::sync::Arc::new(analyseAnnotationMod) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>, Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, SourceInfo) -> Result<()> + 'static>), inEnv.clone(), inInfo.clone())?;
+            List::map2_0(sub_mods.clone(), (std::sync::Arc::new(fnptr!(analyseAnnotationMod, Arc<SCode::SubMod>, Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, SourceInfo)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>, Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, SourceInfo) -> Result<()> + 'static>), inEnv.clone(), inInfo.clone())?;
             ()
         },
         _ => bail!("match: no arm matched"),
@@ -1125,7 +1125,7 @@ fn analyseAnnotation(mut inAnnotation: Arc<SCode::Annotation>, mut inEnv: Env, m
     Ok(())
 }
 
-fn analyseAnnotationMod(mut inMod: Arc<SCode::SubMod>, mut inEnv: Env, mut inInfo: SourceInfo) -> Result<()> {
+fn analyseAnnotationMod(mut inMod: Arc<SCode::SubMod>, mut inEnv: Env, mut inInfo: SourceInfo) -> () {
     let () = 'mc: {
         let __mc_input = inMod.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -1164,9 +1164,9 @@ fn analyseAnnotationMod(mut inMod: Arc<SCode::SubMod>, mut inEnv: Env, mut inInf
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(())
+    ()
 }
 
 fn analyseAnnotationName(mut inName: ArcStr, mut inEnv: Env, mut inInfo: SourceInfo) -> Result<()> {
@@ -1213,21 +1213,21 @@ fn analyseExp2(mut inExp: Arc<Absyn::Exp>, mut inEnv: Env, mut inInfo: SourceInf
     let mut outEnv: Env;
     outEnv = (::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ Absyn::Exp::CREF { componentRef: cref } => {
-            analyseCref(cref.clone(), inEnv.clone(), inInfo.clone())?;
+            analyseCref(cref.clone(), inEnv.clone(), inInfo.clone());
             inEnv.clone()
         },
         Deref @ Absyn::Exp::CALL { function_: cref, functionArgs: Deref @ Absyn::FunctionArgs::FOR_ITER_FARG { iterators: iters, .. }, .. } => {
             let mut env: Env = metamodelica::nil();
-            analyseCref(cref.clone(), inEnv.clone(), inInfo.clone())?;
+            analyseCref(cref.clone(), inEnv.clone(), inInfo.clone());
             env = NFSCodeEnv::extendEnvWithIterators(iters.clone(), System::tmpTickIndex(NFSCodeEnv::tmpTickIndex.clone()), inEnv.clone())?;
             env.clone()
         },
         Deref @ Absyn::Exp::CALL { function_: cref, .. } => {
-            analyseCref(cref.clone(), inEnv.clone(), inInfo.clone())?;
+            analyseCref(cref.clone(), inEnv.clone(), inInfo.clone());
             inEnv.clone()
         },
         Deref @ Absyn::Exp::PARTEVALFUNCTION { function_: cref, .. } => {
-            analyseCref(cref.clone(), inEnv.clone(), inInfo.clone())?;
+            analyseCref(cref.clone(), inEnv.clone(), inInfo.clone());
             inEnv.clone()
         },
         Deref @ Absyn::Exp::MATCHEXP { .. } => {
@@ -1243,7 +1243,7 @@ fn analyseExp2(mut inExp: Arc<Absyn::Exp>, mut inEnv: Env, mut inInfo: SourceInf
     Ok(outEnv)
 }
 
-fn analyseCref(mut inCref: Arc<Absyn::ComponentRef>, mut inEnv: Env, mut inInfo: SourceInfo) -> Result<()> {
+fn analyseCref(mut inCref: Arc<Absyn::ComponentRef>, mut inEnv: Env, mut inInfo: SourceInfo) -> () {
     let () = 'mc: {
         let __mc_input = inCref.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -1276,9 +1276,9 @@ fn analyseCref(mut inCref: Arc<Absyn::ComponentRef>, mut inEnv: Env, mut inInfo:
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(())
+    ()
 }
 
 fn analyseExpTraverserExit(mut inExp: Arc<Absyn::Exp>, mut inTuple: (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, SourceInfo)) -> (Arc<Absyn::Exp>, (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, SourceInfo)) {
@@ -1314,7 +1314,7 @@ fn analyseEquationTraverser(mut eq: Arc<SCode::Equation>, mut env: Env) -> Resul
             (eq.clone(), env.clone())
         },
         Deref @ SCode::Equation::EQ_REINIT { cref: Deref @ Absyn::Exp::CREF { componentRef: cref1 }, info, .. } => {
-            analyseCref(cref1.clone(), env.clone(), info.clone())?;
+            analyseCref(cref1.clone(), env.clone(), info.clone());
             (eq, _) = SCodeUtil::mapFoldEquationExps(eq.clone(), (std::sync::Arc::new(traverseExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, SourceInfo)) -> Result<(Arc<Absyn::Exp>, (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, SourceInfo))> + 'static>), (env.clone(), info.clone()))?;
             (eq.clone(), env.clone())
         },
@@ -1384,11 +1384,11 @@ fn analyseClassExtends(mut inEnv: Env) -> Result<()> {
         _ => bail!("pattern mismatch"),
     } };
     tree = __pa0.clone();
-    NFSCodeEnv::EnvTree::foldCond(tree.clone(), (std::sync::Arc::new(analyseAvlValue) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<NFSCodeEnv::Item>, Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>) -> Result<(Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, bool)> + 'static>), inEnv.clone())?;
+    NFSCodeEnv::EnvTree::foldCond(tree.clone(), (std::sync::Arc::new(fnptr!(analyseAvlValue, ArcStr, Arc<NFSCodeEnv::Item>, Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<NFSCodeEnv::Item>, Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>) -> Result<(Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, bool)> + 'static>), inEnv.clone())?;
     Ok(())
 }
 
-fn analyseAvlValue(mut key: ArcStr, mut value: Item, mut env: Env) -> Result<(Env, bool)> {
+fn analyseAvlValue(mut key: ArcStr, mut value: Item, mut env: Env) -> (Env, bool) {
     let mut env: Env = env;
     let mut cont: bool;
     cont = 'mc: {
@@ -1407,7 +1407,7 @@ fn analyseAvlValue(mut key: ArcStr, mut value: Item, mut env: Env) -> Result<(En
                 (Deref @ NFSCodeEnv::Item::CLASS { cls, env: Deref @ metamodelica::List::Cons { head: cls_env, tail: Deref @ metamodelica::List::Nil }, classType: cls_ty }, _) => {
                     let mut env2: Env = metamodelica::nil();
                     env2 = NFSCodeEnv::enterFrame(cls_env.clone(), env.clone());
-                    analyseClassExtendsDef(cls.clone(), cls_ty.clone(), env2.clone())?;
+                    analyseClassExtendsDef(cls.clone(), cls_ty.clone(), env2.clone());
                     analyseClassExtends(env2.clone())?;
                     Ok(true)
                 }
@@ -1422,12 +1422,12 @@ fn analyseAvlValue(mut key: ArcStr, mut value: Item, mut env: Env) -> Result<(En
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((env, cont))
+    (env, cont)
 }
 
-fn analyseClassExtendsDef(mut inClass: Arc<SCode::Element>, mut inClassType: NFSCodeEnv::ClassType, mut inEnv: Env) -> Result<()> {
+fn analyseClassExtendsDef(mut inClass: Arc<SCode::Element>, mut inClassType: NFSCodeEnv::ClassType, mut inEnv: Env) -> () {
     let () = 'mc: {
         let __mc_input = (inClass.clone(), inClassType.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -1476,9 +1476,9 @@ fn analyseClassExtendsDef(mut inClass: Arc<SCode::Element>, mut inClassType: NFS
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(())
+    ()
 }
 
 fn collectUsedProgram(mut inEnv: Env, mut inProgram: Arc<metamodelica::List<Arc<SCode::Element>>>, mut inClassName: Arc<Absyn::Path>) -> Result<(Env, Arc<metamodelica::List<Arc<SCode::Element>>>)> {

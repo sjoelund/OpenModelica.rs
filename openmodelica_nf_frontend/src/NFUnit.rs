@@ -466,7 +466,7 @@ pub fn parseUnitString(mut inUnitString: ArcStr, mut inKnownUnits: StringToUnitT
         Error::addSourceMessage(Error::INVALID_UNIT.clone(), list![(inUnitString.clone()).clone()], info.clone())?;
         bail!("fail");
     }
-    outUnit = parser3(list![true, true], tokenList.clone(), ONE().clone(), inKnownUnits.clone())?;
+    outUnit = parser3(list![true, true], tokenList.clone(), ONE().clone(), inKnownUnits.clone());
     if !(isUnit(outUnit.clone())) {
         if Flags::isSet(Flags::FAILTRACE.clone())? {
             Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFUnit.parseUnitString")); __mm_s.push_str(&*literal!(": failed to parse unit string ")); __mm_s.push_str(&*inUnitString.clone()); ArcStr::from(__mm_s) }).clone())?;
@@ -475,7 +475,7 @@ pub fn parseUnitString(mut inUnitString: ArcStr, mut inKnownUnits: StringToUnitT
     Ok(outUnit)
 }
 
-fn parser3(mut inMul: Arc<metamodelica::List<bool>>, mut inTokenList: Arc<metamodelica::List<Token>>, mut inUnit: Unit, mut inHtS2U: StringToUnitTable) -> Result<Unit> {
+fn parser3(mut inMul: Arc<metamodelica::List<bool>>, mut inTokenList: Arc<metamodelica::List<Token>>, mut inUnit: Unit, mut inHtS2U: StringToUnitTable) -> Unit {
     let mut outUnit: Unit;
     outUnit = 'mc: {
         let __mc_input = (inMul.clone(), inTokenList.clone());
@@ -493,7 +493,7 @@ fn parser3(mut inMul: Arc<metamodelica::List<bool>>, mut inTokenList: Arc<metamo
                     let mut ut: Unit = <Unit as ::std::default::Default>::default();
                     ut = ONE().clone();
                     ut = if (bMul.clone()) {unitMul(inUnit.clone(), ut.clone())?} else {unitDiv(inUnit.clone(), ut.clone())?};
-                    ut = parser3(bRest.clone(), tokens.clone(), ut.clone(), inHtS2U.clone())?;
+                    ut = parser3(bRest.clone(), tokens.clone(), ut.clone(), inHtS2U.clone());
                     Ok(ut.clone())
                 }
                 _ => bail!("nomatch"),
@@ -506,7 +506,7 @@ fn parser3(mut inMul: Arc<metamodelica::List<bool>>, mut inTokenList: Arc<metamo
                     ut = unitToken2unit((s.clone()).clone(), inHtS2U.clone())?;
                     ut = unitPow(ut.clone(), exponent.clone())?;
                     ut = if (bMul.clone()) {unitMul(inUnit.clone(), ut.clone())?} else {unitDiv(inUnit.clone(), ut.clone())?};
-                    ut = parser3(bRest.clone(), tokens.clone(), ut.clone(), inHtS2U.clone())?;
+                    ut = parser3(bRest.clone(), tokens.clone(), ut.clone(), inHtS2U.clone());
                     Ok(ut.clone())
                 }
                 _ => bail!("nomatch"),
@@ -518,7 +518,7 @@ fn parser3(mut inMul: Arc<metamodelica::List<bool>>, mut inTokenList: Arc<metamo
                     let mut ut: Unit = <Unit as ::std::default::Default>::default();
                     ut = unitToken2unit((s.clone()).clone(), inHtS2U.clone())?;
                     ut = if (bMul.clone()) {unitMul(inUnit.clone(), ut.clone())?} else {unitDiv(inUnit.clone(), ut.clone())?};
-                    ut = parser3(bRest.clone(), tokens.clone(), ut.clone(), inHtS2U.clone())?;
+                    ut = parser3(bRest.clone(), tokens.clone(), ut.clone(), inHtS2U.clone());
                     Ok(ut.clone())
                 }
                 _ => bail!("nomatch"),
@@ -528,7 +528,7 @@ fn parser3(mut inMul: Arc<metamodelica::List<bool>>, mut inTokenList: Arc<metamo
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: bMul, tail: _ }, Deref @ metamodelica::List::Cons { head: Token::T_MUL { .. }, tail: Deref @ metamodelica::List::Cons { head: Token::T_LPAREN { .. }, tail: tokens } }) => {
                     let mut ut: Unit = <Unit as ::std::default::Default>::default();
-                    ut = parser3(metamodelica::cons(bMul.clone(), metamodelica::cons(bMul.clone(), inMul.clone())), tokens.clone(), inUnit.clone(), inHtS2U.clone())?;
+                    ut = parser3(metamodelica::cons(bMul.clone(), metamodelica::cons(bMul.clone(), inMul.clone())), tokens.clone(), inUnit.clone(), inHtS2U.clone());
                     Ok(ut.clone())
                 }
                 _ => bail!("nomatch"),
@@ -540,7 +540,7 @@ fn parser3(mut inMul: Arc<metamodelica::List<bool>>, mut inTokenList: Arc<metamo
                     let mut ut: Unit = <Unit as ::std::default::Default>::default();
                     let mut b: bool = false;
                     b = !(bMul.clone());
-                    ut = parser3(metamodelica::cons(b.clone(), metamodelica::cons(b.clone(), inMul.clone())), tokens.clone(), inUnit.clone(), inHtS2U.clone())?;
+                    ut = parser3(metamodelica::cons(b.clone(), metamodelica::cons(b.clone(), inMul.clone())), tokens.clone(), inUnit.clone(), inHtS2U.clone());
                     Ok(ut.clone())
                 }
                 _ => bail!("nomatch"),
@@ -550,7 +550,7 @@ fn parser3(mut inMul: Arc<metamodelica::List<bool>>, mut inTokenList: Arc<metamo
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: _, tail: bRest }, Deref @ metamodelica::List::Cons { head: Token::T_RPAREN { .. }, tail: tokens }) => {
                     let mut ut: Unit = <Unit as ::std::default::Default>::default();
-                    ut = parser3(bRest.clone(), tokens.clone(), inUnit.clone(), inHtS2U.clone())?;
+                    ut = parser3(bRest.clone(), tokens.clone(), inUnit.clone(), inHtS2U.clone());
                     Ok(ut.clone())
                 }
                 _ => bail!("nomatch"),
@@ -560,7 +560,7 @@ fn parser3(mut inMul: Arc<metamodelica::List<bool>>, mut inTokenList: Arc<metamo
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: bMul, tail: _ }, Deref @ metamodelica::List::Cons { head: Token::T_MUL { .. }, tail: tokens }) => {
                     let mut ut: Unit = <Unit as ::std::default::Default>::default();
-                    ut = parser3(metamodelica::cons(bMul.clone(), inMul.clone()), tokens.clone(), inUnit.clone(), inHtS2U.clone())?;
+                    ut = parser3(metamodelica::cons(bMul.clone(), inMul.clone()), tokens.clone(), inUnit.clone(), inHtS2U.clone());
                     Ok(ut.clone())
                 }
                 _ => bail!("nomatch"),
@@ -572,7 +572,7 @@ fn parser3(mut inMul: Arc<metamodelica::List<bool>>, mut inTokenList: Arc<metamo
                     let mut ut: Unit = <Unit as ::std::default::Default>::default();
                     let mut b: bool = false;
                     b = !(bMul.clone());
-                    ut = parser3(metamodelica::cons(b.clone(), inMul.clone()), tokens.clone(), inUnit.clone(), inHtS2U.clone())?;
+                    ut = parser3(metamodelica::cons(b.clone(), inMul.clone()), tokens.clone(), inUnit.clone(), inHtS2U.clone());
                     Ok(ut.clone())
                 }
                 _ => bail!("nomatch"),
@@ -586,9 +586,9 @@ fn parser3(mut inMul: Arc<metamodelica::List<bool>>, mut inTokenList: Arc<metamo
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outUnit)
+    outUnit
 }
 
 fn unitToken2unit(mut inS: ArcStr, mut inHtS2U: StringToUnitTable) -> Result<Unit> {
@@ -994,7 +994,7 @@ fn lexer(mut inCharList: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamode
                     let mut tokenList: Arc<metamodelica::List<Token>> = metamodelica::nil();
                     let mut i: i32 = 0;
                     let mut charList = (*charList).clone();
-                    (charList, number) = popNumber(charList.clone())?;
+                    (charList, number) = popNumber(charList.clone());
                     let false = (number.clone() == literal!("")) else { bail!("pattern mismatch") };
                     tokenList = lexer(charList.clone())?;
                     i = stringInt((number.clone()).clone())?;
@@ -1010,7 +1010,7 @@ fn lexer(mut inCharList: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamode
                     let mut tokenList: Arc<metamodelica::List<Token>> = metamodelica::nil();
                     let mut i: i32 = 0;
                     let mut charList = (*charList).clone();
-                    (charList, number) = popNumber(charList.clone())?;
+                    (charList, number) = popNumber(charList.clone());
                     let false = (number.clone() == literal!("")) else { bail!("pattern mismatch") };
                     tokenList = lexer(charList.clone())?;
                     i = -(stringInt((number.clone()).clone())?);
@@ -1026,7 +1026,7 @@ fn lexer(mut inCharList: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamode
                     let mut tokenList: Arc<metamodelica::List<Token>> = metamodelica::nil();
                     let mut i: i32 = 0;
                     let mut charList = (*charList).clone();
-                    (charList, number) = popNumber(charList.clone())?;
+                    (charList, number) = popNumber(charList.clone());
                     let false = (number.clone() == literal!("")) else { bail!("pattern mismatch") };
                     tokenList = lexer(charList.clone())?;
                     i = stringInt((number.clone()).clone())?;
@@ -1041,7 +1041,7 @@ fn lexer(mut inCharList: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamode
                     let mut unit: ArcStr = arcstr::literal!("");
                     let mut tokenList: Arc<metamodelica::List<Token>> = metamodelica::nil();
                     let mut charList = (*charList).clone();
-                    (charList, unit) = popUnit(charList.clone())?;
+                    (charList, unit) = popUnit(charList.clone());
                     let false = (unit.clone() == literal!("")) else { bail!("pattern mismatch") };
                     tokenList = lexer(charList.clone())?;
                     Ok(metamodelica::cons(Token::T_UNIT { unit: (unit.clone()).clone() }, tokenList.clone()))
@@ -1054,7 +1054,7 @@ fn lexer(mut inCharList: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamode
     Ok(outTokenList)
 }
 
-fn popUnit(mut inCharList: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<metamodelica::List<ArcStr>>, ArcStr)> {
+fn popUnit(mut inCharList: Arc<metamodelica::List<ArcStr>>) -> (Arc<metamodelica::List<ArcStr>>, ArcStr) {
     let mut outCharList: Arc<metamodelica::List<ArcStr>>;
     let mut outUnit: ArcStr;
     (outCharList, outUnit) = 'mc: {
@@ -1073,7 +1073,7 @@ fn popUnit(mut inCharList: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<metam
                     let mut s2: ArcStr = arcstr::literal!("");
                     let mut strRest = (*strRest).clone();
                     let true = (stringCompare((s1.clone()).clone(), (literal!("a")).clone()) >= 0 && stringCompare((s1.clone()).clone(), (literal!("z")).clone()) <= 0) else { bail!("pattern mismatch") };
-                    (strRest, s2) = popUnit(strRest.clone())?;
+                    (strRest, s2) = popUnit(strRest.clone());
                     Ok((strRest.clone(), { let mut __mm_s = String::new(); __mm_s.push_str(&*s1.clone()); __mm_s.push_str(&*s2.clone()); ArcStr::from(__mm_s) }))
                 }
                 _ => bail!("nomatch"),
@@ -1085,7 +1085,7 @@ fn popUnit(mut inCharList: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<metam
                     let mut s2: ArcStr = arcstr::literal!("");
                     let mut strRest = (*strRest).clone();
                     let true = (stringCompare((s1.clone()).clone(), (literal!("A")).clone()) >= 0 && stringCompare((s1.clone()).clone(), (literal!("Z")).clone()) <= 0) else { bail!("pattern mismatch") };
-                    (strRest, s2) = popUnit(strRest.clone())?;
+                    (strRest, s2) = popUnit(strRest.clone());
                     Ok((strRest.clone(), { let mut __mm_s = String::new(); __mm_s.push_str(&*s1.clone()); __mm_s.push_str(&*s2.clone()); ArcStr::from(__mm_s) }))
                 }
                 _ => bail!("nomatch"),
@@ -1099,12 +1099,12 @@ fn popUnit(mut inCharList: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<metam
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outCharList, outUnit))
+    (outCharList, outUnit)
 }
 
-fn popNumber(mut inCharList: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<metamodelica::List<ArcStr>>, ArcStr)> {
+fn popNumber(mut inCharList: Arc<metamodelica::List<ArcStr>>) -> (Arc<metamodelica::List<ArcStr>>, ArcStr) {
     let mut outCharList: Arc<metamodelica::List<ArcStr>>;
     let mut outNumber: ArcStr;
     (outCharList, outNumber) = 'mc: {
@@ -1125,7 +1125,7 @@ fn popNumber(mut inCharList: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<met
                     let mut strRest = (*strRest).clone();
                     i = stringInt((s1.clone()).clone())?;
                     let true = (intString(i.clone()) == s1.clone()) else { bail!("pattern mismatch") };
-                    (strRest, s2) = popNumber(strRest.clone())?;
+                    (strRest, s2) = popNumber(strRest.clone());
                     Ok((strRest.clone(), { let mut __mm_s = String::new(); __mm_s.push_str(&*s1.clone()); __mm_s.push_str(&*s2.clone()); ArcStr::from(__mm_s) }))
                 }
                 _ => bail!("nomatch"),
@@ -1139,8 +1139,8 @@ fn popNumber(mut inCharList: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<met
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outCharList, outNumber))
+    (outCharList, outNumber)
 }
 

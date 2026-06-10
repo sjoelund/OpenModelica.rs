@@ -84,7 +84,7 @@ fn id(mut inStr: ArcStr) -> ArcStr {
 
 pub fn emptyHashTableSized(mut size: i32) -> HashTable {
     let mut hashTable: HashTable;
-    hashTable = BaseHashTable::emptyHashTableWork(size.clone(), ((std::sync::Arc::new(FUnit::hashUnit) as std::sync::Arc<dyn ::std::ops::Fn(FUnit::Unit) -> Result<i32> + 'static>), (std::sync::Arc::new(FUnit::unitEqual) as std::sync::Arc<dyn ::std::ops::Fn(FUnit::Unit, FUnit::Unit) -> Result<bool> + 'static>), (std::sync::Arc::new(FUnit::unit2string) as std::sync::Arc<dyn ::std::ops::Fn(FUnit::Unit) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(fnptr!(id, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>)));
+    hashTable = BaseHashTable::emptyHashTableWork(size.clone(), ((std::sync::Arc::new(FUnit::hashUnit) as std::sync::Arc<dyn ::std::ops::Fn(FUnit::Unit) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(FUnit::unitEqual, FUnit::Unit, FUnit::Unit)) as std::sync::Arc<dyn ::std::ops::Fn(FUnit::Unit, FUnit::Unit) -> Result<bool> + 'static>), (std::sync::Arc::new(FUnit::unit2string) as std::sync::Arc<dyn ::std::ops::Fn(FUnit::Unit) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(fnptr!(id, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>)));
     hashTable
 }
 

@@ -137,7 +137,7 @@ pub fn inferBindings(mut model_path: Path, mut env: Absyn::Program) -> Result<Ab
     let mut client_list: Arc<metamodelica::List<Arc<Client_e>>>;
     model_def = ProgramUtil::getPathedClassInProgram(model_path.clone(), env.clone(), false, false)?;
     scode_def = AbsynToSCode::translateAbsyn2SCode(env.clone())?;
-    ms = getMediatorDefsElements(scode_def.clone(), metamodelica::nil())?;
+    ms = getMediatorDefsElements(scode_def.clone(), metamodelica::nil());
     client_list = buildInstList(model_def.clone(), env.clone(), crate::Binding::Client_e::interned_NO_PRED(), ms.clone(), metamodelica::nil(), metamodelica::nil())?;
     out_vmodel = inferBindingClientList(client_list.clone(), model_def.clone(), env.clone())?;
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*Dump::unparseClassStr(out_vmodel.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
@@ -162,10 +162,10 @@ pub fn generateVerificationScenarios(mut package_path: Path, mut in_env: Absyn::
     let mut autogen_model: Arc<Absyn::ElementItem>;
     let mut i: i32;
     scode_def = AbsynToSCode::translateAbsyn2SCode(in_env.clone())?;
-    design_alts = getAllElementsOfType(scode_def.clone(), (literal!("VVDRlib.Verification.Design")).clone(), (literal!("")).clone(), metamodelica::nil())?;
-    reqs = getAllElementsOfType(scode_def.clone(), (literal!("VVDRlib.Verification.Requirement")).clone(), (literal!("")).clone(), metamodelica::nil())?;
-    scenarios = getAllElementsOfType(scode_def.clone(), (literal!("VVDRlib.Verification.Scenario")).clone(), (literal!("")).clone(), metamodelica::nil())?;
-    ms = getMediatorDefsElements(scode_def.clone(), metamodelica::nil())?;
+    design_alts = getAllElementsOfType(scode_def.clone(), (literal!("VVDRlib.Verification.Design")).clone(), (literal!("")).clone(), metamodelica::nil());
+    reqs = getAllElementsOfType(scode_def.clone(), (literal!("VVDRlib.Verification.Requirement")).clone(), (literal!("")).clone(), metamodelica::nil());
+    scenarios = getAllElementsOfType(scode_def.clone(), (literal!("VVDRlib.Verification.Scenario")).clone(), (literal!("")).clone(), metamodelica::nil());
+    ms = getMediatorDefsElements(scode_def.clone(), metamodelica::nil());
     package_def = ProgramUtil::getPathedClassInProgram(package_path.clone(), in_env.clone(), false, false)?;
     autogen_model_list = metamodelica::nil();
     i = 0;
@@ -221,23 +221,23 @@ fn populateModel(mut element_defs: Arc<metamodelica::List<(Arc<SCode::Element>, 
     }
 }
 
-fn getAllElementsOfType(mut element_defs: Arc<metamodelica::List<Arc<SCode::Element>>>, mut typeName: Ident, mut pathInProg: ArcStr, mut elements_in: Arc<metamodelica::List<(Arc<SCode::Element>, ArcStr)>>) -> Result<Arc<metamodelica::List<(Arc<SCode::Element>, ArcStr)>>> {
+fn getAllElementsOfType(mut element_defs: Arc<metamodelica::List<Arc<SCode::Element>>>, mut typeName: Ident, mut pathInProg: ArcStr, mut elements_in: Arc<metamodelica::List<(Arc<SCode::Element>, ArcStr)>>) -> Arc<metamodelica::List<(Arc<SCode::Element>, ArcStr)>> {
     '__tco: loop {
         ::match_deref::match_deref! { match &(element_defs.clone()) {
         Deref @ metamodelica::List::Nil => {
-            return Ok(elements_in.clone())
+            return elements_in.clone()
         },
         Deref @ metamodelica::List::Cons { head: el, tail: rest } => {
             let mut m: Arc<metamodelica::List<(Arc<SCode::Element>, ArcStr)>> = metamodelica::nil();
-            m = listAppend(getAllElementsOfType2(el.clone(), (typeName.clone()).clone(), (pathInProg.clone()).clone())?, elements_in.clone());
+            m = listAppend(getAllElementsOfType2(el.clone(), (typeName.clone()).clone(), (pathInProg.clone()).clone()), elements_in.clone());
             { (element_defs, typeName, pathInProg, elements_in) = (rest.clone(), (typeName.clone()).clone(), (pathInProg.clone()).clone(), m.clone()); continue '__tco; }
         },
-        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+        _ => unreachable!("tail-call lowered match: no arm matched"),
     } }
     }
 }
 
-fn getAllElementsOfType2(mut el: Arc<SCode::Element>, mut typeName: Ident, mut pathInProg: ArcStr) -> Result<Arc<metamodelica::List<(Arc<SCode::Element>, ArcStr)>>> {
+fn getAllElementsOfType2(mut el: Arc<SCode::Element>, mut typeName: Ident, mut pathInProg: ArcStr) -> Arc<metamodelica::List<(Arc<SCode::Element>, ArcStr)>> {
     let mut res_elem: Arc<metamodelica::List<(Arc<SCode::Element>, ArcStr)>>;
     res_elem = 'mc: {
         let __mc_input = el.clone();
@@ -273,7 +273,7 @@ fn getAllElementsOfType2(mut el: Arc<SCode::Element>, mut typeName: Ident, mut p
                 Deref @ SCode::Element::CLASS { name, prefixes: _, encapsulatedPrefix: _, partialPrefix: _, restriction: SCode::Restriction::R_PACKAGE { .. }, classDef: Deref @ SCode::ClassDef::PARTS { elementLst: elist, normalEquationLst: _, initialEquationLst: _, normalAlgorithmLst: _, initialAlgorithmLst: _, constraintLst: _, clsattrs: _, externalDecl: _ }, cmt: _, info: _ } => {
                     let mut nName: ArcStr = arcstr::literal!("");
                     nName = (if (pathInProg.clone() == literal!("")) {name.clone()} else {{ let mut __mm_s = String::new(); __mm_s.push_str(&*pathInProg.clone()); __mm_s.push_str(&*literal!(".")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }}).clone();
-                    Ok(getAllElementsOfType(elist.clone(), (typeName.clone()).clone(), (nName.clone()).clone(), metamodelica::nil())?)
+                    Ok(getAllElementsOfType(elist.clone(), (typeName.clone()).clone(), (nName.clone()).clone(), metamodelica::nil()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -281,7 +281,7 @@ fn getAllElementsOfType2(mut el: Arc<SCode::Element>, mut typeName: Ident, mut p
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SCode::Element::CLASS { name: _, prefixes: _, encapsulatedPrefix: _, partialPrefix: _, restriction: _, classDef: Deref @ SCode::ClassDef::PARTS { elementLst: elist, normalEquationLst: _, initialEquationLst: _, normalAlgorithmLst: _, initialAlgorithmLst: _, constraintLst: _, clsattrs: _, externalDecl: _ }, cmt: _, info: _ } => {
-                    let true = (isOfType(elist.clone(), (typeName.clone()).clone())?) else { bail!("pattern mismatch") };
+                    let true = (isOfType(elist.clone(), (typeName.clone()).clone())) else { bail!("pattern mismatch") };
                     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("*** Found a ")); __mm_s.push_str(&*typeName.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     Ok(list![(el.clone(), pathInProg.clone())])
                 }
@@ -296,12 +296,12 @@ fn getAllElementsOfType2(mut el: Arc<SCode::Element>, mut typeName: Ident, mut p
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(res_elem)
+    res_elem
 }
 
-fn isOfType(mut elems: Arc<metamodelica::List<Arc<SCode::Element>>>, mut typeName: ArcStr) -> Result<bool> {
+fn isOfType(mut elems: Arc<metamodelica::List<Arc<SCode::Element>>>, mut typeName: ArcStr) -> bool {
     let mut result: bool;
     result = 'mc: {
         let __mc_input = elems.clone();
@@ -325,14 +325,14 @@ fn isOfType(mut elems: Arc<metamodelica::List<Arc<SCode::Element>>>, mut typeNam
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
-                    Ok(isOfType(rest.clone(), (typeName.clone()).clone())?)
+                    Ok(isOfType(rest.clone(), (typeName.clone()).clone()))
                 }
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(result)
+    result
 }
 
 fn inferBindingClientList(mut client_list: Arc<metamodelica::List<Arc<Client_e>>>, mut vmodel: Arc<Absyn::Class>, mut env: Absyn::Program) -> Result<Arc<Absyn::Class>> {
@@ -450,7 +450,7 @@ fn parseClassPart(mut in_def: Arc<Absyn::ClassPart>, mut defs: Absyn::Program, m
     out_def = (::match_deref::match_deref! { match &(in_def.clone()) {
         Deref @ Absyn::ClassPart::PUBLIC { contents: elems } => {
             let mut elems1: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
-            elems1 = parseElems(elems.clone(), defs.clone(), typeSpec.clone(), rootType.clone(), exp.clone(), instance_name.clone(), hasPreferred.clone(), preferred.clone(), (path.clone()).clone())?;
+            elems1 = parseElems(elems.clone(), defs.clone(), typeSpec.clone(), rootType.clone(), exp.clone(), instance_name.clone(), hasPreferred.clone(), preferred.clone(), (path.clone()).clone());
             Arc::new(Absyn::ClassPart::PUBLIC { contents: elems1.clone() })
         },
         _ => {
@@ -461,7 +461,7 @@ fn parseClassPart(mut in_def: Arc<Absyn::ClassPart>, mut defs: Absyn::Program, m
     Ok(out_def)
 }
 
-fn parseElems(mut in_elems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut defs: Absyn::Program, mut typeSpec: TypeSpec, mut rootType: TypeSpec, mut exp2: Arc<metamodelica::List<(Arc<Absyn::Exp>, ArcStr)>>, mut instance_name: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>, mut hasPreferred: bool, mut preferred: Arc<metamodelica::List<Preferred>>, mut pathInClass: ArcStr) -> Result<Arc<metamodelica::List<Arc<Absyn::ElementItem>>>> {
+fn parseElems(mut in_elems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut defs: Absyn::Program, mut typeSpec: TypeSpec, mut rootType: TypeSpec, mut exp2: Arc<metamodelica::List<(Arc<Absyn::Exp>, ArcStr)>>, mut instance_name: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>, mut hasPreferred: bool, mut preferred: Arc<metamodelica::List<Preferred>>, mut pathInClass: ArcStr) -> Arc<metamodelica::List<Arc<Absyn::ElementItem>>> {
     let mut out_elems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>;
     out_elems = 'mc: {
         let __mc_input = in_elems.clone();
@@ -481,15 +481,15 @@ fn parseElems(mut in_elems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mu
                     if AbsynUtil::typeSpecPathString(rootType.clone())? == AbsynUtil::typeSpecPathString(tSpec.clone())? && !(exp2.clone().is_empty()) {
                         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("... found instance provider ")); __mm_s.push_str(&*Dump::unparseTypeSpec(tSpec.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                         if hasPreferred.clone() {
-                            e_list = applyModifiersPreferred(components.clone(), exp2.clone(), instance_name.clone(), (pathInClass.clone()).clone(), finalPrefix.clone(), redeclareKeywords.clone(), innerOuter.clone(), info.clone(), constrainClass.clone(), attributes.clone(), tSpec.clone(), preferred.clone())?;
+                            e_list = applyModifiersPreferred(components.clone(), exp2.clone(), instance_name.clone(), (pathInClass.clone()).clone(), finalPrefix.clone(), redeclareKeywords.clone(), innerOuter.clone(), info.clone(), constrainClass.clone(), attributes.clone(), tSpec.clone(), preferred.clone());
                         } else {
                             newName = (exp2.clone().len() as i32) != 1;
-                            e_list = applyModifiers(components.clone(), exp2.clone(), instance_name.clone(), 0, finalPrefix.clone(), redeclareKeywords.clone(), innerOuter.clone(), info.clone(), constrainClass.clone(), attributes.clone(), tSpec.clone(), newName.clone())?;
+                            e_list = applyModifiers(components.clone(), exp2.clone(), instance_name.clone(), 0, finalPrefix.clone(), redeclareKeywords.clone(), innerOuter.clone(), info.clone(), constrainClass.clone(), attributes.clone(), tSpec.clone(), newName.clone());
                         }
                     } else {
                         e_list = list![Arc::new(Absyn::ElementItem::ELEMENTITEM { element: Arc::new(Absyn::Element::ELEMENT { finalPrefix: finalPrefix.clone(), redeclareKeywords: redeclareKeywords.clone(), innerOuter: innerOuter.clone(), specification: Arc::new(Absyn::ElementSpec::COMPONENTS { attributes: attributes.clone(), typeSpec: tSpec.clone(), components: components.clone() }), info: info.clone(), constrainClass: constrainClass.clone() }) })];
                     }
-                    Ok(listAppend(e_list.clone(), parseElems(rest.clone(), defs.clone(), typeSpec.clone(), rootType.clone(), exp2.clone(), instance_name.clone(), hasPreferred.clone(), preferred.clone(), (pathInClass.clone()).clone())?))
+                    Ok(listAppend(e_list.clone(), parseElems(rest.clone(), defs.clone(), typeSpec.clone(), rootType.clone(), exp2.clone(), instance_name.clone(), hasPreferred.clone(), preferred.clone(), (pathInClass.clone()).clone())))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -497,17 +497,17 @@ fn parseElems(mut in_elems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mu
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: e_item, tail: rest } => {
-                    Ok(metamodelica::cons(e_item.clone(), parseElems(rest.clone(), defs.clone(), typeSpec.clone(), rootType.clone(), exp2.clone(), instance_name.clone(), hasPreferred.clone(), preferred.clone(), (pathInClass.clone()).clone())?))
+                    Ok(metamodelica::cons(e_item.clone(), parseElems(rest.clone(), defs.clone(), typeSpec.clone(), rootType.clone(), exp2.clone(), instance_name.clone(), hasPreferred.clone(), preferred.clone(), (pathInClass.clone()).clone())))
                 }
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(out_elems)
+    out_elems
 }
 
-fn applyModifiersPreferred(mut comps: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, mut exp: Arc<metamodelica::List<(Arc<Absyn::Exp>, ArcStr)>>, mut instance_name: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>, mut typeSp: ArcStr, mut finalPrefix: bool, mut redeclareKeywords: Option<Absyn::RedeclareKeywords>, mut innerOuter: Absyn::InnerOuter, mut info: SourceInfo, mut constrainClass: Option<Arc<Absyn::ConstrainClass>>, mut attributes: Absyn::ElementAttributes, mut tSpec: TypeSpec, mut preferred: Arc<metamodelica::List<Preferred>>) -> Result<Arc<metamodelica::List<Arc<Absyn::ElementItem>>>> {
+fn applyModifiersPreferred(mut comps: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, mut exp: Arc<metamodelica::List<(Arc<Absyn::Exp>, ArcStr)>>, mut instance_name: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>, mut typeSp: ArcStr, mut finalPrefix: bool, mut redeclareKeywords: Option<Absyn::RedeclareKeywords>, mut innerOuter: Absyn::InnerOuter, mut info: SourceInfo, mut constrainClass: Option<Arc<Absyn::ConstrainClass>>, mut attributes: Absyn::ElementAttributes, mut tSpec: TypeSpec, mut preferred: Arc<metamodelica::List<Preferred>>) -> Arc<metamodelica::List<Arc<Absyn::ElementItem>>> {
     let mut out_elems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>;
     out_elems = 'mc: {
         let __mc_input = exp.clone();
@@ -526,9 +526,9 @@ fn applyModifiersPreferred(mut comps: Arc<metamodelica::List<Arc<Absyn::Componen
                     let mut client_pref: ArcStr = arcstr::literal!("");
                     let mut enew: Arc<Absyn::ElementItem> = Arc::new(<Absyn::ElementItem as ::std::default::Default>::default());
                     client_pref = (getPreferredBinding((ename.clone()).clone(), preferred.clone())?).clone();
-                    cnew = applyModifierPreferred(comps.clone(), e.clone(), (client_pref.clone()).clone(), instance_name.clone(), (ename.clone()).clone())?;
+                    cnew = applyModifierPreferred(comps.clone(), e.clone(), (client_pref.clone()).clone(), instance_name.clone(), (ename.clone()).clone());
                     enew = Arc::new(Absyn::ElementItem::ELEMENTITEM { element: Arc::new(Absyn::Element::ELEMENT { finalPrefix: finalPrefix.clone(), redeclareKeywords: redeclareKeywords.clone(), innerOuter: innerOuter.clone(), specification: Arc::new(Absyn::ElementSpec::COMPONENTS { attributes: attributes.clone(), typeSpec: tSpec.clone(), components: cnew.clone() }), info: info.clone(), constrainClass: constrainClass.clone() }) });
-                    Ok(metamodelica::cons(enew.clone(), applyModifiersPreferred(comps.clone(), rest.clone(), instance_name.clone(), (typeSp.clone()).clone(), finalPrefix.clone(), redeclareKeywords.clone(), innerOuter.clone(), info.clone(), constrainClass.clone(), attributes.clone(), tSpec.clone(), preferred.clone())?))
+                    Ok(metamodelica::cons(enew.clone(), applyModifiersPreferred(comps.clone(), rest.clone(), instance_name.clone(), (typeSp.clone()).clone(), finalPrefix.clone(), redeclareKeywords.clone(), innerOuter.clone(), info.clone(), constrainClass.clone(), attributes.clone(), tSpec.clone(), preferred.clone())))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -536,14 +536,14 @@ fn applyModifiersPreferred(mut comps: Arc<metamodelica::List<Arc<Absyn::Componen
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
-                    Ok(applyModifiersPreferred(comps.clone(), rest.clone(), instance_name.clone(), (typeSp.clone()).clone(), finalPrefix.clone(), redeclareKeywords.clone(), innerOuter.clone(), info.clone(), constrainClass.clone(), attributes.clone(), tSpec.clone(), preferred.clone())?)
+                    Ok(applyModifiersPreferred(comps.clone(), rest.clone(), instance_name.clone(), (typeSp.clone()).clone(), finalPrefix.clone(), redeclareKeywords.clone(), innerOuter.clone(), info.clone(), constrainClass.clone(), attributes.clone(), tSpec.clone(), preferred.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(out_elems)
+    out_elems
 }
 
 fn getPreferredBinding(mut ename: ArcStr, mut elems: Arc<metamodelica::List<Preferred>>) -> Result<ArcStr> {
@@ -580,7 +580,7 @@ fn getPreferredBinding(mut ename: ArcStr, mut elems: Arc<metamodelica::List<Pref
     Ok(cl_name)
 }
 
-fn applyModifierPreferred(mut comps: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, mut exp: Arc<Absyn::Exp>, mut typeSp: ArcStr, mut instance_name: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>, mut ename: ArcStr) -> Result<Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>> {
+fn applyModifierPreferred(mut comps: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, mut exp: Arc<Absyn::Exp>, mut typeSp: ArcStr, mut instance_name: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>, mut ename: ArcStr) -> Arc<metamodelica::List<Arc<Absyn::ComponentItem>>> {
     let mut out_comps: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>;
     out_comps = 'mc: {
         let __mc_input = comps.clone();
@@ -606,17 +606,17 @@ fn applyModifierPreferred(mut comps: Arc<metamodelica::List<Arc<Absyn::Component
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
-                    Ok(applyModifierPreferred(rest.clone(), exp.clone(), (typeSp.clone()).clone(), instance_name.clone(), (ename.clone()).clone())?)
+                    Ok(applyModifierPreferred(rest.clone(), exp.clone(), (typeSp.clone()).clone(), instance_name.clone(), (ename.clone()).clone()))
                 }
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(out_comps)
+    out_comps
 }
 
-fn applyModifiers(mut comps: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, mut exp: Arc<metamodelica::List<(Arc<Absyn::Exp>, ArcStr)>>, mut instance_name: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>, mut counter: i32, mut finalPrefix: bool, mut redeclareKeywords: Option<Absyn::RedeclareKeywords>, mut innerOuter: Absyn::InnerOuter, mut info: SourceInfo, mut constrainClass: Option<Arc<Absyn::ConstrainClass>>, mut attributes: Absyn::ElementAttributes, mut tSpec: TypeSpec, mut newName: bool) -> Result<Arc<metamodelica::List<Arc<Absyn::ElementItem>>>> {
+fn applyModifiers(mut comps: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, mut exp: Arc<metamodelica::List<(Arc<Absyn::Exp>, ArcStr)>>, mut instance_name: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>, mut counter: i32, mut finalPrefix: bool, mut redeclareKeywords: Option<Absyn::RedeclareKeywords>, mut innerOuter: Absyn::InnerOuter, mut info: SourceInfo, mut constrainClass: Option<Arc<Absyn::ConstrainClass>>, mut attributes: Absyn::ElementAttributes, mut tSpec: TypeSpec, mut newName: bool) -> Arc<metamodelica::List<Arc<Absyn::ElementItem>>> {
     let mut out_elems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>;
     out_elems = 'mc: {
         let __mc_input = exp.clone();
@@ -633,9 +633,9 @@ fn applyModifiers(mut comps: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>,
                 Deref @ metamodelica::List::Cons { head: (e, _), tail: rest } => {
                     let mut cnew: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>> = metamodelica::nil();
                     let mut enew: Arc<Absyn::ElementItem> = Arc::new(<Absyn::ElementItem as ::std::default::Default>::default());
-                    cnew = applyModifier(comps.clone(), e.clone(), instance_name.clone(), counter.clone(), newName.clone())?;
+                    cnew = applyModifier(comps.clone(), e.clone(), instance_name.clone(), counter.clone(), newName.clone());
                     enew = Arc::new(Absyn::ElementItem::ELEMENTITEM { element: Arc::new(Absyn::Element::ELEMENT { finalPrefix: finalPrefix.clone(), redeclareKeywords: redeclareKeywords.clone(), innerOuter: innerOuter.clone(), specification: Arc::new(Absyn::ElementSpec::COMPONENTS { attributes: attributes.clone(), typeSpec: tSpec.clone(), components: cnew.clone() }), info: info.clone(), constrainClass: constrainClass.clone() }) });
-                    Ok(metamodelica::cons(enew.clone(), applyModifiers(comps.clone(), rest.clone(), instance_name.clone(), counter.clone() + 1, finalPrefix.clone(), redeclareKeywords.clone(), innerOuter.clone(), info.clone(), constrainClass.clone(), attributes.clone(), tSpec.clone(), newName.clone())?))
+                    Ok(metamodelica::cons(enew.clone(), applyModifiers(comps.clone(), rest.clone(), instance_name.clone(), counter.clone() + 1, finalPrefix.clone(), redeclareKeywords.clone(), innerOuter.clone(), info.clone(), constrainClass.clone(), attributes.clone(), tSpec.clone(), newName.clone())))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -643,17 +643,17 @@ fn applyModifiers(mut comps: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>,
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
-                    Ok(applyModifiers(comps.clone(), rest.clone(), instance_name.clone(), counter.clone(), finalPrefix.clone(), redeclareKeywords.clone(), innerOuter.clone(), info.clone(), constrainClass.clone(), attributes.clone(), tSpec.clone(), newName.clone())?)
+                    Ok(applyModifiers(comps.clone(), rest.clone(), instance_name.clone(), counter.clone(), finalPrefix.clone(), redeclareKeywords.clone(), innerOuter.clone(), info.clone(), constrainClass.clone(), attributes.clone(), tSpec.clone(), newName.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(out_elems)
+    out_elems
 }
 
-fn applyModifier(mut comps: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, mut exp: Arc<Absyn::Exp>, mut instance_name: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>, mut counter: i32, mut newName: bool) -> Result<Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>> {
+fn applyModifier(mut comps: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, mut exp: Arc<Absyn::Exp>, mut instance_name: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>, mut counter: i32, mut newName: bool) -> Arc<metamodelica::List<Arc<Absyn::ComponentItem>>> {
     let mut out_comps: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>;
     out_comps = 'mc: {
         let __mc_input = comps.clone();
@@ -681,14 +681,14 @@ fn applyModifier(mut comps: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
-                    Ok(applyModifier(rest.clone(), exp.clone(), instance_name.clone(), counter.clone(), newName.clone())?)
+                    Ok(applyModifier(rest.clone(), exp.clone(), instance_name.clone(), counter.clone(), newName.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(out_comps)
+    out_comps
 }
 
 fn buildComponentModifiers(mut name_list: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>, mut exp: Arc<Absyn::Exp>) -> Result<Arc<metamodelica::List<Arc<Absyn::ElementArg>>>> {
@@ -826,13 +826,13 @@ pub fn getProviders(mut providers: Arc<metamodelica::List<Provider>>, mut vmodel
             let mut mlist: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
             let mut exp: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
             mlist = AbsynUtil::getElementItemsInClass(vmodel.clone())?;
-            comps = getAllProviderInstances((className.clone()).clone(), (template.clone()).clone(), mlist.clone(), env.clone(), metamodelica::nil(), (literal!("")).clone())?;
+            comps = getAllProviderInstances((className.clone()).clone(), (template.clone()).clone(), mlist.clone(), env.clone(), metamodelica::nil(), (literal!("")).clone());
             let __pa0 = ::match_deref::match_deref! { match &(Parser::parsestringexp((template.clone()).clone(), (literal!("<interactive>")).clone())?) {
                 GlobalScript::Statements { interactiveStmtLst: Deref @ metamodelica::List::Cons { head: GlobalScript::Statement::IEXP { exp: __pa0, info: _ }, tail: Deref @ metamodelica::List::Nil }, semicolon: _ } => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
             exp = __pa0.clone();
-            exps = applyTemplate(exp.clone(), comps.clone(), metamodelica::nil())?;
+            exps = applyTemplate(exp.clone(), comps.clone(), metamodelica::nil());
             new_es = listAppend(exps.clone(), in_es.clone());
             { (providers, vmodel, env, in_es) = (rest.clone(), vmodel.clone(), env.clone(), new_es.clone()); continue '__tco; }
         },
@@ -841,7 +841,7 @@ pub fn getProviders(mut providers: Arc<metamodelica::List<Provider>>, mut vmodel
     }
 }
 
-fn applyTemplate(mut exp: Arc<Absyn::Exp>, mut comps: Arc<metamodelica::List<(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArcStr)>>, mut in_es: Arc<metamodelica::List<(Arc<Absyn::Exp>, ArcStr)>>) -> Result<Arc<metamodelica::List<(Arc<Absyn::Exp>, ArcStr)>>> {
+fn applyTemplate(mut exp: Arc<Absyn::Exp>, mut comps: Arc<metamodelica::List<(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArcStr)>>, mut in_es: Arc<metamodelica::List<(Arc<Absyn::Exp>, ArcStr)>>) -> Arc<metamodelica::List<(Arc<Absyn::Exp>, ArcStr)>> {
     let mut out_es: Arc<metamodelica::List<(Arc<Absyn::Exp>, ArcStr)>>;
     out_es = 'mc: {
         let __mc_input = comps.clone();
@@ -857,8 +857,8 @@ fn applyTemplate(mut exp: Arc<Absyn::Exp>, mut comps: Arc<metamodelica::List<(Ar
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: (clist, pathInClass), tail: rest } => {
                     let mut new_es: Arc<metamodelica::List<(Arc<Absyn::Exp>, ArcStr)>> = metamodelica::nil();
-                    new_es = applyTemplate2(exp.clone(), clist.clone(), in_es.clone(), (pathInClass.clone()).clone())?;
-                    Ok(applyTemplate(exp.clone(), rest.clone(), new_es.clone())?)
+                    new_es = applyTemplate2(exp.clone(), clist.clone(), in_es.clone(), (pathInClass.clone()).clone());
+                    Ok(applyTemplate(exp.clone(), rest.clone(), new_es.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -866,17 +866,17 @@ fn applyTemplate(mut exp: Arc<Absyn::Exp>, mut comps: Arc<metamodelica::List<(Ar
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
-                    Ok(applyTemplate(exp.clone(), rest.clone(), in_es.clone())?)
+                    Ok(applyTemplate(exp.clone(), rest.clone(), in_es.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(out_es)
+    out_es
 }
 
-fn applyTemplate2(mut exp: Arc<Absyn::Exp>, mut comps: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, mut in_es: Arc<metamodelica::List<(Arc<Absyn::Exp>, ArcStr)>>, mut pathInClass: ArcStr) -> Result<Arc<metamodelica::List<(Arc<Absyn::Exp>, ArcStr)>>> {
+fn applyTemplate2(mut exp: Arc<Absyn::Exp>, mut comps: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, mut in_es: Arc<metamodelica::List<(Arc<Absyn::Exp>, ArcStr)>>, mut pathInClass: ArcStr) -> Arc<metamodelica::List<(Arc<Absyn::Exp>, ArcStr)>> {
     let mut out_es: Arc<metamodelica::List<(Arc<Absyn::Exp>, ArcStr)>>;
     out_es = 'mc: {
         let __mc_input = comps.clone();
@@ -893,7 +893,7 @@ fn applyTemplate2(mut exp: Arc<Absyn::Exp>, mut comps: Arc<metamodelica::List<Ar
                 Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ComponentItem { component: Absyn::Component { name, arrayDim: _, modification: _ }, condition: _, comment: _ }, tail: rest } => {
                     let mut newName: ArcStr = arcstr::literal!("");
                     newName = (if (pathInClass.clone() == literal!("")) {name.clone()} else {{ let mut __mm_s = String::new(); __mm_s.push_str(&*pathInClass.clone()); __mm_s.push_str(&*literal!(".")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }}).clone();
-                    Ok(applyTemplate2(exp.clone(), rest.clone(), metamodelica::cons((parseExpression(exp.clone(), (newName.clone()).clone())?, newName.clone()), in_es.clone()), (pathInClass.clone()).clone())?)
+                    Ok(applyTemplate2(exp.clone(), rest.clone(), metamodelica::cons((parseExpression(exp.clone(), (newName.clone()).clone()), newName.clone()), in_es.clone()), (pathInClass.clone()).clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -901,62 +901,62 @@ fn applyTemplate2(mut exp: Arc<Absyn::Exp>, mut comps: Arc<metamodelica::List<Ar
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
-                    Ok(applyTemplate2(exp.clone(), rest.clone(), in_es.clone(), (pathInClass.clone()).clone())?)
+                    Ok(applyTemplate2(exp.clone(), rest.clone(), in_es.clone(), (pathInClass.clone()).clone()))
                 }
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(out_es)
+    out_es
 }
 
-fn parseExpression(mut in_eq: Arc<Absyn::Exp>, mut fargs: ArcStr) -> Result<Arc<Absyn::Exp>> {
+fn parseExpression(mut in_eq: Arc<Absyn::Exp>, mut fargs: ArcStr) -> Arc<Absyn::Exp> {
     let mut out_eq: Arc<Absyn::Exp>;
     out_eq = (::match_deref::match_deref! { match &(in_eq.clone()) {
         Deref @ Absyn::Exp::BINARY { exp1, op, exp2 } => {
             let mut nexp1: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
             let mut nexp2: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
-            nexp1 = parseExpression(exp1.clone(), (fargs.clone()).clone())?;
-            nexp2 = parseExpression(exp2.clone(), (fargs.clone()).clone())?;
+            nexp1 = parseExpression(exp1.clone(), (fargs.clone()).clone());
+            nexp2 = parseExpression(exp2.clone(), (fargs.clone()).clone());
             Arc::new(Absyn::Exp::BINARY { exp1: nexp1.clone(), op: op.clone(), exp2: nexp2.clone() })
         },
         Deref @ Absyn::Exp::LBINARY { exp1, op, exp2 } => {
             let mut nexp1: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
             let mut nexp2: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
-            nexp1 = parseExpression(exp1.clone(), (fargs.clone()).clone())?;
-            nexp2 = parseExpression(exp2.clone(), (fargs.clone()).clone())?;
+            nexp1 = parseExpression(exp1.clone(), (fargs.clone()).clone());
+            nexp2 = parseExpression(exp2.clone(), (fargs.clone()).clone());
             Arc::new(Absyn::Exp::LBINARY { exp1: nexp1.clone(), op: op.clone(), exp2: nexp2.clone() })
         },
         Deref @ Absyn::Exp::RELATION { exp1, op, exp2 } => {
             let mut nexp1: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
             let mut nexp2: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
-            nexp1 = parseExpression(exp1.clone(), (fargs.clone()).clone())?;
-            nexp2 = parseExpression(exp2.clone(), (fargs.clone()).clone())?;
+            nexp1 = parseExpression(exp1.clone(), (fargs.clone()).clone());
+            nexp2 = parseExpression(exp2.clone(), (fargs.clone()).clone());
             Arc::new(Absyn::Exp::RELATION { exp1: nexp1.clone(), op: op.clone(), exp2: nexp2.clone() })
         },
         Deref @ Absyn::Exp::UNARY { op, exp: exp2 } => {
             let mut nexp1: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
-            nexp1 = parseExpression(exp2.clone(), (fargs.clone()).clone())?;
+            nexp1 = parseExpression(exp2.clone(), (fargs.clone()).clone());
             Arc::new(Absyn::Exp::UNARY { op: op.clone(), exp: nexp1.clone() })
         },
         Deref @ Absyn::Exp::LUNARY { op, exp: exp2 } => {
             let mut nexp1: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
-            nexp1 = parseExpression(exp2.clone(), (fargs.clone()).clone())?;
+            nexp1 = parseExpression(exp2.clone(), (fargs.clone()).clone());
             Arc::new(Absyn::Exp::LUNARY { op: op.clone(), exp: nexp1.clone() })
         },
         Deref @ Absyn::Exp::IFEXP { ifExp: ife, trueBranch: exp1, elseBranch: exp2, elseIfBranch: elif } => {
             let mut nexp1: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
             let mut nexp2: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
             let mut nife: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
-            nife = parseExpression(ife.clone(), (fargs.clone()).clone())?;
-            nexp1 = parseExpression(exp1.clone(), (fargs.clone()).clone())?;
-            nexp2 = parseExpression(exp2.clone(), (fargs.clone()).clone())?;
+            nife = parseExpression(ife.clone(), (fargs.clone()).clone());
+            nexp1 = parseExpression(exp1.clone(), (fargs.clone()).clone());
+            nexp2 = parseExpression(exp2.clone(), (fargs.clone()).clone());
             Arc::new(Absyn::Exp::IFEXP { ifExp: nife.clone(), trueBranch: nexp1.clone(), elseBranch: nexp2.clone(), elseIfBranch: elif.clone() })
         },
         Deref @ Absyn::Exp::CREF { componentRef: crf } => {
             let mut new_crf: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
-            new_crf = updateCRF(crf.clone(), (fargs.clone()).clone())?;
+            new_crf = updateCRF(crf.clone(), (fargs.clone()).clone());
             Arc::new(Absyn::Exp::CREF { componentRef: new_crf.clone() })
         },
         _ => {
@@ -964,17 +964,17 @@ fn parseExpression(mut in_eq: Arc<Absyn::Exp>, mut fargs: ArcStr) -> Result<Arc<
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Ok(out_eq)
+    out_eq
 }
 
-fn updateCRF(mut componentRef: Arc<Absyn::ComponentRef>, mut name: ArcStr) -> Result<Arc<Absyn::ComponentRef>> {
+fn updateCRF(mut componentRef: Arc<Absyn::ComponentRef>, mut name: ArcStr) -> Arc<Absyn::ComponentRef> {
     let mut out_componentRef: Arc<Absyn::ComponentRef>;
     out_componentRef = 'mc: {
         let __mc_input = componentRef.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { componentRef: cRef } => {
-                    Ok(updateCRF(cRef.clone(), (name.clone()).clone())?)
+                    Ok(updateCRF(cRef.clone(), (name.clone()).clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -991,7 +991,7 @@ fn updateCRF(mut componentRef: Arc<Absyn::ComponentRef>, mut name: ArcStr) -> Re
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::ComponentRef::CREF_QUAL { name: id, subscripts, componentRef: cRef } => {
                     let mut new_cRef: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
-                    new_cRef = updateCRF(cRef.clone(), (name.clone()).clone())?;
+                    new_cRef = updateCRF(cRef.clone(), (name.clone()).clone());
                     Ok(Arc::new(Absyn::ComponentRef::CREF_QUAL { name: (id.clone()).clone(), subscripts: subscripts.clone(), componentRef: new_cRef.clone() }))
                 }
                 _ => bail!("nomatch"),
@@ -1013,12 +1013,12 @@ fn updateCRF(mut componentRef: Arc<Absyn::ComponentRef>, mut name: ArcStr) -> Re
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(out_componentRef)
+    out_componentRef
 }
 
-fn getAllProviderInstances(mut className: ArcStr, mut template: ArcStr, mut e_items: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut env: Absyn::Program, mut in_components: Arc<metamodelica::List<(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArcStr)>>, mut pathInClass: ArcStr) -> Result<Arc<metamodelica::List<(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArcStr)>>> {
+fn getAllProviderInstances(mut className: ArcStr, mut template: ArcStr, mut e_items: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut env: Absyn::Program, mut in_components: Arc<metamodelica::List<(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArcStr)>>, mut pathInClass: ArcStr) -> Arc<metamodelica::List<(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArcStr)>> {
     let mut out_components: Arc<metamodelica::List<(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArcStr)>>;
     out_components = 'mc: {
         let __mc_input = e_items.clone();
@@ -1047,8 +1047,8 @@ fn getAllProviderInstances(mut className: ArcStr, mut template: ArcStr, mut e_it
                         cnew = in_components.clone();
                     }
                     re_items = AbsynUtil::getElementItemsInClass(def.clone())?;
-                    cnew2 = parseComponents((className.clone()).clone(), (template.clone()).clone(), re_items.clone(), env.clone(), components.clone(), cnew.clone(), (pathInClass.clone()).clone())?;
-                    Ok(getAllProviderInstances((className.clone()).clone(), (template.clone()).clone(), rest.clone(), env.clone(), cnew2.clone(), (pathInClass.clone()).clone())?)
+                    cnew2 = parseComponents((className.clone()).clone(), (template.clone()).clone(), re_items.clone(), env.clone(), components.clone(), cnew.clone(), (pathInClass.clone()).clone());
+                    Ok(getAllProviderInstances((className.clone()).clone(), (template.clone()).clone(), rest.clone(), env.clone(), cnew2.clone(), (pathInClass.clone()).clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1056,17 +1056,17 @@ fn getAllProviderInstances(mut className: ArcStr, mut template: ArcStr, mut e_it
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
-                    Ok(getAllProviderInstances((className.clone()).clone(), (template.clone()).clone(), rest.clone(), env.clone(), in_components.clone(), (pathInClass.clone()).clone())?)
+                    Ok(getAllProviderInstances((className.clone()).clone(), (template.clone()).clone(), rest.clone(), env.clone(), in_components.clone(), (pathInClass.clone()).clone()))
                 }
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(out_components)
+    out_components
 }
 
-fn parseComponents(mut className: ArcStr, mut template: ArcStr, mut e_items: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut env: Absyn::Program, mut components: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, mut in_components: Arc<metamodelica::List<(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArcStr)>>, mut pathInClass: ArcStr) -> Result<Arc<metamodelica::List<(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArcStr)>>> {
+fn parseComponents(mut className: ArcStr, mut template: ArcStr, mut e_items: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut env: Absyn::Program, mut components: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, mut in_components: Arc<metamodelica::List<(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArcStr)>>, mut pathInClass: ArcStr) -> Arc<metamodelica::List<(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArcStr)>> {
     let mut out_components: Arc<metamodelica::List<(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArcStr)>>;
     out_components = 'mc: {
         let __mc_input = components.clone();
@@ -1084,8 +1084,8 @@ fn parseComponents(mut className: ArcStr, mut template: ArcStr, mut e_items: Arc
                     let mut tmp: Arc<metamodelica::List<(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArcStr)>> = metamodelica::nil();
                     let mut newName: ArcStr = arcstr::literal!("");
                     newName = (if (pathInClass.clone() == literal!("")) {name.clone()} else {{ let mut __mm_s = String::new(); __mm_s.push_str(&*pathInClass.clone()); __mm_s.push_str(&*literal!(".")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }}).clone();
-                    tmp = getAllProviderInstances((className.clone()).clone(), (template.clone()).clone(), e_items.clone(), env.clone(), in_components.clone(), (newName.clone()).clone())?;
-                    Ok(parseComponents((className.clone()).clone(), (template.clone()).clone(), e_items.clone(), env.clone(), rest.clone(), tmp.clone(), (pathInClass.clone()).clone())?)
+                    tmp = getAllProviderInstances((className.clone()).clone(), (template.clone()).clone(), e_items.clone(), env.clone(), in_components.clone(), (newName.clone()).clone());
+                    Ok(parseComponents((className.clone()).clone(), (template.clone()).clone(), e_items.clone(), env.clone(), rest.clone(), tmp.clone(), (pathInClass.clone()).clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1093,21 +1093,21 @@ fn parseComponents(mut className: ArcStr, mut template: ArcStr, mut e_items: Arc
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
-                    Ok(parseComponents((className.clone()).clone(), (template.clone()).clone(), e_items.clone(), env.clone(), rest.clone(), in_components.clone(), (pathInClass.clone()).clone())?)
+                    Ok(parseComponents((className.clone()).clone(), (template.clone()).clone(), e_items.clone(), env.clone(), rest.clone(), in_components.clone(), (pathInClass.clone()).clone()))
                 }
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(out_components)
+    out_components
 }
 
 fn buildInstList(mut clazz: Arc<Absyn::Class>, mut env: Absyn::Program, mut predecessors: Arc<Client_e>, mut mediators: Arc<metamodelica::List<Mediator>>, mut client_list_in: Arc<metamodelica::List<Arc<Client_e>>>, mut instance_list: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>) -> Result<Arc<metamodelica::List<Arc<Client_e>>>> {
     let mut client_list: Arc<metamodelica::List<Arc<Client_e>>>;
     let mut e_items: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>;
     e_items = AbsynUtil::getElementItemsInClass(clazz.clone())?;
-    client_list = parseElementInstList(e_items.clone(), env.clone(), crate::Binding::Client_e::interned_NO_PRED(), mediators.clone(), client_list_in.clone(), instance_list.clone())?;
+    client_list = parseElementInstList(e_items.clone(), env.clone(), crate::Binding::Client_e::interned_NO_PRED(), mediators.clone(), client_list_in.clone(), instance_list.clone());
     Ok(client_list)
 }
 
@@ -1115,7 +1115,7 @@ fn buildInstList2(mut clazz: Arc<Absyn::Class>, mut env: Absyn::Program, mut pre
     let mut client_list: Arc<metamodelica::List<Arc<Client_e>>>;
     let mut e_items: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>;
     e_items = AbsynUtil::getElementItemsInClass(clazz.clone())?;
-    client_list = parseElementInstList2(e_items.clone(), env.clone(), crate::Binding::Client_e::interned_NO_PRED(), mediators.clone(), client_list_in.clone(), instance_list.clone(), rootType.clone())?;
+    client_list = parseElementInstList2(e_items.clone(), env.clone(), crate::Binding::Client_e::interned_NO_PRED(), mediators.clone(), client_list_in.clone(), instance_list.clone(), rootType.clone());
     Ok(client_list)
 }
 
@@ -1133,7 +1133,7 @@ fn isAlreadyInList(mut ts: Arc<Absyn::TypeSpec>, mut predecessors: Arc<metamodel
     }
 }
 
-fn parseElementInstList(mut e_items: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut env: Absyn::Program, mut predecessors: Arc<Client_e>, mut mediators: Arc<metamodelica::List<Mediator>>, mut in_client_list: Arc<metamodelica::List<Arc<Client_e>>>, mut instance_list: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>) -> Result<Arc<metamodelica::List<Arc<Client_e>>>> {
+fn parseElementInstList(mut e_items: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut env: Absyn::Program, mut predecessors: Arc<Client_e>, mut mediators: Arc<metamodelica::List<Mediator>>, mut in_client_list: Arc<metamodelica::List<Arc<Client_e>>>, mut instance_list: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>) -> Arc<metamodelica::List<Arc<Client_e>>> {
     let mut client_list: Arc<metamodelica::List<Arc<Client_e>>>;
     client_list = 'mc: {
         let __mc_input = e_items.clone();
@@ -1167,7 +1167,7 @@ fn parseElementInstList(mut e_items: Arc<metamodelica::List<Arc<Absyn::ElementIt
                         l2 = in_client_list.clone();
                     }
                     l1 = buildInstList2(def.clone(), env.clone(), new_predecessors.clone(), mediators.clone(), l2.clone(), instance_list.clone(), typeSpec.clone())?;
-                    Ok(parseElementInstList(rest.clone(), env.clone(), predecessors.clone(), mediators.clone(), l1.clone(), instance_list.clone())?)
+                    Ok(parseElementInstList(rest.clone(), env.clone(), predecessors.clone(), mediators.clone(), l1.clone(), instance_list.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1175,14 +1175,14 @@ fn parseElementInstList(mut e_items: Arc<metamodelica::List<Arc<Absyn::ElementIt
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
-                    Ok(parseElementInstList(rest.clone(), env.clone(), predecessors.clone(), mediators.clone(), in_client_list.clone(), instance_list.clone())?)
+                    Ok(parseElementInstList(rest.clone(), env.clone(), predecessors.clone(), mediators.clone(), in_client_list.clone(), instance_list.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(client_list)
+    client_list
 }
 
 fn getComponentNames(mut l: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>) -> Result<Arc<metamodelica::List<ArcStr>>> {
@@ -1199,7 +1199,7 @@ fn getComponentNames(mut l: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>) 
     Ok(res)
 }
 
-fn parseElementInstList2(mut e_items: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut env: Absyn::Program, mut predecessors: Arc<Client_e>, mut mediators: Arc<metamodelica::List<Mediator>>, mut in_client_list: Arc<metamodelica::List<Arc<Client_e>>>, mut instance_list: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>, mut rootType: TypeSpec) -> Result<Arc<metamodelica::List<Arc<Client_e>>>> {
+fn parseElementInstList2(mut e_items: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut env: Absyn::Program, mut predecessors: Arc<Client_e>, mut mediators: Arc<metamodelica::List<Mediator>>, mut in_client_list: Arc<metamodelica::List<Arc<Client_e>>>, mut instance_list: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>, mut rootType: TypeSpec) -> Arc<metamodelica::List<Arc<Client_e>>> {
     let mut client_list: Arc<metamodelica::List<Arc<Client_e>>>;
     client_list = 'mc: {
         let __mc_input = e_items.clone();
@@ -1233,7 +1233,7 @@ fn parseElementInstList2(mut e_items: Arc<metamodelica::List<Arc<Absyn::ElementI
                         l2 = in_client_list.clone();
                     }
                     l1 = buildInstList2(def.clone(), env.clone(), new_predecessors.clone(), mediators.clone(), l2.clone(), metamodelica::cons(getComponentNames(components.clone())?, instance_list.clone()), rootType.clone())?;
-                    Ok(parseElementInstList2(rest.clone(), env.clone(), predecessors.clone(), mediators.clone(), l1.clone(), instance_list.clone(), rootType.clone())?)
+                    Ok(parseElementInstList2(rest.clone(), env.clone(), predecessors.clone(), mediators.clone(), l1.clone(), instance_list.clone(), rootType.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1241,14 +1241,14 @@ fn parseElementInstList2(mut e_items: Arc<metamodelica::List<Arc<Absyn::ElementI
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
-                    Ok(parseElementInstList2(rest.clone(), env.clone(), predecessors.clone(), mediators.clone(), in_client_list.clone(), instance_list.clone(), rootType.clone())?)
+                    Ok(parseElementInstList2(rest.clone(), env.clone(), predecessors.clone(), mediators.clone(), in_client_list.clone(), instance_list.clone(), rootType.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(client_list)
+    client_list
 }
 
 fn isClient(mut ci_name: ArcStr, mut mediators: Arc<metamodelica::List<Mediator>>, mut in_m: Arc<metamodelica::List<Mediator>>) -> Result<(bool, ArcStr, Arc<metamodelica::List<Mediator>>)> {
@@ -1269,7 +1269,7 @@ fn isClient(mut ci_name: ArcStr, mut mediators: Arc<metamodelica::List<Mediator>
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Mediator { mType, template, clients, providers, preferred }, tail: _ } => {
                     let mut nm: ArcStr = arcstr::literal!("");
-                    let (true, __pa0) = (isClientInMediator((ci_name.clone()).clone(), clients.clone())?) else { bail!("pattern mismatch") };
+                    let (true, __pa0) = (isClientInMediator((ci_name.clone()).clone(), clients.clone())) else { bail!("pattern mismatch") };
                     nm = __pa0.clone();
                     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("... found client : ")); __mm_s.push_str(&*ci_name.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     Ok((true, nm.clone(), metamodelica::cons(Mediator { mType: (mType.clone()).clone(), template: (template.clone()).clone(), clients: clients.clone(), providers: providers.clone(), preferred: preferred.clone() }, in_m.clone())))
@@ -1290,7 +1290,7 @@ fn isClient(mut ci_name: ArcStr, mut mediators: Arc<metamodelica::List<Mediator>
     Ok((isClient, iname, m))
 }
 
-fn isClientInMediator(mut ci_name: ArcStr, mut clients: Arc<metamodelica::List<Client>>) -> Result<(bool, ArcStr)> {
+fn isClientInMediator(mut ci_name: ArcStr, mut clients: Arc<metamodelica::List<Client>>) -> (bool, ArcStr) {
     let mut isClient: bool;
     let mut iname: ArcStr;
     (isClient, iname) = 'mc: {
@@ -1315,40 +1315,40 @@ fn isClientInMediator(mut ci_name: ArcStr, mut clients: Arc<metamodelica::List<C
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
-                    Ok(isClientInMediator((ci_name.clone()).clone(), rest.clone())?)
+                    Ok(isClientInMediator((ci_name.clone()).clone(), rest.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((isClient, iname))
+    (isClient, iname)
 }
 
-fn getMediatorDefsElements(mut mediator_defs: Arc<metamodelica::List<Arc<SCode::Element>>>, mut mediators_in: Arc<metamodelica::List<Mediator>>) -> Result<Arc<metamodelica::List<Mediator>>> {
+fn getMediatorDefsElements(mut mediator_defs: Arc<metamodelica::List<Arc<SCode::Element>>>, mut mediators_in: Arc<metamodelica::List<Mediator>>) -> Arc<metamodelica::List<Mediator>> {
     '__tco: loop {
         ::match_deref::match_deref! { match &(mediator_defs.clone()) {
         Deref @ metamodelica::List::Nil => {
-            return Ok(mediators_in.clone())
+            return mediators_in.clone()
         },
         Deref @ metamodelica::List::Cons { head: el, tail: rest } => {
             let mut m: Arc<metamodelica::List<Mediator>> = metamodelica::nil();
-            m = listAppend(getMediatorDefsElement(el.clone())?, mediators_in.clone());
+            m = listAppend(getMediatorDefsElement(el.clone()), mediators_in.clone());
             { (mediator_defs, mediators_in) = (rest.clone(), m.clone()); continue '__tco; }
         },
-        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+        _ => unreachable!("tail-call lowered match: no arm matched"),
     } }
     }
 }
 
-fn getMediatorDefsElement(mut el: Arc<SCode::Element>) -> Result<Arc<metamodelica::List<Mediator>>> {
+fn getMediatorDefsElement(mut el: Arc<SCode::Element>) -> Arc<metamodelica::List<Mediator>> {
     let mut mediator: Arc<metamodelica::List<Mediator>>;
     mediator = 'mc: {
         let __mc_input = el.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SCode::Element::CLASS { name: _, prefixes: _, encapsulatedPrefix: _, partialPrefix: _, restriction: SCode::Restriction::R_PACKAGE { .. }, classDef: Deref @ SCode::ClassDef::PARTS { elementLst: elist, normalEquationLst: _, initialEquationLst: _, normalAlgorithmLst: _, initialAlgorithmLst: _, constraintLst: _, clsattrs: _, externalDecl: _ }, cmt: _, info: _ } => {
-                    Ok(getMediatorDefsElements(elist.clone(), metamodelica::nil())?)
+                    Ok(getMediatorDefsElements(elist.clone(), metamodelica::nil()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1367,7 +1367,7 @@ fn getMediatorDefsElement(mut el: Arc<SCode::Element>) -> Result<Arc<metamodelic
                     let mut cls: Arc<metamodelica::List<Client>> = metamodelica::nil();
                     let mut prvs: Arc<metamodelica::List<Provider>> = metamodelica::nil();
                     let mut pref: Arc<metamodelica::List<Preferred>> = metamodelica::nil();
-                    let __pa0 = ::match_deref::match_deref! { match &(extendsType(elist.clone(), (literal!("Mediator")).clone())?) {
+                    let __pa0 = ::match_deref::match_deref! { match &(extendsType(elist.clone(), (literal!("Mediator")).clone())) {
                         (true, Some(__pa0)) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -1415,9 +1415,9 @@ fn getMediatorDefsElement(mut el: Arc<SCode::Element>) -> Result<Arc<metamodelic
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(mediator)
+    mediator
 }
 
 fn getPreferredList(mut e: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut val: Arc<metamodelica::List<Preferred>>) -> Result<Arc<metamodelica::List<Preferred>>> {
@@ -1429,8 +1429,8 @@ fn getPreferredList(mut e: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut val: Ar
         Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::CALL { function_: _, functionArgs: Deref @ Absyn::FunctionArgs::FUNCTIONARGS { args: _, argNames }, .. }, tail: rest } => {
             let mut clientInstancePath: ArcStr = arcstr::literal!("");
             let mut providerInstancePath: ArcStr = arcstr::literal!("");
-            clientInstancePath = (getArg(argNames.clone(), (literal!("clientInstancePath")).clone())?).clone();
-            providerInstancePath = (getArg(argNames.clone(), (literal!("providerInstancePath")).clone())?).clone();
+            clientInstancePath = (getArg(argNames.clone(), (literal!("clientInstancePath")).clone())).clone();
+            providerInstancePath = (getArg(argNames.clone(), (literal!("providerInstancePath")).clone())).clone();
             { (e, val) = (rest.clone(), metamodelica::cons(Preferred { clientInstancePath: (clientInstancePath.clone()).clone(), providerInstancePath: (providerInstancePath.clone()).clone() }, val.clone())); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
@@ -1450,10 +1450,10 @@ fn getClientList(mut e: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut val: Arc<m
             let mut template: ArcStr = arcstr::literal!("");
             let mut isM: ArcStr = arcstr::literal!("");
             let mut isMandatory: bool = false;
-            className = (getArg(argNames.clone(), (literal!("modelID")).clone())?).clone();
-            instance = (getArg(argNames.clone(), (literal!("component")).clone())?).clone();
-            template = (getArg(argNames.clone(), (literal!("template")).clone())?).clone();
-            isM = (getArg(argNames.clone(), (literal!("isMandatory")).clone())?).clone();
+            className = (getArg(argNames.clone(), (literal!("modelID")).clone())).clone();
+            instance = (getArg(argNames.clone(), (literal!("component")).clone())).clone();
+            template = (getArg(argNames.clone(), (literal!("template")).clone())).clone();
+            isM = (getArg(argNames.clone(), (literal!("isMandatory")).clone())).clone();
             if isM.clone() == literal!("true") {
                 isMandatory = true;
             } else {
@@ -1476,9 +1476,9 @@ fn getProviderList(mut e: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut val: Arc
             let mut className: ArcStr = arcstr::literal!("");
             let mut providerTemplate: ArcStr = arcstr::literal!("");
             let mut instance: ArcStr = arcstr::literal!("");
-            className = (getArg(argNames.clone(), (literal!("modelID")).clone())?).clone();
-            instance = (getArg(argNames.clone(), (literal!("component")).clone())?).clone();
-            providerTemplate = (getArg(argNames.clone(), (literal!("template")).clone())?).clone();
+            className = (getArg(argNames.clone(), (literal!("modelID")).clone())).clone();
+            instance = (getArg(argNames.clone(), (literal!("component")).clone())).clone();
+            providerTemplate = (getArg(argNames.clone(), (literal!("template")).clone())).clone();
             { (e, val) = (rest.clone(), metamodelica::cons(Provider { modelID: (className.clone()).clone(), component: (instance.clone()).clone(), template: (providerTemplate.clone()).clone() }, val.clone())); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
@@ -1486,7 +1486,7 @@ fn getProviderList(mut e: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut val: Arc
     }
 }
 
-fn getArg(mut argNames: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut name: ArcStr) -> Result<ArcStr> {
+fn getArg(mut argNames: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut name: ArcStr) -> ArcStr {
     let mut val: ArcStr;
     val = ('mc: {
         let __mc_input = argNames.clone();
@@ -1514,17 +1514,17 @@ fn getArg(mut argNames: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut name:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
-                    Ok(getArg(rest.clone(), (name.clone()).clone())?)
+                    Ok(getArg(rest.clone(), (name.clone()).clone()))
                 }
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     }).clone();
-    Ok(val)
+    val
 }
 
-fn extendsType(mut elems: Arc<metamodelica::List<Arc<SCode::Element>>>, mut typeName: ArcStr) -> Result<(bool, Option<Arc<SCode::Mod>>)> {
+fn extendsType(mut elems: Arc<metamodelica::List<Arc<SCode::Element>>>, mut typeName: ArcStr) -> (bool, Option<Arc<SCode::Mod>>) {
     let mut result: bool;
     let mut mods: Option<Arc<SCode::Mod>>;
     (result, mods) = 'mc: {
@@ -1549,14 +1549,14 @@ fn extendsType(mut elems: Arc<metamodelica::List<Arc<SCode::Element>>>, mut type
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
-                    Ok(extendsType(rest.clone(), (typeName.clone()).clone())?)
+                    Ok(extendsType(rest.clone(), (typeName.clone()).clone()))
                 }
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((result, mods))
+    (result, mods)
 }
 
 fn getValue(mut r#mod: Arc<SCode::Mod>, mut name: Ident, mut retype: ArcStr) -> Result<Arc<Absyn::Exp>> {

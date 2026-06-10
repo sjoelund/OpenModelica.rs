@@ -218,7 +218,7 @@ fn instEquationCommonWork(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
                     (outCache, rhs_exp, rhs_prop) = Static::elabExp(inCache.clone(), inEnv.clone(), rhs_aexp.clone(), inImpl.clone(), true, inPrefix.clone(), info.clone())?;
                     (outCache, lhs_exp, lhs_prop) = Ceval::cevalIfConstant(outCache.clone(), inEnv.clone(), lhs_exp.clone(), lhs_prop.clone(), inImpl.clone(), info.clone())?;
                     (outCache, rhs_exp, rhs_prop) = Ceval::cevalIfConstant(outCache.clone(), inEnv.clone(), rhs_exp.clone(), rhs_prop.clone(), inImpl.clone(), info.clone())?;
-                    (outCache, lhs_exp, rhs_exp, lhs_prop) = condenseArrayEquation(outCache.clone(), inEnv.clone(), lhs_aexp.clone(), rhs_aexp.clone(), lhs_exp.clone(), rhs_exp.clone(), lhs_prop.clone(), rhs_prop.clone(), inImpl.clone(), inPrefix.clone(), info.clone())?;
+                    (outCache, lhs_exp, rhs_exp, lhs_prop) = condenseArrayEquation(outCache.clone(), inEnv.clone(), lhs_aexp.clone(), rhs_aexp.clone(), lhs_exp.clone(), rhs_exp.clone(), lhs_prop.clone(), rhs_prop.clone(), inImpl.clone(), inPrefix.clone(), info.clone());
                     (outCache, lhs_exp) = PrefixUtil::prefixExp(outCache.clone(), inEnv.clone(), inIH.clone(), lhs_exp.clone(), inPrefix.clone())?;
                     (outCache, rhs_exp) = PrefixUtil::prefixExp(outCache.clone(), inEnv.clone(), inIH.clone(), rhs_exp.clone(), inPrefix.clone())?;
                     source = makeEqSource(info.clone(), inEnv.clone(), inPrefix.clone(), inFlattenOp.clone())?;
@@ -468,11 +468,11 @@ fn instEquationCommonWork(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
                     ty = __pa2.clone();
                     cr_exp = __pa3.clone();
                     cr_prop = __pa4.clone();
-                    let true = (checkReinitType(ty.clone(), cr_prop.clone(), cr.clone(), info.clone())?) else { bail!("pattern mismatch") };
+                    let true = (checkReinitType(ty.clone(), cr_prop.clone(), cr.clone(), info.clone())) else { bail!("pattern mismatch") };
                     (outCache, exp, prop) = Static::elabExp(outCache.clone(), inEnv.clone(), var_field!((*inEquation).expReinit, SCode::Equation::EQ_REINIT).clone(), inImpl.clone(), true, inPrefix.clone(), info.clone())?;
                     (outCache, exp, prop) = Ceval::cevalIfConstant(outCache.clone(), inEnv.clone(), exp.clone(), prop.clone(), inImpl.clone(), info.clone())?;
                     (exp, _) = Types::matchProp(exp.clone(), prop.clone(), cr_prop.clone(), true)?;
-                    (outCache, cr_exp, exp, cr_prop) = condenseArrayEquation(outCache.clone(), inEnv.clone(), var_field!((*inEquation).cref, SCode::Equation::EQ_REINIT).clone(), var_field!((*inEquation).expReinit, SCode::Equation::EQ_REINIT).clone(), cr_exp.clone(), exp.clone(), cr_prop.clone(), prop.clone(), inImpl.clone(), inPrefix.clone(), info.clone())?;
+                    (outCache, cr_exp, exp, cr_prop) = condenseArrayEquation(outCache.clone(), inEnv.clone(), var_field!((*inEquation).cref, SCode::Equation::EQ_REINIT).clone(), var_field!((*inEquation).expReinit, SCode::Equation::EQ_REINIT).clone(), cr_exp.clone(), exp.clone(), cr_prop.clone(), prop.clone(), inImpl.clone(), inPrefix.clone(), info.clone());
                     (outCache, cr_exp) = PrefixUtil::prefixExp(outCache.clone(), inEnv.clone(), inIH.clone(), cr_exp.clone(), inPrefix.clone())?;
                     (outCache, exp) = PrefixUtil::prefixExp(outCache.clone(), inEnv.clone(), inIH.clone(), exp.clone(), inPrefix.clone())?;
                     source = makeEqSource(info.clone(), inEnv.clone(), inPrefix.clone(), inFlattenOp.clone())?;
@@ -523,7 +523,7 @@ fn instEquationCommonWork(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
                 _ => {
                     let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
                     Debug::trace((literal!("- InstSection.instEquationCommonWork failed for eqn: ")).clone())?;
-                    Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*SCodeDump::equationStr(inEquation.clone(), SCodeDump::defaultOptions.clone())?); __mm_s.push_str(&*literal!(" in scope: ")); __mm_s.push_str(&*FGraph::getGraphNameStr(inEnv.clone())?); ArcStr::from(__mm_s) }).clone())?;
+                    Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*SCodeDump::equationStr(inEquation.clone(), SCodeDump::defaultOptions.clone())?); __mm_s.push_str(&*literal!(" in scope: ")); __mm_s.push_str(&*FGraph::getGraphNameStr(inEnv.clone())); ArcStr::from(__mm_s) }).clone())?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -601,7 +601,7 @@ fn instOperatorArg(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH:
     let mut ty: Arc<DAE::Type>;
     (outCache, outArg, props) = Static::elabExp(inCache.clone(), inEnv.clone(), inArg.clone(), inImpl.clone(), true, inPrefix.clone(), inInfo.clone())?;
     ty = Types::getPropType(props.clone())?;
-    if !(Types::subtype(ty.clone(), inExpectedType.clone(), true)?) {
+    if !(Types::subtype(ty.clone(), inExpectedType.clone(), true)) {
         Error::addSourceMessageAndFail(Error::ARG_TYPE_MISMATCH.clone(), list![(intString(inArgIndex.clone())).clone(), (inOperatorName.clone()).clone(), (inArgName.clone()).clone(), (Dump::printExpStr(inArg.clone())?).clone(), (TypesDump::unparseTypeNoAttr(ty.clone())?).clone(), (TypesDump::unparseType(inExpectedType.clone())?).clone()], inInfo.clone())?;
         unreachable!("Error.addSourceMessageAndFail always fails — caller-side flow-analysis hint");
     }
@@ -808,7 +808,7 @@ fn handleConnectionsOperators(mut inCache: FCore::Cache, mut inEnv: FCore::Graph
                     let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
                     s = (SCodeDump::equationStr(eqn.clone(), SCodeDump::defaultOptions.clone())?).clone();
                     Debug::trace((literal!("- handleConnectionsOperators failed for eqn: ")).clone())?;
-                    Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*s.clone()); __mm_s.push_str(&*literal!(" in scope:")); __mm_s.push_str(&*FGraph::getGraphNameStr(env.clone())?); ArcStr::from(__mm_s) }).clone())?;
+                    Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*s.clone()); __mm_s.push_str(&*literal!(" in scope:")); __mm_s.push_str(&*FGraph::getGraphNameStr(env.clone())); ArcStr::from(__mm_s) }).clone())?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -913,7 +913,7 @@ fn uniqueRootArguments(mut inFunctionArgs: Arc<Absyn::FunctionArgs>, mut info: S
     Ok((outCref, outMessage))
 }
 
-fn checkReinitType(mut inType: Arc<DAE::Type>, mut inProperties: DAE::Properties, mut inCref: Arc<DAE::ComponentRef>, mut inInfo: SourceInfo) -> Result<bool> {
+fn checkReinitType(mut inType: Arc<DAE::Type>, mut inProperties: DAE::Properties, mut inCref: Arc<DAE::ComponentRef>, mut inInfo: SourceInfo) -> bool {
     let mut outSucceeded: bool;
     outSucceeded = 'mc: {
         let __mc_input = inProperties.clone();
@@ -943,9 +943,9 @@ fn checkReinitType(mut inType: Arc<DAE::Type>, mut inProperties: DAE::Properties
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(true)
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outSucceeded)
+    outSucceeded
 }
 
 fn checkTupleCallEquationMessage(mut left: Arc<Absyn::Exp>, mut right: Arc<Absyn::Exp>, mut info: SourceInfo) -> Result<()> {
@@ -1018,7 +1018,7 @@ fn makeDAEArrayEqToReinitForm(mut inEq: Arc<DAE::Element>) -> Result<Arc<DAE::El
     Ok(outEqn)
 }
 
-fn condenseArrayEquation(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut ie1: Arc<Absyn::Exp>, mut ie2: Arc<Absyn::Exp>, mut elabedE1: Arc<DAE::Exp>, mut elabedE2: Arc<DAE::Exp>, mut iprop: DAE::Properties, mut iprop2: DAE::Properties, mut r#impl: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, Arc<DAE::Exp>, DAE::Properties)> {
+fn condenseArrayEquation(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut ie1: Arc<Absyn::Exp>, mut ie2: Arc<Absyn::Exp>, mut elabedE1: Arc<DAE::Exp>, mut elabedE2: Arc<DAE::Exp>, mut iprop: DAE::Properties, mut iprop2: DAE::Properties, mut r#impl: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> (FCore::Cache, Arc<DAE::Exp>, Arc<DAE::Exp>, DAE::Properties) {
     let mut outCache: FCore::Cache;
     let mut outE1: Arc<DAE::Exp>;
     let mut outE2: Arc<DAE::Exp>;
@@ -1060,9 +1060,9 @@ fn condenseArrayEquation(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outCache, outE1, outE2, oprop))
+    (outCache, outE1, outE2, oprop)
 }
 
 fn expandTupleEquationWithWild(mut inExp: Arc<Absyn::Exp>, mut propCall: DAE::Properties, mut propTuple: DAE::Properties) -> Result<(Arc<Absyn::Exp>, DAE::Properties)> {
@@ -1114,7 +1114,7 @@ fn expandTupleEquationWithWild(mut inExp: Arc<Absyn::Exp>, mut propCall: DAE::Pr
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _, _) => {
-                    if !((!(Types::isPropTuple(propCall.clone())?))) { bail!("guard") }
+                    if !((!(Types::isPropTuple(propCall.clone())))) { bail!("guard") }
                     Ok((inExp.clone(), propTuple.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1966,7 +1966,7 @@ fn instForStatement_dispatch(mut inCache: FCore::Cache, mut inEnv: FCore::Graph,
     }
     ty = Types::getPropType(inRangeProps.clone())?;
     ty = getIteratorType(ty.clone(), (inIterator.clone()).clone(), inInfo.clone())?;
-    (outCache, range) = Ceval::cevalRangeIfConstant(outCache.clone(), inEnv.clone(), inRange.clone(), inRangeProps.clone(), inImpl.clone(), inInfo.clone())?;
+    (outCache, range) = Ceval::cevalRangeIfConstant(outCache.clone(), inEnv.clone(), inRange.clone(), inRangeProps.clone(), inImpl.clone(), inInfo.clone());
     (outCache, range) = PrefixUtil::prefixExp(outCache.clone(), inEnv.clone(), inIH.clone(), range.clone(), inPrefix.clone())?;
     env = addForLoopScope(inEnv.clone(), (inIterator.clone()).clone(), ty.clone(), openmodelica_frontend_types::SCode::Variability::VAR, Some(c.clone()))?;
     (outCache, outStatements) = instStatements(outCache.clone(), env.clone(), inIH.clone(), inPrefix.clone(), inState.clone(), inBody.clone(), inSource.clone(), inInitial.clone(), inImpl.clone(), inUnrollLoops.clone())?;
@@ -2736,7 +2736,7 @@ fn instWhenEqBranch(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH
         _ => {
             (outCache, dexp, prop) = instExp(inCache.clone(), inEnv.clone(), inIH.clone(), inPrefix.clone(), cond.clone(), inImpl.clone(), info.clone())?;
             ty = Types::getPropType(prop.clone())?;
-            if Types::isClockOrSubTypeClock(ty.clone())? {
+            if Types::isClockOrSubTypeClock(ty.clone()) {
                 isClock = true;
             } else {
                 dexp = checkWhenCondition(dexp.clone(), ty.clone(), cond.clone(), info.clone())?;
@@ -3426,7 +3426,7 @@ fn generateExpandableDAE(mut inCache: FCore::Cache, mut inParentEnv: FCore::Grap
             if daeDims.clone().is_empty() {
                 daeExpandable = InstDAE::daeDeclare(inCache.clone(), inParentEnv.clone(), inClassEnv.clone(), cref.clone(), state.clone(), ty.clone(), attrs.clone(), vis.clone(), None, metamodelica::nil(), None, None, Some(Arc::new(SCode::Comment { annotation_: None, comment: Some((literal!("virtual variable in expandable connector")).clone()) })), io.clone(), openmodelica_frontend_types::SCode::Final::NOT_FINAL, source.clone(), true)?;
             } else {
-                crefs = ComponentReference::expandCref(cref.clone(), false)?;
+                crefs = ComponentReference::expandCref(cref.clone(), false);
                 daeExpandable = daeDeclareList(inCache.clone(), inParentEnv.clone(), inClassEnv.clone(), crefs.clone().reverse(), state.clone(), ty.clone(), attrs.clone(), vis.clone(), io.clone(), source.clone(), DAE::emptyDae().clone())?;
             }
             daeExpandable.clone()
@@ -3461,7 +3461,7 @@ fn updateEnvComponentsOnQualPath(mut inCache: FCore::Cache, mut inEnv: FCore::Gr
             let mut realEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
             let mut forLoopScope: Arc<metamodelica::List<metamodelica::Array<FCore::Node>>> = metamodelica::nil();
             (realEnv, forLoopScope) = FGraph::splitGraphScope(topEnv.clone())?;
-            updatedEnv = FGraph::updateComp(realEnv.clone(), Arc::new(DAE::Var { name: (currentName.clone()).clone(), attributes: veAttr.clone(), ty: veTy.clone(), binding: veBinding.clone(), bind_from_outside: false, constOfForIteratorRange: veCnstForRange.clone() }), openmodelica_frontend_dump::FCore::Status::VAR_TYPED, veEnv.clone())?;
+            updatedEnv = FGraph::updateComp(realEnv.clone(), Arc::new(DAE::Var { name: (currentName.clone()).clone(), attributes: veAttr.clone(), ty: veTy.clone(), binding: veBinding.clone(), bind_from_outside: false, constOfForIteratorRange: veCnstForRange.clone() }), openmodelica_frontend_dump::FCore::Status::VAR_TYPED, veEnv.clone());
             return Ok(FGraph::pushScope(updatedEnv.clone(), forLoopScope.clone())?)
         },
         (cache, topEnv, veCref @ Deref @ DAE::ComponentRef::CREF_QUAL { .. }, veAttr, veTy, veBinding, veCnstForRange, veEnv) => {
@@ -3480,7 +3480,7 @@ fn updateEnvComponentsOnQualPath(mut inCache: FCore::Cache, mut inEnv: FCore::Gr
             qualCref = ComponentReferenceBasics::crefStripLastSubs(qualCref.clone())?;
             (_, currentAttr, currentTy, currentBinding, currentCnstForRange, _, _, currentEnv, _) = Lookup::lookupVar(cache.clone(), topEnv.clone(), qualCref.clone())?;
             (realEnv, forLoopScope) = FGraph::splitGraphScope(currentEnv.clone())?;
-            currentEnv = FGraph::updateComp(realEnv.clone(), Arc::new(DAE::Var { name: (currentName.clone()).clone(), attributes: veAttr.clone(), ty: veTy.clone(), binding: veBinding.clone(), bind_from_outside: false, constOfForIteratorRange: veCnstForRange.clone() }), openmodelica_frontend_dump::FCore::Status::VAR_TYPED, veEnv.clone())?;
+            currentEnv = FGraph::updateComp(realEnv.clone(), Arc::new(DAE::Var { name: (currentName.clone()).clone(), attributes: veAttr.clone(), ty: veTy.clone(), binding: veBinding.clone(), bind_from_outside: false, constOfForIteratorRange: veCnstForRange.clone() }), openmodelica_frontend_dump::FCore::Status::VAR_TYPED, veEnv.clone());
             currentEnv = FGraph::pushScope(currentEnv.clone(), forLoopScope.clone())?;
             { (inCache, inEnv, virtualExpandableCref, virtualExpandableAttr, virtualExpandableTy, virtualExpandableBinding, virtualExpandableCnstForRange, virtualExpandableEnv) = (cache.clone(), topEnv.clone(), qualCref.clone(), currentAttr.clone(), currentTy.clone(), currentBinding.clone(), currentCnstForRange.clone(), currentEnv.clone()); continue '__tco; }
         },
@@ -3722,7 +3722,7 @@ fn checkConnectTypesType(mut inLhsType: Arc<DAE::Type>, mut inRhsType: Arc<DAE::
         let __mc_input = inInfo.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            let true = (Types::equivtypesOrRecordSubtypeOf(inLhsType.clone(), inRhsType.clone())?) else { bail!("pattern mismatch") };
+            let true = (Types::equivtypesOrRecordSubtypeOf(inLhsType.clone(), inRhsType.clone())) else { bail!("pattern mismatch") };
             Ok(())
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
@@ -3735,7 +3735,7 @@ fn checkConnectTypesType(mut inLhsType: Arc<DAE::Type>, mut inRhsType: Arc<DAE::
             let mut cref_str2: ArcStr = arcstr::literal!("");
             t1 = Types::arrayElementType(inLhsType.clone());
             t2 = Types::arrayElementType(inRhsType.clone());
-            let false = (Types::equivtypesOrRecordSubtypeOf(t1.clone(), t2.clone())?) else { bail!("pattern mismatch") };
+            let false = (Types::equivtypesOrRecordSubtypeOf(t1.clone(), t2.clone())) else { bail!("pattern mismatch") };
             (_, cs1) = TypesDump::printConnectorTypeStr(t1.clone())?;
             (_, cs2) = TypesDump::printConnectorTypeStr(t2.clone())?;
             cref_str1 = (ComponentReferenceBasics::printComponentRefStr(inLhsCref.clone())?).clone();
@@ -3955,8 +3955,8 @@ pub fn connectComponents(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut
                     } };
                     let true = (Expression::dimensionsKnownAndEqual(dim1.clone(), dim2.clone())?) else { bail!("pattern mismatch") };
                     Expression::dimensionSize(dim1.clone())?;
-                    crefs1 = ComponentReference::expandCref(c1.clone(), false)?;
-                    crefs2 = ComponentReference::expandCref(c2.clone(), false)?;
+                    crefs1 = ComponentReference::expandCref(c1.clone(), false);
+                    crefs2 = ComponentReference::expandCref(c2.clone(), false);
                     (cache, _, ih, sets_1, dae, graph) = connectArrayComponents(cache.clone(), env.clone(), ih.clone(), sets.clone(), pre.clone(), crefs1.clone(), f1.clone(), t1.clone(), vt1.clone(), io1.clone(), crefs2.clone(), f2.clone(), t2.clone(), vt2.clone(), io2.clone(), ct.clone(), graph.clone(), info.clone())?;
                     Ok((cache.clone(), env.clone(), ih.clone(), sets_1.clone(), dae.clone(), graph.clone()))
                 }
@@ -3983,8 +3983,8 @@ pub fn connectComponents(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut
                     } };
                     let true = (Expression::dimensionsKnownAndEqual(dim1.clone(), dim2.clone())?) else { bail!("pattern mismatch") };
                     Expression::dimensionSize(dim1.clone())?;
-                    crefs1 = ComponentReference::expandCref(c1.clone(), false)?;
-                    crefs2 = ComponentReference::expandCref(c2.clone(), false)?;
+                    crefs1 = ComponentReference::expandCref(c1.clone(), false);
+                    crefs2 = ComponentReference::expandCref(c2.clone(), false);
                     (cache, _, ih, sets_1, dae, graph) = connectArrayComponents(cache.clone(), env.clone(), ih.clone(), sets.clone(), pre.clone(), crefs1.clone(), f1.clone(), t1.clone(), vt1.clone(), io1.clone(), crefs2.clone(), f2.clone(), t2.clone(), vt2.clone(), io2.clone(), ct.clone(), graph.clone(), info.clone())?;
                     Ok((cache.clone(), env.clone(), ih.clone(), sets_1.clone(), dae.clone(), graph.clone()))
                 }
@@ -4394,19 +4394,19 @@ fn getVectorizedCref(mut crefOrArray: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
 }
 
 fn checkWhenAlgorithm(mut inWhenAlgorithm: Arc<SCode::Statement>) -> Result<()> {
-    let true = (checkForReinitInWhenInitialAlg(inWhenAlgorithm.clone())?) else { bail!("pattern mismatch") };
+    let true = (checkForReinitInWhenInitialAlg(inWhenAlgorithm.clone())) else { bail!("pattern mismatch") };
     checkForNestedWhenInStatements(inWhenAlgorithm.clone())?;
     Ok(())
 }
 
-fn checkForReinitInWhenInitialAlg(mut inWhenAlgorithm: Arc<SCode::Statement>) -> Result<bool> {
+fn checkForReinitInWhenInitialAlg(mut inWhenAlgorithm: Arc<SCode::Statement>) -> bool {
     let mut outOK: bool;
     outOK = 'mc: {
         let __mc_input = inWhenAlgorithm.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SCode::Statement::ALG_WHEN_A { branches: Deref @ metamodelica::List::Cons { head: (exp, algs), tail: _ }, info, .. } => {
-                    let true = (AbsynUtil::expContainsInitial(exp.clone())?) else { bail!("pattern mismatch") };
+                    let true = (AbsynUtil::expContainsInitial(exp.clone())) else { bail!("pattern mismatch") };
                     let true = (SCodeUtil::algorithmsContainReinit(algs.clone())?) else { bail!("pattern mismatch") };
                     Error::addSourceMessage(Error::REINIT_IN_WHEN_INITIAL.clone(), metamodelica::nil(), info.clone())?;
                     Ok(false)
@@ -4422,9 +4422,9 @@ fn checkForReinitInWhenInitialAlg(mut inWhenAlgorithm: Arc<SCode::Statement>) ->
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outOK)
+    outOK
 }
 
 fn checkForNestedWhenInStatements(mut inWhenAlgorithm: Arc<SCode::Statement>) -> Result<()> {
@@ -4449,19 +4449,19 @@ fn checkForNestedWhenInStatements(mut inWhenAlgorithm: Arc<SCode::Statement>) ->
 }
 
 fn checkWhenEquation(mut inWhenEq: Arc<SCode::Equation>) -> Result<()> {
-    let true = (checkForReinitInWhenInitialEq(inWhenEq.clone())?) else { bail!("pattern mismatch") };
+    let true = (checkForReinitInWhenInitialEq(inWhenEq.clone())) else { bail!("pattern mismatch") };
     checkForNestedWhenInEquation(inWhenEq.clone())?;
     Ok(())
 }
 
-fn checkForReinitInWhenInitialEq(mut inWhenEq: Arc<SCode::Equation>) -> Result<bool> {
+fn checkForReinitInWhenInitialEq(mut inWhenEq: Arc<SCode::Equation>) -> bool {
     let mut outOK: bool;
     outOK = 'mc: {
         let __mc_input = inWhenEq.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SCode::Equation::EQ_WHEN { condition: exp, eEquationLst: el, info, .. } => {
-                    let true = (AbsynUtil::expContainsInitial(exp.clone())?) else { bail!("pattern mismatch") };
+                    let true = (AbsynUtil::expContainsInitial(exp.clone())) else { bail!("pattern mismatch") };
                     let true = (SCodeUtil::equationsContainReinit(el.clone())?) else { bail!("pattern mismatch") };
                     Error::addSourceMessage(Error::REINIT_IN_WHEN_INITIAL.clone(), metamodelica::nil(), info.clone())?;
                     Ok(false)
@@ -4477,9 +4477,9 @@ fn checkForReinitInWhenInitialEq(mut inWhenEq: Arc<SCode::Equation>) -> Result<b
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outOK)
+    outOK
 }
 
 fn checkForNestedWhenInEquation(mut inWhenEq: Arc<SCode::Equation>) -> Result<()> {
@@ -4911,7 +4911,7 @@ fn instAssignment2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH:
                     (cache, e_1, prop1) = Static::elabExpLHS(cache.clone(), inEnv.clone(), e1.clone(), inImpl.clone(), false, inPre.clone(), info.clone())?;
                     lt = Types::getPropType(prop1.clone())?;
                     rt = Types::getPropType(prop2.clone())?;
-                    let false = (Types::subtype(lt.clone(), rt.clone(), true)?) else { bail!("pattern mismatch") };
+                    let false = (Types::subtype(lt.clone(), rt.clone(), true)) else { bail!("pattern mismatch") };
                     lhs_str = (ExpressionBasics::printExpStr(e_1.clone())?).clone();
                     rhs_str = (Dump::printExpStr(inRhs.clone())?).clone();
                     lt_str = (TypesDump::unparseTypeNoAttr(lt.clone())?).clone();
@@ -4996,11 +4996,11 @@ fn getIteratorType(mut ty: Arc<DAE::Type>, mut id: ArcStr, mut info: SourceInfo)
         },
         Deref @ DAE::Type::T_METALIST { ty: __esc_oty } => {
             oty = (*__esc_oty).clone();
-            Types::boxIfUnboxedType(oty.clone())?
+            Types::boxIfUnboxedType(oty.clone())
         },
         Deref @ DAE::Type::T_METAARRAY { ty: __esc_oty } => {
             oty = (*__esc_oty).clone();
-            Types::boxIfUnboxedType(oty.clone())?
+            Types::boxIfUnboxedType(oty.clone())
         },
         Deref @ DAE::Type::T_METATYPE { ty: __esc_oty } => {
             oty = (*__esc_oty).clone();
@@ -5081,7 +5081,7 @@ fn instParForStatement_dispatch(mut inCache: FCore::Cache, mut inEnv: FCore::Gra
     }
     ty = Types::getPropType(inRangeProps.clone())?;
     ty = getIteratorType(ty.clone(), (inIterator.clone()).clone(), inInfo.clone())?;
-    (outCache, range) = Ceval::cevalRangeIfConstant(outCache.clone(), inEnv.clone(), inRange.clone(), inRangeProps.clone(), inImpl.clone(), inInfo.clone())?;
+    (outCache, range) = Ceval::cevalRangeIfConstant(outCache.clone(), inEnv.clone(), inRange.clone(), inRangeProps.clone(), inImpl.clone(), inInfo.clone());
     (outCache, range) = PrefixUtil::prefixExp(outCache.clone(), inEnv.clone(), inIH.clone(), range.clone(), inPrefix.clone())?;
     env = addParForLoopScope(inEnv.clone(), (inIterator.clone()).clone(), ty.clone(), openmodelica_frontend_types::SCode::Variability::VAR, Some(c.clone()))?;
     (outCache, outStatements) = instStatements(outCache.clone(), env.clone(), inIH.clone(), inPrefix.clone(), inState.clone(), inBody.clone(), inSource.clone(), inInitial.clone(), inImpl.clone(), inUnrollLoops.clone())?;

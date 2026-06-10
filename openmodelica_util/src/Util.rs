@@ -1101,7 +1101,7 @@ pub fn realRangeSize(mut inStart: metamodelica::Real, mut inStep: metamodelica::
     outSize
 }
 
-fn createDirectoryTreeH(mut inString: ArcStr, mut parentDir: ArcStr, mut parentDirExists: bool) -> Result<bool> {
+fn createDirectoryTreeH(mut inString: ArcStr, mut parentDir: ArcStr, mut parentDirExists: bool) -> bool {
     let mut outBool: bool;
     outBool = 'mc: {
         let __mc_input = parentDirExists.clone();
@@ -1121,7 +1121,7 @@ fn createDirectoryTreeH(mut inString: ArcStr, mut parentDir: ArcStr, mut parentD
         if let Ok(__v) = (|| -> Result<_> {
             let false = __mc_input.clone() else { bail!("nomatch") };
             let mut b: bool = false;
-            let true = (createDirectoryTree((parentDir.clone()).clone())?) else { bail!("pattern mismatch") };
+            let true = (createDirectoryTree((parentDir.clone()).clone())) else { bail!("pattern mismatch") };
             b = System::createDirectory((inString.clone()).clone());
             Ok(b.clone())
         })() { break 'mc __v; }
@@ -1129,12 +1129,12 @@ fn createDirectoryTreeH(mut inString: ArcStr, mut parentDir: ArcStr, mut parentD
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(false)
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outBool)
+    outBool
 }
 
-pub fn createDirectoryTree(mut inString: ArcStr) -> Result<bool> {
+pub fn createDirectoryTree(mut inString: ArcStr) -> bool {
     let mut outBool: bool;
     let mut parentDir: ArcStr;
     let mut parentDirExists: bool;
@@ -1143,9 +1143,9 @@ pub fn createDirectoryTree(mut inString: ArcStr) -> Result<bool> {
     } else {
         parentDir = (System::dirname((inString.clone()).clone())).clone();
         parentDirExists = System::directoryExists((parentDir.clone()).clone());
-        outBool = createDirectoryTreeH((inString.clone()).clone(), (parentDir.clone()).clone(), parentDirExists.clone())?;
+        outBool = createDirectoryTreeH((inString.clone()).clone(), (parentDir.clone()).clone(), parentDirExists.clone());
     }
-    Ok(outBool)
+    outBool
 }
 
 pub fn nextPowerOf2(mut i: i32) -> i32 {

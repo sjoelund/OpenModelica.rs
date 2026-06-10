@@ -36,11 +36,17 @@
 //!    [`Fallibility::Fallible`] in [`crate::external_c_calls`].
 //!  * The body of `f` contains a call to `fail()` outside a `try`/`failure`
 //!    boundary.
-//!  * The body of `f` contains an unguarded `match` expression (a plain
-//!    `match` without `matchcontinue` semantics can fall through if no case
-//!    matches, which raises a MetaModelica failure).  `matchcontinue` is
-//!    treated identically here — even though it locally recovers from a
-//!    failing arm, exhausting all arms still raises a failure.
+//!  * The body of `f` contains a `match` expression whose case patterns do
+//!    not exhaustively cover the scrutinee (falling through every case
+//!    raises a MetaModelica failure).
+//!  * The body of `f` contains a `matchcontinue` expression that can exhaust
+//!    its arms. A failing arm (guard or body) falls through to the *next*
+//!    arm, so nothing inside an arm escapes directly; the construct fails
+//!    only when no arm runs to completion. It is therefore infallible iff
+//!    the patterns of its unguarded, infallible-bodied arms exhaustively
+//!    cover the scrutinee — an always-succeeding `else` being the common
+//!    special case. Whether an arm body is infallible depends on the
+//!    call-graph fixed point, so the check is deferred (see [`McCheck`]).
 //!  * The body of `f` calls some other function `g` (builtin, external, or
 //!    user-defined) that is itself fallible, again outside a `try`/`failure`
 //!    boundary.
@@ -52,8 +58,6 @@
 //!
 //! ## What this iteration does NOT yet do
 //!
-//! * Cross-arm precision for `matchcontinue`: every match is conservatively
-//!   marked fallible.
 //! * Walking `for`/`while` loop bodies — these are walked uniformly with the
 //!   surrounding scope (no special semantics needed for fallibility).
 //! * Distinguishing `pure` external annotations.
@@ -308,6 +312,33 @@ struct Walk {
     /// (refutable). This is the scope-aware replacement for the historical
     /// case-sensitivity heuristic.
     outer_scope: BTreeSet<String>,
+    /// Deferred safety obligations, one per `matchcontinue` expression in the
+    /// body. A failing `matchcontinue` arm (guard or body) falls through to
+    /// the next arm, so nothing *inside* an arm escapes directly — the
+    /// construct as a whole fails only when every arm fails or mismatches.
+    /// Whether that can happen depends on the fallibility of the functions
+    /// the arms call, which is only known at the call-graph fixed point, so
+    /// the check is recorded here and evaluated in [`analyze`] (see
+    /// [`mc_check_is_safe`]).
+    mc_checks: Vec<McCheck>,
+}
+
+/// Safety obligation for one `matchcontinue` expression: it cannot fail iff
+/// the patterns of its *infallible* candidate arms exhaustively cover the
+/// scrutinee — execution then always reaches some matching arm that runs to
+/// completion (an always-succeeding `else` is the common special case).
+///
+/// `candidates` holds the unguarded arms (incl. `else`, as
+/// [`CoverKey::Irrefutable`]) whose pattern can contribute type-independent
+/// coverage, paired with a sub-[`Walk`] of the failure sources *inside* the
+/// arm. Guarded arms are not recorded: a guard may evaluate to false, so a
+/// guarded arm never guarantees success — and its failures are caught by the
+/// matchcontinue either way. Arms whose pattern classifies as
+/// [`CoverKey::Other`] are likewise dropped (they can never contribute
+/// coverage).
+#[derive(Debug, Default)]
+struct McCheck {
+    candidates: Vec<(CoverKey, Walk)>,
 }
 
 impl Walk {
@@ -503,38 +534,109 @@ impl Walk {
             AS { exp, .. } => self.scan_exp(exp),
             CONS { head, rest } => { self.scan_exp(head); self.scan_exp(rest); }
             MATCHEXP { matchTy, inputExp, localDecls, cases, .. } => {
-                // A `match` raises a failure only when no arm matches the
-                // scrutinee. If the patterns exhaustively cover every value
-                // of the scrutinee's type, the match cannot fail, so the
-                // surrounding function stays infallible. `matchcontinue` is
-                // never considered exhaustive — any arm body may explicitly
-                // `fail()` and fall through, exhausting all arms even with
-                // full pattern coverage. See codegen `cases_exhaustive` for
-                // the typed-IR counterpart; the two must agree.
-                if !matches!(matchTy, Absyn::MatchType::MATCH)
-                    || !match_is_exhaustive(cases, localDecls, &self.outer_scope)
-                {
-                    self.has_match = true;
-                }
+                // The scrutinee is evaluated once, before any arm's failure-
+                // catch scope is entered, so its failures escape the match —
+                // for `matchcontinue` too (codegen binds `__mc_input` outside
+                // the per-arm closures). Likewise the `= <exp>` default
+                // bindings of match-level locals: codegen hoists them to a
+                // `let` evaluated once before the match.
                 self.scan_exp(inputExp);
-                for case in &**cases {
-                    match &**case {
-                        Absyn::Case::CASE { pattern, patternGuard, classPart, result, .. } => {
-                            self.scan_exp(pattern);
-                            if let Some(g) = patternGuard.as_deref() { self.scan_exp(g); }
-                            self.scan_class_part(classPart);
-                            self.scan_exp(result);
-                        }
-                        Absyn::Case::ELSE { classPart, result, .. } => {
-                            self.scan_class_part(classPart);
-                            self.scan_exp(result);
+                self.scan_local_decl_defaults(localDecls);
+                if matches!(matchTy, Absyn::MatchType::MATCH) {
+                    // A `match` raises a failure when no arm matches the
+                    // scrutinee. If the patterns exhaustively cover every
+                    // value of the scrutinee's type, the match cannot fail,
+                    // so the surrounding function stays infallible. See
+                    // codegen `cases_exhaustive` for the typed-IR
+                    // counterpart; the two must agree.
+                    if !match_is_exhaustive(cases, localDecls, &self.outer_scope) {
+                        self.has_match = true;
+                    }
+                    // A failure inside a `match` arm (guard, body, or result)
+                    // escapes the match — there is no fall-through to the
+                    // next arm — so arm contents are scanned into `self`.
+                    for case in &**cases {
+                        match &**case {
+                            Absyn::Case::CASE { pattern, patternGuard, localDecls: case_decls, classPart, result, .. } => {
+                                self.scan_exp(pattern);
+                                if let Some(g) = patternGuard.as_deref() { self.scan_exp(g); }
+                                self.scan_local_decl_defaults(case_decls);
+                                self.scan_class_part(classPart);
+                                self.scan_exp(result);
+                            }
+                            Absyn::Case::ELSE { localDecls: case_decls, classPart, result, .. } => {
+                                self.scan_local_decl_defaults(case_decls);
+                                self.scan_class_part(classPart);
+                                self.scan_exp(result);
+                            }
                         }
                     }
+                } else {
+                    // `matchcontinue`: a failing arm falls through to the
+                    // next arm, so nothing inside an arm escapes directly.
+                    // Record the deferred safety check instead — see
+                    // [`McCheck`]. Arm contents are scanned into per-arm
+                    // sub-walks whose verdicts feed the check; arms that can
+                    // never contribute coverage (guarded, or pattern shape
+                    // [`CoverKey::Other`]) are dropped entirely.
+                    let mut match_scope = self.outer_scope.clone();
+                    collect_local_decl_names(localDecls, &mut match_scope);
+                    let mut candidates: Vec<(CoverKey, Walk)> = Vec::new();
+                    for case in &**cases {
+                        match &**case {
+                            Absyn::Case::CASE { pattern, patternGuard, localDecls: case_decls, classPart, result, .. } => {
+                                if patternGuard.is_some() { continue; }
+                                let mut scope = match_scope.clone();
+                                collect_local_decl_names(case_decls, &mut scope);
+                                let key = pat_cover_key(pattern, &scope);
+                                if matches!(key, CoverKey::Other) { continue; }
+                                let mut sub = Walk { outer_scope: scope, ..Walk::default() };
+                                sub.scan_exp(pattern);
+                                sub.scan_local_decl_defaults(case_decls);
+                                sub.scan_class_part(classPart);
+                                sub.scan_exp(result);
+                                candidates.push((key, sub));
+                            }
+                            Absyn::Case::ELSE { localDecls: case_decls, classPart, result, .. } => {
+                                let mut scope = match_scope.clone();
+                                collect_local_decl_names(case_decls, &mut scope);
+                                let mut sub = Walk { outer_scope: scope, ..Walk::default() };
+                                sub.scan_local_decl_defaults(case_decls);
+                                sub.scan_class_part(classPart);
+                                sub.scan_exp(result);
+                                candidates.push((CoverKey::Irrefutable, sub));
+                            }
+                        }
+                    }
+                    self.mc_checks.push(McCheck { candidates });
                 }
             }
             DOT { exp, index } => { self.scan_exp(exp); self.scan_exp(index); }
             EXPRESSIONCOMMENT { exp, .. } => self.scan_exp(exp),
             SUBSCRIPTED_EXP { exp, .. } => self.scan_exp(exp),
+        }
+    }
+
+    /// Scan the eagerly-evaluated `= <exp>` default bindings (and `if <cond>`
+    /// component conditions) of a match-level `local` declaration block.
+    /// Codegen hoists initialised match-locals to a `let` emitted once before
+    /// the match expression — outside any arm's failure-catch scope — so a
+    /// fallible call inside such a binding escapes the match, even for
+    /// `matchcontinue`. Mirrors the component-binding scan in
+    /// [`Walk::scan_class`].
+    fn scan_local_decl_defaults(&mut self, decls: &metamodelica::List<std::sync::Arc<Absyn::ElementItem>>) {
+        for item in decls {
+            let Absyn::ElementItem::ELEMENTITEM { element } = item.as_ref() else { continue };
+            let Absyn::Element::ELEMENT { specification, .. } = &**element else { continue };
+            let Absyn::ElementSpec::COMPONENTS { components, .. } = &**specification else { continue };
+            for ci in &**components {
+                if let Some(exp) = crate::hierarchy::extract_default_exp(&ci.component.modification) {
+                    self.scan_exp(exp);
+                }
+                if let Some(cond) = ci.condition.as_deref() {
+                    self.scan_exp(cond);
+                }
+            }
         }
     }
 
@@ -707,55 +809,41 @@ fn absyn_pat_is_full_some(e: &Absyn::Exp, binding_names: &BTreeSet<String>) -> b
     false
 }
 
-/// Does an Absyn case set exhaustively cover the scrutinee? Handles the
-/// type-independent shapes:
-///   * any case is `ELSE` or has an irrefutable pattern → exhaustive
-///   * `{}` (Nil) + `_ :: _` with both subpatterns irrefutable → List
-///   * `NONE()` + `SOME(_)` with irrefutable inner → Option
-///   * boolean literals `true` and `false` → Bool
-/// Cases with a guard never contribute coverage — a guard can fail.
-fn match_is_exhaustive(
-    cases: &metamodelica::List<Arc<Absyn::Case>>,
-    match_local_decls: &metamodelica::List<std::sync::Arc<Absyn::ElementItem>>,
-    outer_scope: &BTreeSet<String>,
-) -> bool {
-    // The full set of names in scope as variable bindings for any pattern
-    // in this match: outer scope (function inputs/outputs/protected) ∕
-    // match-level localDecls ∕ per-case localDecls.  Built once for the
-    // match, augmented per-case below.
-    let mut match_scope: BTreeSet<String> = outer_scope.clone();
-    collect_local_decl_names(match_local_decls, &mut match_scope);
+/// Type-independent pattern-coverage classification of one unguarded case.
+/// [`cover_keys_exhaustive`] decides exhaustiveness from a set of these, so
+/// the whole-match check ([`match_is_exhaustive`]) and the per-arm-subset
+/// check for `matchcontinue` safety ([`mc_check_is_safe`]) share one
+/// definition of what covers what.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum CoverKey {
+    /// Matches every value of the scrutinee type: `else`, `_`, a declared
+    /// variable binding, as-patterns and tuples of irrefutable patterns.
+    Irrefutable,
+    /// `{}` — the empty-list literal.
+    NilList,
+    /// `head :: rest` with both sub-patterns irrefutable.
+    FullCons,
+    /// `NONE()`.
+    NoneOpt,
+    /// `SOME(<irrefutable>)`.
+    FullSome,
+    /// Literal `true`.
+    BoolTrue,
+    /// Literal `false`.
+    BoolFalse,
+    /// Every other shape — constructor patterns, literals, partial
+    /// cons/SOME, … — contributes no type-independent coverage.
+    Other,
+}
 
-    // ELSE / leading irrefutable case → exhaustive regardless of type.
-    for case in cases {
-        match &**case {
-            Absyn::Case::ELSE { .. } => return true,
-            Absyn::Case::CASE { pattern, patternGuard, localDecls, .. } => {
-                if patternGuard.is_none() {
-                    let mut scope = match_scope.clone();
-                    collect_local_decl_names(localDecls, &mut scope);
-                    if absyn_pat_is_irrefutable(pattern.as_ref(), &scope) {
-                        return true;
-                    }
-                }
-            }
-        }
+/// Classify a pattern's coverage contribution. `binding_names` is the set of
+/// names in scope as variable bindings for this pattern (function locals +
+/// match-level localDecls + the case's own localDecls) — see
+/// [`absyn_pat_is_irrefutable`].
+fn pat_cover_key(e: &Absyn::Exp, binding_names: &BTreeSet<String>) -> CoverKey {
+    if absyn_pat_is_irrefutable(e, binding_names) {
+        return CoverKey::Irrefutable;
     }
-
-    // Collect un-guarded (pattern, per-case scope) pairs for the structural
-    // checks below. Each case's pattern is checked against the union of the
-    // match scope and that case's own localDecls.
-    let pats: Vec<(&Absyn::Exp, BTreeSet<String>)> = cases.into_iter().filter_map(|c| match &**c {
-        Absyn::Case::CASE { pattern, patternGuard, localDecls, .. } if patternGuard.is_none() => {
-            let mut scope = match_scope.clone();
-            collect_local_decl_names(localDecls, &mut scope);
-            Some((&**pattern, scope))
-        }
-        _ => None,
-    }).collect();
-
-    // List: Nil + fully-irrefutable Cons.
-    //
     // The parser surface for the empty list literal `{}` is currently
     // `Absyn::Exp::ARRAY { arrayExp: [] }` (the MetaModelica `{...}`
     // syntax always produces an ARRAY node; the dedicated LIST variant is
@@ -765,37 +853,67 @@ fn match_is_exhaustive(
     // desugar to a Cons chain in pattern position, but the parser keeps
     // the literal form here — `{l}` is therefore ARRAY/LIST with a single
     // element and does NOT contribute to Cons coverage.
-    let is_empty_literal = |p: &Absyn::Exp| matches!(p,
-        Absyn::Exp::ARRAY { arrayExp } if arrayExp.is_empty()
-    ) || matches!(p,
-        Absyn::Exp::LIST { exps } if exps.is_empty()
-    );
-    let has_nil = pats.iter().any(|(p, _)| is_empty_literal(p));
-    let has_full_cons = pats.iter().any(|(p, scope)| match p {
-        Absyn::Exp::CONS { head, rest } =>
-            absyn_pat_is_irrefutable(head, scope) && absyn_pat_is_irrefutable(rest, scope),
-        _ => false,
-    });
-    if has_nil && has_full_cons { return true; }
+    match e {
+        Absyn::Exp::ARRAY { arrayExp } if arrayExp.is_empty() => CoverKey::NilList,
+        Absyn::Exp::LIST { exps } if exps.is_empty() => CoverKey::NilList,
+        Absyn::Exp::CONS { head, rest }
+            if absyn_pat_is_irrefutable(head, binding_names)
+                && absyn_pat_is_irrefutable(rest, binding_names) =>
+            CoverKey::FullCons,
+        Absyn::Exp::CALL { function_, .. }
+            if cref_to_dotted(function_.as_ref()) == "NONE" =>
+            CoverKey::NoneOpt,
+        _ if absyn_pat_is_full_some(e, binding_names) => CoverKey::FullSome,
+        Absyn::Exp::BOOL { value: true } => CoverKey::BoolTrue,
+        Absyn::Exp::BOOL { value: false } => CoverKey::BoolFalse,
+        _ => CoverKey::Other,
+    }
+}
 
-    // Option: NONE() + SOME(irrefutable).
-    let has_none = pats.iter().any(|(p, _)| matches!(
-        p,
-        Absyn::Exp::CALL { function_, .. } if cref_to_dotted(function_.as_ref()) == "NONE"
-    ));
-    let has_full_some = pats.iter().any(|(p, scope)| absyn_pat_is_full_some(p, scope));
-    if has_none && has_full_some { return true; }
+/// Does a set of unguarded patterns (classified by [`pat_cover_key`])
+/// exhaustively cover the scrutinee? Handles the type-independent shapes:
+///   * any irrefutable pattern (incl. `else`) → exhaustive
+///   * `{}` (Nil) + `_ :: _` with both subpatterns irrefutable → List
+///   * `NONE()` + `SOME(_)` with irrefutable inner → Option
+///   * boolean literals `true` and `false` → Bool
+///
+/// TODO: uniontype / record exhaustiveness — requires looking up the
+/// scrutinee's type to enumerate constructors, which needs the typed IR.
+/// See the typedexp::TypedPat counterpart in codegen (`pats_cover_ty`) for
+/// the analogous gap.
+fn cover_keys_exhaustive(keys: &[CoverKey]) -> bool {
+    use CoverKey::*;
+    keys.contains(&Irrefutable)
+        || (keys.contains(&NilList) && keys.contains(&FullCons))
+        || (keys.contains(&NoneOpt) && keys.contains(&FullSome))
+        || (keys.contains(&BoolTrue) && keys.contains(&BoolFalse))
+}
 
-    // Bool: both literals present.
-    let has_true = pats.iter().any(|(p, _)| matches!(p, Absyn::Exp::BOOL { value: true }));
-    let has_false = pats.iter().any(|(p, _)| matches!(p, Absyn::Exp::BOOL { value: false }));
-    if has_true && has_false { return true; }
+/// Does an Absyn case set exhaustively cover the scrutinee? See
+/// [`cover_keys_exhaustive`] for the recognised shapes. Cases with a guard
+/// never contribute coverage — a guard can fail.
+fn match_is_exhaustive(
+    cases: &metamodelica::List<Arc<Absyn::Case>>,
+    match_local_decls: &metamodelica::List<std::sync::Arc<Absyn::ElementItem>>,
+    outer_scope: &BTreeSet<String>,
+) -> bool {
+    // The full set of names in scope as variable bindings for any pattern
+    // in this match: outer scope (function inputs/outputs/protected) ∪
+    // match-level localDecls ∪ per-case localDecls.  Built once for the
+    // match, augmented per-case below.
+    let mut match_scope: BTreeSet<String> = outer_scope.clone();
+    collect_local_decl_names(match_local_decls, &mut match_scope);
 
-    // TODO: uniontype / record exhaustiveness — requires looking up the
-    // scrutinee's type to enumerate constructors, which needs the typed IR.
-    // See the typedexp::TypedPat counterpart in codegen for the analogous
-    // gap.
-    false
+    let keys: Vec<CoverKey> = cases.into_iter().filter_map(|c| match &**c {
+        Absyn::Case::ELSE { .. } => Some(CoverKey::Irrefutable),
+        Absyn::Case::CASE { pattern, patternGuard, localDecls, .. } if patternGuard.is_none() => {
+            let mut scope = match_scope.clone();
+            collect_local_decl_names(localDecls, &mut scope);
+            Some(pat_cover_key(pattern.as_ref(), &scope))
+        }
+        _ => None,
+    }).collect();
+    cover_keys_exhaustive(&keys)
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -905,10 +1023,8 @@ pub fn analyze(hier: &InstanceHierarchy<'_>) -> FallibilityInfo {
         }
     }
 
-    let mut fallible: BTreeSet<String> = BTreeSet::new();
-
-    // Seed: every function whose immediate features (external/fail/match)
-    // make it locally fallible.
+    // Resolve every Walk (incl. the per-arm sub-walks of matchcontinue
+    // checks) into qname edges + immediate verdicts.
     //
     // For functions with an `external` clause, look up the classification in
     // priority order:
@@ -928,60 +1044,17 @@ pub fn analyze(hier: &InstanceHierarchy<'_>) -> FallibilityInfo {
     //      C runtime, so they have no registry entry.
     //   3. Neither table knows the symbol: `lookup_or_panic` reports the
     //      missing registry entry (unless `MMTORUST_LENIENT_EXTERNALS=1`).
+    let mut resolved: BTreeMap<String, ResolvedSources> = BTreeMap::new();
     for (qname, w) in &walks {
-        let local = if let Some(c_name) = &w.external {
+        let mut rs = resolve_walk(w, qname, &hier.top_level, &walks);
+        if let Some(c_name) = &w.external {
             let simple = qname.rsplit_once('.').map(|(_, s)| s).unwrap_or(qname.as_str());
             let f = external_c_calls::lookup(c_name)
                 .or_else(|| builtin_fallibility(simple))
                 .unwrap_or_else(|| external_c_calls::lookup_or_panic(c_name, qname));
-            matches!(f, Fallibility::Fallible)
-        } else {
-            w.has_fail || w.has_match || w.calls_fn_value
-        };
-        if local {
-            fallible.insert(qname.clone());
-        }
-    }
-
-    // Build a forward call graph: caller_fqn → set of callee_fqn that are
-    // user-defined functions reachable in the hierarchy.  Calls to bare
-    // names are also resolved against builtins (handled inline below).
-    let mut callees: BTreeMap<String, BTreeSet<String>> = BTreeMap::new();
-    for (qname, w) in &walks {
-        let mut set: BTreeSet<String> = BTreeSet::new();
-        for raw in &w.calls {
-            // Resolve user-defined callee first: a user function shadows any
-            // same-named builtin (e.g. `exp` inside `Template.TplMain`
-            // refers to the AST-printer, not the math `exp` builtin).
-            // If the name resolves to a node in the hierarchy, record the
-            // edge for fixed-point propagation. Otherwise fall through to
-            // the builtin table.
-            if let Some(target) = resolve_called_qname(raw, qname, &hier.top_level) {
-                if walks.contains_key(&target) {
-                    set.insert(target);
-                    continue;
-                }
-                // Target resolves to a non-function node (record/type
-                // constructor, partial-application reference, etc.) — drop
-                // the edge, constructors never fail in our lowering.
-                continue;
+            if matches!(f, Fallibility::Fallible) {
+                rs.always = true;
             }
-            // Unresolved as a user function: consult the builtin table.
-            if let Some(b) = builtin_fallibility(raw) {
-                if matches!(b, Fallibility::Fallible) {
-                    fallible.insert(qname.clone());
-                }
-                continue;
-            }
-            // Otherwise unresolved: a call through a function value (a
-            // callback parameter or function-typed local/field) is already
-            // accounted for via [`Walk::calls_fn_value`] during scanning, so it
-            // does not need a call-graph edge here. Anything else that reaches
-            // this point is a name we genuinely could not resolve (e.g. a
-            // resolution gap); it contributes no edge. Marking it fallible
-            // would be sound but would conflate true callbacks with resolution
-            // bugs, so we leave it — `calls_fn_value` already covers the real
-            // higher-order cases.
         }
         // `function Foo = Bar(...)` aliases have no body of their own; their
         // fallibility comes from the base function. Add the resolved edge so
@@ -990,24 +1063,29 @@ pub fn analyze(hier: &InstanceHierarchy<'_>) -> FallibilityInfo {
         if let Some(base) = alias_bases.get(qname) {
             if let Some(target) = resolve_called_qname(base, qname, &hier.top_level) {
                 if walks.contains_key(&target) {
-                    set.insert(target);
+                    rs.edges.insert(target);
                 }
             } else if let Some(b) = builtin_fallibility(base)
                 && matches!(b, Fallibility::Fallible) {
-                    fallible.insert(qname.clone());
+                    rs.always = true;
                 }
         }
-        callees.insert(qname.clone(), set);
+        resolved.insert(qname.clone(), rs);
     }
 
-    // Fixed point: a function becomes fallible as soon as it can reach a
-    // fallible callee.  Naive O(n·m·#iters) saturation — sufficient at
-    // current scale (a few thousand functions) and easy to verify.
+    // Fixed point: a function becomes fallible as soon as one of its sources
+    // evaluates fallible under the current set — a reachable fallible callee,
+    // or a matchcontinue losing its last covering set of infallible arms.
+    // [`sources_fallible`] is monotone in `fallible`, so saturating from the
+    // empty set yields the least fixed point (the most precise sound
+    // verdict). Naive O(n·#iters) re-evaluation — sufficient at current
+    // scale (a few thousand functions) and easy to verify.
+    let mut fallible: BTreeSet<String> = BTreeSet::new();
     loop {
         let mut changed = false;
-        for (qname, edges) in &callees {
+        for (qname, rs) in &resolved {
             if fallible.contains(qname) { continue; }
-            if edges.iter().any(|t| fallible.contains(t)) {
+            if sources_fallible(rs, &fallible) {
                 fallible.insert(qname.clone());
                 changed = true;
             }
@@ -1020,4 +1098,111 @@ pub fn analyze(hier: &InstanceHierarchy<'_>) -> FallibilityInfo {
         total_functions: functions.len(),
         external_functions: external_count,
     }
+}
+
+// ── Source resolution & fixed-point evaluation ───────────────────────────────
+
+/// A [`Walk`] with its raw callee names resolved against the hierarchy and
+/// the builtin table, ready for repeated evaluation in the fixed point.
+#[derive(Debug, Default)]
+struct ResolvedSources {
+    /// Fallible regardless of the call graph: a local `fail()` / `failure()`
+    /// clause / refutable `:=` LHS / non-exhaustive `match`, a call through a
+    /// function value, a call to a fallible builtin — or, for `external`
+    /// functions, a fallible registry classification (set by the caller in
+    /// [`analyze`]).
+    always: bool,
+    /// FQNs of user-defined callees; fallible iff any of them is.
+    edges: BTreeSet<String>,
+    /// Per-`matchcontinue` safety obligations (see [`McCheck`]).
+    mc: Vec<ResolvedMcCheck>,
+}
+
+/// [`McCheck`] after callee-name resolution.
+#[derive(Debug, Default)]
+struct ResolvedMcCheck {
+    candidates: Vec<(CoverKey, ResolvedSources)>,
+}
+
+/// Resolve a [`Walk`]'s raw callee names (recursively through its
+/// matchcontinue sub-walks) into [`ResolvedSources`]. `caller_qname` is the
+/// enclosing *function* for every nesting level — match arms share the
+/// function's name-resolution scope.
+fn resolve_walk(
+    w: &Walk,
+    caller_qname: &str,
+    top_level: &BTreeMap<String, NameNode<'_>>,
+    walks: &BTreeMap<String, Walk>,
+) -> ResolvedSources {
+    let mut rs = ResolvedSources {
+        always: w.has_fail || w.has_match || w.calls_fn_value,
+        ..ResolvedSources::default()
+    };
+    for raw in &w.calls {
+        // Resolve user-defined callee first: a user function shadows any
+        // same-named builtin (e.g. `exp` inside `Template.TplMain`
+        // refers to the AST-printer, not the math `exp` builtin).
+        // If the name resolves to a node in the hierarchy, record the
+        // edge for fixed-point propagation. Otherwise fall through to
+        // the builtin table.
+        if let Some(target) = resolve_called_qname(raw, caller_qname, top_level) {
+            if walks.contains_key(&target) {
+                rs.edges.insert(target);
+            }
+            // Else: target resolves to a non-function node (record/type
+            // constructor, partial-application reference, etc.) — drop
+            // the edge, constructors never fail in our lowering.
+            continue;
+        }
+        // Unresolved as a user function: consult the builtin table.
+        if let Some(b) = builtin_fallibility(raw) {
+            if matches!(b, Fallibility::Fallible) {
+                rs.always = true;
+            }
+            continue;
+        }
+        // Otherwise unresolved: a call through a function value (a
+        // callback parameter or function-typed local/field) is already
+        // accounted for via [`Walk::calls_fn_value`] during scanning, so it
+        // does not need a call-graph edge here. Anything else that reaches
+        // this point is a name we genuinely could not resolve (e.g. a
+        // resolution gap); it contributes no edge. Marking it fallible
+        // would be sound but would conflate true callbacks with resolution
+        // bugs, so we leave it — `calls_fn_value` already covers the real
+        // higher-order cases.
+    }
+    for mc in &w.mc_checks {
+        rs.mc.push(ResolvedMcCheck {
+            candidates: mc.candidates.iter()
+                .map(|(key, sub)| (*key, resolve_walk(sub, caller_qname, top_level, walks)))
+                .collect(),
+        });
+    }
+    rs
+}
+
+/// Evaluate a function's failure sources under the current `fallible` set.
+/// Monotone in `fallible`: a growing set can only flip verdicts from
+/// infallible to fallible (directly through `edges`, or by shrinking the set
+/// of infallible matchcontinue candidates below coverage).
+fn sources_fallible(rs: &ResolvedSources, fallible: &BTreeSet<String>) -> bool {
+    rs.always
+        || rs.edges.iter().any(|t| fallible.contains(t))
+        || rs.mc.iter().any(|mc| !mc_check_is_safe(mc, fallible))
+}
+
+/// A `matchcontinue` cannot fail iff the patterns of its infallible
+/// candidate arms exhaustively cover the scrutinee: execution falls through
+/// failing/mismatching arms until it reaches a covering arm that — being
+/// infallible — runs to completion. The codegen counterpart needs no typed-IR
+/// twin of this predicate: the `MatchKind::MatchContinue` lowering emits
+/// every arm as a `Result` closure and its no-arm-matched fallback through
+/// [`crate::codegen`]'s `emit_diverging_fail`, both of which are valid in
+/// fallible and infallible functions alike.
+fn mc_check_is_safe(mc: &ResolvedMcCheck, fallible: &BTreeSet<String>) -> bool {
+    let keys: Vec<CoverKey> = mc.candidates.iter()
+        .filter(|(_, sub)| !sources_fallible(sub, fallible))
+        .map(|(key, _)| *key)
+        .collect();
+    cover_keys_exhaustive(&keys)
 }

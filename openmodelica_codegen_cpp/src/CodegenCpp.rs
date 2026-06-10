@@ -37119,7 +37119,7 @@ fn fun_1438(mut in_txt: Tpl::Text, mut in_a_lit: Arc<DAE::Exp>, mut in_a_name: T
             let mut ret_3: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
             let mut l_size: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
-            ret_3 = Expression::flattenArrayExpToList(i_lit.clone())?;
+            ret_3 = Expression::flattenArrayExpToList(i_lit.clone());
             ret_4 = (ret_3.clone().len() as i32);
             l_size = Tpl::writeStr(Tpl::emptyTxt.clone(), (intString(ret_4.clone())).clone())?;
             ret_6 = (i_ty_dims.clone().len() as i32);
@@ -37131,11 +37131,11 @@ fn fun_1438(mut in_txt: Tpl::Text, mut in_a_lit: Arc<DAE::Exp>, mut in_a_name: T
             l_instDimsInit = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("][")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             l_instDimsInit = lm_1431(l_instDimsInit.clone(), i_ty_dims.clone())?;
             l_instDimsInit = Tpl::popIter(l_instDimsInit.clone())?;
-            ret_11 = Expression::flattenArrayExpToList(i_lit.clone())?;
+            ret_11 = Expression::flattenArrayExpToList(i_lit.clone());
             l_data = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             l_data = lm_1432(l_data.clone(), ret_11.clone())?;
             l_data = Tpl::popIter(l_data.clone())?;
-            ret_12 = Expression::flattenArrayExpToList(i_lit.clone())?;
+            ret_12 = Expression::flattenArrayExpToList(i_lit.clone());
             ret_13 = (ret_12.clone().len() as i32);
             txt = fun_1433(txt.clone(), ret_13.clone(), l_data.clone(), a_name.clone(), l_arrayTypeStr.clone())?;
             txt.clone()
@@ -37154,7 +37154,7 @@ fn fun_1438(mut in_txt: Tpl::Text, mut in_a_lit: Arc<DAE::Exp>, mut in_a_name: T
             let mut l_ndim: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_size: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
-            ret_14 = Expression::flattenArrayExpToList(i_lit.clone())?;
+            ret_14 = Expression::flattenArrayExpToList(i_lit.clone());
             ret_15 = (ret_14.clone().len() as i32);
             l_size = Tpl::writeStr(Tpl::emptyTxt.clone(), (intString(ret_15.clone())).clone())?;
             ret_16 = (i_ty_dims.clone().len() as i32);
@@ -37166,11 +37166,11 @@ fn fun_1438(mut in_txt: Tpl::Text, mut in_a_lit: Arc<DAE::Exp>, mut in_a_name: T
             l_instDimsInit = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("][")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             l_instDimsInit = lm_1435(l_instDimsInit.clone(), i_ty_dims.clone())?;
             l_instDimsInit = Tpl::popIter(l_instDimsInit.clone())?;
-            ret_17 = Expression::flattenArrayExpToList(i_lit.clone())?;
+            ret_17 = Expression::flattenArrayExpToList(i_lit.clone());
             l_data = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             l_data = lm_1436(l_data.clone(), ret_17.clone())?;
             l_data = Tpl::popIter(l_data.clone())?;
-            ret_18 = Expression::flattenArrayExpToList(i_lit.clone())?;
+            ret_18 = Expression::flattenArrayExpToList(i_lit.clone());
             ret_19 = (ret_18.clone().len() as i32);
             txt = fun_1437(txt.clone(), ret_19.clone(), l_data.clone(), a_name.clone(), l_arrayTypeStr.clone())?;
             txt.clone()

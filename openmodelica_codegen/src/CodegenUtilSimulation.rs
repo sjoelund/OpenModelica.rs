@@ -257,7 +257,7 @@ fn lm_52(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Statemen
         txt = (::match_deref::match_deref! { match &(lstElt_52.clone()) {
         i_stmt => {
             let mut ret_0: ArcStr = arcstr::literal!("");
-            ret_0 = (DAEDump::ppStmtStr(i_stmt.clone(), 2)?).clone();
+            ret_0 = (DAEDump::ppStmtStr(i_stmt.clone(), 2)).clone();
             txt = CodegenUtil::escapeCComments(txt.clone(), (ret_0.clone()).clone())?;
             txt.clone()
         },
@@ -274,7 +274,7 @@ fn lm_53(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Statemen
         txt = (::match_deref::match_deref! { match &(lstElt_53.clone()) {
         i_stmt => {
             let mut ret_0: ArcStr = arcstr::literal!("");
-            ret_0 = (DAEDump::ppStmtStr(i_stmt.clone(), 2)?).clone();
+            ret_0 = (DAEDump::ppStmtStr(i_stmt.clone(), 2)).clone();
             txt = CodegenUtil::escapeCComments(txt.clone(), (ret_0.clone()).clone())?;
             txt.clone()
         },

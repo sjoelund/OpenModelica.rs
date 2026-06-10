@@ -1648,7 +1648,7 @@ pub fn updateIndex() -> Result<bool> {
     let mut packageIndex: ArcStr;
     let url: ArcStr = literal!("https://libraries.openmodelica.org/index/v1/index.json");
     userLibraries = (getUserLibraryPath()?).clone();
-    Util::createDirectoryTree((userLibraries.clone()).clone())?;
+    Util::createDirectoryTree((userLibraries.clone()).clone());
     packageIndex = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*userLibraries.clone()); __mm_s.push_str(&*literal!("index.json")); ArcStr::from(__mm_s) }).clone();
     if !(Curl::multiDownload(list![(list![(url.clone()).clone()], packageIndex.clone())], Config::noProc()?)?) {
         Error::addMessage(Error::ERROR_PKG_INDEX_FAILED_DOWNLOAD.clone(), list![(url.clone()).clone(), (packageIndex.clone()).clone()])?;
@@ -1916,7 +1916,7 @@ pub fn installPackage(mut pkg: ArcStr, mut version: ArcStr, mut exactMatch: bool
     });
     for mut pack in &*packagesToInstall.clone() {
         let mut pack = pack.clone();
-        Util::createDirectoryTree((cachePath.clone()).clone())?;
+        Util::createDirectoryTree((cachePath.clone()).clone());
     }
     if !(skipDownload.clone()) {
         mirrors = getMirrors()?;
@@ -2029,7 +2029,7 @@ pub fn installCachedPackages() -> Result<()> {
         Error::addSourceMessage(Error::NOTIFY_INITIALIZING_USER_LIBRARIES.clone(), list![(getUserLibraryPath()?).clone()], makeSourceInfo((packageIndex.clone()).clone()))?;
     }
     if !(System::regularFileExists((getIndexPath()?).clone())) {
-        Util::createDirectoryTree((getUserLibraryPath()?).clone())?;
+        Util::createDirectoryTree((getUserLibraryPath()?).clone());
         System::copyFile((packageIndex.clone()).clone(), (getIndexPath()?).clone());
     }
     for mut lib in &*libs.clone() {

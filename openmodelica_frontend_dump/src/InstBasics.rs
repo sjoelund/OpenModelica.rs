@@ -48,7 +48,7 @@ use openmodelica_ast::Absyn;
 use openmodelica_frontend_types::DAE;
 use openmodelica_frontend_types::SCode;
 
-pub fn commentIsInlineFunc(mut cmt: Arc<SCode::Comment>) -> Result<DAE::InlineType> {
+pub fn commentIsInlineFunc(mut cmt: Arc<SCode::Comment>) -> DAE::InlineType {
     let mut outInlineType: DAE::InlineType;
     outInlineType = 'mc: {
         let __mc_input = cmt.clone();
@@ -68,9 +68,9 @@ pub fn commentIsInlineFunc(mut cmt: Arc<SCode::Comment>) -> Result<DAE::InlineTy
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outInlineType)
+    outInlineType
 }
 
 fn isInlineFunc2(mut inSubModList: Arc<metamodelica::List<Arc<SCode::SubMod>>>) -> DAE::InlineType {

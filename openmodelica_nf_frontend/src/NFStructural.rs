@@ -70,7 +70,7 @@ pub fn isStructuralComponent(mut component: Arc<Component::NFComponent>, mut com
             isStructural = false;
         } else if !(Binding::isBound(binding.clone()) || InstNode::hasBinding(compNode.clone())?) {
             if !(parentEval.clone()) && !(InstContext::inRelaxed(context.clone())) {
-                Error::addSourceMessage(Error::UNBOUND_PARAMETER_EVALUATE_TRUE.clone(), list![(InstNode::name(compNode.clone())?).clone()], InstNode::info(compNode.clone())?)?;
+                Error::addSourceMessage(Error::UNBOUND_PARAMETER_EVALUATE_TRUE.clone(), list![(InstNode::name(compNode.clone())?).clone()], InstNode::info(compNode.clone()))?;
             }
             isStructural = false;
         } else if isBindingNotFixed(binding.clone(), false, 4)? {

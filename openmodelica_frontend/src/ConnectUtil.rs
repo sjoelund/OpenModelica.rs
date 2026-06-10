@@ -213,8 +213,8 @@ pub fn addArrayConnection(mut sets: Sets, mut cref1: Arc<DAE::ComponentRef>, mut
     let mut crefs1: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
     let mut crefs2: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
     let mut cr2: Arc<DAE::ComponentRef>;
-    crefs1 = ComponentReference::expandCref(cref1.clone(), false)?;
-    crefs2 = ComponentReference::expandCref(cref2.clone(), false)?;
+    crefs1 = ComponentReference::expandCref(cref1.clone(), false);
+    crefs2 = ComponentReference::expandCref(cref2.clone(), false);
     for mut cr1 in &*crefs1.clone() {
         let mut cr1 = cr1.clone();
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(crefs2.clone()) {
@@ -423,7 +423,7 @@ fn daeVarToCrefs(mut var: Arc<DAE::Var>) -> Result<Arc<metamodelica::List<Arc<DA
         Deref @ DAE::Type::T_ARRAY { .. } => {
             dims = TypesDump::getDimensions(ty.clone());
             cr = Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (name.clone()).clone(), identType: ty.clone(), subscriptLst: metamodelica::nil() });
-            expandArrayCref(cr.clone(), dims.clone(), metamodelica::nil())?
+            expandArrayCref(cr.clone(), dims.clone(), metamodelica::nil())
         },
         _ => {
             Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Unknown var ")); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!(" in ConnectUtil.daeVarToCrefs")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("FrontEnd/ConnectUtil.mo"))?;
@@ -434,7 +434,7 @@ fn daeVarToCrefs(mut var: Arc<DAE::Var>) -> Result<Arc<metamodelica::List<Arc<DA
     Ok(crefs)
 }
 
-fn expandArrayCref(mut cref: Arc<DAE::ComponentRef>, mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>, mut accumCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> {
+fn expandArrayCref(mut cref: Arc<DAE::ComponentRef>, mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>, mut accumCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Arc<metamodelica::List<Arc<DAE::ComponentRef>>> {
     let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
     crefs = 'mc: {
         let __mc_input = dims.clone();
@@ -455,8 +455,8 @@ fn expandArrayCref(mut cref: Arc<DAE::ComponentRef>, mut dims: Arc<metamodelica:
                     let mut dim = (*dim).clone();
                     (idx, dim) = getNextIndex(dim.clone())?;
                     cr = ComponentReference::subscriptCref(cref.clone(), list![Arc::new(DAE::Subscript::INDEX { exp: idx.clone() })])?;
-                    crs = expandArrayCref(cr.clone(), rest_dims.clone(), accumCrefs.clone())?;
-                    crs = expandArrayCref(cref.clone(), metamodelica::cons(dim.clone(), rest_dims.clone()), crs.clone())?;
+                    crs = expandArrayCref(cr.clone(), rest_dims.clone(), accumCrefs.clone());
+                    crs = expandArrayCref(cref.clone(), metamodelica::cons(dim.clone(), rest_dims.clone()), crs.clone());
                     Ok(crs.clone())
                 }
                 _ => bail!("nomatch"),
@@ -470,9 +470,9 @@ fn expandArrayCref(mut cref: Arc<DAE::ComponentRef>, mut dims: Arc<metamodelica:
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(crefs)
+    crefs
 }
 
 fn reverseEnumType(mut dim: Arc<DAE::Dimension>) -> Arc<DAE::Dimension> {
@@ -1551,9 +1551,9 @@ pub fn increaseConnectRefCount(mut lhsCref: Arc<DAE::ComponentRef>, mut rhsCref:
     let mut sets: Sets = sets;
     let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
     if System::getUsesCardinality() {
-        crefs = ComponentReference::expandCref(lhsCref.clone(), false)?;
+        crefs = ComponentReference::expandCref(lhsCref.clone(), false);
         sets.sets = increaseConnectRefCount2(crefs.clone(), sets.sets.clone())?;
-        crefs = ComponentReference::expandCref(rhsCref.clone(), false)?;
+        crefs = ComponentReference::expandCref(rhsCref.clone(), false);
         sets.sets = increaseConnectRefCount2(crefs.clone(), sets.sets.clone())?;
     }
     Ok(sets)
@@ -2039,12 +2039,12 @@ fn evaluateCardinality(mut cref: Arc<DAE::ComponentRef>, mut sets: Sets) -> Arc<
 fn simplifyDAEElements(mut hasCardinality: bool, mut DAE: DAE::DAElist) -> Result<DAE::DAElist> {
     let mut DAE: DAE::DAElist = DAE;
     if hasCardinality.clone() {
-        DAE = DAE::DAElist { elementLst: List::mapFlat(DAE.elementLst.clone(), (std::sync::Arc::new(simplifyDAEElement) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<Arc<metamodelica::List<Arc<DAE::Element>>>> + 'static>))? };
+        DAE = DAE::DAElist { elementLst: List::mapFlat(DAE.elementLst.clone(), (std::sync::Arc::new(fnptr!(simplifyDAEElement, Arc<DAE::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<Arc<metamodelica::List<Arc<DAE::Element>>>> + 'static>))? };
     }
     Ok(DAE)
 }
 
-fn simplifyDAEElement(mut element: Arc<DAE::Element>) -> Result<Arc<metamodelica::List<Arc<DAE::Element>>>> {
+fn simplifyDAEElement(mut element: Arc<DAE::Element>) -> Arc<metamodelica::List<Arc<DAE::Element>>> {
     let mut elements: Arc<metamodelica::List<Arc<DAE::Element>>>;
     elements = 'mc: {
         let __mc_input = element.clone();
@@ -2080,9 +2080,9 @@ fn simplifyDAEElement(mut element: Arc<DAE::Element>) -> Result<Arc<metamodelica
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(elements)
+    elements
 }
 
 fn simplifyDAEIfEquation(mut conditions: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut branches: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Element>>>>>, mut elseBranch: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Element>>>> {
@@ -2308,7 +2308,7 @@ fn sizeOfType(mut ty: Arc<DAE::Type>) -> Result<i32> {
         },
         _ => {
             let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
-            Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- ConnectUtil.sizeOfType failed on ")); __mm_s.push_str(&*TypesDump::printTypeStr(ty.clone())?); ArcStr::from(__mm_s) }).clone())?;
+            Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- ConnectUtil.sizeOfType failed on ")); __mm_s.push_str(&*TypesDump::printTypeStr(ty.clone())); ArcStr::from(__mm_s) }).clone())?;
             return Ok(bail!("fail"))
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),

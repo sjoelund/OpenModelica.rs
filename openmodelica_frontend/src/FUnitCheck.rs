@@ -349,7 +349,7 @@ fn foldEquation2(mut eq: Arc<DAE::Element>, mut htCr2U: (metamodelica::Array<Arc
             if Flags::isSet(Flags::DUMP_EQ_UNIT_STRUCT.clone())? {
                 ExpressionDump::dumpExp(temp.clone())?;
             }
-            let (_, (__pa0, __pa1, __pa2), __pa3) = insertUnitInEquation(temp.clone(), (htCr2U.clone(), htS2U.clone(), htU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, args.clone())?;
+            let (_, (__pa0, __pa1, __pa2), __pa3) = insertUnitInEquation(temp.clone(), (htCr2U.clone(), htS2U.clone(), htU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, args.clone());
             htCr2U = __pa0.clone();
             htS2U = __pa1.clone();
             htU2S = __pa2.clone();
@@ -364,7 +364,7 @@ fn foldEquation2(mut eq: Arc<DAE::Element>, mut htCr2U: (metamodelica::Array<Arc
             if Flags::isSet(Flags::DUMP_EQ_UNIT_STRUCT.clone())? {
                 ExpressionDump::dumpExp(temp.clone())?;
             }
-            let (_, (__pa0, __pa1, __pa2), __pa3) = insertUnitInEquation(temp.clone(), (htCr2U.clone(), htS2U.clone(), htU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, args.clone())?;
+            let (_, (__pa0, __pa1, __pa2), __pa3) = insertUnitInEquation(temp.clone(), (htCr2U.clone(), htS2U.clone(), htU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, args.clone());
             htCr2U = __pa0.clone();
             htS2U = __pa1.clone();
             htU2S = __pa2.clone();
@@ -381,7 +381,7 @@ fn foldEquation2(mut eq: Arc<DAE::Element>, mut htCr2U: (metamodelica::Array<Arc
             s1 = (System::trim((s1.clone()).clone(), (literal!(".")).clone())).clone();
             (_, outvars, _, outunitlist) = getNamedUnitlist((s1.clone()).clone(), args.clone());
             (htCr2U, htS2U, htU2S, expList2) = foldCallArg1(expl.clone(), htCr2U.clone(), htS2U.clone(), htU2S.clone(), Unit::Unit::MASTER { varList: metamodelica::nil() }, outunitlist.clone(), outvars.clone(), (s1.clone()).clone())?;
-            let (_, (__pa0, __pa1, __pa2), __pa3) = insertUnitInEquation(var_field!((*eq).scalar, DAE::Element::EQUATION).clone(), (htCr2U.clone(), htS2U.clone(), htU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, args.clone())?;
+            let (_, (__pa0, __pa1, __pa2), __pa3) = insertUnitInEquation(var_field!((*eq).scalar, DAE::Element::EQUATION).clone(), (htCr2U.clone(), htS2U.clone(), htU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, args.clone());
             htCr2U = __pa0.clone();
             htS2U = __pa1.clone();
             htU2S = __pa2.clone();
@@ -403,7 +403,7 @@ fn foldEquation2(mut eq: Arc<DAE::Element>, mut htCr2U: (metamodelica::Array<Arc
             s1 = (AbsynUtil::pathString(path.clone(), (literal!(".")).clone(), true, false)?).clone();
             s1 = (System::trim((s1.clone()).clone(), (literal!(".")).clone())).clone();
             (_, outvars, _, outunitlist) = getNamedUnitlist((s1.clone()).clone(), args.clone());
-            let (__pa0, (__pa1, __pa2, __pa3), _) = insertUnitInEquation(lhs.clone(), (htCr2U.clone(), htS2U.clone(), htU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, args.clone())?;
+            let (__pa0, (__pa1, __pa2, __pa3), _) = insertUnitInEquation(lhs.clone(), (htCr2U.clone(), htS2U.clone(), htU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, args.clone());
             ut1 = __pa0.clone();
             htCr2U = __pa1.clone();
             htS2U = __pa2.clone();
@@ -411,14 +411,14 @@ fn foldEquation2(mut eq: Arc<DAE::Element>, mut htCr2U: (metamodelica::Array<Arc
             formalargs = (listHead(outunitlist.clone())?).clone();
             formalvar = (listHead(outvars.clone())?).clone();
             ut2 = if (formalargs.clone() == literal!("NONE")) {Unit::Unit::MASTER { varList: metamodelica::nil() }} else {Unit::parseUnitString((formalargs.clone()).clone(), Unit::getKnownUnits()?)?};
-            (b, _, _) = UnitTypesEqual(ut1.clone(), ut2.clone(), htCr2U.clone())?;
+            (b, _, _) = UnitTypesEqual(ut1.clone(), ut2.clone(), htCr2U.clone());
             if b.clone() {
                 expList2 = metamodelica::nil();
             } else {
                 temp = makenewcref(lhs.clone(), (formalvar.clone()).clone(), (s1.clone()).clone())?;
                 expList2 = metamodelica::cons(list![(lhs.clone(), ut1.clone()), (temp.clone(), ut2.clone())], metamodelica::nil());
             }
-            let (_, (__pa4, __pa5, __pa6), __pa7) = insertUnitInEquation(var_field!((*eq).scalar, DAE::Element::EQUATION).clone(), (htCr2U.clone(), htS2U.clone(), htU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, args.clone())?;
+            let (_, (__pa4, __pa5, __pa6), __pa7) = insertUnitInEquation(var_field!((*eq).scalar, DAE::Element::EQUATION).clone(), (htCr2U.clone(), htS2U.clone(), htU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, args.clone());
             htCr2U = __pa4.clone();
             htS2U = __pa5.clone();
             htU2S = __pa6.clone();
@@ -431,7 +431,7 @@ fn foldEquation2(mut eq: Arc<DAE::Element>, mut htCr2U: (metamodelica::Array<Arc
             if Flags::isSet(Flags::DUMP_EQ_UNIT_STRUCT.clone())? {
                 ExpressionDump::dumpExp(temp.clone())?;
             }
-            let (_, (__pa0, __pa1, __pa2), __pa3) = insertUnitInEquation(temp.clone(), (htCr2U.clone(), htS2U.clone(), htU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, args.clone())?;
+            let (_, (__pa0, __pa1, __pa2), __pa3) = insertUnitInEquation(temp.clone(), (htCr2U.clone(), htS2U.clone(), htU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, args.clone());
             htCr2U = __pa0.clone();
             htS2U = __pa1.clone();
             htU2S = __pa2.clone();
@@ -447,7 +447,7 @@ fn foldEquation2(mut eq: Arc<DAE::Element>, mut htCr2U: (metamodelica::Array<Arc
             if Flags::isSet(Flags::DUMP_EQ_UNIT_STRUCT.clone())? {
                 ExpressionDump::dumpExp(temp.clone())?;
             }
-            let (_, (__pa0, __pa1, __pa2), __pa3) = insertUnitInEquation(temp.clone(), (htCr2U.clone(), htS2U.clone(), htU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, args.clone())?;
+            let (_, (__pa0, __pa1, __pa2), __pa3) = insertUnitInEquation(temp.clone(), (htCr2U.clone(), htS2U.clone(), htU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, args.clone());
             htCr2U = __pa0.clone();
             htS2U = __pa1.clone();
             htU2S = __pa2.clone();
@@ -460,7 +460,7 @@ fn foldEquation2(mut eq: Arc<DAE::Element>, mut htCr2U: (metamodelica::Array<Arc
             if Flags::isSet(Flags::DUMP_EQ_UNIT_STRUCT.clone())? {
                 ExpressionDump::dumpExp(temp.clone())?;
             }
-            let (_, (__pa0, __pa1, __pa2), __pa3) = insertUnitInEquation(temp.clone(), (htCr2U.clone(), htS2U.clone(), htU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, args.clone())?;
+            let (_, (__pa0, __pa1, __pa2), __pa3) = insertUnitInEquation(temp.clone(), (htCr2U.clone(), htS2U.clone(), htU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, args.clone());
             htCr2U = __pa0.clone();
             htS2U = __pa1.clone();
             htU2S = __pa2.clone();
@@ -473,7 +473,7 @@ fn foldEquation2(mut eq: Arc<DAE::Element>, mut htCr2U: (metamodelica::Array<Arc
             if Flags::isSet(Flags::DUMP_EQ_UNIT_STRUCT.clone())? {
                 ExpressionDump::dumpExp(temp.clone())?;
             }
-            let (_, (__pa0, __pa1, __pa2), __pa3) = insertUnitInEquation(temp.clone(), (htCr2U.clone(), htS2U.clone(), htU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, args.clone())?;
+            let (_, (__pa0, __pa1, __pa2), __pa3) = insertUnitInEquation(temp.clone(), (htCr2U.clone(), htS2U.clone(), htU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, args.clone());
             htCr2U = __pa0.clone();
             htS2U = __pa1.clone();
             htU2S = __pa2.clone();
@@ -486,7 +486,7 @@ fn foldEquation2(mut eq: Arc<DAE::Element>, mut htCr2U: (metamodelica::Array<Arc
             if Flags::isSet(Flags::DUMP_EQ_UNIT_STRUCT.clone())? {
                 ExpressionDump::dumpExp(temp.clone())?;
             }
-            let (_, (__pa0, __pa1, __pa2), __pa3) = insertUnitInEquation(temp.clone(), (htCr2U.clone(), htS2U.clone(), htU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, args.clone())?;
+            let (_, (__pa0, __pa1, __pa2), __pa3) = insertUnitInEquation(temp.clone(), (htCr2U.clone(), htS2U.clone(), htU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, args.clone());
             htCr2U = __pa0.clone();
             htS2U = __pa1.clone();
             htU2S = __pa2.clone();
@@ -499,7 +499,7 @@ fn foldEquation2(mut eq: Arc<DAE::Element>, mut htCr2U: (metamodelica::Array<Arc
             if Flags::isSet(Flags::DUMP_EQ_UNIT_STRUCT.clone())? {
                 ExpressionDump::dumpExp(temp.clone())?;
             }
-            let (_, (__pa0, __pa1, __pa2), __pa3) = insertUnitInEquation(temp.clone(), (htCr2U.clone(), htS2U.clone(), htU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, args.clone())?;
+            let (_, (__pa0, __pa1, __pa2), __pa3) = insertUnitInEquation(temp.clone(), (htCr2U.clone(), htS2U.clone(), htU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, args.clone());
             htCr2U = __pa0.clone();
             htS2U = __pa1.clone();
             htU2S = __pa2.clone();
@@ -520,7 +520,7 @@ fn foldEquation2(mut eq: Arc<DAE::Element>, mut htCr2U: (metamodelica::Array<Arc
             metamodelica::nil()
         },
         Deref @ DAE::Element::NORETCALL { .. } => {
-            let (_, (__pa0, __pa1, __pa2), __pa3) = insertUnitInEquation(var_field!((*eq).exp, DAE::Element::NORETCALL).clone(), (htCr2U.clone(), htS2U.clone(), htU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, args.clone())?;
+            let (_, (__pa0, __pa1, __pa2), __pa3) = insertUnitInEquation(var_field!((*eq).exp, DAE::Element::NORETCALL).clone(), (htCr2U.clone(), htS2U.clone(), htU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, args.clone());
             htCr2U = __pa0.clone();
             htS2U = __pa1.clone();
             htU2S = __pa2.clone();
@@ -528,7 +528,7 @@ fn foldEquation2(mut eq: Arc<DAE::Element>, mut htCr2U: (metamodelica::Array<Arc
             inconsistentUnits.clone()
         },
         Deref @ DAE::Element::INITIAL_NORETCALL { .. } => {
-            let (_, (__pa0, __pa1, __pa2), __pa3) = insertUnitInEquation(var_field!((*eq).exp, DAE::Element::INITIAL_NORETCALL).clone(), (htCr2U.clone(), htS2U.clone(), htU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, args.clone())?;
+            let (_, (__pa0, __pa1, __pa2), __pa3) = insertUnitInEquation(var_field!((*eq).exp, DAE::Element::INITIAL_NORETCALL).clone(), (htCr2U.clone(), htS2U.clone(), htU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, args.clone());
             htCr2U = __pa0.clone();
             htS2U = __pa1.clone();
             htU2S = __pa2.clone();
@@ -557,7 +557,7 @@ fn foldEquation2(mut eq: Arc<DAE::Element>, mut htCr2U: (metamodelica::Array<Arc
             metamodelica::nil()
         },
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FUnitCheck.foldEquation2")); __mm_s.push_str(&*literal!(" failed on: ")); __mm_s.push_str(&*DAEDump::dumpEquationStr(eq.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("FrontEnd/FUnitCheck.mo"))?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FUnitCheck.foldEquation2")); __mm_s.push_str(&*literal!(" failed on: ")); __mm_s.push_str(&*DAEDump::dumpEquationStr(eq.clone())); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("FrontEnd/FUnitCheck.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -582,7 +582,7 @@ fn makenewcref(mut inexp: Arc<DAE::Exp>, mut instring: ArcStr, mut instring1: Ar
     Ok(outexp)
 }
 
-fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>)), (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>)), (metamodelica::Array<Arc<metamodelica::List<(Unit::Unit, i32)>>>, (i32, i32, metamodelica::Array<Option<(Unit::Unit, ArcStr)>>), i32, (Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit, Unit::Unit) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>))), mut inUt: Unit::Unit, mut inargs: Arc<metamodelica::List<Functionargs>>) -> Result<(Unit::Unit, ((metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>)), (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>)), (metamodelica::Array<Arc<metamodelica::List<(Unit::Unit, i32)>>>, (i32, i32, metamodelica::Array<Option<(Unit::Unit, ArcStr)>>), i32, (Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit, Unit::Unit) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>))), Arc<metamodelica::List<Arc<metamodelica::List<(Arc<DAE::Exp>, Unit::Unit)>>>>)> {
+fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>)), (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>)), (metamodelica::Array<Arc<metamodelica::List<(Unit::Unit, i32)>>>, (i32, i32, metamodelica::Array<Option<(Unit::Unit, ArcStr)>>), i32, (Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit, Unit::Unit) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>))), mut inUt: Unit::Unit, mut inargs: Arc<metamodelica::List<Functionargs>>) -> (Unit::Unit, ((metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>)), (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>)), (metamodelica::Array<Arc<metamodelica::List<(Unit::Unit, i32)>>>, (i32, i32, metamodelica::Array<Option<(Unit::Unit, ArcStr)>>), i32, (Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit, Unit::Unit) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>))), Arc<metamodelica::List<Arc<metamodelica::List<(Arc<DAE::Exp>, Unit::Unit)>>>>) {
     let mut outUt: Unit::Unit;
     let mut outTpl: ((metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (HashTableCrToUnit::FuncHashKey, HashTableCrToUnit::FuncKeyEqual, HashTableCrToUnit::FuncKeyStr, HashTableCrToUnit::FuncValueStr)), (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Unit::Unit)>>), i32, (HashTableStringToUnit::FuncHashKey, HashTableStringToUnit::FuncKeyEqual, HashTableStringToUnit::FuncKeyStr, HashTableStringToUnit::FuncValueStr)), (metamodelica::Array<Arc<metamodelica::List<(Unit::Unit, i32)>>>, (i32, i32, metamodelica::Array<Option<(Unit::Unit, ArcStr)>>), i32, (HashTableUnitToString::FuncHashKey, HashTableUnitToString::FuncKeyEqual, HashTableUnitToString::FuncKeyStr, HashTableUnitToString::FuncValueStr)));
     let mut outexpList: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<DAE::Exp>, Unit::Unit)>>>>;
@@ -598,7 +598,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     let mut HtCr2U = (*HtCr2U).clone();
                     let mut HtS2U = (*HtS2U).clone();
                     let mut HtU2S = (*HtU2S).clone();
-                    let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), inUt.clone(), inargs.clone())?) {
+                    let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), inUt.clone(), inargs.clone())) {
                         (__pa0 @ Unit::Unit::UNIT { .. }, (__pa1, __pa2, __pa3), __pa4) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -607,13 +607,13 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     HtS2U = __pa2.clone();
                     HtU2S = __pa3.clone();
                     expListList = __pa4.clone();
-                    let (__pa5, (__pa6, __pa7, __pa8), __pa9) = insertUnitInEquation(exp2.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), ut.clone(), inargs.clone())?;
+                    let (__pa5, (__pa6, __pa7, __pa8), __pa9) = insertUnitInEquation(exp2.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), ut.clone(), inargs.clone());
                     ut2 = __pa5.clone();
                     HtCr2U = __pa6.clone();
                     HtS2U = __pa7.clone();
                     HtU2S = __pa8.clone();
                     expListList2 = __pa9.clone();
-                    let (true, __pa10, __pa11) = (UnitTypesEqual(ut.clone(), ut2.clone(), HtCr2U.clone())?) else { bail!("pattern mismatch") };
+                    let (true, __pa10, __pa11) = (UnitTypesEqual(ut.clone(), ut2.clone(), HtCr2U.clone())) else { bail!("pattern mismatch") };
                     ut = __pa10.clone();
                     HtCr2U = __pa11.clone();
                     expListList = List::append_reverse(expListList.clone(), expListList2.clone());
@@ -632,19 +632,19 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     let mut HtCr2U = (*HtCr2U).clone();
                     let mut HtS2U = (*HtS2U).clone();
                     let mut HtU2S = (*HtU2S).clone();
-                    let (__pa0, (__pa1, __pa2, __pa3), __pa4) = insertUnitInEquation(exp2.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), inUt.clone(), inargs.clone())?;
+                    let (__pa0, (__pa1, __pa2, __pa3), __pa4) = insertUnitInEquation(exp2.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), inUt.clone(), inargs.clone());
                     ut2 = __pa0.clone();
                     HtCr2U = __pa1.clone();
                     HtS2U = __pa2.clone();
                     HtU2S = __pa3.clone();
                     expListList = __pa4.clone();
-                    let (__pa5, (__pa6, __pa7, __pa8), __pa9) = insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), ut2.clone(), inargs.clone())?;
+                    let (__pa5, (__pa6, __pa7, __pa8), __pa9) = insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), ut2.clone(), inargs.clone());
                     ut = __pa5.clone();
                     HtCr2U = __pa6.clone();
                     HtS2U = __pa7.clone();
                     HtU2S = __pa8.clone();
                     expListList2 = __pa9.clone();
-                    let (true, __pa10, __pa11) = (UnitTypesEqual(ut.clone(), ut2.clone(), HtCr2U.clone())?) else { bail!("pattern mismatch") };
+                    let (true, __pa10, __pa11) = (UnitTypesEqual(ut.clone(), ut2.clone(), HtCr2U.clone())) else { bail!("pattern mismatch") };
                     ut = __pa10.clone();
                     HtCr2U = __pa11.clone();
                     expListList = List::append_reverse(expListList.clone(), expListList2.clone());
@@ -663,7 +663,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     let mut HtCr2U = (*HtCr2U).clone();
                     let mut HtS2U = (*HtS2U).clone();
                     let mut HtU2S = (*HtU2S).clone();
-                    let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), inUt.clone(), inargs.clone())?) {
+                    let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), inUt.clone(), inargs.clone())) {
                         (__pa0 @ Unit::Unit::UNIT { .. }, (__pa1, __pa2, __pa3), __pa4) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -672,13 +672,13 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     HtS2U = __pa2.clone();
                     HtU2S = __pa3.clone();
                     expListList = __pa4.clone();
-                    let (__pa5, (__pa6, __pa7, __pa8), __pa9) = insertUnitInEquation(exp2.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), ut.clone(), inargs.clone())?;
+                    let (__pa5, (__pa6, __pa7, __pa8), __pa9) = insertUnitInEquation(exp2.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), ut.clone(), inargs.clone());
                     ut2 = __pa5.clone();
                     HtCr2U = __pa6.clone();
                     HtS2U = __pa7.clone();
                     HtU2S = __pa8.clone();
                     expListList2 = __pa9.clone();
-                    let (false, _, _) = (UnitTypesEqual(ut.clone(), ut2.clone(), HtCr2U.clone())?) else { bail!("pattern mismatch") };
+                    let (false, _, _) = (UnitTypesEqual(ut.clone(), ut2.clone(), HtCr2U.clone())) else { bail!("pattern mismatch") };
                     expListList = List::append_reverse(expListList.clone(), expListList2.clone());
                     expListList = metamodelica::cons(list![(exp1.clone(), ut.clone()), (exp2.clone(), ut2.clone())], expListList.clone());
                     Ok((Unit::Unit::MASTER { varList: metamodelica::nil() }, (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), expListList.clone()))
@@ -696,19 +696,19 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     let mut HtCr2U = (*HtCr2U).clone();
                     let mut HtS2U = (*HtS2U).clone();
                     let mut HtU2S = (*HtU2S).clone();
-                    let (__pa0, (__pa1, __pa2, __pa3), __pa4) = insertUnitInEquation(exp2.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), inUt.clone(), inargs.clone())?;
+                    let (__pa0, (__pa1, __pa2, __pa3), __pa4) = insertUnitInEquation(exp2.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), inUt.clone(), inargs.clone());
                     ut2 = __pa0.clone();
                     HtCr2U = __pa1.clone();
                     HtS2U = __pa2.clone();
                     HtU2S = __pa3.clone();
                     expListList = __pa4.clone();
-                    let (__pa5, (__pa6, __pa7, __pa8), __pa9) = insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), ut2.clone(), inargs.clone())?;
+                    let (__pa5, (__pa6, __pa7, __pa8), __pa9) = insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), ut2.clone(), inargs.clone());
                     ut = __pa5.clone();
                     HtCr2U = __pa6.clone();
                     HtS2U = __pa7.clone();
                     HtU2S = __pa8.clone();
                     expListList2 = __pa9.clone();
-                    let (false, _, _) = (UnitTypesEqual(ut.clone(), ut2.clone(), HtCr2U.clone())?) else { bail!("pattern mismatch") };
+                    let (false, _, _) = (UnitTypesEqual(ut.clone(), ut2.clone(), HtCr2U.clone())) else { bail!("pattern mismatch") };
                     expListList = List::append_reverse(expListList.clone(), expListList2.clone());
                     expListList = metamodelica::cons(list![(exp1.clone(), ut.clone()), (exp2.clone(), ut2.clone())], expListList.clone());
                     Ok((Unit::Unit::MASTER { varList: metamodelica::nil() }, (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), expListList.clone()))
@@ -726,7 +726,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     let mut HtCr2U = (*HtCr2U).clone();
                     let mut HtS2U = (*HtS2U).clone();
                     let mut HtU2S = (*HtU2S).clone();
-                    let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), inUt.clone(), inargs.clone())?) {
+                    let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), inUt.clone(), inargs.clone())) {
                         (__pa0 @ Unit::Unit::UNIT { .. }, (__pa1, __pa2, __pa3), __pa4) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -735,13 +735,13 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     HtS2U = __pa2.clone();
                     HtU2S = __pa3.clone();
                     expListList = __pa4.clone();
-                    let (__pa5, (__pa6, __pa7, __pa8), __pa9) = insertUnitInEquation(exp2.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), ut.clone(), inargs.clone())?;
+                    let (__pa5, (__pa6, __pa7, __pa8), __pa9) = insertUnitInEquation(exp2.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), ut.clone(), inargs.clone());
                     ut2 = __pa5.clone();
                     HtCr2U = __pa6.clone();
                     HtS2U = __pa7.clone();
                     HtU2S = __pa8.clone();
                     expListList2 = __pa9.clone();
-                    let (true, __pa10, __pa11) = (UnitTypesEqual(ut.clone(), ut2.clone(), HtCr2U.clone())?) else { bail!("pattern mismatch") };
+                    let (true, __pa10, __pa11) = (UnitTypesEqual(ut.clone(), ut2.clone(), HtCr2U.clone())) else { bail!("pattern mismatch") };
                     ut = __pa10.clone();
                     HtCr2U = __pa11.clone();
                     expListList = List::append_reverse(expListList.clone(), expListList2.clone());
@@ -760,19 +760,19 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     let mut HtCr2U = (*HtCr2U).clone();
                     let mut HtS2U = (*HtS2U).clone();
                     let mut HtU2S = (*HtU2S).clone();
-                    let (__pa0, (__pa1, __pa2, __pa3), __pa4) = insertUnitInEquation(exp2.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), inUt.clone(), inargs.clone())?;
+                    let (__pa0, (__pa1, __pa2, __pa3), __pa4) = insertUnitInEquation(exp2.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), inUt.clone(), inargs.clone());
                     ut2 = __pa0.clone();
                     HtCr2U = __pa1.clone();
                     HtS2U = __pa2.clone();
                     HtU2S = __pa3.clone();
                     expListList = __pa4.clone();
-                    let (__pa5, (__pa6, __pa7, __pa8), __pa9) = insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), ut2.clone(), inargs.clone())?;
+                    let (__pa5, (__pa6, __pa7, __pa8), __pa9) = insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), ut2.clone(), inargs.clone());
                     ut = __pa5.clone();
                     HtCr2U = __pa6.clone();
                     HtS2U = __pa7.clone();
                     HtU2S = __pa8.clone();
                     expListList2 = __pa9.clone();
-                    let (true, __pa10, __pa11) = (UnitTypesEqual(ut.clone(), ut2.clone(), HtCr2U.clone())?) else { bail!("pattern mismatch") };
+                    let (true, __pa10, __pa11) = (UnitTypesEqual(ut.clone(), ut2.clone(), HtCr2U.clone())) else { bail!("pattern mismatch") };
                     ut = __pa10.clone();
                     HtCr2U = __pa11.clone();
                     expListList = List::append_reverse(expListList.clone(), expListList2.clone());
@@ -791,7 +791,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     let mut HtCr2U = (*HtCr2U).clone();
                     let mut HtS2U = (*HtS2U).clone();
                     let mut HtU2S = (*HtU2S).clone();
-                    let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), inUt.clone(), inargs.clone())?) {
+                    let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), inUt.clone(), inargs.clone())) {
                         (__pa0 @ Unit::Unit::UNIT { .. }, (__pa1, __pa2, __pa3), __pa4) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -800,13 +800,13 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     HtS2U = __pa2.clone();
                     HtU2S = __pa3.clone();
                     expListList = __pa4.clone();
-                    let (__pa5, (__pa6, __pa7, __pa8), __pa9) = insertUnitInEquation(exp2.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), ut.clone(), inargs.clone())?;
+                    let (__pa5, (__pa6, __pa7, __pa8), __pa9) = insertUnitInEquation(exp2.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), ut.clone(), inargs.clone());
                     ut2 = __pa5.clone();
                     HtCr2U = __pa6.clone();
                     HtS2U = __pa7.clone();
                     HtU2S = __pa8.clone();
                     expListList2 = __pa9.clone();
-                    let (false, _, _) = (UnitTypesEqual(ut.clone(), ut2.clone(), HtCr2U.clone())?) else { bail!("pattern mismatch") };
+                    let (false, _, _) = (UnitTypesEqual(ut.clone(), ut2.clone(), HtCr2U.clone())) else { bail!("pattern mismatch") };
                     expListList = List::append_reverse(expListList.clone(), expListList2.clone());
                     expListList = metamodelica::cons(list![(exp1.clone(), ut.clone()), (exp2.clone(), ut2.clone())], expListList.clone());
                     Ok((Unit::Unit::MASTER { varList: metamodelica::nil() }, (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), expListList.clone()))
@@ -824,19 +824,19 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     let mut HtCr2U = (*HtCr2U).clone();
                     let mut HtS2U = (*HtS2U).clone();
                     let mut HtU2S = (*HtU2S).clone();
-                    let (__pa0, (__pa1, __pa2, __pa3), __pa4) = insertUnitInEquation(exp2.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), inUt.clone(), inargs.clone())?;
+                    let (__pa0, (__pa1, __pa2, __pa3), __pa4) = insertUnitInEquation(exp2.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), inUt.clone(), inargs.clone());
                     ut2 = __pa0.clone();
                     HtCr2U = __pa1.clone();
                     HtS2U = __pa2.clone();
                     HtU2S = __pa3.clone();
                     expListList = __pa4.clone();
-                    let (__pa5, (__pa6, __pa7, __pa8), __pa9) = insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), ut2.clone(), inargs.clone())?;
+                    let (__pa5, (__pa6, __pa7, __pa8), __pa9) = insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), ut2.clone(), inargs.clone());
                     ut = __pa5.clone();
                     HtCr2U = __pa6.clone();
                     HtS2U = __pa7.clone();
                     HtU2S = __pa8.clone();
                     expListList2 = __pa9.clone();
-                    let (false, _, _) = (UnitTypesEqual(ut.clone(), ut2.clone(), HtCr2U.clone())?) else { bail!("pattern mismatch") };
+                    let (false, _, _) = (UnitTypesEqual(ut.clone(), ut2.clone(), HtCr2U.clone())) else { bail!("pattern mismatch") };
                     expListList = List::append_reverse(expListList.clone(), expListList2.clone());
                     expListList = metamodelica::cons(list![(exp1.clone(), ut.clone()), (exp2.clone(), ut2.clone())], expListList.clone());
                     Ok((Unit::Unit::MASTER { varList: metamodelica::nil() }, (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), expListList.clone()))
@@ -855,7 +855,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     let mut HtCr2U = (*HtCr2U).clone();
                     let mut HtS2U = (*HtS2U).clone();
                     let mut HtU2S = (*HtU2S).clone();
-                    let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())?) {
+                    let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())) {
                         (__pa0 @ Unit::Unit::UNIT { .. }, (__pa1, __pa2, __pa3), __pa4) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -864,7 +864,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     HtS2U = __pa2.clone();
                     HtU2S = __pa3.clone();
                     expListList = __pa4.clone();
-                    let (__pa5, __pa6, __pa7, __pa8, __pa9) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp2.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())?) {
+                    let (__pa5, __pa6, __pa7, __pa8, __pa9) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp2.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())) {
                         (__pa5 @ Unit::Unit::UNIT { .. }, (__pa6, __pa7, __pa8), __pa9) => (__pa5.clone(), __pa6.clone(), __pa7.clone(), __pa8.clone(), __pa9.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -877,7 +877,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     s1 = (Unit::unitString(ut.clone(), HtU2S.clone())?).clone();
                     expListList = List::append_reverse(expListList.clone(), expListList2.clone());
                     HtS2U = addUnit2HtS2U((s1.clone(), ut.clone()), HtS2U.clone())?;
-                    HtU2S = addUnit2HtU2S((s1.clone(), ut.clone()), HtU2S.clone())?;
+                    HtU2S = addUnit2HtU2S((s1.clone(), ut.clone()), HtU2S.clone());
                     Ok((ut.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), expListList.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -891,7 +891,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     let mut HtCr2U = (*HtCr2U).clone();
                     let mut HtS2U = (*HtS2U).clone();
                     let mut HtU2S = (*HtU2S).clone();
-                    let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())?) {
+                    let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())) {
                         (Unit::Unit::MASTER { .. }, (__pa0, __pa1, __pa2), __pa3) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -899,7 +899,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     HtS2U = __pa1.clone();
                     HtU2S = __pa2.clone();
                     expListList = __pa3.clone();
-                    let (__pa4, __pa5, __pa6, __pa7) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp2.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())?) {
+                    let (__pa4, __pa5, __pa6, __pa7) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp2.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())) {
                         (Unit::Unit::UNIT { .. }, (__pa4, __pa5, __pa6), __pa7) => (__pa4.clone(), __pa5.clone(), __pa6.clone(), __pa7.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -925,7 +925,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     let mut HtCr2U = (*HtCr2U).clone();
                     let mut HtS2U = (*HtS2U).clone();
                     let mut HtU2S = (*HtU2S).clone();
-                    let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())?) {
+                    let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())) {
                         (Unit::Unit::MASTER { varList: __pa0 }, (__pa1, __pa2, __pa3), __pa4) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -934,7 +934,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     HtS2U = __pa2.clone();
                     HtU2S = __pa3.clone();
                     expListList = __pa4.clone();
-                    let (__pa5, __pa6, __pa7, __pa8, __pa9) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp2.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())?) {
+                    let (__pa5, __pa6, __pa7, __pa8, __pa9) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp2.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())) {
                         (__pa5 @ Unit::Unit::UNIT { .. }, (__pa6, __pa7, __pa8), __pa9) => (__pa5.clone(), __pa6.clone(), __pa7.clone(), __pa8.clone(), __pa9.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -948,7 +948,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     HtCr2U = List::fold1(lcr.clone(), (std::sync::Arc::new(updateHtCr2U) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Unit::Unit, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>))) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>))> + 'static>), ut.clone(), HtCr2U.clone())?;
                     expListList = List::append_reverse(expListList.clone(), expListList2.clone());
                     HtS2U = addUnit2HtS2U((s1.clone(), ut.clone()), HtS2U.clone())?;
-                    HtU2S = addUnit2HtU2S((s1.clone(), ut.clone()), HtU2S.clone())?;
+                    HtU2S = addUnit2HtU2S((s1.clone(), ut.clone()), HtU2S.clone());
                     Ok((inUt.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), expListList.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -962,7 +962,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     let mut HtCr2U = (*HtCr2U).clone();
                     let mut HtS2U = (*HtS2U).clone();
                     let mut HtU2S = (*HtU2S).clone();
-                    let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())?) {
+                    let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())) {
                         (Unit::Unit::UNIT { .. }, (__pa0, __pa1, __pa2), __pa3) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -970,7 +970,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     HtS2U = __pa1.clone();
                     HtU2S = __pa2.clone();
                     expListList = __pa3.clone();
-                    let (__pa4, __pa5, __pa6, __pa7) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp2.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())?) {
+                    let (__pa4, __pa5, __pa6, __pa7) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp2.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())) {
                         (Unit::Unit::MASTER { .. }, (__pa4, __pa5, __pa6), __pa7) => (__pa4.clone(), __pa5.clone(), __pa6.clone(), __pa7.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -996,7 +996,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     let mut HtCr2U = (*HtCr2U).clone();
                     let mut HtS2U = (*HtS2U).clone();
                     let mut HtU2S = (*HtU2S).clone();
-                    let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())?) {
+                    let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())) {
                         (__pa0 @ Unit::Unit::UNIT { .. }, (__pa1, __pa2, __pa3), __pa4) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -1005,7 +1005,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     HtS2U = __pa2.clone();
                     HtU2S = __pa3.clone();
                     expListList = __pa4.clone();
-                    let (__pa5, __pa6, __pa7, __pa8, __pa9) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp2.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())?) {
+                    let (__pa5, __pa6, __pa7, __pa8, __pa9) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp2.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())) {
                         (Unit::Unit::MASTER { varList: __pa5 }, (__pa6, __pa7, __pa8), __pa9) => (__pa5.clone(), __pa6.clone(), __pa7.clone(), __pa8.clone(), __pa9.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -1019,7 +1019,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     HtCr2U = List::fold1(lcr.clone(), (std::sync::Arc::new(updateHtCr2U) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Unit::Unit, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>))) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>))> + 'static>), ut.clone(), HtCr2U.clone())?;
                     expListList = List::append_reverse(expListList.clone(), expListList2.clone());
                     HtS2U = addUnit2HtS2U((s1.clone(), ut.clone()), HtS2U.clone())?;
-                    HtU2S = addUnit2HtU2S((s1.clone(), ut.clone()), HtU2S.clone())?;
+                    HtU2S = addUnit2HtU2S((s1.clone(), ut.clone()), HtU2S.clone());
                     Ok((inUt.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), expListList.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1033,7 +1033,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     let mut HtCr2U = (*HtCr2U).clone();
                     let mut HtS2U = (*HtS2U).clone();
                     let mut HtU2S = (*HtU2S).clone();
-                    let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())?) {
+                    let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())) {
                         (Unit::Unit::MASTER { .. }, (__pa0, __pa1, __pa2), __pa3) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -1041,7 +1041,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     HtS2U = __pa1.clone();
                     HtU2S = __pa2.clone();
                     expListList = __pa3.clone();
-                    let (__pa4, __pa5, __pa6, __pa7) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp2.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())?) {
+                    let (__pa4, __pa5, __pa6, __pa7) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp2.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())) {
                         (Unit::Unit::MASTER { .. }, (__pa4, __pa5, __pa6), __pa7) => (__pa4.clone(), __pa5.clone(), __pa6.clone(), __pa7.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -1066,7 +1066,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     let mut HtCr2U = (*HtCr2U).clone();
                     let mut HtS2U = (*HtS2U).clone();
                     let mut HtU2S = (*HtU2S).clone();
-                    let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())?) {
+                    let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())) {
                         (__pa0 @ Unit::Unit::UNIT { .. }, (__pa1, __pa2, __pa3), __pa4) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -1075,7 +1075,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     HtS2U = __pa2.clone();
                     HtU2S = __pa3.clone();
                     expListList = __pa4.clone();
-                    let (__pa5, __pa6, __pa7, __pa8, __pa9) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp2.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())?) {
+                    let (__pa5, __pa6, __pa7, __pa8, __pa9) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp2.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())) {
                         (__pa5 @ Unit::Unit::UNIT { .. }, (__pa6, __pa7, __pa8), __pa9) => (__pa5.clone(), __pa6.clone(), __pa7.clone(), __pa8.clone(), __pa9.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -1088,7 +1088,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     s1 = (Unit::unitString(ut.clone(), HtU2S.clone())?).clone();
                     expListList = List::append_reverse(expListList.clone(), expListList2.clone());
                     HtS2U = addUnit2HtS2U((s1.clone(), ut.clone()), HtS2U.clone())?;
-                    HtU2S = addUnit2HtU2S((s1.clone(), ut.clone()), HtU2S.clone())?;
+                    HtU2S = addUnit2HtU2S((s1.clone(), ut.clone()), HtU2S.clone());
                     Ok((ut.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), expListList.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1102,7 +1102,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     let mut HtCr2U = (*HtCr2U).clone();
                     let mut HtS2U = (*HtS2U).clone();
                     let mut HtU2S = (*HtU2S).clone();
-                    let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())?) {
+                    let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())) {
                         (Unit::Unit::MASTER { .. }, (__pa0, __pa1, __pa2), __pa3) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -1110,7 +1110,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     HtS2U = __pa1.clone();
                     HtU2S = __pa2.clone();
                     expListList = __pa3.clone();
-                    let (__pa4, __pa5, __pa6, __pa7) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp2.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())?) {
+                    let (__pa4, __pa5, __pa6, __pa7) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp2.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())) {
                         (Unit::Unit::UNIT { .. }, (__pa4, __pa5, __pa6), __pa7) => (__pa4.clone(), __pa5.clone(), __pa6.clone(), __pa7.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -1136,7 +1136,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     let mut HtCr2U = (*HtCr2U).clone();
                     let mut HtS2U = (*HtS2U).clone();
                     let mut HtU2S = (*HtU2S).clone();
-                    let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())?) {
+                    let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())) {
                         (Unit::Unit::MASTER { varList: __pa0 }, (__pa1, __pa2, __pa3), __pa4) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -1145,7 +1145,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     HtS2U = __pa2.clone();
                     HtU2S = __pa3.clone();
                     expListList = __pa4.clone();
-                    let (__pa5, __pa6, __pa7, __pa8, __pa9) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp2.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())?) {
+                    let (__pa5, __pa6, __pa7, __pa8, __pa9) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp2.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())) {
                         (__pa5 @ Unit::Unit::UNIT { .. }, (__pa6, __pa7, __pa8), __pa9) => (__pa5.clone(), __pa6.clone(), __pa7.clone(), __pa8.clone(), __pa9.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -1159,7 +1159,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     HtCr2U = List::fold1(lcr.clone(), (std::sync::Arc::new(updateHtCr2U) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Unit::Unit, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>))) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>))> + 'static>), ut.clone(), HtCr2U.clone())?;
                     expListList = List::append_reverse(expListList.clone(), expListList2.clone());
                     HtS2U = addUnit2HtS2U((s1.clone(), ut.clone()), HtS2U.clone())?;
-                    HtU2S = addUnit2HtU2S((s1.clone(), ut.clone()), HtU2S.clone())?;
+                    HtU2S = addUnit2HtU2S((s1.clone(), ut.clone()), HtU2S.clone());
                     Ok((inUt.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), expListList.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1173,7 +1173,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     let mut HtCr2U = (*HtCr2U).clone();
                     let mut HtS2U = (*HtS2U).clone();
                     let mut HtU2S = (*HtU2S).clone();
-                    let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())?) {
+                    let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())) {
                         (Unit::Unit::UNIT { .. }, (__pa0, __pa1, __pa2), __pa3) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -1181,7 +1181,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     HtS2U = __pa1.clone();
                     HtU2S = __pa2.clone();
                     expListList = __pa3.clone();
-                    let (__pa4, __pa5, __pa6, __pa7) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp2.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())?) {
+                    let (__pa4, __pa5, __pa6, __pa7) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp2.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())) {
                         (Unit::Unit::MASTER { .. }, (__pa4, __pa5, __pa6), __pa7) => (__pa4.clone(), __pa5.clone(), __pa6.clone(), __pa7.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -1207,7 +1207,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     let mut HtCr2U = (*HtCr2U).clone();
                     let mut HtS2U = (*HtS2U).clone();
                     let mut HtU2S = (*HtU2S).clone();
-                    let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())?) {
+                    let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())) {
                         (__pa0 @ Unit::Unit::UNIT { .. }, (__pa1, __pa2, __pa3), __pa4) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -1216,7 +1216,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     HtS2U = __pa2.clone();
                     HtU2S = __pa3.clone();
                     expListList = __pa4.clone();
-                    let (__pa5, __pa6, __pa7, __pa8, __pa9) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp2.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())?) {
+                    let (__pa5, __pa6, __pa7, __pa8, __pa9) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp2.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())) {
                         (Unit::Unit::MASTER { varList: __pa5 }, (__pa6, __pa7, __pa8), __pa9) => (__pa5.clone(), __pa6.clone(), __pa7.clone(), __pa8.clone(), __pa9.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -1230,7 +1230,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     HtCr2U = List::fold1(lcr.clone(), (std::sync::Arc::new(updateHtCr2U) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Unit::Unit, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>))) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>))> + 'static>), ut.clone(), HtCr2U.clone())?;
                     expListList = List::append_reverse(expListList.clone(), expListList2.clone());
                     HtS2U = addUnit2HtS2U((s1.clone(), ut.clone()), HtS2U.clone())?;
-                    HtU2S = addUnit2HtU2S((s1.clone(), ut.clone()), HtU2S.clone())?;
+                    HtU2S = addUnit2HtU2S((s1.clone(), ut.clone()), HtU2S.clone());
                     Ok((inUt.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), expListList.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1244,7 +1244,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     let mut HtCr2U = (*HtCr2U).clone();
                     let mut HtS2U = (*HtS2U).clone();
                     let mut HtU2S = (*HtU2S).clone();
-                    let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())?) {
+                    let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())) {
                         (Unit::Unit::MASTER { .. }, (__pa0, __pa1, __pa2), __pa3) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -1252,7 +1252,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     HtS2U = __pa1.clone();
                     HtU2S = __pa2.clone();
                     expListList = __pa3.clone();
-                    let (__pa4, __pa5, __pa6, __pa7) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp2.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())?) {
+                    let (__pa4, __pa5, __pa6, __pa7) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp2.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())) {
                         (Unit::Unit::MASTER { .. }, (__pa4, __pa5, __pa6), __pa7) => (__pa4.clone(), __pa5.clone(), __pa6.clone(), __pa7.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -1276,7 +1276,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     let mut HtCr2U = (*HtCr2U).clone();
                     let mut HtS2U = (*HtS2U).clone();
                     let mut HtU2S = (*HtU2S).clone();
-                    let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())?) {
+                    let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())) {
                         (__pa0 @ Unit::Unit::UNIT { .. }, (__pa1, __pa2, __pa3), __pa4) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -1290,7 +1290,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     ut = Unit::unitPow(ut.clone(), i.clone())?;
                     s1 = (Unit::unitString(ut.clone(), HtU2S.clone())?).clone();
                     HtS2U = addUnit2HtS2U((s1.clone(), ut.clone()), HtS2U.clone())?;
-                    HtU2S = addUnit2HtU2S((s1.clone(), ut.clone()), HtU2S.clone())?;
+                    HtU2S = addUnit2HtU2S((s1.clone(), ut.clone()), HtU2S.clone());
                     Ok((ut.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), expListList.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1313,7 +1313,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     let mut HtCr2U = (*HtCr2U).clone();
                     let mut HtS2U = (*HtS2U).clone();
                     let mut HtU2S = (*HtU2S).clone();
-                    let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())?) {
+                    let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())) {
                         (Unit::Unit::MASTER { varList: __pa0 }, (__pa1, __pa2, __pa3), __pa4) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -1334,7 +1334,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     HtCr2U = List::fold1(lcr.clone(), (std::sync::Arc::new(updateHtCr2U) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Unit::Unit, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>))) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>))> + 'static>), Unit::Unit::UNIT { factor: factor1.clone(), mol: i1.clone(), cd: i2.clone(), m: i3.clone(), s: i4.clone(), A: i5.clone(), K: i6.clone(), g: i7.clone() }, HtCr2U.clone())?;
                     s1 = (Unit::unitString(Unit::Unit::UNIT { factor: factor1.clone(), mol: i1.clone(), cd: i2.clone(), m: i3.clone(), s: i4.clone(), A: i5.clone(), K: i6.clone(), g: i7.clone() }, HtU2S.clone())?).clone();
                     HtS2U = addUnit2HtS2U((s1.clone(), Unit::Unit::UNIT { factor: factor1.clone(), mol: i1.clone(), cd: i2.clone(), m: i3.clone(), s: i4.clone(), A: i5.clone(), K: i6.clone(), g: i7.clone() }), HtS2U.clone())?;
-                    HtU2S = addUnit2HtU2S((s1.clone(), Unit::Unit::UNIT { factor: factor1.clone(), mol: i1.clone(), cd: i2.clone(), m: i3.clone(), s: i4.clone(), A: i5.clone(), K: i6.clone(), g: i7.clone() }), HtU2S.clone())?;
+                    HtU2S = addUnit2HtU2S((s1.clone(), Unit::Unit::UNIT { factor: factor1.clone(), mol: i1.clone(), cd: i2.clone(), m: i3.clone(), s: i4.clone(), A: i5.clone(), K: i6.clone(), g: i7.clone() }), HtU2S.clone());
                     Ok((inUt.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), expListList.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1347,7 +1347,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     let mut HtCr2U = (*HtCr2U).clone();
                     let mut HtS2U = (*HtS2U).clone();
                     let mut HtU2S = (*HtU2S).clone();
-                    let (_, (__pa0, __pa1, __pa2), __pa3) = insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())?;
+                    let (_, (__pa0, __pa1, __pa2), __pa3) = insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone());
                     HtCr2U = __pa0.clone();
                     HtS2U = __pa1.clone();
                     HtU2S = __pa2.clone();
@@ -1365,7 +1365,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     let mut HtCr2U = (*HtCr2U).clone();
                     let mut HtS2U = (*HtS2U).clone();
                     let mut HtU2S = (*HtU2S).clone();
-                    let (__pa0, (__pa1, __pa2, __pa3), __pa4) = insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), inUt.clone(), inargs.clone())?;
+                    let (__pa0, (__pa1, __pa2, __pa3), __pa4) = insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), inUt.clone(), inargs.clone());
                     ut = __pa0.clone();
                     HtCr2U = __pa1.clone();
                     HtS2U = __pa2.clone();
@@ -1386,7 +1386,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     let mut HtCr2U = (*HtCr2U).clone();
                     let mut HtS2U = (*HtS2U).clone();
                     let mut HtU2S = (*HtU2S).clone();
-                    let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())?) {
+                    let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())) {
                         (Unit::Unit::MASTER { varList: __pa0 }, (__pa1, __pa2, __pa3), __pa4) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -1399,7 +1399,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     HtCr2U = List::fold1(lcr.clone(), (std::sync::Arc::new(updateHtCr2U) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Unit::Unit, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>))) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>))> + 'static>), ut.clone(), HtCr2U.clone())?;
                     s1 = (Unit::unitString(ut.clone(), HtU2S.clone())?).clone();
                     HtS2U = addUnit2HtS2U((s1.clone(), ut.clone()), HtS2U.clone())?;
-                    HtU2S = addUnit2HtU2S((s1.clone(), ut.clone()), HtU2S.clone())?;
+                    HtU2S = addUnit2HtU2S((s1.clone(), ut.clone()), HtU2S.clone());
                     Ok((inUt.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), expListList.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1414,7 +1414,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     let mut HtCr2U = (*HtCr2U).clone();
                     let mut HtS2U = (*HtS2U).clone();
                     let mut HtU2S = (*HtU2S).clone();
-                    let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())?) {
+                    let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())) {
                         (__pa0 @ Unit::Unit::UNIT { .. }, (__pa1, __pa2, __pa3), __pa4) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -1426,7 +1426,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     ut = Unit::unitDiv(ut.clone(), Unit::Unit::UNIT { factor: metamodelica::OrderedFloat(1e0_f64), mol: 0, cd: 0, m: 0, s: 1, A: 0, K: 0, g: 0 })?;
                     s1 = (Unit::unitString(ut.clone(), HtU2S.clone())?).clone();
                     HtS2U = addUnit2HtS2U((s1.clone(), ut.clone()), HtS2U.clone())?;
-                    HtU2S = addUnit2HtU2S((s1.clone(), ut.clone()), HtU2S.clone())?;
+                    HtU2S = addUnit2HtU2S((s1.clone(), ut.clone()), HtU2S.clone());
                     Ok((ut.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), expListList.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1439,7 +1439,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     let mut HtCr2U = (*HtCr2U).clone();
                     let mut HtS2U = (*HtS2U).clone();
                     let mut HtU2S = (*HtU2S).clone();
-                    let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())?) {
+                    let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())) {
                         (Unit::Unit::MASTER { .. }, (__pa0, __pa1, __pa2), __pa3) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -1469,7 +1469,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     let mut HtCr2U = (*HtCr2U).clone();
                     let mut HtS2U = (*HtS2U).clone();
                     let mut HtU2S = (*HtU2S).clone();
-                    let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())?) {
+                    let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())) {
                         (__pa0 @ Unit::Unit::UNIT { .. }, (__pa1, __pa2, __pa3), __pa4) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -1489,7 +1489,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     i7 = __pa12.clone();
                     s1 = (Unit::unitString(Unit::Unit::UNIT { factor: factor1.clone(), mol: i1.clone(), cd: i2.clone(), m: i3.clone(), s: i4.clone(), A: i5.clone(), K: i6.clone(), g: i7.clone() }, HtU2S.clone())?).clone();
                     HtS2U = addUnit2HtS2U((s1.clone(), Unit::Unit::UNIT { factor: factor1.clone(), mol: i1.clone(), cd: i2.clone(), m: i3.clone(), s: i4.clone(), A: i5.clone(), K: i6.clone(), g: i7.clone() }), HtS2U.clone())?;
-                    HtU2S = addUnit2HtU2S((s1.clone(), Unit::Unit::UNIT { factor: factor1.clone(), mol: i1.clone(), cd: i2.clone(), m: i3.clone(), s: i4.clone(), A: i5.clone(), K: i6.clone(), g: i7.clone() }), HtU2S.clone())?;
+                    HtU2S = addUnit2HtU2S((s1.clone(), Unit::Unit::UNIT { factor: factor1.clone(), mol: i1.clone(), cd: i2.clone(), m: i3.clone(), s: i4.clone(), A: i5.clone(), K: i6.clone(), g: i7.clone() }), HtU2S.clone());
                     Ok((Unit::Unit::UNIT { factor: factor1.clone(), mol: i1.clone(), cd: i2.clone(), m: i3.clone(), s: i4.clone(), A: i5.clone(), K: i6.clone(), g: i7.clone() }, (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), expListList.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1505,7 +1505,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     let mut HtCr2U = (*HtCr2U).clone();
                     let mut HtS2U = (*HtS2U).clone();
                     let mut HtU2S = (*HtU2S).clone();
-                    let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())?) {
+                    let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())) {
                         (Unit::Unit::MASTER { varList: __pa0 }, (__pa1, __pa2, __pa3), __pa4) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -1518,7 +1518,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     s1 = (Unit::unitString(ut.clone(), HtU2S.clone())?).clone();
                     HtCr2U = List::fold1(lcr.clone(), (std::sync::Arc::new(updateHtCr2U) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Unit::Unit, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>))) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>))> + 'static>), ut.clone(), HtCr2U.clone())?;
                     HtS2U = addUnit2HtS2U((s1.clone(), ut.clone()), HtS2U.clone())?;
-                    HtU2S = addUnit2HtU2S((s1.clone(), ut.clone()), HtU2S.clone())?;
+                    HtU2S = addUnit2HtU2S((s1.clone(), ut.clone()), HtU2S.clone());
                     Ok((inUt.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), expListList.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1531,7 +1531,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     let mut HtCr2U = (*HtCr2U).clone();
                     let mut HtS2U = (*HtS2U).clone();
                     let mut HtU2S = (*HtU2S).clone();
-                    let (_, (__pa0, __pa1, __pa2), __pa3) = insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone())?;
+                    let (_, (__pa0, __pa1, __pa2), __pa3) = insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, inargs.clone());
                     HtCr2U = __pa0.clone();
                     HtS2U = __pa1.clone();
                     HtU2S = __pa2.clone();
@@ -1552,19 +1552,19 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     let mut HtCr2U = (*HtCr2U).clone();
                     let mut HtS2U = (*HtS2U).clone();
                     let mut HtU2S = (*HtU2S).clone();
-                    let (__pa0, (__pa1, __pa2, __pa3), __pa4) = insertUnitInEquation(exp2.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), inUt.clone(), inargs.clone())?;
+                    let (__pa0, (__pa1, __pa2, __pa3), __pa4) = insertUnitInEquation(exp2.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), inUt.clone(), inargs.clone());
                     ut = __pa0.clone();
                     HtCr2U = __pa1.clone();
                     HtS2U = __pa2.clone();
                     HtU2S = __pa3.clone();
                     expListList2 = __pa4.clone();
-                    let (__pa5, (__pa6, __pa7, __pa8), __pa9) = insertUnitInEquation(exp3.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), ut.clone(), inargs.clone())?;
+                    let (__pa5, (__pa6, __pa7, __pa8), __pa9) = insertUnitInEquation(exp3.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), ut.clone(), inargs.clone());
                     ut2 = __pa5.clone();
                     HtCr2U = __pa6.clone();
                     HtS2U = __pa7.clone();
                     HtU2S = __pa8.clone();
                     expListList3 = __pa9.clone();
-                    let (true, __pa10, __pa11) = (UnitTypesEqual(ut.clone(), ut2.clone(), HtCr2U.clone())?) else { bail!("pattern mismatch") };
+                    let (true, __pa10, __pa11) = (UnitTypesEqual(ut.clone(), ut2.clone(), HtCr2U.clone())) else { bail!("pattern mismatch") };
                     ut = __pa10.clone();
                     HtCr2U = __pa11.clone();
                     expListList = List::append_reverse(expListList2.clone(), expListList3.clone());
@@ -1584,19 +1584,19 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     let mut HtCr2U = (*HtCr2U).clone();
                     let mut HtS2U = (*HtS2U).clone();
                     let mut HtU2S = (*HtU2S).clone();
-                    let (__pa0, (__pa1, __pa2, __pa3), __pa4) = insertUnitInEquation(exp2.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), inUt.clone(), inargs.clone())?;
+                    let (__pa0, (__pa1, __pa2, __pa3), __pa4) = insertUnitInEquation(exp2.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), inUt.clone(), inargs.clone());
                     ut = __pa0.clone();
                     HtCr2U = __pa1.clone();
                     HtS2U = __pa2.clone();
                     HtU2S = __pa3.clone();
                     expListList2 = __pa4.clone();
-                    let (__pa5, (__pa6, __pa7, __pa8), __pa9) = insertUnitInEquation(exp3.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), ut.clone(), inargs.clone())?;
+                    let (__pa5, (__pa6, __pa7, __pa8), __pa9) = insertUnitInEquation(exp3.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), ut.clone(), inargs.clone());
                     ut2 = __pa5.clone();
                     HtCr2U = __pa6.clone();
                     HtS2U = __pa7.clone();
                     HtU2S = __pa8.clone();
                     expListList3 = __pa9.clone();
-                    let (false, _, _) = (UnitTypesEqual(ut.clone(), ut2.clone(), HtCr2U.clone())?) else { bail!("pattern mismatch") };
+                    let (false, _, _) = (UnitTypesEqual(ut.clone(), ut2.clone(), HtCr2U.clone())) else { bail!("pattern mismatch") };
                     expListList = List::append_reverse(expListList2.clone(), expListList3.clone());
                     expListList = metamodelica::cons(list![(exp2.clone(), ut.clone()), (exp3.clone(), ut2.clone())], expListList.clone());
                     Ok((Unit::Unit::MASTER { varList: metamodelica::nil() }, (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), expListList.clone()))
@@ -1614,19 +1614,19 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     let mut HtCr2U = (*HtCr2U).clone();
                     let mut HtS2U = (*HtS2U).clone();
                     let mut HtU2S = (*HtU2S).clone();
-                    let (__pa0, (__pa1, __pa2, __pa3), __pa4) = insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), inUt.clone(), inargs.clone())?;
+                    let (__pa0, (__pa1, __pa2, __pa3), __pa4) = insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), inUt.clone(), inargs.clone());
                     ut = __pa0.clone();
                     HtCr2U = __pa1.clone();
                     HtS2U = __pa2.clone();
                     HtU2S = __pa3.clone();
                     expListList = __pa4.clone();
-                    let (__pa5, (__pa6, __pa7, __pa8), __pa9) = insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), inUt.clone(), inargs.clone())?;
+                    let (__pa5, (__pa6, __pa7, __pa8), __pa9) = insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), inUt.clone(), inargs.clone());
                     ut2 = __pa5.clone();
                     HtCr2U = __pa6.clone();
                     HtS2U = __pa7.clone();
                     HtU2S = __pa8.clone();
                     expListList2 = __pa9.clone();
-                    let (true, __pa10, __pa11) = (UnitTypesEqual(ut.clone(), ut2.clone(), HtCr2U.clone())?) else { bail!("pattern mismatch") };
+                    let (true, __pa10, __pa11) = (UnitTypesEqual(ut.clone(), ut2.clone(), HtCr2U.clone())) else { bail!("pattern mismatch") };
                     ut = __pa10.clone();
                     HtCr2U = __pa11.clone();
                     expListList = List::append_reverse(expListList.clone(), expListList2.clone());
@@ -1645,19 +1645,19 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     let mut HtCr2U = (*HtCr2U).clone();
                     let mut HtS2U = (*HtS2U).clone();
                     let mut HtU2S = (*HtU2S).clone();
-                    let (__pa0, (__pa1, __pa2, __pa3), __pa4) = insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), inUt.clone(), inargs.clone())?;
+                    let (__pa0, (__pa1, __pa2, __pa3), __pa4) = insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), inUt.clone(), inargs.clone());
                     ut = __pa0.clone();
                     HtCr2U = __pa1.clone();
                     HtS2U = __pa2.clone();
                     HtU2S = __pa3.clone();
                     expListList = __pa4.clone();
-                    let (__pa5, (__pa6, __pa7, __pa8), __pa9) = insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), inUt.clone(), inargs.clone())?;
+                    let (__pa5, (__pa6, __pa7, __pa8), __pa9) = insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), inUt.clone(), inargs.clone());
                     ut2 = __pa5.clone();
                     HtCr2U = __pa6.clone();
                     HtS2U = __pa7.clone();
                     HtU2S = __pa8.clone();
                     expListList2 = __pa9.clone();
-                    let (false, _, _) = (UnitTypesEqual(ut.clone(), ut2.clone(), HtCr2U.clone())?) else { bail!("pattern mismatch") };
+                    let (false, _, _) = (UnitTypesEqual(ut.clone(), ut2.clone(), HtCr2U.clone())) else { bail!("pattern mismatch") };
                     expListList = List::append_reverse(expListList.clone(), expListList2.clone());
                     expListList = metamodelica::cons(list![(exp1.clone(), ut.clone()), (exp2.clone(), ut2.clone())], expListList.clone());
                     Ok((Unit::Unit::MASTER { varList: metamodelica::nil() }, (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), expListList.clone()))
@@ -1672,7 +1672,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     let mut HtCr2U = (*HtCr2U).clone();
                     let mut HtS2U = (*HtS2U).clone();
                     let mut HtU2S = (*HtU2S).clone();
-                    (HtCr2U, HtS2U, HtU2S, expListList) = foldCallArg(ExpList.clone(), HtCr2U.clone(), HtS2U.clone(), HtU2S.clone())?;
+                    (HtCr2U, HtS2U, HtU2S, expListList) = foldCallArg(ExpList.clone(), HtCr2U.clone(), HtS2U.clone(), HtU2S.clone());
                     Ok((Unit::Unit::MASTER { varList: metamodelica::nil() }, (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), expListList.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1705,7 +1705,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     let mut HtCr2U = (*HtCr2U).clone();
                     let mut HtS2U = (*HtS2U).clone();
                     let mut HtU2S = (*HtU2S).clone();
-                    let (__pa0, (__pa1, __pa2, __pa3), __pa4) = insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), inUt.clone(), inargs.clone())?;
+                    let (__pa0, (__pa1, __pa2, __pa3), __pa4) = insertUnitInEquation(exp1.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), inUt.clone(), inargs.clone());
                     ut = __pa0.clone();
                     HtCr2U = __pa1.clone();
                     HtS2U = __pa2.clone();
@@ -1725,7 +1725,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     let true = (ComponentReferenceBasics::crefEqual(cr.clone(), DAE::crefTime().clone())?) else { bail!("pattern mismatch") };
                     ut = Unit::Unit::UNIT { factor: metamodelica::OrderedFloat(1e0_f64), mol: 0, cd: 0, m: 0, s: 1, A: 0, K: 0, g: 0 };
                     HtS2U = addUnit2HtS2U((literal!("time"), ut.clone()), HtS2U.clone())?;
-                    HtU2S = addUnit2HtU2S((literal!("time"), ut.clone()), HtU2S.clone())?;
+                    HtU2S = addUnit2HtU2S((literal!("time"), ut.clone()), HtU2S.clone());
                     Ok((ut.clone(), (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone()), metamodelica::nil()))
                 }
                 _ => bail!("nomatch"),
@@ -1749,9 +1749,9 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outUt, outTpl, outexpList))
+    (outUt, outTpl, outexpList)
 }
 
 fn getNamedUnitlist(mut instring: ArcStr, mut inargs: Arc<metamodelica::List<Functionargs>>) -> (Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>) {
@@ -1779,7 +1779,7 @@ fn getNamedUnitlist(mut instring: ArcStr, mut inargs: Arc<metamodelica::List<Fun
     }
 }
 
-fn UnitTypesEqual(mut inut: Unit::Unit, mut inut2: Unit::Unit, mut inHtCr2U: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>))) -> Result<(bool, Unit::Unit, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>)))> {
+fn UnitTypesEqual(mut inut: Unit::Unit, mut inut2: Unit::Unit, mut inHtCr2U: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>))) -> (bool, Unit::Unit, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>))) {
     let mut b: bool;
     let mut outUt: Unit::Unit;
     let mut outHtCr2U: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (HashTableCrToUnit::FuncHashKey, HashTableCrToUnit::FuncKeyEqual, HashTableCrToUnit::FuncKeyStr, HashTableCrToUnit::FuncValueStr));
@@ -1846,9 +1846,9 @@ fn UnitTypesEqual(mut inut: Unit::Unit, mut inut2: Unit::Unit, mut inHtCr2U: (me
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok((false, inut.clone(), inHtCr2U.clone()))
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((b, outUt, outHtCr2U))
+    (b, outUt, outHtCr2U)
 }
 
 fn updateHtCr2U(mut inCr: Arc<DAE::ComponentRef>, mut inUt: Unit::Unit, mut inHtCr2U: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>))) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>))> {
@@ -1881,7 +1881,7 @@ fn Errorfunction(mut inexpList: Arc<metamodelica::List<(Arc<DAE::Exp>, Unit::Uni
             let mut s2: ArcStr = arcstr::literal!("");
             let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
             info = getSourceInfo(inEq.clone())?;
-            s = (DAEDump::dumpEquationStr(inEq.clone())?).clone();
+            s = (DAEDump::dumpEquationStr(inEq.clone())).clone();
             s1 = (Errorfunction2(expList.clone(), inHtU2S.clone())?).clone();
             s2 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("The following equation is INCONSISTENT due to specified unit information:")); __mm_s.push_str(&*s.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
             Error::addSourceMessage(Error::COMPILER_WARNING.clone(), list![(s2.clone()).clone()], info.clone())?;
@@ -1956,7 +1956,7 @@ pub fn GetElementList(mut eqlist: DAE::DAElist) -> Result<Arc<metamodelica::List
     Ok(outstring)
 }
 
-fn foldCallArg(mut inExpList: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inHtCr2U: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>)), mut inHtS2U: (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>)), mut inHtU2S: (metamodelica::Array<Arc<metamodelica::List<(Unit::Unit, i32)>>>, (i32, i32, metamodelica::Array<Option<(Unit::Unit, ArcStr)>>), i32, (Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit, Unit::Unit) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>))) -> Result<((metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>)), (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>)), (metamodelica::Array<Arc<metamodelica::List<(Unit::Unit, i32)>>>, (i32, i32, metamodelica::Array<Option<(Unit::Unit, ArcStr)>>), i32, (Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit, Unit::Unit) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>)), Arc<metamodelica::List<Arc<metamodelica::List<(Arc<DAE::Exp>, Unit::Unit)>>>>)> {
+fn foldCallArg(mut inExpList: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inHtCr2U: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>)), mut inHtS2U: (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>)), mut inHtU2S: (metamodelica::Array<Arc<metamodelica::List<(Unit::Unit, i32)>>>, (i32, i32, metamodelica::Array<Option<(Unit::Unit, ArcStr)>>), i32, (Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit, Unit::Unit) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>))) -> ((metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>)), (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>)), (metamodelica::Array<Arc<metamodelica::List<(Unit::Unit, i32)>>>, (i32, i32, metamodelica::Array<Option<(Unit::Unit, ArcStr)>>), i32, (Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit, Unit::Unit) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>)), Arc<metamodelica::List<Arc<metamodelica::List<(Arc<DAE::Exp>, Unit::Unit)>>>>) {
     let mut outHtCr2U: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (HashTableCrToUnit::FuncHashKey, HashTableCrToUnit::FuncKeyEqual, HashTableCrToUnit::FuncKeyStr, HashTableCrToUnit::FuncValueStr)) = inHtCr2U.clone();
     let mut outHtS2U: (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Unit::Unit)>>), i32, (HashTableStringToUnit::FuncHashKey, HashTableStringToUnit::FuncKeyEqual, HashTableStringToUnit::FuncKeyStr, HashTableStringToUnit::FuncValueStr)) = inHtS2U.clone();
     let mut outHtU2S: (metamodelica::Array<Arc<metamodelica::List<(Unit::Unit, i32)>>>, (i32, i32, metamodelica::Array<Option<(Unit::Unit, ArcStr)>>), i32, (HashTableUnitToString::FuncHashKey, HashTableUnitToString::FuncKeyEqual, HashTableUnitToString::FuncKeyStr, HashTableUnitToString::FuncValueStr)) = inHtU2S.clone();
@@ -1964,7 +1964,7 @@ fn foldCallArg(mut inExpList: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inHtCr
     let mut expListList: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<DAE::Exp>, Unit::Unit)>>>>;
     for mut exp in &*inExpList.clone() {
         let mut exp = exp.clone();
-        let (_, (__pa0, __pa1, __pa2), __pa3) = insertUnitInEquation(exp.clone(), (outHtCr2U.clone(), outHtS2U.clone(), outHtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, metamodelica::nil())?;
+        let (_, (__pa0, __pa1, __pa2), __pa3) = insertUnitInEquation(exp.clone(), (outHtCr2U.clone(), outHtS2U.clone(), outHtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, metamodelica::nil());
         outHtCr2U = __pa0.clone();
         outHtS2U = __pa1.clone();
         outHtU2S = __pa2.clone();
@@ -1972,7 +1972,7 @@ fn foldCallArg(mut inExpList: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inHtCr
         outExpListList = List::append_reverse(expListList.clone(), outExpListList.clone());
     }
     outExpListList = outExpListList.clone().reverse();
-    Ok((outHtCr2U, outHtS2U, outHtU2S, outExpListList))
+    (outHtCr2U, outHtS2U, outHtU2S, outExpListList)
 }
 
 fn foldCallArg1(mut inExpList: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inHtCr2U: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>)), mut inHtS2U: (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>)), mut inHtU2S: (metamodelica::Array<Arc<metamodelica::List<(Unit::Unit, i32)>>>, (i32, i32, metamodelica::Array<Option<(Unit::Unit, ArcStr)>>), i32, (Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit, Unit::Unit) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>)), mut inunit: Unit::Unit, mut unitlist: Arc<metamodelica::List<ArcStr>>, mut invars: Arc<metamodelica::List<ArcStr>>, mut fname: ArcStr) -> Result<((metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>)), (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>)), (metamodelica::Array<Arc<metamodelica::List<(Unit::Unit, i32)>>>, (i32, i32, metamodelica::Array<Option<(Unit::Unit, ArcStr)>>), i32, (Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit, Unit::Unit) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>)), Arc<metamodelica::List<Arc<metamodelica::List<(Arc<DAE::Exp>, Unit::Unit)>>>>)> {
@@ -1993,7 +1993,7 @@ fn foldCallArg1(mut inExpList: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inHtC
         exp = (inExpList.clone()).get(i.clone())?;
         formalarg = ((unitlist.clone()).get(i.clone())?).clone();
         formalvar = ((invars.clone()).get(i.clone())?).clone();
-        let (__pa0, (__pa1, __pa2, __pa3), __pa4) = insertUnitInEquation(exp.clone(), (outHtCr2U.clone(), outHtS2U.clone(), outHtU2S.clone()), inunit.clone(), metamodelica::nil())?;
+        let (__pa0, (__pa1, __pa2, __pa3), __pa4) = insertUnitInEquation(exp.clone(), (outHtCr2U.clone(), outHtS2U.clone(), outHtU2S.clone()), inunit.clone(), metamodelica::nil());
         ut = __pa0.clone();
         outHtCr2U = __pa1.clone();
         outHtS2U = __pa2.clone();
@@ -2005,7 +2005,7 @@ fn foldCallArg1(mut inExpList: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inHtC
             ut1 = Unit::parseUnitString((formalarg.clone()).clone(), Unit::getKnownUnits()?)?;
         }
         s = (Unit::unitString(ut.clone(), outHtU2S.clone())?).clone();
-        (b, ut, _) = UnitTypesEqual(ut.clone(), ut1.clone(), outHtCr2U.clone())?;
+        (b, ut, _) = UnitTypesEqual(ut.clone(), ut1.clone(), outHtCr2U.clone());
         if b.clone() == true {
             expListList = metamodelica::nil();
         } else {
@@ -2023,7 +2023,7 @@ fn addUnit2HtS2U(mut inTpl: (ArcStr, Unit::Unit), mut inHtS2U: (metamodelica::Ar
     Ok(outHtS2U)
 }
 
-fn addUnit2HtU2S(mut inTpl: (ArcStr, Unit::Unit), mut inHtU2S: (metamodelica::Array<Arc<metamodelica::List<(Unit::Unit, i32)>>>, (i32, i32, metamodelica::Array<Option<(Unit::Unit, ArcStr)>>), i32, (Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit, Unit::Unit) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>))) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Unit::Unit, i32)>>>, (i32, i32, metamodelica::Array<Option<(Unit::Unit, ArcStr)>>), i32, (Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit, Unit::Unit) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>))> {
+fn addUnit2HtU2S(mut inTpl: (ArcStr, Unit::Unit), mut inHtU2S: (metamodelica::Array<Arc<metamodelica::List<(Unit::Unit, i32)>>>, (i32, i32, metamodelica::Array<Option<(Unit::Unit, ArcStr)>>), i32, (Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit, Unit::Unit) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>))) -> (metamodelica::Array<Arc<metamodelica::List<(Unit::Unit, i32)>>>, (i32, i32, metamodelica::Array<Option<(Unit::Unit, ArcStr)>>), i32, (Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit, Unit::Unit) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>)) {
     let mut outHtU2S: (metamodelica::Array<Arc<metamodelica::List<(Unit::Unit, i32)>>>, (i32, i32, metamodelica::Array<Option<(Unit::Unit, ArcStr)>>), i32, (HashTableUnitToString::FuncHashKey, HashTableUnitToString::FuncKeyEqual, HashTableUnitToString::FuncKeyStr, HashTableUnitToString::FuncValueStr));
     outHtU2S = 'mc: {
         let __mc_input = inTpl.clone();
@@ -2038,9 +2038,9 @@ fn addUnit2HtU2S(mut inTpl: (ArcStr, Unit::Unit), mut inHtU2S: (metamodelica::Ar
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(inHtU2S.clone())
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outHtU2S)
+    outHtU2S
 }
 
 // get unit information based on old instantiation
@@ -2062,7 +2062,7 @@ fn convertUnitString2unit_old(mut var: Arc<DAE::Element>, mut inTpl: ((metamodel
             let mut HtU2S = (*HtU2S).clone();
             HtCr2U = BaseHashTable::add((cr.clone(), Unit::Unit::MASTER { varList: list![cr.clone()] }), HtCr2U.clone())?;
             HtS2U = addUnit2HtS2U((literal!("-"), Unit::Unit::MASTER { varList: list![cr.clone()] }), HtS2U.clone())?;
-            HtU2S = addUnit2HtU2S((literal!("-"), Unit::Unit::MASTER { varList: list![cr.clone()] }), HtU2S.clone())?;
+            HtU2S = addUnit2HtU2S((literal!("-"), Unit::Unit::MASTER { varList: list![cr.clone()] }), HtU2S.clone());
             (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone())
         },
         _ => {
@@ -2094,7 +2094,7 @@ fn convertUnitString2unit(mut var: Arc<DAE::Element>, mut inTpl: ((metamodelica:
             let mut HtU2S = (*HtU2S).clone();
             HtCr2U = BaseHashTable::add((cr.clone(), Unit::Unit::MASTER { varList: list![cr.clone()] }), HtCr2U.clone())?;
             HtS2U = addUnit2HtS2U((literal!("-"), Unit::Unit::MASTER { varList: list![cr.clone()] }), HtS2U.clone())?;
-            HtU2S = addUnit2HtU2S((literal!("-"), Unit::Unit::MASTER { varList: list![cr.clone()] }), HtU2S.clone())?;
+            HtU2S = addUnit2HtU2S((literal!("-"), Unit::Unit::MASTER { varList: list![cr.clone()] }), HtU2S.clone());
             (HtCr2U.clone(), HtS2U.clone(), HtU2S.clone())
         },
         _ => bail!("match: no arm matched"),
@@ -2166,7 +2166,7 @@ fn parse(mut inUnitString: ArcStr, mut inCref: Arc<DAE::ComponentRef>, mut inHtS
                 }
             }
             outHtS2U = addUnit2HtS2U((inUnitString.clone(), outUnit.clone()), outHtS2U.clone())?;
-            outHtU2S = addUnit2HtU2S((inUnitString.clone(), outUnit.clone()), outHtU2S.clone())?;
+            outHtU2S = addUnit2HtU2S((inUnitString.clone(), outUnit.clone()), outHtU2S.clone());
         }
     }
     Ok((outUnit, outHtS2U, outHtU2S))

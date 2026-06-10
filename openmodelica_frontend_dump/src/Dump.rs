@@ -539,7 +539,7 @@ pub fn printFunctionArgsStr(mut inFunctionArgs: Arc<Absyn::FunctionArgs>) -> Res
                     let mut estr: ArcStr = arcstr::literal!("");
                     let mut istr: ArcStr = arcstr::literal!("");
                     estr = (printExpStr(exp.clone())?).clone();
-                    istr = (printIteratorsStr(iterators.clone())?).clone();
+                    istr = (printIteratorsStr(iterators.clone())).clone();
                     r#str = stringAppendList(list![(estr.clone()).clone(), (literal!(" for ")).clone(), (istr.clone()).clone()]);
                     Ok(r#str.clone())
                 }
@@ -551,7 +551,7 @@ pub fn printFunctionArgsStr(mut inFunctionArgs: Arc<Absyn::FunctionArgs>) -> Res
     Ok(outString)
 }
 
-pub fn printIteratorsStr(mut iterators: Arc<metamodelica::List<Arc<Absyn::ForIterator>>>) -> Result<ArcStr> {
+pub fn printIteratorsStr(mut iterators: Arc<metamodelica::List<Arc<Absyn::ForIterator>>>) -> ArcStr {
     let mut iteratorsStr: ArcStr;
     iteratorsStr = ('mc: {
         let __mc_input = iterators.clone();
@@ -603,17 +603,17 @@ pub fn printIteratorsStr(mut iterators: Arc<metamodelica::List<Arc<Absyn::ForIte
                     let mut s: ArcStr = arcstr::literal!("");
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut s2: ArcStr = arcstr::literal!("");
-                    s1 = (printIteratorsStr(list![x.clone()])?).clone();
-                    s2 = (printIteratorsStr(rest.clone())?).clone();
+                    s1 = (printIteratorsStr(list![x.clone()])).clone();
+                    s2 = (printIteratorsStr(rest.clone())).clone();
                     s = stringAppendList(list![(s1.clone()).clone(), (literal!(", ")).clone(), (s2.clone()).clone()]);
                     Ok(s.clone())
                 }
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     }).clone();
-    Ok(iteratorsStr)
+    iteratorsStr
 }
 
 pub fn printNamedArgStr(mut inNamedArg: Arc<Absyn::NamedArg>) -> Result<ArcStr> {

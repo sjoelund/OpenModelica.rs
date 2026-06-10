@@ -887,7 +887,7 @@ pub fn addOutPrefixes(mut inStmts: Arc<metamodelica::List<Arc<MMExp>>>, mut inTe
                     let mut rhs = (*rhs).clone();
                     let mut stmts = (*stmts).clone();
                     let mut trIdents = (*trIdents).clone();
-                    rhs = addOutPrefixesRhs(rhs.clone(), trIdents.clone())?;
+                    rhs = addOutPrefixesRhs(rhs.clone(), trIdents.clone());
                     (largs, trIdents) = addOutPrefixesLhs(largs.clone(), txtargs.clone(), trIdents.clone())?;
                     stmts = addOutPrefixes(stmts.clone(), txtargs.clone(), trIdents.clone())?;
                     Ok(metamodelica::cons(Arc::new(MMExp::MM_ASSIGN { lhsArgs: largs.clone(), rhs: rhs.clone() }), stmts.clone()))
@@ -920,7 +920,7 @@ pub fn addOutPrefixes(mut inStmts: Arc<metamodelica::List<Arc<MMExp>>>, mut inTe
     Ok(outStmts)
 }
 
-pub fn addOutPrefixesRhs(mut inStmt: Arc<MMExp>, mut inTranslatedTextArgs: Arc<metamodelica::List<(ArcStr, ArcStr)>>) -> Result<Arc<MMExp>> {
+pub fn addOutPrefixesRhs(mut inStmt: Arc<MMExp>, mut inTranslatedTextArgs: Arc<metamodelica::List<(ArcStr, ArcStr)>>) -> Arc<MMExp> {
     let mut outStmt: Arc<MMExp>;
     outStmt = 'mc: {
         let __mc_input = (inStmt.clone(), inTranslatedTextArgs.clone());
@@ -938,7 +938,7 @@ pub fn addOutPrefixesRhs(mut inStmt: Arc<MMExp>, mut inTranslatedTextArgs: Arc<m
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ MMExp::MM_FN_CALL { fnName: fpath, args: fargs }, trIdents) => {
                     let mut fargs = (*fargs).clone();
-                    fargs = List::map1(fargs.clone(), (std::sync::Arc::new(addOutPrefixesRhs) as std::sync::Arc<dyn ::std::ops::Fn(Arc<MMExp>, Arc<metamodelica::List<(ArcStr, ArcStr)>>) -> Result<Arc<MMExp>> + 'static>), trIdents.clone())?;
+                    fargs = List::map1(fargs.clone(), (std::sync::Arc::new(fnptr!(addOutPrefixesRhs, Arc<MMExp>, Arc<metamodelica::List<(ArcStr, ArcStr)>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<MMExp>, Arc<metamodelica::List<(ArcStr, ArcStr)>>) -> Result<Arc<MMExp>> + 'static>), trIdents.clone())?;
                     Ok(Arc::new(MMExp::MM_FN_CALL { fnName: fpath.clone(), args: fargs.clone() }))
                 }
                 _ => bail!("nomatch"),
@@ -952,9 +952,9 @@ pub fn addOutPrefixesRhs(mut inStmt: Arc<MMExp>, mut inTranslatedTextArgs: Arc<m
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outStmt)
+    outStmt
 }
 
 pub fn addOutPrefixesLhs(mut inLhsArgs: Arc<metamodelica::List<ArcStr>>, mut inTextArgs: TypedIdents, mut inTranslatedTextArgs: Arc<metamodelica::List<(ArcStr, ArcStr)>>) -> Result<(Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<(ArcStr, ArcStr)>>)> {
@@ -978,7 +978,7 @@ pub fn addOutPrefixesLhs(mut inLhsArgs: Arc<metamodelica::List<ArcStr>>, mut inT
                     let mut trIdents = (*trIdents).clone();
                     lookupTupleList(txtargs.clone(), (ident.clone()).clone())?;
                     outident = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*arcstr::literal!(outPrefix)); __mm_s.push_str(&*ident.clone()); ArcStr::from(__mm_s) }).clone();
-                    trIdents = updateTupleList(trIdents.clone(), (ident.clone(), outident.clone()))?;
+                    trIdents = updateTupleList(trIdents.clone(), (ident.clone(), outident.clone()));
                     (largs, trIdents) = addOutPrefixesLhs(largs.clone(), txtargs.clone(), trIdents.clone())?;
                     Ok((metamodelica::cons((outident.clone()).clone(), largs.clone()), trIdents.clone()))
                 }
@@ -1134,8 +1134,8 @@ pub fn statementsFromExp(mut inExp: Expression, mut inMMEscOptions: Arc<metamode
                         Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n BOUND_VALUE resolving boundPath = ")); __mm_s.push_str(&*pathIdentString(path.clone())?); ArcStr::from(__mm_s) }).clone())?;
                     }
                     (mmexp, idtype, scEnv) = resolveBoundPath(path.clone(), scEnv.clone(), tplPackage.clone())?;
-                    checkResolvedType(path.clone(), idtype.clone(), (literal!("bound value")).clone(), sinfo.clone())?;
-                    exptype = deAliasedType(idtype.clone(), astDefs.clone())?;
+                    checkResolvedType(path.clone(), idtype.clone(), (literal!("bound value")).clone(), sinfo.clone());
+                    exptype = deAliasedType(idtype.clone(), astDefs.clone());
                     if Flags::isSet(Flags::FAILTRACE.clone())? {
                         Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n BOUND_VALUE resolved mmexp = ")); __mm_s.push_str(&*mmExpString(mmexp.clone())?); __mm_s.push_str(&*literal!(" : ")); __mm_s.push_str(&*typeSignatureString(idtype.clone())?); __mm_s.push_str(&*literal!(" (dealiased: ")); __mm_s.push_str(&*typeSignatureString(exptype.clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())?;
                     }
@@ -1174,7 +1174,7 @@ pub fn statementsFromExp(mut inExp: Expression, mut inMMEscOptions: Arc<metamode
                     if Flags::isSet(Flags::FAILTRACE.clone())? {
                         Debug::trace(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" FUN_CALL stmt =\n")); __mm_s.push_str(&*stmtsString(list![stmt.clone()])?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone())?;
                     }
-                    rettype = deAliasedType(rettype.clone(), astDefs.clone())?;
+                    rettype = deAliasedType(rettype.clone(), astDefs.clone());
                     (stmts, locals, scEnv, accMMDecls, intxt) = addWriteCallFromMMExp(hasretval.clone(), mmexp.clone(), rettype.clone(), sinfo.clone(), mmopts.clone(), metamodelica::cons(stmt.clone(), stmts.clone()), (intxt.clone()).clone(), (outtxt.clone()).clone(), locals.clone(), scEnv.clone(), tplPackage.clone(), accMMDecls.clone())?;
                     Ok((stmts.clone(), locals.clone(), scEnv.clone(), accMMDecls.clone(), intxt.clone()))
                 }
@@ -1225,7 +1225,7 @@ pub fn statementsFromExp(mut inExp: Expression, mut inMMEscOptions: Arc<metamode
                     warnIfSomeOptions(mmopts.clone())?;
                     (argval, stmts, locals, scEnv, accMMDecls) = statementsFromArg(exp.clone(), stmts.clone(), locals.clone(), scEnv.clone(), tplPackage.clone(), accMMDecls.clone())?;
                     (_, exptype, _) = argval.clone();
-                    exptype = deAliasedType(exptype.clone(), astDefs.clone())?;
+                    exptype = deAliasedType(exptype.clone(), astDefs.clone());
                     mcases = elabCasesFromCondition(exptype.clone(), isnot.clone(), rhsval.clone(), tbranch.clone(), ebranch.clone(), tplPackage.clone())?;
                     (argvals, fname, iargs, oargs, scEnv, accMMDecls) = makeMatchFun(argval.clone(), mcases.clone(), exp.clone(), false, scEnv.clone(), tplPackage.clone(), accMMDecls.clone())?;
                     (_, stmt, _, _, locals, intxt) = statementFromFun(argvals.clone(), fname.clone(), iargs.clone(), oargs.clone(), metamodelica::nil(), (intxt.clone()).clone(), (outtxt.clone()).clone(), locals.clone(), tplPackage.clone(), sinfo.clone())?;
@@ -1368,7 +1368,7 @@ pub fn statementsFromExp(mut inExp: Expression, mut inMMEscOptions: Arc<metamode
                     warnIfSomeOptions(mmopts.clone())?;
                     path = Arc::new(PathIdent::IDENT { ident: (ident.clone()).clone() });
                     (mmexp, idtype, scEnv) = resolveBoundPath(path.clone(), scEnv.clone(), tplPackage.clone())?;
-                    checkResolvedType(path.clone(), idtype.clone(), (literal!("let +=")).clone(), sinfo2.clone())?;
+                    checkResolvedType(path.clone(), idtype.clone(), (literal!("let +=")).clone(), sinfo2.clone());
                     idtype = checkTextType(idtype.clone(), (ident.clone()).clone(), (literal!("let +=")).clone(), sinfo2.clone())?;
                     let __pa0 = ::match_deref::match_deref! { match &(mmexp.clone()) {
                         Deref @ MMExp::MM_IDENT { ident: Deref @ PathIdent::IDENT { ident: __pa0 } } => __pa0.clone(),
@@ -1802,7 +1802,7 @@ pub fn statementsFromArg(mut inExp: Expression, mut inStmts: Arc<metamodelica::L
                     let mut idtype: Arc<TypeSignature> = Arc::new(TypeSignature::BOOLEAN_TYPE);
                     let mut scEnv = (*scEnv).clone();
                     (mmexp, idtype, scEnv) = resolveBoundPath(path.clone(), scEnv.clone(), tplPackage.clone())?;
-                    checkResolvedType(path.clone(), idtype.clone(), (literal!("argument")).clone(), sinfo.clone())?;
+                    checkResolvedType(path.clone(), idtype.clone(), (literal!("argument")).clone(), sinfo.clone());
                     Ok(((mmexp.clone(), idtype.clone(), sinfo.clone()), stmts.clone(), locals.clone(), scEnv.clone(), accMMDecls.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -2262,11 +2262,11 @@ pub fn areTextInOutArgs(mut inInArg: (ArcStr, Arc<TypeSignature>), mut inOutArg:
             ::match_deref::match_deref! { match &__mc_input {
                 ((inid, itype), (outid, otype), TemplPackage { astDefs: astdefs, .. }) => {
                     let true = (stringEq((inid.clone()).clone(), (outid.clone()).clone())) else { bail!("pattern mismatch") };
-                    ::match_deref::match_deref! { match &(deAliasedType(itype.clone(), astdefs.clone())?) {
+                    ::match_deref::match_deref! { match &(deAliasedType(itype.clone(), astdefs.clone())) {
                         Deref @ TypeSignature::TEXT_TYPE { .. } => (),
                         _ => bail!("pattern mismatch"),
                     } };
-                    ::match_deref::match_deref! { match &(deAliasedType(otype.clone(), astdefs.clone())?) {
+                    ::match_deref::match_deref! { match &(deAliasedType(otype.clone(), astdefs.clone())) {
                         Deref @ TypeSignature::TEXT_TYPE { .. } => (),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -2291,11 +2291,11 @@ pub fn areTextInOutArgs(mut inInArg: (ArcStr, Arc<TypeSignature>), mut inOutArg:
                     } };
                     outlst = __pa2.clone();
                     let true = (inlst.clone() == outlst.clone()) else { bail!("pattern mismatch") };
-                    ::match_deref::match_deref! { match &(deAliasedType(itype.clone(), astdefs.clone())?) {
+                    ::match_deref::match_deref! { match &(deAliasedType(itype.clone(), astdefs.clone())) {
                         Deref @ TypeSignature::TEXT_TYPE { .. } => (),
                         _ => bail!("pattern mismatch"),
                     } };
-                    ::match_deref::match_deref! { match &(deAliasedType(otype.clone(), astdefs.clone())?) {
+                    ::match_deref::match_deref! { match &(deAliasedType(otype.clone(), astdefs.clone())) {
                         Deref @ TypeSignature::TEXT_TYPE { .. } => (),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -2329,7 +2329,7 @@ pub fn typeAdaptMMArgsForFun(mut inArgValues: Arc<metamodelica::List<(Arc<MMExp>
                     let mut mmarg = (*mmarg).clone();
                     let mut argtype = (*argtype).clone();
                     let mut setTyVars = (*setTyVars).clone();
-                    argtype = deAliasedType(argtype.clone(), astdefs.clone())?;
+                    argtype = deAliasedType(argtype.clone(), astdefs.clone());
                     (mmarg, setTyVars) = typeAdaptMMArg(mmarg.clone(), argtype.clone(), sinfo.clone(), true, sigArgtype.clone(), tyVars.clone(), setTyVars.clone(), astdefs.clone())?;
                     (mmargs, setTyVars) = typeAdaptMMArgsForFun(argvals.clone(), iargs.clone(), tyVars.clone(), setTyVars.clone(), astdefs.clone())?;
                     Ok((metamodelica::cons(mmarg.clone(), mmargs.clone()), setTyVars.clone()))
@@ -2485,7 +2485,7 @@ pub fn typeAdaptMMOption(mut inMMArg: Arc<MMExp>, mut inArgType: Arc<TypeSignatu
                     let mut targettype = (*targettype).clone();
                     let mut stmts = (*stmts).clone();
                     let mut locals = (*locals).clone();
-                    targettype = deAliasedType(targettype.clone(), astdefs.clone())?;
+                    targettype = deAliasedType(targettype.clone(), astdefs.clone());
                     (mmarg, stmts, locals) = typeAdaptMMOption(mmarg.clone(), argtype.clone(), sinfo.clone(), targettype.clone(), stmts.clone(), locals.clone(), astdefs.clone())?;
                     mmarg = Arc::new(MMExp::MM_FN_CALL { fnName: Arc::new(PathIdent::IDENT { ident: (literal!("SOME")).clone() }), args: list![mmarg.clone()] });
                     Ok((mmarg.clone(), stmts.clone(), locals.clone()))
@@ -2500,7 +2500,7 @@ pub fn typeAdaptMMOption(mut inMMArg: Arc<MMExp>, mut inArgType: Arc<TypeSignatu
                     let mut argtype = (*argtype).clone();
                     let mut stmts = (*stmts).clone();
                     let mut locals = (*locals).clone();
-                    argtype = deAliasedType(argtype.clone(), astdefs.clone())?;
+                    argtype = deAliasedType(argtype.clone(), astdefs.clone());
                     (mmarg, _) = typeAdaptMMArg(mmarg.clone(), argtype.clone(), sinfo.clone(), false, targettype.clone(), metamodelica::nil(), metamodelica::nil(), astdefs.clone())?;
                     (mmarg, stmts, locals) = mmEnsureNonFunctionArg(mmarg.clone(), targettype.clone(), stmts.clone(), locals.clone())?;
                     Ok((mmarg.clone(), stmts.clone(), locals.clone()))
@@ -2731,7 +2731,7 @@ pub fn statementsFromMapExp(mut inIsFirstArgToMap: bool, mut inArgValuesToMap: A
                     let mut locals = (*locals).clone();
                     let mut scEnv = (*scEnv).clone();
                     let mut accMMDecls = (*accMMDecls).clone();
-                    let __pa0 = ::match_deref::match_deref! { match &(deAliasedType(argtype.clone(), astDefs.clone())?) {
+                    let __pa0 = ::match_deref::match_deref! { match &(deAliasedType(argtype.clone(), astDefs.clone())) {
                         Deref @ TypeSignature::LIST_TYPE { ofType: __pa0 } => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -2753,7 +2753,7 @@ pub fn statementsFromMapExp(mut inIsFirstArgToMap: bool, mut inArgValuesToMap: A
                     scEnv = __pa7.clone();
                     (mexp, _) = rewriteMatchExpByLocalNames(mexp.clone(), oftype.clone(), localNames.clone(), metamodelica::nil(), astDefs.clone())?;
                     maplocals = listAppend(caseLocals.clone(), maplocals.clone());
-                    useiter = shouldUseIterFunctions(isfirst.clone(), useiter.clone(), true, isUsed.clone(), iopts.clone(), restargs.clone())?;
+                    useiter = shouldUseIterFunctions(isfirst.clone(), useiter.clone(), true, isUsed.clone(), iopts.clone(), restargs.clone());
                     stmt = tplStatement((literal!("nextIter")).clone(), metamodelica::nil(), (arcstr::literal!(imlicitTxt)).clone(), (arcstr::literal!(imlicitTxt)).clone());
                     mapstmts = if (useiter.clone()) {metamodelica::cons(stmt.clone(), mapstmts.clone())} else {mapstmts.clone()};
                     fname = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*arcstr::literal!(listMapFunPrefix)); __mm_s.push_str(&*intString((accMMDecls.clone().len() as i32))); ArcStr::from(__mm_s) }).clone();
@@ -2766,7 +2766,7 @@ pub fn statementsFromMapExp(mut inIsFirstArgToMap: bool, mut inArgValuesToMap: A
                     matchLocals = maplocals.clone();
                     eltName = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("lstElt_")); __mm_s.push_str(&*intString((accMMDecls.clone().len() as i32))); ArcStr::from(__mm_s) }).clone();
                     mmmcMatched = (list![mexp.clone()], mapstmts.clone());
-                    mmmcases = if (isAlwaysMatchedBool(mexp.clone())?) {list![mmmcMatched.clone()]} else {list![mmmcMatched.clone(), (list![crate::TplAbsyn::MatchingExp::interned_REST_MATCH()], metamodelica::nil())]};
+                    mmmcases = if (isAlwaysMatchedBool(mexp.clone())) {list![mmmcMatched.clone()]} else {list![mmmcMatched.clone(), (list![crate::TplAbsyn::MatchingExp::interned_REST_MATCH()], metamodelica::nil())]};
                     mapctx = MapContext { ofBinding: ofbind.clone(), mapExp: mapexp.clone(), iterMMExpOptions: iopts.clone(), hasIndexIdentOpt: hasIndexIdentOpt.clone(), useIter: useiter.clone() };
                     mmFun = MMDeclaration::MM_FUN { isPublic: false, name: (fname.clone()).clone(), inArgs: iargs.clone(), outArgs: oargs.clone(), locals: metamodelica::nil(), statements: list![Arc::new(MMExp::MM_LIST_FOR_LOOP { eltName: (eltName.clone()).clone(), listName: (literal!("items")).clone(), matchLocals: matchLocals.clone(), matchCases: mmmcases.clone() })], genInfoOpt: GenInfo::GI_MAP_FUN { mapType: argtype.clone(), mapContext: mapctx.clone() } };
                     (stmts, intxt) = addPushIter(isfirst.clone() && useiter.clone(), iopts.clone(), stmts.clone(), (intxt.clone()).clone(), (outtxt.clone()).clone())?;
@@ -2809,7 +2809,7 @@ pub fn statementsFromMapExp(mut inIsFirstArgToMap: bool, mut inArgValuesToMap: A
                     let mut locals = (*locals).clone();
                     let mut scEnv = (*scEnv).clone();
                     let mut accMMDecls = (*accMMDecls).clone();
-                    let __pa0 = ::match_deref::match_deref! { match &(deAliasedType(argtype.clone(), astDefs.clone())?) {
+                    let __pa0 = ::match_deref::match_deref! { match &(deAliasedType(argtype.clone(), astDefs.clone())) {
                         Deref @ TypeSignature::ARRAY_TYPE { ofType: __pa0 } => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -2831,7 +2831,7 @@ pub fn statementsFromMapExp(mut inIsFirstArgToMap: bool, mut inArgValuesToMap: A
                     scEnv = __pa7.clone();
                     (mexp, _) = rewriteMatchExpByLocalNames(mexp.clone(), oftype.clone(), localNames.clone(), metamodelica::nil(), astDefs.clone())?;
                     maplocals = listAppend(caseLocals.clone(), maplocals.clone());
-                    useiter = shouldUseIterFunctions(isfirst.clone(), useiter.clone(), true, isUsed.clone(), iopts.clone(), restargs.clone())?;
+                    useiter = shouldUseIterFunctions(isfirst.clone(), useiter.clone(), true, isUsed.clone(), iopts.clone(), restargs.clone());
                     stmt = tplStatement((literal!("nextIter")).clone(), metamodelica::nil(), (arcstr::literal!(imlicitTxt)).clone(), (arcstr::literal!(imlicitTxt)).clone());
                     mapstmts = if (useiter.clone()) {metamodelica::cons(stmt.clone(), mapstmts.clone())} else {mapstmts.clone()};
                     fname = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*arcstr::literal!(arrayMapFunPrefix)); __mm_s.push_str(&*intString((accMMDecls.clone().len() as i32))); ArcStr::from(__mm_s) }).clone();
@@ -2893,14 +2893,14 @@ pub fn statementsFromMapExp(mut inIsFirstArgToMap: bool, mut inArgValuesToMap: A
                     let mut scEnv = (*scEnv).clone();
                     let mut accMMDecls = (*accMMDecls).clone();
                     if '__try0: {
-                        ::match_deref::match_deref! { match &(unwrap_break_err!(deAliasedType(argtype.clone(), astDefs.clone()), '__try0)) {
+                        ::match_deref::match_deref! { match &(deAliasedType(argtype.clone(), astDefs.clone())) {
                             Deref @ TypeSignature::LIST_TYPE { .. } => (),
                             _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
                         } };
                         Ok::<(), anyhow::Error>(())
                     }.is_ok() { bail!("failure(): body succeeded") }
                     if '__try1: {
-                        ::match_deref::match_deref! { match &(unwrap_break_err!(deAliasedType(argtype.clone(), astDefs.clone()), '__try1)) {
+                        ::match_deref::match_deref! { match &(deAliasedType(argtype.clone(), astDefs.clone())) {
                             Deref @ TypeSignature::ARRAY_TYPE { .. } => (),
                             _ => break '__try1 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
                         } };
@@ -2923,7 +2923,7 @@ pub fn statementsFromMapExp(mut inIsFirstArgToMap: bool, mut inArgValuesToMap: A
                     scEnv = __pa8.clone();
                     (mexp, _) = rewriteMatchExpByLocalNames(mexp.clone(), argtype.clone(), localNames.clone(), metamodelica::nil(), astDefs.clone())?;
                     maplocals = listAppend(caseLocals.clone(), maplocals.clone());
-                    useiter = shouldUseIterFunctions(isfirst.clone(), useiter.clone(), false, isUsed.clone(), iopts.clone(), restargs.clone())?;
+                    useiter = shouldUseIterFunctions(isfirst.clone(), useiter.clone(), false, isUsed.clone(), iopts.clone(), restargs.clone());
                     stmt = tplStatement((literal!("nextIter")).clone(), metamodelica::nil(), (arcstr::literal!(imlicitTxt)).clone(), (arcstr::literal!(imlicitTxt)).clone());
                     mapstmts = if (useiter.clone()) {metamodelica::cons(stmt.clone(), mapstmts.clone())} else {mapstmts.clone()};
                     fname = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*arcstr::literal!(scalarMapFunPrefix)); __mm_s.push_str(&*intString((accMMDecls.clone().len() as i32))); ArcStr::from(__mm_s) }).clone();
@@ -2933,7 +2933,7 @@ pub fn statementsFromMapExp(mut inIsFirstArgToMap: bool, mut inArgValuesToMap: A
                     oargs = metamodelica::cons(imlicitTxtArg.clone(), oargs.clone());
                     mapstmts = mapstmts.clone().reverse();
                     (mapstmts, maplocals) = addGetIndex(isUsed.clone(), (freshIdxName.clone()).clone(), mapstmts.clone(), (arcstr::literal!(imlicitTxt)).clone(), maplocals.clone())?;
-                    elabcases = addRestElabCase(list![(mexp.clone(), encodedExtargs.clone(), mapstmts.clone())])?;
+                    elabcases = addRestElabCase(list![(mexp.clone(), encodedExtargs.clone(), mapstmts.clone())]);
                     mmmcases = List::map2(elabcases.clone(), (std::sync::Arc::new(makeMMMatchCase) as std::sync::Arc<dyn ::std::ops::Fn((Arc<MatchingExp>, Arc<metamodelica::List<(ArcStr, Arc<TypeSignature>)>>, Arc<metamodelica::List<Arc<MMExp>>>), Arc<metamodelica::List<(ArcStr, Arc<TypeSignature>)>>, Arc<metamodelica::List<(ArcStr, Arc<TypeSignature>)>>) -> Result<(Arc<metamodelica::List<Arc<MatchingExp>>>, Arc<metamodelica::List<Arc<MMExp>>>)> + 'static>), encodedExtargs.clone(), oargs.clone())?;
                     mapctx = MapContext { ofBinding: ofbind.clone(), mapExp: mapexp.clone(), iterMMExpOptions: iopts.clone(), hasIndexIdentOpt: hasIndexIdentOpt.clone(), useIter: useiter.clone() };
                     maplocals = listAppend(encodedExtargs.clone(), maplocals.clone());
@@ -2983,7 +2983,7 @@ pub fn intersectInOutArgs(mut inList1: TypedIdents, mut inList2: TypedIdents) ->
     Ok(outIntersectionAndRests)
 }
 
-pub fn isTupleListMember(mut inId: Ident, mut inList: TypedIdents) -> Result<bool> {
+pub fn isTupleListMember(mut inId: Ident, mut inList: TypedIdents) -> bool {
     let mut outIsMember: bool;
     outIsMember = 'mc: {
         let __mc_input = ();
@@ -2996,9 +2996,9 @@ pub fn isTupleListMember(mut inId: Ident, mut inList: TypedIdents) -> Result<boo
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(false)
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outIsMember)
+    outIsMember
 }
 
 /*
@@ -3013,7 +3013,7 @@ algorithm
   end match;
 end isIndexArg;
 */
-pub fn shouldUseIterFunctions(mut inIsFirstArgToMap: bool, mut inUseIterLast: bool, mut inIsListArgToMap: bool, mut wasIndexVarUsed: bool, mut inIterOptions: Arc<metamodelica::List<(ArcStr, (Arc<MMExp>, Arc<TypeSignature>))>>, mut inRestArgValsToMap: Arc<metamodelica::List<(Arc<MMExp>, Arc<TypeSignature>, SourceInfo)>>) -> Result<bool> {
+pub fn shouldUseIterFunctions(mut inIsFirstArgToMap: bool, mut inUseIterLast: bool, mut inIsListArgToMap: bool, mut wasIndexVarUsed: bool, mut inIterOptions: Arc<metamodelica::List<(ArcStr, (Arc<MMExp>, Arc<TypeSignature>))>>, mut inRestArgValsToMap: Arc<metamodelica::List<(Arc<MMExp>, Arc<TypeSignature>, SourceInfo)>>) -> bool {
     let mut outUseIterFuns: bool;
     outUseIterFuns = 'mc: {
         let __mc_input = (inIsFirstArgToMap.clone(), inUseIterLast.clone(), inIsListArgToMap.clone(), wasIndexVarUsed.clone(), inIterOptions.clone(), inRestArgValsToMap.clone());
@@ -3073,9 +3073,9 @@ pub fn shouldUseIterFunctions(mut inIsFirstArgToMap: bool, mut inUseIterLast: bo
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outUseIterFuns)
+    outUseIterFuns
 }
 
 /*
@@ -3294,7 +3294,7 @@ pub fn makeMatchFun(mut inArgval: (Arc<MMExp>, Arc<TypeSignature>, SourceInfo), 
                     let mut assignedIdents: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut scEnv = (*scEnv).clone();
                     let mut accMMDecls = (*accMMDecls).clone();
-                    (implicitValueName, matchArgName) = getMatchArgName(inArgExp.clone())?;
+                    (implicitValueName, matchArgName) = getMatchArgName(inArgExp.clone());
                     let (__pa0, __pa1, __pa2, __pa3, __pa4, __pa5, __pa6) = ::match_deref::match_deref! { match &(elabMatchCases((mmexp.clone(), exptype.clone()), (implicitValueName.clone()).clone(), mcases.clone(), hasImplicitLookup.clone(), metamodelica::nil(), metamodelica::nil(), metamodelica::cons(Scope::FUN_SCOPE { args: metamodelica::nil(), localArgs: metamodelica::nil() }, scEnv.clone()), tplPackage.clone(), accMMDecls.clone())?) {
                         (__pa0, __pa1, Deref @ metamodelica::List::Cons { head: Scope::FUN_SCOPE { args: __pa2, localArgs: __pa3 }, tail: __pa4 }, __pa5, __pa6) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone(), __pa6.clone()),
                         _ => bail!("pattern mismatch"),
@@ -3306,8 +3306,8 @@ pub fn makeMatchFun(mut inArgval: (Arc<MMExp>, Arc<TypeSignature>, SourceInfo), 
                     scEnv = __pa4.clone();
                     accMMDecls = __pa5.clone();
                     assignedIdents = __pa6.clone();
-                    elabcases = addRestElabCase(elabcases.clone())?;
-                    (extargs, localArgs) = alignExtArgsToScopeEnv(extargs.clone(), localArgs.clone(), scEnv.clone())?;
+                    elabcases = addRestElabCase(elabcases.clone());
+                    (extargs, localArgs) = alignExtArgsToScopeEnv(extargs.clone(), localArgs.clone(), scEnv.clone());
                     encodedExtargs = List::map1(extargs.clone(), (std::sync::Arc::new(encodeTypedIdent) as std::sync::Arc<dyn ::std::ops::Fn((ArcStr, Arc<TypeSignature>), ArcStr) -> Result<(ArcStr, Arc<TypeSignature>)> + 'static>), (arcstr::literal!(funArgNamePrefix)).clone())?;
                     iargs = metamodelica::cons(imlicitTxtArg.clone(), metamodelica::cons((matchArgName.clone(), exptype.clone()), encodedExtargs.clone()));
                     oargs = List::filter1OnTrue(encodedExtargs.clone(), (std::sync::Arc::new(fnptr!(isAssignedText, (ArcStr, Arc<TypeSignature>), Arc<metamodelica::List<ArcStr>>)) as std::sync::Arc<dyn ::std::ops::Fn((ArcStr, Arc<TypeSignature>), Arc<metamodelica::List<ArcStr>>) -> Result<bool> + 'static>), assignedIdents.clone())?;
@@ -3339,7 +3339,7 @@ pub fn makeMatchFun(mut inArgval: (Arc<MMExp>, Arc<TypeSignature>, SourceInfo), 
 }
 
 //no fail
-pub fn alignExtArgsToScopeEnv(mut inExtraArgs: TypedIdents, mut inEncExtraArgs: TypedIdents, mut inScopeEnv: ScopeEnv) -> Result<(TypedIdents, TypedIdents)> {
+pub fn alignExtArgsToScopeEnv(mut inExtraArgs: TypedIdents, mut inEncExtraArgs: TypedIdents, mut inScopeEnv: ScopeEnv) -> (TypedIdents, TypedIdents) {
     let mut outExtraArgs: TypedIdents;
     let mut outEncExtraArgs: TypedIdents;
     (outExtraArgs, outEncExtraArgs) = 'mc: {
@@ -3366,13 +3366,13 @@ pub fn alignExtArgsToScopeEnv(mut inExtraArgs: TypedIdents, mut inEncExtraArgs: 
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outExtraArgs, outEncExtraArgs))
+    (outExtraArgs, outEncExtraArgs)
 }
 
 //no fail
-pub fn getMatchArgName(mut inArgExp: Expression) -> Result<(Ident, Ident)> {
+pub fn getMatchArgName(mut inArgExp: Expression) -> (Ident, Ident) {
     let mut outInputValueName: Ident = arcstr::literal!("");
     let mut outMatchArgName: Ident = arcstr::literal!("");
     (outInputValueName, outMatchArgName) = 'mc: {
@@ -3397,9 +3397,9 @@ pub fn getMatchArgName(mut inArgExp: Expression) -> Result<(Ident, Ident)> {
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outInputValueName, outMatchArgName))
+    (outInputValueName, outMatchArgName)
 }
 
 //no fail
@@ -3619,7 +3619,7 @@ pub fn typeCheckMatchingExp(mut inMatchingExp: Arc<MatchingExp>, mut inMType: Ar
                     let mut tagpath = (*tagpath).clone();
                     let mut fms = (*fms).clone();
                     let mut mtype = (*mtype).clone();
-                    mtype = deAliasedType(mtype.clone(), astDefs.clone())?;
+                    mtype = deAliasedType(mtype.clone(), astDefs.clone());
                     (fields, tagpath) = getFieldsForRecord(mtype.clone(), tagpath.clone(), astDefs.clone())?;
                     fms = typeCheckMatchingExpRecord(fms.clone(), fields.clone(), astDefs.clone())?;
                     Ok(Arc::new(MatchingExp::RECORD_MATCH { tagName: tagpath.clone(), fieldMatchings: fms.clone() }))
@@ -3632,7 +3632,7 @@ pub fn typeCheckMatchingExp(mut inMatchingExp: Arc<MatchingExp>, mut inMType: Ar
                 (Deref @ MatchingExp::SOME_MATCH { value: mexp }, mtype, astDefs) => {
                     let mut mexp = (*mexp).clone();
                     let mut mtype = (*mtype).clone();
-                    let __pa0 = ::match_deref::match_deref! { match &(deAliasedType(mtype.clone(), astDefs.clone())?) {
+                    let __pa0 = ::match_deref::match_deref! { match &(deAliasedType(mtype.clone(), astDefs.clone())) {
                         Deref @ TypeSignature::OPTION_TYPE { ofType: __pa0 } => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -3646,7 +3646,7 @@ pub fn typeCheckMatchingExp(mut inMatchingExp: Arc<MatchingExp>, mut inMType: Ar
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (mexp @ Deref @ MatchingExp::NONE_MATCH { .. }, mtype, astDefs) => {
-                    ::match_deref::match_deref! { match &(deAliasedType(mtype.clone(), astDefs.clone())?) {
+                    ::match_deref::match_deref! { match &(deAliasedType(mtype.clone(), astDefs.clone())) {
                         Deref @ TypeSignature::OPTION_TYPE { .. } => (),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -3660,7 +3660,7 @@ pub fn typeCheckMatchingExp(mut inMatchingExp: Arc<MatchingExp>, mut inMType: Ar
                 (Deref @ MatchingExp::TUPLE_MATCH { tupleArgs: mexpLst }, mtype, astDefs) => {
                     let mut otLst: Arc<metamodelica::List<Arc<TypeSignature>>> = metamodelica::nil();
                     let mut mexpLst = (*mexpLst).clone();
-                    let __pa0 = ::match_deref::match_deref! { match &(deAliasedType(mtype.clone(), astDefs.clone())?) {
+                    let __pa0 = ::match_deref::match_deref! { match &(deAliasedType(mtype.clone(), astDefs.clone())) {
                         Deref @ TypeSignature::TUPLE_TYPE { ofTypes: __pa0 } => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -3677,7 +3677,7 @@ pub fn typeCheckMatchingExp(mut inMatchingExp: Arc<MatchingExp>, mut inMType: Ar
                     let mut ot: Arc<TypeSignature> = Arc::new(TypeSignature::BOOLEAN_TYPE);
                     let mut otLst: Arc<metamodelica::List<Arc<TypeSignature>>> = metamodelica::nil();
                     let mut mexpLst = (*mexpLst).clone();
-                    let __pa0 = ::match_deref::match_deref! { match &(deAliasedType(mtype.clone(), astDefs.clone())?) {
+                    let __pa0 = ::match_deref::match_deref! { match &(deAliasedType(mtype.clone(), astDefs.clone())) {
                         Deref @ TypeSignature::LIST_TYPE { ofType: __pa0 } => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -3696,7 +3696,7 @@ pub fn typeCheckMatchingExp(mut inMatchingExp: Arc<MatchingExp>, mut inMType: Ar
                     let mut mexp = (*mexp).clone();
                     let mut restmexp = (*restmexp).clone();
                     let mut mtype = (*mtype).clone();
-                    mtype = deAliasedType(mtype.clone(), astDefs.clone())?;
+                    mtype = deAliasedType(mtype.clone(), astDefs.clone());
                     let __pa0 = ::match_deref::match_deref! { match &(mtype.clone()) {
                         Deref @ TypeSignature::LIST_TYPE { ofType: __pa0 } => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -3712,7 +3712,7 @@ pub fn typeCheckMatchingExp(mut inMatchingExp: Arc<MatchingExp>, mut inMType: Ar
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (mexp @ Deref @ MatchingExp::STRING_MATCH { .. }, mtype, astDefs) => {
-                    ::match_deref::match_deref! { match &(deAliasedType(mtype.clone(), astDefs.clone())?) {
+                    ::match_deref::match_deref! { match &(deAliasedType(mtype.clone(), astDefs.clone())) {
                         Deref @ TypeSignature::STRING_TYPE { .. } => (),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -3724,7 +3724,7 @@ pub fn typeCheckMatchingExp(mut inMatchingExp: Arc<MatchingExp>, mut inMType: Ar
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (mexp @ Deref @ MatchingExp::LITERAL_MATCH { litType: ot, .. }, mtype, astDefs) => {
-                    typesEqualConcrete(deAliasedType(ot.clone(), astDefs.clone())?, deAliasedType(mtype.clone(), astDefs.clone())?, astDefs.clone())?;
+                    typesEqualConcrete(deAliasedType(ot.clone(), astDefs.clone()), deAliasedType(mtype.clone(), astDefs.clone()), astDefs.clone())?;
                     Ok(mexp.clone())
                 }
                 _ => bail!("nomatch"),
@@ -3906,7 +3906,7 @@ pub fn rewriteMatchExpByLocalNames(mut inMatchingExp: Arc<MatchingExp>, mut inMT
                     let mut fldId: Ident = arcstr::literal!("");
                     let mut tagpath = (*tagpath).clone();
                     let mut mtype = (*mtype).clone();
-                    mtype = deAliasedType(mtype.clone(), astDefs.clone())?;
+                    mtype = deAliasedType(mtype.clone(), astDefs.clone());
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(getFieldsForRecord(mtype.clone(), tagpath.clone(), astDefs.clone())?) {
                         (Deref @ metamodelica::List::Cons { head: (__pa0, _), tail: _ }, __pa1) => (__pa0.clone(), __pa1.clone()),
                         _ => bail!("pattern mismatch"),
@@ -3926,7 +3926,7 @@ pub fn rewriteMatchExpByLocalNames(mut inMatchingExp: Arc<MatchingExp>, mut inMT
                     let mut fms = (*fms).clone();
                     let mut mtype = (*mtype).clone();
                     let mut usedLocals = (*usedLocals).clone();
-                    mtype = deAliasedType(mtype.clone(), astDefs.clone())?;
+                    mtype = deAliasedType(mtype.clone(), astDefs.clone());
                     (fields, tagpath) = getFieldsForRecord(mtype.clone(), tagpath.clone(), astDefs.clone())?;
                     (fms, usedLocals) = rewriteMatchExpByLocalNamesRecord(fms.clone(), fields.clone(), inLocalNames.clone(), usedLocals.clone(), astDefs.clone())?;
                     Ok((Arc::new(MatchingExp::RECORD_MATCH { tagName: tagpath.clone(), fieldMatchings: fms.clone() }), usedLocals.clone()))
@@ -3940,7 +3940,7 @@ pub fn rewriteMatchExpByLocalNames(mut inMatchingExp: Arc<MatchingExp>, mut inMT
                     let mut mexp = (*mexp).clone();
                     let mut mtype = (*mtype).clone();
                     let mut usedLocals = (*usedLocals).clone();
-                    let __pa0 = ::match_deref::match_deref! { match &(deAliasedType(mtype.clone(), astDefs.clone())?) {
+                    let __pa0 = ::match_deref::match_deref! { match &(deAliasedType(mtype.clone(), astDefs.clone())) {
                         Deref @ TypeSignature::OPTION_TYPE { ofType: __pa0 } => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -3957,7 +3957,7 @@ pub fn rewriteMatchExpByLocalNames(mut inMatchingExp: Arc<MatchingExp>, mut inMT
                     let mut otLst: Arc<metamodelica::List<Arc<TypeSignature>>> = metamodelica::nil();
                     let mut mexpLst = (*mexpLst).clone();
                     let mut usedLocals = (*usedLocals).clone();
-                    let __pa0 = ::match_deref::match_deref! { match &(deAliasedType(mtype.clone(), astDefs.clone())?) {
+                    let __pa0 = ::match_deref::match_deref! { match &(deAliasedType(mtype.clone(), astDefs.clone())) {
                         Deref @ TypeSignature::TUPLE_TYPE { ofTypes: __pa0 } => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -3975,7 +3975,7 @@ pub fn rewriteMatchExpByLocalNames(mut inMatchingExp: Arc<MatchingExp>, mut inMT
                     let mut otLst: Arc<metamodelica::List<Arc<TypeSignature>>> = metamodelica::nil();
                     let mut mexpLst = (*mexpLst).clone();
                     let mut usedLocals = (*usedLocals).clone();
-                    let __pa0 = ::match_deref::match_deref! { match &(deAliasedType(mtype.clone(), astDefs.clone())?) {
+                    let __pa0 = ::match_deref::match_deref! { match &(deAliasedType(mtype.clone(), astDefs.clone())) {
                         Deref @ TypeSignature::LIST_TYPE { ofType: __pa0 } => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -3995,7 +3995,7 @@ pub fn rewriteMatchExpByLocalNames(mut inMatchingExp: Arc<MatchingExp>, mut inMT
                     let mut restmexp = (*restmexp).clone();
                     let mut mtype = (*mtype).clone();
                     let mut usedLocals = (*usedLocals).clone();
-                    mtype = deAliasedType(mtype.clone(), astDefs.clone())?;
+                    mtype = deAliasedType(mtype.clone(), astDefs.clone());
                     let __pa0 = ::match_deref::match_deref! { match &(mtype.clone()) {
                         Deref @ TypeSignature::LIST_TYPE { ofType: __pa0 } => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -4241,7 +4241,7 @@ pub fn makeExtraArgBinding(mut inExtraArg: (ArcStr, Arc<TypeSignature>), mut inC
     Ok(outExtraArgBinding)
 }
 
-pub fn addRestElabCase(mut inElabCases: Arc<metamodelica::List<(Arc<MatchingExp>, Arc<metamodelica::List<(ArcStr, Arc<TypeSignature>)>>, Arc<metamodelica::List<Arc<MMExp>>>)>>) -> Result<Arc<metamodelica::List<(Arc<MatchingExp>, Arc<metamodelica::List<(ArcStr, Arc<TypeSignature>)>>, Arc<metamodelica::List<Arc<MMExp>>>)>>> {
+pub fn addRestElabCase(mut inElabCases: Arc<metamodelica::List<(Arc<MatchingExp>, Arc<metamodelica::List<(ArcStr, Arc<TypeSignature>)>>, Arc<metamodelica::List<Arc<MMExp>>>)>>) -> Arc<metamodelica::List<(Arc<MatchingExp>, Arc<metamodelica::List<(ArcStr, Arc<TypeSignature>)>>, Arc<metamodelica::List<Arc<MMExp>>>)>> {
     let mut outElabCases: Arc<metamodelica::List<(Arc<MatchingExp>, Arc<metamodelica::List<(ArcStr, Arc<TypeSignature>)>>, Arc<metamodelica::List<Arc<MMExp>>>)>>;
     outElabCases = 'mc: {
         let __mc_input = inElabCases.clone();
@@ -4266,7 +4266,7 @@ pub fn addRestElabCase(mut inElabCases: Arc<metamodelica::List<(Arc<MatchingExp>
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: elabcase @ _, tail: restcases } => {
                     let mut restcases = (*restcases).clone();
-                    restcases = addRestElabCase(restcases.clone())?;
+                    restcases = addRestElabCase(restcases.clone());
                     Ok(metamodelica::cons(elabcase.clone(), restcases.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -4282,9 +4282,9 @@ pub fn addRestElabCase(mut inElabCases: Arc<metamodelica::List<(Arc<MatchingExp>
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outElabCases)
+    outElabCases
 }
 
 pub fn isAlwaysMatched(mut inMatchingExp: Arc<MatchingExp>) -> Result<()> {
@@ -4308,7 +4308,7 @@ pub fn isAlwaysMatched(mut inMatchingExp: Arc<MatchingExp>) -> Result<()> {
     Ok(())
 }
 
-pub fn isAlwaysMatchedBool(mut inMatchingExp: Arc<MatchingExp>) -> Result<bool> {
+pub fn isAlwaysMatchedBool(mut inMatchingExp: Arc<MatchingExp>) -> bool {
     let mut isAlwaysMatched: bool;
     isAlwaysMatched = 'mc: {
         let __mc_input = inMatchingExp.clone();
@@ -4329,9 +4329,9 @@ pub fn isAlwaysMatchedBool(mut inMatchingExp: Arc<MatchingExp>) -> Result<bool> 
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(isAlwaysMatched)
+    isAlwaysMatched
 }
 
 pub fn adaptTextToString(mut inArgValue: (Arc<MMExp>, Arc<TypeSignature>, SourceInfo), mut inArgExp: Expression, mut inStmts: Arc<metamodelica::List<Arc<MMExp>>>, mut inLocals: TypedIdents, mut inTplPackage: TemplPackage) -> Result<((Arc<MMExp>, Arc<TypeSignature>, SourceInfo), Expression, Arc<metamodelica::List<Arc<MMExp>>>, TypedIdents)> {
@@ -4348,7 +4348,7 @@ pub fn adaptTextToString(mut inArgValue: (Arc<MMExp>, Arc<TypeSignature>, Source
                     let mut strid: Ident = arcstr::literal!("");
                     let mut mmexp = (*mmexp).clone();
                     let mut locals = (*locals).clone();
-                    ::match_deref::match_deref! { match &(deAliasedType(exptype.clone(), astdefs.clone())?) {
+                    ::match_deref::match_deref! { match &(deAliasedType(exptype.clone(), astdefs.clone())) {
                         Deref @ TypeSignature::TEXT_TYPE { .. } => (),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -4617,7 +4617,7 @@ pub fn resolveBoundPath(mut inPath: Arc<PathIdent>, mut inScopeEnv: ScopeEnv, mu
     Ok((outMMExp, outType, outScopeEnv))
 }
 
-pub fn checkResolvedType(mut inPath: Arc<PathIdent>, mut inType: Arc<TypeSignature>, mut inUnresolvedMsg: ArcStr, mut inInfo: SourceInfo) -> Result<()> {
+pub fn checkResolvedType(mut inPath: Arc<PathIdent>, mut inType: Arc<TypeSignature>, mut inUnresolvedMsg: ArcStr, mut inInfo: SourceInfo) -> () {
     let () = 'mc: {
         let __mc_input = (inType.clone(), inUnresolvedMsg.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -4639,9 +4639,9 @@ pub fn checkResolvedType(mut inPath: Arc<PathIdent>, mut inType: Arc<TypeSignatu
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(())
+    ()
 }
 
 pub fn checkTextType(mut inType: Arc<TypeSignature>, mut inIdent: Ident, mut inUnresolvedMsg: ArcStr, mut inInfo: SourceInfo) -> Result<Arc<TypeSignature>> {
@@ -4713,7 +4713,7 @@ pub fn makeMMExpFromTemplateConstant(mut inTplDef: TemplateDef, mut inTemplIdent
     Ok((outMMExp, outConstType))
 }
 
-pub fn prepareMatchArgument(mut inMExp: Arc<MatchingExp>, mut inMatchArgName: Ident) -> Result<(Ident, Arc<MatchingExp>)> {
+pub fn prepareMatchArgument(mut inMExp: Arc<MatchingExp>, mut inMatchArgName: Ident) -> (Ident, Arc<MatchingExp>) {
     let mut outIdent: Ident;
     let mut outMExp: Arc<MatchingExp>;
     (outIdent, outMExp) = 'mc: {
@@ -4750,9 +4750,9 @@ pub fn prepareMatchArgument(mut inMExp: Arc<MatchingExp>, mut inMatchArgName: Id
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outIdent, outMExp))
+    (outIdent, outMExp)
 }
 
 pub fn resolvePathInScopeEnv(mut inIdent: Ident, mut inPath: Arc<PathIdent>, mut canDoImplicitLookup: bool, mut inScopeEnv: ScopeEnv, mut inASTDefs: Arc<metamodelica::List<ASTDef>>) -> Result<(Ident, Arc<TypeSignature>, ScopeEnv)> {
@@ -4890,7 +4890,7 @@ pub fn resolvePathInScopeEnv(mut inIdent: Ident, mut inPath: Arc<PathIdent>, mut
                     let mut localNames = (*localNames).clone();
                     let mut accLocals = (*accLocals).clone();
                     let true = (stringEq((ident.clone()).clone(), (matchArgName.clone()).clone())) else { bail!("pattern mismatch") };
-                    (ident, mexp) = prepareMatchArgument(mexp.clone(), (matchArgName.clone()).clone())?;
+                    (ident, mexp) = prepareMatchArgument(mexp.clone(), (matchArgName.clone()).clone());
                     encident = (encodeIdent((ident.clone()).clone(), (arcstr::literal!(caseBindingNamePrefix)).clone())?).clone();
                     (encident, localNames, accLocals) = updateLocalsForMatchingExp((ident.clone()).clone(), (encident.clone()).clone(), 0, mtype.clone(), localNames.clone(), accLocals.clone())?;
                     Ok((encident.clone(), mtype.clone(), metamodelica::cons(Scope::CASE_SCOPE { mExp: mexp.clone(), mType: mtype.clone(), localNames: localNames.clone(), accLocals: accLocals.clone(), extArgs: extargs.clone(), matchArgName: (matchArgName.clone()).clone(), hasImplicitScope: hasImplicitScope.clone() }, restEnv.clone())))
@@ -4906,7 +4906,7 @@ pub fn resolvePathInScopeEnv(mut inIdent: Ident, mut inPath: Arc<PathIdent>, mut
                     let mut extargs = (*extargs).clone();
                     let mut restEnv = (*restEnv).clone();
                     (encident, idtype, restEnv) = resolvePathInScopeEnv((ident.clone()).clone(), path.clone(), canDoImplicitLookup.clone() && !(hasImplicitScope.clone()), restEnv.clone(), astdefs.clone())?;
-                    extargs = updateTupleList(extargs.clone(), (encident.clone(), idtype.clone()))?;
+                    extargs = updateTupleList(extargs.clone(), (encident.clone(), idtype.clone()));
                     Ok((encident.clone(), idtype.clone(), metamodelica::cons(Scope::CASE_SCOPE { mExp: mexp.clone(), mType: mtype.clone(), localNames: localNames.clone(), accLocals: accLocals.clone(), extArgs: extargs.clone(), matchArgName: (matchArgName.clone()).clone(), hasImplicitScope: hasImplicitScope.clone() }, restEnv.clone())))
                 }
                 _ => bail!("nomatch"),
@@ -5005,7 +5005,7 @@ pub fn updateLocalsForMatchingExp(mut inIdent: Ident, mut inEncIdent: Ident, mut
     Ok((outLocalIdent, outLocalNames, outLocals))
 }
 
-pub fn usedInImmediateLetScope(mut inIdent: Ident, mut inFreshIdent: Ident, mut inScopeEnv: ScopeEnv) -> Result<bool> {
+pub fn usedInImmediateLetScope(mut inIdent: Ident, mut inFreshIdent: Ident, mut inScopeEnv: ScopeEnv) -> bool {
     let mut outIsUsed: bool;
     outIsUsed = 'mc: {
         let __mc_input = inScopeEnv.clone();
@@ -5022,7 +5022,7 @@ pub fn usedInImmediateLetScope(mut inIdent: Ident, mut inFreshIdent: Ident, mut 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Scope::LET_SCOPE { .. }, tail: restEnv } => {
-                    Ok(usedInImmediateLetScope((inIdent.clone()).clone(), (inFreshIdent.clone()).clone(), restEnv.clone())?)
+                    Ok(usedInImmediateLetScope((inIdent.clone()).clone(), (inFreshIdent.clone()).clone(), restEnv.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -5040,7 +5040,7 @@ pub fn usedInImmediateLetScope(mut inIdent: Ident, mut inFreshIdent: Ident, mut 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Scope::RECURSIVE_SCOPE { .. }, tail: restEnv } => {
-                    Ok(usedInImmediateLetScope((inIdent.clone()).clone(), (inFreshIdent.clone()).clone(), restEnv.clone())?)
+                    Ok(usedInImmediateLetScope((inIdent.clone()).clone(), (inFreshIdent.clone()).clone(), restEnv.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -5053,9 +5053,9 @@ pub fn usedInImmediateLetScope(mut inIdent: Ident, mut inFreshIdent: Ident, mut 
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outIsUsed)
+    outIsUsed
 }
 
 pub fn updateLocalsForLetExp(mut inIdent: Ident, mut inEncIdent: Ident, mut inPostfix: i32, mut inType: Arc<TypeSignature>, mut inLocals: TypedIdents, mut inScopeEnv: ScopeEnv) -> Result<(Ident, TypedIdents)> {
@@ -5100,7 +5100,7 @@ pub fn updateLocalsForLetExp(mut inIdent: Ident, mut inEncIdent: Ident, mut inPo
                     encIdent = (addPostfixToIdent((inEncIdent.clone()).clone(), inPostfix.clone())).clone();
                     loctype = lookupTupleList(inLocals.clone(), (encIdent.clone()).clone())?;
                     let true = (loctype.clone() == inType.clone()) else { bail!("pattern mismatch") };
-                    let false = (usedInImmediateLetScope((inIdent.clone()).clone(), (encIdent.clone()).clone(), inScopeEnv.clone())?) else { bail!("pattern mismatch") };
+                    let false = (usedInImmediateLetScope((inIdent.clone()).clone(), (encIdent.clone()).clone(), inScopeEnv.clone())) else { bail!("pattern mismatch") };
                     Ok((encIdent.clone(), inLocals.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -5115,7 +5115,7 @@ pub fn updateLocalsForLetExp(mut inIdent: Ident, mut inEncIdent: Ident, mut inPo
                     encIdent = (addPostfixToIdent((inEncIdent.clone()).clone(), inPostfix.clone())).clone();
                     loctype = lookupTupleList(inLocals.clone(), (encIdent.clone()).clone())?;
                     let true = (loctype.clone() == inType.clone()) else { bail!("pattern mismatch") };
-                    let true = (usedInImmediateLetScope((inIdent.clone()).clone(), (encIdent.clone()).clone(), inScopeEnv.clone())?) else { bail!("pattern mismatch") };
+                    let true = (usedInImmediateLetScope((inIdent.clone()).clone(), (encIdent.clone()).clone(), inScopeEnv.clone())) else { bail!("pattern mismatch") };
                     (encIdent, locals) = updateLocalsForLetExp((inIdent.clone()).clone(), (inEncIdent.clone()).clone(), inPostfix.clone() + 1, inType.clone(), inLocals.clone(), inScopeEnv.clone())?;
                     Ok((encIdent.clone(), locals.clone()))
                 }
@@ -5203,7 +5203,7 @@ pub fn lookupUpdateMatchingExp(mut inIdent: Ident, mut inPathIdent: Arc<PathIden
                     let mut fields: TypedIdents = metamodelica::nil();
                     let mut fms = (*fms).clone();
                     let mut mtype = (*mtype).clone();
-                    mtype = deAliasedType(mtype.clone(), astDefs.clone())?;
+                    mtype = deAliasedType(mtype.clone(), astDefs.clone());
                     (fields, _) = getFieldsForRecord(mtype.clone(), tagpath.clone(), astDefs.clone())?;
                     (valtype, fms) = lookupUpdateMExpRecord((inid.clone()).clone(), path.clone(), fms.clone(), fields.clone(), astDefs.clone())?;
                     Ok((valtype.clone(), Arc::new(MatchingExp::RECORD_MATCH { tagName: tagpath.clone(), fieldMatchings: fms.clone() })))
@@ -5217,7 +5217,7 @@ pub fn lookupUpdateMatchingExp(mut inIdent: Ident, mut inPathIdent: Arc<PathIden
                     let mut valtype: Arc<TypeSignature> = Arc::new(TypeSignature::BOOLEAN_TYPE);
                     let mut mexp = (*mexp).clone();
                     let mut mtype = (*mtype).clone();
-                    let __pa0 = ::match_deref::match_deref! { match &(deAliasedType(mtype.clone(), astDefs.clone())?) {
+                    let __pa0 = ::match_deref::match_deref! { match &(deAliasedType(mtype.clone(), astDefs.clone())) {
                         Deref @ TypeSignature::OPTION_TYPE { ofType: __pa0 } => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -5234,7 +5234,7 @@ pub fn lookupUpdateMatchingExp(mut inIdent: Ident, mut inPathIdent: Arc<PathIden
                     let mut valtype: Arc<TypeSignature> = Arc::new(TypeSignature::BOOLEAN_TYPE);
                     let mut mtypeLst: Arc<metamodelica::List<Arc<TypeSignature>>> = metamodelica::nil();
                     let mut mexpLst = (*mexpLst).clone();
-                    let __pa0 = ::match_deref::match_deref! { match &(deAliasedType(mtype.clone(), astDefs.clone())?) {
+                    let __pa0 = ::match_deref::match_deref! { match &(deAliasedType(mtype.clone(), astDefs.clone())) {
                         Deref @ TypeSignature::TUPLE_TYPE { ofTypes: __pa0 } => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -5252,7 +5252,7 @@ pub fn lookupUpdateMatchingExp(mut inIdent: Ident, mut inPathIdent: Arc<PathIden
                     let mut mtypeLst: Arc<metamodelica::List<Arc<TypeSignature>>> = metamodelica::nil();
                     let mut mexpLst = (*mexpLst).clone();
                     let mut mtype = (*mtype).clone();
-                    let __pa0 = ::match_deref::match_deref! { match &(deAliasedType(mtype.clone(), astDefs.clone())?) {
+                    let __pa0 = ::match_deref::match_deref! { match &(deAliasedType(mtype.clone(), astDefs.clone())) {
                         Deref @ TypeSignature::LIST_TYPE { ofType: __pa0 } => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -5271,7 +5271,7 @@ pub fn lookupUpdateMatchingExp(mut inIdent: Ident, mut inPathIdent: Arc<PathIden
                     let mut valtype: Arc<TypeSignature> = Arc::new(TypeSignature::BOOLEAN_TYPE);
                     let mut mexp = (*mexp).clone();
                     let mut restmexp = (*restmexp).clone();
-                    let __pa0 = ::match_deref::match_deref! { match &(deAliasedType(mtype.clone(), astDefs.clone())?) {
+                    let __pa0 = ::match_deref::match_deref! { match &(deAliasedType(mtype.clone(), astDefs.clone())) {
                         Deref @ TypeSignature::LIST_TYPE { ofType: __pa0 } => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -5316,7 +5316,7 @@ pub fn lookupUpdateMExpDotPath(mut inIdent: Ident, mut inPathIdent: Arc<PathIden
                     let mut fields: TypedIdents = metamodelica::nil();
                     let mut fms = (*fms).clone();
                     let mut mtype = (*mtype).clone();
-                    mtype = deAliasedType(mtype.clone(), astDefs.clone())?;
+                    mtype = deAliasedType(mtype.clone(), astDefs.clone());
                     (fields, _) = getFieldsForRecord(mtype.clone(), tagpath.clone(), astDefs.clone())?;
                     valtype = lookupTupleList(fields.clone(), (id.clone()).clone())?;
                     fms = updateFieldMatchingsForField((inid.clone()).clone(), (id.clone()).clone(), fms.clone())?;
@@ -5333,7 +5333,7 @@ pub fn lookupUpdateMExpDotPath(mut inIdent: Ident, mut inPathIdent: Arc<PathIden
                     let mut reason: ArcStr = arcstr::literal!("");
                     let mut tagpath = (*tagpath).clone();
                     let mut mtype = (*mtype).clone();
-                    mtype = deAliasedType(mtype.clone(), astDefs.clone())?;
+                    mtype = deAliasedType(mtype.clone(), astDefs.clone());
                     (fields, tagpath) = getFieldsForRecord(mtype.clone(), tagpath.clone(), astDefs.clone())?;
                     if '__try0: {
                         unwrap_break_err!(lookupTupleList(fields.clone(), (id.clone()).clone()), '__try0);
@@ -5353,7 +5353,7 @@ pub fn lookupUpdateMExpDotPath(mut inIdent: Ident, mut inPathIdent: Arc<PathIden
                     let mut fields: TypedIdents = metamodelica::nil();
                     let mut fms = (*fms).clone();
                     let mut mtype = (*mtype).clone();
-                    mtype = deAliasedType(mtype.clone(), astDefs.clone())?;
+                    mtype = deAliasedType(mtype.clone(), astDefs.clone());
                     (fields, _) = getFieldsForRecord(mtype.clone(), tagpath.clone(), astDefs.clone())?;
                     mtype = lookupTupleList(fields.clone(), (id.clone()).clone())?;
                     (valtype, fms) = lookupUpdateMExpDotPathRecord((inid.clone()).clone(), (id.clone()).clone(), path.clone(), fms.clone(), mtype.clone(), astDefs.clone())?;
@@ -5370,7 +5370,7 @@ pub fn lookupUpdateMExpDotPath(mut inIdent: Ident, mut inPathIdent: Arc<PathIden
                     let mut reason: ArcStr = arcstr::literal!("");
                     let mut tagpath = (*tagpath).clone();
                     let mut mtype = (*mtype).clone();
-                    mtype = deAliasedType(mtype.clone(), astDefs.clone())?;
+                    mtype = deAliasedType(mtype.clone(), astDefs.clone());
                     (fields, tagpath) = getFieldsForRecord(mtype.clone(), tagpath.clone(), astDefs.clone())?;
                     if '__try0: {
                         unwrap_break_err!(lookupTupleList(fields.clone(), (id.clone()).clone()), '__try0);
@@ -5856,7 +5856,7 @@ pub fn getTypeInfo(mut inTypePackageOpt: Option<Arc<PathIdent>>, mut inTypeIdent
     Ok((outTypePackage, outTypeInfo))
 }
 
-fn deAliasedType(mut inType: Arc<TypeSignature>, mut inASTDefs: Arc<metamodelica::List<ASTDef>>) -> Result<Arc<TypeSignature>> {
+fn deAliasedType(mut inType: Arc<TypeSignature>, mut inASTDefs: Arc<metamodelica::List<ASTDef>>) -> Arc<TypeSignature> {
     let mut outType: Arc<TypeSignature>;
     outType = 'mc: {
         let __mc_input = (inType.clone(), inASTDefs.clone());
@@ -5872,7 +5872,7 @@ fn deAliasedType(mut inType: Arc<TypeSignature>, mut inASTDefs: Arc<metamodelica
                         _ => bail!("pattern mismatch"),
                     } };
                     dt = __pa0.clone();
-                    Ok(deAliasedType(dt.clone(), astDefs.clone())?)
+                    Ok(deAliasedType(dt.clone(), astDefs.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -5885,9 +5885,9 @@ fn deAliasedType(mut inType: Arc<TypeSignature>, mut inASTDefs: Arc<metamodelica
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outType)
+    outType
 }
 
 fn typesEqual(mut inType: Arc<TypeSignature>, mut inTypeConcrete: Arc<TypeSignature>, mut inTypeVars: Arc<metamodelica::List<ArcStr>>, mut inSetTypeVars: TypedIdents, mut inASTDefs: Arc<metamodelica::List<ASTDef>>) -> Result<TypedIdents> {
@@ -5931,8 +5931,8 @@ fn typesEqual(mut inType: Arc<TypeSignature>, mut inTypeConcrete: Arc<TypeSignat
                 (Deref @ TypeSignature::NAMED_TYPE { name: Deref @ PathIdent::PATH_IDENT { .. } }, tyConcrete, _, setTyVars, astDefs) => {
                     let mut ty: Arc<TypeSignature> = Arc::new(TypeSignature::BOOLEAN_TYPE);
                     let mut tyConcrete = (*tyConcrete).clone();
-                    ty = deAliasedType(inType.clone(), astDefs.clone())?;
-                    tyConcrete = deAliasedType(tyConcrete.clone(), astDefs.clone())?;
+                    ty = deAliasedType(inType.clone(), astDefs.clone());
+                    tyConcrete = deAliasedType(tyConcrete.clone(), astDefs.clone());
                     typesEqualConcrete(ty.clone(), tyConcrete.clone(), astDefs.clone())?;
                     Ok(setTyVars.clone())
                 }
@@ -5945,8 +5945,8 @@ fn typesEqual(mut inType: Arc<TypeSignature>, mut inTypeConcrete: Arc<TypeSignat
                     let mut ty: Arc<TypeSignature> = Arc::new(TypeSignature::BOOLEAN_TYPE);
                     let mut tyConcrete = (*tyConcrete).clone();
                     let false = (listMember((tid.clone()).clone(), tyVars.clone())) else { bail!("pattern mismatch") };
-                    ty = deAliasedType(inType.clone(), astDefs.clone())?;
-                    tyConcrete = deAliasedType(tyConcrete.clone(), astDefs.clone())?;
+                    ty = deAliasedType(inType.clone(), astDefs.clone());
+                    tyConcrete = deAliasedType(tyConcrete.clone(), astDefs.clone());
                     typesEqualConcrete(ty.clone(), tyConcrete.clone(), astDefs.clone())?;
                     Ok(setTyVars.clone())
                 }
@@ -5959,7 +5959,7 @@ fn typesEqual(mut inType: Arc<TypeSignature>, mut inTypeConcrete: Arc<TypeSignat
                     let mut ty: Arc<TypeSignature> = Arc::new(TypeSignature::BOOLEAN_TYPE);
                     let mut tyConcreteDA: Arc<TypeSignature> = Arc::new(TypeSignature::BOOLEAN_TYPE);
                     ty = lookupTupleList(setTyVars.clone(), (tid.clone()).clone())?;
-                    tyConcreteDA = deAliasedType(tyConcrete.clone(), astDefs.clone())?;
+                    tyConcreteDA = deAliasedType(tyConcrete.clone(), astDefs.clone());
                     typesEqualConcrete(ty.clone(), tyConcreteDA.clone(), astDefs.clone())?;
                     Ok(setTyVars.clone())
                 }
@@ -5973,7 +5973,7 @@ fn typesEqual(mut inType: Arc<TypeSignature>, mut inTypeConcrete: Arc<TypeSignat
                     let mut tyConcreteDA: Arc<TypeSignature> = Arc::new(TypeSignature::BOOLEAN_TYPE);
                     let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
                     ty = lookupTupleList(setTyVars.clone(), (tid.clone()).clone())?;
-                    tyConcreteDA = deAliasedType(tyConcrete.clone(), astDefs.clone())?;
+                    tyConcreteDA = deAliasedType(tyConcrete.clone(), astDefs.clone());
                     if '__try0: {
                         unwrap_break_err!(typesEqualConcrete(ty.clone(), tyConcreteDA.clone(), astDefs.clone()), '__try0);
                         Ok::<(), anyhow::Error>(())
@@ -5993,7 +5993,7 @@ fn typesEqual(mut inType: Arc<TypeSignature>, mut inTypeConcrete: Arc<TypeSignat
                         Ok::<(), anyhow::Error>(())
                     }.is_ok() { bail!("failure(): body succeeded") }
                     let true = (listMember((tid.clone()).clone(), tyVars.clone())) else { bail!("pattern mismatch") };
-                    tyConcreteDA = deAliasedType(tyConcrete.clone(), astDefs.clone())?;
+                    tyConcreteDA = deAliasedType(tyConcrete.clone(), astDefs.clone());
                     Ok(metamodelica::cons((tid.clone(), tyConcreteDA.clone()), setTyVars.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -6220,7 +6220,7 @@ pub fn getFunSignature(mut inFunName: Arc<PathIdent>, mut inSourceInfo: SourceIn
                     let mut iargs: TypedIdents = metamodelica::nil();
                     let mut oargs: TypedIdents = metamodelica::nil();
                     let mut fname = (*fname).clone();
-                    let __pa0 = ::match_deref::match_deref! { match &(deAliasedType(Arc::new(TypeSignature::NAMED_TYPE { name: fname.clone() }), astDefs.clone())?) {
+                    let __pa0 = ::match_deref::match_deref! { match &(deAliasedType(Arc::new(TypeSignature::NAMED_TYPE { name: fname.clone() }), astDefs.clone())) {
                         Deref @ TypeSignature::NAMED_TYPE { name: __pa0 } => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -6440,7 +6440,7 @@ pub fn fullyQualifyAstTypeInfo(mut inASTTypeInfo: TypeInfo, mut inImportPackage:
             ::match_deref::match_deref! { match &__mc_input {
                 (TypeInfo::TI_ALIAS_TYPE { aliasType }, importpckg) => {
                     let mut aliasType = (*aliasType).clone();
-                    aliasType = fullyQualifyAstTypeSignature(aliasType.clone(), importpckg.clone(), metamodelica::nil())?;
+                    aliasType = fullyQualifyAstTypeSignature(aliasType.clone(), importpckg.clone(), metamodelica::nil());
                     Ok(TypeInfo::TI_ALIAS_TYPE { aliasType: aliasType.clone() })
                 }
                 _ => bail!("nomatch"),
@@ -6462,7 +6462,7 @@ pub fn fullyQualifyAstTypeInfo(mut inASTTypeInfo: TypeInfo, mut inImportPackage:
             ::match_deref::match_deref! { match &__mc_input {
                 (TypeInfo::TI_CONST_TYPE { constType }, importpckg) => {
                     let mut constType = (*constType).clone();
-                    constType = fullyQualifyAstTypeSignature(constType.clone(), importpckg.clone(), metamodelica::nil())?;
+                    constType = fullyQualifyAstTypeSignature(constType.clone(), importpckg.clone(), metamodelica::nil());
                     Ok(TypeInfo::TI_CONST_TYPE { constType: constType.clone() })
                 }
                 _ => bail!("nomatch"),
@@ -6485,11 +6485,11 @@ pub fn fullyQualifyAstTypeInfo(mut inASTTypeInfo: TypeInfo, mut inImportPackage:
 
 pub fn fullyQualifyAstTypedIdents(mut inASTDefTypedIdents: TypedIdents, mut inImportPackage: Arc<PathIdent>, mut inTypeVars: Arc<metamodelica::List<ArcStr>>) -> Result<TypedIdents> {
     let mut outASTDefTypedIdents: TypedIdents;
-    outASTDefTypedIdents = listMap2Tuple22(inASTDefTypedIdents.clone(), (std::sync::Arc::new(fullyQualifyAstTypeSignature) as std::sync::Arc<dyn ::std::ops::Fn(Arc<TypeSignature>, Arc<PathIdent>, Arc<metamodelica::List<ArcStr>>) -> Result<Arc<TypeSignature>> + 'static>), inImportPackage.clone(), inTypeVars.clone())?;
+    outASTDefTypedIdents = listMap2Tuple22(inASTDefTypedIdents.clone(), (std::sync::Arc::new(fnptr!(fullyQualifyAstTypeSignature, Arc<TypeSignature>, Arc<PathIdent>, Arc<metamodelica::List<ArcStr>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<TypeSignature>, Arc<PathIdent>, Arc<metamodelica::List<ArcStr>>) -> Result<Arc<TypeSignature>> + 'static>), inImportPackage.clone(), inTypeVars.clone())?;
     Ok(outASTDefTypedIdents)
 }
 
-pub fn fullyQualifyAstTypeSignature(mut inASTDefTypeSignature: Arc<TypeSignature>, mut inImportPackage: Arc<PathIdent>, mut inTypeVars: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<TypeSignature>> {
+pub fn fullyQualifyAstTypeSignature(mut inASTDefTypeSignature: Arc<TypeSignature>, mut inImportPackage: Arc<PathIdent>, mut inTypeVars: Arc<metamodelica::List<ArcStr>>) -> Arc<TypeSignature> {
     let mut outASTDefTypeSignature: Arc<TypeSignature>;
     outASTDefTypeSignature = 'mc: {
         let __mc_input = (inASTDefTypeSignature.clone(), inImportPackage.clone(), inTypeVars.clone());
@@ -6497,7 +6497,7 @@ pub fn fullyQualifyAstTypeSignature(mut inASTDefTypeSignature: Arc<TypeSignature
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ TypeSignature::LIST_TYPE { ofType: ota }, importpckg, tyVars) => {
                     let mut ota = (*ota).clone();
-                    ota = fullyQualifyAstTypeSignature(ota.clone(), importpckg.clone(), tyVars.clone())?;
+                    ota = fullyQualifyAstTypeSignature(ota.clone(), importpckg.clone(), tyVars.clone());
                     Ok(Arc::new(TypeSignature::LIST_TYPE { ofType: ota.clone() }))
                 }
                 _ => bail!("nomatch"),
@@ -6507,7 +6507,7 @@ pub fn fullyQualifyAstTypeSignature(mut inASTDefTypeSignature: Arc<TypeSignature
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ TypeSignature::ARRAY_TYPE { ofType: ota }, importpckg, tyVars) => {
                     let mut ota = (*ota).clone();
-                    ota = fullyQualifyAstTypeSignature(ota.clone(), importpckg.clone(), tyVars.clone())?;
+                    ota = fullyQualifyAstTypeSignature(ota.clone(), importpckg.clone(), tyVars.clone());
                     Ok(Arc::new(TypeSignature::ARRAY_TYPE { ofType: ota.clone() }))
                 }
                 _ => bail!("nomatch"),
@@ -6517,7 +6517,7 @@ pub fn fullyQualifyAstTypeSignature(mut inASTDefTypeSignature: Arc<TypeSignature
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ TypeSignature::OPTION_TYPE { ofType: ota }, importpckg, tyVars) => {
                     let mut ota = (*ota).clone();
-                    ota = fullyQualifyAstTypeSignature(ota.clone(), importpckg.clone(), tyVars.clone())?;
+                    ota = fullyQualifyAstTypeSignature(ota.clone(), importpckg.clone(), tyVars.clone());
                     Ok(Arc::new(TypeSignature::OPTION_TYPE { ofType: ota.clone() }))
                 }
                 _ => bail!("nomatch"),
@@ -6527,7 +6527,7 @@ pub fn fullyQualifyAstTypeSignature(mut inASTDefTypeSignature: Arc<TypeSignature
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ TypeSignature::TUPLE_TYPE { ofTypes: typeLst }, importpckg, tyVars) => {
                     let mut typeLst = (*typeLst).clone();
-                    typeLst = List::map2(typeLst.clone(), (std::sync::Arc::new(fullyQualifyAstTypeSignature) as std::sync::Arc<dyn ::std::ops::Fn(Arc<TypeSignature>, Arc<PathIdent>, Arc<metamodelica::List<ArcStr>>) -> Result<Arc<TypeSignature>> + 'static>), importpckg.clone(), tyVars.clone())?;
+                    typeLst = List::map2(typeLst.clone(), (std::sync::Arc::new(fnptr!(fullyQualifyAstTypeSignature, Arc<TypeSignature>, Arc<PathIdent>, Arc<metamodelica::List<ArcStr>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<TypeSignature>, Arc<PathIdent>, Arc<metamodelica::List<ArcStr>>) -> Result<Arc<TypeSignature>> + 'static>), importpckg.clone(), tyVars.clone())?;
                     Ok(Arc::new(TypeSignature::TUPLE_TYPE { ofTypes: typeLst.clone() }))
                 }
                 _ => bail!("nomatch"),
@@ -6572,9 +6572,9 @@ pub fn fullyQualifyAstTypeSignature(mut inASTDefTypeSignature: Arc<TypeSignature
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outASTDefTypeSignature)
+    outASTDefTypeSignature
 }
 
 pub fn convertNameTypeIfIntrinsic(mut inNameOfType: Arc<PathIdent>) -> Arc<TypeSignature> {
@@ -6595,7 +6595,7 @@ pub fn fullyQualifyTemplateDef(mut inTemplateDef: TemplateDef, mut inASTDefs: Ar
             ::match_deref::match_deref! { match &__mc_input {
                 (TemplateDef::LITERAL_DEF { value: r#str, litType }, astDefs) => {
                     let mut litType = (*litType).clone();
-                    litType = fullyQualifyTemplateTypeSignature(litType.clone(), astDefs.clone())?;
+                    litType = fullyQualifyTemplateTypeSignature(litType.clone(), astDefs.clone());
                     Ok(TemplateDef::LITERAL_DEF { value: (r#str.clone()).clone(), litType: litType.clone() })
                 }
                 _ => bail!("nomatch"),
@@ -6613,7 +6613,7 @@ pub fn fullyQualifyTemplateDef(mut inTemplateDef: TemplateDef, mut inASTDefs: Ar
             ::match_deref::match_deref! { match &__mc_input {
                 (TemplateDef::TEMPLATE_DEF { args: targs, lesc, resc, exp: texp }, astDefs) => {
                     let mut targs = (*targs).clone();
-                    targs = listMap1Tuple22(targs.clone(), (std::sync::Arc::new(fullyQualifyTemplateTypeSignature) as std::sync::Arc<dyn ::std::ops::Fn(Arc<TypeSignature>, Arc<metamodelica::List<ASTDef>>) -> Result<Arc<TypeSignature>> + 'static>), astDefs.clone())?;
+                    targs = listMap1Tuple22(targs.clone(), (std::sync::Arc::new(fnptr!(fullyQualifyTemplateTypeSignature, Arc<TypeSignature>, Arc<metamodelica::List<ASTDef>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<TypeSignature>, Arc<metamodelica::List<ASTDef>>) -> Result<Arc<TypeSignature>> + 'static>), astDefs.clone())?;
                     Ok(TemplateDef::TEMPLATE_DEF { args: targs.clone(), lesc: (lesc.clone()).clone(), resc: (resc.clone()).clone(), exp: texp.clone() })
                 }
                 _ => bail!("nomatch"),
@@ -6634,7 +6634,7 @@ pub fn fullyQualifyTemplateDef(mut inTemplateDef: TemplateDef, mut inASTDefs: Ar
     Ok(outTemplateDef)
 }
 
-pub fn fullyQualifyTemplateTypeSignature(mut inTemplateTypeSignature: Arc<TypeSignature>, mut inASTDefs: Arc<metamodelica::List<ASTDef>>) -> Result<Arc<TypeSignature>> {
+pub fn fullyQualifyTemplateTypeSignature(mut inTemplateTypeSignature: Arc<TypeSignature>, mut inASTDefs: Arc<metamodelica::List<ASTDef>>) -> Arc<TypeSignature> {
     let mut outFullyQualifiedTypeSignature: Arc<TypeSignature>;
     outFullyQualifiedTypeSignature = 'mc: {
         let __mc_input = (inTemplateTypeSignature.clone(), inASTDefs.clone());
@@ -6642,7 +6642,7 @@ pub fn fullyQualifyTemplateTypeSignature(mut inTemplateTypeSignature: Arc<TypeSi
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ TypeSignature::LIST_TYPE { ofType: ota }, astDefs) => {
                     let mut ota = (*ota).clone();
-                    ota = fullyQualifyTemplateTypeSignature(ota.clone(), astDefs.clone())?;
+                    ota = fullyQualifyTemplateTypeSignature(ota.clone(), astDefs.clone());
                     Ok(Arc::new(TypeSignature::LIST_TYPE { ofType: ota.clone() }))
                 }
                 _ => bail!("nomatch"),
@@ -6652,7 +6652,7 @@ pub fn fullyQualifyTemplateTypeSignature(mut inTemplateTypeSignature: Arc<TypeSi
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ TypeSignature::ARRAY_TYPE { ofType: ota }, astDefs) => {
                     let mut ota = (*ota).clone();
-                    ota = fullyQualifyTemplateTypeSignature(ota.clone(), astDefs.clone())?;
+                    ota = fullyQualifyTemplateTypeSignature(ota.clone(), astDefs.clone());
                     Ok(Arc::new(TypeSignature::ARRAY_TYPE { ofType: ota.clone() }))
                 }
                 _ => bail!("nomatch"),
@@ -6662,7 +6662,7 @@ pub fn fullyQualifyTemplateTypeSignature(mut inTemplateTypeSignature: Arc<TypeSi
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ TypeSignature::OPTION_TYPE { ofType: ota }, astDefs) => {
                     let mut ota = (*ota).clone();
-                    ota = fullyQualifyTemplateTypeSignature(ota.clone(), astDefs.clone())?;
+                    ota = fullyQualifyTemplateTypeSignature(ota.clone(), astDefs.clone());
                     Ok(Arc::new(TypeSignature::OPTION_TYPE { ofType: ota.clone() }))
                 }
                 _ => bail!("nomatch"),
@@ -6672,7 +6672,7 @@ pub fn fullyQualifyTemplateTypeSignature(mut inTemplateTypeSignature: Arc<TypeSi
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ TypeSignature::TUPLE_TYPE { ofTypes: typeLst }, astDefs) => {
                     let mut typeLst = (*typeLst).clone();
-                    typeLst = List::map1(typeLst.clone(), (std::sync::Arc::new(fullyQualifyTemplateTypeSignature) as std::sync::Arc<dyn ::std::ops::Fn(Arc<TypeSignature>, Arc<metamodelica::List<ASTDef>>) -> Result<Arc<TypeSignature>> + 'static>), astDefs.clone())?;
+                    typeLst = List::map1(typeLst.clone(), (std::sync::Arc::new(fnptr!(fullyQualifyTemplateTypeSignature, Arc<TypeSignature>, Arc<metamodelica::List<ASTDef>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<TypeSignature>, Arc<metamodelica::List<ASTDef>>) -> Result<Arc<TypeSignature>> + 'static>), astDefs.clone())?;
                     Ok(Arc::new(TypeSignature::TUPLE_TYPE { ofTypes: typeLst.clone() }))
                 }
                 _ => bail!("nomatch"),
@@ -6709,9 +6709,9 @@ pub fn fullyQualifyTemplateTypeSignature(mut inTemplateTypeSignature: Arc<TypeSi
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outFullyQualifiedTypeSignature)
+    outFullyQualifiedTypeSignature
 }
 
 fn lookupTupleList<Type_a: Clone + 'static + PartialEq, Type_b: Clone + 'static>(mut inList: Arc<metamodelica::List<(Type_a, Type_b)>>, mut inItemA: Type_a) -> Result<Type_b> {
@@ -6740,7 +6740,7 @@ fn lookupTupleList<Type_a: Clone + 'static + PartialEq, Type_b: Clone + 'static>
     Ok(outItemB)
 }
 
-fn updateTupleList<Type_a: Clone + 'static + PartialEq, Type_b: Clone + 'static>(mut inList: Arc<metamodelica::List<(Type_a, Type_b)>>, mut inTuple: (Type_a, Type_b)) -> Result<Arc<metamodelica::List<(Type_a, Type_b)>>> {
+fn updateTupleList<Type_a: Clone + 'static + PartialEq, Type_b: Clone + 'static>(mut inList: Arc<metamodelica::List<(Type_a, Type_b)>>, mut inTuple: (Type_a, Type_b)) -> Arc<metamodelica::List<(Type_a, Type_b)>> {
     let mut outList: Arc<metamodelica::List<(Type_a, Type_b)>>;
     outList = 'mc: {
         let __mc_input = (inList.clone(), inTuple.clone());
@@ -6761,9 +6761,9 @@ fn updateTupleList<Type_a: Clone + 'static + PartialEq, Type_b: Clone + 'static>
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outList)
+    outList
 }
 
 fn lookupDeleteTupleList<Type_a: Clone + 'static + PartialEq, Type_b: Clone + 'static>(mut inList: Arc<metamodelica::List<(Type_a, Type_b)>>, mut inItemA: Type_a) -> Result<(Type_b, Arc<metamodelica::List<(Type_a, Type_b)>>)> {
@@ -6891,7 +6891,7 @@ fn addSusanNotification(mut inErrMsg: ArcStr, mut inInfo: SourceInfo) -> Result<
     Ok(())
 }
 
-pub fn canBeEscapedUnquoted(mut inStringList: Arc<metamodelica::List<ArcStr>>) -> Result<bool> {
+pub fn canBeEscapedUnquoted(mut inStringList: Arc<metamodelica::List<ArcStr>>) -> bool {
     let mut outCanBeUnquoted: bool;
     outCanBeUnquoted = 'mc: {
         let __mc_input = inStringList.clone();
@@ -6910,7 +6910,7 @@ pub fn canBeEscapedUnquoted(mut inStringList: Arc<metamodelica::List<ArcStr>>) -
                 Deref @ metamodelica::List::Cons { head: r#str, tail: rest @ Deref @ metamodelica::List::Cons { head: _, tail: _ } } => {
                     let true = (((r#str.clone()).clone().len() as i32) > 0) else { bail!("pattern mismatch") };
                     let true = (canBeEscapedUnquotedChars(stringListStringChar((r#str.clone()).clone()))) else { bail!("pattern mismatch") };
-                    Ok(canBeEscapedUnquoted(rest.clone())?)
+                    Ok(canBeEscapedUnquoted(rest.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -6923,9 +6923,9 @@ pub fn canBeEscapedUnquoted(mut inStringList: Arc<metamodelica::List<ArcStr>>) -
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outCanBeUnquoted)
+    outCanBeUnquoted
 }
 
 fn canBeEscapedUnquotedChars(mut inChars: Arc<metamodelica::List<ArcStr>>) -> bool {

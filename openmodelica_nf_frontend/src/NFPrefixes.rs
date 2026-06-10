@@ -750,7 +750,7 @@ pub fn unparseReplaceable(mut repl: Replaceable) -> ArcStr {
 }
 
 pub fn printPrefixError(mut outerPrefix: ArcStr, mut innerPrefix: ArcStr, mut node: Arc<InstNode::InstNode>) -> Result<()> {
-    Error::addSourceMessage(Error::INVALID_TYPE_PREFIX.clone(), list![(outerPrefix.clone()).clone(), (InstNode::typeName(node.clone())?).clone(), (InstNode::name(node.clone())?).clone(), (innerPrefix.clone()).clone()], InstNode::info(node.clone())?)?;
+    Error::addSourceMessage(Error::INVALID_TYPE_PREFIX.clone(), list![(outerPrefix.clone()).clone(), (InstNode::typeName(node.clone())?).clone(), (InstNode::name(node.clone())?).clone(), (innerPrefix.clone()).clone()], InstNode::info(node.clone()))?;
     bail!("fail");
     Ok(())
 }

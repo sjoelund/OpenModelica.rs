@@ -95,7 +95,7 @@ pub type Import = Absyn::Import;
 
 pub type Msg = Option<SourceInfo>;
 
-pub fn inst(mut inPath: Arc<Absyn::Path>, mut inProgram: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<DAE::DAElist> {
+pub fn inst(mut inPath: Arc<Absyn::Path>, mut inProgram: Arc<metamodelica::List<Arc<SCode::Element>>>) -> DAE::DAElist {
     let mut dae: DAE::DAElist;
     dae = 'mc: {
         let __mc_input = inProgram.clone();
@@ -105,7 +105,7 @@ pub fn inst(mut inPath: Arc<Absyn::Path>, mut inProgram: Arc<metamodelica::List<
                     let mut g: Graph = <FCore::Graph as ::std::default::Default>::default();
                     let mut p: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
                     let mut lst: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
-                    p = doSCodeDep(inProgram.clone(), inPath.clone())?;
+                    p = doSCodeDep(inProgram.clone(), inPath.clone());
                     lst = metamodelica::nil();
                     System::realtimeTick(ClockIndexes::RT_CLOCK_FINST.clone())?;
                     (_, g) = FBuiltin::initialGraph(FCore::emptyCache())?;
@@ -135,19 +135,19 @@ pub fn inst(mut inPath: Arc<Absyn::Path>, mut inProgram: Arc<metamodelica::List<
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(dae)
+    dae
 }
 
-pub fn instPath(mut inPath: Arc<Absyn::Path>, mut inProgram: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<DAE::DAElist> {
+pub fn instPath(mut inPath: Arc<Absyn::Path>, mut inProgram: Arc<metamodelica::List<Arc<SCode::Element>>>) -> DAE::DAElist {
     let mut dae: DAE::DAElist;
     dae = 'mc: {
         let __mc_input = inProgram.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    Ok(inst(inPath.clone(), inProgram.clone())?)
+                    Ok(inst(inPath.clone(), inProgram.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -160,7 +160,7 @@ pub fn instPath(mut inPath: Arc<Absyn::Path>, mut inProgram: Arc<metamodelica::L
                     let mut lst: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
                     lst = metamodelica::nil();
                     System::realtimeTick(ClockIndexes::RT_CLOCK_FINST.clone())?;
-                    p = doSCodeDep(inProgram.clone(), inPath.clone())?;
+                    p = doSCodeDep(inProgram.clone(), inPath.clone());
                     lst = List::consr(lst.clone(), System::realtimeTock(ClockIndexes::RT_CLOCK_FINST.clone())?);
                     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SCode depend:   ")); __mm_s.push_str(&*realString(listHead(lst.clone())?)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     System::realtimeTick(ClockIndexes::RT_CLOCK_FINST.clone())?;
@@ -191,12 +191,12 @@ pub fn instPath(mut inPath: Arc<Absyn::Path>, mut inProgram: Arc<metamodelica::L
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(dae)
+    dae
 }
 
-fn doSCodeDep(mut inProgram: Arc<metamodelica::List<Arc<SCode::Element>>>, mut inPath: Arc<Absyn::Path>) -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> {
+fn doSCodeDep(mut inProgram: Arc<metamodelica::List<Arc<SCode::Element>>>, mut inPath: Arc<Absyn::Path>) -> Arc<metamodelica::List<Arc<SCode::Element>>> {
     let mut outProgram: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
     outProgram = 'mc: {
         let __mc_input = inPath.clone();
@@ -219,8 +219,8 @@ fn doSCodeDep(mut inProgram: Arc<metamodelica::List<Arc<SCode::Element>>>, mut i
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outProgram)
+    outProgram
 }
 

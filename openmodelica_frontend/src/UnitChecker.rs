@@ -51,7 +51,7 @@ use openmodelica_util::Error;
 use openmodelica_util::Flags;
 use openmodelica_util::MMath;
 
-pub fn check(mut tms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>, mut ist: UnitAbsyn::InstStore) -> Result<UnitAbsyn::InstStore> {
+pub fn check(mut tms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>, mut ist: UnitAbsyn::InstStore) -> UnitAbsyn::InstStore {
     let mut outSt: UnitAbsyn::InstStore;
     outSt = 'mc: {
         let __mc_input = (tms.clone(), ist.clone());
@@ -78,7 +78,7 @@ pub fn check(mut tms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>, mut ist
                     let mut st: UnitAbsyn::InstStore = UnitAbsyn::InstStore::NOSTORE;
                     let (UnitAbsyn::CONSISTENT { .. }, _, __pa0) = (checkTerm(tm1.clone(), st1.clone())?) else { bail!("pattern mismatch") };
                     st2 = __pa0.clone();
-                    st = check(rest1.clone(), UnitAbsyn::InstStore::INSTSTORE { store: st2.clone(), ht: ht.clone(), checkResult: Some(crate::UnitAbsyn::UnitCheckResult::CONSISTENT) })?;
+                    st = check(rest1.clone(), UnitAbsyn::InstStore::INSTSTORE { store: st2.clone(), ht: ht.clone(), checkResult: Some(crate::UnitAbsyn::UnitCheckResult::CONSISTENT) });
                     Ok(st.clone())
                 }
                 _ => bail!("nomatch"),
@@ -115,9 +115,9 @@ pub fn check(mut tms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>, mut ist
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outSt)
+    outSt
 }
 
 pub fn isComplete(mut st: UnitAbsyn::Store) -> Result<(bool, UnitAbsyn::Store)> {
@@ -388,7 +388,7 @@ fn unify(mut insu1: UnitAbsyn::SpecUnit, mut insu2: UnitAbsyn::SpecUnit, mut st:
     Ok((outresult, outSt))
 }
 
-fn isSpecUnitEq(mut insu1: UnitAbsyn::SpecUnit, mut insu2: UnitAbsyn::SpecUnit) -> Result<bool> {
+fn isSpecUnitEq(mut insu1: UnitAbsyn::SpecUnit, mut insu2: UnitAbsyn::SpecUnit) -> bool {
     let mut res: bool;
     res = 'mc: {
         let __mc_input = (insu1.clone(), insu2.clone());
@@ -404,7 +404,7 @@ fn isSpecUnitEq(mut insu1: UnitAbsyn::SpecUnit, mut insu2: UnitAbsyn::SpecUnit) 
             ::match_deref::match_deref! { match &__mc_input {
                 (UnitAbsyn::SpecUnit { typeParameters: _, units: Deref @ metamodelica::List::Nil }, UnitAbsyn::SpecUnit { typeParameters: _, units: Deref @ metamodelica::List::Cons { head: MMath::Rational { nom: 0, denom: _ }, tail: rest1 } }) => {
                     let mut r1: bool = false;
-                    r1 = isSpecUnitEq(UnitAbsyn::SpecUnit { typeParameters: metamodelica::nil(), units: metamodelica::nil() }, UnitAbsyn::SpecUnit { typeParameters: metamodelica::nil(), units: rest1.clone() })?;
+                    r1 = isSpecUnitEq(UnitAbsyn::SpecUnit { typeParameters: metamodelica::nil(), units: metamodelica::nil() }, UnitAbsyn::SpecUnit { typeParameters: metamodelica::nil(), units: rest1.clone() });
                     Ok(r1.clone())
                 }
                 _ => bail!("nomatch"),
@@ -414,7 +414,7 @@ fn isSpecUnitEq(mut insu1: UnitAbsyn::SpecUnit, mut insu2: UnitAbsyn::SpecUnit) 
             ::match_deref::match_deref! { match &__mc_input {
                 (UnitAbsyn::SpecUnit { typeParameters: _, units: Deref @ metamodelica::List::Cons { head: MMath::Rational { nom: 0, denom: _ }, tail: rest1 } }, UnitAbsyn::SpecUnit { typeParameters: _, units: Deref @ metamodelica::List::Nil }) => {
                     let mut r1: bool = false;
-                    r1 = isSpecUnitEq(UnitAbsyn::SpecUnit { typeParameters: metamodelica::nil(), units: rest1.clone() }, UnitAbsyn::SpecUnit { typeParameters: metamodelica::nil(), units: metamodelica::nil() })?;
+                    r1 = isSpecUnitEq(UnitAbsyn::SpecUnit { typeParameters: metamodelica::nil(), units: rest1.clone() }, UnitAbsyn::SpecUnit { typeParameters: metamodelica::nil(), units: metamodelica::nil() });
                     Ok(r1.clone())
                 }
                 _ => bail!("nomatch"),
@@ -426,7 +426,7 @@ fn isSpecUnitEq(mut insu1: UnitAbsyn::SpecUnit, mut insu2: UnitAbsyn::SpecUnit) 
                     let mut r1: bool = false;
                     let true = (intEq(i1a.clone(), i2a.clone())) else { bail!("pattern mismatch") };
                     let true = (intEq(i1b.clone(), i2b.clone())) else { bail!("pattern mismatch") };
-                    r1 = isSpecUnitEq(UnitAbsyn::SpecUnit { typeParameters: metamodelica::nil(), units: rest1.clone() }, UnitAbsyn::SpecUnit { typeParameters: metamodelica::nil(), units: rest2.clone() })?;
+                    r1 = isSpecUnitEq(UnitAbsyn::SpecUnit { typeParameters: metamodelica::nil(), units: rest1.clone() }, UnitAbsyn::SpecUnit { typeParameters: metamodelica::nil(), units: rest2.clone() });
                     Ok(r1.clone())
                 }
                 _ => bail!("nomatch"),
@@ -440,9 +440,9 @@ fn isSpecUnitEq(mut insu1: UnitAbsyn::SpecUnit, mut insu2: UnitAbsyn::SpecUnit) 
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(res)
+    res
 }
 
 fn unifyunits(mut insu1: UnitAbsyn::SpecUnit, mut insu2: UnitAbsyn::SpecUnit, mut st: UnitAbsyn::Store) -> Result<(UnitAbsyn::UnitCheckResult, UnitAbsyn::Store)> {
@@ -454,7 +454,7 @@ fn unifyunits(mut insu1: UnitAbsyn::SpecUnit, mut insu2: UnitAbsyn::SpecUnit, mu
             let (mut su1, mut su2, mut st1) = __mc_input.clone() else { bail!("nomatch") };
             let false = (hasUnknown(su1.clone())?) else { bail!("pattern mismatch") };
             let false = (hasUnknown(su2.clone())?) else { bail!("pattern mismatch") };
-            let true = (isSpecUnitEq(su1.clone(), su2.clone())?) else { bail!("pattern mismatch") };
+            let true = (isSpecUnitEq(su1.clone(), su2.clone())) else { bail!("pattern mismatch") };
             Ok((crate::UnitAbsyn::UnitCheckResult::CONSISTENT, st1.clone()))
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
@@ -951,7 +951,7 @@ fn normalizeParamsExponents(mut inparams: Arc<metamodelica::List<(MMath::Rationa
                     let mut rest3: Arc<metamodelica::List<(MMath::Rational, UnitAbsyn::TypeParameter)>> = metamodelica::nil();
                     let mut expo2: MMath::Rational = <MMath::Rational as ::std::default::Default>::default();
                     let mut expo3: MMath::Rational = <MMath::Rational as ::std::default::Default>::default();
-                    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(getParam(rest1.clone(), loc1.clone())?) {
+                    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(getParam(rest1.clone(), loc1.clone())) {
                         (true, __pa0, __pa1) => (__pa0.clone(), __pa1.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -999,7 +999,7 @@ fn normalizeParamsExponents(mut inparams: Arc<metamodelica::List<(MMath::Rationa
     Ok(outparams)
 }
 
-fn getParam(mut inparams: Arc<metamodelica::List<(MMath::Rational, UnitAbsyn::TypeParameter)>>, mut loc: i32) -> Result<(bool, MMath::Rational, Arc<metamodelica::List<(MMath::Rational, UnitAbsyn::TypeParameter)>>)> {
+fn getParam(mut inparams: Arc<metamodelica::List<(MMath::Rational, UnitAbsyn::TypeParameter)>>, mut loc: i32) -> (bool, MMath::Rational, Arc<metamodelica::List<(MMath::Rational, UnitAbsyn::TypeParameter)>>) {
     let mut found: bool;
     let mut outexpo: MMath::Rational;
     let mut outparams: Arc<metamodelica::List<(MMath::Rational, UnitAbsyn::TypeParameter)>>;
@@ -1028,7 +1028,7 @@ fn getParam(mut inparams: Arc<metamodelica::List<(MMath::Rational, UnitAbsyn::Ty
                     let mut rest2: Arc<metamodelica::List<(MMath::Rational, UnitAbsyn::TypeParameter)>> = metamodelica::nil();
                     let mut expo: MMath::Rational = <MMath::Rational as ::std::default::Default>::default();
                     let mut found2: bool = false;
-                    (found2, expo, rest2) = getParam(rest.clone(), loc.clone())?;
+                    (found2, expo, rest2) = getParam(rest.clone(), loc.clone());
                     Ok((found2.clone(), expo.clone(), metamodelica::cons(param.clone(), rest2.clone())))
                 }
                 _ => bail!("nomatch"),
@@ -1044,9 +1044,9 @@ fn getParam(mut inparams: Arc<metamodelica::List<(MMath::Rational, UnitAbsyn::Ty
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((found, outexpo, outparams))
+    (found, outexpo, outparams)
 }
 
 fn normalizeParamsValues(mut inparams: Arc<metamodelica::List<(MMath::Rational, UnitAbsyn::TypeParameter)>>, mut suin: UnitAbsyn::SpecUnit, mut st: UnitAbsyn::Store) -> Result<(UnitAbsyn::SpecUnit, UnitAbsyn::Store)> {

@@ -124,25 +124,25 @@ pub fn unparseType(mut inType: Arc<DAE::Type>) -> Result<ArcStr> {
         Deref @ DAE::Type::T_INTEGER { varLst: vs } => {
             let mut s1: ArcStr = arcstr::literal!("");
             let mut s2: ArcStr = arcstr::literal!("");
-            s1 = stringDelimitList(List::map(vs.clone(), (std::sync::Arc::new(unparseVarAttr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone());
+            s1 = stringDelimitList(List::map(vs.clone(), (std::sync::Arc::new(fnptr!(unparseVarAttr, Arc<DAE::Var>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone());
             return Ok({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Integer(")); __mm_s.push_str(&*s1.clone()); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) })
         },
         Deref @ DAE::Type::T_REAL { varLst: vs } => {
             let mut s1: ArcStr = arcstr::literal!("");
             let mut s2: ArcStr = arcstr::literal!("");
-            s1 = stringDelimitList(List::map(vs.clone(), (std::sync::Arc::new(unparseVarAttr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone());
+            s1 = stringDelimitList(List::map(vs.clone(), (std::sync::Arc::new(fnptr!(unparseVarAttr, Arc<DAE::Var>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone());
             return Ok({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Real(")); __mm_s.push_str(&*s1.clone()); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) })
         },
         Deref @ DAE::Type::T_STRING { varLst: vs } => {
             let mut s1: ArcStr = arcstr::literal!("");
             let mut s2: ArcStr = arcstr::literal!("");
-            s1 = stringDelimitList(List::map(vs.clone(), (std::sync::Arc::new(unparseVarAttr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone());
+            s1 = stringDelimitList(List::map(vs.clone(), (std::sync::Arc::new(fnptr!(unparseVarAttr, Arc<DAE::Var>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone());
             return Ok({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("String(")); __mm_s.push_str(&*s1.clone()); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) })
         },
         Deref @ DAE::Type::T_BOOL { varLst: vs } => {
             let mut s1: ArcStr = arcstr::literal!("");
             let mut s2: ArcStr = arcstr::literal!("");
-            s1 = stringDelimitList(List::map(vs.clone(), (std::sync::Arc::new(unparseVarAttr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone());
+            s1 = stringDelimitList(List::map(vs.clone(), (std::sync::Arc::new(fnptr!(unparseVarAttr, Arc<DAE::Var>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone());
             return Ok({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Boolean(")); __mm_s.push_str(&*s1.clone()); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) })
         },
         Deref @ DAE::Type::T_ENUMERATION { path, names: l, .. } => {
@@ -413,7 +413,7 @@ pub fn printTupleConstStr(mut inTupleConst: Arc<DAE::TupleConst>) -> Result<ArcS
     Ok(outString)
 }
 
-pub fn printTypeStr(mut inType: Arc<DAE::Type>) -> Result<ArcStr> {
+pub fn printTypeStr(mut inType: Arc<DAE::Type>) -> ArcStr {
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = ('mc: {
         let __mc_input = inType.clone();
@@ -472,7 +472,7 @@ pub fn printTypeStr(mut inType: Arc<DAE::Type>) -> Result<ArcStr> {
                     let mut s2: ArcStr = arcstr::literal!("");
                     let mut compType: ArcStr = arcstr::literal!("");
                     let mut r#str: ArcStr = r#str.clone();
-                    compType = (printTypeStr(t.clone())?).clone();
+                    compType = (printTypeStr(t.clone())).clone();
                     s1 = (ClassInfUtil::printStateStr(st.clone())).clone();
                     s2 = stringDelimitList(List::map(vars.clone(), (std::sync::Arc::new(printVarStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone());
                     r#str = stringAppendList(list![(literal!("composite(")).clone(), (s1.clone()).clone(), (literal!("{")).clone(), (s2.clone()).clone(), (literal!("}, derived from ")).clone(), (compType.clone()).clone(), (literal!(")")).clone()]);
@@ -502,7 +502,7 @@ pub fn printTypeStr(mut inType: Arc<DAE::Type>) -> Result<ArcStr> {
                     let mut s2: ArcStr = arcstr::literal!("");
                     let mut r#str: ArcStr = r#str.clone();
                     s1 = stringDelimitList(List::map(dims.clone(), (std::sync::Arc::new(ExpressionBasics::dimensionString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Dimension>) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone());
-                    s2 = (printTypeStr(t.clone())?).clone();
+                    s2 = (printTypeStr(t.clone())).clone();
                     r#str = stringAppendList(list![(literal!("array(")).clone(), (s2.clone()).clone(), (literal!(")[")).clone(), (s1.clone()).clone(), (literal!("]")).clone()]);
                     Ok((r#str.clone(), r#str.clone()))
                 }
@@ -516,7 +516,7 @@ pub fn printTypeStr(mut inType: Arc<DAE::Type>) -> Result<ArcStr> {
                     let mut s2: ArcStr = arcstr::literal!("");
                     let mut r#str: ArcStr = r#str.clone();
                     s1 = (printParamsStr(params.clone())?).clone();
-                    s2 = (printTypeStr(restype.clone())?).clone();
+                    s2 = (printTypeStr(restype.clone())).clone();
                     r#str = stringAppendList(list![(literal!("function(")).clone(), (s1.clone()).clone(), (literal!(") => ")).clone(), (s2.clone()).clone()]);
                     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*AbsynUtil::pathString(var_field!((*inType).path, DAE::Type::T_FUNCTION).clone(), (literal!(".")).clone(), true, false)?); ArcStr::from(__mm_s) }).clone();
                     Ok((r#str.clone(), r#str.clone()))
@@ -529,7 +529,7 @@ pub fn printTypeStr(mut inType: Arc<DAE::Type>) -> Result<ArcStr> {
                 Deref @ DAE::Type::T_TUPLE { types: tys, .. } => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut r#str: ArcStr = r#str.clone();
-                    s1 = stringDelimitList(List::map(tys.clone(), (std::sync::Arc::new(printTypeStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone());
+                    s1 = stringDelimitList(List::map(tys.clone(), (std::sync::Arc::new(fnptr!(printTypeStr, Arc<DAE::Type>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone());
                     r#str = stringAppendList(list![(literal!("(")).clone(), (s1.clone()).clone(), (literal!(")")).clone()]);
                     Ok((r#str.clone(), r#str.clone()))
                 }
@@ -540,7 +540,7 @@ pub fn printTypeStr(mut inType: Arc<DAE::Type>) -> Result<ArcStr> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Type::T_METATUPLE { types: tys } => {
                     let mut r#str: ArcStr = r#str.clone();
-                    r#str = (printTypeStr(Arc::new(DAE::Type::T_TUPLE { types: tys.clone(), names: None }))?).clone();
+                    r#str = (printTypeStr(Arc::new(DAE::Type::T_TUPLE { types: tys.clone(), names: None }))).clone();
                     Ok((r#str.clone(), r#str.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -551,7 +551,7 @@ pub fn printTypeStr(mut inType: Arc<DAE::Type>) -> Result<ArcStr> {
                 Deref @ DAE::Type::T_METALIST { ty } => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut r#str: ArcStr = r#str.clone();
-                    s1 = (printTypeStr(ty.clone())?).clone();
+                    s1 = (printTypeStr(ty.clone())).clone();
                     r#str = stringAppendList(list![(literal!("list<")).clone(), (s1.clone()).clone(), (literal!(">")).clone()]);
                     Ok((r#str.clone(), r#str.clone()))
                 }
@@ -563,7 +563,7 @@ pub fn printTypeStr(mut inType: Arc<DAE::Type>) -> Result<ArcStr> {
                 Deref @ DAE::Type::T_METAOPTION { ty } => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut r#str: ArcStr = r#str.clone();
-                    s1 = (printTypeStr(ty.clone())?).clone();
+                    s1 = (printTypeStr(ty.clone())).clone();
                     r#str = stringAppendList(list![(literal!("Option<")).clone(), (s1.clone()).clone(), (literal!(">")).clone()]);
                     Ok((r#str.clone(), r#str.clone()))
                 }
@@ -575,7 +575,7 @@ pub fn printTypeStr(mut inType: Arc<DAE::Type>) -> Result<ArcStr> {
                 Deref @ DAE::Type::T_METAARRAY { ty } => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut r#str: ArcStr = r#str.clone();
-                    s1 = (printTypeStr(ty.clone())?).clone();
+                    s1 = (printTypeStr(ty.clone())).clone();
                     r#str = stringAppendList(list![(literal!("array<")).clone(), (s1.clone()).clone(), (literal!(">")).clone()]);
                     Ok((r#str.clone(), r#str.clone()))
                 }
@@ -587,7 +587,7 @@ pub fn printTypeStr(mut inType: Arc<DAE::Type>) -> Result<ArcStr> {
                 Deref @ DAE::Type::T_METABOXED { ty } => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut r#str: ArcStr = r#str.clone();
-                    s1 = (printTypeStr(ty.clone())?).clone();
+                    s1 = (printTypeStr(ty.clone())).clone();
                     r#str = stringAppendList(list![(literal!("boxed<")).clone(), (s1.clone()).clone(), (literal!(">")).clone()]);
                     Ok((r#str.clone(), r#str.clone()))
                 }
@@ -649,7 +649,7 @@ pub fn printTypeStr(mut inType: Arc<DAE::Type>) -> Result<ArcStr> {
                 Deref @ DAE::Type::T_METATYPE { ty: t } => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut r#str: ArcStr = r#str.clone();
-                    s1 = (printTypeStr(t.clone())?).clone();
+                    s1 = (printTypeStr(t.clone())).clone();
                     r#str = stringAppendList(list![(literal!("METATYPE(")).clone(), (s1.clone()).clone(), (literal!(")")).clone()]);
                     Ok((r#str.clone(), r#str.clone()))
                 }
@@ -730,9 +730,9 @@ pub fn printTypeStr(mut inType: Arc<DAE::Type>) -> Result<ArcStr> {
                 _ => bail!("nomatch"),
             }}
         })() { r#str = __wb0; break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     }).clone();
-    Ok(r#str)
+    r#str
 }
 
 pub fn printConnectorTypeStr(mut it: Arc<DAE::Type>) -> Result<(ArcStr, ArcStr)> {
@@ -766,7 +766,7 @@ pub fn printConnectorTypeStr(mut it: Arc<DAE::Type>) -> Result<(ArcStr, ArcStr)>
                     varNames = List::map(vars.clone(), (std::sync::Arc::new(getVarName) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<ArcStr> + 'static>))?;
                     isExpandableStr = (if (isExpandable.clone()) {literal!("/* expandable */ ")} else {literal!("")}).clone();
                     s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*isExpandableStr.clone()); __mm_s.push_str(&*AbsynUtil::pathString(connectorName.clone(), (literal!(".")).clone(), true, false)?); ArcStr::from(__mm_s) }).clone();
-                    s2 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("{")); __mm_s.push_str(&*stringDelimitList(varNames.clone(), (literal!(", ")).clone())); __mm_s.push_str(&*literal!("}")); __mm_s.push_str(&*literal!(" subtype of: ")); __mm_s.push_str(&*printTypeStr(t.clone())?); ArcStr::from(__mm_s) }).clone();
+                    s2 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("{")); __mm_s.push_str(&*stringDelimitList(varNames.clone(), (literal!(", ")).clone())); __mm_s.push_str(&*literal!("}")); __mm_s.push_str(&*literal!(" subtype of: ")); __mm_s.push_str(&*printTypeStr(t.clone())); ArcStr::from(__mm_s) }).clone();
                     Ok(((s.clone(), s2.clone()), s.clone(), s2.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -802,7 +802,7 @@ pub fn printParamsStr(mut inFuncArgLst: Arc<metamodelica::List<Arc<DAE::FuncArg>
                 Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { name: n, ty: t, .. }, tail: Deref @ metamodelica::List::Nil } => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut r#str: ArcStr = r#str.clone();
-                    s1 = (printTypeStr(t.clone())?).clone();
+                    s1 = (printTypeStr(t.clone())).clone();
                     r#str = stringAppendList(list![(n.clone()).clone(), (literal!(" :: ")).clone(), (s1.clone()).clone()]);
                     Ok((r#str.clone(), r#str.clone()))
                 }
@@ -815,7 +815,7 @@ pub fn printParamsStr(mut inFuncArgLst: Arc<metamodelica::List<Arc<DAE::FuncArg>
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut s2: ArcStr = arcstr::literal!("");
                     let mut r#str: ArcStr = r#str.clone();
-                    s1 = (printTypeStr(t.clone())?).clone();
+                    s1 = (printTypeStr(t.clone())).clone();
                     s2 = (printParamsStr(params.clone())?).clone();
                     r#str = stringAppendList(list![(n.clone()).clone(), (literal!(" :: ")).clone(), (s1.clone()).clone(), (literal!(" * ")).clone(), (s2.clone()).clone()]);
                     Ok((r#str.clone(), r#str.clone()))
@@ -828,7 +828,7 @@ pub fn printParamsStr(mut inFuncArgLst: Arc<metamodelica::List<Arc<DAE::FuncArg>
     Ok(r#str)
 }
 
-pub fn unparseVarAttr(mut inVar: Arc<DAE::Var>) -> Result<ArcStr> {
+pub fn unparseVarAttr(mut inVar: Arc<DAE::Var>) -> ArcStr {
     let mut outString: ArcStr;
     outString = ('mc: {
         let __mc_input = inVar.clone();
@@ -864,9 +864,9 @@ pub fn unparseVarAttr(mut inVar: Arc<DAE::Var>) -> Result<ArcStr> {
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     }).clone();
-    Ok(outString)
+    outString
 }
 
 pub fn unparseVar(mut inVar: Arc<DAE::Var>) -> Result<ArcStr> {
@@ -876,7 +876,7 @@ pub fn unparseVar(mut inVar: Arc<DAE::Var>) -> Result<ArcStr> {
             let mut t: ArcStr = arcstr::literal!("");
             let mut res: ArcStr = arcstr::literal!("");
             let mut s: ArcStr = arcstr::literal!("");
-            s = (connectorTypeStr(ct.clone())?).clone();
+            s = (connectorTypeStr(ct.clone())).clone();
             t = (unparseType(typ.clone())?).clone();
             res = stringAppendList(list![(literal!("  ")).clone(), (s.clone()).clone(), (t.clone()).clone(), (literal!(" ")).clone(), (n.clone()).clone(), (literal!(";\n")).clone()]);
             res.clone()
@@ -886,7 +886,7 @@ pub fn unparseVar(mut inVar: Arc<DAE::Var>) -> Result<ArcStr> {
     Ok(outString)
 }
 
-pub fn connectorTypeStr(mut ct: Arc<DAE::ConnectorType>) -> Result<ArcStr> {
+pub fn connectorTypeStr(mut ct: Arc<DAE::ConnectorType>) -> ArcStr {
     let mut r#str: ArcStr;
     r#str = ('mc: {
         let __mc_input = ct.clone();
@@ -922,9 +922,9 @@ pub fn connectorTypeStr(mut ct: Arc<DAE::ConnectorType>) -> Result<ArcStr> {
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     }).clone();
-    Ok(r#str)
+    r#str
 }
 
 fn unparseParam(mut inFuncArg: Arc<DAE::FuncArg>) -> Result<ArcStr> {
@@ -970,7 +970,7 @@ pub fn printVarStr(mut inVar: Arc<DAE::Var>) -> Result<ArcStr> {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut s2: ArcStr = arcstr::literal!("");
                     let mut r#str: ArcStr = r#str.clone();
-                    s1 = (printTypeStr(typ.clone())?).clone();
+                    s1 = (printTypeStr(typ.clone())).clone();
                     vs = (SCodeDump::variabilityString(var.clone())?).clone();
                     s2 = (printBindingStr(bind.clone())?).clone();
                     r#str = stringAppendList(list![(s1.clone()).clone(), (literal!(" ")).clone(), (n.clone()).clone(), (literal!(" ")).clone(), (vs.clone()).clone(), (literal!(" ")).clone(), (s2.clone()).clone()]);
@@ -1045,7 +1045,7 @@ pub fn printBindingStr(mut inBinding: Arc<DAE::Binding>) -> Result<ArcStr> {
 pub fn printFarg(mut inFuncArg: Arc<DAE::FuncArg>) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(inFuncArg.clone()) {
         Deref @ DAE::FuncArg { name: n, ty, .. } => {
-            Print::printErrorBuf((printTypeStr(ty.clone())?).clone())?;
+            Print::printErrorBuf((printTypeStr(ty.clone())).clone())?;
             Print::printErrorBuf((literal!(" ")).clone())?;
             Print::printErrorBuf((n.clone()).clone())?;
             ()
@@ -1072,7 +1072,7 @@ pub fn printFargStr(mut inFuncArg: Arc<DAE::FuncArg>) -> Result<ArcStr> {
     Ok(outString)
 }
 
-pub fn getTypeName(mut inType: Arc<DAE::Type>) -> Result<ArcStr> {
+pub fn getTypeName(mut inType: Arc<DAE::Type>) -> ArcStr {
     let mut outString: ArcStr;
     outString = ('mc: {
         let __mc_input = inType.clone();
@@ -1146,7 +1146,7 @@ pub fn getTypeName(mut inType: Arc<DAE::Type>) -> Result<ArcStr> {
                     let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
                     (ty, dims) = flattenArrayType(arrayty.clone());
                     dimstr = (ExpressionBasics::dimensionsString(dims.clone())?).clone();
-                    tystr = (getTypeName(ty.clone())?).clone();
+                    tystr = (getTypeName(ty.clone())).clone();
                     r#str = stringAppendList(list![(tystr.clone()).clone(), (literal!("[")).clone(), (dimstr.clone()).clone(), (literal!("]")).clone()]);
                     Ok(r#str.clone())
                 }
@@ -1157,7 +1157,7 @@ pub fn getTypeName(mut inType: Arc<DAE::Type>) -> Result<ArcStr> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Type::T_METALIST { ty } => {
                     let mut n: ArcStr = arcstr::literal!("");
-                    n = (getTypeName(ty.clone())?).clone();
+                    n = (getTypeName(ty.clone())).clone();
                     Ok(n.clone())
                 }
                 _ => bail!("nomatch"),
@@ -1171,9 +1171,9 @@ pub fn getTypeName(mut inType: Arc<DAE::Type>) -> Result<ArcStr> {
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     }).clone();
-    Ok(outString)
+    outString
 }
 
 pub fn constStrFriendly(mut r#const: DAE::Const) -> Result<ArcStr> {

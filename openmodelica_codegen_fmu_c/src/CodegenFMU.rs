@@ -842,7 +842,7 @@ fn fun_76(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::ModelInfo, mut in_
             txt = Tpl::writeText(txt.clone(), l_numberOfBooleans.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("#define NUMBER_OF_EXTERNALFUNCTIONS ")).clone() }))?;
-            ret_17 = SimCodeUtil::countDynamicExternalFunctions(i_functions.clone())?;
+            ret_17 = SimCodeUtil::countDynamicExternalFunctions(i_functions.clone());
             txt = Tpl::writeStr(txt.clone(), (intString(ret_17.clone())).clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\n")).clone(), (literal!("// define initial state vector as vector of value references\n")).clone(), (literal!("#define STATES { ")).clone()], lastHasNewLine: false }))?;

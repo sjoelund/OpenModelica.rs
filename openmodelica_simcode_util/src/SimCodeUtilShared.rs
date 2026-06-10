@@ -81,7 +81,7 @@ pub fn createFunctions(mut inProgram: Absyn::Program, mut functionTree: Arc<AvlT
     let mut lits: Arc<metamodelica::List<Arc<DAE::Exp>>>;
     match '__try0: {
         funcelems = unwrap_break_err!(DAEUtil::getFunctionList(functionTree.clone(), false), '__try0);
-        funcelems = unwrap_break_err!(Inline::inlineCallsInFunctions(funcelems.clone(), (None, list![openmodelica_frontend_types::DAE::InlineType::NORM_INLINE, openmodelica_frontend_types::DAE::InlineType::AFTER_INDEX_RED_INLINE])), '__try0);
+        funcelems = Inline::inlineCallsInFunctions(funcelems.clone(), (None, list![openmodelica_frontend_types::DAE::InlineType::NORM_INLINE, openmodelica_frontend_types::DAE::InlineType::AFTER_INDEX_RED_INLINE]));
         let (__pa1, ref __pa3 @ (_, _, ref __pa2)) = unwrap_break_err!(simulationFindLiterals(funcelems.clone()), '__try0);
         funcelems = __pa1.clone();
         lits = __pa2.clone();

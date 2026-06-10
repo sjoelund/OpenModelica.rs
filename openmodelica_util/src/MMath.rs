@@ -186,7 +186,7 @@ pub fn intGcd(mut i1: i32, mut i2: i32) -> i32 {
 }
 
 /* Tests */
-pub fn testRational() -> Result<()> {
+pub fn testRational() -> () {
     let () = 'mc: {
         let __mc_input = ();
         if let Ok(__v) = (|| -> Result<_> {
@@ -206,8 +206,8 @@ pub fn testRational() -> Result<()> {
             metamodelica::print((literal!("testRationals failed\n")).clone());
             Ok(())
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(())
+    ()
 }
 

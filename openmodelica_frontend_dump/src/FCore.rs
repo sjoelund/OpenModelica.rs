@@ -1340,7 +1340,7 @@ pub fn setCacheClassName(mut inCache: Cache, mut p: Arc<Absyn::Path>) -> Cache {
     outCache
 }
 
-pub fn isImplicitScope(mut inName: Name) -> Result<bool> {
+pub fn isImplicitScope(mut inName: Name) -> bool {
     let mut isImplicit: bool;
     isImplicit = 'mc: {
         let __mc_input = inName.clone();
@@ -1352,9 +1352,9 @@ pub fn isImplicitScope(mut inName: Name) -> Result<bool> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(false)
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(isImplicit)
+    isImplicit
 }
 
 pub fn getCachedInstFunc(mut inCache: Cache, mut path: Arc<Absyn::Path>) -> Result<DAE::Function> {

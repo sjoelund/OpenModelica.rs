@@ -88,7 +88,7 @@ fn instExtendsList(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH:
     let mut outComments: Arc<metamodelica::List<Arc<SCode::Comment>>> = metamodelica::nil();
     let mut duplicates: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
     let mut duplicateUnparseStrings: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    duplicates = List::sortedDuplicates(List::sort(inElementsFromExtendsScope.clone(), (std::sync::Arc::new(SCodeUtil::elementEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, Arc<SCode::Element>) -> Result<bool> + 'static>))?, (std::sync::Arc::new(SCodeUtil::elementEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, Arc<SCode::Element>) -> Result<bool> + 'static>))?;
+    duplicates = List::sortedDuplicates(List::sort(inElementsFromExtendsScope.clone(), (std::sync::Arc::new(fnptr!(SCodeUtil::elementEqual, Arc<SCode::Element>, Arc<SCode::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, Arc<SCode::Element>) -> Result<bool> + 'static>))?, (std::sync::Arc::new(fnptr!(SCodeUtil::elementEqual, Arc<SCode::Element>, Arc<SCode::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, Arc<SCode::Element>) -> Result<bool> + 'static>))?;
     if Config::acceptMetaModelicaGrammar()? {
         duplicates = List::filterOnFalse(duplicates.clone(), (std::sync::Arc::new(fnptr!(SCodeUtil::isTypeVar, Arc<SCode::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<bool> + 'static>))?;
     }
@@ -170,7 +170,7 @@ fn instExtendsList(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH:
                     let mut outMod: Arc<DAE::Mod> = outMod.clone();
                     let mut outNormalAlgs: Arc<metamodelica::List<Arc<SCode::AlgorithmSection>>> = outNormalAlgs.clone();
                     let mut outNormalEqs: Arc<metamodelica::List<Arc<SCode::Equation>>> = outNormalEqs.clone();
-                    emod = InstUtil::chainRedeclares(outMod.clone(), var_field!((*el).modifications, SCode::Element::EXTENDS).clone())?;
+                    emod = InstUtil::chainRedeclares(outMod.clone(), var_field!((*el).modifications, SCode::Element::EXTENDS).clone());
                     base_first_id = (AbsynUtil::pathFirstIdent(var_field!((*el).baseClassPath, SCode::Element::EXTENDS).clone())?).clone();
                     eq_name = stringEq((inClassName.clone()).clone(), (base_first_id.clone()).clone()) && AbsynUtil::pathEqual(ClassInfUtil::getStateName(inState.clone()), AbsynUtil::joinPaths(FGraph::getGraphName(outEnv.clone())?, AbsynUtil::makeIdentPathFromString((base_first_id.clone()).clone()))?);
                     (outCache, ocls, cenv) = lookupBaseClass(var_field!((*el).baseClassPath, SCode::Element::EXTENDS).clone(), eq_name.clone(), (inClassName.clone()).clone(), outEnv.clone(), outCache.clone())?;
@@ -190,7 +190,7 @@ fn instExtendsList(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH:
                     } else {
                         if Flags::getConfigBool(Flags::PERMISSIVE.clone())? {
                             bc_str = (AbsynUtil::pathString(var_field!((*el).baseClassPath, SCode::Element::EXTENDS).clone(), (literal!(".")).clone(), true, false)?).clone();
-                            scope_str = (FGraph::printGraphPathStr(inEnv.clone())?).clone();
+                            scope_str = (FGraph::printGraphPathStr(inEnv.clone())).clone();
                             Error::addSourceMessage(Error::LOOKUP_BASECLASS_ERROR.clone(), list![(bc_str.clone()).clone(), (scope_str.clone()).clone()], var_field!((*el).info, SCode::Element::EXTENDS).clone())?;
                         }
                         bail!("fail");
@@ -298,7 +298,7 @@ fn instExtendsList(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH:
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
-                    Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- Inst.instExtendsList failed on:\n\t")); __mm_s.push_str(&*literal!("className: ")); __mm_s.push_str(&*inClassName.clone()); __mm_s.push_str(&*literal!("\n\t")); __mm_s.push_str(&*literal!("env:       ")); __mm_s.push_str(&*FGraph::printGraphPathStr(outEnv.clone())?); __mm_s.push_str(&*literal!("\n\t")); __mm_s.push_str(&*literal!("mods:      ")); __mm_s.push_str(&*Mod::printModStr(outMod.clone())?); __mm_s.push_str(&*literal!("\n\t")); __mm_s.push_str(&*literal!("elem:      ")); __mm_s.push_str(&*SCodeDump::unparseElementStr(el.clone(), SCodeDump::defaultOptions.clone())?); ArcStr::from(__mm_s) }).clone())?;
+                    Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- Inst.instExtendsList failed on:\n\t")); __mm_s.push_str(&*literal!("className: ")); __mm_s.push_str(&*inClassName.clone()); __mm_s.push_str(&*literal!("\n\t")); __mm_s.push_str(&*literal!("env:       ")); __mm_s.push_str(&*FGraph::printGraphPathStr(outEnv.clone())); __mm_s.push_str(&*literal!("\n\t")); __mm_s.push_str(&*literal!("mods:      ")); __mm_s.push_str(&*Mod::printModStr(outMod.clone())?); __mm_s.push_str(&*literal!("\n\t")); __mm_s.push_str(&*literal!("elem:      ")); __mm_s.push_str(&*SCodeDump::unparseElementStr(el.clone(), SCodeDump::defaultOptions.clone())?); ArcStr::from(__mm_s) }).clone())?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -327,7 +327,7 @@ fn lookupBaseClass(mut inPath: Arc<Absyn::Path>, mut inSelfReference: bool, mut 
             let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
             let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
             let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-            path = AbsynUtil::removePartialPrefix(Arc::new(Absyn::Path::IDENT { name: (inClassName.clone()).clone() }), inPath.clone())?;
+            path = AbsynUtil::removePartialPrefix(Arc::new(Absyn::Path::IDENT { name: (inClassName.clone()).clone() }), inPath.clone());
             (cache, elem, env) = Lookup::lookupClass(inCache.clone(), inEnv.clone(), path.clone(), None)?;
             (cache.clone(), Some(elem.clone()), env.clone())
         },
@@ -721,7 +721,7 @@ fn instDerivedClassesWork(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
                     let mut dmod = (*dmod).clone();
                     let mut outComments: Arc<metamodelica::List<Arc<SCode::Comment>>> = outComments.clone();
                     (cache, c, cenv) = Lookup::lookupClass(cache.clone(), env.clone(), tp.clone(), Some(info.clone()))?;
-                    dmod = InstUtil::chainRedeclares(r#mod.clone(), dmod.clone())?;
+                    dmod = InstUtil::chainRedeclares(r#mod.clone(), dmod.clone());
                     (cache, daeDMOD) = Mod::elabMod(cache.clone(), env.clone(), ih.clone(), pre.clone(), dmod.clone(), r#impl.clone(), Mod::ModScope::DERIVED { path: tp.clone() }, info.clone())?;
                     r#mod = Mod::merge(r#mod.clone(), daeDMOD.clone(), (literal!("")).clone(), true)?;
                     (cache, env, ih, elt, eq, ieq, alg, ialg, r#mod, outComments) = instDerivedClassesWork(cache.clone(), cenv.clone(), ih.clone(), r#mod.clone(), pre.clone(), c.clone(), r#impl.clone(), info.clone(), numIter.clone() >= Global::recursionDepthLimit.clone(), numIter.clone() + 1)?;
@@ -757,7 +757,7 @@ fn instDerivedClassesWork(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
                     let mut str1: ArcStr = arcstr::literal!("");
                     let mut str2: ArcStr = arcstr::literal!("");
                     str1 = (SCodeDump::unparseElementStr(inClass.clone(), SCodeDump::defaultOptions.clone())?).clone();
-                    str2 = (FGraph::printGraphPathStr(inEnv.clone())?).clone();
+                    str2 = (FGraph::printGraphPathStr(inEnv.clone())).clone();
                     Error::addSourceMessage(Error::RECURSION_DEPTH_DERIVED.clone(), list![(str1.clone()).clone(), (str2.clone()).clone()], inInfo.clone())?;
                     Ok(bail!("fail"))
                 }
@@ -852,7 +852,7 @@ fn updateComponentsAndClassdefs2(mut inComponent: (Arc<SCode::Element>, Arc<DAE:
                     cmod = __pa1.clone();
                     mod_rest = inMod.clone();
                     cmod = Mod::merge(cmod.clone(), r#mod.clone(), (var_field!((*el).name, SCode::Element::CLASS).clone()).clone(), false)?;
-                    comp = SCodeUtil::mergeWithOriginal(comp.clone(), el.clone())?;
+                    comp = SCodeUtil::mergeWithOriginal(comp.clone(), el.clone());
                     Ok(((comp.clone(), cmod.clone(), b.clone()), mod_rest.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -874,7 +874,7 @@ fn updateComponentsAndClassdefs2(mut inComponent: (Arc<SCode::Element>, Arc<DAE:
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
-                    Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- InstExtends.updateComponentsAndClassdefs2 failed on:\n")); __mm_s.push_str(&*literal!("env = ")); __mm_s.push_str(&*FGraph::printGraphPathStr(inEnv.clone())?); __mm_s.push_str(&*literal!("\nmod = ")); __mm_s.push_str(&*Mod::printModStr(inMod.clone())?); __mm_s.push_str(&*literal!("\ncmod = ")); __mm_s.push_str(&*Mod::printModStr(r#mod.clone())?); __mm_s.push_str(&*literal!("\nbool = ")); __mm_s.push_str(&*boolString(b.clone())); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*SCodeDump::unparseElementStr(el.clone(), SCodeDump::defaultOptions.clone())?); ArcStr::from(__mm_s) }).clone())?;
+                    Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- InstExtends.updateComponentsAndClassdefs2 failed on:\n")); __mm_s.push_str(&*literal!("env = ")); __mm_s.push_str(&*FGraph::printGraphPathStr(inEnv.clone())); __mm_s.push_str(&*literal!("\nmod = ")); __mm_s.push_str(&*Mod::printModStr(inMod.clone())?); __mm_s.push_str(&*literal!("\ncmod = ")); __mm_s.push_str(&*Mod::printModStr(r#mod.clone())?); __mm_s.push_str(&*literal!("\nbool = ")); __mm_s.push_str(&*boolString(b.clone())); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*SCodeDump::unparseElementStr(el.clone(), SCodeDump::defaultOptions.clone())?); ArcStr::from(__mm_s) }).clone())?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -1092,7 +1092,7 @@ fn fixElement(mut inCache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::
                 (env, Deref @ SCode::Element::EXTENDS { baseClassPath: extendsPath1, visibility: vis, modifications: modifications1, ann: optAnnotation, info }) => {
                     let mut modifications2: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
                     let mut extendsPath2: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-                    extendsPath2 = fixPath(inCache.clone(), env.clone(), extendsPath1.clone(), tree.clone())?;
+                    extendsPath2 = fixPath(inCache.clone(), env.clone(), extendsPath1.clone(), tree.clone());
                     modifications2 = fixModifications(inCache.clone(), env.clone(), modifications1.clone(), tree.clone())?;
                     Ok(if (referenceEq(&*(extendsPath1.clone()),&*(extendsPath2.clone())) && referenceEq(&*(modifications1.clone()),&*(modifications2.clone()))) {inElt.clone()} else {Arc::new(SCode::Element::EXTENDS { baseClassPath: extendsPath2.clone(), visibility: vis.clone(), modifications: modifications2.clone(), ann: optAnnotation.clone(), info: info.clone() })})
                 }
@@ -1249,14 +1249,14 @@ fn fixEquation(mut cache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::G
             let mut cref = (*cref).clone();
             exp1 = fixExp(cache.clone(), inEnv.clone(), exp1.clone(), tree.clone())?;
             exp2 = fixExp(cache.clone(), inEnv.clone(), exp2.clone(), tree.clone())?;
-            cref = fixCref(cache.clone(), inEnv.clone(), cref.clone(), tree.clone())?;
+            cref = fixCref(cache.clone(), inEnv.clone(), cref.clone(), tree.clone());
             Arc::new(SCode::Equation::EQ_PDE { expLeft: exp1.clone(), expRight: exp2.clone(), domain: cref.clone(), comment: comment.clone(), info: info.clone() })
         },
         Deref @ SCode::Equation::EQ_CONNECT { crefLeft: cref1, crefRight: cref2, comment, info } => {
             let mut cref1 = (*cref1).clone();
             let mut cref2 = (*cref2).clone();
-            cref1 = fixCref(cache.clone(), inEnv.clone(), cref1.clone(), tree.clone())?;
-            cref2 = fixCref(cache.clone(), inEnv.clone(), cref2.clone(), tree.clone())?;
+            cref1 = fixCref(cache.clone(), inEnv.clone(), cref1.clone(), tree.clone());
+            cref2 = fixCref(cache.clone(), inEnv.clone(), cref2.clone(), tree.clone());
             Arc::new(SCode::Equation::EQ_CONNECT { crefLeft: cref1.clone(), crefRight: cref2.clone(), comment: comment.clone(), info: info.clone() })
         },
         Deref @ SCode::Equation::EQ_FOR { index: id, range: optExp, eEquationLst: eql, comment, info } => {
@@ -1555,7 +1555,7 @@ fn fixTypeSpec(mut cache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::G
             let mut path2: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             let mut arrayDim2: Option<Arc<metamodelica::List<Arc<Absyn::Subscript>>>> = None;
             arrayDim2 = fixOption(cache.clone(), inEnv.clone(), arrayDim1.clone(), tree.clone(), (std::sync::Arc::new(fixArrayDim) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Cache>, FCore::Graph, Arc<metamodelica::List<Arc<Absyn::Subscript>>>, Arc<AvlSetString::Tree>) -> Result<Arc<metamodelica::List<Arc<Absyn::Subscript>>>> + 'static>))?;
-            path2 = fixPath(cache.clone(), inEnv.clone(), path1.clone(), tree.clone())?;
+            path2 = fixPath(cache.clone(), inEnv.clone(), path1.clone(), tree.clone());
             if ((match (&(arrayDim2.clone()), &(arrayDim1.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => metamodelica::ReferenceEq::reference_eq(&*(*__refeq_l), &*(*__refeq_r)), _ => false }) && referenceEq(&*(path1.clone()),&*(path2.clone()))) {inTs.clone()} else {Arc::new(Absyn::TypeSpec::TPATH { path: path2.clone(), arrayDim: arrayDim2.clone() })}
         },
         Deref @ Absyn::TypeSpec::TCOMPLEX { path: path1, typeSpecs: typeSpecs1, arrayDim: arrayDim1 } => {
@@ -1563,7 +1563,7 @@ fn fixTypeSpec(mut cache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::G
             let mut arrayDim2: Option<Arc<metamodelica::List<Arc<Absyn::Subscript>>>> = None;
             let mut typeSpecs2: Arc<metamodelica::List<Arc<Absyn::TypeSpec>>> = metamodelica::nil();
             arrayDim2 = fixOption(cache.clone(), inEnv.clone(), arrayDim1.clone(), tree.clone(), (std::sync::Arc::new(fixArrayDim) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Cache>, FCore::Graph, Arc<metamodelica::List<Arc<Absyn::Subscript>>>, Arc<AvlSetString::Tree>) -> Result<Arc<metamodelica::List<Arc<Absyn::Subscript>>>> + 'static>))?;
-            path2 = fixPath(cache.clone(), inEnv.clone(), path1.clone(), tree.clone())?;
+            path2 = fixPath(cache.clone(), inEnv.clone(), path1.clone(), tree.clone());
             typeSpecs2 = fixList(cache.clone(), inEnv.clone(), typeSpecs1.clone(), tree.clone(), (std::sync::Arc::new(fixTypeSpec) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Cache>, FCore::Graph, Arc<Absyn::TypeSpec>, Arc<AvlSetString::Tree>) -> Result<Arc<Absyn::TypeSpec>> + 'static>))?;
             if ((match (&(arrayDim2.clone()), &(arrayDim1.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => metamodelica::ReferenceEq::reference_eq(&*(*__refeq_l), &*(*__refeq_r)), _ => false }) && referenceEq(&*(path1.clone()),&*(path2.clone())) && metamodelica::ReferenceEq::reference_eq(&*(typeSpecs1.clone()), &*(typeSpecs2.clone()))) {inTs.clone()} else {Arc::new(Absyn::TypeSpec::TCOMPLEX { path: path2.clone(), typeSpecs: typeSpecs2.clone(), arrayDim: arrayDim2.clone() })}
         },
@@ -1572,7 +1572,7 @@ fn fixTypeSpec(mut cache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::G
     Ok(outTs)
 }
 
-fn fixPath(mut inCache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::Graph, mut inPath: Arc<Absyn::Path>, mut tree: Arc<AvlSetString::Tree>) -> Result<Arc<Absyn::Path>> {
+fn fixPath(mut inCache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::Graph, mut inPath: Arc<Absyn::Path>, mut tree: Arc<AvlSetString::Tree>) -> Arc<Absyn::Path> {
     let mut outPath: Arc<Absyn::Path>;
     outPath = 'mc: {
         let __mc_input = inPath.clone();
@@ -1591,7 +1591,7 @@ fn fixPath(mut inCache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::Gra
                     let mut path2: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     id = (AbsynUtil::pathFirstIdent(inPath.clone())?).clone();
                     let true = (AvlSetString::hasKey(tree.clone(), (id.clone()).clone())?) else { bail!("pattern mismatch") };
-                    path2 = FGraph::pathStripGraphScopePrefix(inPath.clone(), inEnv.clone(), false)?;
+                    path2 = FGraph::pathStripGraphScopePrefix(inPath.clone(), inEnv.clone(), false);
                     Ok(path2.clone())
                 }
                 _ => bail!("nomatch"),
@@ -1602,7 +1602,7 @@ fn fixPath(mut inCache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::Gra
                 _ => {
                     let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     Lookup::lookupClassLocal(inEnv.clone(), (AbsynUtil::pathFirstIdent(inPath.clone())?).clone())?;
-                    path = FGraph::pathStripGraphScopePrefix(inPath.clone(), inEnv.clone(), false)?;
+                    path = FGraph::pathStripGraphScopePrefix(inPath.clone(), inEnv.clone(), false);
                     Ok(path.clone())
                 }
                 _ => bail!("nomatch"),
@@ -1614,7 +1614,7 @@ fn fixPath(mut inCache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::Gra
                     let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
                     (cache, path) = Inst::makeFullyQualified(metamodelica::arrayGet(inCache.clone(), 1)?, inEnv.clone(), inPath.clone())?;
-                    path = FGraph::pathStripGraphScopePrefix(path.clone(), inEnv.clone(), false)?;
+                    path = FGraph::pathStripGraphScopePrefix(path.clone(), inEnv.clone(), false);
                     metamodelica::arrayUpdate(inCache.clone(), 1, cache.clone())?;
                     Ok(path.clone())
                 }
@@ -1625,15 +1625,15 @@ fn fixPath(mut inCache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::Gra
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-                    path = FGraph::pathStripGraphScopePrefix(inPath.clone(), inEnv.clone(), false)?;
+                    path = FGraph::pathStripGraphScopePrefix(inPath.clone(), inEnv.clone(), false);
                     Ok(path.clone())
                 }
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outPath)
+    outPath
 }
 
 fn lookupVarNoErrorMessage(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut ident: ArcStr) -> Result<(FCore::Graph, ArcStr)> {
@@ -1657,7 +1657,7 @@ fn lookupVarNoErrorMessage(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, m
     Ok((outEnv, id))
 }
 
-fn fixCref(mut cache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::Graph, mut inCref: Arc<Absyn::ComponentRef>, mut tree: Arc<AvlSetString::Tree>) -> Result<Arc<Absyn::ComponentRef>> {
+fn fixCref(mut cache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::Graph, mut inCref: Arc<Absyn::ComponentRef>, mut tree: Arc<AvlSetString::Tree>) -> Arc<Absyn::ComponentRef> {
     let mut outCref: Arc<Absyn::ComponentRef>;
     outCref = 'mc: {
         let __mc_input = (inEnv.clone(), inCref.clone());
@@ -1666,7 +1666,7 @@ fn fixCref(mut cache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::Graph
                 (env, Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { .. }) => {
                     let mut env = (*env).clone();
                     env = FGraph::topScope(inEnv.clone())?;
-                    Ok(fixCref(cache.clone(), env.clone(), var_field!((*inCref).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone(), tree.clone())?)
+                    Ok(fixCref(cache.clone(), env.clone(), var_field!((*inCref).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone(), tree.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1678,7 +1678,7 @@ fn fixCref(mut cache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::Graph
                     let mut cref = (*cref).clone();
                     id = (AbsynUtil::crefFirstIdent(cref.clone())?).clone();
                     let true = (AvlSetString::hasKey(tree.clone(), (id.clone()).clone())?) else { bail!("pattern mismatch") };
-                    cref = FGraph::crefStripGraphScopePrefix(cref.clone(), env.clone(), false)?;
+                    cref = FGraph::crefStripGraphScopePrefix(cref.clone(), env.clone(), false);
                     cref = if (AbsynUtil::crefEqual(cref.clone(), inCref.clone())?) {inCref.clone()} else {cref.clone()};
                     Ok(cref.clone())
                 }
@@ -1695,7 +1695,7 @@ fn fixCref(mut cache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::Graph
                     (denv, id) = lookupVarNoErrorMessage(metamodelica::arrayGet(cache.clone(), 1)?, env.clone(), (id.clone()).clone())?;
                     denv = FGraph::openScope(denv.clone(), openmodelica_frontend_types::SCode::Encapsulated::ENCAPSULATED, (id.clone()).clone(), None)?;
                     cref = AbsynUtil::crefReplaceFirstIdent(cref.clone(), FGraph::getGraphName(denv.clone())?)?;
-                    cref = FGraph::crefStripGraphScopePrefix(cref.clone(), env.clone(), false)?;
+                    cref = FGraph::crefStripGraphScopePrefix(cref.clone(), env.clone(), false);
                     cref = if (AbsynUtil::crefEqual(cref.clone(), inCref.clone())?) {inCref.clone()} else {cref.clone()};
                     Ok(cref.clone())
                 }
@@ -1714,7 +1714,7 @@ fn fixCref(mut cache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::Graph
                     id = (SCodeUtil::getElementName(c.clone())?).clone();
                     denv = FGraph::openScope(denv.clone(), openmodelica_frontend_types::SCode::Encapsulated::ENCAPSULATED, (id.clone()).clone(), None)?;
                     cref = AbsynUtil::crefReplaceFirstIdent(cref.clone(), FGraph::getGraphName(denv.clone())?)?;
-                    cref = FGraph::crefStripGraphScopePrefix(cref.clone(), env.clone(), false)?;
+                    cref = FGraph::crefStripGraphScopePrefix(cref.clone(), env.clone(), false);
                     cref = if (AbsynUtil::crefEqual(cref.clone(), inCref.clone())?) {inCref.clone()} else {cref.clone()};
                     Ok(cref.clone())
                 }
@@ -1729,9 +1729,9 @@ fn fixCref(mut cache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::Graph
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outCref)
+    outCref
 }
 
 fn fixModifications(mut inCache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::Graph, mut inMod: Arc<SCode::Mod>, mut tree: Arc<AvlSetString::Tree>) -> Result<Arc<SCode::Mod>> {
@@ -1830,27 +1830,27 @@ fn fixSubMod(mut inCache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::G
 
 fn fixExp(mut cache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::Graph, mut inExp: Arc<Absyn::Exp>, mut tree: Arc<AvlSetString::Tree>) -> Result<Arc<Absyn::Exp>> {
     let mut outExp: Arc<Absyn::Exp>;
-    (outExp, _) = AbsynUtil::traverseExp(inExp.clone(), (std::sync::Arc::new(fixExpTraverse) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, (metamodelica::Array<FCore::Cache>, FCore::Graph, Arc<AvlSetString::Tree>)) -> Result<(Arc<Absyn::Exp>, (metamodelica::Array<FCore::Cache>, FCore::Graph, Arc<AvlSetString::Tree>))> + 'static>), (cache.clone(), inEnv.clone(), tree.clone()))?;
+    (outExp, _) = AbsynUtil::traverseExp(inExp.clone(), (std::sync::Arc::new(fnptr!(fixExpTraverse, Arc<Absyn::Exp>, (metamodelica::Array<FCore::Cache>, FCore::Graph, Arc<AvlSetString::Tree>))) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, (metamodelica::Array<FCore::Cache>, FCore::Graph, Arc<AvlSetString::Tree>)) -> Result<(Arc<Absyn::Exp>, (metamodelica::Array<FCore::Cache>, FCore::Graph, Arc<AvlSetString::Tree>))> + 'static>), (cache.clone(), inEnv.clone(), tree.clone()))?;
     Ok(outExp)
 }
 
-fn fixExpTraverse(mut exp: Arc<Absyn::Exp>, mut tpl: (metamodelica::Array<FCore::Cache>, FCore::Graph, Arc<AvlSetString::Tree>)) -> Result<(Arc<Absyn::Exp>, (metamodelica::Array<FCore::Cache>, FCore::Graph, Arc<AvlSetString::Tree>))> {
+fn fixExpTraverse(mut exp: Arc<Absyn::Exp>, mut tpl: (metamodelica::Array<FCore::Cache>, FCore::Graph, Arc<AvlSetString::Tree>)) -> (Arc<Absyn::Exp>, (metamodelica::Array<FCore::Cache>, FCore::Graph, Arc<AvlSetString::Tree>)) {
     let mut exp: Arc<Absyn::Exp> = exp;
     let mut tpl: (metamodelica::Array<FCore::Cache>, FCore::Graph, Arc<AvlSetString::Tree>) = tpl;
     exp = (::match_deref::match_deref! { match &((exp.clone(), tpl.clone())) {
         (Deref @ Absyn::Exp::CREF { componentRef: cref }, (cache, env, tree)) => {
             let mut cref1: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
-            cref1 = fixCref(cache.clone(), env.clone(), cref.clone(), tree.clone())?;
+            cref1 = fixCref(cache.clone(), env.clone(), cref.clone(), tree.clone());
             if (referenceEq(&*(cref.clone()),&*(cref1.clone()))) {exp.clone()} else {Arc::new(Absyn::Exp::CREF { componentRef: cref1.clone() })}
         },
         (Deref @ Absyn::Exp::CALL { function_: cref, .. }, (cache, env, tree)) => {
             let mut cref1: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
-            cref1 = fixCref(cache.clone(), env.clone(), cref.clone(), tree.clone())?;
+            cref1 = fixCref(cache.clone(), env.clone(), cref.clone(), tree.clone());
             if (referenceEq(&*(cref.clone()),&*(cref1.clone()))) {exp.clone()} else {Arc::new(Absyn::Exp::CALL { function_: cref1.clone(), functionArgs: var_field!((*exp).functionArgs, Absyn::Exp::CALL).clone(), typeVars: var_field!((*exp).typeVars, Absyn::Exp::CALL).clone() })}
         },
         (Deref @ Absyn::Exp::PARTEVALFUNCTION { function_: cref, functionArgs: fargs }, (cache, env, tree)) => {
             let mut cref1: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
-            cref1 = fixCref(cache.clone(), env.clone(), cref.clone(), tree.clone())?;
+            cref1 = fixCref(cache.clone(), env.clone(), cref.clone(), tree.clone());
             if (referenceEq(&*(cref.clone()),&*(cref1.clone()))) {exp.clone()} else {Arc::new(Absyn::Exp::PARTEVALFUNCTION { function_: cref1.clone(), functionArgs: fargs.clone() })}
         },
         _ => {
@@ -1858,7 +1858,7 @@ fn fixExpTraverse(mut exp: Arc<Absyn::Exp>, mut tpl: (metamodelica::Array<FCore:
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Ok((exp, tpl))
+    (exp, tpl)
 }
 
 fn fixOption<Type_A: Clone + 'static + metamodelica::ReferenceEq>(mut inCache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::Graph, mut inA: Option<Type_A>, mut tree: Arc<AvlSetString::Tree>, mut fixA: Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Cache>, FCore::Graph, Type_A, Arc<AvlSetString::Tree>) -> Result<Type_A> + 'static>) -> Result<Option<Type_A>> {

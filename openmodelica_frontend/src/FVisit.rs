@@ -105,7 +105,7 @@ pub fn next(mut inVisited: Visited) -> Result<(Visited, Next)> {
     Ok((outVisited, next))
 }
 
-pub fn visited(mut inVisited: Visited, mut inRef: Ref) -> Result<bool> {
+pub fn visited(mut inVisited: Visited, mut inRef: Ref) -> bool {
     let mut b: bool;
     b = 'mc: {
         let __mc_input = inVisited.clone();
@@ -119,9 +119,9 @@ pub fn visited(mut inVisited: Visited, mut inRef: Ref) -> Result<bool> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(false)
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(b)
+    b
 }
 
 pub fn seq(mut v: Visit) -> Result<Seq> {
@@ -154,7 +154,7 @@ pub fn visit(mut inVisited: Visited, mut inRef: Ref) -> Result<Visited> {
             let mut v: Visit = <FCore::Visit as ::std::default::Default>::default();
             FNode::id(FNode::fromRef(inRef.clone())?)?;
             v = avlTreeGet(tree(inVisited.clone())?, FNode::id(FNode::fromRef(inRef.clone())?)?)?;
-            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Already visited: ")); __mm_s.push_str(&*FNode::toStr(FNode::fromRef(inRef.clone())?)?); __mm_s.push_str(&*literal!(" seq: ")); __mm_s.push_str(&*intString(seq(v.clone())?)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Already visited: ")); __mm_s.push_str(&*FNode::toStr(FNode::fromRef(inRef.clone())?)); __mm_s.push_str(&*literal!(" seq: ")); __mm_s.push_str(&*intString(seq(v.clone())?)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             Ok(bail!("fail"))
         })() { break 'mc __v; }
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
@@ -324,13 +324,13 @@ fn doBalance2(mut differenceIsNegative: bool, mut inBt: AvlTree) -> Result<AvlTr
     outBt = (::match_deref::match_deref! { match &((differenceIsNegative.clone(), inBt.clone())) {
         (true, bt) => {
             let mut bt = (*bt).clone();
-            bt = doBalance3(bt.clone())?;
+            bt = doBalance3(bt.clone());
             bt = rotateLeft(bt.clone())?;
             bt.clone()
         },
         (false, bt) => {
             let mut bt = (*bt).clone();
-            bt = doBalance4(bt.clone())?;
+            bt = doBalance4(bt.clone());
             bt = rotateRight(bt.clone())?;
             bt.clone()
         },
@@ -339,7 +339,7 @@ fn doBalance2(mut differenceIsNegative: bool, mut inBt: AvlTree) -> Result<AvlTr
     Ok(outBt)
 }
 
-fn doBalance3(mut inBt: AvlTree) -> Result<AvlTree> {
+fn doBalance3(mut inBt: AvlTree) -> AvlTree {
     let mut outBt: AvlTree;
     outBt = 'mc: {
         let __mc_input = inBt.clone();
@@ -364,12 +364,12 @@ fn doBalance3(mut inBt: AvlTree) -> Result<AvlTree> {
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outBt)
+    outBt
 }
 
-fn doBalance4(mut inBt: AvlTree) -> Result<AvlTree> {
+fn doBalance4(mut inBt: AvlTree) -> AvlTree {
     let mut outBt: AvlTree;
     outBt = 'mc: {
         let __mc_input = inBt.clone();
@@ -394,9 +394,9 @@ fn doBalance4(mut inBt: AvlTree) -> Result<AvlTree> {
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outBt)
+    outBt
 }
 
 fn setRight(mut node: AvlTree, mut right: Option<Arc<FCore::VAvlTree>>) -> Result<AvlTree> {

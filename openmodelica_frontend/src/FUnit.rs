@@ -157,7 +157,7 @@ pub fn hashUnit(mut inKey: Unit) -> Result<i32> {
     Ok(outHash)
 }
 
-pub fn unitEqual(mut inKey: Unit, mut inKey2: Unit) -> Result<bool> {
+pub fn unitEqual(mut inKey: Unit, mut inKey2: Unit) -> bool {
     let mut res: bool;
     res = 'mc: {
         let __mc_input = (inKey.clone(), inKey2.clone());
@@ -200,9 +200,9 @@ pub fn unitEqual(mut inKey: Unit, mut inKey2: Unit) -> Result<bool> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(false)
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(res)
+    res
 }
 
 pub fn unit2string(mut inUnit: Unit) -> Result<ArcStr> {
@@ -1123,7 +1123,7 @@ fn lexer(mut inCharList: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamode
                     let mut tokenList: Arc<metamodelica::List<Token>> = metamodelica::nil();
                     let mut i: i32 = 0;
                     let mut charList = (*charList).clone();
-                    (charList, number) = popNumber(charList.clone())?;
+                    (charList, number) = popNumber(charList.clone());
                     let false = (number.clone() == literal!("")) else { bail!("pattern mismatch") };
                     tokenList = lexer(charList.clone())?;
                     i = stringInt((number.clone()).clone())?;
@@ -1139,7 +1139,7 @@ fn lexer(mut inCharList: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamode
                     let mut tokenList: Arc<metamodelica::List<Token>> = metamodelica::nil();
                     let mut i: i32 = 0;
                     let mut charList = (*charList).clone();
-                    (charList, number) = popNumber(charList.clone())?;
+                    (charList, number) = popNumber(charList.clone());
                     let false = (number.clone() == literal!("")) else { bail!("pattern mismatch") };
                     tokenList = lexer(charList.clone())?;
                     i = -(stringInt((number.clone()).clone())?);
@@ -1155,7 +1155,7 @@ fn lexer(mut inCharList: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamode
                     let mut tokenList: Arc<metamodelica::List<Token>> = metamodelica::nil();
                     let mut i: i32 = 0;
                     let mut charList = (*charList).clone();
-                    (charList, number) = popNumber(charList.clone())?;
+                    (charList, number) = popNumber(charList.clone());
                     let false = (number.clone() == literal!("")) else { bail!("pattern mismatch") };
                     tokenList = lexer(charList.clone())?;
                     i = stringInt((number.clone()).clone())?;
@@ -1170,7 +1170,7 @@ fn lexer(mut inCharList: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamode
                     let mut unit: ArcStr = arcstr::literal!("");
                     let mut tokenList: Arc<metamodelica::List<Token>> = metamodelica::nil();
                     let mut charList = (*charList).clone();
-                    (charList, unit) = popUnit(charList.clone())?;
+                    (charList, unit) = popUnit(charList.clone());
                     let false = (unit.clone() == literal!("")) else { bail!("pattern mismatch") };
                     tokenList = lexer(charList.clone())?;
                     Ok(metamodelica::cons(Token::T_UNIT { unit: (unit.clone()).clone() }, tokenList.clone()))
@@ -1192,7 +1192,7 @@ fn lexer(mut inCharList: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamode
     Ok(outTokenList)
 }
 
-fn popUnit(mut inCharList: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<metamodelica::List<ArcStr>>, ArcStr)> {
+fn popUnit(mut inCharList: Arc<metamodelica::List<ArcStr>>) -> (Arc<metamodelica::List<ArcStr>>, ArcStr) {
     let mut outCharList: Arc<metamodelica::List<ArcStr>>;
     let mut outUnit: ArcStr;
     (outCharList, outUnit) = 'mc: {
@@ -1211,7 +1211,7 @@ fn popUnit(mut inCharList: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<metam
                     let mut s2: ArcStr = arcstr::literal!("");
                     let mut strRest = (*strRest).clone();
                     let true = (stringCompare((s1.clone()).clone(), (literal!("a")).clone()) >= 0 && stringCompare((s1.clone()).clone(), (literal!("z")).clone()) <= 0) else { bail!("pattern mismatch") };
-                    (strRest, s2) = popUnit(strRest.clone())?;
+                    (strRest, s2) = popUnit(strRest.clone());
                     Ok((strRest.clone(), { let mut __mm_s = String::new(); __mm_s.push_str(&*s1.clone()); __mm_s.push_str(&*s2.clone()); ArcStr::from(__mm_s) }))
                 }
                 _ => bail!("nomatch"),
@@ -1223,7 +1223,7 @@ fn popUnit(mut inCharList: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<metam
                     let mut s2: ArcStr = arcstr::literal!("");
                     let mut strRest = (*strRest).clone();
                     let true = (stringCompare((s1.clone()).clone(), (literal!("A")).clone()) >= 0 && stringCompare((s1.clone()).clone(), (literal!("Z")).clone()) <= 0) else { bail!("pattern mismatch") };
-                    (strRest, s2) = popUnit(strRest.clone())?;
+                    (strRest, s2) = popUnit(strRest.clone());
                     Ok((strRest.clone(), { let mut __mm_s = String::new(); __mm_s.push_str(&*s1.clone()); __mm_s.push_str(&*s2.clone()); ArcStr::from(__mm_s) }))
                 }
                 _ => bail!("nomatch"),
@@ -1237,12 +1237,12 @@ fn popUnit(mut inCharList: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<metam
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outCharList, outUnit))
+    (outCharList, outUnit)
 }
 
-fn popNumber(mut inCharList: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<metamodelica::List<ArcStr>>, ArcStr)> {
+fn popNumber(mut inCharList: Arc<metamodelica::List<ArcStr>>) -> (Arc<metamodelica::List<ArcStr>>, ArcStr) {
     let mut outCharList: Arc<metamodelica::List<ArcStr>>;
     let mut outNumber: ArcStr;
     (outCharList, outNumber) = 'mc: {
@@ -1263,7 +1263,7 @@ fn popNumber(mut inCharList: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<met
                     let mut strRest = (*strRest).clone();
                     i = stringInt((s1.clone()).clone())?;
                     let true = (intString(i.clone()) == s1.clone()) else { bail!("pattern mismatch") };
-                    (strRest, s2) = popNumber(strRest.clone())?;
+                    (strRest, s2) = popNumber(strRest.clone());
                     Ok((strRest.clone(), { let mut __mm_s = String::new(); __mm_s.push_str(&*s1.clone()); __mm_s.push_str(&*s2.clone()); ArcStr::from(__mm_s) }))
                 }
                 _ => bail!("nomatch"),
@@ -1277,8 +1277,8 @@ fn popNumber(mut inCharList: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<met
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok((outCharList, outNumber))
+    (outCharList, outNumber)
 }
 

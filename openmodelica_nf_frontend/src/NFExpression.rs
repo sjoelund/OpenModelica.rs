@@ -3116,7 +3116,7 @@ pub fn toDAEValue(mut exp: Arc<NFExpression>) -> Result<Arc<Values::Value>> {
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }))?
+    }))
         },
         Deref @ RECORD { .. } => {
             toDAEValueRecord(var_field!((*exp).ty, NFExpression::RECORD).clone(), var_field!((*exp).path, NFExpression::RECORD).clone(), var_field!((*exp).elements, NFExpression::RECORD).clone())?
@@ -4929,7 +4929,7 @@ pub fn arrayFirstScalar(mut arrayExp: Arc<NFExpression>) -> Result<Arc<NFExpress
     }
 }
 
-pub fn arrayAllEqual(mut arrayExp: Arc<NFExpression>) -> Result<bool> {
+pub fn arrayAllEqual(mut arrayExp: Arc<NFExpression>) -> bool {
     let mut allEqual: bool;
     allEqual = 'mc: {
         let __mc_input = arrayExp.clone();
@@ -4949,9 +4949,9 @@ pub fn arrayAllEqual(mut arrayExp: Arc<NFExpression>) -> Result<bool> {
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(allEqual)
+    allEqual
 }
 
 pub fn arrayAllEqual2(mut arrayExp: Arc<NFExpression>, mut element: Arc<NFExpression>) -> Result<bool> {
@@ -5433,7 +5433,7 @@ pub fn makeOperatorRecordZero(mut recordNode: Arc<InstNode::InstNode>) -> Result
     let mut r#fn: Arc<Function::Function::Function>;
     match '__try0: {
         (op_node, _) = unwrap_break_err!(Class::lookupElement((literal!("'0'")).clone(), unwrap_break_err!(InstNode::getClass(recordNode.clone()), '__try0)), '__try0);
-        unwrap_break_err!(Function::Function::instFunctionNode(op_node.clone(), InstContext::NO_CONTEXT.clone(), unwrap_break_err!(InstNode::info(InstNode::parent(op_node.clone())), '__try0)), '__try0);
+        unwrap_break_err!(Function::Function::instFunctionNode(op_node.clone(), InstContext::NO_CONTEXT.clone(), InstNode::info(InstNode::parent(op_node.clone()))), '__try0);
         let __pa1 = ::match_deref::match_deref! { match &(unwrap_break_err!(Function::Function::typeNodeCache(op_node.clone(), InstContext::FUNCTION.clone()), '__try0)) {
             Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Nil } => __pa1.clone(),
             _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),

@@ -244,7 +244,7 @@ pub fn clone(mut inGraph: Graph) -> Result<Graph> {
     Ok(outGraph)
 }
 
-pub fn updateComp(mut inGraph: Graph, mut inVar: Arc<DAE::Var>, mut instStatus: FCore::Status, mut inTargetGraph: Graph) -> Result<Graph> {
+pub fn updateComp(mut inGraph: Graph, mut inVar: Arc<DAE::Var>, mut instStatus: FCore::Status, mut inTargetGraph: Graph) -> Graph {
     let mut outGraph: Graph;
     outGraph = 'mc: {
         let __mc_input = (inGraph.clone(), inVar.clone());
@@ -286,7 +286,7 @@ pub fn updateComp(mut inGraph: Graph, mut inVar: Arc<DAE::Var>, mut instStatus: 
                     pr = lastScopeRef(g.clone())?;
                     let true = (FNode::isImplicitRefName(pr.clone())?) else { bail!("pattern mismatch") };
                     (g, _) = stripLastScopeRef(g.clone())?;
-                    g = updateComp(g.clone(), v.clone(), instStatus.clone(), inTargetGraph.clone())?;
+                    g = updateComp(g.clone(), v.clone(), instStatus.clone(), inTargetGraph.clone());
                     Ok(g.clone())
                 }
                 _ => bail!("nomatch"),
@@ -300,9 +300,9 @@ pub fn updateComp(mut inGraph: Graph, mut inVar: Arc<DAE::Var>, mut instStatus: 
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outGraph)
+    outGraph
 }
 
 pub fn updateSourceTargetScope(mut inRef: Ref, mut inTargetScope: Scope) -> Result<Ref> {
@@ -345,7 +345,7 @@ pub fn updateInstance(mut inRef: Ref, mut inVar: Arc<DAE::Var>) -> Result<Ref> {
     Ok(outRef)
 }
 
-fn updateVarAndMod(mut inGraph: Graph, mut inVar: Arc<DAE::Var>, mut inMod: Arc<DAE::Mod>, mut instStatus: FCore::Status, mut inTargetGraph: Graph) -> Result<Graph> {
+fn updateVarAndMod(mut inGraph: Graph, mut inVar: Arc<DAE::Var>, mut inMod: Arc<DAE::Mod>, mut instStatus: FCore::Status, mut inTargetGraph: Graph) -> Graph {
     let mut outGraph: Graph;
     outGraph = 'mc: {
         let __mc_input = (inGraph.clone(), inVar.clone());
@@ -385,7 +385,7 @@ fn updateVarAndMod(mut inGraph: Graph, mut inVar: Arc<DAE::Var>, mut inMod: Arc<
                     pr = lastScopeRef(g.clone())?;
                     let true = (FNode::isImplicitRefName(pr.clone())?) else { bail!("pattern mismatch") };
                     (g, _) = stripLastScopeRef(g.clone())?;
-                    g = updateVarAndMod(g.clone(), v.clone(), inMod.clone(), instStatus.clone(), inTargetGraph.clone())?;
+                    g = updateVarAndMod(g.clone(), v.clone(), inMod.clone(), instStatus.clone(), inTargetGraph.clone());
                     Ok(g.clone())
                 }
                 _ => bail!("nomatch"),
@@ -399,9 +399,9 @@ fn updateVarAndMod(mut inGraph: Graph, mut inVar: Arc<DAE::Var>, mut inMod: Arc<
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outGraph)
+    outGraph
 }
 
 pub fn updateClass(mut inGraph: Graph, mut inElement: Arc<SCode::Element>, mut inPrefix: DAE::Prefix, mut inMod: Arc<DAE::Mod>, mut instStatus: FCore::Status, mut inTargetGraph: Graph) -> Result<Graph> {
@@ -484,14 +484,14 @@ pub fn addForIterator(mut inGraph: Graph, mut name: ArcStr, mut ty: Arc<DAE::Typ
             v = Arc::new(DAE::Var { name: (name.clone()).clone(), attributes: Arc::new(DAE::Attributes { connectorType: openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR(), parallelism: openmodelica_frontend_types::SCode::Parallelism::NON_PARALLEL, variability: variability.clone(), direction: openmodelica_ast::Absyn::Direction::BIDIR, innerOuter: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC }), ty: ty.clone(), binding: binding.clone(), bind_from_outside: false, constOfForIteratorRange: constOfForIteratorRange.clone() });
             r = lastScopeRef(g.clone())?;
             g = FGraphBuildEnv::mkCompNode(c.clone(), r.clone(), openmodelica_frontend_dump::FCore::Kind::BUILTIN, g.clone())?;
-            g = updateVarAndMod(g.clone(), v.clone(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), openmodelica_frontend_dump::FCore::Status::VAR_UNTYPED, empty())?;
+            g = updateVarAndMod(g.clone(), v.clone(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), openmodelica_frontend_dump::FCore::Status::VAR_UNTYPED, empty());
             g.clone()
         },
     });
     Ok(outGraph)
 }
 
-pub fn printGraphPathStr(mut inGraph: Graph) -> Result<ArcStr> {
+pub fn printGraphPathStr(mut inGraph: Graph) -> ArcStr {
     let mut outString: ArcStr;
     outString = ('mc: {
         let __mc_input = inGraph.clone();
@@ -519,9 +519,9 @@ pub fn printGraphPathStr(mut inGraph: Graph) -> Result<ArcStr> {
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     }).clone();
-    Ok(outString)
+    outString
 }
 
 pub fn openNewScope(mut inGraph: Graph, mut encapsulatedPrefix: SCode::Encapsulated, mut inName: Option<ArcStr>, mut inScopeType: Option<FCore::ScopeType>) -> Result<Graph> {
@@ -541,7 +541,7 @@ pub fn openNewScope(mut inGraph: Graph, mut encapsulatedPrefix: SCode::Encapsula
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            Error::addCompilerError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FGraph.openNewScope: failed to open new scope in scope: ")); __mm_s.push_str(&*getGraphNameStr(inGraph.clone())?); __mm_s.push_str(&*literal!(" name: ")); __mm_s.push_str(&*Util::getOptionOrDefault(inName.clone(), (literal!("")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone())?;
+            Error::addCompilerError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FGraph.openNewScope: failed to open new scope in scope: ")); __mm_s.push_str(&*getGraphNameStr(inGraph.clone())); __mm_s.push_str(&*literal!(" name: ")); __mm_s.push_str(&*Util::getOptionOrDefault(inName.clone(), (literal!("")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone())?;
             Ok(bail!("fail"))
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
@@ -583,7 +583,7 @@ pub fn openScope(mut inGraph: Graph, mut encapsulatedPrefix: SCode::Encapsulated
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            Error::addCompilerError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FGraph.openScope: failed to open new scope in scope: ")); __mm_s.push_str(&*getGraphNameStr(inGraph.clone())?); __mm_s.push_str(&*literal!(" name: ")); __mm_s.push_str(&*inName.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone())?;
+            Error::addCompilerError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FGraph.openScope: failed to open new scope in scope: ")); __mm_s.push_str(&*getGraphNameStr(inGraph.clone())); __mm_s.push_str(&*literal!(" name: ")); __mm_s.push_str(&*inName.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone())?;
             Ok(bail!("fail"))
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
@@ -591,7 +591,7 @@ pub fn openScope(mut inGraph: Graph, mut encapsulatedPrefix: SCode::Encapsulated
     Ok(outGraph)
 }
 
-pub fn inForLoopScope(mut inGraph: Graph) -> Result<bool> {
+pub fn inForLoopScope(mut inGraph: Graph) -> bool {
     let mut res: bool;
     res = 'mc: {
         let __mc_input = inGraph.clone();
@@ -606,12 +606,12 @@ pub fn inForLoopScope(mut inGraph: Graph) -> Result<bool> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(false)
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(res)
+    res
 }
 
-pub fn inForOrParforIterLoopScope(mut inGraph: Graph) -> Result<bool> {
+pub fn inForOrParforIterLoopScope(mut inGraph: Graph) -> bool {
     let mut res: bool;
     res = 'mc: {
         let __mc_input = inGraph.clone();
@@ -626,9 +626,9 @@ pub fn inForOrParforIterLoopScope(mut inGraph: Graph) -> Result<bool> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(false)
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(res)
+    res
 }
 
 pub fn getScopePath(mut inGraph: Graph) -> Result<Option<Arc<Absyn::Path>>> {
@@ -657,7 +657,7 @@ pub fn getScopePath(mut inGraph: Graph) -> Result<Option<Arc<Absyn::Path>>> {
     Ok(outPath)
 }
 
-pub fn getGraphNameStr(mut inGraph: Graph) -> Result<ArcStr> {
+pub fn getGraphNameStr(mut inGraph: Graph) -> ArcStr {
     let mut outString: ArcStr;
     outString = ('mc: {
         let __mc_input = inGraph.clone();
@@ -669,9 +669,9 @@ pub fn getGraphNameStr(mut inGraph: Graph) -> Result<ArcStr> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(literal!("."))
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     }).clone();
-    Ok(outString)
+    outString
 }
 
 pub fn getGraphName(mut inGraph: Graph) -> Result<Arc<Absyn::Path>> {
@@ -791,7 +791,7 @@ pub fn scopeTypeToRestriction(mut inScopeType: FCore::ScopeType) -> SCode::Restr
     outRestriction
 }
 
-pub fn isTopScope(mut graph: Graph) -> Result<bool> {
+pub fn isTopScope(mut graph: Graph) -> bool {
     let mut isTop: bool;
     isTop = 'mc: {
         let __mc_input = graph.clone();
@@ -804,12 +804,12 @@ pub fn isTopScope(mut graph: Graph) -> Result<bool> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(false)
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(isTop)
+    isTop
 }
 
-pub fn crefStripGraphScopePrefix(mut inCref: Arc<Absyn::ComponentRef>, mut inEnv: Graph, mut stripPartial: bool) -> Result<Arc<Absyn::ComponentRef>> {
+pub fn crefStripGraphScopePrefix(mut inCref: Arc<Absyn::ComponentRef>, mut inEnv: Graph, mut stripPartial: bool) -> Arc<Absyn::ComponentRef> {
     let mut outCref: Arc<Absyn::ComponentRef>;
     outCref = 'mc: {
         let __mc_input = stripPartial.clone();
@@ -838,9 +838,9 @@ pub fn crefStripGraphScopePrefix(mut inCref: Arc<Absyn::ComponentRef>, mut inEnv
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(inCref.clone())
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outCref)
+    outCref
 }
 
 fn crefStripGraphScopePrefix2(mut inCref: Arc<Absyn::ComponentRef>, mut inEnvPath: Arc<Absyn::Path>, mut stripPartial: bool) -> Result<Arc<Absyn::ComponentRef>> {
@@ -879,7 +879,7 @@ fn crefStripGraphScopePrefix2(mut inCref: Arc<Absyn::ComponentRef>, mut inEnvPat
     Ok(outCref)
 }
 
-pub fn pathStripGraphScopePrefix(mut inPath: Arc<Absyn::Path>, mut inEnv: Graph, mut stripPartial: bool) -> Result<Arc<Absyn::Path>> {
+pub fn pathStripGraphScopePrefix(mut inPath: Arc<Absyn::Path>, mut inEnv: Graph, mut stripPartial: bool) -> Arc<Absyn::Path> {
     let mut outPath: Arc<Absyn::Path>;
     outPath = 'mc: {
         let __mc_input = stripPartial.clone();
@@ -908,9 +908,9 @@ pub fn pathStripGraphScopePrefix(mut inPath: Arc<Absyn::Path>, mut inEnv: Graph,
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(inPath.clone())
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outPath)
+    outPath
 }
 
 fn pathStripGraphScopePrefix2(mut inPath: Arc<Absyn::Path>, mut inEnvPath: Arc<Absyn::Path>, mut stripPartial: bool) -> Result<Arc<Absyn::Path>> {
@@ -952,7 +952,7 @@ pub fn mkComponentNode(mut inGraph: Graph, mut inVar: Arc<DAE::Var>, mut inVarEl
                     let true = (stringEq((n.clone()).clone(), (SCodeUtil::elementName(c.clone())?).clone())) else { bail!("pattern mismatch") };
                     r = lastScopeRef(g.clone())?;
                     g = FGraphBuildEnv::mkCompNode(c.clone(), r.clone(), openmodelica_frontend_dump::FCore::Kind::USERDEFINED, g.clone())?;
-                    g = updateVarAndMod(g.clone(), v.clone(), m.clone(), i.clone(), cg.clone())?;
+                    g = updateVarAndMod(g.clone(), v.clone(), m.clone(), i.clone(), cg.clone());
                     Ok(g.clone())
                 }
                 _ => bail!("nomatch"),
@@ -1081,17 +1081,17 @@ pub fn printGraphStr(mut inGraph: Graph) -> ArcStr {
     s
 }
 
-pub fn inFunctionScope(mut inGraph: Graph) -> Result<bool> {
+pub fn inFunctionScope(mut inGraph: Graph) -> bool {
     let mut inFunction: bool;
     inFunction = (match inGraph.clone() {
-        FCore::Graph::G { scope: ref s, .. } if (checkScopeType(s.clone(), Some(openmodelica_frontend_dump::FCore::ScopeType::FUNCTION_SCOPE))? || checkScopeType(s.clone(), Some(openmodelica_frontend_dump::FCore::ScopeType::PARALLEL_SCOPE))?) => {
+        FCore::Graph::G { scope: ref s, .. } if (checkScopeType(s.clone(), Some(openmodelica_frontend_dump::FCore::ScopeType::FUNCTION_SCOPE)) || checkScopeType(s.clone(), Some(openmodelica_frontend_dump::FCore::ScopeType::PARALLEL_SCOPE))) => {
             true
         },
         _ => {
             false
         },
     });
-    Ok(inFunction)
+    inFunction
 }
 
 pub fn getScopeName(mut inGraph: Graph) -> Result<Name> {
@@ -1108,7 +1108,7 @@ pub fn getScopeName(mut inGraph: Graph) -> Result<Name> {
     Ok(name)
 }
 
-pub fn checkScopeType(mut inScope: Scope, mut inScopeType: Option<FCore::ScopeType>) -> Result<bool> {
+pub fn checkScopeType(mut inScope: Scope, mut inScopeType: Option<FCore::ScopeType>) -> bool {
     let mut yes: bool;
     yes = 'mc: {
         let __mc_input = inScope.clone();
@@ -1147,14 +1147,14 @@ pub fn checkScopeType(mut inScope: Scope, mut inScopeType: Option<FCore::ScopeTy
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
-                    Ok(checkScopeType(rest.clone(), inScopeType.clone())?)
+                    Ok(checkScopeType(rest.clone(), inScopeType.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(yes)
+    yes
 }
 
 pub fn lastScopeRestriction(mut inGraph: Graph) -> Result<SCode::Restriction> {
@@ -1208,11 +1208,11 @@ pub fn getScopeRestriction(mut inScope: Scope) -> Result<SCode::Restriction> {
 
 pub fn getGraphPathNoImplicitScope(mut inGraph: Graph) -> Result<Option<Arc<Absyn::Path>>> {
     let mut outAbsynPathOption: Option<Arc<Absyn::Path>>;
-    outAbsynPathOption = getGraphPathNoImplicitScope_dispatch(currentScope(inGraph.clone())?)?;
+    outAbsynPathOption = getGraphPathNoImplicitScope_dispatch(currentScope(inGraph.clone())?);
     Ok(outAbsynPathOption)
 }
 
-fn getGraphPathNoImplicitScope_dispatch(mut inScope: Scope) -> Result<Option<Arc<Absyn::Path>>> {
+fn getGraphPathNoImplicitScope_dispatch(mut inScope: Scope) -> Option<Arc<Absyn::Path>> {
     let mut outAbsynPathOption: Option<Arc<Absyn::Path>>;
     let mut opath: Option<Arc<Absyn::Path>> = None;
     outAbsynPathOption = 'mc: {
@@ -1226,10 +1226,10 @@ fn getGraphPathNoImplicitScope_dispatch(mut inScope: Scope) -> Result<Option<Arc
                     let mut path_1: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     let mut opath: Option<Arc<Absyn::Path>> = opath.clone();
                     id = (FNode::refName(r#ref.clone())?).clone();
-                    if isImplicitScope((id.clone()).clone())? {
-                        opath = getGraphPathNoImplicitScope_dispatch(rest.clone())?;
+                    if isImplicitScope((id.clone()).clone()) {
+                        opath = getGraphPathNoImplicitScope_dispatch(rest.clone());
                     } else {
-                        opath = getGraphPathNoImplicitScope_dispatch(rest.clone())?;
+                        opath = getGraphPathNoImplicitScope_dispatch(rest.clone());
                         if isSome(opath.clone()) {
                             let __pa0 = ::match_deref::match_deref! { match &(opath.clone()) {
                                         Some(__pa0) => __pa0.clone(),
@@ -1255,15 +1255,15 @@ fn getGraphPathNoImplicitScope_dispatch(mut inScope: Scope) -> Result<Option<Arc
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outAbsynPathOption)
+    outAbsynPathOption
 }
 
-pub fn isImplicitScope(mut inName: Name) -> Result<bool> {
+pub fn isImplicitScope(mut inName: Name) -> bool {
     let mut isImplicit: bool;
-    isImplicit = FCore::isImplicitScope((inName.clone()).clone())?;
-    Ok(isImplicit)
+    isImplicit = FCore::isImplicitScope((inName.clone()).clone());
+    isImplicit
 }
 
 pub fn joinScopePath(mut inGraph: Graph, mut inPath: Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> {
@@ -1412,7 +1412,7 @@ pub fn mkVersionNode(mut inSourceEnv: Graph, mut inSourceName: Name, mut inPrefi
                     c = inTargetClass.clone();
                     targetClassName = (SCodeUtil::elementName(c.clone())?).clone();
                     (newTargetClassName, _) = mkVersionName(inSourceEnv.clone(), (inSourceName.clone()).clone(), inPrefix.clone(), inMod.clone(), inTargetClassEnv.clone(), (targetClassName.clone()).clone())?;
-                    Error::addCompilerWarning(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FGraph.mkVersionNode: failed to create version node:\n")); __mm_s.push_str(&*literal!("Instance: CL(")); __mm_s.push_str(&*getGraphNameStr(inSourceEnv.clone())?); __mm_s.push_str(&*literal!(").CO(")); __mm_s.push_str(&*inSourceName.clone()); __mm_s.push_str(&*literal!(").CL(")); __mm_s.push_str(&*getGraphNameStr(inTargetClassEnv.clone())?); __mm_s.push_str(&*literal!(".")); __mm_s.push_str(&*targetClassName.clone()); __mm_s.push_str(&*SCodeDump::printModStr(Mod::unelabMod(inMod.clone())?, SCodeDump::defaultOptions.clone())?); __mm_s.push_str(&*literal!(")\n\t")); __mm_s.push_str(&*newTargetClassName.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone())?;
+                    Error::addCompilerWarning(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FGraph.mkVersionNode: failed to create version node:\n")); __mm_s.push_str(&*literal!("Instance: CL(")); __mm_s.push_str(&*getGraphNameStr(inSourceEnv.clone())); __mm_s.push_str(&*literal!(").CO(")); __mm_s.push_str(&*inSourceName.clone()); __mm_s.push_str(&*literal!(").CL(")); __mm_s.push_str(&*getGraphNameStr(inTargetClassEnv.clone())); __mm_s.push_str(&*literal!(".")); __mm_s.push_str(&*targetClassName.clone()); __mm_s.push_str(&*SCodeDump::printModStr(Mod::unelabMod(inMod.clone())?, SCodeDump::defaultOptions.clone())?); __mm_s.push_str(&*literal!(")\n\t")); __mm_s.push_str(&*newTargetClassName.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone())?;
                     Ok((inTargetClassEnv.clone(), inTargetClass.clone(), inIH.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1448,7 +1448,7 @@ pub fn createVersionScope(mut inSourceEnv: Graph, mut inSourceName: Name, mut in
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    let true = (Config::acceptMetaModelicaGrammar()? || isTargetClassBuiltin(inTargetClassEnv.clone(), inTargetClass.clone())? || inFunctionScope(inSourceEnv.clone())? || SCodeUtil::isOperatorRecord(inTargetClass.clone())) else { bail!("pattern mismatch") };
+                    let true = (Config::acceptMetaModelicaGrammar()? || isTargetClassBuiltin(inTargetClassEnv.clone(), inTargetClass.clone()) || inFunctionScope(inSourceEnv.clone()) || SCodeUtil::isOperatorRecord(inTargetClass.clone())) else { bail!("pattern mismatch") };
                     Ok((inTargetClassEnv.clone(), inTargetClass.clone(), inIH.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1480,7 +1480,7 @@ pub fn createVersionScope(mut inSourceEnv: Graph, mut inSourceName: Name, mut in
     Ok((outVersionedTargetClassEnv, outVersionedTargetClass, outIH))
 }
 
-pub fn isTargetClassBuiltin(mut inGraph: Graph, mut inClass: Arc<SCode::Element>) -> Result<bool> {
+pub fn isTargetClassBuiltin(mut inGraph: Graph, mut inClass: Arc<SCode::Element>) -> bool {
     let mut yes: bool = false;
     yes = 'mc: {
         let __mc_input = inClass.clone();
@@ -1504,9 +1504,9 @@ pub fn isTargetClassBuiltin(mut inGraph: Graph, mut inClass: Arc<SCode::Element>
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(yes)
+    yes
 }
 
 pub fn mkVersionName(mut inSourceEnv: Graph, mut inSourceName: Name, mut inPrefix: DAE::Prefix, mut inMod: Arc<DAE::Mod>, mut inTargetClassEnv: Graph, mut inTargetClassName: Name) -> Result<(Name, DAE::Prefix)> {
@@ -1524,7 +1524,7 @@ pub fn mkVersionName(mut inSourceEnv: Graph, mut inSourceName: Name, mut inPrefi
     Ok((outName, outCrefPrefix))
 }
 
-pub fn getClassPrefix(mut inEnv: FCore::Graph, mut inClassName: Name) -> Result<DAE::Prefix> {
+pub fn getClassPrefix(mut inEnv: FCore::Graph, mut inClassName: Name) -> DAE::Prefix {
     let mut outPrefix: DAE::Prefix;
     outPrefix = 'mc: {
         let __mc_input = inClassName.clone();
@@ -1541,12 +1541,12 @@ pub fn getClassPrefix(mut inEnv: FCore::Graph, mut inClassName: Name) -> Result<
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(openmodelica_frontend_types::DAE::Prefix::NOPRE)
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(outPrefix)
+    outPrefix
 }
 
-pub fn isInstance(mut inEnv: FCore::Graph, mut inName: ArcStr) -> Result<bool> {
+pub fn isInstance(mut inEnv: FCore::Graph, mut inName: ArcStr) -> bool {
     let mut yes: bool;
     yes = 'mc: {
         let __mc_input = inName.clone();
@@ -1559,12 +1559,12 @@ pub fn isInstance(mut inEnv: FCore::Graph, mut inName: ArcStr) -> Result<bool> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(false)
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     };
-    Ok(yes)
+    yes
 }
 
-pub fn getInstanceOriginalName(mut inEnv: FCore::Graph, mut inName: ArcStr) -> Result<ArcStr> {
+pub fn getInstanceOriginalName(mut inEnv: FCore::Graph, mut inName: ArcStr) -> ArcStr {
     let mut outName: ArcStr = arcstr::literal!("");
     outName = ('mc: {
         let __mc_input = inName.clone();
@@ -1579,9 +1579,9 @@ pub fn getInstanceOriginalName(mut inEnv: FCore::Graph, mut inName: ArcStr) -> R
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(inName.clone())
         })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
+        panic!("matchcontinue: no arm matched")
     }).clone();
-    Ok(outName)
+    outName
 }
 
 pub fn graphPrefixOf(mut inPrefixEnv: Graph, mut inEnv: Graph) -> Result<bool> {
@@ -1632,7 +1632,7 @@ pub fn setStatus(mut inEnv: Graph, mut inName: Name, mut inStatus: FCore::Data) 
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let mut g = __mc_input.clone() else { bail!("nomatch") };
-            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FGraph.setStatus failed on: ")); __mm_s.push_str(&*getGraphNameStr(g.clone())?); __mm_s.push_str(&*literal!(" element: ")); __mm_s.push_str(&*inName.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FGraph.setStatus failed on: ")); __mm_s.push_str(&*getGraphNameStr(g.clone())); __mm_s.push_str(&*literal!(" element: ")); __mm_s.push_str(&*inName.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             Ok(g.clone())
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
