@@ -413,7 +413,7 @@ fn simplifyTimeIndepFuncCallsShared(mut inDAE: Arc<BackendDAE::BackendDAE>) -> R
     Ok(outDAE)
 }
 
-fn traverseEventInfoExps<T: Clone + 'static + metamodelica::ReferenceEq>(mut eventInfo: BackendDAE::EventInfo, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, T) -> Result<(Arc<DAE::Exp>, T)> + 'static>, mut arg: T) -> Result<(BackendDAE::EventInfo, T)> {
+fn traverseEventInfoExps<T: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut eventInfo: BackendDAE::EventInfo, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, T) -> Result<(Arc<DAE::Exp>, T)> + 'static>, mut arg: T) -> Result<(BackendDAE::EventInfo, T)> {
     pub type FuncExpType<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, T) -> Result<(Arc<DAE::Exp>, T)> + 'static>;
 
     let mut eventInfo: BackendDAE::EventInfo = eventInfo;
@@ -424,7 +424,7 @@ fn traverseEventInfoExps<T: Clone + 'static + metamodelica::ReferenceEq>(mut eve
     Ok((eventInfo, arg))
 }
 
-fn traverseZeroCrossingExps<T: Clone + 'static + metamodelica::ReferenceEq>(mut zc: BackendDAE::ZeroCrossing, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, T) -> Result<(Arc<DAE::Exp>, T)> + 'static>, mut arg: T) -> Result<(BackendDAE::ZeroCrossing, T)> {
+fn traverseZeroCrossingExps<T: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut zc: BackendDAE::ZeroCrossing, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, T) -> Result<(Arc<DAE::Exp>, T)> + 'static>, mut arg: T) -> Result<(BackendDAE::ZeroCrossing, T)> {
     pub type FuncExpType<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, T) -> Result<(Arc<DAE::Exp>, T)> + 'static>;
 
     let mut zc: BackendDAE::ZeroCrossing = zc;

@@ -73,7 +73,7 @@ pub enum NFExpressionIterator {
     },
 }
 impl metamodelica::gc::MMTrace for NFExpressionIterator {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             NFExpressionIterator::ARRAY_ITERATOR { arr, index, arrays } => {
                 metamodelica::gc::MMTrace::mm_accept(arr, __mmv)?;

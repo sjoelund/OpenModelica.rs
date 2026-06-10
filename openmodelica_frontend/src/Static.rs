@@ -118,7 +118,7 @@ pub struct Slot {
 }
 
 impl metamodelica::gc::MMTrace for Slot {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.defaultArg, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.slotFilled, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.arg, __mmv)?;
@@ -7928,7 +7928,7 @@ pub enum ForceFunctionInst {
     NORMAL_FUNCTION_INST,
 }
 impl metamodelica::gc::MMTrace for ForceFunctionInst {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             ForceFunctionInst::FORCE_FUNCTION_INST => Ok(()),
             ForceFunctionInst::NORMAL_FUNCTION_INST => Ok(()),

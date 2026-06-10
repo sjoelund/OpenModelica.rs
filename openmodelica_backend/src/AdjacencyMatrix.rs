@@ -65,7 +65,7 @@ pub fn copyAdjacencyMatrix(mut inAdjacencyMatrix: Option<metamodelica::Array<Arc
 
 pub use copyAdjacencyMatrix as copyAdjacencyMatrixT;
 
-pub fn traverseAdjacencyMatrix<T: Clone + 'static>(mut inM: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, i32, T) -> Result<(Arc<metamodelica::List<i32>>, T)> + 'static>, mut inTypeA: T) -> Result<(metamodelica::Array<Arc<metamodelica::List<i32>>>, T)> {
+pub fn traverseAdjacencyMatrix<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inM: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, i32, T) -> Result<(Arc<metamodelica::List<i32>>, T)> + 'static>, mut inTypeA: T) -> Result<(metamodelica::Array<Arc<metamodelica::List<i32>>>, T)> {
     pub type FuncType<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, i32, T) -> Result<(Arc<metamodelica::List<i32>>, T)> + 'static>;
 
     let mut outM: metamodelica::Array<Arc<metamodelica::List<i32>>>;
@@ -74,7 +74,7 @@ pub fn traverseAdjacencyMatrix<T: Clone + 'static>(mut inM: metamodelica::Array<
     Ok((outM, outTypeA))
 }
 
-fn traverseAdjacencyMatrix1<T: Clone + 'static>(mut inM: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, i32, T) -> Result<(Arc<metamodelica::List<i32>>, T)> + 'static>, mut pos: i32, mut len: i32, mut inTypeA: T) -> Result<(metamodelica::Array<Arc<metamodelica::List<i32>>>, T)> {
+fn traverseAdjacencyMatrix1<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inM: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, i32, T) -> Result<(Arc<metamodelica::List<i32>>, T)> + 'static>, mut pos: i32, mut len: i32, mut inTypeA: T) -> Result<(metamodelica::Array<Arc<metamodelica::List<i32>>>, T)> {
     pub type FuncType<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, i32, T) -> Result<(Arc<metamodelica::List<i32>>, T)> + 'static>;
 
     let mut outM: metamodelica::Array<Arc<metamodelica::List<i32>>>;
@@ -83,7 +83,7 @@ fn traverseAdjacencyMatrix1<T: Clone + 'static>(mut inM: metamodelica::Array<Arc
     Ok((outM, outTypeA))
 }
 
-fn traverseAdjacencyMatrix2<T: Clone + 'static>(mut inM: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, i32, T) -> Result<(Arc<metamodelica::List<i32>>, T)> + 'static>, mut pos: i32, mut len: i32, mut stop: bool, mut inTypeA: T) -> Result<(metamodelica::Array<Arc<metamodelica::List<i32>>>, T)> {
+fn traverseAdjacencyMatrix2<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inM: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, i32, T) -> Result<(Arc<metamodelica::List<i32>>, T)> + 'static>, mut pos: i32, mut len: i32, mut stop: bool, mut inTypeA: T) -> Result<(metamodelica::Array<Arc<metamodelica::List<i32>>>, T)> {
     pub type FuncType<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, i32, T) -> Result<(Arc<metamodelica::List<i32>>, T)> + 'static>;
 
     '__tco: loop {
@@ -108,7 +108,7 @@ fn traverseAdjacencyMatrix2<T: Clone + 'static>(mut inM: metamodelica::Array<Arc
     }
 }
 
-fn traverseAdjacencyMatrixList<T: Clone + 'static>(mut inLst: Arc<metamodelica::List<i32>>, mut inM: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, i32, T) -> Result<(Arc<metamodelica::List<i32>>, T)> + 'static>, mut len: i32, mut maxpos: i32, mut inTypeA: T) -> Result<(metamodelica::Array<Arc<metamodelica::List<i32>>>, T)> {
+fn traverseAdjacencyMatrixList<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inLst: Arc<metamodelica::List<i32>>, mut inM: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, i32, T) -> Result<(Arc<metamodelica::List<i32>>, T)> + 'static>, mut len: i32, mut maxpos: i32, mut inTypeA: T) -> Result<(metamodelica::Array<Arc<metamodelica::List<i32>>>, T)> {
     pub type FuncType<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, i32, T) -> Result<(Arc<metamodelica::List<i32>>, T)> + 'static>;
 
     let mut outM: metamodelica::Array<Arc<metamodelica::List<i32>>>;

@@ -78,7 +78,7 @@ pub struct SMNode {
 }
 
 impl metamodelica::gc::MMTrace for SMNode {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.componentRef, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.isInitial, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.edges, __mmv)?;
@@ -130,7 +130,7 @@ pub struct FlatSMGroup {
 }
 
 impl metamodelica::gc::MMTrace for FlatSMGroup {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.initState, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.states, __mmv)?;
         Ok(())
@@ -148,7 +148,7 @@ pub struct AdjacencyTable {
 }
 
 impl metamodelica::gc::MMTrace for AdjacencyTable {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.cref2index, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.adjacency, __mmv)?;
         Ok(())

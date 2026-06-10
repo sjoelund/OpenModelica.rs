@@ -113,7 +113,7 @@ impl Ord for Visibility {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 impl metamodelica::gc::MMTrace for Visibility {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+    fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 
 pub fn getExtendsElementspecInClass(mut inClass: Arc<Absyn::Class>) -> Arc<metamodelica::List<Arc<Absyn::ElementSpec>>> {
@@ -2682,7 +2682,7 @@ pub mod ClassEntry {
     }
 
     impl metamodelica::gc::MMTrace for ClassEntry {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             metamodelica::gc::MMTrace::mm_accept(&self.path, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.cls, __mmv)?;
             Ok(())
@@ -3382,7 +3382,7 @@ pub fn getPathedExtendsInProgram(mut classPath: Arc<Absyn::Path>, mut extendsPat
     extendsSpec
 }
 
-pub fn transformPathedElementInList<T: Clone + 'static>(mut inList: Arc<metamodelica::List<T>>, mut inFunc: Arc<dyn ::std::ops::Fn(T) -> Result<(T, Option<Arc<Absyn::Element>>, bool)> + 'static>) -> Result<(Arc<metamodelica::List<T>>, Option<Arc<Absyn::Element>>, bool)> {
+pub fn transformPathedElementInList<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inList: Arc<metamodelica::List<T>>, mut inFunc: Arc<dyn ::std::ops::Fn(T) -> Result<(T, Option<Arc<Absyn::Element>>, bool)> + 'static>) -> Result<(Arc<metamodelica::List<T>>, Option<Arc<Absyn::Element>>, bool)> {
     pub type FuncType<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T) -> Result<(T, Option<Arc<Absyn::Element>>, bool)> + 'static>;
 
     let mut outList: Arc<metamodelica::List<T>> = metamodelica::nil();

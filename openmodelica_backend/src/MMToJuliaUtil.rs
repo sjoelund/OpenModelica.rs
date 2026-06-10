@@ -159,7 +159,7 @@ pub enum Context {
     },
 }
 impl metamodelica::gc::MMTrace for Context {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             Context::FUNCTION { retValsStr } => {
                 metamodelica::gc::MMTrace::mm_accept(retValsStr, __mmv)?;

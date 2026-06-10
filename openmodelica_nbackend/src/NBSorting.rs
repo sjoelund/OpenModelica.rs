@@ -88,7 +88,7 @@ pub mod Value {
         },
     }
     impl metamodelica::gc::MMTrace for Value {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             match self {
                 Value::SINGLE_VAL { cref_to_solve, eqn_scal_indices } => {
                     metamodelica::gc::MMTrace::mm_accept(cref_to_solve, __mmv)?;
@@ -395,7 +395,7 @@ pub mod LoopIdentifier {
     }
 
     impl metamodelica::gc::MMTrace for LoopIdentifier {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             metamodelica::gc::MMTrace::mm_accept(&self.eqns, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.vars, __mmv)?;
             Ok(())
@@ -477,7 +477,7 @@ pub mod SuperNode {
         },
     }
     impl metamodelica::gc::MMTrace for SuperNode {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             match self {
                 SuperNode::SINGLE { index } => {
                     metamodelica::gc::MMTrace::mm_accept(index, __mmv)?;

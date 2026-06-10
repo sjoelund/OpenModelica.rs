@@ -740,7 +740,7 @@ pub fn containWholeDim(mut inRef: Arc<DAE::ComponentRef>) -> Result<bool> {
     Ok(wholedim)
 }
 
-pub fn traverseCref<Type_a: Clone + 'static>(mut cref: Arc<DAE::ComponentRef>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Type_a) -> Result<Type_a> + 'static>, mut argIn: Type_a) -> Result<Type_a> {
+pub fn traverseCref<Type_a: Clone + 'static + metamodelica::gc::MMTrace>(mut cref: Arc<DAE::ComponentRef>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Type_a) -> Result<Type_a> + 'static>, mut argIn: Type_a) -> Result<Type_a> {
     pub type FuncType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Type_a) -> Result<Type_a> + 'static>;
 
     let mut argOut: Type_a;

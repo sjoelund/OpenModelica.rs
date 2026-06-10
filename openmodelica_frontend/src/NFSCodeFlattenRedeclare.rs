@@ -88,7 +88,7 @@ pub enum Replacement {
     },
 }
 impl metamodelica::gc::MMTrace for Replacement {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             Replacement::REPLACED { name, old, new, env } => {
                 metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;

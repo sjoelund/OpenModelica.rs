@@ -95,7 +95,7 @@ pub mod EvalTarget {
     }
 
     impl metamodelica::gc::MMTrace for EvalTarget {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             metamodelica::gc::MMTrace::mm_accept(&self.info, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.context, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.extra, __mmv)?;
@@ -142,7 +142,7 @@ pub struct EvalTargetData {
 }
 
 impl metamodelica::gc::MMTrace for EvalTargetData {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.component, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.index, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.exp, __mmv)?;

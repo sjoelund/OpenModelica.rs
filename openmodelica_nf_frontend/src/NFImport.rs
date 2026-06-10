@@ -72,7 +72,7 @@ pub enum NFImport {
     },
 }
 impl metamodelica::gc::MMTrace for NFImport {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             NFImport::UNRESOLVED_IMPORT { imp, scope, info } => {
                 metamodelica::gc::MMTrace::mm_accept(imp, __mmv)?;

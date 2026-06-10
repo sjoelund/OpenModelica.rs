@@ -178,7 +178,7 @@ pub enum NBackendDAE {
     },
 }
 impl metamodelica::gc::MMTrace for NBackendDAE {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             NBackendDAE::MAIN { ode, algebraic, ode_event, alg_event, clocked, init, init_0, dae, varData, eqData, eventInfo, clockedInfo, funcMap } => {
                 metamodelica::gc::MMTrace::mm_accept(ode, __mmv)?;

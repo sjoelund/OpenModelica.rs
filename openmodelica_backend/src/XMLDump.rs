@@ -2359,7 +2359,7 @@ fn dumpKind(mut inVarKind: BackendDAE::VarKind) -> Result<ArcStr> {
     Ok(outString)
 }
 
-fn dumpList<Type_a: Clone + 'static>(mut inTypeALst: Arc<metamodelica::List<Type_a>>, mut inFuncTypeTypeATo: Arc<dyn ::std::ops::Fn(Type_a) -> Result<()> + 'static>) -> Result<()> {
+fn dumpList<Type_a: Clone + 'static + metamodelica::gc::MMTrace>(mut inTypeALst: Arc<metamodelica::List<Type_a>>, mut inFuncTypeTypeATo: Arc<dyn ::std::ops::Fn(Type_a) -> Result<()> + 'static>) -> Result<()> {
     pub type FuncTypeType_aTo<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Type_a) -> Result<()> + 'static>;
 
     let () = 'mc: {
@@ -2396,7 +2396,7 @@ fn dumpList<Type_a: Clone + 'static>(mut inTypeALst: Arc<metamodelica::List<Type
     Ok(())
 }
 
-fn dumpListSeparator<Type_a: Clone + 'static>(mut inTypeALst: Arc<metamodelica::List<Type_a>>, mut inFuncTypeTypeATo: Arc<dyn ::std::ops::Fn(Type_a) -> Result<()> + 'static>, mut inString: ArcStr) -> Result<()> {
+fn dumpListSeparator<Type_a: Clone + 'static + metamodelica::gc::MMTrace>(mut inTypeALst: Arc<metamodelica::List<Type_a>>, mut inFuncTypeTypeATo: Arc<dyn ::std::ops::Fn(Type_a) -> Result<()> + 'static>, mut inString: ArcStr) -> Result<()> {
     pub type FuncTypeType_aTo<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Type_a) -> Result<()> + 'static>;
 
     let () = 'mc: {

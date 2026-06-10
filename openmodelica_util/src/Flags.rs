@@ -58,7 +58,7 @@ pub struct DebugFlag {
 }
 
 impl metamodelica::gc::MMTrace for DebugFlag {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.index, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.name, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.default, __mmv)?;
@@ -88,7 +88,7 @@ pub struct ConfigFlag {
 }
 
 impl metamodelica::gc::MMTrace for ConfigFlag {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.index, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.name, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.shortname, __mmv)?;
@@ -153,7 +153,7 @@ pub enum FlagData {
     },
 }
 impl metamodelica::gc::MMTrace for FlagData {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             FlagData::EMPTY_FLAG => Ok(()),
             FlagData::BOOL_FLAG { data } => {
@@ -202,7 +202,7 @@ pub enum FlagVisibility {
     EXTERNAL,
 }
 impl metamodelica::gc::MMTrace for FlagVisibility {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             FlagVisibility::INTERNAL => Ok(()),
             FlagVisibility::EXTERNAL => Ok(()),
@@ -224,7 +224,7 @@ pub enum Flag {
     NO_FLAGS,
 }
 impl metamodelica::gc::MMTrace for Flag {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             Flag::FLAGS { debugFlags, configFlags } => {
                 metamodelica::gc::MMTrace::mm_accept(debugFlags, __mmv)?;
@@ -253,7 +253,7 @@ pub enum ValidOptions {
     },
 }
 impl metamodelica::gc::MMTrace for ValidOptions {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             ValidOptions::STRING_OPTION { options } => {
                 metamodelica::gc::MMTrace::mm_accept(options, __mmv)?;

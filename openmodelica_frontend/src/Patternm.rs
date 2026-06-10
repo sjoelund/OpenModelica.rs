@@ -1646,7 +1646,7 @@ fn addCasesLocalCref(mut icases: Arc<metamodelica::List<Arc<DAE::MatchCase>>>, m
     }
 }
 
-fn simplifyPattern<A: Clone + 'static>(mut inPat: Arc<DAE::Pattern>, mut extra: A) -> Result<(Arc<DAE::Pattern>, A)> {
+fn simplifyPattern<A: Clone + 'static + metamodelica::gc::MMTrace>(mut inPat: Arc<DAE::Pattern>, mut extra: A) -> Result<(Arc<DAE::Pattern>, A)> {
     let mut outPat: Arc<DAE::Pattern>;
     let mut outExtra: A = extra.clone();
     outPat = (::match_deref::match_deref! { match &(inPat.clone()) {
@@ -1703,7 +1703,7 @@ fn addPatternAsBindings(mut inPat: Arc<DAE::Pattern>, mut inHt: (metamodelica::A
     (pat, ht)
 }
 
-pub fn traversePatternList<TypeA: Clone + 'static>(mut inPatterns: Arc<metamodelica::List<Arc<DAE::Pattern>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Pattern>, TypeA) -> Result<(Arc<DAE::Pattern>, TypeA)> + 'static>, mut inExtra: TypeA) -> Result<(Arc<metamodelica::List<Arc<DAE::Pattern>>>, TypeA)> {
+pub fn traversePatternList<TypeA: Clone + 'static + metamodelica::gc::MMTrace>(mut inPatterns: Arc<metamodelica::List<Arc<DAE::Pattern>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Pattern>, TypeA) -> Result<(Arc<DAE::Pattern>, TypeA)> + 'static>, mut inExtra: TypeA) -> Result<(Arc<metamodelica::List<Arc<DAE::Pattern>>>, TypeA)> {
     pub type Func<TypeA: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Pattern>, TypeA) -> Result<(Arc<DAE::Pattern>, TypeA)> + 'static>;
 
     let mut outPatterns: Arc<metamodelica::List<Arc<DAE::Pattern>>> = metamodelica::nil();
@@ -1718,7 +1718,7 @@ pub fn traversePatternList<TypeA: Clone + 'static>(mut inPatterns: Arc<metamodel
     Ok((outPatterns, extra))
 }
 
-pub fn traversePattern<TypeA: Clone + 'static>(mut inPattern: Arc<DAE::Pattern>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Pattern>, TypeA) -> Result<(Arc<DAE::Pattern>, TypeA)> + 'static>, mut inExtra: TypeA) -> Result<(Arc<DAE::Pattern>, TypeA)> {
+pub fn traversePattern<TypeA: Clone + 'static + metamodelica::gc::MMTrace>(mut inPattern: Arc<DAE::Pattern>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Pattern>, TypeA) -> Result<(Arc<DAE::Pattern>, TypeA)> + 'static>, mut inExtra: TypeA) -> Result<(Arc<DAE::Pattern>, TypeA)> {
     pub type Func<TypeA: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Pattern>, TypeA) -> Result<(Arc<DAE::Pattern>, TypeA)> + 'static>;
 
     let mut outPattern: Arc<DAE::Pattern>;
@@ -2488,7 +2488,7 @@ fn fixCaseReturnTypes(mut icases: Arc<metamodelica::List<Arc<DAE::MatchCase>>>, 
     Ok((outCases, ty))
 }
 
-pub fn traverseConstantPatternsHelper<T: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut inT: T, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, T) -> Result<(Arc<DAE::Exp>, T)> + 'static>) -> Result<(Arc<DAE::Exp>, T)> {
+pub fn traverseConstantPatternsHelper<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inExp: Arc<DAE::Exp>, mut inT: T, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, T) -> Result<(Arc<DAE::Exp>, T)> + 'static>) -> Result<(Arc<DAE::Exp>, T)> {
     pub type FuncExpType<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, T) -> Result<(Arc<DAE::Exp>, T)> + 'static>;
 
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -2531,7 +2531,7 @@ pub fn traverseConstantPatternsHelper<T: Clone + 'static>(mut inExp: Arc<DAE::Ex
     Ok((outExp, outT))
 }
 
-pub fn traverseConstantPatternsHelper2<T: Clone + 'static>(mut inPattern: Arc<DAE::Pattern>, mut inExtra: T, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, T) -> Result<(Arc<DAE::Exp>, T)> + 'static>) -> Result<(Arc<DAE::Pattern>, T)> {
+pub fn traverseConstantPatternsHelper2<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inPattern: Arc<DAE::Pattern>, mut inExtra: T, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, T) -> Result<(Arc<DAE::Exp>, T)> + 'static>) -> Result<(Arc<DAE::Pattern>, T)> {
     pub type FuncExpType<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, T) -> Result<(Arc<DAE::Exp>, T)> + 'static>;
 
     let mut outPattern: Arc<DAE::Pattern> = Arc::new(DAE::Pattern::PAT_WILD);

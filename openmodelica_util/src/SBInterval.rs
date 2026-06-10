@@ -55,7 +55,7 @@ pub struct SBInterval {
 }
 
 impl metamodelica::gc::MMTrace for SBInterval {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.lo, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.step, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.hi, __mmv)?;

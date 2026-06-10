@@ -77,7 +77,7 @@ pub struct Functionargs {
 }
 
 impl metamodelica::gc::MMTrace for Functionargs {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.name, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.invars, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.outvars, __mmv)?;

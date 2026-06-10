@@ -114,7 +114,7 @@ impl Ord for JacobianType {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 impl metamodelica::gc::MMTrace for JacobianType {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+    fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 
 pub fn isDynamic(mut jacType: JacobianType) -> bool {
@@ -327,7 +327,7 @@ pub mod SparsityPattern {
     }
 
     impl metamodelica::gc::MMTrace for SparsityPattern {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             metamodelica::gc::MMTrace::mm_accept(&self.col_wise_pattern, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.row_wise_pattern, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.seed_vars, __mmv)?;
@@ -556,7 +556,7 @@ pub mod SparsityColoring {
     }
 
     impl metamodelica::gc::MMTrace for SparsityColoring {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             metamodelica::gc::MMTrace::mm_accept(&self.cols, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.rows, __mmv)?;
             Ok(())

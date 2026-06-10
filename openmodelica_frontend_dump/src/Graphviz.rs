@@ -59,7 +59,7 @@ pub struct Attribute {
 }
 
 impl metamodelica::gc::MMTrace for Attribute {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.name, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.value, __mmv)?;
         Ok(())
@@ -98,7 +98,7 @@ pub enum Node {
     },
 }
 impl metamodelica::gc::MMTrace for Node {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             Node::NODE { type_, attributes, children } => {
                 metamodelica::gc::MMTrace::mm_accept(type_, __mmv)?;

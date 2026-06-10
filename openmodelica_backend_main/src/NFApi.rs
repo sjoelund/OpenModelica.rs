@@ -771,7 +771,7 @@ pub enum InstanceTree {
     EMPTY,
 }
 impl metamodelica::gc::MMTrace for InstanceTree {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             InstanceTree::COMPONENT { node, binding, cls } => {
                 metamodelica::gc::MMTrace::mm_accept(node, __mmv)?;
@@ -2385,7 +2385,7 @@ pub struct MoveEnv {
 }
 
 impl metamodelica::gc::MMTrace for MoveEnv {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.scope, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.destinationPath, __mmv)?;
         Ok(())

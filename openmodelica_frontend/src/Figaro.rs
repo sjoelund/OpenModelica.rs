@@ -102,7 +102,7 @@ pub struct FigaroClass {
 }
 
 impl metamodelica::gc::MMTrace for FigaroClass {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.className, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.typeName, __mmv)?;
         Ok(())
@@ -131,7 +131,7 @@ pub struct FigaroObject {
 }
 
 impl metamodelica::gc::MMTrace for FigaroObject {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.objectName, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.typeName, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.figaroCode, __mmv)?;
@@ -750,7 +750,7 @@ pub enum Token {
     },
 }
 impl metamodelica::gc::MMTrace for Token {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             Token::OPENTAG { tagName } => {
                 metamodelica::gc::MMTrace::mm_accept(tagName, __mmv)?;

@@ -57,7 +57,7 @@ pub enum Status {
     FAILURE,
 }
 impl metamodelica::gc::MMTrace for Status {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             Status::SUCCESS => Ok(()),
             Status::FAILURE => Ok(()),
@@ -80,7 +80,7 @@ pub struct DateTime {
 }
 
 impl metamodelica::gc::MMTrace for DateTime {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.sec, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.min, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.hour, __mmv)?;
@@ -159,7 +159,7 @@ pub fn selectFirstNonEmptyString(mut inStrings: Arc<metamodelica::List<ArcStr>>)
     outResult
 }
 
-pub fn compareTupleIntGt<T: Clone + 'static>(mut inTplA: (i32, T), mut inTplB: (i32, T)) -> bool {
+pub fn compareTupleIntGt<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inTplA: (i32, T), mut inTplB: (i32, T)) -> bool {
     let mut res: bool;
     let mut a: i32;
     let mut b: i32;
@@ -169,7 +169,7 @@ pub fn compareTupleIntGt<T: Clone + 'static>(mut inTplA: (i32, T), mut inTplB: (
     res
 }
 
-pub fn compareTupleIntLt<T: Clone + 'static>(mut inTplA: (i32, T), mut inTplB: (i32, T)) -> bool {
+pub fn compareTupleIntLt<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inTplA: (i32, T), mut inTplB: (i32, T)) -> bool {
     let mut res: bool;
     let mut a: i32;
     let mut b: i32;
@@ -179,7 +179,7 @@ pub fn compareTupleIntLt<T: Clone + 'static>(mut inTplA: (i32, T), mut inTplB: (
     res
 }
 
-pub fn compareTuple2IntGt<T: Clone + 'static>(mut inTplA: (T, i32), mut inTplB: (T, i32)) -> bool {
+pub fn compareTuple2IntGt<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inTplA: (T, i32), mut inTplB: (T, i32)) -> bool {
     let mut res: bool;
     let mut a: i32;
     let mut b: i32;
@@ -189,7 +189,7 @@ pub fn compareTuple2IntGt<T: Clone + 'static>(mut inTplA: (T, i32), mut inTplB: 
     res
 }
 
-pub fn compareTuple2IntLt<T: Clone + 'static>(mut inTplA: (T, i32), mut inTplB: (T, i32)) -> bool {
+pub fn compareTuple2IntLt<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inTplA: (T, i32), mut inTplB: (T, i32)) -> bool {
     let mut res: bool;
     let mut a: i32;
     let mut b: i32;
@@ -199,19 +199,19 @@ pub fn compareTuple2IntLt<T: Clone + 'static>(mut inTplA: (T, i32), mut inTplB: 
     res
 }
 
-pub fn tuple21<T1: Clone + 'static, T2: Clone + 'static>(mut inTuple: (T1, T2)) -> T1 {
+pub fn tuple21<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'static + metamodelica::gc::MMTrace>(mut inTuple: (T1, T2)) -> T1 {
     let mut outValue: T1;
     (outValue, _) = inTuple.clone();
     outValue
 }
 
-pub fn tuple22<T1: Clone + 'static, T2: Clone + 'static>(mut inTuple: (T1, T2)) -> T2 {
+pub fn tuple22<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'static + metamodelica::gc::MMTrace>(mut inTuple: (T1, T2)) -> T2 {
     let mut outValue: T2;
     (_, outValue) = inTuple.clone();
     outValue
 }
 
-pub fn optTuple22<T1: Clone + 'static, T2: Clone + 'static>(mut inTuple: Option<(T1, T2)>) -> Result<T2> {
+pub fn optTuple22<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'static + metamodelica::gc::MMTrace>(mut inTuple: Option<(T1, T2)>) -> Result<T2> {
     let mut outValue: T2;
     let __pa0 = ::match_deref::match_deref! { match &(inTuple.clone()) {
         Some((_, __pa0)) => __pa0.clone(),
@@ -221,7 +221,7 @@ pub fn optTuple22<T1: Clone + 'static, T2: Clone + 'static>(mut inTuple: Option<
     Ok(outValue)
 }
 
-pub fn tuple312<T1: Clone + 'static, T2: Clone + 'static, T3: Clone + 'static>(mut inTuple: (T1, T2, T3)) -> (T1, T2) {
+pub fn tuple312<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'static + metamodelica::gc::MMTrace, T3: Clone + 'static + metamodelica::gc::MMTrace>(mut inTuple: (T1, T2, T3)) -> (T1, T2) {
     let mut outTuple: (T1, T2);
     let mut e1: T1;
     let mut e2: T2;
@@ -230,85 +230,85 @@ pub fn tuple312<T1: Clone + 'static, T2: Clone + 'static, T3: Clone + 'static>(m
     outTuple
 }
 
-pub fn tuple31<T1: Clone + 'static, T2: Clone + 'static, T3: Clone + 'static>(mut inValue: (T1, T2, T3)) -> T1 {
+pub fn tuple31<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'static + metamodelica::gc::MMTrace, T3: Clone + 'static + metamodelica::gc::MMTrace>(mut inValue: (T1, T2, T3)) -> T1 {
     let mut outValue: T1;
     (outValue, _, _) = inValue.clone();
     outValue
 }
 
-pub fn tuple32<T1: Clone + 'static, T2: Clone + 'static, T3: Clone + 'static>(mut inValue: (T1, T2, T3)) -> T2 {
+pub fn tuple32<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'static + metamodelica::gc::MMTrace, T3: Clone + 'static + metamodelica::gc::MMTrace>(mut inValue: (T1, T2, T3)) -> T2 {
     let mut outValue: T2;
     (_, outValue, _) = inValue.clone();
     outValue
 }
 
-pub fn tuple33<T1: Clone + 'static, T2: Clone + 'static, T3: Clone + 'static>(mut inValue: (T1, T2, T3)) -> T3 {
+pub fn tuple33<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'static + metamodelica::gc::MMTrace, T3: Clone + 'static + metamodelica::gc::MMTrace>(mut inValue: (T1, T2, T3)) -> T3 {
     let mut outValue: T3;
     (_, _, outValue) = inValue.clone();
     outValue
 }
 
-pub fn tuple41<T1: Clone + 'static, T2: Clone + 'static, T3: Clone + 'static, T4: Clone + 'static>(mut inTuple: (T1, T2, T3, T4)) -> T1 {
+pub fn tuple41<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'static + metamodelica::gc::MMTrace, T3: Clone + 'static + metamodelica::gc::MMTrace, T4: Clone + 'static + metamodelica::gc::MMTrace>(mut inTuple: (T1, T2, T3, T4)) -> T1 {
     let mut outValue: T1;
     (outValue, _, _, _) = inTuple.clone();
     outValue
 }
 
-pub fn tuple42<T1: Clone + 'static, T2: Clone + 'static, T3: Clone + 'static, T4: Clone + 'static>(mut inTuple: (T1, T2, T3, T4)) -> T2 {
+pub fn tuple42<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'static + metamodelica::gc::MMTrace, T3: Clone + 'static + metamodelica::gc::MMTrace, T4: Clone + 'static + metamodelica::gc::MMTrace>(mut inTuple: (T1, T2, T3, T4)) -> T2 {
     let mut outValue: T2;
     (_, outValue, _, _) = inTuple.clone();
     outValue
 }
 
-pub fn tuple43<T1: Clone + 'static, T2: Clone + 'static, T3: Clone + 'static, T4: Clone + 'static>(mut inTuple: (T1, T2, T3, T4)) -> T3 {
+pub fn tuple43<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'static + metamodelica::gc::MMTrace, T3: Clone + 'static + metamodelica::gc::MMTrace, T4: Clone + 'static + metamodelica::gc::MMTrace>(mut inTuple: (T1, T2, T3, T4)) -> T3 {
     let mut outValue: T3;
     (_, _, outValue, _) = inTuple.clone();
     outValue
 }
 
-pub fn tuple44<T1: Clone + 'static, T2: Clone + 'static, T3: Clone + 'static, T4: Clone + 'static>(mut inTuple: (T1, T2, T3, T4)) -> T4 {
+pub fn tuple44<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'static + metamodelica::gc::MMTrace, T3: Clone + 'static + metamodelica::gc::MMTrace, T4: Clone + 'static + metamodelica::gc::MMTrace>(mut inTuple: (T1, T2, T3, T4)) -> T4 {
     let mut outValue: T4;
     (_, _, _, outValue) = inTuple.clone();
     outValue
 }
 
-pub fn tuple51<T1: Clone + 'static, T2: Clone + 'static, T3: Clone + 'static, T4: Clone + 'static, T5: Clone + 'static>(mut inTuple: (T1, T2, T3, T4, T5)) -> T1 {
+pub fn tuple51<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'static + metamodelica::gc::MMTrace, T3: Clone + 'static + metamodelica::gc::MMTrace, T4: Clone + 'static + metamodelica::gc::MMTrace, T5: Clone + 'static + metamodelica::gc::MMTrace>(mut inTuple: (T1, T2, T3, T4, T5)) -> T1 {
     let mut outValue: T1;
     (outValue, _, _, _, _) = inTuple.clone();
     outValue
 }
 
-pub fn tuple52<T1: Clone + 'static, T2: Clone + 'static, T3: Clone + 'static, T4: Clone + 'static, T5: Clone + 'static>(mut inTuple: (T1, T2, T3, T4, T5)) -> T2 {
+pub fn tuple52<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'static + metamodelica::gc::MMTrace, T3: Clone + 'static + metamodelica::gc::MMTrace, T4: Clone + 'static + metamodelica::gc::MMTrace, T5: Clone + 'static + metamodelica::gc::MMTrace>(mut inTuple: (T1, T2, T3, T4, T5)) -> T2 {
     let mut outValue: T2;
     (_, outValue, _, _, _) = inTuple.clone();
     outValue
 }
 
-pub fn tuple53<T1: Clone + 'static, T2: Clone + 'static, T3: Clone + 'static, T4: Clone + 'static, T5: Clone + 'static>(mut inTuple: (T1, T2, T3, T4, T5)) -> T3 {
+pub fn tuple53<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'static + metamodelica::gc::MMTrace, T3: Clone + 'static + metamodelica::gc::MMTrace, T4: Clone + 'static + metamodelica::gc::MMTrace, T5: Clone + 'static + metamodelica::gc::MMTrace>(mut inTuple: (T1, T2, T3, T4, T5)) -> T3 {
     let mut outValue: T3;
     (_, _, outValue, _, _) = inTuple.clone();
     outValue
 }
 
-pub fn tuple54<T1: Clone + 'static, T2: Clone + 'static, T3: Clone + 'static, T4: Clone + 'static, T5: Clone + 'static>(mut inTuple: (T1, T2, T3, T4, T5)) -> T4 {
+pub fn tuple54<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'static + metamodelica::gc::MMTrace, T3: Clone + 'static + metamodelica::gc::MMTrace, T4: Clone + 'static + metamodelica::gc::MMTrace, T5: Clone + 'static + metamodelica::gc::MMTrace>(mut inTuple: (T1, T2, T3, T4, T5)) -> T4 {
     let mut outValue: T4;
     (_, _, _, outValue, _) = inTuple.clone();
     outValue
 }
 
-pub fn tuple55<T1: Clone + 'static, T2: Clone + 'static, T3: Clone + 'static, T4: Clone + 'static, T5: Clone + 'static>(mut inTuple: (T1, T2, T3, T4, T5)) -> T5 {
+pub fn tuple55<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'static + metamodelica::gc::MMTrace, T3: Clone + 'static + metamodelica::gc::MMTrace, T4: Clone + 'static + metamodelica::gc::MMTrace, T5: Clone + 'static + metamodelica::gc::MMTrace>(mut inTuple: (T1, T2, T3, T4, T5)) -> T5 {
     let mut outValue: T5;
     (_, _, _, _, outValue) = inTuple.clone();
     outValue
 }
 
-pub fn tuple61<T1: Clone + 'static, T2: Clone + 'static, T3: Clone + 'static, T4: Clone + 'static, T5: Clone + 'static, T6: Clone + 'static>(mut inTuple: (T1, T2, T3, T4, T5, T6)) -> T1 {
+pub fn tuple61<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'static + metamodelica::gc::MMTrace, T3: Clone + 'static + metamodelica::gc::MMTrace, T4: Clone + 'static + metamodelica::gc::MMTrace, T5: Clone + 'static + metamodelica::gc::MMTrace, T6: Clone + 'static + metamodelica::gc::MMTrace>(mut inTuple: (T1, T2, T3, T4, T5, T6)) -> T1 {
     let mut outValue: T1;
     (outValue, _, _, _, _, _) = inTuple.clone();
     outValue
 }
 
-pub fn tuple62<T1: Clone + 'static, T2: Clone + 'static, T3: Clone + 'static, T4: Clone + 'static, T5: Clone + 'static, T6: Clone + 'static>(mut inTuple: (T1, T2, T3, T4, T5, T6)) -> T2 {
+pub fn tuple62<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'static + metamodelica::gc::MMTrace, T3: Clone + 'static + metamodelica::gc::MMTrace, T4: Clone + 'static + metamodelica::gc::MMTrace, T5: Clone + 'static + metamodelica::gc::MMTrace, T6: Clone + 'static + metamodelica::gc::MMTrace>(mut inTuple: (T1, T2, T3, T4, T5, T6)) -> T2 {
     let mut outValue: T2;
     (_, outValue, _, _, _, _) = inTuple.clone();
     outValue
@@ -494,7 +494,7 @@ pub fn stringSplitAtChar(mut string: ArcStr, mut token: ArcStr) -> Result<Arc<me
     Ok(strings)
 }
 
-pub fn optionToString<T: Clone + 'static>(mut ot: Option<T>, mut f: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>) -> Result<ArcStr> {
+pub fn optionToString<T: Clone + 'static + metamodelica::gc::MMTrace>(mut ot: Option<T>, mut f: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>) -> Result<ArcStr> {
     pub type FuncType<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>;
 
     let mut r#str: ArcStr;
@@ -509,7 +509,7 @@ pub fn optionToString<T: Clone + 'static>(mut ot: Option<T>, mut f: Arc<dyn ::st
     Ok(r#str)
 }
 
-pub fn applyOption<TI: Clone + 'static, TO: Clone + 'static>(mut inOption: Option<TI>, mut inFunc: Arc<dyn ::std::ops::Fn(TI) -> Result<TO> + 'static>) -> Result<Option<TO>> {
+pub fn applyOption<TI: Clone + 'static + metamodelica::gc::MMTrace, TO: Clone + 'static + metamodelica::gc::MMTrace>(mut inOption: Option<TI>, mut inFunc: Arc<dyn ::std::ops::Fn(TI) -> Result<TO> + 'static>) -> Result<Option<TO>> {
     pub type FuncType<TI: Clone + 'static, TO: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(TI) -> Result<TO> + 'static>;
 
     let mut outOption: Option<TO>;
@@ -524,7 +524,7 @@ pub fn applyOption<TI: Clone + 'static, TO: Clone + 'static>(mut inOption: Optio
     Ok(outOption)
 }
 
-pub fn applyOption1<TI: Clone + 'static, ArgT: Clone + 'static, TO: Clone + 'static>(mut inOption: Option<TI>, mut inFunc: Arc<dyn ::std::ops::Fn(TI, ArgT) -> Result<TO> + 'static>, mut inArg: ArgT) -> Result<Option<TO>> {
+pub fn applyOption1<TI: Clone + 'static + metamodelica::gc::MMTrace, ArgT: Clone + 'static + metamodelica::gc::MMTrace, TO: Clone + 'static + metamodelica::gc::MMTrace>(mut inOption: Option<TI>, mut inFunc: Arc<dyn ::std::ops::Fn(TI, ArgT) -> Result<TO> + 'static>, mut inArg: ArgT) -> Result<Option<TO>> {
     pub type FuncType<TI: Clone + 'static, ArgT: Clone + 'static, TO: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(TI, ArgT) -> Result<TO> + 'static>;
 
     let mut outOption: Option<TO>;
@@ -539,7 +539,7 @@ pub fn applyOption1<TI: Clone + 'static, ArgT: Clone + 'static, TO: Clone + 'sta
     Ok(outOption)
 }
 
-pub fn applyOptionOrDefault<TI: Clone + 'static, TO: Clone + 'static>(mut inValue: Option<TI>, mut inFunc: Arc<dyn ::std::ops::Fn(TI) -> Result<TO> + 'static>, mut inDefaultValue: TO) -> Result<TO> {
+pub fn applyOptionOrDefault<TI: Clone + 'static + metamodelica::gc::MMTrace, TO: Clone + 'static + metamodelica::gc::MMTrace>(mut inValue: Option<TI>, mut inFunc: Arc<dyn ::std::ops::Fn(TI) -> Result<TO> + 'static>, mut inDefaultValue: TO) -> Result<TO> {
     pub type FuncType<TI: Clone + 'static, TO: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(TI) -> Result<TO> + 'static>;
 
     let mut outValue: TO;
@@ -554,7 +554,7 @@ pub fn applyOptionOrDefault<TI: Clone + 'static, TO: Clone + 'static>(mut inValu
     Ok(outValue)
 }
 
-pub fn applyOptionOrDefault1<TI: Clone + 'static, ArgT: Clone + 'static, TO: Clone + 'static>(mut inValue: Option<TI>, mut inFunc: Arc<dyn ::std::ops::Fn(TI, ArgT) -> Result<TO> + 'static>, mut inArg: ArgT, mut inDefaultValue: TO) -> Result<TO> {
+pub fn applyOptionOrDefault1<TI: Clone + 'static + metamodelica::gc::MMTrace, ArgT: Clone + 'static + metamodelica::gc::MMTrace, TO: Clone + 'static + metamodelica::gc::MMTrace>(mut inValue: Option<TI>, mut inFunc: Arc<dyn ::std::ops::Fn(TI, ArgT) -> Result<TO> + 'static>, mut inArg: ArgT, mut inDefaultValue: TO) -> Result<TO> {
     pub type FuncType<TI: Clone + 'static, ArgT: Clone + 'static, TO: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(TI, ArgT) -> Result<TO> + 'static>;
 
     let mut outValue: TO;
@@ -569,7 +569,7 @@ pub fn applyOptionOrDefault1<TI: Clone + 'static, ArgT: Clone + 'static, TO: Clo
     Ok(outValue)
 }
 
-pub fn applyOptionOrDefault2<TI: Clone + 'static, ArgT1: Clone + 'static, ArgT2: Clone + 'static, TO: Clone + 'static>(mut inValue: Option<TI>, mut inFunc: Arc<dyn ::std::ops::Fn(TI, ArgT1, ArgT2) -> Result<TO> + 'static>, mut inArg1: ArgT1, mut inArg2: ArgT2, mut inDefaultValue: TO) -> Result<TO> {
+pub fn applyOptionOrDefault2<TI: Clone + 'static + metamodelica::gc::MMTrace, ArgT1: Clone + 'static + metamodelica::gc::MMTrace, ArgT2: Clone + 'static + metamodelica::gc::MMTrace, TO: Clone + 'static + metamodelica::gc::MMTrace>(mut inValue: Option<TI>, mut inFunc: Arc<dyn ::std::ops::Fn(TI, ArgT1, ArgT2) -> Result<TO> + 'static>, mut inArg1: ArgT1, mut inArg2: ArgT2, mut inDefaultValue: TO) -> Result<TO> {
     pub type FuncType<TI: Clone + 'static, ArgT1: Clone + 'static, ArgT2: Clone + 'static, TO: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(TI, ArgT1, ArgT2) -> Result<TO> + 'static>;
 
     let mut outValue: TO;
@@ -584,7 +584,7 @@ pub fn applyOptionOrDefault2<TI: Clone + 'static, ArgT1: Clone + 'static, ArgT2:
     Ok(outValue)
 }
 
-pub fn applyOption_2<T: Clone + 'static>(mut inValue1: Option<T>, mut inValue2: Option<T>, mut inFunc: Arc<dyn ::std::ops::Fn(T, T) -> Result<T> + 'static>) -> Result<Option<T>> {
+pub fn applyOption_2<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inValue1: Option<T>, mut inValue2: Option<T>, mut inFunc: Arc<dyn ::std::ops::Fn(T, T) -> Result<T> + 'static>) -> Result<Option<T>> {
     pub type FuncType<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T, T) -> Result<T> + 'static>;
 
     let mut outValue: Option<T>;
@@ -596,17 +596,17 @@ pub fn applyOption_2<T: Clone + 'static>(mut inValue1: Option<T>, mut inValue2: 
     Ok(outValue)
 }
 
-pub fn makeOption<T: Clone + 'static>(mut inValue: T) -> Option<T> {
+pub fn makeOption<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inValue: T) -> Option<T> {
     let mut outOption: Option<T> = Some(inValue.clone());
     outOption
 }
 
-pub fn makeOptionOnTrue<T: Clone + 'static>(mut inCondition: bool, mut inValue: T) -> Option<T> {
+pub fn makeOptionOnTrue<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inCondition: bool, mut inValue: T) -> Option<T> {
     let mut outOption: Option<T> = if (inCondition.clone()) {Some(inValue.clone())} else {None};
     outOption
 }
 
-pub fn getOption<T: Clone + 'static>(mut inOption: Option<T>) -> Result<T> {
+pub fn getOption<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inOption: Option<T>) -> Result<T> {
     let mut outValue: T;
     let __pa0 = ::match_deref::match_deref! { match &(inOption.clone()) {
         Some(__pa0) => __pa0.clone(),
@@ -616,7 +616,7 @@ pub fn getOption<T: Clone + 'static>(mut inOption: Option<T>) -> Result<T> {
     Ok(outValue)
 }
 
-pub fn getOptionOrDefault<T: Clone + 'static>(mut inOption: Option<T>, mut inDefault: T) -> T {
+pub fn getOptionOrDefault<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inOption: Option<T>, mut inDefault: T) -> T {
     let mut outValue: T;
     outValue = (match inOption.clone() {
         Some(mut value) => {
@@ -783,17 +783,17 @@ pub fn escapeQuotes(mut r#str: ArcStr) -> Result<ArcStr> {
     Ok(quotes)
 }
 
-pub fn makeTuple<T1: Clone + 'static, T2: Clone + 'static>(mut inValue1: T1, mut inValue2: T2) -> (T1, T2) {
+pub fn makeTuple<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'static + metamodelica::gc::MMTrace>(mut inValue1: T1, mut inValue2: T2) -> (T1, T2) {
     let mut outTuple: (T1, T2) = (inValue1.clone(), inValue2.clone());
     outTuple
 }
 
-pub fn makeTupleR<T1: Clone + 'static, T2: Clone + 'static>(mut inValue1: T1, mut inValue2: T2) -> (T2, T1) {
+pub fn makeTupleR<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'static + metamodelica::gc::MMTrace>(mut inValue1: T1, mut inValue2: T2) -> (T2, T1) {
     let mut outTuple: (T2, T1) = (inValue2.clone(), inValue1.clone());
     outTuple
 }
 
-pub fn make3Tuple<T1: Clone + 'static, T2: Clone + 'static, T3: Clone + 'static>(mut inValue1: T1, mut inValue2: T2, mut inValue3: T3) -> (T1, T2, T3) {
+pub fn make3Tuple<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'static + metamodelica::gc::MMTrace, T3: Clone + 'static + metamodelica::gc::MMTrace>(mut inValue1: T1, mut inValue2: T2, mut inValue3: T3) -> (T1, T2, T3) {
     let mut outTuple: (T1, T2, T3) = (inValue1.clone(), inValue2.clone(), inValue3.clone());
     outTuple
 }
@@ -833,7 +833,7 @@ pub fn setStatefulBoolean(mut sb: StatefulBoolean, mut b: bool) -> Result<()> {
     Ok(())
 }
 
-pub fn optionEqual<T1: Clone + 'static, T2: Clone + 'static>(mut inOption1: Option<T1>, mut inOption2: Option<T2>, mut inFunc: Arc<dyn ::std::ops::Fn(T1, T2) -> Result<bool> + 'static>) -> Result<bool> {
+pub fn optionEqual<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'static + metamodelica::gc::MMTrace>(mut inOption1: Option<T1>, mut inOption2: Option<T2>, mut inFunc: Arc<dyn ::std::ops::Fn(T1, T2) -> Result<bool> + 'static>) -> Result<bool> {
     pub type CompareFunc<T1: Clone + 'static, T2: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T1, T2) -> Result<bool> + 'static>;
 
     let mut outEqual: bool;
@@ -851,7 +851,7 @@ pub fn optionEqual<T1: Clone + 'static, T2: Clone + 'static>(mut inOption1: Opti
     Ok(outEqual)
 }
 
-pub fn makeValueOrDefault<TI: Clone + 'static, TO: Clone + 'static>(mut inFunc: Arc<dyn ::std::ops::Fn(TI) -> Result<TO> + 'static>, mut inArg: TI, mut inDefaultValue: TO) -> TO {
+pub fn makeValueOrDefault<TI: Clone + 'static + metamodelica::gc::MMTrace, TO: Clone + 'static + metamodelica::gc::MMTrace>(mut inFunc: Arc<dyn ::std::ops::Fn(TI) -> Result<TO> + 'static>, mut inArg: TI, mut inDefaultValue: TO) -> TO {
     pub type FuncType<TI: Clone + 'static, TO: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(TI) -> Result<TO> + 'static>;
 
     let mut outValue: TO;
@@ -925,7 +925,7 @@ pub fn isSuccess(mut status: Status) -> Result<bool> {
     Ok(bool)
 }
 
-pub fn id<T: Clone + 'static>(mut inValue: T) -> T {
+pub fn id<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inValue: T) -> T {
     let mut outValue: T = inValue.clone();
     outValue
 }
@@ -952,7 +952,7 @@ pub fn buildMapStr(mut inLst1: Arc<metamodelica::List<ArcStr>>, mut inLst2: Arc<
     Ok(outStr)
 }
 
-pub fn assoc<Key: Clone + 'static + PartialEq, Val: Clone + 'static>(mut inKey: Key, mut inList: Arc<metamodelica::List<(Key, Val)>>) -> Result<Val> {
+pub fn assoc<Key: Clone + 'static + metamodelica::gc::MMTrace + PartialEq, Val: Clone + 'static + metamodelica::gc::MMTrace>(mut inKey: Key, mut inList: Arc<metamodelica::List<(Key, Val)>>) -> Result<Val> {
     '__tco: loop {
         let mut k: Key;
         let mut v: Val;
@@ -1070,7 +1070,7 @@ fn nextPrime_isPrime(mut inN: i32) -> bool {
     outIsPrime
 }
 
-pub fn anyToEmptyString<T: Clone + 'static>(mut a: T) -> ArcStr {
+pub fn anyToEmptyString<T: Clone + 'static + metamodelica::gc::MMTrace>(mut a: T) -> ArcStr {
     let mut empty: ArcStr = literal!("");
     empty
 }
@@ -1098,7 +1098,7 @@ pub fn stringNotEqual(mut str1: ArcStr, mut str2: ArcStr) -> bool {
     b
 }
 
-pub fn swap<T: Clone + 'static>(mut cond: bool, mut in1: T, mut in2: T) -> (T, T) {
+pub fn swap<T: Clone + 'static + metamodelica::gc::MMTrace>(mut cond: bool, mut in1: T, mut in2: T) -> (T, T) {
     let mut out1: T;
     let mut out2: T;
     (out1, out2) = (match cond.clone() {
@@ -1108,7 +1108,7 @@ pub fn swap<T: Clone + 'static>(mut cond: bool, mut in1: T, mut in2: T) -> (T, T
     (out1, out2)
 }
 
-pub fn replace<T: Clone + 'static>(mut replaced: T, mut arg: T) -> T {
+pub fn replace<T: Clone + 'static + metamodelica::gc::MMTrace>(mut replaced: T, mut arg: T) -> T {
     let mut outArg: T = arg.clone();
     outArg
 }
@@ -1207,7 +1207,7 @@ pub fn getTempVariableIndex() -> ArcStr {
     name
 }
 
-pub fn anyReturnTrue<T: Clone + 'static>(mut a: T) -> bool {
+pub fn anyReturnTrue<T: Clone + 'static + metamodelica::gc::MMTrace>(mut a: T) -> bool {
     let mut b: bool = true;
     b
 }
@@ -1346,7 +1346,7 @@ pub fn profilertock2() -> Result<metamodelica::Real> {
     Ok(t)
 }
 
-pub fn applyTuple21<T1: Clone + 'static + metamodelica::ReferenceEq, T2: Clone + 'static>(mut inTuple: (T1, T2), mut func: Arc<dyn ::std::ops::Fn(T1) -> Result<T1> + 'static>) -> Result<(T1, T2)> {
+pub fn applyTuple21<T1: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq, T2: Clone + 'static + metamodelica::gc::MMTrace>(mut inTuple: (T1, T2), mut func: Arc<dyn ::std::ops::Fn(T1) -> Result<T1> + 'static>) -> Result<(T1, T2)> {
     pub type FuncT<T1: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T1) -> Result<T1> + 'static>;
 
     let mut outTuple: (T1, T2);
@@ -1359,7 +1359,7 @@ pub fn applyTuple21<T1: Clone + 'static + metamodelica::ReferenceEq, T2: Clone +
     Ok(outTuple)
 }
 
-pub fn applyTuple22<T1: Clone + 'static, T2: Clone + 'static + metamodelica::ReferenceEq>(mut inTuple: (T1, T2), mut func: Arc<dyn ::std::ops::Fn(T2) -> Result<T2> + 'static>) -> Result<(T1, T2)> {
+pub fn applyTuple22<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut inTuple: (T1, T2), mut func: Arc<dyn ::std::ops::Fn(T2) -> Result<T2> + 'static>) -> Result<(T1, T2)> {
     pub type FuncT<T2: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T2) -> Result<T2> + 'static>;
 
     let mut outTuple: (T1, T2);
@@ -1372,7 +1372,7 @@ pub fn applyTuple22<T1: Clone + 'static, T2: Clone + 'static + metamodelica::Ref
     Ok(outTuple)
 }
 
-pub fn applyTuple31<T1: Clone + 'static + metamodelica::ReferenceEq, T2: Clone + 'static, T3: Clone + 'static>(mut inTuple: (T1, T2, T3), mut func: Arc<dyn ::std::ops::Fn(T1) -> Result<T1> + 'static>) -> Result<(T1, T2, T3)> {
+pub fn applyTuple31<T1: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq, T2: Clone + 'static + metamodelica::gc::MMTrace, T3: Clone + 'static + metamodelica::gc::MMTrace>(mut inTuple: (T1, T2, T3), mut func: Arc<dyn ::std::ops::Fn(T1) -> Result<T1> + 'static>) -> Result<(T1, T2, T3)> {
     pub type FuncT<T1: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T1) -> Result<T1> + 'static>;
 
     let mut outTuple: (T1, T2, T3);
@@ -1386,7 +1386,7 @@ pub fn applyTuple31<T1: Clone + 'static + metamodelica::ReferenceEq, T2: Clone +
     Ok(outTuple)
 }
 
-pub fn referenceCompare<T1: Clone + 'static, T2: Clone + 'static>(mut ref1: T1, mut ref2: T2) -> i32 {
+pub fn referenceCompare<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'static + metamodelica::gc::MMTrace>(mut ref1: T1, mut ref2: T2) -> i32 {
     let mut result: i32 = 0;
     todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("referenceCompareExt"), lang: Some("C"), output_: Some(CREF_IDENT { name: "result", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "ref1", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "ref2", subscripts: Nil } }, tail: Nil } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Include" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "\n  static inline int referenceCompareExt(void *ref1, void *ref2)\n  {\n    return (ref1 < ref2) ? -1 : (ref1 > ref2);\n  }\n" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Util.mo", isReadOnly: false, lineNumberStart: 1650, columnNumberStart: 73, lineNumberEnd: 1655, columnNumberEnd: 2, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Util.mo", isReadOnly: false, lineNumberStart: 1650, columnNumberStart: 66, lineNumberEnd: 1655, columnNumberEnd: 2, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
     result
@@ -1414,7 +1414,7 @@ pub fn msb(mut n: i32) -> i32 {
     res
 }
 
-pub fn foldcallN<FT: Clone + 'static>(mut n: i32, mut inFoldFunc: Arc<dyn ::std::ops::Fn(FT) -> Result<FT> + 'static>, mut inStartValue: FT) -> Result<FT> {
+pub fn foldcallN<FT: Clone + 'static + metamodelica::gc::MMTrace>(mut n: i32, mut inFoldFunc: Arc<dyn ::std::ops::Fn(FT) -> Result<FT> + 'static>, mut inStartValue: FT) -> Result<FT> {
     pub type FoldFunc<FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(FT) -> Result<FT> + 'static>;
 
     let mut outResult: FT = inStartValue.clone();

@@ -5928,7 +5928,7 @@ fn randSortSystem(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<Backend
     Ok(osyst)
 }
 
-fn randSortSystem1<Type_a: Clone + 'static, Type_b: Clone + 'static>(mut index: i32, mut offset: i32, mut randarr: metamodelica::Array<i32>, mut oldTypeA: Type_a, mut newTypeA: Type_a, mut get: Arc<dyn ::std::ops::Fn(Type_a, i32) -> Result<Type_b> + 'static>, mut set: Arc<dyn ::std::ops::Fn(Type_b, Type_a) -> Result<Type_a> + 'static>) -> Result<Type_a> {
+fn randSortSystem1<Type_a: Clone + 'static + metamodelica::gc::MMTrace, Type_b: Clone + 'static + metamodelica::gc::MMTrace>(mut index: i32, mut offset: i32, mut randarr: metamodelica::Array<i32>, mut oldTypeA: Type_a, mut newTypeA: Type_a, mut get: Arc<dyn ::std::ops::Fn(Type_a, i32) -> Result<Type_b> + 'static>, mut set: Arc<dyn ::std::ops::Fn(Type_b, Type_a) -> Result<Type_a> + 'static>) -> Result<Type_a> {
     pub type getFunc<Type_a: Clone + 'static, Type_b: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Type_a, i32) -> Result<Type_b> + 'static>;
 
     pub type setFunc<Type_b: Clone + 'static, Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Type_b, Type_a) -> Result<Type_a> + 'static>;

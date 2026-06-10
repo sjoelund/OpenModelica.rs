@@ -142,7 +142,7 @@ pub enum NFCall {
     },
 }
 impl metamodelica::gc::MMTrace for NFCall {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             NFCall::UNTYPED_CALL { r#ref, arguments, named_args, call_scope } => {
                 metamodelica::gc::MMTrace::mm_accept(r#ref, __mmv)?;
@@ -1729,7 +1729,7 @@ pub fn applyExpShallow(mut call: Arc<NFCall>, mut func: Arc<dyn ::std::ops::Fn(A
     Ok(())
 }
 
-pub fn foldExp<ArgT: Clone + 'static>(mut call: Arc<NFCall>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut foldArg: ArgT) -> Result<ArgT> {
+pub fn foldExp<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut call: Arc<NFCall>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut foldArg: ArgT) -> Result<ArgT> {
     pub type FoldFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>;
 
     let mut foldArg: ArgT = foldArg;
@@ -2018,7 +2018,7 @@ pub fn mapIteratorsExpShallow(mut iters: Arc<metamodelica::List<(Arc<InstNode::I
     Ok(outIters)
 }
 
-pub fn mapFoldExp<ArgT: Clone + 'static>(mut call: Arc<NFCall>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<(Arc<Expression::NFExpression>, ArgT)> + 'static>, mut foldArg: ArgT) -> Result<(Arc<NFCall>, ArgT)> {
+pub fn mapFoldExp<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut call: Arc<NFCall>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<(Arc<Expression::NFExpression>, ArgT)> + 'static>, mut foldArg: ArgT) -> Result<(Arc<NFCall>, ArgT)> {
     pub type MapFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<(Arc<Expression::NFExpression>, ArgT)> + 'static>;
 
     let mut outCall: Arc<NFCall>;
@@ -2108,7 +2108,7 @@ pub fn mapFoldExp<ArgT: Clone + 'static>(mut call: Arc<NFCall>, mut func: Arc<dy
     Ok((outCall, foldArg))
 }
 
-pub fn mapFoldIteratorsExp<ArgT: Clone + 'static>(mut iters: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<(Arc<Expression::NFExpression>, ArgT)> + 'static>, mut arg: ArgT) -> Result<(Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>>, ArgT)> {
+pub fn mapFoldIteratorsExp<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut iters: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<(Arc<Expression::NFExpression>, ArgT)> + 'static>, mut arg: ArgT) -> Result<(Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>>, ArgT)> {
     pub type MapFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<(Arc<Expression::NFExpression>, ArgT)> + 'static>;
 
     let mut outIters: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>> = metamodelica::nil();
@@ -2126,7 +2126,7 @@ pub fn mapFoldIteratorsExp<ArgT: Clone + 'static>(mut iters: Arc<metamodelica::L
     Ok((outIters, arg))
 }
 
-pub fn mapFoldExpShallow<ArgT: Clone + 'static>(mut call: Arc<NFCall>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<(Arc<Expression::NFExpression>, ArgT)> + 'static>, mut foldArg: ArgT) -> Result<(Arc<NFCall>, ArgT)> {
+pub fn mapFoldExpShallow<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut call: Arc<NFCall>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<(Arc<Expression::NFExpression>, ArgT)> + 'static>, mut foldArg: ArgT) -> Result<(Arc<NFCall>, ArgT)> {
     pub type MapFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<(Arc<Expression::NFExpression>, ArgT)> + 'static>;
 
     let mut outCall: Arc<NFCall>;
@@ -2216,7 +2216,7 @@ pub fn mapFoldExpShallow<ArgT: Clone + 'static>(mut call: Arc<NFCall>, mut func:
     Ok((outCall, foldArg))
 }
 
-pub fn mapFoldIteratorsExpShallow<ArgT: Clone + 'static>(mut iters: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<(Arc<Expression::NFExpression>, ArgT)> + 'static>, mut arg: ArgT) -> Result<(Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>>, ArgT)> {
+pub fn mapFoldIteratorsExpShallow<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut iters: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<(Arc<Expression::NFExpression>, ArgT)> + 'static>, mut arg: ArgT) -> Result<(Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>>, ArgT)> {
     pub type MapFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<(Arc<Expression::NFExpression>, ArgT)> + 'static>;
 
     let mut outIters: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>> = metamodelica::nil();

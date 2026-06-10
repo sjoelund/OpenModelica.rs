@@ -73,7 +73,7 @@ pub struct Mediator {
 }
 
 impl metamodelica::gc::MMTrace for Mediator {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.mType, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.template, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.clients, __mmv)?;
@@ -94,7 +94,7 @@ pub struct Client {
 }
 
 impl metamodelica::gc::MMTrace for Client {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.modelID, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.component, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.template, __mmv)?;
@@ -113,7 +113,7 @@ pub struct Provider {
 }
 
 impl metamodelica::gc::MMTrace for Provider {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.modelID, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.component, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.template, __mmv)?;
@@ -130,7 +130,7 @@ pub struct Preferred {
 }
 
 impl metamodelica::gc::MMTrace for Preferred {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.clientInstancePath, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.providerInstancePath, __mmv)?;
         Ok(())
@@ -154,7 +154,7 @@ pub enum Client_e {
     NO_PRED,
 }
 impl metamodelica::gc::MMTrace for Client_e {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             Client_e::CLIENT_E { components, typeSpec, rootType, def, instance, predecessors, mediator } => {
                 metamodelica::gc::MMTrace::mm_accept(components, __mmv)?;

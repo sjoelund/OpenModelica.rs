@@ -139,7 +139,7 @@ impl Ord for SlicingStatus {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 impl metamodelica::gc::MMTrace for SlicingStatus {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+    fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 
 /// result of sub-routine recollect
@@ -156,7 +156,7 @@ impl Ord for RecollectStatus {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 impl metamodelica::gc::MMTrace for RecollectStatus {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+    fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 
 /// result of sub-routine frame ordering
@@ -174,7 +174,7 @@ impl Ord for FrameOrderingStatus {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 impl metamodelica::gc::MMTrace for FrameOrderingStatus {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+    fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 
 /// type for collecting data in hash maps
@@ -215,7 +215,7 @@ pub mod Iterator {
         EMPTY,
     }
     impl metamodelica::gc::MMTrace for Iterator {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             match self {
                 Iterator::SINGLE { name, range, map } => {
                     metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
@@ -1349,7 +1349,7 @@ pub mod Equation {
         DUMMY_EQUATION,
     }
     impl metamodelica::gc::MMTrace for Equation {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             match self {
                 Equation::SCALAR_EQUATION { ty, lhs, rhs, source, attr } => {
                     metamodelica::gc::MMTrace::mm_accept(ty, __mmv)?;
@@ -2069,7 +2069,7 @@ pub mod Equation {
         Ok(cref)
     }
 
-    pub fn collectFromMap<T: Clone + 'static>(mut cref: Arc<ComponentRef::NFComponentRef>, mut acc: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut check_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, T>>) -> Result<Arc<ComponentRef::NFComponentRef>> {
+    pub fn collectFromMap<T: Clone + 'static + metamodelica::gc::MMTrace>(mut cref: Arc<ComponentRef::NFComponentRef>, mut acc: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut check_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, T>>) -> Result<Arc<ComponentRef::NFComponentRef>> {
         let mut cref: Arc<ComponentRef::NFComponentRef> = cref;
         if UnorderedMap::contains(cref.clone(), check_map.clone())? {
             UnorderedSet::add(cref.clone(), acc.clone())?;
@@ -3415,7 +3415,7 @@ pub mod IfEquationBody {
     }
 
     impl metamodelica::gc::MMTrace for IfEquationBody {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             metamodelica::gc::MMTrace::mm_accept(&self.condition, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.then_eqns, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.else_if, __mmv)?;
@@ -3846,7 +3846,7 @@ pub mod WhenEquationBody {
     }
 
     impl metamodelica::gc::MMTrace for WhenEquationBody {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             metamodelica::gc::MMTrace::mm_accept(&self.condition, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.when_stmts, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.else_when, __mmv)?;
@@ -4387,7 +4387,7 @@ pub mod WhenStatement {
         },
     }
     impl metamodelica::gc::MMTrace for WhenStatement {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             match self {
                 WhenStatement::ASSIGN { lhs, rhs, source } => {
                     metamodelica::gc::MMTrace::mm_accept(lhs, __mmv)?;
@@ -4658,7 +4658,7 @@ pub mod EquationAttributes {
     }
 
     impl metamodelica::gc::MMTrace for EquationAttributes {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             metamodelica::gc::MMTrace::mm_accept(&self.derivative, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.residualVar, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.clock_idx, __mmv)?;
@@ -4767,7 +4767,7 @@ impl Ord for EquationKind {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 impl metamodelica::gc::MMTrace for EquationKind {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+    fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 impl Default for EquationKind {
     fn default() -> Self { Self::CONTINUOUS }
@@ -4838,7 +4838,7 @@ pub mod EquationPointers {
     }
 
     impl metamodelica::gc::MMTrace for EquationPointers {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             metamodelica::gc::MMTrace::mm_accept(&self.map, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.eqArr, __mmv)?;
             Ok(())
@@ -5105,7 +5105,7 @@ pub mod EquationPointers {
         Ok(())
     }
 
-    pub fn fold<T: Clone + 'static>(mut equations: Arc<EquationPointers>, mut func: Arc<dyn ::std::ops::Fn(Arc<Equation::Equation>, T) -> Result<T> + 'static>, mut extArg: T) -> Result<T> {
+    pub fn fold<T: Clone + 'static + metamodelica::gc::MMTrace>(mut equations: Arc<EquationPointers>, mut func: Arc<dyn ::std::ops::Fn(Arc<Equation::Equation>, T) -> Result<T> + 'static>, mut extArg: T) -> Result<T> {
         pub type MapFunc<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::Equation>, T) -> Result<T> + 'static>;
 
         let mut extArg: T = extArg;
@@ -5117,7 +5117,7 @@ pub mod EquationPointers {
         Ok(extArg)
     }
 
-    pub fn foldPtr<T: Clone + 'static>(mut equations: Arc<EquationPointers>, mut func: Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>, T) -> Result<T> + 'static>, mut extArg: T) -> Result<T> {
+    pub fn foldPtr<T: Clone + 'static + metamodelica::gc::MMTrace>(mut equations: Arc<EquationPointers>, mut func: Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>, T) -> Result<T> + 'static>, mut extArg: T) -> Result<T> {
         pub type MapFunc<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>, T) -> Result<T> + 'static>;
 
         let mut extArg: T = extArg;
@@ -5129,7 +5129,7 @@ pub mod EquationPointers {
         Ok(extArg)
     }
 
-    pub fn foldRemovePtr<T: Clone + 'static>(mut equations: Arc<EquationPointers>, mut func: Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>, T) -> Result<(T, bool)> + 'static>, mut extArg: T) -> Result<(Arc<EquationPointers>, T)> {
+    pub fn foldRemovePtr<T: Clone + 'static + metamodelica::gc::MMTrace>(mut equations: Arc<EquationPointers>, mut func: Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>, T) -> Result<(T, bool)> + 'static>, mut extArg: T) -> Result<(Arc<EquationPointers>, T)> {
         pub type MapFunc<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>, T) -> Result<(T, bool)> + 'static>;
 
         let mut equations: Arc<EquationPointers> = equations;
@@ -5302,7 +5302,7 @@ pub mod EqData {
         EQ_DATA_EMPTY,
     }
     impl metamodelica::gc::MMTrace for EqData {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             match self {
                 EqData::EQ_DATA_SIM { uniqueIndex, equations, simulation, continuous, clocked, discretes, initials, auxiliaries, removed } => {
                     metamodelica::gc::MMTrace::mm_accept(uniqueIndex, __mmv)?;
@@ -5554,7 +5554,7 @@ pub mod EqData {
         fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
     }
     impl metamodelica::gc::MMTrace for EqType {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+        fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
     }
 
     pub fn addTypedList(mut eqData: Arc<EqData>, mut eq_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>, mut eqType: EqType, mut newName: bool) -> Result<Arc<EqData>> {

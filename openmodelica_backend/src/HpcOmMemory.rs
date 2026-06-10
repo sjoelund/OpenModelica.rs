@@ -109,7 +109,7 @@ pub enum CacheMap {
     },
 }
 impl metamodelica::gc::MMTrace for CacheMap {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             CacheMap::CACHEMAP { cacheLineSize, cacheVariables, cacheLinesFloat, cacheLinesInt, cacheLinesBool } => {
                 metamodelica::gc::MMTrace::mm_accept(cacheLineSize, __mmv)?;
@@ -147,7 +147,7 @@ pub struct CacheLineMap {
 }
 
 impl metamodelica::gc::MMTrace for CacheLineMap {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.idx, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.numBytesFree, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.entries, __mmv)?;
@@ -177,7 +177,7 @@ pub struct CacheLineEntry {
 }
 
 impl metamodelica::gc::MMTrace for CacheLineEntry {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.start, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.dataType, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.size, __mmv)?;
@@ -209,7 +209,7 @@ pub struct CacheMapMeta {
 }
 
 impl metamodelica::gc::MMTrace for CacheMapMeta {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.allSCVarsMapping, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.simCodeVarTypes, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.scVarCLMapping, __mmv)?;
@@ -241,7 +241,7 @@ pub enum PartlyFilledCacheLine {
     },
 }
 impl metamodelica::gc::MMTrace for PartlyFilledCacheLine {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             PartlyFilledCacheLine::PARTLYFILLEDCACHELINE_LEVEL { cacheLineMap, prefetchLevel, writeLevel } => {
                 metamodelica::gc::MMTrace::mm_accept(cacheLineMap, __mmv)?;
@@ -272,7 +272,7 @@ pub struct ScVarInfo {
 }
 
 impl metamodelica::gc::MMTrace for ScVarInfo {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.ownerThread, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.isShared, __mmv)?;
         Ok(())
@@ -916,7 +916,7 @@ fn createCacheMapThreadOptimized(mut iTaskGraph: metamodelica::Array<Arc<metamod
     Ok((oCacheMap, oScVarCLMapping, oNumCL))
 }
 
-fn createCacheMapOptimizedForTask<T: Clone + 'static>(mut iTask: Arc<HpcOmSimCode::Task>, mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut iSchedulerInfo: metamodelica::Array<(i32, i32, metamodelica::Real)>, mut iTaskSolvedVarsMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskUnsolvedVarsMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iHandledVariables: metamodelica::Array<bool>, mut iNumberOfThreads: i32, mut iSharedClSelectFunction: Arc<dyn ::std::ops::Fn(i32, i32, i32, i32, T, metamodelica::Array<((Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>), (Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>))>) -> Result<Option<(PartlyFilledCacheLine, i32)>> + 'static>, mut iCompareFuncArgument: T, mut iFactoryMethod: Arc<dyn ::std::ops::Fn(Option<PartlyFilledCacheLine>, CacheLineMap, T) -> Result<PartlyFilledCacheLine> + 'static>, mut iThreadCacheLines: metamodelica::Array<(Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>)>, mut iSharedCacheLines: metamodelica::Array<((Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>), (Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>))>, mut iScVarInfos: metamodelica::Array<ScVarInfo>, mut iInfo: (CacheMap, CacheMapMeta, i32)) -> Result<(CacheMap, CacheMapMeta, i32)> {
+fn createCacheMapOptimizedForTask<T: Clone + 'static + metamodelica::gc::MMTrace>(mut iTask: Arc<HpcOmSimCode::Task>, mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut iSchedulerInfo: metamodelica::Array<(i32, i32, metamodelica::Real)>, mut iTaskSolvedVarsMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskUnsolvedVarsMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iHandledVariables: metamodelica::Array<bool>, mut iNumberOfThreads: i32, mut iSharedClSelectFunction: Arc<dyn ::std::ops::Fn(i32, i32, i32, i32, T, metamodelica::Array<((Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>), (Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>))>) -> Result<Option<(PartlyFilledCacheLine, i32)>> + 'static>, mut iCompareFuncArgument: T, mut iFactoryMethod: Arc<dyn ::std::ops::Fn(Option<PartlyFilledCacheLine>, CacheLineMap, T) -> Result<PartlyFilledCacheLine> + 'static>, mut iThreadCacheLines: metamodelica::Array<(Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>)>, mut iSharedCacheLines: metamodelica::Array<((Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>), (Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>))>, mut iScVarInfos: metamodelica::Array<ScVarInfo>, mut iInfo: (CacheMap, CacheMapMeta, i32)) -> Result<(CacheMap, CacheMapMeta, i32)> {
     pub type HeuristicFunction<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(i32, i32, i32, i32, T, metamodelica::Array<((Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>), (Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>))>) -> Result<Option<(PartlyFilledCacheLine, i32)>> + 'static>;
 
     pub type FactoryMethod<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Option<PartlyFilledCacheLine>, CacheLineMap, T) -> Result<PartlyFilledCacheLine> + 'static>;
@@ -962,7 +962,7 @@ fn createCacheMapOptimizedForTask<T: Clone + 'static>(mut iTask: Arc<HpcOmSimCod
     Ok(oInfo)
 }
 
-fn createCacheMapOptimizedForTask1<T: Clone + 'static>(mut iScVar: i32, mut iThreadIdx: i32, mut iScVarInfos: metamodelica::Array<ScVarInfo>, mut iHandledVariables: metamodelica::Array<bool>, mut iSharedClSelectFunction: Arc<dyn ::std::ops::Fn(i32, i32, i32, i32, T, metamodelica::Array<((Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>), (Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>))>) -> Result<Option<(PartlyFilledCacheLine, i32)>> + 'static>, mut iCompareFuncArgument: T, mut iFactoryMethod: Arc<dyn ::std::ops::Fn(Option<PartlyFilledCacheLine>, CacheLineMap, T) -> Result<PartlyFilledCacheLine> + 'static>, mut iThreadCacheLines: metamodelica::Array<(Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>)>, mut iSharedCacheLines: metamodelica::Array<((Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>), (Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>))>, mut iInfo: (CacheMap, CacheMapMeta, i32)) -> Result<(CacheMap, CacheMapMeta, i32)> {
+fn createCacheMapOptimizedForTask1<T: Clone + 'static + metamodelica::gc::MMTrace>(mut iScVar: i32, mut iThreadIdx: i32, mut iScVarInfos: metamodelica::Array<ScVarInfo>, mut iHandledVariables: metamodelica::Array<bool>, mut iSharedClSelectFunction: Arc<dyn ::std::ops::Fn(i32, i32, i32, i32, T, metamodelica::Array<((Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>), (Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>))>) -> Result<Option<(PartlyFilledCacheLine, i32)>> + 'static>, mut iCompareFuncArgument: T, mut iFactoryMethod: Arc<dyn ::std::ops::Fn(Option<PartlyFilledCacheLine>, CacheLineMap, T) -> Result<PartlyFilledCacheLine> + 'static>, mut iThreadCacheLines: metamodelica::Array<(Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>)>, mut iSharedCacheLines: metamodelica::Array<((Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>), (Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>))>, mut iInfo: (CacheMap, CacheMapMeta, i32)) -> Result<(CacheMap, CacheMapMeta, i32)> {
     pub type HeuristicFunction<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(i32, i32, i32, i32, T, metamodelica::Array<((Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>), (Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>))>) -> Result<Option<(PartlyFilledCacheLine, i32)>> + 'static>;
 
     pub type FactoryMethod<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Option<PartlyFilledCacheLine>, CacheLineMap, T) -> Result<PartlyFilledCacheLine> + 'static>;
@@ -1159,7 +1159,7 @@ fn contractCacheLineForVarType(mut iVarDataType: i32, mut iCacheLinesFloat: Arc<
     oContractedCacheLines
 }
 
-fn addVarsToSharedCL<T: Clone + 'static>(mut iNodeVars: Arc<metamodelica::List<i32>>, mut iSharedClSelectFunction: Arc<dyn ::std::ops::Fn(i32, i32, i32, i32, T, metamodelica::Array<((Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>), (Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>))>) -> Result<Option<(PartlyFilledCacheLine, i32)>> + 'static>, mut iFactoryMethod: Arc<dyn ::std::ops::Fn(Option<PartlyFilledCacheLine>, CacheLineMap, T) -> Result<PartlyFilledCacheLine> + 'static>, mut iThreadIdx: i32, mut iCompareFuncArgument: T, mut iSharedCacheLines: metamodelica::Array<((Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>), (Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>))>, mut iInfo: (CacheMap, CacheMapMeta, i32)) -> Result<(CacheMap, CacheMapMeta, i32)> {
+fn addVarsToSharedCL<T: Clone + 'static + metamodelica::gc::MMTrace>(mut iNodeVars: Arc<metamodelica::List<i32>>, mut iSharedClSelectFunction: Arc<dyn ::std::ops::Fn(i32, i32, i32, i32, T, metamodelica::Array<((Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>), (Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>))>) -> Result<Option<(PartlyFilledCacheLine, i32)>> + 'static>, mut iFactoryMethod: Arc<dyn ::std::ops::Fn(Option<PartlyFilledCacheLine>, CacheLineMap, T) -> Result<PartlyFilledCacheLine> + 'static>, mut iThreadIdx: i32, mut iCompareFuncArgument: T, mut iSharedCacheLines: metamodelica::Array<((Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>), (Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>))>, mut iInfo: (CacheMap, CacheMapMeta, i32)) -> Result<(CacheMap, CacheMapMeta, i32)> {
     pub type HeuristicFunction<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(i32, i32, i32, i32, T, metamodelica::Array<((Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>), (Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>))>) -> Result<Option<(PartlyFilledCacheLine, i32)>> + 'static>;
 
     pub type FactoryMethod<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Option<PartlyFilledCacheLine>, CacheLineMap, T) -> Result<PartlyFilledCacheLine> + 'static>;
@@ -1198,7 +1198,7 @@ fn addVarsToSharedCL<T: Clone + 'static>(mut iNodeVars: Arc<metamodelica::List<i
     Ok(oInfo)
 }
 
-fn addVarsToSharedCL0<T: Clone + 'static>(mut iMatchedCacheLine: Option<(PartlyFilledCacheLine, i32)>, mut iVarIdx: i32, mut iFactoryMethod: Arc<dyn ::std::ops::Fn(Option<PartlyFilledCacheLine>, CacheLineMap, T) -> Result<PartlyFilledCacheLine> + 'static>, mut iAdditionalArgument: T, mut iThreadIdx: i32, mut iSharedCacheLines: metamodelica::Array<((Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>), (Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>))>, mut iInfo: (CacheMap, CacheMapMeta, i32)) -> Result<(CacheMap, CacheMapMeta, i32)> {
+fn addVarsToSharedCL0<T: Clone + 'static + metamodelica::gc::MMTrace>(mut iMatchedCacheLine: Option<(PartlyFilledCacheLine, i32)>, mut iVarIdx: i32, mut iFactoryMethod: Arc<dyn ::std::ops::Fn(Option<PartlyFilledCacheLine>, CacheLineMap, T) -> Result<PartlyFilledCacheLine> + 'static>, mut iAdditionalArgument: T, mut iThreadIdx: i32, mut iSharedCacheLines: metamodelica::Array<((Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>), (Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>))>, mut iInfo: (CacheMap, CacheMapMeta, i32)) -> Result<(CacheMap, CacheMapMeta, i32)> {
     pub type FactoryMethod<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Option<PartlyFilledCacheLine>, CacheLineMap, T) -> Result<PartlyFilledCacheLine> + 'static>;
 
     let mut oInfo: (CacheMap, CacheMapMeta, i32);

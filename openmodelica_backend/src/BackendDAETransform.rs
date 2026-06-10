@@ -665,7 +665,7 @@ pub fn getEquationAndSolvedVarIndxes(mut inComp: Arc<BackendDAE::StrongComponent
 // traverseBackendDAEExps stuff
 //
 // =============================================================================
-pub fn traverseBackendDAEExpsEqnWithSymbolicOperation<Type_a: Clone + 'static + metamodelica::ReferenceEq>(mut inEquation: Arc<BackendDAE::Equation>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>>, Type_a)) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>>, Type_a))> + 'static>, mut inTypeA: Type_a) -> Result<(Arc<BackendDAE::Equation>, Type_a)> {
+pub fn traverseBackendDAEExpsEqnWithSymbolicOperation<Type_a: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut inEquation: Arc<BackendDAE::Equation>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>>, Type_a)) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>>, Type_a))> + 'static>, mut inTypeA: Type_a) -> Result<(Arc<BackendDAE::Equation>, Type_a)> {
     pub type FuncExpType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>>, Type_a)) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>>, Type_a))> + 'static>;
 
     let mut outEquation: Arc<BackendDAE::Equation>;
@@ -891,7 +891,7 @@ pub fn traverseBackendDAEExpsEqnWithSymbolicOperation<Type_a: Clone + 'static + 
     Ok((outEquation, outTypeA))
 }
 
-fn traverseBackendDAEExpsLstEqnWithSymbolicOperation<Type_a: Clone + 'static>(mut inExps: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut inTypeA: Type_a, mut iAcc: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<(Arc<metamodelica::List<Arc<DAE::Exp>>>, Type_a)> {
+fn traverseBackendDAEExpsLstEqnWithSymbolicOperation<Type_a: Clone + 'static + metamodelica::gc::MMTrace>(mut inExps: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut inTypeA: Type_a, mut iAcc: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<(Arc<metamodelica::List<Arc<DAE::Exp>>>, Type_a)> {
     pub type FuncExpType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>;
 
     '__tco: loop {
@@ -911,7 +911,7 @@ fn traverseBackendDAEExpsLstEqnWithSymbolicOperation<Type_a: Clone + 'static>(mu
     }
 }
 
-pub fn traverseBackendDAEExpsEqnLstWithSymbolicOperation<Type_a: Clone + 'static + metamodelica::ReferenceEq>(mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>>, Type_a)) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>>, Type_a))> + 'static>, mut inTypeA: Type_a, mut iAcc: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) -> Result<(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Type_a)> {
+pub fn traverseBackendDAEExpsEqnLstWithSymbolicOperation<Type_a: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>>, Type_a)) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>>, Type_a))> + 'static>, mut inTypeA: Type_a, mut iAcc: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) -> Result<(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Type_a)> {
     pub type FuncExpType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>>, Type_a)) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>>, Type_a))> + 'static>;
 
     '__tco: loop {
@@ -931,7 +931,7 @@ pub fn traverseBackendDAEExpsEqnLstWithSymbolicOperation<Type_a: Clone + 'static
     }
 }
 
-fn traverseBackendDAEExpsEqnLstLstWithSymbolicOperation<Type_a: Clone + 'static + metamodelica::ReferenceEq>(mut inEqns: Arc<metamodelica::List<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>>, Type_a)) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>>, Type_a))> + 'static>, mut inTypeA: Type_a, mut iAcc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>>) -> Result<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>>, Type_a)> {
+fn traverseBackendDAEExpsEqnLstLstWithSymbolicOperation<Type_a: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut inEqns: Arc<metamodelica::List<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>>, Type_a)) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>>, Type_a))> + 'static>, mut inTypeA: Type_a, mut iAcc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>>) -> Result<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>>, Type_a)> {
     pub type FuncExpType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>>, Type_a)) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>>, Type_a))> + 'static>;
 
     '__tco: loop {
@@ -951,7 +951,7 @@ fn traverseBackendDAEExpsEqnLstLstWithSymbolicOperation<Type_a: Clone + 'static 
     }
 }
 
-fn traverseBackendDAEExpsWhenOperatorWithSymbolicOperation<ArgT: Clone + 'static + metamodelica::ReferenceEq>(mut inStmtLst: Arc<metamodelica::List<BackendDAE::WhenOperator>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>>, ArgT)) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>>, ArgT))> + 'static>, mut inArg: ArgT) -> Result<(Arc<metamodelica::List<BackendDAE::WhenOperator>>, ArgT)> {
+fn traverseBackendDAEExpsWhenOperatorWithSymbolicOperation<ArgT: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut inStmtLst: Arc<metamodelica::List<BackendDAE::WhenOperator>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>>, ArgT)) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>>, ArgT))> + 'static>, mut inArg: ArgT) -> Result<(Arc<metamodelica::List<BackendDAE::WhenOperator>>, ArgT)> {
     pub type FuncExpType<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>>, ArgT)) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>>, ArgT))> + 'static>;
 
     let mut outStmtLst: Arc<metamodelica::List<BackendDAE::WhenOperator>> = metamodelica::nil();
@@ -1036,7 +1036,7 @@ pub fn collapseArrayExpressions(mut dae: Arc<BackendDAE::BackendDAE>) -> Result<
     Ok(dae)
 }
 
-pub fn collapseArrayCrefExp<T: Clone + 'static + metamodelica::ReferenceEq>(mut inExp: Arc<DAE::Exp>, mut inTpl: (Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>>, T)) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>>, T))> {
+pub fn collapseArrayCrefExp<T: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut inExp: Arc<DAE::Exp>, mut inTpl: (Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>>, T)) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>>, T))> {
     let mut outExp: Arc<DAE::Exp>;
     let mut outTpl: (Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>>, T);
     let mut ops: Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>>;
@@ -1051,7 +1051,7 @@ pub fn collapseArrayCrefExp<T: Clone + 'static + metamodelica::ReferenceEq>(mut 
     Ok((outExp, outTpl))
 }
 
-fn collapseArrayCrefExpWork<T: Clone + 'static>(mut e: Arc<DAE::Exp>, mut t: T) -> (Arc<DAE::Exp>, bool, T) {
+fn collapseArrayCrefExpWork<T: Clone + 'static + metamodelica::gc::MMTrace>(mut e: Arc<DAE::Exp>, mut t: T) -> (Arc<DAE::Exp>, bool, T) {
     let mut e: Arc<DAE::Exp> = e;
     let mut cont: bool;
     let mut t: T = t;

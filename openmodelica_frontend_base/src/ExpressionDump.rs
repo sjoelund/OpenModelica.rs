@@ -293,7 +293,7 @@ pub fn relopSymbol(mut inOperator: DAE::Operator) -> Result<ArcStr> {
     Ok(outString)
 }
 
-pub fn printList<Type_a: Clone + 'static>(mut inTypeALst: Arc<metamodelica::List<Type_a>>, mut inFuncTypeTypeATo: Arc<dyn ::std::ops::Fn(Type_a) -> Result<()> + 'static>, mut inString: ArcStr) -> Result<()> {
+pub fn printList<Type_a: Clone + 'static + metamodelica::gc::MMTrace>(mut inTypeALst: Arc<metamodelica::List<Type_a>>, mut inFuncTypeTypeATo: Arc<dyn ::std::ops::Fn(Type_a) -> Result<()> + 'static>, mut inString: ArcStr) -> Result<()> {
     pub type FuncTypeType_aTo<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Type_a) -> Result<()> + 'static>;
 
     let () = 'mc: {
@@ -404,7 +404,7 @@ pub fn printCrefsFromExpStr(mut e: Arc<DAE::Exp>) -> Result<ArcStr> {
     Ok(s)
 }
 
-pub fn printExp2Str<Type_a: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut stringDelimiter: ArcStr, mut opcreffunc: Option<(Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Type_a) -> Result<ArcStr> + 'static>, Type_a)>, mut opcallfunc: Option<Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArcStr, Option<(Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Type_a) -> Result<ArcStr> + 'static>, Type_a)>) -> Result<ArcStr> + 'static>>) -> ArcStr {
+pub fn printExp2Str<Type_a: Clone + 'static + metamodelica::gc::MMTrace>(mut inExp: Arc<DAE::Exp>, mut stringDelimiter: ArcStr, mut opcreffunc: Option<(Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Type_a) -> Result<ArcStr> + 'static>, Type_a)>, mut opcallfunc: Option<Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArcStr, Option<(Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Type_a) -> Result<ArcStr> + 'static>, Type_a)>) -> Result<ArcStr> + 'static>>) -> ArcStr {
     pub type printComponentRefStrFunc<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Type_a) -> Result<ArcStr> + 'static>;
 
     pub type printCallFunc<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArcStr, Option<(Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Type_a) -> Result<ArcStr> + 'static>, Type_a)>) -> Result<ArcStr> + 'static>;

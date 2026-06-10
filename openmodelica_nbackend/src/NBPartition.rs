@@ -96,7 +96,7 @@ impl Ord for Kind {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 impl metamodelica::gc::MMTrace for Kind {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+    fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 impl Default for Kind {
     fn default() -> Self { Self::ODE }
@@ -128,7 +128,7 @@ pub mod Association {
         },
     }
     impl metamodelica::gc::MMTrace for Association {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             match self {
                 Association::CONTINUOUS { kind, jacobian, jacobianAdjoint, LFG_jacobian, MRF_jacobian, R0_jacobian } => {
                     metamodelica::gc::MMTrace::mm_accept(kind, __mmv)?;
@@ -412,7 +412,7 @@ pub mod Partition {
     }
 
     impl metamodelica::gc::MMTrace for Partition {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             metamodelica::gc::MMTrace::mm_accept(&self.index, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.association, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.unknowns, __mmv)?;

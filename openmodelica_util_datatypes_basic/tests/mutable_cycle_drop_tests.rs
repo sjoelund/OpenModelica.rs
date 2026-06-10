@@ -4,19 +4,15 @@
 //! placeholder and then `Mutable.update`s it with a value that (transitively)
 //! contains the cell itself — e.g. `NFInst.mo` updating `cls_ptr` with an
 //! `InstNode` whose class points back through that same pointer. In the Rust
-//! port both the cell (`Arc<Mutex<T>>`) and uniontype values (`Arc<enum>`)
-//! are strong references, so such cycles are never deallocated.
+//! port both the cell and uniontype values (`Arc<enum>`) are strong
+//! references, so such cycles are never freed by refcounting alone; the
+//! trial-deletion collector in `metamodelica::gc` reclaims them at explicit
+//! `collect()` points (the generated compiler's `GCExt.gcollect`).
 //!
-//! These tests make the leak *observable*: a payload with a `Drop` impl that
-//! increments a shared counter, plus a `Weak` handle to the payload. If the
-//! cycle is collected, the counter fires and the `Weak` dangles; if it leaks,
-//! neither happens.
-//!
-//! Status: cycle collection is NOT implemented yet. The `*_is_dropped` tests
-//! state the desired behavior and are `#[ignore]`d; the `*_currently_leaks`
-//! tests pin the status quo. When cycle handling lands, un-ignore the former
-//! and delete the latter (they will start failing, which is the signal).
+//! These tests make collection *observable*: a payload with a `Drop` impl
+//! that increments a shared counter, plus a `Weak` handle to the payload.
 
+use metamodelica::gc::{collect, MMTrace, MMVisitor};
 use openmodelica_util_datatypes_basic::Mutable;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, Weak};
@@ -30,6 +26,13 @@ struct DropProbe {
 impl Drop for DropProbe {
     fn drop(&mut self) {
         self.drops.fetch_add(1, Ordering::SeqCst);
+    }
+}
+
+/// Leaf payload: a probe can never contain a cell handle.
+impl MMTrace for DropProbe {
+    fn mm_accept(&self, _visitor: &mut dyn MMVisitor) -> Result<(), ()> {
+        Ok(())
     }
 }
 
@@ -57,11 +60,27 @@ enum Node {
     },
 }
 
-// ── harness sanity: the probe itself works ──────────────────────────────
+/// The shape of the impl mmtorust emits for generated uniontypes: structural
+/// delegation into every field (`probe` reports its `Arc`; `next` reports
+/// the cell and traces its content once).
+impl MMTrace for Node {
+    fn mm_accept(&self, visitor: &mut dyn MMVisitor) -> Result<(), ()> {
+        match self {
+            Node::Empty => Ok(()),
+            Node::Link { probe, next } => {
+                probe.mm_accept(visitor)?;
+                next.mm_accept(visitor)
+            }
+        }
+    }
+}
+
+// ── harness sanity: refcounting alone frees acyclic structure ───────────
 
 // No cycle: a cell points at a Link whose `next` is a *different* cell
-// holding Empty. Dropping the outer cell must free the payload — this
-// validates that the probe/Weak machinery can actually observe a drop.
+// holding Empty. Dropping the outer cell must free the payload without any
+// collect() — this validates that the probe/Weak machinery can actually
+// observe a drop, and that registration does not keep cells alive.
 #[test]
 fn acyclic_mutable_chain_is_dropped() {
     let (p, weak, drops) = probe();
@@ -108,142 +127,108 @@ fn build_two_cell_cycle() -> (Weak<DropProbe>, Arc<AtomicUsize>) {
     (weak, drops)
 }
 
-// Desired behavior once cyclic-drop handling exists: dropping the last
-// external handle collects the cycle.
 #[test]
-#[ignore = "Arc cycles through Mutable are not collected yet; un-ignore when cycle handling is implemented"]
 fn self_cycle_through_mutable_update_is_dropped() {
     let (weak, drops) = build_self_cycle();
+    let stats = collect();
+    assert!(!stats.aborted);
     assert_eq!(drops.load(Ordering::SeqCst), 1, "cycle payload was not dropped");
     assert!(weak.upgrade().is_none(), "cycle payload is still alive");
 }
 
 #[test]
-#[ignore = "Arc cycles through Mutable are not collected yet; un-ignore when cycle handling is implemented"]
 fn two_cell_cycle_through_mutable_update_is_dropped() {
     let (weak, drops) = build_two_cell_cycle();
+    collect();
     // Both Links (one probe each) must be freed.
     assert_eq!(drops.load(Ordering::SeqCst), 2, "cycle payloads were not dropped");
     assert!(weak.upgrade().is_none(), "cycle payload is still alive");
 }
 
-// ── GcMutable: the dumpster-backed cell collects the same cycles ────────
-//
-// These mirror the Mutable tests above but use the Gc-backed cell, and the
-// MMTrace impl below models exactly what mmtorust will emit for generated
-// uniontypes: visit every field that can transitively contain a Gc pointer,
-// skip leaves. Collection is asserted to actually free the cycle.
-
-use openmodelica_util_datatypes_basic::Mutable::GcMutable;
-use metamodelica::gc::{dumpster, MMTrace};
-
-/// Leaf payload: a probe can never contain a Gc pointer.
-impl MMTrace for DropProbe {
-    fn mm_accept<V: dumpster::Visitor>(&self, _v: &mut V) -> Result<(), ()> {
-        Ok(())
-    }
-}
-
-#[derive(Clone, Debug)]
-enum GcNode {
-    Empty,
-    Link {
-        probe: Arc<DropProbe>,
-        next: GcMutable<Arc<GcNode>>,
-    },
-}
-
-/// The shape of the impl mmtorust will emit for generated uniontypes:
-/// structural delegation to cycle-capable fields (`probe` is visited via the
-/// `Arc` delegating impl; `next` hands its cell to the collector).
-impl MMTrace for GcNode {
-    fn mm_accept<V: dumpster::Visitor>(&self, v: &mut V) -> Result<(), ()> {
-        match self {
-            GcNode::Empty => Ok(()),
-            GcNode::Link { probe, next } => {
-                probe.mm_accept(v)?;
-                next.mm_accept(v)
-            }
-        }
-    }
-}
-
-#[test]
-fn gc_acyclic_chain_is_dropped_without_collect() {
-    let (p, weak, drops) = probe();
-    let tail = GcMutable::create(Arc::new(GcNode::Empty));
-    let head = GcMutable::create(Arc::new(GcNode::Link { probe: p, next: tail }));
-    drop(head);
-    // No cycle: plain refcounting frees it; collect() must not be needed.
-    assert_eq!(drops.load(Ordering::SeqCst), 1);
-    assert!(weak.upgrade().is_none());
-}
-
-#[test]
-fn gc_self_cycle_is_collected() {
-    let (p, weak, drops) = probe();
-    let cell = GcMutable::create(Arc::new(GcNode::Empty));
-    GcMutable::update(
-        cell.clone(),
-        Arc::new(GcNode::Link { probe: p, next: cell.clone() }),
-    );
-    drop(cell);
-    dumpster::unsync::collect();
-    assert_eq!(drops.load(Ordering::SeqCst), 1, "cycle payload was not collected");
-    assert!(weak.upgrade().is_none(), "cycle payload is still alive");
-}
-
-#[test]
-fn gc_two_cell_cycle_is_collected() {
-    let (p, weak, drops) = probe();
-    let a = GcMutable::create(Arc::new(GcNode::Empty));
-    let b = GcMutable::create(Arc::new(GcNode::Link { probe: p, next: a.clone() }));
-    GcMutable::update(
-        a,
-        Arc::new(GcNode::Link {
-            probe: Arc::new(DropProbe { drops: drops.clone() }),
-            next: b,
-        }),
-    );
-    dumpster::unsync::collect();
-    // Still rooted by nothing — both cells were dropped above (`a` moved into
-    // update, `b` moved into the node), so the cycle is garbage.
-    assert_eq!(drops.load(Ordering::SeqCst), 2, "cycle payloads were not collected");
-    assert!(weak.upgrade().is_none(), "cycle payload is still alive");
-}
-
 // A live cycle must NOT be collected while a handle still roots it.
 #[test]
-fn gc_live_cycle_survives_collect() {
+fn live_cycle_survives_collect() {
     let (p, weak, drops) = probe();
-    let cell = GcMutable::create(Arc::new(GcNode::Empty));
-    GcMutable::update(
+    let cell = Mutable::create(Arc::new(Node::Empty));
+    Mutable::update(
         cell.clone(),
-        Arc::new(GcNode::Link { probe: p, next: cell.clone() }),
+        Arc::new(Node::Link { probe: p, next: cell.clone() }),
     );
-    dumpster::unsync::collect();
+    collect();
     assert_eq!(drops.load(Ordering::SeqCst), 0, "live cycle was freed");
     assert!(weak.upgrade().is_some());
     // ... and once the root goes away, it is collectable.
     drop(cell);
-    dumpster::unsync::collect();
+    collect();
     assert_eq!(drops.load(Ordering::SeqCst), 1);
     assert!(weak.upgrade().is_none());
 }
 
-// Pin the current (leaking) behavior so the harness is exercised in CI today.
-// DELETE these two tests when the `_is_dropped` tests above are enabled —
-// they assert the opposite and will fail once cycles are collected.
+// The regression that ruled out tracing-pointer libraries (dumpster freed
+// this case): the cycle-closing value is *shared* — the same `Arc<Node>`
+// that contains the in-cycle handle is also held on the stack. The cell has
+// no external handle of its own, but it is reachable through the shared
+// content, so it must survive.
 #[test]
-fn self_cycle_through_mutable_update_currently_leaks() {
-    let (weak, drops) = build_self_cycle();
-    assert_eq!(drops.load(Ordering::SeqCst), 0);
-    assert!(weak.upgrade().is_some());
+fn content_shared_with_stack_survives_collect() {
+    let (p, weak, drops) = probe();
+    let cell = Mutable::create(Arc::new(Node::Empty));
+    let link = Arc::new(Node::Link { probe: p, next: cell.clone() });
+    Mutable::update(cell.clone(), link.clone());
+    drop(cell);
+    collect();
+    assert_eq!(drops.load(Ordering::SeqCst), 0, "live payload was freed");
+    assert!(weak.upgrade().is_some(), "live payload was freed");
+    let Node::Link { next, .. } = &*link else { unreachable!() };
+    // Accessing the still-live cell must not panic on a poisoned cell.
+    let _ = Mutable::access(next.clone());
+    // Dropping the last shared handle makes the cycle garbage.
+    drop(link);
+    collect();
+    assert_eq!(drops.load(Ordering::SeqCst), 1, "dead cycle was not collected");
+    assert!(weak.upgrade().is_none());
 }
 
+// Cycle through a shared list spine: `cell → Arc<List<cell>> → cell`, with
+// the spine also referenced from the stack. Exercises the per-spine-cell
+// reporting in `List`'s MMTrace impl.
 #[test]
-fn two_cell_cycle_through_mutable_update_currently_leaks() {
-    let (weak, drops) = build_two_cell_cycle();
-    assert_eq!(drops.load(Ordering::SeqCst), 0);
+fn cycle_through_shared_list_spine() {
+    use metamodelica::{cons, nil, List};
+
+    #[derive(Clone, Debug)]
+    enum ListNode {
+        Empty,
+        #[allow(dead_code)]
+        Many {
+            probe: Arc<DropProbe>,
+            nodes: Arc<List<Mutable::Mutable<Arc<ListNode>>>>,
+        },
+    }
+    impl MMTrace for ListNode {
+        fn mm_accept(&self, visitor: &mut dyn MMVisitor) -> Result<(), ()> {
+            match self {
+                ListNode::Empty => Ok(()),
+                ListNode::Many { probe, nodes } => {
+                    probe.mm_accept(visitor)?;
+                    nodes.mm_accept(visitor)
+                }
+            }
+        }
+    }
+
+    let (p, weak, drops) = probe();
+    let cell = Mutable::create(Arc::new(ListNode::Empty));
+    let spine = cons(cell.clone(), nil());
+    Mutable::update(cell.clone(), Arc::new(ListNode::Many { probe: p, nodes: spine.clone() }));
+    drop(cell);
+    // The spine is still on the stack: everything must survive.
+    collect();
+    assert_eq!(drops.load(Ordering::SeqCst), 0, "live payload was freed");
     assert!(weak.upgrade().is_some());
+    drop(spine);
+    // Now the cycle (cell → Many → spine → cell) is unreachable.
+    collect();
+    assert_eq!(drops.load(Ordering::SeqCst), 1, "list-spine cycle was not collected");
+    assert!(weak.upgrade().is_none());
 }

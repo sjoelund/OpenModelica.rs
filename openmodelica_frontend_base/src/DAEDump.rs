@@ -2816,7 +2816,7 @@ fn buildGrVars(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element>>>) -> 
     Ok(outGraphvizNodeLst)
 }
 
-pub fn buildGrStrlist<Type_a: Clone + 'static>(mut inTypeALst: Arc<metamodelica::List<Type_a>>, mut inFuncTypeTypeAToString: Arc<dyn ::std::ops::Fn(Type_a) -> Result<ArcStr> + 'static>, mut inInteger: i32) -> Result<(Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<Type_a>>)> {
+pub fn buildGrStrlist<Type_a: Clone + 'static + metamodelica::gc::MMTrace>(mut inTypeALst: Arc<metamodelica::List<Type_a>>, mut inFuncTypeTypeAToString: Arc<dyn ::std::ops::Fn(Type_a) -> Result<ArcStr> + 'static>, mut inInteger: i32) -> Result<(Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<Type_a>>)> {
     pub type FuncTypeType_aToString<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Type_a) -> Result<ArcStr> + 'static>;
 
     let mut outStringLst: Arc<metamodelica::List<ArcStr>>;
@@ -4767,7 +4767,7 @@ pub fn dumpDebugElementStr(mut inElement: Arc<DAE::Element>) -> ArcStr {
     outString
 }
 
-fn getOptionWithConcatStr<Type_a: Clone + 'static>(mut inTypeAOption: Option<Type_a>, mut inFuncTypeTypeAToString: Arc<dyn ::std::ops::Fn(Type_a) -> Result<ArcStr> + 'static>, mut inString: ArcStr) -> Result<ArcStr> {
+fn getOptionWithConcatStr<Type_a: Clone + 'static + metamodelica::gc::MMTrace>(mut inTypeAOption: Option<Type_a>, mut inFuncTypeTypeAToString: Arc<dyn ::std::ops::Fn(Type_a) -> Result<ArcStr> + 'static>, mut inString: ArcStr) -> Result<ArcStr> {
     pub type FuncTypeType_aToString<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Type_a) -> Result<ArcStr> + 'static>;
 
     let mut outString: ArcStr;

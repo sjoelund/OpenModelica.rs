@@ -173,7 +173,7 @@ pub mod FunctionTreeImpl {
         EMPTY,
     }
     impl metamodelica::gc::MMTrace for Tree {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             match self {
                 Tree::NODE { key, value, height, left, right } => {
                     metamodelica::gc::MMTrace::mm_accept(key, __mmv)?;
@@ -359,7 +359,7 @@ pub mod FunctionTreeImpl {
         outBalance
     }
 
-    pub fn fold<FT: Clone + 'static>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Path>, Arc<Function::Function>, FT) -> Result<FT> + 'static>, mut inStartValue: FT) -> Result<FT> {
+    pub fn fold<FT: Clone + 'static + metamodelica::gc::MMTrace>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Path>, Arc<Function::Function>, FT) -> Result<FT> + 'static>, mut inStartValue: FT) -> Result<FT> {
         pub type FoldFunc<FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT) -> Result<FT> + 'static>;
 
         let mut outResult: FT = inStartValue.clone();
@@ -382,7 +382,7 @@ pub mod FunctionTreeImpl {
         Ok(outResult)
     }
 
-    pub fn foldCond<FT: Clone + 'static>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(Arc<Path>, Arc<Function::Function>, FT) -> Result<(FT, bool)> + 'static>, mut value: FT) -> Result<FT> {
+    pub fn foldCond<FT: Clone + 'static + metamodelica::gc::MMTrace>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(Arc<Path>, Arc<Function::Function>, FT) -> Result<(FT, bool)> + 'static>, mut value: FT) -> Result<FT> {
         pub type FoldFunc<FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT) -> Result<(FT, bool)> + 'static>;
 
         let mut value: FT = value;
@@ -409,7 +409,7 @@ pub mod FunctionTreeImpl {
         Ok(value)
     }
 
-    pub fn fold_2<FT1: Clone + 'static, FT2: Clone + 'static>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(Arc<Path>, Arc<Function::Function>, FT1, FT2) -> Result<(FT1, FT2)> + 'static>, mut foldArg1: FT1, mut foldArg2: FT2) -> Result<(FT1, FT2)> {
+    pub fn fold_2<FT1: Clone + 'static + metamodelica::gc::MMTrace, FT2: Clone + 'static + metamodelica::gc::MMTrace>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(Arc<Path>, Arc<Function::Function>, FT1, FT2) -> Result<(FT1, FT2)> + 'static>, mut foldArg1: FT1, mut foldArg2: FT2) -> Result<(FT1, FT2)> {
         pub type FoldFunc<FT1: Clone + 'static, FT2: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT1, FT2) -> Result<(FT1, FT2)> + 'static>;
 
         let mut foldArg1: FT1 = foldArg1;
@@ -663,7 +663,7 @@ pub mod FunctionTreeImpl {
         Ok(outTree)
     }
 
-    pub fn mapFold<FT: Clone + 'static>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Path>, Arc<Function::Function>, FT) -> Result<(Arc<Function::Function>, FT)> + 'static>, mut inStartValue: FT) -> Result<(Arc<Tree>, FT)> {
+    pub fn mapFold<FT: Clone + 'static + metamodelica::gc::MMTrace>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Path>, Arc<Function::Function>, FT) -> Result<(Arc<Function::Function>, FT)> + 'static>, mut inStartValue: FT) -> Result<(Arc<Tree>, FT)> {
         pub type MapFunc<FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT) -> Result<Value> + 'static>;
 
         let mut outTree: Arc<Tree> = inTree.clone();
@@ -857,7 +857,7 @@ pub struct FlattenSettings {
 }
 
 impl metamodelica::gc::MMTrace for FlattenSettings {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.scalarize, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.arrayConnect, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.nfAPI, __mmv)?;
@@ -902,7 +902,7 @@ pub mod Prefix {
         },
     }
     impl metamodelica::gc::MMTrace for Prefix {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             match self {
                 Prefix::PREFIX { root, prefix } => {
                     metamodelica::gc::MMTrace::mm_accept(root, __mmv)?;
@@ -1359,7 +1359,7 @@ impl Ord for ComponentType {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 impl metamodelica::gc::MMTrace for ComponentType {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+    fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 
 fn flattenSimpleComponent(mut node: Arc<InstNode::InstNode>, mut comp: Arc<Component::NFComponent>, mut visibility: Visibility, mut outerBinding: Option<Arc<Binding::NFBinding>>, mut typeAttrs: Arc<metamodelica::List<Arc<Modifier::Modifier>>>, mut prefix: Arc<Prefix::Prefix>, mut vars: Arc<metamodelica::List<Arc<Variable::NFVariable>>>, mut sections: Arc<Sections::NFSections>, mut settings: FlattenSettings, mut children: Arc<metamodelica::List<Arc<Variable::NFVariable>>>) -> Result<(Arc<metamodelica::List<Arc<Variable::NFVariable>>>, Arc<Sections::NFSections>)> {

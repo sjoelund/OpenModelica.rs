@@ -64,7 +64,7 @@ pub struct DumpOptions {
 }
 
 impl metamodelica::gc::MMTrace for DumpOptions {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.fileName, __mmv)?;
         Ok(())
     }
@@ -854,7 +854,7 @@ pub fn printCodeStr(mut inCode: Arc<Absyn::CodeNode>) -> Result<ArcStr> {
     Ok(outString)
 }
 
-fn printListStr<Type_a: Clone + 'static>(mut inTypeALst: Arc<metamodelica::List<Type_a>>, mut inFuncTypeTypeAToString: Arc<dyn ::std::ops::Fn(Type_a) -> Result<ArcStr> + 'static>, mut inString: ArcStr) -> Result<ArcStr> {
+fn printListStr<Type_a: Clone + 'static + metamodelica::gc::MMTrace>(mut inTypeALst: Arc<metamodelica::List<Type_a>>, mut inFuncTypeTypeAToString: Arc<dyn ::std::ops::Fn(Type_a) -> Result<ArcStr> + 'static>, mut inString: ArcStr) -> Result<ArcStr> {
     pub type FuncTypeType_aToString<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Type_a) -> Result<ArcStr> + 'static>;
 
     let mut outString: ArcStr;
@@ -965,7 +965,7 @@ pub fn opSymbolCompact(mut inOperator: Absyn::Operator) -> Result<ArcStr> {
  * These are utility functions used in some of the other functions.
  *
  */
-pub fn printOption<Type_a: Clone + 'static>(mut inTypeAOption: Option<Type_a>, mut inFuncTypeTypeATo: Arc<dyn ::std::ops::Fn(Type_a) -> Result<()> + 'static>) -> Result<()> {
+pub fn printOption<Type_a: Clone + 'static + metamodelica::gc::MMTrace>(mut inTypeAOption: Option<Type_a>, mut inFuncTypeTypeATo: Arc<dyn ::std::ops::Fn(Type_a) -> Result<()> + 'static>) -> Result<()> {
     pub type FuncTypeType_aTo<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Type_a) -> Result<()> + 'static>;
 
     let () = (match inTypeAOption.clone() {
@@ -983,7 +983,7 @@ pub fn printOption<Type_a: Clone + 'static>(mut inTypeAOption: Option<Type_a>, m
     Ok(())
 }
 
-pub fn printList<Type_a: Clone + 'static>(mut inTypeALst: Arc<metamodelica::List<Type_a>>, mut inFuncTypeTypeATo: Arc<dyn ::std::ops::Fn(Type_a) -> Result<()> + 'static>, mut inString: ArcStr) -> Result<()> {
+pub fn printList<Type_a: Clone + 'static + metamodelica::gc::MMTrace>(mut inTypeALst: Arc<metamodelica::List<Type_a>>, mut inFuncTypeTypeATo: Arc<dyn ::std::ops::Fn(Type_a) -> Result<()> + 'static>, mut inString: ArcStr) -> Result<()> {
     pub type FuncTypeType_aTo<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Type_a) -> Result<()> + 'static>;
 
     let () = 'mc: {
@@ -2586,7 +2586,7 @@ fn printListExpAsCorbaString(mut inLst: Arc<metamodelica::List<Arc<Absyn::Exp>>>
     Ok(())
 }
 
-fn printListAsCorbaString<Type_a: Clone + 'static>(mut inTypeALst: Arc<metamodelica::List<Type_a>>, mut inFuncTypeTypeATo: Arc<dyn ::std::ops::Fn(Type_a) -> Result<()> + 'static>, mut inString: ArcStr) -> Result<()> {
+fn printListAsCorbaString<Type_a: Clone + 'static + metamodelica::gc::MMTrace>(mut inTypeALst: Arc<metamodelica::List<Type_a>>, mut inFuncTypeTypeATo: Arc<dyn ::std::ops::Fn(Type_a) -> Result<()> + 'static>, mut inString: ArcStr) -> Result<()> {
     pub type FuncTypeType_aTo<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Type_a) -> Result<()> + 'static>;
 
     Print::printBuf((literal!("{")).clone())?;
@@ -2595,7 +2595,7 @@ fn printListAsCorbaString<Type_a: Clone + 'static>(mut inTypeALst: Arc<metamodel
     Ok(())
 }
 
-fn printTupleAsCorbaString<Type_a: Clone + 'static, Type_b: Clone + 'static>(mut inTpl: (Type_a, Type_b), mut fnA: Arc<dyn ::std::ops::Fn(Type_a) -> Result<()> + 'static>, mut fnB: Arc<dyn ::std::ops::Fn(Type_b) -> Result<()> + 'static>) -> Result<()> {
+fn printTupleAsCorbaString<Type_a: Clone + 'static + metamodelica::gc::MMTrace, Type_b: Clone + 'static + metamodelica::gc::MMTrace>(mut inTpl: (Type_a, Type_b), mut fnA: Arc<dyn ::std::ops::Fn(Type_a) -> Result<()> + 'static>, mut fnB: Arc<dyn ::std::ops::Fn(Type_b) -> Result<()> + 'static>) -> Result<()> {
     pub type FuncTypeType_a<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Type_a) -> Result<()> + 'static>;
 
     pub type FuncTypeType_b<Type_b: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Type_b) -> Result<()> + 'static>;

@@ -103,7 +103,7 @@ pub enum NFComponent {
     WILD,
 }
 impl metamodelica::gc::MMTrace for NFComponent {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             NFComponent::COMPONENT_DEF { definition, modifier } => {
                 metamodelica::gc::MMTrace::mm_accept(definition, __mmv)?;
@@ -178,7 +178,7 @@ impl Ord for ComponentState {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 impl metamodelica::gc::MMTrace for ComponentState {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+    fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 
 pub fn new(mut definition: Arc<Element>) -> Arc<NFComponent> {

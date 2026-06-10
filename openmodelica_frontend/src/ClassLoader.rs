@@ -76,7 +76,7 @@ pub enum PackageOrder {
     },
 }
 impl metamodelica::gc::MMTrace for PackageOrder {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             PackageOrder::CLASSPART { cp } => {
                 metamodelica::gc::MMTrace::mm_accept(cp, __mmv)?;
@@ -113,7 +113,7 @@ pub enum LoadFileStrategy {
     },
 }
 impl metamodelica::gc::MMTrace for LoadFileStrategy {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             LoadFileStrategy::STRATEGY_HASHTABLE { ht } => {
                 metamodelica::gc::MMTrace::mm_accept(ht, __mmv)?;

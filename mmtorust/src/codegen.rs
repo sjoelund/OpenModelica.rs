@@ -3088,7 +3088,14 @@ fn emit_struct<'a>(out: &mut String, name: &str, node: &NameNode<'_>, c: &MM::Cl
             let impl_params = if type_vars.is_empty() {
                 String::new()
             } else {
-                let bounded: Vec<String> = type_vars.iter().map(|v| format!("{v}: Clone")).collect();
+                // Field defaults may allocate mutable cells
+                // (`Mutable::default()` / `Mutable::create(...)`), which
+                // register with the cycle collector and therefore need
+                // `MMTrace + 'static` on the content type.
+                let bounded: Vec<String> = type_vars
+                    .iter()
+                    .map(|v| format!("{v}: Clone + 'static + metamodelica::gc::MMTrace"))
+                    .collect();
                 format!("<{}>", bounded.join(", "))
             };
             let use_params = if type_vars.is_empty() {
@@ -3119,10 +3126,11 @@ fn emit_struct<'a>(out: &mut String, name: &str, node: &NameNode<'_>, c: &MM::Cl
 /// Emit `impl metamodelica::gc::MMTrace` — structural tracing for the cycle
 /// collector (see `metamodelica::gc`). Every field delegates via
 /// `mm_accept`; the runtime's leaf/container impls decide what actually
-/// reaches the collector's visitor (function values accept trivially — the
-/// documented unchecked "captures no Gc pointers" assumption — so no field
-/// is skipped at this level, keeping the emission independent of the
-/// cycle-capability analysis).
+/// reaches the collector's visitor (function values accept trivially —
+/// hiding closure captures from the trial-deletion collector is safe by
+/// construction, it can only keep more alive — so no field is skipped at
+/// this level, keeping the emission independent of the cycle-capability
+/// analysis).
 ///
 /// `variants` carries `(variant_name, escaped_field_names)` for an enum; a
 /// struct passes a single entry with an empty variant name. The visitor
@@ -3147,7 +3155,7 @@ fn emit_mm_trace_impl(
         format!("<{}>", bounded.join(", "))
     };
     writeln!(out, "{indent}impl{impl_params} metamodelica::gc::MMTrace for {ename}{use_params} {{").unwrap();
-    writeln!(out, "{indent}    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {{").unwrap();
+    writeln!(out, "{indent}    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {{").unwrap();
     if is_enum {
         writeln!(out, "{indent}        match self {{").unwrap();
         for (vname, fields) in variants {
@@ -3178,7 +3186,7 @@ fn emit_mm_trace_impl(
 /// `Gc` pointer (enumerations, opaque external objects).
 fn emit_mm_trace_leaf_impl(out: &mut String, indent: &str, ename: &str) {
     writeln!(out, "{indent}impl metamodelica::gc::MMTrace for {ename} {{").unwrap();
-    writeln!(out, "{indent}    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> {{ Ok(()) }}").unwrap();
+    writeln!(out, "{indent}    fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {{ Ok(()) }}").unwrap();
     writeln!(out, "{indent}}}").unwrap();
 }
 
@@ -5977,8 +5985,15 @@ fn emit_function<'a>(out: &mut String, name: &str, node: &NameNode<'_>, c: &MM::
         // [`analyze_reference_eq`], direct + transitive like the other two).
         let empty_refeq: HashSet<String> = HashSet::new();
         let refeq_vars = ctx.reference_eq_required.get(&fn_qname).unwrap_or(&empty_refeq);
+        // `MMTrace` joins `Clone + 'static` in the default bound set: any type
+        // parameter may flow into a mutable-cell constructor (`Mutable.create`
+        // and the containers built on it), which registers the cell with the
+        // cycle collector and needs to trace the content. Every
+        // MM-representable type implements `MMTrace` (generated impls,
+        // runtime containers, scalar/borrow/function-value leaves), so the
+        // bound never locks an instantiation out.
         let bounded: Vec<String> = all_type_vars.iter().map(|v| {
-            let mut bounds = vec!["Clone", "'static"];
+            let mut bounds = vec!["Clone", "'static", "metamodelica::gc::MMTrace"];
             if eq_vars.contains(v) { bounds.push("PartialEq"); }
             if default_vars.contains(v) { bounds.push("Default"); }
             if refeq_vars.contains(v) { bounds.push("metamodelica::ReferenceEq"); }

@@ -109,7 +109,7 @@ pub mod AvailableLibraries {
         EMPTY,
     }
     impl metamodelica::gc::MMTrace for Tree {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             match self {
                 Tree::NODE { key, value, height, left, right } => {
                     metamodelica::gc::MMTrace::mm_accept(key, __mmv)?;
@@ -295,7 +295,7 @@ pub mod AvailableLibraries {
         outBalance
     }
 
-    pub fn fold<FT: Clone + 'static>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(ArcStr, Arc<VersionMap::Tree>, FT) -> Result<FT> + 'static>, mut inStartValue: FT) -> Result<FT> {
+    pub fn fold<FT: Clone + 'static + metamodelica::gc::MMTrace>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(ArcStr, Arc<VersionMap::Tree>, FT) -> Result<FT> + 'static>, mut inStartValue: FT) -> Result<FT> {
         pub type FoldFunc<FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT) -> Result<FT> + 'static>;
 
         let mut outResult: FT = inStartValue.clone();
@@ -318,7 +318,7 @@ pub mod AvailableLibraries {
         Ok(outResult)
     }
 
-    pub fn foldCond<FT: Clone + 'static>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(ArcStr, Arc<VersionMap::Tree>, FT) -> Result<(FT, bool)> + 'static>, mut value: FT) -> Result<FT> {
+    pub fn foldCond<FT: Clone + 'static + metamodelica::gc::MMTrace>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(ArcStr, Arc<VersionMap::Tree>, FT) -> Result<(FT, bool)> + 'static>, mut value: FT) -> Result<FT> {
         pub type FoldFunc<FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT) -> Result<(FT, bool)> + 'static>;
 
         let mut value: FT = value;
@@ -345,7 +345,7 @@ pub mod AvailableLibraries {
         Ok(value)
     }
 
-    pub fn fold_2<FT1: Clone + 'static, FT2: Clone + 'static>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(ArcStr, Arc<VersionMap::Tree>, FT1, FT2) -> Result<(FT1, FT2)> + 'static>, mut foldArg1: FT1, mut foldArg2: FT2) -> Result<(FT1, FT2)> {
+    pub fn fold_2<FT1: Clone + 'static + metamodelica::gc::MMTrace, FT2: Clone + 'static + metamodelica::gc::MMTrace>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(ArcStr, Arc<VersionMap::Tree>, FT1, FT2) -> Result<(FT1, FT2)> + 'static>, mut foldArg1: FT1, mut foldArg2: FT2) -> Result<(FT1, FT2)> {
         pub type FoldFunc<FT1: Clone + 'static, FT2: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT1, FT2) -> Result<(FT1, FT2)> + 'static>;
 
         let mut foldArg1: FT1 = foldArg1;
@@ -599,7 +599,7 @@ pub mod AvailableLibraries {
         Ok(outTree)
     }
 
-    pub fn mapFold<FT: Clone + 'static>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(ArcStr, Arc<VersionMap::Tree>, FT) -> Result<(Arc<VersionMap::Tree>, FT)> + 'static>, mut inStartValue: FT) -> Result<(Arc<Tree>, FT)> {
+    pub fn mapFold<FT: Clone + 'static + metamodelica::gc::MMTrace>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(ArcStr, Arc<VersionMap::Tree>, FT) -> Result<(Arc<VersionMap::Tree>, FT)> + 'static>, mut inStartValue: FT) -> Result<(Arc<Tree>, FT)> {
         pub type MapFunc<FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT) -> Result<Value> + 'static>;
 
         let mut outTree: Arc<Tree> = inTree.clone();
@@ -828,7 +828,7 @@ pub mod VersionMap {
         EMPTY,
     }
     impl metamodelica::gc::MMTrace for Tree {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             match self {
                 Tree::NODE { key, value, height, left, right } => {
                     metamodelica::gc::MMTrace::mm_accept(key, __mmv)?;
@@ -1014,7 +1014,7 @@ pub mod VersionMap {
         outBalance
     }
 
-    pub fn fold<FT: Clone + 'static>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(SemanticVersion::Version, ArcStr, FT) -> Result<FT> + 'static>, mut inStartValue: FT) -> Result<FT> {
+    pub fn fold<FT: Clone + 'static + metamodelica::gc::MMTrace>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(SemanticVersion::Version, ArcStr, FT) -> Result<FT> + 'static>, mut inStartValue: FT) -> Result<FT> {
         pub type FoldFunc<FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT) -> Result<FT> + 'static>;
 
         let mut outResult: FT = inStartValue.clone();
@@ -1037,7 +1037,7 @@ pub mod VersionMap {
         Ok(outResult)
     }
 
-    pub fn foldCond<FT: Clone + 'static>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(SemanticVersion::Version, ArcStr, FT) -> Result<(FT, bool)> + 'static>, mut value: FT) -> Result<FT> {
+    pub fn foldCond<FT: Clone + 'static + metamodelica::gc::MMTrace>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(SemanticVersion::Version, ArcStr, FT) -> Result<(FT, bool)> + 'static>, mut value: FT) -> Result<FT> {
         pub type FoldFunc<FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT) -> Result<(FT, bool)> + 'static>;
 
         let mut value: FT = value;
@@ -1064,7 +1064,7 @@ pub mod VersionMap {
         Ok(value)
     }
 
-    pub fn fold_2<FT1: Clone + 'static, FT2: Clone + 'static>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(SemanticVersion::Version, ArcStr, FT1, FT2) -> Result<(FT1, FT2)> + 'static>, mut foldArg1: FT1, mut foldArg2: FT2) -> Result<(FT1, FT2)> {
+    pub fn fold_2<FT1: Clone + 'static + metamodelica::gc::MMTrace, FT2: Clone + 'static + metamodelica::gc::MMTrace>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(SemanticVersion::Version, ArcStr, FT1, FT2) -> Result<(FT1, FT2)> + 'static>, mut foldArg1: FT1, mut foldArg2: FT2) -> Result<(FT1, FT2)> {
         pub type FoldFunc<FT1: Clone + 'static, FT2: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT1, FT2) -> Result<(FT1, FT2)> + 'static>;
 
         let mut foldArg1: FT1 = foldArg1;
@@ -1318,7 +1318,7 @@ pub mod VersionMap {
         Ok(outTree)
     }
 
-    pub fn mapFold<FT: Clone + 'static>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(SemanticVersion::Version, ArcStr, FT) -> Result<(ArcStr, FT)> + 'static>, mut inStartValue: FT) -> Result<(Arc<Tree>, FT)> {
+    pub fn mapFold<FT: Clone + 'static + metamodelica::gc::MMTrace>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(SemanticVersion::Version, ArcStr, FT) -> Result<(ArcStr, FT)> + 'static>, mut inStartValue: FT) -> Result<(Arc<Tree>, FT)> {
         pub type MapFunc<FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT) -> Result<Value> + 'static>;
 
         let mut outTree: Arc<Tree> = inTree.clone();
@@ -1641,7 +1641,7 @@ impl Ord for SupportLevel {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 impl metamodelica::gc::MMTrace for SupportLevel {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+    fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 
 pub fn getSupportLevel(mut obj: Arc<JSON::JSON>) -> Result<SupportLevel> {
@@ -2119,7 +2119,7 @@ pub struct PackageInstallInfo {
 }
 
 impl metamodelica::gc::MMTrace for PackageInstallInfo {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.needsInstall, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.pkg, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.version, __mmv)?;

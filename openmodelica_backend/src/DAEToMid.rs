@@ -90,7 +90,7 @@ pub struct State {
 }
 
 impl metamodelica::gc::MMTrace for State {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.locals, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.localBufs, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.localBufPtrs, __mmv)?;
@@ -152,7 +152,7 @@ impl Default for State {
 pub type STATE = State;
 
 
-fn listZip<X: Clone + 'static, Y: Clone + 'static>(mut xs: Arc<metamodelica::List<X>>, mut ys: Arc<metamodelica::List<Y>>) -> Result<Arc<metamodelica::List<(X, Y)>>> {
+fn listZip<X: Clone + 'static + metamodelica::gc::MMTrace, Y: Clone + 'static + metamodelica::gc::MMTrace>(mut xs: Arc<metamodelica::List<X>>, mut ys: Arc<metamodelica::List<Y>>) -> Result<Arc<metamodelica::List<(X, Y)>>> {
     let mut zs: Arc<metamodelica::List<(X, Y)>>;
     let mut xs_: Arc<metamodelica::List<X>> = metamodelica::nil();
     let mut ys_: Arc<metamodelica::List<Y>> = metamodelica::nil();

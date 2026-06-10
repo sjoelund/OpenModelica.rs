@@ -1,12 +1,18 @@
 // Manually written
 #![allow(non_snake_case)]
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
+
+use metamodelica::gc::{MMTrace, MMVisitor, TraceableCell};
+
+use crate::Mutable::{cell_get, cell_set, new_cell, CellInner};
 
 // Mirrors the MetaModelica/C representation: `Mutable` corresponds to
 // `mmc_mk_box1(0, data)` (ctor 0, in-place updatable) and `Immutable`
 // corresponds to `mmc_mk_some(data)` (ctor 1, update rejected at runtime).
+// The mutable variant shares `CellInner` with `Mutable.Mutable` so both cell
+// kinds register with the same cycle-collector machinery.
 pub enum Pointer<T> {
-    Mutable(Arc<Mutex<T>>),
+    Mutable(Arc<CellInner<T>>),
     Immutable(Arc<T>),
 }
 
@@ -79,17 +85,25 @@ impl<T> std::hash::Hash for Pointer<T> {
     }
 }
 
-/// Transitional tracing through the legacy `Arc`-based cell, mirroring the
-/// `Mutable` impl: the cell itself is not a Gc allocation, but its content
-/// may transitively hold `Gc` pointers during the codegen migration. A busy
-/// mutex reports `Err` ("keep alive").
-impl<T: metamodelica::gc::MMTrace> metamodelica::gc::MMTrace for Pointer<T> {
-    fn mm_accept<V: metamodelica::gc::dumpster::Visitor>(
-        &self,
-        visitor: &mut V,
-    ) -> Result<(), ()> {
+/// Both variants are shared allocations and are reported as such; the
+/// mutable variant additionally aborts the collection when locked by
+/// another thread (`Err` from `trace_content`).
+impl<T: MMTrace> MMTrace for Pointer<T> {
+    fn mm_accept(&self, visitor: &mut dyn MMVisitor) -> Result<(), ()> {
         match self {
-            Pointer::Mutable(a) => a.try_lock().map_err(|_| ())?.mm_accept(visitor),
+            Pointer::Mutable(a) => {
+                if visitor.visit_shared(
+                    Arc::as_ptr(a) as *const (),
+                    Arc::strong_count(a),
+                    std::any::type_name::<CellInner<T>>(),
+                ) {
+                    let r = a.trace_content(visitor);
+                    visitor.leave_shared();
+                    r
+                } else {
+                    Ok(())
+                }
+            }
             Pointer::Immutable(a) => a.mm_accept(visitor),
         }
     }
@@ -103,17 +117,16 @@ impl<T: metamodelica::gc::MMTrace> metamodelica::gc::MMTrace for Pointer<T> {
 /// `Pointer.create(value)`. We mirror that by initialising the slot with
 /// `T::default()` boxed in a fresh `Mutable` cell, so downstream
 /// `Mutable.update` / `Mutable.access` operate against a real cell rather
-/// than panicking. The `T: Default` bound is the only one strictly
-/// required; placeholders for non-`Default` `T` would have to come from
-/// the caller anyway.
-impl<T: Default> Default for Pointer<T> {
+/// than panicking. The `MMTrace + 'static` bounds come from registering the
+/// fresh cell with the cycle collector.
+impl<T: Clone + Default + MMTrace + 'static> Default for Pointer<T> {
     fn default() -> Self {
-        Pointer::Mutable(Arc::new(Mutex::new(T::default())))
+        Pointer::Mutable(new_cell(T::default()))
     }
 }
 
-pub fn create<T: Clone + PartialEq>(data: T) -> Pointer<T> {
-    Pointer::Mutable(Arc::new(Mutex::new(data)))
+pub fn create<T: Clone + PartialEq + MMTrace + 'static>(data: T) -> Pointer<T> {
+    Pointer::Mutable(new_cell(data))
 }
 
 pub fn createImmutable<T: Clone + PartialEq>(data: T) -> Pointer<T> {
@@ -126,20 +139,14 @@ pub fn createImmutable<T: Clone + PartialEq>(data: T) -> Pointer<T> {
 // panic rather than a `Result` because every caller would `unwrap`.
 pub fn update<T: Clone + PartialEq>(mutable: Pointer<T>, data: T) {
     match mutable {
-        Pointer::Mutable(cell) => {
-            let mut guard = cell.lock().expect("Pointer.update: mutex poisoned");
-            *guard = data;
-        }
+        Pointer::Mutable(cell) => cell_set(&cell, data),
         Pointer::Immutable(_) => panic!("Pointer.update: tried to update an immutable Pointer"),
     }
 }
 
 pub fn access<T: Clone + PartialEq>(mutable: Pointer<T>) -> T {
     match mutable {
-        Pointer::Mutable(cell) => {
-            let guard = cell.lock().expect("Pointer.access: mutex poisoned");
-            (*guard).clone()
-        }
+        Pointer::Mutable(cell) => cell_get(&cell),
         Pointer::Immutable(a) => (*a).clone(),
     }
 }

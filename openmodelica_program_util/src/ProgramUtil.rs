@@ -1152,7 +1152,7 @@ pub fn getDefaultComponentPrefixesModStr(mut r#mod: Option<Arc<Absyn::Modificati
     docStr
 }
 
-pub fn getNamedAnnotationExp<T: Clone + 'static>(mut inPath: Arc<Absyn::Path>, mut inProgram: Absyn::Program, mut id: Arc<Absyn::Path>, mut default: Option<T>, mut f: Arc<dyn ::std::ops::Fn(Option<Arc<Absyn::Modification>>) -> Result<T> + 'static>) -> Result<T> {
+pub fn getNamedAnnotationExp<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inPath: Arc<Absyn::Path>, mut inProgram: Absyn::Program, mut id: Arc<Absyn::Path>, mut default: Option<T>, mut f: Arc<dyn ::std::ops::Fn(Option<Arc<Absyn::Modification>>) -> Result<T> + 'static>) -> Result<T> {
     pub type ModFunc<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Option<Arc<Absyn::Modification>>) -> Result<T> + 'static>;
 
     let mut outString: T;

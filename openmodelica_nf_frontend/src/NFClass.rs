@@ -125,7 +125,7 @@ pub enum NFClass {
     },
 }
 impl metamodelica::gc::MMTrace for NFClass {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             NFClass::NOT_INSTANTIATED => Ok(()),
             NFClass::PARTIAL_CLASS { elements, modifier, ccMod, prefixes } => {
@@ -215,7 +215,7 @@ pub mod Prefixes {
     }
 
     impl metamodelica::gc::MMTrace for Prefixes {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             metamodelica::gc::MMTrace::mm_accept(&self.encapsulatedPrefix, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.partialPrefix, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.finalPrefix, __mmv)?;

@@ -112,7 +112,7 @@ pub enum Visualization {
     },
 }
 impl metamodelica::gc::MMTrace for Visualization {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             Visualization::SHAPE { ident, shapeType, T, r, r_shape, lengthDir, widthDir, length, width, height, extra, color, specularCoeff } => {
                 metamodelica::gc::MMTrace::mm_accept(ident, __mmv)?;

@@ -57,7 +57,7 @@ pub enum CallingScope {
     TYPE_CALL,
 }
 impl metamodelica::gc::MMTrace for CallingScope {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             CallingScope::TOP_CALL => Ok(()),
             CallingScope::INNER_CALL => Ok(()),
@@ -84,7 +84,7 @@ pub enum SearchStrategy {
     SEARCH_ALSO_BUILTIN,
 }
 impl metamodelica::gc::MMTrace for SearchStrategy {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             SearchStrategy::SEARCH_LOCAL_ONLY => Ok(()),
             SearchStrategy::SEARCH_ALSO_BUILTIN => Ok(()),
@@ -103,7 +103,7 @@ pub struct SplicedExpData {
 }
 
 impl metamodelica::gc::MMTrace for SplicedExpData {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.splicedExp, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.identType, __mmv)?;
         Ok(())

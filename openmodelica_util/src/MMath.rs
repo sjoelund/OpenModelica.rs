@@ -53,7 +53,7 @@ pub struct Rational {
 }
 
 impl metamodelica::gc::MMTrace for Rational {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.nom, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.denom, __mmv)?;
         Ok(())

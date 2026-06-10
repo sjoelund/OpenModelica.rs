@@ -1590,7 +1590,7 @@ pub fn isImport(mut element: Arc<SCode::Element>) -> bool {
     isImport
 }
 
-pub fn foldEquations<ArgT: Clone + 'static>(mut inEquation: Arc<SCode::Equation>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, ArgT) -> Result<ArgT> + 'static>, mut inArg: ArgT) -> Result<ArgT> {
+pub fn foldEquations<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inEquation: Arc<SCode::Equation>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, ArgT) -> Result<ArgT> + 'static>, mut inArg: ArgT) -> Result<ArgT> {
     pub type FoldFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, ArgT) -> Result<ArgT> + 'static>;
 
     let mut outArg: ArgT;
@@ -1618,7 +1618,7 @@ pub fn foldEquations<ArgT: Clone + 'static>(mut inEquation: Arc<SCode::Equation>
     Ok(outArg)
 }
 
-pub fn foldEquationsExps<ArgT: Clone + 'static>(mut inEquation: Arc<SCode::Equation>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<ArgT> + 'static>, mut inArg: ArgT) -> Result<ArgT> {
+pub fn foldEquationsExps<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inEquation: Arc<SCode::Equation>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<ArgT> + 'static>, mut inArg: ArgT) -> Result<ArgT> {
     pub type FoldFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<ArgT> + 'static>;
 
     let mut outArg: ArgT = inArg.clone();
@@ -1689,7 +1689,7 @@ pub fn foldEquationsExps<ArgT: Clone + 'static>(mut inEquation: Arc<SCode::Equat
     Ok(outArg)
 }
 
-pub fn foldStatementsExps<ArgT: Clone + 'static>(mut inStatement: Arc<SCode::Statement>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<ArgT> + 'static>, mut inArg: ArgT) -> Result<ArgT> {
+pub fn foldStatementsExps<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inStatement: Arc<SCode::Statement>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<ArgT> + 'static>, mut inArg: ArgT) -> Result<ArgT> {
     pub type FoldFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<ArgT> + 'static>;
 
     let mut outArg: ArgT = inArg.clone();
@@ -1788,7 +1788,7 @@ pub fn foldStatementsExps<ArgT: Clone + 'static>(mut inStatement: Arc<SCode::Sta
     Ok(outArg)
 }
 
-pub fn mapFoldEquationsList<ArgT: Clone + 'static>(mut eql: Arc<metamodelica::List<Arc<SCode::Equation>>>, mut traverser: Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, ArgT) -> Result<(Arc<SCode::Equation>, ArgT)> + 'static>, mut arg: ArgT) -> Result<(Arc<metamodelica::List<Arc<SCode::Equation>>>, ArgT)> {
+pub fn mapFoldEquationsList<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut eql: Arc<metamodelica::List<Arc<SCode::Equation>>>, mut traverser: Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, ArgT) -> Result<(Arc<SCode::Equation>, ArgT)> + 'static>, mut arg: ArgT) -> Result<(Arc<metamodelica::List<Arc<SCode::Equation>>>, ArgT)> {
     pub type TraverseFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, ArgT) -> Result<(Arc<SCode::Equation>, ArgT)> + 'static>;
 
     let mut eql: Arc<metamodelica::List<Arc<SCode::Equation>>> = eql;
@@ -1797,7 +1797,7 @@ pub fn mapFoldEquationsList<ArgT: Clone + 'static>(mut eql: Arc<metamodelica::Li
     Ok((eql, arg))
 }
 
-pub fn mapFoldEquations<ArgT: Clone + 'static>(mut eq: Arc<SCode::Equation>, mut traverser: Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, ArgT) -> Result<(Arc<SCode::Equation>, ArgT)> + 'static>, mut arg: ArgT) -> Result<(Arc<SCode::Equation>, ArgT)> {
+pub fn mapFoldEquations<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut eq: Arc<SCode::Equation>, mut traverser: Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, ArgT) -> Result<(Arc<SCode::Equation>, ArgT)> + 'static>, mut arg: ArgT) -> Result<(Arc<SCode::Equation>, ArgT)> {
     pub type TraverseFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, ArgT) -> Result<(Arc<SCode::Equation>, ArgT)> + 'static>;
 
     let mut eq: Arc<SCode::Equation> = eq;
@@ -1832,7 +1832,7 @@ pub fn mapFoldEquations<ArgT: Clone + 'static>(mut eq: Arc<SCode::Equation>, mut
     Ok((eq, arg))
 }
 
-fn mapFoldElseWhenEquations<ArgT: Clone + 'static>(mut elseWhen: (Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Equation>>>), mut traverser: Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, ArgT) -> Result<(Arc<SCode::Equation>, ArgT)> + 'static>, mut arg: ArgT) -> Result<((Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Equation>>>), ArgT)> {
+fn mapFoldElseWhenEquations<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut elseWhen: (Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Equation>>>), mut traverser: Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, ArgT) -> Result<(Arc<SCode::Equation>, ArgT)> + 'static>, mut arg: ArgT) -> Result<((Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Equation>>>), ArgT)> {
     pub type TraverseFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, ArgT) -> Result<(Arc<SCode::Equation>, ArgT)> + 'static>;
 
     let mut elseWhen: (Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Equation>>>) = elseWhen;
@@ -1845,7 +1845,7 @@ fn mapFoldElseWhenEquations<ArgT: Clone + 'static>(mut elseWhen: (Arc<Absyn::Exp
     Ok((elseWhen, arg))
 }
 
-pub fn mapFoldEquationListExps<ArgT: Clone + 'static>(mut inEquations: Arc<metamodelica::List<Arc<SCode::Equation>>>, mut traverser: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<(Arc<Absyn::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> Result<(Arc<metamodelica::List<Arc<SCode::Equation>>>, ArgT)> {
+pub fn mapFoldEquationListExps<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inEquations: Arc<metamodelica::List<Arc<SCode::Equation>>>, mut traverser: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<(Arc<Absyn::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> Result<(Arc<metamodelica::List<Arc<SCode::Equation>>>, ArgT)> {
     pub type TraverseFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<(Arc<Absyn::Exp>, ArgT)> + 'static>;
 
     let mut outEquations: Arc<metamodelica::List<Arc<SCode::Equation>>>;
@@ -1854,7 +1854,7 @@ pub fn mapFoldEquationListExps<ArgT: Clone + 'static>(mut inEquations: Arc<metam
     Ok((outEquations, outArg))
 }
 
-pub fn mapFoldEquationExps<ArgT: Clone + 'static>(mut eq: Arc<SCode::Equation>, mut traverser: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<(Arc<Absyn::Exp>, ArgT)> + 'static>, mut arg: ArgT) -> Result<(Arc<SCode::Equation>, ArgT)> {
+pub fn mapFoldEquationExps<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut eq: Arc<SCode::Equation>, mut traverser: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<(Arc<Absyn::Exp>, ArgT)> + 'static>, mut arg: ArgT) -> Result<(Arc<SCode::Equation>, ArgT)> {
     pub type TraverseFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<(Arc<Absyn::Exp>, ArgT)> + 'static>;
 
     let mut eq: Arc<SCode::Equation> = eq;
@@ -1932,7 +1932,7 @@ pub fn mapFoldEquationExps<ArgT: Clone + 'static>(mut eq: Arc<SCode::Equation>, 
     Ok((eq, arg))
 }
 
-fn mapFoldComponentRefExps<ArgT: Clone + 'static>(mut inCref: Arc<Absyn::ComponentRef>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<(Arc<Absyn::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> Result<(Arc<Absyn::ComponentRef>, ArgT)> {
+fn mapFoldComponentRefExps<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inCref: Arc<Absyn::ComponentRef>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<(Arc<Absyn::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> Result<(Arc<Absyn::ComponentRef>, ArgT)> {
     pub type TraverseFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<(Arc<Absyn::Exp>, ArgT)> + 'static>;
 
     let mut outCref: Arc<Absyn::ComponentRef>;
@@ -1966,7 +1966,7 @@ fn mapFoldComponentRefExps<ArgT: Clone + 'static>(mut inCref: Arc<Absyn::Compone
     Ok((outCref, outArg))
 }
 
-fn mapFoldSubscriptExps<ArgT: Clone + 'static>(mut inSubscript: Arc<Absyn::Subscript>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<(Arc<Absyn::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> Result<(Arc<Absyn::Subscript>, ArgT)> {
+fn mapFoldSubscriptExps<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inSubscript: Arc<Absyn::Subscript>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<(Arc<Absyn::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> Result<(Arc<Absyn::Subscript>, ArgT)> {
     pub type TraverseFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<(Arc<Absyn::Exp>, ArgT)> + 'static>;
 
     let mut outSubscript: Arc<Absyn::Subscript>;
@@ -1986,7 +1986,7 @@ fn mapFoldSubscriptExps<ArgT: Clone + 'static>(mut inSubscript: Arc<Absyn::Subsc
     Ok((outSubscript, outArg))
 }
 
-fn mapFoldElseWhenExps<ArgT: Clone + 'static>(mut inElseWhen: (Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Equation>>>), mut traverser: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<(Arc<Absyn::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> Result<((Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Equation>>>), ArgT)> {
+fn mapFoldElseWhenExps<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inElseWhen: (Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Equation>>>), mut traverser: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<(Arc<Absyn::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> Result<((Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Equation>>>), ArgT)> {
     pub type TraverseFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<(Arc<Absyn::Exp>, ArgT)> + 'static>;
 
     let mut outElseWhen: (Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Equation>>>);
@@ -1999,7 +1999,7 @@ fn mapFoldElseWhenExps<ArgT: Clone + 'static>(mut inElseWhen: (Arc<Absyn::Exp>, 
     Ok((outElseWhen, outArg))
 }
 
-fn mapFoldForIteratorExps<ArgT: Clone + 'static>(mut inIterator: Arc<Absyn::ForIterator>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<(Arc<Absyn::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> Result<(Arc<Absyn::ForIterator>, ArgT)> {
+fn mapFoldForIteratorExps<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inIterator: Arc<Absyn::ForIterator>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<(Arc<Absyn::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> Result<(Arc<Absyn::ForIterator>, ArgT)> {
     pub type TraverseFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<(Arc<Absyn::Exp>, ArgT)> + 'static>;
 
     let mut outIterator: Arc<Absyn::ForIterator>;
@@ -2033,7 +2033,7 @@ fn mapFoldForIteratorExps<ArgT: Clone + 'static>(mut inIterator: Arc<Absyn::ForI
     Ok((outIterator, outArg))
 }
 
-pub fn mapFoldStatementsList<ArgT: Clone + 'static>(mut statements: Arc<metamodelica::List<Arc<SCode::Statement>>>, mut traverser: Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, ArgT) -> Result<(Arc<SCode::Statement>, ArgT)> + 'static>, mut arg: ArgT) -> Result<(Arc<metamodelica::List<Arc<SCode::Statement>>>, ArgT)> {
+pub fn mapFoldStatementsList<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut statements: Arc<metamodelica::List<Arc<SCode::Statement>>>, mut traverser: Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, ArgT) -> Result<(Arc<SCode::Statement>, ArgT)> + 'static>, mut arg: ArgT) -> Result<(Arc<metamodelica::List<Arc<SCode::Statement>>>, ArgT)> {
     pub type TraverseFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, ArgT) -> Result<(Arc<SCode::Statement>, ArgT)> + 'static>;
 
     let mut statements: Arc<metamodelica::List<Arc<SCode::Statement>>> = statements;
@@ -2042,7 +2042,7 @@ pub fn mapFoldStatementsList<ArgT: Clone + 'static>(mut statements: Arc<metamode
     Ok((statements, arg))
 }
 
-pub fn mapFoldStatements<ArgT: Clone + 'static>(mut stmt: Arc<SCode::Statement>, mut traverser: Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, ArgT) -> Result<(Arc<SCode::Statement>, ArgT)> + 'static>, mut arg: ArgT) -> Result<(Arc<SCode::Statement>, ArgT)> {
+pub fn mapFoldStatements<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut stmt: Arc<SCode::Statement>, mut traverser: Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, ArgT) -> Result<(Arc<SCode::Statement>, ArgT)> + 'static>, mut arg: ArgT) -> Result<(Arc<SCode::Statement>, ArgT)> {
     pub type TraverseFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, ArgT) -> Result<(Arc<SCode::Statement>, ArgT)> + 'static>;
 
     let mut stmt: Arc<SCode::Statement> = stmt;
@@ -2091,7 +2091,7 @@ pub fn mapFoldStatements<ArgT: Clone + 'static>(mut stmt: Arc<SCode::Statement>,
     Ok((stmt, arg))
 }
 
-fn mapFoldBranchStatements<ArgT: Clone + 'static>(mut branch: (Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Statement>>>), mut traverser: Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, ArgT) -> Result<(Arc<SCode::Statement>, ArgT)> + 'static>, mut arg: ArgT) -> Result<((Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Statement>>>), ArgT)> {
+fn mapFoldBranchStatements<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut branch: (Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Statement>>>), mut traverser: Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, ArgT) -> Result<(Arc<SCode::Statement>, ArgT)> + 'static>, mut arg: ArgT) -> Result<((Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Statement>>>), ArgT)> {
     pub type TraverseFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, ArgT) -> Result<(Arc<SCode::Statement>, ArgT)> + 'static>;
 
     let mut branch: (Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Statement>>>) = branch;
@@ -2104,7 +2104,7 @@ fn mapFoldBranchStatements<ArgT: Clone + 'static>(mut branch: (Arc<Absyn::Exp>, 
     Ok((branch, arg))
 }
 
-pub fn mapFoldStatementListExps<ArgT: Clone + 'static>(mut inStatements: Arc<metamodelica::List<Arc<SCode::Statement>>>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<(Arc<Absyn::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> Result<(Arc<metamodelica::List<Arc<SCode::Statement>>>, ArgT)> {
+pub fn mapFoldStatementListExps<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inStatements: Arc<metamodelica::List<Arc<SCode::Statement>>>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<(Arc<Absyn::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> Result<(Arc<metamodelica::List<Arc<SCode::Statement>>>, ArgT)> {
     pub type TraverseFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<(Arc<Absyn::Exp>, ArgT)> + 'static>;
 
     let mut outStatements: Arc<metamodelica::List<Arc<SCode::Statement>>>;
@@ -2113,7 +2113,7 @@ pub fn mapFoldStatementListExps<ArgT: Clone + 'static>(mut inStatements: Arc<met
     Ok((outStatements, outArg))
 }
 
-pub fn mapFoldStatementExps<ArgT: Clone + 'static>(mut inStatement: Arc<SCode::Statement>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<(Arc<Absyn::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> Result<(Arc<SCode::Statement>, ArgT)> {
+pub fn mapFoldStatementExps<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inStatement: Arc<SCode::Statement>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<(Arc<Absyn::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> Result<(Arc<SCode::Statement>, ArgT)> {
     pub type TraverseFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<(Arc<Absyn::Exp>, ArgT)> + 'static>;
 
     let mut outStatement: Arc<SCode::Statement>;
@@ -2197,7 +2197,7 @@ pub fn mapFoldStatementExps<ArgT: Clone + 'static>(mut inStatement: Arc<SCode::S
     Ok((outStatement, outArg))
 }
 
-fn mapFoldBranchExps<ArgT: Clone + 'static>(mut inBranch: (Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Statement>>>), mut traverser: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<(Arc<Absyn::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> Result<((Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Statement>>>), ArgT)> {
+fn mapFoldBranchExps<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inBranch: (Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Statement>>>), mut traverser: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<(Arc<Absyn::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> Result<((Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Statement>>>), ArgT)> {
     pub type TraverseFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<(Arc<Absyn::Exp>, ArgT)> + 'static>;
 
     let mut outBranch: (Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Statement>>>);

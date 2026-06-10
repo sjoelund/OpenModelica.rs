@@ -75,7 +75,7 @@ pub enum NFRangeIterator {
     },
 }
 impl metamodelica::gc::MMTrace for NFRangeIterator {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             NFRangeIterator::INT_RANGE { current, last } => {
                 metamodelica::gc::MMTrace::mm_accept(current, __mmv)?;
@@ -286,7 +286,7 @@ pub fn toListReverse(mut iterator: Arc<NFRangeIterator>) -> Result<Arc<metamodel
     Ok(expl)
 }
 
-pub fn map<T: Clone + 'static>(mut iterator: Arc<NFRangeIterator>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<T> + 'static>) -> Result<Arc<metamodelica::List<T>>> {
+pub fn map<T: Clone + 'static + metamodelica::gc::MMTrace>(mut iterator: Arc<NFRangeIterator>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<T> + 'static>) -> Result<Arc<metamodelica::List<T>>> {
     pub type FuncT<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<T> + 'static>;
 
     let mut lst: Arc<metamodelica::List<T>> = metamodelica::nil();
@@ -300,7 +300,7 @@ pub fn map<T: Clone + 'static>(mut iterator: Arc<NFRangeIterator>, mut func: Arc
     Ok(lst)
 }
 
-pub fn fold<ArgT: Clone + 'static>(mut iterator: Arc<NFRangeIterator>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
+pub fn fold<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut iterator: Arc<NFRangeIterator>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
     pub type FuncT<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>;
 
     let mut arg: ArgT = arg;

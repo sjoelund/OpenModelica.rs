@@ -126,7 +126,7 @@ pub enum NFEquation {
     },
 }
 impl metamodelica::gc::MMTrace for NFEquation {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             NFEquation::EQUALITY { lhs, rhs, ty, scope, source, scalarizeMode } => {
                 metamodelica::gc::MMTrace::mm_accept(lhs, __mmv)?;
@@ -219,7 +219,7 @@ pub mod Branch {
         },
     }
     impl metamodelica::gc::MMTrace for Branch {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             match self {
                 Branch::BRANCH { condition, conditionVar, body } => {
                     metamodelica::gc::MMTrace::mm_accept(condition, __mmv)?;
@@ -374,7 +374,7 @@ impl Ord for ScalarizeMode {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 impl metamodelica::gc::MMTrace for ScalarizeMode {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+    fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 
 pub fn makeEquality(mut lhs: Arc<Expression::NFExpression>, mut rhs: Arc<Expression::NFExpression>, mut ty: Arc<Type::NFType>, mut src: Arc<DAE::ElementSource>, mut scope: Arc<InstNode::InstNode>, mut scalarizeMode: ScalarizeMode) -> Arc<NFEquation> {
@@ -959,7 +959,7 @@ pub fn mapExpShallow(mut eq: Arc<NFEquation>, mut func: Arc<dyn ::std::ops::Fn(A
     Ok(eq)
 }
 
-pub fn foldExpList<ArgT: Clone + 'static>(mut eq: Arc<metamodelica::List<Arc<NFEquation>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
+pub fn foldExpList<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut eq: Arc<metamodelica::List<Arc<NFEquation>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
     pub type FoldFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>;
 
     let mut arg: ArgT = arg;
@@ -970,7 +970,7 @@ pub fn foldExpList<ArgT: Clone + 'static>(mut eq: Arc<metamodelica::List<Arc<NFE
     Ok(arg)
 }
 
-pub fn foldExp<ArgT: Clone + 'static>(mut eq: Arc<NFEquation>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
+pub fn foldExp<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut eq: Arc<NFEquation>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
     pub type FoldFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>;
 
     let mut arg: ArgT = arg;

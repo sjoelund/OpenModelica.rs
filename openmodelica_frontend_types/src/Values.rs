@@ -123,7 +123,7 @@ pub enum Value {
     },
 }
 impl metamodelica::gc::MMTrace for Value {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             Value::INTEGER { integer } => {
                 metamodelica::gc::MMTrace::mm_accept(integer, __mmv)?;
@@ -225,7 +225,7 @@ pub enum IntRealOp {
     LESSEQOP,
 }
 impl metamodelica::gc::MMTrace for IntRealOp {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             IntRealOp::MULOP => Ok(()),
             IntRealOp::DIVOP => Ok(()),

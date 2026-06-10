@@ -1949,7 +1949,7 @@ pub fn debugStrEqnStrEqnStr(mut a: ArcStr, mut b: Arc<BackendDAE::Equation>, mut
     Ok(())
 }
 
-pub fn debuglst<Type_a: Clone + 'static>(mut lst: Arc<metamodelica::List<Type_a>>, mut f: Arc<dyn ::std::ops::Fn(Type_a) -> Result<ArcStr> + 'static>, mut c: ArcStr, mut se: ArcStr) -> Result<()> {
+pub fn debuglst<Type_a: Clone + 'static + metamodelica::gc::MMTrace>(mut lst: Arc<metamodelica::List<Type_a>>, mut f: Arc<dyn ::std::ops::Fn(Type_a) -> Result<ArcStr> + 'static>, mut c: ArcStr, mut se: ArcStr) -> Result<()> {
     pub type FuncTypeType_aToStr<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Type_a) -> Result<ArcStr> + 'static>;
 
     let () = (::match_deref::match_deref! { match &(lst.clone()) {
@@ -1979,7 +1979,7 @@ pub fn debuglst<Type_a: Clone + 'static>(mut lst: Arc<metamodelica::List<Type_a>
 // These section should be empty. Feel free to sort these functions into one of
 // the upper sections.
 // =============================================================================
-pub fn printCallFunction2StrDIVISION<Type_a: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut stringDelimiter: ArcStr, mut opcreffunc: Option<(Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Type_a) -> Result<ArcStr> + 'static>, Type_a)>) -> Result<ArcStr> {
+pub fn printCallFunction2StrDIVISION<Type_a: Clone + 'static + metamodelica::gc::MMTrace>(mut inExp: Arc<DAE::Exp>, mut stringDelimiter: ArcStr, mut opcreffunc: Option<(Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Type_a) -> Result<ArcStr> + 'static>, Type_a)>) -> Result<ArcStr> {
     pub type strongComponentStringRefStrFunc<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Type_a) -> Result<ArcStr> + 'static>;
 
     let mut outString: ArcStr;
@@ -2119,7 +2119,7 @@ pub fn dumpWhenOperatorStr(mut inWhenOperator: BackendDAE::WhenOperator) -> Resu
     Ok(outString)
 }
 
-pub fn dumpOption<Type_A: Clone + 'static>(mut inType: Option<Type_A>, mut infunc: Arc<dyn ::std::ops::Fn(Type_A) -> Result<()> + 'static>) -> Result<()> {
+pub fn dumpOption<Type_A: Clone + 'static + metamodelica::gc::MMTrace>(mut inType: Option<Type_A>, mut infunc: Arc<dyn ::std::ops::Fn(Type_A) -> Result<()> + 'static>) -> Result<()> {
     pub type printType_A<Type_A: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Type_A) -> Result<()> + 'static>;
 
     let () = (match inType.clone() {
@@ -3582,7 +3582,7 @@ fn dumpCompMixed(mut mixedTpl: DumpCompShortMixedTpl) -> Result<()> {
     Ok(())
 }
 
-fn equationSizesStr<A: Clone + 'static>(mut eqs: Arc<metamodelica::List<A>>, mut r#fn: Arc<dyn ::std::ops::Fn(A) -> Result<ArcStr> + 'static>) -> Result<ArcStr> {
+fn equationSizesStr<A: Clone + 'static + metamodelica::gc::MMTrace>(mut eqs: Arc<metamodelica::List<A>>, mut r#fn: Arc<dyn ::std::ops::Fn(A) -> Result<ArcStr> + 'static>) -> Result<ArcStr> {
     pub type AToStr<A: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(A) -> Result<ArcStr> + 'static>;
 
     let mut r#str: ArcStr;

@@ -61,7 +61,7 @@ pub struct UnorderedSet<T: Clone> {
 }
 
 impl<T: Clone + metamodelica::gc::MMTrace> metamodelica::gc::MMTrace for UnorderedSet<T> {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.buckets, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.size, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.hashFn, __mmv)?;
@@ -94,7 +94,7 @@ impl<T: Clone + 'static + std::fmt::Debug> std::fmt::Debug for UnorderedSet<T> {
     }
 }
 
-impl<T: Clone> Default for UnorderedSet<T> {
+impl<T: Clone + 'static + metamodelica::gc::MMTrace> Default for UnorderedSet<T> {
     fn default() -> Self {
         Self {
             buckets: Default::default(),
@@ -111,7 +111,7 @@ pub type Hash<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T) -> Resu
 
 pub type KeyEq<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>;
 
-pub fn new<T: Clone + 'static>(mut hash: Arc<dyn ::std::ops::Fn(T) -> Result<i32> + 'static>, mut keyEq: Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>, mut bucketCount: i32) -> Arc<UnorderedSet<T>> {
+pub fn new<T: Clone + 'static + metamodelica::gc::MMTrace>(mut hash: Arc<dyn ::std::ops::Fn(T) -> Result<i32> + 'static>, mut keyEq: Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>, mut bucketCount: i32) -> Arc<UnorderedSet<T>> {
     let mut set: Arc<UnorderedSet<T>>;
     let mut buckets: Mutable::Mutable<metamodelica::Array<Arc<metamodelica::List<T>>>>;
     buckets = Mutable::create(arrayCreate(bucketCount.clone(), metamodelica::nil()));
@@ -119,7 +119,7 @@ pub fn new<T: Clone + 'static>(mut hash: Arc<dyn ::std::ops::Fn(T) -> Result<i32
     set
 }
 
-pub fn fromList<T: Clone + 'static>(mut elements: Arc<metamodelica::List<T>>, mut hash: Arc<dyn ::std::ops::Fn(T) -> Result<i32> + 'static>, mut keyEq: Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>) -> Result<Arc<UnorderedSet<T>>> {
+pub fn fromList<T: Clone + 'static + metamodelica::gc::MMTrace>(mut elements: Arc<metamodelica::List<T>>, mut hash: Arc<dyn ::std::ops::Fn(T) -> Result<i32> + 'static>, mut keyEq: Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>) -> Result<Arc<UnorderedSet<T>>> {
     let mut set: Arc<UnorderedSet<T>>;
     set = new(hash.clone(), keyEq.clone(), Util::nextPrime((elements.clone().len() as i32)));
     for mut e in &*elements.clone() {
@@ -129,13 +129,13 @@ pub fn fromList<T: Clone + 'static>(mut elements: Arc<metamodelica::List<T>>, mu
     Ok(set)
 }
 
-pub fn copy<T: Clone + 'static>(mut set: Arc<UnorderedSet<T>>) -> Arc<UnorderedSet<T>> {
+pub fn copy<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set: Arc<UnorderedSet<T>>) -> Arc<UnorderedSet<T>> {
     let mut outSet: Arc<UnorderedSet<T>>;
     outSet = Arc::new(UnorderedSet { buckets: Mutable::create(metamodelica::arrayFromVec(Mutable::access(set.buckets.clone()).borrow().clone())), size: Mutable::create(Mutable::access(set.size.clone())), hashFn: set.hashFn.clone(), eqFn: set.eqFn.clone() });
     outSet
 }
 
-pub fn add<T: Clone + 'static>(mut key: T, mut set: Arc<UnorderedSet<T>>) -> Result<()> {
+pub fn add<T: Clone + 'static + metamodelica::gc::MMTrace>(mut key: T, mut set: Arc<UnorderedSet<T>>) -> Result<()> {
     let mut hash: i32;
     let mut okey: Option<T>;
     (okey, hash) = find(key.clone(), set.clone())?;
@@ -145,7 +145,7 @@ pub fn add<T: Clone + 'static>(mut key: T, mut set: Arc<UnorderedSet<T>>) -> Res
     Ok(())
 }
 
-pub fn addNew<T: Clone + 'static>(mut key: T, mut set: Arc<UnorderedSet<T>>) -> Result<()> {
+pub fn addNew<T: Clone + 'static + metamodelica::gc::MMTrace>(mut key: T, mut set: Arc<UnorderedSet<T>>) -> Result<()> {
     let mut hashfn: Hash<T> = set.hashFn.clone();
     let mut hash: i32;
     hash = intMod(hashfn(key.clone())?, metamodelica::arrayLength(Mutable::access(set.buckets.clone())));
@@ -153,7 +153,7 @@ pub fn addNew<T: Clone + 'static>(mut key: T, mut set: Arc<UnorderedSet<T>>) -> 
     Ok(())
 }
 
-pub fn addUnique<T: Clone + 'static>(mut key: T, mut set: Arc<UnorderedSet<T>>) -> Result<()> {
+pub fn addUnique<T: Clone + 'static + metamodelica::gc::MMTrace>(mut key: T, mut set: Arc<UnorderedSet<T>>) -> Result<()> {
     let mut hash: i32;
     let __pa0 = ::match_deref::match_deref! { match &(find(key.clone(), set.clone())?) {
         (None, __pa0) => __pa0.clone(),
@@ -164,7 +164,7 @@ pub fn addUnique<T: Clone + 'static>(mut key: T, mut set: Arc<UnorderedSet<T>>) 
     Ok(())
 }
 
-pub fn remove<T: Clone + 'static>(mut key: T, mut set: Arc<UnorderedSet<T>>) -> Result<bool> {
+pub fn remove<T: Clone + 'static + metamodelica::gc::MMTrace>(mut key: T, mut set: Arc<UnorderedSet<T>>) -> Result<bool> {
     let mut removed: bool;
     let mut buckets: metamodelica::Array<Arc<metamodelica::List<T>>> = Mutable::access(set.buckets.clone());
     let mut hashfn: Hash<T> = set.hashFn.clone();
@@ -183,13 +183,13 @@ pub fn remove<T: Clone + 'static>(mut key: T, mut set: Arc<UnorderedSet<T>>) -> 
     Ok(removed)
 }
 
-pub fn get<T: Clone + 'static>(mut key: T, mut set: Arc<UnorderedSet<T>>) -> Result<Option<T>> {
+pub fn get<T: Clone + 'static + metamodelica::gc::MMTrace>(mut key: T, mut set: Arc<UnorderedSet<T>>) -> Result<Option<T>> {
     let mut outKey: Option<T>;
     (outKey, _) = find(key.clone(), set.clone())?;
     Ok(outKey)
 }
 
-pub fn getOrFail<T: Clone + 'static>(mut key: T, mut set: Arc<UnorderedSet<T>>) -> Result<T> {
+pub fn getOrFail<T: Clone + 'static + metamodelica::gc::MMTrace>(mut key: T, mut set: Arc<UnorderedSet<T>>) -> Result<T> {
     let mut outKey: T;
     let mut okey: Option<T>;
     (okey, _) = find(key.clone(), set.clone())?;
@@ -201,13 +201,13 @@ pub fn getOrFail<T: Clone + 'static>(mut key: T, mut set: Arc<UnorderedSet<T>>) 
     Ok(outKey)
 }
 
-pub fn contains<T: Clone + 'static>(mut key: T, mut set: Arc<UnorderedSet<T>>) -> Result<bool> {
+pub fn contains<T: Clone + 'static + metamodelica::gc::MMTrace>(mut key: T, mut set: Arc<UnorderedSet<T>>) -> Result<bool> {
     let mut res: bool;
     res = isSome((find(key.clone(), set.clone())?).0);
     Ok(res)
 }
 
-pub fn first<T: Clone + 'static>(mut set: Arc<UnorderedSet<T>>) -> Result<T> {
+pub fn first<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set: Arc<UnorderedSet<T>>) -> Result<T> {
     let mut val: T;
     let __range0 = Mutable::access(set.buckets.clone()).borrow().iter().cloned().collect::<Vec<_>>();
     for mut b in __range0 {
@@ -221,7 +221,7 @@ pub fn first<T: Clone + 'static>(mut set: Arc<UnorderedSet<T>>) -> Result<T> {
     Ok(val)
 }
 
-pub fn isEqual<T: Clone + 'static>(mut set1: Arc<UnorderedSet<T>>, mut set2: Arc<UnorderedSet<T>>) -> Result<bool> {
+pub fn isEqual<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set1: Arc<UnorderedSet<T>>, mut set2: Arc<UnorderedSet<T>>) -> Result<bool> {
     let mut equal: bool = true;
     if Mutable::access(set1.size.clone()) != Mutable::access(set2.size.clone()) {
         equal = false;
@@ -240,7 +240,7 @@ pub fn isEqual<T: Clone + 'static>(mut set1: Arc<UnorderedSet<T>>, mut set2: Arc
     Ok(equal)
 }
 
-pub fn toList<T: Clone + 'static>(mut set: Arc<UnorderedSet<T>>) -> Arc<metamodelica::List<T>> {
+pub fn toList<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set: Arc<UnorderedSet<T>>) -> Arc<metamodelica::List<T>> {
     let mut outList: Arc<metamodelica::List<T>> = metamodelica::nil();
     let __range0 = Mutable::access(set.buckets.clone()).borrow().iter().cloned().collect::<Vec<_>>();
     for mut b in __range0 {
@@ -252,7 +252,7 @@ pub fn toList<T: Clone + 'static>(mut set: Arc<UnorderedSet<T>>) -> Arc<metamode
     outList
 }
 
-pub fn toArray<T: Clone + 'static + Default>(mut set: Arc<UnorderedSet<T>>) -> metamodelica::Array<T> {
+pub fn toArray<T: Clone + 'static + metamodelica::gc::MMTrace + Default>(mut set: Arc<UnorderedSet<T>>) -> metamodelica::Array<T> {
     let mut outArray: metamodelica::Array<T>;
     let mut dummy: T;
     let mut i: i32 = 1;
@@ -268,7 +268,7 @@ pub fn toArray<T: Clone + 'static + Default>(mut set: Arc<UnorderedSet<T>>) -> m
     outArray
 }
 
-pub fn fold<T: Clone + 'static, FT: Clone + 'static>(mut set: Arc<UnorderedSet<T>>, mut r#fn: Arc<dyn ::std::ops::Fn(T, FT) -> Result<FT> + 'static>, mut startValue: FT) -> Result<FT> {
+pub fn fold<T: Clone + 'static + metamodelica::gc::MMTrace, FT: Clone + 'static + metamodelica::gc::MMTrace>(mut set: Arc<UnorderedSet<T>>, mut r#fn: Arc<dyn ::std::ops::Fn(T, FT) -> Result<FT> + 'static>, mut startValue: FT) -> Result<FT> {
     pub type FoldFn<T: Clone + 'static, FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T, FT) -> Result<FT> + 'static>;
 
     let mut result: FT = startValue.clone();
@@ -282,7 +282,7 @@ pub fn fold<T: Clone + 'static, FT: Clone + 'static>(mut set: Arc<UnorderedSet<T
     Ok(result)
 }
 
-pub fn apply<T: Clone + 'static>(mut set: Arc<UnorderedSet<T>>, mut r#fn: Arc<dyn ::std::ops::Fn(T) -> Result<T> + 'static>) -> Result<()> {
+pub fn apply<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set: Arc<UnorderedSet<T>>, mut r#fn: Arc<dyn ::std::ops::Fn(T) -> Result<T> + 'static>) -> Result<()> {
     pub type ApplyFn<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T) -> Result<T> + 'static>;
 
     let mut hashfn: Hash<T> = set.hashFn.clone();
@@ -322,7 +322,7 @@ pub fn apply<T: Clone + 'static>(mut set: Arc<UnorderedSet<T>>, mut r#fn: Arc<dy
     Ok(())
 }
 
-pub fn all<T: Clone + 'static>(mut set: Arc<UnorderedSet<T>>, mut r#fn: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>) -> Result<bool> {
+pub fn all<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set: Arc<UnorderedSet<T>>, mut r#fn: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>) -> Result<bool> {
     pub type PredFn<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>;
 
     let mut res: bool;
@@ -344,7 +344,7 @@ pub fn all<T: Clone + 'static>(mut set: Arc<UnorderedSet<T>>, mut r#fn: Arc<dyn 
     Ok(res)
 }
 
-pub fn any<T: Clone + 'static>(mut set: Arc<UnorderedSet<T>>, mut r#fn: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>) -> Result<bool> {
+pub fn any<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set: Arc<UnorderedSet<T>>, mut r#fn: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>) -> Result<bool> {
     pub type PredFn<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>;
 
     let mut res: bool;
@@ -366,7 +366,7 @@ pub fn any<T: Clone + 'static>(mut set: Arc<UnorderedSet<T>>, mut r#fn: Arc<dyn 
     Ok(res)
 }
 
-pub fn none<T: Clone + 'static>(mut set: Arc<UnorderedSet<T>>, mut r#fn: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>) -> Result<bool> {
+pub fn none<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set: Arc<UnorderedSet<T>>, mut r#fn: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>) -> Result<bool> {
     pub type PredFn<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>;
 
     let mut res: bool;
@@ -388,7 +388,7 @@ pub fn none<T: Clone + 'static>(mut set: Arc<UnorderedSet<T>>, mut r#fn: Arc<dyn
     Ok(res)
 }
 
-pub fn filterOnFalse<T: Clone + 'static>(mut set: Arc<UnorderedSet<T>>, mut r#fn: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>) -> Result<Arc<UnorderedSet<T>>> {
+pub fn filterOnFalse<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set: Arc<UnorderedSet<T>>, mut r#fn: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>) -> Result<Arc<UnorderedSet<T>>> {
     pub type PredFn<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>;
 
     let mut falseSet: Arc<UnorderedSet<T>> = new(set.hashFn.clone(), set.eqFn.clone(), 13);
@@ -404,7 +404,7 @@ pub fn filterOnFalse<T: Clone + 'static>(mut set: Arc<UnorderedSet<T>>, mut r#fn
     Ok(falseSet)
 }
 
-pub fn splitOnTrue<T: Clone + 'static>(mut set: Arc<UnorderedSet<T>>, mut r#fn: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>) -> Result<(Arc<UnorderedSet<T>>, Arc<UnorderedSet<T>>)> {
+pub fn splitOnTrue<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set: Arc<UnorderedSet<T>>, mut r#fn: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>) -> Result<(Arc<UnorderedSet<T>>, Arc<UnorderedSet<T>>)> {
     pub type PredFn<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>;
 
     let mut trueSet: Arc<UnorderedSet<T>> = new(set.hashFn.clone(), set.eqFn.clone(), 13);
@@ -419,27 +419,27 @@ pub fn splitOnTrue<T: Clone + 'static>(mut set: Arc<UnorderedSet<T>>, mut r#fn: 
     Ok((trueSet, falseSet))
 }
 
-pub fn size<T: Clone + 'static>(mut set: Arc<UnorderedSet<T>>) -> i32 {
+pub fn size<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set: Arc<UnorderedSet<T>>) -> i32 {
     let mut s: i32 = Mutable::access(set.size.clone());
     s
 }
 
-pub fn isEmpty<T: Clone + 'static>(mut set: Arc<UnorderedSet<T>>) -> bool {
+pub fn isEmpty<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set: Arc<UnorderedSet<T>>) -> bool {
     let mut empty: bool = Mutable::access(set.size.clone()) == 0;
     empty
 }
 
-pub fn bucketCount<T: Clone + 'static>(mut set: Arc<UnorderedSet<T>>) -> i32 {
+pub fn bucketCount<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set: Arc<UnorderedSet<T>>) -> i32 {
     let mut count: i32 = metamodelica::arrayLength(Mutable::access(set.buckets.clone()));
     count
 }
 
-pub fn loadFactor<T: Clone + 'static>(mut set: Arc<UnorderedSet<T>>) -> metamodelica::Real {
+pub fn loadFactor<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set: Arc<UnorderedSet<T>>) -> metamodelica::Real {
     let mut load: metamodelica::Real = intReal(Mutable::access(set.size.clone())) / metamodelica::OrderedFloat((bucketCount(set.clone())) as f64);
     load
 }
 
-pub fn rehash<T: Clone + 'static>(mut set: Arc<UnorderedSet<T>>) -> Result<()> {
+pub fn rehash<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set: Arc<UnorderedSet<T>>) -> Result<()> {
     let mut old_buckets: metamodelica::Array<Arc<metamodelica::List<T>>> = Mutable::access(set.buckets.clone());
     let mut new_buckets: metamodelica::Array<Arc<metamodelica::List<T>>>;
     let mut bucket_count: i32;
@@ -459,7 +459,7 @@ pub fn rehash<T: Clone + 'static>(mut set: Arc<UnorderedSet<T>>) -> Result<()> {
     Ok(())
 }
 
-pub fn toString<T: Clone + 'static + Default>(mut set: Arc<UnorderedSet<T>>, mut stringFn: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>, mut delimiter: ArcStr) -> Result<ArcStr> {
+pub fn toString<T: Clone + 'static + metamodelica::gc::MMTrace + Default>(mut set: Arc<UnorderedSet<T>>, mut stringFn: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>, mut delimiter: ArcStr) -> Result<ArcStr> {
     pub type StringFn<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>;
 
     let mut r#str: ArcStr;
@@ -474,7 +474,7 @@ pub fn toString<T: Clone + 'static + Default>(mut set: Arc<UnorderedSet<T>>, mut
     Ok(r#str)
 }
 
-pub fn dump<T: Clone + 'static + Default>(mut set: Arc<UnorderedSet<T>>, mut stringFn: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>) -> Result<()> {
+pub fn dump<T: Clone + 'static + metamodelica::gc::MMTrace + Default>(mut set: Arc<UnorderedSet<T>>, mut stringFn: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>) -> Result<()> {
     pub type StringFn<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>;
 
     metamodelica::print((toString(set.clone(), stringFn.clone(), (literal!("\n")).clone())?).clone());
@@ -482,12 +482,12 @@ pub fn dump<T: Clone + 'static + Default>(mut set: Arc<UnorderedSet<T>>, mut str
     Ok(())
 }
 
-pub fn unique_list<T: Clone + 'static>(mut inList: Arc<metamodelica::List<T>>, mut hashFunc: Arc<dyn ::std::ops::Fn(T) -> Result<i32> + 'static>, mut keyEqFunc: Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>) -> Result<Arc<metamodelica::List<T>>> {
+pub fn unique_list<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inList: Arc<metamodelica::List<T>>, mut hashFunc: Arc<dyn ::std::ops::Fn(T) -> Result<i32> + 'static>, mut keyEqFunc: Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>) -> Result<Arc<metamodelica::List<T>>> {
     let mut outList: Arc<metamodelica::List<T>> = if (List::hasSeveralElements(inList.clone())) {toList(fromList(inList.clone(), hashFunc.clone(), keyEqFunc.clone())?)} else {inList.clone()};
     Ok(outList)
 }
 
-pub fn union<T: Clone + 'static>(mut set1: Arc<UnorderedSet<T>>, mut set2: Arc<UnorderedSet<T>>) -> Result<Arc<UnorderedSet<T>>> {
+pub fn union<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set1: Arc<UnorderedSet<T>>, mut set2: Arc<UnorderedSet<T>>) -> Result<Arc<UnorderedSet<T>>> {
     let mut set: Arc<UnorderedSet<T>>;
     let mut buckets: metamodelica::Array<Arc<metamodelica::List<T>>>;
     if Mutable::access(set1.size.clone()) > Mutable::access(set2.size.clone()) {
@@ -507,7 +507,7 @@ pub fn union<T: Clone + 'static>(mut set1: Arc<UnorderedSet<T>>, mut set2: Arc<U
     Ok(set)
 }
 
-pub fn union_list<T: Clone + 'static>(mut set_lst: Arc<metamodelica::List<Arc<UnorderedSet<T>>>>, mut hashFunc: Arc<dyn ::std::ops::Fn(T) -> Result<i32> + 'static>, mut keyEqFunc: Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>) -> Result<Arc<UnorderedSet<T>>> {
+pub fn union_list<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set_lst: Arc<metamodelica::List<Arc<UnorderedSet<T>>>>, mut hashFunc: Arc<dyn ::std::ops::Fn(T) -> Result<i32> + 'static>, mut keyEqFunc: Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>) -> Result<Arc<UnorderedSet<T>>> {
     let mut set: Arc<UnorderedSet<T>>;
     let mut rest: Arc<metamodelica::List<Arc<UnorderedSet<T>>>>;
     if set_lst.clone().is_empty() {
@@ -522,7 +522,7 @@ pub fn union_list<T: Clone + 'static>(mut set_lst: Arc<metamodelica::List<Arc<Un
     Ok(set)
 }
 
-pub fn merge<T: Clone + 'static>(mut set1: Arc<UnorderedSet<T>>, mut set2: Arc<UnorderedSet<T>>) -> Result<Arc<UnorderedSet<T>>> {
+pub fn merge<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set1: Arc<UnorderedSet<T>>, mut set2: Arc<UnorderedSet<T>>) -> Result<Arc<UnorderedSet<T>>> {
     let mut set1: Arc<UnorderedSet<T>> = set1;
     let __range0 = Mutable::access(set2.buckets.clone()).borrow().iter().cloned().collect::<Vec<_>>();
     for mut b in __range0 {
@@ -534,7 +534,7 @@ pub fn merge<T: Clone + 'static>(mut set1: Arc<UnorderedSet<T>>, mut set2: Arc<U
     Ok(set1)
 }
 
-pub fn intersection<T: Clone + 'static>(mut set1: Arc<UnorderedSet<T>>, mut set2: Arc<UnorderedSet<T>>) -> Result<Arc<UnorderedSet<T>>> {
+pub fn intersection<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set1: Arc<UnorderedSet<T>>, mut set2: Arc<UnorderedSet<T>>) -> Result<Arc<UnorderedSet<T>>> {
     let mut set: Arc<UnorderedSet<T>>;
     let mut set_small: Arc<UnorderedSet<T>>;
     let mut set_big: Arc<UnorderedSet<T>>;
@@ -559,7 +559,7 @@ pub fn intersection<T: Clone + 'static>(mut set1: Arc<UnorderedSet<T>>, mut set2
     Ok(set)
 }
 
-pub fn intersection_list<T: Clone + 'static>(mut set_lst: Arc<metamodelica::List<Arc<UnorderedSet<T>>>>, mut hashFunc: Arc<dyn ::std::ops::Fn(T) -> Result<i32> + 'static>, mut keyEqFunc: Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>) -> Result<Arc<UnorderedSet<T>>> {
+pub fn intersection_list<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set_lst: Arc<metamodelica::List<Arc<UnorderedSet<T>>>>, mut hashFunc: Arc<dyn ::std::ops::Fn(T) -> Result<i32> + 'static>, mut keyEqFunc: Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>) -> Result<Arc<UnorderedSet<T>>> {
     let mut set: Arc<UnorderedSet<T>>;
     let mut set_small: Arc<UnorderedSet<T>>;
     let mut rest: Arc<metamodelica::List<Arc<UnorderedSet<T>>>>;
@@ -580,7 +580,7 @@ pub fn intersection_list<T: Clone + 'static>(mut set_lst: Arc<metamodelica::List
     Ok(set)
 }
 
-pub fn difference_list<T: Clone + 'static>(mut inList1: Arc<metamodelica::List<T>>, mut inList2: Arc<metamodelica::List<T>>, mut hashFunc: Arc<dyn ::std::ops::Fn(T) -> Result<i32> + 'static>, mut keyEqFunc: Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>) -> Result<Arc<metamodelica::List<T>>> {
+pub fn difference_list<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inList1: Arc<metamodelica::List<T>>, mut inList2: Arc<metamodelica::List<T>>, mut hashFunc: Arc<dyn ::std::ops::Fn(T) -> Result<i32> + 'static>, mut keyEqFunc: Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>) -> Result<Arc<metamodelica::List<T>>> {
     let mut acc: Arc<metamodelica::List<T>> = metamodelica::nil();
     let mut set2: Arc<UnorderedSet<T>>;
     let mut lst1: Arc<metamodelica::List<T>> = inList1.clone();
@@ -603,7 +603,7 @@ pub fn difference_list<T: Clone + 'static>(mut inList1: Arc<metamodelica::List<T
     Ok(acc)
 }
 
-pub fn equal_list<T: Clone + 'static>(mut inList1: Arc<metamodelica::List<T>>, mut inList2: Arc<metamodelica::List<T>>, mut hashFunc: Arc<dyn ::std::ops::Fn(T) -> Result<i32> + 'static>, mut keyEqFunc: Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>) -> Result<bool> {
+pub fn equal_list<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inList1: Arc<metamodelica::List<T>>, mut inList2: Arc<metamodelica::List<T>>, mut hashFunc: Arc<dyn ::std::ops::Fn(T) -> Result<i32> + 'static>, mut keyEqFunc: Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>) -> Result<bool> {
     let mut b: bool = false;
     let mut set1: Arc<UnorderedSet<T>> = fromList(inList1.clone(), hashFunc.clone(), keyEqFunc.clone())?;
     let mut set2: Arc<UnorderedSet<T>> = fromList(inList2.clone(), hashFunc.clone(), keyEqFunc.clone())?;
@@ -620,7 +620,7 @@ pub fn equal_list<T: Clone + 'static>(mut inList1: Arc<metamodelica::List<T>>, m
     Ok(b)
 }
 
-pub fn difference<T: Clone + 'static>(mut set1: Arc<UnorderedSet<T>>, mut set2: Arc<UnorderedSet<T>>) -> Result<Arc<UnorderedSet<T>>> {
+pub fn difference<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set1: Arc<UnorderedSet<T>>, mut set2: Arc<UnorderedSet<T>>) -> Result<Arc<UnorderedSet<T>>> {
     let mut set: Arc<UnorderedSet<T>>;
     let mut acc: Arc<metamodelica::List<T>> = metamodelica::nil();
     let __range0 = Mutable::access(set1.buckets.clone()).borrow().iter().cloned().collect::<Vec<_>>();
@@ -636,7 +636,7 @@ pub fn difference<T: Clone + 'static>(mut set1: Arc<UnorderedSet<T>>, mut set2: 
     Ok(set)
 }
 
-pub fn sym_difference<T: Clone + 'static>(mut set1: Arc<UnorderedSet<T>>, mut set2: Arc<UnorderedSet<T>>) -> Result<Arc<UnorderedSet<T>>> {
+pub fn sym_difference<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set1: Arc<UnorderedSet<T>>, mut set2: Arc<UnorderedSet<T>>) -> Result<Arc<UnorderedSet<T>>> {
     let mut set: Arc<UnorderedSet<T>>;
     let mut acc: Arc<metamodelica::List<T>> = metamodelica::nil();
     let __range0 = Mutable::access(set1.buckets.clone()).borrow().iter().cloned().collect::<Vec<_>>();
@@ -661,7 +661,7 @@ pub fn sym_difference<T: Clone + 'static>(mut set1: Arc<UnorderedSet<T>>, mut se
     Ok(set)
 }
 
-pub fn isDisjoint<T: Clone + 'static>(mut set1: Arc<UnorderedSet<T>>, mut set2: Arc<UnorderedSet<T>>) -> Result<bool> {
+pub fn isDisjoint<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set1: Arc<UnorderedSet<T>>, mut set2: Arc<UnorderedSet<T>>) -> Result<bool> {
     let mut b: bool = true;
     let mut set_small: Arc<UnorderedSet<T>>;
     let mut set_big: Arc<UnorderedSet<T>>;
@@ -685,7 +685,7 @@ pub fn isDisjoint<T: Clone + 'static>(mut set1: Arc<UnorderedSet<T>>, mut set2: 
     Ok(b)
 }
 
-fn find<T: Clone + 'static>(mut key: T, mut set: Arc<UnorderedSet<T>>) -> Result<(Option<T>, i32)> {
+fn find<T: Clone + 'static + metamodelica::gc::MMTrace>(mut key: T, mut set: Arc<UnorderedSet<T>>) -> Result<(Option<T>, i32)> {
     let mut outKey: Option<T> = None;
     let mut hash: i32;
     let mut hashfn: Hash<T> = set.hashFn.clone();
@@ -704,7 +704,7 @@ fn find<T: Clone + 'static>(mut key: T, mut set: Arc<UnorderedSet<T>>) -> Result
     Ok((outKey, hash))
 }
 
-fn addKey<T: Clone + 'static>(mut key: T, mut hash: i32, mut set: Arc<UnorderedSet<T>>) -> Result<()> {
+fn addKey<T: Clone + 'static + metamodelica::gc::MMTrace>(mut key: T, mut hash: i32, mut set: Arc<UnorderedSet<T>>) -> Result<()> {
     let mut buckets: metamodelica::Array<Arc<metamodelica::List<T>>>;
     let mut h: i32;
     let mut hashfn: Hash<T>;
@@ -722,7 +722,7 @@ fn addKey<T: Clone + 'static>(mut key: T, mut hash: i32, mut set: Arc<UnorderedS
     Ok(())
 }
 
-fn extractFromLst<T: Clone + 'static>(mut lst: Arc<metamodelica::List<Arc<UnorderedSet<T>>>>, mut func: Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>) -> Result<(Arc<UnorderedSet<T>>, Arc<metamodelica::List<Arc<UnorderedSet<T>>>>)> {
+fn extractFromLst<T: Clone + 'static + metamodelica::gc::MMTrace>(mut lst: Arc<metamodelica::List<Arc<UnorderedSet<T>>>>, mut func: Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>) -> Result<(Arc<UnorderedSet<T>>, Arc<metamodelica::List<Arc<UnorderedSet<T>>>>)> {
     type size_compare = std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>;
 
     let mut single: Arc<UnorderedSet<T>>;

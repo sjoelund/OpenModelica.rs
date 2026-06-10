@@ -89,7 +89,7 @@ pub struct Transition {
 }
 
 impl metamodelica::gc::MMTrace for Transition {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.from, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.to, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.condition, __mmv)?;
@@ -142,7 +142,7 @@ pub struct FlatSmSemantics {
 }
 
 impl metamodelica::gc::MMTrace for FlatSmSemantics {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.initStateRef, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.smComps, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.t, __mmv)?;

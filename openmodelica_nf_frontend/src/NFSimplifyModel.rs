@@ -408,7 +408,7 @@ pub fn simplifyAssignment(mut stmt: Arc<Statement::NFStatement>, mut statements:
     Ok(statements)
 }
 
-pub fn simplifyTupleElement<ElementT: Clone + 'static>(mut lhsTuple: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut rhsTuple: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut ty: Arc<Type::NFType>, mut src: Arc<DAE::ElementSource>, mut makeFn: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>, Arc<Type::NFType>, Arc<DAE::ElementSource>) -> Result<ElementT> + 'static>, mut statements: Arc<metamodelica::List<ElementT>>) -> Result<Arc<metamodelica::List<ElementT>>> {
+pub fn simplifyTupleElement<ElementT: Clone + 'static + metamodelica::gc::MMTrace>(mut lhsTuple: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut rhsTuple: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut ty: Arc<Type::NFType>, mut src: Arc<DAE::ElementSource>, mut makeFn: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>, Arc<Type::NFType>, Arc<DAE::ElementSource>) -> Result<ElementT> + 'static>, mut statements: Arc<metamodelica::List<ElementT>>) -> Result<Arc<metamodelica::List<ElementT>>> {
     pub type MakeElement<ElementT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>, Arc<Type::NFType>, Arc<DAE::ElementSource>) -> Result<ElementT> + 'static>;
 
     let mut statements: Arc<metamodelica::List<ElementT>> = statements;
@@ -547,7 +547,7 @@ pub fn simplifyIfEqBranches(mut branches: Arc<metamodelica::List<Arc<Equation::B
     Ok(elements)
 }
 
-pub fn simplifyIfStmtBranches<ElemT: Clone + 'static>(mut branches: Arc<metamodelica::List<(Arc<Expression::NFExpression>, Arc<metamodelica::List<ElemT>>)>>, mut src: Arc<DAE::ElementSource>, mut makeFunc: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<(Arc<Expression::NFExpression>, Arc<metamodelica::List<ElemT>>)>>, Arc<DAE::ElementSource>) -> Result<ElemT> + 'static>, mut simplifyFunc: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<ElemT>>) -> Result<Arc<metamodelica::List<ElemT>>> + 'static>, mut elements: Arc<metamodelica::List<ElemT>>) -> Result<Arc<metamodelica::List<ElemT>>> {
+pub fn simplifyIfStmtBranches<ElemT: Clone + 'static + metamodelica::gc::MMTrace>(mut branches: Arc<metamodelica::List<(Arc<Expression::NFExpression>, Arc<metamodelica::List<ElemT>>)>>, mut src: Arc<DAE::ElementSource>, mut makeFunc: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<(Arc<Expression::NFExpression>, Arc<metamodelica::List<ElemT>>)>>, Arc<DAE::ElementSource>) -> Result<ElemT> + 'static>, mut simplifyFunc: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<ElemT>>) -> Result<Arc<metamodelica::List<ElemT>>> + 'static>, mut elements: Arc<metamodelica::List<ElemT>>) -> Result<Arc<metamodelica::List<ElemT>>> {
     pub type MakeFunc<ElemT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<(Arc<Expression::NFExpression>, Arc<metamodelica::List<ElemT>>)>>, Arc<DAE::ElementSource>) -> Result<ElemT> + 'static>;
 
     pub type SimplifyFunc<ElemT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<ElemT>>) -> Result<Arc<metamodelica::List<ElemT>>> + 'static>;

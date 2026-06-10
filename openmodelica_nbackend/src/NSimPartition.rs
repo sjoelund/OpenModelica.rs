@@ -84,7 +84,7 @@ pub enum NSimPartition {
     },
 }
 impl metamodelica::gc::MMTrace for NSimPartition {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             NSimPartition::BASE_PARTITION { baseClock, subPartitions } => {
                 metamodelica::gc::MMTrace::mm_accept(baseClock, __mmv)?;

@@ -914,7 +914,7 @@ fn setTrieAdd(mut element: ConnectorElement, mut trie: Arc<SetTrieNode>) -> Resu
     Ok(trie)
 }
 
-fn updateSetLeaf<Arg: Clone + 'static>(mut sets: Sets, mut cref: Arc<DAE::ComponentRef>, mut arg: Arg, mut updateFunc: Arc<dyn ::std::ops::Fn(Arg, Arc<SetTrieNode>) -> Result<Arc<SetTrieNode>> + 'static>) -> Result<Sets> {
+fn updateSetLeaf<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut sets: Sets, mut cref: Arc<DAE::ComponentRef>, mut arg: Arg, mut updateFunc: Arc<dyn ::std::ops::Fn(Arg, Arc<SetTrieNode>) -> Result<Arc<SetTrieNode>> + 'static>) -> Result<Sets> {
     pub type UpdateFunc<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arg, Arc<SetTrieNode>) -> Result<Arc<SetTrieNode>> + 'static>;
 
     let mut sets: Sets = sets;
@@ -922,7 +922,7 @@ fn updateSetLeaf<Arg: Clone + 'static>(mut sets: Sets, mut cref: Arc<DAE::Compon
     Ok(sets)
 }
 
-fn setTrieUpdate<Arg: Clone + 'static>(mut cref: Arc<DAE::ComponentRef>, mut arg: Arg, mut trie: Arc<SetTrieNode>, mut updateFunc: Arc<dyn ::std::ops::Fn(Arg, Arc<SetTrieNode>) -> Result<Arc<SetTrieNode>> + 'static>) -> Result<Arc<SetTrieNode>> {
+fn setTrieUpdate<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut cref: Arc<DAE::ComponentRef>, mut arg: Arg, mut trie: Arc<SetTrieNode>, mut updateFunc: Arc<dyn ::std::ops::Fn(Arg, Arc<SetTrieNode>) -> Result<Arc<SetTrieNode>> + 'static>) -> Result<Arc<SetTrieNode>> {
     pub type UpdateFunc<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arg, Arc<SetTrieNode>) -> Result<Arc<SetTrieNode>> + 'static>;
 
     let mut trie: Arc<SetTrieNode> = trie;
@@ -944,7 +944,7 @@ fn setTrieUpdate<Arg: Clone + 'static>(mut cref: Arc<DAE::ComponentRef>, mut arg
     Ok(trie)
 }
 
-fn setTrieUpdateNode<Arg: Clone + 'static>(mut id: ArcStr, mut wholeCref: Arc<DAE::ComponentRef>, mut cref: Arc<DAE::ComponentRef>, mut arg: Arg, mut updateFunc: Arc<dyn ::std::ops::Fn(Arg, Arc<SetTrieNode>) -> Result<Arc<SetTrieNode>> + 'static>, mut nodes: Arc<metamodelica::List<Arc<SetTrieNode>>>) -> Result<Arc<metamodelica::List<Arc<SetTrieNode>>>> {
+fn setTrieUpdateNode<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut id: ArcStr, mut wholeCref: Arc<DAE::ComponentRef>, mut cref: Arc<DAE::ComponentRef>, mut arg: Arg, mut updateFunc: Arc<dyn ::std::ops::Fn(Arg, Arc<SetTrieNode>) -> Result<Arc<SetTrieNode>> + 'static>, mut nodes: Arc<metamodelica::List<Arc<SetTrieNode>>>) -> Result<Arc<metamodelica::List<Arc<SetTrieNode>>>> {
     pub type UpdateFunc<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arg, Arc<SetTrieNode>) -> Result<Arc<SetTrieNode>> + 'static>;
 
     let mut nodes: Arc<metamodelica::List<Arc<SetTrieNode>>> = nodes;
@@ -964,7 +964,7 @@ fn setTrieUpdateNode<Arg: Clone + 'static>(mut id: ArcStr, mut wholeCref: Arc<DA
     Ok(nodes)
 }
 
-fn setTrieUpdateNode2<Arg: Clone + 'static>(mut cref: Arc<DAE::ComponentRef>, mut arg: Arg, mut updateFunc: Arc<dyn ::std::ops::Fn(Arg, Arc<SetTrieNode>) -> Result<Arc<SetTrieNode>> + 'static>, mut nodes: Arc<metamodelica::List<Arc<SetTrieNode>>>) -> Result<Arc<metamodelica::List<Arc<SetTrieNode>>>> {
+fn setTrieUpdateNode2<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut cref: Arc<DAE::ComponentRef>, mut arg: Arg, mut updateFunc: Arc<dyn ::std::ops::Fn(Arg, Arc<SetTrieNode>) -> Result<Arc<SetTrieNode>> + 'static>, mut nodes: Arc<metamodelica::List<Arc<SetTrieNode>>>) -> Result<Arc<metamodelica::List<Arc<SetTrieNode>>>> {
     pub type UpdateFunc<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arg, Arc<SetTrieNode>) -> Result<Arc<SetTrieNode>> + 'static>;
 
     let mut nodes: Arc<metamodelica::List<Arc<SetTrieNode>>> = nodes;
@@ -991,7 +991,7 @@ fn setTrieUpdateNode2<Arg: Clone + 'static>(mut cref: Arc<DAE::ComponentRef>, mu
     Ok(nodes)
 }
 
-fn setTrieUpdateLeaf<Arg: Clone + 'static>(mut id: ArcStr, mut arg: Arg, mut nodes: Arc<metamodelica::List<Arc<SetTrieNode>>>, mut updateFunc: Arc<dyn ::std::ops::Fn(Arg, Arc<SetTrieNode>) -> Result<Arc<SetTrieNode>> + 'static>) -> Result<Arc<metamodelica::List<Arc<SetTrieNode>>>> {
+fn setTrieUpdateLeaf<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut id: ArcStr, mut arg: Arg, mut nodes: Arc<metamodelica::List<Arc<SetTrieNode>>>, mut updateFunc: Arc<dyn ::std::ops::Fn(Arg, Arc<SetTrieNode>) -> Result<Arc<SetTrieNode>> + 'static>) -> Result<Arc<metamodelica::List<Arc<SetTrieNode>>>> {
     pub type UpdateFunc<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arg, Arc<SetTrieNode>) -> Result<Arc<SetTrieNode>> + 'static>;
 
     let mut nodes: Arc<metamodelica::List<Arc<SetTrieNode>>> = nodes;
@@ -1008,7 +1008,7 @@ fn setTrieUpdateLeaf<Arg: Clone + 'static>(mut id: ArcStr, mut arg: Arg, mut nod
     Ok(nodes)
 }
 
-pub fn traverseSets<Arg: Clone + 'static>(mut sets: Sets, mut arg: Arg, mut updateFunc: Arc<dyn ::std::ops::Fn(Arc<SetTrieNode>, Arg) -> Result<(Arc<SetTrieNode>, Arg)> + 'static>) -> Result<(Sets, Arg)> {
+pub fn traverseSets<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut sets: Sets, mut arg: Arg, mut updateFunc: Arc<dyn ::std::ops::Fn(Arc<SetTrieNode>, Arg) -> Result<(Arc<SetTrieNode>, Arg)> + 'static>) -> Result<(Sets, Arg)> {
     pub type UpdateFunc<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<SetTrieNode>, Arg) -> Result<(Arc<SetTrieNode>, Arg)> + 'static>;
 
     let mut sets: Sets = sets;
@@ -1019,7 +1019,7 @@ pub fn traverseSets<Arg: Clone + 'static>(mut sets: Sets, mut arg: Arg, mut upda
     Ok((sets, arg))
 }
 
-fn setTrieTraverseLeaves<Arg: Clone + 'static>(mut node: Arc<SetTrieNode>, mut updateFunc: Arc<dyn ::std::ops::Fn(Arc<SetTrieNode>, Arg) -> Result<(Arc<SetTrieNode>, Arg)> + 'static>, mut arg: Arg) -> Result<(Arc<SetTrieNode>, Arg)> {
+fn setTrieTraverseLeaves<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut node: Arc<SetTrieNode>, mut updateFunc: Arc<dyn ::std::ops::Fn(Arc<SetTrieNode>, Arg) -> Result<(Arc<SetTrieNode>, Arg)> + 'static>, mut arg: Arg) -> Result<(Arc<SetTrieNode>, Arg)> {
     pub type UpdateFunc<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<SetTrieNode>, Arg) -> Result<(Arc<SetTrieNode>, Arg)> + 'static>;
 
     let mut node: Arc<SetTrieNode> = node;

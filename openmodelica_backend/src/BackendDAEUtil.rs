@@ -3132,7 +3132,7 @@ fn adjacencyRowAlgorithm(mut exp: Arc<DAE::Exp>, mut row: Arc<AvlSetInt::Tree>, 
     Ok(row)
 }
 
-pub fn adjacencyRow1<Type_a: Clone + 'static, Type_b: Clone + 'static, Type_c: Clone + 'static, Type_d: Clone + 'static, Type_e: Clone + 'static, Type_f: Clone + 'static>(mut inList: Arc<metamodelica::List<Type_a>>, mut inFunc: Arc<dyn ::std::ops::Fn(Type_a, Type_b, Type_c, Type_d, Type_e, Type_f) -> Result<Type_c> + 'static>, mut inArg: Type_b, mut inArg1: Type_c, mut inArg2: Type_d, mut inArg3: Type_e, mut inArg4: Type_f) -> Result<Type_c> {
+pub fn adjacencyRow1<Type_a: Clone + 'static + metamodelica::gc::MMTrace, Type_b: Clone + 'static + metamodelica::gc::MMTrace, Type_c: Clone + 'static + metamodelica::gc::MMTrace, Type_d: Clone + 'static + metamodelica::gc::MMTrace, Type_e: Clone + 'static + metamodelica::gc::MMTrace, Type_f: Clone + 'static + metamodelica::gc::MMTrace>(mut inList: Arc<metamodelica::List<Type_a>>, mut inFunc: Arc<dyn ::std::ops::Fn(Type_a, Type_b, Type_c, Type_d, Type_e, Type_f) -> Result<Type_c> + 'static>, mut inArg: Type_b, mut inArg1: Type_c, mut inArg2: Type_d, mut inArg3: Type_e, mut inArg4: Type_f) -> Result<Type_c> {
     pub type FuncType<Type_a: Clone + 'static, Type_b: Clone + 'static, Type_c: Clone + 'static, Type_d: Clone + 'static, Type_e: Clone + 'static, Type_f: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Type_a, Type_b, Type_c, Type_d, Type_e, Type_f) -> Result<Type_c> + 'static>;
 
     '__tco: loop {
@@ -4767,7 +4767,7 @@ pub fn removedAdjacencyMatrixMasked(mut inSyst: Arc<BackendDAE::EqSystem>, mut i
     Ok((outM, outMT))
 }
 
-fn traverseStmts<ArgT: Clone + 'static>(mut inStmts: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<ArgT> + 'static>, mut extraArg: ArgT) -> Result<ArgT> {
+fn traverseStmts<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inStmts: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<ArgT> + 'static>, mut extraArg: ArgT) -> Result<ArgT> {
     pub type FuncExpType<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<ArgT> + 'static>;
 
     let mut extraArg: ArgT = extraArg;
@@ -4982,7 +4982,7 @@ fn traverseStmts<ArgT: Clone + 'static>(mut inStmts: Arc<metamodelica::List<Arc<
     Ok(extraArg)
 }
 
-fn traverseStmtsElse<Type_a: Clone + 'static>(mut inElse: Arc<DAE::Else>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<Type_a> + 'static>, mut iextraArg: Type_a) -> Result<Type_a> {
+fn traverseStmtsElse<Type_a: Clone + 'static + metamodelica::gc::MMTrace>(mut inElse: Arc<DAE::Else>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<Type_a> + 'static>, mut iextraArg: Type_a) -> Result<Type_a> {
     pub type FuncExpType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<Type_a> + 'static>;
 
     let mut oextraArg: Type_a;
@@ -7776,7 +7776,7 @@ fn makeZeroReplacement(mut inVar: BackendDAE::Var, mut inRepl: BackendVarTransfo
 /* ************************************************
  * traverseBackendDAE and stuff
  ************************************************/
-pub fn traverseBackendDAEExps<Type_a: Clone + 'static + metamodelica::ReferenceEq>(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut inTypeA: Type_a) -> Result<Type_a> {
+pub fn traverseBackendDAEExps<Type_a: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut inTypeA: Type_a) -> Result<Type_a> {
     pub type FuncExpType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>;
 
     let mut outTypeA: Type_a;
@@ -7811,7 +7811,7 @@ pub fn traverseBackendDAEExps<Type_a: Clone + 'static + metamodelica::ReferenceE
     Ok(outTypeA)
 }
 
-pub fn traverseBackendDAEExpsEqSystemJacobians<Type_a: Clone + 'static + metamodelica::ReferenceEq>(mut syst: Arc<BackendDAE::EqSystem>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut inTypeA: Type_a) -> Type_a {
+pub fn traverseBackendDAEExpsEqSystemJacobians<Type_a: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut syst: Arc<BackendDAE::EqSystem>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut inTypeA: Type_a) -> Type_a {
     pub type FuncExpType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>;
 
     let mut outTypeA: Type_a;
@@ -7843,7 +7843,7 @@ pub fn traverseBackendDAEExpsEqSystemJacobians<Type_a: Clone + 'static + metamod
     outTypeA
 }
 
-pub fn traverseStrongComponentsJacobiansExp<Type_a: Clone + 'static + metamodelica::ReferenceEq>(mut inComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut arg: Type_a) -> Result<Type_a> {
+pub fn traverseStrongComponentsJacobiansExp<Type_a: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut inComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut arg: Type_a) -> Result<Type_a> {
     pub type FuncExpType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>;
 
     let mut arg: Type_a = arg;
@@ -7868,7 +7868,7 @@ pub fn traverseStrongComponentsJacobiansExp<Type_a: Clone + 'static + metamodeli
     Ok(arg)
 }
 
-fn traverseBackendDAEExpsJacobianEqn<Type_a: Clone + 'static>(mut inJacEntry: Arc<metamodelica::List<(i32, i32, Arc<BackendDAE::Equation>)>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut inTypeA: Type_a) -> Result<Type_a> {
+fn traverseBackendDAEExpsJacobianEqn<Type_a: Clone + 'static + metamodelica::gc::MMTrace>(mut inJacEntry: Arc<metamodelica::List<(i32, i32, Arc<BackendDAE::Equation>)>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut inTypeA: Type_a) -> Result<Type_a> {
     pub type FuncExpType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>;
 
     let mut outTypeA: Type_a;
@@ -7886,7 +7886,7 @@ fn traverseBackendDAEExpsJacobianEqn<Type_a: Clone + 'static>(mut inJacEntry: Ar
     Ok(outTypeA)
 }
 
-pub fn traverseStateSetsJacobiansExp<Type_a: Clone + 'static + metamodelica::ReferenceEq>(mut inStateSets: Arc<metamodelica::List<BackendDAE::StateSet>>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut inTypeA: Type_a) -> Result<Type_a> {
+pub fn traverseStateSetsJacobiansExp<Type_a: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut inStateSets: Arc<metamodelica::List<BackendDAE::StateSet>>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut inTypeA: Type_a) -> Result<Type_a> {
     pub type FuncExpType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>;
 
     '__tco: loop {
@@ -7904,7 +7904,7 @@ pub fn traverseStateSetsJacobiansExp<Type_a: Clone + 'static + metamodelica::Ref
     }
 }
 
-pub fn traverseBackendDAEExpsNoCopyWithUpdate<A: Clone + 'static + metamodelica::ReferenceEq>(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, A) -> Result<(Arc<DAE::Exp>, A)> + 'static>, mut inTypeA: A) -> Result<A> {
+pub fn traverseBackendDAEExpsNoCopyWithUpdate<A: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, A) -> Result<(Arc<DAE::Exp>, A)> + 'static>, mut inTypeA: A) -> Result<A> {
     pub type FuncExpType<A: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, A) -> Result<(Arc<DAE::Exp>, A)> + 'static>;
 
     let mut outTypeA: A;
@@ -7938,7 +7938,7 @@ pub fn traverseBackendDAEExpsNoCopyWithUpdate<A: Clone + 'static + metamodelica:
     Ok(outTypeA)
 }
 
-pub fn traverseBackendDAEExpsEqSystem<Type_a: Clone + 'static + metamodelica::ReferenceEq>(mut syst: Arc<BackendDAE::EqSystem>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut inTypeA: Type_a) -> Result<Type_a> {
+pub fn traverseBackendDAEExpsEqSystem<Type_a: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut syst: Arc<BackendDAE::EqSystem>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut inTypeA: Type_a) -> Result<Type_a> {
     pub type FuncExpType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>;
 
     let mut outTypeA: Type_a;
@@ -7948,7 +7948,7 @@ pub fn traverseBackendDAEExpsEqSystem<Type_a: Clone + 'static + metamodelica::Re
     Ok(outTypeA)
 }
 
-pub fn traverseBackendDAEExpsEqSystemWithUpdate<Type_a: Clone + 'static + metamodelica::ReferenceEq>(mut syst: Arc<BackendDAE::EqSystem>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut inTypeA: Type_a) -> Result<Type_a> {
+pub fn traverseBackendDAEExpsEqSystemWithUpdate<Type_a: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut syst: Arc<BackendDAE::EqSystem>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut inTypeA: Type_a) -> Result<Type_a> {
     pub type FuncExpType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>;
 
     let mut outTypeA: Type_a;
@@ -7958,7 +7958,7 @@ pub fn traverseBackendDAEExpsEqSystemWithUpdate<Type_a: Clone + 'static + metamo
     Ok(outTypeA)
 }
 
-pub fn traverseBackendDAEExpsVars<Type_a: Clone + 'static + metamodelica::ReferenceEq>(mut inVariables: BackendDAE::Variables, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut inTypeA: Type_a) -> Result<Type_a> {
+pub fn traverseBackendDAEExpsVars<Type_a: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut inVariables: BackendDAE::Variables, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut inTypeA: Type_a) -> Result<Type_a> {
     pub type FuncExpType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>;
 
     let mut outTypeA: Type_a;
@@ -7983,7 +7983,7 @@ pub fn traverseBackendDAEExpsVars<Type_a: Clone + 'static + metamodelica::Refere
     Ok(outTypeA)
 }
 
-pub fn traverseBackendDAEExpsVarsWithUpdate<Type_a: Clone + 'static + metamodelica::ReferenceEq>(mut inVariables: BackendDAE::Variables, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut inTypeA: Type_a) -> Result<Type_a> {
+pub fn traverseBackendDAEExpsVarsWithUpdate<Type_a: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut inVariables: BackendDAE::Variables, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut inTypeA: Type_a) -> Result<Type_a> {
     pub type FuncExpType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>;
 
     let mut outTypeA: Type_a;
@@ -8007,7 +8007,7 @@ pub fn traverseBackendDAEExpsVarsWithUpdate<Type_a: Clone + 'static + metamodeli
     Ok(outTypeA)
 }
 
-pub fn traverseArrayNoCopy<ArrT: Clone + 'static, ElemT: Clone + 'static, ArgT: Clone + 'static>(mut inArray: metamodelica::Array<ArrT>, mut inElemFunc: Arc<dyn ::std::ops::Fn(ElemT, ArgT) -> Result<(ElemT, ArgT)> + 'static>, mut inArrayFunc: Arc<dyn ::std::ops::Fn(ArrT, Arc<dyn ::std::ops::Fn(ElemT, ArgT) -> Result<(ElemT, ArgT)> + 'static>, ArgT) -> Result<ArgT> + 'static>, mut inArg: ArgT, mut inLength: i32) -> Result<ArgT> {
+pub fn traverseArrayNoCopy<ArrT: Clone + 'static + metamodelica::gc::MMTrace, ElemT: Clone + 'static + metamodelica::gc::MMTrace, ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inArray: metamodelica::Array<ArrT>, mut inElemFunc: Arc<dyn ::std::ops::Fn(ElemT, ArgT) -> Result<(ElemT, ArgT)> + 'static>, mut inArrayFunc: Arc<dyn ::std::ops::Fn(ArrT, Arc<dyn ::std::ops::Fn(ElemT, ArgT) -> Result<(ElemT, ArgT)> + 'static>, ArgT) -> Result<ArgT> + 'static>, mut inArg: ArgT, mut inLength: i32) -> Result<ArgT> {
     pub type ElemFuncType<ElemT: Clone + 'static, ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(ElemT, ArgT) -> Result<(ElemT, ArgT)> + 'static>;
 
     pub type ArrayFuncType<ArrT: Clone + 'static, ElemT: Clone + 'static, ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(ArrT, Arc<dyn ::std::ops::Fn(ElemT, ArgT) -> Result<(ElemT, ArgT)> + 'static>, ArgT) -> Result<ArgT> + 'static>;
@@ -8020,7 +8020,7 @@ pub fn traverseArrayNoCopy<ArrT: Clone + 'static, ElemT: Clone + 'static, ArgT: 
     Ok(outArg)
 }
 
-pub fn traverseArrayNoCopyWithStop<ArrT: Clone + 'static, ElemT: Clone + 'static, ArgT: Clone + 'static>(mut inArray: metamodelica::Array<ArrT>, mut inElemFunc: Arc<dyn ::std::ops::Fn(ElemT, ArgT) -> Result<(ElemT, bool, ArgT)> + 'static>, mut inArrayFunc: Arc<dyn ::std::ops::Fn(ArrT, Arc<dyn ::std::ops::Fn(ElemT, ArgT) -> Result<(ElemT, bool, ArgT)> + 'static>, ArgT) -> Result<(bool, ArgT)> + 'static>, mut inArg: ArgT, mut inLength: i32) -> Result<ArgT> {
+pub fn traverseArrayNoCopyWithStop<ArrT: Clone + 'static + metamodelica::gc::MMTrace, ElemT: Clone + 'static + metamodelica::gc::MMTrace, ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inArray: metamodelica::Array<ArrT>, mut inElemFunc: Arc<dyn ::std::ops::Fn(ElemT, ArgT) -> Result<(ElemT, bool, ArgT)> + 'static>, mut inArrayFunc: Arc<dyn ::std::ops::Fn(ArrT, Arc<dyn ::std::ops::Fn(ElemT, ArgT) -> Result<(ElemT, bool, ArgT)> + 'static>, ArgT) -> Result<(bool, ArgT)> + 'static>, mut inArg: ArgT, mut inLength: i32) -> Result<ArgT> {
     pub type ElemFuncType<ElemT: Clone + 'static, ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(ElemT, ArgT) -> Result<(ElemT, bool, ArgT)> + 'static>;
 
     pub type ArrayFuncType<ArrT: Clone + 'static, ElemT: Clone + 'static, ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(ArrT, Arc<dyn ::std::ops::Fn(ElemT, ArgT) -> Result<(ElemT, bool, ArgT)> + 'static>, ArgT) -> Result<(bool, ArgT)> + 'static>;
@@ -8037,7 +8037,7 @@ pub fn traverseArrayNoCopyWithStop<ArrT: Clone + 'static, ElemT: Clone + 'static
     Ok(outArg)
 }
 
-pub fn traverseArrayNoCopyWithUpdate<ArrT: Clone + 'static + metamodelica::ReferenceEq, ElemT: Clone + 'static, ArgT: Clone + 'static>(mut inArray: metamodelica::Array<ArrT>, mut inElemFunc: Arc<dyn ::std::ops::Fn(ElemT, ArgT) -> Result<(ElemT, ArgT)> + 'static>, mut inArrayFunc: Arc<dyn ::std::ops::Fn(ArrT, Arc<dyn ::std::ops::Fn(ElemT, ArgT) -> Result<(ElemT, ArgT)> + 'static>, ArgT) -> Result<(ArrT, ArgT)> + 'static>, mut inArg: ArgT, mut inLength: i32) -> Result<(metamodelica::Array<ArrT>, ArgT)> {
+pub fn traverseArrayNoCopyWithUpdate<ArrT: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq, ElemT: Clone + 'static + metamodelica::gc::MMTrace, ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inArray: metamodelica::Array<ArrT>, mut inElemFunc: Arc<dyn ::std::ops::Fn(ElemT, ArgT) -> Result<(ElemT, ArgT)> + 'static>, mut inArrayFunc: Arc<dyn ::std::ops::Fn(ArrT, Arc<dyn ::std::ops::Fn(ElemT, ArgT) -> Result<(ElemT, ArgT)> + 'static>, ArgT) -> Result<(ArrT, ArgT)> + 'static>, mut inArg: ArgT, mut inLength: i32) -> Result<(metamodelica::Array<ArrT>, ArgT)> {
     pub type ElemFuncType<ElemT: Clone + 'static, ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(ElemT, ArgT) -> Result<(ElemT, ArgT)> + 'static>;
 
     pub type ArrayFuncType<ArrT: Clone + 'static, ElemT: Clone + 'static, ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(ArrT, Arc<dyn ::std::ops::Fn(ElemT, ArgT) -> Result<(ElemT, ArgT)> + 'static>, ArgT) -> Result<(ArrT, ArgT)> + 'static>;
@@ -8057,7 +8057,7 @@ pub fn traverseArrayNoCopyWithUpdate<ArrT: Clone + 'static + metamodelica::Refer
     Ok((outArray, outArg))
 }
 
-fn traverseBackendDAEExpsVar<Type_a: Clone + 'static + metamodelica::ReferenceEq>(mut inVar: Option<BackendDAE::Var>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut inTypeA: Type_a) -> Result<Type_a> {
+fn traverseBackendDAEExpsVar<Type_a: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut inVar: Option<BackendDAE::Var>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut inTypeA: Type_a) -> Result<Type_a> {
     pub type FuncExpType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>;
 
     let mut outTypeA: Type_a;
@@ -8065,7 +8065,7 @@ fn traverseBackendDAEExpsVar<Type_a: Clone + 'static + metamodelica::ReferenceEq
     Ok(outTypeA)
 }
 
-fn traverseBackendDAEExpsVarWithUpdate<Type_a: Clone + 'static + metamodelica::ReferenceEq>(mut inVar: Option<BackendDAE::Var>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut inTypeA: Type_a) -> Result<(Option<BackendDAE::Var>, Type_a)> {
+fn traverseBackendDAEExpsVarWithUpdate<Type_a: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut inVar: Option<BackendDAE::Var>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut inTypeA: Type_a) -> Result<(Option<BackendDAE::Var>, Type_a)> {
     pub type FuncExpType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>;
 
     let mut ovar: Option<BackendDAE::Var>;
@@ -8134,7 +8134,7 @@ fn traverseBackendDAEExpsVarWithUpdate<Type_a: Clone + 'static + metamodelica::R
     Ok((ovar, outTypeA))
 }
 
-pub fn traverseBackendDAEVarAttr<ExtraArgType: Clone + 'static + metamodelica::ReferenceEq>(mut attr: Option<Arc<DAE::VariableAttributes>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ExtraArgType) -> Result<(Arc<DAE::Exp>, ExtraArgType)> + 'static>, mut extraArg: ExtraArgType) -> Result<(Option<Arc<DAE::VariableAttributes>>, ExtraArgType)> {
+pub fn traverseBackendDAEVarAttr<ExtraArgType: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut attr: Option<Arc<DAE::VariableAttributes>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ExtraArgType) -> Result<(Arc<DAE::Exp>, ExtraArgType)> + 'static>, mut extraArg: ExtraArgType) -> Result<(Option<Arc<DAE::VariableAttributes>>, ExtraArgType)> {
     pub type FuncExpType<ExtraArgType: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ExtraArgType) -> Result<(Arc<DAE::Exp>, ExtraArgType)> + 'static>;
 
     let mut outAttr: Option<Arc<DAE::VariableAttributes>>;
@@ -8258,7 +8258,7 @@ pub fn traverseBackendDAEVarAttr<ExtraArgType: Clone + 'static + metamodelica::R
     Ok((outAttr, outExtraArg))
 }
 
-fn traverseBackendDAEAttrDistribution<Type_a: Clone + 'static + metamodelica::ReferenceEq>(mut distOpt: Option<Arc<DAE::Distribution>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut extraArg: Type_a) -> Result<(Option<Arc<DAE::Distribution>>, Type_a)> {
+fn traverseBackendDAEAttrDistribution<Type_a: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut distOpt: Option<Arc<DAE::Distribution>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut extraArg: Type_a) -> Result<(Option<Arc<DAE::Distribution>>, Type_a)> {
     pub type FuncExpType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>;
 
     let mut outDistOpt: Option<Arc<DAE::Distribution>>;
@@ -8290,7 +8290,7 @@ fn traverseBackendDAEAttrDistribution<Type_a: Clone + 'static + metamodelica::Re
     Ok((outDistOpt, outExtraArg))
 }
 
-pub fn traverseBackendDAEExpsEqns<T: Clone + 'static>(mut equationArray: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, T) -> Result<(Arc<DAE::Exp>, T)> + 'static>, mut extraArg: T) -> Result<T> {
+pub fn traverseBackendDAEExpsEqns<T: Clone + 'static + metamodelica::gc::MMTrace>(mut equationArray: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, T) -> Result<(Arc<DAE::Exp>, T)> + 'static>, mut extraArg: T) -> Result<T> {
     pub type FuncExpType<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, T) -> Result<(Arc<DAE::Exp>, T)> + 'static>;
 
     let mut extraArg: T = extraArg;
@@ -8321,7 +8321,7 @@ pub fn traverseBackendDAEExpsEqns<T: Clone + 'static>(mut equationArray: Arc<Exp
     Ok(extraArg)
 }
 
-pub fn traverseBackendDAEExpsEqnsWithStop<T: Clone + 'static>(mut equationArray: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, T) -> Result<(Arc<DAE::Exp>, bool, T)> + 'static>, mut extraArg: T) -> Result<T> {
+pub fn traverseBackendDAEExpsEqnsWithStop<T: Clone + 'static + metamodelica::gc::MMTrace>(mut equationArray: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, T) -> Result<(Arc<DAE::Exp>, bool, T)> + 'static>, mut extraArg: T) -> Result<T> {
     pub type FuncExpType<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, T) -> Result<(Arc<DAE::Exp>, bool, T)> + 'static>;
 
     let mut extraArg: T = extraArg;
@@ -8352,7 +8352,7 @@ pub fn traverseBackendDAEExpsEqnsWithStop<T: Clone + 'static>(mut equationArray:
     Ok(extraArg)
 }
 
-pub fn traverseBackendDAEExpsOptEqn<Type_a: Clone + 'static>(mut inEquation: Option<Arc<BackendDAE::Equation>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut inTypeA: Type_a) -> Result<Type_a> {
+pub fn traverseBackendDAEExpsOptEqn<Type_a: Clone + 'static + metamodelica::gc::MMTrace>(mut inEquation: Option<Arc<BackendDAE::Equation>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut inTypeA: Type_a) -> Result<Type_a> {
     pub type FuncExpType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>;
 
     let mut outTypeA: Type_a;
@@ -8360,7 +8360,7 @@ pub fn traverseBackendDAEExpsOptEqn<Type_a: Clone + 'static>(mut inEquation: Opt
     Ok(outTypeA)
 }
 
-fn traverseBackendDAEExpsOptEqnWithUpdate<Type_a: Clone + 'static>(mut inEquation: Option<Arc<BackendDAE::Equation>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut inTypeA: Type_a) -> Result<(Option<Arc<BackendDAE::Equation>>, Type_a)> {
+fn traverseBackendDAEExpsOptEqnWithUpdate<Type_a: Clone + 'static + metamodelica::gc::MMTrace>(mut inEquation: Option<Arc<BackendDAE::Equation>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut inTypeA: Type_a) -> Result<(Option<Arc<BackendDAE::Equation>>, Type_a)> {
     pub type FuncExpType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>;
 
     let mut outEquation: Option<Arc<BackendDAE::Equation>>;
@@ -8380,7 +8380,7 @@ fn traverseBackendDAEExpsOptEqnWithUpdate<Type_a: Clone + 'static>(mut inEquatio
     Ok((outEquation, outTypeA))
 }
 
-pub fn traverseAlgorithmExpsWithUpdate<Type_a: Clone + 'static>(mut inAlgorithm: Arc<DAE::Algorithm>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut inTypeA: Type_a) -> Result<(Arc<DAE::Algorithm>, Type_a)> {
+pub fn traverseAlgorithmExpsWithUpdate<Type_a: Clone + 'static + metamodelica::gc::MMTrace>(mut inAlgorithm: Arc<DAE::Algorithm>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut inTypeA: Type_a) -> Result<(Arc<DAE::Algorithm>, Type_a)> {
     pub type FuncExpType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>;
 
     let mut outAlgorithm: Arc<DAE::Algorithm>;
@@ -8399,7 +8399,7 @@ pub fn traverseAlgorithmExpsWithUpdate<Type_a: Clone + 'static>(mut inAlgorithm:
     Ok((outAlgorithm, outTypeA))
 }
 
-fn traverseZeroCrossingExps<Type_a: Clone + 'static + metamodelica::ReferenceEq>(mut iZeroCrossing: Arc<metamodelica::List<BackendDAE::ZeroCrossing>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut inTypeA: Type_a, mut iAcc: Arc<metamodelica::List<BackendDAE::ZeroCrossing>>) -> Result<(Arc<metamodelica::List<BackendDAE::ZeroCrossing>>, Type_a)> {
+fn traverseZeroCrossingExps<Type_a: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut iZeroCrossing: Arc<metamodelica::List<BackendDAE::ZeroCrossing>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut inTypeA: Type_a, mut iAcc: Arc<metamodelica::List<BackendDAE::ZeroCrossing>>) -> Result<(Arc<metamodelica::List<BackendDAE::ZeroCrossing>>, Type_a)> {
     pub type FuncExpType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>;
 
     '__tco: loop {
@@ -8967,7 +8967,7 @@ pub fn getIndexReductionMethod(mut ostrIndexReductionMethod: Option<ArcStr>) -> 
     Ok(IndexReductionMethod)
 }
 
-fn selectIndexReductionMethod<Type_a: Clone + 'static, Type_b: Clone + 'static>(mut strIndexReductionMethod: ArcStr, mut inIndexReductionMethods: Arc<metamodelica::List<(Type_a, ArcStr, Type_b, ArcStr)>>) -> Result<(Type_a, ArcStr, Type_b, ArcStr)> {
+fn selectIndexReductionMethod<Type_a: Clone + 'static + metamodelica::gc::MMTrace, Type_b: Clone + 'static + metamodelica::gc::MMTrace>(mut strIndexReductionMethod: ArcStr, mut inIndexReductionMethods: Arc<metamodelica::List<(Type_a, ArcStr, Type_b, ArcStr)>>) -> Result<(Type_a, ArcStr, Type_b, ArcStr)> {
     let mut outIndexReductionMethod: (Type_a, ArcStr, Type_b, ArcStr);
     outIndexReductionMethod = 'mc: {
         let __mc_input = inIndexReductionMethods.clone();
@@ -9026,7 +9026,7 @@ pub fn getMatchingAlgorithm(mut ostrMatchingAlgorithm: Option<ArcStr>) -> Result
     Ok(matchingAlgorithm)
 }
 
-fn selectMatchingAlgorithm<Type_a: Clone + 'static>(mut strMatchingAlgorithm: ArcStr, mut inMatchingAlgorithms: Arc<metamodelica::List<(Type_a, ArcStr)>>) -> Result<(Type_a, ArcStr)> {
+fn selectMatchingAlgorithm<Type_a: Clone + 'static + metamodelica::gc::MMTrace>(mut strMatchingAlgorithm: ArcStr, mut inMatchingAlgorithms: Arc<metamodelica::List<(Type_a, ArcStr)>>) -> Result<(Type_a, ArcStr)> {
     let mut outMatchingAlgorithm: (Type_a, ArcStr);
     outMatchingAlgorithm = 'mc: {
         let __mc_input = inMatchingAlgorithms.clone();
@@ -9356,7 +9356,7 @@ pub fn isInitOptModuleActivated(mut initOptModule: ArcStr, mut activatedInitOptM
 /* ************************************************
  * traverse BackendDAE equation systems
  ************************************************/
-pub fn mapEqSystem1<A: Clone + 'static>(mut dae: Arc<BackendDAE::BackendDAE>, mut func: Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, A, Arc<BackendDAE::Shared>) -> Result<(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>)> + 'static>, mut a: A) -> Result<Arc<BackendDAE::BackendDAE>> {
+pub fn mapEqSystem1<A: Clone + 'static + metamodelica::gc::MMTrace>(mut dae: Arc<BackendDAE::BackendDAE>, mut func: Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, A, Arc<BackendDAE::Shared>) -> Result<(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>)> + 'static>, mut a: A) -> Result<Arc<BackendDAE::BackendDAE>> {
     pub type Function<A: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, A, Arc<BackendDAE::Shared>) -> Result<(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>)> + 'static>;
 
     let mut odae: Arc<BackendDAE::BackendDAE>;
@@ -9374,7 +9374,7 @@ pub fn mapEqSystem1<A: Clone + 'static>(mut dae: Arc<BackendDAE::BackendDAE>, mu
     Ok(odae)
 }
 
-pub fn mapEqSystemAndFold<B: Clone + 'static>(mut inDAE: Arc<BackendDAE::BackendDAE>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, B) -> Result<(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, B)> + 'static>, mut initialExtra: B) -> Result<(Arc<BackendDAE::BackendDAE>, B)> {
+pub fn mapEqSystemAndFold<B: Clone + 'static + metamodelica::gc::MMTrace>(mut inDAE: Arc<BackendDAE::BackendDAE>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, B) -> Result<(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, B)> + 'static>, mut initialExtra: B) -> Result<(Arc<BackendDAE::BackendDAE>, B)> {
     pub type Function<B: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, B) -> Result<(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, B)> + 'static>;
 
     let mut outDAE: Arc<BackendDAE::BackendDAE>;
@@ -9393,7 +9393,7 @@ pub fn mapEqSystemAndFold<B: Clone + 'static>(mut inDAE: Arc<BackendDAE::Backend
     Ok((outDAE, outExtra))
 }
 
-pub fn foldEqSystem<B: Clone + 'static>(mut dae: Arc<BackendDAE::BackendDAE>, mut func: Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, B) -> Result<B> + 'static>, mut initialExtra: B) -> Result<B> {
+pub fn foldEqSystem<B: Clone + 'static + metamodelica::gc::MMTrace>(mut dae: Arc<BackendDAE::BackendDAE>, mut func: Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, B) -> Result<B> + 'static>, mut initialExtra: B) -> Result<B> {
     pub type Function<B: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, B) -> Result<B> + 'static>;
 
     let mut extra: B;
@@ -10199,7 +10199,7 @@ pub fn causalizeVarBindSystem(mut varLstIn: Arc<metamodelica::List<BackendDAE::V
     Ok((comps, ass1, ass2))
 }
 
-pub fn traverseEqSystemStrongComponents<Type_a: Clone + 'static>(mut syst: Arc<BackendDAE::EqSystem>, mut func: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, Type_a) -> Result<Type_a> + 'static>, mut inTypeA: Type_a) -> Result<Type_a> {
+pub fn traverseEqSystemStrongComponents<Type_a: Clone + 'static + metamodelica::gc::MMTrace>(mut syst: Arc<BackendDAE::EqSystem>, mut func: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, Type_a) -> Result<Type_a> + 'static>, mut inTypeA: Type_a) -> Result<Type_a> {
     pub type FuncExpType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, Type_a) -> Result<Type_a> + 'static>;
 
     let mut outTypeA: Type_a = inTypeA.clone();

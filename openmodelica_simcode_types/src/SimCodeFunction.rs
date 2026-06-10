@@ -73,7 +73,7 @@ pub struct FunctionCode {
 }
 
 impl metamodelica::gc::MMTrace for FunctionCode {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.name, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.mainFunction, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.functions, __mmv)?;
@@ -147,7 +147,7 @@ pub mod Function {
         },
     }
     impl metamodelica::gc::MMTrace for Function {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             match self {
                 Function::FUNCTION { name, outVars, functionArguments, variableDeclarations, body, visibility, info } => {
                     metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
@@ -300,7 +300,7 @@ pub enum RecordDeclaration {
     },
 }
 impl metamodelica::gc::MMTrace for RecordDeclaration {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             RecordDeclaration::RECORD_DECL_FULL { name, aliasName, defPath, variables, usedExternally } => {
                 metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
@@ -355,7 +355,7 @@ pub struct MakefileParams {
 }
 
 impl metamodelica::gc::MMTrace for MakefileParams {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.ccompiler, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.cxxcompiler, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.linker, __mmv)?;
@@ -427,7 +427,7 @@ pub mod SimExtArg {
         SIMNOEXTARG,
     }
     impl metamodelica::gc::MMTrace for SimExtArg {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             match self {
                 SimExtArg::SIMEXTARG { cref, isInput, outputIndex, isArray, hasBinding, type_ } => {
                     metamodelica::gc::MMTrace::mm_accept(cref, __mmv)?;
@@ -534,7 +534,7 @@ pub mod Variable {
         },
     }
     impl metamodelica::gc::MMTrace for Variable {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             match self {
                 Variable::VARIABLE { name, ty, value, instDims, parallelism, kind, bind_from_outside } => {
                     metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
@@ -623,7 +623,7 @@ pub enum Context {
     },
 }
 impl metamodelica::gc::MMTrace for Context {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             Context::SIMULATION_CONTEXT { genDiscrete } => {
                 metamodelica::gc::MMTrace::mm_accept(genDiscrete, __mmv)?;

@@ -116,7 +116,7 @@ pub struct TypedArg {
 }
 
 impl metamodelica::gc::MMTrace for TypedArg {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.name, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.value, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.ty, __mmv)?;
@@ -158,7 +158,7 @@ impl Ord for SlotType {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 impl metamodelica::gc::MMTrace for SlotType {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+    fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 impl Default for SlotType {
     fn default() -> Self { Self::POSITIONAL }
@@ -178,7 +178,7 @@ impl Ord for SlotEvalStatus {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 impl metamodelica::gc::MMTrace for SlotEvalStatus {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+    fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 impl Default for SlotEvalStatus {
     fn default() -> Self { Self::NOT_EVALUATED }
@@ -197,7 +197,7 @@ pub mod Slot {
     }
 
     impl metamodelica::gc::MMTrace for Slot {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             metamodelica::gc::MMTrace::mm_accept(&self.node, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.ty, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.default, __mmv)?;
@@ -273,7 +273,7 @@ pub mod FunctionMatchKind {
         NOT_COMPATIBLE,
     }
     impl metamodelica::gc::MMTrace for FunctionMatchKind {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             match self {
                 FunctionMatchKind::EXACT => Ok(()),
                 FunctionMatchKind::CAST => Ok(()),
@@ -386,7 +386,7 @@ pub mod MatchedFunction {
     }
 
     impl metamodelica::gc::MMTrace for MatchedFunction {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             metamodelica::gc::MMTrace::mm_accept(&self.func, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.args, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.mk, __mmv)?;
@@ -459,7 +459,7 @@ impl Ord for FunctionStatus {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 impl metamodelica::gc::MMTrace for FunctionStatus {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+    fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 impl Default for FunctionStatus {
     fn default() -> Self { Self::BUILTIN }
@@ -487,7 +487,7 @@ pub mod Function {
     }
 
     impl metamodelica::gc::MMTrace for Function {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             metamodelica::gc::MMTrace::mm_accept(&self.path, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.node, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.inputs, __mmv)?;
@@ -2156,7 +2156,7 @@ pub mod Function {
         Ok(r#fn)
     }
 
-    pub fn foldExp<ArgT: Clone + 'static>(mut r#fn: Arc<Function>, mut foldFn: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT, mut mapParameters: bool, mut mapBody: bool) -> Result<ArgT> {
+    pub fn foldExp<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut r#fn: Arc<Function>, mut foldFn: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT, mut mapParameters: bool, mut mapBody: bool) -> Result<ArgT> {
         pub type FoldFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>;
 
         let mut arg: ArgT = arg;
@@ -2171,7 +2171,7 @@ pub mod Function {
         Ok(arg)
     }
 
-    pub fn foldExpParameter<ArgT: Clone + 'static>(mut node: Arc<InstNode::InstNode>, mut foldFn: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
+    pub fn foldExpParameter<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut node: Arc<InstNode::InstNode>, mut foldFn: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
         pub type FoldFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>;
 
         let mut arg: ArgT = arg;

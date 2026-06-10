@@ -602,7 +602,7 @@ pub enum Statement {
     },
 }
 impl metamodelica::gc::MMTrace for Statement {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             Statement::ASSIGN { lhs, rhs } => {
                 metamodelica::gc::MMTrace::mm_accept(lhs, __mmv)?;
@@ -638,7 +638,7 @@ pub enum Exp {
     },
 }
 impl metamodelica::gc::MMTrace for Exp {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             Exp::ICONST { value } => {
                 metamodelica::gc::MMTrace::mm_accept(value, __mmv)?;
@@ -666,7 +666,7 @@ pub enum Operator {
     LESS,
 }
 impl metamodelica::gc::MMTrace for Operator {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             Operator::PLUS => Ok(()),
             Operator::TIMES => Ok(()),

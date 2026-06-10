@@ -143,7 +143,7 @@ pub struct SimCodeIndices {
 }
 
 impl metamodelica::gc::MMTrace for SimCodeIndices {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.uniqueIndex, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.realVarIndex, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.integerVarIndex, __mmv)?;
@@ -217,7 +217,7 @@ pub mod Identifier {
     }
 
     impl metamodelica::gc::MMTrace for Identifier {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             metamodelica::gc::MMTrace::mm_accept(&self.eqn, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.var_cref, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.resizable, __mmv)?;
@@ -321,7 +321,7 @@ pub mod SimCode {
     }
 
     impl metamodelica::gc::MMTrace for SimCode {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             metamodelica::gc::MMTrace::mm_accept(&self.modelInfo, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.literals, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.recordDecls, __mmv)?;
@@ -749,7 +749,7 @@ pub mod ModelInfo {
     }
 
     impl metamodelica::gc::MMTrace for ModelInfo {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             metamodelica::gc::MMTrace::mm_accept(&self.name, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.description, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.version, __mmv)?;
@@ -862,7 +862,7 @@ pub mod DaeModeData {
     }
 
     impl metamodelica::gc::MMTrace for DaeModeData {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             metamodelica::gc::MMTrace::mm_accept(&self.blcks, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.sparsityPattern, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.residualVars, __mmv)?;
@@ -1030,7 +1030,7 @@ impl Ord for DaeModeConfig {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 impl metamodelica::gc::MMTrace for DaeModeConfig {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+    fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 impl Default for DaeModeConfig {
     fn default() -> Self { Self::ALL }

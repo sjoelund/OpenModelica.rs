@@ -1,6 +1,12 @@
-//! `mutable-cycles` subcommand: estimate which generated datatypes would have
-//! to switch from `Arc` to a cycle-collecting pointer (e.g. `dumpster::sync::Gc`)
-//! to make reference cycles created through mutable cells collectable.
+//! `mutable-cycles` subcommand: report which generated datatypes can sit on
+//! reference cycles created through mutable cells.
+//!
+//! Informational: the runtime's trial-deletion collector
+//! (`metamodelica::gc::collect`) works over the `Arc` representation and
+//! needs no per-type opt-in, so this analysis no longer gates code
+//! generation. It remains useful for auditing where cycles can arise (e.g.
+//! when judging whether a `GCExt.gcollect` call site is worthwhile) and for
+//! sizing a future "skip registering never-cyclic cells" optimization.
 //!
 //! Background: immutable `Arc` values are constructed bottom-up and can never
 //! be cyclic on their own. A heap cycle can only be closed by *updating* a

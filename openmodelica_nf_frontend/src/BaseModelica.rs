@@ -59,7 +59,7 @@ impl Ord for ScalarizeMode {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 impl metamodelica::gc::MMTrace for ScalarizeMode {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+    fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 impl Default for ScalarizeMode {
     fn default() -> Self { Self::SCALARIZED }
@@ -78,7 +78,7 @@ impl Ord for RecordMode {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 impl metamodelica::gc::MMTrace for RecordMode {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+    fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 impl Default for RecordMode {
     fn default() -> Self { Self::WITH_RECORDS }
@@ -93,7 +93,7 @@ pub struct OutputFormat {
 }
 
 impl metamodelica::gc::MMTrace for OutputFormat {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.scalarizeMode, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.recordMode, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.moveBindings, __mmv)?;

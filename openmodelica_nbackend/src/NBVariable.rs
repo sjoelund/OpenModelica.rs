@@ -1990,7 +1990,7 @@ pub mod VariablePointers {
     }
 
     impl metamodelica::gc::MMTrace for VariablePointers {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             metamodelica::gc::MMTrace::mm_accept(&self.map, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.varArr, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.scalarized, __mmv)?;
@@ -2572,7 +2572,7 @@ pub mod VarData {
         VAR_DATA_EMPTY,
     }
     impl metamodelica::gc::MMTrace for VarData {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             match self {
                 VarData::VAR_DATA_SIM { uniqueIndex, variables, unknowns, knowns, initials, auxiliaries, aliasVars, nonTrivialAlias, derivatives, algebraics, discretes, discrete_states, clocked_states, previous, clocks, states, top_level_inputs, resizables, parameters, constants, records, external_objects, artificials, state_order } => {
                     metamodelica::gc::MMTrace::mm_accept(uniqueIndex, __mmv)?;
@@ -2809,7 +2809,7 @@ pub mod VarData {
         fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
     }
     impl metamodelica::gc::MMTrace for VarType {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+        fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
     }
 
     pub fn addTypedList(mut varData: Arc<VarData>, mut var_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>, mut varType: VarType) -> Result<Arc<VarData>> {

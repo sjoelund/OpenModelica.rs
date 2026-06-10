@@ -118,7 +118,7 @@ impl Ord for DifferentiationType {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 impl metamodelica::gc::MMTrace for DifferentiationType {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+    fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 impl Default for DifferentiationType {
     fn default() -> Self { Self::TIME }
@@ -149,7 +149,7 @@ pub mod DifferentiationArguments {
     }
 
     impl metamodelica::gc::MMTrace for DifferentiationArguments {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             metamodelica::gc::MMTrace::mm_accept(&self.diffCref, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.new_vars, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.diff_map, __mmv)?;

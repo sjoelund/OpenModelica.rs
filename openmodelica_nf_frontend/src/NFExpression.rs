@@ -264,7 +264,7 @@ pub enum NFExpression {
     },
 }
 impl metamodelica::gc::MMTrace for NFExpression {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             NFExpression::INTEGER { value } => {
                 metamodelica::gc::MMTrace::mm_accept(value, __mmv)?;
@@ -4040,7 +4040,7 @@ pub fn mapArrayElements(mut exp: Arc<NFExpression>, mut func: Arc<dyn ::std::ops
     Ok(outExp)
 }
 
-pub fn foldArray<ArgT: Clone + 'static>(mut expl: metamodelica::Array<Arc<NFExpression>>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
+pub fn foldArray<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut expl: metamodelica::Array<Arc<NFExpression>>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
     pub type FoldFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>, ArgT) -> Result<ArgT> + 'static>;
 
     let mut result: ArgT = arg.clone();
@@ -4051,7 +4051,7 @@ pub fn foldArray<ArgT: Clone + 'static>(mut expl: metamodelica::Array<Arc<NFExpr
     Ok(result)
 }
 
-pub fn foldList<ArgT: Clone + 'static>(mut expl: Arc<metamodelica::List<Arc<NFExpression>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
+pub fn foldList<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut expl: Arc<metamodelica::List<Arc<NFExpression>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
     pub type FoldFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>, ArgT) -> Result<ArgT> + 'static>;
 
     let mut result: ArgT = arg.clone();
@@ -4062,7 +4062,7 @@ pub fn foldList<ArgT: Clone + 'static>(mut expl: Arc<metamodelica::List<Arc<NFEx
     Ok(result)
 }
 
-pub fn foldOpt<ArgT: Clone + 'static>(mut exp: Option<Arc<NFExpression>>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
+pub fn foldOpt<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut exp: Option<Arc<NFExpression>>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
     pub type FoldFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>, ArgT) -> Result<ArgT> + 'static>;
 
     let mut result: ArgT;
@@ -4078,7 +4078,7 @@ pub fn foldOpt<ArgT: Clone + 'static>(mut exp: Option<Arc<NFExpression>>, mut fu
     Ok(result)
 }
 
-pub fn fold<ArgT: Clone + 'static>(mut exp: Arc<NFExpression>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
+pub fn fold<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut exp: Arc<NFExpression>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
     pub type FoldFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>, ArgT) -> Result<ArgT> + 'static>;
 
     let mut result: ArgT;
@@ -4528,7 +4528,7 @@ pub fn applyShallowOpt(mut exp: Option<Arc<NFExpression>>, mut func: Arc<dyn ::s
     Ok(())
 }
 
-pub fn mapFold<ArgT: Clone + 'static>(mut exp: Arc<NFExpression>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFExpression>, ArgT) -> Result<(Arc<NFExpression>, ArgT)> + 'static>, mut arg: ArgT) -> Result<(Arc<NFExpression>, ArgT)> {
+pub fn mapFold<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut exp: Arc<NFExpression>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFExpression>, ArgT) -> Result<(Arc<NFExpression>, ArgT)> + 'static>, mut arg: ArgT) -> Result<(Arc<NFExpression>, ArgT)> {
     pub type MapFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>, ArgT) -> Result<(Arc<NFExpression>, ArgT)> + 'static>;
 
     let mut outExp: Arc<NFExpression>;
@@ -4715,7 +4715,7 @@ pub fn mapFold<ArgT: Clone + 'static>(mut exp: Arc<NFExpression>, mut func: Arc<
     Ok((outExp, arg))
 }
 
-pub fn mapFoldOpt<ArgT: Clone + 'static>(mut exp: Option<Arc<NFExpression>>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFExpression>, ArgT) -> Result<(Arc<NFExpression>, ArgT)> + 'static>, mut arg: ArgT) -> Result<(Option<Arc<NFExpression>>, ArgT)> {
+pub fn mapFoldOpt<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut exp: Option<Arc<NFExpression>>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFExpression>, ArgT) -> Result<(Arc<NFExpression>, ArgT)> + 'static>, mut arg: ArgT) -> Result<(Option<Arc<NFExpression>>, ArgT)> {
     pub type MapFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>, ArgT) -> Result<(Arc<NFExpression>, ArgT)> + 'static>;
 
     let mut outExp: Option<Arc<NFExpression>>;
@@ -4733,7 +4733,7 @@ pub fn mapFoldOpt<ArgT: Clone + 'static>(mut exp: Option<Arc<NFExpression>>, mut
     Ok((outExp, arg))
 }
 
-pub fn mapFoldShallow<ArgT: Clone + 'static>(mut exp: Arc<NFExpression>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFExpression>, ArgT) -> Result<(Arc<NFExpression>, ArgT)> + 'static>, mut arg: ArgT) -> Result<(Arc<NFExpression>, ArgT)> {
+pub fn mapFoldShallow<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut exp: Arc<NFExpression>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFExpression>, ArgT) -> Result<(Arc<NFExpression>, ArgT)> + 'static>, mut arg: ArgT) -> Result<(Arc<NFExpression>, ArgT)> {
     pub type MapFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>, ArgT) -> Result<(Arc<NFExpression>, ArgT)> + 'static>;
 
     let mut outExp: Arc<NFExpression>;
@@ -4907,7 +4907,7 @@ pub fn mapFoldShallow<ArgT: Clone + 'static>(mut exp: Arc<NFExpression>, mut fun
     Ok((outExp, arg))
 }
 
-pub fn mapFoldOptShallow<ArgT: Clone + 'static>(mut exp: Option<Arc<NFExpression>>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFExpression>, ArgT) -> Result<(Arc<NFExpression>, ArgT)> + 'static>, mut arg: ArgT) -> Result<(Option<Arc<NFExpression>>, ArgT)> {
+pub fn mapFoldOptShallow<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut exp: Option<Arc<NFExpression>>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFExpression>, ArgT) -> Result<(Arc<NFExpression>, ArgT)> + 'static>, mut arg: ArgT) -> Result<(Option<Arc<NFExpression>>, ArgT)> {
     pub type MapFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>, ArgT) -> Result<(Arc<NFExpression>, ArgT)> + 'static>;
 
     let mut outExp: Option<Arc<NFExpression>>;

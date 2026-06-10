@@ -96,7 +96,7 @@ pub fn countElem(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> i3
     count
 }
 
-pub fn indexTplGt<T: Clone + 'static>(mut tpl1: (i32, T), mut tpl2: (i32, T)) -> bool {
+pub fn indexTplGt<T: Clone + 'static + metamodelica::gc::MMTrace>(mut tpl1: (i32, T), mut tpl2: (i32, T)) -> bool {
     let mut gt: bool;
     let mut i1: i32;
     let mut i2: i32;

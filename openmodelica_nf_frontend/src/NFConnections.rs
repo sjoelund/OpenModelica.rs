@@ -69,7 +69,7 @@ pub struct NFConnections {
 }
 
 impl metamodelica::gc::MMTrace for NFConnections {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.connections, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.flows, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.broken, __mmv)?;
@@ -97,7 +97,7 @@ pub struct BrokenEdge {
 }
 
 impl metamodelica::gc::MMTrace for BrokenEdge {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.lhs, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.rhs, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.source, __mmv)?;

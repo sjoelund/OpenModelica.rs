@@ -94,7 +94,7 @@ pub enum NFSubscript {
     },
 }
 impl metamodelica::gc::MMTrace for NFSubscript {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             NFSubscript::RAW_SUBSCRIPT { subscript } => {
                 metamodelica::gc::MMTrace::mm_accept(subscript, __mmv)?;
@@ -652,7 +652,7 @@ pub fn mapShallowExp(mut subscript: Arc<NFSubscript>, mut func: Arc<dyn ::std::o
     Ok(outSubscript)
 }
 
-pub fn foldExp<ArgT: Clone + 'static>(mut subscript: Arc<NFSubscript>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
+pub fn foldExp<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut subscript: Arc<NFSubscript>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
     pub type FoldFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>;
 
     let mut result: ArgT;
@@ -666,7 +666,7 @@ pub fn foldExp<ArgT: Clone + 'static>(mut subscript: Arc<NFSubscript>, mut func:
     Ok(result)
 }
 
-pub fn mapFoldExp<ArgT: Clone + 'static>(mut subscript: Arc<NFSubscript>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<(Arc<Expression::NFExpression>, ArgT)> + 'static>, mut arg: ArgT) -> Result<(Arc<NFSubscript>, ArgT)> {
+pub fn mapFoldExp<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut subscript: Arc<NFSubscript>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<(Arc<Expression::NFExpression>, ArgT)> + 'static>, mut arg: ArgT) -> Result<(Arc<NFSubscript>, ArgT)> {
     pub type MapFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<(Arc<Expression::NFExpression>, ArgT)> + 'static>;
 
     let mut outSubscript: Arc<NFSubscript>;
@@ -695,7 +695,7 @@ pub fn mapFoldExp<ArgT: Clone + 'static>(mut subscript: Arc<NFSubscript>, mut fu
     Ok((outSubscript, arg))
 }
 
-pub fn mapFoldExpShallow<ArgT: Clone + 'static>(mut subscript: Arc<NFSubscript>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<(Arc<Expression::NFExpression>, ArgT)> + 'static>, mut arg: ArgT) -> Result<(Arc<NFSubscript>, ArgT)> {
+pub fn mapFoldExpShallow<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut subscript: Arc<NFSubscript>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<(Arc<Expression::NFExpression>, ArgT)> + 'static>, mut arg: ArgT) -> Result<(Arc<NFSubscript>, ArgT)> {
     pub type MapFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<(Arc<Expression::NFExpression>, ArgT)> + 'static>;
 
     let mut outSubscript: Arc<NFSubscript>;

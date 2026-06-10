@@ -76,7 +76,7 @@ pub enum Text {
     },
 }
 impl metamodelica::gc::MMTrace for Text {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             Text::MEM_TEXT { tokens, blocksStack } => {
                 metamodelica::gc::MMTrace::mm_accept(tokens, __mmv)?;
@@ -119,7 +119,7 @@ pub struct BlockTypeFileText {
 }
 
 impl metamodelica::gc::MMTrace for BlockTypeFileText {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.bt, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.nchars, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.aind, __mmv)?;
@@ -156,7 +156,7 @@ pub enum StringToken {
     },
 }
 impl metamodelica::gc::MMTrace for StringToken {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             StringToken::ST_NEW_LINE => Ok(()),
             StringToken::ST_STRING { value } => {
@@ -215,7 +215,7 @@ pub enum BlockType {
     },
 }
 impl metamodelica::gc::MMTrace for BlockType {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             BlockType::BT_TEXT => Ok(()),
             BlockType::BT_INDENT { width } => {
@@ -269,7 +269,7 @@ pub struct IterOptions {
 }
 
 impl metamodelica::gc::MMTrace for IterOptions {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.startIndex0, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.empty, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.separator, __mmv)?;
@@ -1609,7 +1609,7 @@ pub fn tplCallWithFailErrorNoArg(mut inFun: Arc<dyn ::std::ops::Fn(Text) -> Resu
     Ok(txt)
 }
 
-pub fn tplCallWithFailError<ArgType1: Clone + 'static>(mut inFun: Arc<dyn ::std::ops::Fn(Text, ArgType1) -> Result<Text> + 'static>, mut inArg: ArgType1, mut txt: Text) -> Result<Text> {
+pub fn tplCallWithFailError<ArgType1: Clone + 'static + metamodelica::gc::MMTrace>(mut inFun: Arc<dyn ::std::ops::Fn(Text, ArgType1) -> Result<Text> + 'static>, mut inArg: ArgType1, mut txt: Text) -> Result<Text> {
     pub type Tpl_Fun<ArgType1: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Text, ArgType1) -> Result<Text> + 'static>;
 
     let mut txt: Text = txt;
@@ -1617,7 +1617,7 @@ pub fn tplCallWithFailError<ArgType1: Clone + 'static>(mut inFun: Arc<dyn ::std:
     Ok(txt)
 }
 
-pub fn tplCallWithFailError2<ArgType1: Clone + 'static, ArgType2: Clone + 'static>(mut inFun: Arc<dyn ::std::ops::Fn(Text, ArgType1, ArgType2) -> Result<Text> + 'static>, mut inArgA: ArgType1, mut inArgB: ArgType2, mut txt: Text) -> Result<Text> {
+pub fn tplCallWithFailError2<ArgType1: Clone + 'static + metamodelica::gc::MMTrace, ArgType2: Clone + 'static + metamodelica::gc::MMTrace>(mut inFun: Arc<dyn ::std::ops::Fn(Text, ArgType1, ArgType2) -> Result<Text> + 'static>, mut inArgA: ArgType1, mut inArgB: ArgType2, mut txt: Text) -> Result<Text> {
     pub type Tpl_Fun<ArgType1: Clone + 'static, ArgType2: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Text, ArgType1, ArgType2) -> Result<Text> + 'static>;
 
     let mut txt: Text = txt;
@@ -1625,7 +1625,7 @@ pub fn tplCallWithFailError2<ArgType1: Clone + 'static, ArgType2: Clone + 'stati
     Ok(txt)
 }
 
-pub fn tplCallWithFailError3<ArgType1: Clone + 'static, ArgType2: Clone + 'static, ArgType3: Clone + 'static>(mut inFun: Arc<dyn ::std::ops::Fn(Text, ArgType1, ArgType2, ArgType3) -> Result<Text> + 'static>, mut inArgA: ArgType1, mut inArgB: ArgType2, mut inArgC: ArgType3, mut txt: Text) -> Result<Text> {
+pub fn tplCallWithFailError3<ArgType1: Clone + 'static + metamodelica::gc::MMTrace, ArgType2: Clone + 'static + metamodelica::gc::MMTrace, ArgType3: Clone + 'static + metamodelica::gc::MMTrace>(mut inFun: Arc<dyn ::std::ops::Fn(Text, ArgType1, ArgType2, ArgType3) -> Result<Text> + 'static>, mut inArgA: ArgType1, mut inArgB: ArgType2, mut inArgC: ArgType3, mut txt: Text) -> Result<Text> {
     pub type Tpl_Fun<ArgType1: Clone + 'static, ArgType2: Clone + 'static, ArgType3: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Text, ArgType1, ArgType2, ArgType3) -> Result<Text> + 'static>;
 
     let mut txt: Text = txt;
@@ -1633,7 +1633,7 @@ pub fn tplCallWithFailError3<ArgType1: Clone + 'static, ArgType2: Clone + 'stati
     Ok(txt)
 }
 
-pub fn tplString<ArgType1: Clone + 'static>(mut inFun: Arc<dyn ::std::ops::Fn(Text, ArgType1) -> Result<Text> + 'static>, mut inArg: ArgType1) -> Result<ArcStr> {
+pub fn tplString<ArgType1: Clone + 'static + metamodelica::gc::MMTrace>(mut inFun: Arc<dyn ::std::ops::Fn(Text, ArgType1) -> Result<Text> + 'static>, mut inArg: ArgType1) -> Result<ArcStr> {
     pub type Tpl_Fun<ArgType1: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Text, ArgType1) -> Result<Text> + 'static>;
 
     let mut outString: ArcStr;
@@ -1646,7 +1646,7 @@ pub fn tplString<ArgType1: Clone + 'static>(mut inFun: Arc<dyn ::std::ops::Fn(Te
     Ok(outString)
 }
 
-pub fn tplString2<ArgType1: Clone + 'static, ArgType2: Clone + 'static>(mut inFun: Arc<dyn ::std::ops::Fn(Text, ArgType1, ArgType2) -> Result<Text> + 'static>, mut inArgA: ArgType1, mut inArgB: ArgType2) -> Result<ArcStr> {
+pub fn tplString2<ArgType1: Clone + 'static + metamodelica::gc::MMTrace, ArgType2: Clone + 'static + metamodelica::gc::MMTrace>(mut inFun: Arc<dyn ::std::ops::Fn(Text, ArgType1, ArgType2) -> Result<Text> + 'static>, mut inArgA: ArgType1, mut inArgB: ArgType2) -> Result<ArcStr> {
     pub type Tpl_Fun<ArgType1: Clone + 'static, ArgType2: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Text, ArgType1, ArgType2) -> Result<Text> + 'static>;
 
     let mut outString: ArcStr;
@@ -1659,7 +1659,7 @@ pub fn tplString2<ArgType1: Clone + 'static, ArgType2: Clone + 'static>(mut inFu
     Ok(outString)
 }
 
-pub fn tplString3<ArgType1: Clone + 'static, ArgType2: Clone + 'static, ArgType3: Clone + 'static>(mut inFun: Arc<dyn ::std::ops::Fn(Text, ArgType1, ArgType2, ArgType3) -> Result<Text> + 'static>, mut inArgA: ArgType1, mut inArgB: ArgType2, mut inArgC: ArgType3) -> Result<ArcStr> {
+pub fn tplString3<ArgType1: Clone + 'static + metamodelica::gc::MMTrace, ArgType2: Clone + 'static + metamodelica::gc::MMTrace, ArgType3: Clone + 'static + metamodelica::gc::MMTrace>(mut inFun: Arc<dyn ::std::ops::Fn(Text, ArgType1, ArgType2, ArgType3) -> Result<Text> + 'static>, mut inArgA: ArgType1, mut inArgB: ArgType2, mut inArgC: ArgType3) -> Result<ArcStr> {
     pub type Tpl_Fun<ArgType1: Clone + 'static, ArgType2: Clone + 'static, ArgType3: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Text, ArgType1, ArgType2, ArgType3) -> Result<Text> + 'static>;
 
     let mut outString: ArcStr;
@@ -1672,7 +1672,7 @@ pub fn tplString3<ArgType1: Clone + 'static, ArgType2: Clone + 'static, ArgType3
     Ok(outString)
 }
 
-pub fn tplPrint<ArgType1: Clone + 'static>(mut inFun: Arc<dyn ::std::ops::Fn(Text, ArgType1) -> Result<Text> + 'static>, mut inArg: ArgType1) -> Result<()> {
+pub fn tplPrint<ArgType1: Clone + 'static + metamodelica::gc::MMTrace>(mut inFun: Arc<dyn ::std::ops::Fn(Text, ArgType1) -> Result<Text> + 'static>, mut inArg: ArgType1) -> Result<()> {
     pub type Tpl_Fun<ArgType1: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Text, ArgType1) -> Result<Text> + 'static>;
 
     let mut txt: Text;
@@ -1684,7 +1684,7 @@ pub fn tplPrint<ArgType1: Clone + 'static>(mut inFun: Arc<dyn ::std::ops::Fn(Tex
     Ok(())
 }
 
-pub fn tplPrint2<ArgType1: Clone + 'static, ArgType2: Clone + 'static>(mut inFun: Arc<dyn ::std::ops::Fn(Text, ArgType1, ArgType2) -> Result<Text> + 'static>, mut inArgA: ArgType1, mut inArgB: ArgType2) -> Result<()> {
+pub fn tplPrint2<ArgType1: Clone + 'static + metamodelica::gc::MMTrace, ArgType2: Clone + 'static + metamodelica::gc::MMTrace>(mut inFun: Arc<dyn ::std::ops::Fn(Text, ArgType1, ArgType2) -> Result<Text> + 'static>, mut inArgA: ArgType1, mut inArgB: ArgType2) -> Result<()> {
     pub type Tpl_Fun<ArgType1: Clone + 'static, ArgType2: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Text, ArgType1, ArgType2) -> Result<Text> + 'static>;
 
     let mut txt: Text;
@@ -1696,7 +1696,7 @@ pub fn tplPrint2<ArgType1: Clone + 'static, ArgType2: Clone + 'static>(mut inFun
     Ok(())
 }
 
-pub fn tplPrint3<ArgType1: Clone + 'static, ArgType2: Clone + 'static, ArgType3: Clone + 'static>(mut inFun: Arc<dyn ::std::ops::Fn(Text, ArgType1, ArgType2, ArgType3) -> Result<Text> + 'static>, mut inArgA: ArgType1, mut inArgB: ArgType2, mut inArgC: ArgType3) -> Result<()> {
+pub fn tplPrint3<ArgType1: Clone + 'static + metamodelica::gc::MMTrace, ArgType2: Clone + 'static + metamodelica::gc::MMTrace, ArgType3: Clone + 'static + metamodelica::gc::MMTrace>(mut inFun: Arc<dyn ::std::ops::Fn(Text, ArgType1, ArgType2, ArgType3) -> Result<Text> + 'static>, mut inArgA: ArgType1, mut inArgB: ArgType2, mut inArgC: ArgType3) -> Result<()> {
     pub type Tpl_Fun<ArgType1: Clone + 'static, ArgType2: Clone + 'static, ArgType3: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Text, ArgType1, ArgType2, ArgType3) -> Result<Text> + 'static>;
 
     let mut txt: Text;
@@ -1708,7 +1708,7 @@ pub fn tplPrint3<ArgType1: Clone + 'static, ArgType2: Clone + 'static, ArgType3:
     Ok(())
 }
 
-pub fn tplNoret3<ArgType1: Clone + 'static, ArgType2: Clone + 'static, ArgType3: Clone + 'static>(mut inFun: Arc<dyn ::std::ops::Fn(Text, ArgType1, ArgType2, ArgType3) -> Result<Text> + 'static>, mut inArg: ArgType1, mut inArg2: ArgType2, mut inArg3: ArgType3) -> Result<()> {
+pub fn tplNoret3<ArgType1: Clone + 'static + metamodelica::gc::MMTrace, ArgType2: Clone + 'static + metamodelica::gc::MMTrace, ArgType3: Clone + 'static + metamodelica::gc::MMTrace>(mut inFun: Arc<dyn ::std::ops::Fn(Text, ArgType1, ArgType2, ArgType3) -> Result<Text> + 'static>, mut inArg: ArgType1, mut inArg2: ArgType2, mut inArg3: ArgType3) -> Result<()> {
     pub type Tpl_Fun<ArgType1: Clone + 'static, ArgType2: Clone + 'static, ArgType3: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Text, ArgType1, ArgType2, ArgType3) -> Result<Text> + 'static>;
 
     let mut nErr: i32;
@@ -1718,7 +1718,7 @@ pub fn tplNoret3<ArgType1: Clone + 'static, ArgType2: Clone + 'static, ArgType3:
     Ok(())
 }
 
-pub fn tplNoret2<ArgType1: Clone + 'static, ArgType2: Clone + 'static>(mut inFun: Arc<dyn ::std::ops::Fn(Text, ArgType1, ArgType2) -> Result<Text> + 'static>, mut inArg: ArgType1, mut inArg2: ArgType2) -> Result<()> {
+pub fn tplNoret2<ArgType1: Clone + 'static + metamodelica::gc::MMTrace, ArgType2: Clone + 'static + metamodelica::gc::MMTrace>(mut inFun: Arc<dyn ::std::ops::Fn(Text, ArgType1, ArgType2) -> Result<Text> + 'static>, mut inArg: ArgType1, mut inArg2: ArgType2) -> Result<()> {
     pub type Tpl_Fun<ArgType1: Clone + 'static, ArgType2: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Text, ArgType1, ArgType2) -> Result<Text> + 'static>;
 
     let mut nErr: i32;
@@ -1728,7 +1728,7 @@ pub fn tplNoret2<ArgType1: Clone + 'static, ArgType2: Clone + 'static>(mut inFun
     Ok(())
 }
 
-pub fn tplNoret<ArgType1: Clone + 'static>(mut inFun: Arc<dyn ::std::ops::Fn(Text, ArgType1) -> Result<Text> + 'static>, mut inArg: ArgType1) -> Result<()> {
+pub fn tplNoret<ArgType1: Clone + 'static + metamodelica::gc::MMTrace>(mut inFun: Arc<dyn ::std::ops::Fn(Text, ArgType1) -> Result<Text> + 'static>, mut inArg: ArgType1) -> Result<()> {
     pub type Tpl_Fun<ArgType1: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Text, ArgType1) -> Result<Text> + 'static>;
 
     let mut nErr: i32;
@@ -1822,7 +1822,7 @@ pub fn addSourceTemplateError(mut inErrMsg: ArcStr, mut inInfo: SourceInfo) -> R
 }
 
 //for completeness
-fn addTemplateErrorFunc<T: Clone + 'static>(mut func: T) -> Result<()> {
+fn addTemplateErrorFunc<T: Clone + 'static + metamodelica::gc::MMTrace>(mut func: T) -> Result<()> {
     Error::addMessage(Error::TEMPLATE_ERROR_FUNC.clone(), list![((System::dladdr(func.clone())).0).clone()])?;
     Ok(())
 }

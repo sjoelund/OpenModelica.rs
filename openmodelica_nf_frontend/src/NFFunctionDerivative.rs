@@ -77,7 +77,7 @@ pub struct NFFunctionDerivative {
 }
 
 impl metamodelica::gc::MMTrace for NFFunctionDerivative {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.derivativeFn, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.derivedFn, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.order, __mmv)?;
@@ -113,7 +113,7 @@ impl Ord for Condition {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 impl metamodelica::gc::MMTrace for Condition {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+    fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 impl Default for Condition {
     fn default() -> Self { Self::ZERO_DERIVATIVE }

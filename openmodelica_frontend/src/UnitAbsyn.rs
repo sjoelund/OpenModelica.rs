@@ -56,7 +56,7 @@ pub enum UnitCheckResult {
     },
 }
 impl metamodelica::gc::MMTrace for UnitCheckResult {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             UnitCheckResult::CONSISTENT => Ok(()),
             UnitCheckResult::INCONSISTENT { u1, u2 } => {
@@ -81,7 +81,7 @@ pub struct SpecUnit {
 }
 
 impl metamodelica::gc::MMTrace for SpecUnit {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.typeParameters, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.units, __mmv)?;
         Ok(())
@@ -108,7 +108,7 @@ pub struct TypeParameter {
 }
 
 impl metamodelica::gc::MMTrace for TypeParameter {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.name, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.indx, __mmv)?;
         Ok(())
@@ -137,7 +137,7 @@ pub enum Unit {
     UNSPECIFIED,
 }
 impl metamodelica::gc::MMTrace for Unit {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             Unit::SPECIFIED { specified } => {
                 metamodelica::gc::MMTrace::mm_accept(specified, __mmv)?;
@@ -219,7 +219,7 @@ pub enum UnitTerm {
     },
 }
 impl metamodelica::gc::MMTrace for UnitTerm {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             UnitTerm::ADD { ut1, ut2, origExp } => {
                 metamodelica::gc::MMTrace::mm_accept(ut1, __mmv)?;
@@ -285,7 +285,7 @@ pub struct Store {
 }
 
 impl metamodelica::gc::MMTrace for Store {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.storeVector, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.numElts, __mmv)?;
         Ok(())
@@ -317,7 +317,7 @@ pub enum InstStore {
     NOSTORE,
 }
 impl metamodelica::gc::MMTrace for InstStore {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             InstStore::INSTSTORE { store, ht, checkResult } => {
                 metamodelica::gc::MMTrace::mm_accept(store, __mmv)?;

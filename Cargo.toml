@@ -48,7 +48,6 @@ serde_json = "1"
 # mutable cells (Mutable/Pointer). Only the `unsync` half is used: MetaModelica
 # payloads are deliberately not Send (Rc-based arrays, non-Send callbacks), so
 # cycle-capable values never cross threads. See metamodelica::gc.
-dumpster = "2.1.0"
 metamodelica = {path = "metamodelica"}
 openmodelica_ast = {path = "openmodelica_ast"}
 openmodelica_error = {path = "openmodelica_error"}

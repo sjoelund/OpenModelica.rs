@@ -61,7 +61,7 @@ pub struct NFCallAttributes {
 }
 
 impl metamodelica::gc::MMTrace for NFCallAttributes {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.tuple_, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.builtin, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.isImpure, __mmv)?;

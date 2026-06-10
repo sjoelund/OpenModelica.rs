@@ -65,7 +65,7 @@ pub struct BinTree {
 }
 
 impl metamodelica::gc::MMTrace for BinTree {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.value, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.leftSubTree, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.rightSubTree, __mmv)?;
@@ -96,7 +96,7 @@ pub struct TreeValue {
 }
 
 impl metamodelica::gc::MMTrace for TreeValue {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.key, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.value, __mmv)?;
         Ok(())

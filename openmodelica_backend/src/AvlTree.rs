@@ -77,7 +77,7 @@ pub struct Tree<Key: Clone, Val: Clone> {
 }
 
 impl<Key: Clone + metamodelica::gc::MMTrace, Val: Clone + metamodelica::gc::MMTrace> metamodelica::gc::MMTrace for Tree<Key, Val> {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.root, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.keyCompareFunc, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.keyStrFuncOpt, __mmv)?;
@@ -144,7 +144,7 @@ pub enum Node<Key, Val> {
     NO_NODE,
 }
 impl<Key: Clone + metamodelica::gc::MMTrace, Val: Clone + metamodelica::gc::MMTrace> metamodelica::gc::MMTrace for Node<Key, Val> {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             Node::NODE { item, height, left, right } => {
                 metamodelica::gc::MMTrace::mm_accept(item, __mmv)?;
@@ -172,7 +172,7 @@ pub enum Item<Key, Val> {
     NO_ITEM,
 }
 impl<Key: Clone + metamodelica::gc::MMTrace, Val: Clone + metamodelica::gc::MMTrace> metamodelica::gc::MMTrace for Item<Key, Val> {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             Item::ITEM { key, val } => {
                 metamodelica::gc::MMTrace::mm_accept(key, __mmv)?;
@@ -185,20 +185,20 @@ impl<Key: Clone + metamodelica::gc::MMTrace, Val: Clone + metamodelica::gc::MMTr
 }
 pub use self::Item::{ITEM,NO_ITEM};
 
-pub fn name<Key: Clone + 'static, Val: Clone + 'static>(mut tree: Tree<Key, Val>) -> Result<ArcStr> {
+pub fn name<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clone + 'static + metamodelica::gc::MMTrace>(mut tree: Tree<Key, Val>) -> Result<ArcStr> {
     let mut name: ArcStr;
     let Tree { name: __pa0, .. } = (tree.clone()) else { bail!("pattern mismatch") };
     name = __pa0.clone();
     Ok(name)
 }
 
-pub fn create<Key: Clone + 'static, Val: Clone + 'static>(mut name: ArcStr, mut inKeyCompareFunc: Arc<dyn ::std::ops::Fn(Key, Key) -> Result<i32> + 'static>, mut inKeyStrFuncOpt: Option<Arc<dyn ::std::ops::Fn(Key) -> Result<ArcStr> + 'static>>, mut inValStrFuncOpt: Option<Arc<dyn ::std::ops::Fn(Val) -> Result<ArcStr> + 'static>>, mut inUpdateCheckFuncOpt: Option<Arc<dyn ::std::ops::Fn(Item<Key, Val>, Item<Key, Val>) -> Result<bool> + 'static>>) -> Tree<Key, Val> {
+pub fn create<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clone + 'static + metamodelica::gc::MMTrace>(mut name: ArcStr, mut inKeyCompareFunc: Arc<dyn ::std::ops::Fn(Key, Key) -> Result<i32> + 'static>, mut inKeyStrFuncOpt: Option<Arc<dyn ::std::ops::Fn(Key) -> Result<ArcStr> + 'static>>, mut inValStrFuncOpt: Option<Arc<dyn ::std::ops::Fn(Val) -> Result<ArcStr> + 'static>>, mut inUpdateCheckFuncOpt: Option<Arc<dyn ::std::ops::Fn(Item<Key, Val>, Item<Key, Val>) -> Result<bool> + 'static>>) -> Tree<Key, Val> {
     let mut tree: Tree<Key, Val>;
     tree = Tree { root: Arc::new(Node::NODE { item: crate::AvlTree::Item::NO_ITEM, height: 0, left: Arc::new(crate::AvlTree::Node::NO_NODE), right: Arc::new(crate::AvlTree::Node::NO_NODE) }), keyCompareFunc: inKeyCompareFunc.clone(), keyStrFuncOpt: inKeyStrFuncOpt.clone(), valStrFuncOpt: inValStrFuncOpt.clone(), updateCheckFuncOpt: inUpdateCheckFuncOpt.clone(), name: (name.clone()).clone() };
     tree
 }
 
-pub fn hasPrintingFunctions<Key: Clone + 'static + PartialEq, Val: Clone + 'static + PartialEq>(mut tree: Tree<Key, Val>) -> Result<bool> {
+pub fn hasPrintingFunctions<Key: Clone + 'static + metamodelica::gc::MMTrace + PartialEq, Val: Clone + 'static + metamodelica::gc::MMTrace + PartialEq>(mut tree: Tree<Key, Val>) -> Result<bool> {
     let mut hasPrinting: bool;
     let mut kf: Option<FuncTypeKeyToStr<Key>>;
     let mut vf: Option<FuncTypeValToStr<Val>>;
@@ -209,7 +209,7 @@ pub fn hasPrintingFunctions<Key: Clone + 'static + PartialEq, Val: Clone + 'stat
     Ok(hasPrinting)
 }
 
-pub fn hasUpdateCheckFunction<Key: Clone + 'static + PartialEq, Val: Clone + 'static + PartialEq>(mut tree: Tree<Key, Val>) -> Result<bool> {
+pub fn hasUpdateCheckFunction<Key: Clone + 'static + metamodelica::gc::MMTrace + PartialEq, Val: Clone + 'static + metamodelica::gc::MMTrace + PartialEq>(mut tree: Tree<Key, Val>) -> Result<bool> {
     let mut hasUpdateCheck: bool;
     let mut uf: Option<FuncTypeItemUpdateCheck<Key, Val>>;
     let Tree { updateCheckFuncOpt: __pa0, .. } = (tree.clone()) else { bail!("pattern mismatch") };
@@ -218,7 +218,7 @@ pub fn hasUpdateCheckFunction<Key: Clone + 'static + PartialEq, Val: Clone + 'st
     Ok(hasUpdateCheck)
 }
 
-pub fn getUpdateCheckFunc<Key: Clone + 'static, Val: Clone + 'static>(mut tree: Tree<Key, Val>) -> Result<Arc<dyn ::std::ops::Fn(Item<Key, Val>, Item<Key, Val>) -> Result<bool> + 'static>> {
+pub fn getUpdateCheckFunc<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clone + 'static + metamodelica::gc::MMTrace>(mut tree: Tree<Key, Val>) -> Result<Arc<dyn ::std::ops::Fn(Item<Key, Val>, Item<Key, Val>) -> Result<bool> + 'static>> {
     let mut outUpdateCheckFunc: FuncTypeItemUpdateCheck<Key, Val>;
     let __pa0 = ::match_deref::match_deref! { match &(tree.clone()) {
         Tree { updateCheckFuncOpt: Some(__pa0), .. } => __pa0.clone(),
@@ -228,14 +228,14 @@ pub fn getUpdateCheckFunc<Key: Clone + 'static, Val: Clone + 'static>(mut tree: 
     Ok(outUpdateCheckFunc)
 }
 
-pub fn getKeyCompareFunc<Key: Clone + 'static, Val: Clone + 'static>(mut tree: Tree<Key, Val>) -> Result<Arc<dyn ::std::ops::Fn(Key, Key) -> Result<i32> + 'static>> {
+pub fn getKeyCompareFunc<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clone + 'static + metamodelica::gc::MMTrace>(mut tree: Tree<Key, Val>) -> Result<Arc<dyn ::std::ops::Fn(Key, Key) -> Result<i32> + 'static>> {
     let mut outKeyCompareFunc: FuncTypeKeyCompare<Key>;
     let Tree { keyCompareFunc: __pa0, .. } = (tree.clone()) else { bail!("pattern mismatch") };
     outKeyCompareFunc = __pa0.clone();
     Ok(outKeyCompareFunc)
 }
 
-pub fn getKeyToStrFunc<Key: Clone + 'static, Val: Clone + 'static>(mut tree: Tree<Key, Val>) -> Result<Arc<dyn ::std::ops::Fn(Key) -> Result<ArcStr> + 'static>> {
+pub fn getKeyToStrFunc<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clone + 'static + metamodelica::gc::MMTrace>(mut tree: Tree<Key, Val>) -> Result<Arc<dyn ::std::ops::Fn(Key) -> Result<ArcStr> + 'static>> {
     let mut outKey2StrFunc: FuncTypeKeyToStr<Key>;
     let __pa0 = ::match_deref::match_deref! { match &(tree.clone()) {
         Tree { keyStrFuncOpt: Some(__pa0), .. } => __pa0.clone(),
@@ -245,7 +245,7 @@ pub fn getKeyToStrFunc<Key: Clone + 'static, Val: Clone + 'static>(mut tree: Tre
     Ok(outKey2StrFunc)
 }
 
-pub fn getValToStrFunc<Key: Clone + 'static, Val: Clone + 'static>(mut tree: Tree<Key, Val>) -> Result<Arc<dyn ::std::ops::Fn(Val) -> Result<ArcStr> + 'static>> {
+pub fn getValToStrFunc<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clone + 'static + metamodelica::gc::MMTrace>(mut tree: Tree<Key, Val>) -> Result<Arc<dyn ::std::ops::Fn(Val) -> Result<ArcStr> + 'static>> {
     let mut outVal2StrFunc: FuncTypeValToStr<Val>;
     let __pa0 = ::match_deref::match_deref! { match &(tree.clone()) {
         Tree { valStrFuncOpt: Some(__pa0), .. } => __pa0.clone(),
@@ -255,13 +255,13 @@ pub fn getValToStrFunc<Key: Clone + 'static, Val: Clone + 'static>(mut tree: Tre
     Ok(outVal2StrFunc)
 }
 
-fn newLeafNode<Key: Clone + 'static, Val: Clone + 'static>(mut inItem: Item<Key, Val>, mut height: i32) -> Arc<Node<Key, Val>> {
+fn newLeafNode<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clone + 'static + metamodelica::gc::MMTrace>(mut inItem: Item<Key, Val>, mut height: i32) -> Arc<Node<Key, Val>> {
     let mut outNode: Arc<Node<Key, Val>>;
     outNode = Arc::new(Node::NODE { item: inItem.clone(), height: 1, left: Arc::new(crate::AvlTree::Node::NO_NODE), right: Arc::new(crate::AvlTree::Node::NO_NODE) });
     outNode
 }
 
-pub fn add<Key: Clone + 'static + PartialEq, Val: Clone + 'static + PartialEq>(mut inTree: Tree<Key, Val>, mut inKey: Key, mut inVal: Val) -> Result<Tree<Key, Val>> {
+pub fn add<Key: Clone + 'static + metamodelica::gc::MMTrace + PartialEq, Val: Clone + 'static + metamodelica::gc::MMTrace + PartialEq>(mut inTree: Tree<Key, Val>, mut inKey: Key, mut inVal: Val) -> Result<Tree<Key, Val>> {
     let mut outTree: Tree<Key, Val>;
     outTree = 'mc: {
         let __mc_input = (inTree.clone(), inKey.clone(), inVal.clone());
@@ -283,7 +283,7 @@ pub fn add<Key: Clone + 'static + PartialEq, Val: Clone + 'static + PartialEq>(m
     Ok(outTree)
 }
 
-fn addNode<Key: Clone + 'static + PartialEq, Val: Clone + 'static + PartialEq>(mut inTree: Tree<Key, Val>, mut inNode: Arc<Node<Key, Val>>, mut inKey: Key, mut inVal: Val) -> Result<Arc<Node<Key, Val>>> {
+fn addNode<Key: Clone + 'static + metamodelica::gc::MMTrace + PartialEq, Val: Clone + 'static + metamodelica::gc::MMTrace + PartialEq>(mut inTree: Tree<Key, Val>, mut inNode: Arc<Node<Key, Val>>, mut inKey: Key, mut inVal: Val) -> Result<Arc<Node<Key, Val>>> {
     let mut outNode: Arc<Node<Key, Val>>;
     outNode = (::match_deref::match_deref! { match &((inTree.clone(), inNode.clone(), inKey.clone(), inVal.clone())) {
         (_, Deref @ Node::NO_NODE { .. }, _, _) => {
@@ -314,7 +314,7 @@ fn addNode<Key: Clone + 'static + PartialEq, Val: Clone + 'static + PartialEq>(m
     Ok(outNode)
 }
 
-fn addNode_dispatch<Key: Clone + 'static + PartialEq, Val: Clone + 'static + PartialEq>(mut inTree: Tree<Key, Val>, mut inNode: Arc<Node<Key, Val>>, mut inKeyComp: i32, mut inKey: Key, mut inVal: Val) -> Result<Arc<Node<Key, Val>>> {
+fn addNode_dispatch<Key: Clone + 'static + metamodelica::gc::MMTrace + PartialEq, Val: Clone + 'static + metamodelica::gc::MMTrace + PartialEq>(mut inTree: Tree<Key, Val>, mut inNode: Arc<Node<Key, Val>>, mut inKeyComp: i32, mut inKey: Key, mut inVal: Val) -> Result<Arc<Node<Key, Val>>> {
     let mut outNode: Arc<Node<Key, Val>>;
     outNode = 'mc: {
         let __mc_input = (inNode.clone(), inKeyComp.clone(), inKey.clone(), inVal.clone());
@@ -378,7 +378,7 @@ fn addNode_dispatch<Key: Clone + 'static + PartialEq, Val: Clone + 'static + Par
     Ok(outNode)
 }
 
-pub fn get<Key: Clone + 'static, Val: Clone + 'static>(mut inTree: Tree<Key, Val>, mut inKey: Key) -> Result<Val> {
+pub fn get<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clone + 'static + metamodelica::gc::MMTrace>(mut inTree: Tree<Key, Val>, mut inKey: Key) -> Result<Val> {
     let mut outVal: Val;
     let mut node: Arc<Node<Key, Val>>;
     let Tree { root: __pa0, .. } = (inTree.clone()) else { bail!("pattern mismatch") };
@@ -387,7 +387,7 @@ pub fn get<Key: Clone + 'static, Val: Clone + 'static>(mut inTree: Tree<Key, Val
     Ok(outVal)
 }
 
-fn getNode<Key: Clone + 'static, Val: Clone + 'static>(mut inTree: Tree<Key, Val>, mut inNode: Arc<Node<Key, Val>>, mut inKey: Key) -> Result<Val> {
+fn getNode<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clone + 'static + metamodelica::gc::MMTrace>(mut inTree: Tree<Key, Val>, mut inNode: Arc<Node<Key, Val>>, mut inKey: Key) -> Result<Val> {
     let mut outVal: Val;
     let mut rkey: Key;
     let mut keyCompareFunc: FuncTypeKeyCompare<Key>;
@@ -403,7 +403,7 @@ fn getNode<Key: Clone + 'static, Val: Clone + 'static>(mut inTree: Tree<Key, Val
     Ok(outVal)
 }
 
-fn getNode_dispatch<Key: Clone + 'static, Val: Clone + 'static>(mut inTree: Tree<Key, Val>, mut inNode: Arc<Node<Key, Val>>, mut inKeyComp: i32, mut inKey: Key) -> Result<Val> {
+fn getNode_dispatch<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clone + 'static + metamodelica::gc::MMTrace>(mut inTree: Tree<Key, Val>, mut inNode: Arc<Node<Key, Val>>, mut inKeyComp: i32, mut inKey: Key) -> Result<Val> {
     let mut outVal: Val;
     outVal = (::match_deref::match_deref! { match &((inNode.clone(), inKeyComp.clone(), inKey.clone())) {
         (Deref @ Node::NODE { item: Item::ITEM { val, .. }, .. }, 0, _) => {
@@ -420,7 +420,7 @@ fn getNode_dispatch<Key: Clone + 'static, Val: Clone + 'static>(mut inTree: Tree
     Ok(outVal)
 }
 
-pub fn replace<Key: Clone + 'static, Val: Clone + 'static>(mut inTree: Tree<Key, Val>, mut inKey: Key, mut inVal: Val) -> Result<Tree<Key, Val>> {
+pub fn replace<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clone + 'static + metamodelica::gc::MMTrace>(mut inTree: Tree<Key, Val>, mut inKey: Key, mut inVal: Val) -> Result<Tree<Key, Val>> {
     let mut outTree: Tree<Key, Val>;
     outTree = (match (inTree.clone(), inKey.clone(), inVal.clone()) {
         (Tree { root: ref node, keyCompareFunc: mut keyCompareFunc, keyStrFuncOpt: mut kf, valStrFuncOpt: mut vf, updateCheckFuncOpt: mut uf, name: mut n }, mut key, mut val) => {
@@ -438,7 +438,7 @@ pub fn replace<Key: Clone + 'static, Val: Clone + 'static>(mut inTree: Tree<Key,
     Ok(outTree)
 }
 
-pub fn replaceNode<Key: Clone + 'static, Val: Clone + 'static>(mut inTree: Tree<Key, Val>, mut inNode: Arc<Node<Key, Val>>, mut inKey: Key, mut inVal: Val) -> Result<Arc<Node<Key, Val>>> {
+pub fn replaceNode<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clone + 'static + metamodelica::gc::MMTrace>(mut inTree: Tree<Key, Val>, mut inNode: Arc<Node<Key, Val>>, mut inKey: Key, mut inVal: Val) -> Result<Arc<Node<Key, Val>>> {
     let mut outNode: Arc<Node<Key, Val>>;
     outNode = (::match_deref::match_deref! { match &((inTree.clone(), inNode.clone(), inKey.clone(), inVal.clone())) {
         (Tree { keyCompareFunc, .. }, Deref @ Node::NODE { item: Item::ITEM { key: rkey, .. }, .. }, key, val) => {
@@ -453,7 +453,7 @@ pub fn replaceNode<Key: Clone + 'static, Val: Clone + 'static>(mut inTree: Tree<
     Ok(outNode)
 }
 
-fn replaceNode_dispatch<Key: Clone + 'static, Val: Clone + 'static>(mut inTree: Tree<Key, Val>, mut inNode: Arc<Node<Key, Val>>, mut inKeyComp: i32, mut inKey: Key, mut inVal: Val) -> Result<Arc<Node<Key, Val>>> {
+fn replaceNode_dispatch<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clone + 'static + metamodelica::gc::MMTrace>(mut inTree: Tree<Key, Val>, mut inNode: Arc<Node<Key, Val>>, mut inKeyComp: i32, mut inKey: Key, mut inVal: Val) -> Result<Arc<Node<Key, Val>>> {
     let mut outNode: Arc<Node<Key, Val>>;
     outNode = (::match_deref::match_deref! { match &((inNode.clone(), inKeyComp.clone(), inKey.clone(), inVal.clone())) {
         (Deref @ Node::NODE { item: Item::ITEM { .. }, height: h, left: l, right: r }, 0, key, val) => {
@@ -476,7 +476,7 @@ fn replaceNode_dispatch<Key: Clone + 'static, Val: Clone + 'static>(mut inTree: 
     Ok(outNode)
 }
 
-fn emptyNodeIfNoNode<Key: Clone + 'static, Val: Clone + 'static>(mut inNode: Arc<Node<Key, Val>>) -> Result<Arc<Node<Key, Val>>> {
+fn emptyNodeIfNoNode<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clone + 'static + metamodelica::gc::MMTrace>(mut inNode: Arc<Node<Key, Val>>) -> Result<Arc<Node<Key, Val>>> {
     let mut outNode: Arc<Node<Key, Val>>;
     outNode = (::match_deref::match_deref! { match &(inNode.clone()) {
         Deref @ Node::NO_NODE { .. } => Arc::new(Node::NODE { item: crate::AvlTree::Item::NO_ITEM, height: 0, left: Arc::new(crate::AvlTree::Node::NO_NODE), right: Arc::new(crate::AvlTree::Node::NO_NODE) }),
@@ -486,7 +486,7 @@ fn emptyNodeIfNoNode<Key: Clone + 'static, Val: Clone + 'static>(mut inNode: Arc
     Ok(outNode)
 }
 
-fn balance<Key: Clone + 'static, Val: Clone + 'static>(mut inNode: Arc<Node<Key, Val>>) -> Result<Arc<Node<Key, Val>>> {
+fn balance<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clone + 'static + metamodelica::gc::MMTrace>(mut inNode: Arc<Node<Key, Val>>) -> Result<Arc<Node<Key, Val>>> {
     let mut outNode: Arc<Node<Key, Val>>;
     let mut d: i32;
     d = differenceInHeight(inNode.clone())?;
@@ -494,7 +494,7 @@ fn balance<Key: Clone + 'static, Val: Clone + 'static>(mut inNode: Arc<Node<Key,
     Ok(outNode)
 }
 
-fn doBalance<Key: Clone + 'static, Val: Clone + 'static>(mut difference: i32, mut inNode: Arc<Node<Key, Val>>) -> Result<Arc<Node<Key, Val>>> {
+fn doBalance<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clone + 'static + metamodelica::gc::MMTrace>(mut difference: i32, mut inNode: Arc<Node<Key, Val>>) -> Result<Arc<Node<Key, Val>>> {
     let mut outNode: Arc<Node<Key, Val>>;
     outNode = (match difference.clone() {
         (-1) => computeHeight(inNode.clone())?,
@@ -505,7 +505,7 @@ fn doBalance<Key: Clone + 'static, Val: Clone + 'static>(mut difference: i32, mu
     Ok(outNode)
 }
 
-fn doBalance2<Key: Clone + 'static, Val: Clone + 'static>(mut inDiffIsNegative: bool, mut inNode: Arc<Node<Key, Val>>) -> Result<Arc<Node<Key, Val>>> {
+fn doBalance2<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clone + 'static + metamodelica::gc::MMTrace>(mut inDiffIsNegative: bool, mut inNode: Arc<Node<Key, Val>>) -> Result<Arc<Node<Key, Val>>> {
     let mut outNode: Arc<Node<Key, Val>>;
     outNode = (::match_deref::match_deref! { match &((inDiffIsNegative.clone(), inNode.clone())) {
         (true, n) => {
@@ -525,7 +525,7 @@ fn doBalance2<Key: Clone + 'static, Val: Clone + 'static>(mut inDiffIsNegative: 
     Ok(outNode)
 }
 
-fn doBalance3<Key: Clone + 'static, Val: Clone + 'static>(mut inNode: Arc<Node<Key, Val>>) -> Arc<Node<Key, Val>> {
+fn doBalance3<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clone + 'static + metamodelica::gc::MMTrace>(mut inNode: Arc<Node<Key, Val>>) -> Arc<Node<Key, Val>> {
     let mut outNode: Arc<Node<Key, Val>>;
     outNode = 'mc: {
         let __mc_input = inNode.clone();
@@ -557,7 +557,7 @@ fn doBalance3<Key: Clone + 'static, Val: Clone + 'static>(mut inNode: Arc<Node<K
     outNode
 }
 
-fn doBalance4<Key: Clone + 'static, Val: Clone + 'static>(mut inNode: Arc<Node<Key, Val>>) -> Arc<Node<Key, Val>> {
+fn doBalance4<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clone + 'static + metamodelica::gc::MMTrace>(mut inNode: Arc<Node<Key, Val>>) -> Arc<Node<Key, Val>> {
     let mut outNode: Arc<Node<Key, Val>>;
     outNode = 'mc: {
         let __mc_input = inNode.clone();
@@ -589,7 +589,7 @@ fn doBalance4<Key: Clone + 'static, Val: Clone + 'static>(mut inNode: Arc<Node<K
     outNode
 }
 
-fn setRight<Key: Clone + 'static, Val: Clone + 'static>(mut node: Arc<Node<Key, Val>>, mut right: Arc<Node<Key, Val>>) -> Result<Arc<Node<Key, Val>>> {
+fn setRight<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clone + 'static + metamodelica::gc::MMTrace>(mut node: Arc<Node<Key, Val>>, mut right: Arc<Node<Key, Val>>) -> Result<Arc<Node<Key, Val>>> {
     let mut outNode: Arc<Node<Key, Val>>;
     let mut item: Item<Key, Val>;
     let mut l: Arc<Node<Key, Val>>;
@@ -605,7 +605,7 @@ fn setRight<Key: Clone + 'static, Val: Clone + 'static>(mut node: Arc<Node<Key, 
     Ok(outNode)
 }
 
-fn setLeft<Key: Clone + 'static, Val: Clone + 'static>(mut node: Arc<Node<Key, Val>>, mut left: Arc<Node<Key, Val>>) -> Result<Arc<Node<Key, Val>>> {
+fn setLeft<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clone + 'static + metamodelica::gc::MMTrace>(mut node: Arc<Node<Key, Val>>, mut left: Arc<Node<Key, Val>>) -> Result<Arc<Node<Key, Val>>> {
     let mut outNode: Arc<Node<Key, Val>>;
     let mut item: Item<Key, Val>;
     let mut r: Arc<Node<Key, Val>>;
@@ -621,7 +621,7 @@ fn setLeft<Key: Clone + 'static, Val: Clone + 'static>(mut node: Arc<Node<Key, V
     Ok(outNode)
 }
 
-fn leftNode<Key: Clone + 'static, Val: Clone + 'static>(mut node: Arc<Node<Key, Val>>) -> Result<Arc<Node<Key, Val>>> {
+fn leftNode<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clone + 'static + metamodelica::gc::MMTrace>(mut node: Arc<Node<Key, Val>>) -> Result<Arc<Node<Key, Val>>> {
     let mut subNode: Arc<Node<Key, Val>>;
     let __pa0 = ::match_deref::match_deref! { match &(node.clone()) {
         Deref @ Node::NODE { left: __pa0, .. } => __pa0.clone(),
@@ -631,7 +631,7 @@ fn leftNode<Key: Clone + 'static, Val: Clone + 'static>(mut node: Arc<Node<Key, 
     Ok(subNode)
 }
 
-fn rightNode<Key: Clone + 'static, Val: Clone + 'static>(mut node: Arc<Node<Key, Val>>) -> Result<Arc<Node<Key, Val>>> {
+fn rightNode<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clone + 'static + metamodelica::gc::MMTrace>(mut node: Arc<Node<Key, Val>>) -> Result<Arc<Node<Key, Val>>> {
     let mut subNode: Arc<Node<Key, Val>>;
     let __pa0 = ::match_deref::match_deref! { match &(node.clone()) {
         Deref @ Node::NODE { right: __pa0, .. } => __pa0.clone(),
@@ -641,7 +641,7 @@ fn rightNode<Key: Clone + 'static, Val: Clone + 'static>(mut node: Arc<Node<Key,
     Ok(subNode)
 }
 
-fn exchangeLeft<Key: Clone + 'static, Val: Clone + 'static>(mut inNode: Arc<Node<Key, Val>>, mut inParent: Arc<Node<Key, Val>>) -> Result<Arc<Node<Key, Val>>> {
+fn exchangeLeft<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clone + 'static + metamodelica::gc::MMTrace>(mut inNode: Arc<Node<Key, Val>>, mut inParent: Arc<Node<Key, Val>>) -> Result<Arc<Node<Key, Val>>> {
     let mut outParent: Arc<Node<Key, Val>>;
     let mut parent: Arc<Node<Key, Val>>;
     let mut node: Arc<Node<Key, Val>>;
@@ -652,7 +652,7 @@ fn exchangeLeft<Key: Clone + 'static, Val: Clone + 'static>(mut inNode: Arc<Node
     Ok(outParent)
 }
 
-fn exchangeRight<Key: Clone + 'static, Val: Clone + 'static>(mut inNode: Arc<Node<Key, Val>>, mut inParent: Arc<Node<Key, Val>>) -> Result<Arc<Node<Key, Val>>> {
+fn exchangeRight<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clone + 'static + metamodelica::gc::MMTrace>(mut inNode: Arc<Node<Key, Val>>, mut inParent: Arc<Node<Key, Val>>) -> Result<Arc<Node<Key, Val>>> {
     let mut outParent: Arc<Node<Key, Val>>;
     let mut parent: Arc<Node<Key, Val>>;
     let mut node: Arc<Node<Key, Val>>;
@@ -663,19 +663,19 @@ fn exchangeRight<Key: Clone + 'static, Val: Clone + 'static>(mut inNode: Arc<Nod
     Ok(outParent)
 }
 
-fn rotateLeft<Key: Clone + 'static, Val: Clone + 'static>(mut node: Arc<Node<Key, Val>>) -> Result<Arc<Node<Key, Val>>> {
+fn rotateLeft<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clone + 'static + metamodelica::gc::MMTrace>(mut node: Arc<Node<Key, Val>>) -> Result<Arc<Node<Key, Val>>> {
     let mut outNode: Arc<Node<Key, Val>>;
     outNode = exchangeLeft(rightNode(node.clone())?, node.clone())?;
     Ok(outNode)
 }
 
-fn rotateRight<Key: Clone + 'static, Val: Clone + 'static>(mut node: Arc<Node<Key, Val>>) -> Result<Arc<Node<Key, Val>>> {
+fn rotateRight<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clone + 'static + metamodelica::gc::MMTrace>(mut node: Arc<Node<Key, Val>>) -> Result<Arc<Node<Key, Val>>> {
     let mut outNode: Arc<Node<Key, Val>>;
     outNode = exchangeRight(leftNode(node.clone())?, node.clone())?;
     Ok(outNode)
 }
 
-fn differenceInHeight<Key: Clone + 'static, Val: Clone + 'static>(mut node: Arc<Node<Key, Val>>) -> Result<i32> {
+fn differenceInHeight<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clone + 'static + metamodelica::gc::MMTrace>(mut node: Arc<Node<Key, Val>>) -> Result<i32> {
     let mut diff: i32;
     let mut l: Arc<Node<Key, Val>>;
     let mut r: Arc<Node<Key, Val>>;
@@ -689,7 +689,7 @@ fn differenceInHeight<Key: Clone + 'static, Val: Clone + 'static>(mut node: Arc<
     Ok(diff)
 }
 
-fn computeHeight<Key: Clone + 'static, Val: Clone + 'static>(mut inNode: Arc<Node<Key, Val>>) -> Result<Arc<Node<Key, Val>>> {
+fn computeHeight<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clone + 'static + metamodelica::gc::MMTrace>(mut inNode: Arc<Node<Key, Val>>) -> Result<Arc<Node<Key, Val>>> {
     let mut outNode: Arc<Node<Key, Val>>;
     let mut l: Arc<Node<Key, Val>>;
     let mut r: Arc<Node<Key, Val>>;
@@ -711,7 +711,7 @@ fn computeHeight<Key: Clone + 'static, Val: Clone + 'static>(mut inNode: Arc<Nod
     Ok(outNode)
 }
 
-fn getHeight<Key: Clone + 'static, Val: Clone + 'static>(mut bt: Arc<Node<Key, Val>>) -> Result<i32> {
+fn getHeight<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clone + 'static + metamodelica::gc::MMTrace>(mut bt: Arc<Node<Key, Val>>) -> Result<i32> {
     let mut height: i32 = 0;
     height = (::match_deref::match_deref! { match &(bt.clone()) {
         Deref @ Node::NO_NODE { .. } => 0,
@@ -724,13 +724,13 @@ fn getHeight<Key: Clone + 'static, Val: Clone + 'static>(mut bt: Arc<Node<Key, V
     Ok(height)
 }
 
-pub fn prettyPrintTreeStr<Key: Clone + 'static + PartialEq, Val: Clone + 'static + PartialEq>(mut inTree: Tree<Key, Val>) -> Result<ArcStr> {
+pub fn prettyPrintTreeStr<Key: Clone + 'static + metamodelica::gc::MMTrace + PartialEq, Val: Clone + 'static + metamodelica::gc::MMTrace + PartialEq>(mut inTree: Tree<Key, Val>) -> Result<ArcStr> {
     let mut outString: ArcStr;
     outString = (prettyPrintTreeStr_dispatch(inTree.clone(), (literal!("")).clone())?).clone();
     Ok(outString)
 }
 
-fn prettyPrintTreeStr_dispatch<Key: Clone + 'static + PartialEq, Val: Clone + 'static + PartialEq>(mut inTree: Tree<Key, Val>, mut inIndent: ArcStr) -> Result<ArcStr> {
+fn prettyPrintTreeStr_dispatch<Key: Clone + 'static + metamodelica::gc::MMTrace + PartialEq, Val: Clone + 'static + metamodelica::gc::MMTrace + PartialEq>(mut inTree: Tree<Key, Val>, mut inIndent: ArcStr) -> Result<ArcStr> {
     let mut outString: ArcStr;
     let mut node: Arc<Node<Key, Val>>;
     if !(hasPrintingFunctions(inTree.clone())?) {
@@ -743,7 +743,7 @@ fn prettyPrintTreeStr_dispatch<Key: Clone + 'static + PartialEq, Val: Clone + 's
     Ok(outString)
 }
 
-fn prettyPrintNodeStr<Key: Clone + 'static, Val: Clone + 'static>(mut inTree: Tree<Key, Val>, mut inNode: Arc<Node<Key, Val>>, mut inIndent: ArcStr) -> Result<ArcStr> {
+fn prettyPrintNodeStr<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clone + 'static + metamodelica::gc::MMTrace>(mut inTree: Tree<Key, Val>, mut inNode: Arc<Node<Key, Val>>, mut inIndent: ArcStr) -> Result<ArcStr> {
     let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(inNode.clone()) {
         Deref @ Node::NO_NODE { .. } => {
@@ -776,7 +776,7 @@ fn prettyPrintNodeStr<Key: Clone + 'static, Val: Clone + 'static>(mut inTree: Tr
     Ok(outString)
 }
 
-pub fn printTreeStr<Key: Clone + 'static + PartialEq, Val: Clone + 'static + PartialEq>(mut inTree: Tree<Key, Val>) -> Result<ArcStr> {
+pub fn printTreeStr<Key: Clone + 'static + metamodelica::gc::MMTrace + PartialEq, Val: Clone + 'static + metamodelica::gc::MMTrace + PartialEq>(mut inTree: Tree<Key, Val>) -> Result<ArcStr> {
     let mut outString: ArcStr;
     let mut node: Arc<Node<Key, Val>>;
     if !(hasPrintingFunctions(inTree.clone())?) {
@@ -789,7 +789,7 @@ pub fn printTreeStr<Key: Clone + 'static + PartialEq, Val: Clone + 'static + Par
     Ok(outString)
 }
 
-fn printNodeStr<Key: Clone + 'static, Val: Clone + 'static>(mut inTree: Tree<Key, Val>, mut inNode: Arc<Node<Key, Val>>) -> Result<ArcStr> {
+fn printNodeStr<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clone + 'static + metamodelica::gc::MMTrace>(mut inTree: Tree<Key, Val>, mut inNode: Arc<Node<Key, Val>>) -> Result<ArcStr> {
     let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(inNode.clone()) {
         Deref @ Node::NO_NODE { .. } => {
@@ -814,7 +814,7 @@ fn printNodeStr<Key: Clone + 'static, Val: Clone + 'static>(mut inTree: Tree<Key
     Ok(outString)
 }
 
-pub fn printItemStr<Key: Clone + 'static, Val: Clone + 'static>(mut inTree: Tree<Key, Val>, mut inItem: Item<Key, Val>) -> Result<ArcStr> {
+pub fn printItemStr<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clone + 'static + metamodelica::gc::MMTrace>(mut inTree: Tree<Key, Val>, mut inItem: Item<Key, Val>) -> Result<ArcStr> {
     let mut outString: ArcStr;
     outString = ((match inItem.clone() {
         Item::NO_ITEM { .. } => {
@@ -838,7 +838,7 @@ pub fn printItemStr<Key: Clone + 'static, Val: Clone + 'static>(mut inTree: Tree
     Ok(outString)
 }
 
-pub fn getKeyOfVal<Key: Clone + 'static, Val: Clone + 'static + PartialEq>(mut inTree: Tree<Key, Val>, mut inVal: Val) -> Result<Key> {
+pub fn getKeyOfVal<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clone + 'static + metamodelica::gc::MMTrace + PartialEq>(mut inTree: Tree<Key, Val>, mut inVal: Val) -> Result<Key> {
     let mut outKey: Key;
     let mut node: Arc<Node<Key, Val>>;
     let Tree { root: __pa0, .. } = (inTree.clone()) else { bail!("pattern mismatch") };
@@ -847,7 +847,7 @@ pub fn getKeyOfVal<Key: Clone + 'static, Val: Clone + 'static + PartialEq>(mut i
     Ok(outKey)
 }
 
-fn getKeyOfValNode<Key: Clone + 'static, Val: Clone + 'static + PartialEq>(mut inTree: Tree<Key, Val>, mut inNode: Arc<Node<Key, Val>>, mut inVal: Val) -> Result<Key> {
+fn getKeyOfValNode<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clone + 'static + metamodelica::gc::MMTrace + PartialEq>(mut inTree: Tree<Key, Val>, mut inNode: Arc<Node<Key, Val>>, mut inVal: Val) -> Result<Key> {
     let mut outKey: Key;
     outKey = 'mc: {
         let __mc_input = inNode.clone();
@@ -887,7 +887,7 @@ fn getKeyOfValNode<Key: Clone + 'static, Val: Clone + 'static + PartialEq>(mut i
     Ok(outKey)
 }
 
-pub fn addUnique<Key: Clone + 'static, Val: Clone + 'static>(mut inTree: Tree<Key, Val>, mut inKey: Key, mut inVal: Val) -> Result<(Tree<Key, Val>, Item<Key, Val>)> {
+pub fn addUnique<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clone + 'static + metamodelica::gc::MMTrace>(mut inTree: Tree<Key, Val>, mut inKey: Key, mut inVal: Val) -> Result<(Tree<Key, Val>, Item<Key, Val>)> {
     let mut outTree: Tree<Key, Val>;
     let mut outItem: Item<Key, Val>;
     (outTree, outItem) = 'mc: {
@@ -911,7 +911,7 @@ pub fn addUnique<Key: Clone + 'static, Val: Clone + 'static>(mut inTree: Tree<Ke
     Ok((outTree, outItem))
 }
 
-fn addNodeUnique<Key: Clone + 'static, Val: Clone + 'static>(mut inTree: Tree<Key, Val>, mut inNode: Arc<Node<Key, Val>>, mut inKey: Key, mut inVal: Val) -> Result<(Arc<Node<Key, Val>>, Item<Key, Val>)> {
+fn addNodeUnique<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clone + 'static + metamodelica::gc::MMTrace>(mut inTree: Tree<Key, Val>, mut inNode: Arc<Node<Key, Val>>, mut inKey: Key, mut inVal: Val) -> Result<(Arc<Node<Key, Val>>, Item<Key, Val>)> {
     let mut outNode: Arc<Node<Key, Val>>;
     let mut outItem: Item<Key, Val>;
     (outNode, outItem) = (::match_deref::match_deref! { match &((inTree.clone(), inNode.clone(), inKey.clone(), inVal.clone())) {
@@ -949,7 +949,7 @@ fn addNodeUnique<Key: Clone + 'static, Val: Clone + 'static>(mut inTree: Tree<Ke
     Ok((outNode, outItem))
 }
 
-fn addNodeUnique_dispatch<Key: Clone + 'static, Val: Clone + 'static>(mut inTree: Tree<Key, Val>, mut inNode: Arc<Node<Key, Val>>, mut inKeyComp: i32, mut inKey: Key, mut inVal: Val) -> Result<(Arc<Node<Key, Val>>, Item<Key, Val>)> {
+fn addNodeUnique_dispatch<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clone + 'static + metamodelica::gc::MMTrace>(mut inTree: Tree<Key, Val>, mut inNode: Arc<Node<Key, Val>>, mut inKeyComp: i32, mut inKey: Key, mut inVal: Val) -> Result<(Arc<Node<Key, Val>>, Item<Key, Val>)> {
     let mut outNode: Arc<Node<Key, Val>>;
     let mut outItem: Item<Key, Val>;
     (outNode, outItem) = (::match_deref::match_deref! { match &((inNode.clone(), inKeyComp.clone(), inKey.clone(), inVal.clone())) {

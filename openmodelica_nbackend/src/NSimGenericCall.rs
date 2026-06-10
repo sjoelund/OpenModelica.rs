@@ -90,7 +90,7 @@ pub enum NSimGenericCall {
     },
 }
 impl metamodelica::gc::MMTrace for NSimGenericCall {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             NSimGenericCall::SINGLE_GENERIC_CALL { index, iters, lhs, rhs, resizable } => {
                 metamodelica::gc::MMTrace::mm_accept(index, __mmv)?;
@@ -293,7 +293,7 @@ pub mod SimIterator {
         },
     }
     impl metamodelica::gc::MMTrace for SimIterator {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             match self {
                 SimIterator::SIM_ITERATOR_RANGE { name, start, step, stop, size, sub_iter } => {
                     metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
@@ -476,7 +476,7 @@ pub mod SimBranch {
         },
     }
     impl metamodelica::gc::MMTrace for SimBranch {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             match self {
                 SimBranch::SIM_BRANCH { condition, body } => {
                     metamodelica::gc::MMTrace::mm_accept(condition, __mmv)?;

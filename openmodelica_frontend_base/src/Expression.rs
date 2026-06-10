@@ -1037,7 +1037,7 @@ pub fn unliftArray(mut inType: Arc<DAE::Type>) -> Result<Arc<DAE::Type>> {
     Ok(outType)
 }
 
-pub fn unliftArrayIgnoreFirst<A: Clone + 'static>(mut a: A, mut inType: Arc<DAE::Type>) -> Result<Arc<DAE::Type>> {
+pub fn unliftArrayIgnoreFirst<A: Clone + 'static + metamodelica::gc::MMTrace>(mut a: A, mut inType: Arc<DAE::Type>) -> Result<Arc<DAE::Type>> {
     let mut outType: Arc<DAE::Type>;
     outType = unliftArray(inType.clone())?;
     Ok(outType)
@@ -5399,7 +5399,7 @@ pub fn containsInitialCall(mut condition: Arc<DAE::Exp>) -> Result<bool> {
 /* **************************************************/
 /* traverse DAE.Exp */
 /* **************************************************/
-pub fn traverseExpBottomUp<T: Clone + 'static + metamodelica::ReferenceEq>(mut inExp: Arc<DAE::Exp>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, T) -> Result<(Arc<DAE::Exp>, T)> + 'static>, mut inExtArg: T) -> Result<(Arc<DAE::Exp>, T)> {
+pub fn traverseExpBottomUp<T: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut inExp: Arc<DAE::Exp>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, T) -> Result<(Arc<DAE::Exp>, T)> + 'static>, mut inExtArg: T) -> Result<(Arc<DAE::Exp>, T)> {
     pub type FuncExpType<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, T) -> Result<(Arc<DAE::Exp>, T)> + 'static>;
 
     let mut outExp: Arc<DAE::Exp>;
@@ -5808,7 +5808,7 @@ pub fn traverseExpDummyHelper(mut inExp: Arc<DAE::Exp>, mut func: Arc<dyn ::std:
     Ok((outExp, outFunc))
 }
 
-pub fn traverseSubexpressionsHelper<Type_a: Clone + 'static + metamodelica::ReferenceEq>(mut inExp: Arc<DAE::Exp>, mut itpl: (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, Type_a)) -> Result<(Arc<DAE::Exp>, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, Type_a))> {
+pub fn traverseSubexpressionsHelper<Type_a: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut inExp: Arc<DAE::Exp>, mut itpl: (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, Type_a)) -> Result<(Arc<DAE::Exp>, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, Type_a))> {
     pub type FuncExpType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>;
 
     let mut outExp: Arc<DAE::Exp>;
@@ -5822,7 +5822,7 @@ pub fn traverseSubexpressionsHelper<Type_a: Clone + 'static + metamodelica::Refe
     Ok((outExp, otpl))
 }
 
-pub fn traverseSubexpressions<Type_a: Clone + 'static + metamodelica::ReferenceEq>(mut e: Arc<DAE::Exp>, mut arg: Type_a, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>) -> Result<(Arc<DAE::Exp>, Type_a)> {
+pub fn traverseSubexpressions<Type_a: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut e: Arc<DAE::Exp>, mut arg: Type_a, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>) -> Result<(Arc<DAE::Exp>, Type_a)> {
     pub type FuncExpType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>;
 
     let mut e: Arc<DAE::Exp> = e;
@@ -5840,7 +5840,7 @@ pub fn traverseSubexpressionsDummyHelper(mut inExp: Arc<DAE::Exp>, mut inFunc: A
     Ok((outExp, outFunc))
 }
 
-pub fn traverseSubexpressionsTopDownHelper<Type_a: Clone + 'static + metamodelica::ReferenceEq>(mut inExp: Arc<DAE::Exp>, mut itpl: (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, bool, Type_a)> + 'static>, Type_a)) -> Result<(Arc<DAE::Exp>, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, bool, Type_a)> + 'static>, Type_a))> {
+pub fn traverseSubexpressionsTopDownHelper<Type_a: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut inExp: Arc<DAE::Exp>, mut itpl: (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, bool, Type_a)> + 'static>, Type_a)) -> Result<(Arc<DAE::Exp>, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, bool, Type_a)> + 'static>, Type_a))> {
     pub type FuncExpType2<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, bool, Type_a)> + 'static>;
 
     let mut outExp: Arc<DAE::Exp>;
@@ -5854,7 +5854,7 @@ pub fn traverseSubexpressionsTopDownHelper<Type_a: Clone + 'static + metamodelic
     Ok((outExp, otpl))
 }
 
-fn traverseExpMatrix<Type_a: Clone + 'static + metamodelica::ReferenceEq>(mut inMatrix: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut inTypeA: Type_a) -> Result<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>>, Type_a)> {
+fn traverseExpMatrix<Type_a: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut inMatrix: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut inTypeA: Type_a) -> Result<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>>, Type_a)> {
     pub type FuncExpType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>;
 
     let mut outMatrix: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>> = metamodelica::nil();
@@ -5875,7 +5875,7 @@ fn traverseExpMatrix<Type_a: Clone + 'static + metamodelica::ReferenceEq>(mut in
     Ok((outMatrix, outTypeA))
 }
 
-pub fn traverseExpList<ArgT: Clone + 'static + metamodelica::ReferenceEq>(mut inExpl: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut rel: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>, mut iext_arg: ArgT) -> Result<(Arc<metamodelica::List<Arc<DAE::Exp>>>, ArgT)> {
+pub fn traverseExpList<ArgT: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut inExpl: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut rel: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>, mut iext_arg: ArgT) -> Result<(Arc<metamodelica::List<Arc<DAE::Exp>>>, ArgT)> {
     pub type FuncExpType<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>;
 
     let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>>;
@@ -5909,7 +5909,7 @@ pub fn traverseExpList<ArgT: Clone + 'static + metamodelica::ReferenceEq>(mut in
     Ok((expl, ext_arg))
 }
 
-pub fn traverseExpTopDown<Type_a: Clone + 'static + metamodelica::ReferenceEq>(mut inExp: Arc<DAE::Exp>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, bool, Type_a)> + 'static>, mut ext_arg: Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> {
+pub fn traverseExpTopDown<Type_a: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut inExp: Arc<DAE::Exp>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, bool, Type_a)> + 'static>, mut ext_arg: Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> {
     pub type FuncExpType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, bool, Type_a)> + 'static>;
 
     let mut outExp: Arc<DAE::Exp>;
@@ -5920,7 +5920,7 @@ pub fn traverseExpTopDown<Type_a: Clone + 'static + metamodelica::ReferenceEq>(m
     Ok((outExp, outArg))
 }
 
-fn traverseExpClk<Type_a: Clone + 'static + metamodelica::ReferenceEq>(mut inClk: Arc<DAE::ClockKind>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut inArg: Type_a) -> Result<(Arc<DAE::ClockKind>, Type_a)> {
+fn traverseExpClk<Type_a: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut inClk: Arc<DAE::ClockKind>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut inArg: Type_a) -> Result<(Arc<DAE::ClockKind>, Type_a)> {
     pub type FuncExpType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>;
 
     let mut outClk: Arc<DAE::ClockKind>;
@@ -5972,7 +5972,7 @@ fn traverseExpClk<Type_a: Clone + 'static + metamodelica::ReferenceEq>(mut inClk
     Ok((outClk, outArg))
 }
 
-fn traverseExpTopDownClockHelper<Type_a: Clone + 'static + metamodelica::ReferenceEq>(mut inClk: Arc<DAE::ClockKind>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, bool, Type_a)> + 'static>, mut inArg: Type_a) -> Result<(Arc<DAE::ClockKind>, Type_a)> {
+fn traverseExpTopDownClockHelper<Type_a: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut inClk: Arc<DAE::ClockKind>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, bool, Type_a)> + 'static>, mut inArg: Type_a) -> Result<(Arc<DAE::ClockKind>, Type_a)> {
     pub type FuncExpType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, bool, Type_a)> + 'static>;
 
     let mut outClk: Arc<DAE::ClockKind>;
@@ -6024,7 +6024,7 @@ fn traverseExpTopDownClockHelper<Type_a: Clone + 'static + metamodelica::Referen
     Ok((outClk, outArg))
 }
 
-fn traverseExpTopDown1<Type_a: Clone + 'static + metamodelica::ReferenceEq>(mut cont: bool, mut inExp: Arc<DAE::Exp>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, bool, Type_a)> + 'static>, mut inArg: Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> {
+fn traverseExpTopDown1<Type_a: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut cont: bool, mut inExp: Arc<DAE::Exp>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, bool, Type_a)> + 'static>, mut inArg: Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> {
     pub type FuncExpType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, bool, Type_a)> + 'static>;
 
     let mut outExp: Arc<DAE::Exp>;
@@ -6309,7 +6309,7 @@ fn traverseExpTopDown1<Type_a: Clone + 'static + metamodelica::ReferenceEq>(mut 
     Ok((outExp, outArg))
 }
 
-fn traverseExpMatrixTopDown<Type_a: Clone + 'static + metamodelica::ReferenceEq>(mut inMatrix: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, bool, Type_a)> + 'static>, mut inTypeA: Type_a) -> Result<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>>, Type_a)> {
+fn traverseExpMatrixTopDown<Type_a: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut inMatrix: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, bool, Type_a)> + 'static>, mut inTypeA: Type_a) -> Result<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>>, Type_a)> {
     pub type FuncExpType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, bool, Type_a)> + 'static>;
 
     let mut outMatrix: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>> = metamodelica::nil();
@@ -6330,7 +6330,7 @@ fn traverseExpMatrixTopDown<Type_a: Clone + 'static + metamodelica::ReferenceEq>
     Ok((outMatrix, outTypeA))
 }
 
-pub fn traverseExpListTopDown<Type_a: Clone + 'static + metamodelica::ReferenceEq>(mut inExpl: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut rel: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, bool, Type_a)> + 'static>, mut inExt_arg: Type_a) -> Result<(Arc<metamodelica::List<Arc<DAE::Exp>>>, Type_a)> {
+pub fn traverseExpListTopDown<Type_a: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut inExpl: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut rel: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, bool, Type_a)> + 'static>, mut inExt_arg: Type_a) -> Result<(Arc<metamodelica::List<Arc<DAE::Exp>>>, Type_a)> {
     pub type FuncExpType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, bool, Type_a)> + 'static>;
 
     let mut outExpl: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
@@ -6351,7 +6351,7 @@ pub fn traverseExpListTopDown<Type_a: Clone + 'static + metamodelica::ReferenceE
     Ok((outExpl, outA))
 }
 
-pub fn traverseExpOpt<Type_a: Clone + 'static + metamodelica::ReferenceEq>(mut inExp: Option<Arc<DAE::Exp>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut inTypeA: Type_a) -> Result<(Option<Arc<DAE::Exp>>, Type_a)> {
+pub fn traverseExpOpt<Type_a: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut inExp: Option<Arc<DAE::Exp>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut inTypeA: Type_a) -> Result<(Option<Arc<DAE::Exp>>, Type_a)> {
     pub type FuncExpType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>;
 
     let mut outExp: Option<Arc<DAE::Exp>>;
@@ -6373,7 +6373,7 @@ pub fn traverseExpOpt<Type_a: Clone + 'static + metamodelica::ReferenceEq>(mut i
     Ok((outExp, outTypeA))
 }
 
-pub fn traverseExpOptTopDown<Type_a: Clone + 'static + metamodelica::ReferenceEq>(mut inExp: Option<Arc<DAE::Exp>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, bool, Type_a)> + 'static>, mut inTypeA: Type_a) -> Result<(Option<Arc<DAE::Exp>>, Type_a)> {
+pub fn traverseExpOptTopDown<Type_a: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut inExp: Option<Arc<DAE::Exp>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, bool, Type_a)> + 'static>, mut inTypeA: Type_a) -> Result<(Option<Arc<DAE::Exp>>, Type_a)> {
     pub type FuncExpType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, bool, Type_a)> + 'static>;
 
     let mut outExp: Option<Arc<DAE::Exp>>;
@@ -6393,7 +6393,7 @@ pub fn traverseExpOptTopDown<Type_a: Clone + 'static + metamodelica::ReferenceEq
     Ok((outExp, outA))
 }
 
-pub fn traverseExpCrefDims<ArgT: Clone + 'static>(mut inCref: Arc<DAE::ComponentRef>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> Result<(Arc<DAE::ComponentRef>, ArgT)> {
+pub fn traverseExpCrefDims<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inCref: Arc<DAE::ComponentRef>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> Result<(Arc<DAE::ComponentRef>, ArgT)> {
     pub type FuncType<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>;
 
     let mut outCref: Arc<DAE::ComponentRef>;
@@ -6425,7 +6425,7 @@ pub fn traverseExpCrefDims<ArgT: Clone + 'static>(mut inCref: Arc<DAE::Component
     Ok((outCref, outArg))
 }
 
-pub fn traverseExpTypeDims<ArgT: Clone + 'static>(mut inType: Arc<DAE::Type>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> Result<(Arc<DAE::Type>, ArgT)> {
+pub fn traverseExpTypeDims<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inType: Arc<DAE::Type>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> Result<(Arc<DAE::Type>, ArgT)> {
     pub type FuncType<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>;
 
     let mut outType: Arc<DAE::Type>;
@@ -6455,7 +6455,7 @@ pub fn traverseExpTypeDims<ArgT: Clone + 'static>(mut inType: Arc<DAE::Type>, mu
     Ok((outType, outArg))
 }
 
-fn traverseExpTypeDims2<ArgT: Clone + 'static>(mut inDims: Arc<metamodelica::List<Arc<DAE::Dimension>>>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> Result<(Arc<metamodelica::List<Arc<DAE::Dimension>>>, ArgT, bool)> {
+fn traverseExpTypeDims2<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inDims: Arc<metamodelica::List<Arc<DAE::Dimension>>>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> Result<(Arc<metamodelica::List<Arc<DAE::Dimension>>>, ArgT, bool)> {
     pub type FuncType<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>;
 
     let mut outDims: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
@@ -7100,7 +7100,7 @@ fn expHasCrefInSmoothZeroWork(mut exp: Arc<DAE::Exp>, mut tpl: (Arc<DAE::Compone
     Ok((exp, tpl))
 }
 
-pub fn traverseCrefsFromExp<Type_a: Clone + 'static + metamodelica::ReferenceEq>(mut inExp: Arc<DAE::Exp>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Type_a) -> Result<Type_a> + 'static>, mut inArg: Type_a) -> Result<Type_a> {
+pub fn traverseCrefsFromExp<Type_a: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut inExp: Arc<DAE::Exp>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Type_a) -> Result<Type_a> + 'static>, mut inArg: Type_a) -> Result<Type_a> {
     pub type FuncCrefTypeA<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Type_a) -> Result<Type_a> + 'static>;
 
     let mut outArg: Type_a;
@@ -7115,7 +7115,7 @@ pub fn traverseCrefsFromExp<Type_a: Clone + 'static + metamodelica::ReferenceEq>
     Ok(outArg)
 }
 
-fn traversingCrefFinder<Type_a: Clone + 'static + metamodelica::ReferenceEq>(mut inExp: Arc<DAE::Exp>, mut inTpl: (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Type_a) -> Result<Type_a> + 'static>, Type_a)) -> (Arc<DAE::Exp>, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Type_a) -> Result<Type_a> + 'static>, Type_a)) {
+fn traversingCrefFinder<Type_a: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut inExp: Arc<DAE::Exp>, mut inTpl: (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Type_a) -> Result<Type_a> + 'static>, Type_a)) -> (Arc<DAE::Exp>, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Type_a) -> Result<Type_a> + 'static>, Type_a)) {
     pub type FuncCrefTypeA<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Type_a) -> Result<Type_a> + 'static>;
 
     let mut outExp: Arc<DAE::Exp>;
@@ -7164,7 +7164,7 @@ fn traversingDivExpFinder(mut e: Arc<DAE::Exp>, mut exps: Arc<metamodelica::List
     (outExp, acc)
 }
 
-pub fn traverseExpListBidir<ArgT: Clone + 'static>(mut inExpl: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inEnterFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>, mut inExitFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> Result<(Arc<metamodelica::List<Arc<DAE::Exp>>>, ArgT)> {
+pub fn traverseExpListBidir<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inExpl: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inEnterFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>, mut inExitFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> Result<(Arc<metamodelica::List<Arc<DAE::Exp>>>, ArgT)> {
     pub type FuncType<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>;
 
     let mut outExpl: Arc<metamodelica::List<Arc<DAE::Exp>>>;
@@ -7198,7 +7198,7 @@ pub fn traverseExpListBidir<ArgT: Clone + 'static>(mut inExpl: Arc<metamodelica:
     Ok((outExpl, outArg))
 }
 
-pub fn traverseExpBidir<ArgT: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut inEnterFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>, mut inExitFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> {
+pub fn traverseExpBidir<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inExp: Arc<DAE::Exp>, mut inEnterFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>, mut inExitFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> {
     pub type FuncType<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>;
 
     let mut outExp: Arc<DAE::Exp>;
@@ -7209,7 +7209,7 @@ pub fn traverseExpBidir<ArgT: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut inE
     Ok((outExp, outArg))
 }
 
-pub fn traverseExpOptBidir<ArgT: Clone + 'static>(mut inExp: Option<Arc<DAE::Exp>>, mut inEnterFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>, mut inExitFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> Result<(Option<Arc<DAE::Exp>>, ArgT)> {
+pub fn traverseExpOptBidir<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inExp: Option<Arc<DAE::Exp>>, mut inEnterFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>, mut inExitFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> Result<(Option<Arc<DAE::Exp>>, ArgT)> {
     pub type FuncType<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Exp, ArgT) -> Result<Exp> + 'static>;
 
     let mut outExp: Option<Arc<DAE::Exp>>;
@@ -7229,7 +7229,7 @@ pub fn traverseExpOptBidir<ArgT: Clone + 'static>(mut inExp: Option<Arc<DAE::Exp
     Ok((outExp, outArg))
 }
 
-fn traverseExpBidirSubExps<ArgT: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut inEnterFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>, mut inExitFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> {
+fn traverseExpBidirSubExps<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inExp: Arc<DAE::Exp>, mut inEnterFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>, mut inExitFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> {
     pub type FuncType<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>;
 
     let mut outExp: Arc<DAE::Exp>;
@@ -7481,7 +7481,7 @@ fn traverseExpBidirSubExps<ArgT: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut 
     Ok((outExp, outArg))
 }
 
-pub fn traverseExpBidirCref<ArgT: Clone + 'static>(mut inCref: Arc<DAE::ComponentRef>, mut inEnterFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>, mut inExitFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> Result<(Arc<DAE::ComponentRef>, ArgT)> {
+pub fn traverseExpBidirCref<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inCref: Arc<DAE::ComponentRef>, mut inEnterFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>, mut inExitFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> Result<(Arc<DAE::ComponentRef>, ArgT)> {
     pub type FuncType<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>;
 
     let mut outCref: Arc<DAE::ComponentRef>;
@@ -7509,7 +7509,7 @@ pub fn traverseExpBidirCref<ArgT: Clone + 'static>(mut inCref: Arc<DAE::Componen
     Ok((outCref, outArg))
 }
 
-pub fn traverseExpCref<Type_a: Clone + 'static + metamodelica::ReferenceEq>(mut inCref: Arc<DAE::ComponentRef>, mut rel: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut iarg: Type_a) -> Result<(Arc<DAE::ComponentRef>, Type_a)> {
+pub fn traverseExpCref<Type_a: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut inCref: Arc<DAE::ComponentRef>, mut rel: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut iarg: Type_a) -> Result<(Arc<DAE::ComponentRef>, Type_a)> {
     pub type FuncType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>;
 
     let mut outCref: Arc<DAE::ComponentRef>;
@@ -7553,7 +7553,7 @@ pub fn traverseExpCref<Type_a: Clone + 'static + metamodelica::ReferenceEq>(mut 
     Ok((outCref, outArg))
 }
 
-fn traverseExpSubs<Type_a: Clone + 'static + metamodelica::ReferenceEq>(mut inSubscript: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut rel: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut iarg: Type_a) -> Result<(Arc<metamodelica::List<Arc<DAE::Subscript>>>, Type_a)> {
+fn traverseExpSubs<Type_a: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut inSubscript: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut rel: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut iarg: Type_a) -> Result<(Arc<metamodelica::List<Arc<DAE::Subscript>>>, Type_a)> {
     pub type FuncType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>;
 
     let mut outSubscript: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
@@ -7601,7 +7601,7 @@ fn traverseExpSubs<Type_a: Clone + 'static + metamodelica::ReferenceEq>(mut inSu
     Ok((outSubscript, outArg))
 }
 
-pub fn traverseExpTopDownCrefHelper<Argument: Clone + 'static + metamodelica::ReferenceEq>(mut inCref: Arc<DAE::ComponentRef>, mut rel: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Argument) -> Result<(Arc<DAE::Exp>, bool, Argument)> + 'static>, mut iarg: Argument) -> Result<(Arc<DAE::ComponentRef>, Argument)> {
+pub fn traverseExpTopDownCrefHelper<Argument: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut inCref: Arc<DAE::ComponentRef>, mut rel: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Argument) -> Result<(Arc<DAE::Exp>, bool, Argument)> + 'static>, mut iarg: Argument) -> Result<(Arc<DAE::ComponentRef>, Argument)> {
     pub type FuncType<Argument: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Argument) -> Result<(Arc<DAE::Exp>, bool, Argument)> + 'static>;
 
     let mut outCref: Arc<DAE::ComponentRef>;
@@ -7629,7 +7629,7 @@ pub fn traverseExpTopDownCrefHelper<Argument: Clone + 'static + metamodelica::Re
     Ok((outCref, outArg))
 }
 
-fn traverseExpBidirSubs<ArgT: Clone + 'static>(mut inSubscript: Arc<DAE::Subscript>, mut inEnterFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>, mut inExitFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> Result<(Arc<DAE::Subscript>, ArgT)> {
+fn traverseExpBidirSubs<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inSubscript: Arc<DAE::Subscript>, mut inEnterFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>, mut inExitFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> Result<(Arc<DAE::Subscript>, ArgT)> {
     pub type FuncType<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>;
 
     let mut outSubscript: Arc<DAE::Subscript>;
@@ -7661,7 +7661,7 @@ fn traverseExpBidirSubs<ArgT: Clone + 'static>(mut inSubscript: Arc<DAE::Subscri
     Ok((outSubscript, outArg))
 }
 
-pub fn traverseExpTopDownSubs<Argument: Clone + 'static + metamodelica::ReferenceEq>(mut inSubscript: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut rel: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Argument) -> Result<(Arc<DAE::Exp>, bool, Argument)> + 'static>, mut iarg: Argument) -> Result<(Arc<metamodelica::List<Arc<DAE::Subscript>>>, Argument)> {
+pub fn traverseExpTopDownSubs<Argument: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut inSubscript: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut rel: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Argument) -> Result<(Arc<DAE::Exp>, bool, Argument)> + 'static>, mut iarg: Argument) -> Result<(Arc<metamodelica::List<Arc<DAE::Subscript>>>, Argument)> {
     pub type FuncType<Argument: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Argument) -> Result<(Arc<DAE::Exp>, bool, Argument)> + 'static>;
 
     let mut outSubscript: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
@@ -10347,7 +10347,7 @@ pub fn reductionIterName(mut iter: Arc<DAE::ReductionIterator>) -> Result<ArcStr
     Ok(name)
 }
 
-fn traverseReductionIteratorBidir<ArgT: Clone + 'static>(mut inIter: Arc<DAE::ReductionIterator>, mut inEnterFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>, mut inExitFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> Result<(Arc<DAE::ReductionIterator>, ArgT)> {
+fn traverseReductionIteratorBidir<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inIter: Arc<DAE::ReductionIterator>, mut inEnterFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>, mut inExitFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> Result<(Arc<DAE::ReductionIterator>, ArgT)> {
     pub type FuncType<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>;
 
     let mut outIter: Arc<DAE::ReductionIterator>;
@@ -10366,7 +10366,7 @@ fn traverseReductionIteratorBidir<ArgT: Clone + 'static>(mut inIter: Arc<DAE::Re
     Ok((outIter, outArg))
 }
 
-fn traverseReductionIteratorTopDown<Type_a: Clone + 'static + metamodelica::ReferenceEq>(mut iter: Arc<DAE::ReductionIterator>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, bool, Type_a)> + 'static>, mut inArg: Type_a) -> Result<(Arc<DAE::ReductionIterator>, Type_a)> {
+fn traverseReductionIteratorTopDown<Type_a: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut iter: Arc<DAE::ReductionIterator>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, bool, Type_a)> + 'static>, mut inArg: Type_a) -> Result<(Arc<DAE::ReductionIterator>, Type_a)> {
     pub type FuncExpType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, bool, Type_a)> + 'static>;
 
     let mut outIter: Arc<DAE::ReductionIterator>;
@@ -10385,7 +10385,7 @@ fn traverseReductionIteratorTopDown<Type_a: Clone + 'static + metamodelica::Refe
     Ok((outIter, outArg))
 }
 
-fn traverseReductionIteratorsTopDown<Type_a: Clone + 'static + metamodelica::ReferenceEq>(mut inIters: Arc<metamodelica::List<Arc<DAE::ReductionIterator>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, bool, Type_a)> + 'static>, mut inArg: Type_a) -> Result<(Arc<metamodelica::List<Arc<DAE::ReductionIterator>>>, Type_a)> {
+fn traverseReductionIteratorsTopDown<Type_a: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut inIters: Arc<metamodelica::List<Arc<DAE::ReductionIterator>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, bool, Type_a)> + 'static>, mut inArg: Type_a) -> Result<(Arc<metamodelica::List<Arc<DAE::ReductionIterator>>>, Type_a)> {
     pub type FuncExpType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, bool, Type_a)> + 'static>;
 
     let mut outIters: Arc<metamodelica::List<Arc<DAE::ReductionIterator>>>;
@@ -10407,7 +10407,7 @@ fn traverseReductionIteratorsTopDown<Type_a: Clone + 'static + metamodelica::Ref
     Ok((outIters, outArg))
 }
 
-fn traverseReductionIterator<Type_a: Clone + 'static + metamodelica::ReferenceEq>(mut iter: Arc<DAE::ReductionIterator>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut iarg: Type_a) -> Result<(Arc<DAE::ReductionIterator>, Type_a)> {
+fn traverseReductionIterator<Type_a: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut iter: Arc<DAE::ReductionIterator>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut iarg: Type_a) -> Result<(Arc<DAE::ReductionIterator>, Type_a)> {
     pub type FuncExpType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>;
 
     let mut outIter: Arc<DAE::ReductionIterator> = Arc::new(<DAE::ReductionIterator as ::std::default::Default>::default());
@@ -10427,7 +10427,7 @@ fn traverseReductionIterator<Type_a: Clone + 'static + metamodelica::ReferenceEq
     Ok((outIter, outArg))
 }
 
-fn traverseReductionIterators<Type_a: Clone + 'static + metamodelica::ReferenceEq>(mut iters: Arc<metamodelica::List<Arc<DAE::ReductionIterator>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut arg: Type_a) -> Result<(Arc<metamodelica::List<Arc<DAE::ReductionIterator>>>, Type_a)> {
+fn traverseReductionIterators<Type_a: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut iters: Arc<metamodelica::List<Arc<DAE::ReductionIterator>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut arg: Type_a) -> Result<(Arc<metamodelica::List<Arc<DAE::ReductionIterator>>>, Type_a)> {
     pub type FuncExpType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>;
 
     let mut iters: Arc<metamodelica::List<Arc<DAE::ReductionIterator>>> = iters;
@@ -12727,7 +12727,7 @@ pub fn arrayFirstScalar(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
     }
 }
 
-pub fn traverseCases<A: Clone + 'static + metamodelica::ReferenceEq>(mut inCases: Arc<metamodelica::List<Arc<DAE::MatchCase>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, A) -> Result<(Arc<DAE::Exp>, A)> + 'static>, mut inA: A) -> Result<(Arc<metamodelica::List<Arc<DAE::MatchCase>>>, A)> {
+pub fn traverseCases<A: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut inCases: Arc<metamodelica::List<Arc<DAE::MatchCase>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, A) -> Result<(Arc<DAE::Exp>, A)> + 'static>, mut inA: A) -> Result<(Arc<metamodelica::List<Arc<DAE::MatchCase>>>, A)> {
     pub type FuncExpType<A: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, A) -> Result<(Arc<DAE::Exp>, A)> + 'static>;
 
     let mut outCases: Arc<metamodelica::List<Arc<DAE::MatchCase>>>;
@@ -12757,7 +12757,7 @@ pub fn traverseCases<A: Clone + 'static + metamodelica::ReferenceEq>(mut inCases
     Ok((outCases, oa))
 }
 
-pub fn traverseCasesTopDown<A: Clone + 'static + metamodelica::ReferenceEq>(mut inCases: Arc<metamodelica::List<Arc<DAE::MatchCase>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, A) -> Result<(Arc<DAE::Exp>, bool, A)> + 'static>, mut inA: A) -> Result<(Arc<metamodelica::List<Arc<DAE::MatchCase>>>, A)> {
+pub fn traverseCasesTopDown<A: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut inCases: Arc<metamodelica::List<Arc<DAE::MatchCase>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, A) -> Result<(Arc<DAE::Exp>, bool, A)> + 'static>, mut inA: A) -> Result<(Arc<metamodelica::List<Arc<DAE::MatchCase>>>, A)> {
     pub type FuncExpType<A: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, A) -> Result<(Arc<DAE::Exp>, bool, A)> + 'static>;
 
     let mut cases: Arc<metamodelica::List<Arc<DAE::MatchCase>>> = metamodelica::nil();

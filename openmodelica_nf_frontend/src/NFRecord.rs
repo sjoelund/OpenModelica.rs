@@ -93,7 +93,7 @@ pub mod Field {
         },
     }
     impl metamodelica::gc::MMTrace for Field {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             match self {
                 Field::INPUT { name } => {
                     metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
@@ -312,7 +312,7 @@ pub fn fieldsToDAE(mut fields: Arc<metamodelica::List<Arc<Field::Field>>>) -> Ar
     fieldNames
 }
 
-pub fn foldInputFields<T: Clone + 'static, ArgT: Clone + 'static>(mut fields: Arc<metamodelica::List<Arc<Field::Field>>>, mut args: Arc<metamodelica::List<T>>, mut func: Arc<dyn ::std::ops::Fn(T, ArgT) -> Result<ArgT> + 'static>, mut foldArg: ArgT) -> Result<ArgT> {
+pub fn foldInputFields<T: Clone + 'static + metamodelica::gc::MMTrace, ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut fields: Arc<metamodelica::List<Arc<Field::Field>>>, mut args: Arc<metamodelica::List<T>>, mut func: Arc<dyn ::std::ops::Fn(T, ArgT) -> Result<ArgT> + 'static>, mut foldArg: ArgT) -> Result<ArgT> {
     pub type FuncT<T: Clone + 'static, ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T, ArgT) -> Result<ArgT> + 'static>;
 
     let mut foldArg: ArgT = foldArg;

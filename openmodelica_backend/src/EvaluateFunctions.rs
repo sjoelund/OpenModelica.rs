@@ -92,7 +92,7 @@ pub struct FuncInfo {
 }
 
 impl metamodelica::gc::MMTrace for FuncInfo {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.repl, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.funcTree, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.idx, __mmv)?;
@@ -118,7 +118,7 @@ pub enum Variability {
     VARIABLE,
 }
 impl metamodelica::gc::MMTrace for Variability {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             Variability::CONST => Ok(()),
             Variability::VARIABLE => Ok(()),
@@ -138,7 +138,7 @@ pub struct CallSignature {
 }
 
 impl metamodelica::gc::MMTrace for CallSignature {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.path, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.inputsVari, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.canBeEvaluated, __mmv)?;
@@ -1946,7 +1946,7 @@ fn stmtCanBeRemoved(mut stmtIn: Arc<DAE::Statement>, mut repl: BackendVarTransfo
     tplOut
 }
 
-fn traverseStmtsAndUpdate<Type_a: Clone + 'static>(mut stmtsIn: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>, Type_a) -> Result<(Arc<DAE::Statement>, bool)> + 'static>, mut argIn: Type_a, mut stmtsFold: Arc<metamodelica::List<Arc<DAE::Statement>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Statement>>>> {
+fn traverseStmtsAndUpdate<Type_a: Clone + 'static + metamodelica::gc::MMTrace>(mut stmtsIn: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>, Type_a) -> Result<(Arc<DAE::Statement>, bool)> + 'static>, mut argIn: Type_a, mut stmtsFold: Arc<metamodelica::List<Arc<DAE::Statement>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Statement>>>> {
     pub type FuncType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>, Type_a) -> Result<(Arc<DAE::Statement>, bool)> + 'static>;
 
     let mut stmtsOut: Arc<metamodelica::List<Arc<DAE::Statement>>>;

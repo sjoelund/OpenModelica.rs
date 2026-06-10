@@ -278,7 +278,7 @@ fn priorityLBinop(mut inOp: DAE::Operator) -> Result<i32> {
     Ok(outPriority)
 }
 
-pub fn evalCat<Exp: Clone + 'static>(mut dim: i32, mut exps: Arc<metamodelica::List<Exp>>, mut getArrayContents: Arc<dyn ::std::ops::Fn(Exp) -> Result<Arc<metamodelica::List<Exp>>> + 'static>, mut toString: Arc<dyn ::std::ops::Fn(Exp) -> Result<ArcStr> + 'static>) -> Result<(Arc<metamodelica::List<Exp>>, Arc<metamodelica::List<i32>>)> {
+pub fn evalCat<Exp: Clone + 'static + metamodelica::gc::MMTrace>(mut dim: i32, mut exps: Arc<metamodelica::List<Exp>>, mut getArrayContents: Arc<dyn ::std::ops::Fn(Exp) -> Result<Arc<metamodelica::List<Exp>>> + 'static>, mut toString: Arc<dyn ::std::ops::Fn(Exp) -> Result<ArcStr> + 'static>) -> Result<(Arc<metamodelica::List<Exp>>, Arc<metamodelica::List<i32>>)> {
     pub type GetArrayContents<Exp: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Exp) -> Result<Arc<metamodelica::List<Exp>>> + 'static>;
 
     pub type MakeArrayFromList<Exp: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Exp>>) -> Result<Exp> + 'static>;
@@ -405,7 +405,7 @@ pub fn evalCat<Exp: Clone + 'static>(mut dim: i32, mut exps: Arc<metamodelica::L
     Ok((outExps, outDims))
 }
 
-fn evalCatGetFlatArray<Exp: Clone + 'static>(mut e: Exp, mut dim: i32, mut getArrayContents: Arc<dyn ::std::ops::Fn(Exp) -> Result<Arc<metamodelica::List<Exp>>> + 'static>, mut toString: Arc<dyn ::std::ops::Fn(Exp) -> Result<ArcStr> + 'static>) -> Result<(Arc<metamodelica::List<Exp>>, Arc<metamodelica::List<i32>>)> {
+fn evalCatGetFlatArray<Exp: Clone + 'static + metamodelica::gc::MMTrace>(mut e: Exp, mut dim: i32, mut getArrayContents: Arc<dyn ::std::ops::Fn(Exp) -> Result<Arc<metamodelica::List<Exp>>> + 'static>, mut toString: Arc<dyn ::std::ops::Fn(Exp) -> Result<ArcStr> + 'static>) -> Result<(Arc<metamodelica::List<Exp>>, Arc<metamodelica::List<i32>>)> {
     pub type GetArrayContents<Exp: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Exp) -> Result<Arc<metamodelica::List<Exp>>> + 'static>;
 
     pub type ToString<Exp: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Exp) -> Result<ArcStr> + 'static>;
@@ -1042,7 +1042,7 @@ pub fn subscriptEqual(mut inSubscriptLst1: Arc<metamodelica::List<Arc<DAE::Subsc
     }
 }
 
-pub fn printListStr<Type_a: Clone + 'static>(mut inTypeALst: Arc<metamodelica::List<Type_a>>, mut inFuncTypeTypeAToString: Arc<dyn ::std::ops::Fn(Type_a) -> Result<ArcStr> + 'static>, mut inString: ArcStr) -> Result<ArcStr> {
+pub fn printListStr<Type_a: Clone + 'static + metamodelica::gc::MMTrace>(mut inTypeALst: Arc<metamodelica::List<Type_a>>, mut inFuncTypeTypeAToString: Arc<dyn ::std::ops::Fn(Type_a) -> Result<ArcStr> + 'static>, mut inString: ArcStr) -> Result<ArcStr> {
     pub type FuncTypeType_aToString<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Type_a) -> Result<ArcStr> + 'static>;
 
     let mut outString: ArcStr;

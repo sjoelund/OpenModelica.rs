@@ -111,7 +111,7 @@ pub mod BClock {
         },
     }
     impl metamodelica::gc::MMTrace for BClock {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             match self {
                 BClock::BASE_CLOCK { clock } => {
                     metamodelica::gc::MMTrace::mm_accept(clock, __mmv)?;
@@ -408,7 +408,7 @@ pub mod ClockedInfo {
     }
 
     impl metamodelica::gc::MMTrace for ClockedInfo {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             metamodelica::gc::MMTrace::mm_accept(&self.baseClocks, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.subClocks, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.subToBase, __mmv)?;
@@ -695,7 +695,7 @@ impl Ord for ClusterElementType {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 impl metamodelica::gc::MMTrace for ClusterElementType {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+    fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 
 pub mod Cluster {
@@ -709,7 +709,7 @@ pub mod Cluster {
     }
 
     impl metamodelica::gc::MMTrace for Cluster {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             metamodelica::gc::MMTrace::mm_accept(&self.variables, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.eqn_idnts, __mmv)?;
             Ok(())
@@ -889,7 +889,7 @@ pub mod DisjointSetForest {
     }
 
     impl metamodelica::gc::MMTrace for DisjointSetForest {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             metamodelica::gc::MMTrace::mm_accept(&self.parent, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.rank, __mmv)?;
             Ok(())

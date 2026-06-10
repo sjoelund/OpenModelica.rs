@@ -1452,7 +1452,7 @@ fn dumpSparsePatternStatistics(mut nonZeroElements: i32, mut sparsepatternT: Arc
     Ok(())
 }
 
-fn findDegrees<T: Clone + 'static>(mut inList: Arc<metamodelica::List<T>>, mut inValue: i32) -> (i32, i32) {
+fn findDegrees<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inList: Arc<metamodelica::List<T>>, mut inValue: i32) -> (i32, i32) {
     let mut outDegree: i32;
     let mut outMaxDegree: i32;
     outDegree = (inList.clone().len() as i32);
@@ -3501,7 +3501,7 @@ pub fn calculateJacobian(mut inVariables: BackendDAE::Variables, mut inEquationA
     (outTplIntegerIntegerEquationLstOption, oShared)
 }
 
-fn calculateJacobianRows<Type_a: Clone + 'static>(mut inEquationArray: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut vars: BackendDAE::Variables, mut m: Type_a, mut eqn_indx: i32, mut scalar_eqn_indx: i32, mut differentiateIfExp: bool, mut iShared: Arc<BackendDAE::Shared>, mut varsInEqn: Arc<dyn ::std::ops::Fn(Type_a, i32) -> Result<Arc<metamodelica::List<i32>>> + 'static>) -> Result<(Arc<metamodelica::List<(i32, i32, Arc<BackendDAE::Equation>)>>, Arc<BackendDAE::Shared>)> {
+fn calculateJacobianRows<Type_a: Clone + 'static + metamodelica::gc::MMTrace>(mut inEquationArray: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut vars: BackendDAE::Variables, mut m: Type_a, mut eqn_indx: i32, mut scalar_eqn_indx: i32, mut differentiateIfExp: bool, mut iShared: Arc<BackendDAE::Shared>, mut varsInEqn: Arc<dyn ::std::ops::Fn(Type_a, i32) -> Result<Arc<metamodelica::List<i32>>> + 'static>) -> Result<(Arc<metamodelica::List<(i32, i32, Arc<BackendDAE::Equation>)>>, Arc<BackendDAE::Shared>)> {
     pub type varsInEqnFunc<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Type_a, i32) -> Result<Arc<metamodelica::List<i32>>> + 'static>;
 
     let mut outLst: Arc<metamodelica::List<(i32, i32, Arc<BackendDAE::Equation>)>> = metamodelica::nil();
@@ -3528,7 +3528,7 @@ fn calculateJacobianRows<Type_a: Clone + 'static>(mut inEquationArray: Arc<Expan
     Ok((outLst, oShared))
 }
 
-fn calculateJacobianRow<Type_a: Clone + 'static>(mut inEquation: Arc<BackendDAE::Equation>, mut vars: BackendDAE::Variables, mut m: Type_a, mut eqn_indx: i32, mut scalar_eqn_indx: i32, mut differentiateIfExp: bool, mut iShared: Arc<BackendDAE::Shared>, mut fvarsInEqn: Arc<dyn ::std::ops::Fn(Type_a, i32) -> Result<Arc<metamodelica::List<i32>>> + 'static>, mut iAcc: Arc<metamodelica::List<(i32, i32, Arc<BackendDAE::Equation>)>>) -> Result<(Arc<metamodelica::List<(i32, i32, Arc<BackendDAE::Equation>)>>, i32, Arc<BackendDAE::Shared>)> {
+fn calculateJacobianRow<Type_a: Clone + 'static + metamodelica::gc::MMTrace>(mut inEquation: Arc<BackendDAE::Equation>, mut vars: BackendDAE::Variables, mut m: Type_a, mut eqn_indx: i32, mut scalar_eqn_indx: i32, mut differentiateIfExp: bool, mut iShared: Arc<BackendDAE::Shared>, mut fvarsInEqn: Arc<dyn ::std::ops::Fn(Type_a, i32) -> Result<Arc<metamodelica::List<i32>>> + 'static>, mut iAcc: Arc<metamodelica::List<(i32, i32, Arc<BackendDAE::Equation>)>>) -> Result<(Arc<metamodelica::List<(i32, i32, Arc<BackendDAE::Equation>)>>, i32, Arc<BackendDAE::Shared>)> {
     pub type varsInEqnFunc<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Type_a, i32) -> Result<Arc<metamodelica::List<i32>>> + 'static>;
 
     let mut outLst: Arc<metamodelica::List<(i32, i32, Arc<BackendDAE::Equation>)>>;
@@ -4356,7 +4356,7 @@ pub mod LinearJacobian {
     }
 
     impl metamodelica::gc::MMTrace for LinearJacobian {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             metamodelica::gc::MMTrace::mm_accept(&self.rows, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.rhs, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.ind, __mmv)?;

@@ -62,7 +62,7 @@ pub struct Info {
 }
 
 impl metamodelica::gc::MMTrace for Info {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.fmiVersion, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.fmiType, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.fmiModelName, __mmv)?;
@@ -109,7 +109,7 @@ pub struct TypeDefinitions {
 }
 
 impl metamodelica::gc::MMTrace for TypeDefinitions {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.name, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.description, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.quantity, __mmv)?;
@@ -129,7 +129,7 @@ pub struct EnumerationItem {
 }
 
 impl metamodelica::gc::MMTrace for EnumerationItem {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.name, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.description, __mmv)?;
         Ok(())
@@ -146,7 +146,7 @@ pub struct ExperimentAnnotation {
 }
 
 impl metamodelica::gc::MMTrace for ExperimentAnnotation {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.fmiExperimentStartTime, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.fmiExperimentStopTime, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.fmiExperimentTolerance, __mmv)?;
@@ -250,7 +250,7 @@ pub enum ModelVariables {
     },
 }
 impl metamodelica::gc::MMTrace for ModelVariables {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             ModelVariables::REALVARIABLE { instance, name, description, baseType, variability, causality, hasStartValue, startValue, isFixed, valueReference, x1Placement, x2Placement, y1Placement, y2Placement } => {
                 metamodelica::gc::MMTrace::mm_accept(instance, __mmv)?;
@@ -361,7 +361,7 @@ pub struct FmiImport {
 }
 
 impl metamodelica::gc::MMTrace for FmiImport {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.platform, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.fmuFileName, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.fmuWorkingDirectory, __mmv)?;

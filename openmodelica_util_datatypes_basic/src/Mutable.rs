@@ -1,9 +1,88 @@
 // Manually written
 #![allow(non_snake_case)]
-use std::sync::Arc;
+use std::sync::{Arc, Mutex, Weak};
 
-#[derive(Clone, Debug)]
-pub struct Mutable<T: Clone>(Arc<std::sync::Mutex<T>>);
+use metamodelica::gc::{MMTrace, MMVisitor, TraceableCell};
+
+/// The shared allocation behind both [`Mutable`] and `Pointer::Mutable`
+/// cells. The content lives in an `Option` so the cycle collector can
+/// *poison* a cell proven unreachable — dropping the content (which breaks
+/// the cycle and lets ordinary `Arc` drops cascade) while leaving the
+/// allocation itself intact for any in-cycle handles still being torn down.
+/// `None` is only ever observed by a collector bug; accessors panic on it
+/// rather than inventing a value.
+pub struct CellInner<T> {
+    content: Mutex<Option<T>>,
+}
+
+impl<T: MMTrace> TraceableCell for CellInner<T> {
+    fn trace_content(&self, visitor: &mut dyn MMVisitor) -> Result<(), ()> {
+        match self.content.try_lock().map_err(|_| ())?.as_ref() {
+            Some(x) => x.mm_accept(visitor),
+            None => Ok(()), // already poisoned: nothing to trace
+        }
+    }
+
+    fn poison(&self) {
+        let mut guard = self
+            .content
+            .lock()
+            .expect("Mutable cell poisoned (a thread panicked while updating it)");
+        *guard = None;
+    }
+}
+
+/// Allocate a cell and register it with the cycle collector. Every cell —
+/// `Mutable` or `Pointer::Mutable`, explicit or `Default`-synthesized — must
+/// go through here: an unregistered cell is never a collection candidate, so
+/// cycles through it would silently leak.
+pub(crate) fn new_cell<T: Clone + MMTrace + 'static>(data: T) -> Arc<CellInner<T>> {
+    let inner = Arc::new(CellInner { content: Mutex::new(Some(data)) });
+    let weak: Weak<dyn TraceableCell> = Arc::downgrade(&inner) as _;
+    metamodelica::gc::register_cell(weak);
+    inner
+}
+
+/// Read access for the cell-based types in this crate (`Pointer` shares
+/// `CellInner`). Panics if the cell was reclaimed by the cycle collector —
+/// reaching such a cell means the collector freed live data, which is a bug
+/// in the collector, not in the caller.
+pub(crate) fn cell_get<T: Clone>(cell: &CellInner<T>) -> T {
+    cell.content
+        .lock()
+        .expect("Mutable cell poisoned (a thread panicked while updating it)")
+        .as_ref()
+        .expect("accessed a cycle-collected mutable cell")
+        .clone()
+}
+
+pub(crate) fn cell_set<T>(cell: &CellInner<T>, data: T) {
+    let mut guard = cell
+        .content
+        .lock()
+        .expect("Mutable cell poisoned (a thread panicked while updating it)");
+    *guard = Some(data);
+}
+
+pub struct Mutable<T: Clone>(pub(crate) Arc<CellInner<T>>);
+
+impl<T: Clone> Clone for Mutable<T> {
+    fn clone(&self) -> Self {
+        Mutable(Arc::clone(&self.0))
+    }
+}
+
+impl<T: Clone + std::fmt::Debug> std::fmt::Debug for Mutable<T> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self.0.content.try_lock() {
+            Ok(guard) => match guard.as_ref() {
+                Some(v) => write!(f, "Mutable({v:?})"),
+                None => write!(f, "Mutable(<collected>)"),
+            },
+            Err(_) => write!(f, "Mutable(<locked>)"),
+        }
+    }
+}
 
 // `PartialEq` is a conditional impl rather than a struct-level bound so
 // that `Mutable<T>` can store values whose `T` does not implement
@@ -12,8 +91,13 @@ pub struct Mutable<T: Clone>(Arc<std::sync::Mutex<T>>);
 // is comparable.
 impl<T: Clone + PartialEq> PartialEq for Mutable<T> {
     fn eq(&self, other: &Self) -> bool {
-        let self_guard = self.0.lock().unwrap();
-        let other_guard = other.0.lock().unwrap();
+        // Identity first: also keeps a self-comparison from deadlocking on
+        // the second lock below.
+        if Arc::ptr_eq(&self.0, &other.0) {
+            return true;
+        }
+        let self_guard = self.0.content.lock().unwrap();
+        let other_guard = other.0.content.lock().unwrap();
         *self_guard == *other_guard
     }
 }
@@ -24,23 +108,30 @@ impl<T: Clone + PartialEq> PartialEq for Mutable<T> {
 impl<T: Clone + Eq> Eq for Mutable<T> {}
 
 /// Content-based ordering. Mirrors `PartialEq`'s "lock both, compare
-/// inner values" pattern. Locks are always acquired self-then-other in
-/// declaration order so the routine is deadlock-free against itself
-/// (cross-thread Mutable comparisons assume no concurrent reordering of
-/// the same pair of cells in opposite order, which the codegen never
-/// generates).
+/// inner values" pattern (with the same identity short-circuit so a
+/// self-comparison cannot self-deadlock). Locks are always acquired
+/// self-then-other in declaration order so the routine is deadlock-free
+/// against itself (cross-thread Mutable comparisons assume no concurrent
+/// reordering of the same pair of cells in opposite order, which the
+/// codegen never generates).
 impl<T: Clone + PartialOrd> PartialOrd for Mutable<T> {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        let self_guard = self.0.lock().unwrap();
-        let other_guard = other.0.lock().unwrap();
+        if Arc::ptr_eq(&self.0, &other.0) {
+            return Some(std::cmp::Ordering::Equal);
+        }
+        let self_guard = self.0.content.lock().unwrap();
+        let other_guard = other.0.content.lock().unwrap();
         (*self_guard).partial_cmp(&*other_guard)
     }
 }
 
 impl<T: Clone + Ord> Ord for Mutable<T> {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        let self_guard = self.0.lock().unwrap();
-        let other_guard = other.0.lock().unwrap();
+        if Arc::ptr_eq(&self.0, &other.0) {
+            return std::cmp::Ordering::Equal;
+        }
+        let self_guard = self.0.content.lock().unwrap();
+        let other_guard = other.0.content.lock().unwrap();
         (*self_guard).cmp(&*other_guard)
     }
 }
@@ -55,24 +146,24 @@ impl<T: Clone + Ord> Ord for Mutable<T> {
 /// `Default` is exposed so records containing a `Mutable<T>` can themselves
 /// derive `Default` (used by the codegen lowering of `arrayCreateNoInit`
 /// when the type-witness dummy is unassigned). The default `Mutable` holds a
-/// freshly-locked `T::default()`.
-impl<T: Clone + Default> Default for Mutable<T> {
+/// fresh `T::default()` and is registered with the collector like any other
+/// cell (the `MMTrace + 'static` bounds come from that registration).
+impl<T: Clone + Default + MMTrace + 'static> Default for Mutable<T> {
     fn default() -> Self {
-        Mutable(Arc::from(std::sync::Mutex::new(T::default())))
+        Mutable(new_cell(T::default()))
     }
 }
 
-pub fn create<T: Clone>(data: T) -> Mutable<T> {
-    Mutable(Arc::from(std::sync::Mutex::new(data)))
+pub fn create<T: Clone + MMTrace + 'static>(data: T) -> Mutable<T> {
+    Mutable(new_cell(data))
 }
 
 pub fn update<T: Clone>(mutable: Mutable<T>, data: T) {
-    let mut guard = mutable.0.lock().unwrap();
-    *guard = data;
+    cell_set(&mutable.0, data);
 }
 
 pub fn access<T: Clone>(mutable: Mutable<T>) -> T {
-    mutable.0.lock().unwrap().clone()
+    cell_get(&mutable.0)
 }
 
 /// MetaModelica `referenceEq` on mutable cells: true iff both handles
@@ -93,105 +184,20 @@ impl<T: Clone> metamodelica::ReferenceEq for Mutable<T> {
     }
 }
 
-/// Transitional tracing through the legacy `Arc`-based cell: the cell itself
-/// is not a Gc allocation (cycles through it still leak), but its content may
-/// transitively hold `Gc` pointers while the codegen migration is in
-/// progress, so tracing must pass through. Mirrors dumpster's `Mutex` impl:
-/// a busy lock reports `Err` ("keep alive").
+/// The cell is a shared allocation: report it, then trace the content once.
+/// A cell locked by another thread aborts the collection (`Err`).
 impl<T: Clone + MMTrace> MMTrace for Mutable<T> {
-    fn mm_accept<V: metamodelica::gc::dumpster::Visitor>(
-        &self,
-        visitor: &mut V,
-    ) -> Result<(), ()> {
-        self.0.try_lock().map_err(|_| ())?.mm_accept(visitor)
-    }
-}
-
-// ── Gc-backed cell ────────────────────────────────────────────────────────────
-//
-// `Mutable<T>` above is an `Arc<Mutex<T>>`: cheap, but a cell updated with a
-// value that transitively contains the cell forms an `Arc` cycle that is
-// never deallocated (see `tests/mutable_cycle_drop_tests.rs`). `GcMutable` is
-// the cycle-collecting replacement: the cell is a `dumpster::unsync::Gc`
-// allocation, so once codegen also allocates the cycle-capable payload types
-// with `Gc`, the collector can trace through cells and free dead cycles.
-//
-// The two cell types coexist while the codegen migration is in progress;
-// codegen keeps `Mutable` for payload types that can never be cyclic.
-
-use metamodelica::gc::{dumpster::unsync::Gc, MMTrace, Traced};
-use std::cell::RefCell;
-
-pub struct GcMutable<T: MMTrace + 'static>(Gc<RefCell<Traced<T>>>);
-
-impl<T: MMTrace> Clone for GcMutable<T> {
-    fn clone(&self) -> Self {
-        GcMutable(Gc::clone(&self.0))
-    }
-}
-
-impl<T: MMTrace + std::fmt::Debug> std::fmt::Debug for GcMutable<T> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self.0.try_borrow() {
-            Ok(v) => write!(f, "GcMutable({:?})", v.0),
-            Err(_) => write!(f, "GcMutable(<borrowed>)"),
+    fn mm_accept(&self, visitor: &mut dyn MMVisitor) -> Result<(), ()> {
+        if visitor.visit_shared(
+            Arc::as_ptr(&self.0) as *const (),
+            Arc::strong_count(&self.0),
+            std::any::type_name::<CellInner<T>>(),
+        ) {
+            let r = self.0.trace_content(visitor);
+            visitor.leave_shared();
+            r
+        } else {
+            Ok(())
         }
-    }
-}
-
-/// Content-based equality, mirroring [`Mutable`]'s `PartialEq`. Unlike the
-/// `Mutex` cell (which self-deadlocks when comparing a cell against itself),
-/// two shared `RefCell` borrows are fine.
-impl<T: MMTrace + PartialEq> PartialEq for GcMutable<T> {
-    fn eq(&self, other: &Self) -> bool {
-        *self.0.borrow() == *other.0.borrow()
-    }
-}
-
-impl<T: MMTrace + Eq> Eq for GcMutable<T> {}
-
-impl<T: MMTrace + Default> Default for GcMutable<T> {
-    fn default() -> Self {
-        GcMutable(Gc::new(RefCell::new(Traced(T::default()))))
-    }
-}
-
-/// Cells are traced by handing the inner `Gc` to the collector's visitor;
-/// the payload is then traced through `Traced<T>`'s `TraceWith` bridge.
-impl<T: MMTrace> MMTrace for GcMutable<T> {
-    fn mm_accept<V: metamodelica::gc::dumpster::Visitor>(
-        &self,
-        visitor: &mut V,
-    ) -> Result<(), ()> {
-        visitor.visit_unsync(&self.0);
-        Ok(())
-    }
-}
-
-impl<T: MMTrace> GcMutable<T> {
-    pub fn create(data: T) -> GcMutable<T> {
-        GcMutable(Gc::new(RefCell::new(Traced(data))))
-    }
-
-    pub fn update(mutable: GcMutable<T>, data: T) {
-        mutable.0.borrow_mut().0 = data;
-    }
-
-    pub fn access(mutable: GcMutable<T>) -> T
-    where
-        T: Clone,
-    {
-        mutable.0.borrow().0.clone()
-    }
-
-    /// MetaModelica `referenceEq`: same cell allocation, contents irrelevant.
-    pub fn referenceEq(a: &GcMutable<T>, b: &GcMutable<T>) -> bool {
-        Gc::ptr_eq(&a.0, &b.0)
-    }
-}
-
-impl<T: MMTrace> metamodelica::ReferenceEq for GcMutable<T> {
-    fn reference_eq(&self, other: &Self) -> bool {
-        GcMutable::referenceEq(self, other)
     }
 }

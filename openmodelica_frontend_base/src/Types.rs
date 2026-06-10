@@ -7475,7 +7475,7 @@ pub fn makeKnownDimensionsInteger(mut ty: Arc<DAE::Type>, mut dummy: i32) -> (Ar
     (oty, odummy)
 }
 
-pub fn traverseType<A: Clone + 'static>(mut ty: Arc<DAE::Type>, mut arg: A, mut r#fn: Arc<dyn ::std::ops::Fn(Arc<DAE::Type>, A) -> Result<(Arc<DAE::Type>, A)> + 'static>) -> Result<(Arc<DAE::Type>, A)> {
+pub fn traverseType<A: Clone + 'static + metamodelica::gc::MMTrace>(mut ty: Arc<DAE::Type>, mut arg: A, mut r#fn: Arc<dyn ::std::ops::Fn(Arc<DAE::Type>, A) -> Result<(Arc<DAE::Type>, A)> + 'static>) -> Result<(Arc<DAE::Type>, A)> {
     pub type Func<A: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>, A) -> Result<(Arc<DAE::Type>, A)> + 'static>;
 
     let mut oty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
@@ -7634,7 +7634,7 @@ pub fn traverseType<A: Clone + 'static>(mut ty: Arc<DAE::Type>, mut arg: A, mut 
     Ok((oty, a))
 }
 
-fn traverseTupleType<A: Clone + 'static>(mut itys: Arc<metamodelica::List<Arc<DAE::Type>>>, mut ia: A, mut r#fn: Arc<dyn ::std::ops::Fn(Arc<DAE::Type>, A) -> Result<(Arc<DAE::Type>, A)> + 'static>) -> Result<(Arc<metamodelica::List<Arc<DAE::Type>>>, A)> {
+fn traverseTupleType<A: Clone + 'static + metamodelica::gc::MMTrace>(mut itys: Arc<metamodelica::List<Arc<DAE::Type>>>, mut ia: A, mut r#fn: Arc<dyn ::std::ops::Fn(Arc<DAE::Type>, A) -> Result<(Arc<DAE::Type>, A)> + 'static>) -> Result<(Arc<metamodelica::List<Arc<DAE::Type>>>, A)> {
     pub type Func<A: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>, A) -> Result<(Arc<DAE::Type>, A)> + 'static>;
 
     let mut otys: Arc<metamodelica::List<Arc<DAE::Type>>>;
@@ -7656,7 +7656,7 @@ fn traverseTupleType<A: Clone + 'static>(mut itys: Arc<metamodelica::List<Arc<DA
     Ok((otys, oa))
 }
 
-fn traverseVarTypes<A: Clone + 'static>(mut ivars: Arc<metamodelica::List<Arc<DAE::Var>>>, mut ia: A, mut r#fn: Arc<dyn ::std::ops::Fn(Arc<DAE::Type>, A) -> Result<(Arc<DAE::Type>, A)> + 'static>) -> Result<(Arc<metamodelica::List<Arc<DAE::Var>>>, A)> {
+fn traverseVarTypes<A: Clone + 'static + metamodelica::gc::MMTrace>(mut ivars: Arc<metamodelica::List<Arc<DAE::Var>>>, mut ia: A, mut r#fn: Arc<dyn ::std::ops::Fn(Arc<DAE::Type>, A) -> Result<(Arc<DAE::Type>, A)> + 'static>) -> Result<(Arc<metamodelica::List<Arc<DAE::Var>>>, A)> {
     pub type Func<A: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>, A) -> Result<(Arc<DAE::Type>, A)> + 'static>;
 
     let mut ovars: Arc<metamodelica::List<Arc<DAE::Var>>>;
@@ -7681,7 +7681,7 @@ fn traverseVarTypes<A: Clone + 'static>(mut ivars: Arc<metamodelica::List<Arc<DA
     Ok((ovars, oa))
 }
 
-fn traverseFuncArg<A: Clone + 'static>(mut iargs: Arc<metamodelica::List<Arc<DAE::FuncArg>>>, mut ia: A, mut r#fn: Arc<dyn ::std::ops::Fn(Arc<DAE::Type>, A) -> Result<(Arc<DAE::Type>, A)> + 'static>) -> Result<(Arc<metamodelica::List<Arc<DAE::FuncArg>>>, A)> {
+fn traverseFuncArg<A: Clone + 'static + metamodelica::gc::MMTrace>(mut iargs: Arc<metamodelica::List<Arc<DAE::FuncArg>>>, mut ia: A, mut r#fn: Arc<dyn ::std::ops::Fn(Arc<DAE::Type>, A) -> Result<(Arc<DAE::Type>, A)> + 'static>) -> Result<(Arc<metamodelica::List<Arc<DAE::FuncArg>>>, A)> {
     pub type Func<A: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>, A) -> Result<(Arc<DAE::Type>, A)> + 'static>;
 
     let mut oargs: Arc<metamodelica::List<Arc<DAE::FuncArg>>>;
@@ -9179,7 +9179,7 @@ pub fn lookupAttributeExp(mut inAttributes: Arc<metamodelica::List<Arc<DAE::Var>
     Ok(outExp)
 }
 
-fn unboxedTypeTraverseHelper<T: Clone + 'static>(mut ty: Arc<DAE::Type>, mut dummy: T) -> Result<(Arc<DAE::Type>, T)> {
+fn unboxedTypeTraverseHelper<T: Clone + 'static + metamodelica::gc::MMTrace>(mut ty: Arc<DAE::Type>, mut dummy: T) -> Result<(Arc<DAE::Type>, T)> {
     let mut oty: Arc<DAE::Type> = unboxedType(ty.clone())?;
     let mut odummy: T = dummy.clone();
     Ok((oty, odummy))

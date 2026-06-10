@@ -107,7 +107,7 @@ impl Ord for MatrixStrictness {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 impl metamodelica::gc::MMTrace for MatrixStrictness {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+    fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 impl Default for MatrixStrictness {
     fn default() -> Self { Self::LINEAR }
@@ -140,7 +140,7 @@ pub mod Mapping {
     }
 
     impl metamodelica::gc::MMTrace for Mapping {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             metamodelica::gc::MMTrace::mm_accept(&self.eqn_StA, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.var_StA, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.eqn_AtS, __mmv)?;
@@ -402,7 +402,7 @@ pub mod Mode {
     }
 
     impl metamodelica::gc::MMTrace for Mode {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             metamodelica::gc::MMTrace::mm_accept(&self.eqn_name, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.crefs, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.scalarize, __mmv)?;
@@ -534,7 +534,7 @@ pub mod Matrix {
         },
     }
     impl metamodelica::gc::MMTrace for Matrix {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             match self {
                 Matrix::EMPTY { st } => {
                     metamodelica::gc::MMTrace::mm_accept(st, __mmv)?;
@@ -1900,7 +1900,7 @@ pub mod Dependency {
     }
 
     impl metamodelica::gc::MMTrace for Dependency {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             metamodelica::gc::MMTrace::mm_accept(&self.skips, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.kinds, __mmv)?;
             Ok(())
@@ -1930,7 +1930,7 @@ pub mod Dependency {
         fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
     }
     impl metamodelica::gc::MMTrace for Kind {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+        fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
     }
     impl Default for Kind {
         fn default() -> Self { Self::REGULAR }
@@ -2200,7 +2200,7 @@ pub mod Solvability {
         },
     }
     impl metamodelica::gc::MMTrace for Solvability {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             match self {
                 Solvability::UNKNOWN => Ok(()),
                 Solvability::UNSOLVABLE => Ok(()),

@@ -75,7 +75,7 @@ pub enum NFRestriction {
     UNKNOWN,
 }
 impl metamodelica::gc::MMTrace for NFRestriction {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             NFRestriction::BLOCK => Ok(()),
             NFRestriction::CLASS => Ok(()),

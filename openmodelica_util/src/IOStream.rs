@@ -56,7 +56,7 @@ pub enum IOStreamType {
     BUFFER,
 }
 impl metamodelica::gc::MMTrace for IOStreamType {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             IOStreamType::FILE { name } => {
                 metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
@@ -85,7 +85,7 @@ pub enum IOStreamData {
     },
 }
 impl metamodelica::gc::MMTrace for IOStreamData {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             IOStreamData::FILE_DATA { data } => {
                 metamodelica::gc::MMTrace::mm_accept(data, __mmv)?;
@@ -119,7 +119,7 @@ pub struct IOStream {
 }
 
 impl metamodelica::gc::MMTrace for IOStream {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.name, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.ty, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.data, __mmv)?;

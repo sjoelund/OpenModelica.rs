@@ -57,7 +57,7 @@ pub enum Severity {
     NOTIFICATION,
 }
 impl metamodelica::gc::MMTrace for Severity {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             Severity::INTERNAL => Ok(()),
             Severity::ERROR => Ok(()),
@@ -90,7 +90,7 @@ pub enum MessageType {
     SCRIPTING,
 }
 impl metamodelica::gc::MMTrace for MessageType {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             MessageType::SYNTAX => Ok(()),
             MessageType::GRAMMAR => Ok(()),
@@ -119,7 +119,7 @@ pub struct Message {
 }
 
 impl metamodelica::gc::MMTrace for Message {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.id, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.ty, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.severity, __mmv)?;
@@ -148,7 +148,7 @@ pub struct TotalMessage {
 }
 
 impl metamodelica::gc::MMTrace for TotalMessage {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.msg, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.info, __mmv)?;
         Ok(())

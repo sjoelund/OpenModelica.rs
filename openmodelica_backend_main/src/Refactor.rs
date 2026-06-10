@@ -236,7 +236,7 @@ fn refactorGraphAnnInClassPart(mut inPart: Arc<Absyn::ClassPart>, mut inProgram:
     outPart
 }
 
-fn refactorGraphAnnInContentList<contentType: Clone + 'static>(mut inList: Arc<metamodelica::List<contentType>>, mut refactorGraphAnnInItem: Arc<dyn ::std::ops::Fn(contentType, Absyn::Program, Arc<Absyn::Path>, Interactive::GraphicEnvCache) -> Result<contentType> + 'static>, mut inProgram: Absyn::Program, mut classPath: Arc<Absyn::Path>, mut inClassEnv: Interactive::GraphicEnvCache) -> Result<Arc<metamodelica::List<contentType>>> {
+fn refactorGraphAnnInContentList<contentType: Clone + 'static + metamodelica::gc::MMTrace>(mut inList: Arc<metamodelica::List<contentType>>, mut refactorGraphAnnInItem: Arc<dyn ::std::ops::Fn(contentType, Absyn::Program, Arc<Absyn::Path>, Interactive::GraphicEnvCache) -> Result<contentType> + 'static>, mut inProgram: Absyn::Program, mut classPath: Arc<Absyn::Path>, mut inClassEnv: Interactive::GraphicEnvCache) -> Result<Arc<metamodelica::List<contentType>>> {
     pub type refactorGraphAnnInContent<contentType: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(contentType, Absyn::Program, Arc<Absyn::Path>, Interactive::GraphicEnvCache) -> Result<contentType> + 'static>;
 
     let mut outList: Arc<metamodelica::List<contentType>>;

@@ -8586,7 +8586,7 @@ fn discretizeTraverseFun(mut inExp: Arc<Absyn::Exp>, mut inTup: (i32, Arc<metamo
     Ok((outExp, outTup))
 }
 
-fn findDomF<T: Clone + 'static>(mut inTup: (ArcStr, T), mut name: ArcStr) -> bool {
+fn findDomF<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inTup: (ArcStr, T), mut name: ArcStr) -> bool {
     let mut found: bool;
     found = (match inTup.clone() {
         (mut nameLoc, _) if (stringEqual((nameLoc.clone()).clone(), (name.clone()).clone())) => {

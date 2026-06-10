@@ -181,7 +181,7 @@ pub mod Call_Id {
     }
 
     impl metamodelica::gc::MMTrace for Call_Id {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             metamodelica::gc::MMTrace::mm_accept(&self.call, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.iter, __mmv)?;
             Ok(())
@@ -232,7 +232,7 @@ pub mod Call_Aux {
     }
 
     impl metamodelica::gc::MMTrace for Call_Aux {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             metamodelica::gc::MMTrace::mm_accept(&self.replacer, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.kind, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.parsed, __mmv)?;
@@ -379,7 +379,7 @@ fn functionAliasDefault(mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqDa
     Ok((varData, eqData))
 }
 
-fn aliasListToString<T1: Clone + 'static, T2: Clone + 'static>(mut aux_lst: Arc<metamodelica::List<(T1, T2)>>, mut func1: Arc<dyn ::std::ops::Fn(T1) -> Result<ArcStr> + 'static>, mut func2: Arc<dyn ::std::ops::Fn(T2) -> Result<ArcStr> + 'static>, mut name: ArcStr) -> Result<ArcStr> {
+fn aliasListToString<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'static + metamodelica::gc::MMTrace>(mut aux_lst: Arc<metamodelica::List<(T1, T2)>>, mut func1: Arc<dyn ::std::ops::Fn(T1) -> Result<ArcStr> + 'static>, mut func2: Arc<dyn ::std::ops::Fn(T2) -> Result<ArcStr> + 'static>, mut name: ArcStr) -> Result<ArcStr> {
     type idToString<T1: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T1) -> Result<ArcStr> + 'static>;
 
     type auxToString<T2: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T2) -> Result<ArcStr> + 'static>;
@@ -465,7 +465,7 @@ fn introduceFunctionAliasEquation(mut eqn: Arc<Equation::Equation>, mut map: Arc
         fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
     }
     impl metamodelica::gc::MMTrace for Depth {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+        fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
     }
 
     let mut eqn: Arc<Equation::Equation> = eqn;

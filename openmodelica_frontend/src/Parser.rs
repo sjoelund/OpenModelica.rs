@@ -187,7 +187,7 @@ pub struct ParserResult {
 }
 
 impl metamodelica::gc::MMTrace for ParserResult {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.filename, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.program, __mmv)?;
         Ok(())

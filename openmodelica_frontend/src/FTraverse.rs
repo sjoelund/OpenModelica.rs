@@ -74,7 +74,7 @@ pub enum WalkOptions {
     DFS,
 }
 impl metamodelica::gc::MMTrace for WalkOptions {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             WalkOptions::BFS => Ok(()),
             WalkOptions::DFS => Ok(()),
@@ -91,7 +91,7 @@ pub enum VisitOptions {
     NO_VISIT,
 }
 impl metamodelica::gc::MMTrace for VisitOptions {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             VisitOptions::VISIT => Ok(()),
             VisitOptions::NO_VISIT => Ok(()),
@@ -109,7 +109,7 @@ pub enum Options {
     },
 }
 impl metamodelica::gc::MMTrace for Options {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             Options::NO_OPTIONS => Ok(()),
             Options::OPTIONS { ws, vs } => {
@@ -122,7 +122,7 @@ impl metamodelica::gc::MMTrace for Options {
 }
 pub use self::Options::{NO_OPTIONS,OPTIONS};
 
-pub fn walk<Extra: Clone + 'static>(mut inGraph: Graph, mut inWalker: Arc<dyn ::std::ops::Fn((FCore::Graph, metamodelica::Array<FCore::Node>, Extra)) -> Result<(FCore::Graph, metamodelica::Array<FCore::Node>, Extra)> + 'static>, mut inExtra: Extra, mut inOptions: Options) -> (Graph, Extra) {
+pub fn walk<Extra: Clone + 'static + metamodelica::gc::MMTrace>(mut inGraph: Graph, mut inWalker: Arc<dyn ::std::ops::Fn((FCore::Graph, metamodelica::Array<FCore::Node>, Extra)) -> Result<(FCore::Graph, metamodelica::Array<FCore::Node>, Extra)> + 'static>, mut inExtra: Extra, mut inOptions: Options) -> (Graph, Extra) {
     pub type Walker<Extra: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn((FCore::Graph, metamodelica::Array<FCore::Node>, Extra)) -> Result<(FCore::Graph, metamodelica::Array<FCore::Node>, Extra)> + 'static>;
 
     let mut outGraph: Graph;

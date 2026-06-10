@@ -178,7 +178,7 @@ fn simplifyWithOptions(mut inExp: Arc<DAE::Exp>, mut options: ExpressionSimplify
     Ok((outExp, hasChanged))
 }
 
-pub fn simplifyTraverseHelper<A: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut inA: A) -> Result<(Arc<DAE::Exp>, A)> {
+pub fn simplifyTraverseHelper<A: Clone + 'static + metamodelica::gc::MMTrace>(mut inExp: Arc<DAE::Exp>, mut inA: A) -> Result<(Arc<DAE::Exp>, A)> {
     let mut exp: Arc<DAE::Exp>;
     let mut a: A;
     a = inA.clone();
@@ -186,7 +186,7 @@ pub fn simplifyTraverseHelper<A: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut 
     Ok((exp, a))
 }
 
-pub fn simplify1TraverseHelper<A: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut inA: A) -> Result<(Arc<DAE::Exp>, A)> {
+pub fn simplify1TraverseHelper<A: Clone + 'static + metamodelica::gc::MMTrace>(mut inExp: Arc<DAE::Exp>, mut inA: A) -> Result<(Arc<DAE::Exp>, A)> {
     let mut outExp: Arc<DAE::Exp>;
     let mut a: A;
     a = inA.clone();

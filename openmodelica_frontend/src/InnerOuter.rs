@@ -86,7 +86,7 @@ pub struct InstResult {
 }
 
 impl metamodelica::gc::MMTrace for InstResult {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.outCache, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.outEnv, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.outStore, __mmv)?;
@@ -134,7 +134,7 @@ pub struct InstInner {
 }
 
 impl metamodelica::gc::MMTrace for InstInner {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.innerPrefix, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.name, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.io, __mmv)?;
@@ -175,7 +175,7 @@ pub struct OuterPrefix {
 }
 
 impl metamodelica::gc::MMTrace for OuterPrefix {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.outerComponentRef, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.innerComponentRef, __mmv)?;
         Ok(())
@@ -209,7 +209,7 @@ pub struct TopInstance {
 }
 
 impl metamodelica::gc::MMTrace for TopInstance {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.path, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.ht, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.outerPrefixes, __mmv)?;
@@ -1242,7 +1242,7 @@ pub struct InstHierarchyHashTable {
 }
 
 impl metamodelica::gc::MMTrace for InstHierarchyHashTable {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.hashTable, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.valueArr, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.bucketSize, __mmv)?;
@@ -1275,7 +1275,7 @@ pub struct ValueArray {
 }
 
 impl metamodelica::gc::MMTrace for ValueArray {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.numberOfElements, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.valueArray, __mmv)?;
         Ok(())

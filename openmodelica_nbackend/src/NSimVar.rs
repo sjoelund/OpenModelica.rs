@@ -130,7 +130,7 @@ pub mod SimVar {
     }
 
     impl metamodelica::gc::MMTrace for SimVar {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             metamodelica::gc::MMTrace::mm_accept(&self.name, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.varKind, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.comment, __mmv)?;
@@ -628,7 +628,7 @@ pub mod Alias {
         },
     }
     impl metamodelica::gc::MMTrace for Alias {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             match self {
                 Alias::NO_ALIAS => Ok(()),
                 Alias::ALIAS { alias, gain, offset } => {
@@ -780,7 +780,7 @@ impl Ord for Causality {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 impl metamodelica::gc::MMTrace for Causality {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+    fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 impl Default for Causality {
     fn default() -> Self { Self::NONE }
@@ -802,7 +802,7 @@ impl Ord for Initial {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 impl metamodelica::gc::MMTrace for Initial {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+    fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 impl Default for Initial {
     fn default() -> Self { Self::NONE }
@@ -825,7 +825,7 @@ impl Ord for Variability {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 impl metamodelica::gc::MMTrace for Variability {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+    fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 impl Default for Variability {
     fn default() -> Self { Self::CONSTANT }
@@ -875,7 +875,7 @@ pub mod SimVars {
     }
 
     impl metamodelica::gc::MMTrace for SimVars {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             metamodelica::gc::MMTrace::mm_accept(&self.stateVars, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.derivativeVars, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.algVars, __mmv)?;
@@ -1458,7 +1458,7 @@ impl Ord for SplitType {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 impl metamodelica::gc::MMTrace for SplitType {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+    fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
@@ -1477,7 +1477,7 @@ impl Ord for VarType {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 impl metamodelica::gc::MMTrace for VarType {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+    fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 
 // ToDo: PRE, OLD, RELATIONS...
@@ -1523,7 +1523,7 @@ pub mod VarInfo {
     }
 
     impl metamodelica::gc::MMTrace for VarInfo {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             metamodelica::gc::MMTrace::mm_accept(&self.numZeroCrossings, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.numTimeEvents, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.numRelations, __mmv)?;
@@ -1643,7 +1643,7 @@ pub mod ExtObjInfo {
     }
 
     impl metamodelica::gc::MMTrace for ExtObjInfo {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             metamodelica::gc::MMTrace::mm_accept(&self.objects, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.aliases, __mmv)?;
             Ok(())

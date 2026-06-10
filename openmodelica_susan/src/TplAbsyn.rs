@@ -77,7 +77,7 @@ pub enum PathIdent {
     },
 }
 impl metamodelica::gc::MMTrace for PathIdent {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             PathIdent::IDENT { ident } => {
                 metamodelica::gc::MMTrace::mm_accept(ident, __mmv)?;
@@ -131,7 +131,7 @@ pub enum TypeSignature {
     },
 }
 impl metamodelica::gc::MMTrace for TypeSignature {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             TypeSignature::LIST_TYPE { ofType } => {
                 metamodelica::gc::MMTrace::mm_accept(ofType, __mmv)?;
@@ -278,7 +278,7 @@ pub enum ExpressionBase {
     ERROR_EXP,
 }
 impl metamodelica::gc::MMTrace for ExpressionBase {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             ExpressionBase::TEMPLATE { items, lquote, rquote } => {
                 metamodelica::gc::MMTrace::mm_accept(items, __mmv)?;
@@ -418,7 +418,7 @@ pub enum MatchingExp {
     REST_MATCH,
 }
 impl metamodelica::gc::MMTrace for MatchingExp {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             MatchingExp::BIND_AS_MATCH { bindIdent, matchingExp } => {
                 metamodelica::gc::MMTrace::mm_accept(bindIdent, __mmv)?;
@@ -505,7 +505,7 @@ pub enum TypeInfo {
     },
 }
 impl metamodelica::gc::MMTrace for TypeInfo {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             TypeInfo::TI_UNION_TYPE { recTags } => {
                 metamodelica::gc::MMTrace::mm_accept(recTags, __mmv)?;
@@ -549,7 +549,7 @@ pub struct ASTDef {
 }
 
 impl metamodelica::gc::MMTrace for ASTDef {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.importPackage, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.isDefault, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.types, __mmv)?;
@@ -578,7 +578,7 @@ pub struct TemplPackage {
 }
 
 impl metamodelica::gc::MMTrace for TemplPackage {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.name, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.astDefs, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.templateDefs, __mmv)?;
@@ -617,7 +617,7 @@ pub enum TemplateDef {
     },
 }
 impl metamodelica::gc::MMTrace for TemplateDef {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             TemplateDef::STR_TOKEN_DEF { value } => {
                 metamodelica::gc::MMTrace::mm_accept(value, __mmv)?;
@@ -657,7 +657,7 @@ pub struct MMPackage {
 }
 
 impl metamodelica::gc::MMTrace for MMPackage {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.name, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.mmDeclarations, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.annotationFooter, __mmv)?;
@@ -706,7 +706,7 @@ pub enum MMDeclaration {
     },
 }
 impl metamodelica::gc::MMTrace for MMDeclaration {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             MMDeclaration::MM_IMPORT { isPublic, packageName } => {
                 metamodelica::gc::MMTrace::mm_accept(isPublic, __mmv)?;
@@ -794,7 +794,7 @@ pub enum MMExp {
     },
 }
 impl metamodelica::gc::MMTrace for MMExp {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             MMExp::MM_ASSIGN { lhsArgs, rhs } => {
                 metamodelica::gc::MMTrace::mm_accept(lhsArgs, __mmv)?;
@@ -980,7 +980,7 @@ pub enum Scope {
     },
 }
 impl metamodelica::gc::MMTrace for Scope {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             Scope::FUN_SCOPE { args, localArgs } => {
                 metamodelica::gc::MMTrace::mm_accept(args, __mmv)?;
@@ -1026,7 +1026,7 @@ pub struct MapContext {
 }
 
 impl metamodelica::gc::MMTrace for MapContext {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.ofBinding, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.mapExp, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.iterMMExpOptions, __mmv)?;
@@ -1048,7 +1048,7 @@ pub enum GenInfo {
     },
 }
 impl metamodelica::gc::MMTrace for GenInfo {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             GenInfo::GI_TEMPL_FUN => Ok(()),
             GenInfo::GI_MATCH_FUN => Ok(()),
@@ -7114,7 +7114,7 @@ pub fn fullyQualifyTemplateTypeSignature(mut inTemplateTypeSignature: Arc<TypeSi
     outFullyQualifiedTypeSignature
 }
 
-fn lookupTupleList<Type_a: Clone + 'static + PartialEq, Type_b: Clone + 'static>(mut inList: Arc<metamodelica::List<(Type_a, Type_b)>>, mut inItemA: Type_a) -> Result<Type_b> {
+fn lookupTupleList<Type_a: Clone + 'static + metamodelica::gc::MMTrace + PartialEq, Type_b: Clone + 'static + metamodelica::gc::MMTrace>(mut inList: Arc<metamodelica::List<(Type_a, Type_b)>>, mut inItemA: Type_a) -> Result<Type_b> {
     let mut outItemB: Type_b;
     outItemB = 'mc: {
         let __mc_input = (inList.clone(), inItemA.clone());
@@ -7140,7 +7140,7 @@ fn lookupTupleList<Type_a: Clone + 'static + PartialEq, Type_b: Clone + 'static>
     Ok(outItemB)
 }
 
-fn updateTupleList<Type_a: Clone + 'static + PartialEq, Type_b: Clone + 'static>(mut inList: Arc<metamodelica::List<(Type_a, Type_b)>>, mut inTuple: (Type_a, Type_b)) -> Arc<metamodelica::List<(Type_a, Type_b)>> {
+fn updateTupleList<Type_a: Clone + 'static + metamodelica::gc::MMTrace + PartialEq, Type_b: Clone + 'static + metamodelica::gc::MMTrace>(mut inList: Arc<metamodelica::List<(Type_a, Type_b)>>, mut inTuple: (Type_a, Type_b)) -> Arc<metamodelica::List<(Type_a, Type_b)>> {
     let mut outList: Arc<metamodelica::List<(Type_a, Type_b)>>;
     outList = 'mc: {
         let __mc_input = (inList.clone(), inTuple.clone());
@@ -7166,7 +7166,7 @@ fn updateTupleList<Type_a: Clone + 'static + PartialEq, Type_b: Clone + 'static>
     outList
 }
 
-fn lookupDeleteTupleList<Type_a: Clone + 'static + PartialEq, Type_b: Clone + 'static>(mut inList: Arc<metamodelica::List<(Type_a, Type_b)>>, mut inItemA: Type_a) -> Result<(Type_b, Arc<metamodelica::List<(Type_a, Type_b)>>)> {
+fn lookupDeleteTupleList<Type_a: Clone + 'static + metamodelica::gc::MMTrace + PartialEq, Type_b: Clone + 'static + metamodelica::gc::MMTrace>(mut inList: Arc<metamodelica::List<(Type_a, Type_b)>>, mut inItemA: Type_a) -> Result<(Type_b, Arc<metamodelica::List<(Type_a, Type_b)>>)> {
     let mut outItemB: Type_b;
     let mut outList: Arc<metamodelica::List<(Type_a, Type_b)>>;
     (outItemB, outList) = 'mc: {
@@ -7196,7 +7196,7 @@ fn lookupDeleteTupleList<Type_a: Clone + 'static + PartialEq, Type_b: Clone + 's
     Ok((outItemB, outList))
 }
 
-fn alignTupleList<Type_a: Clone + 'static + PartialEq, Type_b: Clone + 'static, Type_c: Clone + 'static>(mut inListToAlign: Arc<metamodelica::List<(Type_a, Type_b)>>, mut inListAlignBy: Arc<metamodelica::List<(Type_a, Type_c)>>) -> Result<Arc<metamodelica::List<(Type_a, Type_b)>>> {
+fn alignTupleList<Type_a: Clone + 'static + metamodelica::gc::MMTrace + PartialEq, Type_b: Clone + 'static + metamodelica::gc::MMTrace, Type_c: Clone + 'static + metamodelica::gc::MMTrace>(mut inListToAlign: Arc<metamodelica::List<(Type_a, Type_b)>>, mut inListAlignBy: Arc<metamodelica::List<(Type_a, Type_c)>>) -> Result<Arc<metamodelica::List<(Type_a, Type_b)>>> {
     let mut outAlignedList: Arc<metamodelica::List<(Type_a, Type_b)>>;
     outAlignedList = 'mc: {
         let __mc_input = (inListToAlign.clone(), inListAlignBy.clone());
@@ -7235,7 +7235,7 @@ fn alignTupleList<Type_a: Clone + 'static + PartialEq, Type_b: Clone + 'static, 
     Ok(outAlignedList)
 }
 
-fn listMap1Tuple22<Type_a: Clone + 'static, Type_b: Clone + 'static, Type_d: Clone + 'static, Type_c: Clone + 'static>(mut inList: Arc<metamodelica::List<(Type_a, Type_b)>>, mut inFun_Tbd_to_Tc: Arc<dyn ::std::ops::Fn(Type_b, Type_d) -> Result<Type_c> + 'static>, mut inExtraArg: Type_d) -> Result<Arc<metamodelica::List<(Type_a, Type_c)>>> {
+fn listMap1Tuple22<Type_a: Clone + 'static + metamodelica::gc::MMTrace, Type_b: Clone + 'static + metamodelica::gc::MMTrace, Type_d: Clone + 'static + metamodelica::gc::MMTrace, Type_c: Clone + 'static + metamodelica::gc::MMTrace>(mut inList: Arc<metamodelica::List<(Type_a, Type_b)>>, mut inFun_Tbd_to_Tc: Arc<dyn ::std::ops::Fn(Type_b, Type_d) -> Result<Type_c> + 'static>, mut inExtraArg: Type_d) -> Result<Arc<metamodelica::List<(Type_a, Type_c)>>> {
     pub type Fun_Tbd_to_Tc<Type_b: Clone + 'static, Type_c: Clone + 'static, Type_d: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Type_b, Type_d) -> Result<Type_c> + 'static>;
 
     let mut outList: Arc<metamodelica::List<(Type_a, Type_c)>>;
@@ -7255,7 +7255,7 @@ fn listMap1Tuple22<Type_a: Clone + 'static, Type_b: Clone + 'static, Type_d: Clo
     Ok(outList)
 }
 
-fn listMap2Tuple22<Type_a: Clone + 'static, Type_b: Clone + 'static, Type_d: Clone + 'static, Type_e: Clone + 'static, Type_c: Clone + 'static>(mut inList: Arc<metamodelica::List<(Type_a, Type_b)>>, mut inFun_Tbde_to_Tc: Arc<dyn ::std::ops::Fn(Type_b, Type_d, Type_e) -> Result<Type_c> + 'static>, mut inExtraArg: Type_d, mut inExtraArg2: Type_e) -> Result<Arc<metamodelica::List<(Type_a, Type_c)>>> {
+fn listMap2Tuple22<Type_a: Clone + 'static + metamodelica::gc::MMTrace, Type_b: Clone + 'static + metamodelica::gc::MMTrace, Type_d: Clone + 'static + metamodelica::gc::MMTrace, Type_e: Clone + 'static + metamodelica::gc::MMTrace, Type_c: Clone + 'static + metamodelica::gc::MMTrace>(mut inList: Arc<metamodelica::List<(Type_a, Type_b)>>, mut inFun_Tbde_to_Tc: Arc<dyn ::std::ops::Fn(Type_b, Type_d, Type_e) -> Result<Type_c> + 'static>, mut inExtraArg: Type_d, mut inExtraArg2: Type_e) -> Result<Arc<metamodelica::List<(Type_a, Type_c)>>> {
     pub type Fun_Tbde_to_Tc<Type_b: Clone + 'static, Type_c: Clone + 'static, Type_d: Clone + 'static, Type_e: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Type_b, Type_d, Type_e) -> Result<Type_c> + 'static>;
 
     let mut outList: Arc<metamodelica::List<(Type_a, Type_c)>>;

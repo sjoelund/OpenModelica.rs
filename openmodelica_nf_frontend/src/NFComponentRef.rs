@@ -87,7 +87,7 @@ pub enum NFComponentRef {
     WILD,
 }
 impl metamodelica::gc::MMTrace for NFComponentRef {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             NFComponentRef::CREF { node, subscripts, ty, origin, restCref } => {
                 metamodelica::gc::MMTrace::mm_accept(node, __mmv)?;
@@ -139,7 +139,7 @@ impl Ord for Origin {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 impl metamodelica::gc::MMTrace for Origin {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+    fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 
 pub fn fromNode(mut node: Arc<InstNode::InstNode>, mut ty: Arc<Type::NFType>, mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>, mut origin: Origin) -> Arc<NFComponentRef> {
@@ -1020,7 +1020,7 @@ pub fn applySubscripts(mut cref: Arc<NFComponentRef>, mut func: Arc<dyn ::std::o
     Ok(())
 }
 
-pub fn foldSubscripts<ArgT: Clone + 'static>(mut cref: Arc<NFComponentRef>, mut func: Arc<dyn ::std::ops::Fn(Arc<Subscript::NFSubscript>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT, mut applyToScope: bool) -> Result<ArgT> {
+pub fn foldSubscripts<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut cref: Arc<NFComponentRef>, mut func: Arc<dyn ::std::ops::Fn(Arc<Subscript::NFSubscript>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT, mut applyToScope: bool) -> Result<ArgT> {
     pub type FuncT<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Subscript::NFSubscript>, ArgT) -> Result<ArgT> + 'static>;
 
     let mut arg: ArgT = arg;
@@ -2050,7 +2050,7 @@ pub fn mapExpShallow(mut cref: Arc<NFComponentRef>, mut func: Arc<dyn ::std::ops
     Ok(outCref)
 }
 
-pub fn foldExp<ArgT: Clone + 'static>(mut cref: Arc<NFComponentRef>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
+pub fn foldExp<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut cref: Arc<NFComponentRef>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
     pub type FoldFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>;
 
     let mut arg: ArgT = arg;
@@ -2066,7 +2066,7 @@ pub fn foldExp<ArgT: Clone + 'static>(mut cref: Arc<NFComponentRef>, mut func: A
     Ok(arg)
 }
 
-pub fn mapFoldExp<ArgT: Clone + 'static>(mut cref: Arc<NFComponentRef>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<(Arc<Expression::NFExpression>, ArgT)> + 'static>, mut arg: ArgT) -> Result<(Arc<NFComponentRef>, ArgT)> {
+pub fn mapFoldExp<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut cref: Arc<NFComponentRef>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<(Arc<Expression::NFExpression>, ArgT)> + 'static>, mut arg: ArgT) -> Result<(Arc<NFComponentRef>, ArgT)> {
     pub type MapFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<(Arc<Expression::NFExpression>, ArgT)> + 'static>;
 
     let mut outCref: Arc<NFComponentRef>;
@@ -2087,7 +2087,7 @@ pub fn mapFoldExp<ArgT: Clone + 'static>(mut cref: Arc<NFComponentRef>, mut func
     Ok((outCref, arg))
 }
 
-pub fn mapFoldExpShallow<ArgT: Clone + 'static>(mut cref: Arc<NFComponentRef>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<(Arc<Expression::NFExpression>, ArgT)> + 'static>, mut arg: ArgT) -> Result<(Arc<NFComponentRef>, ArgT)> {
+pub fn mapFoldExpShallow<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut cref: Arc<NFComponentRef>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<(Arc<Expression::NFExpression>, ArgT)> + 'static>, mut arg: ArgT) -> Result<(Arc<NFComponentRef>, ArgT)> {
     pub type MapFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<(Arc<Expression::NFExpression>, ArgT)> + 'static>;
 
     let mut outCref: Arc<NFComponentRef>;

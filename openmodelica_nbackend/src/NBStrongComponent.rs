@@ -165,7 +165,7 @@ pub enum NBStrongComponent {
     },
 }
 impl metamodelica::gc::MMTrace for NBStrongComponent {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             NBStrongComponent::SINGLE_COMPONENT { var, eqn, status } => {
                 metamodelica::gc::MMTrace::mm_accept(var, __mmv)?;
@@ -245,7 +245,7 @@ pub mod AliasInfo {
     }
 
     impl metamodelica::gc::MMTrace for AliasInfo {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             metamodelica::gc::MMTrace::mm_accept(&self.kind, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.partitionIndex, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.componentIndex, __mmv)?;
@@ -368,7 +368,7 @@ pub struct CountCollector {
 }
 
 impl metamodelica::gc::MMTrace for CountCollector {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.single_scalar, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.single_array, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.single_record, __mmv)?;
@@ -723,7 +723,7 @@ impl Ord for DAEType {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 impl metamodelica::gc::MMTrace for DAEType {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+    fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 
 pub fn sortDAEModeComponents(mut comps: Option<metamodelica::Array<Arc<NBStrongComponent>>>, mut variables: Arc<VariablePointers::VariablePointers>, mut uniqueIndex: Pointer::Pointer<i32>) -> Result<Option<metamodelica::Array<Arc<NBStrongComponent>>>> {

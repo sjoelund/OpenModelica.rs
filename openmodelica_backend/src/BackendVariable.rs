@@ -3294,7 +3294,7 @@ pub fn rehashVariables(mut inVariables: BackendDAE::Variables) -> Result<Backend
     Ok(outVariables)
 }
 
-pub fn traverseBackendDAEVars<ArgT: Clone + 'static>(mut inVariables: BackendDAE::Variables, mut inFunc: Arc<dyn ::std::ops::Fn(BackendDAE::Var, ArgT) -> Result<(BackendDAE::Var, ArgT)> + 'static>, mut inArg: ArgT) -> Result<ArgT> {
+pub fn traverseBackendDAEVars<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inVariables: BackendDAE::Variables, mut inFunc: Arc<dyn ::std::ops::Fn(BackendDAE::Var, ArgT) -> Result<(BackendDAE::Var, ArgT)> + 'static>, mut inArg: ArgT) -> Result<ArgT> {
     pub type FuncType<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, ArgT) -> Result<(BackendDAE::Var, ArgT)> + 'static>;
 
     let mut outArg: ArgT;
@@ -3324,7 +3324,7 @@ fn filterTraverse(mut var: BackendDAE::Var, mut func: Arc<dyn ::std::ops::Fn(Bac
     Ok((var, acc))
 }
 
-fn traverseBackendDAEVars2<ArgT: Clone + 'static>(mut inVar: Option<BackendDAE::Var>, mut inFunc: Arc<dyn ::std::ops::Fn(BackendDAE::Var, ArgT) -> Result<(BackendDAE::Var, ArgT)> + 'static>, mut inArg: ArgT) -> Result<ArgT> {
+fn traverseBackendDAEVars2<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inVar: Option<BackendDAE::Var>, mut inFunc: Arc<dyn ::std::ops::Fn(BackendDAE::Var, ArgT) -> Result<(BackendDAE::Var, ArgT)> + 'static>, mut inArg: ArgT) -> Result<ArgT> {
     pub type FuncType<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, ArgT) -> Result<(BackendDAE::Var, ArgT)> + 'static>;
 
     let mut outArg: ArgT;
@@ -3341,7 +3341,7 @@ fn traverseBackendDAEVars2<ArgT: Clone + 'static>(mut inVar: Option<BackendDAE::
     Ok(outArg)
 }
 
-pub fn traverseBackendDAEVarsWithStop<ArgT: Clone + 'static>(mut inVariables: BackendDAE::Variables, mut inFunc: Arc<dyn ::std::ops::Fn(BackendDAE::Var, ArgT) -> Result<(BackendDAE::Var, bool, ArgT)> + 'static>, mut inArg: ArgT) -> Result<ArgT> {
+pub fn traverseBackendDAEVarsWithStop<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inVariables: BackendDAE::Variables, mut inFunc: Arc<dyn ::std::ops::Fn(BackendDAE::Var, ArgT) -> Result<(BackendDAE::Var, bool, ArgT)> + 'static>, mut inArg: ArgT) -> Result<ArgT> {
     pub type FuncType<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, ArgT) -> Result<(BackendDAE::Var, bool, ArgT)> + 'static>;
 
     let mut outArg: ArgT;
@@ -3354,7 +3354,7 @@ pub fn traverseBackendDAEVarsWithStop<ArgT: Clone + 'static>(mut inVariables: Ba
     Ok(outArg)
 }
 
-fn traverseBackendDAEVarsWithStop2<ArgT: Clone + 'static>(mut inVar: Option<BackendDAE::Var>, mut inFunc: Arc<dyn ::std::ops::Fn(BackendDAE::Var, ArgT) -> Result<(BackendDAE::Var, bool, ArgT)> + 'static>, mut inArg: ArgT) -> Result<(bool, ArgT)> {
+fn traverseBackendDAEVarsWithStop2<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inVar: Option<BackendDAE::Var>, mut inFunc: Arc<dyn ::std::ops::Fn(BackendDAE::Var, ArgT) -> Result<(BackendDAE::Var, bool, ArgT)> + 'static>, mut inArg: ArgT) -> Result<(bool, ArgT)> {
     pub type FuncType<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, ArgT) -> Result<(BackendDAE::Var, bool, ArgT)> + 'static>;
 
     let mut outContinue: bool;
@@ -3373,7 +3373,7 @@ fn traverseBackendDAEVarsWithStop2<ArgT: Clone + 'static>(mut inVar: Option<Back
     Ok((outContinue, outArg))
 }
 
-pub fn traverseBackendDAE<ArgT: Clone + 'static>(mut dae: Arc<BackendDAE::BackendDAE>, mut inFunc: Arc<dyn ::std::ops::Fn(BackendDAE::Var, ArgT) -> Result<(BackendDAE::Var, ArgT)> + 'static>, mut arg: ArgT) -> Result<(Arc<BackendDAE::BackendDAE>, ArgT)> {
+pub fn traverseBackendDAE<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut dae: Arc<BackendDAE::BackendDAE>, mut inFunc: Arc<dyn ::std::ops::Fn(BackendDAE::Var, ArgT) -> Result<(BackendDAE::Var, ArgT)> + 'static>, mut arg: ArgT) -> Result<(Arc<BackendDAE::BackendDAE>, ArgT)> {
     pub type FuncType<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, ArgT) -> Result<(BackendDAE::Var, ArgT)> + 'static>;
 
     let mut dae: Arc<BackendDAE::BackendDAE> = dae;
@@ -3389,7 +3389,7 @@ pub fn traverseBackendDAE<ArgT: Clone + 'static>(mut dae: Arc<BackendDAE::Backen
     Ok((dae, arg))
 }
 
-pub fn traverseBackendDAEVarsWithUpdate<ArgT: Clone + 'static>(mut inVariables: BackendDAE::Variables, mut inFunc: Arc<dyn ::std::ops::Fn(BackendDAE::Var, ArgT) -> Result<(BackendDAE::Var, ArgT)> + 'static>, mut inArg: ArgT) -> Result<(BackendDAE::Variables, ArgT)> {
+pub fn traverseBackendDAEVarsWithUpdate<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inVariables: BackendDAE::Variables, mut inFunc: Arc<dyn ::std::ops::Fn(BackendDAE::Var, ArgT) -> Result<(BackendDAE::Var, ArgT)> + 'static>, mut inArg: ArgT) -> Result<(BackendDAE::Variables, ArgT)> {
     pub type FuncType<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, ArgT) -> Result<(BackendDAE::Var, ArgT)> + 'static>;
 
     let mut outVariables: BackendDAE::Variables;
@@ -3414,7 +3414,7 @@ pub fn traverseBackendDAEVarsWithUpdate<ArgT: Clone + 'static>(mut inVariables: 
     Ok((outVariables, outArg))
 }
 
-fn traverseBackendDAEVarsWithUpdate2<ArgT: Clone + 'static>(mut inVar: Option<BackendDAE::Var>, mut inFunc: Arc<dyn ::std::ops::Fn(BackendDAE::Var, ArgT) -> Result<(BackendDAE::Var, ArgT)> + 'static>, mut inArg: ArgT) -> Result<(Option<BackendDAE::Var>, ArgT)> {
+fn traverseBackendDAEVarsWithUpdate2<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inVar: Option<BackendDAE::Var>, mut inFunc: Arc<dyn ::std::ops::Fn(BackendDAE::Var, ArgT) -> Result<(BackendDAE::Var, ArgT)> + 'static>, mut inArg: ArgT) -> Result<(Option<BackendDAE::Var>, ArgT)> {
     pub type FuncType<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, ArgT) -> Result<(BackendDAE::Var, ArgT)> + 'static>;
 
     let mut outVar: Option<BackendDAE::Var>;

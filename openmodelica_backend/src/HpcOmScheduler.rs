@@ -4842,7 +4842,7 @@ fn MCP_getTaskAssignment1(mut orderIn: Arc<metamodelica::List<i32>>, mut taskAss
     Ok((taskAssOut, procAssOut))
 }
 
-fn updateLockIdcsInThreadschedule<ArgType: Clone + 'static>(mut scheduleIn: Arc<HpcOmSimCode::Schedule>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, ArgType) -> Result<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> + 'static>, mut extraArg: ArgType) -> Result<Arc<HpcOmSimCode::Schedule>> {
+fn updateLockIdcsInThreadschedule<ArgType: Clone + 'static + metamodelica::gc::MMTrace>(mut scheduleIn: Arc<HpcOmSimCode::Schedule>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, ArgType) -> Result<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> + 'static>, mut extraArg: ArgType) -> Result<Arc<HpcOmSimCode::Schedule>> {
     pub type FuncType<ArgType: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, ArgType) -> Result<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> + 'static>;
 
     let mut scheduleOut: Arc<HpcOmSimCode::Schedule>;
@@ -4863,7 +4863,7 @@ fn updateLockIdcsInThreadschedule<ArgType: Clone + 'static>(mut scheduleIn: Arc<
     Ok(scheduleOut)
 }
 
-fn traverseAndUpdateThreadsInSchedule<ArgType: Clone + 'static>(mut scheduleIn: Arc<HpcOmSimCode::Schedule>, mut funcIn: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, ArgType) -> Result<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> + 'static>, mut extraArg: ArgType) -> Result<Arc<HpcOmSimCode::Schedule>> {
+fn traverseAndUpdateThreadsInSchedule<ArgType: Clone + 'static + metamodelica::gc::MMTrace>(mut scheduleIn: Arc<HpcOmSimCode::Schedule>, mut funcIn: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, ArgType) -> Result<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> + 'static>, mut extraArg: ArgType) -> Result<Arc<HpcOmSimCode::Schedule>> {
     pub type FuncType<ArgType: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, ArgType) -> Result<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> + 'static>;
 
     let mut scheduleOut: Arc<HpcOmSimCode::Schedule>;
@@ -5299,7 +5299,7 @@ fn getMemberOnTrueWithIdx1(mut inIdx: i32, mut inValue: metamodelica::Real, mut 
     (outElement, outIdx, found)
 }
 
-fn swapEntriesInList<ElementType: Clone + 'static>(mut idx1: i32, mut idx2: i32, mut lstIn: Arc<metamodelica::List<ElementType>>) -> Result<Arc<metamodelica::List<ElementType>>> {
+fn swapEntriesInList<ElementType: Clone + 'static + metamodelica::gc::MMTrace>(mut idx1: i32, mut idx2: i32, mut lstIn: Arc<metamodelica::List<ElementType>>) -> Result<Arc<metamodelica::List<ElementType>>> {
     let mut lstOut: Arc<metamodelica::List<ElementType>>;
     let mut r1: ElementType;
     let mut r2: ElementType;

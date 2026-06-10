@@ -93,7 +93,7 @@ pub mod SetVertex {
     }
 
     impl metamodelica::gc::MMTrace for SetVertex {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             metamodelica::gc::MMTrace::mm_accept(&self.name, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.vs, __mmv)?;
             Ok(())
@@ -137,7 +137,7 @@ pub mod SetEdge {
     }
 
     impl metamodelica::gc::MMTrace for SetEdge {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             metamodelica::gc::MMTrace::mm_accept(&self.name, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.es1, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.es2, __mmv)?;

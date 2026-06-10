@@ -147,7 +147,7 @@ pub mod ConnectionSets {
     }
 
     impl metamodelica::gc::MMTrace for Sets {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             metamodelica::gc::MMTrace::mm_accept(&self.nodes, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.elements, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.nodeCount, __mmv)?;

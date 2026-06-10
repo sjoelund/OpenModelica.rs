@@ -125,7 +125,7 @@ pub enum InstNodeType {
     IMPLICIT_SCOPE,
 }
 impl metamodelica::gc::MMTrace for InstNodeType {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             InstNodeType::NORMAL_CLASS => Ok(()),
             InstNodeType::BASE_CLASS { parent, definition, ty } => {
@@ -225,7 +225,7 @@ impl Ord for PackageCacheState {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 impl metamodelica::gc::MMTrace for PackageCacheState {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+    fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 
 pub mod CachedData {
@@ -244,7 +244,7 @@ pub mod CachedData {
         },
     }
     impl metamodelica::gc::MMTrace for CachedData {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             match self {
                 CachedData::NO_CACHE => Ok(()),
                 CachedData::PACKAGE { instance, state } => {
@@ -384,7 +384,7 @@ pub mod InstNode {
         EMPTY_NODE,
     }
     impl metamodelica::gc::MMTrace for InstNode {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             match self {
                 InstNode::CLASS_NODE { name, definition, visibility, cls, caches, parentScope, nodeType } => {
                     metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
@@ -1317,7 +1317,7 @@ pub mod InstNode {
         Ok(ty)
     }
 
-    pub fn classApply<ArgT: Clone + 'static>(mut node: Arc<InstNode>, mut func: Arc<dyn ::std::ops::Fn(ArgT, Arc<Class::NFClass>) -> Result<Arc<Class::NFClass>> + 'static>, mut arg: ArgT) -> Result<Arc<InstNode>> {
+    pub fn classApply<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut node: Arc<InstNode>, mut func: Arc<dyn ::std::ops::Fn(ArgT, Arc<Class::NFClass>) -> Result<Arc<Class::NFClass>> + 'static>, mut arg: ArgT) -> Result<Arc<InstNode>> {
         pub type FuncType<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(ArgT, Arc<Class::NFClass>) -> Result<Arc<Class::NFClass>> + 'static>;
 
         let mut node: Arc<InstNode> = node;
@@ -1331,7 +1331,7 @@ pub mod InstNode {
         Ok(node)
     }
 
-    pub fn componentApply<ArgT: Clone + 'static>(mut node: Arc<InstNode>, mut func: Arc<dyn ::std::ops::Fn(ArgT, Arc<Component::NFComponent>) -> Result<Arc<Component::NFComponent>> + 'static>, mut arg: ArgT) -> Result<Arc<InstNode>> {
+    pub fn componentApply<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut node: Arc<InstNode>, mut func: Arc<dyn ::std::ops::Fn(ArgT, Arc<Component::NFComponent>) -> Result<Arc<Component::NFComponent>> + 'static>, mut arg: ArgT) -> Result<Arc<InstNode>> {
         pub type FuncType<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(ArgT, Arc<Component::NFComponent>) -> Result<Arc<Component::NFComponent>> + 'static>;
 
         let mut node: Arc<InstNode> = node;
@@ -1427,7 +1427,7 @@ pub mod InstNode {
         fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
     }
     impl metamodelica::gc::MMTrace for ScopeType {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+        fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
     }
 
     pub fn rootPath(mut node: Arc<InstNode>, mut ignoreBaseClass: bool) -> Result<Arc<Absyn::Path>> {

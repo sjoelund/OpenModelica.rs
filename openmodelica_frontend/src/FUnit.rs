@@ -82,7 +82,7 @@ pub enum Unit {
     },
 }
 impl metamodelica::gc::MMTrace for Unit {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             Unit::UNIT { factor, mol, cd, m, s, A, K, g } => {
                 metamodelica::gc::MMTrace::mm_accept(factor, __mmv)?;
@@ -129,7 +129,7 @@ pub enum Token {
     T_RPAREN,
 }
 impl metamodelica::gc::MMTrace for Token {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             Token::T_NUMBER { number } => {
                 metamodelica::gc::MMTrace::mm_accept(number, __mmv)?;

@@ -123,7 +123,7 @@ pub enum SimpleContainer {
     },
 }
 impl metamodelica::gc::MMTrace for SimpleContainer {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             SimpleContainer::ALIAS { cr1, negatedCr1, i1, cr2, negatedCr2, i2, eqnAttributes, visited } => {
                 metamodelica::gc::MMTrace::mm_accept(cr1, __mmv)?;
@@ -817,7 +817,7 @@ fn causal1(mut inSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc<BackendDAE
     Ok((outSystem, outShared, outTpl))
 }
 
-fn traverseComponents<Type_a: Clone + 'static>(mut inComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, mut iEqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Type_a) -> Result<Type_a> + 'static>, mut inTypeA: Type_a) -> Result<Type_a> {
+fn traverseComponents<Type_a: Clone + 'static + metamodelica::gc::MMTrace>(mut inComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, mut iEqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Type_a) -> Result<Type_a> + 'static>, mut inTypeA: Type_a) -> Result<Type_a> {
     pub type FuncType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Type_a) -> Result<Type_a> + 'static>;
 
     '__tco: loop {

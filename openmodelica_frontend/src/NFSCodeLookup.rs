@@ -77,7 +77,7 @@ pub enum RedeclareReplaceStrategy {
     IGNORE_REDECLARES,
 }
 impl metamodelica::gc::MMTrace for RedeclareReplaceStrategy {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             RedeclareReplaceStrategy::INSERT_REDECLARES => Ok(()),
             RedeclareReplaceStrategy::IGNORE_REDECLARES => Ok(()),
@@ -92,7 +92,7 @@ pub enum LookupStrategy {
     LOOKUP_ANY,
 }
 impl metamodelica::gc::MMTrace for LookupStrategy {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             LookupStrategy::NO_BUILTIN_TYPES => Ok(()),
             LookupStrategy::LOOKUP_ANY => Ok(()),

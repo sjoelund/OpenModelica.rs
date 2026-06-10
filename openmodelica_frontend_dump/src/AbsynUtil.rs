@@ -50,7 +50,7 @@ use openmodelica_util::System;
 use openmodelica_util::Util;
 use openmodelica_util_datatypes_basic::List;
 
-pub fn traverseExp<Arg: Clone + 'static>(mut inExp: Arc<Absyn::Exp>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut inArg: Arg) -> Result<(Arc<Absyn::Exp>, Arg)> {
+pub fn traverseExp<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut inExp: Arc<Absyn::Exp>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut inArg: Arg) -> Result<(Arc<Absyn::Exp>, Arg)> {
     pub type FuncType<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>;
 
     let mut outExp: Arc<Absyn::Exp>;
@@ -59,7 +59,7 @@ pub fn traverseExp<Arg: Clone + 'static>(mut inExp: Arc<Absyn::Exp>, mut inFunc:
     Ok((outExp, outArg))
 }
 
-pub fn traverseExpTopDown<Arg: Clone + 'static>(mut inExp: Arc<Absyn::Exp>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut inArg: Arg) -> Result<(Arc<Absyn::Exp>, Arg)> {
+pub fn traverseExpTopDown<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut inExp: Arc<Absyn::Exp>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut inArg: Arg) -> Result<(Arc<Absyn::Exp>, Arg)> {
     pub type FuncType<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>;
 
     let mut outExp: Arc<Absyn::Exp>;
@@ -68,7 +68,7 @@ pub fn traverseExpTopDown<Arg: Clone + 'static>(mut inExp: Arc<Absyn::Exp>, mut 
     Ok((outExp, outArg))
 }
 
-pub fn traverseExpList<Arg: Clone + 'static>(mut inExpList: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut inArg: Arg) -> Result<(Arc<metamodelica::List<Arc<Absyn::Exp>>>, Arg)> {
+pub fn traverseExpList<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut inExpList: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut inArg: Arg) -> Result<(Arc<metamodelica::List<Arc<Absyn::Exp>>>, Arg)> {
     pub type FuncType<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>;
 
     let mut outExpList: Arc<metamodelica::List<Arc<Absyn::Exp>>>;
@@ -77,7 +77,7 @@ pub fn traverseExpList<Arg: Clone + 'static>(mut inExpList: Arc<metamodelica::Li
     Ok((outExpList, outArg))
 }
 
-pub fn traverseExpListBidir<Arg: Clone + 'static>(mut inExpl: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut inArg: Arg) -> Result<(Arc<metamodelica::List<Arc<Absyn::Exp>>>, Arg)> {
+pub fn traverseExpListBidir<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut inExpl: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut inArg: Arg) -> Result<(Arc<metamodelica::List<Arc<Absyn::Exp>>>, Arg)> {
     pub type FuncType<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>;
 
     let mut outExpl: Arc<metamodelica::List<Arc<Absyn::Exp>>>;
@@ -86,7 +86,7 @@ pub fn traverseExpListBidir<Arg: Clone + 'static>(mut inExpl: Arc<metamodelica::
     Ok((outExpl, outArg))
 }
 
-pub fn traverseExpBidir<Arg: Clone + 'static>(mut inExp: Arc<Absyn::Exp>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut inArg: Arg) -> Result<(Arc<Absyn::Exp>, Arg)> {
+pub fn traverseExpBidir<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut inExp: Arc<Absyn::Exp>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut inArg: Arg) -> Result<(Arc<Absyn::Exp>, Arg)> {
     pub type FuncType<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>;
 
     let mut e: Arc<Absyn::Exp>;
@@ -97,7 +97,7 @@ pub fn traverseExpBidir<Arg: Clone + 'static>(mut inExp: Arc<Absyn::Exp>, mut en
     Ok((e, arg))
 }
 
-pub fn traverseExpOptBidir<Arg: Clone + 'static>(mut inExp: Option<Arc<Absyn::Exp>>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut inArg: Arg) -> Result<(Option<Arc<Absyn::Exp>>, Arg)> {
+pub fn traverseExpOptBidir<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut inExp: Option<Arc<Absyn::Exp>>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut inArg: Arg) -> Result<(Option<Arc<Absyn::Exp>>, Arg)> {
     pub type FuncType<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>;
 
     let mut outExp: Option<Arc<Absyn::Exp>>;
@@ -116,7 +116,7 @@ pub fn traverseExpOptBidir<Arg: Clone + 'static>(mut inExp: Option<Arc<Absyn::Ex
     Ok((outExp, arg))
 }
 
-fn traverseExpBidirSubExps<Arg: Clone + 'static>(mut exp: Arc<Absyn::Exp>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut arg: Arg) -> Result<(Arc<Absyn::Exp>, Arg)> {
+fn traverseExpBidirSubExps<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut exp: Arc<Absyn::Exp>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut arg: Arg) -> Result<(Arc<Absyn::Exp>, Arg)> {
     pub type FuncType<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>;
 
     let mut exp: Arc<Absyn::Exp> = exp;
@@ -283,7 +283,7 @@ fn traverseExpBidirSubExps<Arg: Clone + 'static>(mut exp: Arc<Absyn::Exp>, mut e
     Ok((exp, arg))
 }
 
-pub fn traverseExpBidirCref<Arg: Clone + 'static>(mut cref: Arc<Absyn::ComponentRef>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut arg: Arg) -> Result<(Arc<Absyn::ComponentRef>, Arg)> {
+pub fn traverseExpBidirCref<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut cref: Arc<Absyn::ComponentRef>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut arg: Arg) -> Result<(Arc<Absyn::ComponentRef>, Arg)> {
     pub type FuncType<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>;
 
     let mut cref: Arc<Absyn::ComponentRef> = cref;
@@ -317,7 +317,7 @@ pub fn traverseExpBidirCref<Arg: Clone + 'static>(mut cref: Arc<Absyn::Component
     Ok((cref, arg))
 }
 
-pub fn traverseExpBidirSubs<Arg: Clone + 'static>(mut subscripts: Arc<metamodelica::List<Arc<Absyn::Subscript>>>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut arg: Arg) -> Result<(Arc<metamodelica::List<Arc<Absyn::Subscript>>>, Arg)> {
+pub fn traverseExpBidirSubs<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut subscripts: Arc<metamodelica::List<Arc<Absyn::Subscript>>>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut arg: Arg) -> Result<(Arc<metamodelica::List<Arc<Absyn::Subscript>>>, Arg)> {
     pub type FuncType<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>;
 
     let mut subscripts: Arc<metamodelica::List<Arc<Absyn::Subscript>>> = subscripts;
@@ -326,7 +326,7 @@ pub fn traverseExpBidirSubs<Arg: Clone + 'static>(mut subscripts: Arc<metamodeli
     Ok((subscripts, arg))
 }
 
-pub fn traverseExpBidirSub<Arg: Clone + 'static>(mut subscript: Arc<Absyn::Subscript>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut arg: Arg) -> Result<(Arc<Absyn::Subscript>, Arg)> {
+pub fn traverseExpBidirSub<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut subscript: Arc<Absyn::Subscript>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut arg: Arg) -> Result<(Arc<Absyn::Subscript>, Arg)> {
     pub type FuncType<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>;
 
     let mut subscript: Arc<Absyn::Subscript> = subscript;
@@ -345,7 +345,7 @@ pub fn traverseExpBidirSub<Arg: Clone + 'static>(mut subscript: Arc<Absyn::Subsc
     Ok((subscript, arg))
 }
 
-pub fn traverseExpBidirElseIf<Arg: Clone + 'static>(mut inElseIf: (Arc<Absyn::Exp>, Arc<Absyn::Exp>), mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut inArg: Arg) -> Result<((Arc<Absyn::Exp>, Arc<Absyn::Exp>), Arg)> {
+pub fn traverseExpBidirElseIf<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut inElseIf: (Arc<Absyn::Exp>, Arc<Absyn::Exp>), mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut inArg: Arg) -> Result<((Arc<Absyn::Exp>, Arc<Absyn::Exp>), Arg)> {
     pub type FuncType<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>;
 
     let mut outElseIf: (Arc<Absyn::Exp>, Arc<Absyn::Exp>);
@@ -359,7 +359,7 @@ pub fn traverseExpBidirElseIf<Arg: Clone + 'static>(mut inElseIf: (Arc<Absyn::Ex
     Ok((outElseIf, arg))
 }
 
-pub fn traverseExpBidirFunctionArgs<Arg: Clone + 'static>(mut args: Arc<Absyn::FunctionArgs>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut arg: Arg) -> Result<(Arc<Absyn::FunctionArgs>, Arg)> {
+pub fn traverseExpBidirFunctionArgs<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut args: Arc<Absyn::FunctionArgs>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut arg: Arg) -> Result<(Arc<Absyn::FunctionArgs>, Arg)> {
     pub type FuncType<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>;
 
     let mut args: Arc<Absyn::FunctionArgs> = args;
@@ -384,7 +384,7 @@ pub fn traverseExpBidirFunctionArgs<Arg: Clone + 'static>(mut args: Arc<Absyn::F
     Ok((args, arg))
 }
 
-pub fn traverseExpBidirNamedArg<Arg: Clone + 'static>(mut inArg: Arc<Absyn::NamedArg>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut inExtra: Arg) -> Result<(Arc<Absyn::NamedArg>, Arg)> {
+pub fn traverseExpBidirNamedArg<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut inArg: Arc<Absyn::NamedArg>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut inExtra: Arg) -> Result<(Arc<Absyn::NamedArg>, Arg)> {
     pub type FuncType<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>;
 
     let mut outArg: Arc<Absyn::NamedArg>;
@@ -403,7 +403,7 @@ pub fn traverseExpBidirNamedArg<Arg: Clone + 'static>(mut inArg: Arc<Absyn::Name
     Ok((outArg, outExtra))
 }
 
-pub fn traverseExpBidirIterator<Arg: Clone + 'static>(mut inIterator: Arc<Absyn::ForIterator>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut inArg: Arg) -> Result<(Arc<Absyn::ForIterator>, Arg)> {
+pub fn traverseExpBidirIterator<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut inIterator: Arc<Absyn::ForIterator>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut inArg: Arg) -> Result<(Arc<Absyn::ForIterator>, Arg)> {
     pub type FuncType<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>;
 
     let mut outIterator: Arc<Absyn::ForIterator>;
@@ -426,7 +426,7 @@ pub fn traverseExpBidirIterator<Arg: Clone + 'static>(mut inIterator: Arc<Absyn:
     Ok((outIterator, outArg))
 }
 
-pub fn traverseMatchCase<Arg: Clone + 'static>(mut matchCase: Arc<Absyn::Case>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut arg: Arg) -> Result<(Arc<Absyn::Case>, Arg)> {
+pub fn traverseMatchCase<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut matchCase: Arc<Absyn::Case>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut arg: Arg) -> Result<(Arc<Absyn::Case>, Arg)> {
     pub type FuncType<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>;
 
     let mut matchCase: Arc<Absyn::Case> = matchCase;
@@ -455,7 +455,7 @@ pub fn traverseMatchCase<Arg: Clone + 'static>(mut matchCase: Arc<Absyn::Case>, 
     Ok((matchCase, arg))
 }
 
-fn traverseClassPartBidir<Arg: Clone + 'static>(mut cp: Arc<Absyn::ClassPart>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut arg: Arg) -> Result<(Arc<Absyn::ClassPart>, Arg)> {
+fn traverseClassPartBidir<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut cp: Arc<Absyn::ClassPart>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut arg: Arg) -> Result<(Arc<Absyn::ClassPart>, Arg)> {
     pub type FuncType<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>;
 
     let mut cp: Arc<Absyn::ClassPart> = cp;
@@ -476,7 +476,7 @@ fn traverseClassPartBidir<Arg: Clone + 'static>(mut cp: Arc<Absyn::ClassPart>, m
     Ok((cp, arg))
 }
 
-pub fn traverseEquationItemListBidir<Arg: Clone + 'static>(mut inEquationItems: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut inArg: Arg) -> Result<(Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, Arg)> {
+pub fn traverseEquationItemListBidir<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut inEquationItems: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut inArg: Arg) -> Result<(Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, Arg)> {
     pub type FuncType<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>;
 
     let mut outEquationItems: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>;
@@ -485,7 +485,7 @@ pub fn traverseEquationItemListBidir<Arg: Clone + 'static>(mut inEquationItems: 
     Ok((outEquationItems, outArg))
 }
 
-pub fn traverseAlgorithmItemListBidir<Arg: Clone + 'static>(mut inAlgs: Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut inArg: Arg) -> Result<(Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>, Arg)> {
+pub fn traverseAlgorithmItemListBidir<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut inAlgs: Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut inArg: Arg) -> Result<(Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>, Arg)> {
     pub type FuncType<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>;
 
     let mut outAlgs: Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>;
@@ -494,7 +494,7 @@ pub fn traverseAlgorithmItemListBidir<Arg: Clone + 'static>(mut inAlgs: Arc<meta
     Ok((outAlgs, outArg))
 }
 
-fn traverseAlgorithmItemBidir<Arg: Clone + 'static>(mut algorithmItem: Arc<Absyn::AlgorithmItem>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut arg: Arg) -> Result<(Arc<Absyn::AlgorithmItem>, Arg)> {
+fn traverseAlgorithmItemBidir<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut algorithmItem: Arc<Absyn::AlgorithmItem>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut arg: Arg) -> Result<(Arc<Absyn::AlgorithmItem>, Arg)> {
     pub type FuncType<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>;
 
     let mut algorithmItem: Arc<Absyn::AlgorithmItem> = algorithmItem;
@@ -514,7 +514,7 @@ fn traverseAlgorithmItemBidir<Arg: Clone + 'static>(mut algorithmItem: Arc<Absyn
     Ok((algorithmItem, arg))
 }
 
-fn traverseEquationItemBidir<Arg: Clone + 'static>(mut equationItem: Arc<Absyn::EquationItem>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut arg: Arg) -> Result<(Arc<Absyn::EquationItem>, Arg)> {
+fn traverseEquationItemBidir<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut equationItem: Arc<Absyn::EquationItem>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut arg: Arg) -> Result<(Arc<Absyn::EquationItem>, Arg)> {
     pub type FuncType<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>;
 
     let mut equationItem: Arc<Absyn::EquationItem> = equationItem;
@@ -534,7 +534,7 @@ fn traverseEquationItemBidir<Arg: Clone + 'static>(mut equationItem: Arc<Absyn::
     Ok((equationItem, arg))
 }
 
-pub fn traverseEquationBidir<Arg: Clone + 'static>(mut eq: Arc<Absyn::Equation>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut arg: Arg) -> Result<(Arc<Absyn::Equation>, Arg)> {
+pub fn traverseEquationBidir<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut eq: Arc<Absyn::Equation>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut arg: Arg) -> Result<(Arc<Absyn::Equation>, Arg)> {
     pub type FuncType<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>;
 
     let mut eq: Arc<Absyn::Equation> = eq;
@@ -607,7 +607,7 @@ pub fn traverseEquationBidir<Arg: Clone + 'static>(mut eq: Arc<Absyn::Equation>,
     Ok((eq, arg))
 }
 
-fn traverseEquationBidirElse<Arg: Clone + 'static>(mut inElse: (Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<Absyn::EquationItem>>>), mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut inArg: Arg) -> Result<((Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<Absyn::EquationItem>>>), Arg)> {
+fn traverseEquationBidirElse<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut inElse: (Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<Absyn::EquationItem>>>), mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut inArg: Arg) -> Result<((Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<Absyn::EquationItem>>>), Arg)> {
     pub type FuncType<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>;
 
     let mut outElse: (Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<Absyn::EquationItem>>>);
@@ -621,7 +621,7 @@ fn traverseEquationBidirElse<Arg: Clone + 'static>(mut inElse: (Arc<Absyn::Exp>,
     Ok((outElse, arg))
 }
 
-fn traverseAlgorithmBidirElse<Arg: Clone + 'static>(mut inElse: (Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>), mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut inArg: Arg) -> Result<((Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>), Arg)> {
+fn traverseAlgorithmBidirElse<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut inElse: (Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>), mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut inArg: Arg) -> Result<((Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>), Arg)> {
     pub type FuncType<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>;
 
     let mut outElse: (Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>);
@@ -635,7 +635,7 @@ fn traverseAlgorithmBidirElse<Arg: Clone + 'static>(mut inElse: (Arc<Absyn::Exp>
     Ok((outElse, arg))
 }
 
-fn traverseAlgorithmBidir<Arg: Clone + 'static>(mut alg: Arc<Absyn::Algorithm>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut arg: Arg) -> Result<(Arc<Absyn::Algorithm>, Arg)> {
+fn traverseAlgorithmBidir<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut alg: Arc<Absyn::Algorithm>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut arg: Arg) -> Result<(Arc<Absyn::Algorithm>, Arg)> {
     pub type FuncType<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>;
 
     let mut alg: Arc<Absyn::Algorithm> = alg;
@@ -4033,7 +4033,7 @@ pub fn lookupAnnotation(mut ann: Arc<Absyn::Annotation>, mut name: ArcStr) -> Re
     Ok(outMod)
 }
 
-pub fn getNamedAnnotationInClass<T: Clone + 'static>(mut inClass: Arc<Absyn::Class>, mut id: Arc<Absyn::Path>, mut f: Arc<dyn ::std::ops::Fn(Option<Arc<Absyn::Modification>>) -> Result<T> + 'static>) -> Option<T> {
+pub fn getNamedAnnotationInClass<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inClass: Arc<Absyn::Class>, mut id: Arc<Absyn::Path>, mut f: Arc<dyn ::std::ops::Fn(Option<Arc<Absyn::Modification>>) -> Result<T> + 'static>) -> Option<T> {
     pub type ModFunc<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Option<Arc<Absyn::Modification>>) -> Result<T> + 'static>;
 
     let mut outString: Option<T>;
@@ -4096,7 +4096,7 @@ pub fn getNamedAnnotationInClass<T: Clone + 'static>(mut inClass: Arc<Absyn::Cla
     outString
 }
 
-fn getNamedAnnotationStr<T: Clone + 'static>(mut inAbsynElementArgLst: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, mut id: Arc<Absyn::Path>, mut f: Arc<dyn ::std::ops::Fn(Option<Arc<Absyn::Modification>>) -> Result<T> + 'static>) -> Result<Option<T>> {
+fn getNamedAnnotationStr<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inAbsynElementArgLst: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, mut id: Arc<Absyn::Path>, mut f: Arc<dyn ::std::ops::Fn(Option<Arc<Absyn::Modification>>) -> Result<T> + 'static>) -> Result<Option<T>> {
     pub type ModFunc<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Option<Arc<Absyn::Modification>>) -> Result<T> + 'static>;
 
     let mut outString: Option<T>;
@@ -4261,7 +4261,7 @@ pub fn opIsElementWise(mut op: Absyn::Operator) -> bool {
     isElementWise
 }
 
-pub fn dummyTraverseExp<Arg: Clone + 'static>(mut inExp: Arc<Absyn::Exp>, mut inArg: Arg) -> (Arc<Absyn::Exp>, Arg) {
+pub fn dummyTraverseExp<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut inExp: Arc<Absyn::Exp>, mut inArg: Arg) -> (Arc<Absyn::Exp>, Arg) {
     let mut outExp: Arc<Absyn::Exp>;
     let mut outArg: Arg;
     outExp = inExp.clone();
@@ -4354,7 +4354,7 @@ pub fn getElementItemsInClassPart(mut inClassPart: Arc<Absyn::ClassPart>) -> Arc
     outElements
 }
 
-pub fn traverseClassComponents<ArgT: Clone + 'static>(mut inClass: Arc<Absyn::Class>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArgT) -> Result<(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArgT, bool)> + 'static>, mut inArg: ArgT) -> Result<(Arc<Absyn::Class>, ArgT)> {
+pub fn traverseClassComponents<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inClass: Arc<Absyn::Class>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArgT) -> Result<(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArgT, bool)> + 'static>, mut inArg: ArgT) -> Result<(Arc<Absyn::Class>, ArgT)> {
     pub type FuncType<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArgT) -> Result<(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArgT, bool)> + 'static>;
 
     let mut outClass: Arc<Absyn::Class> = inClass.clone();
@@ -4373,7 +4373,7 @@ pub fn traverseClassComponents<ArgT: Clone + 'static>(mut inClass: Arc<Absyn::Cl
     Ok((outClass, outArg))
 }
 
-fn traverseListGeneric<T: Clone + 'static + metamodelica::ReferenceEq, ArgT: Clone + 'static>(mut inList: Arc<metamodelica::List<T>>, mut inFunc: Arc<dyn ::std::ops::Fn(T, ArgT) -> Result<(T, ArgT, bool)> + 'static>, mut inArg: ArgT) -> Result<(Arc<metamodelica::List<T>>, ArgT, bool)> {
+fn traverseListGeneric<T: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq, ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inList: Arc<metamodelica::List<T>>, mut inFunc: Arc<dyn ::std::ops::Fn(T, ArgT) -> Result<(T, ArgT, bool)> + 'static>, mut inArg: ArgT) -> Result<(Arc<metamodelica::List<T>>, ArgT, bool)> {
     pub type FuncType<T: Clone + 'static, ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T, ArgT) -> Result<(T, ArgT, bool)> + 'static>;
 
     let mut outList: Arc<metamodelica::List<T>> = metamodelica::nil();
@@ -4407,7 +4407,7 @@ fn traverseListGeneric<T: Clone + 'static + metamodelica::ReferenceEq, ArgT: Clo
     Ok((outList, outArg, outContinue))
 }
 
-fn traverseClassPartComponents<ArgT: Clone + 'static>(mut inClassPart: Arc<Absyn::ClassPart>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArgT) -> Result<(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArgT, bool)> + 'static>, mut inArg: ArgT) -> Result<(Arc<Absyn::ClassPart>, ArgT, bool)> {
+fn traverseClassPartComponents<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inClassPart: Arc<Absyn::ClassPart>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArgT) -> Result<(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArgT, bool)> + 'static>, mut inArg: ArgT) -> Result<(Arc<Absyn::ClassPart>, ArgT, bool)> {
     pub type FuncType<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArgT) -> Result<(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArgT, bool)> + 'static>;
 
     let mut outClassPart: Arc<Absyn::ClassPart> = inClassPart.clone();
@@ -4434,7 +4434,7 @@ fn traverseClassPartComponents<ArgT: Clone + 'static>(mut inClassPart: Arc<Absyn
     Ok((outClassPart, outArg, outContinue))
 }
 
-fn traverseElementItemComponents<ArgT: Clone + 'static>(mut inItem: Arc<Absyn::ElementItem>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArgT) -> Result<(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArgT, bool)> + 'static>, mut inArg: ArgT) -> Result<(Arc<Absyn::ElementItem>, ArgT, bool)> {
+fn traverseElementItemComponents<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inItem: Arc<Absyn::ElementItem>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArgT) -> Result<(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArgT, bool)> + 'static>, mut inArg: ArgT) -> Result<(Arc<Absyn::ElementItem>, ArgT, bool)> {
     pub type FuncType<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArgT) -> Result<(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArgT, bool)> + 'static>;
 
     let mut outItem: Arc<Absyn::ElementItem> = Arc::new(<Absyn::ElementItem as ::std::default::Default>::default());
@@ -4455,7 +4455,7 @@ fn traverseElementItemComponents<ArgT: Clone + 'static>(mut inItem: Arc<Absyn::E
     Ok((outItem, outArg, outContinue))
 }
 
-fn traverseElementComponents<ArgT: Clone + 'static>(mut inElement: Arc<Absyn::Element>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArgT) -> Result<(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArgT, bool)> + 'static>, mut inArg: ArgT) -> Result<(Arc<Absyn::Element>, ArgT, bool)> {
+fn traverseElementComponents<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inElement: Arc<Absyn::Element>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArgT) -> Result<(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArgT, bool)> + 'static>, mut inArg: ArgT) -> Result<(Arc<Absyn::Element>, ArgT, bool)> {
     pub type FuncType<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArgT) -> Result<(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArgT, bool)> + 'static>;
 
     let mut outElement: Arc<Absyn::Element> = inElement.clone();
@@ -4478,7 +4478,7 @@ fn traverseElementComponents<ArgT: Clone + 'static>(mut inElement: Arc<Absyn::El
     Ok((outElement, outArg, outContinue))
 }
 
-fn traverseElementSpecComponents<ArgT: Clone + 'static>(mut inSpec: Arc<Absyn::ElementSpec>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArgT) -> Result<(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArgT, bool)> + 'static>, mut inArg: ArgT) -> Result<(Arc<Absyn::ElementSpec>, ArgT, bool)> {
+fn traverseElementSpecComponents<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inSpec: Arc<Absyn::ElementSpec>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArgT) -> Result<(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArgT, bool)> + 'static>, mut inArg: ArgT) -> Result<(Arc<Absyn::ElementSpec>, ArgT, bool)> {
     pub type FuncType<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArgT) -> Result<(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArgT, bool)> + 'static>;
 
     let mut outSpec: Arc<Absyn::ElementSpec> = inSpec.clone();
@@ -4501,7 +4501,7 @@ fn traverseElementSpecComponents<ArgT: Clone + 'static>(mut inSpec: Arc<Absyn::E
     Ok((outSpec, outArg, outContinue))
 }
 
-fn traverseClassDef<ArgT: Clone + 'static>(mut inClassDef: Arc<Absyn::ClassDef>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::ClassPart>, ArgT) -> Result<(Arc<Absyn::ClassPart>, ArgT, bool)> + 'static>, mut inArg: ArgT) -> Result<(Arc<Absyn::ClassDef>, ArgT, bool)> {
+fn traverseClassDef<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inClassDef: Arc<Absyn::ClassDef>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::ClassPart>, ArgT) -> Result<(Arc<Absyn::ClassPart>, ArgT, bool)> + 'static>, mut inArg: ArgT) -> Result<(Arc<Absyn::ClassDef>, ArgT, bool)> {
     pub type FuncType<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::ClassPart>, ArgT) -> Result<(Arc<Absyn::ClassPart>, ArgT, bool)> + 'static>;
 
     let mut outClassDef: Arc<Absyn::ClassDef> = inClassDef.clone();
@@ -4618,7 +4618,7 @@ pub fn crefExplode(mut inCref: Arc<Absyn::ComponentRef>, mut inAccum: Arc<metamo
     }
 }
 
-pub fn traverseExpShallow<ArgT: Clone + 'static>(mut inExp: Arc<Absyn::Exp>, mut inArg: ArgT, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<Arc<Absyn::Exp>> + 'static>) -> Result<Arc<Absyn::Exp>> {
+pub fn traverseExpShallow<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inExp: Arc<Absyn::Exp>, mut inArg: ArgT, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<Arc<Absyn::Exp>> + 'static>) -> Result<Arc<Absyn::Exp>> {
     pub type FuncT<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<Arc<Absyn::Exp>> + 'static>;
 
     let mut outExp: Arc<Absyn::Exp> = inExp.clone();
@@ -4777,7 +4777,7 @@ pub fn traverseExpShallow<ArgT: Clone + 'static>(mut inExp: Arc<Absyn::Exp>, mut
     Ok(outExp)
 }
 
-fn traverseExpShallowFuncArgs<ArgT: Clone + 'static>(mut inArgs: Arc<Absyn::FunctionArgs>, mut inArg: ArgT, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<Arc<Absyn::Exp>> + 'static>) -> Result<Arc<Absyn::FunctionArgs>> {
+fn traverseExpShallowFuncArgs<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inArgs: Arc<Absyn::FunctionArgs>, mut inArg: ArgT, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<Arc<Absyn::Exp>> + 'static>) -> Result<Arc<Absyn::FunctionArgs>> {
     pub type FuncT<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<Arc<Absyn::Exp>> + 'static>;
 
     let mut outArgs: Arc<Absyn::FunctionArgs> = inArgs.clone();
@@ -4812,7 +4812,7 @@ fn traverseExpShallowFuncArgs<ArgT: Clone + 'static>(mut inArgs: Arc<Absyn::Func
     Ok(outArgs)
 }
 
-fn traverseExpShallowIterator<ArgT: Clone + 'static>(mut inIterator: Arc<Absyn::ForIterator>, mut inArg: ArgT, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<Arc<Absyn::Exp>> + 'static>) -> Result<Arc<Absyn::ForIterator>> {
+fn traverseExpShallowIterator<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inIterator: Arc<Absyn::ForIterator>, mut inArg: ArgT, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<Arc<Absyn::Exp>> + 'static>) -> Result<Arc<Absyn::ForIterator>> {
     pub type FuncT<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<Arc<Absyn::Exp>> + 'static>;
 
     let mut outIterator: Arc<Absyn::ForIterator>;
@@ -4832,7 +4832,7 @@ fn traverseExpShallowIterator<ArgT: Clone + 'static>(mut inIterator: Arc<Absyn::
     Ok(outIterator)
 }
 
-pub fn traverseExpShallowSub<ArgT: Clone + 'static>(mut sub: Arc<Absyn::Subscript>, mut inArg: ArgT, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<Arc<Absyn::Exp>> + 'static>) -> Result<Arc<Absyn::Subscript>> {
+pub fn traverseExpShallowSub<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut sub: Arc<Absyn::Subscript>, mut inArg: ArgT, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<Arc<Absyn::Exp>> + 'static>) -> Result<Arc<Absyn::Subscript>> {
     pub type FuncT<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<Arc<Absyn::Exp>> + 'static>;
 
     let mut sub: Arc<Absyn::Subscript> = sub;
@@ -5094,7 +5094,7 @@ pub fn stripGraphicsAndInteractionModification(mut inAbsynElementArgLst: Arc<met
     Ok((outAbsynElementArgLst1, outAbsynElementArgLst2))
 }
 
-pub fn traverseClasses<Arg: Clone + 'static>(mut inProgram: Absyn::Program, mut inPath: Option<Arc<Absyn::Path>>, mut inFunc: Arc<dyn ::std::ops::Fn((Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg)) -> Result<(Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg)> + 'static>, mut inArg: Arg, mut inVisitProtected: bool) -> Result<(Absyn::Program, Option<Arc<Absyn::Path>>, Arg)> {
+pub fn traverseClasses<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut inProgram: Absyn::Program, mut inPath: Option<Arc<Absyn::Path>>, mut inFunc: Arc<dyn ::std::ops::Fn((Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg)) -> Result<(Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg)> + 'static>, mut inArg: Arg, mut inVisitProtected: bool) -> Result<(Absyn::Program, Option<Arc<Absyn::Path>>, Arg)> {
     pub type FuncType<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn((Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg)) -> Result<(Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg)> + 'static>;
 
     let mut outTpl: (Absyn::Program, Option<Arc<Absyn::Path>>, Arg);
@@ -5111,7 +5111,7 @@ pub fn traverseClasses<Arg: Clone + 'static>(mut inProgram: Absyn::Program, mut 
     Ok(outTpl)
 }
 
-fn traverseClasses2<Arg: Clone + 'static>(mut inClasses: Arc<metamodelica::List<Arc<Absyn::Class>>>, mut inPath: Option<Arc<Absyn::Path>>, mut inFunc: Arc<dyn ::std::ops::Fn((Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg)) -> Result<(Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg)> + 'static>, mut inArg: Arg, mut inVisitProtected: bool) -> Result<(Arc<metamodelica::List<Arc<Absyn::Class>>>, Option<Arc<Absyn::Path>>, Arg)> {
+fn traverseClasses2<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut inClasses: Arc<metamodelica::List<Arc<Absyn::Class>>>, mut inPath: Option<Arc<Absyn::Path>>, mut inFunc: Arc<dyn ::std::ops::Fn((Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg)) -> Result<(Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg)> + 'static>, mut inArg: Arg, mut inVisitProtected: bool) -> Result<(Arc<metamodelica::List<Arc<Absyn::Class>>>, Option<Arc<Absyn::Path>>, Arg)> {
     pub type FuncType<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn((Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg)) -> Result<(Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg)> + 'static>;
 
     let mut outTpl: (Arc<metamodelica::List<Arc<Absyn::Class>>>, Option<Arc<Absyn::Path>>, Arg);
@@ -5277,7 +5277,7 @@ fn eltsHasLocalClass(mut inElts: Arc<metamodelica::List<Arc<Absyn::ElementItem>>
     res
 }
 
-fn traverseInnerClass<Arg: Clone + 'static>(mut inClass: Arc<Absyn::Class>, mut path: Option<Arc<Absyn::Path>>, mut visitor: Arc<dyn ::std::ops::Fn((Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg)) -> Result<(Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg)> + 'static>, mut arg: Arg, mut visitProtected: bool) -> (Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg) {
+fn traverseInnerClass<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut inClass: Arc<Absyn::Class>, mut path: Option<Arc<Absyn::Path>>, mut visitor: Arc<dyn ::std::ops::Fn((Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg)) -> Result<(Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg)> + 'static>, mut arg: Arg, mut visitProtected: bool) -> (Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg) {
     pub type FuncType<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn((Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg)) -> Result<(Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg)> + 'static>;
 
     let mut outTpl: (Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg);
@@ -5392,7 +5392,7 @@ fn traverseInnerClass<Arg: Clone + 'static>(mut inClass: Arc<Absyn::Class>, mut 
     outTpl
 }
 
-fn traverseInnerClassParts<Arg: Clone + 'static>(mut inClassParts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>, mut inPath: Option<Arc<Absyn::Path>>, mut visitor: Arc<dyn ::std::ops::Fn((Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg)) -> Result<(Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg)> + 'static>, mut inArg: Arg, mut visitProtected: bool) -> Result<(Arc<metamodelica::List<Arc<Absyn::ClassPart>>>, Option<Arc<Absyn::Path>>, Arg)> {
+fn traverseInnerClassParts<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut inClassParts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>, mut inPath: Option<Arc<Absyn::Path>>, mut visitor: Arc<dyn ::std::ops::Fn((Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg)) -> Result<(Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg)> + 'static>, mut inArg: Arg, mut visitProtected: bool) -> Result<(Arc<metamodelica::List<Arc<Absyn::ClassPart>>>, Option<Arc<Absyn::Path>>, Arg)> {
     pub type FuncType<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn((Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg)) -> Result<(Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg)> + 'static>;
 
     let mut outTpl: (Arc<metamodelica::List<Arc<Absyn::ClassPart>>>, Option<Arc<Absyn::Path>>, Arg);
@@ -5422,7 +5422,7 @@ fn traverseInnerClassParts<Arg: Clone + 'static>(mut inClassParts: Arc<metamodel
     Ok(outTpl)
 }
 
-fn traverseInnerClassElements<Arg: Clone + 'static>(mut inElements: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut inPath: Option<Arc<Absyn::Path>>, mut visitor: Arc<dyn ::std::ops::Fn((Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg)) -> Result<(Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg)> + 'static>, mut inArg: Arg, mut visitProtected: bool) -> Result<(Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, Option<Arc<Absyn::Path>>, Arg)> {
+fn traverseInnerClassElements<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut inElements: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut inPath: Option<Arc<Absyn::Path>>, mut visitor: Arc<dyn ::std::ops::Fn((Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg)) -> Result<(Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg)> + 'static>, mut inArg: Arg, mut visitProtected: bool) -> Result<(Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, Option<Arc<Absyn::Path>>, Arg)> {
     pub type FuncType<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn((Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg)) -> Result<(Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg)> + 'static>;
 
     let mut outTpl: (Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, Option<Arc<Absyn::Path>>, Arg);
@@ -5461,7 +5461,7 @@ fn traverseInnerClassElements<Arg: Clone + 'static>(mut inElements: Arc<metamode
     Ok(outTpl)
 }
 
-fn traverseInnerClassElementspec<Arg: Clone + 'static>(mut inElementSpec: Arc<Absyn::ElementSpec>, mut inPath: Option<Arc<Absyn::Path>>, mut visitor: Arc<dyn ::std::ops::Fn((Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg)) -> Result<(Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg)> + 'static>, mut inArg: Arg, mut visitProtected: bool) -> Result<(Arc<Absyn::ElementSpec>, Option<Arc<Absyn::Path>>, Arg)> {
+fn traverseInnerClassElementspec<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut inElementSpec: Arc<Absyn::ElementSpec>, mut inPath: Option<Arc<Absyn::Path>>, mut visitor: Arc<dyn ::std::ops::Fn((Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg)) -> Result<(Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg)> + 'static>, mut inArg: Arg, mut visitProtected: bool) -> Result<(Arc<Absyn::ElementSpec>, Option<Arc<Absyn::Path>>, Arg)> {
     pub type FuncType<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn((Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg)) -> Result<(Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, Arg)> + 'static>;
 
     let mut outTpl: (Arc<Absyn::ElementSpec>, Option<Arc<Absyn::Path>>, Arg);
@@ -5585,7 +5585,7 @@ pub fn isUniontype(mut cls: Arc<Absyn::Class>) -> bool {
     b
 }
 
-pub fn traverseClassElements<ArgT: Clone + 'static>(mut cls: Arc<Absyn::Class>, mut func: Arc<dyn ::std::ops::Fn(Arc<Absyn::Element>, ArgT) -> Result<(Arc<Absyn::Element>, ArgT, bool)> + 'static>, mut arg: ArgT) -> Result<(Arc<Absyn::Class>, ArgT)> {
+pub fn traverseClassElements<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut cls: Arc<Absyn::Class>, mut func: Arc<dyn ::std::ops::Fn(Arc<Absyn::Element>, ArgT) -> Result<(Arc<Absyn::Element>, ArgT, bool)> + 'static>, mut arg: ArgT) -> Result<(Arc<Absyn::Class>, ArgT)> {
     pub type FuncType<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Element>, ArgT) -> Result<(Arc<Absyn::Element>, ArgT, bool)> + 'static>;
 
     let mut cls: Arc<Absyn::Class> = cls;
@@ -5598,7 +5598,7 @@ pub fn traverseClassElements<ArgT: Clone + 'static>(mut cls: Arc<Absyn::Class>, 
     Ok((cls, arg))
 }
 
-pub fn traverseClassDefElements<ArgT: Clone + 'static>(mut classDef: Arc<Absyn::ClassDef>, mut func: Arc<dyn ::std::ops::Fn(Arc<Absyn::Element>, ArgT) -> Result<(Arc<Absyn::Element>, ArgT, bool)> + 'static>, mut arg: ArgT) -> Result<(Arc<Absyn::ClassDef>, ArgT)> {
+pub fn traverseClassDefElements<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut classDef: Arc<Absyn::ClassDef>, mut func: Arc<dyn ::std::ops::Fn(Arc<Absyn::Element>, ArgT) -> Result<(Arc<Absyn::Element>, ArgT, bool)> + 'static>, mut arg: ArgT) -> Result<(Arc<Absyn::ClassDef>, ArgT)> {
     pub type FuncType<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Element>, ArgT) -> Result<(Arc<Absyn::Element>, ArgT, bool)> + 'static>;
 
     let mut classDef: Arc<Absyn::ClassDef> = classDef;
@@ -5607,7 +5607,7 @@ pub fn traverseClassDefElements<ArgT: Clone + 'static>(mut classDef: Arc<Absyn::
     Ok((classDef, arg))
 }
 
-fn traverseClassPartElements<ArgT: Clone + 'static>(mut inClassPart: Arc<Absyn::ClassPart>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Element>, ArgT) -> Result<(Arc<Absyn::Element>, ArgT, bool)> + 'static>, mut inArg: ArgT) -> Result<(Arc<Absyn::ClassPart>, ArgT, bool)> {
+fn traverseClassPartElements<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inClassPart: Arc<Absyn::ClassPart>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Element>, ArgT) -> Result<(Arc<Absyn::Element>, ArgT, bool)> + 'static>, mut inArg: ArgT) -> Result<(Arc<Absyn::ClassPart>, ArgT, bool)> {
     pub type FuncType<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Element>, ArgT) -> Result<(Arc<Absyn::Element>, ArgT, bool)> + 'static>;
 
     let mut outClassPart: Arc<Absyn::ClassPart> = inClassPart.clone();
@@ -5634,7 +5634,7 @@ fn traverseClassPartElements<ArgT: Clone + 'static>(mut inClassPart: Arc<Absyn::
     Ok((outClassPart, outArg, outContinue))
 }
 
-fn traverseElementItem<ArgT: Clone + 'static>(mut inItem: Arc<Absyn::ElementItem>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Element>, ArgT) -> Result<(Arc<Absyn::Element>, ArgT, bool)> + 'static>, mut inArg: ArgT) -> Result<(Arc<Absyn::ElementItem>, ArgT, bool)> {
+fn traverseElementItem<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inItem: Arc<Absyn::ElementItem>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Element>, ArgT) -> Result<(Arc<Absyn::Element>, ArgT, bool)> + 'static>, mut inArg: ArgT) -> Result<(Arc<Absyn::ElementItem>, ArgT, bool)> {
     pub type FuncType<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Element>, ArgT) -> Result<(Arc<Absyn::Element>, ArgT, bool)> + 'static>;
 
     let mut outItem: Arc<Absyn::ElementItem> = Arc::new(<Absyn::ElementItem as ::std::default::Default>::default());

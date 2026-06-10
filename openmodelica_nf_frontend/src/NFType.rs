@@ -117,7 +117,7 @@ pub enum NFType {
     },
 }
 impl metamodelica::gc::MMTrace for NFType {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             NFType::INTEGER => Ok(()),
             NFType::REAL => Ok(()),
@@ -261,7 +261,7 @@ impl Ord for FunctionType {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 impl metamodelica::gc::MMTrace for FunctionType {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+    fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
@@ -278,7 +278,7 @@ impl Ord for Branch {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 impl metamodelica::gc::MMTrace for Branch {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+    fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 
 pub fn liftArrayLeft(mut ty: Arc<NFType>, mut dim: Arc<Dimension::NFDimension>) -> Arc<NFType> {
@@ -1089,7 +1089,7 @@ pub fn mapDims(mut ty: Arc<NFType>, mut func: Arc<dyn ::std::ops::Fn(Arc<Dimensi
     Ok(ty)
 }
 
-pub fn foldDims<ArgT: Clone + 'static>(mut ty: Arc<NFType>, mut func: Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
+pub fn foldDims<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut ty: Arc<NFType>, mut func: Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
     pub type FuncT<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>, ArgT) -> Result<ArgT> + 'static>;
 
     let mut arg: ArgT = arg;

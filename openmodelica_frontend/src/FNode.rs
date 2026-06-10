@@ -1373,7 +1373,7 @@ pub fn dfs(mut inRef: Ref) -> Result<Refs> {
     Ok(outRefs)
 }
 
-pub fn apply1<ExtraArg: Clone + 'static>(mut inRef: Ref, mut inApply: Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<FCore::Node>, ExtraArg) -> Result<ExtraArg> + 'static>, mut inExtraArg: ExtraArg) -> Result<ExtraArg> {
+pub fn apply1<ExtraArg: Clone + 'static + metamodelica::gc::MMTrace>(mut inRef: Ref, mut inApply: Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<FCore::Node>, ExtraArg) -> Result<ExtraArg> + 'static>, mut inExtraArg: ExtraArg) -> Result<ExtraArg> {
     pub type Apply<ExtraArg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Name, Ref, ExtraArg) -> Result<ExtraArg> + 'static>;
 
     let mut outExtraArg: ExtraArg;

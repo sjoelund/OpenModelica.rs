@@ -93,7 +93,7 @@ pub struct CSE_Equation {
 }
 
 impl metamodelica::gc::MMTrace for CSE_Equation {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.cse, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.call, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.dependencies, __mmv)?;
@@ -2071,7 +2071,7 @@ pub enum CommonSubExp {
     },
 }
 impl metamodelica::gc::MMTrace for CommonSubExp {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             CommonSubExp::ASSIGNMENT_CSE { eqIdcs, sharedVars, aliasVars } => {
                 metamodelica::gc::MMTrace::mm_accept(eqIdcs, __mmv)?;

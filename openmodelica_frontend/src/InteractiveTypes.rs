@@ -78,7 +78,7 @@ pub struct SimulationOptions {
 }
 
 impl metamodelica::gc::MMTrace for SimulationOptions {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.startTime, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.stopTime, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.numberOfIntervals, __mmv)?;
@@ -128,7 +128,7 @@ pub struct Variable {
 }
 
 impl metamodelica::gc::MMTrace for Variable {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.varIdent, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.value, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.type_, __mmv)?;
@@ -168,7 +168,7 @@ pub enum Component {
     },
 }
 impl metamodelica::gc::MMTrace for Component {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             Component::COMPONENTITEM { the1, the2, the3 } => {
                 metamodelica::gc::MMTrace::mm_accept(the1, __mmv)?;
@@ -202,7 +202,7 @@ pub struct Components {
 }
 
 impl metamodelica::gc::MMTrace for Components {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.componentLst, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.the, __mmv)?;
         Ok(())
@@ -231,7 +231,7 @@ pub struct ComponentReplacement {
 }
 
 impl metamodelica::gc::MMTrace for ComponentReplacement {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.which1, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.the2, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.the3, __mmv)?;
@@ -259,7 +259,7 @@ pub struct ComponentReplacementRules {
 }
 
 impl metamodelica::gc::MMTrace for ComponentReplacementRules {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.componentReplacementLst, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.the, __mmv)?;
         Ok(())

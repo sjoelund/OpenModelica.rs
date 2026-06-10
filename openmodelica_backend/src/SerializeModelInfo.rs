@@ -416,7 +416,7 @@ impl Ord for AssignType {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 impl metamodelica::gc::MMTrace for AssignType {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+    fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 
 fn tagFromAssignType(mut assignType: AssignType) -> Result<ArcStr> {
@@ -1282,7 +1282,7 @@ fn serializeStatement(mut file: File::File, mut stmt: Arc<DAE::Statement>) -> ()
     ()
 }
 
-fn serializeList<ArgType: Clone + 'static>(mut file: File::File, mut lst: Arc<metamodelica::List<ArgType>>, mut func: Arc<dyn ::std::ops::Fn(File::File, ArgType) -> Result<()> + 'static>, mut append: bool, mut sep: ArcStr) -> Result<()> {
+fn serializeList<ArgType: Clone + 'static + metamodelica::gc::MMTrace>(mut file: File::File, mut lst: Arc<metamodelica::List<ArgType>>, mut func: Arc<dyn ::std::ops::Fn(File::File, ArgType) -> Result<()> + 'static>, mut append: bool, mut sep: ArcStr) -> Result<()> {
     pub type FuncType<ArgType: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(File::File, ArgType) -> Result<()> + 'static>;
 
     if !(lst.clone().is_empty()) {

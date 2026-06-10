@@ -76,7 +76,7 @@ pub struct JacobianColumn {
 }
 
 impl metamodelica::gc::MMTrace for JacobianColumn {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.columnEqns, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.columnVars, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.numberOfResultVars, __mmv)?;
@@ -118,7 +118,7 @@ pub struct JacobianMatrix {
 }
 
 impl metamodelica::gc::MMTrace for JacobianMatrix {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.columns, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.seedVars, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.matrixName, __mmv)?;
@@ -273,7 +273,7 @@ pub struct SimCode {
 }
 
 impl metamodelica::gc::MMTrace for SimCode {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.modelInfo, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.literals, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.recordDecls, __mmv)?;
@@ -471,7 +471,7 @@ pub struct ClockedPartition {
 }
 
 impl metamodelica::gc::MMTrace for ClockedPartition {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.baseClock, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.subPartitions, __mmv)?;
         Ok(())
@@ -499,7 +499,7 @@ pub struct SubPartition {
 }
 
 impl metamodelica::gc::MMTrace for SubPartition {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.vars, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.equations, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.removedEquations, __mmv)?;
@@ -538,7 +538,7 @@ pub enum BackendMapping {
     NO_MAPPING,
 }
 impl metamodelica::gc::MMTrace for BackendMapping {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             BackendMapping::BACKENDMAPPING { m, mT, eqMapping, varMapping, eqMatch, varMatch, eqTree, simVarMapping } => {
                 metamodelica::gc::MMTrace::mm_accept(m, __mmv)?;
@@ -569,7 +569,7 @@ pub struct PartitionData {
 }
 
 impl metamodelica::gc::MMTrace for PartitionData {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.numPartitions, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.partitions, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.activatorsForPartitions, __mmv)?;
@@ -599,7 +599,7 @@ pub struct DelayedExpression {
 }
 
 impl metamodelica::gc::MMTrace for DelayedExpression {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.delayedExps, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.maxDelayedIndex, __mmv)?;
         Ok(())
@@ -624,7 +624,7 @@ pub struct SpatialDistributionInfo {
 }
 
 impl metamodelica::gc::MMTrace for SpatialDistributionInfo {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.spatialDistributions, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.maxIndex, __mmv)?;
         Ok(())
@@ -663,7 +663,7 @@ pub struct SpatialDistribution {
 }
 
 impl metamodelica::gc::MMTrace for SpatialDistribution {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.index, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.in0, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.in1, __mmv)?;
@@ -701,7 +701,7 @@ pub struct UnitDefinition {
 }
 
 impl metamodelica::gc::MMTrace for UnitDefinition {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.name, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.baseUnit, __mmv)?;
         Ok(())
@@ -745,7 +745,7 @@ pub enum BaseUnit {
     NOBASEUNIT,
 }
 impl metamodelica::gc::MMTrace for BaseUnit {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             BaseUnit::BASEUNIT { s, m, kg, A, K, mol, cd, factor, offset } => {
                 metamodelica::gc::MMTrace::mm_accept(s, __mmv)?;
@@ -797,7 +797,7 @@ pub struct ModelInfo {
 }
 
 impl metamodelica::gc::MMTrace for ModelInfo {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.name, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.description, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.version, __mmv)?;
@@ -869,7 +869,7 @@ pub struct FileInfo {
 }
 
 impl metamodelica::gc::MMTrace for FileInfo {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.fileName, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.isReadOnly, __mmv)?;
         Ok(())
@@ -931,7 +931,7 @@ pub struct VarInfo {
 }
 
 impl metamodelica::gc::MMTrace for VarInfo {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.numZeroCrossings, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.numTimeEvents, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.numRelations, __mmv)?;
@@ -1021,7 +1021,7 @@ pub enum DaeModeConfig {
     DYNAMIC_EQUATIONS,
 }
 impl metamodelica::gc::MMTrace for DaeModeConfig {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             DaeModeConfig::ALL_EQUATIONS => Ok(()),
             DaeModeConfig::DYNAMIC_EQUATIONS => Ok(()),
@@ -1048,7 +1048,7 @@ pub struct DaeModeData {
 }
 
 impl metamodelica::gc::MMTrace for DaeModeData {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.daeEquations, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.sparsityPattern, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.residualVars, __mmv)?;
@@ -1084,7 +1084,7 @@ pub struct OMSIData {
 }
 
 impl metamodelica::gc::MMTrace for OMSIData {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.initialization, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.simulation, __mmv)?;
         Ok(())
@@ -1122,7 +1122,7 @@ pub struct OMSIFunction {
 }
 
 impl metamodelica::gc::MMTrace for OMSIFunction {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.equations, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.inputVars, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.outputVars, __mmv)?;
@@ -1319,7 +1319,7 @@ pub enum SimEqSystem {
     },
 }
 impl metamodelica::gc::MMTrace for SimEqSystem {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             SimEqSystem::SES_RESIDUAL { index, res_index, exp, source, eqAttr } => {
                 metamodelica::gc::MMTrace::mm_accept(index, __mmv)?;
@@ -1526,7 +1526,7 @@ pub enum SimGenericCall {
     },
 }
 impl metamodelica::gc::MMTrace for SimGenericCall {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             SimGenericCall::SINGLE_GENERIC_CALL { index, iters, lhs, rhs, resizable } => {
                 metamodelica::gc::MMTrace::mm_accept(index, __mmv)?;
@@ -1577,7 +1577,7 @@ pub enum SimBranch {
     },
 }
 impl metamodelica::gc::MMTrace for SimBranch {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             SimBranch::SIM_BRANCH { condition, body } => {
                 metamodelica::gc::MMTrace::mm_accept(condition, __mmv)?;
@@ -1615,7 +1615,7 @@ pub struct DerivativeMatrix {
 }
 
 impl metamodelica::gc::MMTrace for DerivativeMatrix {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.columns, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.matrixName, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.sparsity, __mmv)?;
@@ -1647,7 +1647,7 @@ pub struct LinearSystem {
 }
 
 impl metamodelica::gc::MMTrace for LinearSystem {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.index, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.partOfMixed, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.tornSystem, __mmv)?;
@@ -1682,7 +1682,7 @@ pub struct NonlinearSystem {
 }
 
 impl metamodelica::gc::MMTrace for NonlinearSystem {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.index, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.eqs, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.crefs, __mmv)?;
@@ -1728,7 +1728,7 @@ pub struct StateSet {
 }
 
 impl metamodelica::gc::MMTrace for StateSet {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.index, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.nCandidates, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.nStates, __mmv)?;
@@ -1763,7 +1763,7 @@ pub struct ExtObjInfo {
 }
 
 impl metamodelica::gc::MMTrace for ExtObjInfo {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.vars, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.aliases, __mmv)?;
         Ok(())
@@ -1798,7 +1798,7 @@ pub struct SimulationSettings {
 }
 
 impl metamodelica::gc::MMTrace for SimulationSettings {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.startTime, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.stopTime, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.numberOfIntervals, __mmv)?;
@@ -1850,7 +1850,7 @@ pub struct FmiUnknown {
 }
 
 impl metamodelica::gc::MMTrace for FmiUnknown {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.index, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.dependencies, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.dependenciesKind, __mmv)?;
@@ -1876,7 +1876,7 @@ pub struct FmiOutputs {
 }
 
 impl metamodelica::gc::MMTrace for FmiOutputs {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.fmiUnknownsList, __mmv)?;
         Ok(())
     }
@@ -1898,7 +1898,7 @@ pub struct FmiDerivatives {
 }
 
 impl metamodelica::gc::MMTrace for FmiDerivatives {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.fmiUnknownsList, __mmv)?;
         Ok(())
     }
@@ -1920,7 +1920,7 @@ pub struct FmiDiscreteStates {
 }
 
 impl metamodelica::gc::MMTrace for FmiDiscreteStates {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.fmiUnknownsList, __mmv)?;
         Ok(())
     }
@@ -1946,7 +1946,7 @@ pub struct FmiInitialUnknowns {
 }
 
 impl metamodelica::gc::MMTrace for FmiInitialUnknowns {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.fmiUnknownsList, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.sortedUnknownCrefs, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.sortedknownCrefs, __mmv)?;
@@ -1977,7 +1977,7 @@ pub struct FmiModelStructure {
 }
 
 impl metamodelica::gc::MMTrace for FmiModelStructure {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.fmiOutputs, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.fmiDerivatives, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.continuousPartialDerivatives, __mmv)?;
@@ -2013,7 +2013,7 @@ pub enum FmiSimulationFlags {
     },
 }
 impl metamodelica::gc::MMTrace for FmiSimulationFlags {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             FmiSimulationFlags::FMI_SIMULATION_FLAGS { nameValueTuples } => {
                 metamodelica::gc::MMTrace::mm_accept(nameValueTuples, __mmv)?;

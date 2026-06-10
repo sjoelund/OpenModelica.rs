@@ -65,7 +65,7 @@ pub struct UnorderedMap<K: Clone, V: Clone> {
 }
 
 impl<K: Clone + metamodelica::gc::MMTrace, V: Clone + metamodelica::gc::MMTrace> metamodelica::gc::MMTrace for UnorderedMap<K, V> {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.buckets, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.keys, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.values, __mmv)?;
@@ -100,7 +100,7 @@ impl<K: Clone + 'static + std::fmt::Debug, V: Clone + 'static + std::fmt::Debug>
     }
 }
 
-impl<K: Clone, V: Clone> Default for UnorderedMap<K, V> {
+impl<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace> Default for UnorderedMap<K, V> {
     fn default() -> Self {
         Self {
             buckets: Default::default(),
@@ -122,13 +122,13 @@ pub type KeyStringFn<K: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(K) 
 
 pub type ValueStringFn<V: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(V) -> Result<ArcStr> + 'static>;
 
-pub fn new<K: Clone + 'static, V: Clone + 'static>(mut hash: Arc<dyn ::std::ops::Fn(K) -> Result<i32> + 'static>, mut keyEq: Arc<dyn ::std::ops::Fn(K, K) -> Result<bool> + 'static>, mut bucketCount: i32) -> Arc<UnorderedMap<K, V>> {
+pub fn new<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut hash: Arc<dyn ::std::ops::Fn(K) -> Result<i32> + 'static>, mut keyEq: Arc<dyn ::std::ops::Fn(K, K) -> Result<bool> + 'static>, mut bucketCount: i32) -> Arc<UnorderedMap<K, V>> {
     let mut map: Arc<UnorderedMap<K, V>>;
     map = Arc::new(UnorderedMap { buckets: Vector::newFill(bucketCount.clone(), metamodelica::nil()), keys: Vector::new(0), values: Vector::new(0), hashFn: hash.clone(), eqFn: keyEq.clone() });
     map
 }
 
-pub fn fromLists<K: Clone + 'static, V: Clone + 'static>(mut keys: Arc<metamodelica::List<K>>, mut values: Arc<metamodelica::List<V>>, mut hash: Arc<dyn ::std::ops::Fn(K) -> Result<i32> + 'static>, mut keyEq: Arc<dyn ::std::ops::Fn(K, K) -> Result<bool> + 'static>) -> Result<Arc<UnorderedMap<K, V>>> {
+pub fn fromLists<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut keys: Arc<metamodelica::List<K>>, mut values: Arc<metamodelica::List<V>>, mut hash: Arc<dyn ::std::ops::Fn(K) -> Result<i32> + 'static>, mut keyEq: Arc<dyn ::std::ops::Fn(K, K) -> Result<bool> + 'static>) -> Result<Arc<UnorderedMap<K, V>>> {
     let mut map: Arc<UnorderedMap<K, V>>;
     let mut key_count: i32;
     let mut bucket_count: i32;
@@ -150,13 +150,13 @@ pub fn fromLists<K: Clone + 'static, V: Clone + 'static>(mut keys: Arc<metamodel
     Ok(map)
 }
 
-pub fn copy<K: Clone + 'static, V: Clone + 'static>(mut map: Arc<UnorderedMap<K, V>>) -> Arc<UnorderedMap<K, V>> {
+pub fn copy<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>) -> Arc<UnorderedMap<K, V>> {
     let mut outMap: Arc<UnorderedMap<K, V>>;
     outMap = Arc::new(UnorderedMap { buckets: Vector::copy(map.buckets.clone()), keys: Vector::copy(map.keys.clone()), values: Vector::copy(map.values.clone()), hashFn: map.hashFn.clone(), eqFn: map.eqFn.clone() });
     outMap
 }
 
-pub fn deepCopy<K: Clone + 'static, V: Clone + 'static>(mut map: Arc<UnorderedMap<K, V>>, mut r#fn: Arc<dyn ::std::ops::Fn(V) -> Result<V> + 'static>) -> Result<Arc<UnorderedMap<K, V>>> {
+pub fn deepCopy<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>, mut r#fn: Arc<dyn ::std::ops::Fn(V) -> Result<V> + 'static>) -> Result<Arc<UnorderedMap<K, V>>> {
     pub type CopyFn<V: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(V) -> Result<V> + 'static>;
 
     let mut outMap: Arc<UnorderedMap<K, V>>;
@@ -164,7 +164,7 @@ pub fn deepCopy<K: Clone + 'static, V: Clone + 'static>(mut map: Arc<UnorderedMa
     Ok(outMap)
 }
 
-pub fn add<K: Clone + 'static, V: Clone + 'static>(mut key: K, mut value: V, mut map: Arc<UnorderedMap<K, V>>) -> Result<()> {
+pub fn add<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut key: K, mut value: V, mut map: Arc<UnorderedMap<K, V>>) -> Result<()> {
     let mut index: i32;
     let mut hash: i32;
     (index, hash) = find(key.clone(), map.clone())?;
@@ -176,14 +176,14 @@ pub fn add<K: Clone + 'static, V: Clone + 'static>(mut key: K, mut value: V, mut
     Ok(())
 }
 
-pub fn addNew<K: Clone + 'static, V: Clone + 'static>(mut key: K, mut value: V, mut map: Arc<UnorderedMap<K, V>>) -> Result<()> {
+pub fn addNew<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut key: K, mut value: V, mut map: Arc<UnorderedMap<K, V>>) -> Result<()> {
     let mut hashfn: Hash<K> = map.hashFn.clone();
     let mut hash: i32 = intMod(hashfn(key.clone())?, Vector::size(map.buckets.clone()));
     addEntry(key.clone(), value.clone(), hash.clone(), map.clone())?;
     Ok(())
 }
 
-pub fn addUnique<K: Clone + 'static, V: Clone + 'static>(mut key: K, mut value: V, mut map: Arc<UnorderedMap<K, V>>) -> Result<()> {
+pub fn addUnique<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut key: K, mut value: V, mut map: Arc<UnorderedMap<K, V>>) -> Result<()> {
     let mut index: i32;
     let mut hash: i32;
     (index, hash) = find(key.clone(), map.clone())?;
@@ -192,7 +192,7 @@ pub fn addUnique<K: Clone + 'static, V: Clone + 'static>(mut key: K, mut value: 
     Ok(())
 }
 
-pub fn tryAdd<K: Clone + 'static, V: Clone + 'static>(mut key: K, mut value: V, mut map: Arc<UnorderedMap<K, V>>) -> Result<V> {
+pub fn tryAdd<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut key: K, mut value: V, mut map: Arc<UnorderedMap<K, V>>) -> Result<V> {
     let mut outValue: V;
     let mut index: i32;
     let mut hash: i32;
@@ -206,7 +206,7 @@ pub fn tryAdd<K: Clone + 'static, V: Clone + 'static>(mut key: K, mut value: V, 
     Ok(outValue)
 }
 
-pub fn tryUpdate<K: Clone + 'static, V: Clone + 'static>(mut key: K, mut value: V, mut map: Arc<UnorderedMap<K, V>>) -> Result<bool> {
+pub fn tryUpdate<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut key: K, mut value: V, mut map: Arc<UnorderedMap<K, V>>) -> Result<bool> {
     let mut updated: bool;
     let mut index: i32;
     let mut hash: i32;
@@ -218,7 +218,7 @@ pub fn tryUpdate<K: Clone + 'static, V: Clone + 'static>(mut key: K, mut value: 
     Ok(updated)
 }
 
-pub fn addUpdate<K: Clone + 'static, V: Clone + 'static>(mut key: K, mut r#fn: Arc<dyn ::std::ops::Fn(Option<V>) -> Result<V> + 'static>, mut map: Arc<UnorderedMap<K, V>>) -> Result<V> {
+pub fn addUpdate<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut key: K, mut r#fn: Arc<dyn ::std::ops::Fn(Option<V>) -> Result<V> + 'static>, mut map: Arc<UnorderedMap<K, V>>) -> Result<V> {
     pub type UpdateFn<V: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Option<V>) -> Result<V> + 'static>;
 
     let mut value: V;
@@ -235,7 +235,7 @@ pub fn addUpdate<K: Clone + 'static, V: Clone + 'static>(mut key: K, mut r#fn: A
     Ok(value)
 }
 
-pub fn tryAddUpdate<K: Clone + 'static, V: Clone + 'static>(mut key: K, mut r#fn: Arc<dyn ::std::ops::Fn(Option<V>) -> Result<V> + 'static>, mut map: Arc<UnorderedMap<K, V>>) -> Result<bool> {
+pub fn tryAddUpdate<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut key: K, mut r#fn: Arc<dyn ::std::ops::Fn(Option<V>) -> Result<V> + 'static>, mut map: Arc<UnorderedMap<K, V>>) -> Result<bool> {
     pub type UpdateFn<V: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Option<V>) -> Result<V> + 'static>;
 
     let mut updated: bool;
@@ -251,7 +251,7 @@ pub fn tryAddUpdate<K: Clone + 'static, V: Clone + 'static>(mut key: K, mut r#fn
     Ok(updated)
 }
 
-pub fn remove<K: Clone + 'static, V: Clone + 'static>(mut key: K, mut map: Arc<UnorderedMap<K, V>>) -> Result<bool> {
+pub fn remove<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut key: K, mut map: Arc<UnorderedMap<K, V>>) -> Result<bool> {
     fn update_indices(mut bucket: Arc<metamodelica::List<i32>>, mut removedIndex: i32) -> Arc<metamodelica::List<i32>> {
         let mut outBucket: Arc<metamodelica::List<i32>>;
         outBucket = ({
@@ -283,7 +283,7 @@ pub fn remove<K: Clone + 'static, V: Clone + 'static>(mut key: K, mut map: Arc<U
     Ok(removed)
 }
 
-pub fn clear<K: Clone + 'static, V: Clone + 'static>(mut map: Arc<UnorderedMap<K, V>>) -> () {
+pub fn clear<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>) -> () {
     Vector::clear(map.buckets.clone());
     Vector::push(map.buckets.clone(), metamodelica::nil());
     Vector::clear(map.keys.clone());
@@ -291,14 +291,14 @@ pub fn clear<K: Clone + 'static, V: Clone + 'static>(mut map: Arc<UnorderedMap<K
     ()
 }
 
-pub fn get<K: Clone + 'static, V: Clone + 'static>(mut key: K, mut map: Arc<UnorderedMap<K, V>>) -> Result<Option<V>> {
+pub fn get<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut key: K, mut map: Arc<UnorderedMap<K, V>>) -> Result<Option<V>> {
     let mut value: Option<V>;
     let (mut index, _): (i32, i32) = find(key.clone(), map.clone())?;
     value = if (index.clone() > 0) {Some(Vector::getNoBounds(map.values.clone(), index.clone()))} else {None};
     Ok(value)
 }
 
-pub fn getSafe<K: Clone + 'static, V: Clone + 'static>(mut key: K, mut map: Arc<UnorderedMap<K, V>>, mut info: SourceInfo) -> Result<V> {
+pub fn getSafe<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut key: K, mut map: Arc<UnorderedMap<K, V>>, mut info: SourceInfo) -> Result<V> {
     let mut value: V;
     let (mut index, _): (i32, i32) = find(key.clone(), map.clone())?;
     if index.clone() > 0 {
@@ -310,19 +310,19 @@ pub fn getSafe<K: Clone + 'static, V: Clone + 'static>(mut key: K, mut map: Arc<
     Ok(value)
 }
 
-pub fn getOrFail<K: Clone + 'static, V: Clone + 'static>(mut key: K, mut map: Arc<UnorderedMap<K, V>>) -> Result<V> {
+pub fn getOrFail<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut key: K, mut map: Arc<UnorderedMap<K, V>>) -> Result<V> {
     let mut value: V = Vector::get(map.values.clone(), (find(key.clone(), map.clone())?).0)?;
     Ok(value)
 }
 
-pub fn getOrDefault<K: Clone + 'static, V: Clone + 'static>(mut key: K, mut map: Arc<UnorderedMap<K, V>>, mut default: V) -> Result<V> {
+pub fn getOrDefault<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut key: K, mut map: Arc<UnorderedMap<K, V>>, mut default: V) -> Result<V> {
     let mut value: V;
     let (mut index, _): (i32, i32) = find(key.clone(), map.clone())?;
     value = if (index.clone() > 0) {Vector::getNoBounds(map.values.clone(), index.clone())} else {default.clone()};
     Ok(value)
 }
 
-pub fn getList<K: Clone + 'static, V: Clone + 'static>(mut keys: Arc<metamodelica::List<K>>, mut map: Arc<UnorderedMap<K, V>>) -> Result<Arc<metamodelica::List<V>>> {
+pub fn getList<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut keys: Arc<metamodelica::List<K>>, mut map: Arc<UnorderedMap<K, V>>) -> Result<Arc<metamodelica::List<V>>> {
     let mut values: Arc<metamodelica::List<V>> = metamodelica::nil();
     let mut index: i32;
     for mut key in &*keys.clone() {
@@ -336,59 +336,59 @@ pub fn getList<K: Clone + 'static, V: Clone + 'static>(mut keys: Arc<metamodelic
     Ok(values)
 }
 
-pub fn getKey<K: Clone + 'static, V: Clone + 'static>(mut key: K, mut map: Arc<UnorderedMap<K, V>>) -> Result<Option<K>> {
+pub fn getKey<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut key: K, mut map: Arc<UnorderedMap<K, V>>) -> Result<Option<K>> {
     let mut outKey: Option<K>;
     let (mut index, _): (i32, i32) = find(key.clone(), map.clone())?;
     outKey = if (index.clone() > 0) {Some(Vector::getNoBounds(map.keys.clone(), index.clone()))} else {None};
     Ok(outKey)
 }
 
-pub fn updateKey<K: Clone + 'static, V: Clone + 'static>(mut key: K, mut map: Arc<UnorderedMap<K, V>>) -> Result<()> {
+pub fn updateKey<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut key: K, mut map: Arc<UnorderedMap<K, V>>) -> Result<()> {
     Vector::update(map.keys.clone(), (find(key.clone(), map.clone())?).0, key.clone())?;
     Ok(())
 }
 
-pub fn contains<K: Clone + 'static, V: Clone + 'static>(mut key: K, mut map: Arc<UnorderedMap<K, V>>) -> Result<bool> {
+pub fn contains<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut key: K, mut map: Arc<UnorderedMap<K, V>>) -> Result<bool> {
     let mut res: bool = (find(key.clone(), map.clone())?).0 > 0;
     Ok(res)
 }
 
-pub fn first<K: Clone + 'static, V: Clone + 'static>(mut map: Arc<UnorderedMap<K, V>>) -> Result<V> {
+pub fn first<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>) -> Result<V> {
     let mut value: V = Vector::get(map.values.clone(), 1)?;
     Ok(value)
 }
 
-pub fn firstKey<K: Clone + 'static, V: Clone + 'static>(mut map: Arc<UnorderedMap<K, V>>) -> Result<K> {
+pub fn firstKey<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>) -> Result<K> {
     let mut key: K = Vector::get(map.keys.clone(), 1)?;
     Ok(key)
 }
 
-pub fn keyAt<K: Clone + 'static, V: Clone + 'static>(mut map: Arc<UnorderedMap<K, V>>, mut index: i32) -> Result<K> {
+pub fn keyAt<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>, mut index: i32) -> Result<K> {
     let mut key: K = Vector::get(map.keys.clone(), index.clone())?;
     Ok(key)
 }
 
-pub fn valueAt<K: Clone + 'static, V: Clone + 'static>(mut map: Arc<UnorderedMap<K, V>>, mut index: i32) -> Result<V> {
+pub fn valueAt<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>, mut index: i32) -> Result<V> {
     let mut value: V = Vector::get(map.values.clone(), index.clone())?;
     Ok(value)
 }
 
-pub fn toList<K: Clone + 'static, V: Clone + 'static>(mut map: Arc<UnorderedMap<K, V>>) -> Arc<metamodelica::List<(K, V)>> {
+pub fn toList<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>) -> Arc<metamodelica::List<(K, V)>> {
     let mut lst: Arc<metamodelica::List<(K, V)>> = List::zip(keyList(map.clone()), valueList(map.clone()));
     lst
 }
 
-pub fn keyList<K: Clone + 'static, V: Clone + 'static>(mut map: Arc<UnorderedMap<K, V>>) -> Arc<metamodelica::List<K>> {
+pub fn keyList<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>) -> Arc<metamodelica::List<K>> {
     let mut keys: Arc<metamodelica::List<K>> = Vector::toList(map.keys.clone());
     keys
 }
 
-pub fn valueList<K: Clone + 'static, V: Clone + 'static>(mut map: Arc<UnorderedMap<K, V>>) -> Arc<metamodelica::List<V>> {
+pub fn valueList<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>) -> Arc<metamodelica::List<V>> {
     let mut values: Arc<metamodelica::List<V>> = Vector::toList(map.values.clone());
     values
 }
 
-pub fn toArray<K: Clone + 'static + Default, V: Clone + 'static + Default>(mut map: Arc<UnorderedMap<K, V>>) -> metamodelica::Array<(K, V)> {
+pub fn toArray<K: Clone + 'static + metamodelica::gc::MMTrace + Default, V: Clone + 'static + metamodelica::gc::MMTrace + Default>(mut map: Arc<UnorderedMap<K, V>>) -> metamodelica::Array<(K, V)> {
     let mut entries: metamodelica::Array<(K, V)>;
     let mut keys: Arc<Vector::Vector<K>> = map.keys.clone();
     let mut values: Arc<Vector::Vector<V>> = map.values.clone();
@@ -401,17 +401,17 @@ pub fn toArray<K: Clone + 'static + Default, V: Clone + 'static + Default>(mut m
     entries
 }
 
-pub fn keyArray<K: Clone + 'static, V: Clone + 'static>(mut map: Arc<UnorderedMap<K, V>>) -> metamodelica::Array<K> {
+pub fn keyArray<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>) -> metamodelica::Array<K> {
     let mut keys: metamodelica::Array<K> = Vector::toArray(map.keys.clone());
     keys
 }
 
-pub fn valueArray<K: Clone + 'static, V: Clone + 'static>(mut map: Arc<UnorderedMap<K, V>>) -> metamodelica::Array<V> {
+pub fn valueArray<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>) -> metamodelica::Array<V> {
     let mut values: metamodelica::Array<V> = Vector::toArray(map.values.clone());
     values
 }
 
-pub fn toVector<K: Clone + 'static, V: Clone + 'static>(mut map: Arc<UnorderedMap<K, V>>) -> Arc<Vector::Vector<(K, V)>> {
+pub fn toVector<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>) -> Arc<Vector::Vector<(K, V)>> {
     pub type EntryT<K, V> = (K, V);
 
     let mut entries: Arc<Vector::Vector<(K, V)>>;
@@ -425,17 +425,17 @@ pub fn toVector<K: Clone + 'static, V: Clone + 'static>(mut map: Arc<UnorderedMa
     entries
 }
 
-pub fn keyVector<K: Clone + 'static, V: Clone + 'static>(mut map: Arc<UnorderedMap<K, V>>) -> Arc<Vector::Vector<K>> {
+pub fn keyVector<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>) -> Arc<Vector::Vector<K>> {
     let mut keys: Arc<Vector::Vector<K>> = Vector::copy(map.keys.clone());
     keys
 }
 
-pub fn valueVector<K: Clone + 'static, V: Clone + 'static>(mut map: Arc<UnorderedMap<K, V>>) -> Arc<Vector::Vector<V>> {
+pub fn valueVector<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>) -> Arc<Vector::Vector<V>> {
     let mut values: Arc<Vector::Vector<V>> = Vector::copy(map.values.clone());
     values
 }
 
-pub fn keySet<K: Clone + 'static, V: Clone + 'static>(mut map: Arc<UnorderedMap<K, V>>) -> Result<Arc<UnorderedSet::UnorderedSet<K>>> {
+pub fn keySet<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>) -> Result<Arc<UnorderedSet::UnorderedSet<K>>> {
     let mut set: Arc<UnorderedSet::UnorderedSet<K>>;
     let mut bucket_count: i32 = Vector::size(map.buckets.clone());
     let mut buckets: metamodelica::Array<Arc<metamodelica::List<K>>>;
@@ -454,7 +454,7 @@ pub fn keySet<K: Clone + 'static, V: Clone + 'static>(mut map: Arc<UnorderedMap<
     Ok(set)
 }
 
-pub fn fold<K: Clone + 'static, V: Clone + 'static, FT: Clone + 'static>(mut map: Arc<UnorderedMap<K, V>>, mut r#fn: Arc<dyn ::std::ops::Fn(V, FT) -> Result<FT> + 'static>, mut arg: FT) -> Result<FT> {
+pub fn fold<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace, FT: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>, mut r#fn: Arc<dyn ::std::ops::Fn(V, FT) -> Result<FT> + 'static>, mut arg: FT) -> Result<FT> {
     pub type FoldFn<V: Clone + 'static, FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(V, FT) -> Result<FT> + 'static>;
 
     let mut arg: FT = arg;
@@ -462,7 +462,7 @@ pub fn fold<K: Clone + 'static, V: Clone + 'static, FT: Clone + 'static>(mut map
     Ok(arg)
 }
 
-pub fn map<K: Clone + 'static, V: Clone + 'static, OT: Clone + 'static>(mut map: Arc<UnorderedMap<K, V>>, mut r#fn: Arc<dyn ::std::ops::Fn(V) -> Result<OT> + 'static>) -> Result<Arc<UnorderedMap<K, OT>>> {
+pub fn map<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace, OT: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>, mut r#fn: Arc<dyn ::std::ops::Fn(V) -> Result<OT> + 'static>) -> Result<Arc<UnorderedMap<K, OT>>> {
     pub type MapFn<V: Clone + 'static, OT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(V) -> Result<OT> + 'static>;
 
     let mut outMap: Arc<UnorderedMap<K, OT>>;
@@ -472,14 +472,14 @@ pub fn map<K: Clone + 'static, V: Clone + 'static, OT: Clone + 'static>(mut map:
     Ok(outMap)
 }
 
-pub fn apply<K: Clone + 'static, V: Clone + 'static>(mut map: Arc<UnorderedMap<K, V>>, mut r#fn: Arc<dyn ::std::ops::Fn(V) -> Result<V> + 'static>) -> Result<()> {
+pub fn apply<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>, mut r#fn: Arc<dyn ::std::ops::Fn(V) -> Result<V> + 'static>) -> Result<()> {
     pub type ApplyFn<V: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(V) -> Result<V> + 'static>;
 
     Vector::apply(map.values.clone(), r#fn.clone())?;
     Ok(())
 }
 
-pub fn merge<K: Clone + 'static, V: Clone + 'static>(mut map1: Arc<UnorderedMap<K, V>>, mut map2: Arc<UnorderedMap<K, V>>, mut info: SourceInfo) -> Result<Arc<UnorderedMap<K, V>>> {
+pub fn merge<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map1: Arc<UnorderedMap<K, V>>, mut map2: Arc<UnorderedMap<K, V>>, mut info: SourceInfo) -> Result<Arc<UnorderedMap<K, V>>> {
     let mut result: Arc<UnorderedMap<K, V>>;
     let mut tmp: Arc<UnorderedMap<K, V>>;
     let mut k: K;
@@ -504,7 +504,7 @@ pub fn merge<K: Clone + 'static, V: Clone + 'static>(mut map1: Arc<UnorderedMap<
     Ok(result)
 }
 
-pub fn subMap<K: Clone + 'static, V: Clone + 'static>(mut map: Arc<UnorderedMap<K, V>>, mut lst: Arc<metamodelica::List<K>>) -> Result<Arc<UnorderedMap<K, V>>> {
+pub fn subMap<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>, mut lst: Arc<metamodelica::List<K>>) -> Result<Arc<UnorderedMap<K, V>>> {
     let mut sub_map: Arc<UnorderedMap<K, V>>;
     let mut len: i32;
     len = (lst.clone().len() as i32);
@@ -516,7 +516,7 @@ pub fn subMap<K: Clone + 'static, V: Clone + 'static>(mut map: Arc<UnorderedMap<
     Ok(sub_map)
 }
 
-pub fn all<K: Clone + 'static, V: Clone + 'static>(mut map: Arc<UnorderedMap<K, V>>, mut r#fn: Arc<dyn ::std::ops::Fn(V) -> Result<bool> + 'static>) -> Result<bool> {
+pub fn all<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>, mut r#fn: Arc<dyn ::std::ops::Fn(V) -> Result<bool> + 'static>) -> Result<bool> {
     pub type PredFn<V: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(V) -> Result<bool> + 'static>;
 
     let mut res: bool;
@@ -524,7 +524,7 @@ pub fn all<K: Clone + 'static, V: Clone + 'static>(mut map: Arc<UnorderedMap<K, 
     Ok(res)
 }
 
-pub fn any<K: Clone + 'static, V: Clone + 'static>(mut map: Arc<UnorderedMap<K, V>>, mut r#fn: Arc<dyn ::std::ops::Fn(V) -> Result<bool> + 'static>) -> Result<bool> {
+pub fn any<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>, mut r#fn: Arc<dyn ::std::ops::Fn(V) -> Result<bool> + 'static>) -> Result<bool> {
     pub type PredFn<V: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(V) -> Result<bool> + 'static>;
 
     let mut res: bool;
@@ -532,7 +532,7 @@ pub fn any<K: Clone + 'static, V: Clone + 'static>(mut map: Arc<UnorderedMap<K, 
     Ok(res)
 }
 
-pub fn none<K: Clone + 'static, V: Clone + 'static>(mut map: Arc<UnorderedMap<K, V>>, mut r#fn: Arc<dyn ::std::ops::Fn(V) -> Result<bool> + 'static>) -> Result<bool> {
+pub fn none<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>, mut r#fn: Arc<dyn ::std::ops::Fn(V) -> Result<bool> + 'static>) -> Result<bool> {
     pub type PredFn<V: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(V) -> Result<bool> + 'static>;
 
     let mut res: bool;
@@ -540,27 +540,27 @@ pub fn none<K: Clone + 'static, V: Clone + 'static>(mut map: Arc<UnorderedMap<K,
     Ok(res)
 }
 
-pub fn size<K: Clone + 'static, V: Clone + 'static>(mut map: Arc<UnorderedMap<K, V>>) -> i32 {
+pub fn size<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>) -> i32 {
     let mut s: i32 = Vector::size(map.keys.clone());
     s
 }
 
-pub fn isEmpty<K: Clone + 'static, V: Clone + 'static>(mut map: Arc<UnorderedMap<K, V>>) -> bool {
+pub fn isEmpty<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>) -> bool {
     let mut empty: bool = Vector::isEmpty(map.keys.clone());
     empty
 }
 
-pub fn bucketCount<K: Clone + 'static, V: Clone + 'static>(mut map: Arc<UnorderedMap<K, V>>) -> i32 {
+pub fn bucketCount<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>) -> i32 {
     let mut count: i32 = Vector::size(map.buckets.clone());
     count
 }
 
-pub fn loadFactor<K: Clone + 'static, V: Clone + 'static>(mut map: Arc<UnorderedMap<K, V>>) -> metamodelica::Real {
+pub fn loadFactor<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>) -> metamodelica::Real {
     let mut load: metamodelica::Real = intReal(Vector::size(map.keys.clone())) / metamodelica::OrderedFloat((Vector::size(map.buckets.clone())) as f64);
     load
 }
 
-pub fn rehash<K: Clone + 'static, V: Clone + 'static>(mut map: Arc<UnorderedMap<K, V>>) -> Result<()> {
+pub fn rehash<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>) -> Result<()> {
     let mut keys: Arc<Vector::Vector<K>> = map.keys.clone();
     let mut buckets: Arc<Vector::Vector<Arc<metamodelica::List<i32>>>> = map.buckets.clone();
     let mut bucket_count: i32;
@@ -576,7 +576,7 @@ pub fn rehash<K: Clone + 'static, V: Clone + 'static>(mut map: Arc<UnorderedMap<
     Ok(())
 }
 
-pub fn toString<K: Clone + 'static, V: Clone + 'static>(mut map: Arc<UnorderedMap<K, V>>, mut keyStringFn: Arc<dyn ::std::ops::Fn(K) -> Result<ArcStr> + 'static>, mut valueStringFn: Arc<dyn ::std::ops::Fn(V) -> Result<ArcStr> + 'static>, mut delimiter: ArcStr, mut concatinator: ArcStr) -> Result<ArcStr> {
+pub fn toString<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>, mut keyStringFn: Arc<dyn ::std::ops::Fn(K) -> Result<ArcStr> + 'static>, mut valueStringFn: Arc<dyn ::std::ops::Fn(V) -> Result<ArcStr> + 'static>, mut delimiter: ArcStr, mut concatinator: ArcStr) -> Result<ArcStr> {
     let mut r#str: ArcStr;
     let mut strl: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     let mut keys: Arc<Vector::Vector<K>> = map.keys.clone();
@@ -588,7 +588,7 @@ pub fn toString<K: Clone + 'static, V: Clone + 'static>(mut map: Arc<UnorderedMa
     Ok(r#str)
 }
 
-pub fn toJSON<K: Clone + 'static, V: Clone + 'static>(mut map: Arc<UnorderedMap<K, V>>, mut keyStringFn: Arc<dyn ::std::ops::Fn(K) -> Result<ArcStr> + 'static>, mut valueStringFn: Arc<dyn ::std::ops::Fn(V) -> Result<ArcStr> + 'static>) -> Result<ArcStr> {
+pub fn toJSON<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>, mut keyStringFn: Arc<dyn ::std::ops::Fn(K) -> Result<ArcStr> + 'static>, mut valueStringFn: Arc<dyn ::std::ops::Fn(V) -> Result<ArcStr> + 'static>) -> Result<ArcStr> {
     let mut r#str: ArcStr;
     let mut io: IOStream::IOStream;
     let mut keys: Arc<Vector::Vector<K>> = map.keys.clone();
@@ -615,7 +615,7 @@ pub fn toJSON<K: Clone + 'static, V: Clone + 'static>(mut map: Arc<UnorderedMap<
     Ok(r#str)
 }
 
-fn find<K: Clone + 'static, V: Clone + 'static>(mut key: K, mut map: Arc<UnorderedMap<K, V>>) -> Result<(i32, i32)> {
+fn find<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut key: K, mut map: Arc<UnorderedMap<K, V>>) -> Result<(i32, i32)> {
     let mut index: i32 = -1;
     let mut hash: i32;
     let mut hashfn: Hash<K> = map.hashFn.clone();
@@ -637,7 +637,7 @@ fn find<K: Clone + 'static, V: Clone + 'static>(mut key: K, mut map: Arc<Unorder
     Ok((index, hash))
 }
 
-fn addEntry<K: Clone + 'static, V: Clone + 'static>(mut key: K, mut value: V, mut hash: i32, mut map: Arc<UnorderedMap<K, V>>) -> Result<()> {
+fn addEntry<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut key: K, mut value: V, mut hash: i32, mut map: Arc<UnorderedMap<K, V>>) -> Result<()> {
     let mut buckets: Arc<Vector::Vector<Arc<metamodelica::List<i32>>>> = map.buckets.clone();
     Vector::push(map.keys.clone(), key.clone());
     Vector::push(map.values.clone(), value.clone());

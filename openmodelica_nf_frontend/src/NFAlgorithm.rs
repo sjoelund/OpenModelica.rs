@@ -65,7 +65,7 @@ pub struct NFAlgorithm {
 }
 
 impl metamodelica::gc::MMTrace for NFAlgorithm {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.statements, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.inputs, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.outputs, __mmv)?;
@@ -169,7 +169,7 @@ pub fn mapExpList(mut algs: Arc<metamodelica::List<Arc<NFAlgorithm>>>, mut func:
     Ok(algs)
 }
 
-pub fn foldExp<ArgT: Clone + 'static>(mut alg: Arc<NFAlgorithm>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
+pub fn foldExp<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut alg: Arc<NFAlgorithm>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
     pub type FoldFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>;
 
     let mut arg: ArgT = arg;
@@ -180,7 +180,7 @@ pub fn foldExp<ArgT: Clone + 'static>(mut alg: Arc<NFAlgorithm>, mut func: Arc<d
     Ok(arg)
 }
 
-pub fn foldExpList<ArgT: Clone + 'static>(mut algs: Arc<metamodelica::List<Arc<NFAlgorithm>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
+pub fn foldExpList<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut algs: Arc<metamodelica::List<Arc<NFAlgorithm>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
     pub type FoldFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>;
 
     let mut arg: ArgT = arg;

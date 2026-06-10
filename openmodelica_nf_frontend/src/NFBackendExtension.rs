@@ -100,7 +100,7 @@ pub mod BackendInfo {
     }
 
     impl metamodelica::gc::MMTrace for BackendInfo {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             metamodelica::gc::MMTrace::mm_accept(&self.varKind, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.attributes, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.annotations, __mmv)?;
@@ -330,7 +330,7 @@ pub mod VariableKind {
         FRONTEND_DUMMY,
     }
     impl metamodelica::gc::MMTrace for VariableKind {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             match self {
                 VariableKind::TIME => Ok(()),
                 VariableKind::ALGEBRAIC => Ok(()),
@@ -773,7 +773,7 @@ pub mod VariableAttributes {
         },
     }
     impl metamodelica::gc::MMTrace for VariableAttributes {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             match self {
                 VariableAttributes::VAR_ATTR_REAL { quantity, unit, displayUnit, min, max, start, fixed, nominal, stateSelect, tearingSelect, uncertainty, distribution, binding, isProtected, finalPrefix, startOrigin } => {
                     metamodelica::gc::MMTrace::mm_accept(quantity, __mmv)?;
@@ -876,7 +876,7 @@ pub mod VariableAttributes {
         fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
     }
     impl metamodelica::gc::MMTrace for VarType {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+        fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
     }
 
     pub fn toString(mut attr: Arc<VariableAttributes>) -> Result<ArcStr> {
@@ -1959,7 +1959,7 @@ impl Ord for StateSelect {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 impl metamodelica::gc::MMTrace for StateSelect {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+    fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 impl Default for StateSelect {
     fn default() -> Self { Self::NEVER }
@@ -1981,7 +1981,7 @@ impl Ord for TearingSelect {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 impl metamodelica::gc::MMTrace for TearingSelect {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+    fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 impl Default for TearingSelect {
     fn default() -> Self { Self::NEVER }
@@ -2002,7 +2002,7 @@ impl Ord for Uncertainty {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 impl metamodelica::gc::MMTrace for Uncertainty {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+    fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 
 #[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
@@ -2013,7 +2013,7 @@ pub struct Distribution {
 }
 
 impl metamodelica::gc::MMTrace for Distribution {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.name, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.params, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.paramNames, __mmv)?;
@@ -2036,7 +2036,7 @@ pub mod Annotations {
     }
 
     impl metamodelica::gc::MMTrace for Annotations {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             metamodelica::gc::MMTrace::mm_accept(&self.hideResult, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.resizable, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.optimizable, __mmv)?;
@@ -2152,7 +2152,7 @@ impl Ord for OptimizerExpression {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 impl metamodelica::gc::MMTrace for OptimizerExpression {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+    fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 impl Default for OptimizerExpression {
     fn default() -> Self { Self::MAYER }

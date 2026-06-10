@@ -62,7 +62,7 @@ pub struct ExpandableArray<T: Clone> {
 }
 
 impl<T: Clone + metamodelica::gc::MMTrace> metamodelica::gc::MMTrace for ExpandableArray<T> {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.numberOfElements, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.lastUsedIndex, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.capacity, __mmv)?;
@@ -70,7 +70,7 @@ impl<T: Clone + metamodelica::gc::MMTrace> metamodelica::gc::MMTrace for Expanda
         Ok(())
     }
 }
-impl<T: Clone> Default for ExpandableArray<T> {
+impl<T: Clone + 'static + metamodelica::gc::MMTrace> Default for ExpandableArray<T> {
     fn default() -> Self {
         Self {
             numberOfElements: Default::default(),
@@ -83,13 +83,13 @@ impl<T: Clone> Default for ExpandableArray<T> {
 
 pub type EXPANDABLE_ARRAY<T> = ExpandableArray<T>;
 
-pub fn new<T: Clone + 'static>(mut capacity: i32, mut dummy: T) -> Arc<ExpandableArray<T>> {
+pub fn new<T: Clone + 'static + metamodelica::gc::MMTrace>(mut capacity: i32, mut dummy: T) -> Arc<ExpandableArray<T>> {
     let mut exarray: Arc<ExpandableArray<T>>;
     exarray = Arc::new(ExpandableArray { numberOfElements: Mutable::create(0), lastUsedIndex: Mutable::create(0), capacity: Mutable::create(capacity.clone()), data: Mutable::create(arrayCreate(capacity.clone(), None)) });
     exarray
 }
 
-pub fn clear<T: Clone + 'static>(mut exarray: Arc<ExpandableArray<T>>) -> Arc<ExpandableArray<T>> {
+pub fn clear<T: Clone + 'static + metamodelica::gc::MMTrace>(mut exarray: Arc<ExpandableArray<T>>) -> Arc<ExpandableArray<T>> {
     let mut exarray: Arc<ExpandableArray<T>> = exarray;
     let mut n: i32 = Mutable::access(exarray.numberOfElements.clone());
     let mut lastUsedIndex: i32 = Mutable::access(exarray.lastUsedIndex.clone());
@@ -108,7 +108,7 @@ pub fn clear<T: Clone + 'static>(mut exarray: Arc<ExpandableArray<T>>) -> Arc<Ex
     exarray
 }
 
-pub fn copy<T: Clone + 'static>(mut inExarray: Arc<ExpandableArray<T>>, mut dummy: T) -> Arc<ExpandableArray<T>> {
+pub fn copy<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inExarray: Arc<ExpandableArray<T>>, mut dummy: T) -> Arc<ExpandableArray<T>> {
     let mut outExarray: Arc<ExpandableArray<T>>;
     outExarray = new(Mutable::access(inExarray.capacity.clone()), dummy.clone());
     assign_field!(
@@ -120,7 +120,7 @@ pub fn copy<T: Clone + 'static>(mut inExarray: Arc<ExpandableArray<T>>, mut dumm
     outExarray
 }
 
-pub fn occupied<T: Clone + 'static>(mut index: i32, mut exarray: Arc<ExpandableArray<T>>) -> bool {
+pub fn occupied<T: Clone + 'static + metamodelica::gc::MMTrace>(mut index: i32, mut exarray: Arc<ExpandableArray<T>>) -> bool {
     let mut b: bool;
     let mut lastUsedIndex: i32 = Mutable::access(exarray.lastUsedIndex.clone());
     let mut data: metamodelica::Array<Option<T>> = Mutable::access(exarray.data.clone());
@@ -128,7 +128,7 @@ pub fn occupied<T: Clone + 'static>(mut index: i32, mut exarray: Arc<ExpandableA
     b
 }
 
-pub fn get<T: Clone + 'static>(mut index: i32, mut exarray: Arc<ExpandableArray<T>>) -> Result<T> {
+pub fn get<T: Clone + 'static + metamodelica::gc::MMTrace>(mut index: i32, mut exarray: Arc<ExpandableArray<T>>) -> Result<T> {
     let mut value: T;
     let mut data: metamodelica::Array<Option<T>> = Mutable::access(exarray.data.clone());
     let true = (index.clone() >= 1 && index.clone() <= Mutable::access(exarray.lastUsedIndex.clone())) else { bail!("pattern mismatch") };
@@ -140,7 +140,7 @@ pub fn get<T: Clone + 'static>(mut index: i32, mut exarray: Arc<ExpandableArray<
     Ok(value)
 }
 
-pub fn expandToSize<T: Clone + 'static>(mut minCapacity: i32, mut exarray: Arc<ExpandableArray<T>>) -> Result<Arc<ExpandableArray<T>>> {
+pub fn expandToSize<T: Clone + 'static + metamodelica::gc::MMTrace>(mut minCapacity: i32, mut exarray: Arc<ExpandableArray<T>>) -> Result<Arc<ExpandableArray<T>>> {
     let mut exarray: Arc<ExpandableArray<T>> = exarray;
     let mut capacity: i32 = Mutable::access(exarray.capacity.clone());
     let mut data: metamodelica::Array<Option<T>> = Mutable::access(exarray.data.clone());
@@ -152,7 +152,7 @@ pub fn expandToSize<T: Clone + 'static>(mut minCapacity: i32, mut exarray: Arc<E
     Ok(exarray)
 }
 
-pub fn set<T: Clone + 'static>(mut index: i32, mut value: T, mut exarray: Arc<ExpandableArray<T>>) -> Result<Arc<ExpandableArray<T>>> {
+pub fn set<T: Clone + 'static + metamodelica::gc::MMTrace>(mut index: i32, mut value: T, mut exarray: Arc<ExpandableArray<T>>) -> Result<Arc<ExpandableArray<T>>> {
     let mut exarray: Arc<ExpandableArray<T>> = exarray;
     let mut numberOfElements: i32 = Mutable::access(exarray.numberOfElements.clone());
     let mut lastUsedIndex: i32 = Mutable::access(exarray.lastUsedIndex.clone());
@@ -178,7 +178,7 @@ pub fn set<T: Clone + 'static>(mut index: i32, mut value: T, mut exarray: Arc<Ex
     Ok(exarray)
 }
 
-pub fn add<T: Clone + 'static>(mut value: T, mut exarray: Arc<ExpandableArray<T>>) -> Result<(Arc<ExpandableArray<T>>, i32)> {
+pub fn add<T: Clone + 'static + metamodelica::gc::MMTrace>(mut value: T, mut exarray: Arc<ExpandableArray<T>>) -> Result<(Arc<ExpandableArray<T>>, i32)> {
     let mut exarray: Arc<ExpandableArray<T>> = exarray;
     let mut index: i32;
     let mut lastUsedIndex: i32 = Mutable::access(exarray.lastUsedIndex.clone());
@@ -187,7 +187,7 @@ pub fn add<T: Clone + 'static>(mut value: T, mut exarray: Arc<ExpandableArray<T>
     Ok((exarray, index))
 }
 
-pub fn delete<T: Clone + 'static>(mut index: i32, mut exarray: Arc<ExpandableArray<T>>) -> Result<Arc<ExpandableArray<T>>> {
+pub fn delete<T: Clone + 'static + metamodelica::gc::MMTrace>(mut index: i32, mut exarray: Arc<ExpandableArray<T>>) -> Result<Arc<ExpandableArray<T>>> {
     let mut exarray: Arc<ExpandableArray<T>> = exarray;
     let mut numberOfElements: i32 = Mutable::access(exarray.numberOfElements.clone());
     let mut lastUsedIndex: i32 = Mutable::access(exarray.lastUsedIndex.clone());
@@ -208,7 +208,7 @@ pub fn delete<T: Clone + 'static>(mut index: i32, mut exarray: Arc<ExpandableArr
     Ok(exarray)
 }
 
-pub fn update<T: Clone + 'static>(mut index: i32, mut value: T, mut exarray: Arc<ExpandableArray<T>>) -> Result<Arc<ExpandableArray<T>>> {
+pub fn update<T: Clone + 'static + metamodelica::gc::MMTrace>(mut index: i32, mut value: T, mut exarray: Arc<ExpandableArray<T>>) -> Result<Arc<ExpandableArray<T>>> {
     let mut exarray: Arc<ExpandableArray<T>> = exarray;
     let mut lastUsedIndex: i32 = Mutable::access(exarray.lastUsedIndex.clone());
     let mut data: metamodelica::Array<Option<T>> = Mutable::access(exarray.data.clone());
@@ -220,7 +220,7 @@ pub fn update<T: Clone + 'static>(mut index: i32, mut value: T, mut exarray: Arc
     Ok(exarray)
 }
 
-pub fn toList<T: Clone + 'static>(mut exarray: Arc<ExpandableArray<T>>) -> Result<Arc<metamodelica::List<T>>> {
+pub fn toList<T: Clone + 'static + metamodelica::gc::MMTrace>(mut exarray: Arc<ExpandableArray<T>>) -> Result<Arc<metamodelica::List<T>>> {
     let mut listT: Arc<metamodelica::List<T>> = metamodelica::nil();
     let mut numberOfElements: i32 = Mutable::access(exarray.numberOfElements.clone());
     let mut lastUsedIndex: i32 = Mutable::access(exarray.lastUsedIndex.clone());
@@ -243,7 +243,7 @@ pub fn toList<T: Clone + 'static>(mut exarray: Arc<ExpandableArray<T>>) -> Resul
     Ok(listT)
 }
 
-pub fn compress<T: Clone + 'static>(mut exarray: Arc<ExpandableArray<T>>) -> Arc<ExpandableArray<T>> {
+pub fn compress<T: Clone + 'static + metamodelica::gc::MMTrace>(mut exarray: Arc<ExpandableArray<T>>) -> Arc<ExpandableArray<T>> {
     let mut exarray: Arc<ExpandableArray<T>> = exarray;
     let mut numberOfElements: i32 = Mutable::access(exarray.numberOfElements.clone());
     let mut lastUsedIndex: i32 = Mutable::access(exarray.lastUsedIndex.clone());
@@ -264,7 +264,7 @@ pub fn compress<T: Clone + 'static>(mut exarray: Arc<ExpandableArray<T>>) -> Arc
     exarray
 }
 
-pub fn shrink<T: Clone + 'static>(mut exarray: Arc<ExpandableArray<T>>) -> Arc<ExpandableArray<T>> {
+pub fn shrink<T: Clone + 'static + metamodelica::gc::MMTrace>(mut exarray: Arc<ExpandableArray<T>>) -> Arc<ExpandableArray<T>> {
     let mut exarray: Arc<ExpandableArray<T>> = exarray;
     let mut numberOfElements: i32 = Mutable::access(exarray.numberOfElements.clone());
     let mut data: metamodelica::Array<Option<T>> = Mutable::access(exarray.data.clone());
@@ -279,7 +279,7 @@ pub fn shrink<T: Clone + 'static>(mut exarray: Arc<ExpandableArray<T>>) -> Arc<E
     exarray
 }
 
-pub fn toString<T: Clone + 'static>(mut exarray: Arc<ExpandableArray<T>>, mut header: ArcStr, mut func: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>, mut debug: bool) -> Result<ArcStr> {
+pub fn toString<T: Clone + 'static + metamodelica::gc::MMTrace>(mut exarray: Arc<ExpandableArray<T>>, mut header: ArcStr, mut func: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>, mut debug: bool) -> Result<ArcStr> {
     pub type PrintFunction<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>;
 
     let mut r#str: ArcStr;
@@ -314,22 +314,22 @@ pub fn toString<T: Clone + 'static>(mut exarray: Arc<ExpandableArray<T>>, mut he
     Ok(r#str)
 }
 
-pub fn getNumberOfElements<T: Clone + 'static>(mut exarray: Arc<ExpandableArray<T>>) -> i32 {
+pub fn getNumberOfElements<T: Clone + 'static + metamodelica::gc::MMTrace>(mut exarray: Arc<ExpandableArray<T>>) -> i32 {
     let mut numberOfElements: i32 = Mutable::access(exarray.numberOfElements.clone());
     numberOfElements
 }
 
-pub fn getLastUsedIndex<T: Clone + 'static>(mut exarray: Arc<ExpandableArray<T>>) -> i32 {
+pub fn getLastUsedIndex<T: Clone + 'static + metamodelica::gc::MMTrace>(mut exarray: Arc<ExpandableArray<T>>) -> i32 {
     let mut lastUsedIndex: i32 = Mutable::access(exarray.lastUsedIndex.clone());
     lastUsedIndex
 }
 
-pub fn getCapacity<T: Clone + 'static>(mut exarray: Arc<ExpandableArray<T>>) -> i32 {
+pub fn getCapacity<T: Clone + 'static + metamodelica::gc::MMTrace>(mut exarray: Arc<ExpandableArray<T>>) -> i32 {
     let mut capacity: i32 = Mutable::access(exarray.capacity.clone());
     capacity
 }
 
-pub fn getData<T: Clone + 'static>(mut exarray: Arc<ExpandableArray<T>>) -> metamodelica::Array<Option<T>> {
+pub fn getData<T: Clone + 'static + metamodelica::gc::MMTrace>(mut exarray: Arc<ExpandableArray<T>>) -> metamodelica::Array<Option<T>> {
     let mut data: metamodelica::Array<Option<T>> = Mutable::access(exarray.data.clone());
     data
 }

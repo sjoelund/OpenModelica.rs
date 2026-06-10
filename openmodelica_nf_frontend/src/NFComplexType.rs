@@ -77,7 +77,7 @@ pub enum NFComplexType {
     },
 }
 impl metamodelica::gc::MMTrace for NFComplexType {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             NFComplexType::CLASS => Ok(()),
             NFComplexType::EXTENDS_TYPE { baseClass } => {

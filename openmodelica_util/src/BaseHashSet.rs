@@ -96,7 +96,7 @@ pub fn bucketToValuesSize(mut szBucket: i32) -> i32 {
     szArr
 }
 
-pub fn emptyHashSetWork<Key: Clone + 'static>(mut szBucket: i32, mut fntpl: FuncsTuple<Key>) -> HashSet<Key> {
+pub fn emptyHashSetWork<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut szBucket: i32, mut fntpl: FuncsTuple<Key>) -> HashSet<Key> {
     let mut hashSet: HashSet<Key>;
     let mut arr: metamodelica::Array<Arc<metamodelica::List<(Key, i32)>>>;
     let mut emptyarr: metamodelica::Array<Option<Key>>;
@@ -108,7 +108,7 @@ pub fn emptyHashSetWork<Key: Clone + 'static>(mut szBucket: i32, mut fntpl: Func
     hashSet
 }
 
-pub fn add<Key: Clone + 'static>(mut entry: Key, mut hashSet: HashSet<Key>) -> Result<HashSet<Key>> {
+pub fn add<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut entry: Key, mut hashSet: HashSet<Key>) -> Result<HashSet<Key>> {
     let mut outHashSet: HashSet<Key>;
     outHashSet = (match (entry.clone(), hashSet.clone()) {
         (mut key, (mut hashvec, mut varr, mut bsize, mut n, ref fntpl @ (ref hashFunc, _, _))) => {
@@ -147,7 +147,7 @@ pub fn add<Key: Clone + 'static>(mut entry: Key, mut hashSet: HashSet<Key>) -> R
     Ok(outHashSet)
 }
 
-pub fn addNoUpdCheck<Key: Clone + 'static>(mut entry: Key, mut hashSet: HashSet<Key>) -> Result<HashSet<Key>> {
+pub fn addNoUpdCheck<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut entry: Key, mut hashSet: HashSet<Key>) -> Result<HashSet<Key>> {
     let mut outHashSet: HashSet<Key>;
     outHashSet = (match (entry.clone(), hashSet.clone()) {
         (mut key, (mut hashvec, mut varr, mut bsize, _, ref fntpl @ (ref hashFunc, _, _))) => {
@@ -169,7 +169,7 @@ pub fn addNoUpdCheck<Key: Clone + 'static>(mut entry: Key, mut hashSet: HashSet<
     Ok(outHashSet)
 }
 
-pub fn addUnique<Key: Clone + 'static>(mut key: Key, mut hashSet: HashSet<Key>) -> Result<HashSet<Key>> {
+pub fn addUnique<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut key: Key, mut hashSet: HashSet<Key>) -> Result<HashSet<Key>> {
     let mut outHashSet: HashSet<Key>;
     outHashSet = (match hashSet.clone() {
         (mut hashvec, mut varr, mut bsize, _, ref fntpl @ (ref hashFunc, _, _)) if (!(has(key.clone(), hashSet.clone())?)) => {
@@ -192,7 +192,7 @@ pub fn addUnique<Key: Clone + 'static>(mut key: Key, mut hashSet: HashSet<Key>) 
     Ok(outHashSet)
 }
 
-pub fn delete<Key: Clone + 'static>(mut key: Key, mut hashSet: HashSet<Key>) -> Result<HashSet<Key>> {
+pub fn delete<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut key: Key, mut hashSet: HashSet<Key>) -> Result<HashSet<Key>> {
     let mut outHashSet: HashSet<Key>;
     let mut indx: i32;
     let mut n: i32;
@@ -212,7 +212,7 @@ pub fn delete<Key: Clone + 'static>(mut key: Key, mut hashSet: HashSet<Key>) -> 
     Ok(outHashSet)
 }
 
-pub fn has<Key: Clone + 'static>(mut key: Key, mut hashSet: HashSet<Key>) -> Result<bool> {
+pub fn has<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut key: Key, mut hashSet: HashSet<Key>) -> Result<bool> {
     let mut b: bool;
     b = (match hashSet.clone() {
         (_, (0, _, _), _, _, _) => {
@@ -227,7 +227,7 @@ pub fn has<Key: Clone + 'static>(mut key: Key, mut hashSet: HashSet<Key>) -> Res
     Ok(b)
 }
 
-pub fn hasAll<Key: Clone + 'static>(mut keys: Arc<metamodelica::List<Key>>, mut hashSet: HashSet<Key>) -> Result<bool> {
+pub fn hasAll<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut keys: Arc<metamodelica::List<Key>>, mut hashSet: HashSet<Key>) -> Result<bool> {
     let mut b: bool = true;
     for mut key in &*keys.clone() {
         let mut key = key.clone();
@@ -239,13 +239,13 @@ pub fn hasAll<Key: Clone + 'static>(mut keys: Arc<metamodelica::List<Key>>, mut 
     Ok(b)
 }
 
-pub fn get<Key: Clone + 'static>(mut key: Key, mut hashSet: HashSet<Key>) -> Result<Option<Key>> {
+pub fn get<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut key: Key, mut hashSet: HashSet<Key>) -> Result<Option<Key>> {
     let mut okey: Option<Key>;
     (okey, _) = get1(key.clone(), hashSet.clone())?;
     Ok(okey)
 }
 
-fn get1<Key: Clone + 'static>(mut key: Key, mut hashSet: HashSet<Key>) -> Result<(Option<Key>, i32)> {
+fn get1<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut key: Key, mut hashSet: HashSet<Key>) -> Result<(Option<Key>, i32)> {
     let mut okey: Option<Key>;
     let mut indx: i32 = 0;
     (okey, indx) = (match hashSet.clone() {
@@ -264,7 +264,7 @@ fn get1<Key: Clone + 'static>(mut key: Key, mut hashSet: HashSet<Key>) -> Result
     Ok((okey, indx))
 }
 
-fn get2<Key: Clone + 'static>(mut key: Key, mut keyIndices: Arc<metamodelica::List<(Key, i32)>>, mut keyEqual: Arc<dyn ::std::ops::Fn(Key, Key) -> Result<bool> + 'static>) -> Result<(i32, bool)> {
+fn get2<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut key: Key, mut keyIndices: Arc<metamodelica::List<(Key, i32)>>, mut keyEqual: Arc<dyn ::std::ops::Fn(Key, Key) -> Result<bool> + 'static>) -> Result<(i32, bool)> {
     let mut index: i32 = -1;
     let mut found: bool = true;
     let mut key2: Key;
@@ -279,7 +279,7 @@ fn get2<Key: Clone + 'static>(mut key: Key, mut keyIndices: Arc<metamodelica::Li
     Ok((index, found))
 }
 
-pub fn printHashSet<Key: Clone + 'static>(mut hashSet: HashSet<Key>) -> Result<()> {
+pub fn printHashSet<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut hashSet: HashSet<Key>) -> Result<()> {
     let mut printKey: FuncKeyString<Key>;
     let (_, _, _, _, (_, _, __pa0)) = hashSet.clone();
     printKey = __pa0.clone();
@@ -294,14 +294,14 @@ pub fn printHashSet<Key: Clone + 'static>(mut hashSet: HashSet<Key>) -> Result<(
     Ok(())
 }
 
-pub fn dumpHashSet<Key: Clone + 'static>(mut hashSet: HashSet<Key>) -> Result<()> {
+pub fn dumpHashSet<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut hashSet: HashSet<Key>) -> Result<()> {
     metamodelica::print((literal!("HashSet:\n")).clone());
     printHashSet(hashSet.clone())?;
     metamodelica::print((literal!("\n")).clone());
     Ok(())
 }
 
-pub fn hashSetList<Key: Clone + 'static>(mut hashSet: HashSet<Key>) -> Result<Arc<metamodelica::List<Key>>> {
+pub fn hashSetList<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut hashSet: HashSet<Key>) -> Result<Arc<metamodelica::List<Key>>> {
     let mut lst: Arc<metamodelica::List<Key>>;
     lst = (match hashSet.clone() {
         (_, mut varr, _, _, _) => {
@@ -311,7 +311,7 @@ pub fn hashSetList<Key: Clone + 'static>(mut hashSet: HashSet<Key>) -> Result<Ar
     Ok(lst)
 }
 
-pub fn valueArrayList<Key: Clone + 'static>(mut inValueArray: ValueArray<Key>) -> Result<Arc<metamodelica::List<Key>>> {
+pub fn valueArrayList<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut inValueArray: ValueArray<Key>) -> Result<Arc<metamodelica::List<Key>>> {
     let mut outList: Arc<metamodelica::List<Key>> = metamodelica::nil();
     let mut arr: metamodelica::Array<Option<Key>>;
     let mut size: i32;
@@ -331,7 +331,7 @@ pub fn valueArrayList<Key: Clone + 'static>(mut inValueArray: ValueArray<Key>) -
     Ok(outList)
 }
 
-pub fn currentSize<Key: Clone + 'static>(mut hashSet: HashSet<Key>) -> i32 {
+pub fn currentSize<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut hashSet: HashSet<Key>) -> i32 {
     let mut sz: i32;
     let mut va: ValueArray<Key>;
     (_, va, _, _, _) = hashSet.clone();
@@ -339,13 +339,13 @@ pub fn currentSize<Key: Clone + 'static>(mut hashSet: HashSet<Key>) -> i32 {
     sz
 }
 
-pub fn valueArrayLength<Key: Clone + 'static>(mut valueArray: ValueArray<Key>) -> i32 {
+pub fn valueArrayLength<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut valueArray: ValueArray<Key>) -> i32 {
     let mut sz: i32;
     (sz, _, _) = valueArray.clone();
     sz
 }
 
-pub fn valueArrayAdd<Key: Clone + 'static>(mut valueArray: ValueArray<Key>, mut entry: Key) -> Result<ValueArray<Key>> {
+pub fn valueArrayAdd<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut valueArray: ValueArray<Key>, mut entry: Key) -> Result<ValueArray<Key>> {
     let mut outValueArray: ValueArray<Key>;
     let mut n: i32;
     let mut size: i32;
@@ -368,7 +368,7 @@ pub fn valueArrayAdd<Key: Clone + 'static>(mut valueArray: ValueArray<Key>, mut 
     Ok(outValueArray)
 }
 
-pub fn valueArraySetnth<Key: Clone + 'static>(mut valueArray: ValueArray<Key>, mut pos: i32, mut entry: Key) -> Result<ValueArray<Key>> {
+pub fn valueArraySetnth<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut valueArray: ValueArray<Key>, mut pos: i32, mut entry: Key) -> Result<ValueArray<Key>> {
     let mut outValueArray: ValueArray<Key>;
     let mut arr_1: metamodelica::Array<Option<Key>>;
     let mut arr: metamodelica::Array<Option<Key>>;
@@ -381,7 +381,7 @@ pub fn valueArraySetnth<Key: Clone + 'static>(mut valueArray: ValueArray<Key>, m
     Ok(outValueArray)
 }
 
-pub fn valueArrayClearnth<Key: Clone + 'static>(mut valueArray: ValueArray<Key>, mut pos: i32) -> Result<ValueArray<Key>> {
+pub fn valueArrayClearnth<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut valueArray: ValueArray<Key>, mut pos: i32) -> Result<ValueArray<Key>> {
     let mut outValueArray: ValueArray<Key>;
     let mut arr_1: metamodelica::Array<Option<Key>>;
     let mut arr: metamodelica::Array<Option<Key>>;
@@ -394,7 +394,7 @@ pub fn valueArrayClearnth<Key: Clone + 'static>(mut valueArray: ValueArray<Key>,
     Ok(outValueArray)
 }
 
-pub fn valueArrayNth<Key: Clone + 'static>(mut valueArray: ValueArray<Key>, mut pos: i32) -> Result<Key> {
+pub fn valueArrayNth<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut valueArray: ValueArray<Key>, mut pos: i32) -> Result<Key> {
     let mut key: Key;
     key = (match valueArray.clone() {
         (mut n, _, mut arr) if (pos.clone() <= n.clone()) => {
@@ -411,7 +411,7 @@ pub fn valueArrayNth<Key: Clone + 'static>(mut valueArray: ValueArray<Key>, mut 
     Ok(key)
 }
 
-fn valueArrayNthT<Key: Clone + 'static>(mut valueArray: ValueArray<Key>, mut pos: i32) -> Result<Option<Key>> {
+fn valueArrayNthT<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut valueArray: ValueArray<Key>, mut pos: i32) -> Result<Option<Key>> {
     let mut key: Option<Key>;
     key = (match valueArray.clone() {
         (mut n, _, mut arr) if (pos.clone() <= n.clone()) => {

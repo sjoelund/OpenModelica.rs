@@ -88,7 +88,7 @@ pub struct EqSys {
 }
 
 impl metamodelica::gc::MMTrace for EqSys {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.dim, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.matrixA, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.vectorB, __mmv)?;
@@ -850,7 +850,7 @@ fn getOtherComps1(mut innerEquation: BackendDAE::InnerEquation, mut tplIn: (meta
     Ok(tplOut)
 }
 
-fn replaceAtPositionFromList<ElementType: Clone + 'static>(mut n: i32, mut replacingLst: Arc<metamodelica::List<ElementType>>, mut positionLst: Arc<metamodelica::List<i32>>, mut inLst: Arc<metamodelica::List<ElementType>>) -> Result<Arc<metamodelica::List<ElementType>>> {
+fn replaceAtPositionFromList<ElementType: Clone + 'static + metamodelica::gc::MMTrace>(mut n: i32, mut replacingLst: Arc<metamodelica::List<ElementType>>, mut positionLst: Arc<metamodelica::List<i32>>, mut inLst: Arc<metamodelica::List<ElementType>>) -> Result<Arc<metamodelica::List<ElementType>>> {
     let mut outLst: Arc<metamodelica::List<ElementType>>;
     let mut idx: i32;
     let mut entry: ElementType;

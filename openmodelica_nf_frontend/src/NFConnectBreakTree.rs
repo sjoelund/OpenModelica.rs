@@ -63,7 +63,7 @@ pub struct Entry {
 }
 
 impl metamodelica::gc::MMTrace for Entry {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.hasMatch, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.r#mod, __mmv)?;
         Ok(())
@@ -127,7 +127,7 @@ pub mod EntryTree {
         EMPTY,
     }
     impl metamodelica::gc::MMTrace for Tree {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             match self {
                 Tree::NODE { key, value, height, left, right } => {
                     metamodelica::gc::MMTrace::mm_accept(key, __mmv)?;
@@ -315,7 +315,7 @@ pub mod EntryTree {
         outBalance
     }
 
-    pub fn fold<FT: Clone + 'static>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>, Mutable::Mutable<Entry>, FT) -> Result<FT> + 'static>, mut inStartValue: FT) -> Result<FT> {
+    pub fn fold<FT: Clone + 'static + metamodelica::gc::MMTrace>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>, Mutable::Mutable<Entry>, FT) -> Result<FT> + 'static>, mut inStartValue: FT) -> Result<FT> {
         pub type FoldFunc<FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT) -> Result<FT> + 'static>;
 
         let mut outResult: FT = inStartValue.clone();
@@ -338,7 +338,7 @@ pub mod EntryTree {
         Ok(outResult)
     }
 
-    pub fn foldCond<FT: Clone + 'static>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>, Mutable::Mutable<Entry>, FT) -> Result<(FT, bool)> + 'static>, mut value: FT) -> Result<FT> {
+    pub fn foldCond<FT: Clone + 'static + metamodelica::gc::MMTrace>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>, Mutable::Mutable<Entry>, FT) -> Result<(FT, bool)> + 'static>, mut value: FT) -> Result<FT> {
         pub type FoldFunc<FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT) -> Result<(FT, bool)> + 'static>;
 
         let mut value: FT = value;
@@ -365,7 +365,7 @@ pub mod EntryTree {
         Ok(value)
     }
 
-    pub fn fold_2<FT1: Clone + 'static, FT2: Clone + 'static>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>, Mutable::Mutable<Entry>, FT1, FT2) -> Result<(FT1, FT2)> + 'static>, mut foldArg1: FT1, mut foldArg2: FT2) -> Result<(FT1, FT2)> {
+    pub fn fold_2<FT1: Clone + 'static + metamodelica::gc::MMTrace, FT2: Clone + 'static + metamodelica::gc::MMTrace>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>, Mutable::Mutable<Entry>, FT1, FT2) -> Result<(FT1, FT2)> + 'static>, mut foldArg1: FT1, mut foldArg2: FT2) -> Result<(FT1, FT2)> {
         pub type FoldFunc<FT1: Clone + 'static, FT2: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT1, FT2) -> Result<(FT1, FT2)> + 'static>;
 
         let mut foldArg1: FT1 = foldArg1;
@@ -619,7 +619,7 @@ pub mod EntryTree {
         Ok(outTree)
     }
 
-    pub fn mapFold<FT: Clone + 'static>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>, Mutable::Mutable<Entry>, FT) -> Result<(Mutable::Mutable<Entry>, FT)> + 'static>, mut inStartValue: FT) -> Result<(Arc<Tree>, FT)> {
+    pub fn mapFold<FT: Clone + 'static + metamodelica::gc::MMTrace>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>, Mutable::Mutable<Entry>, FT) -> Result<(Mutable::Mutable<Entry>, FT)> + 'static>, mut inStartValue: FT) -> Result<(Arc<Tree>, FT)> {
         pub type MapFunc<FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT) -> Result<Value> + 'static>;
 
         let mut outTree: Arc<Tree> = inTree.clone();
@@ -956,7 +956,7 @@ pub enum Tree {
     EMPTY,
 }
 impl metamodelica::gc::MMTrace for Tree {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             Tree::NODE { key, value, height, left, right } => {
                 metamodelica::gc::MMTrace::mm_accept(key, __mmv)?;
@@ -1144,7 +1144,7 @@ fn calculateBalance(mut inNode: Arc<Tree>) -> i32 {
     outBalance
 }
 
-pub fn fold<FT: Clone + 'static>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>, Arc<EntryTree::Tree>, FT) -> Result<FT> + 'static>, mut inStartValue: FT) -> Result<FT> {
+pub fn fold<FT: Clone + 'static + metamodelica::gc::MMTrace>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>, Arc<EntryTree::Tree>, FT) -> Result<FT> + 'static>, mut inStartValue: FT) -> Result<FT> {
     pub type FoldFunc<FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT) -> Result<FT> + 'static>;
 
     let mut outResult: FT = inStartValue.clone();
@@ -1167,7 +1167,7 @@ pub fn fold<FT: Clone + 'static>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::st
     Ok(outResult)
 }
 
-pub fn foldCond<FT: Clone + 'static>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>, Arc<EntryTree::Tree>, FT) -> Result<(FT, bool)> + 'static>, mut value: FT) -> Result<FT> {
+pub fn foldCond<FT: Clone + 'static + metamodelica::gc::MMTrace>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>, Arc<EntryTree::Tree>, FT) -> Result<(FT, bool)> + 'static>, mut value: FT) -> Result<FT> {
     pub type FoldFunc<FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT) -> Result<(FT, bool)> + 'static>;
 
     let mut value: FT = value;
@@ -1194,7 +1194,7 @@ pub fn foldCond<FT: Clone + 'static>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn 
     Ok(value)
 }
 
-pub fn fold_2<FT1: Clone + 'static, FT2: Clone + 'static>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>, Arc<EntryTree::Tree>, FT1, FT2) -> Result<(FT1, FT2)> + 'static>, mut foldArg1: FT1, mut foldArg2: FT2) -> Result<(FT1, FT2)> {
+pub fn fold_2<FT1: Clone + 'static + metamodelica::gc::MMTrace, FT2: Clone + 'static + metamodelica::gc::MMTrace>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>, Arc<EntryTree::Tree>, FT1, FT2) -> Result<(FT1, FT2)> + 'static>, mut foldArg1: FT1, mut foldArg2: FT2) -> Result<(FT1, FT2)> {
     pub type FoldFunc<FT1: Clone + 'static, FT2: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT1, FT2) -> Result<(FT1, FT2)> + 'static>;
 
     let mut foldArg1: FT1 = foldArg1;
@@ -1448,7 +1448,7 @@ pub fn map(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::
     Ok(outTree)
 }
 
-pub fn mapFold<FT: Clone + 'static>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>, Arc<EntryTree::Tree>, FT) -> Result<(Arc<EntryTree::Tree>, FT)> + 'static>, mut inStartValue: FT) -> Result<(Arc<Tree>, FT)> {
+pub fn mapFold<FT: Clone + 'static + metamodelica::gc::MMTrace>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>, Arc<EntryTree::Tree>, FT) -> Result<(Arc<EntryTree::Tree>, FT)> + 'static>, mut inStartValue: FT) -> Result<(Arc<Tree>, FT)> {
     pub type MapFunc<FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT) -> Result<Value> + 'static>;
 
     let mut outTree: Arc<Tree> = inTree.clone();

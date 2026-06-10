@@ -82,7 +82,7 @@ pub enum NFClockKind {
     },
 }
 impl metamodelica::gc::MMTrace for NFClockKind {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             NFClockKind::INFERRED_CLOCK { idx } => {
                 metamodelica::gc::MMTrace::mm_accept(idx, __mmv)?;
@@ -268,7 +268,7 @@ pub fn applyExpShallow(mut ck: Arc<NFClockKind>, mut func: Arc<dyn ::std::ops::F
     Ok(())
 }
 
-pub fn foldExp<ArgT: Clone + 'static>(mut ck: Arc<NFClockKind>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
+pub fn foldExp<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut ck: Arc<NFClockKind>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
     pub type FoldFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>;
 
     let mut result: ArgT;
@@ -374,7 +374,7 @@ pub fn mapExpShallow(mut ck: Arc<NFClockKind>, mut func: Arc<dyn ::std::ops::Fn(
     Ok(outCk)
 }
 
-pub fn mapFoldExp<ArgT: Clone + 'static>(mut ck: Arc<NFClockKind>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<(Arc<Expression::NFExpression>, ArgT)> + 'static>, mut arg: ArgT) -> Result<(Arc<NFClockKind>, ArgT)> {
+pub fn mapFoldExp<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut ck: Arc<NFClockKind>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<(Arc<Expression::NFExpression>, ArgT)> + 'static>, mut arg: ArgT) -> Result<(Arc<NFClockKind>, ArgT)> {
     pub type MapFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<(Arc<Expression::NFExpression>, ArgT)> + 'static>;
 
     let mut outCk: Arc<NFClockKind>;
@@ -416,7 +416,7 @@ pub fn mapFoldExp<ArgT: Clone + 'static>(mut ck: Arc<NFClockKind>, mut func: Arc
     Ok((outCk, arg))
 }
 
-pub fn mapFoldExpShallow<ArgT: Clone + 'static>(mut ck: Arc<NFClockKind>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<(Arc<Expression::NFExpression>, ArgT)> + 'static>, mut arg: ArgT) -> Result<(Arc<NFClockKind>, ArgT)> {
+pub fn mapFoldExpShallow<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut ck: Arc<NFClockKind>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<(Arc<Expression::NFExpression>, ArgT)> + 'static>, mut arg: ArgT) -> Result<(Arc<NFClockKind>, ArgT)> {
     pub type MapFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<(Arc<Expression::NFExpression>, ArgT)> + 'static>;
 
     let mut outCk: Arc<NFClockKind>;

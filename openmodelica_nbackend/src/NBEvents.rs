@@ -154,7 +154,7 @@ pub mod EventInfo {
     }
 
     impl metamodelica::gc::MMTrace for EventInfo {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             metamodelica::gc::MMTrace::mm_accept(&self.time_set, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.time_map, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.state_map, __mmv)?;
@@ -176,7 +176,7 @@ pub mod EventInfo {
     pub type EVENT_INFO = EventInfo;
 
     pub fn toString(mut eventInfo: Arc<EventInfo>) -> Result<ArcStr> {
-        fn tplString<T1: Clone + 'static, T2: Clone + 'static>(mut tpl: (T1, T2), mut f1: Arc<dyn ::std::ops::Fn(T1) -> Result<ArcStr> + 'static>, mut f2: Arc<dyn ::std::ops::Fn(T2) -> Result<ArcStr> + 'static>) -> Result<ArcStr> {
+        fn tplString<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'static + metamodelica::gc::MMTrace>(mut tpl: (T1, T2), mut f1: Arc<dyn ::std::ops::Fn(T1) -> Result<ArcStr> + 'static>, mut f2: Arc<dyn ::std::ops::Fn(T2) -> Result<ArcStr> + 'static>) -> Result<ArcStr> {
             type F1<T1: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T1) -> Result<ArcStr> + 'static>;
 
             type F2<T2: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T2) -> Result<ArcStr> + 'static>;
@@ -341,7 +341,7 @@ pub mod TimeEvent {
         },
     }
     impl metamodelica::gc::MMTrace for TimeEvent {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             match self {
                 TimeEvent::SINGLE { index, trigger, iter } => {
                     metamodelica::gc::MMTrace::mm_accept(index, __mmv)?;
@@ -638,7 +638,7 @@ pub mod StateEvent {
     }
 
     impl metamodelica::gc::MMTrace for StateEvent {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             metamodelica::gc::MMTrace::mm_accept(&self.index, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.auxiliary, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.eqns, __mmv)?;
@@ -807,7 +807,7 @@ pub mod CompositeEvent {
     }
 
     impl metamodelica::gc::MMTrace for CompositeEvent {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             metamodelica::gc::MMTrace::mm_accept(&self.index, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.auxiliary, __mmv)?;
             Ok(())
@@ -964,7 +964,7 @@ pub mod Condition {
     }
 
     impl metamodelica::gc::MMTrace for Condition {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             metamodelica::gc::MMTrace::mm_accept(&self.exp, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.iter, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.stmt_index, __mmv)?;
@@ -1059,7 +1059,7 @@ pub struct Bucket {
 }
 
 impl metamodelica::gc::MMTrace for Bucket {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.time_set, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.time_map, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.state_map, __mmv)?;

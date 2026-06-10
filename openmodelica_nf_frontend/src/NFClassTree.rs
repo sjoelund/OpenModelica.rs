@@ -124,7 +124,7 @@ pub mod ClassTree {
         EMPTY_TREE,
     }
     impl metamodelica::gc::MMTrace for ClassTree {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             match self {
                 ClassTree::PARTIAL_TREE { tree, classes, components, exts, imports, duplicates } => {
                     metamodelica::gc::MMTrace::mm_accept(tree, __mmv)?;
@@ -899,7 +899,7 @@ pub mod ClassTree {
         Ok(())
     }
 
-    pub fn foldClasses<ArgT: Clone + 'static>(mut tree: Arc<ClassTree>, mut func: Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
+    pub fn foldClasses<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut tree: Arc<ClassTree>, mut func: Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
         pub type FuncT<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, ArgT) -> Result<ArgT> + 'static>;
 
         let mut arg: ArgT = arg;
@@ -932,7 +932,7 @@ pub mod ClassTree {
         Ok(())
     }
 
-    pub fn foldExtends<ArgT: Clone + 'static>(mut tree: Arc<ClassTree>, mut func: Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
+    pub fn foldExtends<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut tree: Arc<ClassTree>, mut func: Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
         pub type FuncT<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, ArgT) -> Result<ArgT> + 'static>;
 
         let mut arg: ArgT = arg;
@@ -944,7 +944,7 @@ pub mod ClassTree {
         Ok(arg)
     }
 
-    pub fn mapFoldExtends<ArgT: Clone + 'static>(mut tree: Arc<ClassTree>, mut func: Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, ArgT) -> Result<(Arc<InstNode::InstNode>, ArgT)> + 'static>, mut arg: ArgT) -> Result<ArgT> {
+    pub fn mapFoldExtends<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut tree: Arc<ClassTree>, mut func: Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, ArgT) -> Result<(Arc<InstNode::InstNode>, ArgT)> + 'static>, mut arg: ArgT) -> Result<ArgT> {
         pub type FuncT<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, ArgT) -> Result<(Arc<InstNode::InstNode>, ArgT)> + 'static>;
 
         let mut arg: ArgT = arg;
@@ -1025,7 +1025,7 @@ pub mod ClassTree {
         Ok(())
     }
 
-    pub fn foldComponents<ArgT: Clone + 'static>(mut tree: Arc<ClassTree>, mut func: Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
+    pub fn foldComponents<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut tree: Arc<ClassTree>, mut func: Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
         pub type FuncT<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, ArgT) -> Result<ArgT> + 'static>;
 
         let mut arg: ArgT = arg;

@@ -258,7 +258,7 @@ pub mod Block {
         },
     }
     impl metamodelica::gc::MMTrace for Block {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             match self {
                 Block::RESIDUAL { index, res_index, exp, source, attr } => {
                     metamodelica::gc::MMTrace::mm_accept(index, __mmv)?;
@@ -1528,7 +1528,7 @@ pub mod LinearSystem {
     }
 
     impl metamodelica::gc::MMTrace for LinearSystem {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             metamodelica::gc::MMTrace::mm_accept(&self.index, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.mixed, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.torn, __mmv)?;
@@ -1592,7 +1592,7 @@ pub mod NonlinearSystem {
     }
 
     impl metamodelica::gc::MMTrace for NonlinearSystem {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             metamodelica::gc::MMTrace::mm_accept(&self.index, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.blcks, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.crefs, __mmv)?;

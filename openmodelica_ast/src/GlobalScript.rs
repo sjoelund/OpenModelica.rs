@@ -59,7 +59,7 @@ pub enum Statement {
     },
 }
 impl metamodelica::gc::MMTrace for Statement {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             Statement::IALG { algItem } => {
                 metamodelica::gc::MMTrace::mm_accept(algItem, __mmv)?;
@@ -93,7 +93,7 @@ pub struct Statements {
 }
 
 impl metamodelica::gc::MMTrace for Statements {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.interactiveStmtLst, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.semicolon, __mmv)?;
         Ok(())

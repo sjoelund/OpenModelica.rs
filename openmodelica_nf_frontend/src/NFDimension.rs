@@ -104,7 +104,7 @@ pub enum NFDimension {
     UNKNOWN,
 }
 impl metamodelica::gc::MMTrace for NFDimension {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             NFDimension::RAW_DIM { dim, scope } => {
                 metamodelica::gc::MMTrace::mm_accept(dim, __mmv)?;
@@ -759,7 +759,7 @@ pub fn mapExp(mut dim: Arc<NFDimension>, mut func: Arc<dyn ::std::ops::Fn(Arc<Ex
     Ok(outDim)
 }
 
-pub fn foldExp<ArgT: Clone + 'static>(mut dim: Arc<NFDimension>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
+pub fn foldExp<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut dim: Arc<NFDimension>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
     pub type FoldFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>;
 
     let mut outArg: ArgT;
@@ -773,7 +773,7 @@ pub fn foldExp<ArgT: Clone + 'static>(mut dim: Arc<NFDimension>, mut func: Arc<d
     Ok(outArg)
 }
 
-pub fn foldExpList<ArgT: Clone + 'static>(mut dims: Arc<metamodelica::List<Arc<NFDimension>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
+pub fn foldExpList<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut dims: Arc<metamodelica::List<Arc<NFDimension>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
     pub type FoldFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>;
 
     let mut arg: ArgT = arg;

@@ -885,7 +885,7 @@ fn updateComponentsAndClassdefs2(mut inComponent: (Arc<SCode::Element>, Arc<DAE:
     Ok((outComponent, outRestMod))
 }
 
-fn getLocalIdentList<Type_A: Clone + 'static>(mut ielts: Arc<metamodelica::List<Type_A>>, mut tree: Arc<AvlSetString::Tree>, mut getIdent: Arc<dyn ::std::ops::Fn(Type_A, Arc<AvlSetString::Tree>) -> Result<Arc<AvlSetString::Tree>> + 'static>) -> Result<Arc<AvlSetString::Tree>> {
+fn getLocalIdentList<Type_A: Clone + 'static + metamodelica::gc::MMTrace>(mut ielts: Arc<metamodelica::List<Type_A>>, mut tree: Arc<AvlSetString::Tree>, mut getIdent: Arc<dyn ::std::ops::Fn(Type_A, Arc<AvlSetString::Tree>) -> Result<Arc<AvlSetString::Tree>> + 'static>) -> Result<Arc<AvlSetString::Tree>> {
     pub type getIdentFn<Type_A: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Type_A, Arc<AvlSetString::Tree>) -> Result<Arc<AvlSetString::Tree>> + 'static>;
 
     let mut tree: Arc<AvlSetString::Tree> = tree;
@@ -1861,7 +1861,7 @@ fn fixExpTraverse(mut exp: Arc<Absyn::Exp>, mut tpl: (metamodelica::Array<FCore:
     (exp, tpl)
 }
 
-fn fixOption<Type_A: Clone + 'static + metamodelica::ReferenceEq>(mut inCache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::Graph, mut inA: Option<Type_A>, mut tree: Arc<AvlSetString::Tree>, mut fixA: Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Cache>, FCore::Graph, Type_A, Arc<AvlSetString::Tree>) -> Result<Type_A> + 'static>) -> Result<Option<Type_A>> {
+fn fixOption<Type_A: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut inCache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::Graph, mut inA: Option<Type_A>, mut tree: Arc<AvlSetString::Tree>, mut fixA: Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Cache>, FCore::Graph, Type_A, Arc<AvlSetString::Tree>) -> Result<Type_A> + 'static>) -> Result<Option<Type_A>> {
     pub type FixAFn<Type_A: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Cache>, FCore::Graph, Type_A, Arc<AvlSetString::Tree>) -> Result<Type_A> + 'static>;
 
     let mut outA: Option<Type_A>;
@@ -1878,7 +1878,7 @@ fn fixOption<Type_A: Clone + 'static + metamodelica::ReferenceEq>(mut inCache: m
     Ok(outA)
 }
 
-fn fixList<Type_A: Clone + 'static + metamodelica::ReferenceEq>(mut inCache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::Graph, mut inA: Arc<metamodelica::List<Type_A>>, mut tree: Arc<AvlSetString::Tree>, mut fixA: Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Cache>, FCore::Graph, Type_A, Arc<AvlSetString::Tree>) -> Result<Type_A> + 'static>) -> Result<Arc<metamodelica::List<Type_A>>> {
+fn fixList<Type_A: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut inCache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::Graph, mut inA: Arc<metamodelica::List<Type_A>>, mut tree: Arc<AvlSetString::Tree>, mut fixA: Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Cache>, FCore::Graph, Type_A, Arc<AvlSetString::Tree>) -> Result<Type_A> + 'static>) -> Result<Arc<metamodelica::List<Type_A>>> {
     pub type FixAFn<Type_A: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Cache>, FCore::Graph, Type_A, Arc<AvlSetString::Tree>) -> Result<Type_A> + 'static>;
 
     let mut outA: Arc<metamodelica::List<Type_A>>;
@@ -1890,7 +1890,7 @@ fn fixList<Type_A: Clone + 'static + metamodelica::ReferenceEq>(mut inCache: met
     Ok(outA)
 }
 
-fn fixListList<Type_A: Clone + 'static + metamodelica::ReferenceEq>(mut inCache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::Graph, mut inA: Arc<metamodelica::List<Arc<metamodelica::List<Type_A>>>>, mut tree: Arc<AvlSetString::Tree>, mut fixA: Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Cache>, FCore::Graph, Type_A, Arc<AvlSetString::Tree>) -> Result<Type_A> + 'static>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<Type_A>>>>> {
+fn fixListList<Type_A: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut inCache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::Graph, mut inA: Arc<metamodelica::List<Arc<metamodelica::List<Type_A>>>>, mut tree: Arc<AvlSetString::Tree>, mut fixA: Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Cache>, FCore::Graph, Type_A, Arc<AvlSetString::Tree>) -> Result<Type_A> + 'static>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<Type_A>>>>> {
     pub type FixAFn<Type_A: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Cache>, FCore::Graph, Type_A, Arc<AvlSetString::Tree>) -> Result<Type_A> + 'static>;
 
     let mut outA: Arc<metamodelica::List<Arc<metamodelica::List<Type_A>>>> = metamodelica::nil();
@@ -1902,7 +1902,7 @@ fn fixListList<Type_A: Clone + 'static + metamodelica::ReferenceEq>(mut inCache:
     Ok(outA)
 }
 
-fn fixListTuple2<Type_A: Clone + 'static + metamodelica::ReferenceEq, Type_B: Clone + 'static + metamodelica::ReferenceEq>(mut inCache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::Graph, mut inRest: Arc<metamodelica::List<(Type_A, Type_B)>>, mut tree: Arc<AvlSetString::Tree>, mut fixA: Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Cache>, FCore::Graph, Type_A, Arc<AvlSetString::Tree>) -> Result<Type_A> + 'static>, mut fixB: Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Cache>, FCore::Graph, Type_B, Arc<AvlSetString::Tree>) -> Result<Type_B> + 'static>) -> Result<Arc<metamodelica::List<(Type_A, Type_B)>>> {
+fn fixListTuple2<Type_A: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq, Type_B: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut inCache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::Graph, mut inRest: Arc<metamodelica::List<(Type_A, Type_B)>>, mut tree: Arc<AvlSetString::Tree>, mut fixA: Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Cache>, FCore::Graph, Type_A, Arc<AvlSetString::Tree>) -> Result<Type_A> + 'static>, mut fixB: Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Cache>, FCore::Graph, Type_B, Arc<AvlSetString::Tree>) -> Result<Type_B> + 'static>) -> Result<Arc<metamodelica::List<(Type_A, Type_B)>>> {
     pub type FixAFn<Type_A: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Cache>, FCore::Graph, Type_A, Arc<AvlSetString::Tree>) -> Result<Type_A> + 'static>;
 
     pub type FixBFn<Type_B: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Cache>, FCore::Graph, Type_B, Arc<AvlSetString::Tree>) -> Result<Type_B> + 'static>;
@@ -1912,7 +1912,7 @@ fn fixListTuple2<Type_A: Clone + 'static + metamodelica::ReferenceEq, Type_B: Cl
     Ok(outA)
 }
 
-fn fixTuple2<Type_A: Clone + 'static + metamodelica::ReferenceEq, Type_B: Clone + 'static + metamodelica::ReferenceEq>(mut inCache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::Graph, mut tpl: (Type_A, Type_B), mut tree: Arc<AvlSetString::Tree>, mut fixA: Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Cache>, FCore::Graph, Type_A, Arc<AvlSetString::Tree>) -> Result<Type_A> + 'static>, mut fixB: Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Cache>, FCore::Graph, Type_B, Arc<AvlSetString::Tree>) -> Result<Type_B> + 'static>) -> Result<(Type_A, Type_B)> {
+fn fixTuple2<Type_A: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq, Type_B: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut inCache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::Graph, mut tpl: (Type_A, Type_B), mut tree: Arc<AvlSetString::Tree>, mut fixA: Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Cache>, FCore::Graph, Type_A, Arc<AvlSetString::Tree>) -> Result<Type_A> + 'static>, mut fixB: Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Cache>, FCore::Graph, Type_B, Arc<AvlSetString::Tree>) -> Result<Type_B> + 'static>) -> Result<(Type_A, Type_B)> {
     pub type FixAFn<Type_A: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Cache>, FCore::Graph, Type_A, Arc<AvlSetString::Tree>) -> Result<Type_A> + 'static>;
 
     pub type FixBFn<Type_B: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Cache>, FCore::Graph, Type_B, Arc<AvlSetString::Tree>) -> Result<Type_B> + 'static>;

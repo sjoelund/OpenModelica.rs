@@ -84,7 +84,7 @@ pub struct NBSlice<T: Clone> {
 }
 
 impl<T: Clone + metamodelica::gc::MMTrace> metamodelica::gc::MMTrace for NBSlice<T> {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.t, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.indices, __mmv)?;
         Ok(())
@@ -94,12 +94,12 @@ pub type SLICE<T> = NBSlice<T>;
 
 pub type IntLst = Arc<metamodelica::List<i32>>;
 
-pub fn getT<T: Clone + 'static>(mut slice: Arc<NBSlice<T>>) -> T {
+pub fn getT<T: Clone + 'static + metamodelica::gc::MMTrace>(mut slice: Arc<NBSlice<T>>) -> T {
     let mut t: T = slice.t.clone();
     t
 }
 
-pub fn hash<T: Clone + 'static>(mut slice: Arc<NBSlice<T>>, mut func: Arc<dyn ::std::ops::Fn(T) -> Result<i32> + 'static>) -> Result<i32> {
+pub fn hash<T: Clone + 'static + metamodelica::gc::MMTrace>(mut slice: Arc<NBSlice<T>>, mut func: Arc<dyn ::std::ops::Fn(T) -> Result<i32> + 'static>) -> Result<i32> {
     let mut h: i32 = func(slice.t.clone())?;
     for mut i in &*List::firstOrEmpty(slice.indices.clone()) {
         let mut i = i.clone();
@@ -108,12 +108,12 @@ pub fn hash<T: Clone + 'static>(mut slice: Arc<NBSlice<T>>, mut func: Arc<dyn ::
     Ok(h)
 }
 
-pub fn isEqual<T: Clone + 'static>(mut slice1: Arc<NBSlice<T>>, mut slice2: Arc<NBSlice<T>>, mut func: Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>) -> Result<bool> {
+pub fn isEqual<T: Clone + 'static + metamodelica::gc::MMTrace>(mut slice1: Arc<NBSlice<T>>, mut slice2: Arc<NBSlice<T>>, mut func: Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>) -> Result<bool> {
     let mut b: bool = func(slice1.t.clone(), slice2.t.clone())? && List::isEqualOnTrue(slice1.indices.clone(), slice2.indices.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
     Ok(b)
 }
 
-pub fn toString<T: Clone + 'static>(mut slice: Arc<NBSlice<T>>, mut func: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>, mut maxLength: i32) -> Result<ArcStr> {
+pub fn toString<T: Clone + 'static + metamodelica::gc::MMTrace>(mut slice: Arc<NBSlice<T>>, mut func: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>, mut maxLength: i32) -> Result<ArcStr> {
     let mut r#str: ArcStr;
     r#str = (func(slice.t.clone())?).clone();
     if maxLength.clone() > 0 && !(slice.indices.clone().is_empty()) {
@@ -122,19 +122,19 @@ pub fn toString<T: Clone + 'static>(mut slice: Arc<NBSlice<T>>, mut func: Arc<dy
     Ok(r#str)
 }
 
-pub fn lstToString<T: Clone + 'static>(mut lst: Arc<metamodelica::List<Arc<NBSlice<T>>>>, mut func: toStringT<T>, mut maxLength: i32) -> Result<ArcStr> {
+pub fn lstToString<T: Clone + 'static + metamodelica::gc::MMTrace>(mut lst: Arc<metamodelica::List<Arc<NBSlice<T>>>>, mut func: toStringT<T>, mut maxLength: i32) -> Result<ArcStr> {
     pub use toStringT as toStringT_;
 
     let mut r#str: ArcStr = List::toString(lst.clone(), (std::sync::Arc::new({ let __pe_b1 = func.clone(); let __pe_b2 = maxLength.clone(); move |__pe_a0| toString(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("\t")).clone(), (literal!(";\n\t")).clone(), (literal!(";")).clone(), false, 0)?;
     Ok(r#str)
 }
 
-pub fn isFull<T: Clone + 'static>(mut slice: Arc<NBSlice<T>>) -> bool {
+pub fn isFull<T: Clone + 'static + metamodelica::gc::MMTrace>(mut slice: Arc<NBSlice<T>>) -> bool {
     let mut b: bool = slice.indices.clone().is_empty();
     b
 }
 
-pub fn size<T: Clone + 'static>(mut slice: Arc<NBSlice<T>>, mut func: Arc<dyn ::std::ops::Fn(T) -> Result<i32> + 'static>) -> Result<i32> {
+pub fn size<T: Clone + 'static + metamodelica::gc::MMTrace>(mut slice: Arc<NBSlice<T>>, mut func: Arc<dyn ::std::ops::Fn(T) -> Result<i32> + 'static>) -> Result<i32> {
     let mut s: i32;
     if slice.indices.clone().is_empty() {
         s = func(slice.t.clone())?;
@@ -144,7 +144,7 @@ pub fn size<T: Clone + 'static>(mut slice: Arc<NBSlice<T>>, mut func: Arc<dyn ::
     Ok(s)
 }
 
-pub fn simplify<T: Clone + 'static>(mut slice: Arc<NBSlice<T>>, mut func: Arc<dyn ::std::ops::Fn(T) -> Result<i32> + 'static>) -> Result<Arc<NBSlice<T>>> {
+pub fn simplify<T: Clone + 'static + metamodelica::gc::MMTrace>(mut slice: Arc<NBSlice<T>>, mut func: Arc<dyn ::std::ops::Fn(T) -> Result<i32> + 'static>) -> Result<Arc<NBSlice<T>>> {
     let mut slice: Arc<NBSlice<T>> = slice;
     if (slice.indices.clone().len() as i32) == func(slice.t.clone())? {
         assign_field!(slice.indices = metamodelica::nil());
@@ -154,12 +154,12 @@ pub fn simplify<T: Clone + 'static>(mut slice: Arc<NBSlice<T>>, mut func: Arc<dy
     Ok(slice)
 }
 
-pub fn addToSliceMap<T: Clone + 'static>(mut t: T, mut i: i32, mut map: Arc<UnorderedMap::UnorderedMap<T, Arc<metamodelica::List<i32>>>>) -> Result<()> {
+pub fn addToSliceMap<T: Clone + 'static + metamodelica::gc::MMTrace>(mut t: T, mut i: i32, mut map: Arc<UnorderedMap::UnorderedMap<T, Arc<metamodelica::List<i32>>>>) -> Result<()> {
     UnorderedMap::add(t.clone(), metamodelica::cons(i.clone(), UnorderedMap::getOrDefault(t.clone(), map.clone(), metamodelica::nil())?), map.clone())?;
     Ok(())
 }
 
-pub fn fromTpl<T: Clone + 'static>(mut tpl: (T, Arc<metamodelica::List<i32>>)) -> Arc<NBSlice<T>> {
+pub fn fromTpl<T: Clone + 'static + metamodelica::gc::MMTrace>(mut tpl: (T, Arc<metamodelica::List<i32>>)) -> Arc<NBSlice<T>> {
     let mut slice: Arc<NBSlice<T>>;
     let mut t: T;
     let mut lst: IntLst;
@@ -168,7 +168,7 @@ pub fn fromTpl<T: Clone + 'static>(mut tpl: (T, Arc<metamodelica::List<i32>>)) -
     slice
 }
 
-pub fn fromMap<T: Clone + 'static>(mut map: Arc<UnorderedMap::UnorderedMap<T, Arc<metamodelica::List<i32>>>>) -> Arc<metamodelica::List<Arc<NBSlice<T>>>> {
+pub fn fromMap<T: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap::UnorderedMap<T, Arc<metamodelica::List<i32>>>>) -> Arc<metamodelica::List<Arc<NBSlice<T>>>> {
     let mut slices: Arc<metamodelica::List<Arc<NBSlice<T>>>> = ({
         let mut __acc: Arc<metamodelica::List<_>> = metamodelica::nil();
         for mut tpl in (UnorderedMap::toList(map.clone())).into_iter().cloned() {
@@ -180,18 +180,18 @@ pub fn fromMap<T: Clone + 'static>(mut map: Arc<UnorderedMap::UnorderedMap<T, Ar
     slices
 }
 
-pub fn apply<T: Clone + 'static>(mut slice: Arc<NBSlice<T>>, mut func: Arc<dyn ::std::ops::Fn(T) -> Result<T> + 'static>) -> Result<Arc<NBSlice<T>>> {
+pub fn apply<T: Clone + 'static + metamodelica::gc::MMTrace>(mut slice: Arc<NBSlice<T>>, mut func: Arc<dyn ::std::ops::Fn(T) -> Result<T> + 'static>) -> Result<Arc<NBSlice<T>>> {
     let mut slice: Arc<NBSlice<T>> = slice;
     assign_field!(slice.t = func(slice.t.clone())?);
     Ok(slice)
 }
 
-pub fn applyMutable<T: Clone + 'static>(mut slice: Arc<NBSlice<T>>, mut func: Arc<dyn ::std::ops::Fn(T) -> Result<()> + 'static>) -> Result<()> {
+pub fn applyMutable<T: Clone + 'static + metamodelica::gc::MMTrace>(mut slice: Arc<NBSlice<T>>, mut func: Arc<dyn ::std::ops::Fn(T) -> Result<()> + 'static>) -> Result<()> {
     func(slice.t.clone())?;
     Ok(())
 }
 
-pub fn check<T: Clone + 'static, T2: Clone + 'static>(mut slice: Arc<NBSlice<T>>, mut func: Arc<dyn ::std::ops::Fn(T) -> Result<T2> + 'static>) -> Result<T2> {
+pub fn check<T: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'static + metamodelica::gc::MMTrace>(mut slice: Arc<NBSlice<T>>, mut func: Arc<dyn ::std::ops::Fn(T) -> Result<T2> + 'static>) -> Result<T2> {
     let mut t2: T2 = func(slice.t.clone())?;
     Ok(t2)
 }

@@ -188,7 +188,7 @@ pub mod AliasSet {
     }
 
     impl metamodelica::gc::MMTrace for AliasSet {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             metamodelica::gc::MMTrace::mm_accept(&self.simple_variables, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.simple_equations, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.const_opt, __mmv)?;
@@ -248,7 +248,7 @@ pub struct CrefTpl {
 }
 
 impl metamodelica::gc::MMTrace for CrefTpl {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.cont, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.varCount, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.paramCount, __mmv)?;
@@ -401,7 +401,7 @@ impl Ord for ExceptionKind {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 impl metamodelica::gc::MMTrace for ExceptionKind {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+    fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 
 fn filterExceptionsEquation(mut eqn: Arc<Equation::Equation>, mut acc: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, ExceptionKind>>) -> Result<Arc<Equation::Equation>> {
@@ -1395,7 +1395,7 @@ pub mod AttributeCollector {
     }
 
     impl metamodelica::gc::MMTrace for AttributeCollector {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             metamodelica::gc::MMTrace::mm_accept(&self.min_val_map, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.max_val_map, __mmv)?;
             metamodelica::gc::MMTrace::mm_accept(&self.start_map, __mmv)?;

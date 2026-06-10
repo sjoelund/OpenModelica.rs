@@ -71,7 +71,7 @@ pub mod LookupStateName {
         },
     }
     impl metamodelica::gc::MMTrace for LookupStateName {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             match self {
                 LookupStateName::PATH { path } => {
                     metamodelica::gc::MMTrace::mm_accept(path, __mmv)?;
@@ -156,7 +156,7 @@ pub mod LookupState {
         },
     }
     impl metamodelica::gc::MMTrace for LookupState {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             match self {
                 LookupState::BEGIN => Ok(()),
                 LookupState::COMP => Ok(()),

@@ -92,7 +92,7 @@ pub struct Communication {
 }
 
 impl metamodelica::gc::MMTrace for Communication {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.numberOfVars, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.integerVars, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.floatVars, __mmv)?;
@@ -128,7 +128,7 @@ pub struct ComponentInfo {
 }
 
 impl metamodelica::gc::MMTrace for ComponentInfo {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.isPartOfODESystem, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.isPartOfZeroFuncSystem, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.isRemovedComponent, __mmv)?;
@@ -165,7 +165,7 @@ pub struct TaskGraphMeta {
 }
 
 impl metamodelica::gc::MMTrace for TaskGraphMeta {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.inComps, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.varCompMapping, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.eqCompMapping, __mmv)?;
@@ -214,7 +214,7 @@ impl Ord for VariableType {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 impl metamodelica::gc::MMTrace for VariableType {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+    fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 
 pub type VariableList = (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>);
@@ -2926,7 +2926,7 @@ pub struct GraphDumpOptions {
 }
 
 impl metamodelica::gc::MMTrace for GraphDumpOptions {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.visualizeCriticalPath, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.visualizeTaskStartAndFinishTime, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.visualizeTaskCalcTime, __mmv)?;
@@ -6851,7 +6851,7 @@ fn multirate_assignTasksToStates(mut tasksPerLevel: Arc<metamodelica::List<Arc<m
     Ok(stateTaskAssignOut)
 }
 
-fn appendToElementUnique<T: Clone + 'static + PartialEq>(mut inIndex: i32, mut inElements: Arc<metamodelica::List<T>>, mut inArray: metamodelica::Array<Arc<metamodelica::List<T>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<T>>>> {
+fn appendToElementUnique<T: Clone + 'static + metamodelica::gc::MMTrace + PartialEq>(mut inIndex: i32, mut inElements: Arc<metamodelica::List<T>>, mut inArray: metamodelica::Array<Arc<metamodelica::List<T>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<T>>>> {
     let mut outArray: metamodelica::Array<Arc<metamodelica::List<T>>>;
     outArray = metamodelica::arrayUpdate(inArray.clone(), inIndex.clone(), List::unique(listAppend(({let __elt = inArray.borrow()[(inIndex.clone()-1) as usize].clone(); __elt}), inElements.clone())))?;
     Ok(outArray)

@@ -54,7 +54,7 @@ pub struct HpcOmData {
 }
 
 impl metamodelica::gc::MMTrace for HpcOmData {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.schedules, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.hpcOmMemory, __mmv)?;
         Ok(())
@@ -83,7 +83,7 @@ pub enum MemoryMap {
     MEMORYMAP_UNIFORM,
 }
 impl metamodelica::gc::MMTrace for MemoryMap {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             MemoryMap::MEMORYMAP_ARRAY { floatArraySize, intArraySize, boolArraySize, stringArraySize } => {
                 metamodelica::gc::MMTrace::mm_accept(floatArraySize, __mmv)?;
@@ -109,7 +109,7 @@ pub struct CommunicationInfo {
 }
 
 impl metamodelica::gc::MMTrace for CommunicationInfo {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.floatVars, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.intVars, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.boolVars, __mmv)?;
@@ -163,7 +163,7 @@ pub enum Task {
     TASKEMPTY,
 }
 impl metamodelica::gc::MMTrace for Task {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             Task::SCHEDULED_TASK { compIdx, numThreads, taskSchedule } => {
                 metamodelica::gc::MMTrace::mm_accept(compIdx, __mmv)?;
@@ -228,7 +228,7 @@ pub enum TaskList {
     },
 }
 impl metamodelica::gc::MMTrace for TaskList {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             TaskList::PARALLELTASKLIST { tasks } => {
                 metamodelica::gc::MMTrace::mm_accept(tasks, __mmv)?;
@@ -272,7 +272,7 @@ pub enum Schedule {
     },
 }
 impl metamodelica::gc::MMTrace for Schedule {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             Schedule::LEVELSCHEDULE { tasksOfLevels, useFixedAssignments } => {
                 metamodelica::gc::MMTrace::mm_accept(tasksOfLevels, __mmv)?;

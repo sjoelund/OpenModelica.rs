@@ -145,7 +145,7 @@ pub enum TranslateModelKind {
     },
 }
 impl metamodelica::gc::MMTrace for TranslateModelKind {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             TranslateModelKind::NORMAL => Ok(()),
             TranslateModelKind::XML => Ok(()),
@@ -1574,7 +1574,7 @@ fn generateModelCodeDAE(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut inIni
     Ok((libs, fileDir, timeSimCode, timeTemplates))
 }
 
-fn serializeNotify<T: Clone + 'static>(mut data: T, mut name: ArcStr) -> Result<()> {
+fn serializeNotify<T: Clone + 'static + metamodelica::gc::MMTrace>(mut data: T, mut name: ArcStr) -> Result<()> {
     let mut sz: metamodelica::Real;
     let mut raw_sz: metamodelica::Real;
     let mut nonSharedStringSize: metamodelica::Real;

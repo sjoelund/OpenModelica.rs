@@ -84,7 +84,7 @@ pub struct SimVars {
 }
 
 impl metamodelica::gc::MMTrace for SimVars {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.stateVars, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.derivativeVars, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.algVars, __mmv)?;
@@ -207,7 +207,7 @@ pub struct SimVar {
 }
 
 impl metamodelica::gc::MMTrace for SimVar {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.name, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.varKind, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.comment, __mmv)?;
@@ -294,7 +294,7 @@ pub enum AliasVariable {
     },
 }
 impl metamodelica::gc::MMTrace for AliasVariable {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             AliasVariable::NOALIAS => Ok(()),
             AliasVariable::ALIAS { varName } => {
@@ -324,7 +324,7 @@ pub enum Causality {
     CALCULATED_PARAMETER,
 }
 impl metamodelica::gc::MMTrace for Causality {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             Causality::NONECAUS => Ok(()),
             Causality::OUTPUT => Ok(()),
@@ -348,7 +348,7 @@ pub enum Initial {
     CALCULATED,
 }
 impl metamodelica::gc::MMTrace for Initial {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             Initial::NONE_INITIAL => Ok(()),
             Initial::EXACT => Ok(()),
@@ -371,7 +371,7 @@ pub enum Variability {
     CONTINUOUS,
 }
 impl metamodelica::gc::MMTrace for Variability {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             Variability::CONSTANT => Ok(()),
             Variability::FIXED => Ok(()),

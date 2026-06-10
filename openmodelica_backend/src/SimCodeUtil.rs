@@ -8178,7 +8178,7 @@ impl Ord for SimVarsIndex {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 impl metamodelica::gc::MMTrace for SimVarsIndex {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+    fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 
 // In special order for fmi: real => intger => boolean => string => external
@@ -11465,7 +11465,7 @@ pub fn compareVarIndexGt(mut var1: SimCodeVar::SimVar, mut var2: SimCodeVar::Sim
     Ok(result)
 }
 
-pub fn compareSimVarTupleIndexGt<anyT: Clone + 'static>(mut var1: (SimCodeVar::SimVar, anyT), mut var2: (SimCodeVar::SimVar, anyT)) -> Result<bool> {
+pub fn compareSimVarTupleIndexGt<anyT: Clone + 'static + metamodelica::gc::MMTrace>(mut var1: (SimCodeVar::SimVar, anyT), mut var2: (SimCodeVar::SimVar, anyT)) -> Result<bool> {
     let mut result: bool;
     let mut index1: i32;
     let mut index2: i32;
@@ -12037,7 +12037,7 @@ fn calcPriority(mut eqs: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>) -> 
     Ok(prio)
 }
 
-pub fn traverseExpsSimCode<A: Clone + 'static>(mut simCode: SimCode::SimCode, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, A) -> Result<(Arc<DAE::Exp>, A)> + 'static>, mut ia: A) -> Result<(SimCode::SimCode, A)> {
+pub fn traverseExpsSimCode<A: Clone + 'static + metamodelica::gc::MMTrace>(mut simCode: SimCode::SimCode, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, A) -> Result<(Arc<DAE::Exp>, A)> + 'static>, mut ia: A) -> Result<(SimCode::SimCode, A)> {
     pub type Func<A: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, A) -> Result<(Arc<DAE::Exp>, A)> + 'static>;
 
     let mut outSimCode: SimCode::SimCode = simCode.clone();
@@ -12079,7 +12079,7 @@ pub fn traverseExpsSimCode<A: Clone + 'static>(mut simCode: SimCode::SimCode, mu
     Ok((outSimCode, oa))
 }
 
-fn traverseExpsPartition<A: Clone + 'static>(mut simPartition: SimCode::ClockedPartition, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, A) -> Result<(Arc<DAE::Exp>, A)> + 'static>, mut ia: A) -> Result<(SimCode::ClockedPartition, A)> {
+fn traverseExpsPartition<A: Clone + 'static + metamodelica::gc::MMTrace>(mut simPartition: SimCode::ClockedPartition, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, A) -> Result<(Arc<DAE::Exp>, A)> + 'static>, mut ia: A) -> Result<(SimCode::ClockedPartition, A)> {
     pub type Func<A: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, A) -> Result<(Arc<DAE::Exp>, A)> + 'static>;
 
     let mut outSimPartition: SimCode::ClockedPartition = simPartition.clone();
@@ -12098,7 +12098,7 @@ fn traverseExpsPartition<A: Clone + 'static>(mut simPartition: SimCode::ClockedP
     Ok((outSimPartition, oa))
 }
 
-fn traverseExpsSubPartition<A: Clone + 'static>(mut subPartition: SimCode::SubPartition, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, A) -> Result<(Arc<DAE::Exp>, A)> + 'static>, mut ia: A) -> Result<(SimCode::SubPartition, A)> {
+fn traverseExpsSubPartition<A: Clone + 'static + metamodelica::gc::MMTrace>(mut subPartition: SimCode::SubPartition, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, A) -> Result<(Arc<DAE::Exp>, A)> + 'static>, mut ia: A) -> Result<(SimCode::SubPartition, A)> {
     pub type Func<A: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, A) -> Result<(Arc<DAE::Exp>, A)> + 'static>;
 
     let mut outSubPartition: SimCode::SubPartition = subPartition.clone();
@@ -12111,7 +12111,7 @@ fn traverseExpsSubPartition<A: Clone + 'static>(mut subPartition: SimCode::SubPa
     Ok((outSubPartition, oa))
 }
 
-fn traverseExpsEqSystemsList<A: Clone + 'static>(mut ieqs: Arc<metamodelica::List<Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, A) -> Result<(Arc<DAE::Exp>, A)> + 'static>, mut ia: A, mut acc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>>>) -> Result<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>>>, A)> {
+fn traverseExpsEqSystemsList<A: Clone + 'static + metamodelica::gc::MMTrace>(mut ieqs: Arc<metamodelica::List<Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, A) -> Result<(Arc<DAE::Exp>, A)> + 'static>, mut ia: A, mut acc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>>>) -> Result<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>>>, A)> {
     pub type Func<A: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, A) -> Result<(Arc<DAE::Exp>, A)> + 'static>;
 
     let mut oeqs: Arc<metamodelica::List<Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>>> = metamodelica::nil();
@@ -12132,7 +12132,7 @@ fn traverseExpsEqSystemsList<A: Clone + 'static>(mut ieqs: Arc<metamodelica::Lis
     Ok((oeqs, oa))
 }
 
-fn traverseExpsEqSystems<A: Clone + 'static>(mut ieqs: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, A) -> Result<(Arc<DAE::Exp>, A)> + 'static>, mut ia: A, mut acc: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>) -> Result<(Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, A)> {
+fn traverseExpsEqSystems<A: Clone + 'static + metamodelica::gc::MMTrace>(mut ieqs: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, A) -> Result<(Arc<DAE::Exp>, A)> + 'static>, mut ia: A, mut acc: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>) -> Result<(Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, A)> {
     pub type Func<A: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, A) -> Result<(Arc<DAE::Exp>, A)> + 'static>;
 
     let mut oeqs: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>;
@@ -12148,7 +12148,7 @@ fn traverseExpsEqSystems<A: Clone + 'static>(mut ieqs: Arc<metamodelica::List<Ar
     Ok((oeqs, oa))
 }
 
-fn traverseExpsEqSystem<A: Clone + 'static>(mut eq: Arc<SimCode::SimEqSystem>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, A) -> Result<(Arc<DAE::Exp>, A)> + 'static>, mut ia: A) -> Result<(Arc<SimCode::SimEqSystem>, A)> {
+fn traverseExpsEqSystem<A: Clone + 'static + metamodelica::gc::MMTrace>(mut eq: Arc<SimCode::SimEqSystem>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, A) -> Result<(Arc<DAE::Exp>, A)> + 'static>, mut ia: A) -> Result<(Arc<SimCode::SimEqSystem>, A)> {
     pub type Func<A: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, A) -> Result<(Arc<DAE::Exp>, A)> + 'static>;
 
     let mut oeq: Arc<SimCode::SimEqSystem>;

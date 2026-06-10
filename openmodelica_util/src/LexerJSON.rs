@@ -190,7 +190,7 @@ impl Ord for TokenId {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 impl metamodelica::gc::MMTrace for TokenId {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+    fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 impl Default for TokenId {
     fn default() -> Self { Self::_NO_TOKEN }
@@ -210,7 +210,7 @@ pub struct Token {
 }
 
 impl metamodelica::gc::MMTrace for Token {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.fileName, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.id, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.fileContents, __mmv)?;
@@ -517,7 +517,7 @@ fn evalState(mut cState: i32, mut c: i32) -> (i32, i32) {
     (new_state, new_c)
 }
 
-fn checkArray<T: Clone + 'static>(mut arr: metamodelica::Array<T>, mut index: i32, mut info: SourceInfo) -> Result<()> {
+fn checkArray<T: Clone + 'static + metamodelica::gc::MMTrace>(mut arr: metamodelica::Array<T>, mut index: i32, mut info: SourceInfo) -> Result<()> {
     let mut filename: ArcStr;
     let mut lineStart: i32;
     if index.clone() < 1 || index.clone() > metamodelica::arrayLength(arr.clone()) {

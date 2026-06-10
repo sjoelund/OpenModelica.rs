@@ -112,7 +112,7 @@ pub enum AnnotationType {
     DIAGRAM_ANNOTATION,
 }
 impl metamodelica::gc::MMTrace for AnnotationType {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             AnnotationType::ICON_ANNOTATION => Ok(()),
             AnnotationType::DIAGRAM_ANNOTATION => Ok(()),
@@ -142,7 +142,7 @@ pub enum GraphicEnvCache {
     },
 }
 impl metamodelica::gc::MMTrace for GraphicEnvCache {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             GraphicEnvCache::GRAPHIC_ENV_NO_CACHE { program, modelPath } => {
                 metamodelica::gc::MMTrace::mm_accept(program, __mmv)?;
@@ -196,7 +196,7 @@ impl Ord for Access {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 impl metamodelica::gc::MMTrace for Access {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+    fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 
 pub fn evaluate(mut inStatements: GlobalScript::Statements, mut verbose: bool) -> Result<ArcStr> {
@@ -3141,7 +3141,7 @@ pub struct ComponentProperties {
 }
 
 impl metamodelica::gc::MMTrace for ComponentProperties {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.isFinal, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.isFlow, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.isStream, __mmv)?;

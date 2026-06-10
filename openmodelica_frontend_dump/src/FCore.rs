@@ -83,7 +83,7 @@ pub struct ImportTable {
 }
 
 impl metamodelica::gc::MMTrace for ImportTable {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.hidden, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.qualifiedImports, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.unqualifiedImports, __mmv)?;
@@ -121,7 +121,7 @@ pub struct Node {
 }
 
 impl metamodelica::gc::MMTrace for Node {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.name, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.id, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.parents, __mmv)?;
@@ -165,7 +165,7 @@ pub enum ModScope {
     },
 }
 impl metamodelica::gc::MMTrace for ModScope {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             ModScope::MS_COMPONENT { name } => {
                 metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
@@ -328,7 +328,7 @@ pub enum Data {
     },
 }
 impl metamodelica::gc::MMTrace for Data {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             Data::TOP => Ok(()),
             Data::IT { i } => {
@@ -511,7 +511,7 @@ pub mod RefTree {
         EMPTY,
     }
     impl metamodelica::gc::MMTrace for Tree {
-        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
             match self {
                 Tree::NODE { key, value, height, left, right } => {
                     metamodelica::gc::MMTrace::mm_accept(key, __mmv)?;
@@ -699,7 +699,7 @@ pub mod RefTree {
         outBalance
     }
 
-    pub fn fold<FT: Clone + 'static>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<Node>, FT) -> Result<FT> + 'static>, mut inStartValue: FT) -> Result<FT> {
+    pub fn fold<FT: Clone + 'static + metamodelica::gc::MMTrace>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<Node>, FT) -> Result<FT> + 'static>, mut inStartValue: FT) -> Result<FT> {
         pub type FoldFunc<FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT) -> Result<FT> + 'static>;
 
         let mut outResult: FT = inStartValue.clone();
@@ -722,7 +722,7 @@ pub mod RefTree {
         Ok(outResult)
     }
 
-    pub fn foldCond<FT: Clone + 'static>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<Node>, FT) -> Result<(FT, bool)> + 'static>, mut value: FT) -> Result<FT> {
+    pub fn foldCond<FT: Clone + 'static + metamodelica::gc::MMTrace>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<Node>, FT) -> Result<(FT, bool)> + 'static>, mut value: FT) -> Result<FT> {
         pub type FoldFunc<FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT) -> Result<(FT, bool)> + 'static>;
 
         let mut value: FT = value;
@@ -749,7 +749,7 @@ pub mod RefTree {
         Ok(value)
     }
 
-    pub fn fold_2<FT1: Clone + 'static, FT2: Clone + 'static>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<Node>, FT1, FT2) -> Result<(FT1, FT2)> + 'static>, mut foldArg1: FT1, mut foldArg2: FT2) -> Result<(FT1, FT2)> {
+    pub fn fold_2<FT1: Clone + 'static + metamodelica::gc::MMTrace, FT2: Clone + 'static + metamodelica::gc::MMTrace>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<Node>, FT1, FT2) -> Result<(FT1, FT2)> + 'static>, mut foldArg1: FT1, mut foldArg2: FT2) -> Result<(FT1, FT2)> {
         pub type FoldFunc<FT1: Clone + 'static, FT2: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT1, FT2) -> Result<(FT1, FT2)> + 'static>;
 
         let mut foldArg1: FT1 = foldArg1;
@@ -1003,7 +1003,7 @@ pub mod RefTree {
         Ok(outTree)
     }
 
-    pub fn mapFold<FT: Clone + 'static>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<Node>, FT) -> Result<(metamodelica::Array<Node>, FT)> + 'static>, mut inStartValue: FT) -> Result<(Arc<Tree>, FT)> {
+    pub fn mapFold<FT: Clone + 'static + metamodelica::gc::MMTrace>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<Node>, FT) -> Result<(metamodelica::Array<Node>, FT)> + 'static>, mut inStartValue: FT) -> Result<(Arc<Tree>, FT)> {
         pub type MapFunc<FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT) -> Result<Value> + 'static>;
 
         let mut outTree: Arc<Tree> = inTree.clone();
@@ -1191,7 +1191,7 @@ pub enum Kind {
     BASIC_TYPE,
 }
 impl metamodelica::gc::MMTrace for Kind {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             Kind::USERDEFINED => Ok(()),
             Kind::BUILTIN => Ok(()),
@@ -1227,7 +1227,7 @@ pub enum Status {
     },
 }
 impl metamodelica::gc::MMTrace for Status {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             Status::VAR_UNTYPED => Ok(()),
             Status::VAR_TYPED => Ok(()),
@@ -1263,7 +1263,7 @@ pub struct Visit {
 }
 
 impl metamodelica::gc::MMTrace for Visit {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.r#ref, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.seq, __mmv)?;
         Ok(())
@@ -1290,7 +1290,7 @@ pub struct Visited {
 }
 
 impl metamodelica::gc::MMTrace for Visited {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.tree, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.next, __mmv)?;
         Ok(())
@@ -1326,7 +1326,7 @@ pub struct VAvlTree {
 }
 
 impl metamodelica::gc::MMTrace for VAvlTree {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.value, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.height, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.left, __mmv)?;
@@ -1358,7 +1358,7 @@ pub struct VAvlTreeValue {
 }
 
 impl metamodelica::gc::MMTrace for VAvlTreeValue {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.key, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.value, __mmv)?;
         Ok(())
@@ -1413,7 +1413,7 @@ pub struct Extra {
 }
 
 impl metamodelica::gc::MMTrace for Extra {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.topModel, __mmv)?;
         Ok(())
     }
@@ -1445,7 +1445,7 @@ pub enum Graph {
     },
 }
 impl metamodelica::gc::MMTrace for Graph {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             Graph::G { top, scope } => {
                 metamodelica::gc::MMTrace::mm_accept(top, __mmv)?;
@@ -1480,7 +1480,7 @@ pub struct Top {
 }
 
 impl metamodelica::gc::MMTrace for Top {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.graph, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.name, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.node, __mmv)?;
@@ -1526,7 +1526,7 @@ pub enum Cache {
     NO_CACHE,
 }
 impl metamodelica::gc::MMTrace for Cache {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             Cache::CACHE { initialGraph, functions, evaluatedParams, modelName } => {
                 metamodelica::gc::MMTrace::mm_accept(initialGraph, __mmv)?;
@@ -1551,7 +1551,7 @@ pub enum ScopeType {
     PARALLEL_SCOPE,
 }
 impl metamodelica::gc::MMTrace for ScopeType {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             ScopeType::FUNCTION_SCOPE => Ok(()),
             ScopeType::CLASS_SCOPE => Ok(()),

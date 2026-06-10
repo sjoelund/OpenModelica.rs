@@ -109,7 +109,7 @@ pub struct AliasSet {
 }
 
 impl metamodelica::gc::MMTrace for AliasSet {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.symbols, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.expl, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.signs, __mmv)?;
@@ -3590,7 +3590,7 @@ fn moveVariables2(mut inVarLst1: Arc<metamodelica::List<BackendDAE::Var>>, mut i
     Ok((outVarLst1, outVarLst2))
 }
 
-pub fn sortBy1<ElementType: Clone + 'static, ArgType1: Clone + 'static>(mut inList: Arc<metamodelica::List<ElementType>>, mut inCompFunc: Arc<dyn ::std::ops::Fn(ElementType, ArgType1) -> Result<i32> + 'static>, mut inArgument1: ArgType1) -> Result<Arc<metamodelica::List<ElementType>>> {
+pub fn sortBy1<ElementType: Clone + 'static + metamodelica::gc::MMTrace, ArgType1: Clone + 'static + metamodelica::gc::MMTrace>(mut inList: Arc<metamodelica::List<ElementType>>, mut inCompFunc: Arc<dyn ::std::ops::Fn(ElementType, ArgType1) -> Result<i32> + 'static>, mut inArgument1: ArgType1) -> Result<Arc<metamodelica::List<ElementType>>> {
     pub type CompareFunc<ElementType: Clone + 'static, ArgType1: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(ElementType, ArgType1) -> Result<i32> + 'static>;
 
     let mut outList: Arc<metamodelica::List<ElementType>>;
@@ -3616,7 +3616,7 @@ pub fn sortBy1<ElementType: Clone + 'static, ArgType1: Clone + 'static>(mut inLi
     Ok(outList)
 }
 
-fn mergeBy1<ElementType: Clone + 'static, ArgType1: Clone + 'static>(mut inLeft: Arc<metamodelica::List<ElementType>>, mut inRight: Arc<metamodelica::List<ElementType>>, mut inCompFunc: Arc<dyn ::std::ops::Fn(ElementType, ArgType1) -> Result<i32> + 'static>, mut inArgument1: ArgType1) -> Result<Arc<metamodelica::List<ElementType>>> {
+fn mergeBy1<ElementType: Clone + 'static + metamodelica::gc::MMTrace, ArgType1: Clone + 'static + metamodelica::gc::MMTrace>(mut inLeft: Arc<metamodelica::List<ElementType>>, mut inRight: Arc<metamodelica::List<ElementType>>, mut inCompFunc: Arc<dyn ::std::ops::Fn(ElementType, ArgType1) -> Result<i32> + 'static>, mut inArgument1: ArgType1) -> Result<Arc<metamodelica::List<ElementType>>> {
     pub type CompareFunc<ElementType: Clone + 'static, ArgType1: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(ElementType, ArgType1) -> Result<i32> + 'static>;
 
     let mut outList: Arc<metamodelica::List<ElementType>>;

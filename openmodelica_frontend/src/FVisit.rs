@@ -487,7 +487,7 @@ fn rotateLeft(mut node: AvlTree) -> Result<AvlTree> {
     Ok(outNode)
 }
 
-fn getOption<T: Clone + 'static>(mut opt: Option<T>) -> Result<T> {
+fn getOption<T: Clone + 'static + metamodelica::gc::MMTrace>(mut opt: Option<T>) -> Result<T> {
     let mut val: T;
     val = (match opt.clone() {
         Some(mut __esc_val) => {
@@ -548,7 +548,7 @@ fn avlTreeGet2(mut inAvlTree: AvlTree, mut keyComp: i32, mut inKey: AvlKey) -> R
     Ok(outValue)
 }
 
-fn getOptionStr<Type_a: Clone + 'static>(mut inTypeAOption: Option<Type_a>, mut inFuncTypeTypeAToString: Arc<dyn ::std::ops::Fn(Type_a) -> Result<ArcStr> + 'static>) -> Result<ArcStr> {
+fn getOptionStr<Type_a: Clone + 'static + metamodelica::gc::MMTrace>(mut inTypeAOption: Option<Type_a>, mut inFuncTypeTypeAToString: Arc<dyn ::std::ops::Fn(Type_a) -> Result<ArcStr> + 'static>) -> Result<ArcStr> {
     pub type FuncTypeType_aToString<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Type_a) -> Result<ArcStr> + 'static>;
 
     let mut outString: ArcStr;

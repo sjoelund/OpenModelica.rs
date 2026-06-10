@@ -61,10 +61,10 @@ impl Ord for Diff {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 impl metamodelica::gc::MMTrace for Diff {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+    fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 
-pub fn diff<T: Clone + 'static>(mut seq1: Arc<metamodelica::List<T>>, mut seq2: Arc<metamodelica::List<T>>, mut equals: Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>, mut isWhitespace: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>, mut isWhitespaceNotComment: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>, mut toString: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>) -> Result<Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>> {
+pub fn diff<T: Clone + 'static + metamodelica::gc::MMTrace>(mut seq1: Arc<metamodelica::List<T>>, mut seq2: Arc<metamodelica::List<T>>, mut equals: Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>, mut isWhitespace: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>, mut isWhitespaceNotComment: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>, mut toString: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>) -> Result<Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>> {
     pub type FunEquals<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>;
 
     pub type FunWhitespace<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>;
@@ -90,7 +90,7 @@ pub fn diff<T: Clone + 'static>(mut seq1: Arc<metamodelica::List<T>>, mut seq2: 
 
 pub type partialPrintDiff<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>, fn(T) -> Result<ArcStr>) -> Result<ArcStr> + 'static>;
 
-pub fn printDiffTerminalColor<T: Clone + 'static>(mut seq: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>, mut toString: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>) -> ArcStr {
+pub fn printDiffTerminalColor<T: Clone + 'static + metamodelica::gc::MMTrace>(mut seq: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>, mut toString: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>) -> ArcStr {
     let mut res: ArcStr;
     let mut open: ArcStr;
     let mut close: ArcStr;
@@ -129,7 +129,7 @@ pub fn printDiffTerminalColor<T: Clone + 'static>(mut seq: Arc<metamodelica::Lis
     res
 }
 
-pub fn printDiffXml<T: Clone + 'static>(mut seq: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>, mut toString: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>) -> ArcStr {
+pub fn printDiffXml<T: Clone + 'static + metamodelica::gc::MMTrace>(mut seq: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>, mut toString: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>) -> ArcStr {
     let mut res: ArcStr;
     let mut open: ArcStr;
     let mut close: ArcStr;
@@ -168,7 +168,7 @@ pub fn printDiffXml<T: Clone + 'static>(mut seq: Arc<metamodelica::List<(Diff, A
     res
 }
 
-pub fn printActual<T: Clone + 'static>(mut seq: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>, mut toString: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>) -> ArcStr {
+pub fn printActual<T: Clone + 'static + metamodelica::gc::MMTrace>(mut seq: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>, mut toString: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>) -> ArcStr {
     let mut res: ArcStr;
     let mut open: ArcStr;
     let mut close: ArcStr;
@@ -207,7 +207,7 @@ pub fn printActual<T: Clone + 'static>(mut seq: Arc<metamodelica::List<(Diff, Ar
     res
 }
 
-fn diffSeq<T: Clone + 'static>(mut arr1: metamodelica::Array<T>, mut arr2: metamodelica::Array<T>, mut equals: Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>, mut isWhitespace: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>, mut isWhitespaceNotComment: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>, mut toString: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>, mut inStart1: i32, mut inEnd1: i32, mut inStart2: i32, mut inEnd2: i32, mut inPrefixes: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>, mut inSuffixes: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>) -> Result<Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>> {
+fn diffSeq<T: Clone + 'static + metamodelica::gc::MMTrace>(mut arr1: metamodelica::Array<T>, mut arr2: metamodelica::Array<T>, mut equals: Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>, mut isWhitespace: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>, mut isWhitespaceNotComment: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>, mut toString: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>, mut inStart1: i32, mut inEnd1: i32, mut inStart2: i32, mut inEnd2: i32, mut inPrefixes: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>, mut inSuffixes: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>) -> Result<Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>> {
     pub type FunEquals<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>;
 
     pub type FunWhitespace<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>;
@@ -296,7 +296,7 @@ fn diffSeq<T: Clone + 'static>(mut arr1: metamodelica::Array<T>, mut arr2: metam
     Ok(out)
 }
 
-fn addToList<T: Clone + 'static>(mut inlst: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>, mut ind: Diff, mut inacc: Arc<metamodelica::List<T>>, mut newd: Diff, mut t: T) -> (Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>, Diff, Arc<metamodelica::List<T>>) {
+fn addToList<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inlst: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>, mut ind: Diff, mut inacc: Arc<metamodelica::List<T>>, mut newd: Diff, mut t: T) -> (Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>, Diff, Arc<metamodelica::List<T>>) {
     let mut lst: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>> = inlst.clone();
     let mut d: Diff = newd.clone();
     let mut acc: Arc<metamodelica::List<T>> = inacc.clone();
@@ -311,7 +311,7 @@ fn addToList<T: Clone + 'static>(mut inlst: Arc<metamodelica::List<(Diff, Arc<me
     (lst, d, acc)
 }
 
-fn endList<T: Clone + 'static>(mut inlst: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>, mut ind: Diff, mut inacc: Arc<metamodelica::List<T>>) -> Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>> {
+fn endList<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inlst: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>, mut ind: Diff, mut inacc: Arc<metamodelica::List<T>>) -> Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>> {
     let mut lst: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>> = inlst.clone();
     if !(inacc.clone().is_empty()) {
         lst = metamodelica::cons((ind.clone(), inacc.clone().reverse()), lst.clone());
@@ -319,7 +319,7 @@ fn endList<T: Clone + 'static>(mut inlst: Arc<metamodelica::List<(Diff, Arc<meta
     lst
 }
 
-fn onlyAdditions<T: Clone + 'static>(mut arr1: metamodelica::Array<T>, mut arr2: metamodelica::Array<T>, mut equals: Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>, mut isWhitespace: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>, mut toString: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>, mut start1: i32, mut end1: i32, mut start2: i32, mut end2: i32) -> Result<Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>> {
+fn onlyAdditions<T: Clone + 'static + metamodelica::gc::MMTrace>(mut arr1: metamodelica::Array<T>, mut arr2: metamodelica::Array<T>, mut equals: Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>, mut isWhitespace: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>, mut toString: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>, mut start1: i32, mut end1: i32, mut start2: i32, mut end2: i32) -> Result<Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>> {
     pub type FunEquals<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>;
 
     pub type FunWhitespace<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>;
@@ -366,7 +366,7 @@ fn onlyAdditions<T: Clone + 'static>(mut arr1: metamodelica::Array<T>, mut arr2:
     Ok(out)
 }
 
-fn onlyRemovals<T: Clone + 'static>(mut arr1: metamodelica::Array<T>, mut arr2: metamodelica::Array<T>, mut equals: Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>, mut isWhitespace: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>, mut toString: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>, mut start1: i32, mut end1: i32, mut start2: i32, mut end2: i32) -> Result<Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>> {
+fn onlyRemovals<T: Clone + 'static + metamodelica::gc::MMTrace>(mut arr1: metamodelica::Array<T>, mut arr2: metamodelica::Array<T>, mut equals: Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>, mut isWhitespace: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>, mut toString: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>, mut start1: i32, mut end1: i32, mut start2: i32, mut end2: i32) -> Result<Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>> {
     pub type FunEquals<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>;
 
     pub type FunWhitespace<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>;
@@ -413,7 +413,7 @@ fn onlyRemovals<T: Clone + 'static>(mut arr1: metamodelica::Array<T>, mut arr2: 
     Ok(out)
 }
 
-fn myersGreedyDiff<T: Clone + 'static>(mut arr1: metamodelica::Array<T>, mut arr2: metamodelica::Array<T>, mut equals: Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>, mut start1: i32, mut end1: i32, mut start2: i32, mut end2: i32) -> Result<Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>> {
+fn myersGreedyDiff<T: Clone + 'static + metamodelica::gc::MMTrace>(mut arr1: metamodelica::Array<T>, mut arr2: metamodelica::Array<T>, mut equals: Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>, mut start1: i32, mut end1: i32, mut start2: i32, mut end2: i32) -> Result<Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>> {
     pub type FunEquals<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>;
 
     let mut out: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>;
@@ -474,7 +474,7 @@ fn myersGreedyDiff<T: Clone + 'static>(mut arr1: metamodelica::Array<T>, mut arr
     Ok(out)
 }
 
-fn myersGreedyPathToDiff<T: Clone + 'static>(mut arr1: metamodelica::Array<T>, mut arr2: metamodelica::Array<T>, mut start1: i32, mut start2: i32, mut paths: Arc<metamodelica::List<(i32, i32)>>) -> Result<Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>> {
+fn myersGreedyPathToDiff<T: Clone + 'static + metamodelica::gc::MMTrace>(mut arr1: metamodelica::Array<T>, mut arr2: metamodelica::Array<T>, mut start1: i32, mut start2: i32, mut paths: Arc<metamodelica::List<(i32, i32)>>) -> Result<Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>> {
     let mut out: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>> = metamodelica::nil();
     let mut x1: i32;
     let mut x2: i32;
@@ -524,7 +524,7 @@ fn myersGreedyPathToDiff<T: Clone + 'static>(mut arr1: metamodelica::Array<T>, m
     Ok(out)
 }
 
-fn trimCommonPrefix<T: Clone + 'static>(mut arr1: metamodelica::Array<T>, mut inStart1: i32, mut end1: i32, mut arr2: metamodelica::Array<T>, mut inStart2: i32, mut end2: i32, mut equals: Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>, mut acc: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>, mut isWhitespaceNotComment: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>, mut toString: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>) -> Result<(Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>, i32, i32)> {
+fn trimCommonPrefix<T: Clone + 'static + metamodelica::gc::MMTrace>(mut arr1: metamodelica::Array<T>, mut inStart1: i32, mut end1: i32, mut arr2: metamodelica::Array<T>, mut inStart2: i32, mut end2: i32, mut equals: Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>, mut acc: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>, mut isWhitespaceNotComment: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>, mut toString: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>) -> Result<(Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>, i32, i32)> {
     pub type ToString<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>;
 
     pub type FunEquals<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>;
@@ -555,7 +555,7 @@ fn trimCommonPrefix<T: Clone + 'static>(mut arr1: metamodelica::Array<T>, mut in
     Ok((prefixes, start1, start2))
 }
 
-fn trimCommonSuffix<T: Clone + 'static>(mut arr1: metamodelica::Array<T>, mut start1: i32, mut inEnd1: i32, mut arr2: metamodelica::Array<T>, mut start2: i32, mut inEnd2: i32, mut equals: Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>, mut acc: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>, mut isWhitespaceNotComment: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>) -> Result<(Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>, i32, i32)> {
+fn trimCommonSuffix<T: Clone + 'static + metamodelica::gc::MMTrace>(mut arr1: metamodelica::Array<T>, mut start1: i32, mut inEnd1: i32, mut arr2: metamodelica::Array<T>, mut start2: i32, mut inEnd2: i32, mut equals: Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>, mut acc: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>, mut isWhitespaceNotComment: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>) -> Result<(Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>, i32, i32)> {
     pub type FunEquals<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>;
 
     pub type FunWhitespace<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>;
@@ -584,7 +584,7 @@ fn trimCommonSuffix<T: Clone + 'static>(mut arr1: metamodelica::Array<T>, mut st
     Ok((suffixes, end1, end2))
 }
 
-fn printStartToEnd<T: Clone + 'static>(mut arr: metamodelica::Array<T>, mut startIndex: i32, mut endIndex: i32, mut toString: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>) -> Result<ArcStr> {
+fn printStartToEnd<T: Clone + 'static + metamodelica::gc::MMTrace>(mut arr: metamodelica::Array<T>, mut startIndex: i32, mut endIndex: i32, mut toString: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>) -> Result<ArcStr> {
     pub type ToString<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>;
 
     let mut res: ArcStr;

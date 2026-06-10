@@ -864,7 +864,7 @@ fn serializeStatement(mut file: File::File, mut stmt: Arc<DAE::Statement>) -> ()
     ()
 }
 
-fn serializeList<ArgType: Clone + 'static>(mut file: File::File, mut lst: Arc<metamodelica::List<ArgType>>, mut func: Arc<dyn ::std::ops::Fn(File::File, ArgType) -> Result<()> + 'static>) -> Result<()> {
+fn serializeList<ArgType: Clone + 'static + metamodelica::gc::MMTrace>(mut file: File::File, mut lst: Arc<metamodelica::List<ArgType>>, mut func: Arc<dyn ::std::ops::Fn(File::File, ArgType) -> Result<()> + 'static>) -> Result<()> {
     pub type FuncType<ArgType: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(File::File, ArgType) -> Result<()> + 'static>;
 
     let () = (::match_deref::match_deref! { match &(lst.clone()) {
@@ -886,7 +886,7 @@ fn serializeList<ArgType: Clone + 'static>(mut file: File::File, mut lst: Arc<me
     Ok(())
 }
 
-fn serializeList1<ArgType: Clone + 'static, Extra: Clone + 'static>(mut file: File::File, mut lst: Arc<metamodelica::List<ArgType>>, mut extra: Extra, mut func: Arc<dyn ::std::ops::Fn(File::File, ArgType, Extra) -> Result<()> + 'static>) -> Result<()> {
+fn serializeList1<ArgType: Clone + 'static + metamodelica::gc::MMTrace, Extra: Clone + 'static + metamodelica::gc::MMTrace>(mut file: File::File, mut lst: Arc<metamodelica::List<ArgType>>, mut extra: Extra, mut func: Arc<dyn ::std::ops::Fn(File::File, ArgType, Extra) -> Result<()> + 'static>) -> Result<()> {
     pub type FuncType<ArgType: Clone + 'static, Extra: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(File::File, ArgType, Extra) -> Result<()> + 'static>;
 
     let () = (::match_deref::match_deref! { match &(lst.clone()) {

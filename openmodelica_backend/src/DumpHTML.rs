@@ -62,7 +62,7 @@ pub struct Style {
 }
 
 impl metamodelica::gc::MMTrace for Style {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.name, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.value, __mmv)?;
         Ok(())
@@ -107,7 +107,7 @@ pub enum Tag {
     },
 }
 impl metamodelica::gc::MMTrace for Tag {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         match self {
             Tag::HEADING { stage, text } => {
                 metamodelica::gc::MMTrace::mm_accept(stage, __mmv)?;
@@ -170,7 +170,7 @@ pub struct Document {
 }
 
 impl metamodelica::gc::MMTrace for Document {
-    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+    fn mm_accept(&self, __mmv: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> {
         metamodelica::gc::MMTrace::mm_accept(&self.docType, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.head, __mmv)?;
         metamodelica::gc::MMTrace::mm_accept(&self.body, __mmv)?;
