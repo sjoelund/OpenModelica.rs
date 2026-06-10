@@ -9,7 +9,13 @@
 //! only if both
 //!   1. `U` is transitively *contained in* some content type `T` that is
 //!      actually stored into a cell via an update call, and
-//!   2. `U` can transitively *reach* a cell field again (close the loop).
+//!   2. `U` lies on a cycle of the type-containment graph that crosses a
+//!      cell edge — i.e. `U` can reach a `Mutable<T'>`/`Pointer<T'>` field
+//!      whose content `T'` reaches `U` again. Merely *reaching* some cell is
+//!      not enough: a dead-end `Mutable<Integer>` field (e.g. `Tpl`'s
+//!      `BT_ITER.index0`) cannot continue a cycle because its content
+//!      terminates. Formally: `U` is in a strongly connected component of
+//!      the containment graph that contains an edge crossing a cell.
 //! The intersection of those two sets is exactly the set of types whose
 //! `Arc`s may sit on a cycle — the types that would need `Gc` + `Trace`.
 //! Types outside the set can keep plain `Arc` (a `Trace` impl that visits
@@ -28,6 +34,16 @@
 //! Reported in two scopes: `Mutable`-only (the user-facing question) and
 //! `Mutable`+`Pointer` (the honest total — `Pointer` is the same
 //! `Arc<Mutex<..>>` cell pattern and e.g. `InstNode.cls` cycles go through it).
+//!
+//! The reported sets contain the *payload* types. Generic container types
+//! (`Mutable`, `Pointer`, `Vector`, `UnorderedMap`, `DoubleEnded`, …) are
+//! deliberately absent even though their allocations sit on runtime cycles
+//! whenever their element type does: in Rust they stay generic and need one
+//! conditional `Trace` impl (`T: Trace ⇒ Container<T>: Trace`), not a
+//! per-instantiation conversion, so listing them per payload would be noise.
+//! The instantiation edge `Container<A> → A` is still followed (labeled with
+//! the cell kinds the container stores its payload under, see
+//! [`tv_under_cells`]), which is what puts the payloads on the cycle.
 //!
 //! Known limitations (all conservative in the "may miss a site" direction,
 //! flagged in the report where detectable):
@@ -337,6 +353,222 @@ fn downward_reach(graph: &BTreeMap<String, Vec<Ty>>, seeds: &BTreeSet<String>) -
     reached
 }
 
+// ── cell-crossing containment cycles (SCC analysis) ──────────────────────────
+//
+// A named type can be cyclic at runtime only if the *type* containment graph
+// has a cycle through it that crosses a cell (`Mutable`/`Pointer`) edge:
+// immutable recursion (lists, expression trees) is constructed bottom-up and
+// can never alias back, and a cell whose content type cannot reach the cycle
+// again (`Mutable<Integer>`) is a dead end. We label every containment edge
+// with the set of cell kinds crossed on the way to the target type, run
+// Tarjan SCC, and keep the members of components containing an internal
+// cell-crossing edge.
+
+/// Per generic type `G`, the cell kinds under which a type variable of `G`
+/// is stored in `G`'s own fields (transitively through other generics'
+/// instantiations — e.g. `UnorderedMap` storing keys inside a `Vector`,
+/// whose payload sits behind a `Mutable<array<T>>`). Needed to label the
+/// implicit containment edge from an instantiation `G<A>` to `A`.
+fn tv_under_cells(graph: &BTreeMap<String, Vec<Ty>>) -> BTreeMap<String, BTreeSet<CellKind>> {
+    fn collect(
+        ty: &Ty,
+        crossed: &BTreeSet<CellKind>,
+        tv_under: &BTreeMap<String, BTreeSet<CellKind>>,
+        out: &mut BTreeSet<CellKind>,
+    ) {
+        if let Some((k, content)) = cell_content(ty) {
+            let mut c = crossed.clone();
+            c.insert(k);
+            collect(content, &c, tv_under, out);
+            return;
+        }
+        match ty {
+            Ty::TypeVar(_) => out.extend(crossed.iter().copied()),
+            Ty::Option(t) | Ty::List(t) | Ty::Array(t) | Ty::Range(t) => {
+                collect(t, crossed, tv_under, out)
+            }
+            Ty::Tuple(ts) => ts.iter().for_each(|t| collect(t, crossed, tv_under, out)),
+            Ty::Generic(name, args) => {
+                let dotted = name.replace("::", ".");
+                let mut c = crossed.clone();
+                if let Some(extra) = tv_under.get(&dotted) {
+                    c.extend(extra.iter().copied());
+                }
+                args.iter().for_each(|a| collect(a, &c, tv_under, out));
+            }
+            // Function types are opaque (see module doc on dyn-fn blind spots).
+            _ => {}
+        }
+    }
+
+    let mut tv_under: BTreeMap<String, BTreeSet<CellKind>> = BTreeMap::new();
+    loop {
+        let mut changed = false;
+        for (qname, field_tys) in graph {
+            let mut kinds = BTreeSet::new();
+            for t in field_tys {
+                collect(t, &BTreeSet::new(), &tv_under, &mut kinds);
+            }
+            if !kinds.is_empty() {
+                let entry = tv_under.entry(qname.clone()).or_default();
+                let before = entry.len();
+                entry.extend(kinds);
+                changed |= entry.len() != before;
+            }
+        }
+        if !changed {
+            return tv_under;
+        }
+    }
+}
+
+/// Containment edges `from → (to, kinds crossed)`. One edge per mention; a
+/// `Generic` instantiation contributes both an edge to the generic type
+/// itself (plain) and edges to its arguments labeled with the kinds the
+/// generic stores its payload under (over-approximate: if the payload is
+/// stored both plainly and behind a cell, the single edge carries the cell
+/// label — labels only ever *add* cycle capability, never remove SCC
+/// membership, so this errs toward reporting a type rather than missing it).
+fn collect_edges(
+    ty: &Ty,
+    crossed: &BTreeSet<CellKind>,
+    tv_under: &BTreeMap<String, BTreeSet<CellKind>>,
+    out: &mut Vec<(String, BTreeSet<CellKind>)>,
+) {
+    if let Some((k, content)) = cell_content(ty) {
+        let mut c = crossed.clone();
+        c.insert(k);
+        collect_edges(content, &c, tv_under, out);
+        return;
+    }
+    match ty {
+        Ty::Option(t) | Ty::List(t) | Ty::Array(t) | Ty::Range(t) => {
+            collect_edges(t, crossed, tv_under, out)
+        }
+        Ty::Tuple(ts) => ts.iter().for_each(|t| collect_edges(t, crossed, tv_under, out)),
+        Ty::Generic(name, args) => {
+            let dotted = name.replace("::", ".");
+            out.push((dotted.clone(), crossed.clone()));
+            let mut c = crossed.clone();
+            if let Some(extra) = tv_under.get(&dotted) {
+                c.extend(extra.iter().copied());
+            }
+            args.iter().for_each(|a| collect_edges(a, &c, tv_under, out));
+        }
+        Ty::RustStruct(q) | Ty::RustEnum(q) | Ty::AliasTo(q) | Ty::Enumeration(q) => {
+            out.push((q.clone(), crossed.clone()));
+        }
+        Ty::UnionTypeVariant(q, _) => out.push((q.clone(), crossed.clone())),
+        _ => {}
+    }
+}
+
+/// Names of types lying on a containment cycle that crosses a cell of one of
+/// `kinds`: members of Tarjan SCCs containing an internal edge labeled with
+/// one of `kinds` (a single node with a matching self-edge counts).
+fn cell_cyclic_types(
+    graph: &BTreeMap<String, Vec<Ty>>,
+    tv_under: &BTreeMap<String, BTreeSet<CellKind>>,
+    kinds: &[CellKind],
+) -> BTreeSet<String> {
+    // Index every graph key and edge target.
+    let mut index: BTreeMap<String, usize> = BTreeMap::new();
+    let mut names: Vec<String> = Vec::new();
+    let intern = |n: &str, index: &mut BTreeMap<String, usize>, names: &mut Vec<String>| {
+        *index.entry(n.to_string()).or_insert_with(|| {
+            names.push(n.to_string());
+            names.len() - 1
+        })
+    };
+    let mut adj: Vec<Vec<(usize, bool)>> = Vec::new(); // (target, crosses one of `kinds`)
+    for (qname, field_tys) in graph {
+        let from = intern(qname, &mut index, &mut names);
+        let mut edges = Vec::new();
+        for t in field_tys {
+            collect_edges(t, &BTreeSet::new(), tv_under, &mut edges);
+        }
+        let targets: Vec<(usize, bool)> = edges
+            .iter()
+            .map(|(to, crossed)| {
+                (
+                    intern(to, &mut index, &mut names),
+                    kinds.iter().any(|k| crossed.contains(k)),
+                )
+            })
+            .collect();
+        if adj.len() <= from {
+            adj.resize(from + 1, Vec::new());
+        }
+        adj[from] = targets;
+    }
+    adj.resize(names.len(), Vec::new());
+
+    // Iterative Tarjan SCC (explicit stack; the graph is shallow but cheap
+    // insurance against deep containment chains).
+    let n = names.len();
+    let mut scc_of = vec![usize::MAX; n];
+    let mut low = vec![0usize; n];
+    let mut num = vec![usize::MAX; n];
+    let mut on_stack = vec![false; n];
+    let mut stack: Vec<usize> = Vec::new();
+    let mut counter = 0usize;
+    let mut scc_count = 0usize;
+    for root in 0..n {
+        if num[root] != usize::MAX {
+            continue;
+        }
+        // (node, next edge index)
+        let mut call: Vec<(usize, usize)> = vec![(root, 0)];
+        while let Some(&mut (v, ref mut ei)) = call.last_mut() {
+            if *ei == 0 {
+                num[v] = counter;
+                low[v] = counter;
+                counter += 1;
+                stack.push(v);
+                on_stack[v] = true;
+            }
+            if let Some(&(w, _)) = adj[v].get(*ei) {
+                *ei += 1;
+                if num[w] == usize::MAX {
+                    call.push((w, 0));
+                } else if on_stack[w] {
+                    low[v] = low[v].min(num[w]);
+                }
+            } else {
+                if low[v] == num[v] {
+                    loop {
+                        let w = stack.pop().expect("Tarjan stack underflow");
+                        on_stack[w] = false;
+                        scc_of[w] = scc_count;
+                        if w == v {
+                            break;
+                        }
+                    }
+                    scc_count += 1;
+                }
+                call.pop();
+                if let Some(&(parent, _)) = call.last() {
+                    low[parent] = low[parent].min(low[v]);
+                }
+            }
+        }
+    }
+
+    // SCCs containing an internal cell-crossing edge.
+    let mut scc_cyclic = vec![false; scc_count];
+    for v in 0..n {
+        for &(w, crosses) in &adj[v] {
+            if crosses && scc_of[v] == scc_of[w] {
+                scc_cyclic[scc_of[v]] = true;
+            }
+        }
+    }
+    (0..n)
+        .filter(|&v| scc_cyclic[scc_of[v]])
+        .map(|v| names[v].clone())
+        .collect()
+}
+
 // ── main analysis ─────────────────────────────────────────────────────────────
 
 pub fn analyze(hier: &InstanceHierarchy<'_>) -> Report {
@@ -360,7 +592,6 @@ pub fn analyze(hier: &InstanceHierarchy<'_>) -> Report {
     hierarchy::collect_struct_field_tys(&hier.top_level, "", &mut graph);
     let back_mutable = types_containing_cell(&graph, &[CellKind::Mutable]);
     let back_pointer = types_containing_cell(&graph, &[CellKind::Pointer]);
-    let back_all = types_containing_cell(&graph, &[CellKind::Mutable, CellKind::Pointer]);
     let back_for = |k: CellKind| match k {
         CellKind::Mutable => &back_mutable,
         CellKind::Pointer => &back_pointer,
@@ -470,13 +701,20 @@ pub fn analyze(hier: &InstanceHierarchy<'_>) -> Report {
     let reach_mutable = downward_reach(&graph, &seeds_mutable);
     let reach_all = downward_reach(&graph, &seeds_all);
 
+    // Types on a cell-crossing containment cycle, restricted to those whose
+    // cells actually get updated (the downward reach from update contents).
+    let tv_under = tv_under_cells(&graph);
+    let cyclic_mutable = cell_cyclic_types(&graph, &tv_under, &[CellKind::Mutable]);
+    let cyclic_all =
+        cell_cyclic_types(&graph, &tv_under, &[CellKind::Mutable, CellKind::Pointer]);
+
     let known = |set: BTreeSet<String>| -> BTreeSet<String> {
         set.into_iter().filter(|q| graph.contains_key(q)).collect()
     };
     let gc_types_mutable_only: BTreeSet<String> =
-        known(reach_mutable.intersection(&back_mutable).cloned().collect());
+        known(reach_mutable.intersection(&cyclic_mutable).cloned().collect());
     let gc_types_full: BTreeSet<String> =
-        known(reach_all.intersection(&back_all).cloned().collect());
+        known(reach_all.intersection(&cyclic_all).cloned().collect());
     let gc_types_with_dyn_fn: BTreeSet<String> = gc_types_full
         .intersection(&hier.types_containing_dyn_fn)
         .cloned()
@@ -555,7 +793,7 @@ pub fn print_report(report: &Report) {
     };
 
     print_set(
-        "Arc→Gc set, Mutable-only scope (reachable from Mutable.update contents ∧ can reach a Mutable field)",
+        "Arc→Gc set, Mutable-only scope (reachable from Mutable.update contents ∧ on a Mutable-crossing containment cycle)",
         &report.gc_types_mutable_only,
     );
     print_set(
