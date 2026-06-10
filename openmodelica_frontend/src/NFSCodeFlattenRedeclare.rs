@@ -87,6 +87,28 @@ pub enum Replacement {
         env: Env,
     },
 }
+impl metamodelica::gc::MMTrace for Replacement {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            Replacement::REPLACED { name, old, new, env } => {
+                metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(old, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(new, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(env, __mmv)?;
+                Ok(())
+            }
+            Replacement::PUSHED { name, redeclaredItem, baseClasses, old, new, env } => {
+                metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(redeclaredItem, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(baseClasses, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(old, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(new, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(env, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 pub use self::Replacement::{REPLACED,PUSHED};
 
 pub type Replacements = Arc<metamodelica::List<Replacement>>;

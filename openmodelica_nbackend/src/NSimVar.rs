@@ -129,6 +129,40 @@ pub mod SimVar {
         pub exportVar: Option<Arc<ComponentRef::NFComponentRef>>,
     }
 
+    impl metamodelica::gc::MMTrace for SimVar {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            metamodelica::gc::MMTrace::mm_accept(&self.name, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.varKind, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.comment, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.unit, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.displayUnit, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.index, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.min, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.max, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.start, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.nominal, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.isFixed, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.type_, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.isDiscrete, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.arrayCref, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.aliasvar, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.info, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.causality, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.variable_index, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.fmi_index, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.numArrayElement, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.isValueChangeable, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.isProtected, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.hideResult, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.isEncrypted, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.inputIndex, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.matrixName, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.variability, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.initial_, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.exportVar, __mmv)?;
+            Ok(())
+        }
+    }
     impl Default for SimVar {
         fn default() -> Self {
             Self {
@@ -593,6 +627,19 @@ pub mod Alias {
             offset: metamodelica::Real,
         },
     }
+    impl metamodelica::gc::MMTrace for Alias {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            match self {
+                Alias::NO_ALIAS => Ok(()),
+                Alias::ALIAS { alias, gain, offset } => {
+                    metamodelica::gc::MMTrace::mm_accept(alias, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(gain, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(offset, __mmv)?;
+                    Ok(())
+                }
+            }
+        }
+    }
     impl Alias {
         pub fn interned_NO_ALIAS() -> Arc<Alias> {
             thread_local! {
@@ -732,6 +779,9 @@ impl PartialOrd for Causality {
 impl Ord for Causality {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
+impl metamodelica::gc::MMTrace for Causality {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+}
 impl Default for Causality {
     fn default() -> Self { Self::NONE }
 }
@@ -750,6 +800,9 @@ impl PartialOrd for Initial {
 }
 impl Ord for Initial {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
+}
+impl metamodelica::gc::MMTrace for Initial {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
 }
 impl Default for Initial {
     fn default() -> Self { Self::NONE }
@@ -770,6 +823,9 @@ impl PartialOrd for Variability {
 }
 impl Ord for Variability {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
+}
+impl metamodelica::gc::MMTrace for Variability {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
 }
 impl Default for Variability {
     fn default() -> Self { Self::CONSTANT }
@@ -818,6 +874,46 @@ pub mod SimVars {
         pub dataReconSetBVars: Arc<metamodelica::List<Arc<SimVar::SimVar>>>,
     }
 
+    impl metamodelica::gc::MMTrace for SimVars {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            metamodelica::gc::MMTrace::mm_accept(&self.stateVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.derivativeVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.algVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.discreteAlgVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.intAlgVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.boolAlgVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.stringAlgVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.enumAlgVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.inputVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.outputVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.aliasVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.intAliasVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.boolAliasVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.stringAliasVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.enumAliasVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.paramVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.intParamVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.boolParamVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.stringParamVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.enumParamVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.extObjVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.constVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.intConstVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.boolConstVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.stringConstVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.enumConstVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.residualVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.jacobianVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.seedVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.realOptimizeConstraintsVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.realOptimizeFinalConstraintsVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.sensitivityVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.dataReconSetcVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.dataReconinputVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.dataReconSetBVars, __mmv)?;
+            Ok(())
+        }
+    }
     impl Default for SimVars {
         fn default() -> Self {
             Self {
@@ -1361,6 +1457,9 @@ impl PartialOrd for SplitType {
 impl Ord for SplitType {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
+impl metamodelica::gc::MMTrace for SplitType {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+}
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
@@ -1376,6 +1475,9 @@ impl PartialOrd for VarType {
 }
 impl Ord for VarType {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
+}
+impl metamodelica::gc::MMTrace for VarType {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
 }
 
 // ToDo: PRE, OLD, RELATIONS...
@@ -1420,6 +1522,46 @@ pub mod VarInfo {
         pub numRelatedBoundaryConditions: i32,
     }
 
+    impl metamodelica::gc::MMTrace for VarInfo {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            metamodelica::gc::MMTrace::mm_accept(&self.numZeroCrossings, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.numTimeEvents, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.numRelations, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.numMathEventFunctions, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.numStateVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.numAlgVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.numDiscreteReal, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.numIntAlgVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.numBoolAlgVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.numAlgAliasVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.numIntAliasVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.numBoolAliasVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.numParams, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.numIntParams, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.numBoolParams, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.numOutVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.numInVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.numExternalObjects, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.numStringAlgVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.numStringParamVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.numStringAliasVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.numEquations, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.numLinearSystems, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.numNonLinearSystems, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.numMixedSystems, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.numStateSets, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.numJacobians, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.numOptimizeConstraints, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.numOptimizeFinalConstraints, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.numSensitivityParameters, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.numSetcVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.numDataReconVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.numRealIntputVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.numSetbVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.numRelatedBoundaryConditions, __mmv)?;
+            Ok(())
+        }
+    }
     impl Default for VarInfo {
         fn default() -> Self {
             Self {
@@ -1500,6 +1642,13 @@ pub mod ExtObjInfo {
         pub aliases: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>)>>,
     }
 
+    impl metamodelica::gc::MMTrace for ExtObjInfo {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            metamodelica::gc::MMTrace::mm_accept(&self.objects, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.aliases, __mmv)?;
+            Ok(())
+        }
+    }
     impl Default for ExtObjInfo {
         fn default() -> Self {
             Self {

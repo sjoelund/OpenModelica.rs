@@ -125,6 +125,17 @@ pub struct NFOCConnectionGraph {
     pub connections: FlatEdges,
 }
 
+impl metamodelica::gc::MMTrace for NFOCConnectionGraph {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.updateGraph, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.definiteRoots, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.potentialRoots, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.uniqueRoots, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.branches, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.connections, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for NFOCConnectionGraph {
     fn default() -> Self {
         Self {
@@ -161,6 +172,9 @@ impl PartialOrd for ConnectionsOperator {
 }
 impl Ord for ConnectionsOperator {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
+}
+impl metamodelica::gc::MMTrace for ConnectionsOperator {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
 }
 
 pub type CrefCrefTable = Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>>>;
@@ -208,6 +222,14 @@ pub mod CrefSets {
         pub nodeCount: i32,
     }
 
+    impl metamodelica::gc::MMTrace for Sets {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            metamodelica::gc::MMTrace::mm_accept(&self.nodes, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.elements, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.nodeCount, __mmv)?;
+            Ok(())
+        }
+    }
     impl Default for Sets {
         fn default() -> Self {
             Self {

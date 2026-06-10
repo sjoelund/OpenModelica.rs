@@ -97,6 +97,15 @@ pub enum LoopControl {
     /// Exit the function.
     RETURN,
 }
+impl metamodelica::gc::MMTrace for LoopControl {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            LoopControl::NEXT => Ok(()),
+            LoopControl::BREAK => Ok(()),
+            LoopControl::RETURN => Ok(()),
+        }
+    }
+}
 impl Default for LoopControl {
     fn default() -> Self { Self::NEXT }
 }

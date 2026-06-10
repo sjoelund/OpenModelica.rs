@@ -75,6 +75,18 @@ pub struct Transition {
     pub priority: i32,
 }
 
+impl metamodelica::gc::MMTrace for Transition {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.from, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.to, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.condition, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.immediate, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.reset, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.synchronize, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.priority, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for Transition {
     fn default() -> Self {
         Self {
@@ -118,6 +130,21 @@ pub struct FlatSmSemantics {
     pub enclosingState: Option<Arc<DAE::ComponentRef>>,
 }
 
+impl metamodelica::gc::MMTrace for FlatSmSemantics {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.ident, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.smComps, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.t, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.c, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.vars, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.knowns, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.eqs, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.pvars, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.peqs, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.enclosingState, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for FlatSmSemantics {
     fn default() -> Self {
         Self {

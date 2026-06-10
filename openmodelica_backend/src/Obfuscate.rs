@@ -75,6 +75,9 @@ impl PartialOrd for ElementType {
 impl Ord for ElementType {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
+impl metamodelica::gc::MMTrace for ElementType {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+}
 impl Default for ElementType {
     fn default() -> Self { Self::TYPE }
 }
@@ -85,6 +88,13 @@ pub struct Env {
     pub builtins: Builtins,
 }
 
+impl metamodelica::gc::MMTrace for Env {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.mapping, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.builtins, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for Env {
     fn default() -> Self {
         Self {

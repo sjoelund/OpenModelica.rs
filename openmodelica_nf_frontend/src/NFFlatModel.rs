@@ -99,6 +99,18 @@ pub struct NFFlatModel {
     pub source: Arc<ElementSource>,
 }
 
+impl metamodelica::gc::MMTrace for NFFlatModel {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.name, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.variables, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.equations, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.initialEquations, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.algorithms, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.initialAlgorithms, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.source, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for NFFlatModel {
     fn default() -> Self {
         Self {

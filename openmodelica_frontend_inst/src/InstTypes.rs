@@ -56,6 +56,15 @@ pub enum CallingScope {
     /// a call to determine type of a class
     TYPE_CALL,
 }
+impl metamodelica::gc::MMTrace for CallingScope {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            CallingScope::TOP_CALL => Ok(()),
+            CallingScope::INNER_CALL => Ok(()),
+            CallingScope::TYPE_CALL => Ok(()),
+        }
+    }
+}
 impl Default for CallingScope {
     fn default() -> Self { Self::TOP_CALL }
 }
@@ -74,6 +83,14 @@ pub enum SearchStrategy {
     /// this one searches also in the builtin scope, it will find *time* variable
     SEARCH_ALSO_BUILTIN,
 }
+impl metamodelica::gc::MMTrace for SearchStrategy {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            SearchStrategy::SEARCH_LOCAL_ONLY => Ok(()),
+            SearchStrategy::SEARCH_ALSO_BUILTIN => Ok(()),
+        }
+    }
+}
 pub use self::SearchStrategy::{SEARCH_LOCAL_ONLY,SEARCH_ALSO_BUILTIN};
 
 /// data for 'spliced expression' (typically a component reference) returned in lookupVar
@@ -85,6 +102,13 @@ pub struct SplicedExpData {
     pub identType: Arc<DAE::Type>,
 }
 
+impl metamodelica::gc::MMTrace for SplicedExpData {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.splicedExp, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.identType, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for SplicedExpData {
     fn default() -> Self {
         Self {

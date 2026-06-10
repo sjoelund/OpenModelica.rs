@@ -1989,6 +1989,14 @@ pub mod VariablePointers {
         pub scalarized: bool,
     }
 
+    impl metamodelica::gc::MMTrace for VariablePointers {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            metamodelica::gc::MMTrace::mm_accept(&self.map, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.varArr, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.scalarized, __mmv)?;
+            Ok(())
+        }
+    }
     impl Default for VariablePointers {
         fn default() -> Self {
             Self {
@@ -2563,6 +2571,67 @@ pub mod VarData {
         },
         VAR_DATA_EMPTY,
     }
+    impl metamodelica::gc::MMTrace for VarData {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            match self {
+                VarData::VAR_DATA_SIM { uniqueIndex, variables, unknowns, knowns, initials, auxiliaries, aliasVars, nonTrivialAlias, derivatives, algebraics, discretes, discrete_states, clocked_states, previous, clocks, states, top_level_inputs, resizables, parameters, constants, records, external_objects, artificials, state_order } => {
+                    metamodelica::gc::MMTrace::mm_accept(uniqueIndex, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(variables, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(unknowns, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(knowns, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(initials, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(auxiliaries, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(aliasVars, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(nonTrivialAlias, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(derivatives, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(algebraics, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(discretes, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(discrete_states, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(clocked_states, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(previous, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(clocks, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(states, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(top_level_inputs, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(resizables, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(parameters, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(constants, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(records, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(external_objects, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(artificials, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(state_order, __mmv)?;
+                    Ok(())
+                }
+                VarData::VAR_DATA_JAC { variables, unknowns, auxiliaries, aliasVars, diffVars, dependencies, resultVars, tmpVars, seedVars } => {
+                    metamodelica::gc::MMTrace::mm_accept(variables, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(unknowns, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(auxiliaries, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(aliasVars, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(diffVars, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(dependencies, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(resultVars, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(tmpVars, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(seedVars, __mmv)?;
+                    Ok(())
+                }
+                VarData::VAR_DATA_HES { variables, unknowns, knowns, auxiliaries, aliasVars, diffVars, dependencies, resultVars, tmpVars, seedVars, seedVars2, lambdaVars } => {
+                    metamodelica::gc::MMTrace::mm_accept(variables, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(unknowns, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(knowns, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(auxiliaries, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(aliasVars, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(diffVars, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(dependencies, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(resultVars, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(tmpVars, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(seedVars, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(seedVars2, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(lambdaVars, __mmv)?;
+                    Ok(())
+                }
+                VarData::VAR_DATA_EMPTY => Ok(()),
+            }
+        }
+    }
     impl VarData {
         pub fn interned_VAR_DATA_EMPTY() -> Arc<VarData> {
             thread_local! {
@@ -2738,6 +2807,9 @@ pub mod VarData {
     }
     impl Ord for VarType {
         fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
+    }
+    impl metamodelica::gc::MMTrace for VarType {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
     }
 
     pub fn addTypedList(mut varData: Arc<VarData>, mut var_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>, mut varType: VarType) -> Result<Arc<VarData>> {

@@ -97,6 +97,21 @@ pub enum ExtendsWrapper {
     },
     NO_EXTENDS,
 }
+impl metamodelica::gc::MMTrace for ExtendsWrapper {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            ExtendsWrapper::UNQUALIFIED_EXTENDS { ext } => {
+                metamodelica::gc::MMTrace::mm_accept(ext, __mmv)?;
+                Ok(())
+            }
+            ExtendsWrapper::QUALIFIED_EXTENDS { ext } => {
+                metamodelica::gc::MMTrace::mm_accept(ext, __mmv)?;
+                Ok(())
+            }
+            ExtendsWrapper::NO_EXTENDS => Ok(()),
+        }
+    }
+}
 impl Default for ExtendsWrapper {
     fn default() -> Self { Self::NO_EXTENDS }
 }

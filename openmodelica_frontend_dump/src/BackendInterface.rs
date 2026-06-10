@@ -54,6 +54,15 @@ pub struct BackendInterfaceFunctions {
     pub initInstHashTable: partialInitInstHashTable,
 }
 
+impl metamodelica::gc::MMTrace for BackendInterfaceFunctions {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.noRewriteRulesFrontEnd, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.rewriteFrontEnd, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.appendLibrary, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.initInstHashTable, __mmv)?;
+        Ok(())
+    }
+}
 impl PartialEq for BackendInterfaceFunctions {
     fn eq(&self, other: &Self) -> bool {
         std::sync::Arc::ptr_eq((&self.noRewriteRulesFrontEnd), (&other.noRewriteRulesFrontEnd)) && std::sync::Arc::ptr_eq((&self.rewriteFrontEnd), (&other.rewriteFrontEnd)) && std::sync::Arc::ptr_eq((&self.appendLibrary), (&other.appendLibrary)) && std::sync::Arc::ptr_eq((&self.initInstHashTable), (&other.initInstHashTable))

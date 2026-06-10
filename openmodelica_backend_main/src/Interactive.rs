@@ -111,6 +111,14 @@ pub enum AnnotationType {
     ICON_ANNOTATION,
     DIAGRAM_ANNOTATION,
 }
+impl metamodelica::gc::MMTrace for AnnotationType {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            AnnotationType::ICON_ANNOTATION => Ok(()),
+            AnnotationType::DIAGRAM_ANNOTATION => Ok(()),
+        }
+    }
+}
 pub use self::AnnotationType::{ICON_ANNOTATION,DIAGRAM_ANNOTATION};
 
 /// Used by buildEnvForGraphicProgram to avoid excessive work.
@@ -132,6 +140,31 @@ pub enum GraphicEnvCache {
         cache: FCore::Cache,
         env: FCore::Graph,
     },
+}
+impl metamodelica::gc::MMTrace for GraphicEnvCache {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            GraphicEnvCache::GRAPHIC_ENV_NO_CACHE { program, modelPath } => {
+                metamodelica::gc::MMTrace::mm_accept(program, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(modelPath, __mmv)?;
+                Ok(())
+            }
+            GraphicEnvCache::GRAPHIC_ENV_PARTIAL_CACHE { program, modelPath, cache, env } => {
+                metamodelica::gc::MMTrace::mm_accept(program, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(modelPath, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(cache, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(env, __mmv)?;
+                Ok(())
+            }
+            GraphicEnvCache::GRAPHIC_ENV_FULL_CACHE { program, modelPath, cache, env } => {
+                metamodelica::gc::MMTrace::mm_accept(program, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(modelPath, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(cache, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(env, __mmv)?;
+                Ok(())
+            }
+        }
+    }
 }
 impl Default for GraphicEnvCache {
     fn default() -> Self {
@@ -161,6 +194,9 @@ impl PartialOrd for Access {
 }
 impl Ord for Access {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
+}
+impl metamodelica::gc::MMTrace for Access {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
 }
 
 pub fn evaluate(mut inStatements: GlobalScript::Statements, mut verbose: bool) -> Result<ArcStr> {
@@ -3104,6 +3140,19 @@ pub struct ComponentProperties {
     pub direction: Absyn::Direction,
 }
 
+impl metamodelica::gc::MMTrace for ComponentProperties {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.isFinal, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.isFlow, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.isStream, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.isProtected, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.isReplaceable, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.variability, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.innerOuter, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.direction, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for ComponentProperties {
     fn default() -> Self {
         Self {

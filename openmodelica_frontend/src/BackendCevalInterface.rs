@@ -57,6 +57,14 @@ pub struct BackendInterfaceFunctions {
     pub elabCallInteractive: partialElabCallInteractive,
 }
 
+impl metamodelica::gc::MMTrace for BackendInterfaceFunctions {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.cevalInteractiveFunctions, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.cevalCallFunction, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.elabCallInteractive, __mmv)?;
+        Ok(())
+    }
+}
 impl PartialEq for BackendInterfaceFunctions {
     fn eq(&self, other: &Self) -> bool {
         std::sync::Arc::ptr_eq((&self.cevalInteractiveFunctions), (&other.cevalInteractiveFunctions)) && std::sync::Arc::ptr_eq((&self.cevalCallFunction), (&other.cevalCallFunction)) && std::sync::Arc::ptr_eq((&self.elabCallInteractive), (&other.elabCallInteractive))

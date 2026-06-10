@@ -79,6 +79,22 @@ impl<T> std::hash::Hash for Pointer<T> {
     }
 }
 
+/// Transitional tracing through the legacy `Arc`-based cell, mirroring the
+/// `Mutable` impl: the cell itself is not a Gc allocation, but its content
+/// may transitively hold `Gc` pointers during the codegen migration. A busy
+/// mutex reports `Err` ("keep alive").
+impl<T: metamodelica::gc::MMTrace> metamodelica::gc::MMTrace for Pointer<T> {
+    fn mm_accept<V: metamodelica::gc::dumpster::Visitor>(
+        &self,
+        visitor: &mut V,
+    ) -> Result<(), ()> {
+        match self {
+            Pointer::Mutable(a) => a.try_lock().map_err(|_| ())?.mm_accept(visitor),
+            Pointer::Immutable(a) => a.mm_accept(visitor),
+        }
+    }
+}
+
 /// Codegen synthesizes `Default::default()` for record fields whose type
 /// transitively involves a `Pointer<...>` (e.g. NFFunction's `status:
 /// Pointer<FunctionStatus>`, `callCounter: Pointer<Integer>`). The

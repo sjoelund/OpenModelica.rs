@@ -89,6 +89,20 @@ pub struct State {
     pub vars: Mutable::Mutable<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, MidCode::Var)>>), i32, (HashTableMidVar::FuncHashCref, HashTableMidVar::FuncCrefEqual, HashTableMidVar::FuncCrefStr, HashTableMidVar::FuncExpStr))>,
 }
 
+impl metamodelica::gc::MMTrace for State {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.locals, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.localBufs, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.localBufPtrs, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.blocks, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.stmts, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.blockid, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.continuejumps, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.breakjumps, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.vars, __mmv)?;
+        Ok(())
+    }
+}
 impl PartialEq for State {
     fn eq(&self, other: &Self) -> bool {
         self.locals == other.locals && self.localBufs == other.localBufs && self.localBufPtrs == other.localBufPtrs && self.blocks == other.blocks && self.stmts == other.stmts && self.blockid == other.blockid && self.continuejumps == other.continuejumps && self.breakjumps == other.breakjumps && { let __lmut = Mutable::access((&self.vars).clone()); let __rmut = Mutable::access((&other.vars).clone()); (match ((&__lmut), (&__rmut)) { ((__lt0, __lt1, __lt2, __lt3), (__rt0, __rt1, __rt2, __rt3)) => (__lt0 == __rt0) && (__lt1 == __rt1) && (__lt2 == __rt2) && (match (__lt3, __rt3) { ((__lt0, __lt1, __lt2, __lt3), (__rt0, __rt1, __rt2, __rt3)) => std::sync::Arc::ptr_eq(__lt0, __rt0) && std::sync::Arc::ptr_eq(__lt1, __rt1) && std::sync::Arc::ptr_eq(__lt2, __rt2) && std::sync::Arc::ptr_eq(__lt3, __rt3) }) }) }

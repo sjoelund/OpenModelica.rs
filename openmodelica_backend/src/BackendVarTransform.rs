@@ -105,6 +105,16 @@ pub struct VariableReplacements {
     pub derConst: Option<Arc<UnorderedMap::UnorderedMap<Arc<DAE::ComponentRef>, Option<Arc<DAE::Exp>>>>>,
 }
 
+impl metamodelica::gc::MMTrace for VariableReplacements {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.hashTable, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.invHashTable, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.extendhashTable, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.iterationVars, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.derConst, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for VariableReplacements {
     fn default() -> Self {
         Self {

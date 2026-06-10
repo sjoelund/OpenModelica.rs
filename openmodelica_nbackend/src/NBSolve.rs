@@ -109,6 +109,9 @@ impl PartialOrd for Status {
 impl Ord for Status {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
+impl metamodelica::gc::MMTrace for Status {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+}
 
 // TRUE -> relation must be inverted, FALSE -> relation must not be inverted, UNKNOWN -> TODO: make relation depend on derivative of the expr
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
@@ -123,6 +126,9 @@ impl PartialOrd for RelationInversion {
 }
 impl Ord for RelationInversion {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
+}
+impl metamodelica::gc::MMTrace for RelationInversion {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
 }
 
 pub fn statusString(mut status: Status) -> ArcStr {

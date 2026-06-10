@@ -116,6 +116,65 @@ pub enum NFType {
         dimensions: metamodelica::Array<Arc<Dimension::NFDimension>>,
     },
 }
+impl metamodelica::gc::MMTrace for NFType {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            NFType::INTEGER => Ok(()),
+            NFType::REAL => Ok(()),
+            NFType::STRING => Ok(()),
+            NFType::BOOLEAN => Ok(()),
+            NFType::CLOCK => Ok(()),
+            NFType::ENUMERATION { typePath, literals } => {
+                metamodelica::gc::MMTrace::mm_accept(typePath, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(literals, __mmv)?;
+                Ok(())
+            }
+            NFType::__ENUMERATION_ANY_NOT_USED__ => Ok(()),
+            NFType::ARRAY { elementType, dimensions } => {
+                metamodelica::gc::MMTrace::mm_accept(elementType, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(dimensions, __mmv)?;
+                Ok(())
+            }
+            NFType::TUPLE { types, names } => {
+                metamodelica::gc::MMTrace::mm_accept(types, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(names, __mmv)?;
+                Ok(())
+            }
+            NFType::NORETCALL => Ok(()),
+            NFType::UNKNOWN => Ok(()),
+            NFType::COMPLEX { cls, complexTy } => {
+                metamodelica::gc::MMTrace::mm_accept(cls, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(complexTy, __mmv)?;
+                Ok(())
+            }
+            NFType::FUNCTION { r#fn, fnType } => {
+                metamodelica::gc::MMTrace::mm_accept(r#fn, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(fnType, __mmv)?;
+                Ok(())
+            }
+            NFType::METABOXED { ty } => {
+                metamodelica::gc::MMTrace::mm_accept(ty, __mmv)?;
+                Ok(())
+            }
+            NFType::POLYMORPHIC { name } => {
+                metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
+                Ok(())
+            }
+            NFType::ANY => Ok(()),
+            NFType::CONDITIONAL_ARRAY { trueType, falseType, matchedBranch } => {
+                metamodelica::gc::MMTrace::mm_accept(trueType, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(falseType, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(matchedBranch, __mmv)?;
+                Ok(())
+            }
+            NFType::UNTYPED { typeNode, dimensions } => {
+                metamodelica::gc::MMTrace::mm_accept(typeNode, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(dimensions, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 impl NFType {
     pub fn interned_INTEGER() -> Arc<NFType> {
         thread_local! {
@@ -201,6 +260,9 @@ impl PartialOrd for FunctionType {
 impl Ord for FunctionType {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
+impl metamodelica::gc::MMTrace for FunctionType {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+}
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
@@ -214,6 +276,9 @@ impl PartialOrd for Branch {
 }
 impl Ord for Branch {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
+}
+impl metamodelica::gc::MMTrace for Branch {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
 }
 
 pub fn liftArrayLeft(mut ty: Arc<NFType>, mut dim: Arc<Dimension::NFDimension>) -> Arc<NFType> {

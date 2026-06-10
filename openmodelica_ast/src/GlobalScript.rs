@@ -58,6 +58,21 @@ pub enum Statement {
         info: SourceInfo,
     },
 }
+impl metamodelica::gc::MMTrace for Statement {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            Statement::IALG { algItem } => {
+                metamodelica::gc::MMTrace::mm_accept(algItem, __mmv)?;
+                Ok(())
+            }
+            Statement::IEXP { exp, info } => {
+                metamodelica::gc::MMTrace::mm_accept(exp, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(info, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 impl Default for Statement {
     fn default() -> Self {
         Self::IALG {
@@ -77,6 +92,13 @@ pub struct Statements {
     pub semicolon: bool,
 }
 
+impl metamodelica::gc::MMTrace for Statements {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.interactiveStmtLst, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.semicolon, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for Statements {
     fn default() -> Self {
         Self {

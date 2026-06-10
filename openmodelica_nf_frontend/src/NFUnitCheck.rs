@@ -80,6 +80,16 @@ pub struct Functionargs {
     pub outunits: Arc<metamodelica::List<ArcStr>>,
 }
 
+impl metamodelica::gc::MMTrace for Functionargs {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.name, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.invars, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.outvars, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.inunits, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.outunits, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for Functionargs {
     fn default() -> Self {
         Self {

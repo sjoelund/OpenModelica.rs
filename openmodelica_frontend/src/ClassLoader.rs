@@ -75,6 +75,25 @@ pub enum PackageOrder {
         cl: ArcStr,
     },
 }
+impl metamodelica::gc::MMTrace for PackageOrder {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            PackageOrder::CLASSPART { cp } => {
+                metamodelica::gc::MMTrace::mm_accept(cp, __mmv)?;
+                Ok(())
+            }
+            PackageOrder::ELEMENT { element, r#pub } => {
+                metamodelica::gc::MMTrace::mm_accept(element, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(r#pub, __mmv)?;
+                Ok(())
+            }
+            PackageOrder::CLASSLOAD { cl } => {
+                metamodelica::gc::MMTrace::mm_accept(cl, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 impl Default for PackageOrder {
     fn default() -> Self {
         Self::CLASSPART {
@@ -92,6 +111,20 @@ pub enum LoadFileStrategy {
     STRATEGY_ON_DEMAND {
         encoding: ArcStr,
     },
+}
+impl metamodelica::gc::MMTrace for LoadFileStrategy {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            LoadFileStrategy::STRATEGY_HASHTABLE { ht } => {
+                metamodelica::gc::MMTrace::mm_accept(ht, __mmv)?;
+                Ok(())
+            }
+            LoadFileStrategy::STRATEGY_ON_DEMAND { encoding } => {
+                metamodelica::gc::MMTrace::mm_accept(encoding, __mmv)?;
+                Ok(())
+            }
+        }
+    }
 }
 impl PartialEq for LoadFileStrategy {
     fn eq(&self, other: &Self) -> bool {

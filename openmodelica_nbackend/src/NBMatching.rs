@@ -83,6 +83,13 @@ pub struct NBMatching {
     pub eqn_to_var: metamodelica::Array<i32>,
 }
 
+impl metamodelica::gc::MMTrace for NBMatching {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.var_to_eqn, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.eqn_to_var, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for NBMatching {
     fn default() -> Self {
         Self {

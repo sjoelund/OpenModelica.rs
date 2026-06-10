@@ -124,6 +124,70 @@ pub enum NFClass {
         ty: Arc<DAE::Type>,
     },
 }
+impl metamodelica::gc::MMTrace for NFClass {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            NFClass::NOT_INSTANTIATED => Ok(()),
+            NFClass::PARTIAL_CLASS { elements, modifier, ccMod, prefixes } => {
+                metamodelica::gc::MMTrace::mm_accept(elements, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(modifier, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(ccMod, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(prefixes, __mmv)?;
+                Ok(())
+            }
+            NFClass::PARTIAL_BUILTIN { ty, elements, modifier, prefixes, restriction } => {
+                metamodelica::gc::MMTrace::mm_accept(ty, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(elements, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(modifier, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(prefixes, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(restriction, __mmv)?;
+                Ok(())
+            }
+            NFClass::EXPANDED_CLASS { elements, modifier, ccMod, prefixes, restriction } => {
+                metamodelica::gc::MMTrace::mm_accept(elements, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(modifier, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(ccMod, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(prefixes, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(restriction, __mmv)?;
+                Ok(())
+            }
+            NFClass::EXPANDED_DERIVED { baseClass, modifier, ccMod, dims, prefixes, attributes, restriction } => {
+                metamodelica::gc::MMTrace::mm_accept(baseClass, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(modifier, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(ccMod, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(dims, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(prefixes, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(attributes, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(restriction, __mmv)?;
+                Ok(())
+            }
+            NFClass::INSTANCED_CLASS { ty, elements, sections, prefixes, restriction } => {
+                metamodelica::gc::MMTrace::mm_accept(ty, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(elements, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(sections, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(prefixes, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(restriction, __mmv)?;
+                Ok(())
+            }
+            NFClass::INSTANCED_BUILTIN { ty, elements, restriction } => {
+                metamodelica::gc::MMTrace::mm_accept(ty, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(elements, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(restriction, __mmv)?;
+                Ok(())
+            }
+            NFClass::TYPED_DERIVED { ty, baseClass, restriction } => {
+                metamodelica::gc::MMTrace::mm_accept(ty, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(baseClass, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(restriction, __mmv)?;
+                Ok(())
+            }
+            NFClass::DAE_TYPE { ty } => {
+                metamodelica::gc::MMTrace::mm_accept(ty, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 impl NFClass {
     pub fn interned_NOT_INSTANTIATED() -> Arc<NFClass> {
         thread_local! {
@@ -150,6 +214,16 @@ pub mod Prefixes {
         pub replaceablePrefix: Arc<SCode::Replaceable>,
     }
 
+    impl metamodelica::gc::MMTrace for Prefixes {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            metamodelica::gc::MMTrace::mm_accept(&self.encapsulatedPrefix, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.partialPrefix, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.finalPrefix, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.innerOuter, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.replaceablePrefix, __mmv)?;
+            Ok(())
+        }
+    }
     impl Default for Prefixes {
         fn default() -> Self {
             Self {

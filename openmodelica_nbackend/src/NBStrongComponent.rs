@@ -164,6 +164,65 @@ pub enum NBStrongComponent {
         original: Arc<NBStrongComponent>,
     },
 }
+impl metamodelica::gc::MMTrace for NBStrongComponent {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            NBStrongComponent::SINGLE_COMPONENT { var, eqn, status } => {
+                metamodelica::gc::MMTrace::mm_accept(var, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(eqn, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(status, __mmv)?;
+                Ok(())
+            }
+            NBStrongComponent::MULTI_COMPONENT { vars, eqn, status } => {
+                metamodelica::gc::MMTrace::mm_accept(vars, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(eqn, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(status, __mmv)?;
+                Ok(())
+            }
+            NBStrongComponent::SLICED_COMPONENT { var_cref, var, eqn, status } => {
+                metamodelica::gc::MMTrace::mm_accept(var_cref, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(var, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(eqn, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(status, __mmv)?;
+                Ok(())
+            }
+            NBStrongComponent::RESIZABLE_COMPONENT { var_cref, var, eqn, order, status } => {
+                metamodelica::gc::MMTrace::mm_accept(var_cref, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(var, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(eqn, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(order, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(status, __mmv)?;
+                Ok(())
+            }
+            NBStrongComponent::GENERIC_COMPONENT { var_cref, var, eqn } => {
+                metamodelica::gc::MMTrace::mm_accept(var_cref, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(var, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(eqn, __mmv)?;
+                Ok(())
+            }
+            NBStrongComponent::ENTWINED_COMPONENT { entwined_slices, entwined_tpl_lst } => {
+                metamodelica::gc::MMTrace::mm_accept(entwined_slices, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(entwined_tpl_lst, __mmv)?;
+                Ok(())
+            }
+            NBStrongComponent::ALGEBRAIC_LOOP { idx, strict, casual, linear, mixed, homotopy, status } => {
+                metamodelica::gc::MMTrace::mm_accept(idx, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(strict, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(casual, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(linear, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(mixed, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(homotopy, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(status, __mmv)?;
+                Ok(())
+            }
+            NBStrongComponent::ALIAS { aliasInfo, original } => {
+                metamodelica::gc::MMTrace::mm_accept(aliasInfo, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(original, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 impl Default for NBStrongComponent {
     fn default() -> Self {
         Self::ENTWINED_COMPONENT {
@@ -185,6 +244,14 @@ pub mod AliasInfo {
         pub componentIndex: i32,
     }
 
+    impl metamodelica::gc::MMTrace for AliasInfo {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            metamodelica::gc::MMTrace::mm_accept(&self.kind, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.partitionIndex, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.componentIndex, __mmv)?;
+            Ok(())
+        }
+    }
     impl Default for AliasInfo {
         fn default() -> Self {
             Self {
@@ -300,6 +367,23 @@ pub struct CountCollector {
     pub loop_nlin: i32,
 }
 
+impl metamodelica::gc::MMTrace for CountCollector {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.single_scalar, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.single_array, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.single_record, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.multi_algorithm, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.multi_when, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.multi_if, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.multi_tpl, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.resizable_for, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.generic_for, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.entwined_for, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.loop_lin, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.loop_nlin, __mmv)?;
+        Ok(())
+    }
+}
 pub type COUNT_COLLECTOR = CountCollector;
 
 
@@ -637,6 +721,9 @@ impl PartialOrd for DAEType {
 }
 impl Ord for DAEType {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
+}
+impl metamodelica::gc::MMTrace for DAEType {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
 }
 
 pub fn sortDAEModeComponents(mut comps: Option<metamodelica::Array<Arc<NBStrongComponent>>>, mut variables: Arc<VariablePointers::VariablePointers>, mut uniqueIndex: Pointer::Pointer<i32>) -> Result<Option<metamodelica::Array<Arc<NBStrongComponent>>>> {

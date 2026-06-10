@@ -93,6 +93,43 @@ pub enum NFSubscript {
         dimIndex: i32,
     },
 }
+impl metamodelica::gc::MMTrace for NFSubscript {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            NFSubscript::RAW_SUBSCRIPT { subscript } => {
+                metamodelica::gc::MMTrace::mm_accept(subscript, __mmv)?;
+                Ok(())
+            }
+            NFSubscript::UNTYPED { exp } => {
+                metamodelica::gc::MMTrace::mm_accept(exp, __mmv)?;
+                Ok(())
+            }
+            NFSubscript::INDEX { index } => {
+                metamodelica::gc::MMTrace::mm_accept(index, __mmv)?;
+                Ok(())
+            }
+            NFSubscript::SLICE { slice } => {
+                metamodelica::gc::MMTrace::mm_accept(slice, __mmv)?;
+                Ok(())
+            }
+            NFSubscript::EXPANDED_SLICE { indices } => {
+                metamodelica::gc::MMTrace::mm_accept(indices, __mmv)?;
+                Ok(())
+            }
+            NFSubscript::WHOLE => Ok(()),
+            NFSubscript::SPLIT_PROXY { origin, parent } => {
+                metamodelica::gc::MMTrace::mm_accept(origin, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(parent, __mmv)?;
+                Ok(())
+            }
+            NFSubscript::SPLIT_INDEX { node, dimIndex } => {
+                metamodelica::gc::MMTrace::mm_accept(node, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(dimIndex, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 impl NFSubscript {
     pub fn interned_WHOLE() -> Arc<NFSubscript> {
         thread_local! {

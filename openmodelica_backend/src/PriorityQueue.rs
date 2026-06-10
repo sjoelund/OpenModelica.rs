@@ -202,6 +202,14 @@ pub struct Tree {
     pub trees: T,
 }
 
+impl metamodelica::gc::MMTrace for Tree {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.elt, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.rank, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.trees, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for Tree {
     fn default() -> Self {
         Self {

@@ -87,6 +87,15 @@ pub struct EqSys {
     pub vectorX: metamodelica::Array<BackendDAE::Var>,
 }
 
+impl metamodelica::gc::MMTrace for EqSys {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.dim, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.matrixA, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.vectorB, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.vectorX, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for EqSys {
     fn default() -> Self {
         Self {

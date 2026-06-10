@@ -125,6 +125,33 @@ pub enum GraphInfo {
         graphEdgeKey: ArcStr,
     },
 }
+impl metamodelica::gc::MMTrace for GraphInfo {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            GraphInfo::GRAPHINFO { graphs, graphCount, nodes, nodeCount, edges, edgeCount, attributes, graphNodeKey, graphEdgeKey } => {
+                metamodelica::gc::MMTrace::mm_accept(graphs, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(graphCount, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(nodes, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(nodeCount, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(edges, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(edgeCount, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(attributes, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(graphNodeKey, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(graphEdgeKey, __mmv)?;
+                Ok(())
+            }
+            GraphInfo::GRAPHINFOARR { graphs, nodes, edges, attributes, graphNodeKey, graphEdgeKey } => {
+                metamodelica::gc::MMTrace::mm_accept(graphs, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(nodes, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(edges, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(attributes, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(graphNodeKey, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(graphEdgeKey, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 impl Default for GraphInfo {
     fn default() -> Self {
         Self::GRAPHINFOARR {
@@ -147,6 +174,15 @@ pub struct Graph {
     pub attValues: Arc<metamodelica::List<(i32, ArcStr)>>,
 }
 
+impl metamodelica::gc::MMTrace for Graph {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.id, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.directed, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.nodeIdc, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.attValues, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for Graph {
     fn default() -> Self {
         Self {
@@ -179,6 +215,29 @@ pub enum Node {
         header: ArcStr,
     },
 }
+impl metamodelica::gc::MMTrace for Node {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            Node::NODE { id, color, border, nodeLabels, shapeType, optDesc, attValues } => {
+                metamodelica::gc::MMTrace::mm_accept(id, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(color, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(border, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(nodeLabels, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(shapeType, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(optDesc, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(attValues, __mmv)?;
+                Ok(())
+            }
+            Node::GROUPNODE { id, internalGraphIdx, isFolded, header } => {
+                metamodelica::gc::MMTrace::mm_accept(id, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(internalGraphIdx, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(isFolded, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(header, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 impl Default for Node {
     fn default() -> Self {
         Self::GROUPNODE {
@@ -205,6 +264,21 @@ pub struct Edge {
     pub attValues: Arc<metamodelica::List<(i32, ArcStr)>>,
 }
 
+impl metamodelica::gc::MMTrace for Edge {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.id, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.target, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.source, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.color, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.lineType, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.lineWidth, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.smooth, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.edgeLabels, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.arrows, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.attValues, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for Edge {
     fn default() -> Self {
         Self {
@@ -234,6 +308,16 @@ pub struct Attribute {
     pub attTarget: AttributeTarget,
 }
 
+impl metamodelica::gc::MMTrace for Attribute {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.attIdx, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.defaultValue, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.name, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.attType, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.attTarget, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for Attribute {
     fn default() -> Self {
         Self {
@@ -263,6 +347,25 @@ pub enum NodeLabel {
         position: ArcStr,
     },
 }
+impl metamodelica::gc::MMTrace for NodeLabel {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            NodeLabel::NODELABEL_INTERNAL { text, backgroundColor, fontStyle } => {
+                metamodelica::gc::MMTrace::mm_accept(text, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(backgroundColor, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(fontStyle, __mmv)?;
+                Ok(())
+            }
+            NodeLabel::NODELABEL_CORNER { text, backgroundColor, fontStyle, position } => {
+                metamodelica::gc::MMTrace::mm_accept(text, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(backgroundColor, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(fontStyle, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(position, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 impl Default for NodeLabel {
     fn default() -> Self {
         Self::NODELABEL_INTERNAL {
@@ -281,6 +384,14 @@ pub struct EdgeLabel {
     pub fontSize: i32,
 }
 
+impl metamodelica::gc::MMTrace for EdgeLabel {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.text, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.backgroundColor, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.fontSize, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for EdgeLabel {
     fn default() -> Self {
         Self {
@@ -301,6 +412,16 @@ pub enum FontStyle {
     FONTITALIC,
     FONTBOLDITALIC,
 }
+impl metamodelica::gc::MMTrace for FontStyle {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            FontStyle::FONTPLAIN => Ok(()),
+            FontStyle::FONTBOLD => Ok(()),
+            FontStyle::FONTITALIC => Ok(()),
+            FontStyle::FONTBOLDITALIC => Ok(()),
+        }
+    }
+}
 impl Default for FontStyle {
     fn default() -> Self { Self::FONTPLAIN }
 }
@@ -319,6 +440,22 @@ pub enum ShapeType {
     TRAPEZOID,
     TRAPEZOID2,
 }
+impl metamodelica::gc::MMTrace for ShapeType {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            ShapeType::RECTANGLE => Ok(()),
+            ShapeType::ROUNDRECTANGLE => Ok(()),
+            ShapeType::ELLIPSE => Ok(()),
+            ShapeType::PARALLELOGRAM => Ok(()),
+            ShapeType::HEXAGON => Ok(()),
+            ShapeType::TRIANGLE => Ok(()),
+            ShapeType::OCTAGON => Ok(()),
+            ShapeType::DIAMOND => Ok(()),
+            ShapeType::TRAPEZOID => Ok(()),
+            ShapeType::TRAPEZOID2 => Ok(()),
+        }
+    }
+}
 impl Default for ShapeType {
     fn default() -> Self { Self::RECTANGLE }
 }
@@ -330,6 +467,15 @@ pub enum LineType {
     DASHED,
     DASHEDDOTTED,
 }
+impl metamodelica::gc::MMTrace for LineType {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            LineType::LINE => Ok(()),
+            LineType::DASHED => Ok(()),
+            LineType::DASHEDDOTTED => Ok(()),
+        }
+    }
+}
 impl Default for LineType {
     fn default() -> Self { Self::LINE }
 }
@@ -340,6 +486,15 @@ pub enum ArrowType {
     ARROWSTANDART,
     ARROWNONE,
     ARROWCONCAVE,
+}
+impl metamodelica::gc::MMTrace for ArrowType {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            ArrowType::ARROWSTANDART => Ok(()),
+            ArrowType::ARROWNONE => Ok(()),
+            ArrowType::ARROWCONCAVE => Ok(()),
+        }
+    }
 }
 impl Default for ArrowType {
     fn default() -> Self { Self::ARROWSTANDART }
@@ -353,6 +508,16 @@ pub enum AttributeType {
     TYPE_INTEGER,
     TYPE_DOUBLE,
 }
+impl metamodelica::gc::MMTrace for AttributeType {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            AttributeType::TYPE_STRING => Ok(()),
+            AttributeType::TYPE_BOOLEAN => Ok(()),
+            AttributeType::TYPE_INTEGER => Ok(()),
+            AttributeType::TYPE_DOUBLE => Ok(()),
+        }
+    }
+}
 impl Default for AttributeType {
     fn default() -> Self { Self::TYPE_STRING }
 }
@@ -363,6 +528,15 @@ pub enum AttributeTarget {
     TARGET_NODE,
     TARGET_EDGE,
     TARGET_GRAPH,
+}
+impl metamodelica::gc::MMTrace for AttributeTarget {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            AttributeTarget::TARGET_NODE => Ok(()),
+            AttributeTarget::TARGET_EDGE => Ok(()),
+            AttributeTarget::TARGET_GRAPH => Ok(()),
+        }
+    }
 }
 impl Default for AttributeTarget {
     fn default() -> Self { Self::TARGET_NODE }

@@ -86,6 +86,22 @@ pub enum NFComponentRef {
     EMPTY,
     WILD,
 }
+impl metamodelica::gc::MMTrace for NFComponentRef {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            NFComponentRef::CREF { node, subscripts, ty, origin, restCref } => {
+                metamodelica::gc::MMTrace::mm_accept(node, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(subscripts, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(ty, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(origin, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(restCref, __mmv)?;
+                Ok(())
+            }
+            NFComponentRef::EMPTY => Ok(()),
+            NFComponentRef::WILD => Ok(()),
+        }
+    }
+}
 impl NFComponentRef {
     pub fn interned_EMPTY() -> Arc<NFComponentRef> {
         thread_local! {
@@ -121,6 +137,9 @@ impl PartialOrd for Origin {
 }
 impl Ord for Origin {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
+}
+impl metamodelica::gc::MMTrace for Origin {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
 }
 
 pub fn fromNode(mut node: Arc<InstNode::InstNode>, mut ty: Arc<Type::NFType>, mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>, mut origin: Origin) -> Arc<NFComponentRef> {

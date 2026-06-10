@@ -102,6 +102,9 @@ impl PartialOrd for FlowControl {
 impl Ord for FlowControl {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
+impl metamodelica::gc::MMTrace for FlowControl {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+}
 
 pub type ArgumentMap = Arc<UnorderedMap::UnorderedMap<Arc<InstNode::InstNode>, Arc<Expression::NFExpression>>>;
 

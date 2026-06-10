@@ -90,6 +90,9 @@ impl PartialOrd for MatchType {
 impl Ord for MatchType {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
+impl metamodelica::gc::MMTrace for MatchType {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+}
 
 pub fn lookupClassName(mut name: Arc<Absyn::Path>, mut scope: Arc<InstNode::InstNode>, mut context: i32, mut info: SourceInfo, mut checkAccessViolations: bool) -> Result<Arc<InstNode::InstNode>> {
     let mut node: Arc<InstNode::InstNode>;

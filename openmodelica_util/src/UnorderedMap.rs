@@ -64,6 +64,16 @@ pub struct UnorderedMap<K: Clone, V: Clone> {
     pub eqFn: KeyEq<K>,
 }
 
+impl<K: Clone + metamodelica::gc::MMTrace, V: Clone + metamodelica::gc::MMTrace> metamodelica::gc::MMTrace for UnorderedMap<K, V> {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.buckets, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.keys, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.values, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.hashFn, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.eqFn, __mmv)?;
+        Ok(())
+    }
+}
 impl<K: Clone + 'static + PartialEq, V: Clone + 'static + PartialEq> PartialEq for UnorderedMap<K, V> {
     fn eq(&self, other: &Self) -> bool {
         self.buckets == other.buckets && self.keys == other.keys && self.values == other.values && std::sync::Arc::ptr_eq((&self.hashFn), (&other.hashFn)) && std::sync::Arc::ptr_eq((&self.eqFn), (&other.eqFn))

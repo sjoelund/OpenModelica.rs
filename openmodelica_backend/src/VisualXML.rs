@@ -111,6 +111,53 @@ pub enum Visualization {
         transparency: Arc<DAE::Exp>,
     },
 }
+impl metamodelica::gc::MMTrace for Visualization {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            Visualization::SHAPE { ident, shapeType, T, r, r_shape, lengthDir, widthDir, length, width, height, extra, color, specularCoeff } => {
+                metamodelica::gc::MMTrace::mm_accept(ident, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(shapeType, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(T, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(r, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(r_shape, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(lengthDir, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(widthDir, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(length, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(width, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(height, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(extra, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(color, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(specularCoeff, __mmv)?;
+                Ok(())
+            }
+            Visualization::VECTOR { ident, T, r, coordinates, color, specularCoeff, quantity, headAtOrigin, twoHeadedArrow } => {
+                metamodelica::gc::MMTrace::mm_accept(ident, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(T, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(r, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(coordinates, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(color, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(specularCoeff, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(quantity, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(headAtOrigin, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(twoHeadedArrow, __mmv)?;
+                Ok(())
+            }
+            Visualization::SURFACE { ident, T, r_0, nu, nv, wireframe, multiColored, color, specularCoeff, transparency } => {
+                metamodelica::gc::MMTrace::mm_accept(ident, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(T, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(r_0, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(nu, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(nv, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(wireframe, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(multiColored, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(color, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(specularCoeff, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(transparency, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 impl Default for Visualization {
     fn default() -> Self {
         Self::VECTOR {

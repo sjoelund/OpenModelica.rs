@@ -55,6 +55,13 @@ pub struct ReplacePattern {
     pub to: ArcStr,
 }
 
+impl metamodelica::gc::MMTrace for ReplacePattern {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.from, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.to, __mmv)?;
+        Ok(())
+    }
+}
 pub type REPLACEPATTERN = ReplacePattern;
 
 

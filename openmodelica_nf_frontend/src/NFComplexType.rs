@@ -76,6 +76,39 @@ pub enum NFComplexType {
         destructor: Arc<InstNode::InstNode>,
     },
 }
+impl metamodelica::gc::MMTrace for NFComplexType {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            NFComplexType::CLASS => Ok(()),
+            NFComplexType::EXTENDS_TYPE { baseClass } => {
+                metamodelica::gc::MMTrace::mm_accept(baseClass, __mmv)?;
+                Ok(())
+            }
+            NFComplexType::CONNECTOR { potentials, flows, streams } => {
+                metamodelica::gc::MMTrace::mm_accept(potentials, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(flows, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(streams, __mmv)?;
+                Ok(())
+            }
+            NFComplexType::EXPANDABLE_CONNECTOR { potentiallyPresents, expandableConnectors } => {
+                metamodelica::gc::MMTrace::mm_accept(potentiallyPresents, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(expandableConnectors, __mmv)?;
+                Ok(())
+            }
+            NFComplexType::RECORD { constructor, fields, indexMap } => {
+                metamodelica::gc::MMTrace::mm_accept(constructor, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(fields, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(indexMap, __mmv)?;
+                Ok(())
+            }
+            NFComplexType::EXTERNAL_OBJECT { constructor, destructor } => {
+                metamodelica::gc::MMTrace::mm_accept(constructor, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(destructor, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 impl NFComplexType {
     pub fn interned_CLASS() -> Arc<NFComplexType> {
         thread_local! {

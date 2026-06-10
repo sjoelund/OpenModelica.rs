@@ -53,6 +53,13 @@ pub struct NFConnection {
     pub rhs: Arc<Connector::NFConnector>,
 }
 
+impl metamodelica::gc::MMTrace for NFConnection {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.lhs, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.rhs, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for NFConnection {
     fn default() -> Self {
         Self {

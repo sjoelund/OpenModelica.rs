@@ -124,6 +124,13 @@ pub struct VariableConversionSettings {
     pub addTypeToSource: bool,
 }
 
+impl metamodelica::gc::MMTrace for VariableConversionSettings {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.isFunctionParameter, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.addTypeToSource, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for VariableConversionSettings {
     fn default() -> Self {
         Self {

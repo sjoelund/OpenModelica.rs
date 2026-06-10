@@ -415,6 +415,9 @@ impl PartialOrd for AssignType {
 impl Ord for AssignType {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
+impl metamodelica::gc::MMTrace for AssignType {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+}
 
 fn tagFromAssignType(mut assignType: AssignType) -> Result<ArcStr> {
     let mut tag: ArcStr;

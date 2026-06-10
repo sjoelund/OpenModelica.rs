@@ -282,6 +282,9 @@ impl PartialOrd for Parallelism {
 impl Ord for Parallelism {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
+impl metamodelica::gc::MMTrace for Parallelism {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+}
 impl Default for Parallelism {
     fn default() -> Self { Self::NON_PARALLEL }
 }
@@ -303,6 +306,9 @@ impl PartialOrd for Variability {
 impl Ord for Variability {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
+impl metamodelica::gc::MMTrace for Variability {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+}
 impl Default for Variability {
     fn default() -> Self { Self::CONSTANT }
 }
@@ -318,6 +324,9 @@ impl PartialOrd for Purity {
 }
 impl Ord for Purity {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
+}
+impl metamodelica::gc::MMTrace for Purity {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
 }
 impl Default for Purity {
     fn default() -> Self { Self::PURE }
@@ -335,6 +344,9 @@ impl PartialOrd for Direction {
 }
 impl Ord for Direction {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
+}
+impl metamodelica::gc::MMTrace for Direction {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
 }
 impl Default for Direction {
     fn default() -> Self { Self::NONE }
@@ -354,6 +366,9 @@ impl PartialOrd for InnerOuter {
 impl Ord for InnerOuter {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
+impl metamodelica::gc::MMTrace for InnerOuter {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+}
 impl Default for InnerOuter {
     fn default() -> Self { Self::NOT_INNER_OUTER }
 }
@@ -369,6 +384,9 @@ impl PartialOrd for Visibility {
 }
 impl Ord for Visibility {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
+}
+impl metamodelica::gc::MMTrace for Visibility {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
 }
 impl Default for Visibility {
     fn default() -> Self { Self::PUBLIC }
@@ -392,6 +410,9 @@ impl PartialOrd for AccessLevel {
 impl Ord for AccessLevel {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
+impl metamodelica::gc::MMTrace for AccessLevel {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+}
 
 #[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Replaceable {
@@ -399,6 +420,17 @@ pub enum Replaceable {
         constrainingClass: Option<Arc<InstNode::InstNode>>,
     },
     NOT_REPLACEABLE,
+}
+impl metamodelica::gc::MMTrace for Replaceable {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            Replaceable::REPLACEABLE { constrainingClass } => {
+                metamodelica::gc::MMTrace::mm_accept(constrainingClass, __mmv)?;
+                Ok(())
+            }
+            Replaceable::NOT_REPLACEABLE => Ok(()),
+        }
+    }
 }
 impl Default for Replaceable {
     fn default() -> Self { Self::NOT_REPLACEABLE }

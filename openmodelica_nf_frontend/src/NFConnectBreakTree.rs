@@ -62,6 +62,13 @@ pub struct Entry {
     pub r#mod: Arc<SCode::Mod>,
 }
 
+impl metamodelica::gc::MMTrace for Entry {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.hasMatch, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.r#mod, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for Entry {
     fn default() -> Self {
         Self {
@@ -118,6 +125,26 @@ pub mod EntryTree {
             value: Value,
         },
         EMPTY,
+    }
+    impl metamodelica::gc::MMTrace for Tree {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            match self {
+                Tree::NODE { key, value, height, left, right } => {
+                    metamodelica::gc::MMTrace::mm_accept(key, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(value, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(height, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(left, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(right, __mmv)?;
+                    Ok(())
+                }
+                Tree::LEAF { key, value } => {
+                    metamodelica::gc::MMTrace::mm_accept(key, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(value, __mmv)?;
+                    Ok(())
+                }
+                Tree::EMPTY => Ok(()),
+            }
+        }
     }
     impl Tree {
         pub fn interned_EMPTY() -> Arc<Tree> {
@@ -927,6 +954,26 @@ pub enum Tree {
         value: Value,
     },
     EMPTY,
+}
+impl metamodelica::gc::MMTrace for Tree {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            Tree::NODE { key, value, height, left, right } => {
+                metamodelica::gc::MMTrace::mm_accept(key, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(value, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(height, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(left, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(right, __mmv)?;
+                Ok(())
+            }
+            Tree::LEAF { key, value } => {
+                metamodelica::gc::MMTrace::mm_accept(key, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(value, __mmv)?;
+                Ok(())
+            }
+            Tree::EMPTY => Ok(()),
+        }
+    }
 }
 impl Tree {
     pub fn interned_EMPTY() -> Arc<Tree> {

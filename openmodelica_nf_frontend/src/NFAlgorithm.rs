@@ -64,6 +64,17 @@ pub struct NFAlgorithm {
     pub source: Arc<DAE::ElementSource>,
 }
 
+impl metamodelica::gc::MMTrace for NFAlgorithm {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.statements, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.inputs, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.outputs, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.stmtDiffInfo, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.scope, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.source, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for NFAlgorithm {
     fn default() -> Self {
         Self {

@@ -77,6 +77,23 @@ pub struct SimulationOptions {
     pub simflags: Arc<DAE::Exp>,
 }
 
+impl metamodelica::gc::MMTrace for SimulationOptions {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.startTime, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.stopTime, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.numberOfIntervals, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.stepSize, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.tolerance, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.method, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.fileNamePrefix, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.options, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.outputFormat, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.variableFilter, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.cflags, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.simflags, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for SimulationOptions {
     fn default() -> Self {
         Self {
@@ -110,6 +127,14 @@ pub struct Variable {
     pub type_: Arc<DAE::Type>,
 }
 
+impl metamodelica::gc::MMTrace for Variable {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.varIdent, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.value, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.type_, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for Variable {
     fn default() -> Self {
         Self {
@@ -142,6 +167,23 @@ pub enum Component {
         the2: Arc<Absyn::Path>,
     },
 }
+impl metamodelica::gc::MMTrace for Component {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            Component::COMPONENTITEM { the1, the2, the3 } => {
+                metamodelica::gc::MMTrace::mm_accept(the1, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(the2, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(the3, __mmv)?;
+                Ok(())
+            }
+            Component::EXTENDSITEM { the1, the2 } => {
+                metamodelica::gc::MMTrace::mm_accept(the1, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(the2, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 impl Default for Component {
     fn default() -> Self {
         Self::EXTENDSITEM {
@@ -159,6 +201,13 @@ pub struct Components {
     pub the: i32,
 }
 
+impl metamodelica::gc::MMTrace for Components {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.componentLst, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.the, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for Components {
     fn default() -> Self {
         Self {
@@ -181,6 +230,14 @@ pub struct ComponentReplacement {
     pub the3: Arc<Absyn::ComponentRef>,
 }
 
+impl metamodelica::gc::MMTrace for ComponentReplacement {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.which1, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.the2, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.the3, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for ComponentReplacement {
     fn default() -> Self {
         Self {
@@ -201,6 +258,13 @@ pub struct ComponentReplacementRules {
     pub the: i32,
 }
 
+impl metamodelica::gc::MMTrace for ComponentReplacementRules {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.componentReplacementLst, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.the, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for ComponentReplacementRules {
     fn default() -> Self {
         Self {

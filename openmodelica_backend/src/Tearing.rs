@@ -94,6 +94,17 @@ pub enum TearingMethod {
     TOTAL_TEARING,
     USER_DEFINED_TEARING,
 }
+impl metamodelica::gc::MMTrace for TearingMethod {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            TearingMethod::MINIMAL_TEARING => Ok(()),
+            TearingMethod::OMC_TEARING => Ok(()),
+            TearingMethod::CELLIER_TEARING => Ok(()),
+            TearingMethod::TOTAL_TEARING => Ok(()),
+            TearingMethod::USER_DEFINED_TEARING => Ok(()),
+        }
+    }
+}
 impl Default for TearingMethod {
     fn default() -> Self { Self::MINIMAL_TEARING }
 }

@@ -73,6 +73,22 @@ pub enum Rule {
         to: Arc<Absyn::Exp>,
     },
 }
+impl metamodelica::gc::MMTrace for Rule {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            Rule::FRONTEND_RULE { from, to } => {
+                metamodelica::gc::MMTrace::mm_accept(from, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(to, __mmv)?;
+                Ok(())
+            }
+            Rule::BACKEND_RULE { from, to } => {
+                metamodelica::gc::MMTrace::mm_accept(from, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(to, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 pub use self::Rule::{FRONTEND_RULE,BACKEND_RULE};
 
 pub type Rules = Arc<metamodelica::List<Rule>>;
@@ -90,6 +106,22 @@ pub enum Bind {
         slot: Arc<DAE::Exp>,
         value: Arc<DAE::Exp>,
     },
+}
+impl metamodelica::gc::MMTrace for Bind {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            Bind::FRONTEND_BIND { slot, value } => {
+                metamodelica::gc::MMTrace::mm_accept(slot, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(value, __mmv)?;
+                Ok(())
+            }
+            Bind::BACKEND_BIND { slot, value } => {
+                metamodelica::gc::MMTrace::mm_accept(slot, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(value, __mmv)?;
+                Ok(())
+            }
+        }
+    }
 }
 pub use self::Bind::{FRONTEND_BIND,BACKEND_BIND};
 

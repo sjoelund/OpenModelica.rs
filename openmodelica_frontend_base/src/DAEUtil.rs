@@ -4051,6 +4051,14 @@ pub enum TraverseStatementsOptions {
     TRAVERSE_ALL,
     TRAVERSE_RHS_ONLY,
 }
+impl metamodelica::gc::MMTrace for TraverseStatementsOptions {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            TraverseStatementsOptions::TRAVERSE_ALL => Ok(()),
+            TraverseStatementsOptions::TRAVERSE_RHS_ONLY => Ok(()),
+        }
+    }
+}
 pub use self::TraverseStatementsOptions::{TRAVERSE_ALL,TRAVERSE_RHS_ONLY};
 
 pub fn traverseAlgorithmExps<Type_a: Clone + 'static>(mut inAlgorithm: Arc<DAE::Algorithm>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut inTypeA: Type_a) -> Result<Type_a> {

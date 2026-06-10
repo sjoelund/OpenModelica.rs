@@ -59,6 +59,13 @@ pub struct SBLinearMap {
     pub offset: metamodelica::Array<metamodelica::Real>,
 }
 
+impl metamodelica::gc::MMTrace for SBLinearMap {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.gain, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.offset, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for SBLinearMap {
     fn default() -> Self {
         Self {

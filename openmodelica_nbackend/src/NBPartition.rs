@@ -95,6 +95,9 @@ impl PartialOrd for Kind {
 impl Ord for Kind {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
+impl metamodelica::gc::MMTrace for Kind {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+}
 impl Default for Kind {
     fn default() -> Self { Self::ODE }
 }
@@ -123,6 +126,28 @@ pub mod Association {
             clock_deps: Arc<UnorderedSet::UnorderedSet<Arc<BClock::BClock>>>,
             holdEvents: bool,
         },
+    }
+    impl metamodelica::gc::MMTrace for Association {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            match self {
+                Association::CONTINUOUS { kind, jacobian, jacobianAdjoint, LFG_jacobian, MRF_jacobian, R0_jacobian } => {
+                    metamodelica::gc::MMTrace::mm_accept(kind, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(jacobian, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(jacobianAdjoint, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(LFG_jacobian, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(MRF_jacobian, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(R0_jacobian, __mmv)?;
+                    Ok(())
+                }
+                Association::CLOCKED { clock, baseClock, clock_deps, holdEvents } => {
+                    metamodelica::gc::MMTrace::mm_accept(clock, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(baseClock, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(clock_deps, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(holdEvents, __mmv)?;
+                    Ok(())
+                }
+            }
+        }
     }
     impl Default for Association {
         fn default() -> Self {
@@ -386,6 +411,19 @@ pub mod Partition {
         pub strongComponents: Option<metamodelica::Array<Arc<StrongComponent::NBStrongComponent>>>,
     }
 
+    impl metamodelica::gc::MMTrace for Partition {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            metamodelica::gc::MMTrace::mm_accept(&self.index, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.association, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.unknowns, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.daeUnknowns, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.equations, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.adjacencyMatrix, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.matching, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.strongComponents, __mmv)?;
+            Ok(())
+        }
+    }
     impl Default for Partition {
         fn default() -> Self {
             Self {

@@ -92,6 +92,20 @@ pub mod Field {
             name: ArcStr,
         },
     }
+    impl metamodelica::gc::MMTrace for Field {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            match self {
+                Field::INPUT { name } => {
+                    metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
+                    Ok(())
+                }
+                Field::LOCAL { name } => {
+                    metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
+                    Ok(())
+                }
+            }
+        }
+    }
     pub use self::Field::{INPUT,LOCAL};
     pub fn isInput(mut field: Arc<Field>) -> bool {
         let mut isInput: bool;

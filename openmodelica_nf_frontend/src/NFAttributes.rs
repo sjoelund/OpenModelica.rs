@@ -72,6 +72,20 @@ pub struct NFAttributes {
     pub isResizable: bool,
 }
 
+impl metamodelica::gc::MMTrace for NFAttributes {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.connectorType, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.parallelism, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.variability, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.direction, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.innerOuter, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.isFinal, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.isRedeclare, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.isReplaceable, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.isResizable, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for NFAttributes {
     fn default() -> Self {
         Self {

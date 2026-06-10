@@ -112,6 +112,63 @@ pub enum NFBinding {
     },
     WILD,
 }
+impl metamodelica::gc::MMTrace for NFBinding {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            NFBinding::UNBOUND => Ok(()),
+            NFBinding::RAW_BINDING { bindingExp, scope, subs, eachType, source, confidence, info } => {
+                metamodelica::gc::MMTrace::mm_accept(bindingExp, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(scope, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(subs, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(eachType, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(source, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(confidence, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(info, __mmv)?;
+                Ok(())
+            }
+            NFBinding::UNTYPED_BINDING { bindingExp, isProcessing, scope, eachType, source, confidence, info } => {
+                metamodelica::gc::MMTrace::mm_accept(bindingExp, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(isProcessing, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(scope, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(eachType, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(source, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(confidence, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(info, __mmv)?;
+                Ok(())
+            }
+            NFBinding::TYPED_BINDING { bindingExp, bindingType, variability, purity, eachType, evalState, isFlattened, source, confidence, info } => {
+                metamodelica::gc::MMTrace::mm_accept(bindingExp, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(bindingType, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(variability, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(purity, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(eachType, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(evalState, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(isFlattened, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(source, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(confidence, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(info, __mmv)?;
+                Ok(())
+            }
+            NFBinding::FLAT_BINDING { bindingExp, variability, source, confidence } => {
+                metamodelica::gc::MMTrace::mm_accept(bindingExp, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(variability, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(source, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(confidence, __mmv)?;
+                Ok(())
+            }
+            NFBinding::CEVAL_BINDING { bindingExp } => {
+                metamodelica::gc::MMTrace::mm_accept(bindingExp, __mmv)?;
+                Ok(())
+            }
+            NFBinding::INVALID_BINDING { binding, errors } => {
+                metamodelica::gc::MMTrace::mm_accept(binding, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(errors, __mmv)?;
+                Ok(())
+            }
+            NFBinding::WILD => Ok(()),
+        }
+    }
+}
 impl NFBinding {
     pub fn interned_UNBOUND() -> Arc<NFBinding> {
         thread_local! {
@@ -149,6 +206,9 @@ impl PartialOrd for EachType {
 impl Ord for EachType {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
+impl metamodelica::gc::MMTrace for EachType {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+}
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
@@ -162,6 +222,9 @@ impl PartialOrd for EvalState {
 }
 impl Ord for EvalState {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
+}
+impl metamodelica::gc::MMTrace for EvalState {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
@@ -181,6 +244,9 @@ impl PartialOrd for Source {
 }
 impl Ord for Source {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
+}
+impl metamodelica::gc::MMTrace for Source {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
 }
 
 pub fn fromAbsyn(mut bindingExp: Option<Arc<Absyn::Exp>>, mut eachPrefix: bool, mut fromType: bool, mut scope: Arc<InstNode::InstNode>, mut instanceLevel: i32, mut info: SourceInfo) -> Arc<NFBinding> {

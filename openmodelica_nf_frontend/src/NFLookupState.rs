@@ -70,6 +70,20 @@ pub mod LookupStateName {
             cref: Arc<Absyn::ComponentRef>,
         },
     }
+    impl metamodelica::gc::MMTrace for LookupStateName {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            match self {
+                LookupStateName::PATH { path } => {
+                    metamodelica::gc::MMTrace::mm_accept(path, __mmv)?;
+                    Ok(())
+                }
+                LookupStateName::CREF { cref } => {
+                    metamodelica::gc::MMTrace::mm_accept(cref, __mmv)?;
+                    Ok(())
+                }
+            }
+        }
+    }
     pub use self::LookupStateName::{PATH,CREF};
     pub fn toString(mut name: Arc<LookupStateName>) -> Result<ArcStr> {
         let mut r#str: ArcStr;
@@ -140,6 +154,30 @@ pub mod LookupState {
         ERROR {
             errorState: Arc<LookupState>,
         },
+    }
+    impl metamodelica::gc::MMTrace for LookupState {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            match self {
+                LookupState::BEGIN => Ok(()),
+                LookupState::COMP => Ok(()),
+                LookupState::CLASS_COMP => Ok(()),
+                LookupState::COMP_CLASS => Ok(()),
+                LookupState::COMP_FUNC => Ok(()),
+                LookupState::PACKAGE => Ok(()),
+                LookupState::CLASS => Ok(()),
+                LookupState::FUNC => Ok(()),
+                LookupState::PREDEF_COMP => Ok(()),
+                LookupState::PREDEF_CLASS => Ok(()),
+                LookupState::IMPORT => Ok(()),
+                LookupState::PARTIAL_CLASS => Ok(()),
+                LookupState::NON_CONSTANT => Ok(()),
+                LookupState::NON_ENCAPSULATED => Ok(()),
+                LookupState::ERROR { errorState } => {
+                    metamodelica::gc::MMTrace::mm_accept(errorState, __mmv)?;
+                    Ok(())
+                }
+            }
+        }
     }
     impl LookupState {
         pub fn interned_BEGIN() -> Arc<LookupState> {

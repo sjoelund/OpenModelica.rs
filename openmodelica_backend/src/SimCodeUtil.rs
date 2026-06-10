@@ -8177,6 +8177,9 @@ impl PartialOrd for SimVarsIndex {
 impl Ord for SimVarsIndex {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
+impl metamodelica::gc::MMTrace for SimVarsIndex {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+}
 
 // In special order for fmi: real => intger => boolean => string => external
 fn createVars(mut inSimDAE: Arc<BackendDAE::BackendDAE>, mut inInitDAE: Arc<BackendDAE::BackendDAE>, mut tempvars: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<(SimCodeVar::SimVars, Arc<metamodelica::List<SimCode::UnitDefinition>>)> {

@@ -95,6 +95,21 @@ pub struct NFVariable {
     pub backendinfo: Arc<BackendInfo::BackendInfo>,
 }
 
+impl metamodelica::gc::MMTrace for NFVariable {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.name, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.ty, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.binding, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.visibility, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.attributes, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.typeAttributes, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.children, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.comment, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.info, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.backendinfo, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for NFVariable {
     fn default() -> Self {
         Self {

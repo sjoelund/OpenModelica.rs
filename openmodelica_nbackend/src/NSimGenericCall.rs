@@ -89,6 +89,34 @@ pub enum NSimGenericCall {
         resizable: bool,
     },
 }
+impl metamodelica::gc::MMTrace for NSimGenericCall {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            NSimGenericCall::SINGLE_GENERIC_CALL { index, iters, lhs, rhs, resizable } => {
+                metamodelica::gc::MMTrace::mm_accept(index, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(iters, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(lhs, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(rhs, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(resizable, __mmv)?;
+                Ok(())
+            }
+            NSimGenericCall::IF_GENERIC_CALL { index, iters, branches, resizable } => {
+                metamodelica::gc::MMTrace::mm_accept(index, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(iters, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(branches, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(resizable, __mmv)?;
+                Ok(())
+            }
+            NSimGenericCall::WHEN_GENERIC_CALL { index, iters, branches, resizable } => {
+                metamodelica::gc::MMTrace::mm_accept(index, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(iters, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(branches, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(resizable, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 impl Default for NSimGenericCall {
     fn default() -> Self {
         Self::IF_GENERIC_CALL {
@@ -264,6 +292,28 @@ pub mod SimIterator {
             sub_iter: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, metamodelica::Array<Arc<Expression::NFExpression>>)>>,
         },
     }
+    impl metamodelica::gc::MMTrace for SimIterator {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            match self {
+                SimIterator::SIM_ITERATOR_RANGE { name, start, step, stop, size, sub_iter } => {
+                    metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(start, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(step, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(stop, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(size, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(sub_iter, __mmv)?;
+                    Ok(())
+                }
+                SimIterator::SIM_ITERATOR_LIST { name, lst, size, sub_iter } => {
+                    metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(lst, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(size, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(sub_iter, __mmv)?;
+                    Ok(())
+                }
+            }
+        }
+    }
     impl Default for SimIterator {
         fn default() -> Self {
             Self::SIM_ITERATOR_LIST {
@@ -424,6 +474,22 @@ pub mod SimBranch {
             condition: Arc<Expression::NFExpression>,
             body: Arc<metamodelica::List<Arc<Statement::NFStatement>>>,
         },
+    }
+    impl metamodelica::gc::MMTrace for SimBranch {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            match self {
+                SimBranch::SIM_BRANCH { condition, body } => {
+                    metamodelica::gc::MMTrace::mm_accept(condition, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(body, __mmv)?;
+                    Ok(())
+                }
+                SimBranch::SIM_BRANCH_STMT { condition, body } => {
+                    metamodelica::gc::MMTrace::mm_accept(condition, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(body, __mmv)?;
+                    Ok(())
+                }
+            }
+        }
     }
     impl Default for SimBranch {
         fn default() -> Self {

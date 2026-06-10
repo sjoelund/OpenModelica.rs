@@ -61,6 +61,22 @@ pub struct Info {
     pub fmiNumberOfEventIndicators: Arc<metamodelica::List<i32>>,
 }
 
+impl metamodelica::gc::MMTrace for Info {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.fmiVersion, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.fmiType, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.fmiModelName, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.fmiModelIdentifier, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.fmiGuid, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.fmiDescription, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.fmiGenerationTool, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.fmiGenerationDateAndTime, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.fmiVariableNamingConvention, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.fmiNumberOfContinuousStates, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.fmiNumberOfEventIndicators, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for Info {
     fn default() -> Self {
         Self {
@@ -92,6 +108,17 @@ pub struct TypeDefinitions {
     pub items: Arc<metamodelica::List<EnumerationItem>>,
 }
 
+impl metamodelica::gc::MMTrace for TypeDefinitions {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.name, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.description, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.quantity, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.min, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.max, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.items, __mmv)?;
+        Ok(())
+    }
+}
 pub type ENUMERATIONTYPE = TypeDefinitions;
 
 
@@ -101,6 +128,13 @@ pub struct EnumerationItem {
     pub description: ArcStr,
 }
 
+impl metamodelica::gc::MMTrace for EnumerationItem {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.name, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.description, __mmv)?;
+        Ok(())
+    }
+}
 pub type ENUMERATIONITEM = EnumerationItem;
 
 
@@ -111,6 +145,14 @@ pub struct ExperimentAnnotation {
     pub fmiExperimentTolerance: metamodelica::Real,
 }
 
+impl metamodelica::gc::MMTrace for ExperimentAnnotation {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.fmiExperimentStartTime, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.fmiExperimentStopTime, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.fmiExperimentTolerance, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for ExperimentAnnotation {
     fn default() -> Self {
         Self {
@@ -207,6 +249,97 @@ pub enum ModelVariables {
         y2Placement: i32,
     },
 }
+impl metamodelica::gc::MMTrace for ModelVariables {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            ModelVariables::REALVARIABLE { instance, name, description, baseType, variability, causality, hasStartValue, startValue, isFixed, valueReference, x1Placement, x2Placement, y1Placement, y2Placement } => {
+                metamodelica::gc::MMTrace::mm_accept(instance, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(description, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(baseType, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(variability, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(causality, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(hasStartValue, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(startValue, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(isFixed, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(valueReference, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(x1Placement, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(x2Placement, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(y1Placement, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(y2Placement, __mmv)?;
+                Ok(())
+            }
+            ModelVariables::INTEGERVARIABLE { instance, name, description, baseType, variability, causality, hasStartValue, startValue, isFixed, valueReference, x1Placement, x2Placement, y1Placement, y2Placement } => {
+                metamodelica::gc::MMTrace::mm_accept(instance, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(description, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(baseType, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(variability, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(causality, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(hasStartValue, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(startValue, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(isFixed, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(valueReference, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(x1Placement, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(x2Placement, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(y1Placement, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(y2Placement, __mmv)?;
+                Ok(())
+            }
+            ModelVariables::BOOLEANVARIABLE { instance, name, description, baseType, variability, causality, hasStartValue, startValue, isFixed, valueReference, x1Placement, x2Placement, y1Placement, y2Placement } => {
+                metamodelica::gc::MMTrace::mm_accept(instance, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(description, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(baseType, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(variability, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(causality, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(hasStartValue, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(startValue, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(isFixed, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(valueReference, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(x1Placement, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(x2Placement, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(y1Placement, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(y2Placement, __mmv)?;
+                Ok(())
+            }
+            ModelVariables::STRINGVARIABLE { instance, name, description, baseType, variability, causality, hasStartValue, startValue, isFixed, valueReference, x1Placement, x2Placement, y1Placement, y2Placement } => {
+                metamodelica::gc::MMTrace::mm_accept(instance, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(description, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(baseType, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(variability, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(causality, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(hasStartValue, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(startValue, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(isFixed, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(valueReference, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(x1Placement, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(x2Placement, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(y1Placement, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(y2Placement, __mmv)?;
+                Ok(())
+            }
+            ModelVariables::ENUMERATIONVARIABLE { instance, name, description, baseType, variability, causality, hasStartValue, startValue, isFixed, valueReference, x1Placement, x2Placement, y1Placement, y2Placement } => {
+                metamodelica::gc::MMTrace::mm_accept(instance, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(description, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(baseType, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(variability, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(causality, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(hasStartValue, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(startValue, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(isFixed, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(valueReference, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(x1Placement, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(x2Placement, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(y1Placement, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(y2Placement, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 pub use self::ModelVariables::{REALVARIABLE,INTEGERVARIABLE,BOOLEANVARIABLE,STRINGVARIABLE,ENUMERATIONVARIABLE};
 
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
@@ -227,6 +360,25 @@ pub struct FmiImport {
     pub generateOutputConnectors: bool,
 }
 
+impl metamodelica::gc::MMTrace for FmiImport {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.platform, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.fmuFileName, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.fmuWorkingDirectory, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.fmiLogLevel, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.fmiDebugOutput, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.fmiContext, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.fmiInstance, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.fmiInfo, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.fmiTypeDefinitionsList, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.fmiExperimentAnnotation, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.fmiModelVariablesInstance, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.fmiModelVariablesList, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.generateInputConnectors, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.generateOutputConnectors, __mmv)?;
+        Ok(())
+    }
+}
 pub type FMIIMPORT = FmiImport;
 
 

@@ -54,6 +54,13 @@ pub struct SBMultiInterval {
     pub ndim: i32,
 }
 
+impl metamodelica::gc::MMTrace for SBMultiInterval {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.intervals, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.ndim, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for SBMultiInterval {
     fn default() -> Self {
         Self {

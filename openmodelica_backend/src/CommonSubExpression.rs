@@ -92,6 +92,14 @@ pub struct CSE_Equation {
     pub dependencies: Arc<metamodelica::List<i32>>,
 }
 
+impl metamodelica::gc::MMTrace for CSE_Equation {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.cse, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.call, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.dependencies, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for CSE_Equation {
     fn default() -> Self {
         Self {
@@ -2061,6 +2069,23 @@ pub enum CommonSubExp {
         eqIdcs: Arc<metamodelica::List<i32>>,
         sharedVar: i32,
     },
+}
+impl metamodelica::gc::MMTrace for CommonSubExp {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            CommonSubExp::ASSIGNMENT_CSE { eqIdcs, sharedVars, aliasVars } => {
+                metamodelica::gc::MMTrace::mm_accept(eqIdcs, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(sharedVars, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(aliasVars, __mmv)?;
+                Ok(())
+            }
+            CommonSubExp::SHORTCUT_CSE { eqIdcs, sharedVar } => {
+                metamodelica::gc::MMTrace::mm_accept(eqIdcs, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(sharedVar, __mmv)?;
+                Ok(())
+            }
+        }
+    }
 }
 pub use self::CommonSubExp::{ASSIGNMENT_CSE,SHORTCUT_CSE};
 

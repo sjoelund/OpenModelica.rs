@@ -70,6 +70,9 @@ impl PartialOrd for LanguageStandard {
 impl Ord for LanguageStandard {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
+impl metamodelica::gc::MMTrace for LanguageStandard {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+}
 
 pub fn typeinfo() -> Result<bool> {
     let mut outBoolean: bool;

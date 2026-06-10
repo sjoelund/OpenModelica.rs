@@ -601,6 +601,22 @@ pub enum Statement {
         statements: Arc<metamodelica::List<Arc<Statement>>>,
     },
 }
+impl metamodelica::gc::MMTrace for Statement {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            Statement::ASSIGN { lhs, rhs } => {
+                metamodelica::gc::MMTrace::mm_accept(lhs, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(rhs, __mmv)?;
+                Ok(())
+            }
+            Statement::WHILE { condition, statements } => {
+                metamodelica::gc::MMTrace::mm_accept(condition, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(statements, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 pub use self::Statement::{ASSIGN,WHILE};
 
 /// Expression nodes
@@ -621,6 +637,26 @@ pub enum Exp {
         rhs: Arc<Exp>,
     },
 }
+impl metamodelica::gc::MMTrace for Exp {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            Exp::ICONST { value } => {
+                metamodelica::gc::MMTrace::mm_accept(value, __mmv)?;
+                Ok(())
+            }
+            Exp::VARIABLE { name } => {
+                metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
+                Ok(())
+            }
+            Exp::BINARY { lhs, op, rhs } => {
+                metamodelica::gc::MMTrace::mm_accept(lhs, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(op, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(rhs, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 pub use self::Exp::{ICONST,VARIABLE,BINARY};
 
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
@@ -628,6 +664,15 @@ pub enum Operator {
     PLUS,
     TIMES,
     LESS,
+}
+impl metamodelica::gc::MMTrace for Operator {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            Operator::PLUS => Ok(()),
+            Operator::TIMES => Ok(()),
+            Operator::LESS => Ok(()),
+        }
+    }
 }
 pub use self::Operator::{PLUS,TIMES,LESS};
 

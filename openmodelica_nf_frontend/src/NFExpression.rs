@@ -263,6 +263,189 @@ pub enum NFExpression {
         scope: Arc<InstNode::InstNode>,
     },
 }
+impl metamodelica::gc::MMTrace for NFExpression {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            NFExpression::INTEGER { value } => {
+                metamodelica::gc::MMTrace::mm_accept(value, __mmv)?;
+                Ok(())
+            }
+            NFExpression::REAL { value } => {
+                metamodelica::gc::MMTrace::mm_accept(value, __mmv)?;
+                Ok(())
+            }
+            NFExpression::STRING { value } => {
+                metamodelica::gc::MMTrace::mm_accept(value, __mmv)?;
+                Ok(())
+            }
+            NFExpression::BOOLEAN { value } => {
+                metamodelica::gc::MMTrace::mm_accept(value, __mmv)?;
+                Ok(())
+            }
+            NFExpression::ENUM_LITERAL { ty, name, index } => {
+                metamodelica::gc::MMTrace::mm_accept(ty, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(index, __mmv)?;
+                Ok(())
+            }
+            NFExpression::CLKCONST { clk } => {
+                metamodelica::gc::MMTrace::mm_accept(clk, __mmv)?;
+                Ok(())
+            }
+            NFExpression::CREF { ty, cref } => {
+                metamodelica::gc::MMTrace::mm_accept(ty, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(cref, __mmv)?;
+                Ok(())
+            }
+            NFExpression::TYPENAME { ty } => {
+                metamodelica::gc::MMTrace::mm_accept(ty, __mmv)?;
+                Ok(())
+            }
+            NFExpression::ARRAY { ty, elements, literal } => {
+                metamodelica::gc::MMTrace::mm_accept(ty, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(elements, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(literal, __mmv)?;
+                Ok(())
+            }
+            NFExpression::MATRIX { elements } => {
+                metamodelica::gc::MMTrace::mm_accept(elements, __mmv)?;
+                Ok(())
+            }
+            NFExpression::RANGE { ty, start, step, stop } => {
+                metamodelica::gc::MMTrace::mm_accept(ty, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(start, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(step, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(stop, __mmv)?;
+                Ok(())
+            }
+            NFExpression::TUPLE { ty, elements } => {
+                metamodelica::gc::MMTrace::mm_accept(ty, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(elements, __mmv)?;
+                Ok(())
+            }
+            NFExpression::RECORD { path, ty, elements } => {
+                metamodelica::gc::MMTrace::mm_accept(path, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(ty, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(elements, __mmv)?;
+                Ok(())
+            }
+            NFExpression::CALL { call } => {
+                metamodelica::gc::MMTrace::mm_accept(call, __mmv)?;
+                Ok(())
+            }
+            NFExpression::SIZE { exp, dimIndex } => {
+                metamodelica::gc::MMTrace::mm_accept(exp, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(dimIndex, __mmv)?;
+                Ok(())
+            }
+            NFExpression::END => Ok(()),
+            NFExpression::BINARY { exp1, operator, exp2 } => {
+                metamodelica::gc::MMTrace::mm_accept(exp1, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(operator, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(exp2, __mmv)?;
+                Ok(())
+            }
+            NFExpression::UNARY { operator, exp } => {
+                metamodelica::gc::MMTrace::mm_accept(operator, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(exp, __mmv)?;
+                Ok(())
+            }
+            NFExpression::LBINARY { exp1, operator, exp2 } => {
+                metamodelica::gc::MMTrace::mm_accept(exp1, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(operator, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(exp2, __mmv)?;
+                Ok(())
+            }
+            NFExpression::LUNARY { operator, exp } => {
+                metamodelica::gc::MMTrace::mm_accept(operator, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(exp, __mmv)?;
+                Ok(())
+            }
+            NFExpression::RELATION { exp1, operator, exp2, index } => {
+                metamodelica::gc::MMTrace::mm_accept(exp1, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(operator, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(exp2, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(index, __mmv)?;
+                Ok(())
+            }
+            NFExpression::MULTARY { arguments, inv_arguments, operator } => {
+                metamodelica::gc::MMTrace::mm_accept(arguments, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(inv_arguments, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(operator, __mmv)?;
+                Ok(())
+            }
+            NFExpression::IF { ty, condition, trueBranch, falseBranch } => {
+                metamodelica::gc::MMTrace::mm_accept(ty, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(condition, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(trueBranch, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(falseBranch, __mmv)?;
+                Ok(())
+            }
+            NFExpression::CAST { ty, exp } => {
+                metamodelica::gc::MMTrace::mm_accept(ty, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(exp, __mmv)?;
+                Ok(())
+            }
+            NFExpression::BOX { exp } => {
+                metamodelica::gc::MMTrace::mm_accept(exp, __mmv)?;
+                Ok(())
+            }
+            NFExpression::UNBOX { exp, ty } => {
+                metamodelica::gc::MMTrace::mm_accept(exp, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(ty, __mmv)?;
+                Ok(())
+            }
+            NFExpression::SUBSCRIPTED_EXP { exp, subscripts, ty, split } => {
+                metamodelica::gc::MMTrace::mm_accept(exp, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(subscripts, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(ty, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(split, __mmv)?;
+                Ok(())
+            }
+            NFExpression::TUPLE_ELEMENT { tupleExp, index, ty } => {
+                metamodelica::gc::MMTrace::mm_accept(tupleExp, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(index, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(ty, __mmv)?;
+                Ok(())
+            }
+            NFExpression::RECORD_ELEMENT { recordExp, index, fieldName, ty } => {
+                metamodelica::gc::MMTrace::mm_accept(recordExp, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(index, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(fieldName, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(ty, __mmv)?;
+                Ok(())
+            }
+            NFExpression::MUTABLE { exp } => {
+                metamodelica::gc::MMTrace::mm_accept(exp, __mmv)?;
+                Ok(())
+            }
+            NFExpression::EMPTY { ty } => {
+                metamodelica::gc::MMTrace::mm_accept(ty, __mmv)?;
+                Ok(())
+            }
+            NFExpression::PARTIAL_FUNCTION_APPLICATION { r#fn, args, argNames, ty } => {
+                metamodelica::gc::MMTrace::mm_accept(r#fn, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(args, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(argNames, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(ty, __mmv)?;
+                Ok(())
+            }
+            NFExpression::FILENAME { filename } => {
+                metamodelica::gc::MMTrace::mm_accept(filename, __mmv)?;
+                Ok(())
+            }
+            NFExpression::SHARED_LITERAL { index, exp } => {
+                metamodelica::gc::MMTrace::mm_accept(index, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(exp, __mmv)?;
+                Ok(())
+            }
+            NFExpression::INSTANCE_NAME { scope } => {
+                metamodelica::gc::MMTrace::mm_accept(scope, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 impl NFExpression {
     pub fn interned_END() -> Arc<NFExpression> {
         thread_local! {

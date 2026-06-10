@@ -125,6 +125,75 @@ pub enum NFEquation {
         source: Arc<DAE::ElementSource>,
     },
 }
+impl metamodelica::gc::MMTrace for NFEquation {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            NFEquation::EQUALITY { lhs, rhs, ty, scope, source, scalarizeMode } => {
+                metamodelica::gc::MMTrace::mm_accept(lhs, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(rhs, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(ty, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(scope, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(source, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(scalarizeMode, __mmv)?;
+                Ok(())
+            }
+            NFEquation::CONNECT { lhs, rhs, scope, source } => {
+                metamodelica::gc::MMTrace::mm_accept(lhs, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(rhs, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(scope, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(source, __mmv)?;
+                Ok(())
+            }
+            NFEquation::FOR { iterator, range, body, scope, source } => {
+                metamodelica::gc::MMTrace::mm_accept(iterator, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(range, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(body, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(scope, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(source, __mmv)?;
+                Ok(())
+            }
+            NFEquation::IF { branches, scope, source } => {
+                metamodelica::gc::MMTrace::mm_accept(branches, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(scope, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(source, __mmv)?;
+                Ok(())
+            }
+            NFEquation::WHEN { branches, scope, source } => {
+                metamodelica::gc::MMTrace::mm_accept(branches, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(scope, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(source, __mmv)?;
+                Ok(())
+            }
+            NFEquation::ASSERT { condition, message, level, scope, source } => {
+                metamodelica::gc::MMTrace::mm_accept(condition, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(message, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(level, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(scope, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(source, __mmv)?;
+                Ok(())
+            }
+            NFEquation::TERMINATE { message, scope, source } => {
+                metamodelica::gc::MMTrace::mm_accept(message, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(scope, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(source, __mmv)?;
+                Ok(())
+            }
+            NFEquation::REINIT { cref, reinitExp, scope, source } => {
+                metamodelica::gc::MMTrace::mm_accept(cref, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(reinitExp, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(scope, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(source, __mmv)?;
+                Ok(())
+            }
+            NFEquation::NORETCALL { exp, scope, source } => {
+                metamodelica::gc::MMTrace::mm_accept(exp, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(scope, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(source, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 impl Default for NFEquation {
     fn default() -> Self {
         Self::IF {
@@ -148,6 +217,23 @@ pub mod Branch {
             branch: Arc<Branch>,
             errors: Arc<metamodelica::List<ErrorTypes::TotalMessage>>,
         },
+    }
+    impl metamodelica::gc::MMTrace for Branch {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            match self {
+                Branch::BRANCH { condition, conditionVar, body } => {
+                    metamodelica::gc::MMTrace::mm_accept(condition, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(conditionVar, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(body, __mmv)?;
+                    Ok(())
+                }
+                Branch::INVALID_BRANCH { branch, errors } => {
+                    metamodelica::gc::MMTrace::mm_accept(branch, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(errors, __mmv)?;
+                    Ok(())
+                }
+            }
+        }
     }
     impl Default for Branch {
         fn default() -> Self {
@@ -286,6 +372,9 @@ impl PartialOrd for ScalarizeMode {
 }
 impl Ord for ScalarizeMode {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
+}
+impl metamodelica::gc::MMTrace for ScalarizeMode {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
 }
 
 pub fn makeEquality(mut lhs: Arc<Expression::NFExpression>, mut rhs: Arc<Expression::NFExpression>, mut ty: Arc<Type::NFType>, mut src: Arc<DAE::ElementSource>, mut scope: Arc<InstNode::InstNode>, mut scalarizeMode: ScalarizeMode) -> Arc<NFEquation> {

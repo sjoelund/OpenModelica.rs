@@ -99,6 +99,24 @@ pub enum ModScope {
         path: Arc<Absyn::Path>,
     },
 }
+impl metamodelica::gc::MMTrace for ModScope {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            ModScope::COMPONENT { name } => {
+                metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
+                Ok(())
+            }
+            ModScope::EXTENDS { path } => {
+                metamodelica::gc::MMTrace::mm_accept(path, __mmv)?;
+                Ok(())
+            }
+            ModScope::DERIVED { path } => {
+                metamodelica::gc::MMTrace::mm_accept(path, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 pub use self::ModScope::{COMPONENT,EXTENDS,DERIVED};
 
 /// used for error reporting
@@ -114,6 +132,22 @@ pub enum FullMod {
         cref: Arc<DAE::ComponentRef>,
         subMod: Arc<DAE::SubMod>,
     },
+}
+impl metamodelica::gc::MMTrace for FullMod {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            FullMod::MOD { cref, r#mod } => {
+                metamodelica::gc::MMTrace::mm_accept(cref, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(r#mod, __mmv)?;
+                Ok(())
+            }
+            FullMod::SUB_MOD { cref, subMod } => {
+                metamodelica::gc::MMTrace::mm_accept(cref, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(subMod, __mmv)?;
+                Ok(())
+            }
+        }
+    }
 }
 impl Default for FullMod {
     fn default() -> Self {

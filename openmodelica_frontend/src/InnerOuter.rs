@@ -85,6 +85,18 @@ pub struct InstResult {
     pub outGraph: ConnectionGraph::ConnectionGraph,
 }
 
+impl metamodelica::gc::MMTrace for InstResult {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.outCache, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.outEnv, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.outStore, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.outDae, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.outSets, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.outType, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.outGraph, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for InstResult {
     fn default() -> Self {
         Self {
@@ -121,6 +133,20 @@ pub struct InstInner {
     pub innerElement: Option<Arc<SCode::Element>>,
 }
 
+impl metamodelica::gc::MMTrace for InstInner {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.innerPrefix, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.name, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.io, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.fullName, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.typePath, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.scope, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.instResult, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.outers, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.innerElement, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for InstInner {
     fn default() -> Self {
         Self {
@@ -148,6 +174,13 @@ pub struct OuterPrefix {
     pub innerComponentRef: Arc<DAE::ComponentRef>,
 }
 
+impl metamodelica::gc::MMTrace for OuterPrefix {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.outerComponentRef, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.innerComponentRef, __mmv)?;
+        Ok(())
+    }
+}
 pub type OUTER = OuterPrefix;
 
 
@@ -175,6 +208,15 @@ pub struct TopInstance {
     pub sm: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr)),
 }
 
+impl metamodelica::gc::MMTrace for TopInstance {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.path, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.ht, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.outerPrefixes, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.sm, __mmv)?;
+        Ok(())
+    }
+}
 impl PartialEq for TopInstance {
     fn eq(&self, other: &Self) -> bool {
         self.path == other.path && self.ht == other.ht && self.outerPrefixes == other.outerPrefixes && (match ((&self.sm), (&other.sm)) { ((__lt0, __lt1, __lt2, __lt3, __lt4), (__rt0, __rt1, __rt2, __rt3, __rt4)) => (__lt0 == __rt0) && (__lt1 == __rt1) && (__lt2 == __rt2) && (__lt3 == __rt3) && (match (__lt4, __rt4) { ((__lt0, __lt1, __lt2), (__rt0, __rt1, __rt2)) => std::sync::Arc::ptr_eq(__lt0, __rt0) && std::sync::Arc::ptr_eq(__lt1, __rt1) && std::sync::Arc::ptr_eq(__lt2, __rt2) }) })
@@ -1199,6 +1241,15 @@ pub struct InstHierarchyHashTable {
     pub numberOfEntries: i32,
 }
 
+impl metamodelica::gc::MMTrace for InstHierarchyHashTable {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.hashTable, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.valueArr, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.bucketSize, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.numberOfEntries, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for InstHierarchyHashTable {
     fn default() -> Self {
         Self {
@@ -1223,6 +1274,13 @@ pub struct ValueArray {
     pub valueArray: metamodelica::Array<Option<(Arc<DAE::ComponentRef>, InstInner)>>,
 }
 
+impl metamodelica::gc::MMTrace for ValueArray {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.numberOfElements, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.valueArray, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for ValueArray {
     fn default() -> Self {
         Self {

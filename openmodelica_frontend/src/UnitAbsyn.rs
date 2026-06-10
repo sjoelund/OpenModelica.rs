@@ -55,6 +55,18 @@ pub enum UnitCheckResult {
         u2: SpecUnit,
     },
 }
+impl metamodelica::gc::MMTrace for UnitCheckResult {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            UnitCheckResult::CONSISTENT => Ok(()),
+            UnitCheckResult::INCONSISTENT { u1, u2 } => {
+                metamodelica::gc::MMTrace::mm_accept(u1, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(u2, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 impl Default for UnitCheckResult {
     fn default() -> Self { Self::CONSISTENT }
 }
@@ -68,6 +80,13 @@ pub struct SpecUnit {
     pub units: Arc<metamodelica::List<MMath::Rational>>,
 }
 
+impl metamodelica::gc::MMTrace for SpecUnit {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.typeParameters, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.units, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for SpecUnit {
     fn default() -> Self {
         Self {
@@ -88,6 +107,13 @@ pub struct TypeParameter {
     pub indx: i32,
 }
 
+impl metamodelica::gc::MMTrace for TypeParameter {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.name, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.indx, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for TypeParameter {
     fn default() -> Self {
         Self {
@@ -109,6 +135,17 @@ pub enum Unit {
     },
     /// Unpspecified unit means that the unit is unknown and should be inferred
     UNSPECIFIED,
+}
+impl metamodelica::gc::MMTrace for Unit {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            Unit::SPECIFIED { specified } => {
+                metamodelica::gc::MMTrace::mm_accept(specified, __mmv)?;
+                Ok(())
+            }
+            Unit::UNSPECIFIED => Ok(()),
+        }
+    }
 }
 impl Default for Unit {
     fn default() -> Self { Self::UNSPECIFIED }
@@ -181,6 +218,53 @@ pub enum UnitTerm {
         origExp: Arc<DAE::Exp>,
     },
 }
+impl metamodelica::gc::MMTrace for UnitTerm {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            UnitTerm::ADD { ut1, ut2, origExp } => {
+                metamodelica::gc::MMTrace::mm_accept(ut1, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(ut2, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(origExp, __mmv)?;
+                Ok(())
+            }
+            UnitTerm::SUB { ut1, ut2, origExp } => {
+                metamodelica::gc::MMTrace::mm_accept(ut1, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(ut2, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(origExp, __mmv)?;
+                Ok(())
+            }
+            UnitTerm::MUL { ut1, ut2, origExp } => {
+                metamodelica::gc::MMTrace::mm_accept(ut1, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(ut2, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(origExp, __mmv)?;
+                Ok(())
+            }
+            UnitTerm::DIV { ut1, ut2, origExp } => {
+                metamodelica::gc::MMTrace::mm_accept(ut1, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(ut2, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(origExp, __mmv)?;
+                Ok(())
+            }
+            UnitTerm::EQN { ut1, ut2, origExp } => {
+                metamodelica::gc::MMTrace::mm_accept(ut1, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(ut2, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(origExp, __mmv)?;
+                Ok(())
+            }
+            UnitTerm::LOC { loc, origExp } => {
+                metamodelica::gc::MMTrace::mm_accept(loc, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(origExp, __mmv)?;
+                Ok(())
+            }
+            UnitTerm::POW { ut1, exponent, origExp } => {
+                metamodelica::gc::MMTrace::mm_accept(ut1, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(exponent, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(origExp, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 impl Default for UnitTerm {
     fn default() -> Self {
         Self::LOC {
@@ -200,6 +284,13 @@ pub struct Store {
     pub numElts: i32,
 }
 
+impl metamodelica::gc::MMTrace for Store {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.storeVector, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.numElts, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for Store {
     fn default() -> Self {
         Self {
@@ -224,6 +315,19 @@ pub enum InstStore {
     },
     /// used to skip unit checking
     NOSTORE,
+}
+impl metamodelica::gc::MMTrace for InstStore {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            InstStore::INSTSTORE { store, ht, checkResult } => {
+                metamodelica::gc::MMTrace::mm_accept(store, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(ht, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(checkResult, __mmv)?;
+                Ok(())
+            }
+            InstStore::NOSTORE => Ok(()),
+        }
+    }
 }
 impl PartialEq for InstStore {
     fn eq(&self, other: &Self) -> bool {

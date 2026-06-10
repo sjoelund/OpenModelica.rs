@@ -770,6 +770,29 @@ pub enum InstanceTree {
     },
     EMPTY,
 }
+impl metamodelica::gc::MMTrace for InstanceTree {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            InstanceTree::COMPONENT { node, binding, cls } => {
+                metamodelica::gc::MMTrace::mm_accept(node, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(binding, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(cls, __mmv)?;
+                Ok(())
+            }
+            InstanceTree::CLASS { node, elements, isExtends } => {
+                metamodelica::gc::MMTrace::mm_accept(node, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(elements, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(isExtends, __mmv)?;
+                Ok(())
+            }
+            InstanceTree::BUILTIN_BASE_CLASS { name } => {
+                metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
+                Ok(())
+            }
+            InstanceTree::EMPTY => Ok(()),
+        }
+    }
+}
 impl InstanceTree {
     pub fn interned_EMPTY() -> Arc<InstanceTree> {
         thread_local! {
@@ -2361,6 +2384,13 @@ pub struct MoveEnv {
     pub destinationPath: Arc<Path>,
 }
 
+impl metamodelica::gc::MMTrace for MoveEnv {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.scope, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.destinationPath, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for MoveEnv {
     fn default() -> Self {
         Self {

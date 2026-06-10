@@ -58,6 +58,13 @@ pub struct Attribute {
     pub value: ArcStr,
 }
 
+impl metamodelica::gc::MMTrace for Attribute {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.name, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.value, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for Attribute {
     fn default() -> Self {
         Self {
@@ -89,6 +96,25 @@ pub enum Node {
         attributes: Attributes,
         children: Arc<metamodelica::List<Arc<Node>>>,
     },
+}
+impl metamodelica::gc::MMTrace for Node {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            Node::NODE { type_, attributes, children } => {
+                metamodelica::gc::MMTrace::mm_accept(type_, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(attributes, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(children, __mmv)?;
+                Ok(())
+            }
+            Node::LNODE { type_, labelLst, attributes, children } => {
+                metamodelica::gc::MMTrace::mm_accept(type_, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(labelLst, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(attributes, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(children, __mmv)?;
+                Ok(())
+            }
+        }
+    }
 }
 impl Default for Node {
     fn default() -> Self {

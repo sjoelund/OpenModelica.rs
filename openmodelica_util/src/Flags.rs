@@ -57,6 +57,15 @@ pub struct DebugFlag {
     pub description: ArcStr,
 }
 
+impl metamodelica::gc::MMTrace for DebugFlag {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.index, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.name, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.default, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.description, __mmv)?;
+        Ok(())
+    }
+}
 pub type DEBUG_FLAG = DebugFlag;
 
 
@@ -78,6 +87,18 @@ pub struct ConfigFlag {
     pub description: ArcStr,
 }
 
+impl metamodelica::gc::MMTrace for ConfigFlag {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.index, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.name, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.shortname, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.visibility, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.defaultValue, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.validOptions, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.description, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for ConfigFlag {
     fn default() -> Self {
         Self {
@@ -131,6 +152,42 @@ pub enum FlagData {
         validValues: Arc<metamodelica::List<(ArcStr, i32)>>,
     },
 }
+impl metamodelica::gc::MMTrace for FlagData {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            FlagData::EMPTY_FLAG => Ok(()),
+            FlagData::BOOL_FLAG { data } => {
+                metamodelica::gc::MMTrace::mm_accept(data, __mmv)?;
+                Ok(())
+            }
+            FlagData::INT_FLAG { data } => {
+                metamodelica::gc::MMTrace::mm_accept(data, __mmv)?;
+                Ok(())
+            }
+            FlagData::INT_LIST_FLAG { data } => {
+                metamodelica::gc::MMTrace::mm_accept(data, __mmv)?;
+                Ok(())
+            }
+            FlagData::REAL_FLAG { data } => {
+                metamodelica::gc::MMTrace::mm_accept(data, __mmv)?;
+                Ok(())
+            }
+            FlagData::STRING_FLAG { data } => {
+                metamodelica::gc::MMTrace::mm_accept(data, __mmv)?;
+                Ok(())
+            }
+            FlagData::STRING_LIST_FLAG { data } => {
+                metamodelica::gc::MMTrace::mm_accept(data, __mmv)?;
+                Ok(())
+            }
+            FlagData::ENUM_FLAG { data, validValues } => {
+                metamodelica::gc::MMTrace::mm_accept(data, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(validValues, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 impl Default for FlagData {
     fn default() -> Self { Self::EMPTY_FLAG }
 }
@@ -143,6 +200,14 @@ pub enum FlagVisibility {
     INTERNAL,
     /// An external flag that is visible to the user.
     EXTERNAL,
+}
+impl metamodelica::gc::MMTrace for FlagVisibility {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            FlagVisibility::INTERNAL => Ok(()),
+            FlagVisibility::EXTERNAL => Ok(()),
+        }
+    }
 }
 impl Default for FlagVisibility {
     fn default() -> Self { Self::INTERNAL }
@@ -157,6 +222,18 @@ pub enum Flag {
         configFlags: metamodelica::Array<FlagData>,
     },
     NO_FLAGS,
+}
+impl metamodelica::gc::MMTrace for Flag {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            Flag::FLAGS { debugFlags, configFlags } => {
+                metamodelica::gc::MMTrace::mm_accept(debugFlags, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(configFlags, __mmv)?;
+                Ok(())
+            }
+            Flag::NO_FLAGS => Ok(()),
+        }
+    }
 }
 impl Default for Flag {
     fn default() -> Self { Self::NO_FLAGS }
@@ -174,6 +251,20 @@ pub enum ValidOptions {
         /// Options for a string flag, with a description for each option.
         options: Arc<metamodelica::List<(ArcStr, ArcStr)>>,
     },
+}
+impl metamodelica::gc::MMTrace for ValidOptions {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            ValidOptions::STRING_OPTION { options } => {
+                metamodelica::gc::MMTrace::mm_accept(options, __mmv)?;
+                Ok(())
+            }
+            ValidOptions::STRING_DESC_OPTION { options } => {
+                metamodelica::gc::MMTrace::mm_accept(options, __mmv)?;
+                Ok(())
+            }
+        }
+    }
 }
 impl Default for ValidOptions {
     fn default() -> Self {

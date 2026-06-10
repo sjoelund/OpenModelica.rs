@@ -108,6 +108,26 @@ pub enum CacheMap {
         cacheLines: Arc<metamodelica::List<CacheLineMap>>,
     },
 }
+impl metamodelica::gc::MMTrace for CacheMap {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            CacheMap::CACHEMAP { cacheLineSize, cacheVariables, cacheLinesFloat, cacheLinesInt, cacheLinesBool } => {
+                metamodelica::gc::MMTrace::mm_accept(cacheLineSize, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(cacheVariables, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(cacheLinesFloat, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(cacheLinesInt, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(cacheLinesBool, __mmv)?;
+                Ok(())
+            }
+            CacheMap::UNIFORM_CACHEMAP { cacheLineSize, cacheVariables, cacheLines } => {
+                metamodelica::gc::MMTrace::mm_accept(cacheLineSize, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(cacheVariables, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(cacheLines, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 impl Default for CacheMap {
     fn default() -> Self {
         Self::UNIFORM_CACHEMAP {
@@ -126,6 +146,14 @@ pub struct CacheLineMap {
     pub entries: Arc<metamodelica::List<CacheLineEntry>>,
 }
 
+impl metamodelica::gc::MMTrace for CacheLineMap {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.idx, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.numBytesFree, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.entries, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for CacheLineMap {
     fn default() -> Self {
         Self {
@@ -148,6 +176,16 @@ pub struct CacheLineEntry {
     pub threadOwner: i32,
 }
 
+impl metamodelica::gc::MMTrace for CacheLineEntry {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.start, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.dataType, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.size, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.scVarIdx, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.threadOwner, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for CacheLineEntry {
     fn default() -> Self {
         Self {
@@ -170,6 +208,14 @@ pub struct CacheMapMeta {
     pub scVarCLMapping: metamodelica::Array<(i32, i32)>,
 }
 
+impl metamodelica::gc::MMTrace for CacheMapMeta {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.allSCVarsMapping, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.simCodeVarTypes, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.scVarCLMapping, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for CacheMapMeta {
     fn default() -> Self {
         Self {
@@ -194,6 +240,22 @@ pub enum PartlyFilledCacheLine {
         cacheLineMap: CacheLineMap,
     },
 }
+impl metamodelica::gc::MMTrace for PartlyFilledCacheLine {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            PartlyFilledCacheLine::PARTLYFILLEDCACHELINE_LEVEL { cacheLineMap, prefetchLevel, writeLevel } => {
+                metamodelica::gc::MMTrace::mm_accept(cacheLineMap, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(prefetchLevel, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(writeLevel, __mmv)?;
+                Ok(())
+            }
+            PartlyFilledCacheLine::PARTLYFILLEDCACHELINE_THREAD { cacheLineMap } => {
+                metamodelica::gc::MMTrace::mm_accept(cacheLineMap, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 impl Default for PartlyFilledCacheLine {
     fn default() -> Self {
         Self::PARTLYFILLEDCACHELINE_THREAD {
@@ -209,6 +271,13 @@ pub struct ScVarInfo {
     pub isShared: bool,
 }
 
+impl metamodelica::gc::MMTrace for ScVarInfo {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.ownerThread, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.isShared, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for ScVarInfo {
     fn default() -> Self {
         Self {

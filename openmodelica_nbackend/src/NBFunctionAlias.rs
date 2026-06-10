@@ -180,6 +180,13 @@ pub mod Call_Id {
         pub iter: Arc<Iterator::Iterator>,
     }
 
+    impl metamodelica::gc::MMTrace for Call_Id {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            metamodelica::gc::MMTrace::mm_accept(&self.call, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.iter, __mmv)?;
+            Ok(())
+        }
+    }
     impl Default for Call_Id {
         fn default() -> Self {
             Self {
@@ -224,6 +231,14 @@ pub mod Call_Aux {
         pub parsed: bool,
     }
 
+    impl metamodelica::gc::MMTrace for Call_Aux {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            metamodelica::gc::MMTrace::mm_accept(&self.replacer, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.kind, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.parsed, __mmv)?;
+            Ok(())
+        }
+    }
     impl Default for Call_Aux {
         fn default() -> Self {
             Self {
@@ -448,6 +463,9 @@ fn introduceFunctionAliasEquation(mut eqn: Arc<Equation::Equation>, mut map: Arc
     }
     impl Ord for Depth {
         fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
+    }
+    impl metamodelica::gc::MMTrace for Depth {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
     }
 
     let mut eqn: Arc<Equation::Equation> = eqn;

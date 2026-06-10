@@ -71,6 +71,29 @@ pub enum NFImport {
         imp2: Arc<NFImport>,
     },
 }
+impl metamodelica::gc::MMTrace for NFImport {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            NFImport::UNRESOLVED_IMPORT { imp, scope, info } => {
+                metamodelica::gc::MMTrace::mm_accept(imp, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(scope, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(info, __mmv)?;
+                Ok(())
+            }
+            NFImport::RESOLVED_IMPORT { node, shortName, info } => {
+                metamodelica::gc::MMTrace::mm_accept(node, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(shortName, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(info, __mmv)?;
+                Ok(())
+            }
+            NFImport::CONFLICTING_IMPORT { imp1, imp2 } => {
+                metamodelica::gc::MMTrace::mm_accept(imp1, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(imp2, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 impl Default for NFImport {
     fn default() -> Self {
         Self::UNRESOLVED_IMPORT {

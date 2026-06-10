@@ -75,6 +75,25 @@ pub enum Text {
         blocksStack: Mutable::Mutable<Arc<metamodelica::List<BlockTypeFileText>>>,
     },
 }
+impl metamodelica::gc::MMTrace for Text {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            Text::MEM_TEXT { tokens, blocksStack } => {
+                metamodelica::gc::MMTrace::mm_accept(tokens, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(blocksStack, __mmv)?;
+                Ok(())
+            }
+            Text::FILE_TEXT { opaqueFile, nchars, aind, isstart, blocksStack } => {
+                metamodelica::gc::MMTrace::mm_accept(opaqueFile, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(nchars, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(aind, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(isstart, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(blocksStack, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 impl Default for Text {
     fn default() -> Self {
         Self::MEM_TEXT {
@@ -99,6 +118,17 @@ pub struct BlockTypeFileText {
     pub septok: Mutable::Mutable<Option<Arc<StringToken>>>,
 }
 
+impl metamodelica::gc::MMTrace for BlockTypeFileText {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.bt, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.nchars, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.aind, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.isstart, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.tell, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.septok, __mmv)?;
+        Ok(())
+    }
+}
 pub type BT_FILE_TEXT = BlockTypeFileText;
 
 
@@ -124,6 +154,31 @@ pub enum StringToken {
         tokens: Tokens,
         blockType: Arc<BlockType>,
     },
+}
+impl metamodelica::gc::MMTrace for StringToken {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            StringToken::ST_NEW_LINE => Ok(()),
+            StringToken::ST_STRING { value } => {
+                metamodelica::gc::MMTrace::mm_accept(value, __mmv)?;
+                Ok(())
+            }
+            StringToken::ST_LINE { line } => {
+                metamodelica::gc::MMTrace::mm_accept(line, __mmv)?;
+                Ok(())
+            }
+            StringToken::ST_STRING_LIST { strList, lastHasNewLine } => {
+                metamodelica::gc::MMTrace::mm_accept(strList, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(lastHasNewLine, __mmv)?;
+                Ok(())
+            }
+            StringToken::ST_BLOCK { tokens, blockType } => {
+                metamodelica::gc::MMTrace::mm_accept(tokens, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(blockType, __mmv)?;
+                Ok(())
+            }
+        }
+    }
 }
 impl StringToken {
     pub fn interned_ST_NEW_LINE() -> Arc<StringToken> {
@@ -159,6 +214,34 @@ pub enum BlockType {
         index0: Mutable::Mutable<i32>,
     },
 }
+impl metamodelica::gc::MMTrace for BlockType {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            BlockType::BT_TEXT => Ok(()),
+            BlockType::BT_INDENT { width } => {
+                metamodelica::gc::MMTrace::mm_accept(width, __mmv)?;
+                Ok(())
+            }
+            BlockType::BT_ABS_INDENT { width } => {
+                metamodelica::gc::MMTrace::mm_accept(width, __mmv)?;
+                Ok(())
+            }
+            BlockType::BT_REL_INDENT { offset } => {
+                metamodelica::gc::MMTrace::mm_accept(offset, __mmv)?;
+                Ok(())
+            }
+            BlockType::BT_ANCHOR { offset } => {
+                metamodelica::gc::MMTrace::mm_accept(offset, __mmv)?;
+                Ok(())
+            }
+            BlockType::BT_ITER { options, index0 } => {
+                metamodelica::gc::MMTrace::mm_accept(options, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(index0, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 impl BlockType {
     pub fn interned_BT_TEXT() -> Arc<BlockType> {
         static INTERNED: std::sync::LazyLock<Arc<BlockType>> = std::sync::LazyLock::new(|| Arc::new(BlockType::BT_TEXT));
@@ -185,6 +268,19 @@ pub struct IterOptions {
     pub wrapSeparator: Arc<StringToken>,
 }
 
+impl metamodelica::gc::MMTrace for IterOptions {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.startIndex0, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.empty, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.separator, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.alignNum, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.alignOfset, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.alignSeparator, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.wrapWidth, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.wrapSeparator, __mmv)?;
+        Ok(())
+    }
+}
 pub type ITER_OPTIONS = IterOptions;
 
 

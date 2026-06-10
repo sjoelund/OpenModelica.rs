@@ -106,6 +106,9 @@ impl PartialOrd for MatrixStrictness {
 impl Ord for MatrixStrictness {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
+impl metamodelica::gc::MMTrace for MatrixStrictness {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+}
 impl Default for MatrixStrictness {
     fn default() -> Self { Self::LINEAR }
 }
@@ -136,6 +139,15 @@ pub mod Mapping {
         pub var_AtS: metamodelica::Array<(i32, i32)>,
     }
 
+    impl metamodelica::gc::MMTrace for Mapping {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            metamodelica::gc::MMTrace::mm_accept(&self.eqn_StA, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.var_StA, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.eqn_AtS, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.var_AtS, __mmv)?;
+            Ok(())
+        }
+    }
     impl Default for Mapping {
         fn default() -> Self {
             Self {
@@ -389,6 +401,14 @@ pub mod Mode {
         pub scalarize: bool,
     }
 
+    impl metamodelica::gc::MMTrace for Mode {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            metamodelica::gc::MMTrace::mm_accept(&self.eqn_name, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.crefs, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.scalarize, __mmv)?;
+            Ok(())
+        }
+    }
     impl Default for Mode {
         fn default() -> Self {
             Self {
@@ -512,6 +532,40 @@ pub mod Matrix {
             repetitions: metamodelica::Array<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>>,
             solved_variables: metamodelica::Array<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>>,
         },
+    }
+    impl metamodelica::gc::MMTrace for Matrix {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            match self {
+                Matrix::EMPTY { st } => {
+                    metamodelica::gc::MMTrace::mm_accept(st, __mmv)?;
+                    Ok(())
+                }
+                Matrix::FULL { equation_names, occurrences, dependencies, solvabilities, repetitions, mapping } => {
+                    metamodelica::gc::MMTrace::mm_accept(equation_names, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(occurrences, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(dependencies, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(solvabilities, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(repetitions, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(mapping, __mmv)?;
+                    Ok(())
+                }
+                Matrix::FINAL { m, mT, mapping, modes, st } => {
+                    metamodelica::gc::MMTrace::mm_accept(m, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(mT, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(mapping, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(modes, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(st, __mmv)?;
+                    Ok(())
+                }
+                Matrix::SPARSITY { equation_names, dependencies, repetitions, solved_variables } => {
+                    metamodelica::gc::MMTrace::mm_accept(equation_names, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(dependencies, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(repetitions, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(solved_variables, __mmv)?;
+                    Ok(())
+                }
+            }
+        }
     }
     impl Default for Matrix {
         fn default() -> Self {
@@ -1845,6 +1899,13 @@ pub mod Dependency {
         pub kinds: Arc<metamodelica::List<Kind>>,
     }
 
+    impl metamodelica::gc::MMTrace for Dependency {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            metamodelica::gc::MMTrace::mm_accept(&self.skips, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.kinds, __mmv)?;
+            Ok(())
+        }
+    }
     impl Default for Dependency {
         fn default() -> Self {
             Self {
@@ -1867,6 +1928,9 @@ pub mod Dependency {
     }
     impl Ord for Kind {
         fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
+    }
+    impl metamodelica::gc::MMTrace for Kind {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
     }
     impl Default for Kind {
         fn default() -> Self { Self::REGULAR }
@@ -2134,6 +2198,24 @@ pub mod Solvability {
             /// variables we need to divide by to solve
             vars: Option<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>>,
         },
+    }
+    impl metamodelica::gc::MMTrace for Solvability {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            match self {
+                Solvability::UNKNOWN => Ok(()),
+                Solvability::UNSOLVABLE => Ok(()),
+                Solvability::IMPLICIT => Ok(()),
+                Solvability::EXPLICIT_NONLINEAR { unique } => {
+                    metamodelica::gc::MMTrace::mm_accept(unique, __mmv)?;
+                    Ok(())
+                }
+                Solvability::EXPLICIT_LINEAR { pars, vars } => {
+                    metamodelica::gc::MMTrace::mm_accept(pars, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(vars, __mmv)?;
+                    Ok(())
+                }
+            }
+        }
     }
     impl Solvability {
         pub fn interned_UNKNOWN() -> Arc<Solvability> {

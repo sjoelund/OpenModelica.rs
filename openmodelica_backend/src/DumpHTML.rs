@@ -61,6 +61,13 @@ pub struct Style {
     pub value: ArcStr,
 }
 
+impl metamodelica::gc::MMTrace for Style {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.name, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.value, __mmv)?;
+        Ok(())
+    }
+}
 pub type STYLE = Style;
 
 
@@ -99,6 +106,51 @@ pub enum Tag {
         attr: Arc<metamodelica::List<ArcStr>>,
     },
 }
+impl metamodelica::gc::MMTrace for Tag {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            Tag::HEADING { stage, text } => {
+                metamodelica::gc::MMTrace::mm_accept(stage, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(text, __mmv)?;
+                Ok(())
+            }
+            Tag::HYPERLINK { href, title, text } => {
+                metamodelica::gc::MMTrace::mm_accept(href, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(title, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(text, __mmv)?;
+                Ok(())
+            }
+            Tag::ANKER { name } => {
+                metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
+                Ok(())
+            }
+            Tag::LINE { text } => {
+                metamodelica::gc::MMTrace::mm_accept(text, __mmv)?;
+                Ok(())
+            }
+            Tag::DIVISION { id, style, tags } => {
+                metamodelica::gc::MMTrace::mm_accept(id, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(style, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(tags, __mmv)?;
+                Ok(())
+            }
+            Tag::SCRIPT { type_, text } => {
+                metamodelica::gc::MMTrace::mm_accept(type_, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(text, __mmv)?;
+                Ok(())
+            }
+            Tag::SCRIPT_BODY { type_, text } => {
+                metamodelica::gc::MMTrace::mm_accept(type_, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(text, __mmv)?;
+                Ok(())
+            }
+            Tag::CANVAS { attr } => {
+                metamodelica::gc::MMTrace::mm_accept(attr, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 impl Default for Tag {
     fn default() -> Self {
         Self::ANKER {
@@ -117,6 +169,14 @@ pub struct Document {
     pub body: Arc<metamodelica::List<Arc<Tag>>>,
 }
 
+impl metamodelica::gc::MMTrace for Document {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.docType, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.head, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.body, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for Document {
     fn default() -> Self {
         Self {

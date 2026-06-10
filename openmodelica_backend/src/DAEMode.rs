@@ -169,6 +169,18 @@ pub struct TraverseEqnAryFold {
     pub shared: Arc<BackendDAE::Shared>,
 }
 
+impl metamodelica::gc::MMTrace for TraverseEqnAryFold {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.globalDAEData, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.newDAEVars, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.newDAEEquations, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.systemVars, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.functionTree, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.recursiveStrongComponentRun, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.shared, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for TraverseEqnAryFold {
     fn default() -> Self {
         Self {

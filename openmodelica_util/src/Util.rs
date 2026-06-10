@@ -56,6 +56,14 @@ pub enum Status {
     SUCCESS,
     FAILURE,
 }
+impl metamodelica::gc::MMTrace for Status {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            Status::SUCCESS => Ok(()),
+            Status::FAILURE => Ok(()),
+        }
+    }
+}
 impl Default for Status {
     fn default() -> Self { Self::SUCCESS }
 }
@@ -71,6 +79,17 @@ pub struct DateTime {
     pub year: i32,
 }
 
+impl metamodelica::gc::MMTrace for DateTime {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.sec, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.min, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.hour, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.mday, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.mon, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.year, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for DateTime {
     fn default() -> Self {
         Self {

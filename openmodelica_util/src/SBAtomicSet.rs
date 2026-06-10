@@ -53,6 +53,13 @@ pub struct SBAtomicSet {
     pub ndim: i32,
 }
 
+impl metamodelica::gc::MMTrace for SBAtomicSet {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.aset, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.ndim, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for SBAtomicSet {
     fn default() -> Self {
         Self {

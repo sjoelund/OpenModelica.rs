@@ -108,6 +108,17 @@ pub struct ConnectionGraph {
     pub connections: DaeEdges,
 }
 
+impl metamodelica::gc::MMTrace for ConnectionGraph {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.updateGraph, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.definiteRoots, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.potentialRoots, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.uniqueRoots, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.branches, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.connections, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for ConnectionGraph {
     fn default() -> Self {
         Self {

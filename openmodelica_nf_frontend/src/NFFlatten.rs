@@ -172,6 +172,26 @@ pub mod FunctionTreeImpl {
         },
         EMPTY,
     }
+    impl metamodelica::gc::MMTrace for Tree {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            match self {
+                Tree::NODE { key, value, height, left, right } => {
+                    metamodelica::gc::MMTrace::mm_accept(key, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(value, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(height, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(left, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(right, __mmv)?;
+                    Ok(())
+                }
+                Tree::LEAF { key, value } => {
+                    metamodelica::gc::MMTrace::mm_accept(key, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(value, __mmv)?;
+                    Ok(())
+                }
+                Tree::EMPTY => Ok(()),
+            }
+        }
+    }
     impl Tree {
         pub fn interned_EMPTY() -> Arc<Tree> {
             thread_local! {
@@ -836,6 +856,19 @@ pub struct FlattenSettings {
     pub minimalEval: bool,
 }
 
+impl metamodelica::gc::MMTrace for FlattenSettings {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.scalarize, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.arrayConnect, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.nfAPI, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.relaxedErrorChecking, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.newBackend, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.vectorizeBindings, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.implicitStartAttribute, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.minimalEval, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for FlattenSettings {
     fn default() -> Self {
         Self {
@@ -867,6 +900,23 @@ pub mod Prefix {
             prefix: Arc<ComponentRef::NFComponentRef>,
             indexedPrefix: Arc<ComponentRef::NFComponentRef>,
         },
+    }
+    impl metamodelica::gc::MMTrace for Prefix {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            match self {
+                Prefix::PREFIX { root, prefix } => {
+                    metamodelica::gc::MMTrace::mm_accept(root, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(prefix, __mmv)?;
+                    Ok(())
+                }
+                Prefix::INDEXED_PREFIX { root, prefix, indexedPrefix } => {
+                    metamodelica::gc::MMTrace::mm_accept(root, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(prefix, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(indexedPrefix, __mmv)?;
+                    Ok(())
+                }
+            }
+        }
     }
     impl Default for Prefix {
         fn default() -> Self {
@@ -1307,6 +1357,9 @@ impl PartialOrd for ComponentType {
 }
 impl Ord for ComponentType {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
+}
+impl metamodelica::gc::MMTrace for ComponentType {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
 }
 
 fn flattenSimpleComponent(mut node: Arc<InstNode::InstNode>, mut comp: Arc<Component::NFComponent>, mut visibility: Visibility, mut outerBinding: Option<Arc<Binding::NFBinding>>, mut typeAttrs: Arc<metamodelica::List<Arc<Modifier::Modifier>>>, mut prefix: Arc<Prefix::Prefix>, mut vars: Arc<metamodelica::List<Arc<Variable::NFVariable>>>, mut sections: Arc<Sections::NFSections>, mut settings: FlattenSettings, mut children: Arc<metamodelica::List<Arc<Variable::NFVariable>>>) -> Result<(Arc<metamodelica::List<Arc<Variable::NFVariable>>>, Arc<Sections::NFSections>)> {

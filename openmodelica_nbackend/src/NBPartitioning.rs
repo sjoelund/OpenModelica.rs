@@ -110,6 +110,26 @@ pub mod BClock {
             base_ref: Arc<ComponentRef::NFComponentRef>,
         },
     }
+    impl metamodelica::gc::MMTrace for BClock {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            match self {
+                BClock::BASE_CLOCK { clock } => {
+                    metamodelica::gc::MMTrace::mm_accept(clock, __mmv)?;
+                    Ok(())
+                }
+                BClock::SUB_CLOCK { factor, shift, solver } => {
+                    metamodelica::gc::MMTrace::mm_accept(factor, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(shift, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(solver, __mmv)?;
+                    Ok(())
+                }
+                BClock::INFERRED_CLOCK { base_ref } => {
+                    metamodelica::gc::MMTrace::mm_accept(base_ref, __mmv)?;
+                    Ok(())
+                }
+            }
+        }
+    }
     impl Default for BClock {
         fn default() -> Self {
             Self::BASE_CLOCK {
@@ -387,6 +407,15 @@ pub mod ClockedInfo {
         pub baseToSub: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>>,
     }
 
+    impl metamodelica::gc::MMTrace for ClockedInfo {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            metamodelica::gc::MMTrace::mm_accept(&self.baseClocks, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.subClocks, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.subToBase, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.baseToSub, __mmv)?;
+            Ok(())
+        }
+    }
     pub type CLOCKED_INFO = ClockedInfo;
 
     pub fn new() -> Arc<ClockedInfo> {
@@ -665,6 +694,9 @@ impl PartialOrd for ClusterElementType {
 impl Ord for ClusterElementType {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
+impl metamodelica::gc::MMTrace for ClusterElementType {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+}
 
 pub mod Cluster {
     use super::*;
@@ -676,6 +708,13 @@ pub mod Cluster {
         pub eqn_idnts: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>,
     }
 
+    impl metamodelica::gc::MMTrace for Cluster {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            metamodelica::gc::MMTrace::mm_accept(&self.variables, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.eqn_idnts, __mmv)?;
+            Ok(())
+        }
+    }
     impl Default for Cluster {
         fn default() -> Self {
             Self {
@@ -849,6 +888,13 @@ pub mod DisjointSetForest {
         pub rank: Pointer::Pointer<metamodelica::Array<i32>>,
     }
 
+    impl metamodelica::gc::MMTrace for DisjointSetForest {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            metamodelica::gc::MMTrace::mm_accept(&self.parent, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.rank, __mmv)?;
+            Ok(())
+        }
+    }
     impl Default for DisjointSetForest {
         fn default() -> Self {
             Self {

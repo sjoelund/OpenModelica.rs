@@ -144,6 +144,19 @@ pub enum TranslateModelKind {
         targetName: ArcStr,
     },
 }
+impl metamodelica::gc::MMTrace for TranslateModelKind {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            TranslateModelKind::NORMAL => Ok(()),
+            TranslateModelKind::XML => Ok(()),
+            TranslateModelKind::FMU { kind, targetName } => {
+                metamodelica::gc::MMTrace::mm_accept(kind, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(targetName, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 pub use self::TranslateModelKind::{NORMAL,XML,FMU};
 
 pub fn createSimulationSettings(mut startTime: metamodelica::Real, mut stopTime: metamodelica::Real, mut inumberOfIntervals: i32, mut tolerance: metamodelica::Real, mut method: ArcStr, mut options: ArcStr, mut outputFormat: ArcStr, mut variableFilter: ArcStr, mut cflags: ArcStr, mut simflags: ArcStr) -> SimCode::SimulationSettings {

@@ -203,6 +203,9 @@ impl PartialOrd for CompareWithSubsType {
 impl Ord for CompareWithSubsType {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
+impl metamodelica::gc::MMTrace for CompareWithSubsType {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+}
 
 pub mod CompareWithGenericSubscript {
     use super::*;

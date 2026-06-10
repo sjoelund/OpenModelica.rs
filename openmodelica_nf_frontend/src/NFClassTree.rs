@@ -123,6 +123,49 @@ pub mod ClassTree {
         },
         EMPTY_TREE,
     }
+    impl metamodelica::gc::MMTrace for ClassTree {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            match self {
+                ClassTree::PARTIAL_TREE { tree, classes, components, exts, imports, duplicates } => {
+                    metamodelica::gc::MMTrace::mm_accept(tree, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(classes, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(components, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(exts, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(imports, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(duplicates, __mmv)?;
+                    Ok(())
+                }
+                ClassTree::EXPANDED_TREE { tree, classes, components, exts, imports, duplicates } => {
+                    metamodelica::gc::MMTrace::mm_accept(tree, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(classes, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(components, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(exts, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(imports, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(duplicates, __mmv)?;
+                    Ok(())
+                }
+                ClassTree::INSTANTIATED_TREE { tree, classes, components, localComponents, exts, imports, duplicates } => {
+                    metamodelica::gc::MMTrace::mm_accept(tree, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(classes, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(components, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(localComponents, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(exts, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(imports, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(duplicates, __mmv)?;
+                    Ok(())
+                }
+                ClassTree::FLAT_TREE { tree, classes, components, imports, duplicates } => {
+                    metamodelica::gc::MMTrace::mm_accept(tree, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(classes, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(components, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(imports, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(duplicates, __mmv)?;
+                    Ok(())
+                }
+                ClassTree::EMPTY_TREE => Ok(()),
+            }
+        }
+    }
     impl ClassTree {
         pub fn interned_EMPTY_TREE() -> Arc<ClassTree> {
             thread_local! {

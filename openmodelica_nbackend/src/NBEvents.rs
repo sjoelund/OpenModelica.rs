@@ -153,6 +153,15 @@ pub mod EventInfo {
         pub numberMathEvents: i32,
     }
 
+    impl metamodelica::gc::MMTrace for EventInfo {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            metamodelica::gc::MMTrace::mm_accept(&self.time_set, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.time_map, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.state_map, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.numberMathEvents, __mmv)?;
+            Ok(())
+        }
+    }
     impl Default for EventInfo {
         fn default() -> Self {
             Self {
@@ -330,6 +339,25 @@ pub mod TimeEvent {
             /// potential iterator
             iter: Arc<Iterator::Iterator>,
         },
+    }
+    impl metamodelica::gc::MMTrace for TimeEvent {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            match self {
+                TimeEvent::SINGLE { index, trigger, iter } => {
+                    metamodelica::gc::MMTrace::mm_accept(index, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(trigger, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(iter, __mmv)?;
+                    Ok(())
+                }
+                TimeEvent::SAMPLE { index, start, interval, iter } => {
+                    metamodelica::gc::MMTrace::mm_accept(index, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(start, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(interval, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(iter, __mmv)?;
+                    Ok(())
+                }
+            }
+        }
     }
     impl Default for TimeEvent {
         fn default() -> Self {
@@ -609,6 +637,14 @@ pub mod StateEvent {
         pub eqns: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Equation::Equation>>>>,
     }
 
+    impl metamodelica::gc::MMTrace for StateEvent {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            metamodelica::gc::MMTrace::mm_accept(&self.index, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.auxiliary, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.eqns, __mmv)?;
+            Ok(())
+        }
+    }
     impl Default for StateEvent {
         fn default() -> Self {
             Self {
@@ -770,6 +806,13 @@ pub mod CompositeEvent {
         pub auxiliary: Pointer::Pointer<Arc<Variable::NFVariable>>,
     }
 
+    impl metamodelica::gc::MMTrace for CompositeEvent {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            metamodelica::gc::MMTrace::mm_accept(&self.index, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.auxiliary, __mmv)?;
+            Ok(())
+        }
+    }
     impl Default for CompositeEvent {
         fn default() -> Self {
             Self {
@@ -920,6 +963,14 @@ pub mod Condition {
         pub stmt_index: i32,
     }
 
+    impl metamodelica::gc::MMTrace for Condition {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            metamodelica::gc::MMTrace::mm_accept(&self.exp, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.iter, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.stmt_index, __mmv)?;
+            Ok(())
+        }
+    }
     impl Default for Condition {
         fn default() -> Self {
             Self {
@@ -1007,6 +1058,16 @@ pub struct Bucket {
     pub stmt_index: i32,
 }
 
+impl metamodelica::gc::MMTrace for Bucket {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.time_set, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.time_map, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.state_map, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.aux_stmts, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.stmt_index, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for Bucket {
     fn default() -> Self {
         Self {

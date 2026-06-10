@@ -132,6 +132,13 @@ pub mod InstSettings {
         pub resizableArrays: bool,
     }
 
+    impl metamodelica::gc::MMTrace for InstSettings {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            metamodelica::gc::MMTrace::mm_accept(&self.mergeExtendsSections, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.resizableArrays, __mmv)?;
+            Ok(())
+        }
+    }
     impl Default for InstSettings {
         fn default() -> Self {
             Self {
@@ -1126,6 +1133,9 @@ impl PartialOrd for ExtendsVisibility {
 }
 impl Ord for ExtendsVisibility {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
+}
+impl metamodelica::gc::MMTrace for ExtendsVisibility {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
 }
 
 pub fn applyExtendsVisibility(mut node: Arc<InstNode::InstNode>, mut visibility: ExtendsVisibility) -> Result<Arc<InstNode::InstNode>> {

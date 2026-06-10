@@ -72,6 +72,16 @@ pub struct Mediator {
     pub preferred: Arc<metamodelica::List<Preferred>>,
 }
 
+impl metamodelica::gc::MMTrace for Mediator {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.mType, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.template, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.clients, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.providers, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.preferred, __mmv)?;
+        Ok(())
+    }
+}
 pub type MEDIATOR = Mediator;
 
 
@@ -83,6 +93,15 @@ pub struct Client {
     pub isMandatory: bool,
 }
 
+impl metamodelica::gc::MMTrace for Client {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.modelID, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.component, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.template, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.isMandatory, __mmv)?;
+        Ok(())
+    }
+}
 pub type CLIENT = Client;
 
 
@@ -93,6 +112,14 @@ pub struct Provider {
     pub template: ArcStr,
 }
 
+impl metamodelica::gc::MMTrace for Provider {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.modelID, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.component, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.template, __mmv)?;
+        Ok(())
+    }
+}
 pub type PROVIDER = Provider;
 
 
@@ -102,6 +129,13 @@ pub struct Preferred {
     pub providerInstancePath: ArcStr,
 }
 
+impl metamodelica::gc::MMTrace for Preferred {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.clientInstancePath, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.providerInstancePath, __mmv)?;
+        Ok(())
+    }
+}
 pub type PREFERRED = Preferred;
 
 
@@ -118,6 +152,23 @@ pub enum Client_e {
         mediator: Arc<metamodelica::List<Mediator>>,
     },
     NO_PRED,
+}
+impl metamodelica::gc::MMTrace for Client_e {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            Client_e::CLIENT_E { components, typeSpec, rootType, def, instance, predecessors, mediator } => {
+                metamodelica::gc::MMTrace::mm_accept(components, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(typeSpec, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(rootType, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(def, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(instance, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(predecessors, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(mediator, __mmv)?;
+                Ok(())
+            }
+            Client_e::NO_PRED => Ok(()),
+        }
+    }
 }
 impl Client_e {
     pub fn interned_NO_PRED() -> Arc<Client_e> {

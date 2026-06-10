@@ -117,6 +117,17 @@ pub struct Slot {
     pub evalStatus: i32,
 }
 
+impl metamodelica::gc::MMTrace for Slot {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.defaultArg, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.slotFilled, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.arg, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.dims, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.idx, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.evalStatus, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for Slot {
     fn default() -> Self {
         Self {
@@ -7915,6 +7926,14 @@ pub enum ForceFunctionInst {
     FORCE_FUNCTION_INST,
     /// Used when blocking function instantiation to instantiate the function anyway
     NORMAL_FUNCTION_INST,
+}
+impl metamodelica::gc::MMTrace for ForceFunctionInst {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            ForceFunctionInst::FORCE_FUNCTION_INST => Ok(()),
+            ForceFunctionInst::NORMAL_FUNCTION_INST => Ok(()),
+        }
+    }
 }
 pub use self::ForceFunctionInst::{FORCE_FUNCTION_INST,NORMAL_FUNCTION_INST};
 

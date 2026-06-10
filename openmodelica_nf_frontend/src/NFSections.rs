@@ -78,6 +78,30 @@ pub enum NFSections {
     },
     EMPTY,
 }
+impl metamodelica::gc::MMTrace for NFSections {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            NFSections::SECTIONS { equations, initialEquations, algorithms, initialAlgorithms } => {
+                metamodelica::gc::MMTrace::mm_accept(equations, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(initialEquations, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(algorithms, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(initialAlgorithms, __mmv)?;
+                Ok(())
+            }
+            NFSections::EXTERNAL { name, args, outputRef, language, ann, explicit, info } => {
+                metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(args, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(outputRef, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(language, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(ann, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(explicit, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(info, __mmv)?;
+                Ok(())
+            }
+            NFSections::EMPTY => Ok(()),
+        }
+    }
+}
 impl NFSections {
     pub fn interned_EMPTY() -> Arc<NFSections> {
         thread_local! {

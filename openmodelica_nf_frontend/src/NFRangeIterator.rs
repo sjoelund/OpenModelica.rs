@@ -74,6 +74,39 @@ pub enum NFRangeIterator {
         exp: Arc<Expression::NFExpression>,
     },
 }
+impl metamodelica::gc::MMTrace for NFRangeIterator {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            NFRangeIterator::INT_RANGE { current, last } => {
+                metamodelica::gc::MMTrace::mm_accept(current, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(last, __mmv)?;
+                Ok(())
+            }
+            NFRangeIterator::INT_STEP_RANGE { current, stepsize, last } => {
+                metamodelica::gc::MMTrace::mm_accept(current, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(stepsize, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(last, __mmv)?;
+                Ok(())
+            }
+            NFRangeIterator::REAL_RANGE { start, stepsize, current, steps } => {
+                metamodelica::gc::MMTrace::mm_accept(start, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(stepsize, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(current, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(steps, __mmv)?;
+                Ok(())
+            }
+            NFRangeIterator::ARRAY_RANGE { values, index } => {
+                metamodelica::gc::MMTrace::mm_accept(values, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(index, __mmv)?;
+                Ok(())
+            }
+            NFRangeIterator::INVALID_RANGE { exp } => {
+                metamodelica::gc::MMTrace::mm_accept(exp, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 impl Default for NFRangeIterator {
     fn default() -> Self {
         Self::INVALID_RANGE {

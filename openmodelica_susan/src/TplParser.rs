@@ -102,6 +102,26 @@ pub mod CacheTree {
         },
         EMPTY,
     }
+    impl metamodelica::gc::MMTrace for Tree {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            match self {
+                Tree::NODE { key, value, height, left, right } => {
+                    metamodelica::gc::MMTrace::mm_accept(key, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(value, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(height, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(left, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(right, __mmv)?;
+                    Ok(())
+                }
+                Tree::LEAF { key, value } => {
+                    metamodelica::gc::MMTrace::mm_accept(key, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(value, __mmv)?;
+                    Ok(())
+                }
+                Tree::EMPTY => Ok(()),
+            }
+        }
+    }
     impl Tree {
         pub fn interned_EMPTY() -> Arc<Tree> {
             static INTERNED: std::sync::LazyLock<Arc<Tree>> = std::sync::LazyLock::new(|| Arc::new(Tree::EMPTY));
@@ -761,6 +781,14 @@ pub struct ParseInfo {
     pub wasFatalError: bool,
 }
 
+impl metamodelica::gc::MMTrace for ParseInfo {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.fileName, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.errors, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.wasFatalError, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for ParseInfo {
     fn default() -> Self {
         Self {
@@ -782,6 +810,15 @@ pub struct LineInfo {
     pub startOfLineChars: Arc<metamodelica::List<ArcStr>>,
 }
 
+impl metamodelica::gc::MMTrace for LineInfo {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.parseInfo, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.lineNumber, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.lineLength, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.startOfLineChars, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for LineInfo {
     fn default() -> Self {
         Self {

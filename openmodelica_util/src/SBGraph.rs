@@ -78,6 +78,9 @@ impl PartialOrd for SetType {
 impl Ord for SetType {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
+impl metamodelica::gc::MMTrace for SetType {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+}
 
 pub fn edge_finder<EdgeT: Clone + 'static>(mut index: i32, mut e: EdgeT, mut edges: Arc<Vector::Vector<EdgeT>>, mut eqFn: Arc<dyn ::std::ops::Fn(EdgeT, EdgeT) -> Result<bool> + 'static>) -> Result<bool> {
     let mut matching: bool = eqFn(e.clone(), Vector::get(edges.clone(), index.clone())?)?;
@@ -97,6 +100,18 @@ pub mod IncidenceList {
         pub edgeToString: EdgeStr<EdgeT>,
     }
 
+    impl<VertexT: Clone + metamodelica::gc::MMTrace, EdgeT: Clone + metamodelica::gc::MMTrace> metamodelica::gc::MMTrace for IncidenceList<VertexT, EdgeT> {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            metamodelica::gc::MMTrace::mm_accept(&self.vertices, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.edges, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.graph, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.vertEqFn, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.edgeEqFn, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.vertToString, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.edgeToString, __mmv)?;
+            Ok(())
+        }
+    }
     impl<VertexT: Clone + 'static + PartialEq, EdgeT: Clone + 'static + PartialEq> PartialEq for IncidenceList<VertexT, EdgeT> {
         fn eq(&self, other: &Self) -> bool {
             self.vertices == other.vertices && self.edges == other.edges && self.graph == other.graph && std::sync::Arc::ptr_eq((&self.vertEqFn), (&other.vertEqFn)) && std::sync::Arc::ptr_eq((&self.edgeEqFn), (&other.edgeEqFn)) && std::sync::Arc::ptr_eq((&self.vertToString), (&other.vertToString)) && std::sync::Arc::ptr_eq((&self.edgeToString), (&other.edgeToString))
@@ -265,6 +280,19 @@ pub mod BipartiteIncidenceList {
         pub edgeToString: EdgeStr<EdgeT>,
     }
 
+    impl<VertexT: Clone + metamodelica::gc::MMTrace, EdgeT: Clone + metamodelica::gc::MMTrace> metamodelica::gc::MMTrace for BipartiteIncidenceList<VertexT, EdgeT> {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            metamodelica::gc::MMTrace::mm_accept(&self.F_vertices, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.U_vertices, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.edges, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.graph, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.vertEqFn, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.edgeEqFn, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.vertToString, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.edgeToString, __mmv)?;
+            Ok(())
+        }
+    }
     impl<VertexT: Clone + 'static + PartialEq, EdgeT: Clone + 'static + PartialEq> PartialEq for BipartiteIncidenceList<VertexT, EdgeT> {
         fn eq(&self, other: &Self) -> bool {
             self.F_vertices == other.F_vertices && self.U_vertices == other.U_vertices && self.edges == other.edges && self.graph == other.graph && std::sync::Arc::ptr_eq((&self.vertEqFn), (&other.vertEqFn)) && std::sync::Arc::ptr_eq((&self.edgeEqFn), (&other.edgeEqFn)) && std::sync::Arc::ptr_eq((&self.vertToString), (&other.vertToString)) && std::sync::Arc::ptr_eq((&self.edgeToString), (&other.edgeToString))

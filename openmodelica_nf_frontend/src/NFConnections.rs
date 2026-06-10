@@ -68,6 +68,14 @@ pub struct NFConnections {
     pub broken: BrokenEdges,
 }
 
+impl metamodelica::gc::MMTrace for NFConnections {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.connections, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.flows, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.broken, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for NFConnections {
     fn default() -> Self {
         Self {
@@ -88,6 +96,15 @@ pub struct BrokenEdge {
     pub brokenEquations: Arc<metamodelica::List<Arc<Equation::NFEquation>>>,
 }
 
+impl metamodelica::gc::MMTrace for BrokenEdge {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.lhs, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.rhs, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.source, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.brokenEquations, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for BrokenEdge {
     fn default() -> Self {
         Self {

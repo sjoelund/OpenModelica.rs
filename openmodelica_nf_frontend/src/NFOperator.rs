@@ -58,6 +58,13 @@ pub struct NFOperator {
     pub op: Op,
 }
 
+impl metamodelica::gc::MMTrace for NFOperator {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.ty, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.op, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for NFOperator {
     fn default() -> Self {
         Self {
@@ -114,6 +121,9 @@ impl PartialOrd for Op {
 }
 impl Ord for Op {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
+}
+impl metamodelica::gc::MMTrace for Op {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
 }
 impl Default for Op {
     fn default() -> Self { Self::ADD }
@@ -174,6 +184,9 @@ impl PartialOrd for TypeRestriction {
 }
 impl Ord for TypeRestriction {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
+}
+impl metamodelica::gc::MMTrace for TypeRestriction {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
 }
 
 pub fn typeRestriction(mut ty: Arc<Type::NFType>) -> Result<TypeRestriction> {
@@ -805,6 +818,9 @@ impl PartialOrd for MathClassification {
 impl Ord for MathClassification {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
+impl metamodelica::gc::MMTrace for MathClassification {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+}
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
@@ -824,6 +840,9 @@ impl PartialOrd for SizeClassification {
 }
 impl Ord for SizeClassification {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
+}
+impl metamodelica::gc::MMTrace for SizeClassification {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
 }
 
 pub type Classification = (MathClassification, SizeClassification);

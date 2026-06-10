@@ -91,6 +91,18 @@ pub struct Communication {
     pub requiredTime: metamodelica::Real,
 }
 
+impl metamodelica::gc::MMTrace for Communication {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.numberOfVars, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.integerVars, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.floatVars, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.booleanVars, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.stringVars, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.childNode, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.requiredTime, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for Communication {
     fn default() -> Self {
         Self {
@@ -115,6 +127,14 @@ pub struct ComponentInfo {
     pub isRemovedComponent: bool,
 }
 
+impl metamodelica::gc::MMTrace for ComponentInfo {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.isPartOfODESystem, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.isPartOfZeroFuncSystem, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.isRemovedComponent, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for ComponentInfo {
     fn default() -> Self {
         Self {
@@ -144,6 +164,21 @@ pub struct TaskGraphMeta {
     pub compInformations: metamodelica::Array<ComponentInfo>,
 }
 
+impl metamodelica::gc::MMTrace for TaskGraphMeta {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.inComps, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.varCompMapping, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.eqCompMapping, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.compParamMapping, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.compNames, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.compDescs, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.exeCosts, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.commCosts, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.nodeMark, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.compInformations, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for TaskGraphMeta {
     fn default() -> Self {
         Self {
@@ -177,6 +212,9 @@ impl PartialOrd for VariableType {
 }
 impl Ord for VariableType {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
+}
+impl metamodelica::gc::MMTrace for VariableType {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
 }
 
 pub type VariableList = (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>);
@@ -2887,6 +2925,15 @@ pub struct GraphDumpOptions {
     pub visualizeCommTime: bool,
 }
 
+impl metamodelica::gc::MMTrace for GraphDumpOptions {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.visualizeCriticalPath, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.visualizeTaskStartAndFinishTime, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.visualizeTaskCalcTime, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.visualizeCommTime, __mmv)?;
+        Ok(())
+    }
+}
 pub type GRAPHDUMPOPTIONS = GraphDumpOptions;
 
 

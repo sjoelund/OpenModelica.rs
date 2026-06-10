@@ -91,6 +91,14 @@ pub struct FuncInfo {
     pub idx: i32,
 }
 
+impl metamodelica::gc::MMTrace for FuncInfo {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.repl, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.funcTree, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.idx, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for FuncInfo {
     fn default() -> Self {
         Self {
@@ -109,6 +117,14 @@ pub enum Variability {
     CONST,
     VARIABLE,
 }
+impl metamodelica::gc::MMTrace for Variability {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            Variability::CONST => Ok(()),
+            Variability::VARIABLE => Ok(()),
+        }
+    }
+}
 impl Default for Variability {
     fn default() -> Self { Self::CONST }
 }
@@ -121,6 +137,14 @@ pub struct CallSignature {
     pub canBeEvaluated: bool,
 }
 
+impl metamodelica::gc::MMTrace for CallSignature {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.path, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.inputsVari, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.canBeEvaluated, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for CallSignature {
     fn default() -> Self {
         Self {

@@ -105,6 +105,15 @@ pub struct NBTearing {
     pub jac: Option<Arc<Jacobian::NBackendDAE>>,
 }
 
+impl metamodelica::gc::MMTrace for NBTearing {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.iteration_vars, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.residual_eqns, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.innerEquations, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.jac, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for NBTearing {
     fn default() -> Self {
         Self {

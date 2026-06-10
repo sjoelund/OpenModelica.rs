@@ -824,6 +824,13 @@ pub mod InlineRating {
         pub constant_rating: i32,
     }
 
+    impl metamodelica::gc::MMTrace for InlineRating {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            metamodelica::gc::MMTrace::mm_accept(&self.input_rating, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.constant_rating, __mmv)?;
+            Ok(())
+        }
+    }
     impl Default for InlineRating {
         fn default() -> Self {
             Self {

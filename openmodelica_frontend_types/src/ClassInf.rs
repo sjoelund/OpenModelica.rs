@@ -130,6 +130,118 @@ pub enum State {
         path: Arc<Absyn::Path>,
     },
 }
+impl metamodelica::gc::MMTrace for State {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            State::UNKNOWN { path } => {
+                metamodelica::gc::MMTrace::mm_accept(path, __mmv)?;
+                Ok(())
+            }
+            State::OPTIMIZATION { path } => {
+                metamodelica::gc::MMTrace::mm_accept(path, __mmv)?;
+                Ok(())
+            }
+            State::MODEL { path } => {
+                metamodelica::gc::MMTrace::mm_accept(path, __mmv)?;
+                Ok(())
+            }
+            State::RECORD { path } => {
+                metamodelica::gc::MMTrace::mm_accept(path, __mmv)?;
+                Ok(())
+            }
+            State::BLOCK { path } => {
+                metamodelica::gc::MMTrace::mm_accept(path, __mmv)?;
+                Ok(())
+            }
+            State::CONNECTOR { path, isExpandable } => {
+                metamodelica::gc::MMTrace::mm_accept(path, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(isExpandable, __mmv)?;
+                Ok(())
+            }
+            State::TYPE { path } => {
+                metamodelica::gc::MMTrace::mm_accept(path, __mmv)?;
+                Ok(())
+            }
+            State::PACKAGE { path } => {
+                metamodelica::gc::MMTrace::mm_accept(path, __mmv)?;
+                Ok(())
+            }
+            State::FUNCTION { path, isImpure } => {
+                metamodelica::gc::MMTrace::mm_accept(path, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(isImpure, __mmv)?;
+                Ok(())
+            }
+            State::ENUMERATION { path } => {
+                metamodelica::gc::MMTrace::mm_accept(path, __mmv)?;
+                Ok(())
+            }
+            State::HAS_RESTRICTIONS { path, hasEquations, hasAlgorithms, hasConstraints } => {
+                metamodelica::gc::MMTrace::mm_accept(path, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(hasEquations, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(hasAlgorithms, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(hasConstraints, __mmv)?;
+                Ok(())
+            }
+            State::TYPE_INTEGER { path } => {
+                metamodelica::gc::MMTrace::mm_accept(path, __mmv)?;
+                Ok(())
+            }
+            State::TYPE_REAL { path } => {
+                metamodelica::gc::MMTrace::mm_accept(path, __mmv)?;
+                Ok(())
+            }
+            State::TYPE_STRING { path } => {
+                metamodelica::gc::MMTrace::mm_accept(path, __mmv)?;
+                Ok(())
+            }
+            State::TYPE_BOOL { path } => {
+                metamodelica::gc::MMTrace::mm_accept(path, __mmv)?;
+                Ok(())
+            }
+            State::TYPE_CLOCK { path } => {
+                metamodelica::gc::MMTrace::mm_accept(path, __mmv)?;
+                Ok(())
+            }
+            State::TYPE_ENUM { path } => {
+                metamodelica::gc::MMTrace::mm_accept(path, __mmv)?;
+                Ok(())
+            }
+            State::EXTERNAL_OBJ { path } => {
+                metamodelica::gc::MMTrace::mm_accept(path, __mmv)?;
+                Ok(())
+            }
+            State::META_TUPLE { path } => {
+                metamodelica::gc::MMTrace::mm_accept(path, __mmv)?;
+                Ok(())
+            }
+            State::META_LIST { path } => {
+                metamodelica::gc::MMTrace::mm_accept(path, __mmv)?;
+                Ok(())
+            }
+            State::META_OPTION { path } => {
+                metamodelica::gc::MMTrace::mm_accept(path, __mmv)?;
+                Ok(())
+            }
+            State::META_RECORD { path } => {
+                metamodelica::gc::MMTrace::mm_accept(path, __mmv)?;
+                Ok(())
+            }
+            State::META_UNIONTYPE { path, typeVars } => {
+                metamodelica::gc::MMTrace::mm_accept(path, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(typeVars, __mmv)?;
+                Ok(())
+            }
+            State::META_ARRAY { path } => {
+                metamodelica::gc::MMTrace::mm_accept(path, __mmv)?;
+                Ok(())
+            }
+            State::META_POLYMORPHIC { path } => {
+                metamodelica::gc::MMTrace::mm_accept(path, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 impl Default for State {
     fn default() -> Self {
         Self::UNKNOWN {
@@ -157,6 +269,21 @@ pub enum Event {
         /// name of the component
         name: ArcStr,
     },
+}
+impl metamodelica::gc::MMTrace for Event {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            Event::FOUND_EQUATION => Ok(()),
+            Event::FOUND_ALGORITHM => Ok(()),
+            Event::FOUND_CONSTRAINT => Ok(()),
+            Event::FOUND_EXT_DECL => Ok(()),
+            Event::NEWDEF => Ok(()),
+            Event::FOUND_COMPONENT { name } => {
+                metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
+                Ok(())
+            }
+        }
+    }
 }
 pub use self::Event::{FOUND_EQUATION,FOUND_ALGORITHM,FOUND_CONSTRAINT,FOUND_EXT_DECL,NEWDEF,FOUND_COMPONENT};
 

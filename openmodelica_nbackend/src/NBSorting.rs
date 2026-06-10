@@ -87,6 +87,22 @@ pub mod Value {
             eqn_scal_indices: Arc<metamodelica::List<i32>>,
         },
     }
+    impl metamodelica::gc::MMTrace for Value {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            match self {
+                Value::SINGLE_VAL { cref_to_solve, eqn_scal_indices } => {
+                    metamodelica::gc::MMTrace::mm_accept(cref_to_solve, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(eqn_scal_indices, __mmv)?;
+                    Ok(())
+                }
+                Value::MULTI_VAL { crefs_to_solve, eqn_scal_indices } => {
+                    metamodelica::gc::MMTrace::mm_accept(crefs_to_solve, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(eqn_scal_indices, __mmv)?;
+                    Ok(())
+                }
+            }
+        }
+    }
     impl Default for Value {
         fn default() -> Self {
             Self::SINGLE_VAL {
@@ -378,6 +394,13 @@ pub mod LoopIdentifier {
         pub vars: Arc<UnorderedSet::UnorderedSet<i32>>,
     }
 
+    impl metamodelica::gc::MMTrace for LoopIdentifier {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            metamodelica::gc::MMTrace::mm_accept(&self.eqns, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.vars, __mmv)?;
+            Ok(())
+        }
+    }
     impl Default for LoopIdentifier {
         fn default() -> Self {
             Self {
@@ -452,6 +475,33 @@ pub mod SuperNode {
             eqn_indices: Arc<metamodelica::List<i32>>,
             arr_idx: i32,
         },
+    }
+    impl metamodelica::gc::MMTrace for SuperNode {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            match self {
+                SuperNode::SINGLE { index } => {
+                    metamodelica::gc::MMTrace::mm_accept(index, __mmv)?;
+                    Ok(())
+                }
+                SuperNode::ELEMENT { index, parent } => {
+                    metamodelica::gc::MMTrace::mm_accept(index, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(parent, __mmv)?;
+                    Ok(())
+                }
+                SuperNode::ALGEBRAIC_LOOP { index, eqn_indices } => {
+                    metamodelica::gc::MMTrace::mm_accept(index, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(eqn_indices, __mmv)?;
+                    Ok(())
+                }
+                SuperNode::ARRAY_BUCKET { index, cref_to_solve, eqn_indices, arr_idx } => {
+                    metamodelica::gc::MMTrace::mm_accept(index, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(cref_to_solve, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(eqn_indices, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(arr_idx, __mmv)?;
+                    Ok(())
+                }
+            }
+        }
     }
     pub use self::SuperNode::{SINGLE,ELEMENT,ALGEBRAIC_LOOP,ARRAY_BUCKET};
     pub fn toString(mut node: Arc<SuperNode>) -> Result<ArcStr> {

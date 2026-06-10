@@ -60,6 +60,15 @@ pub struct UnorderedSet<T: Clone> {
     pub eqFn: KeyEq<T>,
 }
 
+impl<T: Clone + metamodelica::gc::MMTrace> metamodelica::gc::MMTrace for UnorderedSet<T> {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.buckets, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.size, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.hashFn, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.eqFn, __mmv)?;
+        Ok(())
+    }
+}
 impl<T: Clone + 'static + PartialEq> PartialEq for UnorderedSet<T> {
     fn eq(&self, other: &Self) -> bool {
         self.buckets == other.buckets && self.size == other.size && std::sync::Arc::ptr_eq((&self.hashFn), (&other.hashFn)) && std::sync::Arc::ptr_eq((&self.eqFn), (&other.eqFn))

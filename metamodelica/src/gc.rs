@@ -95,6 +95,14 @@ impl MMTrace for ordered_float::OrderedFloat<f64> {
     }
 }
 
+/// Strings, flags and line numbers only.
+impl MMTrace for crate::SourceInfo {
+    #[inline]
+    fn mm_accept<V: Visitor>(&self, _visitor: &mut V) -> Result<(), ()> {
+        Ok(())
+    }
+}
+
 // ── containers: delegate to the payload ───────────────────────────────────────
 
 impl<T: MMTrace + ?Sized> MMTrace for Arc<T> {
@@ -180,9 +188,68 @@ mm_trace_tuple!(A: 0, B: 1, C: 2, D: 3, E: 4);
 mm_trace_tuple!(A: 0, B: 1, C: 2, D: 3, E: 4, F: 5);
 mm_trace_tuple!(A: 0, B: 1, C: 2, D: 3, E: 4, F: 5, G: 6);
 mm_trace_tuple!(A: 0, B: 1, C: 2, D: 3, E: 4, F: 5, G: 6, H: 7);
+mm_trace_tuple!(A: 0, B: 1, C: 2, D: 3, E: 4, F: 5, G: 6, H: 7, I: 8);
+mm_trace_tuple!(A: 0, B: 1, C: 2, D: 3, E: 4, F: 5, G: 6, H: 7, I: 8, J: 9);
+mm_trace_tuple!(A: 0, B: 1, C: 2, D: 3, E: 4, F: 5, G: 6, H: 7, I: 8, J: 9, K: 10);
+mm_trace_tuple!(A: 0, B: 1, C: 2, D: 3, E: 4, F: 5, G: 6, H: 7, I: 8, J: 9, K: 10, L: 11);
 
 // `Array<T>` (= `Rc<RefCell<Vec<T>>>`) is covered by composing the `Rc`,
 // `RefCell` and `Vec` impls above.
+
+// ── function values: the unchecked leaves ─────────────────────────────────────
+//
+// Codegen lowers MetaModelica function values to `Arc<dyn Fn(..) -> .. +
+// 'static>`. A closure's captures cannot be traversed, so these impls accept
+// trivially — this is the module-level "captures no Gc pointers" assumption.
+// One impl per arity; extend the list if codegen ever emits a higher arity.
+
+macro_rules! mm_trace_dyn_fn {
+    ($($args:ident),*) => {
+        impl<Ret $(,$args)*> MMTrace for dyn Fn($($args),*) -> Ret + 'static {
+            #[inline]
+            fn mm_accept<V: Visitor>(&self, _visitor: &mut V) -> Result<(), ()> {
+                Ok(())
+            }
+        }
+    };
+}
+
+/// Plain function pointers carry no captures at all; trivially accepted.
+/// (They appear in cell contents, e.g. SimCodeUtil's tuple-shaped caches.)
+macro_rules! mm_trace_fn_ptr {
+    ($($args:ident),*) => {
+        impl<Ret $(,$args)*> MMTrace for fn($($args),*) -> Ret {
+            #[inline]
+            fn mm_accept<V: Visitor>(&self, _visitor: &mut V) -> Result<(), ()> {
+                Ok(())
+            }
+        }
+    };
+}
+
+mm_trace_fn_ptr!();
+mm_trace_fn_ptr!(A);
+mm_trace_fn_ptr!(A, B);
+mm_trace_fn_ptr!(A, B, C);
+mm_trace_fn_ptr!(A, B, C, D);
+mm_trace_fn_ptr!(A, B, C, D, E);
+mm_trace_fn_ptr!(A, B, C, D, E, F);
+mm_trace_fn_ptr!(A, B, C, D, E, F, G);
+mm_trace_fn_ptr!(A, B, C, D, E, F, G, H);
+
+mm_trace_dyn_fn!();
+mm_trace_dyn_fn!(A);
+mm_trace_dyn_fn!(A, B);
+mm_trace_dyn_fn!(A, B, C);
+mm_trace_dyn_fn!(A, B, C, D);
+mm_trace_dyn_fn!(A, B, C, D, E);
+mm_trace_dyn_fn!(A, B, C, D, E, F);
+mm_trace_dyn_fn!(A, B, C, D, E, F, G);
+mm_trace_dyn_fn!(A, B, C, D, E, F, G, H);
+mm_trace_dyn_fn!(A, B, C, D, E, F, G, H, I);
+mm_trace_dyn_fn!(A, B, C, D, E, F, G, H, I, J);
+mm_trace_dyn_fn!(A, B, C, D, E, F, G, H, I, J, K);
+mm_trace_dyn_fn!(A, B, C, D, E, F, G, H, I, J, K, L);
 
 #[cfg(test)]
 mod tests {

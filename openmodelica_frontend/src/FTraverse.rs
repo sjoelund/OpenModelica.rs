@@ -73,6 +73,14 @@ pub enum WalkOptions {
     /// depth first search
     DFS,
 }
+impl metamodelica::gc::MMTrace for WalkOptions {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            WalkOptions::BFS => Ok(()),
+            WalkOptions::DFS => Ok(()),
+        }
+    }
+}
 pub use self::WalkOptions::{BFS,DFS};
 
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
@@ -81,6 +89,14 @@ pub enum VisitOptions {
     VISIT,
     /// do not mark as visited
     NO_VISIT,
+}
+impl metamodelica::gc::MMTrace for VisitOptions {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            VisitOptions::VISIT => Ok(()),
+            VisitOptions::NO_VISIT => Ok(()),
+        }
+    }
 }
 pub use self::VisitOptions::{VISIT,NO_VISIT};
 
@@ -91,6 +107,18 @@ pub enum Options {
         ws: WalkOptions,
         vs: VisitOptions,
     },
+}
+impl metamodelica::gc::MMTrace for Options {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            Options::NO_OPTIONS => Ok(()),
+            Options::OPTIONS { ws, vs } => {
+                metamodelica::gc::MMTrace::mm_accept(ws, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(vs, __mmv)?;
+                Ok(())
+            }
+        }
+    }
 }
 pub use self::Options::{NO_OPTIONS,OPTIONS};
 

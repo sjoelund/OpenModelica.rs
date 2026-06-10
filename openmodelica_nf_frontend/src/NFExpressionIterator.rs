@@ -72,6 +72,32 @@ pub enum NFExpressionIterator {
         all: Arc<metamodelica::List<Arc<Expression::NFExpression>>>,
     },
 }
+impl metamodelica::gc::MMTrace for NFExpressionIterator {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            NFExpressionIterator::ARRAY_ITERATOR { arr, index, arrays } => {
+                metamodelica::gc::MMTrace::mm_accept(arr, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(index, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(arrays, __mmv)?;
+                Ok(())
+            }
+            NFExpressionIterator::SCALAR_ITERATOR { exp } => {
+                metamodelica::gc::MMTrace::mm_accept(exp, __mmv)?;
+                Ok(())
+            }
+            NFExpressionIterator::EACH_ITERATOR { exp } => {
+                metamodelica::gc::MMTrace::mm_accept(exp, __mmv)?;
+                Ok(())
+            }
+            NFExpressionIterator::NONE_ITERATOR => Ok(()),
+            NFExpressionIterator::REPEAT_ITERATOR { current, all } => {
+                metamodelica::gc::MMTrace::mm_accept(current, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(all, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 impl NFExpressionIterator {
     pub fn interned_NONE_ITERATOR() -> Arc<NFExpressionIterator> {
         thread_local! {

@@ -122,6 +122,53 @@ pub enum SimpleContainer {
         visited: i32,
     },
 }
+impl metamodelica::gc::MMTrace for SimpleContainer {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            SimpleContainer::ALIAS { cr1, negatedCr1, i1, cr2, negatedCr2, i2, eqnAttributes, visited } => {
+                metamodelica::gc::MMTrace::mm_accept(cr1, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(negatedCr1, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(i1, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(cr2, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(negatedCr2, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(i2, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(eqnAttributes, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(visited, __mmv)?;
+                Ok(())
+            }
+            SimpleContainer::PARAMETERALIAS { unknowncr, negatedCr1, i1, paramcr, negatedCr2, i2, eqnAttributes, visited } => {
+                metamodelica::gc::MMTrace::mm_accept(unknowncr, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(negatedCr1, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(i1, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(paramcr, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(negatedCr2, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(i2, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(eqnAttributes, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(visited, __mmv)?;
+                Ok(())
+            }
+            SimpleContainer::TIMEALIAS { cr1, negatedCr1, i1, cr2, negatedCr2, i2, eqnAttributes, visited } => {
+                metamodelica::gc::MMTrace::mm_accept(cr1, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(negatedCr1, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(i1, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(cr2, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(negatedCr2, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(i2, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(eqnAttributes, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(visited, __mmv)?;
+                Ok(())
+            }
+            SimpleContainer::TIMEINDEPENTVAR { cr, i, exp, eqnAttributes, visited } => {
+                metamodelica::gc::MMTrace::mm_accept(cr, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(i, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(exp, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(eqnAttributes, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(visited, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 impl Default for SimpleContainer {
     fn default() -> Self {
         Self::TIMEINDEPENTVAR {

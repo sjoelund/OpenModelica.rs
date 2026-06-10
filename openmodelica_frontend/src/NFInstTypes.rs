@@ -69,6 +69,27 @@ pub enum Element {
         ty: Arc<DAE::Type>,
     },
 }
+impl metamodelica::gc::MMTrace for Element {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            Element::ELEMENT { component, cls } => {
+                metamodelica::gc::MMTrace::mm_accept(component, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(cls, __mmv)?;
+                Ok(())
+            }
+            Element::CONDITIONAL_ELEMENT { component } => {
+                metamodelica::gc::MMTrace::mm_accept(component, __mmv)?;
+                Ok(())
+            }
+            Element::EXTENDED_ELEMENTS { baseClass, cls, ty } => {
+                metamodelica::gc::MMTrace::mm_accept(baseClass, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(cls, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(ty, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 pub use self::Element::{ELEMENT,CONDITIONAL_ELEMENT,EXTENDED_ELEMENTS};
 
 #[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
@@ -84,6 +105,25 @@ pub enum Class {
     BASIC_TYPE {
         name: Arc<Absyn::Path>,
     },
+}
+impl metamodelica::gc::MMTrace for Class {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            Class::COMPLEX_CLASS { name, components, equations, initialEquations, algorithms, initialAlgorithms } => {
+                metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(components, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(equations, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(initialEquations, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(algorithms, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(initialAlgorithms, __mmv)?;
+                Ok(())
+            }
+            Class::BASIC_TYPE { name } => {
+                metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
+                Ok(())
+            }
+        }
+    }
 }
 pub use self::Class::{COMPLEX_CLASS,BASIC_TYPE};
 
@@ -111,6 +151,28 @@ pub enum Function {
         algorithms: Arc<metamodelica::List<Arc<Statement>>>,
     },
 }
+impl metamodelica::gc::MMTrace for Function {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            Function::FUNCTION { path, inputs, outputs, locals, algorithms } => {
+                metamodelica::gc::MMTrace::mm_accept(path, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(inputs, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(outputs, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(locals, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(algorithms, __mmv)?;
+                Ok(())
+            }
+            Function::RECORD_CONSTRUCTOR { path, recType, inputs, locals, algorithms } => {
+                metamodelica::gc::MMTrace::mm_accept(path, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(recType, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(inputs, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(locals, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(algorithms, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 pub use self::Function::{FUNCTION,RECORD_CONSTRUCTOR};
 
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
@@ -122,6 +184,21 @@ pub enum Dimension {
     TYPED_DIMENSION {
         dimension: Arc<DAE::Dimension>,
     },
+}
+impl metamodelica::gc::MMTrace for Dimension {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            Dimension::UNTYPED_DIMENSION { dimension, isProcessing } => {
+                metamodelica::gc::MMTrace::mm_accept(dimension, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(isProcessing, __mmv)?;
+                Ok(())
+            }
+            Dimension::TYPED_DIMENSION { dimension } => {
+                metamodelica::gc::MMTrace::mm_accept(dimension, __mmv)?;
+                Ok(())
+            }
+        }
+    }
 }
 pub use self::Dimension::{UNTYPED_DIMENSION,TYPED_DIMENSION};
 
@@ -149,6 +226,34 @@ pub enum Binding {
         propagatedDims: i32,
         info: SourceInfo,
     },
+}
+impl metamodelica::gc::MMTrace for Binding {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            Binding::UNBOUND => Ok(()),
+            Binding::RAW_BINDING { bindingExp, env, propagatedDims, info } => {
+                metamodelica::gc::MMTrace::mm_accept(bindingExp, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(env, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(propagatedDims, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(info, __mmv)?;
+                Ok(())
+            }
+            Binding::UNTYPED_BINDING { bindingExp, isProcessing, propagatedDims, info } => {
+                metamodelica::gc::MMTrace::mm_accept(bindingExp, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(isProcessing, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(propagatedDims, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(info, __mmv)?;
+                Ok(())
+            }
+            Binding::TYPED_BINDING { bindingExp, bindingType, propagatedDims, info } => {
+                metamodelica::gc::MMTrace::mm_accept(bindingExp, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(bindingType, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(propagatedDims, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(info, __mmv)?;
+                Ok(())
+            }
+        }
+    }
 }
 pub use self::Binding::{UNBOUND,RAW_BINDING,UNTYPED_BINDING,TYPED_BINDING};
 
@@ -192,6 +297,55 @@ pub enum Component {
         componentName: Arc<Absyn::Path>,
     },
 }
+impl metamodelica::gc::MMTrace for Component {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            Component::UNTYPED_COMPONENT { name, baseType, dimensions, prefixes, paramType, binding, info } => {
+                metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(baseType, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(dimensions, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(prefixes, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(paramType, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(binding, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(info, __mmv)?;
+                Ok(())
+            }
+            Component::TYPED_COMPONENT { name, ty, parent, prefixes, binding, info } => {
+                metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(ty, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(parent, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(prefixes, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(binding, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(info, __mmv)?;
+                Ok(())
+            }
+            Component::CONDITIONAL_COMPONENT { name, condition, element, modifier, prefixes, env, prefix, info } => {
+                metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(condition, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(element, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(modifier, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(prefixes, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(env, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(prefix, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(info, __mmv)?;
+                Ok(())
+            }
+            Component::DELETED_COMPONENT { name } => {
+                metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
+                Ok(())
+            }
+            Component::OUTER_COMPONENT { name, innerName } => {
+                metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(innerName, __mmv)?;
+                Ok(())
+            }
+            Component::COMPONENT_ALIAS { componentName } => {
+                metamodelica::gc::MMTrace::mm_accept(componentName, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 pub use self::Component::{UNTYPED_COMPONENT,TYPED_COMPONENT,CONDITIONAL_COMPONENT,DELETED_COMPONENT,OUTER_COMPONENT,COMPONENT_ALIAS};
 
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
@@ -203,6 +357,20 @@ pub enum Condition {
         conditions: Arc<metamodelica::List<Arc<Condition>>>,
     },
 }
+impl metamodelica::gc::MMTrace for Condition {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            Condition::SINGLE_CONDITION { condition } => {
+                metamodelica::gc::MMTrace::mm_accept(condition, __mmv)?;
+                Ok(())
+            }
+            Condition::ARRAY_CONDITION { conditions } => {
+                metamodelica::gc::MMTrace::mm_accept(conditions, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 pub use self::Condition::{SINGLE_CONDITION,ARRAY_CONDITION};
 
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
@@ -213,6 +381,15 @@ pub enum ParamType {
     NON_STRUCT_PARAM,
     /// A structural parameter.
     STRUCT_PARAM,
+}
+impl metamodelica::gc::MMTrace for ParamType {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            ParamType::NON_PARAM => Ok(()),
+            ParamType::NON_STRUCT_PARAM => Ok(()),
+            ParamType::STRUCT_PARAM => Ok(()),
+        }
+    }
 }
 pub use self::ParamType::{NON_PARAM,NON_STRUCT_PARAM,STRUCT_PARAM};
 
@@ -236,6 +413,31 @@ pub enum Modifier {
     },
     NOMOD,
 }
+impl metamodelica::gc::MMTrace for Modifier {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            Modifier::MODIFIER { name, finalPrefix, eachPrefix, binding, subModifiers, info } => {
+                metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(finalPrefix, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(eachPrefix, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(binding, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(subModifiers, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(info, __mmv)?;
+                Ok(())
+            }
+            Modifier::REDECLARE { finalPrefix, eachPrefix, element, env, r#mod, constrainingClass } => {
+                metamodelica::gc::MMTrace::mm_accept(finalPrefix, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(eachPrefix, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(element, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(env, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(r#mod, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(constrainingClass, __mmv)?;
+                Ok(())
+            }
+            Modifier::NOMOD => Ok(()),
+        }
+    }
+}
 impl Modifier {
     pub fn interned_NOMOD() -> Arc<Modifier> {
         thread_local! {
@@ -253,6 +455,13 @@ pub struct ConstrainingClass {
     pub r#mod: Arc<Modifier>,
 }
 
+impl metamodelica::gc::MMTrace for ConstrainingClass {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.classPath, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.r#mod, __mmv)?;
+        Ok(())
+    }
+}
 pub type CONSTRAINING_CLASS = ConstrainingClass;
 
 
@@ -269,6 +478,23 @@ pub enum Prefixes {
         varArgs: VarArgs,
     },
 }
+impl metamodelica::gc::MMTrace for Prefixes {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            Prefixes::NO_PREFIXES => Ok(()),
+            Prefixes::PREFIXES { visibility, variability, finalPrefix, innerOuter, direction, connectorType, varArgs } => {
+                metamodelica::gc::MMTrace::mm_accept(visibility, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(variability, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(finalPrefix, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(innerOuter, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(direction, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(connectorType, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(varArgs, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 pub use self::Prefixes::{NO_PREFIXES,PREFIXES};
 
 pub static DEFAULT_PROTECTED_PREFIXES: std::sync::LazyLock<Prefixes> = std::sync::LazyLock::new(|| { Prefixes::PREFIXES { visibility: openmodelica_frontend_types::SCode::Visibility::PROTECTED, variability: openmodelica_frontend_types::SCode::Variability::VAR, finalPrefix: openmodelica_frontend_types::SCode::Final::NOT_FINAL, innerOuter: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, direction: (openmodelica_ast::Absyn::Direction::BIDIR, Absyn::dummyInfo.clone()), connectorType: (openmodelica_frontend_types::SCode::ConnectorType::POTENTIAL, Absyn::dummyInfo.clone()), varArgs: crate::NFInstTypes::VarArgs::NO_VARARG } });
@@ -279,6 +505,14 @@ pub static DEFAULT_INPUT_PREFIXES: std::sync::LazyLock<Prefixes> = std::sync::La
 pub enum VarArgs {
     NO_VARARG,
     IS_VARARG,
+}
+impl metamodelica::gc::MMTrace for VarArgs {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            VarArgs::NO_VARARG => Ok(()),
+            VarArgs::IS_VARARG => Ok(()),
+        }
+    }
 }
 pub use self::VarArgs::{NO_VARARG,IS_VARARG};
 
@@ -293,6 +527,22 @@ pub enum DaePrefixes {
         direction: DAE::VarDirection,
         connectorType: Arc<DAE::ConnectorType>,
     },
+}
+impl metamodelica::gc::MMTrace for DaePrefixes {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            DaePrefixes::NO_DAE_PREFIXES => Ok(()),
+            DaePrefixes::DAE_PREFIXES { visibility, variability, finalPrefix, innerOuter, direction, connectorType } => {
+                metamodelica::gc::MMTrace::mm_accept(visibility, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(variability, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(finalPrefix, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(innerOuter, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(direction, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(connectorType, __mmv)?;
+                Ok(())
+            }
+        }
+    }
 }
 pub use self::DaePrefixes::{NO_DAE_PREFIXES,DAE_PREFIXES};
 
@@ -368,6 +618,69 @@ pub enum Equation {
         exp: Arc<DAE::Exp>,
         info: SourceInfo,
     },
+}
+impl metamodelica::gc::MMTrace for Equation {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            Equation::EQUALITY_EQUATION { lhs, rhs, info } => {
+                metamodelica::gc::MMTrace::mm_accept(lhs, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(rhs, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(info, __mmv)?;
+                Ok(())
+            }
+            Equation::CONNECT_EQUATION { lhs, lhsType, rhs, rhsType, prefix, info } => {
+                metamodelica::gc::MMTrace::mm_accept(lhs, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(lhsType, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(rhs, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(rhsType, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(prefix, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(info, __mmv)?;
+                Ok(())
+            }
+            Equation::FOR_EQUATION { name, index, indexType, range, body, info } => {
+                metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(index, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(indexType, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(range, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(body, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(info, __mmv)?;
+                Ok(())
+            }
+            Equation::IF_EQUATION { branches, info } => {
+                metamodelica::gc::MMTrace::mm_accept(branches, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(info, __mmv)?;
+                Ok(())
+            }
+            Equation::WHEN_EQUATION { branches, info } => {
+                metamodelica::gc::MMTrace::mm_accept(branches, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(info, __mmv)?;
+                Ok(())
+            }
+            Equation::ASSERT_EQUATION { condition, message, level, info } => {
+                metamodelica::gc::MMTrace::mm_accept(condition, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(message, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(level, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(info, __mmv)?;
+                Ok(())
+            }
+            Equation::TERMINATE_EQUATION { message, info } => {
+                metamodelica::gc::MMTrace::mm_accept(message, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(info, __mmv)?;
+                Ok(())
+            }
+            Equation::REINIT_EQUATION { cref, reinitExp, info } => {
+                metamodelica::gc::MMTrace::mm_accept(cref, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(reinitExp, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(info, __mmv)?;
+                Ok(())
+            }
+            Equation::NORETCALL_EQUATION { exp, info } => {
+                metamodelica::gc::MMTrace::mm_accept(exp, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(info, __mmv)?;
+                Ok(())
+            }
+        }
+    }
 }
 pub use self::Equation::{EQUALITY_EQUATION,CONNECT_EQUATION,FOR_EQUATION,IF_EQUATION,WHEN_EQUATION,ASSERT_EQUATION,TERMINATE_EQUATION,REINIT_EQUATION,NORETCALL_EQUATION};
 
@@ -448,6 +761,84 @@ pub enum Statement {
         info: SourceInfo,
     },
 }
+impl metamodelica::gc::MMTrace for Statement {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            Statement::ASSIGN_STMT { lhs, rhs, info } => {
+                metamodelica::gc::MMTrace::mm_accept(lhs, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(rhs, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(info, __mmv)?;
+                Ok(())
+            }
+            Statement::FUNCTION_ARRAY_INIT { name, ty, info } => {
+                metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(ty, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(info, __mmv)?;
+                Ok(())
+            }
+            Statement::FOR_STMT { name, index, indexType, range, body, info } => {
+                metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(index, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(indexType, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(range, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(body, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(info, __mmv)?;
+                Ok(())
+            }
+            Statement::IF_STMT { branches, info } => {
+                metamodelica::gc::MMTrace::mm_accept(branches, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(info, __mmv)?;
+                Ok(())
+            }
+            Statement::WHEN_STMT { branches, info } => {
+                metamodelica::gc::MMTrace::mm_accept(branches, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(info, __mmv)?;
+                Ok(())
+            }
+            Statement::ASSERT_STMT { condition, message, info } => {
+                metamodelica::gc::MMTrace::mm_accept(condition, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(message, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(info, __mmv)?;
+                Ok(())
+            }
+            Statement::TERMINATE_STMT { message, info } => {
+                metamodelica::gc::MMTrace::mm_accept(message, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(info, __mmv)?;
+                Ok(())
+            }
+            Statement::REINIT_STMT { cref, reinitExp, info } => {
+                metamodelica::gc::MMTrace::mm_accept(cref, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(reinitExp, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(info, __mmv)?;
+                Ok(())
+            }
+            Statement::NORETCALL_STMT { exp, info } => {
+                metamodelica::gc::MMTrace::mm_accept(exp, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(info, __mmv)?;
+                Ok(())
+            }
+            Statement::WHILE_STMT { exp, statementLst, info } => {
+                metamodelica::gc::MMTrace::mm_accept(exp, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(statementLst, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(info, __mmv)?;
+                Ok(())
+            }
+            Statement::RETURN_STMT { info } => {
+                metamodelica::gc::MMTrace::mm_accept(info, __mmv)?;
+                Ok(())
+            }
+            Statement::BREAK_STMT { info } => {
+                metamodelica::gc::MMTrace::mm_accept(info, __mmv)?;
+                Ok(())
+            }
+            Statement::FAILURE_STMT { body, info } => {
+                metamodelica::gc::MMTrace::mm_accept(body, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(info, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 pub use self::Statement::{ASSIGN_STMT,FUNCTION_ARRAY_INIT,FOR_STMT,IF_STMT,WHEN_STMT,ASSERT_STMT,TERMINATE_STMT,REINIT_STMT,NORETCALL_STMT,WHILE_STMT,RETURN_STMT,BREAK_STMT,FAILURE_STMT};
 
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
@@ -457,6 +848,14 @@ pub struct FunctionSlot {
     pub defaultValue: Option<Arc<DAE::Exp>>,
 }
 
+impl metamodelica::gc::MMTrace for FunctionSlot {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.name, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.arg, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.defaultValue, __mmv)?;
+        Ok(())
+    }
+}
 pub type SLOT = FunctionSlot;
 
 
@@ -494,6 +893,33 @@ pub enum EntryOrigin {
         originEnv: Env,
     },
 }
+impl metamodelica::gc::MMTrace for EntryOrigin {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            EntryOrigin::LOCAL_ORIGIN => Ok(()),
+            EntryOrigin::BUILTIN_ORIGIN => Ok(()),
+            EntryOrigin::INHERITED_ORIGIN { baseClass, info, origin, originEnv, index } => {
+                metamodelica::gc::MMTrace::mm_accept(baseClass, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(info, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(origin, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(originEnv, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(index, __mmv)?;
+                Ok(())
+            }
+            EntryOrigin::REDECLARED_ORIGIN { replacedEntry, originEnv } => {
+                metamodelica::gc::MMTrace::mm_accept(replacedEntry, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(originEnv, __mmv)?;
+                Ok(())
+            }
+            EntryOrigin::IMPORTED_ORIGIN { imp, info, originEnv } => {
+                metamodelica::gc::MMTrace::mm_accept(imp, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(info, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(originEnv, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 impl EntryOrigin {
     pub fn interned_LOCAL_ORIGIN() -> Arc<EntryOrigin> {
         thread_local! {
@@ -520,6 +946,15 @@ pub struct Entry {
     pub origins: Arc<metamodelica::List<Arc<EntryOrigin>>>,
 }
 
+impl metamodelica::gc::MMTrace for Entry {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.name, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.element, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.r#mod, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.origins, __mmv)?;
+        Ok(())
+    }
+}
 pub type ENTRY = Entry;
 
 
@@ -535,6 +970,22 @@ pub enum ScopeType {
         iterIndex: i32,
     },
 }
+impl metamodelica::gc::MMTrace for ScopeType {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            ScopeType::BUILTIN_SCOPE => Ok(()),
+            ScopeType::TOP_SCOPE => Ok(()),
+            ScopeType::NORMAL_SCOPE { isEncapsulated } => {
+                metamodelica::gc::MMTrace::mm_accept(isEncapsulated, __mmv)?;
+                Ok(())
+            }
+            ScopeType::IMPLICIT_SCOPE { iterIndex } => {
+                metamodelica::gc::MMTrace::mm_accept(iterIndex, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 pub use self::ScopeType::{BUILTIN_SCOPE,TOP_SCOPE,NORMAL_SCOPE,IMPLICIT_SCOPE};
 
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
@@ -545,6 +996,15 @@ pub struct Frame {
     pub entries: Arc<AvlTree>,
 }
 
+impl metamodelica::gc::MMTrace for Frame {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.name, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.prefix, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.scopeType, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.entries, __mmv)?;
+        Ok(())
+    }
+}
 pub type FRAME = Frame;
 
 
@@ -567,6 +1027,15 @@ pub struct AvlTree {
     pub right: Option<Arc<AvlTree>>,
 }
 
+impl metamodelica::gc::MMTrace for AvlTree {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.value, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.height, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.left, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.right, __mmv)?;
+        Ok(())
+    }
+}
 pub type AVLTREENODE = AvlTree;
 
 
@@ -579,6 +1048,13 @@ pub struct AvlTreeValue {
     pub value: AvlValue,
 }
 
+impl metamodelica::gc::MMTrace for AvlTreeValue {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.key, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.value, __mmv)?;
+        Ok(())
+    }
+}
 pub type AVLTREEVALUE = AvlTreeValue;
 
 

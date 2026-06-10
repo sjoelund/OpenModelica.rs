@@ -81,6 +81,31 @@ pub enum Unit {
         unit: ArcStr,
     },
 }
+impl metamodelica::gc::MMTrace for Unit {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            Unit::UNIT { factor, mol, cd, m, s, A, K, g } => {
+                metamodelica::gc::MMTrace::mm_accept(factor, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(mol, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(cd, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(m, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(s, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(A, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(K, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(g, __mmv)?;
+                Ok(())
+            }
+            Unit::MASTER { varList } => {
+                metamodelica::gc::MMTrace::mm_accept(varList, __mmv)?;
+                Ok(())
+            }
+            Unit::UNKNOWN { unit } => {
+                metamodelica::gc::MMTrace::mm_accept(unit, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 impl Default for Unit {
     fn default() -> Self {
         Self::MASTER {
@@ -102,6 +127,24 @@ pub enum Token {
     T_DIV,
     T_LPAREN,
     T_RPAREN,
+}
+impl metamodelica::gc::MMTrace for Token {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            Token::T_NUMBER { number } => {
+                metamodelica::gc::MMTrace::mm_accept(number, __mmv)?;
+                Ok(())
+            }
+            Token::T_UNIT { unit } => {
+                metamodelica::gc::MMTrace::mm_accept(unit, __mmv)?;
+                Ok(())
+            }
+            Token::T_MUL => Ok(()),
+            Token::T_DIV => Ok(()),
+            Token::T_LPAREN => Ok(()),
+            Token::T_RPAREN => Ok(()),
+        }
+    }
 }
 pub use self::Token::{T_NUMBER,T_UNIT,T_MUL,T_DIV,T_LPAREN,T_RPAREN};
 

@@ -141,6 +141,65 @@ pub enum NFCall {
         foldExp: (Option<Arc<Expression::NFExpression>>, ArcStr, ArcStr),
     },
 }
+impl metamodelica::gc::MMTrace for NFCall {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            NFCall::UNTYPED_CALL { r#ref, arguments, named_args, call_scope } => {
+                metamodelica::gc::MMTrace::mm_accept(r#ref, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(arguments, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(named_args, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(call_scope, __mmv)?;
+                Ok(())
+            }
+            NFCall::ARG_TYPED_CALL { r#ref, positional_args, named_args, call_scope } => {
+                metamodelica::gc::MMTrace::mm_accept(r#ref, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(positional_args, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(named_args, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(call_scope, __mmv)?;
+                Ok(())
+            }
+            NFCall::TYPED_CALL { r#fn, ty, var, purity, arguments, attributes } => {
+                metamodelica::gc::MMTrace::mm_accept(r#fn, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(ty, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(var, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(purity, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(arguments, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(attributes, __mmv)?;
+                Ok(())
+            }
+            NFCall::UNTYPED_ARRAY_CONSTRUCTOR { exp, iters } => {
+                metamodelica::gc::MMTrace::mm_accept(exp, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(iters, __mmv)?;
+                Ok(())
+            }
+            NFCall::TYPED_ARRAY_CONSTRUCTOR { ty, var, purity, exp, iters } => {
+                metamodelica::gc::MMTrace::mm_accept(ty, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(var, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(purity, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(exp, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(iters, __mmv)?;
+                Ok(())
+            }
+            NFCall::UNTYPED_REDUCTION { r#ref, exp, iters } => {
+                metamodelica::gc::MMTrace::mm_accept(r#ref, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(exp, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(iters, __mmv)?;
+                Ok(())
+            }
+            NFCall::TYPED_REDUCTION { r#fn, ty, var, purity, exp, iters, defaultExp, foldExp } => {
+                metamodelica::gc::MMTrace::mm_accept(r#fn, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(ty, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(var, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(purity, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(exp, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(iters, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(defaultExp, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(foldExp, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 impl Default for NFCall {
     fn default() -> Self {
         Self::UNTYPED_ARRAY_CONSTRUCTOR {

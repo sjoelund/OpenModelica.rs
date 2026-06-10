@@ -49,6 +49,14 @@ pub enum Evaluate {
     NO_EVAL,
     DO_EVAL,
 }
+impl metamodelica::gc::MMTrace for Evaluate {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            Evaluate::NO_EVAL => Ok(()),
+            Evaluate::DO_EVAL => Ok(()),
+        }
+    }
+}
 impl Default for Evaluate {
     fn default() -> Self { Self::NO_EVAL }
 }
@@ -63,6 +71,17 @@ pub enum IntOp {
     ADDOP,
     SUBOP,
     POWOP,
+}
+impl metamodelica::gc::MMTrace for IntOp {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            IntOp::MULOP => Ok(()),
+            IntOp::DIVOP => Ok(()),
+            IntOp::ADDOP => Ok(()),
+            IntOp::SUBOP => Ok(()),
+            IntOp::POWOP => Ok(()),
+        }
+    }
 }
 pub use self::IntOp::{MULOP,DIVOP,ADDOP,SUBOP,POWOP};
 

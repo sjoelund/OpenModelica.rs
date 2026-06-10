@@ -84,6 +84,43 @@ pub enum JSON {
     FALSE,
     NULL,
 }
+impl metamodelica::gc::MMTrace for JSON {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            JSON::OBJECT { values } => {
+                metamodelica::gc::MMTrace::mm_accept(values, __mmv)?;
+                Ok(())
+            }
+            JSON::LIST_OBJECT { values } => {
+                metamodelica::gc::MMTrace::mm_accept(values, __mmv)?;
+                Ok(())
+            }
+            JSON::ARRAY { values } => {
+                metamodelica::gc::MMTrace::mm_accept(values, __mmv)?;
+                Ok(())
+            }
+            JSON::LIST { values } => {
+                metamodelica::gc::MMTrace::mm_accept(values, __mmv)?;
+                Ok(())
+            }
+            JSON::STRING { r#str } => {
+                metamodelica::gc::MMTrace::mm_accept(r#str, __mmv)?;
+                Ok(())
+            }
+            JSON::INTEGER { i } => {
+                metamodelica::gc::MMTrace::mm_accept(i, __mmv)?;
+                Ok(())
+            }
+            JSON::NUMBER { r } => {
+                metamodelica::gc::MMTrace::mm_accept(r, __mmv)?;
+                Ok(())
+            }
+            JSON::TRUE => Ok(()),
+            JSON::FALSE => Ok(()),
+            JSON::NULL => Ok(()),
+        }
+    }
+}
 impl JSON {
     pub fn interned_TRUE() -> Arc<JSON> {
         thread_local! {

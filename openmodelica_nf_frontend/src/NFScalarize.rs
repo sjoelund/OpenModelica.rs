@@ -82,6 +82,14 @@ pub mod AttributeIterator {
         pub iterator: Mutable::Mutable<Arc<ExpressionIterator::NFExpressionIterator>>,
     }
 
+    impl metamodelica::gc::MMTrace for AttributeIterator {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            metamodelica::gc::MMTrace::mm_accept(&self.name, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.confidence, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.iterator, __mmv)?;
+            Ok(())
+        }
+    }
     impl Default for AttributeIterator {
         fn default() -> Self {
             Self {

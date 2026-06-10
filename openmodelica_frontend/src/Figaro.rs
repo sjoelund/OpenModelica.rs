@@ -101,6 +101,13 @@ pub struct FigaroClass {
     pub typeName: ArcStr,
 }
 
+impl metamodelica::gc::MMTrace for FigaroClass {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.className, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.typeName, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for FigaroClass {
     fn default() -> Self {
         Self {
@@ -123,6 +130,14 @@ pub struct FigaroObject {
     pub figaroCode: ArcStr,
 }
 
+impl metamodelica::gc::MMTrace for FigaroObject {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.objectName, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.typeName, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.figaroCode, __mmv)?;
+        Ok(())
+    }
+}
 pub type FIGAROOBJECT = FigaroObject;
 
 
@@ -733,6 +748,24 @@ pub enum Token {
     TEXT {
         text: ArcStr,
     },
+}
+impl metamodelica::gc::MMTrace for Token {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            Token::OPENTAG { tagName } => {
+                metamodelica::gc::MMTrace::mm_accept(tagName, __mmv)?;
+                Ok(())
+            }
+            Token::CLOSETAG { tagName } => {
+                metamodelica::gc::MMTrace::mm_accept(tagName, __mmv)?;
+                Ok(())
+            }
+            Token::TEXT { text } => {
+                metamodelica::gc::MMTrace::mm_accept(text, __mmv)?;
+                Ok(())
+            }
+        }
+    }
 }
 pub use self::Token::{OPENTAG,CLOSETAG,TEXT};
 

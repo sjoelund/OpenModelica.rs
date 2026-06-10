@@ -53,6 +53,13 @@ pub struct HpcOmData {
     pub hpcOmMemory: Option<MemoryMap>,
 }
 
+impl metamodelica::gc::MMTrace for HpcOmData {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.schedules, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.hpcOmMemory, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for HpcOmData {
     fn default() -> Self {
         Self {
@@ -75,6 +82,20 @@ pub enum MemoryMap {
     },
     MEMORYMAP_UNIFORM,
 }
+impl metamodelica::gc::MMTrace for MemoryMap {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            MemoryMap::MEMORYMAP_ARRAY { floatArraySize, intArraySize, boolArraySize, stringArraySize } => {
+                metamodelica::gc::MMTrace::mm_accept(floatArraySize, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(intArraySize, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(boolArraySize, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(stringArraySize, __mmv)?;
+                Ok(())
+            }
+            MemoryMap::MEMORYMAP_UNIFORM => Ok(()),
+        }
+    }
+}
 impl Default for MemoryMap {
     fn default() -> Self { Self::MEMORYMAP_UNIFORM }
 }
@@ -87,6 +108,14 @@ pub struct CommunicationInfo {
     pub boolVars: Arc<metamodelica::List<SimCodeVar::SimVar>>,
 }
 
+impl metamodelica::gc::MMTrace for CommunicationInfo {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.floatVars, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.intVars, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.boolVars, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for CommunicationInfo {
     fn default() -> Self {
         Self {
@@ -133,6 +162,47 @@ pub enum Task {
     },
     TASKEMPTY,
 }
+impl metamodelica::gc::MMTrace for Task {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            Task::SCHEDULED_TASK { compIdx, numThreads, taskSchedule } => {
+                metamodelica::gc::MMTrace::mm_accept(compIdx, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(numThreads, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(taskSchedule, __mmv)?;
+                Ok(())
+            }
+            Task::CALCTASK { weighting, index, calcTime, timeFinished, threadIdx, eqIdc } => {
+                metamodelica::gc::MMTrace::mm_accept(weighting, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(index, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(calcTime, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(timeFinished, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(threadIdx, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(eqIdc, __mmv)?;
+                Ok(())
+            }
+            Task::CALCTASK_LEVEL { eqIdc, nodeIdc, threadIdx } => {
+                metamodelica::gc::MMTrace::mm_accept(eqIdc, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(nodeIdc, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(threadIdx, __mmv)?;
+                Ok(())
+            }
+            Task::DEPTASK { sourceTask, targetTask, outgoing, id, communicationInfo } => {
+                metamodelica::gc::MMTrace::mm_accept(sourceTask, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(targetTask, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(outgoing, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(id, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(communicationInfo, __mmv)?;
+                Ok(())
+            }
+            Task::PREFETCHTASK { varIdc, varArrayidx } => {
+                metamodelica::gc::MMTrace::mm_accept(varIdc, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(varArrayidx, __mmv)?;
+                Ok(())
+            }
+            Task::TASKEMPTY => Ok(()),
+        }
+    }
+}
 impl Task {
     pub fn interned_TASKEMPTY() -> Arc<Task> {
         thread_local! {
@@ -156,6 +226,21 @@ pub enum TaskList {
         tasks: Arc<metamodelica::List<Arc<Task>>>,
         masterOnly: bool,
     },
+}
+impl metamodelica::gc::MMTrace for TaskList {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            TaskList::PARALLELTASKLIST { tasks } => {
+                metamodelica::gc::MMTrace::mm_accept(tasks, __mmv)?;
+                Ok(())
+            }
+            TaskList::SERIALTASKLIST { tasks, masterOnly } => {
+                metamodelica::gc::MMTrace::mm_accept(tasks, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(masterOnly, __mmv)?;
+                Ok(())
+            }
+        }
+    }
 }
 impl Default for TaskList {
     fn default() -> Self {
@@ -185,6 +270,32 @@ pub enum Schedule {
     EMPTYSCHEDULE {
         tasks: TaskList,
     },
+}
+impl metamodelica::gc::MMTrace for Schedule {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            Schedule::LEVELSCHEDULE { tasksOfLevels, useFixedAssignments } => {
+                metamodelica::gc::MMTrace::mm_accept(tasksOfLevels, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(useFixedAssignments, __mmv)?;
+                Ok(())
+            }
+            Schedule::THREADSCHEDULE { threadTasks, outgoingDepTasks, scheduledTasks, allCalcTasks } => {
+                metamodelica::gc::MMTrace::mm_accept(threadTasks, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(outgoingDepTasks, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(scheduledTasks, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(allCalcTasks, __mmv)?;
+                Ok(())
+            }
+            Schedule::TASKDEPSCHEDULE { tasks } => {
+                metamodelica::gc::MMTrace::mm_accept(tasks, __mmv)?;
+                Ok(())
+            }
+            Schedule::EMPTYSCHEDULE { tasks } => {
+                metamodelica::gc::MMTrace::mm_accept(tasks, __mmv)?;
+                Ok(())
+            }
+        }
+    }
 }
 impl Default for Schedule {
     fn default() -> Self {

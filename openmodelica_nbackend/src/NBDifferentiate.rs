@@ -117,6 +117,9 @@ impl PartialOrd for DifferentiationType {
 impl Ord for DifferentiationType {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
+impl metamodelica::gc::MMTrace for DifferentiationType {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+}
 impl Default for DifferentiationType {
     fn default() -> Self { Self::TIME }
 }
@@ -145,6 +148,20 @@ pub mod DifferentiationArguments {
         pub collectAdjoints: bool,
     }
 
+    impl metamodelica::gc::MMTrace for DifferentiationArguments {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            metamodelica::gc::MMTrace::mm_accept(&self.diffCref, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.new_vars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.diff_map, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.diffType, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.funcMap, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.scalarized, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.adjoint_map, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.current_grad, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.collectAdjoints, __mmv)?;
+            Ok(())
+        }
+    }
     impl Default for DifferentiationArguments {
         fn default() -> Self {
             Self {

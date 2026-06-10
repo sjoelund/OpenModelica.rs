@@ -81,6 +81,35 @@ pub enum NFClockKind {
         solverMethod: Arc<Expression::NFExpression>,
     },
 }
+impl metamodelica::gc::MMTrace for NFClockKind {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            NFClockKind::INFERRED_CLOCK { idx } => {
+                metamodelica::gc::MMTrace::mm_accept(idx, __mmv)?;
+                Ok(())
+            }
+            NFClockKind::RATIONAL_CLOCK { intervalCounter, resolution } => {
+                metamodelica::gc::MMTrace::mm_accept(intervalCounter, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(resolution, __mmv)?;
+                Ok(())
+            }
+            NFClockKind::REAL_CLOCK { interval } => {
+                metamodelica::gc::MMTrace::mm_accept(interval, __mmv)?;
+                Ok(())
+            }
+            NFClockKind::EVENT_CLOCK { condition, startInterval } => {
+                metamodelica::gc::MMTrace::mm_accept(condition, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(startInterval, __mmv)?;
+                Ok(())
+            }
+            NFClockKind::SOLVER_CLOCK { c, solverMethod } => {
+                metamodelica::gc::MMTrace::mm_accept(c, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(solverMethod, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 impl Default for NFClockKind {
     fn default() -> Self {
         Self::INFERRED_CLOCK {

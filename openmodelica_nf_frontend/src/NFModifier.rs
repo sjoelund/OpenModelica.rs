@@ -106,6 +106,26 @@ pub mod ModTable {
         },
         EMPTY,
     }
+    impl metamodelica::gc::MMTrace for Tree {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            match self {
+                Tree::NODE { key, value, height, left, right } => {
+                    metamodelica::gc::MMTrace::mm_accept(key, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(value, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(height, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(left, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(right, __mmv)?;
+                    Ok(())
+                }
+                Tree::LEAF { key, value } => {
+                    metamodelica::gc::MMTrace::mm_accept(key, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(value, __mmv)?;
+                    Ok(())
+                }
+                Tree::EMPTY => Ok(()),
+            }
+        }
+    }
     impl Tree {
         pub fn interned_EMPTY() -> Arc<Tree> {
             thread_local! {
@@ -777,6 +797,24 @@ pub mod ModifierScope {
             path: Arc<Absyn::Path>,
         },
     }
+    impl metamodelica::gc::MMTrace for ModifierScope {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            match self {
+                ModifierScope::COMPONENT { name } => {
+                    metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
+                    Ok(())
+                }
+                ModifierScope::CLASS { name } => {
+                    metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
+                    Ok(())
+                }
+                ModifierScope::EXTENDS { path } => {
+                    metamodelica::gc::MMTrace::mm_accept(path, __mmv)?;
+                    Ok(())
+                }
+            }
+        }
+    }
     impl Default for ModifierScope {
         fn default() -> Self {
             Self::COMPONENT {
@@ -852,6 +890,32 @@ pub mod Modifier {
             propagatedSubs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>,
         },
         NOMOD,
+    }
+    impl metamodelica::gc::MMTrace for Modifier {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            match self {
+                Modifier::MODIFIER { name, finalPrefix, eachPrefix, binding, subModifiers, info } => {
+                    metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(finalPrefix, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(eachPrefix, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(binding, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(subModifiers, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(info, __mmv)?;
+                    Ok(())
+                }
+                Modifier::REDECLARE { finalPrefix, eachPrefix, element, innerMod, outerMod, constrainingMod, propagatedSubs } => {
+                    metamodelica::gc::MMTrace::mm_accept(finalPrefix, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(eachPrefix, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(element, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(innerMod, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(outerMod, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(constrainingMod, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(propagatedSubs, __mmv)?;
+                    Ok(())
+                }
+                Modifier::NOMOD => Ok(()),
+            }
+        }
     }
     impl Modifier {
         pub fn interned_NOMOD() -> Arc<Modifier> {

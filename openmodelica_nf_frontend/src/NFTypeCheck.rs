@@ -107,6 +107,9 @@ impl PartialOrd for MatchKind {
 impl Ord for MatchKind {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
+impl metamodelica::gc::MMTrace for MatchKind {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+}
 
 pub fn isCompatibleMatch(mut kind: MatchKind) -> bool {
     let mut isCompatible: bool = kind.clone() != MatchKind::NOT_COMPATIBLE.clone();

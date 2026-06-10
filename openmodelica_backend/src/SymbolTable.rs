@@ -80,6 +80,16 @@ pub struct SymbolTable {
     pub cacheIndex: i32,
 }
 
+impl metamodelica::gc::MMTrace for SymbolTable {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.ast, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.explodedAst, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.vars, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.cachedAsts, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.cacheIndex, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for SymbolTable {
     fn default() -> Self {
         Self {

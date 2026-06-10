@@ -77,6 +77,14 @@ pub struct SMNode {
     pub edges: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr)),
 }
 
+impl metamodelica::gc::MMTrace for SMNode {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.componentRef, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.isInitial, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.edges, __mmv)?;
+        Ok(())
+    }
+}
 impl PartialEq for SMNode {
     fn eq(&self, other: &Self) -> bool {
         self.componentRef == other.componentRef && self.isInitial == other.isInitial && (match ((&self.edges), (&other.edges)) { ((__lt0, __lt1, __lt2, __lt3, __lt4), (__rt0, __rt1, __rt2, __rt3, __rt4)) => (__lt0 == __rt0) && (__lt1 == __rt1) && (__lt2 == __rt2) && (__lt3 == __rt3) && (match (__lt4, __rt4) { ((__lt0, __lt1, __lt2), (__rt0, __rt1, __rt2)) => std::sync::Arc::ptr_eq(__lt0, __rt0) && std::sync::Arc::ptr_eq(__lt1, __rt1) && std::sync::Arc::ptr_eq(__lt2, __rt2) }) })
@@ -121,6 +129,13 @@ pub struct FlatSMGroup {
     pub states: metamodelica::Array<Arc<DAE::ComponentRef>>,
 }
 
+impl metamodelica::gc::MMTrace for FlatSMGroup {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.initState, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.states, __mmv)?;
+        Ok(())
+    }
+}
 pub type FLAT_SM_GROUP = FlatSMGroup;
 
 
@@ -132,6 +147,13 @@ pub struct AdjacencyTable {
     pub adjacency: metamodelica::Array<metamodelica::Array<bool>>,
 }
 
+impl metamodelica::gc::MMTrace for AdjacencyTable {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.cref2index, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.adjacency, __mmv)?;
+        Ok(())
+    }
+}
 impl PartialEq for AdjacencyTable {
     fn eq(&self, other: &Self) -> bool {
         (match ((&self.cref2index), (&other.cref2index)) { ((__lt0, __lt1, __lt2, __lt3), (__rt0, __rt1, __rt2, __rt3)) => (__lt0 == __rt0) && (__lt1 == __rt1) && (__lt2 == __rt2) && (match (__lt3, __rt3) { ((__lt0, __lt1, __lt2, __lt3), (__rt0, __rt1, __rt2, __rt3)) => std::sync::Arc::ptr_eq(__lt0, __rt0) && std::sync::Arc::ptr_eq(__lt1, __rt1) && std::sync::Arc::ptr_eq(__lt2, __rt2) && std::sync::Arc::ptr_eq(__lt3, __rt3) }) }) && self.adjacency == other.adjacency

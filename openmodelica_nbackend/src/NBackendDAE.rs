@@ -177,6 +177,43 @@ pub enum NBackendDAE {
         eqData: Arc<EqData::EqData>,
     },
 }
+impl metamodelica::gc::MMTrace for NBackendDAE {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            NBackendDAE::MAIN { ode, algebraic, ode_event, alg_event, clocked, init, init_0, dae, varData, eqData, eventInfo, clockedInfo, funcMap } => {
+                metamodelica::gc::MMTrace::mm_accept(ode, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(algebraic, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(ode_event, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(alg_event, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(clocked, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(init, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(init_0, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(dae, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(varData, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(eqData, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(eventInfo, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(clockedInfo, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(funcMap, __mmv)?;
+                Ok(())
+            }
+            NBackendDAE::JACOBIAN { name, jacType, varData, comps, sparsityPattern, sparsityColoring, isAdjoint } => {
+                metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(jacType, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(varData, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(comps, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(sparsityPattern, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(sparsityColoring, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(isAdjoint, __mmv)?;
+                Ok(())
+            }
+            NBackendDAE::HESSIAN { varData, eqData } => {
+                metamodelica::gc::MMTrace::mm_accept(varData, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(eqData, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 impl Default for NBackendDAE {
     fn default() -> Self {
         Self::HESSIAN {

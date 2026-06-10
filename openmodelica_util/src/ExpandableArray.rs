@@ -61,6 +61,15 @@ pub struct ExpandableArray<T: Clone> {
     pub data: Mutable::Mutable<metamodelica::Array<Option<T>>>,
 }
 
+impl<T: Clone + metamodelica::gc::MMTrace> metamodelica::gc::MMTrace for ExpandableArray<T> {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.numberOfElements, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.lastUsedIndex, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.capacity, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.data, __mmv)?;
+        Ok(())
+    }
+}
 impl<T: Clone> Default for ExpandableArray<T> {
     fn default() -> Self {
         Self {

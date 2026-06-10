@@ -102,6 +102,50 @@ pub enum NFComponent {
     /// needed for new crefs in the backend
     WILD,
 }
+impl metamodelica::gc::MMTrace for NFComponent {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            NFComponent::COMPONENT_DEF { definition, modifier } => {
+                metamodelica::gc::MMTrace::mm_accept(definition, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(modifier, __mmv)?;
+                Ok(())
+            }
+            NFComponent::COMPONENT { classInst, ty, binding, condition, attributes, comment, state, info } => {
+                metamodelica::gc::MMTrace::mm_accept(classInst, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(ty, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(binding, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(condition, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(attributes, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(comment, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(state, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(info, __mmv)?;
+                Ok(())
+            }
+            NFComponent::ITERATOR { ty, variability, info } => {
+                metamodelica::gc::MMTrace::mm_accept(ty, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(variability, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(info, __mmv)?;
+                Ok(())
+            }
+            NFComponent::ENUM_LITERAL { literal, comment } => {
+                metamodelica::gc::MMTrace::mm_accept(literal, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(comment, __mmv)?;
+                Ok(())
+            }
+            NFComponent::TYPE_ATTRIBUTE { ty, modifier } => {
+                metamodelica::gc::MMTrace::mm_accept(ty, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(modifier, __mmv)?;
+                Ok(())
+            }
+            NFComponent::INVALID_COMPONENT { component, errors } => {
+                metamodelica::gc::MMTrace::mm_accept(component, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(errors, __mmv)?;
+                Ok(())
+            }
+            NFComponent::WILD => Ok(()),
+        }
+    }
+}
 impl NFComponent {
     pub fn interned_WILD() -> Arc<NFComponent> {
         thread_local! {
@@ -132,6 +176,9 @@ impl PartialOrd for ComponentState {
 }
 impl Ord for ComponentState {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
+}
+impl metamodelica::gc::MMTrace for ComponentState {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
 }
 
 pub fn new(mut definition: Arc<Element>) -> Arc<NFComponent> {

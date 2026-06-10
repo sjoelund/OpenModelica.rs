@@ -108,6 +108,26 @@ pub mod AvailableLibraries {
         },
         EMPTY,
     }
+    impl metamodelica::gc::MMTrace for Tree {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            match self {
+                Tree::NODE { key, value, height, left, right } => {
+                    metamodelica::gc::MMTrace::mm_accept(key, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(value, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(height, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(left, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(right, __mmv)?;
+                    Ok(())
+                }
+                Tree::LEAF { key, value } => {
+                    metamodelica::gc::MMTrace::mm_accept(key, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(value, __mmv)?;
+                    Ok(())
+                }
+                Tree::EMPTY => Ok(()),
+            }
+        }
+    }
     impl Tree {
         pub fn interned_EMPTY() -> Arc<Tree> {
             static INTERNED: std::sync::LazyLock<Arc<Tree>> = std::sync::LazyLock::new(|| Arc::new(Tree::EMPTY));
@@ -806,6 +826,26 @@ pub mod VersionMap {
             value: Value,
         },
         EMPTY,
+    }
+    impl metamodelica::gc::MMTrace for Tree {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            match self {
+                Tree::NODE { key, value, height, left, right } => {
+                    metamodelica::gc::MMTrace::mm_accept(key, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(value, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(height, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(left, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(right, __mmv)?;
+                    Ok(())
+                }
+                Tree::LEAF { key, value } => {
+                    metamodelica::gc::MMTrace::mm_accept(key, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(value, __mmv)?;
+                    Ok(())
+                }
+                Tree::EMPTY => Ok(()),
+            }
+        }
     }
     impl Tree {
         pub fn interned_EMPTY() -> Arc<Tree> {
@@ -1600,6 +1640,9 @@ impl PartialOrd for SupportLevel {
 impl Ord for SupportLevel {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
+impl metamodelica::gc::MMTrace for SupportLevel {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+}
 
 pub fn getSupportLevel(mut obj: Arc<JSON::JSON>) -> Result<SupportLevel> {
     let mut support: SupportLevel;
@@ -2075,6 +2118,19 @@ pub struct PackageInstallInfo {
     pub json: Arc<JSON::JSON>,
 }
 
+impl metamodelica::gc::MMTrace for PackageInstallInfo {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.needsInstall, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.pkg, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.version, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.urlToZipFile, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.path, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.sha, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.singleFileStructureCopyAllFiles, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.json, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for PackageInstallInfo {
     fn default() -> Self {
         Self {

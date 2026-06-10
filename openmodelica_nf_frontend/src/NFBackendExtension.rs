@@ -99,6 +99,20 @@ pub mod BackendInfo {
         pub parent: Option<Pointer::Pointer<Arc<Variable::NFVariable>>>,
     }
 
+    impl metamodelica::gc::MMTrace for BackendInfo {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            metamodelica::gc::MMTrace::mm_accept(&self.varKind, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.attributes, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.annotations, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.var_pre, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.var_seed, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.var_pder_res, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.var_pder_tmp, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.var_start, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.parent, __mmv)?;
+            Ok(())
+        }
+    }
     impl Default for BackendInfo {
         fn default() -> Self {
             Self {
@@ -314,6 +328,77 @@ pub mod VariableKind {
         LOOP_SOLVED,
         /// Undefined variable type. Only to be used during frontend phase.
         FRONTEND_DUMMY,
+    }
+    impl metamodelica::gc::MMTrace for VariableKind {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            match self {
+                VariableKind::TIME => Ok(()),
+                VariableKind::ALGEBRAIC => Ok(()),
+                VariableKind::STATE { index, derivative, natural } => {
+                    metamodelica::gc::MMTrace::mm_accept(index, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(derivative, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(natural, __mmv)?;
+                    Ok(())
+                }
+                VariableKind::STATE_DER { state, alias } => {
+                    metamodelica::gc::MMTrace::mm_accept(state, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(alias, __mmv)?;
+                    Ok(())
+                }
+                VariableKind::DUMMY_DER { dummy_state } => {
+                    metamodelica::gc::MMTrace::mm_accept(dummy_state, __mmv)?;
+                    Ok(())
+                }
+                VariableKind::DUMMY_STATE { dummy_der } => {
+                    metamodelica::gc::MMTrace::mm_accept(dummy_der, __mmv)?;
+                    Ok(())
+                }
+                VariableKind::DISCRETE => Ok(()),
+                VariableKind::DISCRETE_STATE => Ok(()),
+                VariableKind::PREVIOUS => Ok(()),
+                VariableKind::CLOCK => Ok(()),
+                VariableKind::CLOCKED => Ok(()),
+                VariableKind::PARAMETER { resize_value } => {
+                    metamodelica::gc::MMTrace::mm_accept(resize_value, __mmv)?;
+                    Ok(())
+                }
+                VariableKind::CONSTANT => Ok(()),
+                VariableKind::ITERATOR => Ok(()),
+                VariableKind::RECORD { children, min_var, max_var } => {
+                    metamodelica::gc::MMTrace::mm_accept(children, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(min_var, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(max_var, __mmv)?;
+                    Ok(())
+                }
+                VariableKind::START { original } => {
+                    metamodelica::gc::MMTrace::mm_accept(original, __mmv)?;
+                    Ok(())
+                }
+                VariableKind::EXTOBJ { fullClassName } => {
+                    metamodelica::gc::MMTrace::mm_accept(fullClassName, __mmv)?;
+                    Ok(())
+                }
+                VariableKind::JAC_VAR => Ok(()),
+                VariableKind::JAC_TMP_VAR => Ok(()),
+                VariableKind::SEED_VAR => Ok(()),
+                VariableKind::OPT_CONSTR => Ok(()),
+                VariableKind::OPT_FCONSTR => Ok(()),
+                VariableKind::OPT_INPUT_WITH_DER => Ok(()),
+                VariableKind::OPT_INPUT_DER => Ok(()),
+                VariableKind::OPT_TGRID => Ok(()),
+                VariableKind::OPT_LOOP_INPUT { replaceCref } => {
+                    metamodelica::gc::MMTrace::mm_accept(replaceCref, __mmv)?;
+                    Ok(())
+                }
+                VariableKind::ALG_STATE => Ok(()),
+                VariableKind::ALG_STATE_OLD => Ok(()),
+                VariableKind::RESIDUAL_VAR => Ok(()),
+                VariableKind::DAE_AUX_VAR => Ok(()),
+                VariableKind::LOOP_ITERATION => Ok(()),
+                VariableKind::LOOP_SOLVED => Ok(()),
+                VariableKind::FRONTEND_DUMMY => Ok(()),
+            }
+        }
     }
     impl VariableKind {
         pub fn interned_TIME() -> Arc<VariableKind> {
@@ -687,6 +772,87 @@ pub mod VariableAttributes {
             childrenAttr: metamodelica::Array<Arc<VariableAttributes>>,
         },
     }
+    impl metamodelica::gc::MMTrace for VariableAttributes {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            match self {
+                VariableAttributes::VAR_ATTR_REAL { quantity, unit, displayUnit, min, max, start, fixed, nominal, stateSelect, tearingSelect, uncertainty, distribution, binding, isProtected, finalPrefix, startOrigin } => {
+                    metamodelica::gc::MMTrace::mm_accept(quantity, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(unit, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(displayUnit, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(min, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(max, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(start, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(fixed, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(nominal, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(stateSelect, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(tearingSelect, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(uncertainty, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(distribution, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(binding, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(isProtected, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(finalPrefix, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(startOrigin, __mmv)?;
+                    Ok(())
+                }
+                VariableAttributes::VAR_ATTR_INT { quantity, min, max, start, fixed, uncertainty, distribution, binding, isProtected, finalPrefix, startOrigin } => {
+                    metamodelica::gc::MMTrace::mm_accept(quantity, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(min, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(max, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(start, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(fixed, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(uncertainty, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(distribution, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(binding, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(isProtected, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(finalPrefix, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(startOrigin, __mmv)?;
+                    Ok(())
+                }
+                VariableAttributes::VAR_ATTR_BOOL { quantity, start, fixed, binding, isProtected, finalPrefix, startOrigin } => {
+                    metamodelica::gc::MMTrace::mm_accept(quantity, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(start, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(fixed, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(binding, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(isProtected, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(finalPrefix, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(startOrigin, __mmv)?;
+                    Ok(())
+                }
+                VariableAttributes::VAR_ATTR_CLOCK { isProtected, finalPrefix } => {
+                    metamodelica::gc::MMTrace::mm_accept(isProtected, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(finalPrefix, __mmv)?;
+                    Ok(())
+                }
+                VariableAttributes::VAR_ATTR_STRING { quantity, start, fixed, binding, isProtected, finalPrefix, startOrigin } => {
+                    metamodelica::gc::MMTrace::mm_accept(quantity, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(start, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(fixed, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(binding, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(isProtected, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(finalPrefix, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(startOrigin, __mmv)?;
+                    Ok(())
+                }
+                VariableAttributes::VAR_ATTR_ENUMERATION { quantity, min, max, start, fixed, binding, isProtected, finalPrefix, startOrigin } => {
+                    metamodelica::gc::MMTrace::mm_accept(quantity, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(min, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(max, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(start, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(fixed, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(binding, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(isProtected, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(finalPrefix, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(startOrigin, __mmv)?;
+                    Ok(())
+                }
+                VariableAttributes::VAR_ATTR_RECORD { indexMap, childrenAttr } => {
+                    metamodelica::gc::MMTrace::mm_accept(indexMap, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(childrenAttr, __mmv)?;
+                    Ok(())
+                }
+            }
+        }
+    }
     impl Default for VariableAttributes {
         fn default() -> Self {
             Self::VAR_ATTR_CLOCK {
@@ -708,6 +874,9 @@ pub mod VariableAttributes {
     }
     impl Ord for VarType {
         fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
+    }
+    impl metamodelica::gc::MMTrace for VarType {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
     }
 
     pub fn toString(mut attr: Arc<VariableAttributes>) -> Result<ArcStr> {
@@ -1789,6 +1958,9 @@ impl PartialOrd for StateSelect {
 impl Ord for StateSelect {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
+impl metamodelica::gc::MMTrace for StateSelect {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+}
 impl Default for StateSelect {
     fn default() -> Self { Self::NEVER }
 }
@@ -1808,6 +1980,9 @@ impl PartialOrd for TearingSelect {
 impl Ord for TearingSelect {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
+impl metamodelica::gc::MMTrace for TearingSelect {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+}
 impl Default for TearingSelect {
     fn default() -> Self { Self::NEVER }
 }
@@ -1826,6 +2001,9 @@ impl PartialOrd for Uncertainty {
 impl Ord for Uncertainty {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
+impl metamodelica::gc::MMTrace for Uncertainty {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+}
 
 #[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct Distribution {
@@ -1834,6 +2012,14 @@ pub struct Distribution {
     pub paramNames: Arc<Expression::NFExpression>,
 }
 
+impl metamodelica::gc::MMTrace for Distribution {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.name, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.params, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.paramNames, __mmv)?;
+        Ok(())
+    }
+}
 pub type DISTRIBUTION = Distribution;
 
 
@@ -1849,6 +2035,15 @@ pub mod Annotations {
         pub optimizerExpression: Option<OptimizerExpression>,
     }
 
+    impl metamodelica::gc::MMTrace for Annotations {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            metamodelica::gc::MMTrace::mm_accept(&self.hideResult, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.resizable, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.optimizable, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.optimizerExpression, __mmv)?;
+            Ok(())
+        }
+    }
     impl Default for Annotations {
         fn default() -> Self {
             Self {
@@ -1955,6 +2150,9 @@ impl PartialOrd for OptimizerExpression {
 }
 impl Ord for OptimizerExpression {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
+}
+impl metamodelica::gc::MMTrace for OptimizerExpression {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
 }
 impl Default for OptimizerExpression {
     fn default() -> Self { Self::MAYER }

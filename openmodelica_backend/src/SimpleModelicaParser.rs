@@ -74,6 +74,22 @@ pub enum ParseTree {
         token: Token,
     },
 }
+impl metamodelica::gc::MMTrace for ParseTree {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            ParseTree::EMPTY => Ok(()),
+            ParseTree::NODE { label, nodes } => {
+                metamodelica::gc::MMTrace::mm_accept(label, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(nodes, __mmv)?;
+                Ok(())
+            }
+            ParseTree::LEAF { token } => {
+                metamodelica::gc::MMTrace::mm_accept(token, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 impl ParseTree {
     pub fn interned_EMPTY() -> Arc<ParseTree> {
         static INTERNED: std::sync::LazyLock<Arc<ParseTree>> = std::sync::LazyLock::new(|| Arc::new(ParseTree::EMPTY));

@@ -63,6 +63,12 @@ pub struct DumpOptions {
     pub fileName: ArcStr,
 }
 
+impl metamodelica::gc::MMTrace for DumpOptions {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.fileName, __mmv)?;
+        Ok(())
+    }
+}
 pub type DUMPOPTIONS = DumpOptions;
 
 

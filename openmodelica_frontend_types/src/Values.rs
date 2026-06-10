@@ -122,6 +122,82 @@ pub enum Value {
         tyStr: ArcStr,
     },
 }
+impl metamodelica::gc::MMTrace for Value {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            Value::INTEGER { integer } => {
+                metamodelica::gc::MMTrace::mm_accept(integer, __mmv)?;
+                Ok(())
+            }
+            Value::REAL { real } => {
+                metamodelica::gc::MMTrace::mm_accept(real, __mmv)?;
+                Ok(())
+            }
+            Value::STRING { string } => {
+                metamodelica::gc::MMTrace::mm_accept(string, __mmv)?;
+                Ok(())
+            }
+            Value::BOOL { boolean } => {
+                metamodelica::gc::MMTrace::mm_accept(boolean, __mmv)?;
+                Ok(())
+            }
+            Value::ENUM_LITERAL { name, index } => {
+                metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(index, __mmv)?;
+                Ok(())
+            }
+            Value::ARRAY { valueLst, dimLst } => {
+                metamodelica::gc::MMTrace::mm_accept(valueLst, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(dimLst, __mmv)?;
+                Ok(())
+            }
+            Value::LIST { valueLst } => {
+                metamodelica::gc::MMTrace::mm_accept(valueLst, __mmv)?;
+                Ok(())
+            }
+            Value::META_ARRAY { valueLst } => {
+                metamodelica::gc::MMTrace::mm_accept(valueLst, __mmv)?;
+                Ok(())
+            }
+            Value::TUPLE { valueLst } => {
+                metamodelica::gc::MMTrace::mm_accept(valueLst, __mmv)?;
+                Ok(())
+            }
+            Value::META_TUPLE { valueLst } => {
+                metamodelica::gc::MMTrace::mm_accept(valueLst, __mmv)?;
+                Ok(())
+            }
+            Value::RECORD { record_, orderd, comp, index } => {
+                metamodelica::gc::MMTrace::mm_accept(record_, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(orderd, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(comp, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(index, __mmv)?;
+                Ok(())
+            }
+            Value::OPTION { some } => {
+                metamodelica::gc::MMTrace::mm_accept(some, __mmv)?;
+                Ok(())
+            }
+            Value::CODE { A } => {
+                metamodelica::gc::MMTrace::mm_accept(A, __mmv)?;
+                Ok(())
+            }
+            Value::NORETCALL => Ok(()),
+            Value::META_BOX { value } => {
+                metamodelica::gc::MMTrace::mm_accept(value, __mmv)?;
+                Ok(())
+            }
+            Value::META_FAIL => Ok(()),
+            Value::EMPTY { scope, name, ty, tyStr } => {
+                metamodelica::gc::MMTrace::mm_accept(scope, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(ty, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(tyStr, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 impl Value {
     pub fn interned_NORETCALL() -> Arc<Value> {
         static INTERNED: std::sync::LazyLock<Arc<Value>> = std::sync::LazyLock::new(|| Arc::new(Value::NORETCALL));
@@ -147,6 +223,18 @@ pub enum IntRealOp {
     SUBOP,
     POWOP,
     LESSEQOP,
+}
+impl metamodelica::gc::MMTrace for IntRealOp {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            IntRealOp::MULOP => Ok(()),
+            IntRealOp::DIVOP => Ok(()),
+            IntRealOp::ADDOP => Ok(()),
+            IntRealOp::SUBOP => Ok(()),
+            IntRealOp::POWOP => Ok(()),
+            IntRealOp::LESSEQOP => Ok(()),
+        }
+    }
 }
 pub use self::IntRealOp::{MULOP,DIVOP,ADDOP,SUBOP,POWOP,LESSEQOP};
 

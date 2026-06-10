@@ -76,6 +76,14 @@ pub struct ImportTable {
     pub unqualifiedImports: Arc<metamodelica::List<Absyn::Import>>,
 }
 
+impl metamodelica::gc::MMTrace for ImportTable {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.hidden, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.qualifiedImports, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.unqualifiedImports, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for ImportTable {
     fn default() -> Self {
         Self {
@@ -103,6 +111,20 @@ pub enum Redeclaration {
         modifier: Arc<Item>,
     },
 }
+impl metamodelica::gc::MMTrace for Redeclaration {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            Redeclaration::RAW_MODIFIER { modifier } => {
+                metamodelica::gc::MMTrace::mm_accept(modifier, __mmv)?;
+                Ok(())
+            }
+            Redeclaration::PROCESSED_MODIFIER { modifier } => {
+                metamodelica::gc::MMTrace::mm_accept(modifier, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 impl Default for Redeclaration {
     fn default() -> Self {
         Self::RAW_MODIFIER {
@@ -120,6 +142,15 @@ pub struct Extends {
     pub info: SourceInfo,
 }
 
+impl metamodelica::gc::MMTrace for Extends {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.baseClass, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.redeclareModifiers, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.index, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.info, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for Extends {
     fn default() -> Self {
         Self {
@@ -141,6 +172,14 @@ pub struct ExtendsTable {
     pub classExtendsInfo: Option<Arc<SCode::Element>>,
 }
 
+impl metamodelica::gc::MMTrace for ExtendsTable {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.baseClasses, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.redeclaredElements, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.classExtendsInfo, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for ExtendsTable {
     fn default() -> Self {
         Self {
@@ -163,6 +202,18 @@ pub enum FrameType {
         iterIndex: i32,
     },
 }
+impl metamodelica::gc::MMTrace for FrameType {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            FrameType::NORMAL_SCOPE => Ok(()),
+            FrameType::ENCAPSULATED_SCOPE => Ok(()),
+            FrameType::IMPLICIT_SCOPE { iterIndex } => {
+                metamodelica::gc::MMTrace::mm_accept(iterIndex, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 impl Default for FrameType {
     fn default() -> Self { Self::NORMAL_SCOPE }
 }
@@ -179,6 +230,17 @@ pub struct Frame {
     pub isUsed: Option<Mutable::Mutable<bool>>,
 }
 
+impl metamodelica::gc::MMTrace for Frame {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.name, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.frameType, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.clsAndVars, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.extendsTable, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.importTable, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.isUsed, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for Frame {
     fn default() -> Self {
         Self {
@@ -201,6 +263,16 @@ pub enum ClassType {
     BUILTIN,
     CLASS_EXTENDS,
     BASIC_TYPE,
+}
+impl metamodelica::gc::MMTrace for ClassType {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            ClassType::USERDEFINED => Ok(()),
+            ClassType::BUILTIN => Ok(()),
+            ClassType::CLASS_EXTENDS => Ok(()),
+            ClassType::BASIC_TYPE => Ok(()),
+        }
+    }
 }
 impl Default for ClassType {
     fn default() -> Self { Self::USERDEFINED }
@@ -229,6 +301,34 @@ pub enum Item {
         item: Arc<Item>,
         declaredEnv: Env,
     },
+}
+impl metamodelica::gc::MMTrace for Item {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            Item::VAR { var, isUsed } => {
+                metamodelica::gc::MMTrace::mm_accept(var, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(isUsed, __mmv)?;
+                Ok(())
+            }
+            Item::CLASS { cls, env, classType } => {
+                metamodelica::gc::MMTrace::mm_accept(cls, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(env, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(classType, __mmv)?;
+                Ok(())
+            }
+            Item::ALIAS { name, path, info } => {
+                metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(path, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(info, __mmv)?;
+                Ok(())
+            }
+            Item::REDECLARED_ITEM { item, declaredEnv } => {
+                metamodelica::gc::MMTrace::mm_accept(item, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(declaredEnv, __mmv)?;
+                Ok(())
+            }
+        }
+    }
 }
 impl Default for Item {
     fn default() -> Self {
@@ -288,6 +388,26 @@ pub mod EnvTree {
             value: Value,
         },
         EMPTY,
+    }
+    impl metamodelica::gc::MMTrace for Tree {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            match self {
+                Tree::NODE { key, value, height, left, right } => {
+                    metamodelica::gc::MMTrace::mm_accept(key, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(value, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(height, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(left, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(right, __mmv)?;
+                    Ok(())
+                }
+                Tree::LEAF { key, value } => {
+                    metamodelica::gc::MMTrace::mm_accept(key, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(value, __mmv)?;
+                    Ok(())
+                }
+                Tree::EMPTY => Ok(()),
+            }
+        }
     }
     impl Tree {
         pub fn interned_EMPTY() -> Arc<Tree> {

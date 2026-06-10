@@ -83,6 +83,13 @@ pub struct NBSlice<T: Clone> {
     pub indices: IntLst,
 }
 
+impl<T: Clone + metamodelica::gc::MMTrace> metamodelica::gc::MMTrace for NBSlice<T> {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.t, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.indices, __mmv)?;
+        Ok(())
+    }
+}
 pub type SLICE<T> = NBSlice<T>;
 
 pub type IntLst = Arc<metamodelica::List<i32>>;

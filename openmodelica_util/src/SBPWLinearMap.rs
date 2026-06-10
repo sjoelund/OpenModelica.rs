@@ -59,6 +59,14 @@ pub struct SBPWLinearMap {
     pub ndim: i32,
 }
 
+impl metamodelica::gc::MMTrace for SBPWLinearMap {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.dom, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.lmap, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.ndim, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for SBPWLinearMap {
     fn default() -> Self {
         Self {

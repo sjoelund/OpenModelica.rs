@@ -53,6 +53,14 @@ pub struct MutableList<T: Clone> {
     pub back: Mutable::Mutable<Arc<metamodelica::List<T>>>,
 }
 
+impl<T: Clone + metamodelica::gc::MMTrace> metamodelica::gc::MMTrace for MutableList<T> {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.length, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.front, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.back, __mmv)?;
+        Ok(())
+    }
+}
 impl<T: Clone> Default for MutableList<T> {
     fn default() -> Self {
         Self {

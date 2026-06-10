@@ -113,6 +113,17 @@ pub mod TypingError {
             upperBound: i32,
         },
     }
+    impl metamodelica::gc::MMTrace for TypingError {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            match self {
+                TypingError::NO_ERROR => Ok(()),
+                TypingError::OUT_OF_BOUNDS { upperBound } => {
+                    metamodelica::gc::MMTrace::mm_accept(upperBound, __mmv)?;
+                    Ok(())
+                }
+            }
+        }
+    }
     impl TypingError {
         pub fn interned_NO_ERROR() -> Arc<TypingError> {
             static INTERNED: std::sync::LazyLock<Arc<TypingError>> = std::sync::LazyLock::new(|| Arc::new(TypingError::NO_ERROR));

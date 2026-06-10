@@ -93,6 +93,20 @@ impl<T: Clone> metamodelica::ReferenceEq for Mutable<T> {
     }
 }
 
+/// Transitional tracing through the legacy `Arc`-based cell: the cell itself
+/// is not a Gc allocation (cycles through it still leak), but its content may
+/// transitively hold `Gc` pointers while the codegen migration is in
+/// progress, so tracing must pass through. Mirrors dumpster's `Mutex` impl:
+/// a busy lock reports `Err` ("keep alive").
+impl<T: Clone + MMTrace> MMTrace for Mutable<T> {
+    fn mm_accept<V: metamodelica::gc::dumpster::Visitor>(
+        &self,
+        visitor: &mut V,
+    ) -> Result<(), ()> {
+        self.0.try_lock().map_err(|_| ())?.mm_accept(visitor)
+    }
+}
+
 // ── Gc-backed cell ────────────────────────────────────────────────────────────
 //
 // `Mutable<T>` above is an `Arc<Mutex<T>>`: cheap, but a cell updated with a

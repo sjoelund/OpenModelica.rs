@@ -69,6 +69,14 @@ pub struct BinTree {
     pub rightSubTree: Option<Arc<BinTree>>,
 }
 
+impl metamodelica::gc::MMTrace for BinTree {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.value, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.leftSubTree, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.rightSubTree, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for BinTree {
     fn default() -> Self {
         Self {
@@ -94,6 +102,15 @@ pub struct TreeValue {
     pub value: Value,
 }
 
+impl metamodelica::gc::MMTrace for TreeValue {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.key, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.r#str, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.hash, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.value, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for TreeValue {
     fn default() -> Self {
         Self {

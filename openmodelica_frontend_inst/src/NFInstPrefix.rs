@@ -59,6 +59,22 @@ pub enum Prefix {
         restPrefix: Arc<Prefix>,
     },
 }
+impl metamodelica::gc::MMTrace for Prefix {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            Prefix::EMPTY_PREFIX { classPath } => {
+                metamodelica::gc::MMTrace::mm_accept(classPath, __mmv)?;
+                Ok(())
+            }
+            Prefix::PREFIX { name, dims, restPrefix } => {
+                metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(dims, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(restPrefix, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 impl Default for Prefix {
     fn default() -> Self {
         Self::EMPTY_PREFIX {

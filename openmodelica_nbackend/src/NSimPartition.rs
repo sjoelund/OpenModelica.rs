@@ -83,6 +83,25 @@ pub enum NSimPartition {
         holdEvents: bool,
     },
 }
+impl metamodelica::gc::MMTrace for NSimPartition {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            NSimPartition::BASE_PARTITION { baseClock, subPartitions } => {
+                metamodelica::gc::MMTrace::mm_accept(baseClock, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(subPartitions, __mmv)?;
+                Ok(())
+            }
+            NSimPartition::SUB_PARTITION { variables, equations, removedEquations, subClock, holdEvents } => {
+                metamodelica::gc::MMTrace::mm_accept(variables, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(equations, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(removedEquations, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(subClock, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(holdEvents, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 impl Default for NSimPartition {
     fn default() -> Self {
         Self::BASE_PARTITION {

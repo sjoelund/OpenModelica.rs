@@ -68,6 +68,14 @@ pub struct NFFunctionInverse {
     pub info: SourceInfo,
 }
 
+impl metamodelica::gc::MMTrace for NFFunctionInverse {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.inputParam, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.inverseCall, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.info, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for NFFunctionInverse {
     fn default() -> Self {
         Self {

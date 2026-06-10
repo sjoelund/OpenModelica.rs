@@ -767,6 +767,9 @@ impl PartialOrd for TokenId {
 impl Ord for TokenId {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
+impl metamodelica::gc::MMTrace for TokenId {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+}
 impl Default for TokenId {
     fn default() -> Self { Self::_NO_TOKEN }
 }
@@ -784,6 +787,20 @@ pub struct Token {
     pub columnNumberEnd: i32,
 }
 
+impl metamodelica::gc::MMTrace for Token {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.fileName, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.id, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.fileContents, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.byteOffset, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.length, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.lineNumberStart, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.columnNumberStart, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.lineNumberEnd, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.columnNumberEnd, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for Token {
     fn default() -> Self {
         Self {

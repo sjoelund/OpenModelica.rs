@@ -62,6 +62,9 @@ impl PartialOrd for EntryType {
 impl Ord for EntryType {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
+impl metamodelica::gc::MMTrace for EntryType {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+}
 impl Default for EntryType {
     fn default() -> Self { Self::DUPLICATE }
 }
@@ -74,6 +77,15 @@ pub struct Entry {
     pub ty: EntryType,
 }
 
+impl metamodelica::gc::MMTrace for Entry {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.entry, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.node, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.children, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.ty, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for Entry {
     fn default() -> Self {
         Self {
@@ -177,6 +189,26 @@ pub enum Tree {
         value: Value,
     },
     EMPTY,
+}
+impl metamodelica::gc::MMTrace for Tree {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            Tree::NODE { key, value, height, left, right } => {
+                metamodelica::gc::MMTrace::mm_accept(key, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(value, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(height, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(left, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(right, __mmv)?;
+                Ok(())
+            }
+            Tree::LEAF { key, value } => {
+                metamodelica::gc::MMTrace::mm_accept(key, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(value, __mmv)?;
+                Ok(())
+            }
+            Tree::EMPTY => Ok(()),
+        }
+    }
 }
 impl Tree {
     pub fn interned_EMPTY() -> Arc<Tree> {

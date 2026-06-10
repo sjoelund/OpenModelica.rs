@@ -125,6 +125,27 @@ pub mod SimJacobian {
         pub isAdjoint: bool,
     }
 
+    impl metamodelica::gc::MMTrace for SimJacobian {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            metamodelica::gc::MMTrace::mm_accept(&self.name, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.jacobianIndex, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.partitionIndex, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.numberOfResultVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.columnEqns, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.constantEqns, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.columnVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.seedVars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.sparsity, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.sparsityT, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.coloring, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.rowColoring, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.numColors, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.generic_loop_calls, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.jac_map, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.isAdjoint, __mmv)?;
+            Ok(())
+        }
+    }
     impl Default for SimJacobian {
         fn default() -> Self {
             Self {

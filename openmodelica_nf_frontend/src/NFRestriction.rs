@@ -74,6 +74,33 @@ pub enum NFRestriction {
     TYPE,
     UNKNOWN,
 }
+impl metamodelica::gc::MMTrace for NFRestriction {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            NFRestriction::BLOCK => Ok(()),
+            NFRestriction::CLASS => Ok(()),
+            NFRestriction::CLOCK => Ok(()),
+            NFRestriction::CONNECTOR { isExpandable } => {
+                metamodelica::gc::MMTrace::mm_accept(isExpandable, __mmv)?;
+                Ok(())
+            }
+            NFRestriction::ENUMERATION => Ok(()),
+            NFRestriction::EXTERNAL_OBJECT => Ok(()),
+            NFRestriction::FUNCTION => Ok(()),
+            NFRestriction::MODEL => Ok(()),
+            NFRestriction::PACKAGE => Ok(()),
+            NFRestriction::OPERATOR => Ok(()),
+            NFRestriction::RECORD { isOperator, usedExternally } => {
+                metamodelica::gc::MMTrace::mm_accept(isOperator, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(usedExternally, __mmv)?;
+                Ok(())
+            }
+            NFRestriction::RECORD_CONSTRUCTOR => Ok(()),
+            NFRestriction::TYPE => Ok(()),
+            NFRestriction::UNKNOWN => Ok(()),
+        }
+    }
+}
 impl NFRestriction {
     pub fn interned_BLOCK() -> Arc<NFRestriction> {
         static INTERNED: std::sync::LazyLock<Arc<NFRestriction>> = std::sync::LazyLock::new(|| Arc::new(NFRestriction::BLOCK));

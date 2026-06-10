@@ -158,6 +158,35 @@ pub enum Context {
         inputExp: Arc<Absyn::Exp>,
     },
 }
+impl metamodelica::gc::MMTrace for Context {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            Context::FUNCTION { retValsStr } => {
+                metamodelica::gc::MMTrace::mm_accept(retValsStr, __mmv)?;
+                Ok(())
+            }
+            Context::FUNCTION_RETURN_CONTEXT { retValsStr, ty_str } => {
+                metamodelica::gc::MMTrace::mm_accept(retValsStr, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(ty_str, __mmv)?;
+                Ok(())
+            }
+            Context::PACKAGE => Ok(()),
+            Context::UNIONTYPE { name } => {
+                metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
+                Ok(())
+            }
+            Context::NO_CONTEXT => Ok(()),
+            Context::INPUT_CONTEXT { ty_str } => {
+                metamodelica::gc::MMTrace::mm_accept(ty_str, __mmv)?;
+                Ok(())
+            }
+            Context::MATCH_CONTEXT { inputExp } => {
+                metamodelica::gc::MMTrace::mm_accept(inputExp, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 impl Default for Context {
     fn default() -> Self { Self::PACKAGE }
 }

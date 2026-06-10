@@ -65,6 +65,20 @@ pub struct SCodeDumpOptions {
     pub stripOutputBindings: bool,
 }
 
+impl metamodelica::gc::MMTrace for SCodeDumpOptions {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.stripAlgorithmSections, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.stripProtectedImports, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.stripProtectedClasses, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.stripProtectedComponents, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.stripMetaRecords, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.stripGraphicalAnnotations, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.stripStringComments, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.stripExternalDecl, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.stripOutputBindings, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for SCodeDumpOptions {
     fn default() -> Self {
         Self {

@@ -127,6 +127,85 @@ pub enum NFStatement {
         source: Arc<DAE::ElementSource>,
     },
 }
+impl metamodelica::gc::MMTrace for NFStatement {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            NFStatement::ASSIGNMENT { lhs, rhs, ty, source } => {
+                metamodelica::gc::MMTrace::mm_accept(lhs, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(rhs, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(ty, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(source, __mmv)?;
+                Ok(())
+            }
+            NFStatement::FUNCTION_ARRAY_INIT { name, ty, source } => {
+                metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(ty, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(source, __mmv)?;
+                Ok(())
+            }
+            NFStatement::FOR { iterator, range, body, forType, source } => {
+                metamodelica::gc::MMTrace::mm_accept(iterator, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(range, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(body, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(forType, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(source, __mmv)?;
+                Ok(())
+            }
+            NFStatement::IF { branches, source } => {
+                metamodelica::gc::MMTrace::mm_accept(branches, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(source, __mmv)?;
+                Ok(())
+            }
+            NFStatement::WHEN { branches, source } => {
+                metamodelica::gc::MMTrace::mm_accept(branches, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(source, __mmv)?;
+                Ok(())
+            }
+            NFStatement::ASSERT { condition, message, level, source } => {
+                metamodelica::gc::MMTrace::mm_accept(condition, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(message, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(level, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(source, __mmv)?;
+                Ok(())
+            }
+            NFStatement::TERMINATE { message, source } => {
+                metamodelica::gc::MMTrace::mm_accept(message, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(source, __mmv)?;
+                Ok(())
+            }
+            NFStatement::REINIT { cref, reinitExp, source } => {
+                metamodelica::gc::MMTrace::mm_accept(cref, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(reinitExp, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(source, __mmv)?;
+                Ok(())
+            }
+            NFStatement::NORETCALL { exp, source } => {
+                metamodelica::gc::MMTrace::mm_accept(exp, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(source, __mmv)?;
+                Ok(())
+            }
+            NFStatement::WHILE { condition, body, source } => {
+                metamodelica::gc::MMTrace::mm_accept(condition, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(body, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(source, __mmv)?;
+                Ok(())
+            }
+            NFStatement::RETURN { source } => {
+                metamodelica::gc::MMTrace::mm_accept(source, __mmv)?;
+                Ok(())
+            }
+            NFStatement::BREAK { source } => {
+                metamodelica::gc::MMTrace::mm_accept(source, __mmv)?;
+                Ok(())
+            }
+            NFStatement::FAILURE { body, source } => {
+                metamodelica::gc::MMTrace::mm_accept(body, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(source, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 impl Default for NFStatement {
     fn default() -> Self {
         Self::RETURN {
@@ -141,6 +220,17 @@ pub enum ForType {
     PARALLEL {
         vars: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, SourceInfo)>>,
     },
+}
+impl metamodelica::gc::MMTrace for ForType {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            ForType::NORMAL => Ok(()),
+            ForType::PARALLEL { vars } => {
+                metamodelica::gc::MMTrace::mm_accept(vars, __mmv)?;
+                Ok(())
+            }
+        }
+    }
 }
 impl ForType {
     pub fn interned_NORMAL() -> Arc<ForType> {

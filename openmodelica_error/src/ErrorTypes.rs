@@ -56,6 +56,16 @@ pub enum Severity {
     ///             actions tool has taken to succeed in translation
     NOTIFICATION,
 }
+impl metamodelica::gc::MMTrace for Severity {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            Severity::INTERNAL => Ok(()),
+            Severity::ERROR => Ok(()),
+            Severity::WARNING => Ok(()),
+            Severity::NOTIFICATION => Ok(()),
+        }
+    }
+}
 impl Default for Severity {
     fn default() -> Self { Self::INTERNAL }
 }
@@ -79,6 +89,18 @@ pub enum MessageType {
     /// runtime scripting /interpretation error
     SCRIPTING,
 }
+impl metamodelica::gc::MMTrace for MessageType {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            MessageType::SYNTAX => Ok(()),
+            MessageType::GRAMMAR => Ok(()),
+            MessageType::TRANSLATION => Ok(()),
+            MessageType::SYMBOLIC => Ok(()),
+            MessageType::SIMULATION => Ok(()),
+            MessageType::SCRIPTING => Ok(()),
+        }
+    }
+}
 impl Default for MessageType {
     fn default() -> Self { Self::SYNTAX }
 }
@@ -96,6 +118,15 @@ pub struct Message {
     pub message: ArcStr,
 }
 
+impl metamodelica::gc::MMTrace for Message {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.id, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.ty, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.severity, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.message, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for Message {
     fn default() -> Self {
         Self {
@@ -116,6 +147,13 @@ pub struct TotalMessage {
     pub info: SourceInfo,
 }
 
+impl metamodelica::gc::MMTrace for TotalMessage {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.msg, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.info, __mmv)?;
+        Ok(())
+    }
+}
 pub type TOTALMESSAGE = TotalMessage;
 
 

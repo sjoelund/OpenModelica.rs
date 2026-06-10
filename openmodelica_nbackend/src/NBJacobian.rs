@@ -113,6 +113,9 @@ impl PartialOrd for JacobianType {
 impl Ord for JacobianType {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
+impl metamodelica::gc::MMTrace for JacobianType {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+}
 
 pub fn isDynamic(mut jacType: JacobianType) -> bool {
     let mut b: bool;
@@ -323,6 +326,16 @@ pub mod SparsityPattern {
         pub nnz: i32,
     }
 
+    impl metamodelica::gc::MMTrace for SparsityPattern {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            metamodelica::gc::MMTrace::mm_accept(&self.col_wise_pattern, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.row_wise_pattern, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.seed_vars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.partial_vars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.nnz, __mmv)?;
+            Ok(())
+        }
+    }
     impl Default for SparsityPattern {
         fn default() -> Self {
             Self {
@@ -542,6 +555,13 @@ pub mod SparsityColoring {
         pub rows: metamodelica::Array<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>,
     }
 
+    impl metamodelica::gc::MMTrace for SparsityColoring {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            metamodelica::gc::MMTrace::mm_accept(&self.cols, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.rows, __mmv)?;
+            Ok(())
+        }
+    }
     impl Default for SparsityColoring {
         fn default() -> Self {
             Self {

@@ -103,6 +103,45 @@ pub enum NFDimension {
     },
     UNKNOWN,
 }
+impl metamodelica::gc::MMTrace for NFDimension {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            NFDimension::RAW_DIM { dim, scope } => {
+                metamodelica::gc::MMTrace::mm_accept(dim, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(scope, __mmv)?;
+                Ok(())
+            }
+            NFDimension::UNTYPED { dimension, isProcessing } => {
+                metamodelica::gc::MMTrace::mm_accept(dimension, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(isProcessing, __mmv)?;
+                Ok(())
+            }
+            NFDimension::INTEGER { size, var } => {
+                metamodelica::gc::MMTrace::mm_accept(size, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(var, __mmv)?;
+                Ok(())
+            }
+            NFDimension::BOOLEAN => Ok(()),
+            NFDimension::ENUM { enumType } => {
+                metamodelica::gc::MMTrace::mm_accept(enumType, __mmv)?;
+                Ok(())
+            }
+            NFDimension::EXP { exp, var } => {
+                metamodelica::gc::MMTrace::mm_accept(exp, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(var, __mmv)?;
+                Ok(())
+            }
+            NFDimension::RESIZABLE { size, opt_size, exp, var } => {
+                metamodelica::gc::MMTrace::mm_accept(size, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(opt_size, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(exp, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(var, __mmv)?;
+                Ok(())
+            }
+            NFDimension::UNKNOWN => Ok(()),
+        }
+    }
+}
 impl NFDimension {
     pub fn interned_BOOLEAN() -> Arc<NFDimension> {
         thread_local! {

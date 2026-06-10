@@ -109,6 +109,22 @@ pub enum CachedInstItem {
         outputs: CachedPartialInstItemOutputs,
     },
 }
+impl metamodelica::gc::MMTrace for CachedInstItem {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            CachedInstItem::FUNC_instClassIn { inputs, outputs } => {
+                metamodelica::gc::MMTrace::mm_accept(inputs, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(outputs, __mmv)?;
+                Ok(())
+            }
+            CachedInstItem::FUNC_partialInstClassIn { inputs, outputs } => {
+                metamodelica::gc::MMTrace::mm_accept(inputs, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(outputs, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 pub use self::CachedInstItem::{FUNC_instClassIn,FUNC_partialInstClassIn};
 
 pub fn addToInstCache(mut fullEnvPathPlusClass: Arc<Absyn::Path>, mut fullInstOpt: Option<CachedInstItem>, mut partialInstOpt: Option<CachedInstItem>) -> () {

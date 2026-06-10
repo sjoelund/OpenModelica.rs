@@ -94,6 +94,14 @@ pub mod EvalTarget {
         pub extra: Option<Arc<EvalTargetData>>,
     }
 
+    impl metamodelica::gc::MMTrace for EvalTarget {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            metamodelica::gc::MMTrace::mm_accept(&self.info, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.context, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.extra, __mmv)?;
+            Ok(())
+        }
+    }
     impl Default for EvalTarget {
         fn default() -> Self {
             Self {
@@ -133,6 +141,14 @@ pub struct EvalTargetData {
     pub exp: Arc<Expression::NFExpression>,
 }
 
+impl metamodelica::gc::MMTrace for EvalTargetData {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.component, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.index, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.exp, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for EvalTargetData {
     fn default() -> Self {
         Self {

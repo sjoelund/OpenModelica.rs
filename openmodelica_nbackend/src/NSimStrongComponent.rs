@@ -257,6 +257,143 @@ pub mod Block {
             indexHybridSystem: i32,
         },
     }
+    impl metamodelica::gc::MMTrace for Block {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            match self {
+                Block::RESIDUAL { index, res_index, exp, source, attr } => {
+                    metamodelica::gc::MMTrace::mm_accept(index, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(res_index, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(exp, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(source, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(attr, __mmv)?;
+                    Ok(())
+                }
+                Block::ARRAY_RESIDUAL { index, res_index, exp, source, attr } => {
+                    metamodelica::gc::MMTrace::mm_accept(index, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(res_index, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(exp, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(source, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(attr, __mmv)?;
+                    Ok(())
+                }
+                Block::FOR_RESIDUAL { index, res_index, iterators, exp, source, attr } => {
+                    metamodelica::gc::MMTrace::mm_accept(index, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(res_index, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(iterators, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(exp, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(source, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(attr, __mmv)?;
+                    Ok(())
+                }
+                Block::GENERIC_RESIDUAL { index, res_index, scal_indices, iterators, exp, source, attr } => {
+                    metamodelica::gc::MMTrace::mm_accept(index, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(res_index, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(scal_indices, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(iterators, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(exp, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(source, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(attr, __mmv)?;
+                    Ok(())
+                }
+                Block::SIMPLE_ASSIGN { index, lhs, rhs, source, attr } => {
+                    metamodelica::gc::MMTrace::mm_accept(index, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(lhs, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(rhs, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(source, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(attr, __mmv)?;
+                    Ok(())
+                }
+                Block::ARRAY_ASSIGN { index, lhs, rhs, source, attr } => {
+                    metamodelica::gc::MMTrace::mm_accept(index, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(lhs, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(rhs, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(source, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(attr, __mmv)?;
+                    Ok(())
+                }
+                Block::RESIZABLE_ASSIGN { index, call_index, iters, source, attr } => {
+                    metamodelica::gc::MMTrace::mm_accept(index, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(call_index, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(iters, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(source, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(attr, __mmv)?;
+                    Ok(())
+                }
+                Block::GENERIC_ASSIGN { index, call_index, scal_indices, source, attr } => {
+                    metamodelica::gc::MMTrace::mm_accept(index, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(call_index, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(scal_indices, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(source, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(attr, __mmv)?;
+                    Ok(())
+                }
+                Block::ENTWINED_ASSIGN { index, call_order, single_calls, source, attr } => {
+                    metamodelica::gc::MMTrace::mm_accept(index, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(call_order, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(single_calls, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(source, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(attr, __mmv)?;
+                    Ok(())
+                }
+                Block::ALIAS { index, aliasInfo, aliasOf, isDiscrete } => {
+                    metamodelica::gc::MMTrace::mm_accept(index, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(aliasInfo, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(aliasOf, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(isDiscrete, __mmv)?;
+                    Ok(())
+                }
+                Block::ALGORITHM { index, stmts, attr } => {
+                    metamodelica::gc::MMTrace::mm_accept(index, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(stmts, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(attr, __mmv)?;
+                    Ok(())
+                }
+                Block::INVERSE_ALGORITHM { index, stmts, knownOutputs, insideNonLinearSystem, attr } => {
+                    metamodelica::gc::MMTrace::mm_accept(index, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(stmts, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(knownOutputs, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(insideNonLinearSystem, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(attr, __mmv)?;
+                    Ok(())
+                }
+                Block::IF { index, branches, source, attr } => {
+                    metamodelica::gc::MMTrace::mm_accept(index, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(branches, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(source, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(attr, __mmv)?;
+                    Ok(())
+                }
+                Block::WHEN { index, initialCall, conditions, when_stmts, else_when, source, attr } => {
+                    metamodelica::gc::MMTrace::mm_accept(index, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(initialCall, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(conditions, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(when_stmts, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(else_when, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(source, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(attr, __mmv)?;
+                    Ok(())
+                }
+                Block::LINEAR { system, alternativeTearing } => {
+                    metamodelica::gc::MMTrace::mm_accept(system, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(alternativeTearing, __mmv)?;
+                    Ok(())
+                }
+                Block::NONLINEAR { system, alternativeTearing } => {
+                    metamodelica::gc::MMTrace::mm_accept(system, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(alternativeTearing, __mmv)?;
+                    Ok(())
+                }
+                Block::HYBRID { index, continuous, discreteVars, discreteEqs, indexHybridSystem } => {
+                    metamodelica::gc::MMTrace::mm_accept(index, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(continuous, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(discreteVars, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(discreteEqs, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(indexHybridSystem, __mmv)?;
+                    Ok(())
+                }
+            }
+        }
+    }
     impl Default for Block {
         fn default() -> Self {
             Self::LINEAR {
@@ -1390,6 +1527,23 @@ pub mod LinearSystem {
         pub partOfJac: bool,
     }
 
+    impl metamodelica::gc::MMTrace for LinearSystem {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            metamodelica::gc::MMTrace::mm_accept(&self.index, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.mixed, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.torn, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.vars, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.beqs, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.simJac, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.residual, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.jacobian, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.sources, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.indexSystem, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.size, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.partOfJac, __mmv)?;
+            Ok(())
+        }
+    }
     impl Default for LinearSystem {
         fn default() -> Self {
             Self {
@@ -1437,6 +1591,20 @@ pub mod NonlinearSystem {
         pub torn: bool,
     }
 
+    impl metamodelica::gc::MMTrace for NonlinearSystem {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            metamodelica::gc::MMTrace::mm_accept(&self.index, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.blcks, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.crefs, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.indexSystem, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.size, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.jacobian, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.homotopy, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.mixed, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.torn, __mmv)?;
+            Ok(())
+        }
+    }
     impl Default for NonlinearSystem {
         fn default() -> Self {
             Self {

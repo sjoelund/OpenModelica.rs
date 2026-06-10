@@ -63,6 +63,20 @@ pub struct splitElements {
     pub sm: Arc<metamodelica::List<Arc<compWithSplitElements>>>,
 }
 
+impl metamodelica::gc::MMTrace for splitElements {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.v, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.ie, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.ia, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.e, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.a, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.co, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.o, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.ca, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.sm, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for splitElements {
     fn default() -> Self {
         Self {
@@ -89,6 +103,14 @@ pub struct compWithSplitElements {
     pub comment: Option<Arc<SCode::Comment>>,
 }
 
+impl metamodelica::gc::MMTrace for compWithSplitElements {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.name, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.spltElems, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.comment, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for compWithSplitElements {
     fn default() -> Self {
         Self {
@@ -107,6 +129,12 @@ pub struct functionList {
     pub funcs: Arc<metamodelica::List<DAE::Function>>,
 }
 
+impl metamodelica::gc::MMTrace for functionList {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.funcs, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for functionList {
     fn default() -> Self {
         Self {

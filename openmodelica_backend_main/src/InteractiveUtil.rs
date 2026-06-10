@@ -112,6 +112,9 @@ impl PartialOrd for Visibility {
 impl Ord for Visibility {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
+impl metamodelica::gc::MMTrace for Visibility {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+}
 
 pub fn getExtendsElementspecInClass(mut inClass: Arc<Absyn::Class>) -> Arc<metamodelica::List<Arc<Absyn::ElementSpec>>> {
     let mut outAbsynElementSpecLst: Arc<metamodelica::List<Arc<Absyn::ElementSpec>>>;
@@ -2678,6 +2681,13 @@ pub mod ClassEntry {
         pub cls: Arc<Absyn::Class>,
     }
 
+    impl metamodelica::gc::MMTrace for ClassEntry {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            metamodelica::gc::MMTrace::mm_accept(&self.path, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.cls, __mmv)?;
+            Ok(())
+        }
+    }
     impl Default for ClassEntry {
         fn default() -> Self {
             Self {

@@ -76,6 +76,17 @@ pub struct Tree<Key: Clone, Val: Clone> {
     pub name: ArcStr,
 }
 
+impl<Key: Clone + metamodelica::gc::MMTrace, Val: Clone + metamodelica::gc::MMTrace> metamodelica::gc::MMTrace for Tree<Key, Val> {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.root, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.keyCompareFunc, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.keyStrFuncOpt, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.valStrFuncOpt, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.updateCheckFuncOpt, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.name, __mmv)?;
+        Ok(())
+    }
+}
 impl<Key: Clone + 'static + PartialEq, Val: Clone + 'static + PartialEq> PartialEq for Tree<Key, Val> {
     fn eq(&self, other: &Self) -> bool {
         self.root == other.root && std::sync::Arc::ptr_eq((&self.keyCompareFunc), (&other.keyCompareFunc)) && (match ((&self.keyStrFuncOpt), (&other.keyStrFuncOpt)) { (Some(__lo), Some(__ro)) => std::sync::Arc::ptr_eq(__lo, __ro), (None, None) => true, _ => false }) && (match ((&self.valStrFuncOpt), (&other.valStrFuncOpt)) { (Some(__lo), Some(__ro)) => std::sync::Arc::ptr_eq(__lo, __ro), (None, None) => true, _ => false }) && (match ((&self.updateCheckFuncOpt), (&other.updateCheckFuncOpt)) { (Some(__lo), Some(__ro)) => std::sync::Arc::ptr_eq(__lo, __ro), (None, None) => true, _ => false }) && self.name == other.name
@@ -132,6 +143,20 @@ pub enum Node<Key, Val> {
     /// no node, empty tree
     NO_NODE,
 }
+impl<Key: Clone + metamodelica::gc::MMTrace, Val: Clone + metamodelica::gc::MMTrace> metamodelica::gc::MMTrace for Node<Key, Val> {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            Node::NODE { item, height, left, right } => {
+                metamodelica::gc::MMTrace::mm_accept(item, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(height, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(left, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(right, __mmv)?;
+                Ok(())
+            }
+            Node::NO_NODE => Ok(()),
+        }
+    }
+}
 pub use self::Node::{NODE,NO_NODE};
 
 /// Each node in the binary tree can have an item associated with it.
@@ -145,6 +170,18 @@ pub enum Item<Key, Val> {
     },
     /// no item
     NO_ITEM,
+}
+impl<Key: Clone + metamodelica::gc::MMTrace, Val: Clone + metamodelica::gc::MMTrace> metamodelica::gc::MMTrace for Item<Key, Val> {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            Item::ITEM { key, val } => {
+                metamodelica::gc::MMTrace::mm_accept(key, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(val, __mmv)?;
+                Ok(())
+            }
+            Item::NO_ITEM => Ok(()),
+        }
+    }
 }
 pub use self::Item::{ITEM,NO_ITEM};
 

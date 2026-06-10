@@ -62,6 +62,24 @@ pub enum Version {
         version: ArcStr,
     },
 }
+impl metamodelica::gc::MMTrace for Version {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            Version::SEMVER { major, minor, patch, prerelease, meta } => {
+                metamodelica::gc::MMTrace::mm_accept(major, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(minor, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(patch, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(prerelease, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(meta, __mmv)?;
+                Ok(())
+            }
+            Version::NONSEMVER { version } => {
+                metamodelica::gc::MMTrace::mm_accept(version, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 impl Default for Version {
     fn default() -> Self {
         Self::NONSEMVER {

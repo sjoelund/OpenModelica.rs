@@ -124,6 +124,47 @@ pub enum InstNodeType {
     ///     implicitly implicit), but by e.g. the annotation scope.
     IMPLICIT_SCOPE,
 }
+impl metamodelica::gc::MMTrace for InstNodeType {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            InstNodeType::NORMAL_CLASS => Ok(()),
+            InstNodeType::BASE_CLASS { parent, definition, ty } => {
+                metamodelica::gc::MMTrace::mm_accept(parent, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(definition, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(ty, __mmv)?;
+                Ok(())
+            }
+            InstNodeType::DERIVED_CLASS { ty } => {
+                metamodelica::gc::MMTrace::mm_accept(ty, __mmv)?;
+                Ok(())
+            }
+            InstNodeType::BUILTIN_CLASS => Ok(()),
+            InstNodeType::TOP_SCOPE { annotationScope, generatedInners } => {
+                metamodelica::gc::MMTrace::mm_accept(annotationScope, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(generatedInners, __mmv)?;
+                Ok(())
+            }
+            InstNodeType::ROOT_CLASS { parent, context } => {
+                metamodelica::gc::MMTrace::mm_accept(parent, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(context, __mmv)?;
+                Ok(())
+            }
+            InstNodeType::NORMAL_COMP => Ok(()),
+            InstNodeType::REDECLARED_COMP { parent } => {
+                metamodelica::gc::MMTrace::mm_accept(parent, __mmv)?;
+                Ok(())
+            }
+            InstNodeType::REDECLARED_CLASS { parent, originalType, originalNode } => {
+                metamodelica::gc::MMTrace::mm_accept(parent, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(originalType, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(originalNode, __mmv)?;
+                Ok(())
+            }
+            InstNodeType::GENERATED_INNER => Ok(()),
+            InstNodeType::IMPLICIT_SCOPE => Ok(()),
+        }
+    }
+}
 impl InstNodeType {
     pub fn interned_NORMAL_CLASS() -> Arc<InstNodeType> {
         thread_local! {
@@ -183,6 +224,9 @@ impl PartialOrd for PackageCacheState {
 impl Ord for PackageCacheState {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
+impl metamodelica::gc::MMTrace for PackageCacheState {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+}
 
 pub mod CachedData {
     use super::*;
@@ -198,6 +242,24 @@ pub mod CachedData {
             typed: bool,
             specialBuiltin: bool,
         },
+    }
+    impl metamodelica::gc::MMTrace for CachedData {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            match self {
+                CachedData::NO_CACHE => Ok(()),
+                CachedData::PACKAGE { instance, state } => {
+                    metamodelica::gc::MMTrace::mm_accept(instance, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(state, __mmv)?;
+                    Ok(())
+                }
+                CachedData::FUNCTION { funcs, typed, specialBuiltin } => {
+                    metamodelica::gc::MMTrace::mm_accept(funcs, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(typed, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(specialBuiltin, __mmv)?;
+                    Ok(())
+                }
+            }
+        }
     }
     impl CachedData {
         pub fn interned_NO_CACHE() -> Arc<CachedData> {
@@ -320,6 +382,59 @@ pub mod InstNode {
             varPointer: Pointer::Pointer<Arc<Variable::NFVariable>>,
         },
         EMPTY_NODE,
+    }
+    impl metamodelica::gc::MMTrace for InstNode {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            match self {
+                InstNode::CLASS_NODE { name, definition, visibility, cls, caches, parentScope, nodeType } => {
+                    metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(definition, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(visibility, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(cls, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(caches, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(parentScope, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(nodeType, __mmv)?;
+                    Ok(())
+                }
+                InstNode::COMPONENT_NODE { name, definition, visibility, component, parent, nodeType } => {
+                    metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(definition, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(visibility, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(component, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(parent, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(nodeType, __mmv)?;
+                    Ok(())
+                }
+                InstNode::INNER_OUTER_NODE { innerNode, outerNode } => {
+                    metamodelica::gc::MMTrace::mm_accept(innerNode, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(outerNode, __mmv)?;
+                    Ok(())
+                }
+                InstNode::REF_NODE { index } => {
+                    metamodelica::gc::MMTrace::mm_accept(index, __mmv)?;
+                    Ok(())
+                }
+                InstNode::NAME_NODE { name } => {
+                    metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
+                    Ok(())
+                }
+                InstNode::IMPLICIT_SCOPE { parentScope, locals } => {
+                    metamodelica::gc::MMTrace::mm_accept(parentScope, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(locals, __mmv)?;
+                    Ok(())
+                }
+                InstNode::ITERATOR_NODE { exp } => {
+                    metamodelica::gc::MMTrace::mm_accept(exp, __mmv)?;
+                    Ok(())
+                }
+                InstNode::VAR_NODE { name, varPointer } => {
+                    metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(varPointer, __mmv)?;
+                    Ok(())
+                }
+                InstNode::EMPTY_NODE => Ok(()),
+            }
+        }
     }
     impl InstNode {
         pub fn interned_EMPTY_NODE() -> Arc<InstNode> {
@@ -1310,6 +1425,9 @@ pub mod InstNode {
     }
     impl Ord for ScopeType {
         fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
+    }
+    impl metamodelica::gc::MMTrace for ScopeType {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
     }
 
     pub fn rootPath(mut node: Arc<InstNode>, mut ignoreBaseClass: bool) -> Result<Arc<Absyn::Path>> {

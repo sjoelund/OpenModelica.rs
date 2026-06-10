@@ -60,6 +60,17 @@ pub struct NFCallAttributes {
     pub tailCall: DAE::TailCall,
 }
 
+impl metamodelica::gc::MMTrace for NFCallAttributes {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.tuple_, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.builtin, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.isImpure, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.isFunctionPointerCall, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.inlineType, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.tailCall, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for NFCallAttributes {
     fn default() -> Self {
         Self {

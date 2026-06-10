@@ -86,6 +86,34 @@ pub enum ConversionRule {
         message: ArcStr,
     },
 }
+impl metamodelica::gc::MMTrace for ConversionRule {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            ConversionRule::CLASS { oldPath, newPath } => {
+                metamodelica::gc::MMTrace::mm_accept(oldPath, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(newPath, __mmv)?;
+                Ok(())
+            }
+            ConversionRule::CLASS_IF => Ok(()),
+            ConversionRule::ELEMENT { oldPath, oldName, newName } => {
+                metamodelica::gc::MMTrace::mm_accept(oldPath, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(oldName, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(newName, __mmv)?;
+                Ok(())
+            }
+            ConversionRule::MODIFIERS { oldMods, newMods, info } => {
+                metamodelica::gc::MMTrace::mm_accept(oldMods, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(newMods, __mmv)?;
+                metamodelica::gc::MMTrace::mm_accept(info, __mmv)?;
+                Ok(())
+            }
+            ConversionRule::MESSAGE { message } => {
+                metamodelica::gc::MMTrace::mm_accept(message, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 impl Default for ConversionRule {
     fn default() -> Self { Self::CLASS_IF }
 }
@@ -103,6 +131,13 @@ pub mod ConversionRules {
         pub rules: Arc<metamodelica::List<ConversionRule>>,
     }
 
+    impl metamodelica::gc::MMTrace for ConversionRules {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            metamodelica::gc::MMTrace::mm_accept(&self.nodes, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.rules, __mmv)?;
+            Ok(())
+        }
+    }
     impl Default for ConversionRules {
         fn default() -> Self {
             Self {
@@ -141,6 +176,9 @@ impl PartialOrd for ArgType {
 impl Ord for ArgType {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
+impl metamodelica::gc::MMTrace for ArgType {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+}
 
 pub static CONVERT_CLASS_TYPE: std::sync::LazyLock<Arc<metamodelica::List<ArgType>>> = std::sync::LazyLock::new(|| { list![ArgType::SCALAR.clone(), ArgType::SCALAR.clone()] });
 
@@ -166,6 +204,15 @@ pub struct ImportData {
     pub shadowed: bool,
 }
 
+impl metamodelica::gc::MMTrace for ImportData {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.originalPath, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.convertedPath, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.importName, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.shadowed, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for ImportData {
     fn default() -> Self {
         Self {
@@ -230,6 +277,26 @@ pub mod ImportTreeImpl {
             value: Value,
         },
         EMPTY,
+    }
+    impl metamodelica::gc::MMTrace for Tree {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            match self {
+                Tree::NODE { key, value, height, left, right } => {
+                    metamodelica::gc::MMTrace::mm_accept(key, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(value, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(height, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(left, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(right, __mmv)?;
+                    Ok(())
+                }
+                Tree::LEAF { key, value } => {
+                    metamodelica::gc::MMTrace::mm_accept(key, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(value, __mmv)?;
+                    Ok(())
+                }
+                Tree::EMPTY => Ok(()),
+            }
+        }
     }
     impl Tree {
         pub fn interned_EMPTY() -> Arc<Tree> {
@@ -887,6 +954,13 @@ pub struct Env {
     pub imports: ImportTree,
 }
 
+impl metamodelica::gc::MMTrace for Env {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.components, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.imports, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for Env {
     fn default() -> Self {
         Self {

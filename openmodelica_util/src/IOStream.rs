@@ -55,6 +55,18 @@ pub enum IOStreamType {
     LIST,
     BUFFER,
 }
+impl metamodelica::gc::MMTrace for IOStreamType {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            IOStreamType::FILE { name } => {
+                metamodelica::gc::MMTrace::mm_accept(name, __mmv)?;
+                Ok(())
+            }
+            IOStreamType::LIST => Ok(()),
+            IOStreamType::BUFFER => Ok(()),
+        }
+    }
+}
 impl Default for IOStreamType {
     fn default() -> Self { Self::LIST }
 }
@@ -72,6 +84,24 @@ pub enum IOStreamData {
         data: i32,
     },
 }
+impl metamodelica::gc::MMTrace for IOStreamData {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        match self {
+            IOStreamData::FILE_DATA { data } => {
+                metamodelica::gc::MMTrace::mm_accept(data, __mmv)?;
+                Ok(())
+            }
+            IOStreamData::LIST_DATA { data } => {
+                metamodelica::gc::MMTrace::mm_accept(data, __mmv)?;
+                Ok(())
+            }
+            IOStreamData::BUFFER_DATA { data } => {
+                metamodelica::gc::MMTrace::mm_accept(data, __mmv)?;
+                Ok(())
+            }
+        }
+    }
+}
 impl Default for IOStreamData {
     fn default() -> Self {
         Self::FILE_DATA {
@@ -88,6 +118,14 @@ pub struct IOStream {
     pub data: IOStreamData,
 }
 
+impl metamodelica::gc::MMTrace for IOStream {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.name, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.ty, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.data, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for IOStream {
     fn default() -> Self {
         Self {

@@ -70,6 +70,16 @@ pub struct NFConnector {
     pub source: Arc<DAE::ElementSource>,
 }
 
+impl metamodelica::gc::MMTrace for NFConnector {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.name, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.ty, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.face, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.cty, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.source, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for NFConnector {
     fn default() -> Self {
         Self {
@@ -95,6 +105,9 @@ impl PartialOrd for Face {
 }
 impl Ord for Face {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
+}
+impl metamodelica::gc::MMTrace for Face {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
 }
 impl Default for Face {
     fn default() -> Self { Self::INSIDE }

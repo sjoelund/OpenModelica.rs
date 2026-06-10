@@ -115,6 +115,16 @@ pub struct TypedArg {
     pub purity: Prefixes::Purity,
 }
 
+impl metamodelica::gc::MMTrace for TypedArg {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+        metamodelica::gc::MMTrace::mm_accept(&self.name, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.value, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.ty, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.var, __mmv)?;
+        metamodelica::gc::MMTrace::mm_accept(&self.purity, __mmv)?;
+        Ok(())
+    }
+}
 impl Default for TypedArg {
     fn default() -> Self {
         Self {
@@ -147,6 +157,9 @@ impl PartialOrd for SlotType {
 impl Ord for SlotType {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
+impl metamodelica::gc::MMTrace for SlotType {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+}
 impl Default for SlotType {
     fn default() -> Self { Self::POSITIONAL }
 }
@@ -164,6 +177,9 @@ impl PartialOrd for SlotEvalStatus {
 impl Ord for SlotEvalStatus {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
+impl metamodelica::gc::MMTrace for SlotEvalStatus {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+}
 impl Default for SlotEvalStatus {
     fn default() -> Self { Self::NOT_EVALUATED }
 }
@@ -180,6 +196,17 @@ pub mod Slot {
         pub evalStatus: SlotEvalStatus,
     }
 
+    impl metamodelica::gc::MMTrace for Slot {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            metamodelica::gc::MMTrace::mm_accept(&self.node, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.ty, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.default, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.arg, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.index, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.evalStatus, __mmv)?;
+            Ok(())
+        }
+    }
     impl Default for Slot {
         fn default() -> Self {
             Self {
@@ -244,6 +271,22 @@ pub mod FunctionMatchKind {
             baseMatch: Arc<FunctionMatchKind>,
         },
         NOT_COMPATIBLE,
+    }
+    impl metamodelica::gc::MMTrace for FunctionMatchKind {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            match self {
+                FunctionMatchKind::EXACT => Ok(()),
+                FunctionMatchKind::CAST => Ok(()),
+                FunctionMatchKind::GENERIC => Ok(()),
+                FunctionMatchKind::VECTORIZED { vectDims, vectorizedArgs, baseMatch } => {
+                    metamodelica::gc::MMTrace::mm_accept(vectDims, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(vectorizedArgs, __mmv)?;
+                    metamodelica::gc::MMTrace::mm_accept(baseMatch, __mmv)?;
+                    Ok(())
+                }
+                FunctionMatchKind::NOT_COMPATIBLE => Ok(()),
+            }
+        }
     }
     impl FunctionMatchKind {
         pub fn interned_EXACT() -> Arc<FunctionMatchKind> {
@@ -342,6 +385,14 @@ pub mod MatchedFunction {
         pub mk: Arc<FunctionMatchKind::FunctionMatchKind>,
     }
 
+    impl metamodelica::gc::MMTrace for MatchedFunction {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            metamodelica::gc::MMTrace::mm_accept(&self.func, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.args, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.mk, __mmv)?;
+            Ok(())
+        }
+    }
     impl Default for MatchedFunction {
         fn default() -> Self {
             Self {
@@ -407,6 +458,9 @@ impl PartialOrd for FunctionStatus {
 impl Ord for FunctionStatus {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
+impl metamodelica::gc::MMTrace for FunctionStatus {
+    fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, _: &mut __MMV) -> Result<(), ()> { Ok(()) }
+}
 impl Default for FunctionStatus {
     fn default() -> Self { Self::BUILTIN }
 }
@@ -432,6 +486,25 @@ pub mod Function {
         pub callCounter: Pointer::Pointer<i32>,
     }
 
+    impl metamodelica::gc::MMTrace for Function {
+        fn mm_accept<__MMV: metamodelica::gc::dumpster::Visitor>(&self, __mmv: &mut __MMV) -> Result<(), ()> {
+            metamodelica::gc::MMTrace::mm_accept(&self.path, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.node, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.inputs, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.outputs, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.locals, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.interfaceDiffInfo, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.slots, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.returnType, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.attributes, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.derivatives, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.derivedInputs, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.inverses, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.status, __mmv)?;
+            metamodelica::gc::MMTrace::mm_accept(&self.callCounter, __mmv)?;
+            Ok(())
+        }
+    }
     impl Default for Function {
         fn default() -> Self {
             Self {
