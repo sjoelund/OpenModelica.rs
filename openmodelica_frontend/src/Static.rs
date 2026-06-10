@@ -96,11 +96,11 @@ use openmodelica_util_datatypes_basic::Array;
 use openmodelica_util_datatypes_basic::List;
 use openmodelica_util_datatypes_basic::Mutable;
 
-pub const SLOT_NOT_EVALUATED: i32 = 0;
+pub(crate) const SLOT_NOT_EVALUATED: i32 = 0;
 
-pub const SLOT_EVALUATING: i32 = 1;
+pub(crate) const SLOT_EVALUATING: i32 = 1;
 
-pub const SLOT_EVALUATED: i32 = 2;
+pub(crate) const SLOT_EVALUATED: i32 = 2;
 
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct Slot {
@@ -145,7 +145,7 @@ pub type SLOT = Slot;
 
 
 thread_local! { static __BUILTIN_TIME_TLS: Option<(Arc<DAE::Exp>, DAE::Properties, Arc<DAE::Attributes>)> = Some((Arc::new(DAE::Exp::CREF { componentRef: Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (literal!("time")).clone(), identType: DAE::T_REAL_DEFAULT().clone(), subscriptLst: metamodelica::nil() }), ty: DAE::T_REAL_DEFAULT().clone() }), DAE::Properties::PROP { type_: DAE::T_REAL_DEFAULT().clone(), constFlag: openmodelica_frontend_types::DAE::Const::C_VAR }, DAE::dummyAttrInput().clone())); }
-pub fn BUILTIN_TIME() -> Option<(Arc<DAE::Exp>, DAE::Properties, Arc<DAE::Attributes>)> { __BUILTIN_TIME_TLS.with(|__t| __t.clone()) }
+pub(crate) fn BUILTIN_TIME() -> Option<(Arc<DAE::Exp>, DAE::Properties, Arc<DAE::Attributes>)> { __BUILTIN_TIME_TLS.with(|__t| __t.clone()) }
 
 pub(crate) fn elabExpList(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExpl: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inImplicit: bool, mut inDoVect: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo, mut inLastType: Arc<DAE::Type>) -> Result<(FCore::Cache, Arc<metamodelica::List<Arc<DAE::Exp>>>, Arc<metamodelica::List<DAE::Properties>>)> {
     let mut outCache: FCore::Cache = inCache.clone();
@@ -6106,13 +6106,13 @@ fn elabBuiltinScalar(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inP
 }
 
 thread_local! { static __STRING_ARG_MINLENGTH_TLS: Slot = Slot { defaultArg: Arc::new(DAE::FuncArg { name: (literal!("minimumLength")).clone(), ty: DAE::T_INTEGER_DEFAULT().clone(), r#const: openmodelica_frontend_types::DAE::Const::C_VAR, par: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, defaultBinding: None }), slotFilled: false, arg: Some(Arc::new(DAE::Exp::ICONST { integer: 0 })), dims: metamodelica::nil(), idx: 2, evalStatus: SLOT_NOT_EVALUATED.clone() }; }
-pub fn STRING_ARG_MINLENGTH() -> Slot { __STRING_ARG_MINLENGTH_TLS.with(|__t| __t.clone()) }
+pub(crate) fn STRING_ARG_MINLENGTH() -> Slot { __STRING_ARG_MINLENGTH_TLS.with(|__t| __t.clone()) }
 
 thread_local! { static __STRING_ARG_LEFTJUSTIFIED_TLS: Slot = Slot { defaultArg: Arc::new(DAE::FuncArg { name: (literal!("leftJustified")).clone(), ty: DAE::T_BOOL_DEFAULT().clone(), r#const: openmodelica_frontend_types::DAE::Const::C_VAR, par: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, defaultBinding: None }), slotFilled: false, arg: Some(Arc::new(DAE::Exp::BCONST { bool: true })), dims: metamodelica::nil(), idx: 3, evalStatus: SLOT_NOT_EVALUATED.clone() }; }
-pub fn STRING_ARG_LEFTJUSTIFIED() -> Slot { __STRING_ARG_LEFTJUSTIFIED_TLS.with(|__t| __t.clone()) }
+pub(crate) fn STRING_ARG_LEFTJUSTIFIED() -> Slot { __STRING_ARG_LEFTJUSTIFIED_TLS.with(|__t| __t.clone()) }
 
 thread_local! { static __STRING_ARG_SIGNIFICANT_DIGITS_TLS: Slot = Slot { defaultArg: Arc::new(DAE::FuncArg { name: (literal!("significantDigits")).clone(), ty: DAE::T_INTEGER_DEFAULT().clone(), r#const: openmodelica_frontend_types::DAE::Const::C_VAR, par: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, defaultBinding: None }), slotFilled: false, arg: Some(Arc::new(DAE::Exp::ICONST { integer: 6 })), dims: metamodelica::nil(), idx: 4, evalStatus: SLOT_NOT_EVALUATED.clone() }; }
-pub fn STRING_ARG_SIGNIFICANT_DIGITS() -> Slot { __STRING_ARG_SIGNIFICANT_DIGITS_TLS.with(|__t| __t.clone()) }
+pub(crate) fn STRING_ARG_SIGNIFICANT_DIGITS() -> Slot { __STRING_ARG_SIGNIFICANT_DIGITS_TLS.with(|__t| __t.clone()) }
 
 fn elabBuiltinString(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPosArgs: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inNamedArgs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inImplicit: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache;
@@ -8305,7 +8305,7 @@ pub fn isExternalObjectFunction(mut inCache: FCore::Cache, mut inEnv: FCore::Gra
     Ok((outCache, outIsExt))
 }
 
-pub const vectorizeArg: &'static str = "$vectorizeArg";
+pub(crate) const vectorizeArg: &'static str = "$vectorizeArg";
 
 fn vectorizeCall(mut inExp: Arc<DAE::Exp>, mut inDims: Arc<metamodelica::List<Arc<DAE::Dimension>>>, mut inSlots: Arc<metamodelica::List<Slot>>, mut inProperties: DAE::Properties, mut info: SourceInfo) -> Result<(Arc<DAE::Exp>, DAE::Properties)> {
     let mut outExp: Arc<DAE::Exp>;

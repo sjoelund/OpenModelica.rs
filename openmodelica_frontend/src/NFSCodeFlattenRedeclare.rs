@@ -113,7 +113,7 @@ pub use self::Replacement::{REPLACED,PUSHED};
 
 pub type Replacements = Arc<metamodelica::List<Replacement>>;
 
-pub static emptyReplacements: std::sync::LazyLock<Arc<metamodelica::List<Replacement>>> = std::sync::LazyLock::new(|| { metamodelica::nil() });
+pub(crate) static emptyReplacements: std::sync::LazyLock<Arc<metamodelica::List<Replacement>>> = std::sync::LazyLock::new(|| { metamodelica::nil() });
 
 pub(crate) fn addElementRedeclarationsToEnv(mut inRedeclares: Arc<metamodelica::List<Arc<SCode::Element>>>, mut inEnv: Env) -> Result<Env> {
     let mut outEnv: Env;

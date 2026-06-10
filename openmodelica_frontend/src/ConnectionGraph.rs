@@ -139,7 +139,7 @@ thread_local! { static __EMPTY_TLS: ConnectionGraph = ConnectionGraph { updateGr
 pub fn EMPTY() -> ConnectionGraph { __EMPTY_TLS.with(|__t| __t.clone()) }
 
 thread_local! { static __NOUPDATE_EMPTY_TLS: ConnectionGraph = ConnectionGraph { updateGraph: false, definiteRoots: metamodelica::nil(), potentialRoots: metamodelica::nil(), uniqueRoots: metamodelica::nil(), branches: metamodelica::nil(), connections: metamodelica::nil() }; }
-pub fn NOUPDATE_EMPTY() -> ConnectionGraph { __NOUPDATE_EMPTY_TLS.with(|__t| __t.clone()) }
+pub(crate) fn NOUPDATE_EMPTY() -> ConnectionGraph { __NOUPDATE_EMPTY_TLS.with(|__t| __t.clone()) }
 
 pub(crate) fn handleOverconstrainedConnections(mut inGraph: ConnectionGraph, mut modelNameQualified: ArcStr, mut inDAE: DAE::DAElist) -> Result<(DAE::DAElist, DaeEdges, DaeEdges)> {
     let mut outDAE: DAE::DAElist;

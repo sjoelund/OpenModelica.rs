@@ -535,10 +535,10 @@ pub mod SparsityPattern {
 }
 
 thread_local! { static __EMPTY_SPARSITY_PATTERN_TLS: Arc<SparsityPattern::SparsityPattern> = Arc::new(SparsityPattern::SparsityPattern { col_wise_pattern: metamodelica::nil(), row_wise_pattern: metamodelica::nil(), seed_vars: metamodelica::nil(), partial_vars: metamodelica::nil(), nnz: 0 }); }
-pub fn EMPTY_SPARSITY_PATTERN() -> Arc<SparsityPattern::SparsityPattern> { __EMPTY_SPARSITY_PATTERN_TLS.with(|__t| __t.clone()) }
+pub(crate) fn EMPTY_SPARSITY_PATTERN() -> Arc<SparsityPattern::SparsityPattern> { __EMPTY_SPARSITY_PATTERN_TLS.with(|__t| __t.clone()) }
 
 thread_local! { static __EMPTY_SPARSITY_COLORING_TLS: Arc<SparsityColoring::SparsityColoring> = Arc::new(SparsityColoring::SparsityColoring { cols: metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect()), rows: metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect()) }); }
-pub fn EMPTY_SPARSITY_COLORING() -> Arc<SparsityColoring::SparsityColoring> { __EMPTY_SPARSITY_COLORING_TLS.with(|__t| __t.clone()) }
+pub(crate) fn EMPTY_SPARSITY_COLORING() -> Arc<SparsityColoring::SparsityColoring> { __EMPTY_SPARSITY_COLORING_TLS.with(|__t| __t.clone()) }
 
 /// seed variable lists belonging to the same color
 pub type SparsityColoringCol = Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;

@@ -153,7 +153,7 @@ pub type GRAPH = NFOCConnectionGraph;
 
 
 thread_local! { static __EMPTY_TLS: NFOCConnectionGraph = NFOCConnectionGraph { updateGraph: true, definiteRoots: metamodelica::nil(), potentialRoots: metamodelica::nil(), uniqueRoots: metamodelica::nil(), branches: metamodelica::nil(), connections: metamodelica::nil() }; }
-pub fn EMPTY() -> NFOCConnectionGraph { __EMPTY_TLS.with(|__t| __t.clone()) }
+pub(crate) fn EMPTY() -> NFOCConnectionGraph { __EMPTY_TLS.with(|__t| __t.clone()) }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]

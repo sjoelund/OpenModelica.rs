@@ -83,7 +83,7 @@ use openmodelica_util_datatypes_basic::List;
 
 // public imports
 // protected imports
-pub const defaultMaxIter: i32 = 20;
+pub(crate) const defaultMaxIter: i32 = 20;
 
 // =============================================================================
 // differentiation interfaces:

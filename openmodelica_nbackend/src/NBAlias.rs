@@ -126,7 +126,7 @@ use openmodelica_util_datatypes_basic::Pointer;
 // ==========================================================================
 //               Single Variable constants and functions
 // ==========================================================================
-pub const NOMINAL_THRESHOLD: metamodelica::Real = metamodelica::OrderedFloat(1000.0_f64);
+pub(crate) const NOMINAL_THRESHOLD: metamodelica::Real = metamodelica::OrderedFloat(1000.0_f64);
 
 pub(crate) fn main(mut bdae: Arc<BackendDAE::NBackendDAE>, mut kind: Partition::Kind) -> Result<Arc<BackendDAE::NBackendDAE>> {
     let mut bdae: Arc<BackendDAE::NBackendDAE> = bdae;
@@ -229,7 +229,7 @@ pub mod AliasSet {
 }
 
 thread_local! { static __EMPTY_ALIAS_SET_TLS: Arc<AliasSet::AliasSet> = Arc::new(AliasSet::AliasSet { simple_variables: metamodelica::nil(), simple_equations: metamodelica::nil(), const_opt: None }); }
-pub fn EMPTY_ALIAS_SET() -> Arc<AliasSet::AliasSet> { __EMPTY_ALIAS_SET_TLS.with(|__t| __t.clone()) }
+pub(crate) fn EMPTY_ALIAS_SET() -> Arc<AliasSet::AliasSet> { __EMPTY_ALIAS_SET_TLS.with(|__t| __t.clone()) }
 
 // needed for unordered map
 pub type SetPtr = Pointer::Pointer<Arc<AliasSet::AliasSet>>;
@@ -271,10 +271,10 @@ pub type CREF_TPL = CrefTpl;
 
 
 thread_local! { static __EMPTY_CREF_TPL_TLS: CrefTpl = CrefTpl { cont: true, varCount: 0, paramCount: 0, cr_lst: metamodelica::nil() }; }
-pub fn EMPTY_CREF_TPL() -> CrefTpl { __EMPTY_CREF_TPL_TLS.with(|__t| __t.clone()) }
+pub(crate) fn EMPTY_CREF_TPL() -> CrefTpl { __EMPTY_CREF_TPL_TLS.with(|__t| __t.clone()) }
 
 thread_local! { static __FAILED_CREF_TPL_TLS: CrefTpl = CrefTpl { cont: false, varCount: 0, paramCount: 0, cr_lst: metamodelica::nil() }; }
-pub fn FAILED_CREF_TPL() -> CrefTpl { __FAILED_CREF_TPL_TLS.with(|__t| __t.clone()) }
+pub(crate) fn FAILED_CREF_TPL() -> CrefTpl { __FAILED_CREF_TPL_TLS.with(|__t| __t.clone()) }
 
 fn aliasDefault(mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqData::EqData>, mut kind: Partition::Kind) -> Result<(Arc<VarData::VarData>, Arc<EqData::EqData>)> {
     let mut varData: Arc<VarData::VarData> = varData;

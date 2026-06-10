@@ -120,11 +120,11 @@ use openmodelica_util::Util;
 use openmodelica_util_datatypes_basic::List;
 use openmodelica_util_datatypes_basic::Mutable;
 
-pub const ANNOTATION_CONTEXT: i32 = intBitOr(InstContext::RELAXED, InstContext::ANNOTATION);
+pub(crate) const ANNOTATION_CONTEXT: i32 = intBitOr(InstContext::RELAXED, InstContext::ANNOTATION);
 
-pub const INST_API_ANNOTATION_CONTEXT: i32 = intBitOr(ANNOTATION_CONTEXT, InstContext::INSTANCE_API);
+pub(crate) const INST_API_ANNOTATION_CONTEXT: i32 = intBitOr(ANNOTATION_CONTEXT, InstContext::INSTANCE_API);
 
-pub const FAST_CONTEXT: i32 = intBitOr(InstContext::RELAXED, InstContext::FAST_LOOKUP);
+pub(crate) const FAST_CONTEXT: i32 = intBitOr(InstContext::RELAXED, InstContext::FAST_LOOKUP);
 
 pub(crate) fn evaluateAnnotation(mut absynProgram: Absyn::Program, mut classPath: Arc<Path>, mut inAnnotation: Arc<Absyn::Annotation>) -> Result<ArcStr> {
     let mut outString: ArcStr = literal!("");
@@ -808,7 +808,7 @@ impl Default for InstanceTree {
 pub use self::InstanceTree::{COMPONENT,CLASS,BUILTIN_BASE_CLASS,EMPTY};
 
 thread_local! { static __ENUM_BASE_TLS: Arc<InstanceTree> = Arc::new(InstanceTree::BUILTIN_BASE_CLASS { name: (literal!("enumeration")).clone() }); }
-pub fn ENUM_BASE() -> Arc<InstanceTree> { __ENUM_BASE_TLS.with(|__t| __t.clone()) }
+pub(crate) fn ENUM_BASE() -> Arc<InstanceTree> { __ENUM_BASE_TLS.with(|__t| __t.clone()) }
 
 pub(crate) fn getModelInstance(mut classPath: Arc<Path>, mut contextPath: Arc<Path>, mut modifier: ArcStr, mut prettyPrint: bool) -> Result<Arc<Values::Value>> {
     let mut res: Arc<Values::Value>;

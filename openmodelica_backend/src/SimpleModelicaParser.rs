@@ -61,7 +61,7 @@ use openmodelica_util::System;
 use openmodelica_util_datatypes_basic::DoubleEnded;
 use openmodelica_util_datatypes_basic::List;
 
-pub static newlineToken: std::sync::LazyLock<Token> = std::sync::LazyLock::new(|| { Token { fileName: (literal!("")).clone(), id: TokenId::NEWLINE.clone(), fileContents: (literal!("\n")).clone(), byteOffset: 1, length: 1, lineNumberStart: 1, columnNumberStart: 1, lineNumberEnd: 1, columnNumberEnd: 1 } });
+pub(crate) static newlineToken: std::sync::LazyLock<Token> = std::sync::LazyLock::new(|| { Token { fileName: (literal!("")).clone(), id: TokenId::NEWLINE.clone(), fileContents: (literal!("\n")).clone(), byteOffset: 1, length: 1, lineNumberStart: 1, columnNumberStart: 1, lineNumberEnd: 1, columnNumberEnd: 1 } });
 
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum ParseTree {
@@ -3561,11 +3561,11 @@ fn countDiffAddDelete(mut diffs: Arc<metamodelica::List<(Diff, Arc<metamodelica:
     (nadd, ndel)
 }
 
-pub static whiteSpaceTokenIds: std::sync::LazyLock<Arc<metamodelica::List<TokenId>>> = std::sync::LazyLock::new(|| { list![TokenId::LINE_COMMENT.clone(), TokenId::BLOCK_COMMENT.clone(), TokenId::NEWLINE.clone(), TokenId::WHITESPACE.clone()] });
+pub(crate) static whiteSpaceTokenIds: std::sync::LazyLock<Arc<metamodelica::List<TokenId>>> = std::sync::LazyLock::new(|| { list![TokenId::LINE_COMMENT.clone(), TokenId::BLOCK_COMMENT.clone(), TokenId::NEWLINE.clone(), TokenId::WHITESPACE.clone()] });
 
-pub static whiteSpaceTokenIdsNotComment: std::sync::LazyLock<Arc<metamodelica::List<TokenId>>> = std::sync::LazyLock::new(|| { list![TokenId::NEWLINE.clone(), TokenId::WHITESPACE.clone()] });
+pub(crate) static whiteSpaceTokenIdsNotComment: std::sync::LazyLock<Arc<metamodelica::List<TokenId>>> = std::sync::LazyLock::new(|| { list![TokenId::NEWLINE.clone(), TokenId::WHITESPACE.clone()] });
 
-pub static tokenIdsComment: std::sync::LazyLock<Arc<metamodelica::List<TokenId>>> = std::sync::LazyLock::new(|| { list![TokenId::LINE_COMMENT.clone(), TokenId::BLOCK_COMMENT.clone()] });
+pub(crate) static tokenIdsComment: std::sync::LazyLock<Arc<metamodelica::List<TokenId>>> = std::sync::LazyLock::new(|| { list![TokenId::LINE_COMMENT.clone(), TokenId::BLOCK_COMMENT.clone()] });
 
 fn parseTreeIsWhitespace(mut t1: Arc<ParseTree>) -> bool {
     let mut b: bool;
@@ -3979,33 +3979,33 @@ fn tokenId(mut t: Token) -> Result<TokenId> {
 
 pub mod First {
     use super::*;
-    pub static class_prefixes: std::sync::LazyLock<Arc<metamodelica::List<TokenId>>> = std::sync::LazyLock::new(|| { list![TokenId::PARTIAL.clone(), TokenId::CLASS.clone(), TokenId::MODEL.clone(), TokenId::OPERATOR.clone(), TokenId::RECORD.clone(), TokenId::BLOCK.clone(), TokenId::EXPANDABLE.clone(), TokenId::CONNECTOR.clone(), TokenId::TYPE.clone(), TokenId::PACKAGE.clone(), TokenId::PURE.clone(), TokenId::IMPURE.clone(), TokenId::FUNCTION.clone()] });
+    pub(crate) static class_prefixes: std::sync::LazyLock<Arc<metamodelica::List<TokenId>>> = std::sync::LazyLock::new(|| { list![TokenId::PARTIAL.clone(), TokenId::CLASS.clone(), TokenId::MODEL.clone(), TokenId::OPERATOR.clone(), TokenId::RECORD.clone(), TokenId::BLOCK.clone(), TokenId::EXPANDABLE.clone(), TokenId::CONNECTOR.clone(), TokenId::TYPE.clone(), TokenId::PACKAGE.clone(), TokenId::PURE.clone(), TokenId::IMPURE.clone(), TokenId::FUNCTION.clone()] });
 
-    pub static class_definition: std::sync::LazyLock<Arc<metamodelica::List<TokenId>>> = std::sync::LazyLock::new(|| { metamodelica::cons(TokenId::FINAL.clone(), metamodelica::cons(TokenId::ENCAPSULATED.clone(), class_prefixes.clone())) });
+    pub(crate) static class_definition: std::sync::LazyLock<Arc<metamodelica::List<TokenId>>> = std::sync::LazyLock::new(|| { metamodelica::cons(TokenId::FINAL.clone(), metamodelica::cons(TokenId::ENCAPSULATED.clone(), class_prefixes.clone())) });
 
-    pub static type_prefix: std::sync::LazyLock<Arc<metamodelica::List<TokenId>>> = std::sync::LazyLock::new(|| { list![TokenId::FLOW.clone(), TokenId::STREAM.clone(), TokenId::DISCRETE.clone(), TokenId::PARAMETER.clone(), TokenId::CONSTANT.clone(), TokenId::INPUT.clone(), TokenId::OUTPUT.clone()] });
+    pub(crate) static type_prefix: std::sync::LazyLock<Arc<metamodelica::List<TokenId>>> = std::sync::LazyLock::new(|| { list![TokenId::FLOW.clone(), TokenId::STREAM.clone(), TokenId::DISCRETE.clone(), TokenId::PARAMETER.clone(), TokenId::CONSTANT.clone(), TokenId::INPUT.clone(), TokenId::OUTPUT.clone()] });
 
-    pub static class_modification: std::sync::LazyLock<Arc<metamodelica::List<TokenId>>> = std::sync::LazyLock::new(|| { list![TokenId::LPAR.clone()] });
+    pub(crate) static class_modification: std::sync::LazyLock<Arc<metamodelica::List<TokenId>>> = std::sync::LazyLock::new(|| { list![TokenId::LPAR.clone()] });
 
-    pub static _annotation: std::sync::LazyLock<Arc<metamodelica::List<TokenId>>> = std::sync::LazyLock::new(|| { list![TokenId::ANNOTATION.clone()] });
+    pub(crate) static _annotation: std::sync::LazyLock<Arc<metamodelica::List<TokenId>>> = std::sync::LazyLock::new(|| { list![TokenId::ANNOTATION.clone()] });
 
-    pub static element_redeclaration: std::sync::LazyLock<Arc<metamodelica::List<TokenId>>> = std::sync::LazyLock::new(|| { list![TokenId::REDECLARE.clone()] });
+    pub(crate) static element_redeclaration: std::sync::LazyLock<Arc<metamodelica::List<TokenId>>> = std::sync::LazyLock::new(|| { list![TokenId::REDECLARE.clone()] });
 
-    pub static name: std::sync::LazyLock<Arc<metamodelica::List<TokenId>>> = std::sync::LazyLock::new(|| { list![TokenId::DOT.clone(), TokenId::IDENT.clone()] });
+    pub(crate) static name: std::sync::LazyLock<Arc<metamodelica::List<TokenId>>> = std::sync::LazyLock::new(|| { list![TokenId::DOT.clone(), TokenId::IDENT.clone()] });
 
-    pub static element_modification_or_replaceable: std::sync::LazyLock<Arc<metamodelica::List<TokenId>>> = std::sync::LazyLock::new(|| { metamodelica::cons(TokenId::EACH.clone(), metamodelica::cons(TokenId::FINAL.clone(), metamodelica::cons(TokenId::REPLACEABLE.clone(), name.clone()))) });
+    pub(crate) static element_modification_or_replaceable: std::sync::LazyLock<Arc<metamodelica::List<TokenId>>> = std::sync::LazyLock::new(|| { metamodelica::cons(TokenId::EACH.clone(), metamodelica::cons(TokenId::FINAL.clone(), metamodelica::cons(TokenId::REPLACEABLE.clone(), name.clone()))) });
 
-    pub static argument: std::sync::LazyLock<Arc<metamodelica::List<TokenId>>> = std::sync::LazyLock::new(|| { listAppend(element_modification_or_replaceable.clone(), element_redeclaration.clone()) });
+    pub(crate) static argument: std::sync::LazyLock<Arc<metamodelica::List<TokenId>>> = std::sync::LazyLock::new(|| { listAppend(element_modification_or_replaceable.clone(), element_redeclaration.clone()) });
 
-    pub static modification: std::sync::LazyLock<Arc<metamodelica::List<TokenId>>> = std::sync::LazyLock::new(|| { list![TokenId::LPAR.clone(), TokenId::EQUALS.clone(), TokenId::ASSIGN.clone()] });
+    pub(crate) static modification: std::sync::LazyLock<Arc<metamodelica::List<TokenId>>> = std::sync::LazyLock::new(|| { list![TokenId::LPAR.clone(), TokenId::EQUALS.clone(), TokenId::ASSIGN.clone()] });
 
-    pub static component_clause: std::sync::LazyLock<Arc<metamodelica::List<TokenId>>> = std::sync::LazyLock::new(|| { listAppend(type_prefix.clone(), name.clone()) });
+    pub(crate) static component_clause: std::sync::LazyLock<Arc<metamodelica::List<TokenId>>> = std::sync::LazyLock::new(|| { listAppend(type_prefix.clone(), name.clone()) });
 
-    pub static element: std::sync::LazyLock<Arc<metamodelica::List<TokenId>>> = std::sync::LazyLock::new(|| { listAppend(component_clause.clone(), listAppend(class_definition.clone(), list![TokenId::ANNOTATION.clone(), TokenId::IMPORT.clone(), TokenId::EXTENDS.clone(), TokenId::REDECLARE.clone(), TokenId::FINAL.clone(), TokenId::INNER.clone(), TokenId::OUTER.clone(), TokenId::REPLACEABLE.clone()])) });
+    pub(crate) static element: std::sync::LazyLock<Arc<metamodelica::List<TokenId>>> = std::sync::LazyLock::new(|| { listAppend(component_clause.clone(), listAppend(class_definition.clone(), list![TokenId::ANNOTATION.clone(), TokenId::IMPORT.clone(), TokenId::EXTENDS.clone(), TokenId::REDECLARE.clone(), TokenId::FINAL.clone(), TokenId::INNER.clone(), TokenId::OUTER.clone(), TokenId::REPLACEABLE.clone()])) });
 
-    pub static statement: std::sync::LazyLock<Arc<metamodelica::List<TokenId>>> = std::sync::LazyLock::new(|| { list![TokenId::DOT.clone(), TokenId::IDENT.clone(), TokenId::LPAR.clone(), TokenId::BREAK.clone(), TokenId::RETURN.clone(), TokenId::IF.clone(), TokenId::FOR.clone(), TokenId::WHILE.clone(), TokenId::WHEN.clone()] });
+    pub(crate) static statement: std::sync::LazyLock<Arc<metamodelica::List<TokenId>>> = std::sync::LazyLock::new(|| { list![TokenId::DOT.clone(), TokenId::IDENT.clone(), TokenId::LPAR.clone(), TokenId::BREAK.clone(), TokenId::RETURN.clone(), TokenId::IF.clone(), TokenId::FOR.clone(), TokenId::WHILE.clone(), TokenId::WHEN.clone()] });
 
-    pub static component_reference: std::sync::LazyLock<Arc<metamodelica::List<TokenId>>> = std::sync::LazyLock::new(|| { list![TokenId::DOT.clone(), TokenId::IDENT.clone()] });
+    pub(crate) static component_reference: std::sync::LazyLock<Arc<metamodelica::List<TokenId>>> = std::sync::LazyLock::new(|| { list![TokenId::DOT.clone(), TokenId::IDENT.clone()] });
 
     /*  constant list<TokenId> function_arguments =
         TokenId.FUNCTION ::
@@ -4016,9 +4016,9 @@ pub mod First {
 
 pub mod Follow {
     use super::*;
-    pub static statement_equation: std::sync::LazyLock<Arc<metamodelica::List<TokenId>>> = std::sync::LazyLock::new(|| { list![TokenId::INITIAL.clone(), TokenId::EQUATION.clone(), TokenId::ALGORITHM.clone(), TokenId::PUBLIC.clone(), TokenId::PROTECTED.clone(), TokenId::EXTERNAL.clone(), TokenId::ANNOTATION.clone(), TokenId::ELSE.clone(), TokenId::ELSEIF.clone(), TokenId::END.clone(), TokenId::ELSEWHEN.clone()] });
+    pub(crate) static statement_equation: std::sync::LazyLock<Arc<metamodelica::List<TokenId>>> = std::sync::LazyLock::new(|| { list![TokenId::INITIAL.clone(), TokenId::EQUATION.clone(), TokenId::ALGORITHM.clone(), TokenId::PUBLIC.clone(), TokenId::PROTECTED.clone(), TokenId::EXTERNAL.clone(), TokenId::ANNOTATION.clone(), TokenId::ELSE.clone(), TokenId::ELSEIF.clone(), TokenId::END.clone(), TokenId::ELSEWHEN.clone()] });
 
 }
 
-pub const debug: bool = false;
+pub(crate) const debug: bool = false;
 

@@ -5020,13 +5020,13 @@ pub(crate) fn offsetAnnotationsInElementSpec(mut spec: Arc<Absyn::ElementSpec>, 
     Ok(spec)
 }
 
-pub static PLACEMENT_ORIGIN_PATH: std::sync::LazyLock<Arc<Absyn::Path>> = std::sync::LazyLock::new(|| { Arc::new(Absyn::Path::QUALIFIED { name: (literal!("Placement")).clone(), path: Arc::new(Absyn::Path::QUALIFIED { name: (literal!("transformation")).clone(), path: Arc::new(Absyn::Path::IDENT { name: (literal!("origin")).clone() }) }) }) });
+pub(crate) static PLACEMENT_ORIGIN_PATH: std::sync::LazyLock<Arc<Absyn::Path>> = std::sync::LazyLock::new(|| { Arc::new(Absyn::Path::QUALIFIED { name: (literal!("Placement")).clone(), path: Arc::new(Absyn::Path::QUALIFIED { name: (literal!("transformation")).clone(), path: Arc::new(Absyn::Path::IDENT { name: (literal!("origin")).clone() }) }) }) });
 
-pub static PLACEMENT_ICON_TRANSFORMATION_PATH: std::sync::LazyLock<Arc<Absyn::Path>> = std::sync::LazyLock::new(|| { Arc::new(Absyn::Path::QUALIFIED { name: (literal!("Placement")).clone(), path: Arc::new(Absyn::Path::IDENT { name: (literal!("iconTransformation")).clone() }) }) });
+pub(crate) static PLACEMENT_ICON_TRANSFORMATION_PATH: std::sync::LazyLock<Arc<Absyn::Path>> = std::sync::LazyLock::new(|| { Arc::new(Absyn::Path::QUALIFIED { name: (literal!("Placement")).clone(), path: Arc::new(Absyn::Path::IDENT { name: (literal!("iconTransformation")).clone() }) }) });
 
-pub static LINE_POINTS_PATH: std::sync::LazyLock<Arc<Absyn::Path>> = std::sync::LazyLock::new(|| { Arc::new(Absyn::Path::QUALIFIED { name: (literal!("Line")).clone(), path: Arc::new(Absyn::Path::IDENT { name: (literal!("points")).clone() }) }) });
+pub(crate) static LINE_POINTS_PATH: std::sync::LazyLock<Arc<Absyn::Path>> = std::sync::LazyLock::new(|| { Arc::new(Absyn::Path::QUALIFIED { name: (literal!("Line")).clone(), path: Arc::new(Absyn::Path::IDENT { name: (literal!("points")).clone() }) }) });
 
-pub static DIAGRAM_GRAPHICS_PATH: std::sync::LazyLock<Arc<Absyn::Path>> = std::sync::LazyLock::new(|| { Arc::new(Absyn::Path::QUALIFIED { name: (literal!("Diagram")).clone(), path: Arc::new(Absyn::Path::IDENT { name: (literal!("graphics")).clone() }) }) });
+pub(crate) static DIAGRAM_GRAPHICS_PATH: std::sync::LazyLock<Arc<Absyn::Path>> = std::sync::LazyLock::new(|| { Arc::new(Absyn::Path::QUALIFIED { name: (literal!("Diagram")).clone(), path: Arc::new(Absyn::Path::IDENT { name: (literal!("graphics")).clone() }) }) });
 
 pub(crate) fn offsetAnnotationsInComponentItem(mut item: Arc<Absyn::ComponentItem>, mut x: i32, mut y: i32) -> Result<Arc<Absyn::ComponentItem>> {
     let mut item: Arc<Absyn::ComponentItem> = item;

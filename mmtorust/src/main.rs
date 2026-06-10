@@ -102,10 +102,10 @@ fn start_compilation(results: Vec<Absyn::Program>) {
     let vis = visibility::analyze(&hier);
     let total_fns = info.total_functions;
     let crate_local = total_fns.saturating_sub(vis.keep_public.len());
-    hier.keep_public_fns = vis.keep_public;
+    hier.keep_public = vis.keep_public;
     println!(
         "Visibility analysis: {} functions kept `pub`, ~{} narrowable to `pub(crate)`; {:.2}s",
-        hier.keep_public_fns.len(),
+        hier.keep_public.len(),
         crate_local,
         t0.elapsed().as_secs_f64(),
     );

@@ -77,15 +77,15 @@ pub type Item = Arc<NFSCodeEnv::Item>;
 
 pub type ExtendsTableArray = metamodelica::Array<ExtendsWrapper>;
 
-pub const BASECLASS_NOT_FOUND_ERROR: &'static str = "$1";
+pub(crate) const BASECLASS_NOT_FOUND_ERROR: &'static str = "$1";
 
-pub const BASECLASS_INHERITED_ERROR: &'static str = "$2";
+pub(crate) const BASECLASS_INHERITED_ERROR: &'static str = "$2";
 
-pub const BASECLASS_REPLACEABLE_ERROR: &'static str = "$3";
+pub(crate) const BASECLASS_REPLACEABLE_ERROR: &'static str = "$3";
 
-pub const BASECLASS_IS_VAR_ERROR: &'static str = "$4";
+pub(crate) const BASECLASS_IS_VAR_ERROR: &'static str = "$4";
 
-pub const BASECLASS_UNKNOWN_ERROR: &'static str = "$5";
+pub(crate) const BASECLASS_UNKNOWN_ERROR: &'static str = "$5";
 
 #[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum ExtendsWrapper {

@@ -155,11 +155,11 @@ pub type MatchOptions = i32;
 
 pub const DEFAULT_OPTIONS: i32 = 0;
 
-pub const ALLOW_UNKNOWN: i32 = intBitLShift(1, 0);
+pub(crate) const ALLOW_UNKNOWN: i32 = intBitLShift(1, 0);
 
-pub const IGNORE_DIMENSIONS: i32 = intBitLShift(1, 1);
+pub(crate) const IGNORE_DIMENSIONS: i32 = intBitLShift(1, 1);
 
-pub const IGNORE_DIMENSIONS_IN_RECORDS: i32 = intBitLShift(1, 2);
+pub(crate) const IGNORE_DIMENSIONS_IN_RECORDS: i32 = intBitLShift(1, 2);
 
 pub(crate) fn setOption(mut currentOptions: MatchOptions, mut newOption: MatchOptions) -> MatchOptions {
     let mut newOptions: MatchOptions = intBitOr(currentOptions.clone(), newOption.clone());

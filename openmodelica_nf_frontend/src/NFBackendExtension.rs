@@ -1929,19 +1929,19 @@ thread_local! { static __EMPTY_VAR_ATTR_REAL_TLS: Arc<VariableAttributes::Variab
 pub fn EMPTY_VAR_ATTR_REAL() -> Arc<VariableAttributes::VariableAttributes> { __EMPTY_VAR_ATTR_REAL_TLS.with(|__t| __t.clone()) }
 
 thread_local! { static __EMPTY_VAR_ATTR_INT_TLS: Arc<VariableAttributes::VariableAttributes> = Arc::new(VariableAttributes::VariableAttributes::VAR_ATTR_INT { quantity: None, min: None, max: None, start: None, fixed: None, uncertainty: None, distribution: None, binding: None, isProtected: None, finalPrefix: None, startOrigin: None }); }
-pub fn EMPTY_VAR_ATTR_INT() -> Arc<VariableAttributes::VariableAttributes> { __EMPTY_VAR_ATTR_INT_TLS.with(|__t| __t.clone()) }
+pub(crate) fn EMPTY_VAR_ATTR_INT() -> Arc<VariableAttributes::VariableAttributes> { __EMPTY_VAR_ATTR_INT_TLS.with(|__t| __t.clone()) }
 
 thread_local! { static __EMPTY_VAR_ATTR_BOOL_TLS: Arc<VariableAttributes::VariableAttributes> = Arc::new(VariableAttributes::VariableAttributes::VAR_ATTR_BOOL { quantity: None, start: None, fixed: None, binding: None, isProtected: None, finalPrefix: None, startOrigin: None }); }
-pub fn EMPTY_VAR_ATTR_BOOL() -> Arc<VariableAttributes::VariableAttributes> { __EMPTY_VAR_ATTR_BOOL_TLS.with(|__t| __t.clone()) }
+pub(crate) fn EMPTY_VAR_ATTR_BOOL() -> Arc<VariableAttributes::VariableAttributes> { __EMPTY_VAR_ATTR_BOOL_TLS.with(|__t| __t.clone()) }
 
 thread_local! { static __EMPTY_VAR_ATTR_CLOCK_TLS: Arc<VariableAttributes::VariableAttributes> = Arc::new(VariableAttributes::VariableAttributes::VAR_ATTR_CLOCK { isProtected: None, finalPrefix: None }); }
-pub fn EMPTY_VAR_ATTR_CLOCK() -> Arc<VariableAttributes::VariableAttributes> { __EMPTY_VAR_ATTR_CLOCK_TLS.with(|__t| __t.clone()) }
+pub(crate) fn EMPTY_VAR_ATTR_CLOCK() -> Arc<VariableAttributes::VariableAttributes> { __EMPTY_VAR_ATTR_CLOCK_TLS.with(|__t| __t.clone()) }
 
 thread_local! { static __EMPTY_VAR_ATTR_STRING_TLS: Arc<VariableAttributes::VariableAttributes> = Arc::new(VariableAttributes::VariableAttributes::VAR_ATTR_STRING { quantity: None, start: None, fixed: None, binding: None, isProtected: None, finalPrefix: None, startOrigin: None }); }
-pub fn EMPTY_VAR_ATTR_STRING() -> Arc<VariableAttributes::VariableAttributes> { __EMPTY_VAR_ATTR_STRING_TLS.with(|__t| __t.clone()) }
+pub(crate) fn EMPTY_VAR_ATTR_STRING() -> Arc<VariableAttributes::VariableAttributes> { __EMPTY_VAR_ATTR_STRING_TLS.with(|__t| __t.clone()) }
 
 thread_local! { static __EMPTY_VAR_ATTR_ENUMERATION_TLS: Arc<VariableAttributes::VariableAttributes> = Arc::new(VariableAttributes::VariableAttributes::VAR_ATTR_ENUMERATION { quantity: None, min: None, max: None, start: None, fixed: None, binding: None, isProtected: None, finalPrefix: None, startOrigin: None }); }
-pub fn EMPTY_VAR_ATTR_ENUMERATION() -> Arc<VariableAttributes::VariableAttributes> { __EMPTY_VAR_ATTR_ENUMERATION_TLS.with(|__t| __t.clone()) }
+pub(crate) fn EMPTY_VAR_ATTR_ENUMERATION() -> Arc<VariableAttributes::VariableAttributes> { __EMPTY_VAR_ATTR_ENUMERATION_TLS.with(|__t| __t.clone()) }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]

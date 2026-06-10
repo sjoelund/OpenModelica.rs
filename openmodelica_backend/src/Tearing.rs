@@ -81,9 +81,9 @@ use openmodelica_util_datatypes_basic::Mutable;
 //
 //
 // =============================================================================
-pub const BORDER: &'static str = "****************************************";
+pub(crate) const BORDER: &'static str = "****************************************";
 
-pub const UNDERLINE: &'static str = "========================================";
+pub(crate) const UNDERLINE: &'static str = "========================================";
 
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum TearingMethod {

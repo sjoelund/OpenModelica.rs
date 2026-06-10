@@ -68,7 +68,7 @@ pub type Element = (i32, Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>);
 pub type T = Arc<metamodelica::List<Arc<Tree>>>;
 
 thread_local! { static __empty_TLS: Arc<metamodelica::List<Arc<Tree>>> = metamodelica::nil(); }
-pub fn empty() -> Arc<metamodelica::List<Arc<Tree>>> { __empty_TLS.with(|__t| __t.clone()) }
+pub(crate) fn empty() -> Arc<metamodelica::List<Arc<Tree>>> { __empty_TLS.with(|__t| __t.clone()) }
 
 /*
 function isEmpty = listEmpty;

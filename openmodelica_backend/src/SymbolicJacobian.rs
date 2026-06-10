@@ -102,7 +102,7 @@ use openmodelica_util_datatypes_basic::List;
 // From User Documentation for ida v5.4.0 equation (2.5) aka Alpha
 // is the scalar in the system Jacobian, proportional to the inverse of the step
 // size used for DAE_Mode symbolic jacobians
-pub const DAE_CJ: &'static str = "$DAE_CJ";
+pub(crate) const DAE_CJ: &'static str = "$DAE_CJ";
 
 pub(crate) fn symbolicJacobian(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut outDAE: Arc<BackendDAE::BackendDAE>;

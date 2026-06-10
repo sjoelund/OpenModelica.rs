@@ -176,7 +176,7 @@ impl Default for FlatSmSemantics {
 pub type FLAT_SM_SEMANTICS = FlatSmSemantics;
 
 
-pub const SMS_PRE: &'static str = "smOf";
+pub(crate) const SMS_PRE: &'static str = "smOf";
 
 // ============================================================
 // Public entry point

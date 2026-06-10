@@ -111,17 +111,17 @@ use openmodelica_util_datatypes_basic::Array;
 use openmodelica_util_datatypes_basic::List;
 
 // for stringReplace
-pub const HEADER: &'static str = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+pub(crate) const HEADER: &'static str = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 
-pub const DAE_OPEN: &'static str = "dae xmlns:p1=\"http://www.w3.org/1998/Math/MathML\"\n                                                xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n                                                xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n                                                xsi:noNamespaceSchemaLocation=\"http://home.dei.polimi.it/donida/Projects/AutoEdit/Images/DAE.xsd\"";
+pub(crate) const DAE_OPEN: &'static str = "dae xmlns:p1=\"http://www.w3.org/1998/Math/MathML\"\n                                                xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n                                                xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n                                                xsi:noNamespaceSchemaLocation=\"http://home.dei.polimi.it/donida/Projects/AutoEdit/Images/DAE.xsd\"";
 
-pub const DAE_CLOSE: &'static str = "dae";
+pub(crate) const DAE_CLOSE: &'static str = "dae";
 
-pub const LABEL: &'static str = "label";
+pub(crate) const LABEL: &'static str = "label";
 
-pub const ANCHOR: &'static str = "anchor";
+pub(crate) const ANCHOR: &'static str = "anchor";
 
-pub const ALGORITHM_NAME: &'static str = "algorithmName";
+pub(crate) const ALGORITHM_NAME: &'static str = "algorithmName";
 
 /*
   This String is used in:
@@ -139,108 +139,108 @@ pub const ALGORITHM_NAME: &'static str = "algorithmName";
         ...
         <ELEMENT>LastStringOfList</ELEMENT>
   */
-pub const ELEMENT: &'static str = "element";
+pub(crate) const ELEMENT: &'static str = "element";
 
-pub const ELEMENT_: &'static str = "Element";
+pub(crate) const ELEMENT_: &'static str = "Element";
 
-pub const INDEX: &'static str = "index";
+pub(crate) const INDEX: &'static str = "index";
 
-pub const INTERVAL: &'static str = "interval";
+pub(crate) const INTERVAL: &'static str = "interval";
 
-pub const START: &'static str = "start";
+pub(crate) const START: &'static str = "start";
 
-pub const VALUE: &'static str = "value";
+pub(crate) const VALUE: &'static str = "value";
 
-pub const LIST_: &'static str = "List";
+pub(crate) const LIST_: &'static str = "List";
 
 //Is the Dimension attribute of a list element.
-pub const DIMENSION: &'static str = "dimension";
+pub(crate) const DIMENSION: &'static str = "dimension";
 
 //Is the reference attribute for an element.
-pub const ID: &'static str = "id";
+pub(crate) const ID: &'static str = "id";
 
-pub const ID_: &'static str = "Id";
+pub(crate) const ID_: &'static str = "Id";
 
-pub const CONDITION: &'static str = "Condition";
+pub(crate) const CONDITION: &'static str = "Condition";
 
-pub const REINIT: &'static str = "reinit";
+pub(crate) const REINIT: &'static str = "reinit";
 
-pub const ASSERT: &'static str = "assert";
+pub(crate) const ASSERT: &'static str = "assert";
 
-pub const TERMINATE: &'static str = "terminate";
+pub(crate) const TERMINATE: &'static str = "terminate";
 
 //This is the String attribute for the textual representation of the expressions.
-pub const EXP_STRING: &'static str = "string";
+pub(crate) const EXP_STRING: &'static str = "string";
 
 //This constant is used when is necessary to bind equations, variables, whenequations,..
-pub const INVOLVED: &'static str = "involved";
+pub(crate) const INVOLVED: &'static str = "involved";
 
-pub const ADDITIONAL_INFO: &'static str = "additionalInfo";
+pub(crate) const ADDITIONAL_INFO: &'static str = "additionalInfo";
 
-pub const SOLVING_INFO: &'static str = "solvingInfo";
+pub(crate) const SOLVING_INFO: &'static str = "solvingInfo";
 
 //This is the name that identifies the Variables' block. It's also used to compose the other
 //Variables' names, such as KnownVariables, OrderedVariables, and so on.
-pub const VARIABLES: &'static str = "variables";
+pub(crate) const VARIABLES: &'static str = "variables";
 
-pub const VARIABLES_: &'static str = "Variables";
+pub(crate) const VARIABLES_: &'static str = "Variables";
 
-pub const ORDERED: &'static str = "ordered";
+pub(crate) const ORDERED: &'static str = "ordered";
 
-pub const KNOWN: &'static str = "known";
+pub(crate) const KNOWN: &'static str = "known";
 
-pub const EXTERNAL: &'static str = "external";
+pub(crate) const EXTERNAL: &'static str = "external";
 
-pub const ALIAS: &'static str = "alias";
+pub(crate) const ALIAS: &'static str = "alias";
 
-pub const CLASSES: &'static str = "classes";
+pub(crate) const CLASSES: &'static str = "classes";
 
-pub const CLASSES_: &'static str = "Classes";
+pub(crate) const CLASSES_: &'static str = "Classes";
 
-pub const CLASS: &'static str = "class";
+pub(crate) const CLASS: &'static str = "class";
 
-pub const CLASS_: &'static str = "Class";
+pub(crate) const CLASS_: &'static str = "Class";
 
-pub const NAMES_: &'static str = "Names";
+pub(crate) const NAMES_: &'static str = "Names";
 
 //This is used all the time a variable is referenced.
-pub const VARIABLE: &'static str = "variable";
+pub(crate) const VARIABLE: &'static str = "variable";
 
-pub const VAR_ID: &'static str = ID;
+pub(crate) const VAR_ID: &'static str = ID;
 
-pub const VAR_NAME: &'static str = "name";
+pub(crate) const VAR_NAME: &'static str = "name";
 
-pub const VAR_INDEX: &'static str = "differentiatedIndex";
+pub(crate) const VAR_INDEX: &'static str = "differentiatedIndex";
 
-pub const VAR_DERNAME: &'static str = "derivativeName";
+pub(crate) const VAR_DERNAME: &'static str = "derivativeName";
 
-pub const VAR_ORIGNAME: &'static str = "origName";
+pub(crate) const VAR_ORIGNAME: &'static str = "origName";
 
-pub const STATE_SELECT_NEVER: &'static str = "Never";
+pub(crate) const STATE_SELECT_NEVER: &'static str = "Never";
 
-pub const STATE_SELECT_AVOID: &'static str = "Avoid";
+pub(crate) const STATE_SELECT_AVOID: &'static str = "Avoid";
 
-pub const STATE_SELECT_DEFAULT: &'static str = "Default";
+pub(crate) const STATE_SELECT_DEFAULT: &'static str = "Default";
 
-pub const STATE_SELECT_PREFER: &'static str = "Prefer";
+pub(crate) const STATE_SELECT_PREFER: &'static str = "Prefer";
 
-pub const STATE_SELECT_ALWAYS: &'static str = "Always";
+pub(crate) const STATE_SELECT_ALWAYS: &'static str = "Always";
 
-pub const VAR_FLOW: &'static str = "flow";
+pub(crate) const VAR_FLOW: &'static str = "flow";
 
-pub const VAR_FLOW_FLOW: &'static str = "Flow";
+pub(crate) const VAR_FLOW_FLOW: &'static str = "Flow";
 
-pub const VAR_FLOW_NONFLOW: &'static str = "NonFlow";
+pub(crate) const VAR_FLOW_NONFLOW: &'static str = "NonFlow";
 
-pub const VAR_FLOW_NONCONNECTOR: &'static str = "NonConnector";
+pub(crate) const VAR_FLOW_NONCONNECTOR: &'static str = "NonConnector";
 
-pub const VAR_STREAM: &'static str = "stream";
+pub(crate) const VAR_STREAM: &'static str = "stream";
 
-pub const VAR_STREAM_STREAM: &'static str = "Stream";
+pub(crate) const VAR_STREAM_STREAM: &'static str = "Stream";
 
-pub const VAR_STREAM_NONSTREAM: &'static str = "NonStream";
+pub(crate) const VAR_STREAM_NONSTREAM: &'static str = "NonStream";
 
-pub const VAR_STREAM_NONSTREAM_CONNECTOR: &'static str = "NonStreamConnector";
+pub(crate) const VAR_STREAM_NONSTREAM_CONNECTOR: &'static str = "NonStreamConnector";
 
 // /  TO CORRECT WITHIN THE OMC!!!  ///
 // The variability is related to the
@@ -250,124 +250,124 @@ pub const VAR_STREAM_NONSTREAM_CONNECTOR: &'static str = "NonStreamConnector";
 // to print the information about state, dummyState, dummyDer separately.
 //In addition to this there's a problem with the discrete states,
 //since they aren't recognised as states.
-pub const VAR_VARIABILITY: &'static str = "variability";
+pub(crate) const VAR_VARIABILITY: &'static str = "variability";
 
-pub const VARIABILITY_CONTINUOUS: &'static str = "continuous";
+pub(crate) const VARIABILITY_CONTINUOUS: &'static str = "continuous";
 
-pub const VARIABILITY_CONTINUOUS_STATE: &'static str = "continuousState";
+pub(crate) const VARIABILITY_CONTINUOUS_STATE: &'static str = "continuousState";
 
-pub const VARIABILITY_CONTINUOUS_DUMMYDER: &'static str = "continuousDummyDer";
+pub(crate) const VARIABILITY_CONTINUOUS_DUMMYDER: &'static str = "continuousDummyDer";
 
-pub const VARIABILITY_CONTINUOUS_DUMMYSTATE: &'static str = "continuousDummyState";
+pub(crate) const VARIABILITY_CONTINUOUS_DUMMYSTATE: &'static str = "continuousDummyState";
 
-pub const VARIABILITY_DISCRETE: &'static str = "discrete";
+pub(crate) const VARIABILITY_DISCRETE: &'static str = "discrete";
 
-pub const VARIABILITY_PARAMETER: &'static str = "parameter";
+pub(crate) const VARIABILITY_PARAMETER: &'static str = "parameter";
 
-pub const VARIABILITY_CONSTANT: &'static str = "constant";
+pub(crate) const VARIABILITY_CONSTANT: &'static str = "constant";
 
-pub const VARIABILITY_EXTERNALOBJECT: &'static str = "externalObject";
+pub(crate) const VARIABILITY_EXTERNALOBJECT: &'static str = "externalObject";
 
-pub const VAR_TYPE: &'static str = "type";
+pub(crate) const VAR_TYPE: &'static str = "type";
 
-pub const VARTYPE_INTEGER: &'static str = "Integer";
+pub(crate) const VARTYPE_INTEGER: &'static str = "Integer";
 
-pub const VARTYPE_REAL: &'static str = "Real";
+pub(crate) const VARTYPE_REAL: &'static str = "Real";
 
-pub const VARTYPE_STRING: &'static str = "String";
+pub(crate) const VARTYPE_STRING: &'static str = "String";
 
-pub const VARTYPE_BOOLEAN: &'static str = "Boolean";
+pub(crate) const VARTYPE_BOOLEAN: &'static str = "Boolean";
 
-pub const VARTYPE_ENUM: &'static str = "Enum";
+pub(crate) const VARTYPE_ENUM: &'static str = "Enum";
 
-pub const VARTYPE_ENUMERATION: &'static str = "enumeration";
+pub(crate) const VARTYPE_ENUMERATION: &'static str = "enumeration";
 
-pub const VARTYPE_EXTERNALOBJECT: &'static str = "ExternalObject";
+pub(crate) const VARTYPE_EXTERNALOBJECT: &'static str = "ExternalObject";
 
-pub const VAR_DIRECTION: &'static str = "direction";
+pub(crate) const VAR_DIRECTION: &'static str = "direction";
 
-pub const VARDIR_INPUT: &'static str = "input";
+pub(crate) const VARDIR_INPUT: &'static str = "input";
 
-pub const VARDIR_OUTPUT: &'static str = "output";
+pub(crate) const VARDIR_OUTPUT: &'static str = "output";
 
-pub const VARDIR_NONE: &'static str = "none";
+pub(crate) const VARDIR_NONE: &'static str = "none";
 
-pub const VAR_FIXED: &'static str = "fixed";
+pub(crate) const VAR_FIXED: &'static str = "fixed";
 
-pub const VAR_COMMENT: &'static str = "comment";
+pub(crate) const VAR_COMMENT: &'static str = "comment";
 
-pub const VAR_ATTRIBUTES_VALUES: &'static str = "attributesValues";
+pub(crate) const VAR_ATTRIBUTES_VALUES: &'static str = "attributesValues";
 
-pub const VAR_ATTR_QUANTITY: &'static str = "quantity";
+pub(crate) const VAR_ATTR_QUANTITY: &'static str = "quantity";
 
-pub const VAR_ATTR_UNIT: &'static str = "unit";
+pub(crate) const VAR_ATTR_UNIT: &'static str = "unit";
 
-pub const VAR_ATTR_DISPLAY_UNIT: &'static str = "displayUnit";
+pub(crate) const VAR_ATTR_DISPLAY_UNIT: &'static str = "displayUnit";
 
-pub const VAR_ATTR_STATESELECT: &'static str = "stateSelect";
+pub(crate) const VAR_ATTR_STATESELECT: &'static str = "stateSelect";
 
-pub const VAR_ATTR_MINVALUE: &'static str = "minValue";
+pub(crate) const VAR_ATTR_MINVALUE: &'static str = "minValue";
 
-pub const VAR_ATTR_MAXVALUE: &'static str = "maxValue";
+pub(crate) const VAR_ATTR_MAXVALUE: &'static str = "maxValue";
 
-pub const VAR_ATTR_NOMINAL: &'static str = "nominal";
+pub(crate) const VAR_ATTR_NOMINAL: &'static str = "nominal";
 
-pub const VAR_ATTR_INITIALVALUE: &'static str = "initialValue";
+pub(crate) const VAR_ATTR_INITIALVALUE: &'static str = "initialValue";
 
-pub const VAR_ATTR_FIXED: &'static str = "fixed";
+pub(crate) const VAR_ATTR_FIXED: &'static str = "fixed";
 
 //Name of the element containing the binding information
 //for the variables (bindExpression)
 //For example consider:
 //parameter Real a = 3*2+e; //With Real constant e = 3;
 //BindExpression 3*2+e
-pub const BIND_EXPRESSION: &'static str = "bindExpression";
+pub(crate) const BIND_EXPRESSION: &'static str = "bindExpression";
 
 //Name of the element representing the subscript, for example the array's index.
-pub const SUBSCRIPT: &'static str = "subscript";
+pub(crate) const SUBSCRIPT: &'static str = "subscript";
 
 //Additional info for variables.
-pub const HASH_TB_CREFS_LIST: &'static str = "hashTb";
+pub(crate) const HASH_TB_CREFS_LIST: &'static str = "hashTb";
 
-pub const HASH_TB_STRING_LIST_OLDVARS: &'static str = "hashTbOldVars";
+pub(crate) const HASH_TB_STRING_LIST_OLDVARS: &'static str = "hashTbOldVars";
 
 //All this constants below are used in the dumpBackendDAE method.
-pub const EQUATIONS: &'static str = "equations";
+pub(crate) const EQUATIONS: &'static str = "equations";
 
-pub const EQUATIONS_: &'static str = "Equations";
+pub(crate) const EQUATIONS_: &'static str = "Equations";
 
-pub const SIMPLE: &'static str = "simple";
+pub(crate) const SIMPLE: &'static str = "simple";
 
-pub const INITIAL: &'static str = "initial";
+pub(crate) const INITIAL: &'static str = "initial";
 
-pub const ZERO_CROSSING: &'static str = "zeroCrossing";
+pub(crate) const ZERO_CROSSING: &'static str = "zeroCrossing";
 
-pub const SAMPLES: &'static str = "Samples";
+pub(crate) const SAMPLES: &'static str = "Samples";
 
-pub const ARRAY_OF_EQUATIONS: &'static str = "arrayOfEquations";
+pub(crate) const ARRAY_OF_EQUATIONS: &'static str = "arrayOfEquations";
 
 //This is used also in the dumpEquation method.
-pub const COMPLEX_EQUATION: &'static str = "complexequations";
+pub(crate) const COMPLEX_EQUATION: &'static str = "complexequations";
 
-pub const EQUATION: &'static str = "equation";
+pub(crate) const EQUATION: &'static str = "equation";
 
-pub const EQUATION_: &'static str = "Equation";
+pub(crate) const EQUATION_: &'static str = "Equation";
 
-pub const SOLVED: &'static str = "solved";
+pub(crate) const SOLVED: &'static str = "solved";
 
-pub const SOLVED_: &'static str = "Solved";
+pub(crate) const SOLVED_: &'static str = "Solved";
 
-pub const WHEN: &'static str = "when";
+pub(crate) const WHEN: &'static str = "when";
 
-pub const WHEN_: &'static str = "When";
+pub(crate) const WHEN_: &'static str = "When";
 
-pub const WHEN_OPERATORS: &'static str = "WhenOperators";
+pub(crate) const WHEN_OPERATORS: &'static str = "WhenOperators";
 
-pub const WHEN_OPERATOR: &'static str = "WhenOperator";
+pub(crate) const WHEN_OPERATOR: &'static str = "WhenOperator";
 
-pub const RESIDUAL: &'static str = "residual";
+pub(crate) const RESIDUAL: &'static str = "residual";
 
-pub const RESIDUAL_: &'static str = "Residual";
+pub(crate) const RESIDUAL_: &'static str = "Residual";
 
 /*
   This String constant is used in:
@@ -381,17 +381,17 @@ pub const RESIDUAL_: &'static str = "Residual";
           <ANCHOR ALGORITHM_NAME=Algorithm_No></ANCHOR>
         </ALGORITHM>
   */
-pub const ALGORITHM: &'static str = "algorithm";
+pub(crate) const ALGORITHM: &'static str = "algorithm";
 
 /*
   This String constant is used to print the reference to the
   corresponding algorithm.
   */
-pub const ALGORITHM_REF: &'static str = "algorithm_ref";
+pub(crate) const ALGORITHM_REF: &'static str = "algorithm_ref";
 
-pub const CONSTRAINT: &'static str = "constraint";
+pub(crate) const CONSTRAINT: &'static str = "constraint";
 
-pub const CONSTRAINT_REF: &'static str = "constraint_ref";
+pub(crate) const CONSTRAINT_REF: &'static str = "constraint_ref";
 
 /*
   This String constant represents the single equation of an array of
@@ -400,27 +400,27 @@ pub const CONSTRAINT_REF: &'static str = "constraint_ref";
     2 - dumpEquation to print the list of equations corresponding to
         the array
   */
-pub const ARRAY_EQUATION: &'static str = "arrayEquation";
+pub(crate) const ARRAY_EQUATION: &'static str = "arrayEquation";
 
-pub const ALGORITHMS: &'static str = "algorithms";
+pub(crate) const ALGORITHMS: &'static str = "algorithms";
 
-pub const CONSTRAINTS: &'static str = "constraints";
+pub(crate) const CONSTRAINTS: &'static str = "constraints";
 
-pub const FUNCTIONS: &'static str = "functions";
+pub(crate) const FUNCTIONS: &'static str = "functions";
 
-pub const FUNCTION: &'static str = "function";
+pub(crate) const FUNCTION: &'static str = "function";
 
-pub const FUNCTION_NAME: &'static str = "name";
+pub(crate) const FUNCTION_NAME: &'static str = "name";
 
-pub const FUNCTION_ORIGNAME: &'static str = VAR_ORIGNAME;
+pub(crate) const FUNCTION_ORIGNAME: &'static str = VAR_ORIGNAME;
 
-pub const NAME_BINDINGS: &'static str = "nameBindings";
+pub(crate) const NAME_BINDINGS: &'static str = "nameBindings";
 
-pub const C_NAME: &'static str = "cName";
+pub(crate) const C_NAME: &'static str = "cName";
 
-pub const C_IMPLEMENTATIONS: &'static str = "cImplementations";
+pub(crate) const C_IMPLEMENTATIONS: &'static str = "cImplementations";
 
-pub const MODELICA_IMPLEMENTATION: &'static str = "ModelicaImplementation";
+pub(crate) const MODELICA_IMPLEMENTATION: &'static str = "ModelicaImplementation";
 
 /*This strings here below are used for printing additionalInfo
   concerning the DAE system of equations, such as:
@@ -428,105 +428,105 @@ pub const MODELICA_IMPLEMENTATION: &'static str = "ModelicaImplementation";
    - the matching algorithm output
    - the blocks obtained after running the BLT algorithm (Tarjan)
    */
-pub const MATCHING_ALGORITHM: &'static str = "matchingAlgorithm";
+pub(crate) const MATCHING_ALGORITHM: &'static str = "matchingAlgorithm";
 
-pub const SOLVED_IN: &'static str = "solvedIn";
+pub(crate) const SOLVED_IN: &'static str = "solvedIn";
 
-pub const BLT_REPRESENTATION: &'static str = "bltRepresentation";
+pub(crate) const BLT_REPRESENTATION: &'static str = "bltRepresentation";
 
-pub const BLT_BLOCK: &'static str = "bltBlock";
+pub(crate) const BLT_BLOCK: &'static str = "bltBlock";
 
-pub const ORIGINAL_ADJACENCY_MATRIX: &'static str = "originalAdjacencyMatrix";
+pub(crate) const ORIGINAL_ADJACENCY_MATRIX: &'static str = "originalAdjacencyMatrix";
 
-pub const MATH: &'static str = "math";
+pub(crate) const MATH: &'static str = "math";
 
-pub const MathML: &'static str = "MathML";
+pub(crate) const MathML: &'static str = "MathML";
 
-pub const MathMLApply: &'static str = "apply";
+pub(crate) const MathMLApply: &'static str = "apply";
 
-pub const MathMLWeb: &'static str = "http://www.w3.org/1998/Math/MathML";
+pub(crate) const MathMLWeb: &'static str = "http://www.w3.org/1998/Math/MathML";
 
-pub const MathMLXmlns: &'static str = "xmlns";
+pub(crate) const MathMLXmlns: &'static str = "xmlns";
 
-pub const MathMLType: &'static str = "type";
+pub(crate) const MathMLType: &'static str = "type";
 
-pub const MathMLNumber: &'static str = "cn";
+pub(crate) const MathMLNumber: &'static str = "cn";
 
-pub const MathMLVariable: &'static str = "ci";
+pub(crate) const MathMLVariable: &'static str = "ci";
 
-pub const MathMLConstant: &'static str = "constant";
+pub(crate) const MathMLConstant: &'static str = "constant";
 
-pub const MathMLInteger: &'static str = "integer";
+pub(crate) const MathMLInteger: &'static str = "integer";
 
-pub const MathMLReal: &'static str = "real";
+pub(crate) const MathMLReal: &'static str = "real";
 
-pub const MathMLVector: &'static str = "vector";
+pub(crate) const MathMLVector: &'static str = "vector";
 
-pub const MathMLMatrixrow: &'static str = "matrixrow";
+pub(crate) const MathMLMatrixrow: &'static str = "matrixrow";
 
-pub const MathMLMatrix: &'static str = "matrix";
+pub(crate) const MathMLMatrix: &'static str = "matrix";
 
-pub const MathMLTrue: &'static str = "true";
+pub(crate) const MathMLTrue: &'static str = "true";
 
-pub const MathMLFalse: &'static str = "false";
+pub(crate) const MathMLFalse: &'static str = "false";
 
-pub const MathMLAnd: &'static str = "and";
+pub(crate) const MathMLAnd: &'static str = "and";
 
-pub const MathMLOr: &'static str = "or";
+pub(crate) const MathMLOr: &'static str = "or";
 
-pub const MathMLNot: &'static str = "not";
+pub(crate) const MathMLNot: &'static str = "not";
 
-pub const MathMLEqual: &'static str = "eq";
+pub(crate) const MathMLEqual: &'static str = "eq";
 
-pub const MathMLLessThan: &'static str = "lt";
+pub(crate) const MathMLLessThan: &'static str = "lt";
 
-pub const MathMLLessEqualThan: &'static str = "leq";
+pub(crate) const MathMLLessEqualThan: &'static str = "leq";
 
-pub const MathMLGreaterThan: &'static str = "gt";
+pub(crate) const MathMLGreaterThan: &'static str = "gt";
 
-pub const MathMLGreaterEqualThan: &'static str = "geq";
+pub(crate) const MathMLGreaterEqualThan: &'static str = "geq";
 
-pub const MathMLEquivalent: &'static str = "equivalent";
+pub(crate) const MathMLEquivalent: &'static str = "equivalent";
 
-pub const MathMLNotEqual: &'static str = "neq";
+pub(crate) const MathMLNotEqual: &'static str = "neq";
 
-pub const MathMLPlus: &'static str = "plus";
+pub(crate) const MathMLPlus: &'static str = "plus";
 
-pub const MathMLMinus: &'static str = "minus";
+pub(crate) const MathMLMinus: &'static str = "minus";
 
-pub const MathMLTimes: &'static str = "times";
+pub(crate) const MathMLTimes: &'static str = "times";
 
-pub const MathMLDivide: &'static str = "divide";
+pub(crate) const MathMLDivide: &'static str = "divide";
 
-pub const MathMLPower: &'static str = "power";
+pub(crate) const MathMLPower: &'static str = "power";
 
-pub const MathMLTranspose: &'static str = "transpose";
+pub(crate) const MathMLTranspose: &'static str = "transpose";
 
-pub const MathMLScalarproduct: &'static str = "scalarproduct";
+pub(crate) const MathMLScalarproduct: &'static str = "scalarproduct";
 
-pub const MathMLVectorproduct: &'static str = "vectorproduct";
+pub(crate) const MathMLVectorproduct: &'static str = "vectorproduct";
 
-pub const MathMLInterval: &'static str = "interval";
+pub(crate) const MathMLInterval: &'static str = "interval";
 
-pub const MathMLSelector: &'static str = "selector";
+pub(crate) const MathMLSelector: &'static str = "selector";
 
-pub const MathMLIfClause: &'static str = "piecewise";
+pub(crate) const MathMLIfClause: &'static str = "piecewise";
 
-pub const MathMLIfBranch: &'static str = "piece";
+pub(crate) const MathMLIfBranch: &'static str = "piece";
 
-pub const MathMLElseBranch: &'static str = "otherwise";
+pub(crate) const MathMLElseBranch: &'static str = "otherwise";
 
-pub const MathMLOperator: &'static str = "mo";
+pub(crate) const MathMLOperator: &'static str = "mo";
 
-pub const MathMLArccos: &'static str = "arccos";
+pub(crate) const MathMLArccos: &'static str = "arccos";
 
-pub const MathMLArcsin: &'static str = "arcsin";
+pub(crate) const MathMLArcsin: &'static str = "arcsin";
 
-pub const MathMLArctan: &'static str = "arctan";
+pub(crate) const MathMLArctan: &'static str = "arctan";
 
-pub const MathMLLn: &'static str = "ln";
+pub(crate) const MathMLLn: &'static str = "ln";
 
-pub const MathMLLog: &'static str = "log";
+pub(crate) const MathMLLog: &'static str = "log";
 
 fn binopSymbol(mut inOperator: DAE::Operator) -> Result<ArcStr> {
     let mut outString: ArcStr;

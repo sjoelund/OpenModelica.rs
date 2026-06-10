@@ -188,7 +188,7 @@ pub type AccTuple = (BackendDAE::Variables, Arc<BackendDAE::Shared>, Arc<metamod
 pub type VarSetAttributes = (bool, (i32, Arc<metamodelica::List<(Option<Arc<DAE::Exp>>, Arc<DAE::ComponentRef>)>>), Arc<metamodelica::List<(Arc<DAE::Exp>, Arc<DAE::ComponentRef>)>>, (Option<Arc<DAE::Exp>>, Option<Arc<DAE::Exp>>));
 
 thread_local! { static __EMPTYVARSETATTRIBUTES_TLS: (bool, (i32, Arc<metamodelica::List<(Option<Arc<DAE::Exp>>, Arc<DAE::ComponentRef>)>>), Arc<metamodelica::List<(Arc<DAE::Exp>, Arc<DAE::ComponentRef>)>>, (Option<Arc<DAE::Exp>>, Option<Arc<DAE::Exp>>)) = (false, (-1, metamodelica::nil()), metamodelica::nil(), (None, None)); }
-pub fn EMPTYVARSETATTRIBUTES() -> (bool, (i32, Arc<metamodelica::List<(Option<Arc<DAE::Exp>>, Arc<DAE::ComponentRef>)>>), Arc<metamodelica::List<(Arc<DAE::Exp>, Arc<DAE::ComponentRef>)>>, (Option<Arc<DAE::Exp>>, Option<Arc<DAE::Exp>>)) { __EMPTYVARSETATTRIBUTES_TLS.with(|__t| __t.clone()) }
+pub(crate) fn EMPTYVARSETATTRIBUTES() -> (bool, (i32, Arc<metamodelica::List<(Option<Arc<DAE::Exp>>, Arc<DAE::ComponentRef>)>>), Arc<metamodelica::List<(Arc<DAE::Exp>, Arc<DAE::ComponentRef>)>>, (Option<Arc<DAE::Exp>>, Option<Arc<DAE::Exp>>)) { __EMPTYVARSETATTRIBUTES_TLS.with(|__t| __t.clone()) }
 
 // =============================================================================
 // Starting point for preOpt and postOpt removeSimpleEquations module

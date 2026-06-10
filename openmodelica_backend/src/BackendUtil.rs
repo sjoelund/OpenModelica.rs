@@ -65,21 +65,21 @@ impl metamodelica::gc::MMTrace for ReplacePattern {
 pub type REPLACEPATTERN = ReplacePattern;
 
 
-pub static replaceStringPatterns: std::sync::LazyLock<Arc<metamodelica::List<ReplacePattern>>> = std::sync::LazyLock::new(|| { list![ReplacePattern { from: (literal!(".")).clone(), to: (arcstr::literal!(pointStr)).clone() }, ReplacePattern { from: (literal!("[")).clone(), to: (arcstr::literal!(leftBraketStr)).clone() }, ReplacePattern { from: (literal!("]")).clone(), to: (arcstr::literal!(rightBraketStr)).clone() }, ReplacePattern { from: (literal!("(")).clone(), to: (arcstr::literal!(leftParStr)).clone() }, ReplacePattern { from: (literal!(")")).clone(), to: (arcstr::literal!(rightParStr)).clone() }, ReplacePattern { from: (literal!(",")).clone(), to: (arcstr::literal!(commaStr)).clone() }, ReplacePattern { from: (literal!("'")).clone(), to: (arcstr::literal!(appostrophStr)).clone() }] });
+pub(crate) static replaceStringPatterns: std::sync::LazyLock<Arc<metamodelica::List<ReplacePattern>>> = std::sync::LazyLock::new(|| { list![ReplacePattern { from: (literal!(".")).clone(), to: (arcstr::literal!(pointStr)).clone() }, ReplacePattern { from: (literal!("[")).clone(), to: (arcstr::literal!(leftBraketStr)).clone() }, ReplacePattern { from: (literal!("]")).clone(), to: (arcstr::literal!(rightBraketStr)).clone() }, ReplacePattern { from: (literal!("(")).clone(), to: (arcstr::literal!(leftParStr)).clone() }, ReplacePattern { from: (literal!(")")).clone(), to: (arcstr::literal!(rightParStr)).clone() }, ReplacePattern { from: (literal!(",")).clone(), to: (arcstr::literal!(commaStr)).clone() }, ReplacePattern { from: (literal!("'")).clone(), to: (arcstr::literal!(appostrophStr)).clone() }] });
 
-pub const pointStr: &'static str = "$P";
+pub(crate) const pointStr: &'static str = "$P";
 
-pub const leftBraketStr: &'static str = "$lB";
+pub(crate) const leftBraketStr: &'static str = "$lB";
 
-pub const rightBraketStr: &'static str = "$rB";
+pub(crate) const rightBraketStr: &'static str = "$rB";
 
-pub const leftParStr: &'static str = "$lP";
+pub(crate) const leftParStr: &'static str = "$lP";
 
-pub const rightParStr: &'static str = "$rP";
+pub(crate) const rightParStr: &'static str = "$rP";
 
-pub const commaStr: &'static str = "$c";
+pub(crate) const commaStr: &'static str = "$c";
 
-pub const appostrophStr: &'static str = "$a";
+pub(crate) const appostrophStr: &'static str = "$a";
 
 pub(crate) fn modelicaStringToCStr(mut r#str: ArcStr, mut changeDerCall: bool) -> Result<ArcStr> {
     let mut res_str: ArcStr = arcstr::literal!("");

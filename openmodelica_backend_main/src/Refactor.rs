@@ -2218,51 +2218,51 @@ pub type rgbColor = Arc<metamodelica::List<i32>>;
 
 pub type rgbColorMapList = Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>;
 
-pub static colorMapList: std::sync::LazyLock<Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>> = std::sync::LazyLock::new(|| { list![list![0, 0, 0], list![255, 0, 0], list![0, 255, 0], list![0, 0, 255], list![0, 255, 255], list![255, 0, 255], list![255, 255, 0], list![255, 255, 255], list![192, 192, 192], list![160, 160, 160], list![128, 128, 128], list![0, 0, 0], list![0, 0, 0], list![0, 0, 0], list![0, 0, 0], list![0, 0, 0], list![0, 0, 0], list![0, 0, 0], list![0, 0, 0], list![0, 0, 0], list![0, 0, 0], list![0, 0, 0], list![0, 0, 0], list![0, 0, 0], list![0, 0, 0], list![0, 0, 0], list![0, 0, 0], list![0, 0, 0], list![0, 0, 0], list![0, 0, 0], list![235, 235, 235], list![240, 255, 255], list![0, 0, 0], list![0, 0, 0], list![0, 0, 0], list![0, 0, 0], list![0, 0, 0], list![0, 0, 0], list![0, 0, 0], list![0, 0, 0], list![0, 0, 0], list![255, 0, 0], list![191, 0, 0], list![255, 127, 127], list![223, 159, 159], list![255, 127, 0], list![191, 95, 0], list![255, 191, 127], list![223, 191, 159], list![255, 255, 0], list![191, 191, 0], list![255, 255, 127], list![223, 223, 159], list![127, 255, 0], list![95, 191, 0], list![191, 255, 127], list![191, 223, 159], list![0, 255, 0], list![0, 191, 0], list![127, 255, 127], list![159, 223, 159], list![0, 255, 127], list![0, 191, 95], list![127, 255, 191], list![159, 223, 191], list![0, 255, 255], list![0, 191, 191], list![127, 255, 255], list![159, 223, 223], list![0, 127, 255], list![0, 95, 191], list![127, 191, 255], list![159, 191, 223], list![0, 0, 255], list![0, 0, 191], list![127, 127, 255], list![159, 159, 223], list![127, 0, 255], list![95, 0, 191], list![191, 127, 255], list![191, 159, 223], list![255, 0, 255], list![191, 0, 191], list![255, 127, 255], list![223, 159, 223], list![255, 0, 127], list![191, 0, 95], list![255, 127, 191], list![223, 159, 191]] });
+pub(crate) static colorMapList: std::sync::LazyLock<Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>> = std::sync::LazyLock::new(|| { list![list![0, 0, 0], list![255, 0, 0], list![0, 255, 0], list![0, 0, 255], list![0, 255, 255], list![255, 0, 255], list![255, 255, 0], list![255, 255, 255], list![192, 192, 192], list![160, 160, 160], list![128, 128, 128], list![0, 0, 0], list![0, 0, 0], list![0, 0, 0], list![0, 0, 0], list![0, 0, 0], list![0, 0, 0], list![0, 0, 0], list![0, 0, 0], list![0, 0, 0], list![0, 0, 0], list![0, 0, 0], list![0, 0, 0], list![0, 0, 0], list![0, 0, 0], list![0, 0, 0], list![0, 0, 0], list![0, 0, 0], list![0, 0, 0], list![0, 0, 0], list![235, 235, 235], list![240, 255, 255], list![0, 0, 0], list![0, 0, 0], list![0, 0, 0], list![0, 0, 0], list![0, 0, 0], list![0, 0, 0], list![0, 0, 0], list![0, 0, 0], list![0, 0, 0], list![255, 0, 0], list![191, 0, 0], list![255, 127, 127], list![223, 159, 159], list![255, 127, 0], list![191, 95, 0], list![255, 191, 127], list![223, 191, 159], list![255, 255, 0], list![191, 191, 0], list![255, 255, 127], list![223, 223, 159], list![127, 255, 0], list![95, 191, 0], list![191, 255, 127], list![191, 223, 159], list![0, 255, 0], list![0, 191, 0], list![127, 255, 127], list![159, 223, 159], list![0, 255, 127], list![0, 191, 95], list![127, 255, 191], list![159, 223, 191], list![0, 255, 255], list![0, 191, 191], list![127, 255, 255], list![159, 223, 223], list![0, 127, 255], list![0, 95, 191], list![127, 191, 255], list![159, 191, 223], list![0, 0, 255], list![0, 0, 191], list![127, 127, 255], list![159, 159, 223], list![127, 0, 255], list![95, 0, 191], list![191, 127, 255], list![191, 159, 223], list![255, 0, 255], list![191, 0, 191], list![255, 127, 255], list![223, 159, 223], list![255, 0, 127], list![191, 0, 95], list![255, 127, 191], list![223, 159, 191]] });
 
-pub const None_: &'static str = "None";
+pub(crate) const None_: &'static str = "None";
 
-pub const Solid: &'static str = "Solid";
+pub(crate) const Solid: &'static str = "Solid";
 
-pub const Horizontal: &'static str = "Horizontal";
+pub(crate) const Horizontal: &'static str = "Horizontal";
 
-pub const Vertical: &'static str = "Vertical";
+pub(crate) const Vertical: &'static str = "Vertical";
 
-pub const Cross: &'static str = "Cross";
+pub(crate) const Cross: &'static str = "Cross";
 
-pub const Forward: &'static str = "Forward";
+pub(crate) const Forward: &'static str = "Forward";
 
-pub const Backward: &'static str = "Backward";
+pub(crate) const Backward: &'static str = "Backward";
 
-pub const CrossDiag: &'static str = "CrossDiag";
+pub(crate) const CrossDiag: &'static str = "CrossDiag";
 
-pub const HorizontalCylinder: &'static str = "HorizontalCylinder";
+pub(crate) const HorizontalCylinder: &'static str = "HorizontalCylinder";
 
-pub const VerticalCylinder: &'static str = "VerticalCylinder";
+pub(crate) const VerticalCylinder: &'static str = "VerticalCylinder";
 
-pub const Sphere: &'static str = "Sphere";
+pub(crate) const Sphere: &'static str = "Sphere";
 
-pub const Dash: &'static str = "Dash";
+pub(crate) const Dash: &'static str = "Dash";
 
-pub const Dot: &'static str = "Dot";
+pub(crate) const Dot: &'static str = "Dot";
 
-pub const DashDot: &'static str = "DashDot";
+pub(crate) const DashDot: &'static str = "DashDot";
 
-pub const DashDotDot: &'static str = "DashDotDot";
+pub(crate) const DashDotDot: &'static str = "DashDotDot";
 
-pub const Filled: &'static str = "Filled";
+pub(crate) const Filled: &'static str = "Filled";
 
-pub const Half: &'static str = "Half";
+pub(crate) const Half: &'static str = "Half";
 
-pub static fillPatternMapList: std::sync::LazyLock<Arc<metamodelica::List<ArcStr>>> = std::sync::LazyLock::new(|| { list![(arcstr::literal!(None_)).clone(), (arcstr::literal!(Solid)).clone(), (arcstr::literal!(None_)).clone(), (arcstr::literal!(None_)).clone(), (arcstr::literal!(None_)).clone(), (arcstr::literal!(Horizontal)).clone(), (arcstr::literal!(Vertical)).clone(), (arcstr::literal!(Forward)).clone(), (arcstr::literal!(Backward)).clone(), (arcstr::literal!(Cross)).clone(), (arcstr::literal!(CrossDiag)).clone()] });
+pub(crate) static fillPatternMapList: std::sync::LazyLock<Arc<metamodelica::List<ArcStr>>> = std::sync::LazyLock::new(|| { list![(arcstr::literal!(None_)).clone(), (arcstr::literal!(Solid)).clone(), (arcstr::literal!(None_)).clone(), (arcstr::literal!(None_)).clone(), (arcstr::literal!(None_)).clone(), (arcstr::literal!(Horizontal)).clone(), (arcstr::literal!(Vertical)).clone(), (arcstr::literal!(Forward)).clone(), (arcstr::literal!(Backward)).clone(), (arcstr::literal!(Cross)).clone(), (arcstr::literal!(CrossDiag)).clone()] });
 
-pub static gradientMapList: std::sync::LazyLock<Arc<metamodelica::List<ArcStr>>> = std::sync::LazyLock::new(|| { list![(arcstr::literal!(None_)).clone(), (arcstr::literal!(VerticalCylinder)).clone(), (arcstr::literal!(HorizontalCylinder)).clone(), (arcstr::literal!(Sphere)).clone()] });
+pub(crate) static gradientMapList: std::sync::LazyLock<Arc<metamodelica::List<ArcStr>>> = std::sync::LazyLock::new(|| { list![(arcstr::literal!(None_)).clone(), (arcstr::literal!(VerticalCylinder)).clone(), (arcstr::literal!(HorizontalCylinder)).clone(), (arcstr::literal!(Sphere)).clone()] });
 
-pub static patternMapList: std::sync::LazyLock<Arc<metamodelica::List<ArcStr>>> = std::sync::LazyLock::new(|| { list![(arcstr::literal!(None_)).clone(), (arcstr::literal!(Solid)).clone(), (arcstr::literal!(Dash)).clone(), (arcstr::literal!(Dot)).clone(), (arcstr::literal!(DashDot)).clone(), (arcstr::literal!(DashDotDot)).clone()] });
+pub(crate) static patternMapList: std::sync::LazyLock<Arc<metamodelica::List<ArcStr>>> = std::sync::LazyLock::new(|| { list![(arcstr::literal!(None_)).clone(), (arcstr::literal!(Solid)).clone(), (arcstr::literal!(Dash)).clone(), (arcstr::literal!(Dot)).clone(), (arcstr::literal!(DashDot)).clone(), (arcstr::literal!(DashDotDot)).clone()] });
 
-pub static thicknessMapList: std::sync::LazyLock<Arc<metamodelica::List<metamodelica::Real>>> = std::sync::LazyLock::new(|| { list![metamodelica::OrderedFloat(0.25_f64), metamodelica::OrderedFloat(0.5_f64), metamodelica::OrderedFloat(0.0_f64), metamodelica::OrderedFloat(1.0_f64)] });
+pub(crate) static thicknessMapList: std::sync::LazyLock<Arc<metamodelica::List<metamodelica::Real>>> = std::sync::LazyLock::new(|| { list![metamodelica::OrderedFloat(0.25_f64), metamodelica::OrderedFloat(0.5_f64), metamodelica::OrderedFloat(0.0_f64), metamodelica::OrderedFloat(1.0_f64)] });
 
-pub static arrowMapList: std::sync::LazyLock<Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>> = std::sync::LazyLock::new(|| { list![list![(arcstr::literal!(None_)).clone(), (arcstr::literal!(None_)).clone()], list![(arcstr::literal!(None_)).clone(), (arcstr::literal!(Filled)).clone()], list![(arcstr::literal!(Filled)).clone(), (arcstr::literal!(None_)).clone()], list![(arcstr::literal!(Filled)).clone(), (arcstr::literal!(Filled)).clone()], list![(arcstr::literal!(None_)).clone(), (arcstr::literal!(Half)).clone()]] });
+pub(crate) static arrowMapList: std::sync::LazyLock<Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>> = std::sync::LazyLock::new(|| { list![list![(arcstr::literal!(None_)).clone(), (arcstr::literal!(None_)).clone()], list![(arcstr::literal!(None_)).clone(), (arcstr::literal!(Filled)).clone()], list![(arcstr::literal!(Filled)).clone(), (arcstr::literal!(None_)).clone()], list![(arcstr::literal!(Filled)).clone(), (arcstr::literal!(Filled)).clone()], list![(arcstr::literal!(None_)).clone(), (arcstr::literal!(Half)).clone()]] });
 
 fn fixPaths(mut inPath1: Arc<Absyn::Path>, mut inPath2: Arc<Absyn::Path>) -> Arc<Absyn::Path> {
     let mut outPath: Arc<Absyn::Path>;

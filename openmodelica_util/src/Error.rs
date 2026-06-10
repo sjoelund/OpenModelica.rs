@@ -101,13 +101,13 @@ pub static NO_CONSTANT_BINDING: ErrorTypes::Message = ErrorTypes::Message { id: 
 
 pub static TYPE_NOT_FROM_PREDEFINED: ErrorTypes::Message = ErrorTypes::Message { id: 27, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("In class %s, class specialization 'type' can only be derived from predefined types.") };
 
-pub static INCOMPATIBLE_CONNECTOR_VARIABILITY: ErrorTypes::Message = ErrorTypes::Message { id: 28, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Cannot connect %s %s to non-constant/parameter %s.") };
+pub(crate) static INCOMPATIBLE_CONNECTOR_VARIABILITY: ErrorTypes::Message = ErrorTypes::Message { id: 28, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Cannot connect %s %s to non-constant/parameter %s.") };
 
-pub static INVALID_CONNECTOR_PREFIXES: ErrorTypes::Message = ErrorTypes::Message { id: 29, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Connector element %s may not be both %s and %s.") };
+pub(crate) static INVALID_CONNECTOR_PREFIXES: ErrorTypes::Message = ErrorTypes::Message { id: 29, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Connector element %s may not be both %s and %s.") };
 
-pub static INVALID_COMPLEX_CONNECTOR_VARIABILITY: ErrorTypes::Message = ErrorTypes::Message { id: 30, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("%s is a composite connector element, and may not be declared as %s.") };
+pub(crate) static INVALID_COMPLEX_CONNECTOR_VARIABILITY: ErrorTypes::Message = ErrorTypes::Message { id: 30, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("%s is a composite connector element, and may not be declared as %s.") };
 
-pub static DIFFERENT_NO_EQUATION_IF_BRANCHES: ErrorTypes::Message = ErrorTypes::Message { id: 31, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Different number of equations in the branches of the if equation: %s") };
+pub(crate) static DIFFERENT_NO_EQUATION_IF_BRANCHES: ErrorTypes::Message = ErrorTypes::Message { id: 31, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Different number of equations in the branches of the if equation: %s") };
 
 pub static UNDERDET_EQN_SYSTEM: ErrorTypes::Message = ErrorTypes::Message { id: 32, ty: openmodelica_error::ErrorTypes::MessageType::SYMBOLIC, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Too few equations, under-determined system. The model has %s equation(s) and %s variable(s).") };
 
@@ -169,7 +169,7 @@ pub static EXTEND_THROUGH_COMPONENT: ErrorTypes::Message = ErrorTypes::Message {
 
 pub static PROTECTED_ACCESS: ErrorTypes::Message = ErrorTypes::Message { id: 61, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Illegal access of protected element %s.") };
 
-pub static ILLEGAL_MODIFICATION: ErrorTypes::Message = ErrorTypes::Message { id: 62, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Illegal modification %s (of %s).") };
+pub(crate) static ILLEGAL_MODIFICATION: ErrorTypes::Message = ErrorTypes::Message { id: 62, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Illegal modification %s (of %s).") };
 
 pub static INTERNAL_ERROR: ErrorTypes::Message = ErrorTypes::Message { id: 63, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Internal error %s") };
 
@@ -187,7 +187,7 @@ pub static DIFFERENT_DIM_SIZE_IN_ARGUMENTS: ErrorTypes::Message = ErrorTypes::Me
 
 pub static LOOKUP_IMPORT_ERROR: ErrorTypes::Message = ErrorTypes::Message { id: 70, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Import %s not found in scope %s.") };
 
-pub static LOOKUP_SHADOWING: ErrorTypes::Message = ErrorTypes::Message { id: 71, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::WARNING, message: literal!("Import %s is shadowed by a local element.") };
+pub(crate) static LOOKUP_SHADOWING: ErrorTypes::Message = ErrorTypes::Message { id: 71, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::WARNING, message: literal!("Import %s is shadowed by a local element.") };
 
 pub static ARGUMENT_MUST_BE_INTEGER: ErrorTypes::Message = ErrorTypes::Message { id: 72, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("%s argument to %s in component %s must be Integer expression.") };
 
@@ -201,13 +201,13 @@ pub static NO_MATCHING_FUNCTION_FOUND: ErrorTypes::Message = ErrorTypes::Message
 
 pub static NO_MATCHING_FUNCTION_FOUND_NO_CANDIDATE: ErrorTypes::Message = ErrorTypes::Message { id: 77, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("No matching function found for %s.") };
 
-pub static FUNCTION_COMPS_MUST_HAVE_DIRECTION: ErrorTypes::Message = ErrorTypes::Message { id: 78, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Component %s in function is neither input nor output.") };
+pub(crate) static FUNCTION_COMPS_MUST_HAVE_DIRECTION: ErrorTypes::Message = ErrorTypes::Message { id: 78, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Component %s in function is neither input nor output.") };
 
 pub static FUNCTION_SLOT_ALREADY_FILLED: ErrorTypes::Message = ErrorTypes::Message { id: 79, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Slot %s already filled in a function call in component %s.") };
 
 pub static NO_SUCH_PARAMETER: ErrorTypes::Message = ErrorTypes::Message { id: 80, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Function %s has no parameter named %s.") };
 
-pub static CONSTANT_OR_PARAM_WITH_NONCONST_BINDING: ErrorTypes::Message = ErrorTypes::Message { id: 81, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("%s is a constant or parameter with a non-constant initializer %s.") };
+pub(crate) static CONSTANT_OR_PARAM_WITH_NONCONST_BINDING: ErrorTypes::Message = ErrorTypes::Message { id: 81, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("%s is a constant or parameter with a non-constant initializer %s.") };
 
 pub static WRONG_DIMENSION_TYPE: ErrorTypes::Message = ErrorTypes::Message { id: 82, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Subscript %s of type %s is not a subtype of Integer, Boolean or enumeration.") };
 
@@ -273,7 +273,7 @@ pub static LOOKUP_CLASS_VIA_COMP_COMP: ErrorTypes::Message = ErrorTypes::Message
 
 pub static SUBSCRIPTED_FUNCTION_CALL: ErrorTypes::Message = ErrorTypes::Message { id: 113, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Function call %s contains subscripts.") };
 
-pub static IF_EQUATION_UNBALANCED: ErrorTypes::Message = ErrorTypes::Message { id: 114, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("In equation %s. If-equation with conditions that are not parameter expressions must have the same number of equations in each branch, equation count is %s for each respective branch.") };
+pub(crate) static IF_EQUATION_UNBALANCED: ErrorTypes::Message = ErrorTypes::Message { id: 114, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("In equation %s. If-equation with conditions that are not parameter expressions must have the same number of equations in each branch, equation count is %s for each respective branch.") };
 
 pub static IF_EQUATION_MISSING_ELSE: ErrorTypes::Message = ErrorTypes::Message { id: 115, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Missing else-clause in if-equation with non-parameter conditions.") };
 
@@ -327,13 +327,13 @@ pub static INITIAL_WHEN: ErrorTypes::Message = ErrorTypes::Message { id: 139, ty
 
 pub static MODIFICATION_INDEX_NOT_FOUND: ErrorTypes::Message = ErrorTypes::Message { id: 140, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Instantiation of array component: %s failed because index modification: %s is invalid.\n\tArray component: %s has more dimensions than binding %s.") };
 
-pub static DUPLICATE_MODIFICATIONS_WARNING: ErrorTypes::Message = ErrorTypes::Message { id: 141, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::WARNING, message: literal!("Duplicate modifications for attribute: %s in modifier: %s.\n\tConsidering only the first modification: %s and ignoring the rest %s.") };
+pub(crate) static DUPLICATE_MODIFICATIONS_WARNING: ErrorTypes::Message = ErrorTypes::Message { id: 141, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::WARNING, message: literal!("Duplicate modifications for attribute: %s in modifier: %s.\n\tConsidering only the first modification: %s and ignoring the rest %s.") };
 
 pub static GENERATECODE_INVARS_HAS_FUNCTION_PTR: ErrorTypes::Message = ErrorTypes::Message { id: 142, ty: openmodelica_error::ErrorTypes::MessageType::SYMBOLIC, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("%s has a function pointer as input. OpenModelica does not support this feature in the interactive environment. Suggested workaround: Call this function with the arguments you want from another function (that does not have function pointer input). Then call that function from the interactive environment instead.") };
 
 pub static LOOKUP_FOUND_WRONG_TYPE: ErrorTypes::Message = ErrorTypes::Message { id: 143, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Expected %s to be a %s, but found %s instead.") };
 
-pub static DUPLICATE_ELEMENTS_NOT_SYNTACTICALLY_IDENTICAL: ErrorTypes::Message = ErrorTypes::Message { id: 144, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::WARNING, message: literal!("Duplicate elements (due to inherited elements) not syntactically identical but semantically identical:\n\tfirst element is:  %s\tsecond element is: %s\tModelica specification requires that elements are exactly identical.") };
+pub(crate) static DUPLICATE_ELEMENTS_NOT_SYNTACTICALLY_IDENTICAL: ErrorTypes::Message = ErrorTypes::Message { id: 144, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::WARNING, message: literal!("Duplicate elements (due to inherited elements) not syntactically identical but semantically identical:\n\tfirst element is:  %s\tsecond element is: %s\tModelica specification requires that elements are exactly identical.") };
 
 pub static GENERIC_INST_FUNCTION: ErrorTypes::Message = ErrorTypes::Message { id: 145, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Failed to instantiate function %s in scope %s.") };
 
@@ -359,7 +359,7 @@ pub static FUNCTION_ELEMENT_WRONG_KIND: ErrorTypes::Message = ErrorTypes::Messag
 
 pub static MISSING_BINDING_PROTECTED_RECORD_VAR: ErrorTypes::Message = ErrorTypes::Message { id: 156, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::WARNING, message: literal!("Protected record member %s has no binding and is not modifiable by a record constructor.") };
 
-pub static DUPLICATE_CLASSES_TOP_LEVEL: ErrorTypes::Message = ErrorTypes::Message { id: 157, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Duplicate classes on top level is not allowed (got %s).") };
+pub(crate) static DUPLICATE_CLASSES_TOP_LEVEL: ErrorTypes::Message = ErrorTypes::Message { id: 157, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Duplicate classes on top level is not allowed (got %s).") };
 
 pub static WHEN_EQ_LHS: ErrorTypes::Message = ErrorTypes::Message { id: 158, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Invalid left-hand side of when-equation: %s.") };
 
@@ -391,7 +391,7 @@ pub static FAILURE_TO_DEDUCE_DIMS_FROM_MOD: ErrorTypes::Message = ErrorTypes::Me
 
 pub static REPLACEABLE_BASE_CLASS: ErrorTypes::Message = ErrorTypes::Message { id: 172, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Class '%s' in 'extends %s' is replaceable, the base class name must be transitively non-replaceable.") };
 
-pub static NON_REPLACEABLE_CLASS_EXTENDS: ErrorTypes::Message = ErrorTypes::Message { id: 173, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Non-replaceable base class %s in class extends.") };
+pub(crate) static NON_REPLACEABLE_CLASS_EXTENDS: ErrorTypes::Message = ErrorTypes::Message { id: 173, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Non-replaceable base class %s in class extends.") };
 
 pub static ERROR_FROM_HERE: ErrorTypes::Message = ErrorTypes::Message { id: 174, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::NOTIFICATION, message: literal!("From here:") };
 
@@ -433,7 +433,7 @@ pub static FUNCTION_UNUSED_INPUT: ErrorTypes::Message = ErrorTypes::Message { id
 
 pub static ARRAY_TYPE_MISMATCH: ErrorTypes::Message = ErrorTypes::Message { id: 193, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Array types mismatch: %s and %s.") };
 
-pub static VECTORIZE_TWO_UNKNOWN: ErrorTypes::Message = ErrorTypes::Message { id: 194, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Could not vectorize call with unknown dimensions due to finding two for-iterators: %s and %s.") };
+pub(crate) static VECTORIZE_TWO_UNKNOWN: ErrorTypes::Message = ErrorTypes::Message { id: 194, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Could not vectorize call with unknown dimensions due to finding two for-iterators: %s and %s.") };
 
 pub static FUNCTION_SLOT_VARIABILITY: ErrorTypes::Message = ErrorTypes::Message { id: 195, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Function argument %s=%s in call to %s has variability %s which is not a %s expression.") };
 
@@ -445,7 +445,7 @@ pub static INVALID_FUNCTION_VAR_TYPE: ErrorTypes::Message = ErrorTypes::Message 
 
 pub static IMBALANCED_EQUATIONS: ErrorTypes::Message = ErrorTypes::Message { id: 199, ty: openmodelica_error::ErrorTypes::MessageType::SYMBOLIC, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("An independent subset of the model has imbalanced number of equations (%s) and variables (%s).\nvariables:\n%s\nequations:\n%s") };
 
-pub static EQUATIONS_VAR_NOT_DEFINED: ErrorTypes::Message = ErrorTypes::Message { id: 200, ty: openmodelica_error::ErrorTypes::MessageType::SYMBOLIC, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Variable %s is not referenced in any equation (possibly after symbolic manipulations).") };
+pub(crate) static EQUATIONS_VAR_NOT_DEFINED: ErrorTypes::Message = ErrorTypes::Message { id: 200, ty: openmodelica_error::ErrorTypes::MessageType::SYMBOLIC, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Variable %s is not referenced in any equation (possibly after symbolic manipulations).") };
 
 pub static NON_FORMAL_PUBLIC_FUNCTION_VAR: ErrorTypes::Message = ErrorTypes::Message { id: 201, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::WARNING, message: literal!("Invalid public variable %s, function variables that are not input/output must be protected.") };
 
@@ -457,17 +457,17 @@ pub static SAME_CONNECT_INSTANCE: ErrorTypes::Message = ErrorTypes::Message { id
 
 pub static STACK_OVERFLOW: ErrorTypes::Message = ErrorTypes::Message { id: 205, ty: openmodelica_error::ErrorTypes::MessageType::SCRIPTING, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Stack overflow occurred while evaluating %s.") };
 
-pub static UNKNOWN_DEBUG_FLAG: ErrorTypes::Message = ErrorTypes::Message { id: 206, ty: openmodelica_error::ErrorTypes::MessageType::SCRIPTING, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Unknown debug flag %s.") };
+pub(crate) static UNKNOWN_DEBUG_FLAG: ErrorTypes::Message = ErrorTypes::Message { id: 206, ty: openmodelica_error::ErrorTypes::MessageType::SCRIPTING, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Unknown debug flag %s.") };
 
 pub static INVALID_FLAG_TYPE: ErrorTypes::Message = ErrorTypes::Message { id: 207, ty: openmodelica_error::ErrorTypes::MessageType::SCRIPTING, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Invalid type of flag %s, expected %s but got %s.") };
 
-pub static CHANGED_STD_VERSION: ErrorTypes::Message = ErrorTypes::Message { id: 208, ty: openmodelica_error::ErrorTypes::MessageType::SCRIPTING, severity: openmodelica_error::ErrorTypes::Severity::NOTIFICATION, message: literal!("Modelica language version set to %s due to loading of MSL %s.") };
+pub(crate) static CHANGED_STD_VERSION: ErrorTypes::Message = ErrorTypes::Message { id: 208, ty: openmodelica_error::ErrorTypes::MessageType::SCRIPTING, severity: openmodelica_error::ErrorTypes::Severity::NOTIFICATION, message: literal!("Modelica language version set to %s due to loading of MSL %s.") };
 
 pub static SIMPLIFY_FIXPOINT_MAXIMUM: ErrorTypes::Message = ErrorTypes::Message { id: 209, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::WARNING, message: literal!("Expression simplification iterated to the fix-point maximum, which may be a performance bottleneck. The last two iterations were: %s, and %s.") };
 
-pub static UNKNOWN_OPTION: ErrorTypes::Message = ErrorTypes::Message { id: 210, ty: openmodelica_error::ErrorTypes::MessageType::SCRIPTING, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Unknown option %s.") };
+pub(crate) static UNKNOWN_OPTION: ErrorTypes::Message = ErrorTypes::Message { id: 210, ty: openmodelica_error::ErrorTypes::MessageType::SCRIPTING, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Unknown option %s.") };
 
-pub static SUBSCRIPTED_MODIFIER: ErrorTypes::Message = ErrorTypes::Message { id: 211, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Subscripted modifier is illegal.") };
+pub(crate) static SUBSCRIPTED_MODIFIER: ErrorTypes::Message = ErrorTypes::Message { id: 211, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Subscripted modifier is illegal.") };
 
 pub static TRANS_VIOLATION: ErrorTypes::Message = ErrorTypes::Message { id: 212, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Class specialization violation: %s is a %s, which may not contain an %s.") };
 
@@ -479,9 +479,9 @@ pub static INVALID_REDECLARE_IN_BASIC_TYPE: ErrorTypes::Message = ErrorTypes::Me
 
 pub static MISMATCHED_FLOW_IN_STREAM_CONNECTOR: ErrorTypes::Message = ErrorTypes::Message { id: 216, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Invalid stream connector %s: A stream connector must have exactly one flow variable, this connector has %s flow variables.") };
 
-pub static CONDITION_TYPE_ERROR: ErrorTypes::Message = ErrorTypes::Message { id: 217, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Type mismatch in condition '%s' of component %s. Expected a Boolean expression, but got an expression of type %s.") };
+pub(crate) static CONDITION_TYPE_ERROR: ErrorTypes::Message = ErrorTypes::Message { id: 217, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Type mismatch in condition '%s' of component %s. Expected a Boolean expression, but got an expression of type %s.") };
 
-pub static SIMPLIFY_CONSTANT_ERROR: ErrorTypes::Message = ErrorTypes::Message { id: 218, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::NOTIFICATION, message: literal!("The compiler failed to perform constant folding on expression %s. Please report this bug to the developers and we will fix it as soon as possible (using the +t compiler option if possible).") };
+pub(crate) static SIMPLIFY_CONSTANT_ERROR: ErrorTypes::Message = ErrorTypes::Message { id: 218, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::NOTIFICATION, message: literal!("The compiler failed to perform constant folding on expression %s. Please report this bug to the developers and we will fix it as soon as possible (using the +t compiler option if possible).") };
 
 pub static SUM_EXPECTED_ARRAY: ErrorTypes::Message = ErrorTypes::Message { id: 219, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("In sum(%s), the expression is of type %s, but is required to be of builtin array type (of any number of dimensions).") };
 
@@ -509,9 +509,9 @@ pub static INVALID_ARGUMENT_TYPE_BRANCH_FIRST: ErrorTypes::Message = ErrorTypes:
 
 pub static INVALID_ARGUMENT_TYPE_BRANCH_SECOND: ErrorTypes::Message = ErrorTypes::Message { id: 231, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("The second argument '%s' of %s must have the form A.R, where A is a connector and R an over-determined type/record.") };
 
-pub static INVALID_ARGUMENT_TYPE_OVERDET_FIRST: ErrorTypes::Message = ErrorTypes::Message { id: 232, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("The first argument of %s must be an over-determined type or record.") };
+pub(crate) static INVALID_ARGUMENT_TYPE_OVERDET_FIRST: ErrorTypes::Message = ErrorTypes::Message { id: 232, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("The first argument of %s must be an over-determined type or record.") };
 
-pub static INVALID_ARGUMENT_TYPE_OVERDET_SECOND: ErrorTypes::Message = ErrorTypes::Message { id: 233, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("The second argument of %s must be an over-determined type or record.") };
+pub(crate) static INVALID_ARGUMENT_TYPE_OVERDET_SECOND: ErrorTypes::Message = ErrorTypes::Message { id: 233, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("The second argument of %s must be an over-determined type or record.") };
 
 pub static LIBRARY_ONE_PACKAGE_PER_FILE: ErrorTypes::Message = ErrorTypes::Message { id: 234, ty: openmodelica_error::ErrorTypes::MessageType::GRAMMAR, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Modelica library files should contain exactly one package, but found the following classes: %s.") };
 
@@ -531,7 +531,7 @@ pub static ORDER_FILE_COMPONENTS: ErrorTypes::Message = ErrorTypes::Message { id
 
 pub static GUARD_EXPRESSION_TYPE_MISMATCH: ErrorTypes::Message = ErrorTypes::Message { id: 242, ty: openmodelica_error::ErrorTypes::MessageType::GRAMMAR, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Guard expressions need to be Boolean, got expression of type %s.") };
 
-pub static FUNCTION_RETURNS_META_ARRAY: ErrorTypes::Message = ErrorTypes::Message { id: 243, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("User-defined function calls that return Array<...> are not supported: %s.") };
+pub(crate) static FUNCTION_RETURNS_META_ARRAY: ErrorTypes::Message = ErrorTypes::Message { id: 243, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("User-defined function calls that return Array<...> are not supported: %s.") };
 
 pub static ASSIGN_UNKNOWN_ERROR: ErrorTypes::Message = ErrorTypes::Message { id: 244, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Failed to elaborate assignment for some unknown reason: %1 := %2. File a bug report and we will make sure this error gets a better message in the future.") };
 
@@ -573,7 +573,7 @@ pub static BACKENDDAEINFO_SYSTEMS: ErrorTypes::Message = ErrorTypes::Message { i
 
 pub static BACKENDDAEINFO_TORN: ErrorTypes::Message = ErrorTypes::Message { id: 263, ty: openmodelica_error::ErrorTypes::MessageType::SYMBOLIC, severity: openmodelica_error::ErrorTypes::Severity::NOTIFICATION, message: literal!("Torn system details for %s tearing set:\n * Linear torn systems (#iteration vars, #inner vars, density): %s\n * Non-linear torn systems (#iteration vars, #inner vars): %s") };
 
-pub static BACKEND_DAE_TO_MODELICA: ErrorTypes::Message = ErrorTypes::Message { id: 264, ty: openmodelica_error::ErrorTypes::MessageType::SYMBOLIC, severity: openmodelica_error::ErrorTypes::Severity::NOTIFICATION, message: literal!("The following Modelica-like model represents the back-end DAE for the '%s' stage:\n%s") };
+pub(crate) static BACKEND_DAE_TO_MODELICA: ErrorTypes::Message = ErrorTypes::Message { id: 264, ty: openmodelica_error::ErrorTypes::MessageType::SYMBOLIC, severity: openmodelica_error::ErrorTypes::Severity::NOTIFICATION, message: literal!("The following Modelica-like model represents the back-end DAE for the '%s' stage:\n%s") };
 
 pub static NEGATIVE_DIMENSION_INDEX: ErrorTypes::Message = ErrorTypes::Message { id: 265, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Negative dimension index (%s) for component %s.") };
 
@@ -629,7 +629,7 @@ pub static EXT_FN_SINGLE_RETURN_ARRAY: ErrorTypes::Message = ErrorTypes::Message
 
 pub static RHS_TUPLE_EXPRESSION: ErrorTypes::Message = ErrorTypes::Message { id: 291, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Tuple expressions may only occur on the left side of an assignment or equation with a single function call on the right side. Got the following expression: %s.") };
 
-pub static EACH_ON_NON_ARRAY: ErrorTypes::Message = ErrorTypes::Message { id: 292, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::WARNING, message: literal!("'each' used when modifying non-array element %s.") };
+pub(crate) static EACH_ON_NON_ARRAY: ErrorTypes::Message = ErrorTypes::Message { id: 292, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::WARNING, message: literal!("'each' used when modifying non-array element %s.") };
 
 pub static BUILTIN_EXTENDS_INVALID_ELEMENTS: ErrorTypes::Message = ErrorTypes::Message { id: 293, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("A class extending from builtin type %s may not have other elements.") };
 
@@ -695,13 +695,13 @@ pub static AMBIGUOUS_MATCHING_OPERATOR_FUNCTIONS_NFINST: ErrorTypes::Message = E
 
 pub static REDECLARE_CONDITION: ErrorTypes::Message = ErrorTypes::Message { id: 325, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Invalid redeclaration of %s, a redeclare may not have a condition attribute.") };
 
-pub static REDECLARE_OF_CONSTANT: ErrorTypes::Message = ErrorTypes::Message { id: 326, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("%s is constant and may not be redeclared.") };
+pub(crate) static REDECLARE_OF_CONSTANT: ErrorTypes::Message = ErrorTypes::Message { id: 326, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("%s is constant and may not be redeclared.") };
 
 pub static REDECLARE_MISMATCHED_PREFIX: ErrorTypes::Message = ErrorTypes::Message { id: 327, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Invalid redeclaration '%s %s', original element is declared '%s'.") };
 
 pub static EXTERNAL_ARG_NONCONSTANT_SIZE_INDEX: ErrorTypes::Message = ErrorTypes::Message { id: 328, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Invalid external argument '%s', the dimension index must be a constant expression.") };
 
-pub static FAILURE_TO_DEDUCE_DIMS_EACH: ErrorTypes::Message = ErrorTypes::Message { id: 329, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Failed to deduce dimension %s of '%s' due to 'each' prefix on binding equation.") };
+pub(crate) static FAILURE_TO_DEDUCE_DIMS_EACH: ErrorTypes::Message = ErrorTypes::Message { id: 329, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Failed to deduce dimension %s of '%s' due to 'each' prefix on binding equation.") };
 
 pub static MISSING_TYPE_BASETYPE: ErrorTypes::Message = ErrorTypes::Message { id: 330, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Type '%s' does not extend a basic type.") };
 
@@ -709,7 +709,7 @@ pub static ASSERT_TRIGGERED_WARNING: ErrorTypes::Message = ErrorTypes::Message {
 
 pub static ASSERT_TRIGGERED_ERROR: ErrorTypes::Message = ErrorTypes::Message { id: 332, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("assert triggered: %s") };
 
-pub static TERMINATE_TRIGGERED: ErrorTypes::Message = ErrorTypes::Message { id: 333, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("terminate triggered: %s") };
+pub(crate) static TERMINATE_TRIGGERED: ErrorTypes::Message = ErrorTypes::Message { id: 333, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("terminate triggered: %s") };
 
 pub static EVAL_RECURSION_LIMIT_REACHED: ErrorTypes::Message = ErrorTypes::Message { id: 334, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("The recursion limit (--evalRecursionLimit=%s) was exceeded during evaluation of %s.") };
 
@@ -757,7 +757,7 @@ pub static REDECLARE_CLASS_NON_SUBTYPE: ErrorTypes::Message = ErrorTypes::Messag
 
 pub static REDECLARE_ENUM_NON_SUBTYPE: ErrorTypes::Message = ErrorTypes::Message { id: 356, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Redeclaration of enumeration '%s' is not a subtype of the redeclared element (use enumeration(:) for a generic replaceable enumeration).") };
 
-pub static CONDITIONAL_COMPONENT_INVALID_CONTEXT: ErrorTypes::Message = ErrorTypes::Message { id: 357, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::WARNING, message: literal!("Conditional component '%s' is used in a non-connect context.") };
+pub(crate) static CONDITIONAL_COMPONENT_INVALID_CONTEXT: ErrorTypes::Message = ErrorTypes::Message { id: 357, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::WARNING, message: literal!("Conditional component '%s' is used in a non-connect context.") };
 
 pub static OPERATOR_RECORD_MISSING_OPERATOR: ErrorTypes::Message = ErrorTypes::Message { id: 358, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Type '%s' of expression '%s' in '%s' does not implement the required operator '%s'") };
 
@@ -771,7 +771,7 @@ pub static W_INVALID_ARGUMENT_TYPE_BRANCH_SECOND: ErrorTypes::Message = ErrorTyp
 
 pub static LIBRARY_WITHIN_WRONG_CASE: ErrorTypes::Message = ErrorTypes::Message { id: 363, ty: openmodelica_error::ErrorTypes::MessageType::GRAMMAR, severity: openmodelica_error::ErrorTypes::Severity::WARNING, message: literal!("Expected the package to have %s but got %s (ignoring the potential error; the class might have been inserted at an unexpected location).") };
 
-pub static INVALID_FLAG_CONDITION: ErrorTypes::Message = ErrorTypes::Message { id: 364, ty: openmodelica_error::ErrorTypes::MessageType::SCRIPTING, severity: openmodelica_error::ErrorTypes::Severity::WARNING, message: literal!("Flag %s ignored: %s.") };
+pub(crate) static INVALID_FLAG_CONDITION: ErrorTypes::Message = ErrorTypes::Message { id: 364, ty: openmodelica_error::ErrorTypes::MessageType::SCRIPTING, severity: openmodelica_error::ErrorTypes::Severity::WARNING, message: literal!("Flag %s ignored: %s.") };
 
 pub static EXPERIMENTAL_REQUIRED: ErrorTypes::Message = ErrorTypes::Message { id: 365, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("%s is an experimental feature and requires the --std=experimental flag.") };
 
@@ -900,7 +900,7 @@ pub static UNBOUND_PARAMETER_ERROR: ErrorTypes::Message = ErrorTypes::Message { 
 
 pub static BUILTIN_FUNCTION_PRODUCT_HAS_SCALAR_PARAMETER: ErrorTypes::Message = ErrorTypes::Message { id: 502, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::WARNING, message: literal!("Function \"product\" has scalar as argument in %s in component %s.") };
 
-pub static SETTING_FIXED_ATTRIBUTE: ErrorTypes::Message = ErrorTypes::Message { id: 503, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::WARNING, message: literal!("Using over-determined solver for initialization. Setting fixed=false to the following variables: %s.") };
+pub(crate) static SETTING_FIXED_ATTRIBUTE: ErrorTypes::Message = ErrorTypes::Message { id: 503, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::WARNING, message: literal!("Using over-determined solver for initialization. Setting fixed=false to the following variables: %s.") };
 
 pub static FAILED_TO_EVALUATE_FUNCTION: ErrorTypes::Message = ErrorTypes::Message { id: 506, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Failed to evaluate function: %s.") };
 
@@ -926,7 +926,7 @@ pub static ASSIGN_RHS_ELABORATION: ErrorTypes::Message = ErrorTypes::Message { i
 
 pub static FAILED_TO_EVALUATE_EXPRESSION: ErrorTypes::Message = ErrorTypes::Message { id: 522, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Could not evaluate expression: %s") };
 
-pub static WARNING_JACOBIAN_EQUATION_SOLVE: ErrorTypes::Message = ErrorTypes::Message { id: 523, ty: openmodelica_error::ErrorTypes::MessageType::SYMBOLIC, severity: openmodelica_error::ErrorTypes::Severity::WARNING, message: literal!("Jacobian equation %s could not solve proper for %s. Assume %s=0.") };
+pub(crate) static WARNING_JACOBIAN_EQUATION_SOLVE: ErrorTypes::Message = ErrorTypes::Message { id: 523, ty: openmodelica_error::ErrorTypes::MessageType::SYMBOLIC, severity: openmodelica_error::ErrorTypes::Severity::WARNING, message: literal!("Jacobian equation %s could not solve proper for %s. Assume %s=0.") };
 
 pub static SIMPLIFICATION_COMPLEXITY: ErrorTypes::Message = ErrorTypes::Message { id: 523, ty: openmodelica_error::ErrorTypes::MessageType::SYMBOLIC, severity: openmodelica_error::ErrorTypes::Severity::NOTIFICATION, message: literal!("Simplification produced a higher complexity (%s) than the original (%s). The simplification was: %s => %s.") };
 
@@ -940,7 +940,7 @@ pub static RECURSION_DEPTH_REACHED: ErrorTypes::Message = ErrorTypes::Message { 
 
 pub static DERIVATIVE_INPUT: ErrorTypes::Message = ErrorTypes::Message { id: 528, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("The model requires derivatives of some inputs as listed below:\n%s") };
 
-pub static UTF8_COMMAND_LINE_ARGS: ErrorTypes::Message = ErrorTypes::Message { id: 529, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("The compiler was sent command-line arguments that were not UTF-8 encoded and will abort the current execution.") };
+pub(crate) static UTF8_COMMAND_LINE_ARGS: ErrorTypes::Message = ErrorTypes::Message { id: 529, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("The compiler was sent command-line arguments that were not UTF-8 encoded and will abort the current execution.") };
 
 pub static PACKAGE_ORDER_FILE_NOT_COMPLETE: ErrorTypes::Message = ErrorTypes::Message { id: 530, ty: openmodelica_error::ErrorTypes::MessageType::GRAMMAR, severity: openmodelica_error::ErrorTypes::Severity::WARNING, message: literal!("The package.order file does not list all .mo files and directories (containing package.mo) present in its directory.\nMissing names are:\n\t%s") };
 
@@ -952,7 +952,7 @@ pub static RECURSION_DEPTH_WARNING: ErrorTypes::Message = ErrorTypes::Message { 
 
 pub static RECURSION_DEPTH_DERIVED: ErrorTypes::Message = ErrorTypes::Message { id: 534, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("The maximum recursion depth of was reached when instantiating a derived class. Current class %s in scope %s.") };
 
-pub static EVAL_EXTERNAL_OBJECT_CONSTRUCTOR: ErrorTypes::Message = ErrorTypes::Message { id: 535, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::WARNING, message: literal!("OpenModelica requires that all external objects input arguments are possible to evaluate before initialization in order to avoid odd run-time failures, but %s is a variable.") };
+pub(crate) static EVAL_EXTERNAL_OBJECT_CONSTRUCTOR: ErrorTypes::Message = ErrorTypes::Message { id: 535, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::WARNING, message: literal!("OpenModelica requires that all external objects input arguments are possible to evaluate before initialization in order to avoid odd run-time failures, but %s is a variable.") };
 
 pub static CLASS_ANNOTATION_DOES_NOT_EXIST: ErrorTypes::Message = ErrorTypes::Message { id: 536, ty: openmodelica_error::ErrorTypes::MessageType::SCRIPTING, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Could not find class annotation %s in class %s.") };
 
@@ -972,13 +972,13 @@ pub static INTEGER_TO_UNKNOWN_ENUMERATION: ErrorTypes::Message = ErrorTypes::Mes
 
 pub static NORETCALL_INVALID_EXP: ErrorTypes::Message = ErrorTypes::Message { id: 544, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Expression %s is not a valid statement - only function calls are allowed.") };
 
-pub static INVALID_FLAG_TYPE_STRINGS: ErrorTypes::Message = ErrorTypes::Message { id: 545, ty: openmodelica_error::ErrorTypes::MessageType::SCRIPTING, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Invalid type of flag %s, expected one of %s but got %s.") };
+pub(crate) static INVALID_FLAG_TYPE_STRINGS: ErrorTypes::Message = ErrorTypes::Message { id: 545, ty: openmodelica_error::ErrorTypes::MessageType::SCRIPTING, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Invalid type of flag %s, expected one of %s but got %s.") };
 
 pub static FUNCTION_RETURN_EXT_OBJ: ErrorTypes::Message = ErrorTypes::Message { id: 546, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Function %s returns an external object, but the only function allowed to return this object is %s.") };
 
 pub static NON_STANDARD_OPERATOR: ErrorTypes::Message = ErrorTypes::Message { id: 547, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::WARNING, message: literal!("Usage of non-standard operator (not specified in the Modelica specification): %s. Functionality might be partially supported but is not guaranteed.") };
 
-pub static CONNECT_ARRAY_SIZE_ZERO: ErrorTypes::Message = ErrorTypes::Message { id: 548, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::WARNING, message: literal!("Ignoring connection of array components having size zero: %s and %s.") };
+pub(crate) static CONNECT_ARRAY_SIZE_ZERO: ErrorTypes::Message = ErrorTypes::Message { id: 548, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::WARNING, message: literal!("Ignoring connection of array components having size zero: %s and %s.") };
 
 pub static ILLEGAL_RECORD_COMPONENT: ErrorTypes::Message = ErrorTypes::Message { id: 549, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Ignoring record component:\n%swhen building the record constructor. Records are allowed to contain only components of basic types, arrays of basic types or other records.") };
 
@@ -1000,9 +1000,9 @@ pub static ROOT_USER_INTERACTIVE: ErrorTypes::Message = ErrorTypes::Message { id
 
 pub static USES_MISSING_VERSION: ErrorTypes::Message = ErrorTypes::Message { id: 558, ty: openmodelica_error::ErrorTypes::MessageType::SCRIPTING, severity: openmodelica_error::ErrorTypes::Severity::WARNING, message: literal!("Uses-annotation is missing version for library %s. Assuming the tool-specific version=\"default\".") };
 
-pub static CLOCK_PREFIX_ERROR: ErrorTypes::Message = ErrorTypes::Message { id: 559, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Clock variable can not be declared with prefixes flow, stream, discrete, parameter, or constant.") };
+pub(crate) static CLOCK_PREFIX_ERROR: ErrorTypes::Message = ErrorTypes::Message { id: 559, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Clock variable can not be declared with prefixes flow, stream, discrete, parameter, or constant.") };
 
-pub static DEFAULT_CLOCK_USED: ErrorTypes::Message = ErrorTypes::Message { id: 560, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::NOTIFICATION, message: literal!("Default inferred clock is used.") };
+pub(crate) static DEFAULT_CLOCK_USED: ErrorTypes::Message = ErrorTypes::Message { id: 560, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::NOTIFICATION, message: literal!("Default inferred clock is used.") };
 
 pub static CONT_CLOCKED_PARTITION_CONFLICT_VAR: ErrorTypes::Message = ErrorTypes::Message { id: 561, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Variable %s belongs to clocked and continuous partitions.") };
 
@@ -1024,11 +1024,11 @@ pub static INVALID_CLOCK_EQUATION: ErrorTypes::Message = ErrorTypes::Message { i
 
 pub static SUBCLOCK_CONFLICT: ErrorTypes::Message = ErrorTypes::Message { id: 570, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Partition has different sub-clock %ss (%s) and (%s).") };
 
-pub static CLOCK_CONFLICT: ErrorTypes::Message = ErrorTypes::Message { id: 571, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Partitions have different base clocks.") };
+pub(crate) static CLOCK_CONFLICT: ErrorTypes::Message = ErrorTypes::Message { id: 571, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Partitions have different base clocks.") };
 
-pub static EXEC_STAT: ErrorTypes::Message = ErrorTypes::Message { id: 572, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::NOTIFICATION, message: literal!("Performance of %s: time %s/%s, allocations: %s / %s, free: %s / %s") };
+pub(crate) static EXEC_STAT: ErrorTypes::Message = ErrorTypes::Message { id: 572, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::NOTIFICATION, message: literal!("Performance of %s: time %s/%s, allocations: %s / %s, free: %s / %s") };
 
-pub static EXEC_STAT_GC: ErrorTypes::Message = ErrorTypes::Message { id: 573, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::NOTIFICATION, message: literal!("Performance of %s: time %s/%s, GC stats:%s") };
+pub(crate) static EXEC_STAT_GC: ErrorTypes::Message = ErrorTypes::Message { id: 573, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::NOTIFICATION, message: literal!("Performance of %s: time %s/%s, GC stats:%s") };
 
 pub static MAX_TEARING_SIZE: ErrorTypes::Message = ErrorTypes::Message { id: 574, ty: openmodelica_error::ErrorTypes::MessageType::SYMBOLIC, severity: openmodelica_error::ErrorTypes::Severity::NOTIFICATION, message: literal!("Tearing is skipped for strong component %s because system size of %s exceeds maximum system size for tearing of %s systems (%s).\nTo adjust the maximum system size for tearing use --%s=<size>.\n") };
 
@@ -1070,7 +1070,7 @@ pub static NON_STATE_STATESELECT_ALWAYS: ErrorTypes::Message = ErrorTypes::Messa
 
 pub static STATE_STATESELECT_NEVER: ErrorTypes::Message = ErrorTypes::Message { id: 593, ty: openmodelica_error::ErrorTypes::MessageType::SYMBOLIC, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Variable %s has attribute stateSelect=StateSelect.never, but was selected as a state") };
 
-pub static FUNCTION_HIGHER_VARIABILITY_BINDING: ErrorTypes::Message = ErrorTypes::Message { id: 594, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::WARNING, message: literal!("Component '%s' of variability %s has binding %s of higher variability %s.") };
+pub(crate) static FUNCTION_HIGHER_VARIABILITY_BINDING: ErrorTypes::Message = ErrorTypes::Message { id: 594, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::WARNING, message: literal!("Component '%s' of variability %s has binding %s of higher variability %s.") };
 
 pub static OCG_MISSING_BRANCH: ErrorTypes::Message = ErrorTypes::Message { id: 595, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::WARNING, message: literal!("Connections.rooted(%s) needs exactly one statement Connections.branch(%s, B.R) involving %s but we found none in the graph. Run with -d=cgraphGraphVizFile to debug") };
 
@@ -1092,7 +1092,7 @@ pub static ERROR_PKG_NOT_EXACT_MATCH: ErrorTypes::Message = ErrorTypes::Message 
 
 pub static ERROR_PKG_INDEX_NOT_ON_PATH: ErrorTypes::Message = ErrorTypes::Message { id: 604, ty: openmodelica_error::ErrorTypes::MessageType::SCRIPTING, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("The MODELICAPATH (%s) does not contain %s, so the package index cannot be used.") };
 
-pub static ERROR_PKG_INDEX_NOT_FOUND: ErrorTypes::Message = ErrorTypes::Message { id: 605, ty: openmodelica_error::ErrorTypes::MessageType::SCRIPTING, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("The package index does not exist: %s.") };
+pub(crate) static ERROR_PKG_INDEX_NOT_FOUND: ErrorTypes::Message = ErrorTypes::Message { id: 605, ty: openmodelica_error::ErrorTypes::MessageType::SCRIPTING, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("The package index does not exist: %s.") };
 
 pub static ERROR_PKG_INDEX_NOT_PARSED: ErrorTypes::Message = ErrorTypes::Message { id: 606, ty: openmodelica_error::ErrorTypes::MessageType::SCRIPTING, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("The package index %s could not be parsed.") };
 
@@ -1110,7 +1110,7 @@ pub static WARNING_PKG_CONFLICTING_VERSIONS: ErrorTypes::Message = ErrorTypes::M
 
 pub static NOTIFY_PKG_NO_INSTALL: ErrorTypes::Message = ErrorTypes::Message { id: 613, ty: openmodelica_error::ErrorTypes::MessageType::SCRIPTING, severity: openmodelica_error::ErrorTypes::Severity::NOTIFICATION, message: literal!("%s %s will not be installed since version %s is installed.") };
 
-pub static DEPRECATED_FLAG: ErrorTypes::Message = ErrorTypes::Message { id: 614, ty: openmodelica_error::ErrorTypes::MessageType::SCRIPTING, severity: openmodelica_error::ErrorTypes::Severity::WARNING, message: literal!("The flag '%s' is deprecated. Please use '%s' instead.") };
+pub(crate) static DEPRECATED_FLAG: ErrorTypes::Message = ErrorTypes::Message { id: 614, ty: openmodelica_error::ErrorTypes::MessageType::SCRIPTING, severity: openmodelica_error::ErrorTypes::Severity::WARNING, message: literal!("The flag '%s' is deprecated. Please use '%s' instead.") };
 
 pub static UNKNOWN_ERROR_INST_FUNCTION: ErrorTypes::Message = ErrorTypes::Message { id: 615, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::INTERNAL, message: literal!("Unknown error trying to instantiate function: %s.") };
 
@@ -1136,7 +1136,7 @@ pub static META_UNIONTYPE_ALIAS_MODS: ErrorTypes::Message = ErrorTypes::Message 
 
 pub static META_COMPLEX_TYPE_MOD: ErrorTypes::Message = ErrorTypes::Message { id: 5006, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("MetaModelica complex types may not have modifiers.") };
 
-pub static META_CEVAL_FUNCTION_REFERENCE: ErrorTypes::Message = ErrorTypes::Message { id: 5008, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Cannot evaluate function pointers (got %s).") };
+pub(crate) static META_CEVAL_FUNCTION_REFERENCE: ErrorTypes::Message = ErrorTypes::Message { id: 5008, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Cannot evaluate function pointers (got %s).") };
 
 pub static NON_INSTANTIATED_FUNCTION: ErrorTypes::Message = ErrorTypes::Message { id: 5009, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Tried to use function %s, but it was not instantiated.") };
 
@@ -1180,7 +1180,7 @@ pub static REDUCTION_TYPE_ERROR: ErrorTypes::Message = ErrorTypes::Message { id:
 
 pub static UNSUPPORTED_REDUCTION_TYPE: ErrorTypes::Message = ErrorTypes::Message { id: 5031, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Expected a reduction function with type signature ('A,'B) => 'B, but got %s.") };
 
-pub static FOUND_NON_NUMERIC_TYPES: ErrorTypes::Message = ErrorTypes::Message { id: 5032, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Operator %s expects numeric types as operands, but got '%s and %s'.") };
+pub(crate) static FOUND_NON_NUMERIC_TYPES: ErrorTypes::Message = ErrorTypes::Message { id: 5032, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Operator %s expects numeric types as operands, but got '%s and %s'.") };
 
 pub static STRUCTURAL_PARAMETER_OR_CONSTANT_WITH_NO_BINDING: ErrorTypes::Message = ErrorTypes::Message { id: 5033, ty: openmodelica_error::ErrorTypes::MessageType::TRANSLATION, severity: openmodelica_error::ErrorTypes::Severity::ERROR, message: literal!("Could not evaluate structural parameter (or constant): %s which gives dimensions of array: %s. Array dimensions must be known at compile time.") };
 
@@ -1216,7 +1216,7 @@ pub static CONVERSION_MISSING_FROM_VERSION: ErrorTypes::Message = ErrorTypes::Me
 
 pub static CONVERSION_UNKNOWN_ANNOTATION: ErrorTypes::Message = ErrorTypes::Message { id: 5049, ty: openmodelica_error::ErrorTypes::MessageType::SCRIPTING, severity: openmodelica_error::ErrorTypes::Severity::WARNING, message: literal!("Conversion-annotation contains unknown element: %s.") };
 
-pub static CONVERSION_MISSING_NONE_FROM_VERSION: ErrorTypes::Message = ErrorTypes::Message { id: 5048, ty: openmodelica_error::ErrorTypes::MessageType::SCRIPTING, severity: openmodelica_error::ErrorTypes::Severity::WARNING, message: literal!("Conversion-annotation is missing version for noneFromVersion: %s.") };
+pub(crate) static CONVERSION_MISSING_NONE_FROM_VERSION: ErrorTypes::Message = ErrorTypes::Message { id: 5048, ty: openmodelica_error::ErrorTypes::MessageType::SCRIPTING, severity: openmodelica_error::ErrorTypes::Severity::WARNING, message: literal!("Conversion-annotation is missing version for noneFromVersion: %s.") };
 
 pub static UNPATCHED_MODELICA_SERVICES: ErrorTypes::Message = ErrorTypes::Message { id: 5049, ty: openmodelica_error::ErrorTypes::MessageType::SCRIPTING, severity: openmodelica_error::ErrorTypes::Severity::WARNING, message: literal!("This version of ModelicaServices does not appear to be patched for use with OpenModelica, consider using a version distributed by OpenModelica instead to avoid compatibility issues.") };
 

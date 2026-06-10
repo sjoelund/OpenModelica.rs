@@ -85,7 +85,7 @@ pub type Import = Absyn::Import;
 
 pub type Msg = Option<SourceInfo>;
 
-pub static dummyLookupOption: Option<SourceInfo> = None;
+pub(crate) static dummyLookupOption: Option<SourceInfo> = None;
 
 // SOME(Absyn.dummyInfo);
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
@@ -106,13 +106,13 @@ impl metamodelica::gc::MMTrace for Options {
 pub type OPTIONS = Options;
 
 
-pub static ignoreNothing: Options = Options { ignoreImports: false, ignoreExtends: false, ignoreParents: false };
+pub(crate) static ignoreNothing: Options = Options { ignoreImports: false, ignoreExtends: false, ignoreParents: false };
 
-pub static ignoreParents: Options = Options { ignoreImports: false, ignoreExtends: false, ignoreParents: true };
+pub(crate) static ignoreParents: Options = Options { ignoreImports: false, ignoreExtends: false, ignoreParents: true };
 
-pub static ignoreParentsAndImports: Options = Options { ignoreImports: true, ignoreExtends: false, ignoreParents: true };
+pub(crate) static ignoreParentsAndImports: Options = Options { ignoreImports: true, ignoreExtends: false, ignoreParents: true };
 
-pub static ignoreAll: Options = Options { ignoreImports: true, ignoreExtends: true, ignoreParents: true };
+pub(crate) static ignoreAll: Options = Options { ignoreImports: true, ignoreExtends: true, ignoreParents: true };
 
 pub(crate) fn id(mut inGraph: Graph, mut inRef: Ref, mut inName: Name, mut inOptions: Options, mut inMsg: Msg) -> Result<(Graph, Ref)> {
     let mut outGraph: Graph;

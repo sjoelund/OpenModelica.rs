@@ -104,7 +104,7 @@ impl Default for SymbolTable {
 
 pub type SYMBOLTABLE = SymbolTable;
 
-pub const AST_CACHE_MAX_SIZE: i32 = 1000;
+pub(crate) const AST_CACHE_MAX_SIZE: i32 = 1000;
 
 pub fn reset() -> Result<()> {
     pub type Program = Absyn::Program;

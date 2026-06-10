@@ -1,12 +1,18 @@
 //! Cross-crate visibility analysis.
 //!
-//! Decides which generated `pub fn`s must stay `pub` and which can be narrowed
-//! to `pub(crate)`. Because `pub(crate)` is already visible from everywhere
-//! inside the defining crate, a function needs full `pub` only when it is
-//! reachable from a *different* crate. So this pass collects every cross-crate
-//! function reference in the generated program; a function not referenced
+//! Decides which generated `pub` functions and `constant`s must stay `pub` and
+//! which can be narrowed to `pub(crate)`. Because `pub(crate)` is already
+//! visible from everywhere inside the defining crate, an item needs full `pub`
+//! only when it is reachable from a *different* crate. So this pass collects
+//! every cross-crate reference in the generated program; an item not referenced
 //! across a crate boundary (and not in the hand-written-export allow-list) is
 //! narrowed to `pub(crate)`.
+//!
+//! Types (records / uniontypes / type aliases) are still always emitted `pub`:
+//! narrowing them additionally requires propagating visibility through the
+//! interface of every kept-public item (a `pub fn`/`pub struct` exposes its
+//! signature/field types — Rust's `private_interfaces` rule), which this pass
+//! does not yet do.
 //!
 //! ## What counts as keeping a function `pub`
 //!
@@ -61,6 +67,9 @@ const HANDWRITTEN_EXPORTS: &[&str] = &[
     "BaseHashTable.emptyHashTableWork",
     // openmodelica_util/src/Globals.rs → global-state initialiser.
     "DoubleEnded.fromList",
+    // openmodelica_frontend_dump/src/unittests/*.rs → flag tables (constants).
+    "FlagsUtil.allConfigFlags",
+    "FlagsUtil.allDebugFlags",
 ];
 
 /// Result of [`analyze`]: the set of function FQNs that must keep full `pub`
@@ -80,6 +89,19 @@ impl VisibilityInfo {
 
 fn is_function_node(node: &NameNode<'_>) -> bool {
     matches!(&node.kind, NodeKind::Class(c) if matches!(c.restriction, Absyn::Restriction::R_FUNCTION { .. }))
+}
+
+/// A `constant` component — emitted as `pub const`/`pub static`/`pub const fn`/
+/// a `LazyLock` getter, whose visibility this pass also narrows.
+fn is_const_node(node: &NameNode<'_>) -> bool {
+    matches!(&node.kind, NodeKind::Component(m) if m.variability == Absyn::Variability::CONST)
+}
+
+/// True for any item whose generated visibility this pass narrows: free
+/// functions and `constant`s. (Types/records/uniontypes are always emitted
+/// `pub` for now — see the module docs.)
+fn is_narrowable_item(node: &NameNode<'_>) -> bool {
+    is_function_node(node) || is_const_node(node)
 }
 
 fn path_to_dotted(p: &Absyn::Path) -> String {
@@ -144,10 +166,11 @@ pub fn analyze(hier: &InstanceHierarchy<'_>) -> VisibilityInfo {
         let Some(ref_crate) = crate_of(qname) else { continue };
 
         // Direct references in the body and in component default expressions: a
-        // target function resolving into another crate keeps that function pub.
+        // narrowable target (function or constant) resolving into another crate
+        // keeps it pub.
         for raw in &RefScan::scan_class(class).refs {
             if let Some((target, n)) = resolve_call_node(raw, top_level, qname)
-                && is_function_node(n)
+                && is_narrowable_item(n)
                 && crate_of(&target).is_some_and(|def_crate| def_crate != ref_crate)
             {
                 keep_public.insert(target);
@@ -164,8 +187,9 @@ pub fn analyze(hier: &InstanceHierarchy<'_>) -> VisibilityInfo {
             keep_public.insert(target);
         }
 
-        // `input <FuncT> f = <default>` — the default function value is expanded
-        // at the caller's site, which may be in any crate. Keep it public.
+        // `input T f = <default>` — the default value (a function or a constant,
+        // e.g. `input MatchOptions options = NFTypeCheck.DEFAULT_OPTIONS`) is
+        // expanded at the caller's site, which may be in any crate. Keep it pub.
         let members = match &class.body {
             MM::ClassDef::Parts { members, .. } | MM::ClassDef::ClassExtends { members, .. } => members.as_slice(),
             _ => &[],
@@ -178,13 +202,19 @@ pub fn analyze(hier: &InstanceHierarchy<'_>) -> VisibilityInfo {
             scan.scan_exp(default);
             for raw in &scan.refs {
                 if let Some((target, n)) = resolve_call_node(raw, top_level, qname)
-                    && is_function_node(n)
+                    && is_narrowable_item(n)
                 {
                     keep_public.insert(target);
                 }
             }
         }
     }
+
+    // Package-level `constant`s have initialisers that the per-function scan
+    // above does not reach (they are not inside any function body). Their
+    // expressions reference other constants / functions, possibly across a
+    // crate boundary, so scan every component's default initialiser.
+    scan_component_defaults(top_level, top_level, "", &crate_map, &mut keep_public);
 
     // Specific-item imports (`import Pkg.{a,b}`, `import Pkg.X`, `import N = Pkg.X`),
     // declared at package or function scope, each lower to a `use …::Item;`
@@ -197,6 +227,39 @@ pub fn analyze(hier: &InstanceHierarchy<'_>) -> VisibilityInfo {
     }
 
     VisibilityInfo { keep_public }
+}
+
+fn scan_component_defaults<'a>(
+    nodes: &BTreeMap<String, NameNode<'a>>,
+    top_level: &BTreeMap<String, NameNode<'a>>,
+    prefix: &str,
+    crate_map: &BTreeMap<&str, &str>,
+    keep_public: &mut BTreeSet<String>,
+) {
+    let crate_of = |qname: &str| -> Option<&str> {
+        crate_map.get(qname.split('.').next().unwrap_or(qname)).copied()
+    };
+    for (name, node) in nodes {
+        let qname = if prefix.is_empty() { name.clone() } else { format!("{prefix}.{name}") };
+        if let NodeKind::Component(m) = &node.kind
+            && let Some(ref_crate) = crate_of(prefix)
+            && let Some(exp) = node.override_default_exp.or_else(|| crate::hierarchy::extract_default_exp(&m.modification))
+        {
+            // Resolve references in the *enclosing* scope (the package/function
+            // the constant is declared in), mirroring codegen's const lowering.
+            let mut scan = RefScan::default();
+            scan.scan_exp(exp);
+            for raw in &scan.refs {
+                if let Some((target, n)) = resolve_call_node(raw, top_level, prefix)
+                    && is_narrowable_item(n)
+                    && crate_of(&target).is_some_and(|def_crate| def_crate != ref_crate)
+                {
+                    keep_public.insert(target);
+                }
+            }
+        }
+        scan_component_defaults(&node.children, top_level, &qname, crate_map, keep_public);
+    }
 }
 
 fn scan_imports<'a>(
@@ -218,7 +281,7 @@ fn scan_imports<'a>(
                 // Resolve in the importing scope (handles relative imports and
                 // import-alias chains, same as codegen's `use`-line emission).
                 if let Some((q, n)) = resolve_call_node(&target, top_level, prefix)
-                    && is_function_node(n)
+                    && is_narrowable_item(n)
                     && crate_of(&q).is_some_and(|def_crate| def_crate != ref_crate)
                 {
                     keep_public.insert(q);

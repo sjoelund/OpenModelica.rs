@@ -767,7 +767,7 @@ pub const fn contextJacobian() -> Context { Context::JACOBIAN_CONTEXT { name: li
 
 pub const fn contextAlgloopJacobian() -> Context { Context::ALGLOOP_CONTEXT { genInitialisation: false, genJacobian: true } }
 
-pub const fn contextAlgloopInitialisation() -> Context { Context::ALGLOOP_CONTEXT { genInitialisation: true, genJacobian: false } }
+pub(crate) const fn contextAlgloopInitialisation() -> Context { Context::ALGLOOP_CONTEXT { genInitialisation: true, genJacobian: false } }
 
 pub const fn contextAlgloop() -> Context { Context::ALGLOOP_CONTEXT { genInitialisation: false, genJacobian: false } }
 
@@ -777,13 +777,13 @@ pub const fn contextParallelFunction() -> Context { Context::FUNCTION_CONTEXT { 
 
 pub const fn contextZeroCross() -> Context { crate::SimCodeFunction::Context::ZEROCROSSINGS_CONTEXT }
 
-pub const fn contextOptimization() -> Context { crate::SimCodeFunction::Context::OPTIMIZATION_CONTEXT }
+pub(crate) const fn contextOptimization() -> Context { crate::SimCodeFunction::Context::OPTIMIZATION_CONTEXT }
 
-pub const fn contextFMI() -> Context { crate::SimCodeFunction::Context::FMI_CONTEXT }
+pub(crate) const fn contextFMI() -> Context { crate::SimCodeFunction::Context::FMI_CONTEXT }
 
 pub const fn contextDAEmode() -> Context { crate::SimCodeFunction::Context::DAE_MODE_CONTEXT }
 
-pub const fn contextOMSI() -> Context { Context::OMSI_CONTEXT { hashTable: None } }
+pub(crate) const fn contextOMSI() -> Context { Context::OMSI_CONTEXT { hashTable: None } }
 
 thread_local! { static __listExpLength1_TLS: Arc<metamodelica::List<Arc<DAE::Exp>>> = list![Arc::new(DAE::Exp::ICONST { integer: 0 })]; }
 pub fn listExpLength1() -> Arc<metamodelica::List<Arc<DAE::Exp>>> { __listExpLength1_TLS.with(|__t| __t.clone()) }

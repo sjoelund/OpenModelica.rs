@@ -165,7 +165,7 @@ impl Default for FlatSmSemantics {
 pub type FLAT_SM_SEMANTICS = FlatSmSemantics;
 
 
-pub const SMS_PRE: &'static str = "smOf";
+pub(crate) const SMS_PRE: &'static str = "smOf";
 
 pub fn stateMachineToDataFlow(mut cache: FCore::Cache, mut env: FCore::Graph, mut inDAElist: DAE::DAElist) -> Result<DAE::DAElist> {
     let mut outDAElist: DAE::DAElist;

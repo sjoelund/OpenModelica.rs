@@ -2044,11 +2044,11 @@ pub use self::JacobianType::{JAC_CONSTANT,JAC_LINEAR,JAC_NONLINEAR,JAC_GENERIC,J
 
 pub const SymbolicJacobianAIndex: i32 = 1;
 
-pub const SymbolicJacobianBIndex: i32 = 2;
+pub(crate) const SymbolicJacobianBIndex: i32 = 2;
 
-pub const SymbolicJacobianCIndex: i32 = 3;
+pub(crate) const SymbolicJacobianCIndex: i32 = 3;
 
-pub const SymbolicJacobianDIndex: i32 = 4;
+pub(crate) const SymbolicJacobianDIndex: i32 = 4;
 
 pub const derivativeNamePrefix: &'static str = "$DERAlias";
 

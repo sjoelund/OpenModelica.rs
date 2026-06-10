@@ -207,7 +207,7 @@ impl Default for InstNodeType {
 }
 pub use self::InstNodeType::{NORMAL_CLASS,BASE_CLASS,DERIVED_CLASS,BUILTIN_CLASS,TOP_SCOPE,ROOT_CLASS,NORMAL_COMP,REDECLARED_COMP,REDECLARED_CLASS,GENERATED_INNER,IMPLICIT_SCOPE};
 
-pub const NUMBER_OF_CACHES: i32 = 2;
+pub(crate) const NUMBER_OF_CACHES: i32 = 2;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]

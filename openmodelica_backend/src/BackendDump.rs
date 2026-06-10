@@ -576,9 +576,9 @@ fn setAdjacencyMatrix1(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut isInitial:
 //   - dumpVariables
 //   - dumpVarList
 // =============================================================================
-pub const BORDER: &'static str = "########################################";
+pub(crate) const BORDER: &'static str = "########################################";
 
-pub const UNDERLINE: &'static str = "========================================";
+pub(crate) const UNDERLINE: &'static str = "========================================";
 
 pub(crate) fn dumpDAE(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut outDAE: Arc<BackendDAE::BackendDAE> = inDAE.clone();

@@ -2154,16 +2154,16 @@ thread_local! { static __T_ENUMERATION_DEFAULT_TLS: Arc<Type> = Arc::new(Type::T
 pub fn T_ENUMERATION_DEFAULT() -> Arc<Type> { __T_ENUMERATION_DEFAULT_TLS.with(|__t| __t.clone()) }
 
 thread_local! { static __T_REAL_BOXED_TLS: Arc<Type> = Arc::new(Type::T_METABOXED { ty: T_REAL_DEFAULT().clone() }); }
-pub fn T_REAL_BOXED() -> Arc<Type> { __T_REAL_BOXED_TLS.with(|__t| __t.clone()) }
+pub(crate) fn T_REAL_BOXED() -> Arc<Type> { __T_REAL_BOXED_TLS.with(|__t| __t.clone()) }
 
 thread_local! { static __T_INTEGER_BOXED_TLS: Arc<Type> = Arc::new(Type::T_METABOXED { ty: T_INTEGER_DEFAULT().clone() }); }
-pub fn T_INTEGER_BOXED() -> Arc<Type> { __T_INTEGER_BOXED_TLS.with(|__t| __t.clone()) }
+pub(crate) fn T_INTEGER_BOXED() -> Arc<Type> { __T_INTEGER_BOXED_TLS.with(|__t| __t.clone()) }
 
 thread_local! { static __T_STRING_BOXED_TLS: Arc<Type> = Arc::new(Type::T_METABOXED { ty: T_STRING_DEFAULT().clone() }); }
-pub fn T_STRING_BOXED() -> Arc<Type> { __T_STRING_BOXED_TLS.with(|__t| __t.clone()) }
+pub(crate) fn T_STRING_BOXED() -> Arc<Type> { __T_STRING_BOXED_TLS.with(|__t| __t.clone()) }
 
 thread_local! { static __T_BOOL_BOXED_TLS: Arc<Type> = Arc::new(Type::T_METABOXED { ty: T_BOOL_DEFAULT().clone() }); }
-pub fn T_BOOL_BOXED() -> Arc<Type> { __T_BOOL_BOXED_TLS.with(|__t| __t.clone()) }
+pub(crate) fn T_BOOL_BOXED() -> Arc<Type> { __T_BOOL_BOXED_TLS.with(|__t| __t.clone()) }
 
 thread_local! { static __T_METABOXED_DEFAULT_TLS: Arc<Type> = Arc::new(Type::T_METABOXED { ty: T_UNKNOWN_DEFAULT().clone() }); }
 pub fn T_METABOXED_DEFAULT() -> Arc<Type> { __T_METABOXED_DEFAULT_TLS.with(|__t| __t.clone()) }
@@ -2193,7 +2193,7 @@ thread_local! { static __T_COMPLEX_DEFAULT_RECORD_TLS: Arc<Type> = Arc::new(Type
 pub fn T_COMPLEX_DEFAULT_RECORD() -> Arc<Type> { __T_COMPLEX_DEFAULT_RECORD_TLS.with(|__t| __t.clone()) }
 
 thread_local! { static __T_SOURCEINFO_DEFAULT_METARECORD_TLS: Arc<Type> = Arc::new(Type::T_METARECORD { path: Arc::new(Absyn::Path::QUALIFIED { name: (literal!("SourceInfo")).clone(), path: Arc::new(Absyn::Path::IDENT { name: (literal!("SOURCEINFO")).clone() }) }), utPath: Arc::new(Absyn::Path::IDENT { name: (literal!("SourceInfo")).clone() }), typeVars: metamodelica::nil(), index: 1, fields: list![Arc::new(Var { name: (literal!("fileName")).clone(), attributes: dummyAttrVar().clone(), ty: T_STRING_DEFAULT().clone(), binding: crate::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None }), Arc::new(Var { name: (literal!("isReadOnly")).clone(), attributes: dummyAttrVar().clone(), ty: T_BOOL_DEFAULT().clone(), binding: crate::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None }), Arc::new(Var { name: (literal!("lineNumberStart")).clone(), attributes: dummyAttrVar().clone(), ty: T_INTEGER_DEFAULT().clone(), binding: crate::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None }), Arc::new(Var { name: (literal!("columnNumberStart")).clone(), attributes: dummyAttrVar().clone(), ty: T_INTEGER_DEFAULT().clone(), binding: crate::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None }), Arc::new(Var { name: (literal!("lineNumberEnd")).clone(), attributes: dummyAttrVar().clone(), ty: T_INTEGER_DEFAULT().clone(), binding: crate::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None }), Arc::new(Var { name: (literal!("columnNumberEnd")).clone(), attributes: dummyAttrVar().clone(), ty: T_INTEGER_DEFAULT().clone(), binding: crate::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None }), Arc::new(Var { name: (literal!("lastModification")).clone(), attributes: dummyAttrVar().clone(), ty: T_REAL_DEFAULT().clone(), binding: crate::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None })], knownSingleton: true }); }
-pub fn T_SOURCEINFO_DEFAULT_METARECORD() -> Arc<Type> { __T_SOURCEINFO_DEFAULT_METARECORD_TLS.with(|__t| __t.clone()) }
+pub(crate) fn T_SOURCEINFO_DEFAULT_METARECORD() -> Arc<Type> { __T_SOURCEINFO_DEFAULT_METARECORD_TLS.with(|__t| __t.clone()) }
 
 thread_local! { static __T_SOURCEINFO_DEFAULT_TLS: Arc<Type> = Arc::new(Type::T_METAUNIONTYPE { paths: list![Arc::new(Absyn::Path::QUALIFIED { name: (literal!("SourceInfo")).clone(), path: Arc::new(Absyn::Path::IDENT { name: (literal!("SOURCEINFO")).clone() }) })], typeVars: metamodelica::nil(), knownSingleton: true, singletonType: Arc::new(EvaluateSingletonType::EVAL_SINGLETON_KNOWN_TYPE { ty: T_SOURCEINFO_DEFAULT_METARECORD().clone() }), path: Arc::new(Absyn::Path::IDENT { name: (literal!("SourceInfo")).clone() }) }); }
 pub fn T_SOURCEINFO_DEFAULT() -> Arc<Type> { __T_SOURCEINFO_DEFAULT_TLS.with(|__t| __t.clone()) }
@@ -2203,10 +2203,10 @@ thread_local! { static __T_ARRAY_REAL_NODIM_TLS: Arc<Type> = Arc::new(Type::T_AR
 pub fn T_ARRAY_REAL_NODIM() -> Arc<Type> { __T_ARRAY_REAL_NODIM_TLS.with(|__t| __t.clone()) }
 
 thread_local! { static __T_ARRAY_INT_NODIM_TLS: Arc<Type> = Arc::new(Type::T_ARRAY { ty: T_INTEGER_DEFAULT().clone(), dims: list![crate::DAE::Dimension::interned_DIM_UNKNOWN()] }); }
-pub fn T_ARRAY_INT_NODIM() -> Arc<Type> { __T_ARRAY_INT_NODIM_TLS.with(|__t| __t.clone()) }
+pub(crate) fn T_ARRAY_INT_NODIM() -> Arc<Type> { __T_ARRAY_INT_NODIM_TLS.with(|__t| __t.clone()) }
 
 thread_local! { static __T_ARRAY_BOOL_NODIM_TLS: Arc<Type> = Arc::new(Type::T_ARRAY { ty: T_BOOL_DEFAULT().clone(), dims: list![crate::DAE::Dimension::interned_DIM_UNKNOWN()] }); }
-pub fn T_ARRAY_BOOL_NODIM() -> Arc<Type> { __T_ARRAY_BOOL_NODIM_TLS.with(|__t| __t.clone()) }
+pub(crate) fn T_ARRAY_BOOL_NODIM() -> Arc<Type> { __T_ARRAY_BOOL_NODIM_TLS.with(|__t| __t.clone()) }
 
 thread_local! { static __T_ARRAY_STRING_NODIM_TLS: Arc<Type> = Arc::new(Type::T_ARRAY { ty: T_STRING_DEFAULT().clone(), dims: list![crate::DAE::Dimension::interned_DIM_UNKNOWN()] }); }
 pub fn T_ARRAY_STRING_NODIM() -> Arc<Type> { __T_ARRAY_STRING_NODIM_TLS.with(|__t| __t.clone()) }
@@ -2637,7 +2637,7 @@ pub static FUNCTION_ATTRIBUTES_BUILTIN: std::sync::LazyLock<FunctionAttributes> 
 
 pub static FUNCTION_ATTRIBUTES_DEFAULT: std::sync::LazyLock<FunctionAttributes> = std::sync::LazyLock::new(|| { FunctionAttributes { inline: crate::DAE::InlineType::DEFAULT_INLINE, generateEvents: false, purity: Purity::PURE.clone(), isFunctionPointer: false, isBuiltin: crate::DAE::FunctionBuiltin::FUNCTION_NOT_BUILTIN, functionParallelism: crate::DAE::FunctionParallelism::FP_NON_PARALLEL } });
 
-pub static FUNCTION_ATTRIBUTES_IMPURE: std::sync::LazyLock<FunctionAttributes> = std::sync::LazyLock::new(|| { FunctionAttributes { inline: crate::DAE::InlineType::NO_INLINE, generateEvents: false, purity: Purity::IMPURE.clone(), isFunctionPointer: false, isBuiltin: crate::DAE::FunctionBuiltin::FUNCTION_NOT_BUILTIN, functionParallelism: crate::DAE::FunctionParallelism::FP_NON_PARALLEL } });
+pub(crate) static FUNCTION_ATTRIBUTES_IMPURE: std::sync::LazyLock<FunctionAttributes> = std::sync::LazyLock::new(|| { FunctionAttributes { inline: crate::DAE::InlineType::NO_INLINE, generateEvents: false, purity: Purity::IMPURE.clone(), isFunctionPointer: false, isBuiltin: crate::DAE::FunctionBuiltin::FUNCTION_NOT_BUILTIN, functionParallelism: crate::DAE::FunctionParallelism::FP_NON_PARALLEL } });
 
 pub static FUNCTION_ATTRIBUTES_BUILTIN_IMPURE: std::sync::LazyLock<FunctionAttributes> = std::sync::LazyLock::new(|| { FunctionAttributes { inline: crate::DAE::InlineType::NO_INLINE, generateEvents: false, purity: Purity::IMPURE.clone(), isFunctionPointer: false, isBuiltin: FunctionBuiltin::FUNCTION_BUILTIN { name: None, unboxArgs: false }, functionParallelism: crate::DAE::FunctionParallelism::FP_NON_PARALLEL } });
 

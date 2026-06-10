@@ -64,15 +64,15 @@ use openmodelica_util_datatypes_basic::Array;
 //
 // You can also use Util.nextPrime if you know exactly how large the hash set
 // should be.
-pub const lowBucketSize: i32 = 257;
+pub(crate) const lowBucketSize: i32 = 257;
 
-pub const avgBucketSize: i32 = 2053;
+pub(crate) const avgBucketSize: i32 = 2053;
 
-pub const bigBucketSize: i32 = 4013;
+pub(crate) const bigBucketSize: i32 = 4013;
 
-pub const biggerBucketSize: i32 = 25343;
+pub(crate) const biggerBucketSize: i32 = 25343;
 
-pub const hugeBucketSize: i32 = 536870879;
+pub(crate) const hugeBucketSize: i32 = 536870879;
 
 pub const defaultBucketSize: i32 = avgBucketSize;
 

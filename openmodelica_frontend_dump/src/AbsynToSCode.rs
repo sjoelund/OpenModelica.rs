@@ -59,7 +59,7 @@ use openmodelica_util::Util;
 use openmodelica_util_datatypes_basic::List;
 
 // Constant expression for AssertionLevel.error.
-pub static ASSERTION_LEVEL_ERROR: std::sync::LazyLock<Arc<Absyn::Exp>> = std::sync::LazyLock::new(|| { Arc::new(Absyn::Exp::CREF { componentRef: Arc::new(Absyn::ComponentRef::CREF_FULLYQUALIFIED { componentRef: Arc::new(Absyn::ComponentRef::CREF_QUAL { name: (literal!("AssertionLevel")).clone(), subscripts: metamodelica::nil(), componentRef: Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (literal!("error")).clone(), subscripts: metamodelica::nil() }) }) }) }) });
+pub(crate) static ASSERTION_LEVEL_ERROR: std::sync::LazyLock<Arc<Absyn::Exp>> = std::sync::LazyLock::new(|| { Arc::new(Absyn::Exp::CREF { componentRef: Arc::new(Absyn::ComponentRef::CREF_FULLYQUALIFIED { componentRef: Arc::new(Absyn::ComponentRef::CREF_QUAL { name: (literal!("AssertionLevel")).clone(), subscripts: metamodelica::nil(), componentRef: Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (literal!("error")).clone(), subscripts: metamodelica::nil() }) }) }) }) });
 
 pub fn translateAbsyn2SCode(mut inProgram: Absyn::Program) -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> {
     let mut outProgram: Arc<metamodelica::List<Arc<SCode::Element>>>;

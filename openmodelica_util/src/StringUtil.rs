@@ -45,15 +45,15 @@ use arcstr::{ArcStr, literal, format};
 
 use crate::System;
 
-pub const NO_POS: i32 = 0;
+pub(crate) const NO_POS: i32 = 0;
 
-pub const CHAR_NEWLINE: i32 = 10;
+pub(crate) const CHAR_NEWLINE: i32 = 10;
 
-pub const CHAR_SPACE: i32 = 32;
+pub(crate) const CHAR_SPACE: i32 = 32;
 
-pub const CHAR_DASH: i32 = 45;
+pub(crate) const CHAR_DASH: i32 = 45;
 
-pub const CHAR_DOT: i32 = 46;
+pub(crate) const CHAR_DOT: i32 = 46;
 
 pub fn headline_1(mut title: ArcStr) -> ArcStr {
     let mut header: ArcStr;

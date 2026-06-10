@@ -64,9 +64,9 @@ use openmodelica_util_datatypes_basic::Mutable;
 
 pub type Import = Absyn::Import;
 
-pub const tmpTickIndex: i32 = 2;
+pub(crate) const tmpTickIndex: i32 = 2;
 
-pub const extendsTickIndex: i32 = 3;
+pub(crate) const extendsTickIndex: i32 = 3;
 
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct ImportTable {
@@ -1061,9 +1061,9 @@ pub mod EnvTree {
 
 pub type Env = Arc<metamodelica::List<Arc<Frame>>>;
 
-pub static emptyEnv: std::sync::LazyLock<Arc<metamodelica::List<Arc<Frame>>>> = std::sync::LazyLock::new(|| { metamodelica::nil() });
+pub(crate) static emptyEnv: std::sync::LazyLock<Arc<metamodelica::List<Arc<Frame>>>> = std::sync::LazyLock::new(|| { metamodelica::nil() });
 
-pub const BASE_CLASS_SUFFIX: &'static str = "$base";
+pub(crate) const BASE_CLASS_SUFFIX: &'static str = "$base";
 
 pub(crate) fn newEnvironment(mut inName: Option<ArcStr>) -> Env {
     let mut outEnv: Env;

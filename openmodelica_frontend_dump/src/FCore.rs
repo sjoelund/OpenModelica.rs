@@ -460,7 +460,7 @@ pub type Scope = Arc<metamodelica::List<metamodelica::Array<Node>>>;
 pub type Children = Arc<RefTree::Tree>;
 
 thread_local! { static __emptyScope_TLS: Arc<metamodelica::List<metamodelica::Array<Node>>> = metamodelica::nil(); }
-pub fn emptyScope() -> Arc<metamodelica::List<metamodelica::Array<Node>>> { __emptyScope_TLS.with(|__t| __t.clone()) }
+pub(crate) fn emptyScope() -> Arc<metamodelica::List<metamodelica::Array<Node>>> { __emptyScope_TLS.with(|__t| __t.clone()) }
 
 pub mod RefTree {
     use super::*;
@@ -1385,9 +1385,9 @@ pub fn emptyVAvlTree() -> Arc<VAvlTree> { __emptyVAvlTree_TLS.with(|__t| __t.clo
 // ************************ FGraph structures ***************************
 pub static dummyTopModel: std::sync::LazyLock<Arc<Absyn::Path>> = std::sync::LazyLock::new(|| { Arc::new(Absyn::Path::IDENT { name: (literal!("$EMPTY")).clone() }) });
 
-pub static dummyExtra: std::sync::LazyLock<Extra> = std::sync::LazyLock::new(|| { Extra { topModel: dummyTopModel.clone() } });
+pub(crate) static dummyExtra: std::sync::LazyLock<Extra> = std::sync::LazyLock::new(|| { Extra { topModel: dummyTopModel.clone() } });
 
-pub const recordConstructorSuffix: &'static str = "$recordconstructor";
+pub(crate) const recordConstructorSuffix: &'static str = "$recordconstructor";
 
 pub const forScopeName: &'static str = "$for loop scope$";
 

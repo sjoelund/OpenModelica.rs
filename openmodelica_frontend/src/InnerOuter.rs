@@ -187,7 +187,7 @@ pub type OUTER = OuterPrefix;
 pub type OuterPrefixes = Arc<metamodelica::List<OuterPrefix>>;
 
 thread_local! { static __emptyOuterPrefixes_TLS: Arc<metamodelica::List<OuterPrefix>> = metamodelica::nil(); }
-pub fn emptyOuterPrefixes() -> Arc<metamodelica::List<OuterPrefix>> { __emptyOuterPrefixes_TLS.with(|__t| __t.clone()) }
+pub(crate) fn emptyOuterPrefixes() -> Arc<metamodelica::List<OuterPrefix>> { __emptyOuterPrefixes_TLS.with(|__t| __t.clone()) }
 
 /// the prefix + '.' + the component name
 pub type Key = Arc<DAE::ComponentRef>;

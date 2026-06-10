@@ -120,7 +120,7 @@ pub type Key = i32;
 /// - Value
 pub type Value = i32;
 
-pub static emptyBinTree: std::sync::LazyLock<Arc<BinTree>> = std::sync::LazyLock::new(|| { Arc::new(BinTree { value: None, leftSubTree: None, rightSubTree: None }) });
+pub(crate) static emptyBinTree: std::sync::LazyLock<Arc<BinTree>> = std::sync::LazyLock::new(|| { Arc::new(BinTree { value: None, leftSubTree: None, rightSubTree: None }) });
 
 /* *************************
   implementation

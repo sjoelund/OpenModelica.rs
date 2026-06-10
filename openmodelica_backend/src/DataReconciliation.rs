@@ -77,7 +77,7 @@ pub type ExtAdjacencyMatrixRow = (i32, Arc<metamodelica::List<i32>>);
 
 pub type ExtAdjacencyMatrix = Arc<metamodelica::List<(i32, Arc<metamodelica::List<i32>>)>>;
 
-pub const UNDERLINE: &'static str = "==========================================================================";
+pub(crate) const UNDERLINE: &'static str = "==========================================================================";
 
 pub(crate) fn newExtractionAlgorithm(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut outDAE: Arc<BackendDAE::BackendDAE>;

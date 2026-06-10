@@ -397,7 +397,7 @@ struct GenCtx {
     /// stay `pub`. A public function absent from this set is narrowed to
     /// `pub(crate)`. Populated by [`crate::visibility::analyze`]; consulted by
     /// [`emit_function`] when choosing the visibility keyword.
-    keep_public_fns: BTreeSet<String>,
+    keep_public: BTreeSet<String>,
     /// Per-function set of type parameter names that need a `+ PartialEq`
     /// bound. Populated by [`analyze_partial_eq`] and consulted by
     /// [`emit_function`] when formatting the signature's type parameters.
@@ -646,7 +646,7 @@ impl GenCtx {
             variants: HashMap::new(),
             variant_shapes: HashMap::new(),
             fallible_functions,
-            keep_public_fns: BTreeSet::new(),
+            keep_public: BTreeSet::new(),
             partial_eq_required,
             reference_eq_required,
             default_required,
@@ -1477,7 +1477,7 @@ pub fn generate_all(hier: &InstanceHierarchy<'_>, output_dir: &str) -> std::io::
             eprintln!("[mmtorust] codegen start {file_path}");
         }
         let file_t0 = std::time::Instant::now();
-        let (content, file_unwraps, file_missing) = generate_file(name, node, &crate_map, current_crate, &nullable_global_roots, &top_level_uniontype_names, hier.recursive_types.clone(), hier.types_containing_mutable.clone(), hier.types_containing_array.clone(), hier.types_containing_dyn_fn.clone(), hier.types_directly_containing_dyn_fn.clone(), &no_mod_uniontypes, &hier.top_level, &fn_type_vars, &hier.fallible_functions, &hier.keep_public_fns, &hier.partial_eq_required, &hier.reference_eq_required, &hier.default_required, &defaultable_struct_qnames, &types_needing_default);
+        let (content, file_unwraps, file_missing) = generate_file(name, node, &crate_map, current_crate, &nullable_global_roots, &top_level_uniontype_names, hier.recursive_types.clone(), hier.types_containing_mutable.clone(), hier.types_containing_array.clone(), hier.types_containing_dyn_fn.clone(), hier.types_directly_containing_dyn_fn.clone(), &no_mod_uniontypes, &hier.top_level, &fn_type_vars, &hier.fallible_functions, &hier.keep_public, &hier.partial_eq_required, &hier.reference_eq_required, &hier.default_required, &defaultable_struct_qnames, &types_needing_default);
         if !file_unwraps.is_empty() {
             infallible_unwraps.lock().unwrap().extend(file_unwraps);
         }
@@ -1883,9 +1883,9 @@ fn collect_no_mod_uniontypes(nodes: &BTreeMap<String, NameNode<'_>>, prefix: &st
     }
 }
 
-fn generate_file<'a>(top_name: &str, node: &NameNode<'_>, crate_map: &BTreeMap<String, String>, current_crate: Option<String>, nullable_global_roots: &HashSet<String>, top_level_uniontype_names: &HashSet<String>, recursive_types: BTreeSet<String>, types_containing_mutable: BTreeSet<String>, types_containing_array: BTreeSet<String>, types_containing_dyn_fn: BTreeSet<String>, types_directly_containing_dyn_fn: BTreeSet<String>, no_mod_uniontypes: &HashSet<String>, top_level: &'a BTreeMap<String, NameNode<'a>>, fn_type_vars: &BTreeMap<String, Vec<String>>, fallible_functions: &BTreeSet<String>, keep_public_fns: &BTreeSet<String>, partial_eq_required: &BTreeMap<String, HashSet<String>>, reference_eq_required: &BTreeMap<String, HashSet<String>>, default_required: &BTreeMap<String, HashSet<String>>, defaultable_struct_qnames: &HashSet<String>, types_needing_default: &HashSet<String>) -> (String, BTreeSet<String>, BTreeSet<String>) {
+fn generate_file<'a>(top_name: &str, node: &NameNode<'_>, crate_map: &BTreeMap<String, String>, current_crate: Option<String>, nullable_global_roots: &HashSet<String>, top_level_uniontype_names: &HashSet<String>, recursive_types: BTreeSet<String>, types_containing_mutable: BTreeSet<String>, types_containing_array: BTreeSet<String>, types_containing_dyn_fn: BTreeSet<String>, types_directly_containing_dyn_fn: BTreeSet<String>, no_mod_uniontypes: &HashSet<String>, top_level: &'a BTreeMap<String, NameNode<'a>>, fn_type_vars: &BTreeMap<String, Vec<String>>, fallible_functions: &BTreeSet<String>, keep_public: &BTreeSet<String>, partial_eq_required: &BTreeMap<String, HashSet<String>>, reference_eq_required: &BTreeMap<String, HashSet<String>>, default_required: &BTreeMap<String, HashSet<String>>, defaultable_struct_qnames: &HashSet<String>, types_needing_default: &HashSet<String>) -> (String, BTreeSet<String>, BTreeSet<String>) {
     let mut ctx = GenCtx::new(top_name, current_crate, crate_map.clone(), nullable_global_roots.clone(), top_level_uniontype_names.clone(), recursive_types, types_containing_mutable, types_containing_array, types_containing_dyn_fn, types_directly_containing_dyn_fn, fn_type_vars.clone(), fallible_functions.clone(), partial_eq_required.clone(), reference_eq_required.clone(), default_required.clone(), defaultable_struct_qnames.clone(), types_needing_default.clone());
-    ctx.keep_public_fns = keep_public_fns.clone();
+    ctx.keep_public = keep_public.clone();
     ctx.no_mod_uniontypes = no_mod_uniontypes.clone();
     if let NodeKind::Class(c) = &node.kind {
         // Diagnostics (`sourceInfo()`) report the .mo relative to
@@ -2053,6 +2053,13 @@ fn emit_node<'a>(out: &mut String, name: &str, node: &NameNode<'_>, indent: &str
                 };
                 let typed = typedexp::infer_exp(exp, &HashMap::new(), top_level, &pkg_prefix, &[]);
                 let ename = escape_ident(name);
+                // Visibility keyword for this constant: full `pub` only when the
+                // visibility analysis found it referenced from another crate
+                // (`crate::visibility`), otherwise `pub(crate)`. The whole family
+                // of constant lowerings below (`const` / `static` / `const fn` /
+                // `LazyLock` / `thread_local!` getter) share it.
+                let const_qname = format!("{pkg_prefix}.{name}");
+                let vis = if ctx.keep_public.contains(&const_qname) { "pub " } else { "pub(crate) " };
 
                 // String `pub const`s are emitted as `&'static str`, not
                 // `ArcStr`, so that:
@@ -2083,11 +2090,11 @@ fn emit_node<'a>(out: &mut String, name: &str, node: &NameNode<'_>, indent: &str
                         let dump = format!("{typed:?}");
                         format!("{{ compile_error!(\"const string init not reducible to &'static str: {dump}\"); \"\" }}")
                     });
-                    writeln!(out, "{indent}pub const {ename}: &'static str = {val};").unwrap();
+                    writeln!(out, "{indent}{vis}const {ename}: &'static str = {val};").unwrap();
                     writeln!(out).unwrap();
                 } else if let Some(r_ty) = rust_ty {
                     let val = emit_exp(&typed, /*is_const=*/true, ctx, top_level);
-                    writeln!(out, "{indent}pub const {ename}: {r_ty} = {val};").unwrap();
+                    writeln!(out, "{indent}{vis}const {ename}: {r_ty} = {val};").unwrap();
                     writeln!(out).unwrap();
                 } else if is_static_const_emittable(&typed, ctx, top_level)
                     && !is_arc_wrapped(&node.ty, ctx)
@@ -2126,9 +2133,9 @@ fn emit_node<'a>(out: &mut String, name: &str, node: &NameNode<'_>, indent: &str
                     let r_ty = fmt_ty(&node.ty, ctx);
                     let val = emit_exp(&typed, /*is_const=*/true, ctx, top_level);
                     if ty_is_sync(&node.ty, ctx) {
-                        writeln!(out, "{indent}pub static {ename}: {r_ty} = {val};").unwrap();
+                        writeln!(out, "{indent}{vis}static {ename}: {r_ty} = {val};").unwrap();
                     } else {
-                        writeln!(out, "{indent}pub const fn {ename}() -> {r_ty} {{ {val} }}").unwrap();
+                        writeln!(out, "{indent}{vis}const fn {ename}() -> {r_ty} {{ {val} }}").unwrap();
                     }
                     writeln!(out).unwrap();
                 } else {
@@ -2176,7 +2183,7 @@ fn emit_node<'a>(out: &mut String, name: &str, node: &NameNode<'_>, indent: &str
                         // The getter is registered in `ctx.const_fn_getters` so
                         // `emit_var` appends `()` at every reference.
                         writeln!(out, "{indent}thread_local! {{ static __{ename}_TLS: {r_ty} = {val}; }}").unwrap();
-                        writeln!(out, "{indent}pub fn {ename}() -> {r_ty} {{ __{ename}_TLS.with(|__t| __t.share()) }}").unwrap();
+                        writeln!(out, "{indent}{vis}fn {ename}() -> {r_ty} {{ __{ename}_TLS.with(|__t| __t.share()) }}").unwrap();
                         writeln!(out).unwrap();
                         return;
                     }
@@ -2206,7 +2213,7 @@ fn emit_node<'a>(out: &mut String, name: &str, node: &NameNode<'_>, indent: &str
                         ctx.current_fn_fallible = saved_fallible;
                         ctx.in_infallible_const_init = saved_const_init;
                         writeln!(out, "{indent}thread_local! {{ static __{ename}_TLS: {r_ty} = {val}; }}").unwrap();
-                        writeln!(out, "{indent}pub fn {ename}() -> {r_ty} {{ __{ename}_TLS.with(|__t| __t.clone()) }}").unwrap();
+                        writeln!(out, "{indent}{vis}fn {ename}() -> {r_ty} {{ __{ename}_TLS.with(|__t| __t.clone()) }}").unwrap();
                         writeln!(out).unwrap();
                         return;
                     }
@@ -2249,7 +2256,7 @@ fn emit_node<'a>(out: &mut String, name: &str, node: &NameNode<'_>, indent: &str
                         // silently producing the wrong type.
                         val = rewrite_array_init_for_static(&val);
                     }
-                    writeln!(out, "{indent}pub static {ename}: std::sync::LazyLock<{r_ty}> = std::sync::LazyLock::new(|| {{ {val} }});").unwrap();
+                    writeln!(out, "{indent}{vis}static {ename}: std::sync::LazyLock<{r_ty}> = std::sync::LazyLock::new(|| {{ {val} }});").unwrap();
                     writeln!(out).unwrap();
                 }
             }
@@ -5749,7 +5756,7 @@ fn emit_function<'a>(out: &mut String, name: &str, node: &NameNode<'_>, c: &MM::
     // still covers every in-crate (cross-module) caller. See
     // [`crate::visibility`].
     let pub_kw = if node.visibility == MM::Visibility::Public {
-        if ctx.keep_public_fns.contains(&fn_qname) { "pub " } else { "pub(crate) " }
+        if ctx.keep_public.contains(&fn_qname) { "pub " } else { "pub(crate) " }
     } else {
         ""
     };

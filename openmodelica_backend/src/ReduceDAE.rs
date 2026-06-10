@@ -63,7 +63,7 @@ use openmodelica_util::System;
 use openmodelica_util::Util;
 use openmodelica_util_datatypes_basic::List;
 
-pub const LABELNAME: &'static str = "label";
+pub(crate) const LABELNAME: &'static str = "label";
 
 pub(crate) fn buildLabels(mut inEquationLst: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut inModelInfo: SimCode::ModelInfo, mut reduceList: Arc<metamodelica::List<i32>>, mut inArgs: Arc<Absyn::FunctionArgs>) -> Result<(Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, SimCode::ModelInfo)> {
     let mut outEquationLst: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>;

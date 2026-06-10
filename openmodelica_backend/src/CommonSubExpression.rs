@@ -114,13 +114,13 @@ pub type CSE_EQUATION = CSE_Equation;
 
 
 thread_local! { static __dummy_equation_TLS: CSE_Equation = CSE_Equation { cse: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) }), call: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) }), dependencies: metamodelica::nil() }; }
-pub fn dummy_equation() -> CSE_Equation { __dummy_equation_TLS.with(|__t| __t.clone()) }
+pub(crate) fn dummy_equation() -> CSE_Equation { __dummy_equation_TLS.with(|__t| __t.clone()) }
 
-pub const debug: bool = false;
+pub(crate) const debug: bool = false;
 
-pub const BORDER: &'static str = "###############################################################";
+pub(crate) const BORDER: &'static str = "###############################################################";
 
-pub const UNDERLINE: &'static str = "========================================";
+pub(crate) const UNDERLINE: &'static str = "========================================";
 
 fn printCSEEquation(mut cseEquation: CSE_Equation) -> Result<ArcStr> {
     let mut r#str: ArcStr;

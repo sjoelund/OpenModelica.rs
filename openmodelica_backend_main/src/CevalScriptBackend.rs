@@ -161,57 +161,57 @@ use openmodelica_util_datatypes_basic::List;
 // public imports
 // protected imports
 thread_local! { static __simulationResultType_rtest_TLS: Arc<DAE::Type> = Arc::new(DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path: Arc::new(Absyn::Path::IDENT { name: (literal!("SimulationResult")).clone() }) }, varLst: list![Arc::new(DAE::Var { name: (literal!("resultFile")).clone(), attributes: DAE::dummyAttrVar().clone(), ty: DAE::T_STRING_DEFAULT().clone(), binding: openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None }), Arc::new(DAE::Var { name: (literal!("simulationOptions")).clone(), attributes: DAE::dummyAttrVar().clone(), ty: DAE::T_STRING_DEFAULT().clone(), binding: openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None }), Arc::new(DAE::Var { name: (literal!("messages")).clone(), attributes: DAE::dummyAttrVar().clone(), ty: DAE::T_STRING_DEFAULT().clone(), binding: openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None })], equalityConstraint: None, usedExternally: false }); }
-pub fn simulationResultType_rtest() -> Arc<DAE::Type> { __simulationResultType_rtest_TLS.with(|__t| __t.clone()) }
+pub(crate) fn simulationResultType_rtest() -> Arc<DAE::Type> { __simulationResultType_rtest_TLS.with(|__t| __t.clone()) }
 
 thread_local! { static __simulationResultType_full_TLS: Arc<DAE::Type> = Arc::new(DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path: Arc::new(Absyn::Path::IDENT { name: (literal!("SimulationResult")).clone() }) }, varLst: list![Arc::new(DAE::Var { name: (literal!("resultFile")).clone(), attributes: DAE::dummyAttrVar().clone(), ty: DAE::T_STRING_DEFAULT().clone(), binding: openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None }), Arc::new(DAE::Var { name: (literal!("simulationOptions")).clone(), attributes: DAE::dummyAttrVar().clone(), ty: DAE::T_STRING_DEFAULT().clone(), binding: openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None }), Arc::new(DAE::Var { name: (literal!("messages")).clone(), attributes: DAE::dummyAttrVar().clone(), ty: DAE::T_STRING_DEFAULT().clone(), binding: openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None }), Arc::new(DAE::Var { name: (literal!("timeFrontend")).clone(), attributes: DAE::dummyAttrVar().clone(), ty: DAE::T_REAL_DEFAULT().clone(), binding: openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None }), Arc::new(DAE::Var { name: (literal!("timeBackend")).clone(), attributes: DAE::dummyAttrVar().clone(), ty: DAE::T_REAL_DEFAULT().clone(), binding: openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None }), Arc::new(DAE::Var { name: (literal!("timeSimCode")).clone(), attributes: DAE::dummyAttrVar().clone(), ty: DAE::T_REAL_DEFAULT().clone(), binding: openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None }), Arc::new(DAE::Var { name: (literal!("timeTemplates")).clone(), attributes: DAE::dummyAttrVar().clone(), ty: DAE::T_REAL_DEFAULT().clone(), binding: openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None }), Arc::new(DAE::Var { name: (literal!("timeCompile")).clone(), attributes: DAE::dummyAttrVar().clone(), ty: DAE::T_REAL_DEFAULT().clone(), binding: openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None }), Arc::new(DAE::Var { name: (literal!("timeSimulation")).clone(), attributes: DAE::dummyAttrVar().clone(), ty: DAE::T_REAL_DEFAULT().clone(), binding: openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None }), Arc::new(DAE::Var { name: (literal!("timeTotal")).clone(), attributes: DAE::dummyAttrVar().clone(), ty: DAE::T_REAL_DEFAULT().clone(), binding: openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None })], equalityConstraint: None, usedExternally: false }); }
-pub fn simulationResultType_full() -> Arc<DAE::Type> { __simulationResultType_full_TLS.with(|__t| __t.clone()) }
+pub(crate) fn simulationResultType_full() -> Arc<DAE::Type> { __simulationResultType_full_TLS.with(|__t| __t.clone()) }
 
 thread_local! { static __simulationResultType_drModelica_TLS: Arc<DAE::Type> = Arc::new(DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path: Arc::new(Absyn::Path::IDENT { name: (literal!("SimulationResult")).clone() }) }, varLst: list![Arc::new(DAE::Var { name: (literal!("messages")).clone(), attributes: DAE::dummyAttrVar().clone(), ty: DAE::T_STRING_DEFAULT().clone(), binding: openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None }), Arc::new(DAE::Var { name: (literal!("flatteningTime")).clone(), attributes: DAE::dummyAttrVar().clone(), ty: DAE::T_REAL_DEFAULT().clone(), binding: openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None }), Arc::new(DAE::Var { name: (literal!("simulationTime")).clone(), attributes: DAE::dummyAttrVar().clone(), ty: DAE::T_REAL_DEFAULT().clone(), binding: openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None })], equalityConstraint: None, usedExternally: false }); }
-pub fn simulationResultType_drModelica() -> Arc<DAE::Type> { __simulationResultType_drModelica_TLS.with(|__t| __t.clone()) }
+pub(crate) fn simulationResultType_drModelica() -> Arc<DAE::Type> { __simulationResultType_drModelica_TLS.with(|__t| __t.clone()) }
 
 //these are in reversed order than above
-pub static zeroAdditionalSimulationResultValues: std::sync::LazyLock<Arc<metamodelica::List<(ArcStr, Arc<Values::Value>)>>> = std::sync::LazyLock::new(|| { list![(literal!("timeTotal"), Arc::new(Values::Value::REAL { real: metamodelica::OrderedFloat(0.0_f64) })), (literal!("timeSimulation"), Arc::new(Values::Value::REAL { real: metamodelica::OrderedFloat(0.0_f64) })), (literal!("timeCompile"), Arc::new(Values::Value::REAL { real: metamodelica::OrderedFloat(0.0_f64) })), (literal!("timeTemplates"), Arc::new(Values::Value::REAL { real: metamodelica::OrderedFloat(0.0_f64) })), (literal!("timeSimCode"), Arc::new(Values::Value::REAL { real: metamodelica::OrderedFloat(0.0_f64) })), (literal!("timeBackend"), Arc::new(Values::Value::REAL { real: metamodelica::OrderedFloat(0.0_f64) })), (literal!("timeFrontend"), Arc::new(Values::Value::REAL { real: metamodelica::OrderedFloat(0.0_f64) }))] });
+pub(crate) static zeroAdditionalSimulationResultValues: std::sync::LazyLock<Arc<metamodelica::List<(ArcStr, Arc<Values::Value>)>>> = std::sync::LazyLock::new(|| { list![(literal!("timeTotal"), Arc::new(Values::Value::REAL { real: metamodelica::OrderedFloat(0.0_f64) })), (literal!("timeSimulation"), Arc::new(Values::Value::REAL { real: metamodelica::OrderedFloat(0.0_f64) })), (literal!("timeCompile"), Arc::new(Values::Value::REAL { real: metamodelica::OrderedFloat(0.0_f64) })), (literal!("timeTemplates"), Arc::new(Values::Value::REAL { real: metamodelica::OrderedFloat(0.0_f64) })), (literal!("timeSimCode"), Arc::new(Values::Value::REAL { real: metamodelica::OrderedFloat(0.0_f64) })), (literal!("timeBackend"), Arc::new(Values::Value::REAL { real: metamodelica::OrderedFloat(0.0_f64) })), (literal!("timeFrontend"), Arc::new(Values::Value::REAL { real: metamodelica::OrderedFloat(0.0_f64) }))] });
 
 thread_local! { static __defaultStartTime_TLS: Arc<DAE::Exp> = Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) }); }
-pub fn defaultStartTime() -> Arc<DAE::Exp> { __defaultStartTime_TLS.with(|__t| __t.clone()) }
+pub(crate) fn defaultStartTime() -> Arc<DAE::Exp> { __defaultStartTime_TLS.with(|__t| __t.clone()) }
 
 thread_local! { static __defaultStopTime_TLS: Arc<DAE::Exp> = Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(1.0_f64) }); }
-pub fn defaultStopTime() -> Arc<DAE::Exp> { __defaultStopTime_TLS.with(|__t| __t.clone()) }
+pub(crate) fn defaultStopTime() -> Arc<DAE::Exp> { __defaultStopTime_TLS.with(|__t| __t.clone()) }
 
 thread_local! { static __defaultNumberOfIntervals_TLS: Arc<DAE::Exp> = Arc::new(DAE::Exp::ICONST { integer: 500 }); }
-pub fn defaultNumberOfIntervals() -> Arc<DAE::Exp> { __defaultNumberOfIntervals_TLS.with(|__t| __t.clone()) }
+pub(crate) fn defaultNumberOfIntervals() -> Arc<DAE::Exp> { __defaultNumberOfIntervals_TLS.with(|__t| __t.clone()) }
 
 thread_local! { static __defaultStepSize_TLS: Arc<DAE::Exp> = Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.002_f64) }); }
-pub fn defaultStepSize() -> Arc<DAE::Exp> { __defaultStepSize_TLS.with(|__t| __t.clone()) }
+pub(crate) fn defaultStepSize() -> Arc<DAE::Exp> { __defaultStepSize_TLS.with(|__t| __t.clone()) }
 
 thread_local! { static __defaultTolerance_TLS: Arc<DAE::Exp> = Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(1e-6_f64) }); }
-pub fn defaultTolerance() -> Arc<DAE::Exp> { __defaultTolerance_TLS.with(|__t| __t.clone()) }
+pub(crate) fn defaultTolerance() -> Arc<DAE::Exp> { __defaultTolerance_TLS.with(|__t| __t.clone()) }
 
 thread_local! { static __defaultMethod_TLS: Arc<DAE::Exp> = Arc::new(DAE::Exp::SCONST { string: (literal!("dassl")).clone() }); }
-pub fn defaultMethod() -> Arc<DAE::Exp> { __defaultMethod_TLS.with(|__t| __t.clone()) }
+pub(crate) fn defaultMethod() -> Arc<DAE::Exp> { __defaultMethod_TLS.with(|__t| __t.clone()) }
 
 thread_local! { static __defaultFileNamePrefix_TLS: Arc<DAE::Exp> = Arc::new(DAE::Exp::SCONST { string: (literal!("")).clone() }); }
-pub fn defaultFileNamePrefix() -> Arc<DAE::Exp> { __defaultFileNamePrefix_TLS.with(|__t| __t.clone()) }
+pub(crate) fn defaultFileNamePrefix() -> Arc<DAE::Exp> { __defaultFileNamePrefix_TLS.with(|__t| __t.clone()) }
 
 thread_local! { static __defaultOptions_TLS: Arc<DAE::Exp> = Arc::new(DAE::Exp::SCONST { string: (literal!("")).clone() }); }
-pub fn defaultOptions() -> Arc<DAE::Exp> { __defaultOptions_TLS.with(|__t| __t.clone()) }
+pub(crate) fn defaultOptions() -> Arc<DAE::Exp> { __defaultOptions_TLS.with(|__t| __t.clone()) }
 
 thread_local! { static __defaultOutputFormat_TLS: Arc<DAE::Exp> = Arc::new(DAE::Exp::SCONST { string: (literal!("mat")).clone() }); }
-pub fn defaultOutputFormat() -> Arc<DAE::Exp> { __defaultOutputFormat_TLS.with(|__t| __t.clone()) }
+pub(crate) fn defaultOutputFormat() -> Arc<DAE::Exp> { __defaultOutputFormat_TLS.with(|__t| __t.clone()) }
 
 thread_local! { static __defaultVariableFilter_TLS: Arc<DAE::Exp> = Arc::new(DAE::Exp::SCONST { string: (literal!(".*")).clone() }); }
-pub fn defaultVariableFilter() -> Arc<DAE::Exp> { __defaultVariableFilter_TLS.with(|__t| __t.clone()) }
+pub(crate) fn defaultVariableFilter() -> Arc<DAE::Exp> { __defaultVariableFilter_TLS.with(|__t| __t.clone()) }
 
 thread_local! { static __defaultCflags_TLS: Arc<DAE::Exp> = Arc::new(DAE::Exp::SCONST { string: (literal!("")).clone() }); }
-pub fn defaultCflags() -> Arc<DAE::Exp> { __defaultCflags_TLS.with(|__t| __t.clone()) }
+pub(crate) fn defaultCflags() -> Arc<DAE::Exp> { __defaultCflags_TLS.with(|__t| __t.clone()) }
 
 thread_local! { static __defaultSimflags_TLS: Arc<DAE::Exp> = Arc::new(DAE::Exp::SCONST { string: (literal!("")).clone() }); }
-pub fn defaultSimflags() -> Arc<DAE::Exp> { __defaultSimflags_TLS.with(|__t| __t.clone()) }
+pub(crate) fn defaultSimflags() -> Arc<DAE::Exp> { __defaultSimflags_TLS.with(|__t| __t.clone()) }
 
 thread_local! { static __defaultSimulationOptions_TLS: InteractiveTypes::SimulationOptions = InteractiveTypes::SimulationOptions { startTime: defaultStartTime().clone(), stopTime: defaultStopTime().clone(), numberOfIntervals: defaultNumberOfIntervals().clone(), stepSize: defaultStepSize().clone(), tolerance: defaultTolerance().clone(), method: defaultMethod().clone(), fileNamePrefix: defaultFileNamePrefix().clone(), options: defaultOptions().clone(), outputFormat: defaultOutputFormat().clone(), variableFilter: defaultVariableFilter().clone(), cflags: defaultCflags().clone(), simflags: defaultSimflags().clone() }; }
-pub fn defaultSimulationOptions() -> InteractiveTypes::SimulationOptions { __defaultSimulationOptions_TLS.with(|__t| __t.clone()) }
+pub(crate) fn defaultSimulationOptions() -> InteractiveTypes::SimulationOptions { __defaultSimulationOptions_TLS.with(|__t| __t.clone()) }
 
-pub static simulationOptionsNames: std::sync::LazyLock<Arc<metamodelica::List<ArcStr>>> = std::sync::LazyLock::new(|| { list![(literal!("startTime")).clone(), (literal!("stopTime")).clone(), (literal!("numberOfIntervals")).clone(), (literal!("tolerance")).clone(), (literal!("method")).clone(), (literal!("fileNamePrefix")).clone(), (literal!("options")).clone(), (literal!("outputFormat")).clone(), (literal!("variableFilter")).clone(), (literal!("cflags")).clone(), (literal!("simflags")).clone()] });
+pub(crate) static simulationOptionsNames: std::sync::LazyLock<Arc<metamodelica::List<ArcStr>>> = std::sync::LazyLock::new(|| { list![(literal!("startTime")).clone(), (literal!("stopTime")).clone(), (literal!("numberOfIntervals")).clone(), (literal!("tolerance")).clone(), (literal!("method")).clone(), (literal!("fileNamePrefix")).clone(), (literal!("options")).clone(), (literal!("outputFormat")).clone(), (literal!("variableFilter")).clone(), (literal!("cflags")).clone(), (literal!("simflags")).clone()] });
 
 pub(crate) fn getSimulationResultType() -> Result<Arc<DAE::Type>> {
     let mut t: Arc<DAE::Type>;

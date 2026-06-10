@@ -51,16 +51,16 @@ use crate::StringUtil;
 use crate::System;
 use openmodelica_util_datatypes_basic::GCExt;
 
-pub const timeFormat: &'static str = "%.4g";
+pub(crate) const timeFormat: &'static str = "%.4g";
 
 // Why not "%.9f"?
-pub const timeMaxLength: i32 = 20;
+pub(crate) const timeMaxLength: i32 = 20;
 
 // Why not 21?
-pub const memoryMaxSizeInUnit: i32 = 500;
+pub(crate) const memoryMaxSizeInUnit: i32 = 500;
 
 // Why not 512?
-pub const memorySignificantDigits: i32 = 4;
+pub(crate) const memorySignificantDigits: i32 = 4;
 
 // Why not 3?
 pub fn execStatReset() -> Result<()> {

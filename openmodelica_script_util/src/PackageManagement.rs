@@ -1499,7 +1499,7 @@ pub mod VersionMap {
 
 }
 
-pub const metaDataFileName: &'static str = "openmodelica.metadata.json";
+pub(crate) const metaDataFileName: &'static str = "openmodelica.metadata.json";
 
 pub fn getInstalledLibraries() -> Result<Arc<AvailableLibraries::Tree>> {
     let mut tree: Arc<AvailableLibraries::Tree>;
@@ -1622,7 +1622,7 @@ pub(crate) fn providesExpectedVersion(mut version: ArcStr, mut provides: Arc<JSO
     Ok(matches)
 }
 
-pub static supportLevels: std::sync::LazyLock<Arc<metamodelica::List<ArcStr>>> = std::sync::LazyLock::new(|| { list![(literal!("fullSupport")).clone(), (literal!("support")).clone(), (literal!("experimental")).clone(), (literal!("obsolete")).clone(), (literal!("unknown")).clone(), (literal!("noSupport")).clone()] });
+pub(crate) static supportLevels: std::sync::LazyLock<Arc<metamodelica::List<ArcStr>>> = std::sync::LazyLock::new(|| { list![(literal!("fullSupport")).clone(), (literal!("support")).clone(), (literal!("experimental")).clone(), (literal!("obsolete")).clone(), (literal!("unknown")).clone(), (literal!("noSupport")).clone()] });
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]

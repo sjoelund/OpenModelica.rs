@@ -190,7 +190,7 @@ impl Default for Document {
 pub type DOCUMENT = Document;
 
 
-pub static emptyDocument: std::sync::LazyLock<Document> = std::sync::LazyLock::new(|| { Document { docType: (literal!("")).clone(), head: metamodelica::nil(), body: metamodelica::nil() } });
+pub(crate) static emptyDocument: std::sync::LazyLock<Document> = std::sync::LazyLock::new(|| { Document { docType: (literal!("")).clone(), head: metamodelica::nil(), body: metamodelica::nil() } });
 
 fn emptyDocumentWithToggleFunktion() -> Result<Document> {
     let mut outDoc: Document;

@@ -132,7 +132,7 @@ pub type Key = Arc<DAE::ComponentRef>;
 pub type Value = i32;
 
 thread_local! { static __emptyBinTree_TLS: Arc<BinTree> = Arc::new(BinTree { value: None, leftSubTree: None, rightSubTree: None }); }
-pub fn emptyBinTree() -> Arc<BinTree> { __emptyBinTree_TLS.with(|__t| __t.clone()) }
+pub(crate) fn emptyBinTree() -> Arc<BinTree> { __emptyBinTree_TLS.with(|__t| __t.clone()) }
 
 /* *************************
   implementation

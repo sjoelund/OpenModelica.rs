@@ -139,11 +139,11 @@ impl Default for IOStream {
 pub type IOSTREAM = IOStream;
 
 
-pub const stdInput: i32 = 0;
+pub(crate) const stdInput: i32 = 0;
 
 pub const stdOutput: i32 = 1;
 
-pub const stdError: i32 = 2;
+pub(crate) const stdError: i32 = 2;
 
 pub static emptyStreamOfTypeList: std::sync::LazyLock<IOStream> = std::sync::LazyLock::new(|| { IOStream { name: (literal!("emptyStreamOfTypeList")).clone(), ty: crate::IOStream::IOStreamType::LIST, data: IOStreamData::LIST_DATA { data: metamodelica::nil() } } });
 

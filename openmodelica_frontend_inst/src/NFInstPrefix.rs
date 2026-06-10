@@ -88,7 +88,7 @@ thread_local! { static __emptyPrefix_TLS: Arc<Prefix> = Arc::new(Prefix::EMPTY_P
 pub fn emptyPrefix() -> Arc<Prefix> { __emptyPrefix_TLS.with(|__t| __t.clone()) }
 
 thread_local! { static __functionPrefix_TLS: Arc<Prefix> = Arc::new(Prefix::EMPTY_PREFIX { classPath: None }); }
-pub fn functionPrefix() -> Arc<Prefix> { __functionPrefix_TLS.with(|__t| __t.clone()) }
+pub(crate) fn functionPrefix() -> Arc<Prefix> { __functionPrefix_TLS.with(|__t| __t.clone()) }
 
 pub(crate) fn makePrefix(mut inName: ArcStr, mut inDims: Arc<metamodelica::List<Arc<DAE::Dimension>>>) -> Arc<Prefix> {
     let mut outPrefix: Arc<Prefix>;

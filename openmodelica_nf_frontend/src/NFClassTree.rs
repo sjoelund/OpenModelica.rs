@@ -70,10 +70,10 @@ use openmodelica_util_datatypes_basic::List;
 use openmodelica_util_datatypes_basic::Mutable;
 
 thread_local! { static __EMPTY_TLS: Arc<ClassTree::ClassTree> = Arc::new(ClassTree::ClassTree::PARTIAL_TREE { tree: openmodelica_util::NFLookupTree::Tree::interned_EMPTY(), classes: metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect()), components: metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect()), exts: metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect()), imports: metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect()), duplicates: crate::NFDuplicateTree::Tree::interned_EMPTY() }); }
-pub fn EMPTY() -> Arc<ClassTree::ClassTree> { __EMPTY_TLS.with(|__t| __t.clone()) }
+pub(crate) fn EMPTY() -> Arc<ClassTree::ClassTree> { __EMPTY_TLS.with(|__t| __t.clone()) }
 
 thread_local! { static __EMPTY_FLAT_TLS: Arc<ClassTree::ClassTree> = Arc::new(ClassTree::ClassTree::FLAT_TREE { tree: openmodelica_util::NFLookupTree::Tree::interned_EMPTY(), classes: metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect()), components: metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect()), imports: metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect()), duplicates: crate::NFDuplicateTree::Tree::interned_EMPTY() }); }
-pub fn EMPTY_FLAT() -> Arc<ClassTree::ClassTree> { __EMPTY_FLAT_TLS.with(|__t| __t.clone()) }
+pub(crate) fn EMPTY_FLAT() -> Arc<ClassTree::ClassTree> { __EMPTY_FLAT_TLS.with(|__t| __t.clone()) }
 
 pub type LookupEntry = Arc<LookupTree::Entry::Entry>;
 

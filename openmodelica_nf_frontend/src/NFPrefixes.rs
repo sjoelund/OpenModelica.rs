@@ -54,35 +54,35 @@ pub mod ConnectorType {
     use super::*;
     pub type Type = i32;
 
-    pub const NON_CONNECTOR: i32 = 0;
+    pub(crate) const NON_CONNECTOR: i32 = 0;
 
-    pub const POTENTIAL: i32 = intBitLShift(1, 0);
+    pub(crate) const POTENTIAL: i32 = intBitLShift(1, 0);
 
-    pub const FLOW: i32 = intBitLShift(1, 1);
+    pub(crate) const FLOW: i32 = intBitLShift(1, 1);
 
-    pub const STREAM: i32 = intBitLShift(1, 2);
+    pub(crate) const STREAM: i32 = intBitLShift(1, 2);
 
-    pub const POTENTIALLY_PRESENT: i32 = intBitLShift(1, 3);
+    pub(crate) const POTENTIALLY_PRESENT: i32 = intBitLShift(1, 3);
 
-    pub const VIRTUAL: i32 = intBitLShift(1, 4);
+    pub(crate) const VIRTUAL: i32 = intBitLShift(1, 4);
 
-    pub const CONNECTOR: i32 = intBitLShift(1, 5);
+    pub(crate) const CONNECTOR: i32 = intBitLShift(1, 5);
 
-    pub const EXPANDABLE: i32 = intBitLShift(1, 6);
+    pub(crate) const EXPANDABLE: i32 = intBitLShift(1, 6);
 
-    pub const AUGMENTED: i32 = intBitLShift(1, 7);
+    pub(crate) const AUGMENTED: i32 = intBitLShift(1, 7);
 
     // flow/stream
-    pub const FLOW_STREAM_MASK: i32 = intBitOr(FLOW, STREAM);
+    pub(crate) const FLOW_STREAM_MASK: i32 = intBitOr(FLOW, STREAM);
 
     // potential/flow/stream
-    pub const PREFIX_MASK: i32 = intBitOr(POTENTIAL, FLOW_STREAM_MASK);
+    pub(crate) const PREFIX_MASK: i32 = intBitOr(POTENTIAL, FLOW_STREAM_MASK);
 
     // Some kind of connector, where anything inside an expandable connector also counts.
-    pub const CONNECTOR_MASK: i32 = intBitOr(CONNECTOR, intBitOr(EXPANDABLE, POTENTIALLY_PRESENT));
+    pub(crate) const CONNECTOR_MASK: i32 = intBitOr(CONNECTOR, intBitOr(EXPANDABLE, POTENTIALLY_PRESENT));
 
     // An element in an expandable connector.
-    pub const UNDECLARED_MASK: i32 = intBitOr(VIRTUAL, POTENTIALLY_PRESENT);
+    pub(crate) const UNDECLARED_MASK: i32 = intBitOr(VIRTUAL, POTENTIALLY_PRESENT);
 
     pub(crate) fn fromSCode(mut scodeCty: SCode::ConnectorType) -> Result<Type> {
         let mut cty: Type;

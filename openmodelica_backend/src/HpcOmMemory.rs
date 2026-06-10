@@ -75,23 +75,23 @@ use openmodelica_util_datatypes_basic::List;
 // -------------------------------------------
 // STRUCTURES
 // -------------------------------------------
-pub const VARDATATYPE_FLOAT: i32 = 1;
+pub(crate) const VARDATATYPE_FLOAT: i32 = 1;
 
-pub const VARDATATYPE_INTEGER: i32 = 2;
+pub(crate) const VARDATATYPE_INTEGER: i32 = 2;
 
-pub const VARDATATYPE_BOOLEAN: i32 = 3;
+pub(crate) const VARDATATYPE_BOOLEAN: i32 = 3;
 
-pub const VARDATATYPE_STRING: i32 = 4;
+pub(crate) const VARDATATYPE_STRING: i32 = 4;
 
-pub const VARTYPE_STATE: i32 = 1;
+pub(crate) const VARTYPE_STATE: i32 = 1;
 
-pub const VARTYPE_STATEDER: i32 = 2;
+pub(crate) const VARTYPE_STATEDER: i32 = 2;
 
-pub const VARTYPE_PARAM: i32 = 3;
+pub(crate) const VARTYPE_PARAM: i32 = 3;
 
-pub const VARTYPE_ALIAS: i32 = 4;
+pub(crate) const VARTYPE_ALIAS: i32 = 4;
 
-pub const VARTYPE_OTHER: i32 = 5;
+pub(crate) const VARTYPE_OTHER: i32 = 5;
 
 #[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum CacheMap {

@@ -209,7 +209,7 @@ impl metamodelica::gc::MMTrace for CompareWithSubsType {
 
 pub mod CompareWithGenericSubscript {
     use super::*;
-    pub static compareSubscript: std::sync::LazyLock<CompareWithSubsType> = std::sync::LazyLock::new(|| { CompareWithSubsType::WithGenericSubscript.clone() });
+    pub(crate) static compareSubscript: std::sync::LazyLock<CompareWithSubsType> = std::sync::LazyLock::new(|| { CompareWithSubsType::WithGenericSubscript.clone() });
 
     pub(crate) fn compare(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::ComponentRef>) -> Result<i32> {
         let mut res: i32 = 0;
@@ -397,7 +397,7 @@ pub mod CompareWithGenericSubscriptNotAlphabetic {
         Ok(res)
     }
 
-    pub static compareSubscript: std::sync::LazyLock<CompareWithSubsType> = std::sync::LazyLock::new(|| { CompareWithSubsType::WithGenericSubscriptNotAlphabetic.clone() });
+    pub(crate) static compareSubscript: std::sync::LazyLock<CompareWithSubsType> = std::sync::LazyLock::new(|| { CompareWithSubsType::WithGenericSubscriptNotAlphabetic.clone() });
 
 }
 
@@ -494,7 +494,7 @@ pub mod CompareWithoutSubscripts {
         Ok(res)
     }
 
-    pub static compareSubscript: std::sync::LazyLock<CompareWithSubsType> = std::sync::LazyLock::new(|| { CompareWithSubsType::WithoutSubscripts.clone() });
+    pub(crate) static compareSubscript: std::sync::LazyLock<CompareWithSubsType> = std::sync::LazyLock::new(|| { CompareWithSubsType::WithoutSubscripts.clone() });
 
 }
 
@@ -591,7 +591,7 @@ pub mod CompareWithIntSubscript {
         Ok(res)
     }
 
-    pub static compareSubscript: std::sync::LazyLock<CompareWithSubsType> = std::sync::LazyLock::new(|| { CompareWithSubsType::WithIntSubscript.clone() });
+    pub(crate) static compareSubscript: std::sync::LazyLock<CompareWithSubsType> = std::sync::LazyLock::new(|| { CompareWithSubsType::WithIntSubscript.clone() });
 
 }
 

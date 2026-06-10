@@ -659,5 +659,5 @@ pub mod SimJacobian {
 }
 
 thread_local! { static __EMPTY_SIM_JAC_TLS: Arc<SimJacobian::SimJacobian> = Arc::new(SimJacobian::SimJacobian { name: (literal!("")).clone(), jacobianIndex: 0, partitionIndex: 0, numberOfResultVars: 0, columnEqns: metamodelica::nil(), constantEqns: metamodelica::nil(), columnVars: metamodelica::nil(), seedVars: metamodelica::nil(), sparsity: metamodelica::nil(), sparsityT: metamodelica::nil(), coloring: metamodelica::nil(), rowColoring: metamodelica::nil(), numColors: 0, generic_loop_calls: metamodelica::nil(), jac_map: None, isAdjoint: false }); }
-pub fn EMPTY_SIM_JAC() -> Arc<SimJacobian::SimJacobian> { __EMPTY_SIM_JAC_TLS.with(|__t| __t.clone()) }
+pub(crate) fn EMPTY_SIM_JAC() -> Arc<SimJacobian::SimJacobian> { __EMPTY_SIM_JAC_TLS.with(|__t| __t.clone()) }
 

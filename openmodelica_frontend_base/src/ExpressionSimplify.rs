@@ -83,7 +83,7 @@ pub type Type = Arc<DAE::Type>;
 pub type Subscript = Arc<DAE::Subscript>;
 
 // protected imports
-pub static optionSimplifyOnly: std::sync::LazyLock<ExpressionSimplifyTypes::Evaluate> = std::sync::LazyLock::new(|| { ExpressionSimplifyTypes::optionSimplifyOnly.clone() });
+pub(crate) static optionSimplifyOnly: std::sync::LazyLock<ExpressionSimplifyTypes::Evaluate> = std::sync::LazyLock::new(|| { ExpressionSimplifyTypes::optionSimplifyOnly.clone() });
 
 pub fn simplify(mut inExp: Arc<DAE::Exp>) -> Result<(Arc<DAE::Exp>, bool)> {
     let mut outExp: Arc<DAE::Exp>;

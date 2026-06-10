@@ -64,7 +64,7 @@ pub type StringToken = Arc<Tpl::StringToken>;
 
 pub type Tokens = Arc<metamodelica::List<Arc<Tpl::StringToken>>>;
 
-pub static dummySourceInfo: SourceInfo = SourceInfo { fileName: literal!("NoFileName.xxx"), isReadOnly: false, lineNumberStart: 0, columnNumberStart: 0, lineNumberEnd: 0, columnNumberEnd: 0, lastModification: metamodelica::OrderedFloat(0.0_f64) };
+pub(crate) static dummySourceInfo: SourceInfo = SourceInfo { fileName: literal!("NoFileName.xxx"), isReadOnly: false, lineNumberStart: 0, columnNumberStart: 0, lineNumberEnd: 0, columnNumberEnd: 0, lastModification: metamodelica::OrderedFloat(0.0_f64) };
 
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum PathIdent {
@@ -854,88 +854,88 @@ pub use self::MMExp::{MM_ASSIGN,MM_FN_CALL,MM_IDENT,MM_STR_TOKEN,MM_STRING,MM_LI
 
 pub type MMMatchCase = (Arc<metamodelica::List<Arc<MatchingExp>>>, Arc<metamodelica::List<Arc<MMExp>>>);
 
-pub const imlicitTxt: &'static str = "txt";
+pub(crate) const imlicitTxt: &'static str = "txt";
 
-pub const inPrefix: &'static str = "in_";
+pub(crate) const inPrefix: &'static str = "in_";
 
-pub const outPrefix: &'static str = "out_";
+pub(crate) const outPrefix: &'static str = "out_";
 
 //constant Ident imlicitInTxt = "intxt"; //not used ... there can be the same names for in/ou values
 //constant Ident imlicitOutTxt = "outtxt";
-pub const funArgNamePrefix: &'static str = "a_";
+pub(crate) const funArgNamePrefix: &'static str = "a_";
 
-pub const extArgNamePrefix: &'static str = "e_";
+pub(crate) const extArgNamePrefix: &'static str = "e_";
 
-pub const letValueNamePrefix: &'static str = "l_";
+pub(crate) const letValueNamePrefix: &'static str = "l_";
 
-pub const indexNamePrefix: &'static str = "x_";
+pub(crate) const indexNamePrefix: &'static str = "x_";
 
-pub const caseBindingNamePrefix: &'static str = "i_";
+pub(crate) const caseBindingNamePrefix: &'static str = "i_";
 
-pub const returnTempVarNamePrefix: &'static str = "ret_";
+pub(crate) const returnTempVarNamePrefix: &'static str = "ret_";
 
-pub const constantNamePrefix: &'static str = "c_";
+pub(crate) const constantNamePrefix: &'static str = "c_";
 
-pub const textTempVarNamePrefix: &'static str = "txt_";
+pub(crate) const textTempVarNamePrefix: &'static str = "txt_";
 
-pub const textToStringNamePrefix: &'static str = "str_";
+pub(crate) const textToStringNamePrefix: &'static str = "str_";
 
-pub const matchFunPrefix: &'static str = "fun_";
+pub(crate) const matchFunPrefix: &'static str = "fun_";
 
-pub const listMapFunPrefix: &'static str = "lm_";
+pub(crate) const listMapFunPrefix: &'static str = "lm_";
 
-pub const arrayMapFunPrefix: &'static str = "am_";
+pub(crate) const arrayMapFunPrefix: &'static str = "am_";
 
-pub const scalarMapFunPrefix: &'static str = "smf_";
+pub(crate) const scalarMapFunPrefix: &'static str = "smf_";
 
 //constant Ident implicitTxtInArgName = "inTxt";
-pub const matchDefaultArgName: &'static str = "mArg";
+pub(crate) const matchDefaultArgName: &'static str = "mArg";
 
-pub const impossibleIdent: &'static str = "*none*";
+pub(crate) const impossibleIdent: &'static str = "*none*";
 
-pub static imlicitTxtArg: std::sync::LazyLock<(ArcStr, Arc<TypeSignature>)> = std::sync::LazyLock::new(|| { (arcstr::literal!(imlicitTxt), crate::TplAbsyn::TypeSignature::interned_TEXT_TYPE()) });
+pub(crate) static imlicitTxtArg: std::sync::LazyLock<(ArcStr, Arc<TypeSignature>)> = std::sync::LazyLock::new(|| { (arcstr::literal!(imlicitTxt), crate::TplAbsyn::TypeSignature::interned_TEXT_TYPE()) });
 
 //constant tuple<Ident,TypeSignature> imlicitTxtInputArg = (implicitTxtInArgName, TEXT_TYPE());
 /* internal types */
-pub static imlicitTxtMExp: std::sync::LazyLock<Arc<MatchingExp>> = std::sync::LazyLock::new(|| { Arc::new(MatchingExp::BIND_MATCH { bindIdent: (arcstr::literal!(imlicitTxt)).clone() }) });
+pub(crate) static imlicitTxtMExp: std::sync::LazyLock<Arc<MatchingExp>> = std::sync::LazyLock::new(|| { Arc::new(MatchingExp::BIND_MATCH { bindIdent: (arcstr::literal!(imlicitTxt)).clone() }) });
 
-pub static emptyExpression: std::sync::LazyLock<(Arc<ExpressionBase>, SourceInfo)> = std::sync::LazyLock::new(|| { (Arc::new(ExpressionBase::STR_TOKEN { value: Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("")).clone() }) }), dummySourceInfo.clone()) });
+pub(crate) static emptyExpression: std::sync::LazyLock<(Arc<ExpressionBase>, SourceInfo)> = std::sync::LazyLock::new(|| { (Arc::new(ExpressionBase::STR_TOKEN { value: Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("")).clone() }) }), dummySourceInfo.clone()) });
 
-pub const emptyTxt: &'static str = "Tpl.emptyTxt";
+pub(crate) const emptyTxt: &'static str = "Tpl.emptyTxt";
 
-pub const errorIdent: &'static str = "!error!";
+pub(crate) const errorIdent: &'static str = "!error!";
 
-pub static defaultIterOptions: std::sync::LazyLock<Arc<Tpl::IterOptions>> = std::sync::LazyLock::new(|| { Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: None, alignNum: 0, alignOfset: 0, alignSeparator: crate::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: crate::Tpl::StringToken::interned_ST_NEW_LINE() }) });
+pub(crate) static defaultIterOptions: std::sync::LazyLock<Arc<Tpl::IterOptions>> = std::sync::LazyLock::new(|| { Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: None, alignNum: 0, alignOfset: 0, alignSeparator: crate::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: crate::Tpl::StringToken::interned_ST_NEW_LINE() }) });
 
 //only achievable by the 'from' clause
-pub const indexOffsetOptionId: &'static str = "$indexOffset";
+pub(crate) const indexOffsetOptionId: &'static str = "$indexOffset";
 
-pub const emptyOptionId: &'static str = "empty";
+pub(crate) const emptyOptionId: &'static str = "empty";
 
-pub const separatorOptionId: &'static str = "separator";
+pub(crate) const separatorOptionId: &'static str = "separator";
 
-pub const alignNumOptionId: &'static str = "align";
+pub(crate) const alignNumOptionId: &'static str = "align";
 
-pub const alignNumOffsetOptionId: &'static str = "alignOffset";
+pub(crate) const alignNumOffsetOptionId: &'static str = "alignOffset";
 
-pub const alignSeparatorOptionId: &'static str = "alignSeparator";
+pub(crate) const alignSeparatorOptionId: &'static str = "alignSeparator";
 
-pub const wrapWidthOptionId: &'static str = "wrap";
+pub(crate) const wrapWidthOptionId: &'static str = "wrap";
 
-pub const wrapSeparatorOptionId: &'static str = "wrapSeparator";
+pub(crate) const wrapSeparatorOptionId: &'static str = "wrapSeparator";
 
-pub const indentOptionId: &'static str = "indent";
+pub(crate) const indentOptionId: &'static str = "indent";
 
-pub const absIndentOptionId: &'static str = "absIndent";
+pub(crate) const absIndentOptionId: &'static str = "absIndent";
 
-pub const relIndentOptionId: &'static str = "relIndent";
+pub(crate) const relIndentOptionId: &'static str = "relIndent";
 
-pub const anchorOptionId: &'static str = "anchor";
+pub(crate) const anchorOptionId: &'static str = "anchor";
 
 //constant defaultMMOptions
-pub static defaultEscOptions: std::sync::LazyLock<Arc<metamodelica::List<(ArcStr, (Arc<MMExp>, Arc<TypeSignature>))>>> = std::sync::LazyLock::new(|| { list![(arcstr::literal!(indexOffsetOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("0")).clone() }), crate::TplAbsyn::TypeSignature::interned_INTEGER_TYPE())), (arcstr::literal!(emptyOptionId), (Arc::new(MMExp::MM_FN_CALL { fnName: Arc::new(PathIdent::IDENT { ident: (literal!("SOME")).clone() }), args: list![Arc::new(MMExp::MM_STR_TOKEN { value: Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("")).clone() }) })] }), Arc::new(TypeSignature::OPTION_TYPE { ofType: crate::TplAbsyn::TypeSignature::interned_STRING_TOKEN_TYPE() }))), (arcstr::literal!(separatorOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("NONE()")).clone() }), Arc::new(TypeSignature::OPTION_TYPE { ofType: crate::TplAbsyn::TypeSignature::interned_STRING_TOKEN_TYPE() }))), (arcstr::literal!(alignNumOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("10")).clone() }), crate::TplAbsyn::TypeSignature::interned_INTEGER_TYPE())), (arcstr::literal!(alignNumOffsetOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("0")).clone() }), crate::TplAbsyn::TypeSignature::interned_INTEGER_TYPE())), (arcstr::literal!(alignSeparatorOptionId), (Arc::new(MMExp::MM_STR_TOKEN { value: crate::Tpl::StringToken::interned_ST_NEW_LINE() }), crate::TplAbsyn::TypeSignature::interned_STRING_TOKEN_TYPE())), (arcstr::literal!(wrapWidthOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("100")).clone() }), crate::TplAbsyn::TypeSignature::interned_INTEGER_TYPE())), (arcstr::literal!(wrapSeparatorOptionId), (Arc::new(MMExp::MM_STR_TOKEN { value: crate::Tpl::StringToken::interned_ST_NEW_LINE() }), crate::TplAbsyn::TypeSignature::interned_STRING_TOKEN_TYPE())), (arcstr::literal!(indentOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("0")).clone() }), crate::TplAbsyn::TypeSignature::interned_INTEGER_TYPE())), (arcstr::literal!(absIndentOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("0")).clone() }), crate::TplAbsyn::TypeSignature::interned_INTEGER_TYPE())), (arcstr::literal!(relIndentOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("0")).clone() }), crate::TplAbsyn::TypeSignature::interned_INTEGER_TYPE())), (arcstr::literal!(anchorOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("0")).clone() }), crate::TplAbsyn::TypeSignature::interned_INTEGER_TYPE()))] });
+pub(crate) static defaultEscOptions: std::sync::LazyLock<Arc<metamodelica::List<(ArcStr, (Arc<MMExp>, Arc<TypeSignature>))>>> = std::sync::LazyLock::new(|| { list![(arcstr::literal!(indexOffsetOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("0")).clone() }), crate::TplAbsyn::TypeSignature::interned_INTEGER_TYPE())), (arcstr::literal!(emptyOptionId), (Arc::new(MMExp::MM_FN_CALL { fnName: Arc::new(PathIdent::IDENT { ident: (literal!("SOME")).clone() }), args: list![Arc::new(MMExp::MM_STR_TOKEN { value: Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("")).clone() }) })] }), Arc::new(TypeSignature::OPTION_TYPE { ofType: crate::TplAbsyn::TypeSignature::interned_STRING_TOKEN_TYPE() }))), (arcstr::literal!(separatorOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("NONE()")).clone() }), Arc::new(TypeSignature::OPTION_TYPE { ofType: crate::TplAbsyn::TypeSignature::interned_STRING_TOKEN_TYPE() }))), (arcstr::literal!(alignNumOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("10")).clone() }), crate::TplAbsyn::TypeSignature::interned_INTEGER_TYPE())), (arcstr::literal!(alignNumOffsetOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("0")).clone() }), crate::TplAbsyn::TypeSignature::interned_INTEGER_TYPE())), (arcstr::literal!(alignSeparatorOptionId), (Arc::new(MMExp::MM_STR_TOKEN { value: crate::Tpl::StringToken::interned_ST_NEW_LINE() }), crate::TplAbsyn::TypeSignature::interned_STRING_TOKEN_TYPE())), (arcstr::literal!(wrapWidthOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("100")).clone() }), crate::TplAbsyn::TypeSignature::interned_INTEGER_TYPE())), (arcstr::literal!(wrapSeparatorOptionId), (Arc::new(MMExp::MM_STR_TOKEN { value: crate::Tpl::StringToken::interned_ST_NEW_LINE() }), crate::TplAbsyn::TypeSignature::interned_STRING_TOKEN_TYPE())), (arcstr::literal!(indentOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("0")).clone() }), crate::TplAbsyn::TypeSignature::interned_INTEGER_TYPE())), (arcstr::literal!(absIndentOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("0")).clone() }), crate::TplAbsyn::TypeSignature::interned_INTEGER_TYPE())), (arcstr::literal!(relIndentOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("0")).clone() }), crate::TplAbsyn::TypeSignature::interned_INTEGER_TYPE())), (arcstr::literal!(anchorOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("0")).clone() }), crate::TplAbsyn::TypeSignature::interned_INTEGER_TYPE()))] });
 
-pub static nonSpecifiedIterOptions: std::sync::LazyLock<Arc<metamodelica::List<(ArcStr, (Arc<MMExp>, Arc<TypeSignature>))>>> = std::sync::LazyLock::new(|| { list![(arcstr::literal!(indexOffsetOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("0")).clone() }), crate::TplAbsyn::TypeSignature::interned_INTEGER_TYPE())), (arcstr::literal!(emptyOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("NONE()")).clone() }), Arc::new(TypeSignature::OPTION_TYPE { ofType: crate::TplAbsyn::TypeSignature::interned_STRING_TOKEN_TYPE() }))), (arcstr::literal!(separatorOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("NONE()")).clone() }), Arc::new(TypeSignature::OPTION_TYPE { ofType: crate::TplAbsyn::TypeSignature::interned_STRING_TOKEN_TYPE() }))), (arcstr::literal!(alignNumOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("0")).clone() }), crate::TplAbsyn::TypeSignature::interned_INTEGER_TYPE())), (arcstr::literal!(alignNumOffsetOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("0")).clone() }), crate::TplAbsyn::TypeSignature::interned_INTEGER_TYPE())), (arcstr::literal!(alignSeparatorOptionId), (Arc::new(MMExp::MM_STR_TOKEN { value: crate::Tpl::StringToken::interned_ST_NEW_LINE() }), crate::TplAbsyn::TypeSignature::interned_STRING_TOKEN_TYPE())), (arcstr::literal!(wrapWidthOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("0")).clone() }), crate::TplAbsyn::TypeSignature::interned_INTEGER_TYPE())), (arcstr::literal!(wrapSeparatorOptionId), (Arc::new(MMExp::MM_STR_TOKEN { value: crate::Tpl::StringToken::interned_ST_NEW_LINE() }), crate::TplAbsyn::TypeSignature::interned_STRING_TOKEN_TYPE()))] });
+pub(crate) static nonSpecifiedIterOptions: std::sync::LazyLock<Arc<metamodelica::List<(ArcStr, (Arc<MMExp>, Arc<TypeSignature>))>>> = std::sync::LazyLock::new(|| { list![(arcstr::literal!(indexOffsetOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("0")).clone() }), crate::TplAbsyn::TypeSignature::interned_INTEGER_TYPE())), (arcstr::literal!(emptyOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("NONE()")).clone() }), Arc::new(TypeSignature::OPTION_TYPE { ofType: crate::TplAbsyn::TypeSignature::interned_STRING_TOKEN_TYPE() }))), (arcstr::literal!(separatorOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("NONE()")).clone() }), Arc::new(TypeSignature::OPTION_TYPE { ofType: crate::TplAbsyn::TypeSignature::interned_STRING_TOKEN_TYPE() }))), (arcstr::literal!(alignNumOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("0")).clone() }), crate::TplAbsyn::TypeSignature::interned_INTEGER_TYPE())), (arcstr::literal!(alignNumOffsetOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("0")).clone() }), crate::TplAbsyn::TypeSignature::interned_INTEGER_TYPE())), (arcstr::literal!(alignSeparatorOptionId), (Arc::new(MMExp::MM_STR_TOKEN { value: crate::Tpl::StringToken::interned_ST_NEW_LINE() }), crate::TplAbsyn::TypeSignature::interned_STRING_TOKEN_TYPE())), (arcstr::literal!(wrapWidthOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("0")).clone() }), crate::TplAbsyn::TypeSignature::interned_INTEGER_TYPE())), (arcstr::literal!(wrapSeparatorOptionId), (Arc::new(MMExp::MM_STR_TOKEN { value: crate::Tpl::StringToken::interned_ST_NEW_LINE() }), crate::TplAbsyn::TypeSignature::interned_STRING_TOKEN_TYPE()))] });
 
 pub type MMEscOption = (ArcStr, (Arc<MMExp>, Arc<TypeSignature>));
 
@@ -7388,7 +7388,7 @@ pub(crate) fn pathIdentString(mut inPathIndent: Arc<PathIdent>) -> Result<ArcStr
     Ok(outPathIdentString)
 }
 
-pub static eTxt: std::sync::LazyLock<Tpl::Text> = std::sync::LazyLock::new(|| { Tpl::Text::MEM_TEXT { tokens: metamodelica::nil(), blocksStack: metamodelica::nil() } });
+pub(crate) static eTxt: std::sync::LazyLock<Tpl::Text> = std::sync::LazyLock::new(|| { Tpl::Text::MEM_TEXT { tokens: metamodelica::nil(), blocksStack: metamodelica::nil() } });
 
 pub(crate) fn typeSignatureString(mut inTS: Arc<TypeSignature>) -> Result<ArcStr> {
     let mut outStr: ArcStr;

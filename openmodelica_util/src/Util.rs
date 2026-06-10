@@ -108,7 +108,7 @@ pub type DATETIME = DateTime;
 
 pub const HASH_SEED: i32 = 5381;
 
-pub static dummyInfo: SourceInfo = SourceInfo { fileName: literal!(""), isReadOnly: false, lineNumberStart: 0, columnNumberStart: 0, lineNumberEnd: 0, columnNumberEnd: 0, lastModification: metamodelica::OrderedFloat(0.0_f64) };
+pub(crate) static dummyInfo: SourceInfo = SourceInfo { fileName: literal!(""), isReadOnly: false, lineNumberStart: 0, columnNumberStart: 0, lineNumberEnd: 0, columnNumberEnd: 0, lastModification: metamodelica::OrderedFloat(0.0_f64) };
 
 pub fn isIntGreater(mut lhs: i32, mut rhs: i32) -> bool {
     let mut b: bool = lhs.clone() > rhs.clone();

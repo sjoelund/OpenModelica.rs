@@ -75,9 +75,9 @@ use openmodelica_util::Util;
 use openmodelica_util_datatypes_basic::Array;
 use openmodelica_util_datatypes_basic::List;
 
-pub const BORDER: &'static str = "********************************************************************************";
+pub(crate) const BORDER: &'static str = "********************************************************************************";
 
-pub const UNDERLINE: &'static str = "================================================================================";
+pub(crate) const UNDERLINE: &'static str = "================================================================================";
 
 type selectParameterFunc = std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>;
 

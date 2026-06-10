@@ -53,7 +53,7 @@ use openmodelica_util::System;
 use openmodelica_util_datatypes_basic::List;
 
 //protected import Print;
-pub const TabSpaces: i32 = 4;
+pub(crate) const TabSpaces: i32 = 4;
 
 pub mod CacheTree {
     use super::*;
@@ -849,7 +849,7 @@ pub(crate) fn getPosition(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLi
 
 pub type LineColumnNumber = (i32, i32);
 
-pub static dummySourceInfo: std::sync::LazyLock<SourceInfo> = std::sync::LazyLock::new(|| { TplAbsyn::dummySourceInfo.clone() });
+pub(crate) static dummySourceInfo: std::sync::LazyLock<SourceInfo> = std::sync::LazyLock::new(|| { TplAbsyn::dummySourceInfo.clone() });
 
 pub(crate) fn captureStartPosition(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inColumnOffset: i32) -> Result<LineColumnNumber> {
     let mut outLineColumnNumber: LineColumnNumber;
@@ -1766,7 +1766,7 @@ pub(crate) fn afterKeyword(mut inChars: Arc<metamodelica::List<ArcStr>>) -> Resu
 identifier:
   [_A-Za-z]:c  identifier_rest:rest     =>  stringCharListString(c::rest)
 */
-pub static keywords: std::sync::LazyLock<Arc<metamodelica::List<ArcStr>>> = std::sync::LazyLock::new(|| { list![(literal!("end")).clone(), (literal!("if")).clone(), (literal!("then")).clone(), (literal!("else")).clone(), (literal!("match")).clone(), (literal!("case")).clone(), (literal!("equation")).clone(), (literal!("equality")).clone(), (literal!("failure")).clone(), (literal!("algorithm")).clone(), (literal!("input")).clone(), (literal!("output")).clone(), (literal!("matchcontinue")).clone(), (literal!("local")).clone(), (literal!("constant")).clone(), (literal!("extends")).clone(), (literal!("external")).clone(), (literal!("for")).clone(), (literal!("function")).clone(), (literal!("import")).clone(), (literal!("package")).clone(), (literal!("partial")).clone(), (literal!("protected")).clone(), (literal!("public")).clone(), (literal!("record")).clone(), (literal!("as")).clone(), (literal!("uniontype")).clone(), (literal!("subtypeof")).clone()] });
+pub(crate) static keywords: std::sync::LazyLock<Arc<metamodelica::List<ArcStr>>> = std::sync::LazyLock::new(|| { list![(literal!("end")).clone(), (literal!("if")).clone(), (literal!("then")).clone(), (literal!("else")).clone(), (literal!("match")).clone(), (literal!("case")).clone(), (literal!("equation")).clone(), (literal!("equality")).clone(), (literal!("failure")).clone(), (literal!("algorithm")).clone(), (literal!("input")).clone(), (literal!("output")).clone(), (literal!("matchcontinue")).clone(), (literal!("local")).clone(), (literal!("constant")).clone(), (literal!("extends")).clone(), (literal!("external")).clone(), (literal!("for")).clone(), (literal!("function")).clone(), (literal!("import")).clone(), (literal!("package")).clone(), (literal!("partial")).clone(), (literal!("protected")).clone(), (literal!("public")).clone(), (literal!("record")).clone(), (literal!("as")).clone(), (literal!("uniontype")).clone(), (literal!("subtypeof")).clone()] });
 
 pub(crate) fn identifier(mut inChars: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<metamodelica::List<ArcStr>>, ArcStr)> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;

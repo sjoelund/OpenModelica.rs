@@ -149,7 +149,7 @@ pub mod TypingError {
 
 // Used by typeDimension for catching cyclic dimension involving :
 thread_local! { static __WHOLEDIM_CREF_TLS: Arc<Expression::NFExpression> = Arc::new(Expression::NFExpression::CREF { ty: crate::NFType::interned_UNKNOWN(), cref: Arc::new(ComponentRef::NFComponentRef::CREF { node: Arc::new(InstNode::InstNode::NAME_NODE { name: (literal!(":")).clone() }), subscripts: metamodelica::nil(), ty: crate::NFType::interned_UNKNOWN(), origin: ComponentRef::Origin::CREF.clone(), restCref: crate::NFComponentRef::interned_EMPTY() }) }); }
-pub fn WHOLEDIM_CREF() -> Arc<Expression::NFExpression> { __WHOLEDIM_CREF_TLS.with(|__t| __t.clone()) }
+pub(crate) fn WHOLEDIM_CREF() -> Arc<Expression::NFExpression> { __WHOLEDIM_CREF_TLS.with(|__t| __t.clone()) }
 
 pub fn typeClass(mut cls: Arc<InstNode::InstNode>, mut context: i32) -> Result<()> {
     let mut next_context: i32;

@@ -98,7 +98,7 @@ pub type ExtAdjacencyMatrix = Arc<metamodelica::List<(i32, Arc<metamodelica::Lis
 pub type mapBlocks = Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, bool, bool)>>;
 
 // {blocks,blocks.visited,blocks.square}
-pub const UNDERLINE: &'static str = "==========================================================================";
+pub(crate) const UNDERLINE: &'static str = "==========================================================================";
 
 #[derive(Clone, metamodelica::ReferenceEq)]
 pub struct AliasSet {

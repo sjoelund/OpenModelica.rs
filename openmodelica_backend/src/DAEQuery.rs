@@ -61,7 +61,7 @@ use openmodelica_util_datatypes_basic::List;
 
 // public imports
 // protected imports
-pub const matlabStringDelim: &'static str = "'";
+pub(crate) const matlabStringDelim: &'static str = "'";
 
 pub fn writeAdjacencyMatrix(mut dlow: Arc<BackendDAE::BackendDAE>, mut fileNamePrefix: ArcStr, mut flatModelicaStr: ArcStr) -> Result<ArcStr> {
     let mut fileName: ArcStr;

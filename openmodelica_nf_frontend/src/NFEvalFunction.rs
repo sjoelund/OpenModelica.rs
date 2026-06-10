@@ -108,9 +108,9 @@ impl metamodelica::gc::MMTrace for FlowControl {
 
 pub type ArgumentMap = Arc<UnorderedMap::UnorderedMap<Arc<InstNode::InstNode>, Arc<Expression::NFExpression>>>;
 
-pub const STATEMENT_CONTEXT: i32 = intBitOr(InstContext::FUNCTION, InstContext::ALGORITHM);
+pub(crate) const STATEMENT_CONTEXT: i32 = intBitOr(InstContext::FUNCTION, InstContext::ALGORITHM);
 
-pub const IF_COND_CONTEXT: i32 = intBitOr(STATEMENT_CONTEXT, intBitOr(InstContext::IF, InstContext::CONDITION));
+pub(crate) const IF_COND_CONTEXT: i32 = intBitOr(STATEMENT_CONTEXT, intBitOr(InstContext::IF, InstContext::CONDITION));
 
 pub(crate) fn evaluate(mut r#fn: Arc<Function::Function>, mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut target: Arc<EvalTarget::EvalTarget>) -> Result<Arc<Expression::NFExpression>> {
     let mut result: Arc<Expression::NFExpression>;

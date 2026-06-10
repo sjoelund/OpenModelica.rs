@@ -192,15 +192,15 @@ impl Default for Context {
 }
 pub use self::Context::{FUNCTION,FUNCTION_RETURN_CONTEXT,PACKAGE,UNIONTYPE,NO_CONTEXT,INPUT_CONTEXT,MATCH_CONTEXT};
 
-pub static packageContext: Context = crate::MMToJuliaUtil::Context::PACKAGE;
+pub(crate) static packageContext: Context = crate::MMToJuliaUtil::Context::PACKAGE;
 
-pub static noContext: Context = crate::MMToJuliaUtil::Context::NO_CONTEXT;
+pub(crate) static noContext: Context = crate::MMToJuliaUtil::Context::NO_CONTEXT;
 
-pub static functionContext: Context = Context::FUNCTION { retValsStr: literal!("") };
+pub(crate) static functionContext: Context = Context::FUNCTION { retValsStr: literal!("") };
 
-pub static returnContext: Context = Context::FUNCTION_RETURN_CONTEXT { retValsStr: literal!(""), ty_str: literal!("") };
+pub(crate) static returnContext: Context = Context::FUNCTION_RETURN_CONTEXT { retValsStr: literal!(""), ty_str: literal!("") };
 
-pub static inputContext: Context = Context::INPUT_CONTEXT { ty_str: literal!("") };
+pub(crate) static inputContext: Context = Context::INPUT_CONTEXT { ty_str: literal!("") };
 
 pub(crate) fn makeUniontypeContext(mut name: ArcStr) -> Context {
     let mut context: Context;

@@ -77,7 +77,7 @@ pub type AvlValue = FCore::Visit;
 pub type AvlTreeValue = FCore::VAvlTreeValue;
 
 thread_local! { static __emptyVisited_TLS: FCore::Visited = FCore::Visited { tree: FCore::emptyVAvlTree().clone(), next: FCore::firstId.clone() }; }
-pub fn emptyVisited() -> FCore::Visited { __emptyVisited_TLS.with(|__t| __t.clone()) }
+pub(crate) fn emptyVisited() -> FCore::Visited { __emptyVisited_TLS.with(|__t| __t.clone()) }
 
 pub(crate) fn new() -> Visited {
     let mut visited: Visited;

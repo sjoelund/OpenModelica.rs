@@ -61,7 +61,7 @@ pub const INSTANCE_API: i32 = intBitLShift(1, 1);
 pub const FAST_LOOKUP: i32 = intBitLShift(1, 2);
 
 // Only expand packages when doing lookup.
-pub const GLOBAL_FLAGS: i32 = intBitOr(RELAXED, intBitOr(INSTANCE_API, FAST_LOOKUP));
+pub(crate) const GLOBAL_FLAGS: i32 = intBitOr(RELAXED, intBitOr(INSTANCE_API, FAST_LOOKUP));
 
 // Scope flags:
 pub const CLASS: i32 = intBitLShift(1, 3);
@@ -70,80 +70,80 @@ pub const CLASS: i32 = intBitLShift(1, 3);
 pub const FUNCTION: i32 = intBitLShift(1, 4);
 
 // In function.
-pub const REDECLARED: i32 = intBitLShift(1, 5);
+pub(crate) const REDECLARED: i32 = intBitLShift(1, 5);
 
 // In an element that will be replaced with a redeclare.
-pub const ALGORITHM: i32 = intBitLShift(1, 6);
+pub(crate) const ALGORITHM: i32 = intBitLShift(1, 6);
 
 // In algorithm section.
-pub const EQUATION: i32 = intBitLShift(1, 7);
+pub(crate) const EQUATION: i32 = intBitLShift(1, 7);
 
 // In equation section.
-pub const INITIAL: i32 = intBitLShift(1, 8);
+pub(crate) const INITIAL: i32 = intBitLShift(1, 8);
 
 // In initial section.
-pub const LHS: i32 = intBitLShift(1, 9);
+pub(crate) const LHS: i32 = intBitLShift(1, 9);
 
 // On left hand side of equality/assignment.
 pub const RHS: i32 = intBitLShift(1, 10);
 
 // On right hand side of equality/assignment.
-pub const WHEN: i32 = intBitLShift(1, 11);
+pub(crate) const WHEN: i32 = intBitLShift(1, 11);
 
 // In when equation/statement.
-pub const CLOCKED: i32 = intBitLShift(1, 12);
+pub(crate) const CLOCKED: i32 = intBitLShift(1, 12);
 
 // Part of a clocked when equation.
-pub const FOR: i32 = intBitLShift(1, 13);
+pub(crate) const FOR: i32 = intBitLShift(1, 13);
 
 // In a for loop.
-pub const IF: i32 = intBitLShift(1, 14);
+pub(crate) const IF: i32 = intBitLShift(1, 14);
 
 // In an if equation/statement.
-pub const WHILE: i32 = intBitLShift(1, 15);
+pub(crate) const WHILE: i32 = intBitLShift(1, 15);
 
 // In a while loop.
-pub const NONEXPANDABLE: i32 = intBitLShift(1, 16);
+pub(crate) const NONEXPANDABLE: i32 = intBitLShift(1, 16);
 
 // In non-parameter if/for.
-pub const ITERATION_RANGE: i32 = intBitLShift(1, 17);
+pub(crate) const ITERATION_RANGE: i32 = intBitLShift(1, 17);
 
 // In range used for iteration.
-pub const DIMENSION: i32 = intBitLShift(1, 18);
+pub(crate) const DIMENSION: i32 = intBitLShift(1, 18);
 
 // In dimension.
-pub const BINDING: i32 = intBitLShift(1, 19);
+pub(crate) const BINDING: i32 = intBitLShift(1, 19);
 
 // In binding.
-pub const CONDITION: i32 = intBitLShift(1, 20);
+pub(crate) const CONDITION: i32 = intBitLShift(1, 20);
 
 // In conditional expression.
-pub const SUBSCRIPT: i32 = intBitLShift(1, 21);
+pub(crate) const SUBSCRIPT: i32 = intBitLShift(1, 21);
 
 // In subscript.
-pub const SUBEXPRESSION: i32 = intBitLShift(1, 22);
+pub(crate) const SUBEXPRESSION: i32 = intBitLShift(1, 22);
 
 // Part of a larger expression.
-pub const CONNECT: i32 = intBitLShift(1, 23);
+pub(crate) const CONNECT: i32 = intBitLShift(1, 23);
 
 // Part of connect argument.
-pub const NOEVENT: i32 = intBitLShift(1, 24);
+pub(crate) const NOEVENT: i32 = intBitLShift(1, 24);
 
 // Part of noEvent argument.
-pub const ASSERT: i32 = intBitLShift(1, 25);
+pub(crate) const ASSERT: i32 = intBitLShift(1, 25);
 
 // Part of assert argument.
 pub const ANNOTATION: i32 = intBitLShift(1, 26);
 
 // Part of an annotation.
 // Combined flags:
-pub const EQ_SUBEXPRESSION: i32 = intBitOr(EQUATION, SUBEXPRESSION);
+pub(crate) const EQ_SUBEXPRESSION: i32 = intBitOr(EQUATION, SUBEXPRESSION);
 
-pub const VALID_TYPENAME_SCOPE: i32 = intBitOr(ITERATION_RANGE, DIMENSION);
+pub(crate) const VALID_TYPENAME_SCOPE: i32 = intBitOr(ITERATION_RANGE, DIMENSION);
 
-pub const DISCRETE_SCOPE: i32 = intBitOr(WHEN, intBitOr(INITIAL, FUNCTION));
+pub(crate) const DISCRETE_SCOPE: i32 = intBitOr(WHEN, intBitOr(INITIAL, FUNCTION));
 
-pub const NON_EXP_FLAGS: i32 = intBitOr(GLOBAL_FLAGS, intBitOr(CLASS, FUNCTION));
+pub(crate) const NON_EXP_FLAGS: i32 = intBitOr(GLOBAL_FLAGS, intBitOr(CLASS, FUNCTION));
 
 pub fn set(mut context: Type, mut flag: Type) -> Type {
     let mut newOrigin: Type;

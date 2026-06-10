@@ -88,7 +88,7 @@ use openmodelica_util::Util;
 use openmodelica_util_datatypes_basic::List;
 
 thread_local! { static __EQ_ASSERT_STR_TLS: Arc<Expression::NFExpression> = Arc::new(Expression::NFExpression::STRING { value: (literal!("Connected constants/parameters must be equal")).clone() }); }
-pub fn EQ_ASSERT_STR() -> Arc<Expression::NFExpression> { __EQ_ASSERT_STR_TLS.with(|__t| __t.clone()) }
+pub(crate) fn EQ_ASSERT_STR() -> Arc<Expression::NFExpression> { __EQ_ASSERT_STR_TLS.with(|__t| __t.clone()) }
 
 pub(crate) fn generateEquations(mut sets: metamodelica::Array<Arc<metamodelica::List<Arc<Connector::NFConnector>>>>, mut variables: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Variable::NFVariable>>>) -> Result<(Arc<metamodelica::List<Arc<Equation::NFEquation>>>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<Connector::NFConnector>>>>>)> {
     type potFunc = std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Connector::NFConnector>>>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<(Arc<metamodelica::List<Arc<Equation::NFEquation>>>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>)> + 'static>;

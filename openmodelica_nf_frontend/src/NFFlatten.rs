@@ -1071,10 +1071,10 @@ pub mod Prefix {
 }
 
 thread_local! { static __EMPTY_PREFIX_TLS: Arc<Prefix::Prefix> = Arc::new(Prefix::Prefix::PREFIX { root: crate::NFInstNode::InstNode::interned_EMPTY_NODE(), prefix: crate::NFComponentRef::interned_EMPTY() }); }
-pub fn EMPTY_PREFIX() -> Arc<Prefix::Prefix> { __EMPTY_PREFIX_TLS.with(|__t| __t.clone()) }
+pub(crate) fn EMPTY_PREFIX() -> Arc<Prefix::Prefix> { __EMPTY_PREFIX_TLS.with(|__t| __t.clone()) }
 
 thread_local! { static __EMPTY_INDEXED_PREFIX_TLS: Arc<Prefix::Prefix> = Arc::new(Prefix::Prefix::INDEXED_PREFIX { root: crate::NFInstNode::InstNode::interned_EMPTY_NODE(), prefix: crate::NFComponentRef::interned_EMPTY(), indexedPrefix: crate::NFComponentRef::interned_EMPTY() }); }
-pub fn EMPTY_INDEXED_PREFIX() -> Arc<Prefix::Prefix> { __EMPTY_INDEXED_PREFIX_TLS.with(|__t| __t.clone()) }
+pub(crate) fn EMPTY_INDEXED_PREFIX() -> Arc<Prefix::Prefix> { __EMPTY_INDEXED_PREFIX_TLS.with(|__t| __t.clone()) }
 
 pub fn flatten(mut classInst: Arc<InstNode::InstNode>, mut classPath: Arc<Path>, mut getConnectionResolved: bool) -> Result<Arc<FlatModel::NFFlatModel>> {
     let mut flatModel: Arc<FlatModel::NFFlatModel>;

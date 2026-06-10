@@ -195,9 +195,9 @@ pub type SMNodeTable = (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Com
 // Table mapping crefs of SMNodes to corresponding crefs of FlatSMGroup
 pub type SMNodeToFlatSMGroupTable = (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>)>>), i32, (HashTableCG::FuncHashCref, HashTableCG::FuncCrefEqual, HashTableCG::FuncCrefStr, HashTableCG::FuncExpStr));
 
-pub const SMS_PRE: &'static str = "smOf";
+pub(crate) const SMS_PRE: &'static str = "smOf";
 
-pub const DEBUG_SMDUMP: bool = false;
+pub(crate) const DEBUG_SMDUMP: bool = false;
 
 pub(crate) fn createSMNodeToFlatSMGroupTable(mut inDae: DAE::DAElist) -> Result<SMNodeToFlatSMGroupTable> {
     let mut smNodeToFlatSMGroup: SMNodeToFlatSMGroupTable;

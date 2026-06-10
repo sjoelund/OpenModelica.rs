@@ -102,13 +102,13 @@ use openmodelica_util_datatypes_basic::Pointer;
 // Old Backend imports
 // New Backend imports
 // Util imports
-pub const SIMULATION_STR: &'static str = "SIM";
+pub(crate) const SIMULATION_STR: &'static str = "SIM";
 
-pub const START_STR: &'static str = "SRT";
+pub(crate) const START_STR: &'static str = "SRT";
 
-pub const PRE_STR: &'static str = "PRE";
+pub(crate) const PRE_STR: &'static str = "PRE";
 
-pub const TMP_STR: &'static str = "TMP";
+pub(crate) const TMP_STR: &'static str = "TMP";
 
 // mainly used for mapping purposes
 pub type EquationPointer = Pointer::Pointer<Arc<Equation::Equation>>;

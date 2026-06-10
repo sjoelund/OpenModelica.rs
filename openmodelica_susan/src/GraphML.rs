@@ -60,7 +60,7 @@ pub const COLOR_GREEN: &'static str = "339966";
 
 pub const COLOR_RED: &'static str = "FF0000";
 
-pub const COLOR_DARKRED: &'static str = "800000";
+pub(crate) const COLOR_DARKRED: &'static str = "800000";
 
 pub const COLOR_WHITE: &'static str = "FFFFFF";
 
@@ -74,7 +74,7 @@ pub const COLOR_ORANGE: &'static str = "FFCC00";
 
 pub const COLOR_ORANGE2: &'static str = "FF6600";
 
-pub const COLOR_DARKGRAY: &'static str = "666666";
+pub(crate) const COLOR_DARKGRAY: &'static str = "666666";
 
 pub const COLOR_RED2: &'static str = "F0988E";
 
@@ -84,7 +84,7 @@ pub const COLOR_CYAN: &'static str = "46BED8";
 
 pub const COLOR_PINK: &'static str = "CF8CB7";
 
-pub const COLOR_GREEN3: &'static str = "008080";
+pub(crate) const COLOR_GREEN3: &'static str = "008080";
 
 pub const LINEWIDTH_STANDARD: metamodelica::Real = metamodelica::OrderedFloat(2.0_f64);
 
@@ -92,9 +92,9 @@ pub const LINEWIDTH_BOLD: metamodelica::Real = metamodelica::OrderedFloat(4.0_f6
 
 pub const FONTSIZE_STANDARD: i32 = 12;
 
-pub const FONTSIZE_BIG: i32 = 20;
+pub(crate) const FONTSIZE_BIG: i32 = 20;
 
-pub const FONTSIZE_SMALL: i32 = 8;
+pub(crate) const FONTSIZE_SMALL: i32 = 8;
 
 pub const BORDERWIDTH_STANDARD: metamodelica::Real = metamodelica::OrderedFloat(1.0_f64);
 

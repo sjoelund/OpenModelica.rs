@@ -95,65 +95,65 @@ pub type Visited = FCore::Visited;
 
 pub type Import = Absyn::Import;
 
-pub const extendsPrefix: &'static str = "$ext_";
+pub(crate) const extendsPrefix: &'static str = "$ext_";
 
-pub const topNodeName: &'static str = "$top";
+pub(crate) const topNodeName: &'static str = "$top";
 
 // these names are used mostly for edges in the graph
 // the edges are saved inside the AvlTree ("name", Ref)
-pub const tyNodeName: &'static str = "$ty";
+pub(crate) const tyNodeName: &'static str = "$ty";
 
-pub const ftNodeName: &'static str = "$ft";
+pub(crate) const ftNodeName: &'static str = "$ft";
 
-pub const refNodeName: &'static str = "$ref";
+pub(crate) const refNodeName: &'static str = "$ref";
 
-pub const modNodeName: &'static str = "$mod";
+pub(crate) const modNodeName: &'static str = "$mod";
 
-pub const bndNodeName: &'static str = "$bnd";
+pub(crate) const bndNodeName: &'static str = "$bnd";
 
-pub const cndNodeName: &'static str = "$cnd";
+pub(crate) const cndNodeName: &'static str = "$cnd";
 
-pub const dimsNodeName: &'static str = "$dims";
+pub(crate) const dimsNodeName: &'static str = "$dims";
 
-pub const tydimsNodeName: &'static str = "$tydims";
+pub(crate) const tydimsNodeName: &'static str = "$tydims";
 
-pub const subsNodeName: &'static str = "$subs";
+pub(crate) const subsNodeName: &'static str = "$subs";
 
-pub const ccNodeName: &'static str = "$cc";
+pub(crate) const ccNodeName: &'static str = "$cc";
 
-pub const eqNodeName: &'static str = "$eq";
+pub(crate) const eqNodeName: &'static str = "$eq";
 
-pub const ieqNodeName: &'static str = "$ieq";
+pub(crate) const ieqNodeName: &'static str = "$ieq";
 
-pub const alNodeName: &'static str = "$al";
+pub(crate) const alNodeName: &'static str = "$al";
 
-pub const ialNodeName: &'static str = "$ial";
+pub(crate) const ialNodeName: &'static str = "$ial";
 
-pub const optNodeName: &'static str = "$opt";
+pub(crate) const optNodeName: &'static str = "$opt";
 
-pub const edNodeName: &'static str = "$ed";
+pub(crate) const edNodeName: &'static str = "$ed";
 
-pub const forNodeName: &'static str = "$for";
+pub(crate) const forNodeName: &'static str = "$for";
 
-pub const matchNodeName: &'static str = "$match";
+pub(crate) const matchNodeName: &'static str = "$match";
 
-pub const cloneNodeName: &'static str = "$clone";
+pub(crate) const cloneNodeName: &'static str = "$clone";
 
-pub const origNodeName: &'static str = "$original";
+pub(crate) const origNodeName: &'static str = "$original";
 
-pub const feNodeName: &'static str = "$functionEvaluation";
+pub(crate) const feNodeName: &'static str = "$functionEvaluation";
 
-pub const duNodeName: &'static str = "$definedUnits";
+pub(crate) const duNodeName: &'static str = "$definedUnits";
 
-pub const veNodeName: &'static str = "$ve";
+pub(crate) const veNodeName: &'static str = "$ve";
 
-pub const imNodeName: &'static str = "$imp";
+pub(crate) const imNodeName: &'static str = "$imp";
 
-pub const itNodeName: &'static str = "$it";
+pub(crate) const itNodeName: &'static str = "$it";
 
-pub const assertNodeName: &'static str = "$assert";
+pub(crate) const assertNodeName: &'static str = "$assert";
 
-pub const statusNodeName: &'static str = "$status";
+pub(crate) const statusNodeName: &'static str = "$status";
 
 pub(crate) fn toRef(mut inNode: Node) -> Ref {
     let mut outRef: Ref;

@@ -768,7 +768,7 @@ pub fn isConnector(mut inState: ClassInf::State) -> Result<()> {
     Ok(())
 }
 
-pub static basicTypeMods: std::sync::LazyLock<Arc<metamodelica::List<ArcStr>>> = std::sync::LazyLock::new(|| { list![(literal!("quantity")).clone(), (literal!("unit")).clone(), (literal!("displayUnit")).clone(), (literal!("min")).clone(), (literal!("max")).clone(), (literal!("start")).clone(), (literal!("fixed")).clone(), (literal!("nominal")).clone(), (literal!("stateSelect")).clone(), (literal!("uncertain")).clone(), (literal!("distribution")).clone()] });
+pub(crate) static basicTypeMods: std::sync::LazyLock<Arc<metamodelica::List<ArcStr>>> = std::sync::LazyLock::new(|| { list![(literal!("quantity")).clone(), (literal!("unit")).clone(), (literal!("displayUnit")).clone(), (literal!("min")).clone(), (literal!("max")).clone(), (literal!("start")).clone(), (literal!("fixed")).clone(), (literal!("nominal")).clone(), (literal!("stateSelect")).clone(), (literal!("uncertain")).clone(), (literal!("distribution")).clone()] });
 
 pub fn isBasicTypeComponentName(mut name: ArcStr) -> bool {
     let mut res: bool;

@@ -100,40 +100,40 @@ thread_local! { static __DUMMY_VARIABLE_TLS: Arc<Variable::NFVariable> = Arc::ne
 pub fn DUMMY_VARIABLE() -> Arc<Variable::NFVariable> { __DUMMY_VARIABLE_TLS.with(|__t| __t.clone()) }
 
 thread_local! { static __SUBST_VARIABLE_TLS: Arc<Variable::NFVariable> = Arc::new(Variable::NFVariable { name: NFBuiltin::SUBST_CREF().clone(), ty: openmodelica_nf_frontend::NFType::interned_ANY(), binding: Binding::EMPTY_BINDING().clone(), visibility: Prefixes::Visibility::PUBLIC.clone(), attributes: Attributes::DEFAULT_ATTR().clone(), typeAttributes: metamodelica::nil(), children: metamodelica::nil(), comment: SCode::noComment.clone(), info: SCodeUtil::dummyInfo.clone(), backendinfo: BackendExtension::DUMMY_BACKEND_INFO().clone() }); }
-pub fn SUBST_VARIABLE() -> Arc<Variable::NFVariable> { __SUBST_VARIABLE_TLS.with(|__t| __t.clone()) }
+pub(crate) fn SUBST_VARIABLE() -> Arc<Variable::NFVariable> { __SUBST_VARIABLE_TLS.with(|__t| __t.clone()) }
 
 thread_local! { static __TIME_VARIABLE_TLS: Arc<Variable::NFVariable> = Arc::new(Variable::NFVariable { name: NFBuiltin::TIME_CREF().clone(), ty: openmodelica_nf_frontend::NFType::interned_REAL(), binding: Binding::EMPTY_BINDING().clone(), visibility: Prefixes::Visibility::PUBLIC.clone(), attributes: Attributes::DEFAULT_ATTR().clone(), typeAttributes: metamodelica::nil(), children: metamodelica::nil(), comment: SCode::noComment.clone(), info: SCodeUtil::dummyInfo.clone(), backendinfo: Arc::new(BackendInfo::BackendInfo { varKind: openmodelica_nf_frontend::NFBackendExtension::VariableKind::interned_TIME(), attributes: BackendExtension::EMPTY_VAR_ATTR_REAL().clone(), annotations: BackendExtension::EMPTY_ANNOTATIONS.clone(), var_pre: None, var_seed: None, var_pder_res: None, var_pder_tmp: None, var_start: None, parent: None }) }); }
-pub fn TIME_VARIABLE() -> Arc<Variable::NFVariable> { __TIME_VARIABLE_TLS.with(|__t| __t.clone()) }
+pub(crate) fn TIME_VARIABLE() -> Arc<Variable::NFVariable> { __TIME_VARIABLE_TLS.with(|__t| __t.clone()) }
 
-pub const DERIVATIVE_STR: &'static str = "$DER";
+pub(crate) const DERIVATIVE_STR: &'static str = "$DER";
 
-pub const DUMMY_DERIVATIVE_STR: &'static str = "$dDER";
+pub(crate) const DUMMY_DERIVATIVE_STR: &'static str = "$dDER";
 
-pub const PARTIAL_DERIVATIVE_STR: &'static str = "$pDER";
+pub(crate) const PARTIAL_DERIVATIVE_STR: &'static str = "$pDER";
 
-pub const FUNCTION_DERIVATIVE_STR: &'static str = "$fDER";
+pub(crate) const FUNCTION_DERIVATIVE_STR: &'static str = "$fDER";
 
-pub const FUNCTION_STR: &'static str = "$FUN";
+pub(crate) const FUNCTION_STR: &'static str = "$FUN";
 
-pub const PREVIOUS_STR: &'static str = "$PRE";
+pub(crate) const PREVIOUS_STR: &'static str = "$PRE";
 
-pub const AUXILIARY_STR: &'static str = "$AUX";
+pub(crate) const AUXILIARY_STR: &'static str = "$AUX";
 
-pub const STATE_ALIAS_STR: &'static str = "$STA";
+pub(crate) const STATE_ALIAS_STR: &'static str = "$STA";
 
-pub const START_STR: &'static str = "$START";
+pub(crate) const START_STR: &'static str = "$START";
 
-pub const RESIDUAL_STR: &'static str = "$RES";
+pub(crate) const RESIDUAL_STR: &'static str = "$RES";
 
-pub const TEMPORARY_STR: &'static str = "$TMP";
+pub(crate) const TEMPORARY_STR: &'static str = "$TMP";
 
-pub const SEED_STR: &'static str = "$SEED";
+pub(crate) const SEED_STR: &'static str = "$SEED";
 
-pub const TIME_EVENT_STR: &'static str = "$TEV";
+pub(crate) const TIME_EVENT_STR: &'static str = "$TEV";
 
-pub const STATE_EVENT_STR: &'static str = "$SEV";
+pub(crate) const STATE_EVENT_STR: &'static str = "$SEV";
 
-pub const CLOCK_STR: &'static str = "$CLK";
+pub(crate) const CLOCK_STR: &'static str = "$CLK";
 
 pub(crate) fn toString(mut var: Arc<Variable::NFVariable>, mut r#str: ArcStr) -> Result<ArcStr> {
     let mut r#str: ArcStr = r#str;

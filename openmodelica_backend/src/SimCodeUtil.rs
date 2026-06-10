@@ -136,7 +136,7 @@ use openmodelica_util_datatypes_basic::Mutable;
 
 // public imports
 // protected imports
-pub const UNDERLINE: &'static str = "========================================";
+pub(crate) const UNDERLINE: &'static str = "========================================";
 
 fn compareEqSystems(mut eq1: Arc<SimCode::SimEqSystem>, mut eq2: Arc<SimCode::SimEqSystem>) -> Result<bool> {
     let mut b: bool;

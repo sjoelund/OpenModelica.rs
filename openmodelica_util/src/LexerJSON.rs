@@ -25,29 +25,29 @@ use crate::System;
    %functions
    %caseAction
   */
-pub const debug: bool = false;
+pub(crate) const debug: bool = false;
 
 pub mod LexTable {
     use super::*;
-    pub const yy_limit: i32 = 46;
+    pub(crate) const yy_limit: i32 = 46;
 
-    pub const yy_finish: i32 = 82;
+    pub(crate) const yy_finish: i32 = 82;
 
-    pub static yy_acclist: std::sync::LazyLock<metamodelica::StaticArray<i32>> = std::sync::LazyLock::new(|| { metamodelica::StaticArray::new(list![17, 16, 15, 16, 16, 13, 16, 5, 16, 14, 16, 11, 16, 12, 16, 16, 16, 16, 9, 16, 10, 16, 15, 1, 5, 2, 3, 4, 8, 6, 3, 7].into_iter().cloned().collect()) });
+    pub(crate) static yy_acclist: std::sync::LazyLock<metamodelica::StaticArray<i32>> = std::sync::LazyLock::new(|| { metamodelica::StaticArray::new(list![17, 16, 15, 16, 16, 13, 16, 5, 16, 14, 16, 11, 16, 12, 16, 16, 16, 16, 9, 16, 10, 16, 15, 1, 5, 2, 3, 4, 8, 6, 3, 7].into_iter().cloned().collect()) });
 
-    pub static yy_accept: std::sync::LazyLock<metamodelica::StaticArray<i32>> = std::sync::LazyLock::new(|| { metamodelica::StaticArray::new(list![1, 1, 1, 2, 3, 5, 6, 8, 10, 12, 14, 16, 17, 18, 19, 21, 23, 24, 24, 25, 25, 25, 26, 26, 26, 26, 26, 27, 27, 28, 28, 29, 29, 29, 29, 29, 29, 29, 30, 31, 31, 31, 32, 33, 33, 33].into_iter().cloned().collect()) });
+    pub(crate) static yy_accept: std::sync::LazyLock<metamodelica::StaticArray<i32>> = std::sync::LazyLock::new(|| { metamodelica::StaticArray::new(list![1, 1, 1, 2, 3, 5, 6, 8, 10, 12, 14, 16, 17, 18, 19, 21, 23, 24, 24, 25, 25, 25, 26, 26, 26, 26, 26, 27, 27, 28, 28, 29, 29, 29, 29, 29, 29, 29, 30, 31, 31, 31, 32, 33, 33, 33].into_iter().cloned().collect()) });
 
-    pub static yy_ec: std::sync::LazyLock<metamodelica::StaticArray<i32>> = std::sync::LazyLock::new(|| { metamodelica::StaticArray::new(list![1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 4, 5, 6, 7, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 10, 1, 1, 1, 1, 1, 1, 11, 11, 11, 11, 12, 11, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 13, 14, 15, 1, 1, 1, 16, 17, 11, 11, 18, 19, 1, 1, 1, 1, 1, 20, 1, 21, 1, 1, 1, 22, 23, 24, 25, 1, 1, 1, 1, 1, 26, 1, 27, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1].into_iter().cloned().collect()) });
+    pub(crate) static yy_ec: std::sync::LazyLock<metamodelica::StaticArray<i32>> = std::sync::LazyLock::new(|| { metamodelica::StaticArray::new(list![1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 4, 5, 6, 7, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 10, 1, 1, 1, 1, 1, 1, 11, 11, 11, 11, 12, 11, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 13, 14, 15, 1, 1, 1, 16, 17, 11, 11, 18, 19, 1, 1, 1, 1, 1, 20, 1, 21, 1, 1, 1, 22, 23, 24, 25, 1, 1, 1, 1, 1, 26, 1, 27, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1].into_iter().cloned().collect()) });
 
-    pub static yy_meta: std::sync::LazyLock<metamodelica::StaticArray<i32>> = std::sync::LazyLock::new(|| { metamodelica::StaticArray::new(list![1, 1, 2, 1, 1, 1, 1, 2, 3, 1, 3, 3, 1, 2, 1, 3, 4, 3, 4, 1, 2, 2, 1, 2, 2, 1, 1].into_iter().cloned().collect()) });
+    pub(crate) static yy_meta: std::sync::LazyLock<metamodelica::StaticArray<i32>> = std::sync::LazyLock::new(|| { metamodelica::StaticArray::new(list![1, 1, 2, 1, 1, 1, 1, 2, 3, 1, 3, 3, 1, 2, 1, 3, 4, 3, 4, 1, 2, 2, 1, 2, 2, 1, 1].into_iter().cloned().collect()) });
 
-    pub static yy_base: std::sync::LazyLock<metamodelica::StaticArray<i32>> = std::sync::LazyLock::new(|| { metamodelica::StaticArray::new(list![0, 0, 81, 82, 78, 25, 82, 22, 82, 82, 82, 63, 53, 55, 82, 82, 74, 27, 82, 50, 65, 26, 39, 53, 52, 37, 82, 0, 37, 45, 43, 27, 27, 24, 0, 47, 19, 82, 82, 0, 27, 23, 82, 0, 82, 56, 59, 61, 63, 65, 67].into_iter().cloned().collect()) });
+    pub(crate) static yy_base: std::sync::LazyLock<metamodelica::StaticArray<i32>> = std::sync::LazyLock::new(|| { metamodelica::StaticArray::new(list![0, 0, 81, 82, 78, 25, 82, 22, 82, 82, 82, 63, 53, 55, 82, 82, 74, 27, 82, 50, 65, 26, 39, 53, 52, 37, 82, 0, 37, 45, 43, 27, 27, 24, 0, 47, 19, 82, 82, 0, 27, 23, 82, 0, 82, 56, 59, 61, 63, 65, 67].into_iter().cloned().collect()) });
 
-    pub static yy_def: std::sync::LazyLock<metamodelica::StaticArray<i32>> = std::sync::LazyLock::new(|| { metamodelica::StaticArray::new(list![45, 1, 45, 45, 45, 46, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 46, 45, 47, 45, 45, 45, 45, 45, 45, 45, 48, 45, 45, 45, 45, 45, 45, 49, 45, 45, 45, 45, 50, 45, 45, 45, 51, 0, 45, 45, 45, 45, 45, 45].into_iter().cloned().collect()) });
+    pub(crate) static yy_def: std::sync::LazyLock<metamodelica::StaticArray<i32>> = std::sync::LazyLock::new(|| { metamodelica::StaticArray::new(list![45, 1, 45, 45, 45, 46, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 46, 45, 47, 45, 45, 45, 45, 45, 45, 45, 48, 45, 45, 45, 45, 45, 45, 49, 45, 45, 45, 45, 50, 45, 45, 45, 51, 0, 45, 45, 45, 45, 45, 45].into_iter().cloned().collect()) });
 
-    pub static yy_nxt: std::sync::LazyLock<metamodelica::StaticArray<i32>> = std::sync::LazyLock::new(|| { metamodelica::StaticArray::new(list![4, 5, 6, 4, 7, 4, 4, 4, 8, 9, 4, 4, 10, 4, 11, 4, 4, 4, 12, 4, 13, 4, 4, 14, 4, 15, 16, 19, 21, 27, 22, 42, 21, 23, 22, 42, 43, 23, 20, 23, 20, 39, 30, 23, 30, 29, 38, 31, 36, 37, 41, 31, 41, 31, 36, 42, 18, 18, 18, 18, 18, 34, 18, 35, 35, 40, 40, 44, 44, 18, 18, 33, 32, 29, 28, 17, 26, 25, 24, 17, 45, 3, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45].into_iter().cloned().collect()) });
+    pub(crate) static yy_nxt: std::sync::LazyLock<metamodelica::StaticArray<i32>> = std::sync::LazyLock::new(|| { metamodelica::StaticArray::new(list![4, 5, 6, 4, 7, 4, 4, 4, 8, 9, 4, 4, 10, 4, 11, 4, 4, 4, 12, 4, 13, 4, 4, 14, 4, 15, 16, 19, 21, 27, 22, 42, 21, 23, 22, 42, 43, 23, 20, 23, 20, 39, 30, 23, 30, 29, 38, 31, 36, 37, 41, 31, 41, 31, 36, 42, 18, 18, 18, 18, 18, 34, 18, 35, 35, 40, 40, 44, 44, 18, 18, 33, 32, 29, 28, 17, 26, 25, 24, 17, 45, 3, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45].into_iter().cloned().collect()) });
 
-    pub static yy_chk: std::sync::LazyLock<metamodelica::StaticArray<i32>> = std::sync::LazyLock::new(|| { metamodelica::StaticArray::new(list![1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6, 8, 18, 8, 42, 22, 8, 22, 41, 37, 22, 6, 8, 18, 34, 23, 22, 23, 29, 33, 23, 29, 32, 36, 31, 36, 30, 29, 36, 46, 46, 46, 46, 47, 26, 47, 48, 48, 49, 49, 50, 50, 51, 51, 25, 24, 21, 20, 17, 14, 13, 12, 5, 3, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45].into_iter().cloned().collect()) });
+    pub(crate) static yy_chk: std::sync::LazyLock<metamodelica::StaticArray<i32>> = std::sync::LazyLock::new(|| { metamodelica::StaticArray::new(list![1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6, 8, 18, 8, 42, 22, 8, 22, 41, 37, 22, 6, 8, 18, 34, 23, 22, 23, 29, 33, 23, 29, 32, 36, 31, 36, 30, 29, 36, 46, 46, 46, 46, 47, 26, 47, 48, 48, 49, 49, 50, 50, 51, 51, 25, 24, 21, 20, 17, 14, 13, 12, 5, 3, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45].into_iter().cloned().collect()) });
 
 }
 
@@ -242,7 +242,7 @@ impl Default for Token {
 pub type TOKEN = Token;
 
 
-pub static noToken: std::sync::LazyLock<Token> = std::sync::LazyLock::new(|| { Token { fileName: (literal!("<NoFile>")).clone(), id: TokenId::_NO_TOKEN.clone(), fileContents: (literal!("")).clone(), byteOffset: 0, length: 0, lineNumberStart: 0, columnNumberStart: 0, lineNumberEnd: 0, columnNumberEnd: 0 } });
+pub(crate) static noToken: std::sync::LazyLock<Token> = std::sync::LazyLock::new(|| { Token { fileName: (literal!("<NoFile>")).clone(), id: TokenId::_NO_TOKEN.clone(), fileContents: (literal!("")).clone(), byteOffset: 0, length: 0, lineNumberStart: 0, columnNumberStart: 0, lineNumberEnd: 0, columnNumberEnd: 0 } });
 
 pub(crate) fn printToken(mut token: Token) -> Result<ArcStr> {
     let mut strTk: ArcStr;

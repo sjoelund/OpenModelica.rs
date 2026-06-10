@@ -805,7 +805,7 @@ fn checkInline(mut func: Arc<Function::Function>, mut inline_types: Arc<metamode
     Ok(b)
 }
 
-pub const HEURISTIC_THRESHOLD: i32 = 10;
+pub(crate) const HEURISTIC_THRESHOLD: i32 = 10;
 
 fn defaultHeuristic(mut r#fn: Arc<Function::Function>, mut func_map: Arc<UnorderedMap::UnorderedMap<Arc<Function::Function>, Arc<InlineRating::InlineRating>>>) -> Result<bool> {
     let mut b: bool;

@@ -20,7 +20,7 @@ use openmodelica_frontend_dump::ValuesDump;
 use openmodelica_frontend_dump::ValuesMake;
 use openmodelica_frontend_types::Values;
 
-pub static dummyMsg: Absyn::Msg = Absyn::Msg::MSG { info: SourceInfo { fileName: literal!("<interactive>"), isReadOnly: false, lineNumberStart: 1, columnNumberStart: 1, lineNumberEnd: 1, columnNumberEnd: 1, lastModification: metamodelica::OrderedFloat(0.0_f64) } };
+pub(crate) static dummyMsg: Absyn::Msg = Absyn::Msg::MSG { info: SourceInfo { fileName: literal!("<interactive>"), isReadOnly: false, lineNumberStart: 1, columnNumberStart: 1, lineNumberEnd: 1, columnNumberEnd: 1, lastModification: metamodelica::OrderedFloat(0.0_f64) } };
 
 pub(crate) fn oms_getVersion() -> Result<ArcStr> {
     let mut res: ArcStr;

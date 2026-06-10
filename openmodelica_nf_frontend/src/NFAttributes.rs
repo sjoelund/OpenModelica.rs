@@ -108,19 +108,19 @@ thread_local! { static __DEFAULT_ATTR_TLS: Arc<NFAttributes> = Arc::new(NFAttrib
 pub fn DEFAULT_ATTR() -> Arc<NFAttributes> { __DEFAULT_ATTR_TLS.with(|__t| __t.clone()) }
 
 thread_local! { static __INPUT_ATTR_TLS: Arc<NFAttributes> = Arc::new(NFAttributes { connectorType: ConnectorType::NON_CONNECTOR.clone(), parallelism: Parallelism::NON_PARALLEL.clone(), variability: Variability::CONTINUOUS.clone(), direction: Direction::INPUT.clone(), innerOuter: InnerOuter::NOT_INNER_OUTER.clone(), isFinal: false, isRedeclare: false, isReplaceable: crate::NFPrefixes::Replaceable::NOT_REPLACEABLE, isResizable: false }); }
-pub fn INPUT_ATTR() -> Arc<NFAttributes> { __INPUT_ATTR_TLS.with(|__t| __t.clone()) }
+pub(crate) fn INPUT_ATTR() -> Arc<NFAttributes> { __INPUT_ATTR_TLS.with(|__t| __t.clone()) }
 
 thread_local! { static __OUTPUT_ATTR_TLS: Arc<NFAttributes> = Arc::new(NFAttributes { connectorType: ConnectorType::NON_CONNECTOR.clone(), parallelism: Parallelism::NON_PARALLEL.clone(), variability: Variability::CONTINUOUS.clone(), direction: Direction::OUTPUT.clone(), innerOuter: InnerOuter::NOT_INNER_OUTER.clone(), isFinal: false, isRedeclare: false, isReplaceable: crate::NFPrefixes::Replaceable::NOT_REPLACEABLE, isResizable: false }); }
-pub fn OUTPUT_ATTR() -> Arc<NFAttributes> { __OUTPUT_ATTR_TLS.with(|__t| __t.clone()) }
+pub(crate) fn OUTPUT_ATTR() -> Arc<NFAttributes> { __OUTPUT_ATTR_TLS.with(|__t| __t.clone()) }
 
 thread_local! { static __CONSTANT_ATTR_TLS: Arc<NFAttributes> = Arc::new(NFAttributes { connectorType: ConnectorType::NON_CONNECTOR.clone(), parallelism: Parallelism::NON_PARALLEL.clone(), variability: Variability::CONSTANT.clone(), direction: Direction::NONE.clone(), innerOuter: InnerOuter::NOT_INNER_OUTER.clone(), isFinal: false, isRedeclare: false, isReplaceable: crate::NFPrefixes::Replaceable::NOT_REPLACEABLE, isResizable: false }); }
-pub fn CONSTANT_ATTR() -> Arc<NFAttributes> { __CONSTANT_ATTR_TLS.with(|__t| __t.clone()) }
+pub(crate) fn CONSTANT_ATTR() -> Arc<NFAttributes> { __CONSTANT_ATTR_TLS.with(|__t| __t.clone()) }
 
 thread_local! { static __IMPL_DISCRETE_ATTR_TLS: Arc<NFAttributes> = Arc::new(NFAttributes { connectorType: ConnectorType::NON_CONNECTOR.clone(), parallelism: Parallelism::NON_PARALLEL.clone(), variability: Variability::IMPLICITLY_DISCRETE.clone(), direction: Direction::NONE.clone(), innerOuter: InnerOuter::NOT_INNER_OUTER.clone(), isFinal: false, isRedeclare: false, isReplaceable: crate::NFPrefixes::Replaceable::NOT_REPLACEABLE, isResizable: false }); }
 pub fn IMPL_DISCRETE_ATTR() -> Arc<NFAttributes> { __IMPL_DISCRETE_ATTR_TLS.with(|__t| __t.clone()) }
 
 thread_local! { static __AUGMENTED_ATTR_TLS: Arc<NFAttributes> = Arc::new(NFAttributes { connectorType: ConnectorType::AUGMENTED.clone(), parallelism: Parallelism::NON_PARALLEL.clone(), variability: Variability::CONTINUOUS.clone(), direction: Direction::NONE.clone(), innerOuter: InnerOuter::NOT_INNER_OUTER.clone(), isFinal: false, isRedeclare: false, isReplaceable: crate::NFPrefixes::Replaceable::NOT_REPLACEABLE, isResizable: false }); }
-pub fn AUGMENTED_ATTR() -> Arc<NFAttributes> { __AUGMENTED_ATTR_TLS.with(|__t| __t.clone()) }
+pub(crate) fn AUGMENTED_ATTR() -> Arc<NFAttributes> { __AUGMENTED_ATTR_TLS.with(|__t| __t.clone()) }
 
 pub(crate) fn fromSCode(mut compAttr: SCode::Attributes, mut compPrefs: Arc<SCode::Prefixes>) -> Result<Arc<NFAttributes>> {
     let mut attributes: Arc<NFAttributes>;

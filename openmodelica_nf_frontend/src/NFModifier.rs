@@ -59,7 +59,7 @@ use openmodelica_util::IOStream;
 use openmodelica_util_datatypes_basic::List;
 
 thread_local! { static __EMPTY_MOD_TLS: Arc<Modifier::Modifier> = crate::NFModifier::Modifier::interned_NOMOD(); }
-pub fn EMPTY_MOD() -> Arc<Modifier::Modifier> { __EMPTY_MOD_TLS.with(|__t| __t.clone()) }
+pub(crate) fn EMPTY_MOD() -> Arc<Modifier::Modifier> { __EMPTY_MOD_TLS.with(|__t| __t.clone()) }
 
 pub mod ModTable {
     use super::*;

@@ -215,7 +215,7 @@ pub fn restrictionStringPP(mut inRestriction: SCode::Restriction) -> Result<ArcS
     Ok(outString)
 }
 
-pub const noEachStr: &'static str = "";
+pub(crate) const noEachStr: &'static str = "";
 
 pub fn unparseElementStr(mut inElement: Arc<SCode::Element>, mut options: SCodeDumpOptions) -> Result<ArcStr> {
     let mut outString: ArcStr;

@@ -365,16 +365,16 @@ pub mod FunctionMatchKind {
 }
 
 thread_local! { static __EXACT_MATCH_TLS: Arc<FunctionMatchKind::FunctionMatchKind> = crate::NFFunction::FunctionMatchKind::interned_EXACT(); }
-pub fn EXACT_MATCH() -> Arc<FunctionMatchKind::FunctionMatchKind> { __EXACT_MATCH_TLS.with(|__t| __t.clone()) }
+pub(crate) fn EXACT_MATCH() -> Arc<FunctionMatchKind::FunctionMatchKind> { __EXACT_MATCH_TLS.with(|__t| __t.clone()) }
 
 thread_local! { static __CAST_MATCH_TLS: Arc<FunctionMatchKind::FunctionMatchKind> = crate::NFFunction::FunctionMatchKind::interned_CAST(); }
-pub fn CAST_MATCH() -> Arc<FunctionMatchKind::FunctionMatchKind> { __CAST_MATCH_TLS.with(|__t| __t.clone()) }
+pub(crate) fn CAST_MATCH() -> Arc<FunctionMatchKind::FunctionMatchKind> { __CAST_MATCH_TLS.with(|__t| __t.clone()) }
 
 thread_local! { static __GENERIC_MATCH_TLS: Arc<FunctionMatchKind::FunctionMatchKind> = crate::NFFunction::FunctionMatchKind::interned_GENERIC(); }
-pub fn GENERIC_MATCH() -> Arc<FunctionMatchKind::FunctionMatchKind> { __GENERIC_MATCH_TLS.with(|__t| __t.clone()) }
+pub(crate) fn GENERIC_MATCH() -> Arc<FunctionMatchKind::FunctionMatchKind> { __GENERIC_MATCH_TLS.with(|__t| __t.clone()) }
 
 thread_local! { static __NO_MATCH_TLS: Arc<FunctionMatchKind::FunctionMatchKind> = crate::NFFunction::FunctionMatchKind::interned_NOT_COMPATIBLE(); }
-pub fn NO_MATCH() -> Arc<FunctionMatchKind::FunctionMatchKind> { __NO_MATCH_TLS.with(|__t| __t.clone()) }
+pub(crate) fn NO_MATCH() -> Arc<FunctionMatchKind::FunctionMatchKind> { __NO_MATCH_TLS.with(|__t| __t.clone()) }
 
 pub mod MatchedFunction {
     use super::*;

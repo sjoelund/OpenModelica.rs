@@ -143,7 +143,7 @@ impl Default for VariableConversionSettings {
 pub type VARIABLE_CONVERSION_SETTINGS = VariableConversionSettings;
 
 
-pub static FUNCTION_VARIABLE_CONVERSION_SETTINGS: VariableConversionSettings = VariableConversionSettings { isFunctionParameter: true, addTypeToSource: false };
+pub(crate) static FUNCTION_VARIABLE_CONVERSION_SETTINGS: VariableConversionSettings = VariableConversionSettings { isFunctionParameter: true, addTypeToSource: false };
 
 fn convertVariables(mut variables: Arc<metamodelica::List<Arc<Variable::NFVariable>>>, mut elements: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Element>>>> {
     let mut elements: Arc<metamodelica::List<Arc<DAE::Element>>> = elements;

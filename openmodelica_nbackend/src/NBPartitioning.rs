@@ -390,10 +390,10 @@ pub mod BClock {
 }
 
 thread_local! { static __DEFAULT_BASE_CLOCK_TLS: Arc<BClock::BClock> = Arc::new(BClock::BClock::BASE_CLOCK { clock: Arc::new(ClockKind::NFClockKind::REAL_CLOCK { interval: Arc::new(Expression::NFExpression::REAL { value: metamodelica::OrderedFloat(1.0_f64) }) }) }); }
-pub fn DEFAULT_BASE_CLOCK() -> Arc<BClock::BClock> { __DEFAULT_BASE_CLOCK_TLS.with(|__t| __t.clone()) }
+pub(crate) fn DEFAULT_BASE_CLOCK() -> Arc<BClock::BClock> { __DEFAULT_BASE_CLOCK_TLS.with(|__t| __t.clone()) }
 
 thread_local! { static __DEFAULT_SUB_CLOCK_TLS: Arc<BClock::BClock> = Arc::new(BClock::BClock::SUB_CLOCK { factor: Rational::ONE.clone(), shift: Rational::ZERO.clone(), solver: None }); }
-pub fn DEFAULT_SUB_CLOCK() -> Arc<BClock::BClock> { __DEFAULT_SUB_CLOCK_TLS.with(|__t| __t.clone()) }
+pub(crate) fn DEFAULT_SUB_CLOCK() -> Arc<BClock::BClock> { __DEFAULT_SUB_CLOCK_TLS.with(|__t| __t.clone()) }
 
 pub type CrefLst = Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
 

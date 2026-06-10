@@ -870,7 +870,7 @@ pub fn setConfigEnum(mut inFlag: Flags::ConfigFlag, mut inValue: i32) -> Result<
 }
 
 // Used by the print functions below to indent descriptions.
-pub const descriptionIndent: &'static str = "                            ";
+pub(crate) const descriptionIndent: &'static str = "                            ";
 
 pub fn printHelp(mut inTopics: Arc<metamodelica::List<ArcStr>>) -> Result<ArcStr> {
     let mut help: ArcStr = arcstr::literal!("");

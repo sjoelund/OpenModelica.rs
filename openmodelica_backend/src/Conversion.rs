@@ -180,15 +180,15 @@ impl metamodelica::gc::MMTrace for ArgType {
     fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 
-pub static CONVERT_CLASS_TYPE: std::sync::LazyLock<Arc<metamodelica::List<ArgType>>> = std::sync::LazyLock::new(|| { list![ArgType::SCALAR.clone(), ArgType::SCALAR.clone()] });
+pub(crate) static CONVERT_CLASS_TYPE: std::sync::LazyLock<Arc<metamodelica::List<ArgType>>> = std::sync::LazyLock::new(|| { list![ArgType::SCALAR.clone(), ArgType::SCALAR.clone()] });
 
-pub static CONVERT_CLASS_IF_TYPE: std::sync::LazyLock<Arc<metamodelica::List<ArgType>>> = std::sync::LazyLock::new(|| { list![ArgType::SCALAR.clone(), ArgType::SCALAR.clone(), ArgType::SCALAR.clone(), ArgType::SCALAR.clone()] });
+pub(crate) static CONVERT_CLASS_IF_TYPE: std::sync::LazyLock<Arc<metamodelica::List<ArgType>>> = std::sync::LazyLock::new(|| { list![ArgType::SCALAR.clone(), ArgType::SCALAR.clone(), ArgType::SCALAR.clone(), ArgType::SCALAR.clone()] });
 
-pub static CONVERT_ELEMENT_TYPE: std::sync::LazyLock<Arc<metamodelica::List<ArgType>>> = std::sync::LazyLock::new(|| { list![ArgType::SCALAR.clone(), ArgType::SCALAR.clone(), ArgType::SCALAR.clone()] });
+pub(crate) static CONVERT_ELEMENT_TYPE: std::sync::LazyLock<Arc<metamodelica::List<ArgType>>> = std::sync::LazyLock::new(|| { list![ArgType::SCALAR.clone(), ArgType::SCALAR.clone(), ArgType::SCALAR.clone()] });
 
-pub static CONVERT_MODIFIER_TYPE: std::sync::LazyLock<Arc<metamodelica::List<ArgType>>> = std::sync::LazyLock::new(|| { list![ArgType::SCALAR.clone(), ArgType::ARRAY.clone(), ArgType::ARRAY.clone(), ArgType::SCALAR.clone()] });
+pub(crate) static CONVERT_MODIFIER_TYPE: std::sync::LazyLock<Arc<metamodelica::List<ArgType>>> = std::sync::LazyLock::new(|| { list![ArgType::SCALAR.clone(), ArgType::ARRAY.clone(), ArgType::ARRAY.clone(), ArgType::SCALAR.clone()] });
 
-pub static CONVERT_MESSAGE_TYPE: std::sync::LazyLock<Arc<metamodelica::List<ArgType>>> = std::sync::LazyLock::new(|| { list![ArgType::SCALAR.clone(), ArgType::SCALAR.clone(), ArgType::SCALAR.clone()] });
+pub(crate) static CONVERT_MESSAGE_TYPE: std::sync::LazyLock<Arc<metamodelica::List<ArgType>>> = std::sync::LazyLock::new(|| { list![ArgType::SCALAR.clone(), ArgType::SCALAR.clone(), ArgType::SCALAR.clone()] });
 
 /// Struct for storing import data.
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]

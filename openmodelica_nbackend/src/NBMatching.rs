@@ -102,7 +102,7 @@ impl Default for NBMatching {
 pub type MATCHING = NBMatching;
 
 thread_local! { static __EMPTY_MATCHING_TLS: Arc<NBMatching> = Arc::new(NBMatching { var_to_eqn: metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect()), eqn_to_var: metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect()) }); }
-pub fn EMPTY_MATCHING() -> Arc<NBMatching> { __EMPTY_MATCHING_TLS.with(|__t| __t.clone()) }
+pub(crate) fn EMPTY_MATCHING() -> Arc<NBMatching> { __EMPTY_MATCHING_TLS.with(|__t| __t.clone()) }
 
 pub(crate) fn toString(mut matching: Arc<NBMatching>, mut r#str: ArcStr) -> ArcStr {
     let mut r#str: ArcStr = r#str;

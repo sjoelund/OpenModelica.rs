@@ -53,9 +53,9 @@ use openmodelica_util::Flags;
 use openmodelica_util::Print;
 use openmodelica_util::System;
 
-pub static emptyTxt: std::sync::LazyLock<Tpl::Text> = std::sync::LazyLock::new(|| { Tpl::Text::MEM_TEXT { tokens: metamodelica::nil(), blocksStack: metamodelica::nil() } });
+pub(crate) static emptyTxt: std::sync::LazyLock<Tpl::Text> = std::sync::LazyLock::new(|| { Tpl::Text::MEM_TEXT { tokens: metamodelica::nil(), blocksStack: metamodelica::nil() } });
 
-pub static dsi: std::sync::LazyLock<SourceInfo> = std::sync::LazyLock::new(|| { TplAbsyn::dummySourceInfo.clone() });
+pub(crate) static dsi: std::sync::LazyLock<SourceInfo> = std::sync::LazyLock::new(|| { TplAbsyn::dummySourceInfo.clone() });
 
 pub fn main(mut inFile: ArcStr) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(inFile.clone()) {

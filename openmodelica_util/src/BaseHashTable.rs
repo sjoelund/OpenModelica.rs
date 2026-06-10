@@ -68,7 +68,7 @@ use openmodelica_util_datatypes_basic::List;
 // should be.
 pub const lowBucketSize: i32 = 257;
 
-pub const avgBucketSize: i32 = 2053;
+pub(crate) const avgBucketSize: i32 = 2053;
 
 pub const bigBucketSize: i32 = 4013;
 

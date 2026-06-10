@@ -258,7 +258,7 @@ pub struct InstanceHierarchy<'a> {
     /// visibility because it is reachable from another crate; every other
     /// public function is narrowed to `pub(crate)`. Populated by
     /// [`crate::visibility::analyze`]. Empty until then.
-    pub keep_public_fns: BTreeSet<String>,
+    pub keep_public: BTreeSet<String>,
     /// Per-function set of type-parameter names that need a `+ PartialEq`
     /// bound in the emitted Rust signature.
     ///
@@ -308,7 +308,7 @@ impl<'a> InstanceHierarchy<'a> {
             types_containing_dyn_fn: BTreeSet::new(),
             types_directly_containing_dyn_fn: BTreeSet::new(),
             fallible_functions: BTreeSet::new(),
-            keep_public_fns: BTreeSet::new(),
+            keep_public: BTreeSet::new(),
             partial_eq_required: BTreeMap::new(),
             default_required: BTreeMap::new(),
             reference_eq_required: BTreeMap::new(),

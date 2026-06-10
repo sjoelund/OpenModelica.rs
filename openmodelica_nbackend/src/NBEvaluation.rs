@@ -92,7 +92,7 @@ pub mod Stages {
 
 }
 
-pub static DEFAULT_STAGES: std::sync::LazyLock<Arc<Stages::Stages>> = std::sync::LazyLock::new(|| { Arc::new(Stages::Stages { dynamicEval: true, algebraicEval: true, zerocrossEval: false, discreteEval: true }) });
+pub(crate) static DEFAULT_STAGES: std::sync::LazyLock<Arc<Stages::Stages>> = std::sync::LazyLock::new(|| { Arc::new(Stages::Stages { dynamicEval: true, algebraicEval: true, zerocrossEval: false, discreteEval: true }) });
 
 pub(crate) fn removeDummies(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<BackendDAE::NBackendDAE>> {
     let mut bdae: Arc<BackendDAE::NBackendDAE> = bdae;

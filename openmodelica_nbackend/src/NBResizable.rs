@@ -85,7 +85,7 @@ use openmodelica_util_datatypes_basic::Pointer;
 ///  package:      NBResizable
 ///  description:  This file contains util functions for resizable parameters.
 pub struct NBResizable;
-pub const debug: bool = false;
+pub(crate) const debug: bool = false;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
@@ -319,7 +319,7 @@ pub type ConstraintList = Arc<metamodelica::List<Arc<Expression::NFExpression>>>
 pub type Occurences = Arc<UnorderedSet::UnorderedSet<Arc<Expression::NFExpression>>>;
 
 thread_local! { static __END_TPL_TLS: (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>) = (openmodelica_nf_frontend::NFComponentRef::interned_EMPTY(), openmodelica_nf_frontend::NFExpression::interned_END()); }
-pub fn END_TPL() -> (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>) { __END_TPL_TLS.with(|__t| __t.clone()) }
+pub(crate) fn END_TPL() -> (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>) { __END_TPL_TLS.with(|__t| __t.clone()) }
 
 fn findOptimalResizableValues(mut eqn: Arc<Equation::Equation>, mut parameters: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut min_parameters: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut optimal_values: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>, mut c2pi: Arc<UnorderedMap::UnorderedMap<Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>>, mut c2pe: Arc<UnorderedMap::UnorderedMap<Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>>) -> Result<Arc<Equation::Equation>> {
     let mut eqn: Arc<Equation::Equation> = eqn;

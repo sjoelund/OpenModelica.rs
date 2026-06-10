@@ -43,7 +43,7 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-pub const RT_NO_CLOCK: i32 = -1;
+pub(crate) const RT_NO_CLOCK: i32 = -1;
 
 pub const RT_CLOCK_SIMULATE_TOTAL: i32 = 8;
 
@@ -51,7 +51,7 @@ pub const RT_CLOCK_SIMULATE_SIMULATION: i32 = 9;
 
 pub const RT_CLOCK_BUILD_MODEL: i32 = 10;
 
-pub const RT_CLOCK_EXECSTAT: i32 = 11;
+pub(crate) const RT_CLOCK_EXECSTAT: i32 = 11;
 
 pub const RT_CLOCK_FRONTEND: i32 = 13;
 
@@ -59,7 +59,7 @@ pub const RT_CLOCK_BACKEND: i32 = 14;
 
 pub const RT_CLOCK_SIMCODE: i32 = 15;
 
-pub const RT_CLOCK_LINEARIZE: i32 = 16;
+pub(crate) const RT_CLOCK_LINEARIZE: i32 = 16;
 
 pub const RT_CLOCK_TEMPLATES: i32 = 17;
 
@@ -67,13 +67,13 @@ pub const RT_CLOCK_UNCERTAINTIES: i32 = 18;
 
 pub const RT_PROFILER0: i32 = 19;
 
-pub const RT_PROFILER1: i32 = 20;
+pub(crate) const RT_PROFILER1: i32 = 20;
 
-pub const RT_PROFILER2: i32 = 21;
+pub(crate) const RT_PROFILER2: i32 = 21;
 
 pub const RT_CLOCK_EXECSTAT_JACOBIANS: i32 = 22;
 
-pub const RT_CLOCK_USER_RESERVED: i32 = 23;
+pub(crate) const RT_CLOCK_USER_RESERVED: i32 = 23;
 
 pub const RT_CLOCK_EXECSTAT_HPCOM_MODULES: i32 = 24;
 

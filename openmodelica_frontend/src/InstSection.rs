@@ -97,7 +97,7 @@ pub type Ident = ArcStr;
 /// an instance hierarchy
 pub type InstanceHierarchy = Arc<metamodelica::List<InnerOuter::TopInstance>>;
 
-pub const alwaysUnroll: bool = true;
+pub(crate) const alwaysUnroll: bool = true;
 
 pub(crate) fn instEquation(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inPrefix: DAE::Prefix, mut inSets: DAE::Connect::Sets, mut inState: ClassInf::State, mut inEquation: Arc<SCode::Equation>, mut inImpl: bool, mut unrollForLoops: bool, mut inGraph: ConnectionGraph::ConnectionGraph) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::DAElist, DAE::Connect::Sets, ClassInf::State, ConnectionGraph::ConnectionGraph)> {
     let mut outCache: FCore::Cache;

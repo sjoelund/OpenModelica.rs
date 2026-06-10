@@ -10484,11 +10484,11 @@ fn complexityTraverse2(mut exp: Arc<DAE::Exp>, mut complexity_: i32) -> Result<(
     Ok((outExp, outComplexity))
 }
 
-pub const complexityAlloc: i32 = 5;
+pub(crate) const complexityAlloc: i32 = 5;
 
-pub const complexityVeryBig: i32 = 500000;
+pub(crate) const complexityVeryBig: i32 = 500000;
 
-pub const complexityDimLarge: i32 = 1000;
+pub(crate) const complexityDimLarge: i32 = 1000;
 
 pub(crate) fn complexity(mut exp: Arc<DAE::Exp>) -> Result<i32> {
     let mut i: i32;
