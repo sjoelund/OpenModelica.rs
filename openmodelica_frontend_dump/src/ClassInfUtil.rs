@@ -643,9 +643,9 @@ pub fn assertValid(mut inState: ClassInf::State, mut inRestriction: SCode::Restr
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (mut st, mut re) = __mc_input.clone() else { bail!("nomatch") };
-            let mut str1: ArcStr = arcstr::literal!("");
-            let mut str2: ArcStr = arcstr::literal!("");
-            let mut str3: ArcStr = arcstr::literal!("");
+            let mut str1: ArcStr;
+            let mut str2: ArcStr;
+            let mut str3: ArcStr;
             str1 = (AbsynUtil::pathString(getStateName(st.clone()), (literal!(".")).clone(), true, false)?).clone();
             str2 = (printStateStr(st.clone())).clone();
             str3 = (SCodeDump::restrictionStringPP(re.clone())?).clone();
@@ -667,9 +667,9 @@ pub fn assertTrans(mut inState: ClassInf::State, mut event: ClassInf::Event, mut
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let mut st = __mc_input.clone() else { bail!("nomatch") };
-            let mut str1: ArcStr = arcstr::literal!("");
-            let mut str2: ArcStr = arcstr::literal!("");
-            let mut str3: ArcStr = arcstr::literal!("");
+            let mut str1: ArcStr;
+            let mut str2: ArcStr;
+            let mut str3: ArcStr;
             str1 = (AbsynUtil::pathString(getStateName(st.clone()), (literal!(".")).clone(), true, false)?).clone();
             str2 = (printStateStr(st.clone())).clone();
             str3 = (printEventStr(event.clone())).clone();
@@ -733,7 +733,7 @@ pub fn matchingState(mut inState: ClassInf::State, mut inStateLst: Arc<metamodel
             return Ok(true)
         },
         (_, Deref @ metamodelica::List::Cons { head: _, tail: rest }) => {
-            let mut res: bool = false;
+            let mut res: bool;
             { (inState, inStateLst) = (inState.clone(), rest.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),

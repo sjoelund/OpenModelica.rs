@@ -342,7 +342,7 @@ fn applyReplacementsDim(mut map: ArgumentMap, mut dim: Arc<Dimension::NFDimensio
     let mut dim: Arc<Dimension::NFDimension> = dim;
     dim = (::match_deref::match_deref! { match &(dim.clone()) {
         Deref @ Dimension::EXP { .. } => {
-            let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut exp: Arc<Expression::NFExpression>;
             exp = Expression::map(var_field!((*dim).exp, Dimension::NFDimension::EXP).clone(), (std::sync::Arc::new({ let __pe_b0 = map.clone(); move |__pe_a1| applyReplacements2(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             exp = Ceval::evalExp(exp.clone(), Ceval::noTarget().clone())?;
             Dimension::fromExp(exp.clone(), Variability::CONSTANT.clone())?
@@ -584,7 +584,7 @@ fn optimizeStatement(mut stmt: Arc<Statement::NFStatement>) -> Result<Arc<Statem
     let mut stmt: Arc<Statement::NFStatement> = stmt;
     let () = (::match_deref::match_deref! { match &(stmt.clone()) {
         Deref @ Statement::FOR { .. } => {
-            let mut iter_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut iter_exp: Arc<Expression::NFExpression>;
             iter_exp = Expression::makeMutable(Arc::new(Expression::NFExpression::EMPTY { ty: InstNode::getType(var_field!((*stmt).iterator, Statement::NFStatement::FOR).clone())? }));
             assign_variant_field!(stmt => Statement::NFStatement::FOR;
                 body = Statement::replaceIteratorList(var_field!((*stmt).body, Statement::NFStatement::FOR).clone(), var_field!((*stmt).iterator, Statement::NFStatement::FOR).clone(), iter_exp.clone())?,
@@ -692,7 +692,7 @@ pub fn assignVariable(mut variable: Arc<Expression::NFExpression>, mut value: Ar
         },
         (Deref @ Expression::TUPLE { .. }, Deref @ Expression::TUPLE { elements: vals, .. }) => {
             let mut var: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut val: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut val: Arc<Expression::NFExpression>;
             let mut vals = (*vals).clone();
             for mut var in &*var_field!((*variable).elements, Expression::NFExpression::TUPLE).clone() {
                 let mut var = var.clone();
@@ -831,8 +831,8 @@ fn assignRecord(mut lhs: Arc<Expression::NFExpression>, mut rhs: Arc<Expression:
     let mut result: Arc<Expression::NFExpression>;
     result = (::match_deref::match_deref! { match &(rhs.clone()) {
         Deref @ Expression::RECORD { .. } => {
-            let mut elems: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-            let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut elems: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
+            let mut e: Arc<Expression::NFExpression>;
             let __pa0 = ::match_deref::match_deref! { match &(lhs.clone()) {
                 Deref @ Expression::RECORD { elements: __pa0, .. } => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
@@ -851,12 +851,12 @@ fn assignRecord(mut lhs: Arc<Expression::NFExpression>, mut rhs: Arc<Expression:
             lhs.clone()
         },
         Deref @ Expression::CREF { .. } => {
-            let mut elems: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-            let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut val: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut cls_tree: Arc<ClassTree::ClassTree> = Arc::new(ClassTree::EMPTY_TREE);
-            let mut comps: metamodelica::Array<Arc<InstNode::InstNode>> = Default::default();
-            let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
+            let mut elems: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
+            let mut e: Arc<Expression::NFExpression>;
+            let mut val: Arc<Expression::NFExpression>;
+            let mut cls_tree: Arc<ClassTree::ClassTree>;
+            let mut comps: metamodelica::Array<Arc<InstNode::InstNode>>;
+            let mut ty: Arc<Type::NFType>;
             let __pa0 = ::match_deref::match_deref! { match &(lhs.clone()) {
                 Deref @ Expression::RECORD { elements: __pa0, .. } => __pa0.clone(),
                 _ => bail!("pattern mismatch"),

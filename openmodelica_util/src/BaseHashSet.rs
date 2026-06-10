@@ -112,10 +112,10 @@ pub fn add<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut entry: Key, mut
     let mut outHashSet: HashSet<Key>;
     outHashSet = (match (entry.clone(), hashSet.clone()) {
         (mut key, (mut hashvec, mut varr, mut bsize, mut n, ref fntpl @ (ref hashFunc, _, _))) => {
-            let mut indx: i32 = 0;
-            let mut newpos: i32 = 0;
-            let mut indexes: Arc<metamodelica::List<(Key, i32)>> = metamodelica::nil();
-            let mut fkey: Option<Key> = None;
+            let mut indx: i32;
+            let mut newpos: i32;
+            let mut indexes: Arc<metamodelica::List<(Key, i32)>>;
+            let mut fkey: Option<Key>;
             (fkey, indx) = get1(key.clone(), hashSet.clone())?;
             if isSome(fkey.clone()) {
                 varr = valueArraySetnth(varr.clone(), indx.clone(), key.clone())?;
@@ -130,8 +130,8 @@ pub fn add<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut entry: Key, mut
             (hashvec.clone(), varr.clone(), bsize.clone(), n.clone(), fntpl.clone())
         },
         (mut key, (_, _, mut bsize, _, (mut hashFunc, _, mut keystrFunc))) => {
-            let mut hval: i32 = 0;
-            let mut s: ArcStr = arcstr::literal!("");
+            let mut hval: i32;
+            let mut s: ArcStr;
             metamodelica::print((literal!("- BaseHashSet.add failed: ")).clone());
             metamodelica::print((literal!("bsize: ")).clone());
             metamodelica::print((intString(bsize.clone())).clone());
@@ -151,12 +151,12 @@ pub fn addNoUpdCheck<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut entry
     let mut outHashSet: HashSet<Key>;
     outHashSet = (match (entry.clone(), hashSet.clone()) {
         (mut key, (mut hashvec, mut varr, mut bsize, _, ref fntpl @ (ref hashFunc, _, _))) => {
-            let mut indx: i32 = 0;
-            let mut newpos: i32 = 0;
-            let mut n_1: i32 = 0;
-            let mut varr_1: (i32, i32, metamodelica::Array<Option<Key>>) = (0, 0, Default::default());
-            let mut indexes: Arc<metamodelica::List<(Key, i32)>> = metamodelica::nil();
-            let mut hashvec_1: metamodelica::Array<Arc<metamodelica::List<(Key, i32)>>> = Default::default();
+            let mut indx: i32;
+            let mut newpos: i32;
+            let mut n_1: i32;
+            let mut varr_1: (i32, i32, metamodelica::Array<Option<Key>>);
+            let mut indexes: Arc<metamodelica::List<(Key, i32)>>;
+            let mut hashvec_1: metamodelica::Array<Arc<metamodelica::List<(Key, i32)>>>;
             indx = intMod(hashFunc(key.clone())?, bsize.clone());
             newpos = valueArrayLength(varr.clone());
             varr_1 = valueArrayAdd(varr.clone(), key.clone())?;
@@ -173,12 +173,12 @@ pub fn addUnique<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut key: Key,
     let mut outHashSet: HashSet<Key>;
     outHashSet = (match hashSet.clone() {
         (mut hashvec, mut varr, mut bsize, _, ref fntpl @ (ref hashFunc, _, _)) if (!(has(key.clone(), hashSet.clone())?)) => {
-            let mut indx: i32 = 0;
-            let mut newpos: i32 = 0;
-            let mut n_1: i32 = 0;
-            let mut varr_1: (i32, i32, metamodelica::Array<Option<Key>>) = (0, 0, Default::default());
-            let mut indexes: Arc<metamodelica::List<(Key, i32)>> = metamodelica::nil();
-            let mut hashvec_1: metamodelica::Array<Arc<metamodelica::List<(Key, i32)>>> = Default::default();
+            let mut indx: i32;
+            let mut newpos: i32;
+            let mut n_1: i32;
+            let mut varr_1: (i32, i32, metamodelica::Array<Option<Key>>);
+            let mut indexes: Arc<metamodelica::List<(Key, i32)>>;
+            let mut hashvec_1: metamodelica::Array<Arc<metamodelica::List<(Key, i32)>>>;
             indx = intMod(hashFunc(key.clone())?, bsize.clone());
             newpos = valueArrayLength(varr.clone());
             varr_1 = valueArrayAdd(varr.clone(), key.clone())?;
@@ -219,7 +219,7 @@ pub fn has<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut key: Key, mut h
             false
         },
         _ => {
-            let mut oKey: Option<Key> = None;
+            let mut oKey: Option<Key>;
             (oKey, _) = get1(key.clone(), hashSet.clone())?;
             isSome(oKey.clone())
         },
@@ -250,10 +250,10 @@ fn get1<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut key: Key, mut hash
     let mut indx: i32 = 0;
     (okey, indx) = (match hashSet.clone() {
         (mut hashvec, mut varr, mut bsize, _, (mut hashFunc, mut keyEqual, _)) => {
-            let mut hashindx: i32 = 0;
-            let mut indexes: Arc<metamodelica::List<(Key, i32)>> = metamodelica::nil();
-            let mut k: Option<Key> = None;
-            let mut b: bool = false;
+            let mut hashindx: i32;
+            let mut indexes: Arc<metamodelica::List<(Key, i32)>>;
+            let mut k: Option<Key>;
+            let mut b: bool;
             hashindx = intMod(hashFunc(key.clone())?, bsize.clone());
             indexes = ({let __elt = hashvec.borrow()[(hashindx.clone() + 1-1) as usize].clone(); __elt});
             (indx, b) = get2(key.clone(), indexes.clone(), keyEqual.clone())?;

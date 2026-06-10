@@ -191,7 +191,7 @@ fn dumpAnnotationStr(mut inComment: Option<Arc<SCode::Comment>>, mut inPrefix: A
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Some(Deref @ SCode::Comment { annotation_: Some(Deref @ SCode::Annotation { modification: ann_mod }), .. }) => {
-                    let mut ann: ArcStr = arcstr::literal!("");
+                    let mut ann: ArcStr;
                     let mut ann_mod = (*ann_mod).clone();
                     if Config::showAnnotations()? {
                         ann = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inPrefix.clone()); __mm_s.push_str(&*literal!("annotation")); __mm_s.push_str(&*SCodeDump::printModStr(ann_mod.clone(), SCodeDump::defaultOptions.clone())?); __mm_s.push_str(&*inSuffix.clone()); ArcStr::from(__mm_s) }).clone();

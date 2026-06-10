@@ -327,8 +327,8 @@ pub fn unliftArray(mut ty: Arc<NFType>) -> Result<Arc<NFType>> {
             if (dims.clone().is_empty()) {var_field!((*ty).elementType, NFType::ARRAY).clone()} else {Arc::new(NFType::ARRAY { elementType: var_field!((*ty).elementType, NFType::ARRAY).clone(), dimensions: dims.clone() })}
         },
         Deref @ CONDITIONAL_ARRAY { .. } => {
-            let mut tty: Arc<NFType> = Arc::new(NFType::ANY);
-            let mut fty: Arc<NFType> = Arc::new(NFType::ANY);
+            let mut tty: Arc<NFType>;
+            let mut fty: Arc<NFType>;
             tty = unliftArray(var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone())?;
             fty = unliftArray(var_field!((*ty).falseType, NFType::CONDITIONAL_ARRAY).clone())?;
             if (isEqual(tty.clone(), fty.clone())?) {tty.clone()} else {Arc::new(NFType::CONDITIONAL_ARRAY { trueType: tty.clone(), falseType: fty.clone(), matchedBranch: var_field!((*ty).matchedBranch, NFType::CONDITIONAL_ARRAY).clone() })}
@@ -352,8 +352,8 @@ pub fn unliftArrayN(mut N: i32, mut ty: Arc<NFType>) -> Result<Arc<NFType>> {
             if (dims.clone().is_empty()) {var_field!((*ty).elementType, NFType::ARRAY).clone()} else {Arc::new(NFType::ARRAY { elementType: var_field!((*ty).elementType, NFType::ARRAY).clone(), dimensions: dims.clone() })}
         },
         Deref @ CONDITIONAL_ARRAY { .. } => {
-            let mut tty: Arc<NFType> = Arc::new(NFType::ANY);
-            let mut fty: Arc<NFType> = Arc::new(NFType::ANY);
+            let mut tty: Arc<NFType>;
+            let mut fty: Arc<NFType>;
             tty = unliftArrayN(N.clone(), var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone())?;
             fty = unliftArrayN(N.clone(), var_field!((*ty).falseType, NFType::CONDITIONAL_ARRAY).clone())?;
             if (isEqual(tty.clone(), fty.clone())?) {tty.clone()} else {Arc::new(NFType::CONDITIONAL_ARRAY { trueType: tty.clone(), falseType: fty.clone(), matchedBranch: var_field!((*ty).matchedBranch, NFType::CONDITIONAL_ARRAY).clone() })}
@@ -1529,7 +1529,7 @@ pub fn setRecordFields(mut field_lst: Arc<metamodelica::List<Arc<Record::Field::
         let mut fields: metamodelica::Array<Arc<Record::Field::Field>> = metamodelica::arrayFromVec(field_lst.clone().into_iter().cloned().collect());
         (::match_deref::match_deref! { match &(recordType.clone()) {
         Deref @ COMPLEX { complexTy: Deref @ ComplexType::RECORD { constructor: rec_node, .. }, .. } => {
-            let mut indexMap: Arc<UnorderedMap::UnorderedMap<ArcStr, i32>> = <Arc<UnorderedMap::UnorderedMap<ArcStr, i32>> as ::std::default::Default>::default();
+            let mut indexMap: Arc<UnorderedMap::UnorderedMap<ArcStr, i32>>;
             indexMap = UnorderedMap::new((std::sync::Arc::new(fnptr!(stringHashDjb2, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), metamodelica::arrayLength(fields.clone()));
             updateRecordFieldsIndexMap(fields.clone(), indexMap.clone())?;
             Arc::new(NFType::COMPLEX { cls: var_field!((*recordType).cls, NFType::COMPLEX).clone(), complexTy: Arc::new(ComplexType::NFComplexType::RECORD { constructor: rec_node.clone(), fields: fields.clone(), indexMap: indexMap.clone() }) })

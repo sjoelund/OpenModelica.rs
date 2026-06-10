@@ -638,8 +638,8 @@ pub mod Function {
             (fnNode.clone(), false)
         },
         Deref @ SCode::Element::CLASS { classDef: cdef @ Deref @ SCode::ClassDef::OVERLOAD { .. }, .. } => {
-            let mut cr: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
-            let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
+            let mut cr: Arc<Absyn::ComponentRef>;
+            let mut node: Arc<InstNode::InstNode>;
             for mut p in &*var_field!((**cdef).pathLst, SCode::ClassDef::OVERLOAD).clone() {
                 let mut p = p.clone();
                 cr = AbsynUtil::pathToCref(p.clone())?;
@@ -652,9 +652,9 @@ pub mod Function {
             (fnNode.clone(), false)
         },
         Deref @ SCode::Element::CLASS { .. } if (InstNode::isEnumerationType(fnNode.clone())?) => {
-            let mut r#fn: Arc<Function> = Arc::new(<Function as ::std::default::Default>::default());
-            let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
-            let mut cmts: Arc<metamodelica::List<Arc<SCode::Comment>>> = metamodelica::nil();
+            let mut r#fn: Arc<Function>;
+            let mut node: Arc<InstNode::InstNode>;
+            let mut cmts: Arc<metamodelica::List<Arc<SCode::Comment>>>;
             node = makeEnumConversionOp(fnNode.clone())?;
             node = InstNode::makeRootClass(node.clone(), parent.clone(), None);
             (node, cmts) = instFunction3(node.clone(), context.clone(), info.clone())?;
@@ -663,8 +663,8 @@ pub mod Function {
             (fnNode.clone(), false)
         },
         Deref @ SCode::Element::CLASS { .. } => {
-            let mut r#fn: Arc<Function> = Arc::new(<Function as ::std::default::Default>::default());
-            let mut cmts: Arc<metamodelica::List<Arc<SCode::Comment>>> = metamodelica::nil();
+            let mut r#fn: Arc<Function>;
+            let mut cmts: Arc<metamodelica::List<Arc<SCode::Comment>>>;
             if SCodeUtil::isOperator(def.clone()) {
                 OperatorOverloading::checkOperatorRestrictions(fnNode.clone())?;
             }
@@ -1285,10 +1285,10 @@ pub mod Function {
             bail!("fail")
         },
         SlotEvalStatus::NOT_EVALUATED => {
-            let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-            let mut var: Prefixes::Variability = Prefixes::Variability::CONSTANT;
-            let mut pur: Prefixes::Purity = Prefixes::Purity::PURE;
+            let mut exp: Arc<Expression::NFExpression>;
+            let mut ty: Arc<Type::NFType>;
+            let mut var: Prefixes::Variability;
+            let mut pur: Prefixes::Purity;
             assign_field!(slot.evalStatus = SlotEvalStatus::EVALUATING.clone());
             metamodelica::arrayUpdate(slots.clone(), slot.index.clone(), slot.clone())?;
             exp = evaluateSlotExp(Util::getOption(slot.default.clone())?, slots.clone(), context.clone(), info.clone())?;
@@ -2386,12 +2386,12 @@ pub mod Function {
         let __mc_input = fres.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let SCode::FunctionRestriction::FR_EXTERNAL_FUNCTION { .. } = __mc_input.clone() else { bail!("nomatch") };
-            let mut has_unbox_args: bool = false;
-            let mut name: ArcStr = arcstr::literal!("");
-            let mut in_params: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            let mut out_params: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            let mut inline_ty: DAE::InlineType = DAE::InlineType::AFTER_INDEX_RED_INLINE;
-            let mut generateEvents: bool = false;
+            let mut has_unbox_args: bool;
+            let mut name: ArcStr;
+            let mut in_params: Arc<metamodelica::List<ArcStr>>;
+            let mut out_params: Arc<metamodelica::List<ArcStr>>;
+            let mut inline_ty: DAE::InlineType;
+            let mut generateEvents: bool;
             in_params = ({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut i in (inputs.clone()).into_iter().cloned() {
@@ -2416,12 +2416,12 @@ pub mod Function {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let SCode::FunctionRestriction::FR_PARALLEL_FUNCTION { .. } = __mc_input.clone() else { bail!("nomatch") };
-            let mut has_unbox_args: bool = false;
-            let mut name: ArcStr = arcstr::literal!("");
-            let mut in_params: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            let mut out_params: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            let mut inline_ty: DAE::InlineType = DAE::InlineType::AFTER_INDEX_RED_INLINE;
-            let mut generateEvents: bool = false;
+            let mut has_unbox_args: bool;
+            let mut name: ArcStr;
+            let mut in_params: Arc<metamodelica::List<ArcStr>>;
+            let mut out_params: Arc<metamodelica::List<ArcStr>>;
+            let mut inline_ty: DAE::InlineType;
+            let mut generateEvents: bool;
             in_params = ({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut i in (inputs.clone()).into_iter().cloned() {
@@ -2446,8 +2446,8 @@ pub mod Function {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let SCode::FunctionRestriction::FR_PARALLEL_FUNCTION { .. } = __mc_input.clone() else { bail!("nomatch") };
-            let mut inline_ty: DAE::InlineType = DAE::InlineType::AFTER_INDEX_RED_INLINE;
-            let mut generateEvents: bool = false;
+            let mut inline_ty: DAE::InlineType;
+            let mut generateEvents: bool;
             inline_ty = InstBasics::commentIsInlineFunc(cmt.clone());
             generateEvents = InstBasics::commentGenerateEvents(cmt.clone());
             Ok(DAE::FunctionAttributes { inline: inline_ty.clone(), generateEvents: generateEvents.clone(), purity: purity.clone(), isFunctionPointer: is_partial.clone(), isBuiltin: getBuiltinPtr(cmt.clone())?, functionParallelism: openmodelica_frontend_types::DAE::FunctionParallelism::FP_PARALLEL_FUNCTION })
@@ -2458,8 +2458,8 @@ pub mod Function {
         })() { break 'mc __v; }
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            let mut inline_ty: DAE::InlineType = DAE::InlineType::AFTER_INDEX_RED_INLINE;
-            let mut generateEvents: bool = false;
+            let mut inline_ty: DAE::InlineType;
+            let mut generateEvents: bool;
             let mut purity: DAE::Purity = purity.clone();
             inline_ty = InstBasics::commentIsInlineFunc(cmt.clone());
             generateEvents = InstBasics::commentGenerateEvents(cmt.clone());
@@ -2710,8 +2710,8 @@ pub mod Function {
         let mut deps: Arc<UnorderedSet::UnorderedSet<Arc<InstNode::InstNode>>> = deps;
         let () = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CREF { .. } => {
-            let mut cr: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-            let mut cr_node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
+            let mut cr: Arc<ComponentRef::NFComponentRef>;
+            let mut cr_node: Arc<InstNode::InstNode>;
             cr = ComponentRef::last(var_field!((*exp).cref, Expression::NFExpression::CREF).clone());
             if ComponentRef::isCref(cr.clone()) {
                 cr_node = ComponentRef::node(cr.clone())?;

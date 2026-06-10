@@ -37,7 +37,7 @@ pub fn genProgram(mut in_txt: Tpl::Text, mut in_a_p: MidCode::Program) -> Result
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_p.clone()) {
         (mut txt, MidCode::Program { functions: ref i_functions, name: mut i_name }) => {
-            let mut ret_0: i32 = 0;
+            let mut ret_0: i32;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("// number of functions: ")).clone() }))?;
             ret_0 = (i_functions.clone().len() as i32);
             txt = Tpl::writeStr(txt.clone(), (intString(ret_0.clone())).clone())?;
@@ -63,7 +63,7 @@ fn fun_45(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_outputs: Arc<metamo
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_outputs.clone())) {
         (txt, false, a_outputs) => {
-            let mut ret_0: MidCode::Var = <MidCode::Var as ::std::default::Default>::default();
+            let mut ret_0: MidCode::Var;
             let mut txt = (*txt).clone();
             ret_0 = listHead(a_outputs.clone())?;
             txt = genVarType(txt.clone(), ret_0.clone())?;
@@ -155,12 +155,12 @@ pub fn genFunction(mut in_txt: Tpl::Text, mut in_a_fn: MidCode::Function) -> Res
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_fn.clone()) {
         (mut txt, ref i_fn @ MidCode::Function { outputs: ref i_outputs, inputs: ref i_inputs, name: ref i_name, locals: ref i_locals, localBufs: ref i_localBufs, localBufPtrs: ref i_localBufPtrs, body: ref i_body, .. }) => {
-            let mut txt_4: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_4: Arc<metamodelica::List<MidCode::Var>> = metamodelica::nil();
-            let mut txt_3: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_arguments: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_1: bool = false;
-            let mut l_returnType: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_4: Tpl::Text;
+            let mut ret_4: Arc<metamodelica::List<MidCode::Var>>;
+            let mut txt_3: Tpl::Text;
+            let mut l_arguments: Tpl::Text;
+            let mut ret_1: bool;
+            let mut l_returnType: Tpl::Text;
             ret_1 = i_outputs.clone().is_empty();
             l_returnType = fun_45(Tpl::emptyTxt.clone(), ret_1.clone(), i_outputs.clone())?;
             txt_3 = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -279,7 +279,7 @@ fn fun_56(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_outputs: Arc<metamo
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_outputs.clone())) {
         (txt, false, a_outputs) => {
-            let mut ret_0: MidCode::Var = <MidCode::Var as ::std::default::Default>::default();
+            let mut ret_0: MidCode::Var;
             let mut txt = (*txt).clone();
             ret_0 = listHead(a_outputs.clone())?;
             txt = genVarName(txt.clone(), ret_0.clone())?;
@@ -381,17 +381,17 @@ pub fn genInFunction(mut in_txt: Tpl::Text, mut in_a_fn: MidCode::Function) -> R
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_fn.clone()) {
         (mut txt, MidCode::Function { inputs: ref i_inputs, outputs: ref i_outputs, name: ref i_name, .. }) => {
-            let mut ret_10: bool = false;
-            let mut txt_8: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_8: Arc<metamodelica::List<MidCode::Var>> = metamodelica::nil();
-            let mut txt_7: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_callargs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_5: bool = false;
-            let mut l_callretval: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_outputLines: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_inputLines: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_outputDefs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_inputDefs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_10: bool;
+            let mut txt_8: Tpl::Text;
+            let mut ret_8: Arc<metamodelica::List<MidCode::Var>>;
+            let mut txt_7: Tpl::Text;
+            let mut l_callargs: Tpl::Text;
+            let mut ret_5: bool;
+            let mut l_callretval: Tpl::Text;
+            let mut l_outputLines: Tpl::Text;
+            let mut l_inputLines: Tpl::Text;
+            let mut l_outputDefs: Tpl::Text;
+            let mut l_inputDefs: Tpl::Text;
             l_inputDefs = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             l_inputDefs = lm_52(l_inputDefs.clone(), i_inputs.clone())?;
             l_inputDefs = Tpl::popIter(l_inputDefs.clone())?;
@@ -562,7 +562,7 @@ fn lm_71(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<MidCode::Var>>) -
         let mut lstElt_71 = lstElt_71.clone();
         txt = (match lstElt_71.clone() {
         mut i_i => {
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_0: Tpl::Text;
             txt_0 = varBoxType(Tpl::emptyTxt.clone(), i_i.clone())?;
             txt = fun_70(txt.clone(), txt_0.clone(), i_i.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
@@ -598,7 +598,7 @@ fn lm_73(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<MidCode::Var>>) -
         let mut lstElt_73 = lstElt_73.clone();
         txt = (match lstElt_73.clone() {
         mut i_o => {
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_0: Tpl::Text;
             txt_0 = varBoxType(Tpl::emptyTxt.clone(), i_o.clone())?;
             txt = fun_72(txt.clone(), txt_0.clone(), i_o.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
@@ -613,7 +613,7 @@ fn fun_74(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_outputs: Arc<metamo
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_outputs.clone())) {
         (txt, false, a_outputs) => {
-            let mut ret_0: MidCode::Var = <MidCode::Var as ::std::default::Default>::default();
+            let mut ret_0: MidCode::Var;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("modelica_metatype out_")).clone() }))?;
             ret_0 = listHead(a_outputs.clone())?;
@@ -656,7 +656,7 @@ fn lm_76(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<MidCode::Var>>) -
         let mut lstElt_76 = lstElt_76.clone();
         txt = (match lstElt_76.clone() {
         mut i_i => {
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_0: Tpl::Text;
             txt_0 = varBoxType(Tpl::emptyTxt.clone(), i_i.clone())?;
             txt = fun_75(txt.clone(), txt_0.clone(), i_i.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
@@ -687,9 +687,9 @@ fn fun_78(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_outputs: Arc<metamo
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_outputs.clone())) {
         (txt, false, a_outputs) => {
-            let mut ret_2: MidCode::Var = <MidCode::Var as ::std::default::Default>::default();
-            let mut txt_1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_0: MidCode::Var = <MidCode::Var as ::std::default::Default>::default();
+            let mut ret_2: MidCode::Var;
+            let mut txt_1: Tpl::Text;
+            let mut ret_0: MidCode::Var;
             let mut txt = (*txt).clone();
             ret_0 = listHead(a_outputs.clone())?;
             txt_1 = varBoxType(Tpl::emptyTxt.clone(), ret_0.clone())?;
@@ -729,7 +729,7 @@ fn lm_80(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<MidCode::Var>>) -
         let mut lstElt_80 = lstElt_80.clone();
         txt = (match lstElt_80.clone() {
         mut i_i => {
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_0: Tpl::Text;
             txt_0 = varBoxType(Tpl::emptyTxt.clone(), i_i.clone())?;
             txt = fun_79(txt.clone(), txt_0.clone())?;
             txt = genVarName(txt.clone(), i_i.clone())?;
@@ -765,7 +765,7 @@ fn lm_82(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<MidCode::Var>>) -
         let mut lstElt_82 = lstElt_82.clone();
         txt = (match lstElt_82.clone() {
         mut i_o => {
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_0: Tpl::Text;
             txt_0 = varBoxType(Tpl::emptyTxt.clone(), i_o.clone())?;
             txt = fun_81(txt.clone(), txt_0.clone())?;
             txt = genVarName(txt.clone(), i_o.clone())?;
@@ -822,8 +822,8 @@ fn fun_86(mut in_txt: Tpl::Text, mut in_mArg: Tpl::Text, mut in_a_outputs: Arc<m
             txt.clone()
         },
         (txt, _, a_outputs) => {
-            let mut ret_1: MidCode::Var = <MidCode::Var as ::std::default::Default>::default();
-            let mut ret_0: MidCode::Var = <MidCode::Var as ::std::default::Default>::default();
+            let mut ret_1: MidCode::Var;
+            let mut ret_0: MidCode::Var;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("out_")).clone() }))?;
             ret_0 = listHead(a_outputs.clone())?;
@@ -843,8 +843,8 @@ fn fun_87(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_outputs: Arc<metamo
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_outputs.clone())) {
         (txt, false, a_outputs) => {
-            let mut txt_1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_0: MidCode::Var = <MidCode::Var as ::std::default::Default>::default();
+            let mut txt_1: Tpl::Text;
+            let mut ret_0: MidCode::Var;
             let mut txt = (*txt).clone();
             ret_0 = listHead(a_outputs.clone())?;
             txt_1 = varBoxType(Tpl::emptyTxt.clone(), ret_0.clone())?;
@@ -887,7 +887,7 @@ fn lm_89(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<MidCode::Var>>) -
         let mut lstElt_89 = lstElt_89.clone();
         txt = (match lstElt_89.clone() {
         mut i_o => {
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_0: Tpl::Text;
             txt_0 = varBoxType(Tpl::emptyTxt.clone(), i_o.clone())?;
             txt = fun_88(txt.clone(), txt_0.clone(), i_o.clone())?;
             txt.clone()
@@ -925,7 +925,7 @@ fn fun_92(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_outputs: Arc<metamo
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_outputs.clone())) {
         (txt, false, a_outputs) => {
-            let mut ret_0: MidCode::Var = <MidCode::Var as ::std::default::Default>::default();
+            let mut ret_0: MidCode::Var;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("return out_")).clone() }))?;
             ret_0 = listHead(a_outputs.clone())?;
@@ -947,29 +947,29 @@ pub fn genBoxPtrFunction(mut in_txt: Tpl::Text, mut in_a_fn: MidCode::Function) 
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_fn.clone()) {
         (mut txt, MidCode::Function { outputs: ref i_outputs, inputs: ref i_inputs, name: ref i_name, .. }) => {
-            let mut ret_22: bool = false;
-            let mut txt_20: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_20: Arc<metamodelica::List<MidCode::Var>> = metamodelica::nil();
-            let mut txt_18: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_18: bool = false;
-            let mut l_boxes: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_15: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_15: Arc<metamodelica::List<MidCode::Var>> = metamodelica::nil();
-            let mut txt_14: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_callvars: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_12: bool = false;
-            let mut l_callretval: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_unboxes: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_9: bool = false;
-            let mut l_boxDefs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_callOutDefs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_unboxDefs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_4: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_4: Arc<metamodelica::List<MidCode::Var>> = metamodelica::nil();
-            let mut txt_3: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_arguments: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_1: bool = false;
-            let mut l_returnType: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_22: bool;
+            let mut txt_20: Tpl::Text;
+            let mut ret_20: Arc<metamodelica::List<MidCode::Var>>;
+            let mut txt_18: Tpl::Text;
+            let mut ret_18: bool;
+            let mut l_boxes: Tpl::Text;
+            let mut txt_15: Tpl::Text;
+            let mut ret_15: Arc<metamodelica::List<MidCode::Var>>;
+            let mut txt_14: Tpl::Text;
+            let mut l_callvars: Tpl::Text;
+            let mut ret_12: bool;
+            let mut l_callretval: Tpl::Text;
+            let mut l_unboxes: Tpl::Text;
+            let mut ret_9: bool;
+            let mut l_boxDefs: Tpl::Text;
+            let mut l_callOutDefs: Tpl::Text;
+            let mut l_unboxDefs: Tpl::Text;
+            let mut txt_4: Tpl::Text;
+            let mut ret_4: Arc<metamodelica::List<MidCode::Var>>;
+            let mut txt_3: Tpl::Text;
+            let mut l_arguments: Tpl::Text;
+            let mut ret_1: bool;
+            let mut l_returnType: Tpl::Text;
             ret_1 = i_outputs.clone().is_empty();
             l_returnType = fun_64(Tpl::emptyTxt.clone(), ret_1.clone())?;
             txt_3 = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -1178,7 +1178,7 @@ fn fun_103(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_outputs: Arc<metam
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_outputs.clone())) {
         (txt, false, a_outputs) => {
-            let mut ret_0: MidCode::Var = <MidCode::Var as ::std::default::Default>::default();
+            let mut ret_0: MidCode::Var;
             let mut txt = (*txt).clone();
             ret_0 = listHead(a_outputs.clone())?;
             txt = genVarName(txt.clone(), ret_0.clone())?;
@@ -1198,7 +1198,7 @@ fn lm_104(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<MidCode::Var>>) 
         let mut lstElt_104 = lstElt_104.clone();
         txt = (match lstElt_104.clone() {
         mut i_v => {
-            let mut l_outPtrName: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_outPtrName: Tpl::Text;
             l_outPtrName = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("outPtr_")).clone() }))?;
             l_outPtrName = genVarName(l_outPtrName.clone(), i_v.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("if (")).clone() }))?;
@@ -1223,9 +1223,9 @@ pub fn genExit(mut in_txt: Tpl::Text, mut in_a_fn: MidCode::Function) -> Result<
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_fn.clone()) {
         (mut txt, MidCode::Function { outputs: ref i_outputs, exitId: mut i_exitId, .. }) => {
-            let mut ret_2: Arc<metamodelica::List<MidCode::Var>> = metamodelica::nil();
-            let mut ret_1: bool = false;
-            let mut l_returnString: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_2: Arc<metamodelica::List<MidCode::Var>>;
+            let mut ret_1: bool;
+            let mut l_returnString: Tpl::Text;
             ret_1 = i_outputs.clone().is_empty();
             l_returnString = fun_103(Tpl::emptyTxt.clone(), ret_1.clone(), i_outputs.clone())?;
             txt = genLabel(txt.clone(), i_exitId.clone())?;
@@ -1509,9 +1509,9 @@ fn fun_126(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_elementa
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_elementargs.clone(), in_a_metatypeCtor.clone(), in_a_metatypeSlots.clone())) {
         (txt, i_ty @ Deref @ DAE::Type::T_METARECORD { path: _, .. }, a_elementargs, a_metatypeCtor, a_metatypeSlots) => {
-            let mut txt_2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_arguments: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_2: Tpl::Text;
+            let mut txt_1: Tpl::Text;
+            let mut l_arguments: Tpl::Text;
             let mut txt = (*txt).clone();
             txt_1 = Tpl::writeText(Tpl::emptyTxt.clone(), a_metatypeSlots.clone())?;
             txt_1 = Tpl::writeTok(txt_1.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("+1")).clone() }))?;
@@ -1530,7 +1530,7 @@ fn fun_126(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_elementa
             txt.clone()
         },
         (txt, _, a_elementargs, a_metatypeCtor, a_metatypeSlots) => {
-            let mut l_arguments: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_arguments: Tpl::Text;
             let mut txt = (*txt).clone();
             l_arguments = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             l_arguments = smf_123(l_arguments.clone(), a_metatypeSlots.clone())?;
@@ -1614,7 +1614,7 @@ pub fn genRValue(mut in_txt: Tpl::Text, mut in_a_rvalue: MidCode::RValue) -> Res
             txt.clone()
         },
         (txt, MidCode::RValue::LITERALSTRING { value: i_value_3 }) => {
-            let mut ret_0: ArcStr = arcstr::literal!("");
+            let mut ret_0: ArcStr;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("mmc_mk_scon(\"")).clone() }))?;
             ret_0 = (Util::escapeModelicaStringToCString((i_value_3.clone()).clone())).clone();
@@ -1623,10 +1623,10 @@ pub fn genRValue(mut in_txt: Tpl::Text, mut in_a_rvalue: MidCode::RValue) -> Res
             txt.clone()
         },
         (txt, MidCode::RValue::LITERALMETATYPE { elements: i_elements, ty: i_ty }) => {
-            let mut l_elementargs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_metatypeCtor: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_2: i32 = 0;
-            let mut l_metatypeSlots: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_elementargs: Tpl::Text;
+            let mut l_metatypeCtor: Tpl::Text;
+            let mut ret_2: i32;
+            let mut l_metatypeSlots: Tpl::Text;
             let mut txt = (*txt).clone();
             ret_2 = (i_elements.clone().len() as i32);
             l_metatypeSlots = Tpl::writeStr(Tpl::emptyTxt.clone(), (intString(ret_2.clone())).clone())?;
@@ -1638,7 +1638,7 @@ pub fn genRValue(mut in_txt: Tpl::Text, mut in_a_rvalue: MidCode::RValue) -> Res
             txt.clone()
         },
         (txt, MidCode::RValue::METAFIELD { src: i_src, index: i_index, ty: _ }) => {
-            let mut ret_5: i32 = 0;
+            let mut ret_5: i32;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("MMC_FETCH(MMC_OFFSET(MMC_UNTAGPTR(")).clone() }))?;
             txt = genVarName(txt.clone(), i_src.clone())?;
@@ -1980,12 +1980,12 @@ fn fun_141(mut in_txt: Tpl::Text, mut in_a_terminator: MidCode::Terminator, mut 
             txt.clone()
         },
         (mut txt, MidCode::Terminator::CALL { func: ref i_func, builtin: mut i_builtin, inputs: ref i_inputs, outputs: ref i_outputs, next: mut i_next }, _) => {
-            let mut txt_4: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_4: Arc<metamodelica::List<MidCode::OutVar>> = metamodelica::nil();
-            let mut txt_3: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_arguments: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_returnAssignment: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_4: Tpl::Text;
+            let mut ret_4: Arc<metamodelica::List<MidCode::OutVar>>;
+            let mut txt_3: Tpl::Text;
+            let mut txt_2: Tpl::Text;
+            let mut l_arguments: Tpl::Text;
+            let mut l_returnAssignment: Tpl::Text;
             l_returnAssignment = fun_132(Tpl::emptyTxt.clone(), i_outputs.clone())?;
             txt_2 = fun_133(Tpl::emptyTxt.clone(), i_builtin.clone())?;
             txt_3 = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -2191,7 +2191,7 @@ fn fun_146(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_elements
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_elements.clone())) {
         (txt, Deref @ DAE::Type::T_METARECORD { index: i_index, .. }, _) => {
-            let mut ret_0: i32 = 0;
+            let mut ret_0: i32;
             let mut txt = (*txt).clone();
             ret_0 = intAdd(i_index.clone(), 3);
             txt = Tpl::writeStr(txt.clone(), (intString(ret_0.clone())).clone())?;
@@ -2213,7 +2213,7 @@ fn fun_146(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_elements
             txt.clone()
         },
         (txt, Deref @ DAE::Type::T_METALIST { ty: _ }, a_elements) => {
-            let mut ret_1: i32 = 0;
+            let mut ret_1: i32;
             let mut txt = (*txt).clone();
             ret_1 = (a_elements.clone().len() as i32);
             txt = fun_145(txt.clone(), ret_1.clone())?;
@@ -2756,11 +2756,11 @@ pub fn replaceDotAndUnderscore(mut in_txt: Tpl::Text, mut in_a_str: ArcStr) -> R
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_str.clone()) {
         (mut txt, mut i_name) => {
-            let mut ret_4: ArcStr = arcstr::literal!("");
-            let mut ret_3: ArcStr = arcstr::literal!("");
-            let mut l_str__underscores: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_1: ArcStr = arcstr::literal!("");
-            let mut l_str__dots: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_4: ArcStr;
+            let mut ret_3: ArcStr;
+            let mut l_str__underscores: Tpl::Text;
+            let mut ret_1: ArcStr;
+            let mut l_str__dots: Tpl::Text;
             ret_1 = (System::stringReplace((i_name.clone()).clone(), (literal!(".")).clone(), (literal!("_")).clone())?).clone();
             l_str__dots = Tpl::writeStr(Tpl::emptyTxt.clone(), (ret_1.clone()).clone())?;
             ret_3 = (System::stringReplace((Tpl::textString(l_str__dots.clone())?).clone(), (literal!("_")).clone(), (literal!("__")).clone())?).clone();

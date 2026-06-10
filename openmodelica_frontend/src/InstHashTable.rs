@@ -146,7 +146,7 @@ pub fn addToInstCache(mut fullEnvPathPlusClass: Arc<Absyn::Path>, mut fullInstOp
         if let Ok(__v) = (|| -> Result<_> {
             let (None, Some(_)) = __mc_input.clone() else { bail!("nomatch") };
             let mut instHash: HashTable;
-            let mut opt: Option<CachedInstItem> = None;
+            let mut opt: Option<CachedInstItem>;
             instHash = crate::Globals::instHashIndex.with(|__root| __root.borrow().clone());
             let __pa0 = ::match_deref::match_deref! { match &(BaseHashTable::get(fullEnvPathPlusClass.clone(), instHash.clone())?) {
                 Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil } } => __pa0.clone(),
@@ -168,7 +168,7 @@ pub fn addToInstCache(mut fullEnvPathPlusClass: Arc<Absyn::Path>, mut fullInstOp
         if let Ok(__v) = (|| -> Result<_> {
             let (Some(_), None) = __mc_input.clone() else { bail!("nomatch") };
             let mut instHash: HashTable;
-            let mut lst: Arc<metamodelica::List<Option<CachedInstItem>>> = metamodelica::nil();
+            let mut lst: Arc<metamodelica::List<Option<CachedInstItem>>>;
             instHash = crate::Globals::instHashIndex.with(|__root| __root.borrow().clone());
             let __pa0 = ::match_deref::match_deref! { match &(BaseHashTable::get(fullEnvPathPlusClass.clone(), instHash.clone())?) {
                 Deref @ metamodelica::List::Cons { head: _, tail: __pa0 @ Deref @ metamodelica::List::Cons { head: Some(_), tail: Deref @ metamodelica::List::Nil } } => __pa0.clone(),

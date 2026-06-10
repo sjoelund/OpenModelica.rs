@@ -128,11 +128,11 @@ pub fn unparseClassAttributesStr(mut inClass: Arc<Absyn::Class>) -> Result<ArcSt
     let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(inClass.clone()) {
         Deref @ Absyn::Class { partialPrefix: p, finalPrefix: f, encapsulatedPrefix: e, restriction: r, .. } => {
-            let mut s1: ArcStr = arcstr::literal!("");
-            let mut s2: ArcStr = arcstr::literal!("");
-            let mut s2_1: ArcStr = arcstr::literal!("");
-            let mut s3: ArcStr = arcstr::literal!("");
-            let mut r#str: ArcStr = arcstr::literal!("");
+            let mut s1: ArcStr;
+            let mut s2: ArcStr;
+            let mut s2_1: ArcStr;
+            let mut s3: ArcStr;
+            let mut r#str: ArcStr;
             s1 = (if (p.clone()) {literal!("partial ")} else {literal!("")}).clone();
             s2 = (if (f.clone()) {literal!("final ")} else {literal!("")}).clone();
             s2_1 = (if (e.clone()) {literal!("encapsulated ")} else {literal!("")}).clone();
@@ -340,7 +340,7 @@ pub fn printSubscriptStr(mut inSubscript: Arc<Absyn::Subscript>) -> Result<ArcSt
             literal!(":")
         },
         Deref @ Absyn::Subscript::SUBSCRIPT { subscript: e1 } => {
-            let mut s: ArcStr = arcstr::literal!("");
+            let mut s: ArcStr;
             s = (printExpStr(e1.clone())?).clone();
             s.clone()
         },
@@ -430,18 +430,18 @@ pub fn printComponentRefStr(mut inComponentRef: Arc<Absyn::ComponentRef>) -> Res
     let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(inComponentRef.clone()) {
         Deref @ Absyn::ComponentRef::CREF_IDENT { name: s, subscripts: subs } => {
-            let mut subsstr: ArcStr = arcstr::literal!("");
-            let mut s_1: ArcStr = arcstr::literal!("");
+            let mut subsstr: ArcStr;
+            let mut s_1: ArcStr;
             subsstr = (printSubscriptsStr(subs.clone())?).clone();
             s_1 = (stringAppend((s.clone()).clone(), (subsstr.clone()).clone())).clone();
             s_1.clone()
         },
         Deref @ Absyn::ComponentRef::CREF_QUAL { name: s, subscripts: subs, componentRef: cr } => {
-            let mut subsstr: ArcStr = arcstr::literal!("");
-            let mut s_1: ArcStr = arcstr::literal!("");
-            let mut crs: ArcStr = arcstr::literal!("");
-            let mut s_2: ArcStr = arcstr::literal!("");
-            let mut s_3: ArcStr = arcstr::literal!("");
+            let mut subsstr: ArcStr;
+            let mut s_1: ArcStr;
+            let mut crs: ArcStr;
+            let mut s_2: ArcStr;
+            let mut s_3: ArcStr;
             crs = (printComponentRefStr(cr.clone())?).clone();
             subsstr = (printSubscriptsStr(subs.clone())?).clone();
             s_1 = (stringAppend((s.clone()).clone(), (subsstr.clone()).clone())).clone();
@@ -450,8 +450,8 @@ pub fn printComponentRefStr(mut inComponentRef: Arc<Absyn::ComponentRef>) -> Res
             s_3.clone()
         },
         Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { componentRef: cr } => {
-            let mut crs: ArcStr = arcstr::literal!("");
-            let mut s_3: ArcStr = arcstr::literal!("");
+            let mut crs: ArcStr;
+            let mut s_3: ArcStr;
             crs = (printComponentRefStr(cr.clone())?).clone();
             s_3 = (stringAppend((literal!(".")).clone(), (crs.clone()).clone())).clone();
             s_3.clone()
@@ -482,9 +482,9 @@ pub fn printSubscriptsStr(mut inAbsynSubscriptLst: Arc<metamodelica::List<Arc<Ab
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 l => {
-                    let mut s: ArcStr = arcstr::literal!("");
-                    let mut s_1: ArcStr = arcstr::literal!("");
-                    let mut s_2: ArcStr = arcstr::literal!("");
+                    let mut s: ArcStr;
+                    let mut s_1: ArcStr;
+                    let mut s_2: ArcStr;
                     s = (printListStr(l.clone(), (std::sync::Arc::new(printSubscriptStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Subscript>) -> Result<ArcStr> + 'static>), (literal!(",")).clone())?).clone();
                     s_1 = (stringAppend((literal!("[")).clone(), (s.clone()).clone())).clone();
                     s_2 = (stringAppend((s_1.clone()).clone(), (literal!("]")).clone())).clone();
@@ -505,10 +505,10 @@ pub fn printFunctionArgsStr(mut inFunctionArgs: Arc<Absyn::FunctionArgs>) -> Res
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::FunctionArgs::FUNCTIONARGS { args: expargs @ Deref @ metamodelica::List::Cons { head: _, tail: _ }, argNames: nargs @ Deref @ metamodelica::List::Cons { head: _, tail: _ } } => {
-                    let mut s1: ArcStr = arcstr::literal!("");
-                    let mut s2: ArcStr = arcstr::literal!("");
-                    let mut s3: ArcStr = arcstr::literal!("");
-                    let mut r#str: ArcStr = arcstr::literal!("");
+                    let mut s1: ArcStr;
+                    let mut s2: ArcStr;
+                    let mut s3: ArcStr;
+                    let mut r#str: ArcStr;
                     s1 = (printListStr(expargs.clone(), (std::sync::Arc::new(printExpStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<ArcStr> + 'static>), (literal!(", ")).clone())?).clone();
                     s2 = (stringAppend((s1.clone()).clone(), (literal!(", ")).clone())).clone();
                     s3 = (printListStr(nargs.clone(), (std::sync::Arc::new(printNamedArgStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::NamedArg>) -> Result<ArcStr> + 'static>), (literal!(", ")).clone())?).clone();
@@ -521,7 +521,7 @@ pub fn printFunctionArgsStr(mut inFunctionArgs: Arc<Absyn::FunctionArgs>) -> Res
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::FunctionArgs::FUNCTIONARGS { args: Deref @ metamodelica::List::Nil, argNames: nargs } => {
-                    let mut r#str: ArcStr = arcstr::literal!("");
+                    let mut r#str: ArcStr;
                     r#str = (printListStr(nargs.clone(), (std::sync::Arc::new(printNamedArgStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::NamedArg>) -> Result<ArcStr> + 'static>), (literal!(", ")).clone())?).clone();
                     Ok(r#str.clone())
                 }
@@ -531,7 +531,7 @@ pub fn printFunctionArgsStr(mut inFunctionArgs: Arc<Absyn::FunctionArgs>) -> Res
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::FunctionArgs::FUNCTIONARGS { args: expargs, argNames: Deref @ metamodelica::List::Nil } => {
-                    let mut r#str: ArcStr = arcstr::literal!("");
+                    let mut r#str: ArcStr;
                     r#str = (printListStr(expargs.clone(), (std::sync::Arc::new(printExpStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<ArcStr> + 'static>), (literal!(", ")).clone())?).clone();
                     Ok(r#str.clone())
                 }
@@ -541,9 +541,9 @@ pub fn printFunctionArgsStr(mut inFunctionArgs: Arc<Absyn::FunctionArgs>) -> Res
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::FunctionArgs::FOR_ITER_FARG { exp, iterators, .. } => {
-                    let mut r#str: ArcStr = arcstr::literal!("");
-                    let mut estr: ArcStr = arcstr::literal!("");
-                    let mut istr: ArcStr = arcstr::literal!("");
+                    let mut r#str: ArcStr;
+                    let mut estr: ArcStr;
+                    let mut istr: ArcStr;
                     estr = (printExpStr(exp.clone())?).clone();
                     istr = (printIteratorsStr(iterators.clone())).clone();
                     r#str = stringAppendList(list![(estr.clone()).clone(), (literal!(" for ")).clone(), (istr.clone()).clone()]);
@@ -572,9 +572,9 @@ pub fn printIteratorsStr(mut iterators: Arc<metamodelica::List<Arc<Absyn::ForIte
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ForIterator { name: id, guardExp: Some(guardExp), range: Some(exp) }, tail: Deref @ metamodelica::List::Nil } => {
-                    let mut s: ArcStr = arcstr::literal!("");
-                    let mut s1: ArcStr = arcstr::literal!("");
-                    let mut s2: ArcStr = arcstr::literal!("");
+                    let mut s: ArcStr;
+                    let mut s1: ArcStr;
+                    let mut s2: ArcStr;
                     s1 = (printExpStr(exp.clone())?).clone();
                     s2 = (printExpStr(guardExp.clone())?).clone();
                     s = stringAppendList(list![(id.clone()).clone(), (literal!(" guard ")).clone(), (s2.clone()).clone(), (literal!(" in ")).clone(), (s1.clone()).clone()]);
@@ -586,8 +586,8 @@ pub fn printIteratorsStr(mut iterators: Arc<metamodelica::List<Arc<Absyn::ForIte
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ForIterator { name: id, guardExp: None, range: Some(exp) }, tail: Deref @ metamodelica::List::Nil } => {
-                    let mut s: ArcStr = arcstr::literal!("");
-                    let mut s1: ArcStr = arcstr::literal!("");
+                    let mut s: ArcStr;
+                    let mut s1: ArcStr;
                     s1 = (printExpStr(exp.clone())?).clone();
                     s = stringAppendList(list![(id.clone()).clone(), (literal!(" in ")).clone(), (s1.clone()).clone()]);
                     Ok(s.clone())
@@ -606,9 +606,9 @@ pub fn printIteratorsStr(mut iterators: Arc<metamodelica::List<Arc<Absyn::ForIte
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: x, tail: rest } => {
-                    let mut s: ArcStr = arcstr::literal!("");
-                    let mut s1: ArcStr = arcstr::literal!("");
-                    let mut s2: ArcStr = arcstr::literal!("");
+                    let mut s: ArcStr;
+                    let mut s1: ArcStr;
+                    let mut s2: ArcStr;
                     s1 = (printIteratorsStr(list![x.clone()])).clone();
                     s2 = (printIteratorsStr(rest.clone())).clone();
                     s = stringAppendList(list![(s1.clone()).clone(), (literal!(", ")).clone(), (s2.clone()).clone()]);
@@ -626,9 +626,9 @@ pub fn printNamedArgStr(mut inNamedArg: Arc<Absyn::NamedArg>) -> Result<ArcStr> 
     let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(inNamedArg.clone()) {
         Deref @ Absyn::NamedArg { argName: ident, argValue: e } => {
-            let mut s1: ArcStr = arcstr::literal!("");
-            let mut s2: ArcStr = arcstr::literal!("");
-            let mut r#str: ArcStr = arcstr::literal!("");
+            let mut s1: ArcStr;
+            let mut s2: ArcStr;
+            let mut r#str: ArcStr;
             s1 = (stringAppend((ident.clone()).clone(), (literal!(" = ")).clone())).clone();
             s2 = (printExpStr(e.clone())?).clone();
             r#str = (stringAppend((s1.clone()).clone(), (s2.clone()).clone())).clone();
@@ -643,7 +643,7 @@ pub fn printNamedArgValueStr(mut inNamedArg: Arc<Absyn::NamedArg>) -> Result<Arc
     let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(inNamedArg.clone()) {
         Deref @ Absyn::NamedArg { argValue: e, .. } => {
-            let mut r#str: ArcStr = arcstr::literal!("");
+            let mut r#str: ArcStr;
             r#str = (printExpStr(e.clone())?).clone();
             r#str.clone()
         },
@@ -659,7 +659,7 @@ pub fn shouldParenthesize(mut inOperand: Arc<Absyn::Exp>, mut inOperator: Arc<Ab
             true
         },
         _ => {
-            let mut diff: i32 = 0;
+            let mut diff: i32;
             diff = Util::intCompare(expPriority(inOperand.clone(), inLhs.clone())?, expPriority(inOperator.clone(), inLhs.clone())?);
             shouldParenthesize2(diff.clone(), inOperand.clone(), inLhs.clone())
         },
@@ -813,7 +813,7 @@ fn printOperandStr(mut inOperand: Arc<Absyn::Exp>, mut inOperation: Arc<Absyn::E
         let __mc_input = inLhs.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            let mut op_str: ArcStr = arcstr::literal!("");
+            let mut op_str: ArcStr;
             let true = (shouldParenthesize(inOperand.clone(), inOperation.clone(), inLhs.clone())?) else { bail!("pattern mismatch") };
             op_str = (printExpStr(inOperand.clone())?).clone();
             op_str = stringAppendList(list![(literal!("(")).clone(), (op_str.clone()).clone(), (literal!(")")).clone()]);
@@ -871,7 +871,7 @@ fn printListStr<Type_a: Clone + 'static + metamodelica::gc::MMTrace>(mut inTypeA
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: h, tail: Deref @ metamodelica::List::Nil }, r, _) => {
-                    let mut s: ArcStr = arcstr::literal!("");
+                    let mut s: ArcStr;
                     s = (r(h.clone())?).clone();
                     Ok(s.clone())
                 }
@@ -881,10 +881,10 @@ fn printListStr<Type_a: Clone + 'static + metamodelica::gc::MMTrace>(mut inTypeA
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: h, tail: t }, r, sep) => {
-                    let mut s: ArcStr = arcstr::literal!("");
-                    let mut srest: ArcStr = arcstr::literal!("");
-                    let mut s_1: ArcStr = arcstr::literal!("");
-                    let mut s_2: ArcStr = arcstr::literal!("");
+                    let mut s: ArcStr;
+                    let mut srest: ArcStr;
+                    let mut s_1: ArcStr;
+                    let mut s_2: ArcStr;
                     s = (r(h.clone())?).clone();
                     srest = (printListStr(t.clone(), r.clone(), (sep.clone()).clone())?).clone();
                     s_1 = (stringAppend((s.clone()).clone(), (sep.clone()).clone())).clone();
@@ -1028,7 +1028,7 @@ fn printStringCommentOption(mut inStringOption: Option<ArcStr>) -> Result<()> {
             ()
         },
         Some(mut s) => {
-            let mut r#str: ArcStr = arcstr::literal!("");
+            let mut r#str: ArcStr;
             r#str = stringAppendList(list![(literal!("SOME(\"")).clone(), (s.clone()).clone(), (literal!("\")")).clone()]);
             Print::printBuf((r#str.clone()).clone())?;
             ()

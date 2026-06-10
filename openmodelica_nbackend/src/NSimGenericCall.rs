@@ -198,19 +198,19 @@ pub fn fromIdentifier(mut ident_tpl: (Arc<Identifier::Identifier>, i32)) -> Resu
     call = (::match_deref::match_deref! { match &(eqn.clone()) {
         Deref @ Equation::FOR_EQUATION { body: Deref @ metamodelica::List::Cons { head: __esc_body @ Deref @ Equation::IF_EQUATION { .. }, tail: Deref @ metamodelica::List::Nil }, .. } => {
             body = (*__esc_body).clone();
-            let mut iters: Arc<metamodelica::List<Arc<SimIterator::SimIterator>>> = metamodelica::nil();
+            let mut iters: Arc<metamodelica::List<Arc<SimIterator::SimIterator>>>;
             iters = SimIterator::fromIterator(var_field!((*eqn).iter, Equation::Equation::FOR_EQUATION).clone())?;
             Arc::new(NSimGenericCall::IF_GENERIC_CALL { index: index.clone(), iters: iters.clone(), branches: SimBranch::fromIfBody(var_field!((*body).body, Equation::Equation::IF_EQUATION).clone())?, resizable: resizable.clone() })
         },
         Deref @ Equation::FOR_EQUATION { body: Deref @ metamodelica::List::Cons { head: __esc_body @ Deref @ Equation::WHEN_EQUATION { .. }, tail: Deref @ metamodelica::List::Nil }, .. } => {
             body = (*__esc_body).clone();
-            let mut iters: Arc<metamodelica::List<Arc<SimIterator::SimIterator>>> = metamodelica::nil();
+            let mut iters: Arc<metamodelica::List<Arc<SimIterator::SimIterator>>>;
             iters = SimIterator::fromIterator(var_field!((*eqn).iter, Equation::Equation::FOR_EQUATION).clone())?;
             Arc::new(NSimGenericCall::WHEN_GENERIC_CALL { index: index.clone(), iters: iters.clone(), branches: SimBranch::fromWhenBody(var_field!((*body).body, Equation::Equation::WHEN_EQUATION).clone())?, resizable: resizable.clone() })
         },
         Deref @ Equation::FOR_EQUATION { body: Deref @ metamodelica::List::Cons { head: __esc_body, tail: Deref @ metamodelica::List::Nil }, .. } => {
             body = (*__esc_body).clone();
-            let mut iters: Arc<metamodelica::List<Arc<SimIterator::SimIterator>>> = metamodelica::nil();
+            let mut iters: Arc<metamodelica::List<Arc<SimIterator::SimIterator>>>;
             iters = SimIterator::fromIterator(var_field!((*eqn).iter, Equation::Equation::FOR_EQUATION).clone())?;
             Arc::new(NSimGenericCall::SINGLE_GENERIC_CALL { index: index.clone(), iters: iters.clone(), lhs: Util::getOption(Equation::getLHS(body.clone())?)?, rhs: Util::getOption(Equation::getRHS(body.clone())?)?, resizable: resizable.clone() })
         },

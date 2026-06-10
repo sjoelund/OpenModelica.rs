@@ -69,9 +69,9 @@ fn friendly2(mut cond: bool, mut name: ArcStr) -> Result<ArcStr> {
     let mut friendly: ArcStr = arcstr::literal!("");
     friendly = ((match cond.clone() {
         true => {
-            let mut i: i32 = 0;
-            let mut strs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            let mut newName: ArcStr = arcstr::literal!("");
+            let mut i: i32;
+            let mut strs: Arc<metamodelica::List<ArcStr>>;
+            let mut newName: ArcStr;
             newName = (if (arcstr::literal!(Autoconf::os) == literal!("Windows_NT")) {System::stringReplace((name.clone()).clone(), (literal!("\\")).clone(), (literal!("/")).clone())?} else {name.clone()}).clone();
             (i, strs) = System::regex((newName.clone()).clone(), (literal!("^(.*/Compiler/)?(.*/testsuite/)?(.*/.openmodelica/libraries/)?(.*/lib/omlibrary/)?(.*/build/(install_cmake/)?)?(.*)$")).clone(), 8, true, false);
             friendly = ((strs.clone()).get(i.clone())?).clone();
@@ -94,7 +94,7 @@ pub fn friendlyPath(mut inPath: ArcStr) -> ArcStr {
         let __mc_input = ();
         if let Ok(__v) = (|| -> Result<_> {
             let () = __mc_input.clone() else { bail!("nomatch") };
-            let mut path: ArcStr = arcstr::literal!("");
+            let mut path: ArcStr;
             let true = (isRunning()?) else { bail!("pattern mismatch") };
             let false = (System::directoryExists((inPath.clone()).clone())) else { bail!("pattern mismatch") };
             let false = (System::regularFileExists((inPath.clone()).clone())) else { bail!("pattern mismatch") };

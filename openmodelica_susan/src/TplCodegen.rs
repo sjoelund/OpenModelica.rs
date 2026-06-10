@@ -149,8 +149,8 @@ fn fun_9(mut in_txt: Tpl::Text, mut in_a_statements: Arc<metamodelica::List<Arc<
             txt.clone()
         },
         (txt, i_sts, a_mf_locals, a_mf_outArgs, a_mf_inArgs) => {
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
             txt = typedIdentsEx(txt.clone(), a_mf_inArgs.clone(), (literal!("input")).clone(), (literal!("")).clone())?;
@@ -638,7 +638,7 @@ fn lm_30(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(ArcStr, Ar
             return Ok(txt.clone())
         },
         (txt, Deref @ metamodelica::List::Cons { head: (i_nm, i_ts), tail: rest }, a_outArgs) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = TplAbsyn::isTupleListMember((i_nm.clone()).clone(), a_outArgs.clone());
             txt = fun_29(txt.clone(), ret_0.clone())?;
@@ -2046,7 +2046,7 @@ fn fun_94(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_sl: Arc<metamodelic
             txt.clone()
         },
         (txt, _, a_sl) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = TplAbsyn::canBeEscapedUnquoted(a_sl.clone());
             txt = fun_93(txt.clone(), ret_0.clone(), a_sl.clone())?;
@@ -2080,7 +2080,7 @@ pub fn sConstStringToken(mut in_txt: Tpl::Text, mut in_a_it: Arc<Tpl::StringToke
             txt.clone()
         },
         (txt, Deref @ Tpl::StringToken::ST_STRING_LIST { strList: i_sl, .. }) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = TplAbsyn::canBeOnOneLine(i_sl.clone());
             txt = fun_94(txt.clone(), ret_0.clone(), i_sl.clone())?;

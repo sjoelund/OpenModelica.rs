@@ -108,19 +108,19 @@ pub fn dumpVisualization(mut in_txt: Tpl::Text, mut in_a_vis: VisualXML::Visuali
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_vis.clone())) {
         (txt, VisualXML::Visualization::SHAPE { shapeType: Deref @ DAE::Exp::SCONST { string: i_svalue }, T: i_T, r: i_r, r_shape: i_r__shape, lengthDir: i_lengthDir, widthDir: i_widthDir, color: i_color, ident: i_ident, length: i_length, width: i_width, height: i_height, extra: i_extra, specularCoeff: i_specularCoeff }) => {
-            let mut ret_12: ArcStr = arcstr::literal!("");
-            let mut ret_11: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-            let mut l_colorDump: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_9: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-            let mut l_wDirDump: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_7: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-            let mut l_lDirDump: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_5: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-            let mut l_r__shapeDump: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_3: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-            let mut l_rDump: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_1: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>> = metamodelica::nil();
-            let mut l_TDump: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_12: ArcStr;
+            let mut ret_11: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+            let mut l_colorDump: Tpl::Text;
+            let mut ret_9: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+            let mut l_wDirDump: Tpl::Text;
+            let mut ret_7: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+            let mut l_lDirDump: Tpl::Text;
+            let mut ret_5: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+            let mut l_r__shapeDump: Tpl::Text;
+            let mut ret_3: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+            let mut l_rDump: Tpl::Text;
+            let mut ret_1: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>>;
+            let mut l_TDump: Tpl::Text;
             let mut txt = (*txt).clone();
             ret_1 = Arc::new(i_T.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>());
             l_TDump = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -189,15 +189,15 @@ pub fn dumpVisualization(mut in_txt: Tpl::Text, mut in_a_vis: VisualXML::Visuali
             txt.clone()
         },
         (txt, VisualXML::Visualization::VECTOR { T: i_T, r: i_r, coordinates: i_coordinates, color: i_color, ident: i_ident, specularCoeff: i_specularCoeff, quantity: i_quantity, headAtOrigin: i_headAtOrigin, twoHeadedArrow: i_twoHeadedArrow }) => {
-            let mut ret_18: ArcStr = arcstr::literal!("");
-            let mut ret_17: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-            let mut ret_16: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-            let mut l_coordDump: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_14: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-            let mut ret_13: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>> = metamodelica::nil();
-            let mut l_colorDump: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_rDump: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_TDump: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_18: ArcStr;
+            let mut ret_17: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+            let mut ret_16: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+            let mut l_coordDump: Tpl::Text;
+            let mut ret_14: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+            let mut ret_13: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>>;
+            let mut l_colorDump: Tpl::Text;
+            let mut l_rDump: Tpl::Text;
+            let mut l_TDump: Tpl::Text;
             let mut txt = (*txt).clone();
             ret_13 = Arc::new(i_T.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>());
             l_TDump = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -248,13 +248,13 @@ pub fn dumpVisualization(mut in_txt: Tpl::Text, mut in_a_vis: VisualXML::Visuali
             txt.clone()
         },
         (txt, VisualXML::Visualization::SURFACE { T: i_T, r_0: i_r__0, color: i_color, ident: i_ident, nu: i_nu, nv: i_nv, wireframe: i_wireframe, multiColored: i_multiColored, specularCoeff: i_specularCoeff, transparency: i_transparency }) => {
-            let mut ret_23: ArcStr = arcstr::literal!("");
-            let mut ret_22: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-            let mut ret_21: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-            let mut l_r__0Dump: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_19: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>> = metamodelica::nil();
-            let mut l_colorDump: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_TDump: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_23: ArcStr;
+            let mut ret_22: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+            let mut ret_21: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+            let mut l_r__0Dump: Tpl::Text;
+            let mut ret_19: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>>;
+            let mut l_colorDump: Tpl::Text;
+            let mut l_TDump: Tpl::Text;
             let mut txt = (*txt).clone();
             ret_19 = Arc::new(i_T.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>());
             l_TDump = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -355,7 +355,7 @@ pub fn dumpExp(mut in_txt: Tpl::Text, mut in_a_expIn: Arc<DAE::Exp>) -> Result<T
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_expIn.clone())) {
         (txt, Deref @ DAE::Exp::ENUM_LITERAL { index: i_index, .. }) => {
-            let mut ret_0: ArcStr = arcstr::literal!("");
+            let mut ret_0: ArcStr;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<enum>")).clone() }))?;
             ret_0 = (intString(i_index.clone())).clone();
@@ -364,7 +364,7 @@ pub fn dumpExp(mut in_txt: Tpl::Text, mut in_a_expIn: Arc<DAE::Exp>) -> Result<T
             txt.clone()
         },
         (txt, i_expIn @ Deref @ DAE::Exp::BCONST { bool: _ }) => {
-            let mut ret_1: ArcStr = arcstr::literal!("");
+            let mut ret_1: ArcStr;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<bconst>")).clone() }))?;
             ret_1 = (ExpressionBasics::printExpStr(i_expIn.clone())?).clone();
@@ -373,7 +373,7 @@ pub fn dumpExp(mut in_txt: Tpl::Text, mut in_a_expIn: Arc<DAE::Exp>) -> Result<T
             txt.clone()
         },
         (txt, i_expIn @ Deref @ DAE::Exp::CREF { componentRef: _, .. }) => {
-            let mut ret_2: ArcStr = arcstr::literal!("");
+            let mut ret_2: ArcStr;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<cref>")).clone() }))?;
             ret_2 = (ExpressionBasics::printExpStr(i_expIn.clone())?).clone();
@@ -468,8 +468,8 @@ pub fn dumpExp(mut in_txt: Tpl::Text, mut in_a_expIn: Arc<DAE::Exp>) -> Result<T
             txt.clone()
         },
         (txt, Deref @ DAE::Exp::CALL { expLst: i_expLst, path: i_path, .. }) => {
-            let mut ret_4: ArcStr = arcstr::literal!("");
-            let mut l_elist: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_4: ArcStr;
+            let mut l_elist: Tpl::Text;
             let mut txt = (*txt).clone();
             l_elist = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             l_elist = lm_17(l_elist.clone(), i_expLst.clone())?;
@@ -487,7 +487,7 @@ pub fn dumpExp(mut in_txt: Tpl::Text, mut in_a_expIn: Arc<DAE::Exp>) -> Result<T
             txt.clone()
         },
         (txt, i_expIn) => {
-            let mut ret_5: ArcStr = arcstr::literal!("");
+            let mut ret_5: ArcStr;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<exp>")).clone() }))?;
             ret_5 = (ExpressionBasics::printExpStr(i_expIn.clone())?).clone();

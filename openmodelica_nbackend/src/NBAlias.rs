@@ -283,13 +283,13 @@ fn aliasDefault(mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqData::EqDa
         let mut new_iters: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>> = UnorderedSet::new((std::sync::Arc::new(BVariable::hash) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<i32> + 'static>), (std::sync::Arc::new(BVariable::equalName) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), 13);
         (::match_deref::match_deref! { match &((varData.clone(), eqData.clone())) {
         (Deref @ BVariable::VarData::VAR_DATA_SIM { .. }, Deref @ BEquation::EqData::EQ_DATA_SIM { .. }) => {
-            let mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> as ::std::default::Default>::default();
-            let mut newEquations: Arc<EquationPointers::EquationPointers> = Arc::new(<EquationPointers::EquationPointers as ::std::default::Default>::default());
-            let mut alias_vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
-            let mut const_vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
-            let mut non_trivial_alias: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
-            let mut non_trivial_eqs: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
-            let mut auxEquations: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
+            let mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>;
+            let mut newEquations: Arc<EquationPointers::EquationPointers>;
+            let mut alias_vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>;
+            let mut const_vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>;
+            let mut non_trivial_alias: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>;
+            let mut non_trivial_eqs: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>;
+            let mut auxEquations: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>;
             (replacements, newEquations) = aliasCausalize(var_field!((*varData).unknowns, VarData::VarData::VAR_DATA_SIM).clone(), var_field!((*eqData).simulation, EqData::EqData::EQ_DATA_SIM).clone(), kind.clone(), (literal!("Simulation")).clone())?;
             (replacements, auxEquations) = checkReplacements(replacements.clone(), eqData.clone())?;
             (eqData, varData) = Replacements::applySimple(eqData.clone(), varData.clone(), replacements.clone())?;
@@ -471,10 +471,10 @@ fn aliasClocks(mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqData::EqDat
     let mut eqData: Arc<EqData::EqData> = eqData;
     (varData, eqData) = (::match_deref::match_deref! { match &((varData.clone(), eqData.clone())) {
         (Deref @ BVariable::VarData::VAR_DATA_SIM { .. }, Deref @ BEquation::EqData::EQ_DATA_SIM { .. }) => {
-            let mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> as ::std::default::Default>::default();
-            let mut newEquations: Arc<EquationPointers::EquationPointers> = Arc::new(<EquationPointers::EquationPointers as ::std::default::Default>::default());
-            let mut alias_vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
-            let mut auxEquations: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
+            let mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>;
+            let mut newEquations: Arc<EquationPointers::EquationPointers>;
+            let mut alias_vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>;
+            let mut auxEquations: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>;
             (replacements, newEquations) = aliasCausalize(var_field!((*varData).clocks, VarData::VarData::VAR_DATA_SIM).clone(), var_field!((*eqData).clocked, EqData::EqData::EQ_DATA_SIM).clone(), kind.clone(), (literal!("Clocked")).clone())?;
             (replacements, auxEquations) = checkReplacements(replacements.clone(), eqData.clone())?;
             (eqData, varData) = Replacements::applySimple(eqData.clone(), varData.clone(), replacements.clone())?;
@@ -556,7 +556,7 @@ fn findSimpleEquation(mut eq_ptr: Pointer::Pointer<Arc<Equation::Equation>>, mut
     (map, delete) = (::match_deref::match_deref! { match &(crefTpl.clone()) {
         CrefTpl { cr_lst: Deref @ metamodelica::List::Cons { head: cr1, tail: Deref @ metamodelica::List::Nil }, .. } => {
             let mut set_ptr: SetPtr;
-            let mut set: Arc<AliasSet::AliasSet> = Arc::new(<AliasSet::AliasSet as ::std::default::Default>::default());
+            let mut set: Arc<AliasSet::AliasSet>;
             if !(UnorderedMap::contains(cr1.clone(), map.clone())?) {
                 set = EMPTY_ALIAS_SET().clone();
                 assign_field!(
@@ -581,9 +581,9 @@ fn findSimpleEquation(mut eq_ptr: Pointer::Pointer<Arc<Equation::Equation>>, mut
             let mut set_ptr: SetPtr;
             let mut set1_ptr: SetPtr;
             let mut set2_ptr: SetPtr;
-            let mut set: Arc<AliasSet::AliasSet> = Arc::new(<AliasSet::AliasSet as ::std::default::Default>::default());
-            let mut set1: Arc<AliasSet::AliasSet> = Arc::new(<AliasSet::AliasSet as ::std::default::Default>::default());
-            let mut set2: Arc<AliasSet::AliasSet> = Arc::new(<AliasSet::AliasSet as ::std::default::Default>::default());
+            let mut set: Arc<AliasSet::AliasSet>;
+            let mut set1: Arc<AliasSet::AliasSet>;
+            let mut set2: Arc<AliasSet::AliasSet>;
             if UnorderedMap::contains(cr1.clone(), map.clone())? && UnorderedMap::contains(cr2.clone(), map.clone())? {
                 set1_ptr = UnorderedMap::getOrFail(cr1.clone(), map.clone())?;
                 set2_ptr = UnorderedMap::getOrFail(cr2.clone(), map.clone())?;
@@ -727,7 +727,7 @@ fn isSimpleExp(mut exp: Arc<Expression::NFExpression>, mut simple: bool) -> (boo
             (simple.clone(), num_cref.clone())
         },
         Deref @ Expression::BINARY { operator: Deref @ Operator::OPERATOR { op, .. }, .. } => {
-            let mut num_cref_tmp: i32 = 0;
+            let mut num_cref_tmp: i32;
             (simple, num_cref) = isSimpleExp(var_field!((*exp).exp2, Expression::NFExpression::BINARY).clone(), true);
             if op.clone() == Operator::Op::DIV.clone() && num_cref.clone() != 0 {
                 simple = false;
@@ -739,7 +739,7 @@ fn isSimpleExp(mut exp: Arc<Expression::NFExpression>, mut simple: bool) -> (boo
             (simple.clone(), num_cref.clone())
         },
         Deref @ Expression::LBINARY { .. } => {
-            let mut num_cref_tmp: i32 = 0;
+            let mut num_cref_tmp: i32;
             (simple, num_cref) = isSimpleExp(var_field!((*exp).exp1, Expression::NFExpression::LBINARY).clone(), true);
             (simple, num_cref_tmp) = isSimpleExp(var_field!((*exp).exp2, Expression::NFExpression::LBINARY).clone(), simple.clone());
             num_cref = num_cref.clone() + num_cref_tmp.clone();
@@ -747,7 +747,7 @@ fn isSimpleExp(mut exp: Arc<Expression::NFExpression>, mut simple: bool) -> (boo
             (simple.clone(), num_cref.clone())
         },
         Deref @ Expression::MULTARY { operator: Deref @ Operator::OPERATOR { op, .. }, .. } => {
-            let mut num_cref_tmp: i32 = 0;
+            let mut num_cref_tmp: i32;
             for mut arg in &*var_field!((*exp).inv_arguments, Expression::NFExpression::MULTARY).clone() {
                 let mut arg = arg.clone();
                 (simple, num_cref_tmp) = isSimpleExp(arg.clone(), simple.clone());
@@ -828,9 +828,9 @@ fn createReplacementRules(mut set: Arc<AliasSet::AliasSet>, mut replacements: Ar
         let mut var_to_keep: Pointer::Pointer<Pointer::Pointer<Arc<Variable::NFVariable>>> = Pointer::create(Pointer::create(BVariable::DUMMY_VARIABLE().clone()));
         (match set.const_opt.clone() {
         Some(mut const_eq) => {
-            let mut vars: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
-            let mut eqs: Arc<EquationPointers::EquationPointers> = Arc::new(<EquationPointers::EquationPointers as ::std::default::Default>::default());
-            let mut comps: Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>> = metamodelica::nil();
+            let mut vars: Arc<VariablePointers::VariablePointers>;
+            let mut eqs: Arc<EquationPointers::EquationPointers>;
+            let mut comps: Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>>;
             vars = BVariable::VariablePointers::fromList(({
         let mut __acc: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
         for mut cr in (set.simple_variables.clone()).into_iter().cloned() {
@@ -845,15 +845,15 @@ fn createReplacementRules(mut set: Arc<AliasSet::AliasSet>, mut replacements: Ar
             replacements.clone()
         },
         _ => {
-            let mut rhs: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut solved_eq: Arc<Equation::Equation> = Arc::new(Equation::DUMMY_EQUATION);
+            let mut rhs: Arc<Expression::NFExpression>;
+            let mut solved_eq: Arc<Equation::Equation>;
             let mut eq: Pointer::Pointer<Arc<Equation::Equation>>;
-            let mut alias_vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
-            let mut vars: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
-            let mut var_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
-            let mut eqs: Arc<EquationPointers::EquationPointers> = Arc::new(<EquationPointers::EquationPointers as ::std::default::Default>::default());
-            let mut comps: Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>> = metamodelica::nil();
-            let mut collector: Arc<AttributeCollector::AttributeCollector> = Arc::new(<AttributeCollector::AttributeCollector as ::std::default::Default>::default());
+            let mut alias_vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>;
+            let mut vars: Arc<VariablePointers::VariablePointers>;
+            let mut var_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>;
+            let mut eqs: Arc<EquationPointers::EquationPointers>;
+            let mut comps: Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>>;
+            let mut collector: Arc<AttributeCollector::AttributeCollector>;
             (alias_vars, collector) = chooseVariableToKeep(({
         let mut __acc: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
         for mut cr in (set.simple_variables.clone()).into_iter().cloned() {

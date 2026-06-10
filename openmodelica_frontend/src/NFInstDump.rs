@@ -102,7 +102,7 @@ pub fn dumpUntypedComponentDims(mut inComponent: Arc<NFInstTypes::Component>) ->
     let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(inComponent.clone()) {
         Deref @ NFInstTypes::Component::UNTYPED_COMPONENT { dimensions: dims, .. } => {
-            let mut dims_str: ArcStr = arcstr::literal!("");
+            let mut dims_str: ArcStr;
             dims_str = (Array::toString(dims.clone(), (std::sync::Arc::new(dimensionStr) as std::sync::Arc<dyn ::std::ops::Fn(NFInstTypes::Dimension) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("[")).clone(), (literal!(", ")).clone(), (literal!("]")).clone(), false, 0)?).clone();
             dims_str.clone()
         },

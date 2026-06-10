@@ -407,7 +407,7 @@ fn stringDelimitListAndSeparate2(mut inStringLst1: Arc<metamodelica::List<ArcStr
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: f, tail: r }, sep1, sep2, n, iter) => {
-                    let mut iter_1: i32 = 0;
+                    let mut iter_1: i32;
                     let 0 = (intMod(iter.clone(), n.clone())) else { bail!("pattern mismatch") };
                     iter_1 = iter.clone() + 1;
                     Print::printBuf((f.clone()).clone())?;
@@ -422,7 +422,7 @@ fn stringDelimitListAndSeparate2(mut inStringLst1: Arc<metamodelica::List<ArcStr
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: f, tail: r }, sep1, sep2, n, iter) => {
-                    let mut iter_1: i32 = 0;
+                    let mut iter_1: i32;
                     iter_1 = iter.clone() + 1;
                     Print::printBuf((f.clone()).clone())?;
                     Print::printBuf((sep1.clone()).clone())?;
@@ -937,12 +937,12 @@ pub fn buildMapStr(mut inLst1: Arc<metamodelica::List<ArcStr>>, mut inLst2: Arc<
             literal!("")
         },
         (Deref @ metamodelica::List::Cons { head: fa, tail: Deref @ metamodelica::List::Nil }, Deref @ metamodelica::List::Cons { head: fb, tail: Deref @ metamodelica::List::Nil }, md, _) => {
-            let mut r#str: ArcStr = arcstr::literal!("");
+            let mut r#str: ArcStr;
             r#str = stringAppendList(list![(fa.clone()).clone(), (md.clone()).clone(), (fb.clone()).clone()]);
             r#str.clone()
         },
         (Deref @ metamodelica::List::Cons { head: fa, tail: ra }, Deref @ metamodelica::List::Cons { head: fb, tail: rb }, md, ed) => {
-            let mut r#str: ArcStr = arcstr::literal!("");
+            let mut r#str: ArcStr;
             r#str = (buildMapStr(ra.clone(), rb.clone(), (md.clone()).clone(), (ed.clone()).clone())?).clone();
             r#str = stringAppendList(list![(fa.clone()).clone(), (md.clone()).clone(), (fb.clone()).clone(), (ed.clone()).clone(), (r#str.clone()).clone()]);
             r#str.clone()
@@ -1126,20 +1126,20 @@ fn createDirectoryTreeH(mut inString: ArcStr, mut parentDir: ArcStr, mut parentD
         let __mc_input = parentDirExists.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            let mut b: bool = false;
+            let mut b: bool;
             let true = (stringEqual((parentDir.clone()).clone(), (System::dirname((parentDir.clone()).clone())).clone())) else { bail!("pattern mismatch") };
             b = System::createDirectory((inString.clone()).clone());
             Ok(b.clone())
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let true = __mc_input.clone() else { bail!("nomatch") };
-            let mut b: bool = false;
+            let mut b: bool;
             b = System::createDirectory((inString.clone()).clone());
             Ok(b.clone())
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let false = __mc_input.clone() else { bail!("nomatch") };
-            let mut b: bool = false;
+            let mut b: bool;
             let true = (createDirectoryTree((parentDir.clone()).clone())) else { bail!("pattern mismatch") };
             b = System::createDirectory((inString.clone()).clone());
             Ok(b.clone())

@@ -92,7 +92,7 @@ fn removeNonConstantBindingsKeepRedeclaresFromSubMod(mut inSl: Arc<metamodelica:
             metamodelica::nil()
         },
         Deref @ metamodelica::List::Cons { head: Deref @ SCode::SubMod { ident: n, r#mod: m }, tail: rest } => {
-            let mut sl: Arc<metamodelica::List<Arc<SCode::SubMod>>> = metamodelica::nil();
+            let mut sl: Arc<metamodelica::List<Arc<SCode::SubMod>>>;
             let mut m = (*m).clone();
             m = removeNonConstantBindingsKeepRedeclares(m.clone(), onlyRedeclares.clone())?;
             sl = removeNonConstantBindingsKeepRedeclaresFromSubMod(rest.clone(), onlyRedeclares.clone())?;
@@ -113,9 +113,9 @@ pub fn addRedeclareAsElementsToExtends(mut inElements: Arc<metamodelica::List<Ar
             metamodelica::nil()
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ SCode::Element::EXTENDS { baseClassPath, visibility, modifications: r#mod, ann, info }, tail: rest }, redecls) => {
-            let mut out: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
-            let mut redeclareMod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
-            let mut submods: Arc<metamodelica::List<Arc<SCode::SubMod>>> = metamodelica::nil();
+            let mut out: Arc<metamodelica::List<Arc<SCode::Element>>>;
+            let mut redeclareMod: Arc<SCode::Mod>;
+            let mut submods: Arc<metamodelica::List<Arc<SCode::SubMod>>>;
             let mut r#mod = (*r#mod).clone();
             submods = makeElementsIntoSubMods(openmodelica_frontend_types::SCode::Final::NOT_FINAL, openmodelica_frontend_types::SCode::Each::NOT_EACH, redecls.clone())?;
             redeclareMod = Arc::new(SCode::Mod::MOD { finalPrefix: openmodelica_frontend_types::SCode::Final::NOT_FINAL, eachPrefix: openmodelica_frontend_types::SCode::Each::NOT_EACH, subModLst: submods.clone(), binding: None, comment: None, info: info.clone() });
@@ -124,7 +124,7 @@ pub fn addRedeclareAsElementsToExtends(mut inElements: Arc<metamodelica::List<Ar
             metamodelica::cons(Arc::new(SCode::Element::EXTENDS { baseClassPath: baseClassPath.clone(), visibility: visibility.clone(), modifications: r#mod.clone(), ann: ann.clone(), info: info.clone() }), out.clone())
         },
         (Deref @ metamodelica::List::Cons { head: el, tail: rest }, redecls) => {
-            let mut out: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
+            let mut out: Arc<metamodelica::List<Arc<SCode::Element>>>;
             out = addRedeclareAsElementsToExtends(rest.clone(), redecls.clone())?;
             metamodelica::cons(el.clone(), out.clone())
         },
@@ -140,22 +140,22 @@ fn makeElementsIntoSubMods(mut inFinal: SCode::Final, mut inEach: SCode::Each, m
             return Ok(metamodelica::nil())
         },
         (f, e, Deref @ metamodelica::List::Cons { head: el @ Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::CLASS_EXTENDS { .. }, .. }, tail: rest }) => {
-            let mut newSubMods: Arc<metamodelica::List<Arc<SCode::SubMod>>> = metamodelica::nil();
+            let mut newSubMods: Arc<metamodelica::List<Arc<SCode::SubMod>>>;
             metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- AbsynToSCode.makeElementsIntoSubMods ignoring class-extends redeclare-as-element: ")); __mm_s.push_str(&*SCodeDump::unparseElementStr(el.clone(), SCodeDump::defaultOptions.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             { (inFinal, inEach, inElements) = (f.clone(), e.clone(), rest.clone()); continue '__tco; }
         },
         (f, e, Deref @ metamodelica::List::Cons { head: el @ Deref @ SCode::Element::COMPONENT { name: n, .. }, tail: rest }) => {
-            let mut newSubMods: Arc<metamodelica::List<Arc<SCode::SubMod>>> = metamodelica::nil();
+            let mut newSubMods: Arc<metamodelica::List<Arc<SCode::SubMod>>>;
             newSubMods = makeElementsIntoSubMods(f.clone(), e.clone(), rest.clone())?;
             return Ok(metamodelica::cons(Arc::new(SCode::SubMod { ident: (n.clone()).clone(), r#mod: Arc::new(SCode::Mod::REDECL { finalPrefix: f.clone(), eachPrefix: e.clone(), element: el.clone() }) }), newSubMods.clone()))
         },
         (f, e, Deref @ metamodelica::List::Cons { head: el @ Deref @ SCode::Element::CLASS { name: n, .. }, tail: rest }) => {
-            let mut newSubMods: Arc<metamodelica::List<Arc<SCode::SubMod>>> = metamodelica::nil();
+            let mut newSubMods: Arc<metamodelica::List<Arc<SCode::SubMod>>>;
             newSubMods = makeElementsIntoSubMods(f.clone(), e.clone(), rest.clone())?;
             return Ok(metamodelica::cons(Arc::new(SCode::SubMod { ident: (n.clone()).clone(), r#mod: Arc::new(SCode::Mod::REDECL { finalPrefix: f.clone(), eachPrefix: e.clone(), element: el.clone() }) }), newSubMods.clone()))
         },
         (f, e, Deref @ metamodelica::List::Cons { head: el, tail: rest }) => {
-            let mut newSubMods: Arc<metamodelica::List<Arc<SCode::SubMod>>> = metamodelica::nil();
+            let mut newSubMods: Arc<metamodelica::List<Arc<SCode::SubMod>>>;
             metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- AbsynToSCode.makeElementsIntoSubMods ignoring redeclare-as-element redeclaration: ")); __mm_s.push_str(&*SCodeDump::unparseElementStr(el.clone(), SCodeDump::defaultOptions.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             { (inFinal, inEach, inElements) = (f.clone(), e.clone(), rest.clone()); continue '__tco; }
         },
@@ -168,8 +168,8 @@ fn removeReferenceInBinding(mut inBinding: Option<Arc<Absyn::Exp>>, mut inCref: 
     let mut outBinding: Option<Arc<Absyn::Exp>>;
     outBinding = (::match_deref::match_deref! { match &(inBinding.clone()) {
         Some(e) => {
-            let mut crlst1: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
-            let mut crlst2: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
+            let mut crlst1: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>;
+            let mut crlst2: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>;
             crlst1 = AbsynUtil::getCrefFromExp(e.clone(), true, true)?;
             crlst2 = AbsynUtil::removeCrefFromCrefs(crlst1.clone(), inCref.clone())?;
             if (intEq((crlst1.clone().len() as i32), (crlst2.clone().len() as i32))) {inBinding.clone()} else {None}
@@ -210,7 +210,7 @@ fn removeSelfReferenceFromSubMod(mut inSl: Arc<metamodelica::List<Arc<SCode::Sub
             metamodelica::nil()
         },
         Deref @ metamodelica::List::Cons { head: Deref @ SCode::SubMod { ident: n, r#mod: m }, tail: rest } => {
-            let mut sl: Arc<metamodelica::List<Arc<SCode::SubMod>>> = metamodelica::nil();
+            let mut sl: Arc<metamodelica::List<Arc<SCode::SubMod>>>;
             let mut m = (*m).clone();
             m = removeSelfReferenceFromMod(m.clone(), inCref.clone())?;
             sl = removeSelfReferenceFromSubMod(rest.clone(), inCref.clone())?;
@@ -226,7 +226,7 @@ fn expandEnumerationSubMod(mut inSubMod: Arc<SCode::SubMod>, mut inChanged: bool
     let mut outChanged: bool;
     (outSubMod, outChanged) = (::match_deref::match_deref! { match &(inSubMod.clone()) {
         Deref @ SCode::SubMod { ident, r#mod } => {
-            let mut mod1: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
+            let mut mod1: Arc<SCode::Mod>;
             mod1 = expandEnumerationMod(r#mod.clone())?;
             if (referenceEq(&*(r#mod.clone()),&*(mod1.clone()))) {(inSubMod.clone(), inChanged.clone())} else {(Arc::new(SCode::SubMod { ident: (ident.clone()).clone(), r#mod: mod1.clone() }), true)}
         },
@@ -277,12 +277,12 @@ pub fn expandEnumerationClass(mut inElement: Arc<SCode::Element>) -> Result<Arc<
     let mut outElement: Arc<SCode::Element>;
     outElement = (::match_deref::match_deref! { match &(inElement.clone()) {
         Deref @ SCode::Element::CLASS { name: n, restriction: SCode::Restriction::R_TYPE { .. }, prefixes, classDef: Deref @ SCode::ClassDef::ENUMERATION { enumLst: l }, cmt, info, .. } => {
-            let mut c: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
+            let mut c: Arc<SCode::Element>;
             c = expandEnumeration((n.clone()).clone(), l.clone(), prefixes.clone(), cmt.clone(), info.clone())?;
             c.clone()
         },
         Deref @ SCode::Element::EXTENDS { baseClassPath: p, visibility: v, modifications: m, ann, info } => {
-            let mut m1: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
+            let mut m1: Arc<SCode::Mod>;
             m1 = expandEnumerationMod(m.clone())?;
             if (referenceEq(&*(m.clone()),&*(m1.clone()))) {inElement.clone()} else {Arc::new(SCode::Element::EXTENDS { baseClassPath: p.clone(), visibility: v.clone(), modifications: m1.clone(), ann: ann.clone(), info: info.clone() })}
         },

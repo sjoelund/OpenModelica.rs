@@ -111,7 +111,7 @@ fn subsToScalar(mut inExpSubscriptLst: Arc<metamodelica::List<Arc<DAE::Subscript
             return Ok(false)
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::INDEX { .. }, tail: r } => {
-            let mut b: bool = false;
+            let mut b: bool;
             { inExpSubscriptLst = r.clone(); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
@@ -161,8 +161,8 @@ pub fn buildCrefExpFromAsub(mut cref: Arc<DAE::Exp>, mut subs: Arc<metamodelica:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::CREF { componentRef: crNew, ty }, _) => {
-                    let mut crefExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut indexes: Arc<metamodelica::List<Arc<DAE::Subscript>>> = metamodelica::nil();
+                    let mut crefExp: Arc<DAE::Exp>;
+                    let mut indexes: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
                     let mut crNew = (*crNew).clone();
                     indexes = List::map(subs.clone(), (std::sync::Arc::new(fnptr!(Expression::makeIndexSubscript, Arc<DAE::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<DAE::Subscript>> + 'static>))?;
                     crNew = ComponentReference::subscriptCref(crNew.clone(), indexes.clone())?;
@@ -192,7 +192,7 @@ pub fn buildCrefExpFromSubs(mut cref: Arc<DAE::Exp>, mut subs: Arc<metamodelica:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::CREF { componentRef: crNew, ty }, _) => {
-                    let mut crefExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut crefExp: Arc<DAE::Exp>;
                     let mut crNew = (*crNew).clone();
                     crNew = ComponentReference::subscriptCref(crNew.clone(), subs.clone())?;
                     crefExp = Expression::makeCrefExp(crNew.clone(), ty.clone())?;
@@ -236,7 +236,7 @@ pub fn makeCrefRecordExp(mut inCRefRecord: Arc<DAE::ComponentRef>, mut inVar: Ar
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     outExp = (::match_deref::match_deref! { match &((inCRefRecord.clone(), inVar.clone())) {
         (cr, Deref @ DAE::Var { name, ty: tp, .. }) => {
-            let mut cr1: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
+            let mut cr1: Arc<DAE::ComponentRef>;
             cr1 = ComponentReference::crefPrependIdent(cr.clone(), (name.clone()).clone(), metamodelica::nil(), tp.clone())?;
             outExp = Expression::makeCrefExp(cr1.clone(), tp.clone())?;
             outExp.clone()
@@ -253,9 +253,9 @@ pub fn splitRecordAssignmentToMemberAssignments(mut lhs_cref: Arc<DAE::Component
     rhs_cref = Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (rhs_cref_str.clone()).clone(), identType: lhs_type.clone(), subscriptLst: metamodelica::nil() });
     let () = (::match_deref::match_deref! { match &(lhs_type.clone()) {
         Deref @ DAE::Type::T_COMPLEX { .. } => {
-            let mut l_v_exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut r_v_exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut stmt: Arc<DAE::Statement> = Arc::new(<DAE::Statement as ::std::default::Default>::default());
+            let mut l_v_exp: Arc<DAE::Exp>;
+            let mut r_v_exp: Arc<DAE::Exp>;
+            let mut stmt: Arc<DAE::Statement>;
             for mut v in &*var_field!((*lhs_type).varLst, DAE::Type::T_COMPLEX).clone() {
                 let mut v = v.clone();
                 l_v_exp = makeCrefRecordExp(lhs_cref.clone(), v.clone())?;
@@ -288,7 +288,7 @@ pub fn hackArrayReverseToCref(mut inExp: Arc<DAE::Exp>, mut context: SimCodeFunc
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::ARRAY { ty: aty, scalar: true, array: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cr, .. }, tail: aRest } } => {
-                    let mut crefExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut crefExp: Arc<DAE::Exp>;
                     let mut cr = (*cr).clone();
                     if '__try0: {
                         let SimCodeFunction::FUNCTION_CONTEXT { .. } = (context.clone()) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
@@ -334,7 +334,7 @@ fn isArrayExpansion(mut inArrayElems: Arc<metamodelica::List<Arc<DAE::Exp>>>, mu
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cr, .. }, tail: aRest } => {
-                    let mut i: i32 = 0;
+                    let mut i: i32;
                     let mut cr = (*cr).clone();
                     let __pa0 = ::match_deref::match_deref! { match &(ComponentReference::crefLastSubs(cr.clone())?) {
                         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::INDEX { exp: Deref @ DAE::Exp::ICONST { integer: __pa0 } }, tail: Deref @ metamodelica::List::Nil } => __pa0.clone(),
@@ -369,7 +369,7 @@ pub fn hackMatrixReverseToCref(mut inExp: Arc<DAE::Exp>, mut context: SimCodeFun
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::MATRIX { ty: aty, matrix: rows @ Deref @ metamodelica::List::Cons { head: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cr, .. }, tail: _ }, tail: _ }, .. } => {
-                    let mut crefExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut crefExp: Arc<DAE::Exp>;
                     let mut cr = (*cr).clone();
                     if '__try0: {
                         let SimCodeFunction::FUNCTION_CONTEXT { .. } = (context.clone()) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
@@ -423,8 +423,8 @@ fn isMatrixExpansion(mut rows: Arc<metamodelica::List<Arc<metamodelica::List<Arc
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cr, .. }, tail: restElems }, tail: restRows } => {
-                    let mut r: i32 = 0;
-                    let mut c: i32 = 0;
+                    let mut r: i32;
+                    let mut c: i32;
                     let mut cr = (*cr).clone();
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(ComponentReference::crefLastSubs(cr.clone())?) {
                         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::INDEX { exp: Deref @ DAE::Exp::ICONST { integer: __pa0 } }, tail: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::INDEX { exp: Deref @ DAE::Exp::ICONST { integer: __pa1 } }, tail: Deref @ metamodelica::List::Nil } } => (__pa0.clone(), __pa1.clone()),
@@ -460,7 +460,7 @@ pub fn hackGetFirstExternalFunctionLib(mut libs: Arc<metamodelica::List<ArcStr>>
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    let mut lib: ArcStr = arcstr::literal!("");
+                    let mut lib: ArcStr;
                     lib = (List::last(libs.clone())?).clone();
                     lib = (System::stringReplace((lib.clone()).clone(), (literal!("-l")).clone(), (literal!("")).clone())?).clone();
                     Ok(lib.clone())
@@ -556,8 +556,8 @@ fn getRecordDependencies(mut decl: SimCodeFunction::RecordDeclaration, mut allDe
             List::select1(allDecls.clone(), (std::sync::Arc::new(fnptr!(recordDeclHasName, SimCodeFunction::RecordDeclaration, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeFunction::RecordDeclaration, ArcStr) -> Result<bool> + 'static>), (name.clone()).clone())?
         },
         SimCodeFunction::RecordDeclaration::RECORD_DECL_FULL { variables: ref vars, .. } => {
-            let mut tys: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
-            let mut tyss: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Type>>>>> = metamodelica::nil();
+            let mut tys: Arc<metamodelica::List<Arc<DAE::Type>>>;
+            let mut tyss: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Type>>>>>;
             tys = ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
         for mut v in (vars.clone()).into_iter().cloned() {
@@ -631,7 +631,7 @@ fn elaborateFunctions2(mut program: Absyn::Program, mut daeElements: Arc<metamod
             return Ok((accfns.clone().reverse(), includes.clone(), includeDirs.clone(), libs.clone(), libPaths.clone()))
         },
         (Deref @ metamodelica::List::Cons { head: DAE::Function::FUNCTION { type_: Deref @ DAE::Type::T_FUNCTION { functionAttributes: DAE::FunctionAttributes { isBuiltin: DAE::FunctionBuiltin::FUNCTION_BUILTIN_PTR { .. }, .. }, .. }, .. }, tail: rest }, accfns, includes, includeDirs, libs, libPaths) => {
-            let mut fns: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>> = metamodelica::nil();
+            let mut fns: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>>;
             let mut includes = (*includes).clone();
             let mut includeDirs = (*includeDirs).clone();
             let mut libs = (*libs).clone();
@@ -639,7 +639,7 @@ fn elaborateFunctions2(mut program: Absyn::Program, mut daeElements: Arc<metamod
             { (program, daeElements, inFunctions, inIncludes, inIncludeDirs, inLibs, inPaths, recDeclsMap) = (program.clone(), rest.clone(), accfns.clone(), includes.clone(), includeDirs.clone(), libs.clone(), libPaths.clone(), recDeclsMap.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: DAE::Function::FUNCTION { partialPrefix: true, .. }, tail: rest }, accfns, includes, includeDirs, libs, libPaths) => {
-            let mut fns: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>> = metamodelica::nil();
+            let mut fns: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>>;
             let mut includes = (*includes).clone();
             let mut includeDirs = (*includeDirs).clone();
             let mut libs = (*libs).clone();
@@ -647,10 +647,10 @@ fn elaborateFunctions2(mut program: Absyn::Program, mut daeElements: Arc<metamod
             { (program, daeElements, inFunctions, inIncludes, inIncludeDirs, inLibs, inPaths, recDeclsMap) = (program.clone(), rest.clone(), accfns.clone(), includes.clone(), includeDirs.clone(), libs.clone(), libPaths.clone(), recDeclsMap.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: fel @ DAE::Function::FUNCTION { path, functions: Deref @ metamodelica::List::Cons { head: DAE::FunctionDefinition::FUNCTION_EXT { externalDecl: DAE::ExternalDecl { name, language: Deref @ "builtin", .. }, .. }, tail: _ }, .. }, tail: rest }, accfns, includes, includeDirs, libs, libPaths) => {
-            let mut b: bool = false;
-            let mut fns: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>> = metamodelica::nil();
+            let mut b: bool;
+            let mut fns: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>>;
             let mut r#fn: Arc<SimCodeFunction::Function::Function> = Arc::new(<SimCodeFunction::Function::Function as ::std::default::Default>::default());
-            let mut fname: ArcStr = arcstr::literal!("");
+            let mut fname: ArcStr;
             let mut includes = (*includes).clone();
             let mut includeDirs = (*includeDirs).clone();
             let mut libs = (*libs).clone();
@@ -663,10 +663,10 @@ fn elaborateFunctions2(mut program: Absyn::Program, mut daeElements: Arc<metamod
             { (program, daeElements, inFunctions, inIncludes, inIncludeDirs, inLibs, inPaths, recDeclsMap) = (program.clone(), rest.clone(), List::consOnTrue(!(b.clone()), r#fn.clone(), accfns.clone()), includes.clone(), includeDirs.clone(), libs.clone(), libPaths.clone(), recDeclsMap.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: fel @ DAE::Function::FUNCTION { path, functions: Deref @ metamodelica::List::Cons { head: DAE::FunctionDefinition::FUNCTION_EXT { externalDecl: DAE::ExternalDecl { name, language: Deref @ "C", .. }, .. }, tail: _ }, .. }, tail: rest }, accfns, includes, includeDirs, libs, libPaths) => {
-            let mut b: bool = false;
-            let mut fns: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>> = metamodelica::nil();
+            let mut b: bool;
+            let mut fns: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>>;
             let mut r#fn: Arc<SimCodeFunction::Function::Function> = Arc::new(<SimCodeFunction::Function::Function as ::std::default::Default>::default());
-            let mut fname: ArcStr = arcstr::literal!("");
+            let mut fname: ArcStr;
             let mut includes = (*includes).clone();
             let mut includeDirs = (*includeDirs).clone();
             let mut libs = (*libs).clone();
@@ -679,8 +679,8 @@ fn elaborateFunctions2(mut program: Absyn::Program, mut daeElements: Arc<metamod
             { (program, daeElements, inFunctions, inIncludes, inIncludeDirs, inLibs, inPaths, recDeclsMap) = (program.clone(), rest.clone(), List::consOnTrue(!(b.clone()), r#fn.clone(), accfns.clone()), includes.clone(), includeDirs.clone(), libs.clone(), libPaths.clone(), recDeclsMap.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: fel, tail: rest }, accfns, includes, includeDirs, libs, libPaths) => {
-            let mut fns: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>> = metamodelica::nil();
-            let mut r#fn: Arc<SimCodeFunction::Function::Function> = Arc::new(<SimCodeFunction::Function::Function as ::std::default::Default>::default());
+            let mut fns: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>>;
+            let mut r#fn: Arc<SimCodeFunction::Function::Function>;
             let mut includes = (*includes).clone();
             let mut includeDirs = (*includeDirs).clone();
             let mut libs = (*libs).clone();
@@ -705,12 +705,12 @@ fn elaborateFunction(mut program: Absyn::Program, mut inElement: DAE::Function, 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Function::FUNCTION { path: fpath, source, visibility, functions: Deref @ metamodelica::List::Cons { head: DAE::FunctionDefinition::FUNCTION_DEF { body: daeElts }, tail: _ }, type_: Deref @ DAE::Type::T_FUNCTION { funcArg: args, functionAttributes: funAttrs, .. }, partialPrefix: false, .. }, includes, includeDirs, libs, libPaths) => {
-                    let mut vars: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
-                    let mut outVars: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>> = metamodelica::nil();
-                    let mut funArgs: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>> = metamodelica::nil();
-                    let mut varDecls: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>> = metamodelica::nil();
-                    let mut bodyStmts: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
-                    let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
+                    let mut vars: Arc<metamodelica::List<Arc<DAE::Element>>>;
+                    let mut outVars: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>;
+                    let mut funArgs: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>;
+                    let mut varDecls: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>;
+                    let mut bodyStmts: Arc<metamodelica::List<Arc<DAE::Statement>>>;
+                    let mut info: SourceInfo;
                     let mut daeElts = (*daeElts).clone();
                     let DAE::FUNCTION_ATTRIBUTES { functionParallelism: DAE::FP_NON_PARALLEL { .. }, .. } = (funAttrs.clone()) else { bail!("pattern mismatch") };
                     daeElts = optMRFAElems(daeElts.clone())?;
@@ -737,12 +737,12 @@ fn elaborateFunction(mut program: Absyn::Program, mut inElement: DAE::Function, 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Function::FUNCTION { path: fpath, source, functions: Deref @ metamodelica::List::Cons { head: DAE::FunctionDefinition::FUNCTION_DEF { body: daeElts }, tail: _ }, type_: Deref @ DAE::Type::T_FUNCTION { funcArg: args, functionAttributes: funAttrs, .. }, partialPrefix: false, .. }, includes, includeDirs, libs, libPaths) => {
-                    let mut vars: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
-                    let mut outVars: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>> = metamodelica::nil();
-                    let mut funArgs: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>> = metamodelica::nil();
-                    let mut varDecls: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>> = metamodelica::nil();
-                    let mut bodyStmts: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
-                    let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
+                    let mut vars: Arc<metamodelica::List<Arc<DAE::Element>>>;
+                    let mut outVars: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>;
+                    let mut funArgs: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>;
+                    let mut varDecls: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>;
+                    let mut bodyStmts: Arc<metamodelica::List<Arc<DAE::Statement>>>;
+                    let mut info: SourceInfo;
                     let mut daeElts = (*daeElts).clone();
                     let DAE::FUNCTION_ATTRIBUTES { functionParallelism: DAE::FP_KERNEL_FUNCTION { .. }, .. } = (funAttrs.clone()) else { bail!("pattern mismatch") };
                     daeElts = optMRFAElems(daeElts.clone())?;
@@ -769,12 +769,12 @@ fn elaborateFunction(mut program: Absyn::Program, mut inElement: DAE::Function, 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Function::FUNCTION { path: fpath, source, functions: Deref @ metamodelica::List::Cons { head: DAE::FunctionDefinition::FUNCTION_DEF { body: daeElts }, tail: _ }, type_: Deref @ DAE::Type::T_FUNCTION { funcArg: args, functionAttributes: funAttrs, .. }, partialPrefix: false, .. }, includes, includeDirs, libs, libPaths) => {
-                    let mut vars: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
-                    let mut outVars: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>> = metamodelica::nil();
-                    let mut funArgs: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>> = metamodelica::nil();
-                    let mut varDecls: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>> = metamodelica::nil();
-                    let mut bodyStmts: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
-                    let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
+                    let mut vars: Arc<metamodelica::List<Arc<DAE::Element>>>;
+                    let mut outVars: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>;
+                    let mut funArgs: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>;
+                    let mut varDecls: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>;
+                    let mut bodyStmts: Arc<metamodelica::List<Arc<DAE::Statement>>>;
+                    let mut info: SourceInfo;
                     let mut daeElts = (*daeElts).clone();
                     let DAE::FUNCTION_ATTRIBUTES { functionParallelism: DAE::FP_PARALLEL_FUNCTION { .. }, .. } = (funAttrs.clone()) else { bail!("pattern mismatch") };
                     daeElts = optMRFAElems(daeElts.clone())?;
@@ -801,23 +801,23 @@ fn elaborateFunction(mut program: Absyn::Program, mut inElement: DAE::Function, 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Function::FUNCTION { path: fpath, source, visibility, functions: Deref @ metamodelica::List::Cons { head: DAE::FunctionDefinition::FUNCTION_EXT { body: daeElts, externalDecl: extdecl }, tail: _ }, type_: Deref @ DAE::Type::T_FUNCTION { funcArg: args, .. }, .. }, includes, includeDirs, libs, libPaths) => {
-                    let mut extfnname: ArcStr = arcstr::literal!("");
-                    let mut lang: ArcStr = arcstr::literal!("");
-                    let mut fn_libs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    let mut fn_paths: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    let mut fn_includes: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    let mut fn_includeDirs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    let mut extargs: Arc<metamodelica::List<DAE::ExtArg>> = metamodelica::nil();
-                    let mut simextargs: Arc<metamodelica::List<Arc<SimCodeFunction::SimExtArg::SimExtArg>>> = metamodelica::nil();
-                    let mut extReturn: Arc<SimCodeFunction::SimExtArg::SimExtArg> = Arc::new(SimCodeFunction::SimExtArg::SIMNOEXTARG);
-                    let mut extretarg: DAE::ExtArg = DAE::ExtArg::NOEXTARG;
-                    let mut ann: Option<Arc<SCode::Annotation>> = None;
-                    let mut outVars: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>> = metamodelica::nil();
-                    let mut inVars: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>> = metamodelica::nil();
-                    let mut biVars: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>> = metamodelica::nil();
-                    let mut funArgs: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>> = metamodelica::nil();
-                    let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
-                    let mut dynamicLoad: bool = false;
+                    let mut extfnname: ArcStr;
+                    let mut lang: ArcStr;
+                    let mut fn_libs: Arc<metamodelica::List<ArcStr>>;
+                    let mut fn_paths: Arc<metamodelica::List<ArcStr>>;
+                    let mut fn_includes: Arc<metamodelica::List<ArcStr>>;
+                    let mut fn_includeDirs: Arc<metamodelica::List<ArcStr>>;
+                    let mut extargs: Arc<metamodelica::List<DAE::ExtArg>>;
+                    let mut simextargs: Arc<metamodelica::List<Arc<SimCodeFunction::SimExtArg::SimExtArg>>>;
+                    let mut extReturn: Arc<SimCodeFunction::SimExtArg::SimExtArg>;
+                    let mut extretarg: DAE::ExtArg;
+                    let mut ann: Option<Arc<SCode::Annotation>>;
+                    let mut outVars: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>;
+                    let mut inVars: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>;
+                    let mut biVars: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>;
+                    let mut funArgs: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>;
+                    let mut info: SourceInfo;
+                    let mut dynamicLoad: bool;
                     let mut includes = (*includes).clone();
                     let mut includeDirs = (*includeDirs).clone();
                     let mut libs = (*libs).clone();
@@ -851,10 +851,10 @@ fn elaborateFunction(mut program: Absyn::Program, mut inElement: DAE::Function, 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Function::RECORD_CONSTRUCTOR { source, type_: Deref @ DAE::Type::T_FUNCTION { funcArg: args, funcResultType: restype @ Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path: name }, .. }, .. }, .. }, includes, includeDirs, libs, libPaths) => {
-                    let mut funArgs: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>> = metamodelica::nil();
-                    let mut varDecls: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>> = metamodelica::nil();
-                    let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
-                    let mut varlst: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
+                    let mut funArgs: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>;
+                    let mut varDecls: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>;
+                    let mut info: SourceInfo;
+                    let mut varlst: Arc<metamodelica::List<Arc<DAE::Var>>>;
                     funArgs = List::map1(args.clone(), (std::sync::Arc::new(typesSimFunctionArg) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::FuncArg>, Option<Arc<DAE::Exp>>) -> Result<Arc<SimCodeFunction::Variable::Variable>> + 'static>), None)?;
                     collectRecDeclsFromType(restype.clone(), recDeclsMap.clone())?;
                     let __pa0 = ::match_deref::match_deref! { match &(restype.clone()) {
@@ -891,7 +891,7 @@ fn typesSimFunctionArg(mut inFuncArg: Arc<DAE::FuncArg>, mut binding: Option<Arc
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::FuncArg { name, ty: Deref @ DAE::Type::T_FUNCTION { funcArg: args, funcResultType: Deref @ DAE::Type::T_TUPLE { types: tys, .. }, .. }, .. } => {
-                    let mut var_args: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>> = metamodelica::nil();
+                    let mut var_args: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>;
                     let mut tys = (*tys).clone();
                     var_args = List::map1(args.clone(), (std::sync::Arc::new(typesSimFunctionArg) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::FuncArg>, Option<Arc<DAE::Exp>>) -> Result<Arc<SimCodeFunction::Variable::Variable>> + 'static>), None)?;
                     tys = List::map(tys.clone(), (std::sync::Arc::new(Types::simplifyType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<Arc<DAE::Type>> + 'static>))?;
@@ -903,7 +903,7 @@ fn typesSimFunctionArg(mut inFuncArg: Arc<DAE::FuncArg>, mut binding: Option<Arc
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::FuncArg { name, ty: Deref @ DAE::Type::T_FUNCTION { funcArg: args, funcResultType: Deref @ DAE::Type::T_NORETCALL { .. }, .. }, .. } => {
-                    let mut var_args: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>> = metamodelica::nil();
+                    let mut var_args: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>;
                     var_args = List::map1(args.clone(), (std::sync::Arc::new(typesSimFunctionArg) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::FuncArg>, Option<Arc<DAE::Exp>>) -> Result<Arc<SimCodeFunction::Variable::Variable>> + 'static>), None)?;
                     Ok(Arc::new(SimCodeFunction::Variable::Variable::FUNCTION_PTR { name: (name.clone()).clone(), tys: metamodelica::nil(), args: var_args.clone(), defaultValue: binding.clone() }))
                 }
@@ -913,7 +913,7 @@ fn typesSimFunctionArg(mut inFuncArg: Arc<DAE::FuncArg>, mut binding: Option<Arc
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::FuncArg { name, ty: Deref @ DAE::Type::T_FUNCTION { funcArg: args, funcResultType: res_ty, .. }, .. } => {
-                    let mut var_args: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>> = metamodelica::nil();
+                    let mut var_args: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>;
                     let mut res_ty = (*res_ty).clone();
                     res_ty = Types::simplifyType(res_ty.clone())?;
                     var_args = List::map1(args.clone(), (std::sync::Arc::new(typesSimFunctionArg) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::FuncArg>, Option<Arc<DAE::Exp>>) -> Result<Arc<SimCodeFunction::Variable::Variable>> + 'static>), None)?;
@@ -925,8 +925,8 @@ fn typesSimFunctionArg(mut inFuncArg: Arc<DAE::FuncArg>, mut binding: Option<Arc
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::FuncArg { name, ty: tty, par: prl, r#const, .. } => {
-                    let mut cref_: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-                    let mut kind: DAE::VarKind = DAE::VarKind::CONST;
+                    let mut cref_: Arc<DAE::ComponentRef>;
+                    let mut kind: DAE::VarKind;
                     let mut tty = (*tty).clone();
                     tty = Types::simplifyType(tty.clone())?;
                     cref_ = ComponentReferenceBasics::makeCrefIdent((name.clone()).clone(), tty.clone(), metamodelica::nil());
@@ -948,7 +948,7 @@ fn daeInOutSimVar(mut inElement: Arc<DAE::Element>) -> Result<Arc<SimCodeFunctio
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Element::VAR { componentRef: Deref @ DAE::ComponentRef::CREF_IDENT { ident: name, .. }, ty: daeType @ Deref @ DAE::Type::T_FUNCTION { .. }, parallelism: prl, binding, .. } => {
-                    let mut var: Arc<SimCodeFunction::Variable::Variable> = Arc::new(<SimCodeFunction::Variable::Variable as ::std::default::Default>::default());
+                    let mut var: Arc<SimCodeFunction::Variable::Variable>;
                     var = typesSimFunctionArg(Arc::new(DAE::FuncArg { name: (name.clone()).clone(), ty: daeType.clone(), r#const: openmodelica_frontend_types::DAE::Const::C_VAR, par: prl.clone(), defaultBinding: None }), binding.clone())?;
                     Ok(var.clone())
                 }
@@ -983,10 +983,10 @@ fn extArgsToSimExtArgs(mut extArg: DAE::ExtArg) -> Result<Arc<SimCodeFunction::S
     let mut simExtArg: Arc<SimCodeFunction::SimExtArg::SimExtArg>;
     simExtArg = (match extArg.clone() {
         DAE::ExtArg::EXTARG { componentRef: mut componentRef, direction: mut dir, type_: mut type_ } => {
-            let mut isInput: bool = false;
-            let mut isOutput: bool = false;
-            let mut isArray: bool = false;
-            let mut outputIndex: i32 = 0;
+            let mut isInput: bool;
+            let mut isOutput: bool;
+            let mut isArray: bool;
+            let mut outputIndex: i32;
             let mut type_ = type_.clone();
             isInput = AbsynUtil::isInput(dir.clone());
             isOutput = AbsynUtil::isOutput(dir.clone());
@@ -1033,9 +1033,9 @@ fn assignOutputIndex(mut simExtArgIn: Arc<SimCodeFunction::SimExtArg::SimExtArg>
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SimCodeFunction::SimExtArg::SIMEXTARG { cref, isInput, outputIndex, isArray, hasBinding: _, type_ } => {
-                    let mut fcref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-                    let mut hasBinding: bool = false;
-                    let mut newOutputIndex: i32 = 0;
+                    let mut fcref: Arc<DAE::ComponentRef>;
+                    let mut hasBinding: bool;
+                    let mut newOutputIndex: i32;
                     let true = (outputIndex.clone() == -1) else { bail!("pattern mismatch") };
                     fcref = ComponentReferenceBasics::crefFirstCref(cref.clone())?;
                     (newOutputIndex, hasBinding) = findIndexInList(fcref.clone(), outVars.clone(), 1)?;
@@ -1047,7 +1047,7 @@ fn assignOutputIndex(mut simExtArgIn: Arc<SimCodeFunction::SimExtArg::SimExtArg>
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SimCodeFunction::SimExtArg::SIMEXTARGSIZE { cref, isInput, outputIndex, type_, exp } => {
-                    let mut newOutputIndex: i32 = 0;
+                    let mut newOutputIndex: i32;
                     let true = (outputIndex.clone() == -1) else { bail!("pattern mismatch") };
                     (newOutputIndex, _) = findIndexInList(cref.clone(), outVars.clone(), 1)?;
                     Ok(Arc::new(SimCodeFunction::SimExtArg::SimExtArg::SIMEXTARGSIZE { cref: cref.clone(), isInput: isInput.clone(), outputIndex: newOutputIndex.clone(), type_: type_.clone(), exp: exp.clone() }))
@@ -1313,7 +1313,7 @@ fn replaceLiteralArrayExp(mut inExp: Arc<DAE::Exp>, mut inTpl: (i32, (metamodeli
     let mut outTpl: (i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (HashTableExpToIndex::FuncHashCref, HashTableExpToIndex::FuncCrefEqual, HashTableExpToIndex::FuncCrefStr, HashTableExpToIndex::FuncExpStr)), Arc<metamodelica::List<Arc<DAE::Exp>>>);
     (outExp, outTpl) = (::match_deref::match_deref! { match &((inExp.clone(), inTpl.clone())) {
         (Deref @ DAE::Exp::ARRAY { .. }, tpl) => {
-            let mut exp2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut exp2: Arc<DAE::Exp>;
             let mut tpl = (*tpl).clone();
             match '__try0: {
                 unwrap_break_err!(isLiteralArrayExp(inExp.clone()), '__try0);
@@ -1331,7 +1331,7 @@ fn replaceLiteralArrayExp(mut inExp: Arc<DAE::Exp>, mut inTpl: (i32, (metamodeli
             (exp2.clone(), tpl.clone())
         },
         (Deref @ DAE::Exp::MATRIX { .. }, tpl) => {
-            let mut exp2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut exp2: Arc<DAE::Exp>;
             let mut tpl = (*tpl).clone();
             match '__try0: {
                 unwrap_break_err!(isLiteralArrayExp(inExp.clone()), '__try0);
@@ -1385,7 +1385,7 @@ fn replaceLiteralExp(mut inExp: Arc<DAE::Exp>, mut inTpl: (i32, (metamodelica::A
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::LIST { valList: es }, t) => {
-                    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut exp: Arc<DAE::Exp>;
                     let mut t = (*t).clone();
                     let true = ((es.clone().len() as i32) > 25) else { bail!("pattern mismatch") };
                     (exp, t) = replaceLiteralExp2(inExp.clone(), t.clone())?;
@@ -1424,7 +1424,7 @@ fn replaceLiteralExp(mut inExp: Arc<DAE::Exp>, mut inTpl: (i32, (metamodelica::A
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (exp, _) => {
-                    let mut msg: ArcStr = arcstr::literal!("");
+                    let mut msg: ArcStr;
                     msg = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("function replaceLiteralExp failed. Falling back to not replacing ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(exp.clone())?); __mm_s.push_str(&*literal!(".")); ArcStr::from(__mm_s) }).clone();
                     Error::addInternalError((msg.clone()).clone(), metamodelica::sourceInfo!("SimCode/SimCodeFunctionUtil.mo"))?;
                     Ok((inExp.clone(), inTpl.clone()))
@@ -1445,8 +1445,8 @@ fn replaceLiteralExp2(mut inExp: Arc<DAE::Exp>, mut inTpl: (i32, (metamodelica::
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (exp, (_, ht, _)) => {
-                    let mut nexp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut ix: i32 = 0;
+                    let mut nexp: Arc<DAE::Exp>;
+                    let mut ix: i32;
                     ix = BaseHashTable::get(exp.clone(), ht.clone())?;
                     nexp = Arc::new(DAE::Exp::SHARED_LITERAL { index: ix.clone(), exp: exp.clone() });
                     Ok((nexp.clone(), inTpl.clone()))
@@ -1457,7 +1457,7 @@ fn replaceLiteralExp2(mut inExp: Arc<DAE::Exp>, mut inTpl: (i32, (metamodelica::
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (exp, (i, ht, l)) => {
-                    let mut nexp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut nexp: Arc<DAE::Exp>;
                     let mut ht = (*ht).clone();
                     ht = BaseHashTable::add((exp.clone(), i.clone()), ht.clone())?;
                     nexp = Arc::new(DAE::Exp::SHARED_LITERAL { index: i.clone(), exp: exp.clone() });
@@ -1489,7 +1489,7 @@ fn listToCons2(mut ies: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Arc<DAE::Exp>
             Arc::new(DAE::Exp::LIST { valList: metamodelica::nil() })
         },
         Deref @ metamodelica::List::Cons { head: car, tail: es } => {
-            let mut cdr: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut cdr: Arc<DAE::Exp>;
             cdr = listToCons2(es.clone());
             Arc::new(DAE::Exp::CONS { car: car.clone(), cdr: cdr.clone() })
         },
@@ -1746,7 +1746,7 @@ fn getCrefFromExp(mut e: Arc<DAE::Exp>) -> Result<Arc<Absyn::ComponentRef>> {
     let mut c: Arc<Absyn::ComponentRef>;
     c = (::match_deref::match_deref! { match &(e.clone()) {
         Deref @ DAE::Exp::CREF { componentRef: crefe, .. } => {
-            let mut crefa: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
+            let mut crefa: Arc<Absyn::ComponentRef>;
             crefa = ComponentReference::unelabCref(crefe.clone())?;
             crefa.clone()
         },
@@ -1762,13 +1762,13 @@ fn getCrefFromExp(mut e: Arc<DAE::Exp>) -> Result<Arc<Absyn::ComponentRef>> {
 fn collectRecDeclsFromType(mut inRecordType: Arc<DAE::Type>, mut recDeclsMap: Arc<UnorderedMap::UnorderedMap<ArcStr, SimCodeFunction::RecordDeclaration>>) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(inRecordType.clone()) {
         Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path }, varLst: varlst, usedExternally, .. } => {
-            let mut name: ArcStr = arcstr::literal!("");
-            let mut sname: ArcStr = arcstr::literal!("");
-            let mut vars: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>> = metamodelica::nil();
-            let mut recDecl: SimCodeFunction::RecordDeclaration = <SimCodeFunction::RecordDeclaration as ::std::default::Default>::default();
-            let mut optRecDecl: Option<SimCodeFunction::RecordDeclaration> = None;
-            let mut is_default: bool = false;
-            let mut bool1: bool = false;
+            let mut name: ArcStr;
+            let mut sname: ArcStr;
+            let mut vars: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>;
+            let mut recDecl: SimCodeFunction::RecordDeclaration;
+            let mut optRecDecl: Option<SimCodeFunction::RecordDeclaration>;
+            let mut is_default: bool;
+            let mut bool1: bool;
             name = (AbsynUtil::pathStringUnquoteReplaceDot(path.clone(), (literal!("_")).clone())?).clone();
             (sname, is_default) = checkBindingsandGetConstructorName((name.clone()).clone(), varlst.clone());
             optRecDecl = UnorderedMap::get((sname.clone()).clone(), recDeclsMap.clone())?;
@@ -1806,8 +1806,8 @@ fn collectRecDeclsFromType(mut inRecordType: Arc<DAE::Type>, mut recDeclsMap: Ar
             ()
         },
         Deref @ DAE::Type::T_METARECORD { fields: varlst, path, .. } => {
-            let mut sname: ArcStr = arcstr::literal!("");
-            let mut fieldNames: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+            let mut sname: ArcStr;
+            let mut fieldNames: Arc<metamodelica::List<ArcStr>>;
             sname = (AbsynUtil::pathStringUnquoteReplaceDot(path.clone(), (literal!("_")).clone())?).clone();
             fieldNames = List::map(varlst.clone(), (std::sync::Arc::new(fnptr!(generateVarName, Arc<DAE::Var>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<ArcStr> + 'static>))?;
             UnorderedMap::tryAdd((sname.clone()).clone(), SimCodeFunction::RecordDeclaration::RECORD_DECL_DEF { path: path.clone(), fieldNames: fieldNames.clone() }, recDeclsMap.clone())?;
@@ -1826,9 +1826,9 @@ fn typesVarNoBinding(mut inTypesVar: Arc<DAE::Var>) -> Result<Arc<SimCodeFunctio
     let mut outVar: Arc<SimCodeFunction::Variable::Variable>;
     outVar = (::match_deref::match_deref! { match &(inTypesVar.clone()) {
         Deref @ DAE::Var { name, attributes: attr, ty, .. } => {
-            let mut cref_: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-            let mut scPrl: SCode::Parallelism = SCode::Parallelism::NON_PARALLEL;
-            let mut prl: DAE::VarParallelism = DAE::VarParallelism::NON_PARALLEL;
+            let mut cref_: Arc<DAE::ComponentRef>;
+            let mut scPrl: SCode::Parallelism;
+            let mut prl: DAE::VarParallelism;
             let mut ty = (*ty).clone();
             ty = Types::simplifyType(ty.clone())?;
             cref_ = ComponentReferenceBasics::makeCrefIdent((name.clone()).clone(), ty.clone(), metamodelica::nil());
@@ -1849,10 +1849,10 @@ fn typesVar(mut inTypesVar: Arc<DAE::Var>) -> Result<Arc<SimCodeFunction::Variab
     let mut outVar: Arc<SimCodeFunction::Variable::Variable>;
     outVar = (::match_deref::match_deref! { match &(inTypesVar.clone()) {
         Deref @ DAE::Var { name, attributes: attr, ty, .. } => {
-            let mut cref_: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-            let mut scPrl: SCode::Parallelism = SCode::Parallelism::NON_PARALLEL;
-            let mut prl: DAE::VarParallelism = DAE::VarParallelism::NON_PARALLEL;
-            let mut bindExp: Option<Arc<DAE::Exp>> = None;
+            let mut cref_: Arc<DAE::ComponentRef>;
+            let mut scPrl: SCode::Parallelism;
+            let mut prl: DAE::VarParallelism;
+            let mut bindExp: Option<Arc<DAE::Exp>>;
             let mut ty = (*ty).clone();
             ty = Types::simplifyType(ty.clone())?;
             cref_ = ComponentReferenceBasics::makeCrefIdent((name.clone()).clone(), ty.clone(), metamodelica::nil());
@@ -2004,12 +2004,12 @@ fn generateExtFunctionIncludes(mut program: Absyn::Program, mut path: Arc<Absyn:
     let mut dynamcLoad: bool;
     (includes, includeDirs, libs, paths, dynamcLoad) = (::match_deref::match_deref! { match &(inAbsynAnnotationOption.clone()) {
         Some(Deref @ SCode::Annotation { modification: r#mod }) => {
-            let mut b: bool = false;
-            let mut target: ArcStr = arcstr::literal!("");
-            let mut resources: Option<ArcStr> = None;
-            let mut libNames: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            let mut fullLibNames: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            let mut dirs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+            let mut b: bool;
+            let mut target: ArcStr;
+            let mut resources: Option<ArcStr>;
+            let mut libNames: Arc<metamodelica::List<ArcStr>>;
+            let mut fullLibNames: Arc<metamodelica::List<ArcStr>>;
+            let mut dirs: Arc<metamodelica::List<ArcStr>>;
             b = generateExtFunctionDynamicLoad(r#mod.clone());
             target = (Flags::getConfigString(Flags::TARGET.clone())?).clone();
             (libs, libNames) = generateExtFunctionIncludesLibstr((target.clone()).clone(), r#mod.clone())?;
@@ -2056,13 +2056,13 @@ fn lookForExtFunctionLibrary(mut names: Arc<metamodelica::List<ArcStr>>, mut dir
     })) {
         let () = (match resources.clone() {
         Some(mut resourcesStr) => {
-            let mut tmpdir: ArcStr = arcstr::literal!("");
-            let mut cmd: ArcStr = arcstr::literal!("");
-            let mut pwd: ArcStr = arcstr::literal!("");
-            let mut contents: ArcStr = arcstr::literal!("");
-            let mut found: ArcStr = arcstr::literal!("");
-            let mut status: i32 = 0;
-            let mut didFind: bool = false;
+            let mut tmpdir: ArcStr;
+            let mut cmd: ArcStr;
+            let mut pwd: ArcStr;
+            let mut contents: ArcStr;
+            let mut found: ArcStr;
+            let mut status: i32;
+            let mut didFind: bool;
             if System::directoryExists((resourcesStr.clone()).clone()) {
                 didFind = false;
                 for mut dir in &*({
@@ -2197,8 +2197,8 @@ fn generateExtFunctionIncludeDirectoryFlags(mut program: Absyn::Program, mut pat
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    let mut r#str: ArcStr = arcstr::literal!("");
-                    let mut istr: ArcStr = arcstr::literal!("");
+                    let mut r#str: ArcStr;
+                    let mut istr: ArcStr;
                     let __pa0 = ::match_deref::match_deref! { match &(Mod::getUnelabedSubMod(inMod.clone(), (literal!("IncludeDirectory")).clone())?) {
                         Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::STRING { value: __pa0 }), .. } => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -2214,8 +2214,8 @@ fn generateExtFunctionIncludeDirectoryFlags(mut program: Absyn::Program, mut pat
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    let mut r#str: ArcStr = arcstr::literal!("");
-                    let mut istr: ArcStr = arcstr::literal!("");
+                    let mut r#str: ArcStr;
+                    let mut istr: ArcStr;
                     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("modelica://")); __mm_s.push_str(&*AbsynUtil::pathFirstIdent(path.clone())?); __mm_s.push_str(&*literal!("/Resources/Include")); ArcStr::from(__mm_s) }).clone();
                     r#str = (ProgramUtil::getFullPathFromUri(program.clone(), (r#str.clone()).clone(), false)?).clone();
                     istr = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\"-I")); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\"")); ArcStr::from(__mm_s) }).clone();
@@ -2290,10 +2290,10 @@ fn generateExtFunctionLibraryDirectoryFlags(mut program: Absyn::Program, mut pat
             ::match_deref::match_deref! { match &__mc_input {
                 libs => {
                     let mut r#str: ArcStr = arcstr::literal!("");
-                    let mut target: ArcStr = arcstr::literal!("");
-                    let mut resourcesStr: ArcStr = arcstr::literal!("");
-                    let mut libs2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    let mut isLinux: bool = false;
+                    let mut target: ArcStr;
+                    let mut resourcesStr: ArcStr;
+                    let mut libs2: Arc<metamodelica::List<ArcStr>>;
+                    let mut isLinux: bool;
                     let mut libs = (*libs).clone();
                     r#str = ('mc: {
         let __mc_input = inMod.clone();
@@ -2370,12 +2370,12 @@ fn generateExtFunctionLibraryDirectoryPaths(mut program: Absyn::Program, mut pat
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    let mut r#str: ArcStr = arcstr::literal!("");
-                    let mut platform1: ArcStr = arcstr::literal!("");
-                    let mut platform2: ArcStr = arcstr::literal!("");
-                    let mut platform3: ArcStr = arcstr::literal!("");
-                    let mut libs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    let mut isLinux: bool = false;
+                    let mut r#str: ArcStr;
+                    let mut platform1: ArcStr;
+                    let mut platform2: ArcStr;
+                    let mut platform3: ArcStr;
+                    let mut libs: Arc<metamodelica::List<ArcStr>>;
+                    let mut isLinux: bool;
                     let __pa0 = ::match_deref::match_deref! { match &(Mod::getUnelabedSubMod(inMod.clone(), (literal!("LibraryDirectory")).clone())?) {
                         Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::STRING { value: __pa0 }), .. } => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -2398,12 +2398,12 @@ fn generateExtFunctionLibraryDirectoryPaths(mut program: Absyn::Program, mut pat
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    let mut r#str: ArcStr = arcstr::literal!("");
-                    let mut platform1: ArcStr = arcstr::literal!("");
-                    let mut platform2: ArcStr = arcstr::literal!("");
-                    let mut platform3: ArcStr = arcstr::literal!("");
-                    let mut libs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    let mut isLinux: bool = false;
+                    let mut r#str: ArcStr;
+                    let mut platform1: ArcStr;
+                    let mut platform2: ArcStr;
+                    let mut platform3: ArcStr;
+                    let mut libs: Arc<metamodelica::List<ArcStr>>;
+                    let mut isLinux: bool;
                     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("modelica://")); __mm_s.push_str(&*AbsynUtil::pathFirstIdent(path.clone())?); __mm_s.push_str(&*literal!("/Resources/Library")); ArcStr::from(__mm_s) }).clone();
                     r#str = (ProgramUtil::getFullPathFromUri(program.clone(), (r#str.clone()).clone(), false)?).clone();
                     platform1 = (System::openModelicaPlatform()).clone();
@@ -2437,7 +2437,7 @@ fn generateExtFunctionLibraryDirectoryPaths2(mut add: bool, mut dir: ArcStr, mut
     libs = (::match_deref::match_deref! { match &((add.clone(), inLibs.clone())) {
         (true, __esc_libs) => {
             libs = (*__esc_libs).clone();
-            let mut b: bool = false;
+            let mut b: bool;
             b = System::directoryExists((dir.clone()).clone());
             libs = List::consOnTrue(b.clone(), (dir.clone()).clone(), libs.clone());
             libs.clone()
@@ -2478,7 +2478,7 @@ fn getLibraryStringInMSVCFormat(mut exp: Arc<Absyn::Exp>) -> Result<(Arc<metamod
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::Exp::STRING { value: Deref @ "OpenModelicaCorba" } => {
-                    let mut r#str: ArcStr = arcstr::literal!("");
+                    let mut r#str: ArcStr;
                     r#str = (arcstr::literal!(Autoconf::corbaLibs)).clone();
                     Ok((list![(r#str.clone()).clone()], metamodelica::nil()))
                 }
@@ -2628,7 +2628,7 @@ fn getLibraryStringInGccFormat(mut exp: Arc<Absyn::Exp>) -> Result<(Arc<metamode
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::Exp::STRING { value: Deref @ "OpenModelicaCorba" } => {
-                    let mut r#str: ArcStr = arcstr::literal!("");
+                    let mut r#str: ArcStr;
                     r#str = (arcstr::literal!(Autoconf::corbaLibs)).clone();
                     Ok((list![(r#str.clone()).clone()], metamodelica::nil()))
                 }
@@ -2646,12 +2646,12 @@ fn getLibraryStringInGccFormat(mut exp: Arc<Absyn::Exp>) -> Result<(Arc<metamode
         if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::Exp::STRING { value: r#str } => {
-                    let mut strs1: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    let mut strs2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    let mut strs3: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    let mut names1: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    let mut names2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    let mut names3: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+                    let mut strs1: Arc<metamodelica::List<ArcStr>>;
+                    let mut strs2: Arc<metamodelica::List<ArcStr>>;
+                    let mut strs3: Arc<metamodelica::List<ArcStr>>;
+                    let mut names1: Arc<metamodelica::List<ArcStr>>;
+                    let mut names2: Arc<metamodelica::List<ArcStr>>;
+                    let mut names3: Arc<metamodelica::List<ArcStr>>;
                     let mut names: Arc<metamodelica::List<ArcStr>> = names.clone();
                     let mut strs: Arc<metamodelica::List<ArcStr>> = strs.clone();
                     if r#str.clone() == literal!("ModelicaStandardTables") {
@@ -2697,9 +2697,9 @@ fn generateExtFunctionIncludesLibstr(mut target: ArcStr, mut inMod: Arc<SCode::M
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ "msvc" => {
-                    let mut arr: Arc<metamodelica::List<Arc<Absyn::Exp>>> = metamodelica::nil();
-                    let mut libsList: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>> = metamodelica::nil();
-                    let mut namesList: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>> = metamodelica::nil();
+                    let mut arr: Arc<metamodelica::List<Arc<Absyn::Exp>>>;
+                    let mut libsList: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>;
+                    let mut namesList: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>;
                     let __pa0 = ::match_deref::match_deref! { match &(Mod::getUnelabedSubMod(inMod.clone(), (literal!("Library")).clone())?) {
                         Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::ARRAY { arrayExp: __pa0 }), .. } => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -2714,8 +2714,8 @@ fn generateExtFunctionIncludesLibstr(mut target: ArcStr, mut inMod: Arc<SCode::M
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ "msvc" => {
-                    let mut libs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    let mut exp: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
+                    let mut libs: Arc<metamodelica::List<ArcStr>>;
+                    let mut exp: Arc<Absyn::Exp>;
                     let mut names: Arc<metamodelica::List<ArcStr>> = names.clone();
                     let __pa0 = ::match_deref::match_deref! { match &(Mod::getUnelabedSubMod(inMod.clone(), (literal!("Library")).clone())?) {
                         Deref @ SCode::Mod::MOD { binding: Some(__pa0), .. } => __pa0.clone(),
@@ -2731,9 +2731,9 @@ fn generateExtFunctionIncludesLibstr(mut target: ArcStr, mut inMod: Arc<SCode::M
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    let mut arr: Arc<metamodelica::List<Arc<Absyn::Exp>>> = metamodelica::nil();
-                    let mut libsList: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>> = metamodelica::nil();
-                    let mut namesList: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>> = metamodelica::nil();
+                    let mut arr: Arc<metamodelica::List<Arc<Absyn::Exp>>>;
+                    let mut libsList: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>;
+                    let mut namesList: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>;
                     let __pa0 = ::match_deref::match_deref! { match &(Mod::getUnelabedSubMod(inMod.clone(), (literal!("Library")).clone())?) {
                         Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::ARRAY { arrayExp: __pa0 }), .. } => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -2748,8 +2748,8 @@ fn generateExtFunctionIncludesLibstr(mut target: ArcStr, mut inMod: Arc<SCode::M
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    let mut libs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    let mut exp: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
+                    let mut libs: Arc<metamodelica::List<ArcStr>>;
+                    let mut exp: Arc<Absyn::Exp>;
                     let mut names: Arc<metamodelica::List<ArcStr>> = names.clone();
                     let __pa0 = ::match_deref::match_deref! { match &(Mod::getUnelabedSubMod(inMod.clone(), (literal!("Library")).clone())?) {
                         Deref @ SCode::Mod::MOD { binding: Some(__pa0), .. } => __pa0.clone(),
@@ -2782,11 +2782,11 @@ fn generateExtFunctionIncludesIncludestr(mut inMod: Arc<SCode::Mod>) -> Arc<meta
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    let mut inc: ArcStr = arcstr::literal!("");
-                    let mut inc_1: ArcStr = arcstr::literal!("");
-                    let mut lineNumberStart: i32 = 0;
-                    let mut r#str: ArcStr = arcstr::literal!("");
-                    let mut fileName: ArcStr = arcstr::literal!("");
+                    let mut inc: ArcStr;
+                    let mut inc_1: ArcStr;
+                    let mut lineNumberStart: i32;
+                    let mut r#str: ArcStr;
+                    let mut fileName: ArcStr;
                     let mut includes: Arc<metamodelica::List<ArcStr>> = includes.clone();
                     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(Mod::getUnelabedSubMod(inMod.clone(), (literal!("Include")).clone())?) {
                         Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::STRING { value: __pa0 }), info: SourceInfo { fileName: __pa1, lineNumberStart: __pa2, .. }, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
@@ -2823,7 +2823,7 @@ fn generateExtFunctionDynamicLoad(mut inMod: Arc<SCode::Mod>) -> bool {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    let mut b: bool = false;
+                    let mut b: bool;
                     let __pa0 = ::match_deref::match_deref! { match &(Mod::getUnelabedSubMod(inMod.clone(), (literal!("DynamicLoad")).clone())?) {
                         Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::BOOL { value: __pa0 }), .. } => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -2862,7 +2862,7 @@ pub fn getImplicitRecordConstructors(mut inExpLst: Arc<metamodelica::List<Arc<DA
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cref, ty: Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path: record_path }, .. } }, tail: rest_expr } => {
-                    let mut record_cref: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut record_cref: Arc<DAE::Exp>;
                     let mut cref = (*cref).clone();
                     let mut rest_expr = (*rest_expr).clone();
                     ::match_deref::match_deref! { match &(ComponentReference::crefLastSubs(cref.clone())?) {
@@ -2924,10 +2924,10 @@ pub fn getCalledFunctionsInFunction2(mut inPath: Arc<Absyn::Path>, mut pathstr: 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (path, ht) => {
-                    let mut funcelem: DAE::Function = <DAE::Function as ::std::default::Default>::default();
-                    let mut calledfuncs: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
-                    let mut varfuncs: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
-                    let mut els: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
+                    let mut funcelem: DAE::Function;
+                    let mut calledfuncs: Arc<metamodelica::List<Arc<Absyn::Path>>>;
+                    let mut varfuncs: Arc<metamodelica::List<Arc<Absyn::Path>>>;
+                    let mut els: Arc<metamodelica::List<Arc<DAE::Element>>>;
                     let mut ht = (*ht).clone();
                     funcelem = DAEUtil::getNamedFunction(path.clone(), funcs.clone())?;
                     els = DAEUtil::getFunctionElements(funcelem.clone())?;
@@ -2947,7 +2947,7 @@ pub fn getCalledFunctionsInFunction2(mut inPath: Arc<Absyn::Path>, mut pathstr: 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (path, _) => {
-                    let mut r#str: ArcStr = arcstr::literal!("");
+                    let mut r#str: ArcStr;
                     if '__try0: {
                         unwrap_break_err!(DAEUtil::getNamedFunction(path.clone(), funcs.clone()), '__try0);
                         Ok::<(), anyhow::Error>(())
@@ -3037,7 +3037,7 @@ fn matchNonBuiltinCallsAndFnRefPaths(mut inExp: Arc<DAE::Exp>, mut itpl: (Arc<me
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::CREF { ty: Deref @ DAE::Type::T_FUNCTION_REFERENCE_FUNC { builtin: false, .. }, .. }, (acc, filter)) => {
-                    let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+                    let mut path: Arc<Absyn::Path>;
                     path = AbsynUtil::crefToPath(getCrefFromExp(inExp.clone())?)?;
                     let false = (List::isMemberOnTrue(path.clone(), filter.clone(), (std::sync::Arc::new(fnptr!(AbsynUtil::pathEqual, Arc<Absyn::Path>, Arc<Absyn::Path>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<bool> + 'static>))?) else { bail!("pattern mismatch") };
                     Ok((inExp.clone(), (metamodelica::cons(path.clone(), acc.clone()), filter.clone())))
@@ -3063,8 +3063,8 @@ fn aliasRecordDeclarations(mut inDecl: SimCodeFunction::RecordDeclaration, mut i
     let mut ht: (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Arc<Absyn::Path>)>>), i32, (HashTableStringToPath::FuncHashCref, HashTableStringToPath::FuncCrefEqual, HashTableStringToPath::FuncCrefStr, HashTableStringToPath::FuncExpStr));
     (decl, ht) = (match inDecl.clone() {
         SimCodeFunction::RecordDeclaration::RECORD_DECL_FULL { name: mut sname, aliasName: _, defPath: ref name, variables: ref vars, usedExternally: mut extConvert } => {
-            let mut r#str: ArcStr = arcstr::literal!("");
-            let mut alias: Option<ArcStr> = None;
+            let mut r#str: ArcStr;
+            let mut alias: Option<ArcStr>;
             r#str = stringDelimitList(List::map(vars.clone(), (std::sync::Arc::new(variableString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SimCodeFunction::Variable::Variable>) -> Result<ArcStr> + 'static>))?, (literal!("\n")).clone());
             (alias, ht) = aliasRecordDeclarations2((r#str.clone()).clone(), name.clone(), inHt.clone())?;
             (SimCodeFunction::RecordDeclaration::RECORD_DECL_FULL { name: (sname.clone()).clone(), aliasName: alias.clone(), defPath: name.clone(), variables: vars.clone(), usedExternally: extConvert.clone() }, ht.clone())
@@ -3083,7 +3083,7 @@ fn aliasRecordDeclarations2(mut r#str: ArcStr, mut path: Arc<Absyn::Path>, mut i
         let __mc_input = inHt.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            let mut aliasStr: ArcStr = arcstr::literal!("");
+            let mut aliasStr: ArcStr;
             aliasStr = (AbsynUtil::pathStringUnquoteReplaceDot(BaseHashTable::get((r#str.clone()).clone(), inHt.clone())?, (literal!("_")).clone())?).clone();
             Ok((Some((aliasStr.clone()).clone()), inHt.clone()))
         })() { break 'mc __v; }
@@ -3208,7 +3208,7 @@ pub fn twodigit(mut i: i32) -> ArcStr {
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             if !((i.clone() < 10)) { bail!("guard") }
-            let mut s: ArcStr = arcstr::literal!("");
+            let mut s: ArcStr;
             s = (intString(i.clone())).clone();
             s = (stringAppend((literal!("0")).clone(), (s.clone()).clone())).clone();
             Ok(s.clone())

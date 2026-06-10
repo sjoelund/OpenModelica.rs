@@ -39,8 +39,8 @@ pub fn translateModel(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode)
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_simCode.clone()) {
         (mut txt, ref i_simCode @ SimCode::SimCode { modelInfo: SimCode::ModelInfo { name: ref i_modelInfo_name, .. }, .. }) => {
-            let mut txt_1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_1: Tpl::Text;
+            let mut txt_0: Tpl::Text;
             txt_0 = generateXml(Tpl::emptyTxt.clone(), i_simCode.clone())?;
             txt_1 = dotPathXml(Tpl::emptyTxt.clone(), i_modelInfo_name.clone())?;
             txt_1 = Tpl::writeTok(txt_1.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".xml")).clone() }))?;
@@ -58,9 +58,9 @@ pub fn generateXml(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode) ->
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_simCode.clone()) {
         (mut txt, ref i_simCode @ SimCode::SimCode { modelInfo: ref i_modelInfo @ SimCode::ModelInfo { functions: ref i_modelInfo_functions, .. }, simulationSettingsOpt: ref i_simulationSettingsOpt, allEquations: ref i_allEquations, initialEquations: ref i_initialEquations, recordDecls: ref i_recordDecls, classAttributes: ref i_classAttributes, .. }) => {
-            let mut l_prefix: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_1: ArcStr = arcstr::literal!("");
-            let mut l_guid: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_prefix: Tpl::Text;
+            let mut ret_1: ArcStr;
+            let mut l_guid: Tpl::Text;
             ret_1 = (System::getUUIDStr()).clone();
             l_guid = Tpl::writeStr(Tpl::emptyTxt.clone(), (ret_1.clone()).clone())?;
             l_prefix = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("https://github.com/JModelica/JModelica/tree/master/XML")).clone() }))?;
@@ -123,8 +123,8 @@ pub fn vendorAnnotationsXml(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::Si
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_simCode.clone()) {
         (mut txt, SimCode::SimCode { modelInfo: SimCode::ModelInfo { varInfo: SimCode::VarInfo { numZeroCrossings: _, .. }, .. }, .. }) => {
-            let mut ret_1: ArcStr = arcstr::literal!("");
-            let mut l_generationTool: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_1: ArcStr;
+            let mut l_generationTool: Tpl::Text;
             l_generationTool = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("OpenModelica Compiler ")).clone() }))?;
             ret_1 = (Settings::getVersionNr()).clone();
             l_generationTool = Tpl::writeStr(l_generationTool.clone(), (ret_1.clone()).clone())?;
@@ -148,18 +148,18 @@ pub fn modelDescriptionXml(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::Sim
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_simCode.clone(), in_a_guid.clone()) {
         (mut txt, SimCode::SimCode { modelInfo: SimCode::ModelInfo { varInfo: SimCode::VarInfo { numStateVars: mut i_modelInfo_varInfo_numStateVars, numZeroCrossings: mut i_modelInfo_varInfo_numZeroCrossings, .. }, name: ref i_modelInfo_name, .. }, fileNamePrefix: mut i_fileNamePrefix, .. }, mut a_guid) => {
-            let mut l_numberOfEventIndicators: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_numberOfContinuousStates: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_variableNamingConvention: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_8: Util::DateTime = <Util::DateTime as ::std::default::Default>::default();
-            let mut l_generationDateAndTime: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_version: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_author: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_description: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_3: ArcStr = arcstr::literal!("");
-            let mut l_modelIdentifier: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_modelName: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_fmiVersion: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_numberOfEventIndicators: Tpl::Text;
+            let mut l_numberOfContinuousStates: Tpl::Text;
+            let mut l_variableNamingConvention: Tpl::Text;
+            let mut ret_8: Util::DateTime;
+            let mut l_generationDateAndTime: Tpl::Text;
+            let mut l_version: Tpl::Text;
+            let mut l_author: Tpl::Text;
+            let mut l_description: Tpl::Text;
+            let mut ret_3: ArcStr;
+            let mut l_modelIdentifier: Tpl::Text;
+            let mut l_modelName: Tpl::Text;
+            let mut l_fmiVersion: Tpl::Text;
             l_fmiVersion = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("1.0")).clone() }))?;
             l_modelName = dotPathXml(Tpl::emptyTxt.clone(), i_modelInfo_name.clone())?;
             ret_3 = (System::stringReplace((i_fileNamePrefix.clone()).clone(), (literal!(".")).clone(), (literal!("_")).clone())?).clone();
@@ -202,11 +202,11 @@ pub fn xsdateTimeXml(mut in_txt: Tpl::Text, mut in_a_dt: Util::DateTime) -> Resu
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_dt.clone()) {
         (mut txt, Util::DateTime { year: mut i_year, mon: mut i_mon, mday: mut i_mday, hour: mut i_hour, min: mut i_min, sec: mut i_sec }) => {
-            let mut ret_4: ArcStr = arcstr::literal!("");
-            let mut ret_3: ArcStr = arcstr::literal!("");
-            let mut ret_2: ArcStr = arcstr::literal!("");
-            let mut ret_1: ArcStr = arcstr::literal!("");
-            let mut ret_0: ArcStr = arcstr::literal!("");
+            let mut ret_4: ArcStr;
+            let mut ret_3: ArcStr;
+            let mut ret_2: ArcStr;
+            let mut ret_1: ArcStr;
+            let mut ret_0: ArcStr;
             txt = Tpl::writeStr(txt.clone(), (intString(i_year.clone())).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("-")).clone() }))?;
             ret_0 = (SimCodeFunctionUtil::twodigit(i_mon.clone())).clone();
@@ -688,7 +688,7 @@ fn fun_72(mut in_txt: Tpl::Text, mut in_a_comment: ArcStr) -> Result<Tpl::Text> 
             txt.clone()
         },
         (txt, i_comment) => {
-            let mut ret_0: ArcStr = arcstr::literal!("");
+            let mut ret_0: ArcStr;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("description=\"")).clone() }))?;
             ret_0 = (Util::escapeModelicaStringToXmlString((i_comment.clone()).clone())?).clone();
@@ -705,13 +705,13 @@ pub fn ScalarVariableAttributesXml(mut in_txt: Tpl::Text, mut in_a_simVar: SimCo
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_simVar.clone()) {
         (mut txt, SimCodeVar::SimVar { varKind: mut i_varKind, comment: mut i_comment, aliasvar: mut i_aliasvar, causality: mut i_causality, name: ref i_name, type_: ref i_type__, unit: mut i_unit, displayUnit: mut i_displayUnit, minValue: mut i_minValue, maxValue: mut i_maxValue, initialValue: mut i_initialValue, isFixed: mut i_isFixed, .. }) => {
-            let mut l_variableCategory: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_caus: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_alias: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_description: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_variability: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_1: i32 = 0;
-            let mut l_valueReference: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_variableCategory: Tpl::Text;
+            let mut l_caus: Tpl::Text;
+            let mut l_alias: Tpl::Text;
+            let mut l_description: Tpl::Text;
+            let mut l_variability: Tpl::Text;
+            let mut ret_1: i32;
+            let mut l_valueReference: Tpl::Text;
             ret_1 = System::tmpTick();
             l_valueReference = Tpl::writeStr(Tpl::emptyTxt.clone(), (intString(ret_1.clone())).clone())?;
             l_variability = getVariablityXml(Tpl::emptyTxt.clone(), i_varKind.clone())?;
@@ -980,9 +980,9 @@ pub fn ScalarVariableTypeCommonAttributeXml(mut in_txt: Tpl::Text, mut in_a_init
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_initialValue.clone(), in_a_isFixed.clone())) {
         (txt, Some(i_exp), a_isFixed) => {
-            let mut ret_2: bool = false;
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_2: bool;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = Expression::isEvaluatedConst(i_exp.clone());
             ret_1 = Expression::isCref(i_exp.clone());
@@ -1063,7 +1063,7 @@ pub fn initValXml(mut in_txt: Tpl::Text, mut in_a_initialValue: Arc<DAE::Exp>) -
             txt.clone()
         },
         (txt, Deref @ DAE::Exp::SCONST { string: i_string }) => {
-            let mut ret_0: ArcStr = arcstr::literal!("");
+            let mut ret_0: ArcStr;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("&quot;")).clone() }))?;
             ret_0 = (Util::escapeModelicaStringToXmlString((i_string.clone()).clone())?).clone();
@@ -1103,7 +1103,7 @@ fn fun_85(mut in_txt: Tpl::Text, mut in_a_unit: ArcStr) -> Result<Tpl::Text> {
             txt.clone()
         },
         (txt, i_unit) => {
-            let mut ret_0: ArcStr = arcstr::literal!("");
+            let mut ret_0: ArcStr;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("unit=\"")).clone() }))?;
             ret_0 = (Util::escapeModelicaStringToXmlString((i_unit.clone()).clone())?).clone();
@@ -1123,7 +1123,7 @@ fn fun_86(mut in_txt: Tpl::Text, mut in_a_displayUnit: ArcStr) -> Result<Tpl::Te
             txt.clone()
         },
         (txt, i_displayUnit) => {
-            let mut ret_0: ArcStr = arcstr::literal!("");
+            let mut ret_0: ArcStr;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("displayUnit=\"")).clone() }))?;
             ret_0 = (Util::escapeModelicaStringToXmlString((i_displayUnit.clone()).clone())?).clone();
@@ -1152,8 +1152,8 @@ fn fun_88(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mut
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_context.clone(), in_a_cr.clone())) {
         (txt, SimCodeFunction::Context::FUNCTION_CONTEXT { cref_prefix: _, .. }, a_cr) => {
-            let mut ret_1: ArcStr = arcstr::literal!("");
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_1: ArcStr;
+            let mut txt_0: Tpl::Text;
             let mut txt = (*txt).clone();
             txt_0 = crefStrXml(Tpl::emptyTxt.clone(), a_cr.clone())?;
             ret_1 = (System::unquoteIdentifier((Tpl::textString(txt_0.clone())?).clone())).clone();
@@ -1284,7 +1284,7 @@ pub fn qualifiedNamePartXml(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::Compone
     '__tco: loop {
         ::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone())) {
         (txt, Deref @ DAE::ComponentRef::CREF_IDENT { subscriptLst: i_subscriptLst, ident: i_ident, .. }) => {
-            let mut l_arrayTest: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_arrayTest: Tpl::Text;
             let mut txt = (*txt).clone();
             l_arrayTest = arraysubscriptsStrXml(Tpl::emptyTxt.clone(), i_subscriptLst.clone())?;
             return Ok(fun_93(txt.clone(), l_arrayTest.clone(), i_subscriptLst.clone(), (i_ident.clone()).clone())?)
@@ -1294,7 +1294,7 @@ pub fn qualifiedNamePartXml(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::Compone
             { (in_txt, in_a_cr) = (txt.clone(), i_componentRef.clone()); continue '__tco; }
         },
         (txt, Deref @ DAE::ComponentRef::CREF_QUAL { subscriptLst: i_subscriptLst, ident: i_ident, componentRef: i_componentRef, .. }) => {
-            let mut l_arrayTest: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_arrayTest: Tpl::Text;
             let mut txt = (*txt).clone();
             l_arrayTest = arraysubscriptsStrXml(Tpl::emptyTxt.clone(), i_subscriptLst.clone())?;
             return Ok(fun_94(txt.clone(), l_arrayTest.clone(), i_subscriptLst.clone(), i_componentRef.clone(), (i_ident.clone()).clone())?)
@@ -1516,7 +1516,7 @@ pub fn arrayCrefXmlStr2(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRe
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone())) {
         (txt, Deref @ DAE::ComponentRef::CREF_IDENT { ident: i_ident, .. }) => {
-            let mut ret_0: ArcStr = arcstr::literal!("");
+            let mut ret_0: ArcStr;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("<exp:QualifiedName>\n")).clone() }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
@@ -1528,7 +1528,7 @@ pub fn arrayCrefXmlStr2(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRe
             txt.clone()
         },
         (txt, Deref @ DAE::ComponentRef::CREF_QUAL { ident: i_ident, subscriptLst: i_subscriptLst, componentRef: i_componentRef, .. }) => {
-            let mut ret_1: ArcStr = arcstr::literal!("");
+            let mut ret_1: ArcStr;
             let mut txt = (*txt).clone();
             ret_1 = (System::unquoteIdentifier((i_ident.clone()).clone())).clone();
             txt = Tpl::writeStr(txt.clone(), (ret_1.clone()).clone())?;
@@ -1672,16 +1672,16 @@ pub fn crefFunctionNameXml(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::Componen
     '__tco: loop {
         ::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone())) {
         (txt, Deref @ DAE::ComponentRef::CREF_IDENT { ident: i_ident, .. }) => {
-            let mut ret_1: ArcStr = arcstr::literal!("");
-            let mut ret_0: ArcStr = arcstr::literal!("");
+            let mut ret_1: ArcStr;
+            let mut ret_0: ArcStr;
             let mut txt = (*txt).clone();
             ret_0 = (System::unquoteIdentifier((i_ident.clone()).clone())).clone();
             ret_1 = (System::stringReplace((ret_0.clone()).clone(), (literal!("_")).clone(), (literal!("__")).clone())?).clone();
             return Ok(Tpl::writeStr(txt.clone(), (ret_1.clone()).clone())?)
         },
         (txt, Deref @ DAE::ComponentRef::CREF_QUAL { ident: i_ident, componentRef: i_componentRef, .. }) => {
-            let mut ret_3: ArcStr = arcstr::literal!("");
-            let mut ret_2: ArcStr = arcstr::literal!("");
+            let mut ret_3: ArcStr;
+            let mut ret_2: ArcStr;
             let mut txt = (*txt).clone();
             ret_2 = (System::unquoteIdentifier((i_ident.clone()).clone())).clone();
             ret_3 = (System::stringReplace((ret_2.clone()).clone(), (literal!("_")).clone(), (literal!("__")).clone())?).clone();
@@ -1726,11 +1726,11 @@ pub fn replaceDotAndUnderscoreXml(mut in_txt: Tpl::Text, mut in_a_str: ArcStr) -
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_str.clone()) {
         (mut txt, mut i_name) => {
-            let mut ret_4: ArcStr = arcstr::literal!("");
-            let mut ret_3: ArcStr = arcstr::literal!("");
-            let mut l_str__underscores: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_1: ArcStr = arcstr::literal!("");
-            let mut l_str__dots: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_4: ArcStr;
+            let mut ret_3: ArcStr;
+            let mut l_str__underscores: Tpl::Text;
+            let mut ret_1: ArcStr;
+            let mut l_str__dots: Tpl::Text;
             ret_1 = (System::stringReplace((i_name.clone()).clone(), (literal!(".")).clone(), (literal!("_")).clone())?).clone();
             l_str__dots = Tpl::writeStr(Tpl::emptyTxt.clone(), (ret_1.clone()).clone())?;
             ret_3 = (System::stringReplace((Tpl::textString(l_str__dots.clone())?).clone(), (literal!("_")).clone(), (literal!("__")).clone())?).clone();
@@ -1868,8 +1868,8 @@ fn fun_119(mut in_txt: Tpl::Text, mut in_a_initialValue: Option<Arc<DAE::Exp>>, 
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_initialValue.clone(), in_a_varName.clone())) {
         (txt, Some(i_exp), a_varName) => {
-            let mut l_preExp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_preExp: Tpl::Text;
+            let mut l_varDecls: Tpl::Text;
             let mut txt = (*txt).clone();
             l_varDecls = Tpl::emptyTxt.clone();
             l_preExp = Tpl::emptyTxt.clone();
@@ -1899,7 +1899,7 @@ pub fn bindingEquationXml(mut in_txt: Tpl::Text, mut in_a_var: SimCodeVar::SimVa
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_var.clone()) {
         (mut txt, SimCodeVar::SimVar { name: ref i_name, initialValue: mut i_initialValue, .. }) => {
-            let mut l_varName: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_varName: Tpl::Text;
             l_varName = qualifiedNamePartXml(Tpl::emptyTxt.clone(), i_name.clone())?;
             txt = fun_119(txt.clone(), i_initialValue.clone(), l_varName.clone())?;
             txt.clone()
@@ -2009,7 +2009,7 @@ fn fun_126(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>, mut in
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_eq.clone(), in_a_varDecls.clone())) {
         (txt, Deref @ SimCode::SimEqSystem::SES_ALGORITHM { statements: i_statements, .. }, a_varDecls) => {
-            let mut l_alg: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_alg: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             l_alg = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -2160,10 +2160,10 @@ pub fn initialEquationsXml(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::M
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_modelInfo.clone(), in_a_initialEqs.clone())) {
         (txt, SimCode::ModelInfo { varInfo: SimCode::VarInfo { numStateVars: _, .. }, vars: SimCodeVar::SimVars { stateVars: i_vars_stateVars, derivativeVars: i_vars_derivativeVars, algVars: i_vars_algVars, discreteAlgVars: i_vars_discreteAlgVars, intAlgVars: i_vars_intAlgVars, boolAlgVars: i_vars_boolAlgVars, stringAlgVars: i_vars_stringAlgVars, .. }, .. }, a_initialEqs) => {
-            let mut l_eqs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_tmp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_jens: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_eqs: Tpl::Text;
+            let mut l_tmp: Tpl::Text;
+            let mut l_jens: Tpl::Text;
+            let mut l_varDecls: Tpl::Text;
             let mut txt = (*txt).clone();
             l_varDecls = Tpl::emptyTxt.clone();
             System::tmpTickReset(0);
@@ -2222,8 +2222,8 @@ fn fun_137(mut in_txt: Tpl::Text, mut in_a_initialValue: Option<Arc<DAE::Exp>>, 
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_initialValue.clone(), in_a_identName.clone())) {
         (txt, Some(i_exp), a_identName) => {
-            let mut l_preExp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_preExp: Tpl::Text;
+            let mut l_varDecls: Tpl::Text;
             let mut txt = (*txt).clone();
             l_varDecls = Tpl::emptyTxt.clone();
             l_preExp = Tpl::emptyTxt.clone();
@@ -2250,7 +2250,7 @@ pub fn initialEquationXml(mut in_txt: Tpl::Text, mut in_a_var: SimCodeVar::SimVa
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_var.clone()) {
         (mut txt, SimCodeVar::SimVar { name: ref i_name, initialValue: mut i_initialValue, .. }) => {
-            let mut l_identName: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_identName: Tpl::Text;
             l_identName = crefXml(Tpl::emptyTxt.clone(), i_name.clone())?;
             txt = fun_137(txt.clone(), i_initialValue.clone(), l_identName.clone())?;
             txt.clone()
@@ -2348,11 +2348,11 @@ pub fn equation_Xml(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem
             (txt.clone(), a_varDecls.clone(), a_eqs.clone())
         },
         (txt, i_eq, a_context, a_varDecls, a_eqs) => {
-            let mut l_x: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_varD: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_tmp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_1: i32 = 0;
-            let mut l_ix: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_x: Tpl::Text;
+            let mut l_varD: Tpl::Text;
+            let mut l_tmp: Tpl::Text;
+            let mut ret_1: i32;
+            let mut l_ix: Tpl::Text;
             let mut a_eqs = (*a_eqs).clone();
             ret_1 = System::tmpTickIndex(10);
             l_ix = Tpl::writeStr(Tpl::emptyTxt.clone(), (intString(ret_1.clone())).clone())?;
@@ -2473,9 +2473,9 @@ pub fn equationSimpleAssignXml(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_eq.clone(), in_a_context.clone(), in_a_varDecls.clone())) {
         (txt, Deref @ SimCode::SimEqSystem::SES_SIMPLE_ASSIGN { exp: i_exp, cref: i_cref, .. }, a_context, a_varDecls) => {
-            let mut l_result: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_expPart: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_preExp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_result: Tpl::Text;
+            let mut l_expPart: Tpl::Text;
+            let mut l_preExp: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             l_preExp = Tpl::emptyTxt.clone();
@@ -2487,9 +2487,9 @@ pub fn equationSimpleAssignXml(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::
             (txt.clone(), a_varDecls.clone())
         },
         (txt, Deref @ SimCode::SimEqSystem::SES_SIMPLE_ASSIGN_CONSTRAINTS { exp: i_exp, cref: i_cref, .. }, a_context, a_varDecls) => {
-            let mut l_result: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_expPart: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_preExp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_result: Tpl::Text;
+            let mut l_expPart: Tpl::Text;
+            let mut l_preExp: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             l_preExp = Tpl::emptyTxt.clone();
@@ -2533,7 +2533,7 @@ fn fun_145(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_eqn_exp: Arc<DAE
             txt.clone()
         },
         (txt, _, a_eqn_exp, _, _) => {
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_0: Tpl::Text;
             let mut txt = (*txt).clone();
             txt_0 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("No runtime support for this sort of array call: ")).clone() }))?;
             txt_0 = ExpressionDumpTpl::dumpExp(txt_0.clone(), a_eqn_exp.clone(), (literal!("\"")).clone())?;
@@ -2550,10 +2550,10 @@ pub fn equationArrayCallAssignXml(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCod
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_eq.clone(), in_a_context.clone(), in_a_varDecls.clone())) {
         (txt, Deref @ SimCode::SimEqSystem::SES_ARRAY_CALL_ASSIGN { lhs: Deref @ DAE::Exp::CREF { componentRef: i_lhs_componentRef, .. }, exp: i_eqn_exp @ i_exp, .. }, a_context, a_varDecls) => {
-            let mut str_3: ArcStr = arcstr::literal!("");
-            let mut txt_2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_expPart: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_preExp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut str_3: ArcStr;
+            let mut txt_2: Tpl::Text;
+            let mut l_expPart: Tpl::Text;
+            let mut l_preExp: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             l_preExp = Tpl::emptyTxt.clone();
@@ -2578,8 +2578,8 @@ fn lm_147(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<(i32, i32, Arc<S
         let mut lstElt_147 = lstElt_147.clone();
         (txt, a_varDecls) = (::match_deref::match_deref! { match &(lstElt_147.clone()) {
         (_, _, Deref @ SimCode::SimEqSystem::SES_RESIDUAL { exp: i_eq_exp, .. }) => {
-            let mut l_expPart: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_preExp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_expPart: Tpl::Text;
+            let mut l_preExp: Tpl::Text;
             l_preExp = Tpl::emptyTxt.clone();
             (l_expPart, l_preExp, a_varDecls) = daeExpXml(Tpl::emptyTxt.clone(), i_eq_exp.clone(), a_context.clone(), l_preExp.clone(), a_varDecls.clone())?;
             txt = Tpl::writeText(txt.clone(), l_preExp.clone())?;
@@ -2606,8 +2606,8 @@ fn lm_148(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>,
         let mut lstElt_148 = lstElt_148.clone();
         (txt, a_varDecls) = (::match_deref::match_deref! { match &(lstElt_148.clone()) {
         i_exp => {
-            let mut l_expPart: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_preExp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_expPart: Tpl::Text;
+            let mut l_preExp: Tpl::Text;
             l_preExp = Tpl::emptyTxt.clone();
             (l_expPart, l_preExp, a_varDecls) = daeExpXml(Tpl::emptyTxt.clone(), i_exp.clone(), a_context.clone(), l_preExp.clone(), a_varDecls.clone())?;
             txt = Tpl::writeText(txt.clone(), l_preExp.clone())?;
@@ -2673,8 +2673,8 @@ fn lm_151(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SimCode::Sim
         let mut lstElt_151 = lstElt_151.clone();
         (txt, a_varDecls) = (::match_deref::match_deref! { match &(lstElt_151.clone()) {
         Deref @ SimCode::SimEqSystem::SES_RESIDUAL { exp: i_eq2_exp, .. } => {
-            let mut l_expPart: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_preExp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_expPart: Tpl::Text;
+            let mut l_preExp: Tpl::Text;
             l_preExp = Tpl::emptyTxt.clone();
             (l_expPart, l_preExp, a_varDecls) = daeExpXml(Tpl::emptyTxt.clone(), i_eq2_exp.clone(), SimCodeFunction::contextSimulationDiscrete().clone(), l_preExp.clone(), a_varDecls.clone())?;
             txt = Tpl::writeText(txt.clone(), l_preExp.clone())?;
@@ -2699,10 +2699,10 @@ fn fun_152(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>) -> Res
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_eq.clone())) {
         (txt, Deref @ SimCode::SimEqSystem::SES_NONLINEAR { nlSystem: Deref @ SimCode::NonlinearSystem { eqs: i_nls_eqs, .. }, .. }) => {
-            let mut l_body: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_prebody: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_tmp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_body: Tpl::Text;
+            let mut l_prebody: Tpl::Text;
+            let mut l_tmp: Tpl::Text;
+            let mut l_varDecls: Tpl::Text;
             let mut txt = (*txt).clone();
             l_varDecls = Tpl::emptyTxt.clone();
             l_tmp = Tpl::emptyTxt.clone();
@@ -2762,7 +2762,7 @@ fn lm_155(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Compone
         let mut lstElt_155 = lstElt_155.clone();
         (txt, a_helpInits) = (::match_deref::match_deref! { match &(lstElt_155.clone()) {
         i_e => {
-            let mut l_helpInit: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_helpInit: Tpl::Text;
             l_helpInit = crefToXmlStr(Tpl::emptyTxt.clone(), i_e.clone())?;
             a_helpInits = Tpl::writeText(a_helpInits.clone(), l_helpInit.clone())?;
             a_helpInits = Tpl::writeTok(a_helpInits.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
@@ -2800,7 +2800,7 @@ fn lm_157(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Compone
         let mut lstElt_157 = lstElt_157.clone();
         (txt, a_helpInits) = (::match_deref::match_deref! { match &(lstElt_157.clone()) {
         i_e => {
-            let mut l_helpInit: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_helpInit: Tpl::Text;
             l_helpInit = crefToXmlStr(Tpl::emptyTxt.clone(), i_e.clone())?;
             a_helpInits = Tpl::writeText(a_helpInits.clone(), l_helpInit.clone())?;
             a_helpInits = Tpl::writeTok(a_helpInits.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
@@ -2836,11 +2836,11 @@ pub fn equationWhenXml(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSys
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_eq.clone(), in_a_context.clone(), in_a_varDecls.clone())) {
         (txt, Deref @ SimCode::SimEqSystem::SES_WHEN { whenStmtLst: i_whenStmtLst, conditions: i_conditions, elseWhen: None, .. }, a_context, a_varDecls) => {
-            let mut l_cond: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_body: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_helpIf: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_helpInits: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_preExp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_cond: Tpl::Text;
+            let mut l_body: Tpl::Text;
+            let mut l_helpIf: Tpl::Text;
+            let mut l_helpInits: Tpl::Text;
+            let mut l_preExp: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             l_preExp = Tpl::emptyTxt.clone();
@@ -2864,12 +2864,12 @@ pub fn equationWhenXml(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSys
             (txt.clone(), a_varDecls.clone())
         },
         (txt, Deref @ SimCode::SimEqSystem::SES_WHEN { whenStmtLst: i_whenStmtLst, conditions: i_conditions, elseWhen: Some(i_elseWhenEq), .. }, a_context, a_varDecls) => {
-            let mut l_elseWhen: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_cond: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_body: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_helpIf: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_helpInits: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_preExp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_elseWhen: Tpl::Text;
+            let mut l_cond: Tpl::Text;
+            let mut l_body: Tpl::Text;
+            let mut l_helpIf: Tpl::Text;
+            let mut l_helpInits: Tpl::Text;
+            let mut l_preExp: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             l_preExp = Tpl::emptyTxt.clone();
@@ -2909,7 +2909,7 @@ fn lm_160(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Compone
         let mut lstElt_160 = lstElt_160.clone();
         (txt, a_helpInits) = (::match_deref::match_deref! { match &(lstElt_160.clone()) {
         i_e => {
-            let mut l_helpInit: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_helpInit: Tpl::Text;
             l_helpInit = crefToXmlStr(Tpl::emptyTxt.clone(), i_e.clone())?;
             a_helpInits = Tpl::writeText(a_helpInits.clone(), l_helpInit.clone())?;
             a_helpInits = Tpl::writeTok(a_helpInits.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
@@ -2947,7 +2947,7 @@ fn lm_162(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Compone
         let mut lstElt_162 = lstElt_162.clone();
         (txt, a_helpInits) = (::match_deref::match_deref! { match &(lstElt_162.clone()) {
         i_e => {
-            let mut l_helpInit: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_helpInit: Tpl::Text;
             l_helpInit = crefToXmlStr(Tpl::emptyTxt.clone(), i_e.clone())?;
             a_helpInits = Tpl::writeText(a_helpInits.clone(), l_helpInit.clone())?;
             a_helpInits = Tpl::writeTok(a_helpInits.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
@@ -2985,9 +2985,9 @@ pub fn equationElseWhenXml(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimE
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_preExp, out_a_helpInits, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_eq.clone(), in_a_context.clone(), in_a_preExp.clone(), in_a_helpInits.clone(), in_a_varDecls.clone())) {
         (txt, Deref @ SimCode::SimEqSystem::SES_WHEN { whenStmtLst: i_whenStmtLst, conditions: i_conditions, elseWhen: None, .. }, a_context, a_preExp, a_helpInits, a_varDecls) => {
-            let mut l_cond: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_body: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_helpIf: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_cond: Tpl::Text;
+            let mut l_body: Tpl::Text;
+            let mut l_helpIf: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_helpInits = (*a_helpInits).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -3010,10 +3010,10 @@ pub fn equationElseWhenXml(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimE
             (txt.clone(), a_preExp.clone(), a_helpInits.clone(), a_varDecls.clone())
         },
         (txt, Deref @ SimCode::SimEqSystem::SES_WHEN { whenStmtLst: i_whenStmtLst, conditions: i_conditions, elseWhen: Some(i_elseWhenEq), .. }, a_context, a_preExp, a_helpInits, a_varDecls) => {
-            let mut l_elseWhen: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_cond: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_body: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_helpIf: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_elseWhen: Tpl::Text;
+            let mut l_cond: Tpl::Text;
+            let mut l_body: Tpl::Text;
+            let mut l_helpIf: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_helpInits = (*a_helpInits).clone();
@@ -3051,8 +3051,8 @@ fn fun_165(mut in_txt: Tpl::Text, mut in_a_whenOp: BackendDAE::WhenOperator, mut
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_whenOp.clone(), in_a_varDecls.clone(), in_a_context.clone())) {
         (txt, BackendDAE::WhenOperator::ASSIGN { left: Deref @ DAE::Exp::CREF { componentRef: i_cr, .. }, right: i_right, .. }, a_varDecls, a_context) => {
-            let mut l_exp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_preExp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_exp: Tpl::Text;
+            let mut l_preExp: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             l_preExp = Tpl::emptyTxt.clone();
@@ -3068,8 +3068,8 @@ fn fun_165(mut in_txt: Tpl::Text, mut in_a_whenOp: BackendDAE::WhenOperator, mut
             (txt.clone(), a_varDecls.clone())
         },
         (txt, BackendDAE::WhenOperator::REINIT { value: i_value, stateVar: i_stateVar, .. }, a_varDecls, _) => {
-            let mut l_val: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_preExp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_val: Tpl::Text;
+            let mut l_preExp: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             l_preExp = Tpl::emptyTxt.clone();
@@ -3085,8 +3085,8 @@ fn fun_165(mut in_txt: Tpl::Text, mut in_a_whenOp: BackendDAE::WhenOperator, mut
             (txt.clone(), a_varDecls.clone())
         },
         (txt, BackendDAE::WhenOperator::TERMINATE { message: i_message, .. }, a_varDecls, _) => {
-            let mut l_msgVar: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_preExp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_msgVar: Tpl::Text;
+            let mut l_preExp: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             l_preExp = Tpl::emptyTxt.clone();
@@ -3349,10 +3349,10 @@ pub fn regularFunctionXml(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimCodeFunctio
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fn.clone())) {
         (txt, Deref @ SimCodeFunction::Function::FUNCTION { name: i_name, body: i_body, outVars: i_outVars, functionArguments: i_functionArguments, .. }) => {
-            let mut l_bodyPart: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_varInits: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_fname: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_bodyPart: Tpl::Text;
+            let mut l_varInits: Tpl::Text;
+            let mut l_varDecls: Tpl::Text;
+            let mut l_fname: Tpl::Text;
             let mut txt = (*txt).clone();
             System::tmpTickReset(1);
             l_fname = underscorePathXml(Tpl::emptyTxt.clone(), i_name.clone())?;
@@ -3429,10 +3429,10 @@ pub fn externalFunctionXml(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimCodeFuncti
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fn.clone())) {
         (txt, i_efn @ Deref @ SimCodeFunction::Function::EXTERNAL_FUNCTION { name: i_name, outVars: i_outVars, funArgs: i_funArgs, .. }) => {
-            let mut l_callPart: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_fname: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_preExp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_callPart: Tpl::Text;
+            let mut l_fname: Tpl::Text;
+            let mut l_varDecls: Tpl::Text;
+            let mut l_preExp: Tpl::Text;
             let mut txt = (*txt).clone();
             System::tmpTickReset(1);
             l_preExp = Tpl::emptyTxt.clone();
@@ -3633,7 +3633,7 @@ fn fun_186(mut in_txt: Tpl::Text, mut in_a_language: ArcStr, mut in_a_name: ArcS
             txt.clone()
         },
         (txt, i_language, _) => {
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_0: Tpl::Text;
             let mut txt = (*txt).clone();
             txt_0 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Unsupport external language: ")).clone() }))?;
             txt_0 = Tpl::writeStr(txt_0.clone(), (i_language.clone()).clone())?;
@@ -3706,8 +3706,8 @@ fn fun_188(mut in_txt: Tpl::Text, mut in_a_type: Arc<DAE::Type>, mut in_a_isInpu
             txt.clone()
         },
         (txt, i_type, _) => {
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_0: ArcStr = arcstr::literal!("");
+            let mut txt_0: Tpl::Text;
+            let mut ret_0: ArcStr;
             let mut txt = (*txt).clone();
             txt_0 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Unknown external C type ")).clone() }))?;
             ret_0 = (TypesDump::unparseType(i_type.clone())?).clone();
@@ -3744,7 +3744,7 @@ fn fun_190(mut in_txt: Tpl::Text, mut in_a_isArray: bool, mut in_a_s: Tpl::Text)
             txt.clone()
         },
         (mut txt, _, mut a_s) => {
-            let mut str_0: ArcStr = arcstr::literal!("");
+            let mut str_0: ArcStr;
             str_0 = (Tpl::textString(a_s.clone())?).clone();
             txt = fun_189(txt.clone(), (str_0.clone()).clone())?;
             txt = Tpl::writeText(txt.clone(), a_s.clone())?;
@@ -3852,8 +3852,8 @@ fn fun_194(mut in_txt: Tpl::Text, mut in_a_type: Arc<DAE::Type>) -> Result<Tpl::
             txt.clone()
         },
         (txt, i_type) => {
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_0: ArcStr = arcstr::literal!("");
+            let mut txt_0: Tpl::Text;
+            let mut ret_0: ArcStr;
             let mut txt = (*txt).clone();
             txt_0 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Unknown external F77 type ")).clone() }))?;
             ret_0 = (TypesDump::unparseType(i_type.clone())?).clone();
@@ -4082,8 +4082,8 @@ pub fn extFunCallCXml(mut in_txt: Tpl::Text, mut in_a_fun: Arc<SimCodeFunction::
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_preExp, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fun.clone(), in_a_preExp.clone(), in_a_varDecls.clone())) {
         (txt, Deref @ SimCodeFunction::Function::EXTERNAL_FUNCTION { extArgs: i_extArgs, extReturn: i_extReturn, extName: i_extName, .. }, a_preExp, a_varDecls) => {
-            let mut l_returnAssign: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_args: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_returnAssign: Tpl::Text;
+            let mut l_args: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -4159,8 +4159,8 @@ pub fn extFunCallF77Xml(mut in_txt: Tpl::Text, mut in_a_fun: Arc<SimCodeFunction
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_preExp, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fun.clone(), in_a_preExp.clone(), in_a_varDecls.clone())) {
         (txt, Deref @ SimCodeFunction::Function::EXTERNAL_FUNCTION { extArgs: i_extArgs, extReturn: i_extReturn, extName: i_extName, .. }, a_preExp, a_varDecls) => {
-            let mut l_returnAssign: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_args: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_returnAssign: Tpl::Text;
+            let mut l_args: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -4225,8 +4225,8 @@ pub fn extArgCXml(mut in_txt: Tpl::Text, mut in_a_extArg: Arc<SimCodeFunction::S
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, Deref @ SimCodeFunction::SimExtArg::SIMEXTARGSIZE { cref: i_c, exp: i_exp, .. }, a_preExp, a_varDecls) => {
-            let mut l_dim: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_name: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_dim: Tpl::Text;
+            let mut l_name: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -4276,7 +4276,7 @@ pub fn extArgF77Xml(mut in_txt: Tpl::Text, mut in_a_extArg: Arc<SimCodeFunction:
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, Deref @ SimCodeFunction::SimExtArg::SIMEXTARGEXP { exp: i_exp, type_: Deref @ DAE::Type::T_STRING { varLst: _ } }, a_preExp, a_varDecls) => {
-            let mut l_texp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_texp: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -4285,8 +4285,8 @@ pub fn extArgF77Xml(mut in_txt: Tpl::Text, mut in_a_extArg: Arc<SimCodeFunction:
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, Deref @ SimCodeFunction::SimExtArg::SIMEXTARGSIZE { cref: i_c, exp: i_exp, .. }, a_preExp, a_varDecls) => {
-            let mut l_name: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_dim: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_name: Tpl::Text;
+            let mut l_dim: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -4502,15 +4502,15 @@ pub fn classAttributesXml(mut in_txt: Tpl::Text, mut in_a_classAttribute: Arc<DA
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_classAttribute.clone(), in_a_simCode.clone())) {
         (txt, Deref @ DAE::ClassAttributes { objetiveE: i_objetiveE, objectiveIntegrandE: i_objectiveIntegrandE, startTimeE: i_startTimeE, finalTimeE: i_finalTimeE }, a_simCode) => {
-            let mut l_constraints: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_timePointValue: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_timePointIndex: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_finalTime: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_startTime: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_objectiveIntegrand: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_objectiveFunction: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_preExp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_constraints: Tpl::Text;
+            let mut l_timePointValue: Tpl::Text;
+            let mut l_timePointIndex: Tpl::Text;
+            let mut l_finalTime: Tpl::Text;
+            let mut l_startTime: Tpl::Text;
+            let mut l_objectiveIntegrand: Tpl::Text;
+            let mut l_objectiveFunction: Tpl::Text;
+            let mut l_preExp: Tpl::Text;
+            let mut l_varDecls: Tpl::Text;
             let mut txt = (*txt).clone();
             l_varDecls = Tpl::emptyTxt.clone();
             l_preExp = Tpl::emptyTxt.clone();
@@ -4605,9 +4605,9 @@ pub fn constraintXml(mut in_txt: Tpl::Text, mut in_a_cons: Arc<DAE::Constraint>)
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cons.clone())) {
         (txt, Deref @ DAE::Constraint::CONSTRAINT_EXPS { constraintLst: i_constraintLst }) => {
-            let mut l_constrain: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_preExp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_constrain: Tpl::Text;
+            let mut l_preExp: Tpl::Text;
+            let mut l_varDecls: Tpl::Text;
             let mut txt = (*txt).clone();
             l_varDecls = Tpl::emptyTxt.clone();
             l_preExp = Tpl::emptyTxt.clone();
@@ -4759,10 +4759,10 @@ fn fun_231(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_val: Arc
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone(), in_a_val.clone(), in_a_varDecls.clone(), in_a_context.clone())) {
         (txt, Deref @ DAE::Exp::ASUB { exp: i_arr, sub: Deref @ metamodelica::List::Cons { head: i_idx, tail: Deref @ metamodelica::List::Nil } }, a_val, a_varDecls, a_context) => {
-            let mut l_val1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_idx1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_arr1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_preExp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_val1: Tpl::Text;
+            let mut l_idx1: Tpl::Text;
+            let mut l_arr1: Tpl::Text;
+            let mut l_preExp: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             l_preExp = Tpl::emptyTxt.clone();
@@ -4797,9 +4797,9 @@ fn fun_232(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_exp1: Arc<DAE::E
             (txt.clone(), a_varDecls.clone())
         },
         (txt, _, a_exp1, a_val, a_varDecls, a_context, _) => {
-            let mut l_expPart: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_varPart: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_preExp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_expPart: Tpl::Text;
+            let mut l_varPart: Tpl::Text;
+            let mut l_preExp: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             l_preExp = Tpl::emptyTxt.clone();
@@ -4829,8 +4829,8 @@ pub fn algStmtAssignXml(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_stmt.clone(), in_a_context.clone(), in_a_varDecls.clone())) {
         (txt, Deref @ DAE::Statement::STMT_ASSIGN { exp1: Deref @ DAE::Exp::CREF { componentRef: Deref @ DAE::ComponentRef::WILD { .. }, .. }, exp: i_e, .. }, a_context, a_varDecls) => {
-            let mut l_expPart: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_preExp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_expPart: Tpl::Text;
+            let mut l_preExp: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             l_preExp = Tpl::emptyTxt.clone();
@@ -4844,9 +4844,9 @@ pub fn algStmtAssignXml(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement
             (txt.clone(), a_varDecls.clone())
         },
         (txt, Deref @ DAE::Statement::STMT_ASSIGN { exp1: i_exp1 @ Deref @ DAE::Exp::CREF { ty: Deref @ DAE::Type::T_FUNCTION_REFERENCE_VAR { functionType: _ }, .. }, exp: i_exp, .. }, a_context, a_varDecls) => {
-            let mut l_varPart: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_expPart: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_preExp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_varPart: Tpl::Text;
+            let mut l_expPart: Tpl::Text;
+            let mut l_preExp: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             l_preExp = Tpl::emptyTxt.clone();
@@ -4867,9 +4867,9 @@ pub fn algStmtAssignXml(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement
             (txt.clone(), a_varDecls.clone())
         },
         (txt, Deref @ DAE::Statement::STMT_ASSIGN { exp1: i_exp1 @ Deref @ DAE::Exp::CREF { ty: Deref @ DAE::Type::T_FUNCTION_REFERENCE_FUNC { builtin: _, .. }, .. }, exp: i_exp, .. }, a_context, a_varDecls) => {
-            let mut l_varPart: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_expPart: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_preExp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_varPart: Tpl::Text;
+            let mut l_expPart: Tpl::Text;
+            let mut l_preExp: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             l_preExp = Tpl::emptyTxt.clone();
@@ -4890,9 +4890,9 @@ pub fn algStmtAssignXml(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement
             (txt.clone(), a_varDecls.clone())
         },
         (txt, Deref @ DAE::Statement::STMT_ASSIGN { exp1: i_exp1 @ Deref @ DAE::Exp::CREF { componentRef: _, .. }, exp: i_exp, .. }, a_context, a_varDecls) => {
-            let mut l_varPart: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_expPart: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_preExp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_varPart: Tpl::Text;
+            let mut l_expPart: Tpl::Text;
+            let mut l_preExp: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             l_preExp = Tpl::emptyTxt.clone();
@@ -4913,8 +4913,8 @@ pub fn algStmtAssignXml(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement
             (txt.clone(), a_varDecls.clone())
         },
         (txt, Deref @ DAE::Statement::STMT_ASSIGN { exp1: i_exp1 @ Deref @ DAE::Exp::ASUB { exp: _, .. }, exp: i_exp @ i_val, .. }, a_context, a_varDecls) => {
-            let mut str_4: ArcStr = arcstr::literal!("");
-            let mut txt_3: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut str_4: ArcStr;
+            let mut txt_3: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             txt_3 = expTypeFromExpShortXml(Tpl::emptyTxt.clone(), i_exp.clone())?;
@@ -4923,9 +4923,9 @@ pub fn algStmtAssignXml(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement
             (txt.clone(), a_varDecls.clone())
         },
         (txt, Deref @ DAE::Statement::STMT_ASSIGN { exp1: i_exp1, exp: i_exp, .. }, a_context, a_varDecls) => {
-            let mut l_expPart2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_expPart1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_preExp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_expPart2: Tpl::Text;
+            let mut l_expPart1: Tpl::Text;
+            let mut l_preExp: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             l_preExp = Tpl::emptyTxt.clone();
@@ -4991,9 +4991,9 @@ pub fn algStmtAssignArrXml(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statem
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_stmt.clone(), in_a_context.clone(), in_a_varDecls.clone())) {
         (txt, Deref @ DAE::Statement::STMT_ASSIGN_ARR { exp: i_e, lhs: Deref @ DAE::Exp::CREF { componentRef: i_cr, .. }, type_: i_t, .. }, a_context, a_varDecls) => {
-            let mut l_ispec: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_expPart: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_preExp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_ispec: Tpl::Text;
+            let mut l_expPart: Tpl::Text;
+            let mut l_preExp: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             l_preExp = Tpl::emptyTxt.clone();
@@ -5090,8 +5090,8 @@ fn lm_241(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>,
         let mut lstElt_241 = lstElt_241.clone();
         (txt, a_varDecls, a_afterExp) = (::match_deref::match_deref! { match &(lstElt_241.clone()) {
         i_cr => {
-            let mut x_i1: i32 = 0;
-            let mut l_rhsStr: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut x_i1: i32;
+            let mut l_rhsStr: Tpl::Text;
             x_i1 = Tpl::getIteri_i0(txt.clone())?;
             l_rhsStr = Tpl::writeText(Tpl::emptyTxt.clone(), a_retStruct.clone())?;
             l_rhsStr = Tpl::writeTok(l_rhsStr.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".targ")).clone() }))?;
@@ -5114,8 +5114,8 @@ fn lm_242(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>,
         let mut lstElt_242 = lstElt_242.clone();
         (txt, a_varDecls, a_afterExp) = (::match_deref::match_deref! { match &(lstElt_242.clone()) {
         i_cr => {
-            let mut x_i1: i32 = 0;
-            let mut l_rhsStr: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut x_i1: i32;
+            let mut l_rhsStr: Tpl::Text;
             x_i1 = Tpl::getIteri_i0(txt.clone())?;
             l_rhsStr = Tpl::writeText(Tpl::emptyTxt.clone(), a_prefix.clone())?;
             l_rhsStr = Tpl::writeTok(l_rhsStr.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_targ")).clone() }))?;
@@ -5175,13 +5175,13 @@ fn lm_245(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>,
         let mut lstElt_245 = lstElt_245.clone();
         (txt, a_varDecls) = (::match_deref::match_deref! { match &(lstElt_245.clone()) {
         i_cr => {
-            let mut x_i1: i32 = 0;
-            let mut str_5: ArcStr = arcstr::literal!("");
-            let mut l_addRoot: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut str_3: ArcStr = arcstr::literal!("");
-            let mut l_initVar: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_typ: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_rhsStr: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut x_i1: i32;
+            let mut str_5: ArcStr;
+            let mut l_addRoot: Tpl::Text;
+            let mut str_3: ArcStr;
+            let mut l_initVar: Tpl::Text;
+            let mut l_typ: Tpl::Text;
+            let mut l_rhsStr: Tpl::Text;
             x_i1 = Tpl::getIteri_i0(txt.clone())?;
             l_rhsStr = Tpl::writeText(Tpl::emptyTxt.clone(), a_prefix.clone())?;
             l_rhsStr = Tpl::writeTok(l_rhsStr.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_targ")).clone() }))?;
@@ -5212,12 +5212,12 @@ pub fn algStmtTupleAssignXml(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Stat
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_stmt.clone(), in_a_context.clone(), in_a_varDecls.clone())) {
         (txt, Deref @ DAE::Statement::STMT_TUPLE_ASSIGN { exp: i_exp @ Deref @ DAE::Exp::CALL { path: _, .. }, expExpLst: i_expExpLst, .. }, a_context, a_varDecls) => {
-            let mut l_lhsCrefs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_retStruct: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_marker: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_crefs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_afterExp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_preExp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_lhsCrefs: Tpl::Text;
+            let mut l_retStruct: Tpl::Text;
+            let mut l_marker: Tpl::Text;
+            let mut l_crefs: Tpl::Text;
+            let mut l_afterExp: Tpl::Text;
+            let mut l_preExp: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             l_preExp = Tpl::emptyTxt.clone();
@@ -5255,11 +5255,11 @@ pub fn algStmtTupleAssignXml(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Stat
             (txt.clone(), a_varDecls.clone())
         },
         (txt, Deref @ DAE::Statement::STMT_TUPLE_ASSIGN { exp: Deref @ DAE::Exp::MATCHEXPRESSION { matchType: _, .. }, expExpLst: i_expExpLst, .. }, a_context, a_varDecls) => {
-            let mut ret_7: i32 = 0;
-            let mut l_prefix: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_lhsCrefs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_afterExp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_preExp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_7: i32;
+            let mut l_prefix: Tpl::Text;
+            let mut l_lhsCrefs: Tpl::Text;
+            let mut l_afterExp: Tpl::Text;
+            let mut l_preExp: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             l_preExp = Tpl::emptyTxt.clone();
@@ -5334,7 +5334,7 @@ pub fn writeLhsCrefXml(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut i
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, i_exp @ Deref @ DAE::Exp::CREF { ty: Deref @ DAE::Type::T_ARRAY { ty: _, .. }, .. }, _, a_context, a_preExp, a_varDecls) => {
-            let mut l_lhsStr: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_lhsStr: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -5343,7 +5343,7 @@ pub fn writeLhsCrefXml(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut i
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, Deref @ DAE::Exp::UNARY { exp: i_e @ Deref @ DAE::Exp::CREF { ty: Deref @ DAE::Type::T_ARRAY { ty: _, .. }, .. }, .. }, a_rhsStr, a_context, a_preExp, a_varDecls) => {
-            let mut l_lhsStr: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_lhsStr: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -5352,7 +5352,7 @@ pub fn writeLhsCrefXml(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut i
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, i_exp @ Deref @ DAE::Exp::CREF { componentRef: _, .. }, _, a_context, a_preExp, a_varDecls) => {
-            let mut l_lhsStr: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_lhsStr: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -5361,7 +5361,7 @@ pub fn writeLhsCrefXml(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut i
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, Deref @ DAE::Exp::UNARY { exp: i_e @ Deref @ DAE::Exp::CREF { componentRef: _, .. }, .. }, _, a_context, a_preExp, a_varDecls) => {
-            let mut l_lhsStr: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_lhsStr: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -5409,8 +5409,8 @@ pub fn algStmtIfXml(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>, m
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_stmt.clone(), in_a_context.clone(), in_a_varDecls.clone())) {
         (txt, Deref @ DAE::Statement::STMT_IF { exp: i_exp, statementLst: i_statementLst, else_: i_else__, .. }, a_context, a_varDecls) => {
-            let mut l_condExp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_preExp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_condExp: Tpl::Text;
+            let mut l_preExp: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             l_preExp = Tpl::emptyTxt.clone();
@@ -5489,9 +5489,9 @@ pub fn algStmtForRangeXml(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Stateme
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_stmt.clone(), in_a_context.clone(), in_a_varDecls.clone())) {
         (txt, Deref @ DAE::Statement::STMT_FOR { range: i_rng @ Deref @ DAE::Exp::RANGE { ty: _, .. }, type_: i_type__, iterIsArray: i_iterIsArray, statementLst: i_statementLst, iter: i_iter, .. }, a_context, a_varDecls) => {
-            let mut l_stmtStr: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_identTypeShort: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_identType: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_stmtStr: Tpl::Text;
+            let mut l_identTypeShort: Tpl::Text;
+            let mut l_identType: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             l_identType = expTypeXml(Tpl::emptyTxt.clone(), i_type__.clone(), i_iterIsArray.clone())?;
@@ -5535,11 +5535,11 @@ fn fun_256(mut in_txt: Tpl::Text, mut in_a_range: Arc<DAE::Exp>, mut in_a_iterat
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_range.clone(), in_a_iterator.clone(), in_a_body.clone(), in_a_context.clone(), in_a_varDecls.clone())) {
         (txt, Deref @ DAE::Exp::RANGE { start: i_start, step: i_step, stop: i_stop, .. }, a_iterator, a_body, a_context, a_varDecls) => {
-            let mut l_stopValue: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_stepValue: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_startValue: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_preExp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_iterName: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_stopValue: Tpl::Text;
+            let mut l_stepValue: Tpl::Text;
+            let mut l_startValue: Tpl::Text;
+            let mut l_preExp: Tpl::Text;
+            let mut l_iterName: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             l_iterName = contextIteratorNameXml(Tpl::emptyTxt.clone(), (a_iterator.clone()).clone(), a_context.clone())?;
@@ -5609,9 +5609,9 @@ pub fn algStmtForGenericXml(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::State
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_stmt.clone(), in_a_context.clone(), in_a_varDecls.clone())) {
         (txt, Deref @ DAE::Statement::STMT_FOR { type_: i_type__, iterIsArray: i_iterIsArray, statementLst: i_statementLst, range: i_range, iter: i_iter, .. }, a_context, a_varDecls) => {
-            let mut l_stmtStr: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_arrayType: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_iterType: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_stmtStr: Tpl::Text;
+            let mut l_arrayType: Tpl::Text;
+            let mut l_iterType: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             l_iterType = expTypeXml(Tpl::emptyTxt.clone(), i_type__.clone(), i_iterIsArray.clone())?;
@@ -5683,8 +5683,8 @@ pub fn algStmtWhileXml(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_stmt.clone(), in_a_context.clone(), in_a_varDecls.clone())) {
         (txt, Deref @ DAE::Statement::STMT_WHILE { exp: i_exp, statementLst: i_statementLst, .. }, a_context, a_varDecls) => {
-            let mut l_var: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_preExp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_var: Tpl::Text;
+            let mut l_preExp: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             l_preExp = Tpl::emptyTxt.clone();
@@ -5735,8 +5735,8 @@ pub fn algStmtTerminateXml(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statem
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_stmt.clone(), in_a_context.clone(), in_a_varDecls.clone())) {
         (txt, Deref @ DAE::Statement::STMT_TERMINATE { msg: i_msg, .. }, a_context, a_varDecls) => {
-            let mut l_msgVar: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_preExp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_msgVar: Tpl::Text;
+            let mut l_preExp: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             l_preExp = Tpl::emptyTxt.clone();
@@ -5759,8 +5759,8 @@ pub fn algStmtNoretcallXml(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statem
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_stmt.clone(), in_a_context.clone(), in_a_varDecls.clone())) {
         (txt, Deref @ DAE::Statement::STMT_NORETCALL { exp: i_exp, .. }, a_context, a_varDecls) => {
-            let mut l_expPart: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_preExp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_expPart: Tpl::Text;
+            let mut l_preExp: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             l_preExp = Tpl::emptyTxt.clone();
@@ -5816,9 +5816,9 @@ pub fn algStmtWhenXml(mut in_txt: Tpl::Text, mut in_a_when: Arc<DAE::Statement>,
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_when.clone(), in_a_context.clone(), in_a_varDecls.clone())) {
         (txt, Deref @ DAE::Statement::STMT_WHEN { conditions: i_conditions, statementLst: i_statementLst, elseWhen: i_elseWhen, .. }, a_context, a_varDecls) => {
-            let mut l_else: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_statements: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_cond: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_else: Tpl::Text;
+            let mut l_statements: Tpl::Text;
+            let mut l_cond: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             l_cond = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -5890,9 +5890,9 @@ pub fn algStatementWhenElseXml(mut in_txt: Tpl::Text, mut in_a_stmt: Option<Arc<
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_stmt.clone(), in_a_varDecls.clone())) {
         (txt, Some(Deref @ DAE::Statement::STMT_WHEN { statementLst: i_when_statementLst, elseWhen: i_when_elseWhen, conditions: i_when_conditions, .. }), a_varDecls) => {
-            let mut l_elseCondStr: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_else: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_statements: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_elseCondStr: Tpl::Text;
+            let mut l_else: Tpl::Text;
+            let mut l_statements: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             l_statements = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -5931,9 +5931,9 @@ pub fn algStmtReinitXml(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_stmt.clone(), in_a_context.clone(), in_a_varDecls.clone())) {
         (txt, Deref @ DAE::Statement::STMT_REINIT { var: i_var, value: i_value, .. }, a_context, a_varDecls) => {
-            let mut l_expPart2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_expPart1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_preExp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_expPart2: Tpl::Text;
+            let mut l_expPart1: Tpl::Text;
+            let mut l_preExp: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             l_preExp = Tpl::emptyTxt.clone();
@@ -6018,8 +6018,8 @@ pub fn elseExprXml(mut in_txt: Tpl::Text, mut in_a_else__: Arc<DAE::Else>, mut i
             return Ok((txt.clone(), a_varDecls.clone()))
         },
         (txt, Deref @ DAE::Else::ELSEIF { exp: i_exp, statementLst: i_statementLst, else_: i_else__ }, a_context, a_varDecls) => {
-            let mut l_condExp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_preExp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_condExp: Tpl::Text;
+            let mut l_preExp: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             l_preExp = Tpl::emptyTxt.clone();
@@ -6093,7 +6093,7 @@ pub fn scalarLhsCrefXml(mut in_txt: Tpl::Text, mut in_a_ecr: Arc<DAE::Exp>, mut 
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, i_ecr @ Deref @ DAE::Exp::CREF { componentRef: i_ecr_componentRef @ Deref @ DAE::ComponentRef::CREF_IDENT { ident: _, .. }, .. }, a_context, a_preExp, a_varDecls) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -6357,7 +6357,7 @@ pub fn daeExpXml_dispatch(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mu
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, i_exp, _, a_preExp, a_varDecls) => {
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_0: Tpl::Text;
             let mut txt = (*txt).clone();
             txt_0 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Unknown expression: ")).clone() }))?;
             txt_0 = ExpressionDumpTpl::dumpExp(txt_0.clone(), i_exp.clone(), (literal!("\"")).clone())?;
@@ -6550,7 +6550,7 @@ fn fun_293(mut in_txt: Tpl::Text, mut in_mArg: Arc<DAE::Type>, mut in_a_ecr: Arc
     let mut out_a_preExp: Tpl::Text;
     (out_txt, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_ecr.clone(), in_a_varDecls.clone(), in_a_preExp.clone(), in_a_context.clone(), in_a_cr.clone(), in_a_arrName.clone())) {
         (txt, Deref @ DAE::Type::T_ARRAY { dims: i_et_dims, .. }, _, a_varDecls, a_preExp, a_context, a_cr, a_arrName) => {
-            let mut ret_0: Arc<metamodelica::List<Arc<DAE::Subscript>>> = metamodelica::nil();
+            let mut ret_0: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             let mut a_preExp = (*a_preExp).clone();
@@ -6563,7 +6563,7 @@ fn fun_293(mut in_txt: Tpl::Text, mut in_mArg: Arc<DAE::Type>, mut in_a_ecr: Arc
             (txt.clone(), a_varDecls.clone(), a_preExp.clone())
         },
         (txt, _, a_ecr, a_varDecls, a_preExp, _, _, _) => {
-            let mut txt_1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_1: Tpl::Text;
             let mut txt = (*txt).clone();
             txt_1 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Indexing non-array ")).clone() }))?;
             txt_1 = ExpressionDumpTpl::dumpExp(txt_1.clone(), a_ecr.clone(), (literal!("\"")).clone())?;
@@ -6581,8 +6581,8 @@ fn fun_294(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mu
     let mut out_a_preExp: Tpl::Text;
     (out_txt, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_context.clone(), in_a_ecr.clone(), in_a_arrName.clone(), in_a_varDecls.clone(), in_a_preExp.clone(), in_a_cr.clone())) {
         (txt, i_context @ SimCodeFunction::Context::FUNCTION_CONTEXT { cref_prefix: _, .. }, _, a_arrName, a_varDecls, a_preExp, a_cr) => {
-            let mut ret_1: Arc<metamodelica::List<Arc<DAE::Subscript>>> = metamodelica::nil();
-            let mut l_dimsValuesStr: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_1: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
+            let mut l_dimsValuesStr: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             let mut a_preExp = (*a_preExp).clone();
@@ -6605,7 +6605,7 @@ fn fun_294(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mu
             (txt.clone(), a_varDecls.clone(), a_preExp.clone())
         },
         (txt, i_context, a_ecr, a_arrName, a_varDecls, a_preExp, a_cr) => {
-            let mut ret_2: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+            let mut ret_2: Arc<DAE::Type>;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             let mut a_preExp = (*a_preExp).clone();
@@ -6624,8 +6624,8 @@ fn fun_295(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_ecr: Arc<DAE::Ex
     let mut out_a_preExp: Tpl::Text;
     (out_txt, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_ecr.clone(), in_a_arrName.clone(), in_a_varDecls.clone(), in_a_preExp.clone(), in_a_context.clone(), in_a_cr.clone())) {
         (txt, Deref @ "metatype_array", _, a_arrName, a_varDecls, a_preExp, a_context, a_cr) => {
-            let mut ret_1: Arc<metamodelica::List<Arc<DAE::Subscript>>> = metamodelica::nil();
-            let mut l_dimsValuesStr: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_1: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
+            let mut l_dimsValuesStr: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             let mut a_preExp = (*a_preExp).clone();
@@ -6658,11 +6658,11 @@ fn fun_296(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_ecr: Arc<DAE::Exp>
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_preExp, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_ecr.clone(), in_a_preExp.clone(), in_a_varDecls.clone(), in_a_ty.clone(), in_a_context.clone(), in_a_cr.clone())) {
         (txt, false, _, a_preExp, a_varDecls, a_ty, a_context, a_cr) => {
-            let mut ret_4: Arc<metamodelica::List<Arc<DAE::Subscript>>> = metamodelica::nil();
-            let mut l_spec1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_tmp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_arrayType: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_arrName: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_4: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
+            let mut l_spec1: Tpl::Text;
+            let mut l_tmp: Tpl::Text;
+            let mut l_arrayType: Tpl::Text;
+            let mut l_arrName: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -6679,13 +6679,13 @@ fn fun_296(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_ecr: Arc<DAE::Exp>
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, _, a_ecr, a_preExp, a_varDecls, a_ty, a_context, a_cr) => {
-            let mut str_9: ArcStr = arcstr::literal!("");
-            let mut ret_8: i32 = 0;
-            let mut ret_7: Arc<metamodelica::List<Arc<DAE::Subscript>>> = metamodelica::nil();
-            let mut l_dimsLenStr: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_5: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-            let mut l_arrayType: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_arrName: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut str_9: ArcStr;
+            let mut ret_8: i32;
+            let mut ret_7: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
+            let mut l_dimsLenStr: Tpl::Text;
+            let mut ret_5: Arc<DAE::ComponentRef>;
+            let mut l_arrayType: Tpl::Text;
+            let mut l_arrName: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -6710,7 +6710,7 @@ fn fun_297(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_ecr_componentRef: 
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_preExp, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_ecr_componentRef.clone(), in_a_ecr.clone(), in_a_preExp.clone(), in_a_varDecls.clone(), in_a_ty.clone(), in_a_context.clone(), in_a_cr.clone())) {
         (txt, false, _, a_ecr, a_preExp, a_varDecls, a_ty, a_context, a_cr) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -6734,7 +6734,7 @@ fn fun_298(mut in_txt: Tpl::Text, mut in_a_box: Tpl::Text, mut in_a_ecr_componen
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_preExp, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_box.clone(), in_a_ecr_componentRef.clone(), in_a_ecr.clone(), in_a_preExp.clone(), in_a_varDecls.clone(), in_a_ty.clone(), in_a_context.clone(), in_a_cr.clone())) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }, a_ecr_componentRef, a_ecr, a_preExp, a_varDecls, a_ty, a_context, a_cr) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -6758,7 +6758,7 @@ pub fn daeExpCrefRhs2Xml(mut in_txt: Tpl::Text, mut in_a_ecr: Arc<DAE::Exp>, mut
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_preExp, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ecr.clone(), in_a_context.clone(), in_a_preExp.clone(), in_a_varDecls.clone())) {
         (txt, i_ecr @ Deref @ DAE::Exp::CREF { componentRef: i_ecr_componentRef @ i_cr, ty: i_ty }, a_context, a_preExp, a_varDecls) => {
-            let mut l_box: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_box: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -6767,7 +6767,7 @@ pub fn daeExpCrefRhs2Xml(mut in_txt: Tpl::Text, mut in_a_ecr: Arc<DAE::Exp>, mut
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, i_ecr, _, a_preExp, a_varDecls) => {
-            let mut txt_1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_1: Tpl::Text;
             let mut txt = (*txt).clone();
             txt_1 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("daeExpCrefRhs2: UNHANDLED EXPRESSION: ")).clone() }))?;
             txt_1 = ExpressionDumpTpl::dumpExp(txt_1.clone(), i_ecr.clone(), (literal!("\"")).clone())?;
@@ -6846,7 +6846,7 @@ fn fun_303(mut in_txt: Tpl::Text, mut in_a_dims: Arc<metamodelica::List<Arc<DAE:
     let mut out_a_preExp: Tpl::Text;
     (out_txt, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_dims.clone(), in_a_subrest.clone(), in_a_varDecls.clone(), in_a_preExp.clone(), in_a_context.clone(), in_a_sub_exp.clone())) {
         (txt, Deref @ metamodelica::List::Cons { head: _, tail: i_dimrest }, a_subrest, a_varDecls, a_preExp, a_context, a_sub_exp) => {
-            let mut l_estr: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_estr: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             let mut a_preExp = (*a_preExp).clone();
@@ -6910,8 +6910,8 @@ fn fun_306(mut in_txt: Tpl::Text, mut in_a_sub: Arc<DAE::Subscript>, mut in_a_va
     let mut out_a_preExp: Tpl::Text;
     (out_txt, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_sub.clone(), in_a_varDecls.clone(), in_a_preExp.clone(), in_a_context.clone())) {
         (txt, Deref @ DAE::Subscript::INDEX { exp: i_exp }, a_varDecls, a_preExp, a_context) => {
-            let mut l_str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_expPart: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_str: Tpl::Text;
+            let mut l_expPart: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             let mut a_preExp = (*a_preExp).clone();
@@ -6921,16 +6921,16 @@ fn fun_306(mut in_txt: Tpl::Text, mut in_a_sub: Arc<DAE::Subscript>, mut in_a_va
             (txt.clone(), a_varDecls.clone(), a_preExp.clone())
         },
         (txt, Deref @ DAE::Subscript::WHOLEDIM { .. }, a_varDecls, a_preExp, _) => {
-            let mut l_str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_str: Tpl::Text;
             let mut txt = (*txt).clone();
             l_str = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(1), (int*)0, 'W'")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), l_str.clone())?;
             (txt.clone(), a_varDecls.clone(), a_preExp.clone())
         },
         (txt, Deref @ DAE::Subscript::SLICE { exp: i_exp }, a_varDecls, a_preExp, a_context) => {
-            let mut l_tmp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_expPart: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_tmp: Tpl::Text;
+            let mut l_str: Tpl::Text;
+            let mut l_expPart: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             let mut a_preExp = (*a_preExp).clone();
@@ -7025,12 +7025,12 @@ fn fun_310(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mu
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, _, a_ecr_componentRef, a_preExp, a_dims, a_varDecls, a_aty) => {
-            let mut l_type: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_dimsValuesStr: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_3: i32 = 0;
-            let mut l_dimsLenStr: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_tmpArr: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_type: Tpl::Text;
+            let mut l_dimsValuesStr: Tpl::Text;
+            let mut ret_3: i32;
+            let mut l_dimsLenStr: Tpl::Text;
+            let mut txt_1: Tpl::Text;
+            let mut l_tmpArr: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -7080,7 +7080,7 @@ fn lm_312(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Var>>>,
         let mut lstElt_312 = lstElt_312.clone();
         (txt, a_varDecls, a_preExp) = (::match_deref::match_deref! { match &(lstElt_312.clone()) {
         i_v => {
-            let mut ret_0: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut ret_0: Arc<DAE::Exp>;
             ret_0 = SimCodeFunctionUtil::makeCrefRecordExp(a_cr.clone(), i_v.clone())?;
             (txt, a_preExp, a_varDecls) = daeExpXml(txt.clone(), ret_0.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
@@ -7098,7 +7098,7 @@ pub fn daeExpRecordCrefRhsXml(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_preExp, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_cr.clone(), in_a_context.clone(), in_a_preExp.clone(), in_a_varDecls.clone())) {
         (txt, Deref @ DAE::Type::T_COMPLEX { complexClassType: _, varLst: i_var__lst, .. }, a_cr, a_context, a_preExp, a_varDecls) => {
-            let mut l_vars: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_vars: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -7234,11 +7234,11 @@ fn fun_318(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_varDecls: Tpl::Tex
     let mut out_a_afterExp: Tpl::Text;
     (out_txt, out_a_varDecls, out_a_afterExp) = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_varDecls.clone(), in_a_ty.clone(), in_a_context.clone(), in_a_cr.clone(), in_a_ecr.clone(), in_a_afterExp.clone())) {
         (txt, false, a_varDecls, a_ty, a_context, a_cr, a_ecr, a_afterExp) => {
-            let mut ret_4: Arc<metamodelica::List<Arc<DAE::Subscript>>> = metamodelica::nil();
-            let mut l_spec1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_tmp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_arrayType: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_arrName: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_4: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
+            let mut l_spec1: Tpl::Text;
+            let mut l_tmp: Tpl::Text;
+            let mut l_arrayType: Tpl::Text;
+            let mut l_arrName: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             let mut a_afterExp = (*a_afterExp).clone();
@@ -7265,15 +7265,15 @@ fn fun_318(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_varDecls: Tpl::Tex
             (txt.clone(), a_varDecls.clone(), a_afterExp.clone())
         },
         (txt, _, a_varDecls, a_ty, a_context, a_cr, a_ecr, a_afterExp) => {
-            let mut str_11: ArcStr = arcstr::literal!("");
-            let mut ret_10: Arc<metamodelica::List<Arc<DAE::Subscript>>> = metamodelica::nil();
-            let mut l_dimsValuesStr: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_8: i32 = 0;
-            let mut ret_7: Arc<metamodelica::List<Arc<DAE::Subscript>>> = metamodelica::nil();
-            let mut l_dimsLenStr: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_5: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-            let mut l_arrayType: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_arrName: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut str_11: ArcStr;
+            let mut ret_10: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
+            let mut l_dimsValuesStr: Tpl::Text;
+            let mut ret_8: i32;
+            let mut ret_7: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
+            let mut l_dimsLenStr: Tpl::Text;
+            let mut ret_5: Arc<DAE::ComponentRef>;
+            let mut l_arrayType: Tpl::Text;
+            let mut l_arrName: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             let mut a_afterExp = (*a_afterExp).clone();
@@ -7306,7 +7306,7 @@ fn fun_319(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_varDecls: Tpl::Tex
     let mut out_a_afterExp: Tpl::Text;
     (out_txt, out_a_varDecls, out_a_afterExp) = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_varDecls.clone(), in_a_ty.clone(), in_a_context.clone(), in_a_ecr.clone(), in_a_afterExp.clone(), in_a_cr.clone())) {
         (txt, false, a_varDecls, a_ty, a_context, a_ecr, a_afterExp, a_cr) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             let mut a_afterExp = (*a_afterExp).clone();
@@ -7330,7 +7330,7 @@ fn fun_320(mut in_txt: Tpl::Text, mut in_a_box: Tpl::Text, mut in_a_varDecls: Tp
     let mut out_a_afterExp: Tpl::Text;
     (out_txt, out_a_varDecls, out_a_afterExp) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_box.clone(), in_a_varDecls.clone(), in_a_ty.clone(), in_a_ecr.clone(), in_a_afterExp.clone(), in_a_context.clone(), in_a_cr.clone())) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }, a_varDecls, a_ty, a_ecr, a_afterExp, a_context, a_cr) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             let mut a_afterExp = (*a_afterExp).clone();
@@ -7354,7 +7354,7 @@ pub fn daeExpCrefLhs2Xml(mut in_txt: Tpl::Text, mut in_a_ecr: Arc<DAE::Exp>, mut
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_afterExp, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ecr.clone(), in_a_context.clone(), in_a_afterExp.clone(), in_a_varDecls.clone())) {
         (txt, i_ecr @ Deref @ DAE::Exp::CREF { componentRef: i_cr, ty: i_ty }, a_context, a_afterExp, a_varDecls) => {
-            let mut l_box: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_box: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_afterExp = (*a_afterExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -7393,8 +7393,8 @@ fn fun_322(mut in_txt: Tpl::Text, mut in_a_sub: Arc<DAE::Subscript>, mut in_a_va
     let mut out_a_afterExp: Tpl::Text;
     (out_txt, out_a_varDecls, out_a_afterExp) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_sub.clone(), in_a_varDecls.clone(), in_a_afterExp.clone(), in_a_context.clone())) {
         (txt, Deref @ DAE::Subscript::INDEX { exp: i_exp }, a_varDecls, a_afterExp, a_context) => {
-            let mut l_str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_expPart: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_str: Tpl::Text;
+            let mut l_expPart: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             let mut a_afterExp = (*a_afterExp).clone();
@@ -7406,16 +7406,16 @@ fn fun_322(mut in_txt: Tpl::Text, mut in_a_sub: Arc<DAE::Subscript>, mut in_a_va
             (txt.clone(), a_varDecls.clone(), a_afterExp.clone())
         },
         (txt, Deref @ DAE::Subscript::WHOLEDIM { .. }, a_varDecls, a_afterExp, _) => {
-            let mut l_str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_str: Tpl::Text;
             let mut txt = (*txt).clone();
             l_str = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(1), (int*)0, 'W'")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), l_str.clone())?;
             (txt.clone(), a_varDecls.clone(), a_afterExp.clone())
         },
         (txt, Deref @ DAE::Subscript::SLICE { exp: i_exp }, a_varDecls, a_afterExp, a_context) => {
-            let mut l_tmp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_expPart: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_tmp: Tpl::Text;
+            let mut l_str: Tpl::Text;
+            let mut l_expPart: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             let mut a_afterExp = (*a_afterExp).clone();
@@ -7510,12 +7510,12 @@ fn fun_326(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mu
             (txt.clone(), a_afterExp.clone(), a_varDecls.clone())
         },
         (txt, _, a_ecr_componentRef, a_afterExp, a_dims, a_varDecls, a_aty) => {
-            let mut l_type: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_dimsValuesStr: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_3: i32 = 0;
-            let mut l_dimsLenStr: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_tmpArr: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_type: Tpl::Text;
+            let mut l_dimsValuesStr: Tpl::Text;
+            let mut ret_3: i32;
+            let mut l_dimsLenStr: Tpl::Text;
+            let mut txt_1: Tpl::Text;
+            let mut l_tmpArr: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_afterExp = (*a_afterExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -7576,7 +7576,7 @@ fn lm_328(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Var>>>,
         let mut lstElt_328 = lstElt_328.clone();
         (txt, a_varDecls, a_afterExp) = (::match_deref::match_deref! { match &(lstElt_328.clone()) {
         i_v => {
-            let mut ret_0: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut ret_0: Arc<DAE::Exp>;
             ret_0 = SimCodeFunctionUtil::makeCrefRecordExp(a_cr.clone(), i_v.clone())?;
             (txt, a_afterExp, a_varDecls) = daeExpXml(txt.clone(), ret_0.clone(), a_context.clone(), a_afterExp.clone(), a_varDecls.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
@@ -7594,11 +7594,11 @@ pub fn daeExpRecordCrefLhsXml(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_afterExp, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_cr.clone(), in_a_context.clone(), in_a_afterExp.clone(), in_a_varDecls.clone())) {
         (txt, Deref @ DAE::Type::T_COMPLEX { complexClassType: i_record__state, varLst: i_var__lst, .. }, a_cr, a_context, a_afterExp, a_varDecls) => {
-            let mut l_ret__var: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_ret__type: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_2: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-            let mut l_record__type__name: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_vars: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_ret__var: Tpl::Text;
+            let mut l_ret__type: Tpl::Text;
+            let mut ret_2: Arc<Absyn::Path>;
+            let mut l_record__type__name: Tpl::Text;
+            let mut l_vars: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_afterExp = (*a_afterExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -7842,8 +7842,8 @@ fn fun_336(mut in_txt: Tpl::Text, mut in_a_operator: DAE::Operator, mut in_a_var
             (txt.clone(), a_varDecls.clone(), a_preExp.clone())
         },
         (txt, DAE::Operator::ADD_ARR { ty: i_ty }, a_varDecls, a_preExp, _, _, a_e2, a_e1) => {
-            let mut l_var: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_type: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_var: Tpl::Text;
+            let mut l_type: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             let mut a_preExp = (*a_preExp).clone();
@@ -7862,8 +7862,8 @@ fn fun_336(mut in_txt: Tpl::Text, mut in_a_operator: DAE::Operator, mut in_a_var
             (txt.clone(), a_varDecls.clone(), a_preExp.clone())
         },
         (txt, DAE::Operator::SUB_ARR { ty: i_ty }, a_varDecls, a_preExp, _, _, a_e2, a_e1) => {
-            let mut l_var: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_type: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_var: Tpl::Text;
+            let mut l_type: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             let mut a_preExp = (*a_preExp).clone();
@@ -7890,8 +7890,8 @@ fn fun_336(mut in_txt: Tpl::Text, mut in_a_operator: DAE::Operator, mut in_a_var
             (txt.clone(), a_varDecls.clone(), a_preExp.clone())
         },
         (txt, DAE::Operator::MUL_ARRAY_SCALAR { ty: i_ty }, a_varDecls, a_preExp, _, _, a_e2, a_e1) => {
-            let mut l_var: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_type: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_var: Tpl::Text;
+            let mut l_type: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             let mut a_preExp = (*a_preExp).clone();
@@ -7918,7 +7918,7 @@ fn fun_336(mut in_txt: Tpl::Text, mut in_a_operator: DAE::Operator, mut in_a_var
             (txt.clone(), a_varDecls.clone(), a_preExp.clone())
         },
         (txt, DAE::Operator::MUL_SCALAR_PRODUCT { ty: i_ty }, a_varDecls, a_preExp, _, _, a_e2, a_e1) => {
-            let mut l_type: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_type: Tpl::Text;
             let mut txt = (*txt).clone();
             l_type = fun_333(Tpl::emptyTxt.clone(), i_ty.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("mul_")).clone() }))?;
@@ -7931,9 +7931,9 @@ fn fun_336(mut in_txt: Tpl::Text, mut in_a_operator: DAE::Operator, mut in_a_var
             (txt.clone(), a_varDecls.clone(), a_preExp.clone())
         },
         (txt, DAE::Operator::MUL_MATRIX_PRODUCT { ty: i_ty }, a_varDecls, a_preExp, _, _, a_e2, a_e1) => {
-            let mut l_typeShort: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_var: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_type: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_typeShort: Tpl::Text;
+            let mut l_var: Tpl::Text;
+            let mut l_type: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             let mut a_preExp = (*a_preExp).clone();
@@ -7952,8 +7952,8 @@ fn fun_336(mut in_txt: Tpl::Text, mut in_a_operator: DAE::Operator, mut in_a_var
             (txt.clone(), a_varDecls.clone(), a_preExp.clone())
         },
         (txt, DAE::Operator::DIV_ARRAY_SCALAR { ty: i_ty }, a_varDecls, a_preExp, _, _, a_e2, a_e1) => {
-            let mut l_var: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_type: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_var: Tpl::Text;
+            let mut l_type: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             let mut a_preExp = (*a_preExp).clone();
@@ -8010,8 +8010,8 @@ pub fn daeExpBinaryXml(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut i
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_preExp, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone(), in_a_context.clone(), in_a_preExp.clone(), in_a_varDecls.clone())) {
         (txt, i_exp @ Deref @ DAE::Exp::BINARY { exp1: i_exp1, exp2: i_exp2, operator: i_operator }, a_context, a_preExp, a_varDecls) => {
-            let mut l_e2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_e1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_e2: Tpl::Text;
+            let mut l_e1: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -8072,7 +8072,7 @@ pub fn daeExpUnaryXml(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_preExp, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone(), in_a_context.clone(), in_a_preExp.clone(), in_a_varDecls.clone())) {
         (txt, Deref @ DAE::Exp::UNARY { exp: i_exp, operator: i_operator }, a_context, a_preExp, a_varDecls) => {
-            let mut l_e: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_e: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -8127,8 +8127,8 @@ pub fn daeExpLbinaryXml(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut 
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_preExp, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone(), in_a_context.clone(), in_a_preExp.clone(), in_a_varDecls.clone())) {
         (txt, Deref @ DAE::Exp::LBINARY { exp1: i_exp1, exp2: i_exp2, operator: i_operator }, a_context, a_preExp, a_varDecls) => {
-            let mut l_e2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_e1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_e2: Tpl::Text;
+            let mut l_e1: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -8170,7 +8170,7 @@ pub fn daeExpLunaryXml(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut i
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_preExp, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone(), in_a_context.clone(), in_a_preExp.clone(), in_a_varDecls.clone())) {
         (txt, Deref @ DAE::Exp::LUNARY { exp: i_exp, operator: i_operator }, a_context, a_preExp, a_varDecls) => {
-            let mut l_e: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_e: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -8393,8 +8393,8 @@ fn fun_345(mut in_txt: Tpl::Text, mut in_a_simRel: Tpl::Text, mut in_a_rel_opera
     let mut out_a_preExp: Tpl::Text;
     (out_txt, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_simRel.clone(), in_a_rel_operator.clone(), in_a_rel_exp2.clone(), in_a_varDecls.clone(), in_a_preExp.clone(), in_a_context.clone(), in_a_rel_exp1.clone())) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }, a_rel_operator, a_rel_exp2, a_varDecls, a_preExp, a_context, a_rel_exp1) => {
-            let mut l_e2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_e1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_e2: Tpl::Text;
+            let mut l_e1: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             let mut a_preExp = (*a_preExp).clone();
@@ -8419,7 +8419,7 @@ pub fn daeExpRelationXml(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_preExp, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone(), in_a_context.clone(), in_a_preExp.clone(), in_a_varDecls.clone())) {
         (txt, i_rel @ Deref @ DAE::Exp::RELATION { exp1: i_rel_exp1, exp2: i_rel_exp2, operator: i_rel_operator, .. }, a_context, a_preExp, a_varDecls) => {
-            let mut l_simRel: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_simRel: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -8575,9 +8575,9 @@ fn fun_349(mut in_txt: Tpl::Text, mut in_a_rel_optionExpisASUB: Option<(Arc<DAE:
     let mut out_a_preExp: Tpl::Text;
     (out_txt, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_rel_optionExpisASUB.clone(), in_a_rel_operator.clone(), in_a_rel_exp2.clone(), in_a_varDecls.clone(), in_a_preExp.clone(), in_a_context.clone(), in_a_rel_exp1.clone())) {
         (txt, None, a_rel_operator, a_rel_exp2, a_varDecls, a_preExp, a_context, a_rel_exp1) => {
-            let mut l_res: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_e2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_e1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_res: Tpl::Text;
+            let mut l_e2: Tpl::Text;
+            let mut l_e1: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             let mut a_preExp = (*a_preExp).clone();
@@ -8588,10 +8588,10 @@ fn fun_349(mut in_txt: Tpl::Text, mut in_a_rel_optionExpisASUB: Option<(Arc<DAE:
             (txt.clone(), a_varDecls.clone(), a_preExp.clone())
         },
         (txt, Some((i_exp, _, _)), a_rel_operator, a_rel_exp2, a_varDecls, a_preExp, a_context, a_rel_exp1) => {
-            let mut l_iterator: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_res: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_e2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_e1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_iterator: Tpl::Text;
+            let mut l_res: Tpl::Text;
+            let mut l_e2: Tpl::Text;
+            let mut l_e1: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             let mut a_preExp = (*a_preExp).clone();
@@ -8750,9 +8750,9 @@ fn fun_352(mut in_txt: Tpl::Text, mut in_a_rel_optionExpisASUB: Option<(Arc<DAE:
     let mut out_a_preExp: Tpl::Text;
     (out_txt, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_rel_optionExpisASUB.clone(), in_a_rel_operator.clone(), in_a_rel_exp2.clone(), in_a_varDecls.clone(), in_a_preExp.clone(), in_a_context.clone(), in_a_rel_exp1.clone())) {
         (txt, None, a_rel_operator, a_rel_exp2, a_varDecls, a_preExp, a_context, a_rel_exp1) => {
-            let mut l_res: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_e2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_e1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_res: Tpl::Text;
+            let mut l_e2: Tpl::Text;
+            let mut l_e1: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             let mut a_preExp = (*a_preExp).clone();
@@ -8763,10 +8763,10 @@ fn fun_352(mut in_txt: Tpl::Text, mut in_a_rel_optionExpisASUB: Option<(Arc<DAE:
             (txt.clone(), a_varDecls.clone(), a_preExp.clone())
         },
         (txt, Some((i_exp, _, _)), a_rel_operator, a_rel_exp2, a_varDecls, a_preExp, a_context, a_rel_exp1) => {
-            let mut l_iterator: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_res: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_e2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_e1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_iterator: Tpl::Text;
+            let mut l_res: Tpl::Text;
+            let mut l_e2: Tpl::Text;
+            let mut l_e1: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             let mut a_preExp = (*a_preExp).clone();
@@ -8885,9 +8885,9 @@ fn fun_356(mut in_txt: Tpl::Text, mut in_a_rel_optionExpisASUB: Option<(Arc<DAE:
     let mut out_a_preExp: Tpl::Text;
     (out_txt, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_rel_optionExpisASUB.clone(), in_a_rel_operator.clone(), in_a_rel_exp2.clone(), in_a_varDecls.clone(), in_a_preExp.clone(), in_a_context.clone(), in_a_rel_exp1.clone())) {
         (txt, None, a_rel_operator, a_rel_exp2, a_varDecls, a_preExp, a_context, a_rel_exp1) => {
-            let mut l_res: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_e2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_e1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_res: Tpl::Text;
+            let mut l_e2: Tpl::Text;
+            let mut l_e1: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             let mut a_preExp = (*a_preExp).clone();
@@ -8951,13 +8951,13 @@ pub fn daeExpIfXml(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_preExp, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone(), in_a_context.clone(), in_a_preExp.clone(), in_a_varDecls.clone())) {
         (txt, Deref @ DAE::Exp::IFEXP { expCond: i_expCond, expThen: i_expThen, expElse: i_expElse }, a_context, a_preExp, a_varDecls) => {
-            let mut l_eElse: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_preExpElse: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_eThen: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_preExpThen: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_resVar: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_condExp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_preExpCond: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_eElse: Tpl::Text;
+            let mut l_preExpElse: Tpl::Text;
+            let mut l_eThen: Tpl::Text;
+            let mut l_preExpThen: Tpl::Text;
+            let mut l_resVar: Tpl::Text;
+            let mut l_condExp: Tpl::Text;
+            let mut l_preExpCond: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -9234,10 +9234,10 @@ pub fn daeExpCallXml(mut in_txt: Tpl::Text, mut in_a_call: Arc<DAE::Exp>, mut in
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_preExp, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_call.clone(), in_a_context.clone(), in_a_preExp.clone(), in_a_varDecls.clone())) {
         (txt, Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "DIVISION" }, expLst: Deref @ metamodelica::List::Cons { head: i_e1, tail: Deref @ metamodelica::List::Cons { head: i_e2, tail: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::SCONST { string: i_string }, tail: Deref @ metamodelica::List::Nil } } }, .. }, a_context, a_preExp, a_varDecls) => {
-            let mut ret_3: ArcStr = arcstr::literal!("");
-            let mut l_var3: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_var2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_var1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_3: ArcStr;
+            let mut l_var3: Tpl::Text;
+            let mut l_var2: Tpl::Text;
+            let mut l_var1: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -9256,11 +9256,11 @@ pub fn daeExpCallXml(mut in_txt: Tpl::Text, mut in_a_call: Arc<DAE::Exp>, mut in
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, Deref @ DAE::Exp::CALL { attr: Deref @ DAE::CallAttributes { ty: i_ty, .. }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "DIVISION_ARRAY_SCALAR" }, expLst: Deref @ metamodelica::List::Cons { head: i_e1, tail: Deref @ metamodelica::List::Cons { head: i_e2, tail: Deref @ metamodelica::List::Cons { head: i_e3 @ Deref @ DAE::Exp::SHARED_LITERAL { index: _, .. }, tail: Deref @ metamodelica::List::Nil } } } }, a_context, a_preExp, a_varDecls) => {
-            let mut l_var: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_type: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_var3: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_var2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_var1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_var: Tpl::Text;
+            let mut l_type: Tpl::Text;
+            let mut l_var3: Tpl::Text;
+            let mut l_var2: Tpl::Text;
+            let mut l_var1: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -9285,7 +9285,7 @@ pub fn daeExpCallXml(mut in_txt: Tpl::Text, mut in_a_call: Arc<DAE::Exp>, mut in
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, i_exp @ Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "DIVISION_ARRAY_SCALAR" }, .. }, _, a_preExp, a_varDecls) => {
-            let mut txt_6: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_6: Tpl::Text;
             let mut txt = (*txt).clone();
             txt_6 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Code generation does not support ")).clone() }))?;
             txt_6 = ExpressionDumpTpl::dumpExp(txt_6.clone(), i_exp.clone(), (literal!("\"")).clone())?;
@@ -9303,7 +9303,7 @@ pub fn daeExpCallXml(mut in_txt: Tpl::Text, mut in_a_call: Arc<DAE::Exp>, mut in
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, expLst: Deref @ metamodelica::List::Cons { head: i_exp, tail: Deref @ metamodelica::List::Nil }, .. }, _, a_preExp, a_varDecls) => {
-            let mut txt_7: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_7: Tpl::Text;
             let mut txt = (*txt).clone();
             txt_7 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Code generation does not support der(")).clone() }))?;
             txt_7 = ExpressionDumpTpl::dumpExp(txt_7.clone(), i_exp.clone(), (literal!("\"")).clone())?;
@@ -9324,7 +9324,7 @@ pub fn daeExpCallXml(mut in_txt: Tpl::Text, mut in_a_call: Arc<DAE::Exp>, mut in
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "edge" }, expLst: Deref @ metamodelica::List::Cons { head: i_exp, tail: Deref @ metamodelica::List::Nil }, .. }, _, a_preExp, a_varDecls) => {
-            let mut txt_8: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_8: Tpl::Text;
             let mut txt = (*txt).clone();
             txt_8 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Code generation does not support edge(")).clone() }))?;
             txt_8 = ExpressionDumpTpl::dumpExp(txt_8.clone(), i_exp.clone(), (literal!("\"")).clone())?;
@@ -9338,7 +9338,7 @@ pub fn daeExpCallXml(mut in_txt: Tpl::Text, mut in_a_call: Arc<DAE::Exp>, mut in
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "change" }, expLst: Deref @ metamodelica::List::Cons { head: i_exp, tail: Deref @ metamodelica::List::Nil }, .. }, _, a_preExp, a_varDecls) => {
-            let mut txt_9: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_9: Tpl::Text;
             let mut txt = (*txt).clone();
             txt_9 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Code generation does not support change(")).clone() }))?;
             txt_9 = ExpressionDumpTpl::dumpExp(txt_9.clone(), i_exp.clone(), (literal!("\"")).clone())?;
@@ -9347,8 +9347,8 @@ pub fn daeExpCallXml(mut in_txt: Tpl::Text, mut in_a_call: Arc<DAE::Exp>, mut in
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "print" }, expLst: Deref @ metamodelica::List::Cons { head: i_e1, tail: Deref @ metamodelica::List::Nil }, .. }, a_context, a_preExp, a_varDecls) => {
-            let mut ret_10: bool = false;
-            let mut l_var1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_10: bool;
+            let mut l_var1: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -9358,8 +9358,8 @@ pub fn daeExpCallXml(mut in_txt: Tpl::Text, mut in_a_call: Arc<DAE::Exp>, mut in
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "max" }, attr: Deref @ DAE::CallAttributes { ty: Deref @ DAE::Type::T_REAL { varLst: _ }, .. }, expLst: Deref @ metamodelica::List::Cons { head: i_e1, tail: Deref @ metamodelica::List::Cons { head: i_e2, tail: Deref @ metamodelica::List::Nil } } }, a_context, a_preExp, a_varDecls) => {
-            let mut l_var2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_var1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_var2: Tpl::Text;
+            let mut l_var1: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -9376,8 +9376,8 @@ pub fn daeExpCallXml(mut in_txt: Tpl::Text, mut in_a_call: Arc<DAE::Exp>, mut in
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "max" }, expLst: Deref @ metamodelica::List::Cons { head: i_e1, tail: Deref @ metamodelica::List::Cons { head: i_e2, tail: Deref @ metamodelica::List::Nil } }, .. }, a_context, a_preExp, a_varDecls) => {
-            let mut l_var2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_var1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_var2: Tpl::Text;
+            let mut l_var1: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -9394,8 +9394,8 @@ pub fn daeExpCallXml(mut in_txt: Tpl::Text, mut in_a_call: Arc<DAE::Exp>, mut in
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "sum" }, attr: Deref @ DAE::CallAttributes { ty: i_ty, .. }, expLst: Deref @ metamodelica::List::Cons { head: i_e, tail: Deref @ metamodelica::List::Nil } }, a_context, a_preExp, a_varDecls) => {
-            let mut l_ty__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_arr: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_ty__str: Tpl::Text;
+            let mut l_arr: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -9409,8 +9409,8 @@ pub fn daeExpCallXml(mut in_txt: Tpl::Text, mut in_a_call: Arc<DAE::Exp>, mut in
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "min" }, attr: Deref @ DAE::CallAttributes { ty: Deref @ DAE::Type::T_REAL { varLst: _ }, .. }, expLst: Deref @ metamodelica::List::Cons { head: i_e1, tail: Deref @ metamodelica::List::Cons { head: i_e2, tail: Deref @ metamodelica::List::Nil } } }, a_context, a_preExp, a_varDecls) => {
-            let mut l_var2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_var1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_var2: Tpl::Text;
+            let mut l_var1: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -9425,8 +9425,8 @@ pub fn daeExpCallXml(mut in_txt: Tpl::Text, mut in_a_call: Arc<DAE::Exp>, mut in
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "min" }, expLst: Deref @ metamodelica::List::Cons { head: i_e1, tail: Deref @ metamodelica::List::Cons { head: i_e2, tail: Deref @ metamodelica::List::Nil } }, .. }, a_context, a_preExp, a_varDecls) => {
-            let mut l_var2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_var1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_var2: Tpl::Text;
+            let mut l_var1: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -9443,7 +9443,7 @@ pub fn daeExpCallXml(mut in_txt: Tpl::Text, mut in_a_call: Arc<DAE::Exp>, mut in
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "abs" }, expLst: Deref @ metamodelica::List::Cons { head: i_e1, tail: Deref @ metamodelica::List::Nil }, attr: Deref @ DAE::CallAttributes { ty: Deref @ DAE::Type::T_INTEGER { varLst: _ }, .. } }, a_context, a_preExp, a_varDecls) => {
-            let mut l_var1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_var1: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -9457,7 +9457,7 @@ pub fn daeExpCallXml(mut in_txt: Tpl::Text, mut in_a_call: Arc<DAE::Exp>, mut in
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "abs" }, expLst: Deref @ metamodelica::List::Cons { head: i_e1, tail: Deref @ metamodelica::List::Nil }, .. }, a_context, a_preExp, a_varDecls) => {
-            let mut l_var1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_var1: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -9471,10 +9471,10 @@ pub fn daeExpCallXml(mut in_txt: Tpl::Text, mut in_a_call: Arc<DAE::Exp>, mut in
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "sqrt" }, expLst: Deref @ metamodelica::List::Cons { head: i_e1, tail: Deref @ metamodelica::List::Nil }, attr: Deref @ DAE::CallAttributes { ty: _, .. } }, a_context, a_preExp, a_varDecls) => {
-            let mut l_argStr: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_15: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut ret_14: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut l_retPre: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_argStr: Tpl::Text;
+            let mut ret_15: Arc<DAE::Exp>;
+            let mut ret_14: Arc<DAE::Exp>;
+            let mut l_retPre: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -9492,8 +9492,8 @@ pub fn daeExpCallXml(mut in_txt: Tpl::Text, mut in_a_call: Arc<DAE::Exp>, mut in
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "div" }, expLst: Deref @ metamodelica::List::Cons { head: i_e1, tail: Deref @ metamodelica::List::Cons { head: i_e2, tail: Deref @ metamodelica::List::Nil } }, attr: Deref @ DAE::CallAttributes { ty: Deref @ DAE::Type::T_INTEGER { varLst: _ }, .. } }, a_context, a_preExp, a_varDecls) => {
-            let mut l_var2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_var1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_var2: Tpl::Text;
+            let mut l_var1: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -9510,8 +9510,8 @@ pub fn daeExpCallXml(mut in_txt: Tpl::Text, mut in_a_call: Arc<DAE::Exp>, mut in
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "div" }, expLst: Deref @ metamodelica::List::Cons { head: i_e1, tail: Deref @ metamodelica::List::Cons { head: i_e2, tail: Deref @ metamodelica::List::Nil } }, .. }, a_context, a_preExp, a_varDecls) => {
-            let mut l_var2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_var1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_var2: Tpl::Text;
+            let mut l_var1: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -9528,8 +9528,8 @@ pub fn daeExpCallXml(mut in_txt: Tpl::Text, mut in_a_call: Arc<DAE::Exp>, mut in
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "mod" }, expLst: Deref @ metamodelica::List::Cons { head: i_e1, tail: Deref @ metamodelica::List::Cons { head: i_e2, tail: Deref @ metamodelica::List::Nil } }, attr: Deref @ DAE::CallAttributes { ty: i_ty, .. } }, a_context, a_preExp, a_varDecls) => {
-            let mut l_var2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_var1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_var2: Tpl::Text;
+            let mut l_var1: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -9545,10 +9545,10 @@ pub fn daeExpCallXml(mut in_txt: Tpl::Text, mut in_a_call: Arc<DAE::Exp>, mut in
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "max" }, attr: Deref @ DAE::CallAttributes { ty: i_ty, .. }, expLst: Deref @ metamodelica::List::Cons { head: i_array, tail: Deref @ metamodelica::List::Nil } }, a_context, a_preExp, a_varDecls) => {
-            let mut txt_20: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_tvar: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_arr__tp__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_expVar: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_20: Tpl::Text;
+            let mut l_tvar: Tpl::Text;
+            let mut l_arr__tp__str: Tpl::Text;
+            let mut l_expVar: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -9567,10 +9567,10 @@ pub fn daeExpCallXml(mut in_txt: Tpl::Text, mut in_a_call: Arc<DAE::Exp>, mut in
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "min" }, attr: Deref @ DAE::CallAttributes { ty: i_ty, .. }, expLst: Deref @ metamodelica::List::Cons { head: i_array, tail: Deref @ metamodelica::List::Nil } }, a_context, a_preExp, a_varDecls) => {
-            let mut txt_21: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_tvar: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_arr__tp__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_expVar: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_21: Tpl::Text;
+            let mut l_tvar: Tpl::Text;
+            let mut l_arr__tp__str: Tpl::Text;
+            let mut l_expVar: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -9589,11 +9589,11 @@ pub fn daeExpCallXml(mut in_txt: Tpl::Text, mut in_a_call: Arc<DAE::Exp>, mut in
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "fill" }, expLst: Deref @ metamodelica::List::Cons { head: i_val, tail: i_dims }, attr: Deref @ DAE::CallAttributes { ty: i_ty, .. } }, a_context, a_preExp, a_varDecls) => {
-            let mut ret_24: i32 = 0;
-            let mut l_dimsExp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_valExp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_tvar: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_ty__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_24: i32;
+            let mut l_dimsExp: Tpl::Text;
+            let mut l_valExp: Tpl::Text;
+            let mut l_tvar: Tpl::Text;
+            let mut l_ty__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -9620,7 +9620,7 @@ pub fn daeExpCallXml(mut in_txt: Tpl::Text, mut in_a_call: Arc<DAE::Exp>, mut in
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, i_call @ Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "vector" }, .. }, _, a_preExp, a_varDecls) => {
-            let mut txt_25: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_25: Tpl::Text;
             let mut txt = (*txt).clone();
             txt_25 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("vector() call does not have a C implementation ")).clone() }))?;
             txt_25 = ExpressionDumpTpl::dumpExp(txt_25.clone(), i_call.clone(), (literal!("\"")).clone())?;
@@ -9628,11 +9628,11 @@ pub fn daeExpCallXml(mut in_txt: Tpl::Text, mut in_a_call: Arc<DAE::Exp>, mut in
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "cat" }, expLst: Deref @ metamodelica::List::Cons { head: i_dim, tail: i_arrays }, attr: Deref @ DAE::CallAttributes { ty: i_ty, .. } }, a_context, a_preExp, a_varDecls) => {
-            let mut ret_28: i32 = 0;
-            let mut l_arrays__exp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_dim__exp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_tvar: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_ty__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_28: i32;
+            let mut l_arrays__exp: Tpl::Text;
+            let mut l_dim__exp: Tpl::Text;
+            let mut l_tvar: Tpl::Text;
+            let mut l_ty__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -9660,10 +9660,10 @@ pub fn daeExpCallXml(mut in_txt: Tpl::Text, mut in_a_call: Arc<DAE::Exp>, mut in
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "promote" }, expLst: Deref @ metamodelica::List::Cons { head: i_A, tail: Deref @ metamodelica::List::Cons { head: i_n, tail: Deref @ metamodelica::List::Nil } }, .. }, a_context, a_preExp, a_varDecls) => {
-            let mut l_tvar: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_arr__tp__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_var2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_var1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_tvar: Tpl::Text;
+            let mut l_arr__tp__str: Tpl::Text;
+            let mut l_var2: Tpl::Text;
+            let mut l_var1: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -9685,9 +9685,9 @@ pub fn daeExpCallXml(mut in_txt: Tpl::Text, mut in_a_call: Arc<DAE::Exp>, mut in
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "transpose" }, expLst: Deref @ metamodelica::List::Cons { head: i_A, tail: Deref @ metamodelica::List::Nil }, .. }, a_context, a_preExp, a_varDecls) => {
-            let mut l_tvar: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_arr__tp__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_var1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_tvar: Tpl::Text;
+            let mut l_arr__tp__str: Tpl::Text;
+            let mut l_var1: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -9706,10 +9706,10 @@ pub fn daeExpCallXml(mut in_txt: Tpl::Text, mut in_a_call: Arc<DAE::Exp>, mut in
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "cross" }, expLst: Deref @ metamodelica::List::Cons { head: i_v1, tail: Deref @ metamodelica::List::Cons { head: i_v2, tail: Deref @ metamodelica::List::Nil } }, .. }, a_context, a_preExp, a_varDecls) => {
-            let mut l_tvar: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_arr__tp__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_var2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_var1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_tvar: Tpl::Text;
+            let mut l_arr__tp__str: Tpl::Text;
+            let mut l_var2: Tpl::Text;
+            let mut l_var1: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -9731,9 +9731,9 @@ pub fn daeExpCallXml(mut in_txt: Tpl::Text, mut in_a_call: Arc<DAE::Exp>, mut in
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "identity" }, expLst: Deref @ metamodelica::List::Cons { head: i_A, tail: Deref @ metamodelica::List::Nil }, .. }, a_context, a_preExp, a_varDecls) => {
-            let mut l_tvar: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_arr__tp__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_var1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_tvar: Tpl::Text;
+            let mut l_arr__tp__str: Tpl::Text;
+            let mut l_var1: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -9752,9 +9752,9 @@ pub fn daeExpCallXml(mut in_txt: Tpl::Text, mut in_a_call: Arc<DAE::Exp>, mut in
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "rem" }, expLst: Deref @ metamodelica::List::Cons { head: i_e1, tail: Deref @ metamodelica::List::Cons { head: i_e2, tail: Deref @ metamodelica::List::Nil } }, .. }, a_context, a_preExp, a_varDecls) => {
-            let mut l_typeStr: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_var2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_var1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_typeStr: Tpl::Text;
+            let mut l_var2: Tpl::Text;
+            let mut l_var1: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -9771,9 +9771,9 @@ pub fn daeExpCallXml(mut in_txt: Tpl::Text, mut in_a_call: Arc<DAE::Exp>, mut in
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "delay" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::ICONST { integer: _ }, tail: Deref @ metamodelica::List::Cons { head: i_e, tail: Deref @ metamodelica::List::Cons { head: i_d, tail: Deref @ metamodelica::List::Cons { head: i_delayMax, tail: Deref @ metamodelica::List::Nil } } } }, .. }, a_context, a_preExp, a_varDecls) => {
-            let mut l_var3: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_var2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_var1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_var3: Tpl::Text;
+            let mut l_var2: Tpl::Text;
+            let mut l_var1: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -9793,7 +9793,7 @@ pub fn daeExpCallXml(mut in_txt: Tpl::Text, mut in_a_call: Arc<DAE::Exp>, mut in
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "integer" }, expLst: Deref @ metamodelica::List::Cons { head: i_toBeCasted, tail: Deref @ metamodelica::List::Nil }, .. }, a_context, a_preExp, a_varDecls) => {
-            let mut l_castedVar: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_castedVar: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -9802,7 +9802,7 @@ pub fn daeExpCallXml(mut in_txt: Tpl::Text, mut in_a_call: Arc<DAE::Exp>, mut in
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "Integer" }, expLst: Deref @ metamodelica::List::Cons { head: i_toBeCasted, tail: Deref @ metamodelica::List::Nil }, .. }, a_context, a_preExp, a_varDecls) => {
-            let mut l_castedVar: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_castedVar: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -9830,8 +9830,8 @@ pub fn daeExpCallXml(mut in_txt: Tpl::Text, mut in_a_call: Arc<DAE::Exp>, mut in
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "mmc_get_field" }, expLst: Deref @ metamodelica::List::Cons { head: i_s1, tail: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::ICONST { integer: i_i }, tail: Deref @ metamodelica::List::Nil } }, .. }, a_context, a_preExp, a_varDecls) => {
-            let mut l_expPart: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_tvar: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_expPart: Tpl::Text;
+            let mut l_tvar: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -9853,7 +9853,7 @@ pub fn daeExpCallXml(mut in_txt: Tpl::Text, mut in_a_call: Arc<DAE::Exp>, mut in
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, i_exp @ Deref @ DAE::Exp::CALL { attr: Deref @ DAE::CallAttributes { tailCall: DAE::TailCall::TAIL { vars: i_tail_vars, .. }, .. }, expLst: i_expLst, .. }, a_context, a_preExp, a_varDecls) => {
-            let mut l_res: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_res: Tpl::Text;
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             l_res = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("/* Tail recursive call ")).clone() }))?;
@@ -9865,13 +9865,13 @@ pub fn daeExpCallXml(mut in_txt: Tpl::Text, mut in_a_call: Arc<DAE::Exp>, mut in
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, i_exp @ Deref @ DAE::Exp::CALL { attr: Deref @ DAE::CallAttributes { builtin: i_attr_builtin, ty: i_attr_ty, .. }, expLst: i_expLst, path: i_path }, a_context, a_preExp, a_varDecls) => {
-            let mut l_retVar: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_retType: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_funName: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_builtinFunctionName: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_result: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_preExp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_argStr: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_retVar: Tpl::Text;
+            let mut l_retType: Tpl::Text;
+            let mut l_funName: Tpl::Text;
+            let mut l_builtinFunctionName: Tpl::Text;
+            let mut l_result: Tpl::Text;
+            let mut l_preExp: Tpl::Text;
+            let mut l_argStr: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             l_preExp = Tpl::emptyTxt.clone();
@@ -10078,8 +10078,8 @@ fn fun_374(mut in_txt: Tpl::Text, mut in_a_e: Arc<DAE::Exp>, mut in_a_varDecls: 
     let mut out_a_preExp: Tpl::Text;
     (out_txt, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_e.clone(), in_a_varDecls.clone(), in_a_preExp.clone(), in_a_context.clone(), in_a_vrest.clone(), in_a_erest.clone(), in_a_exp.clone(), in_a_v.clone())) {
         (txt, Deref @ DAE::Exp::CREF { componentRef: i_cr, ty: Deref @ DAE::Type::T_FUNCTION_REFERENCE_VAR { functionType: _ } }, a_varDecls, a_preExp, a_context, a_vrest, a_erest, a_exp, a_v) => {
-            let mut ret_1: bool = false;
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_1: bool;
+            let mut txt_0: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             let mut a_preExp = (*a_preExp).clone();
@@ -10112,7 +10112,7 @@ fn fun_375(mut in_txt: Tpl::Text, mut in_a_vs: Arc<metamodelica::List<ArcStr>>, 
     let mut out_a_preExp: Tpl::Text;
     (out_txt, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_vs.clone(), in_a_erest.clone(), in_a_varDecls.clone(), in_a_preExp.clone(), in_a_context.clone(), in_a_e.clone())) {
         (txt, Deref @ metamodelica::List::Cons { head: i_v, tail: i_vrest }, a_erest, a_varDecls, a_preExp, a_context, a_e) => {
-            let mut l_exp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_exp: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             let mut a_preExp = (*a_preExp).clone();
@@ -10189,7 +10189,7 @@ pub fn daeExpArrayXml(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_preExp, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone(), in_a_context.clone(), in_a_preExp.clone(), in_a_varDecls.clone())) {
         (txt, Deref @ DAE::Exp::ARRAY { array: i_array, .. }, a_context, a_preExp, a_varDecls) => {
-            let mut l_params: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_params: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -10222,8 +10222,8 @@ fn lm_380(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<metamodelica
         let mut lstElt_380 = lstElt_380.clone();
         (txt, a_vars2, a_promote, a_varDecls) = (::match_deref::match_deref! { match &(lstElt_380.clone()) {
         i_row => {
-            let mut l_vars: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_tmp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_vars: Tpl::Text;
+            let mut l_tmp: Tpl::Text;
             (l_tmp, a_varDecls) = tempDeclXml(Tpl::emptyTxt.clone(), (Tpl::textString(a_arrayTypeStr.clone())?).clone(), a_varDecls.clone())?;
             (l_vars, a_promote, a_varDecls) = daeExpMatrixRowXml(Tpl::emptyTxt.clone(), i_row.clone(), (Tpl::textString(a_arrayTypeStr.clone())?).clone(), a_context.clone(), a_promote.clone(), a_varDecls.clone())?;
             a_vars2 = Tpl::writeTok(a_vars2.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", &")).clone() }))?;
@@ -10249,11 +10249,11 @@ pub fn daeExpMatrixXml(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut i
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, Deref @ DAE::Exp::MATRIX { ty: i_m_ty, matrix: i_m_matrix, .. }, a_context, a_preExp, a_varDecls) => {
-            let mut l_tmp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_catAlloc: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_promote: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_vars2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_arrayTypeStr: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_tmp: Tpl::Text;
+            let mut l_catAlloc: Tpl::Text;
+            let mut l_promote: Tpl::Text;
+            let mut l_vars2: Tpl::Text;
+            let mut l_arrayTypeStr: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -10287,8 +10287,8 @@ fn lm_382(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>,
         let mut lstElt_382 = lstElt_382.clone();
         (txt, a_varLstStr, a_varDecls, a_preExp) = (::match_deref::match_deref! { match &(lstElt_382.clone()) {
         i_e => {
-            let mut l_tmp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_expVar: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_tmp: Tpl::Text;
+            let mut l_expVar: Tpl::Text;
             (l_expVar, a_preExp, a_varDecls) = daeExpXml(Tpl::emptyTxt.clone(), i_e.clone(), a_context.clone(), a_preExp.clone(), a_varDecls.clone())?;
             (l_tmp, a_varDecls) = tempDeclXml(Tpl::emptyTxt.clone(), (a_arrayTypeStr.clone()).clone(), a_varDecls.clone())?;
             a_varLstStr = Tpl::writeTok(a_varLstStr.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", &")).clone() }))?;
@@ -10347,11 +10347,11 @@ pub fn daeExpRangeXml(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_preExp, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone(), in_a_context.clone(), in_a_preExp.clone(), in_a_varDecls.clone())) {
         (txt, Deref @ DAE::Exp::RANGE { ty: i_ty, start: i_start, stop: i_stop, step: i_step }, a_context, a_preExp, a_varDecls) => {
-            let mut l_step__exp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_tmp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_stop__exp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_start__exp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_ty__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_step__exp: Tpl::Text;
+            let mut l_tmp: Tpl::Text;
+            let mut l_stop__exp: Tpl::Text;
+            let mut l_start__exp: Tpl::Text;
+            let mut l_ty__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -10408,10 +10408,10 @@ fn fun_386(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_preExp: 
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, Deref @ DAE::Type::T_ARRAY { ty: i_ty, .. }, a_preExp, a_exp, a_varDecls, a_expVar) => {
-            let mut l_from: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_to: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_tvar: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_arrayTypeStr: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_from: Tpl::Text;
+            let mut l_to: Tpl::Text;
+            let mut l_tvar: Tpl::Text;
+            let mut l_arrayTypeStr: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -10449,7 +10449,7 @@ pub fn daeExpCastXml(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_preExp, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone(), in_a_context.clone(), in_a_preExp.clone(), in_a_varDecls.clone())) {
         (txt, Deref @ DAE::Exp::CAST { exp: i_exp, ty: i_ty }, a_context, a_preExp, a_varDecls) => {
-            let mut l_expVar: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_expVar: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -10493,8 +10493,8 @@ fn fun_389(mut in_txt: Tpl::Text, mut in_a_inExp: Arc<DAE::Exp>, mut in_a_varDec
     let mut out_a_preExp: Tpl::Text;
     (out_txt, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_inExp.clone(), in_a_varDecls.clone(), in_a_preExp.clone(), in_a_context.clone())) {
         (txt, Deref @ DAE::Exp::ASUB { exp: i_e, sub: Deref @ metamodelica::List::Cons { head: i_idx, tail: Deref @ metamodelica::List::Nil } }, a_varDecls, a_preExp, a_context) => {
-            let mut l_idx1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_e1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_idx1: Tpl::Text;
+            let mut l_e1: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             let mut a_preExp = (*a_preExp).clone();
@@ -10521,10 +10521,10 @@ fn lm_390(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>,
         let mut lstElt_390 = lstElt_390.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_390.clone()) {
         i_e => {
-            let mut x_i1: i32 = 0;
-            let mut l_v: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_casePreExp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_caseVarDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut x_i1: i32;
+            let mut l_v: Tpl::Text;
+            let mut l_casePreExp: Tpl::Text;
+            let mut l_caseVarDecls: Tpl::Text;
             x_i1 = Tpl::getIteri_i0(txt.clone())?;
             l_caseVarDecls = Tpl::emptyTxt.clone();
             l_casePreExp = Tpl::emptyTxt.clone();
@@ -10581,7 +10581,7 @@ fn fun_392(mut in_txt: Tpl::Text, mut in_a_inExp: Arc<DAE::Exp>, mut in_a_preExp
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_preExp, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_inExp.clone(), in_a_preExp.clone(), in_a_context.clone(), in_a_varDecls.clone())) {
         (txt, Deref @ DAE::Exp::ASUB { exp: i_exp @ Deref @ DAE::Exp::ASUB { exp: _, .. }, .. }, a_preExp, _, a_varDecls) => {
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_0: Tpl::Text;
             let mut txt = (*txt).clone();
             txt_0 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Nested array subscripting *should* have been handled by the routine creating the asub, but for some reason it was not: ")).clone() }))?;
             txt_0 = ExpressionDumpTpl::dumpExp(txt_0.clone(), i_exp.clone(), (literal!("\"")).clone())?;
@@ -10589,10 +10589,10 @@ fn fun_392(mut in_txt: Tpl::Text, mut in_a_inExp: Arc<DAE::Exp>, mut in_a_preExp
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, Deref @ DAE::Exp::ASUB { exp: i_exp @ Deref @ DAE::Exp::ARRAY { scalar: true, array: i_exp_array, .. }, sub: Deref @ metamodelica::List::Cons { head: i_idx, tail: Deref @ metamodelica::List::Nil } }, a_preExp, a_context, a_varDecls) => {
-            let mut l_expl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_idx1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_res: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_expl: Tpl::Text;
+            let mut l_idx1: Tpl::Text;
+            let mut txt_2: Tpl::Text;
+            let mut l_res: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -10613,7 +10613,7 @@ fn fun_392(mut in_txt: Tpl::Text, mut in_a_inExp: Arc<DAE::Exp>, mut in_a_preExp
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, Deref @ DAE::Exp::ASUB { exp: i_exp @ Deref @ DAE::Exp::RANGE { ty: _, .. }, sub: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil } }, a_preExp, _, a_varDecls) => {
-            let mut txt_5: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_5: Tpl::Text;
             let mut txt = (*txt).clone();
             txt_5 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("ASUB_EASY_CASE ")).clone() }))?;
             txt_5 = ExpressionDumpTpl::dumpExp(txt_5.clone(), i_exp.clone(), (literal!("\"")).clone())?;
@@ -10621,8 +10621,8 @@ fn fun_392(mut in_txt: Tpl::Text, mut in_a_inExp: Arc<DAE::Exp>, mut in_a_preExp
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, Deref @ DAE::Exp::ASUB { exp: i_ecr @ Deref @ DAE::Exp::CREF { ty: i_ecr_ty, .. }, sub: i_subs }, a_preExp, a_context, a_varDecls) => {
-            let mut ret_7: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut l_arrName: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_7: Arc<DAE::Exp>;
+            let mut l_arrName: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -10632,7 +10632,7 @@ fn fun_392(mut in_txt: Tpl::Text, mut in_a_inExp: Arc<DAE::Exp>, mut in_a_preExp
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, Deref @ DAE::Exp::ASUB { exp: i_e, sub: _ }, a_preExp, a_context, a_varDecls) => {
-            let mut l_exp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_exp: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -10641,7 +10641,7 @@ fn fun_392(mut in_txt: Tpl::Text, mut in_a_inExp: Arc<DAE::Exp>, mut in_a_preExp
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, i_exp, a_preExp, _, a_varDecls) => {
-            let mut txt_9: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_9: Tpl::Text;
             let mut txt = (*txt).clone();
             txt_9 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("OTHER_ASUB ")).clone() }))?;
             txt_9 = ExpressionDumpTpl::dumpExp(txt_9.clone(), i_exp.clone(), (literal!("\"")).clone())?;
@@ -10695,14 +10695,14 @@ pub fn daeExpASubIndexXml(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mu
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_preExp, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone(), in_a_context.clone(), in_a_preExp.clone(), in_a_varDecls.clone())) {
         (txt, Deref @ DAE::Exp::ICONST { integer: i_integer }, _, a_preExp, a_varDecls) => {
-            let mut ret_0: i32 = 0;
+            let mut ret_0: i32;
             let mut txt = (*txt).clone();
             ret_0 = SimCodeFunctionUtil::incrementInt(i_integer.clone(), -1);
             txt = Tpl::writeStr(txt.clone(), (intString(ret_0.clone())).clone())?;
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, Deref @ DAE::Exp::ENUM_LITERAL { index: i_index, .. }, _, a_preExp, a_varDecls) => {
-            let mut ret_1: i32 = 0;
+            let mut ret_1: i32;
             let mut txt = (*txt).clone();
             ret_1 = SimCodeFunctionUtil::incrementInt(i_index.clone(), -1);
             txt = Tpl::writeStr(txt.clone(), (intString(ret_1.clone())).clone())?;
@@ -10739,7 +10739,7 @@ fn fun_396(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>) -> Result<Tpl::Te
             txt.clone()
         },
         (txt, i_exp) => {
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_0: Tpl::Text;
             let mut txt = (*txt).clone();
             txt_0 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Code generation does not support pre(")).clone() }))?;
             txt_0 = ExpressionDumpTpl::dumpExp(txt_0.clone(), i_exp.clone(), (literal!("\"")).clone())?;
@@ -10768,8 +10768,8 @@ pub fn daeExpSizeXml(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_preExp, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone(), in_a_context.clone(), in_a_preExp.clone(), in_a_varDecls.clone())) {
         (txt, Deref @ DAE::Exp::SIZE { exp: i_exp @ Deref @ DAE::Exp::CREF { componentRef: _, .. }, sz: Some(i_dim) }, a_context, a_preExp, a_varDecls) => {
-            let mut l_dimPart: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_expPart: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_dimPart: Tpl::Text;
+            let mut l_expPart: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -10801,7 +10801,7 @@ pub fn daeExpBoxXml(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_preExp, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone(), in_a_context.clone(), in_a_preExp.clone(), in_a_varDecls.clone())) {
         (txt, Deref @ DAE::Exp::BOX { exp: i_exp_exp }, a_context, a_preExp, a_varDecls) => {
-            let mut l_res: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_res: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -10823,7 +10823,7 @@ pub fn daeExpUnboxXml(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_preExp, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone(), in_a_context.clone(), in_a_preExp.clone(), in_a_varDecls.clone())) {
         (txt, Deref @ DAE::Exp::UNBOX { exp: i_exp_exp, .. }, a_context, a_preExp, a_varDecls) => {
-            let mut l_res: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_res: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -10947,7 +10947,7 @@ fn fun_407(mut in_txt: Tpl::Text, mut in_a_ty: ArcStr, mut in_a_varDecls: Tpl::T
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_varDecls.clone())) {
         (txt, Deref @ "modelica_metatype", a_varDecls) => {
-            let mut ret_0: i32 = 0;
+            let mut ret_0: i32;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("tmpMeta[")).clone() }))?;
             ret_0 = System::tmpTickIndex(1);
@@ -10956,7 +10956,7 @@ fn fun_407(mut in_txt: Tpl::Text, mut in_a_ty: ArcStr, mut in_a_varDecls: Tpl::T
             (txt.clone(), a_varDecls.clone())
         },
         (txt, Deref @ "metamodelica_string", a_varDecls) => {
-            let mut ret_1: i32 = 0;
+            let mut ret_1: i32;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("tmpMeta[")).clone() }))?;
             ret_1 = System::tmpTickIndex(1);
@@ -10965,7 +10965,7 @@ fn fun_407(mut in_txt: Tpl::Text, mut in_a_ty: ArcStr, mut in_a_varDecls: Tpl::T
             (txt.clone(), a_varDecls.clone())
         },
         (txt, Deref @ "metamodelica_string_const", a_varDecls) => {
-            let mut ret_2: i32 = 0;
+            let mut ret_2: i32;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("tmpMeta[")).clone() }))?;
             ret_2 = System::tmpTickIndex(1);
@@ -10974,8 +10974,8 @@ fn fun_407(mut in_txt: Tpl::Text, mut in_a_ty: ArcStr, mut in_a_varDecls: Tpl::T
             (txt.clone(), a_varDecls.clone())
         },
         (txt, i_ty, a_varDecls) => {
-            let mut ret_4: i32 = 0;
-            let mut l_newVarIx: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_4: i32;
+            let mut l_newVarIx: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             l_newVarIx = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("tmp")).clone() }))?;
@@ -11161,7 +11161,7 @@ pub fn expTypeShortXml(mut in_txt: Tpl::Text, mut in_a_type: Arc<DAE::Type>) -> 
             return Ok(Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Real")).clone() }))?)
         },
         (txt, Deref @ DAE::Type::T_STRING { varLst: _ }) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = Config::acceptMetaModelicaGrammar()?;
             return Ok(fun_414(txt.clone(), ret_0.clone())?)
@@ -11183,7 +11183,7 @@ pub fn expTypeShortXml(mut in_txt: Tpl::Text, mut in_a_type: Arc<DAE::Type>) -> 
             return Ok(Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Complex")).clone() }))?)
         },
         (txt, Deref @ DAE::Type::T_COMPLEX { complexClassType: i_complexClassType, .. }) => {
-            let mut ret_1: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+            let mut ret_1: Arc<Absyn::Path>;
             let mut txt = (*txt).clone();
             ret_1 = ClassInfUtil::getStateName(i_complexClassType.clone());
             return Ok(underscorePathXml(txt.clone(), ret_1.clone())?)
@@ -11209,8 +11209,8 @@ pub fn expTypeShortXml(mut in_txt: Tpl::Text, mut in_a_type: Arc<DAE::Type>) -> 
             return Ok(Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Complex")).clone() }))?)
         },
         (txt, i_type) => {
-            let mut txt_2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_2: ArcStr = arcstr::literal!("");
+            let mut txt_2: Tpl::Text;
+            let mut ret_2: ArcStr;
             let mut txt = (*txt).clone();
             txt_2 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("expTypeShortXml:")).clone() }))?;
             ret_2 = (TypesDump::unparseType(i_type.clone())?).clone();
@@ -11295,7 +11295,7 @@ fn fun_425(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Te
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone())) {
         (txt, Deref @ DAE::Type::T_COMPLEX { complexClassType: i_complexClassType, .. }) => {
-            let mut ret_0: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+            let mut ret_0: Arc<Absyn::Path>;
             let mut txt = (*txt).clone();
             ret_0 = ClassInfUtil::getStateName(i_complexClassType.clone());
             txt = underscorePathXml(txt.clone(), ret_0.clone())?;
@@ -11584,7 +11584,7 @@ pub fn expTypeFromExpFlagXml(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>,
             return Ok(fun_431(txt.clone(), a_flag.clone())?)
         },
         (txt, Deref @ DAE::Exp::SCONST { string: _ }, a_flag) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = Config::acceptMetaModelicaGrammar()?;
             return Ok(fun_434(txt.clone(), ret_0.clone(), a_flag.clone())?)
@@ -11650,37 +11650,37 @@ pub fn expTypeFromExpFlagXml(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>,
             return Ok(expTypeFlagXml(txt.clone(), i_c_ty.clone(), a_flag.clone())?)
         },
         (txt, i_c @ Deref @ DAE::Exp::ASUB { exp: _, .. }, a_flag) => {
-            let mut ret_1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+            let mut ret_1: Arc<DAE::Type>;
             let mut txt = (*txt).clone();
             ret_1 = Expression::r#typeof(i_c.clone())?;
             return Ok(expTypeFlagXml(txt.clone(), ret_1.clone(), a_flag.clone())?)
         },
         (txt, i_exp @ Deref @ DAE::Exp::REDUCTION { reductionInfo: _, .. }, a_flag) => {
-            let mut ret_2: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+            let mut ret_2: Arc<DAE::Type>;
             let mut txt = (*txt).clone();
             ret_2 = Expression::r#typeof(i_exp.clone())?;
             return Ok(expTypeFlagXml(txt.clone(), ret_2.clone(), a_flag.clone())?)
         },
         (txt, i_e @ Deref @ DAE::Exp::BOX { exp: _ }, a_flag) => {
-            let mut ret_3: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+            let mut ret_3: Arc<DAE::Type>;
             let mut txt = (*txt).clone();
             ret_3 = Expression::r#typeof(i_e.clone())?;
             return Ok(expTypeFlagXml(txt.clone(), ret_3.clone(), a_flag.clone())?)
         },
         (txt, i_e @ Deref @ DAE::Exp::CONS { car: _, .. }, a_flag) => {
-            let mut ret_4: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+            let mut ret_4: Arc<DAE::Type>;
             let mut txt = (*txt).clone();
             ret_4 = Expression::r#typeof(i_e.clone())?;
             return Ok(expTypeFlagXml(txt.clone(), ret_4.clone(), a_flag.clone())?)
         },
         (txt, i_e @ Deref @ DAE::Exp::LIST { valList: _ }, a_flag) => {
-            let mut ret_5: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+            let mut ret_5: Arc<DAE::Type>;
             let mut txt = (*txt).clone();
             ret_5 = Expression::r#typeof(i_e.clone())?;
             return Ok(expTypeFlagXml(txt.clone(), ret_5.clone(), a_flag.clone())?)
         },
         (txt, i_e @ Deref @ DAE::Exp::SIZE { exp: _, .. }, a_flag) => {
-            let mut ret_6: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+            let mut ret_6: Arc<DAE::Type>;
             let mut txt = (*txt).clone();
             ret_6 = Expression::r#typeof(i_e.clone())?;
             return Ok(expTypeFlagXml(txt.clone(), ret_6.clone(), a_flag.clone())?)
@@ -11714,7 +11714,7 @@ pub fn expTypeFromExpFlagXml(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>,
             { (in_txt, in_a_exp, in_a_flag) = (txt.clone(), i_c_exp.clone(), a_flag.clone()); continue '__tco; }
         },
         (txt, i_exp, _) => {
-            let mut txt_7: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_7: Tpl::Text;
             let mut txt = (*txt).clone();
             txt_7 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("expTypeFromExpFlag:")).clone() }))?;
             txt_7 = ExpressionDumpTpl::dumpExp(txt_7.clone(), i_exp.clone(), (literal!("\"")).clone())?;

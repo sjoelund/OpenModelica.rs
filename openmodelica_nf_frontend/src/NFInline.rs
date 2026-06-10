@@ -65,7 +65,7 @@ pub fn inlineCallExp(mut callExp: Arc<Expression::NFExpression>, mut forceInline
     let mut result: Arc<Expression::NFExpression>;
     result = (::match_deref::match_deref! { match &(callExp.clone()) {
         Deref @ Expression::CALL { call: call @ Deref @ Call::TYPED_CALL { .. } } => {
-            let mut shouldInline: bool = false;
+            let mut shouldInline: bool;
             shouldInline = (match Call::inlineType(call.clone()) {
         DAE::InlineType::BUILTIN_EARLY_INLINE { .. } => true,
         DAE::InlineType::EARLY_INLINE { .. } if (Flags::isSet(Flags::INLINE_FUNCTIONS.clone())?) => true,
@@ -210,7 +210,7 @@ fn replaceDimExp(mut dim: Arc<Dimension::NFDimension>, mut node: Arc<InstNode::I
     let mut dim: Arc<Dimension::NFDimension> = dim;
     dim = (::match_deref::match_deref! { match &(dim.clone()) {
         Deref @ Dimension::EXP { .. } => {
-            let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut exp: Arc<Expression::NFExpression>;
             exp = Expression::map(var_field!((*dim).exp, Dimension::NFDimension::EXP).clone(), (std::sync::Arc::new({ let __pe_b1 = node.clone(); let __pe_b2 = value.clone(); move |__pe_a0| replaceCrefNode(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             Dimension::fromExp(exp.clone(), var_field!((*dim).var, Dimension::NFDimension::EXP).clone())?
         },

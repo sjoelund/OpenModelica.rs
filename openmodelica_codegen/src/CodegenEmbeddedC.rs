@@ -685,9 +685,9 @@ fn fun_88(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_mo
             txt.clone()
         },
         (mut txt, SimCode::SimCode { modelInfo: SimCode::ModelInfo { functions: ref i_functions, varInfo: ref i_varInfo @ SimCode::VarInfo { numIntAlgVars: ref i_varInfo_numIntAlgVars, numBoolAlgVars: ref i_varInfo_numBoolAlgVars, numStringAlgVars: ref i_varInfo_numStringAlgVars, numParams: ref i_varInfo_numParams, numIntParams: ref i_varInfo_numIntParams, numBoolParams: ref i_varInfo_numBoolParams, numStringParamVars: ref i_varInfo_numStringParamVars, numStateVars: ref i_varInfo_numStateVars, .. }, vars: SimCodeVar::SimVars { stateVars: ref i_vars_stateVars, derivativeVars: ref i_vars_derivativeVars, algVars: ref i_vars_algVars, discreteAlgVars: ref i_vars_discreteAlgVars, realOptimizeConstraintsVars: ref i_vars_realOptimizeConstraintsVars, realOptimizeFinalConstraintsVars: ref i_vars_realOptimizeFinalConstraintsVars, intAlgVars: ref i_vars_intAlgVars, boolAlgVars: ref i_vars_boolAlgVars, stringAlgVars: ref i_vars_stringAlgVars, paramVars: ref i_vars_paramVars, intParamVars: ref i_vars_intParamVars, boolParamVars: ref i_vars_boolParamVars, stringParamVars: ref i_vars_stringParamVars, .. }, .. }, extObjInfo: ref i_extObjInfo @ SimCode::ExtObjInfo { vars: ref i_extObjVars, .. }, simulationSettingsOpt: Some(SimCode::SimulationSettings { startTime: mut i_settings_startTime, stopTime: mut i_settings_stopTime, stepSize: mut i_settings_stepSize, .. }), literals: ref i_literals, externalFunctionIncludes: ref i_externalFunctionIncludes, odeEquations: ref i_odeEquations, allEquations: ref i_allEquations, .. }, mut a_modelNamePrefixStr) => {
-            let mut ret_2: i32 = 0;
-            let mut ret_1: i32 = 0;
-            let mut ret_0: i32 = 0;
+            let mut ret_2: i32;
+            let mut ret_1: i32;
+            let mut ret_0: i32;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("#define fmi2TypesPlatform_h\n")).clone(), (literal!("\n")).clone(), (literal!("#define fmi2TypesPlatform \"default\" /* Compatible */\n")).clone(), (literal!("\n")).clone(), (literal!("typedef struct ")).clone()], lastHasNewLine: false }))?;
             txt = CodegenUtil::symbolName(txt.clone(), (Tpl::textString(a_modelNamePrefixStr.clone())?).clone(), (literal!("fmi2Component_s")).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("* fmi2Component;\n")).clone(), (literal!("typedef void* fmi2ComponentEnvironment;    /* Pointer to FMU environment    */\n")).clone(), (literal!("typedef void* fmi2FMUstate;                /* Pointer to internal FMU state */\n")).clone(), (literal!("typedef unsigned int fmi2ValueReference;\n")).clone(), (literal!("typedef double fmi2Real;\n")).clone(), (literal!("typedef int fmi2Integer;\n")).clone(), (literal!("typedef int fmi2Boolean;\n")).clone(), (literal!("typedef char fmi2Char;\n")).clone(), (literal!("typedef const fmi2Char* fmi2String;\n")).clone(), (literal!("typedef char fmi2Byte;\n")).clone(), (literal!("\n")).clone(), (literal!("#define fmi2True 1\n")).clone(), (literal!("#define fmi2False 0\n")).clone(), (literal!("\n")).clone(), (literal!("#include \"fmi2/fmi2Functions.h\"\n")).clone(), (literal!("\n")).clone(), (literal!("#include <stdint.h>\n")).clone(), (literal!("#include <stdio.h>\n")).clone(), (literal!("\n")).clone(), (literal!("void ModelicaFormatMessage(const char *fmt, ...)\n")).clone(), (literal!("{\n")).clone(), (literal!("  va_list args;\n")).clone(), (literal!("  va_start(args, fmt);\n")).clone(), (literal!("  vprintf(fmt, args);\n")).clone(), (literal!("  va_end(args);\n")).clone(), (literal!("}\n")).clone(), (literal!("\n")).clone(), (literal!("typedef struct ")).clone()], lastHasNewLine: false }))?;
@@ -919,7 +919,7 @@ pub fn statement(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>) -> R
             txt.clone()
         },
         (txt, i_stmt) => {
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_0: Tpl::Text;
             let mut txt = (*txt).clone();
             txt_0 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Unsupported statement: ")).clone() }))?;
             txt_0 = DAEDumpTpl::dumpStatement(txt_0.clone(), i_stmt.clone())?;
@@ -1051,7 +1051,7 @@ fn fun_99(mut in_txt: Tpl::Text, mut in_a_isPre: bool, mut in_a_cr: Arc<DAE::Com
             txt.clone()
         },
         (txt, _, a_cr, _, _) => {
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_0: Tpl::Text;
             let mut txt = (*txt).clone();
             txt_0 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Got $PRE for something that is already pre: ")).clone() }))?;
             txt_0 = CodegenUtil::crefStr(txt_0.clone(), a_cr.clone())?;
@@ -1067,7 +1067,7 @@ fn fun_100(mut in_txt: Tpl::Text, mut in_mArg: SimCodeVar::SimVar, mut in_a_isPr
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_isPre.clone(), in_a_ix.clone()) {
         (mut txt, SimCodeVar::SimVar { index: (-1), varKind: mut i_varKind, name: ref i_name, .. }, _, _) => {
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_0: Tpl::Text;
             txt_0 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("crefToCStr got index=-1 for ")).clone() }))?;
             txt_0 = CodegenUtil::variabilityString(txt_0.clone(), i_varKind.clone())?;
             txt_0 = Tpl::writeTok(txt_0.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() }))?;
@@ -1076,8 +1076,8 @@ fn fun_100(mut in_txt: Tpl::Text, mut in_mArg: SimCodeVar::SimVar, mut in_a_isPr
             txt.clone()
         },
         (mut txt, ref i_var @ SimCodeVar::SimVar { index: ref i_index, name: ref i_name, varKind: ref i_varKind, .. }, mut a_isPre, mut a_ix) => {
-            let mut ret_2: ArcStr = arcstr::literal!("");
-            let mut txt_1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_2: ArcStr;
+            let mut txt_1: Tpl::Text;
             txt = varArrayNameValues(txt.clone(), i_var.clone(), a_ix.clone(), a_isPre.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("[")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (intString(i_index.clone())).clone())?;
@@ -1107,8 +1107,8 @@ pub fn crefToCStr(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>, mu
             txt.clone()
         },
         (txt, i_cr, a_ix, a_isPre) => {
-            let mut ret_1: SimCodeVar::SimVar = <SimCodeVar::SimVar as ::std::default::Default>::default();
-            let mut ret_0: SimCode::SimCode = <SimCode::SimCode as ::std::default::Default>::default();
+            let mut ret_1: SimCodeVar::SimVar;
+            let mut ret_0: SimCode::SimCode;
             let mut txt = (*txt).clone();
             ret_0 = SimCodeUtil::getSimCode()?;
             ret_1 = SimCodeUtil::cref2simvar(i_cr.clone(), ret_0.clone())?;
@@ -1176,8 +1176,8 @@ pub fn expTypeShort(mut in_txt: Tpl::Text, mut in_a_type: Arc<DAE::Type>) -> Res
             return Ok(Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("void*")).clone() }))?)
         },
         (txt, i_type) => {
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_0: ArcStr = arcstr::literal!("");
+            let mut txt_0: Tpl::Text;
+            let mut ret_0: ArcStr;
             let mut txt = (*txt).clone();
             txt_0 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("expTypeShort: ")).clone() }))?;
             ret_0 = (TypesDump::unparseType(i_type.clone())?).clone();
@@ -1216,7 +1216,7 @@ pub fn daeExp(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>) -> Result<Tpl:
             return Ok(Tpl::writeStr(txt.clone(), (realString(i_real.clone())).clone())?)
         },
         (txt, Deref @ DAE::Exp::SCONST { string: i_string }) => {
-            let mut ret_0: ArcStr = arcstr::literal!("");
+            let mut ret_0: ArcStr;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\"")).clone() }))?;
             ret_0 = (Util::escapeModelicaStringToCString((i_string.clone()).clone())).clone();
@@ -1270,7 +1270,7 @@ pub fn daeExp(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>) -> Result<Tpl:
             return Ok(daeExpCall(txt.clone(), i_exp.clone())?)
         },
         (txt, i_exp @ Deref @ DAE::Exp::CREF { ty: Deref @ DAE::Type::T_ARRAY { ty: _, .. }, .. }) => {
-            let mut txt_1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_1: Tpl::Text;
             let mut txt = (*txt).clone();
             txt_1 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("CREF array... ")).clone() }))?;
             txt_1 = ExpressionDumpTpl::dumpExp(txt_1.clone(), i_exp.clone(), (literal!("\"")).clone())?;
@@ -1285,7 +1285,7 @@ pub fn daeExp(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>) -> Result<Tpl:
             { (in_txt, in_a_exp) = (txt.clone(), i_e.clone()); continue '__tco; }
         },
         (txt, i_exp) => {
-            let mut txt_2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_2: Tpl::Text;
             let mut txt = (*txt).clone();
             txt_2 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("daeExp: Not supporting ")).clone() }))?;
             txt_2 = ExpressionDumpTpl::dumpExp(txt_2.clone(), i_exp.clone(), (literal!("\"")).clone())?;
@@ -1390,7 +1390,7 @@ fn fun_106(mut in_txt: Tpl::Text, mut in_a_op: DAE::Operator, mut in_a_exp1: Arc
             txt.clone()
         },
         (txt, _, _, _, a_origExp) => {
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_0: Tpl::Text;
             let mut txt = (*txt).clone();
             txt_0 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("daeExpBinary: Not supporting operator? ")).clone() }))?;
             txt_0 = ExpressionDumpTpl::dumpExp(txt_0.clone(), a_origExp.clone(), (literal!("\"")).clone())?;
@@ -1592,7 +1592,7 @@ pub fn daeExpCallBuiltin(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>) -> 
             txt.clone()
         },
         (txt, i_exp @ Deref @ DAE::Exp::CALL { path: _, .. }) => {
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_0: Tpl::Text;
             let mut txt = (*txt).clone();
             txt_0 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("daeExpCallBuiltin: Not supported: ")).clone() }))?;
             txt_0 = ExpressionDumpTpl::dumpExp(txt_0.clone(), i_exp.clone(), (literal!("\"")).clone())?;
@@ -1635,7 +1635,7 @@ pub fn daeExpCall(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>) -> Result<
             txt.clone()
         },
         (txt, i_exp @ Deref @ DAE::Exp::CALL { path: _, .. }) => {
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_0: Tpl::Text;
             let mut txt = (*txt).clone();
             txt_0 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("daeExpCall: Not supported: ")).clone() }))?;
             txt_0 = ExpressionDumpTpl::dumpExp(txt_0.clone(), i_exp.clone(), (literal!("\"")).clone())?;
@@ -1758,7 +1758,7 @@ fn fun_117(mut in_txt: Tpl::Text, mut in_a_ty__: Arc<DAE::Type>, mut in_a_value:
             txt.clone()
         },
         (txt, _, a_value) => {
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_0: Tpl::Text;
             let mut txt = (*txt).clone();
             txt_0 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("No start value for variable... ")).clone() }))?;
             txt_0 = ExpressionDumpTpl::dumpExp(txt_0.clone(), a_value.clone(), (literal!("\"")).clone())?;
@@ -1784,7 +1784,7 @@ pub fn constVal(mut in_txt: Tpl::Text, mut in_a_value: Arc<DAE::Exp>, mut in_a_t
             txt.clone()
         },
         (txt, Deref @ DAE::Exp::SCONST { string: i_string }, _) => {
-            let mut ret_0: ArcStr = arcstr::literal!("");
+            let mut ret_0: ArcStr;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\"")).clone() }))?;
             ret_0 = (Util::escapeModelicaStringToCString((i_string.clone()).clone())).clone();
@@ -1857,7 +1857,7 @@ pub fn startValue(mut in_txt: Tpl::Text, mut in_a_var: SimCodeVar::SimVar) -> Re
             txt.clone()
         },
         (txt, SimCodeVar::SimVar { name: i_name, .. }) => {
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_0: Tpl::Text;
             let mut txt = (*txt).clone();
             txt_0 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("No start value for variable ")).clone() }))?;
             txt_0 = CodegenUtil::crefStr(txt_0.clone(), i_name.clone())?;
@@ -1879,7 +1879,7 @@ fn lm_120(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>)
         let mut lstElt_120 = lstElt_120.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_120.clone()) {
         i_literal => {
-            let mut x_i0: i32 = 0;
+            let mut x_i0: i32;
             x_i0 = Tpl::getIteri_i0(txt.clone())?;
             txt = literalExpConst(txt.clone(), i_literal.clone(), x_i0.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
@@ -1995,7 +1995,7 @@ pub fn functionDeclaration(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimCodeFuncti
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fn.clone())) {
         (txt, Deref @ SimCodeFunction::Function::FUNCTION { name: i_name, functionArguments: i_functionArguments, outVars: i_outVars, .. }) => {
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_0: Tpl::Text;
             let mut txt = (*txt).clone();
             txt_0 = CodegenUtil::underscorePath(Tpl::emptyTxt.clone(), i_name.clone())?;
             (txt, txt_0) = functionPrototype(txt.clone(), txt_0.clone(), i_functionArguments.clone(), i_outVars.clone())?;
@@ -2003,7 +2003,7 @@ pub fn functionDeclaration(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimCodeFuncti
             txt.clone()
         },
         (txt, Deref @ SimCodeFunction::Function::EXTERNAL_FUNCTION { name: i_name, funArgs: i_funArgs, outVars: i_outVars, .. }) => {
-            let mut txt_1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_1: Tpl::Text;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("static inline ")).clone() }))?;
             txt_1 = CodegenUtil::underscorePath(Tpl::emptyTxt.clone(), i_name.clone())?;
@@ -2067,9 +2067,9 @@ pub fn functionBodyRegularFunction(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimCo
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fn.clone())) {
         (txt, Deref @ SimCodeFunction::Function::FUNCTION { name: i_name, functionArguments: i_functionArguments, outVars: i_outVars, body: i_body, .. }) => {
-            let mut l_bodyPart: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_prototype: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_fname: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_bodyPart: Tpl::Text;
+            let mut l_prototype: Tpl::Text;
+            let mut l_fname: Tpl::Text;
             let mut txt = (*txt).clone();
             l_fname = CodegenUtil::underscorePath(Tpl::emptyTxt.clone(), i_name.clone())?;
             (l_prototype, l_fname) = functionPrototype(Tpl::emptyTxt.clone(), l_fname.clone(), i_functionArguments.clone(), i_outVars.clone())?;
@@ -2197,7 +2197,7 @@ fn fun_135(mut in_txt: Tpl::Text, mut in_a_outVars: Arc<metamodelica::List<Arc<S
             txt.clone()
         },
         (txt, i_outVars) => {
-            let mut ret_0: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>> = metamodelica::nil();
+            let mut ret_0: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>;
             let mut txt = (*txt).clone();
             ret_0 = listRest(i_outVars.clone())?;
             txt = lm_134(txt.clone(), ret_0.clone())?;
@@ -2212,13 +2212,13 @@ pub fn functionBodyExternalFunction(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimC
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fn.clone())) {
         (txt, Deref @ SimCodeFunction::Function::EXTERNAL_FUNCTION { language: Deref @ "C", name: i_name, funArgs: i_funArgs, outVars: i_outVars, extArgs: i_extArgs, extReturn: i_extReturn, extName: i_extName, .. }) => {
-            let mut l_varAssign: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_returnStatement: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_returnAssign: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_varDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_args: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_prototype: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_fname: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_varAssign: Tpl::Text;
+            let mut l_returnStatement: Tpl::Text;
+            let mut l_returnAssign: Tpl::Text;
+            let mut l_varDecl: Tpl::Text;
+            let mut l_args: Tpl::Text;
+            let mut l_prototype: Tpl::Text;
+            let mut l_fname: Tpl::Text;
             let mut txt = (*txt).clone();
             l_fname = CodegenUtil::underscorePath(Tpl::emptyTxt.clone(), i_name.clone())?;
             (l_prototype, l_fname) = functionPrototype(Tpl::emptyTxt.clone(), l_fname.clone(), i_funArgs.clone(), i_outVars.clone())?;
@@ -2378,7 +2378,7 @@ fn fun_142(mut in_txt: Tpl::Text, mut in_a_outVars: Arc<metamodelica::List<Arc<S
             txt.clone()
         },
         (txt, i_outVars) => {
-            let mut ret_0: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>> = metamodelica::nil();
+            let mut ret_0: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>;
             let mut txt = (*txt).clone();
             ret_0 = listRest(i_outVars.clone())?;
             txt = lm_141(txt.clone(), ret_0.clone())?;
@@ -2449,7 +2449,7 @@ pub fn literalExpConst(mut in_txt: Tpl::Text, mut in_a_e: Arc<DAE::Exp>, mut in_
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_e.clone(), in_a_i0.clone())) {
         (txt, Deref @ DAE::Exp::SCONST { string: i_string }, a_i0) => {
-            let mut ret_0: ArcStr = arcstr::literal!("");
+            let mut ret_0: ArcStr;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("static const char * const OMCLIT")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (intString(a_i0.clone())).clone())?;
@@ -2460,7 +2460,7 @@ pub fn literalExpConst(mut in_txt: Tpl::Text, mut in_a_e: Arc<DAE::Exp>, mut in_
             txt.clone()
         },
         (txt, i_e, _) => {
-            let mut txt_1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_1: Tpl::Text;
             let mut txt = (*txt).clone();
             txt_1 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Literal expression: ")).clone() }))?;
             txt_1 = ExpressionDumpTpl::dumpExp(txt_1.clone(), i_e.clone(), (literal!("\"")).clone())?;

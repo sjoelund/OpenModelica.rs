@@ -128,8 +128,8 @@ pub fn findMin(mut inTs: T) -> Result<Element> {
             root(t.clone())?
         },
         Deref @ metamodelica::List::Cons { head: t, tail: ts } => {
-            let mut x: Element = (0, metamodelica::nil());
-            let mut y: Element = (0, metamodelica::nil());
+            let mut x: Element;
+            let mut y: Element;
             x = root(t.clone())?;
             y = findMin(ts.clone())?;
             if (compareElement(x.clone(), y.clone())) {x.clone()} else {y.clone()}
@@ -182,7 +182,7 @@ pub fn elements2(mut its: T, mut acc: Arc<metamodelica::List<(i32, Arc<metamodel
             return Ok(acc.clone().reverse())
         },
         ts => {
-            let mut elt: Element = (0, metamodelica::nil());
+            let mut elt: Element;
             let mut ts = (*ts).clone();
             (ts, elt) = deleteAndReturnMin(ts.clone())?;
             { (its, acc) = (ts.clone(), metamodelica::cons(elt.clone(), acc.clone())); continue '__tco; }
@@ -284,9 +284,9 @@ fn getMin(mut ts: T) -> Result<(Arc<Tree>, T)> {
             (t.clone(), metamodelica::nil())
         },
         Deref @ metamodelica::List::Cons { head: t1, tail: ts1 } => {
-            let mut t2: Arc<Tree> = Arc::new(<Tree as ::std::default::Default>::default());
-            let mut ts2: T = metamodelica::nil();
-            let mut b: bool = false;
+            let mut t2: Arc<Tree>;
+            let mut ts2: T;
+            let mut b: bool;
             (t2, ts2) = getMin(ts1.clone())?;
             b = compareElement(root(t1.clone())?, root(t2.clone())?);
             (if (b.clone()) {t1.clone()} else {t2.clone()}, if (b.clone()) {ts1.clone()} else {metamodelica::cons(t1.clone(), ts2.clone())})

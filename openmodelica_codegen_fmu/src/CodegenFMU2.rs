@@ -74,9 +74,9 @@ pub fn fmiModelDescription(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::Sim
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_simCode.clone(), in_a_guid.clone(), in_a_FMUType.clone(), in_a_sourceFiles.clone())) {
         (txt, i_simCode @ SimCode::SimCode { simulationSettingsOpt: i_simulationSettingsOpt, modelStructure: i_modelStructure, .. }, a_guid, a_FMUType, a_sourceFiles) => {
-            let mut ret_2: bool = false;
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_2: bool;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("<fmiModelDescription\n")).clone() }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
@@ -117,7 +117,7 @@ fn fun_54(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_author: Tpl::Text) 
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_author.clone()) {
         (mut txt, false, mut a_author) => {
-            let mut ret_0: ArcStr = arcstr::literal!("");
+            let mut ret_0: ArcStr;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("author=\"")).clone() }))?;
             ret_0 = (Util::escapeModelicaStringToXmlString((Tpl::textString(a_author.clone())?).clone())?).clone();
             txt = Tpl::writeStr(txt.clone(), (ret_0.clone()).clone())?;
@@ -135,7 +135,7 @@ fn fun_55(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_copyright: Tpl::Tex
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_copyright.clone()) {
         (mut txt, false, mut a_copyright) => {
-            let mut ret_0: ArcStr = arcstr::literal!("");
+            let mut ret_0: ArcStr;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("copyright=\"")).clone() }))?;
             ret_0 = (Util::escapeModelicaStringToXmlString((Tpl::textString(a_copyright.clone())?).clone())?).clone();
             txt = Tpl::writeStr(txt.clone(), (ret_0.clone()).clone())?;
@@ -153,7 +153,7 @@ fn fun_56(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_license: Tpl::Text)
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_license.clone()) {
         (mut txt, false, mut a_license) => {
-            let mut ret_0: ArcStr = arcstr::literal!("");
+            let mut ret_0: ArcStr;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("license=\"")).clone() }))?;
             ret_0 = (Util::escapeModelicaStringToXmlString((Tpl::textString(a_license.clone())?).clone())?).clone();
             txt = Tpl::writeStr(txt.clone(), (ret_0.clone()).clone())?;
@@ -171,27 +171,27 @@ pub fn fmiModelDescriptionAttributes(mut in_txt: Tpl::Text, mut in_a_simCode: Si
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_simCode.clone(), in_a_guid.clone()) {
         (mut txt, ref i_simCode @ SimCode::SimCode { modelInfo: SimCode::ModelInfo { varInfo: SimCode::VarInfo { numZeroCrossings: _, .. }, vars: SimCodeVar::SimVars { stateVars: _, .. }, name: ref i_modelInfo_name, description: ref i_modelInfo_description, author: ref i_modelInfo_author, version: ref i_modelInfo_version, copyright: ref i_modelInfo_copyright, license: ref i_modelInfo_license, .. }, .. }, mut a_guid) => {
-            let mut ret_20: ArcStr = arcstr::literal!("");
-            let mut ret_19: ArcStr = arcstr::literal!("");
-            let mut ret_18: bool = false;
-            let mut ret_17: bool = false;
-            let mut ret_16: bool = false;
-            let mut ret_15: ArcStr = arcstr::literal!("");
-            let mut ret_14: ArcStr = arcstr::literal!("");
-            let mut ret_13: ArcStr = arcstr::literal!("");
-            let mut l_numberOfEventIndicators: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_variableNamingConvention: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_10: Util::DateTime = <Util::DateTime as ::std::default::Default>::default();
-            let mut l_generationDateAndTime: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_8: ArcStr = arcstr::literal!("");
-            let mut l_generationTool: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_license: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_copyright: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_version: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_author: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_description: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_modelName: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_fmiVersion: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_20: ArcStr;
+            let mut ret_19: ArcStr;
+            let mut ret_18: bool;
+            let mut ret_17: bool;
+            let mut ret_16: bool;
+            let mut ret_15: ArcStr;
+            let mut ret_14: ArcStr;
+            let mut ret_13: ArcStr;
+            let mut l_numberOfEventIndicators: Tpl::Text;
+            let mut l_variableNamingConvention: Tpl::Text;
+            let mut ret_10: Util::DateTime;
+            let mut l_generationDateAndTime: Tpl::Text;
+            let mut ret_8: ArcStr;
+            let mut l_generationTool: Tpl::Text;
+            let mut l_license: Tpl::Text;
+            let mut l_copyright: Tpl::Text;
+            let mut l_version: Tpl::Text;
+            let mut l_author: Tpl::Text;
+            let mut l_description: Tpl::Text;
+            let mut l_modelName: Tpl::Text;
+            let mut l_fmiVersion: Tpl::Text;
             l_fmiVersion = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("2.0")).clone() }))?;
             l_modelName = CodegenUtil::dotPath(Tpl::emptyTxt.clone(), i_modelInfo_name.clone())?;
             l_description = Tpl::writeStr(Tpl::emptyTxt.clone(), (i_modelInfo_description.clone()).clone())?;
@@ -298,11 +298,11 @@ pub fn CoSimulation(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, m
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_simCode.clone(), in_a_sourceFiles.clone())) {
         (txt, i_simCode @ SimCode::SimCode { modelInfo: _, .. }, a_sourceFiles) => {
-            let mut ret_4: bool = false;
-            let mut ret_3: bool = false;
-            let mut ret_2: bool = false;
-            let mut ret_1: ArcStr = arcstr::literal!("");
-            let mut l_modelIdentifier: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_4: bool;
+            let mut ret_3: bool;
+            let mut ret_2: bool;
+            let mut ret_1: ArcStr;
+            let mut l_modelIdentifier: Tpl::Text;
             let mut txt = (*txt).clone();
             l_modelIdentifier = CodegenUtilSimulation::modelNamePrefix(Tpl::emptyTxt.clone(), i_simCode.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("<CoSimulation\n")).clone() }))?;

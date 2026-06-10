@@ -85,9 +85,9 @@ pub fn addRational(mut r1: Rational, mut r2: Rational) -> Result<Rational> {
     let mut r: Rational;
     r = (match (r1.clone(), r2.clone()) {
         (Rational { nom: mut i1, denom: mut i2 }, Rational { nom: mut i3, denom: mut i4 }) => {
-            let mut ri1: i32 = 0;
-            let mut ri2: i32 = 0;
-            let mut d: i32 = 0;
+            let mut ri1: i32;
+            let mut ri2: i32;
+            let mut d: i32;
             ri1 = i1.clone() * i4.clone() + i3.clone() * i2.clone();
             ri2 = i2.clone() * i4.clone();
             d = intGcd(ri1.clone(), ri2.clone());
@@ -133,9 +133,9 @@ pub fn subRational(mut r1: Rational, mut r2: Rational) -> Result<Rational> {
     let mut r: Rational;
     r = (match (r1.clone(), r2.clone()) {
         (Rational { nom: mut i1, denom: mut i2 }, Rational { nom: mut i3, denom: mut i4 }) => {
-            let mut ri1: i32 = 0;
-            let mut ri2: i32 = 0;
-            let mut d: i32 = 0;
+            let mut ri1: i32;
+            let mut ri2: i32;
+            let mut d: i32;
             ri1 = i1.clone() * i4.clone() - i3.clone() * i2.clone();
             ri2 = i2.clone() * i4.clone();
             d = intGcd(ri1.clone(), ri2.clone());
@@ -151,9 +151,9 @@ pub fn multRational(mut r1: Rational, mut r2: Rational) -> Result<Rational> {
     let mut r: Rational;
     r = (match (r1.clone(), r2.clone()) {
         (Rational { nom: mut i1, denom: mut i2 }, Rational { nom: mut i3, denom: mut i4 }) => {
-            let mut ri1: i32 = 0;
-            let mut ri2: i32 = 0;
-            let mut d: i32 = 0;
+            let mut ri1: i32;
+            let mut ri2: i32;
+            let mut d: i32;
             ri1 = i1.clone() * i3.clone();
             ri2 = i2.clone() * i4.clone();
             d = intGcd(ri1.clone(), ri2.clone());
@@ -169,9 +169,9 @@ pub fn divRational(mut r1: Rational, mut r2: Rational) -> Result<Rational> {
     let mut r: Rational;
     r = (match (r1.clone(), r2.clone()) {
         (Rational { nom: mut i1, denom: mut i2 }, Rational { nom: mut i3, denom: mut i4 }) => {
-            let mut ri1: i32 = 0;
-            let mut ri2: i32 = 0;
-            let mut d: i32 = 0;
+            let mut ri1: i32;
+            let mut ri2: i32;
+            let mut d: i32;
             ri1 = i1.clone() * i4.clone();
             ri2 = i3.clone() * i2.clone();
             d = intGcd(ri1.clone(), ri2.clone());

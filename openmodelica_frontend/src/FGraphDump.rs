@@ -102,9 +102,9 @@ pub fn dumpGraph(mut inGraph: Graph, mut fileName: ArcStr) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            let mut g: i32 = 0;
-            let mut gi: GraphML::GraphInfo = <GraphML::GraphInfo as ::std::default::Default>::default();
-            let mut nr: Ref = Default::default();
+            let mut g: i32;
+            let mut gi: GraphML::GraphInfo;
+            let mut nr: Ref;
             gi = GraphML::createGraphInfo();
             let (__pa0, (_, __pa1)) = GraphML::addGraph((literal!("G")).clone(), false, gi.clone())?;
             gi = __pa0.clone();
@@ -144,12 +144,12 @@ fn addNode(mut gin: (GraphML::GraphInfo, i32), mut node: Node) -> Result<(GraphM
     let mut gout: (GraphML::GraphInfo, i32);
     gout = (::match_deref::match_deref! { match &((gin.clone(), node.clone())) {
         ((gi, i), FCore::Node { parents: Deref @ metamodelica::List::Nil, children: kids, .. }) => {
-            let mut nds: ArcStr = arcstr::literal!("");
-            let mut color: ArcStr = arcstr::literal!("");
-            let mut labelText: ArcStr = arcstr::literal!("");
-            let mut shape: GraphML::ShapeType = GraphML::ShapeType::DIAMOND;
-            let mut nrefs: Arc<metamodelica::List<metamodelica::Array<FCore::Node>>> = metamodelica::nil();
-            let mut label: GraphML::NodeLabel = <GraphML::NodeLabel as ::std::default::Default>::default();
+            let mut nds: ArcStr;
+            let mut color: ArcStr;
+            let mut labelText: ArcStr;
+            let mut shape: GraphML::ShapeType;
+            let mut nrefs: Arc<metamodelica::List<metamodelica::Array<FCore::Node>>>;
+            let mut label: GraphML::NodeLabel;
             let mut gi = (*gi).clone();
             let mut i = (*i).clone();
             (color, shape, nds) = graphml(node.clone(), true)?;
@@ -161,12 +161,12 @@ fn addNode(mut gin: (GraphML::GraphInfo, i32), mut node: Node) -> Result<(GraphM
             (gi.clone(), i.clone())
         },
         ((gi, i), FCore::Node { parents: Deref @ metamodelica::List::Cons { head: nr, tail: _ }, children: kids, data: FCore::Data::REF { target: Deref @ metamodelica::List::Nil }, .. }) => {
-            let mut nds: ArcStr = arcstr::literal!("");
-            let mut color: ArcStr = arcstr::literal!("");
-            let mut labelText: ArcStr = arcstr::literal!("");
-            let mut shape: GraphML::ShapeType = GraphML::ShapeType::DIAMOND;
-            let mut nrefs: Arc<metamodelica::List<metamodelica::Array<FCore::Node>>> = metamodelica::nil();
-            let mut label: GraphML::NodeLabel = <GraphML::NodeLabel as ::std::default::Default>::default();
+            let mut nds: ArcStr;
+            let mut color: ArcStr;
+            let mut labelText: ArcStr;
+            let mut shape: GraphML::ShapeType;
+            let mut nrefs: Arc<metamodelica::List<metamodelica::Array<FCore::Node>>>;
+            let mut label: GraphML::NodeLabel;
             let mut gi = (*gi).clone();
             let mut i = (*i).clone();
             (color, shape, nds) = graphml(node.clone(), true)?;
@@ -179,12 +179,12 @@ fn addNode(mut gin: (GraphML::GraphInfo, i32), mut node: Node) -> Result<(GraphM
             (gi.clone(), i.clone())
         },
         ((gi, i), FCore::Node { parents: Deref @ metamodelica::List::Cons { head: nr, tail: _ }, children: kids, data: FCore::Data::REF { target: Deref @ metamodelica::List::Cons { head: _, tail: _ } }, .. }) => {
-            let mut nds: ArcStr = arcstr::literal!("");
-            let mut color: ArcStr = arcstr::literal!("");
-            let mut labelText: ArcStr = arcstr::literal!("");
-            let mut shape: GraphML::ShapeType = GraphML::ShapeType::DIAMOND;
-            let mut nrefs: Arc<metamodelica::List<metamodelica::Array<FCore::Node>>> = metamodelica::nil();
-            let mut label: GraphML::NodeLabel = <GraphML::NodeLabel as ::std::default::Default>::default();
+            let mut nds: ArcStr;
+            let mut color: ArcStr;
+            let mut labelText: ArcStr;
+            let mut shape: GraphML::ShapeType;
+            let mut nrefs: Arc<metamodelica::List<metamodelica::Array<FCore::Node>>>;
+            let mut label: GraphML::NodeLabel;
             let mut gi = (*gi).clone();
             let mut i = (*i).clone();
             (color, shape, nds) = graphml(node.clone(), true)?;
@@ -200,12 +200,12 @@ fn addNode(mut gin: (GraphML::GraphInfo, i32), mut node: Node) -> Result<(GraphM
             (gi.clone(), i.clone())
         },
         ((gi, i), FCore::Node { parents: Deref @ metamodelica::List::Cons { head: nr, tail: _ }, children: kids, .. }) => {
-            let mut nds: ArcStr = arcstr::literal!("");
-            let mut color: ArcStr = arcstr::literal!("");
-            let mut labelText: ArcStr = arcstr::literal!("");
-            let mut shape: GraphML::ShapeType = GraphML::ShapeType::DIAMOND;
-            let mut nrefs: Arc<metamodelica::List<metamodelica::Array<FCore::Node>>> = metamodelica::nil();
-            let mut label: GraphML::NodeLabel = <GraphML::NodeLabel as ::std::default::Default>::default();
+            let mut nds: ArcStr;
+            let mut color: ArcStr;
+            let mut labelText: ArcStr;
+            let mut shape: GraphML::ShapeType;
+            let mut nrefs: Arc<metamodelica::List<metamodelica::Array<FCore::Node>>>;
+            let mut label: GraphML::NodeLabel;
             let mut gi = (*gi).clone();
             let mut i = (*i).clone();
             (color, shape, nds) = graphml(node.clone(), true)?;
@@ -231,8 +231,8 @@ pub fn graphml(mut node: Node, mut escape: bool) -> Result<(ArcStr, GraphML::Sha
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 FCore::Node { name: _, id: _, parents: _, children: _, data: FCore::Data::CL { e, .. } } => {
-                    let mut s: ArcStr = arcstr::literal!("");
-                    let mut b: bool = false;
+                    let mut s: ArcStr;
+                    let mut b: bool;
                     let true = (SCodeUtil::isElementRedeclare(e.clone())?) else { bail!("pattern mismatch") };
                     let true = (SCodeUtil::isElementReplaceable(e.clone())?) else { bail!("pattern mismatch") };
                     b = FNode::isClassExtends(node.clone());
@@ -246,8 +246,8 @@ pub fn graphml(mut node: Node, mut escape: bool) -> Result<(ArcStr, GraphML::Sha
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 FCore::Node { name: _, id: _, parents: _, children: _, data: FCore::Data::CL { e, .. } } => {
-                    let mut s: ArcStr = arcstr::literal!("");
-                    let mut b: bool = false;
+                    let mut s: ArcStr;
+                    let mut b: bool;
                     let true = (SCodeUtil::isElementRedeclare(e.clone())?) else { bail!("pattern mismatch") };
                     b = FNode::isClassExtends(node.clone());
                     s = (if (b.clone()) {literal!("rdCE:")} else {literal!("rdC:")}).clone();
@@ -260,7 +260,7 @@ pub fn graphml(mut node: Node, mut escape: bool) -> Result<(ArcStr, GraphML::Sha
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 FCore::Node { name: _, id: _, parents: _, children: _, data: FCore::Data::CL { e, .. } } => {
-                    let mut s: ArcStr = arcstr::literal!("");
+                    let mut s: ArcStr;
                     let true = (SCodeUtil::isElementReplaceable(e.clone())?) else { bail!("pattern mismatch") };
                     s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("rpC:")); __mm_s.push_str(&*FNode::name(node.clone())?); ArcStr::from(__mm_s) }).clone();
                     Ok((arcstr::literal!(GraphML::COLOR_RED), openmodelica_susan::GraphML::ShapeType::RECTANGLE, s.clone()))
@@ -271,7 +271,7 @@ pub fn graphml(mut node: Node, mut escape: bool) -> Result<(ArcStr, GraphML::Sha
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 FCore::Node { name: _, id: _, parents: _, children: _, data: FCore::Data::CO { e, .. } } => {
-                    let mut s: ArcStr = arcstr::literal!("");
+                    let mut s: ArcStr;
                     let true = (SCodeUtil::isElementRedeclare(e.clone())?) else { bail!("pattern mismatch") };
                     let true = (SCodeUtil::isElementReplaceable(e.clone())?) else { bail!("pattern mismatch") };
                     s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("rdrpc:")); __mm_s.push_str(&*FNode::name(node.clone())?); ArcStr::from(__mm_s) }).clone();
@@ -283,7 +283,7 @@ pub fn graphml(mut node: Node, mut escape: bool) -> Result<(ArcStr, GraphML::Sha
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 FCore::Node { name: _, id: _, parents: _, children: _, data: FCore::Data::CO { e, .. } } => {
-                    let mut s: ArcStr = arcstr::literal!("");
+                    let mut s: ArcStr;
                     let true = (SCodeUtil::isElementRedeclare(e.clone())?) else { bail!("pattern mismatch") };
                     s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("rdc:")); __mm_s.push_str(&*FNode::name(node.clone())?); ArcStr::from(__mm_s) }).clone();
                     Ok((arcstr::literal!(GraphML::COLOR_YELLOW), openmodelica_susan::GraphML::ShapeType::ELLIPSE, s.clone()))
@@ -294,7 +294,7 @@ pub fn graphml(mut node: Node, mut escape: bool) -> Result<(ArcStr, GraphML::Sha
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 FCore::Node { name: _, id: _, parents: _, children: _, data: FCore::Data::CO { e, .. } } => {
-                    let mut s: ArcStr = arcstr::literal!("");
+                    let mut s: ArcStr;
                     let true = (SCodeUtil::isElementReplaceable(e.clone())?) else { bail!("pattern mismatch") };
                     s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("rpc:")); __mm_s.push_str(&*FNode::name(node.clone())?); ArcStr::from(__mm_s) }).clone();
                     Ok((arcstr::literal!(GraphML::COLOR_RED), openmodelica_susan::GraphML::ShapeType::ELLIPSE, s.clone()))
@@ -305,7 +305,7 @@ pub fn graphml(mut node: Node, mut escape: bool) -> Result<(ArcStr, GraphML::Sha
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 FCore::Node { name: _, id: _, parents: _, children: _, data: nd @ FCore::Data::CL { .. } } => {
-                    let mut s: ArcStr = arcstr::literal!("");
+                    let mut s: ArcStr;
                     s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*FNode::dataStr(nd.clone())); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*FNode::name(node.clone())?); ArcStr::from(__mm_s) }).clone();
                     Ok((arcstr::literal!(GraphML::COLOR_GRAY), openmodelica_susan::GraphML::ShapeType::RECTANGLE, s.clone()))
                 }
@@ -315,7 +315,7 @@ pub fn graphml(mut node: Node, mut escape: bool) -> Result<(ArcStr, GraphML::Sha
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 FCore::Node { name: _, id: _, parents: _, children: _, data: nd @ FCore::Data::CO { .. } } => {
-                    let mut s: ArcStr = arcstr::literal!("");
+                    let mut s: ArcStr;
                     s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*FNode::dataStr(nd.clone())); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*FNode::name(node.clone())?); ArcStr::from(__mm_s) }).clone();
                     Ok((arcstr::literal!(GraphML::COLOR_WHITE), openmodelica_susan::GraphML::ShapeType::ELLIPSE, s.clone()))
                 }
@@ -325,7 +325,7 @@ pub fn graphml(mut node: Node, mut escape: bool) -> Result<(ArcStr, GraphML::Sha
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 FCore::Node { name: _, id: _, parents: _, children: _, data: nd @ FCore::Data::EX { .. } } => {
-                    let mut s: ArcStr = arcstr::literal!("");
+                    let mut s: ArcStr;
                     s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*FNode::dataStr(nd.clone())); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*FNode::name(node.clone())?); ArcStr::from(__mm_s) }).clone();
                     Ok((arcstr::literal!(GraphML::COLOR_GREEN), openmodelica_susan::GraphML::ShapeType::ROUNDRECTANGLE, s.clone()))
                 }
@@ -335,7 +335,7 @@ pub fn graphml(mut node: Node, mut escape: bool) -> Result<(ArcStr, GraphML::Sha
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 FCore::Node { name: _, id: _, parents: _, children: _, data: nd @ FCore::Data::EXP { e: exp, .. } } => {
-                    let mut s: ArcStr = arcstr::literal!("");
+                    let mut s: ArcStr;
                     s = (Dump::printExpStr(exp.clone())?).clone();
                     s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*FNode::dataStr(nd.clone())); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*if (escape.clone()) {Util::escapeModelicaStringToXmlString((s.clone()).clone())?} else {Util::stringTrunc((s.clone()).clone(), 100)?}); ArcStr::from(__mm_s) }).clone();
                     Ok((arcstr::literal!(GraphML::COLOR_PURPLE), openmodelica_susan::GraphML::ShapeType::HEXAGON, s.clone()))
@@ -346,7 +346,7 @@ pub fn graphml(mut node: Node, mut escape: bool) -> Result<(ArcStr, GraphML::Sha
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 FCore::Node { name: _, id: _, parents: _, children: _, data: nd @ FCore::Data::DIMS { dims, .. } } => {
-                    let mut s: ArcStr = arcstr::literal!("");
+                    let mut s: ArcStr;
                     s = (Dump::printArraydimStr(dims.clone())?).clone();
                     s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*FNode::dataStr(nd.clone())); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*if (escape.clone()) {Util::escapeModelicaStringToXmlString((s.clone()).clone())?} else {Util::stringTrunc((s.clone()).clone(), 100)?}); ArcStr::from(__mm_s) }).clone();
                     Ok((arcstr::literal!(GraphML::COLOR_PINK), openmodelica_susan::GraphML::ShapeType::TRIANGLE, s.clone()))
@@ -357,7 +357,7 @@ pub fn graphml(mut node: Node, mut escape: bool) -> Result<(ArcStr, GraphML::Sha
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 FCore::Node { name: _, id: _, parents: _, children: _, data: nd @ FCore::Data::CR { r } } => {
-                    let mut s: ArcStr = arcstr::literal!("");
+                    let mut s: ArcStr;
                     s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*FNode::dataStr(nd.clone())); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*Dump::printComponentRefStr(r.clone())?); ArcStr::from(__mm_s) }).clone();
                     Ok((arcstr::literal!(GraphML::COLOR_PURPLE), openmodelica_susan::GraphML::ShapeType::OCTAGON, s.clone()))
                 }
@@ -377,7 +377,7 @@ pub fn graphml(mut node: Node, mut escape: bool) -> Result<(ArcStr, GraphML::Sha
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 FCore::Node { name: _, id: _, parents: _, children: _, data: nd @ FCore::Data::REF { target: Deref @ metamodelica::List::Nil } } => {
-                    let mut s: ArcStr = arcstr::literal!("");
+                    let mut s: ArcStr;
                     s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*FNode::dataStr(nd.clone())); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*literal!("UNRESOLVED")); ArcStr::from(__mm_s) }).clone();
                     Ok((arcstr::literal!(GraphML::COLOR_RED), openmodelica_susan::GraphML::ShapeType::PARALLELOGRAM, s.clone()))
                 }
@@ -387,7 +387,7 @@ pub fn graphml(mut node: Node, mut escape: bool) -> Result<(ArcStr, GraphML::Sha
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 FCore::Node { name: _, id: _, parents: _, children: _, data: nd @ FCore::Data::REF { target: Deref @ metamodelica::List::Cons { head: target, tail: _ } } } => {
-                    let mut s: ArcStr = arcstr::literal!("");
+                    let mut s: ArcStr;
                     s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*FNode::dataStr(nd.clone())); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*FNode::toPathStr(FNode::fromRef(target.clone())?)?); ArcStr::from(__mm_s) }).clone();
                     Ok((arcstr::literal!(GraphML::COLOR_GREEN), openmodelica_susan::GraphML::ShapeType::TRAPEZOID, s.clone()))
                 }
@@ -397,7 +397,7 @@ pub fn graphml(mut node: Node, mut escape: bool) -> Result<(ArcStr, GraphML::Sha
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 FCore::Node { name: _, id: _, parents: _, children: _, data: nd } => {
-                    let mut s: ArcStr = arcstr::literal!("");
+                    let mut s: ArcStr;
                     s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*FNode::dataStr(nd.clone())); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*FNode::name(node.clone())?); ArcStr::from(__mm_s) }).clone();
                     Ok((arcstr::literal!(GraphML::COLOR_BLUE), openmodelica_susan::GraphML::ShapeType::ELLIPSE, s.clone()))
                 }

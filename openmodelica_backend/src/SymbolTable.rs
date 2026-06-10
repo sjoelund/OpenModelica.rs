@@ -460,8 +460,8 @@ fn addVarToEnv(mut inVariable: InteractiveTypes::Variable, mut inEnv: FCore::Gra
         let __mc_input = (inVariable.clone(), inEnv.clone());
         if let Ok(__v) = (|| -> Result<_> {
             let (InteractiveTypes::Variable { varIdent: mut id, value: ref v, type_: ref tp }, mut env) = __mc_input.clone() else { bail!("nomatch") };
-            let mut empty_env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-            let mut cref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
+            let mut empty_env: FCore::Graph;
+            let mut cref: Arc<DAE::ComponentRef>;
             cref = ComponentReferenceBasics::makeCrefIdent((id.clone()).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), metamodelica::nil());
             empty_env = FGraph::empty();
             Lookup::lookupVar(FCore::emptyCache(), env.clone(), cref.clone())?;
@@ -470,7 +470,7 @@ fn addVarToEnv(mut inVariable: InteractiveTypes::Variable, mut inEnv: FCore::Gra
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (InteractiveTypes::Variable { varIdent: mut id, value: ref v, type_: ref tp }, mut env) = __mc_input.clone() else { bail!("nomatch") };
-            let mut empty_env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
+            let mut empty_env: FCore::Graph;
             empty_env = FGraph::empty();
             env = FGraph::mkComponentNode(env.clone(), Arc::new(DAE::Var { name: (id.clone()).clone(), attributes: DAE::dummyAttrVar().clone(), ty: tp.clone(), binding: Arc::new(DAE::Binding::VALBOUND { valBound: v.clone(), source: openmodelica_frontend_types::DAE::BindingSource::BINDING_FROM_DEFAULT_VALUE }), bind_from_outside: false, constOfForIteratorRange: None }), Arc::new(SCode::Element::COMPONENT { name: (id.clone()).clone(), prefixes: SCode::defaultPrefixes.clone(), attributes: SCode::Attributes { arrayDims: metamodelica::nil(), connectorType: openmodelica_frontend_types::SCode::ConnectorType::POTENTIAL, parallelism: openmodelica_frontend_types::SCode::Parallelism::NON_PARALLEL, variability: openmodelica_frontend_types::SCode::Variability::VAR, direction: openmodelica_ast::Absyn::Direction::BIDIR, isField: openmodelica_ast::Absyn::IsField::NONFIELD }, typeSpec: Arc::new(Absyn::TypeSpec::TPATH { path: Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }), arrayDim: None }), modifications: openmodelica_frontend_types::SCode::Mod::interned_NOMOD(), comment: SCode::noComment.clone(), condition: None, info: Absyn::dummyInfo.clone() }), openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), openmodelica_frontend_dump::FCore::Status::VAR_UNTYPED, empty_env.clone())?;
             Ok(env.clone())

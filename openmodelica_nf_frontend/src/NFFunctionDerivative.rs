@@ -284,9 +284,9 @@ fn instDerivativeMod(mut r#mod: Arc<SCode::Mod>, mut fnNode: Arc<InstNode::InstN
     let mut fnDers: Arc<metamodelica::List<Arc<NFFunctionDerivative>>> = fnDers;
     fnDers = (::match_deref::match_deref! { match &(r#mod.clone()) {
         Deref @ SCode::Mod::MOD { subModLst: attrs, binding: Some(Deref @ Absyn::Exp::CREF { componentRef: acref }), .. } => {
-            let mut der_node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
-            let mut order: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut conds: Arc<metamodelica::List<(i32, ArcStr, Condition)>> = metamodelica::nil();
+            let mut der_node: Arc<InstNode::InstNode>;
+            let mut order: Arc<Expression::NFExpression>;
+            let mut conds: Arc<metamodelica::List<(i32, ArcStr, Condition)>>;
             (_, der_node, _) = Function::instFunction(acref.clone(), scope.clone(), InstContext::NO_CONTEXT.clone(), var_field!((*r#mod).info, SCode::Mod::MOD).clone())?;
             addLowerOrderDerivative(der_node.clone(), fnNode.clone())?;
             (order, conds) = getDerivativeAttributes(attrs.clone(), r#fn.clone(), fnNode.clone(), var_field!((*r#mod).info, SCode::Mod::MOD).clone())?;

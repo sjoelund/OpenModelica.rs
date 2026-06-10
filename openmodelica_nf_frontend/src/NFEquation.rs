@@ -799,15 +799,15 @@ pub fn mapExp(mut eq: Arc<NFEquation>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expr
     let mut eq: Arc<NFEquation> = eq;
     eq = (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ EQUALITY { .. } => {
-            let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut e1: Arc<Expression::NFExpression>;
+            let mut e2: Arc<Expression::NFExpression>;
             e1 = func(var_field!((*eq).lhs, NFEquation::EQUALITY).clone())?;
             e2 = func(var_field!((*eq).rhs, NFEquation::EQUALITY).clone())?;
             if (referenceEq(&*(e1.clone()),&*(var_field!((*eq).lhs, NFEquation::EQUALITY).clone())) && referenceEq(&*(e2.clone()),&*(var_field!((*eq).rhs, NFEquation::EQUALITY).clone()))) {eq.clone()} else {Arc::new(NFEquation::EQUALITY { lhs: e1.clone(), rhs: e2.clone(), ty: var_field!((*eq).ty, NFEquation::EQUALITY).clone(), scope: var_field!((*eq).scope, NFEquation::EQUALITY).clone(), source: var_field!((*eq).source, NFEquation::EQUALITY).clone(), scalarizeMode: var_field!((*eq).scalarizeMode, NFEquation::EQUALITY).clone() })}
         },
         Deref @ CONNECT { .. } => {
-            let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut e1: Arc<Expression::NFExpression>;
+            let mut e2: Arc<Expression::NFExpression>;
             e1 = func(var_field!((*eq).lhs, NFEquation::CONNECT).clone())?;
             e2 = func(var_field!((*eq).rhs, NFEquation::CONNECT).clone())?;
             if (referenceEq(&*(e1.clone()),&*(var_field!((*eq).lhs, NFEquation::CONNECT).clone())) && referenceEq(&*(e2.clone()),&*(var_field!((*eq).rhs, NFEquation::CONNECT).clone()))) {eq.clone()} else {Arc::new(NFEquation::CONNECT { lhs: e1.clone(), rhs: e2.clone(), scope: var_field!((*eq).scope, NFEquation::CONNECT).clone(), source: var_field!((*eq).source, NFEquation::CONNECT).clone() })}
@@ -849,28 +849,28 @@ pub fn mapExp(mut eq: Arc<NFEquation>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expr
             eq.clone()
         },
         Deref @ ASSERT { .. } => {
-            let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut e3: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut e1: Arc<Expression::NFExpression>;
+            let mut e2: Arc<Expression::NFExpression>;
+            let mut e3: Arc<Expression::NFExpression>;
             e1 = func(var_field!((*eq).condition, NFEquation::ASSERT).clone())?;
             e2 = func(var_field!((*eq).message, NFEquation::ASSERT).clone())?;
             e3 = func(var_field!((*eq).level, NFEquation::ASSERT).clone())?;
             if (referenceEq(&*(e1.clone()),&*(var_field!((*eq).condition, NFEquation::ASSERT).clone())) && referenceEq(&*(e2.clone()),&*(var_field!((*eq).message, NFEquation::ASSERT).clone())) && referenceEq(&*(e3.clone()),&*(var_field!((*eq).level, NFEquation::ASSERT).clone()))) {eq.clone()} else {Arc::new(NFEquation::ASSERT { condition: e1.clone(), message: e2.clone(), level: e3.clone(), scope: var_field!((*eq).scope, NFEquation::ASSERT).clone(), source: var_field!((*eq).source, NFEquation::ASSERT).clone() })}
         },
         Deref @ TERMINATE { .. } => {
-            let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut e1: Arc<Expression::NFExpression>;
             e1 = func(var_field!((*eq).message, NFEquation::TERMINATE).clone())?;
             if (referenceEq(&*(e1.clone()),&*(var_field!((*eq).message, NFEquation::TERMINATE).clone()))) {eq.clone()} else {Arc::new(NFEquation::TERMINATE { message: e1.clone(), scope: var_field!((*eq).scope, NFEquation::TERMINATE).clone(), source: var_field!((*eq).source, NFEquation::TERMINATE).clone() })}
         },
         Deref @ REINIT { .. } => {
-            let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut e1: Arc<Expression::NFExpression>;
+            let mut e2: Arc<Expression::NFExpression>;
             e1 = func(var_field!((*eq).cref, NFEquation::REINIT).clone())?;
             e2 = func(var_field!((*eq).reinitExp, NFEquation::REINIT).clone())?;
             if (referenceEq(&*(e1.clone()),&*(var_field!((*eq).cref, NFEquation::REINIT).clone())) && referenceEq(&*(e2.clone()),&*(var_field!((*eq).reinitExp, NFEquation::REINIT).clone()))) {eq.clone()} else {Arc::new(NFEquation::REINIT { cref: e1.clone(), reinitExp: e2.clone(), scope: var_field!((*eq).scope, NFEquation::REINIT).clone(), source: var_field!((*eq).source, NFEquation::REINIT).clone() })}
         },
         Deref @ NORETCALL { .. } => {
-            let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut e1: Arc<Expression::NFExpression>;
             e1 = func(var_field!((*eq).exp, NFEquation::NORETCALL).clone())?;
             if (referenceEq(&*(e1.clone()),&*(var_field!((*eq).exp, NFEquation::NORETCALL).clone()))) {eq.clone()} else {Arc::new(NFEquation::NORETCALL { exp: e1.clone(), scope: var_field!((*eq).scope, NFEquation::NORETCALL).clone(), source: var_field!((*eq).source, NFEquation::NORETCALL).clone() })}
         },
@@ -886,15 +886,15 @@ pub fn mapExpShallow(mut eq: Arc<NFEquation>, mut func: Arc<dyn ::std::ops::Fn(A
     let mut eq: Arc<NFEquation> = eq;
     eq = (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ EQUALITY { .. } => {
-            let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut e1: Arc<Expression::NFExpression>;
+            let mut e2: Arc<Expression::NFExpression>;
             e1 = func(var_field!((*eq).lhs, NFEquation::EQUALITY).clone())?;
             e2 = func(var_field!((*eq).rhs, NFEquation::EQUALITY).clone())?;
             if (referenceEq(&*(e1.clone()),&*(var_field!((*eq).lhs, NFEquation::EQUALITY).clone())) && referenceEq(&*(e2.clone()),&*(var_field!((*eq).rhs, NFEquation::EQUALITY).clone()))) {eq.clone()} else {Arc::new(NFEquation::EQUALITY { lhs: e1.clone(), rhs: e2.clone(), ty: var_field!((*eq).ty, NFEquation::EQUALITY).clone(), scope: var_field!((*eq).scope, NFEquation::EQUALITY).clone(), source: var_field!((*eq).source, NFEquation::EQUALITY).clone(), scalarizeMode: var_field!((*eq).scalarizeMode, NFEquation::EQUALITY).clone() })}
         },
         Deref @ CONNECT { .. } => {
-            let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut e1: Arc<Expression::NFExpression>;
+            let mut e2: Arc<Expression::NFExpression>;
             e1 = func(var_field!((*eq).lhs, NFEquation::CONNECT).clone())?;
             e2 = func(var_field!((*eq).rhs, NFEquation::CONNECT).clone())?;
             if (referenceEq(&*(e1.clone()),&*(var_field!((*eq).lhs, NFEquation::CONNECT).clone())) && referenceEq(&*(e2.clone()),&*(var_field!((*eq).rhs, NFEquation::CONNECT).clone()))) {eq.clone()} else {Arc::new(NFEquation::CONNECT { lhs: e1.clone(), rhs: e2.clone(), scope: var_field!((*eq).scope, NFEquation::CONNECT).clone(), source: var_field!((*eq).source, NFEquation::CONNECT).clone() })}
@@ -926,28 +926,28 @@ pub fn mapExpShallow(mut eq: Arc<NFEquation>, mut func: Arc<dyn ::std::ops::Fn(A
             eq.clone()
         },
         Deref @ ASSERT { .. } => {
-            let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut e3: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut e1: Arc<Expression::NFExpression>;
+            let mut e2: Arc<Expression::NFExpression>;
+            let mut e3: Arc<Expression::NFExpression>;
             e1 = func(var_field!((*eq).condition, NFEquation::ASSERT).clone())?;
             e2 = func(var_field!((*eq).message, NFEquation::ASSERT).clone())?;
             e3 = func(var_field!((*eq).level, NFEquation::ASSERT).clone())?;
             if (referenceEq(&*(e1.clone()),&*(var_field!((*eq).condition, NFEquation::ASSERT).clone())) && referenceEq(&*(e2.clone()),&*(var_field!((*eq).message, NFEquation::ASSERT).clone())) && referenceEq(&*(e3.clone()),&*(var_field!((*eq).level, NFEquation::ASSERT).clone()))) {eq.clone()} else {Arc::new(NFEquation::ASSERT { condition: e1.clone(), message: e2.clone(), level: e3.clone(), scope: var_field!((*eq).scope, NFEquation::ASSERT).clone(), source: var_field!((*eq).source, NFEquation::ASSERT).clone() })}
         },
         Deref @ TERMINATE { .. } => {
-            let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut e1: Arc<Expression::NFExpression>;
             e1 = func(var_field!((*eq).message, NFEquation::TERMINATE).clone())?;
             if (referenceEq(&*(e1.clone()),&*(var_field!((*eq).message, NFEquation::TERMINATE).clone()))) {eq.clone()} else {Arc::new(NFEquation::TERMINATE { message: e1.clone(), scope: var_field!((*eq).scope, NFEquation::TERMINATE).clone(), source: var_field!((*eq).source, NFEquation::TERMINATE).clone() })}
         },
         Deref @ REINIT { .. } => {
-            let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut e1: Arc<Expression::NFExpression>;
+            let mut e2: Arc<Expression::NFExpression>;
             e1 = func(var_field!((*eq).cref, NFEquation::REINIT).clone())?;
             e2 = func(var_field!((*eq).reinitExp, NFEquation::REINIT).clone())?;
             if (referenceEq(&*(e1.clone()),&*(var_field!((*eq).cref, NFEquation::REINIT).clone())) && referenceEq(&*(e2.clone()),&*(var_field!((*eq).reinitExp, NFEquation::REINIT).clone()))) {eq.clone()} else {Arc::new(NFEquation::REINIT { cref: e1.clone(), reinitExp: e2.clone(), scope: var_field!((*eq).scope, NFEquation::REINIT).clone(), source: var_field!((*eq).source, NFEquation::REINIT).clone() })}
         },
         Deref @ NORETCALL { .. } => {
-            let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut e1: Arc<Expression::NFExpression>;
             e1 = func(var_field!((*eq).exp, NFEquation::NORETCALL).clone())?;
             if (referenceEq(&*(e1.clone()),&*(var_field!((*eq).exp, NFEquation::NORETCALL).clone()))) {eq.clone()} else {Arc::new(NFEquation::NORETCALL { exp: e1.clone(), scope: var_field!((*eq).scope, NFEquation::NORETCALL).clone(), source: var_field!((*eq).source, NFEquation::NORETCALL).clone() })}
         },

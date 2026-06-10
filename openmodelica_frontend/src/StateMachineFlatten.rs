@@ -326,7 +326,7 @@ fn traversingSubsTicksInState(mut inExp: Arc<DAE::Exp>, mut inCref_HitCount: (Ar
     (cref, hitCount) = inCref_HitCount.clone();
     (outExp, outCref_HitCount) = (::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "ticksInState" }, expLst: Deref @ metamodelica::List::Nil, attr: Deref @ DAE::CallAttributes { ty, .. } } => {
-            let mut crefTicksInState: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
+            let mut crefTicksInState: Arc<DAE::ComponentRef>;
             crefTicksInState = ComponentReference::joinCrefs(cref.clone(), Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (literal!("$ticksInState")).clone(), identType: ty.clone(), subscriptLst: metamodelica::nil() }))?;
             (Arc::new(DAE::Exp::CREF { componentRef: crefTicksInState.clone(), ty: ty.clone() }), (cref.clone(), hitCount.clone() + 1))
         },
@@ -1018,7 +1018,7 @@ fn traversingSubsPreviousCref(mut inExp: Arc<DAE::Exp>, mut inCrefHit: (Arc<DAE:
     let mut outCrefHit: (Arc<DAE::ComponentRef>, bool);
     (outExp, outCrefHit) = (::match_deref::match_deref! { match &((inExp.clone(), inCrefHit.clone())) {
         (Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "previous" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cr, ty }, tail: Deref @ metamodelica::List::Nil }, attr: _ }, (cref, _)) if (ComponentReferenceBasics::crefEqual(cr.clone(), cref.clone())?) => {
-            let mut substituteRef: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
+            let mut substituteRef: Arc<DAE::ComponentRef>;
             metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("StateMachineFlatten.traversingSubsPreviousCref: cr: ")); __mm_s.push_str(&*ComponentReference::crefStr(cr.clone())?); __mm_s.push_str(&*literal!(", cref: ")); __mm_s.push_str(&*ComponentReference::crefStr(cref.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             substituteRef = ComponentReference::appendStringLastIdent((literal!("_previous")).clone(), cref.clone())?;
             (Arc::new(DAE::Exp::CREF { componentRef: substituteRef.clone(), ty: ty.clone() }), (cref.clone(), true))
@@ -1037,7 +1037,7 @@ fn traversingSubsPreviousCrefs(mut inExp: Arc<DAE::Exp>, mut inCrefsHit: (Arc<me
     let mut outCrefsHit: (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, bool);
     (outExp, outCrefsHit) = (::match_deref::match_deref! { match &((inExp.clone(), inCrefsHit.clone())) {
         (Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "previous" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cr, ty }, tail: Deref @ metamodelica::List::Nil }, attr: _ }, (crefs, _)) if (List::any(crefs.clone(), (std::sync::Arc::new({ let __pe_b0 = cr.clone(); move |__pe_a1| ComponentReferenceBasics::crefEqual(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<bool> + 'static>))?) => {
-            let mut substituteRef: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
+            let mut substituteRef: Arc<DAE::ComponentRef>;
             substituteRef = ComponentReference::appendStringLastIdent((literal!("_previous")).clone(), cr.clone())?;
             (Arc::new(DAE::Exp::CREF { componentRef: substituteRef.clone(), ty: ty.clone() }), (crefs.clone(), true))
         },
@@ -1851,9 +1851,9 @@ fn extractSmOfExps(mut inElem: Arc<DAE::Element>, mut inLastIdent: ArcStr) -> Re
     let mut outExp: Arc<DAE::Exp>;
     outExp = (::match_deref::match_deref! { match &(inElem.clone()) {
         Deref @ DAE::Element::EQUATION { exp, .. } => {
-            let mut cref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-            let mut firstIdent: ArcStr = arcstr::literal!("");
-            let mut lastIdent: ArcStr = arcstr::literal!("");
+            let mut cref: Arc<DAE::ComponentRef>;
+            let mut firstIdent: ArcStr;
+            let mut lastIdent: ArcStr;
             let __pa0 = ::match_deref::match_deref! { match &(exp.clone()) {
                 Deref @ DAE::Exp::CREF { componentRef: __pa0, .. } => __pa0.clone(),
                 _ => bail!("pattern mismatch"),

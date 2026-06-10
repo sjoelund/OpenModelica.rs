@@ -443,14 +443,14 @@ pub mod SparsityPattern {
             (EMPTY_SPARSITY_PATTERN().clone(), UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1))
         },
         Some(mut comps) => {
-            let mut seed_mapping: Arc<Mapping::Mapping> = Arc::new(<Mapping::Mapping as ::std::default::Default>::default());
-            let mut partial_mapping: Arc<Mapping::Mapping> = Arc::new(<Mapping::Mapping as ::std::default::Default>::default());
-            let mut seed_vars: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-            let mut seed_vars_array: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-            let mut partial_vars: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-            let mut partial_vars_array: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-            let mut tmp: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-            let mut set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
+            let mut seed_mapping: Arc<Mapping::Mapping>;
+            let mut partial_mapping: Arc<Mapping::Mapping>;
+            let mut seed_vars: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
+            let mut seed_vars_array: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
+            let mut partial_vars: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
+            let mut partial_vars_array: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
+            let mut tmp: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
+            let mut set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
             seed_mapping = Adjacency::Mapping::create(NBEquation::EquationPointers::empty(BaseHashTable::bigBucketSize.clone()), seedCandidates.clone())?;
             partial_mapping = Adjacency::Mapping::create(NBEquation::EquationPointers::empty(BaseHashTable::bigBucketSize.clone()), partialCandidates.clone())?;
             partial_vars = NBVariable::VariablePointers::getScalarVarNames(partialCandidates.clone(), false)?;
@@ -1046,7 +1046,7 @@ fn partJacobian(mut part: Arc<Partition::Partition::Partition>, mut funcMap: Arc
     let mut updated: bool = false;
     assign_field!(part.strongComponents = (match part.strongComponents.clone() {
         Some(mut comps) => {
-            let mut tmp: Arc<StrongComponent::NBStrongComponent> = Arc::new(<StrongComponent::NBStrongComponent as ::std::default::Default>::default());
+            let mut tmp: Arc<StrongComponent::NBStrongComponent>;
             for mut i in 1..=metamodelica::arrayLength(comps.clone()) {
                 (tmp, updated) = compJacobian(({let __elt = comps.borrow()[(i.clone()-1) as usize].clone(); __elt}), part.adjacencyMatrix.clone(), funcMap.clone(), kind.clone())?;
                 if updated.clone() {
@@ -1481,20 +1481,20 @@ fn jacobianSymbolicAdjoint(mut name: ArcStr, mut jacType: JacobianType, mut seed
         let mut linResEqnPtrs: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
         (::match_deref::match_deref! { match &(c_noalias.clone()) {
         Deref @ StrongComponent::ALGEBRAIC_LOOP { strict: tearing, .. } => {
-            let mut residuals: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-            let mut iRes: i32 = 0;
-            let mut terms_x: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-            let mut rhs_x: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut baseX: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-            let mut pDerX: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-            let mut o_pDerX: Option<Arc<ComponentRef::NFComponentRef>> = None;
-            let mut seedPtrListX: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
-            let mut terms_j: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-            let mut lhs_j: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut rhs_j: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut residuals: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
+            let mut iRes: i32;
+            let mut terms_x: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
+            let mut rhs_x: Arc<Expression::NFExpression>;
+            let mut baseX: Arc<ComponentRef::NFComponentRef>;
+            let mut pDerX: Arc<ComponentRef::NFComponentRef>;
+            let mut o_pDerX: Option<Arc<ComponentRef::NFComponentRef>>;
+            let mut seedPtrListX: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>;
+            let mut terms_j: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
+            let mut lhs_j: Arc<Expression::NFExpression>;
+            let mut rhs_j: Arc<Expression::NFExpression>;
             let mut resid_j: Pointer::Pointer<Arc<Equation::Equation>>;
-            let mut o_ySeedCref: Option<Arc<ComponentRef::NFComponentRef>> = None;
-            let mut ySeedCref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
+            let mut o_ySeedCref: Option<Arc<ComponentRef::NFComponentRef>>;
+            let mut ySeedCref: Arc<ComponentRef::NFComponentRef>;
             itVarPtrs = Tearing::getIterationVars(tearing.clone());
             residuals = ({
         let mut __acc: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();

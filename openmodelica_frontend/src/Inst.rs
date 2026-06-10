@@ -135,9 +135,9 @@ fn instantiateClass_dispatch(mut inCache: FCore::Cache, mut inIH: Arc<metamodeli
     let mut outDAElist: DAE::DAElist;
     (outCache, outEnv, outIH, outDAElist) = (::match_deref::match_deref! { match &((inCache.clone(), inIH.clone(), inProgram.clone(), inPath.clone())) {
         (cache, ih, cdecls @ Deref @ metamodelica::List::Cons { head: _, tail: _ }, path @ Deref @ Absyn::Path::IDENT { .. }) => {
-            let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-            let mut dae2: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-            let mut source: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
+            let mut env: FCore::Graph;
+            let mut dae2: DAE::DAElist;
+            let mut source: Arc<DAE::ElementSource>;
             let mut cache = (*cache).clone();
             let mut ih = (*ih).clone();
             let mut cdecls = (*cdecls).clone();
@@ -160,14 +160,14 @@ fn instantiateClass_dispatch(mut inCache: FCore::Cache, mut inIH: Arc<metamodeli
             (cache.clone(), env.clone(), ih.clone(), dae2.clone())
         },
         (cache, ih, cdecls @ Deref @ metamodelica::List::Cons { head: _, tail: _ }, path @ Deref @ Absyn::Path::QUALIFIED { .. }) => {
-            let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-            let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-            let mut n: ArcStr = arcstr::literal!("");
-            let mut pathstr: ArcStr = arcstr::literal!("");
-            let mut cdef: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
-            let mut source: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
-            let mut daeElts: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
-            let mut cmt: Option<Arc<SCode::Comment>> = None;
+            let mut env: FCore::Graph;
+            let mut dae: DAE::DAElist;
+            let mut n: ArcStr;
+            let mut pathstr: ArcStr;
+            let mut cdef: Arc<SCode::Element>;
+            let mut source: Arc<DAE::ElementSource>;
+            let mut daeElts: Arc<metamodelica::List<Arc<DAE::Element>>>;
+            let mut cmt: Option<Arc<SCode::Comment>>;
             let mut cache = (*cache).clone();
             let mut ih = (*ih).clone();
             let mut cdecls = (*cdecls).clone();
@@ -241,8 +241,8 @@ pub fn instantiateClass(mut inCache: FCore::Cache, mut inIH: Arc<metamodelica::L
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _, Deref @ metamodelica::List::Cons { head: _, tail: _ }, path) => {
-                    let mut cname_str: ArcStr = arcstr::literal!("");
-                    let mut stackOverflow: bool = false;
+                    let mut cname_str: ArcStr;
+                    let mut stackOverflow: bool;
                     stackOverflow = setStackOverflowSignal(false);
                     cname_str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*AbsynUtil::pathString(path.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*if (stackOverflow.clone()) {literal!(". The compiler got into Stack Overflow!")} else {literal!("")}); ArcStr::from(__mm_s) }).clone();
                     if !(Config::getGraphicsExpMode()?) {
@@ -278,11 +278,11 @@ pub fn instantiatePartialClass(mut inCache: FCore::Cache, mut inIH: Arc<metamode
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, ih, cdecls @ Deref @ metamodelica::List::Cons { head: _, tail: _ }, path @ Deref @ Absyn::Path::IDENT { .. }) => {
-                    let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut env_1: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut env_2: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-                    let mut source: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
+                    let mut env: FCore::Graph;
+                    let mut env_1: FCore::Graph;
+                    let mut env_2: FCore::Graph;
+                    let mut dae: DAE::DAElist;
+                    let mut source: Arc<DAE::ElementSource>;
                     let mut cache = (*cache).clone();
                     let mut ih = (*ih).clone();
                     let mut cdecls = (*cdecls).clone();
@@ -299,16 +299,16 @@ pub fn instantiatePartialClass(mut inCache: FCore::Cache, mut inIH: Arc<metamode
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, ih, cdecls @ Deref @ metamodelica::List::Cons { head: _, tail: _ }, path @ Deref @ Absyn::Path::QUALIFIED { .. }) => {
-                    let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut env_1: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut env_2: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-                    let mut n: ArcStr = arcstr::literal!("");
-                    let mut pathstr: ArcStr = arcstr::literal!("");
-                    let mut cdef: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
-                    let mut source: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
-                    let mut daeElts: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
-                    let mut cmt: Option<Arc<SCode::Comment>> = None;
+                    let mut env: FCore::Graph;
+                    let mut env_1: FCore::Graph;
+                    let mut env_2: FCore::Graph;
+                    let mut dae: DAE::DAElist;
+                    let mut n: ArcStr;
+                    let mut pathstr: ArcStr;
+                    let mut cdef: Arc<SCode::Element>;
+                    let mut source: Arc<DAE::ElementSource>;
+                    let mut daeElts: Arc<metamodelica::List<Arc<DAE::Element>>>;
+                    let mut cmt: Option<Arc<SCode::Comment>>;
                     let mut cache = (*cache).clone();
                     let mut ih = (*ih).clone();
                     (cache, env) = Builtin::initialGraph(cache.clone())?;
@@ -337,7 +337,7 @@ pub fn instantiatePartialClass(mut inCache: FCore::Cache, mut inIH: Arc<metamode
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _, _, path) => {
                     if !((!(Config::getGraphicsExpMode()?))) { bail!("guard") }
-                    let mut cname_str: ArcStr = arcstr::literal!("");
+                    let mut cname_str: ArcStr;
                     cname_str = (AbsynUtil::pathString(path.clone(), (literal!(".")).clone(), true, false)?).clone();
                     Error::addMessage(Error::ERROR_FLATTENING.clone(), list![(cname_str.clone()).clone()])?;
                     Ok(bail!("fail"))
@@ -382,13 +382,13 @@ fn instClassInProgram(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut in
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, Deref @ Absyn::Path::IDENT { name }) => {
-                    let mut cls: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
-                    let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
-                    let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut ih: InstanceHierarchy = metamodelica::nil();
-                    let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-                    let mut elts: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
-                    let mut cmt: Option<Arc<SCode::Comment>> = None;
+                    let mut cls: Arc<SCode::Element>;
+                    let mut cache: FCore::Cache;
+                    let mut env: FCore::Graph;
+                    let mut ih: InstanceHierarchy;
+                    let mut dae: DAE::DAElist;
+                    let mut elts: Arc<metamodelica::List<Arc<DAE::Element>>>;
+                    let mut cmt: Option<Arc<SCode::Comment>>;
                     cls = InstUtil::lookupTopLevelClass((name.clone()).clone(), inProgram.clone(), true)?;
                     (cache, env, ih, _, dae, _, _, _, _, _) = instClass(inCache.clone(), inEnv.clone(), inIH.clone(), UnitAbsynBuilder::emptyInstStore(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), makeTopComponentPrefix(inEnv.clone(), (name.clone()).clone()), cls.clone(), metamodelica::nil(), false, openmodelica_frontend_inst::InstTypes::CallingScope::TOP_CALL, ConnectionGraph::EMPTY().clone(), Connect::emptySet().clone())?;
                     dae = InstUtil::reEvaluateInitialIfEqns(cache.clone(), env.clone(), dae.clone(), true)?;
@@ -431,15 +431,15 @@ pub fn instClass(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, _, _, store, _, _, Deref @ SCode::Element::CLASS { name: n, partialPrefix: SCode::Partial::PARTIAL { .. }, restriction: r, info, .. }, _, _, _, _) => {
-                    let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut csets: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
-                    let mut ci_state_1: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
-                    let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-                    let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut c: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
-                    let mut oDA: Option<SCode::Attributes> = None;
-                    let mut graph: ConnectionGraph::ConnectionGraph = <ConnectionGraph::ConnectionGraph as ::std::default::Default>::default();
-                    let mut ih: InstanceHierarchy = metamodelica::nil();
+                    let mut env: FCore::Graph;
+                    let mut csets: DAE::Connect::Sets;
+                    let mut ci_state_1: ClassInf::State;
+                    let mut dae: DAE::DAElist;
+                    let mut ty: Arc<DAE::Type>;
+                    let mut c: Arc<SCode::Element>;
+                    let mut oDA: Option<SCode::Attributes>;
+                    let mut graph: ConnectionGraph::ConnectionGraph;
+                    let mut ih: InstanceHierarchy;
                     let mut cache = (*cache).clone();
                     let mut store = (*store).clone();
                     let true = (Flags::getConfigBool(Flags::CHECK_MODEL.clone())?) else { bail!("pattern mismatch") };
@@ -457,27 +457,27 @@ pub fn instClass(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, store, r#mod, pre, c @ Deref @ SCode::Element::CLASS { name: n, encapsulatedPrefix: encflag, restriction: r, partialPrefix, info, .. }, inst_dims, r#impl, callscope, graph) => {
-                    let mut env_1: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut env_3: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut csets: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
-                    let mut scopeName: ArcStr = arcstr::literal!("");
-                    let mut strDepth: ArcStr = arcstr::literal!("");
-                    let mut callscope_1: bool = false;
-                    let mut isFn: bool = false;
-                    let mut notIsPartial: bool = false;
-                    let mut isPartialFn: bool = false;
-                    let mut recursionDepthReached: bool = false;
-                    let mut ci_state: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
-                    let mut ci_state_1: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
-                    let mut dae1: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-                    let mut dae1_1: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-                    let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-                    let mut tys: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
-                    let mut bc_ty: Option<Arc<DAE::Type>> = None;
-                    let mut fq_class: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-                    let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut oDA: Option<SCode::Attributes> = None;
-                    let mut equalityConstraint: Option<(Arc<Absyn::Path>, i32, DAE::InlineType)> = None;
+                    let mut env_1: FCore::Graph;
+                    let mut env_3: FCore::Graph;
+                    let mut csets: DAE::Connect::Sets;
+                    let mut scopeName: ArcStr;
+                    let mut strDepth: ArcStr;
+                    let mut callscope_1: bool;
+                    let mut isFn: bool;
+                    let mut notIsPartial: bool;
+                    let mut isPartialFn: bool;
+                    let mut recursionDepthReached: bool;
+                    let mut ci_state: ClassInf::State;
+                    let mut ci_state_1: ClassInf::State;
+                    let mut dae1: DAE::DAElist;
+                    let mut dae1_1: DAE::DAElist;
+                    let mut dae: DAE::DAElist;
+                    let mut tys: Arc<metamodelica::List<Arc<DAE::Var>>>;
+                    let mut bc_ty: Option<Arc<DAE::Type>>;
+                    let mut fq_class: Arc<Absyn::Path>;
+                    let mut ty: Arc<DAE::Type>;
+                    let mut oDA: Option<SCode::Attributes>;
+                    let mut equalityConstraint: Option<(Arc<Absyn::Path>, i32, DAE::InlineType)>;
                     let mut cache = (*cache).clone();
                     let mut ih = (*ih).clone();
                     let mut store = (*store).clone();
@@ -551,19 +551,19 @@ fn instClassBasictype(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut in
     let mut outState: ClassInf::State;
     (outCache, outEnv, outIH, outStore, outDae, outSets, outType, outTypeVars, outState) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inIH.clone(), inStore.clone(), inMod.clone(), inPrefix.clone(), inClass.clone(), inInstDims.clone(), inImplicit.clone())) {
         (cache, env, ih, store, r#mod, pre, c @ Deref @ SCode::Element::CLASS { name: n, encapsulatedPrefix: encflag, restriction: r, .. }, inst_dims, r#impl) => {
-            let mut env_1: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-            let mut env_3: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-            let mut ci_state: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
-            let mut ci_state_1: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
-            let mut c_1: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
-            let mut dae1: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-            let mut dae1_1: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-            let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-            let mut csets: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
-            let mut tys: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
-            let mut bc_ty: Option<Arc<DAE::Type>> = None;
-            let mut fq_class: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-            let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+            let mut env_1: FCore::Graph;
+            let mut env_3: FCore::Graph;
+            let mut ci_state: ClassInf::State;
+            let mut ci_state_1: ClassInf::State;
+            let mut c_1: Arc<SCode::Element>;
+            let mut dae1: DAE::DAElist;
+            let mut dae1_1: DAE::DAElist;
+            let mut dae: DAE::DAElist;
+            let mut csets: DAE::Connect::Sets;
+            let mut tys: Arc<metamodelica::List<Arc<DAE::Var>>>;
+            let mut bc_ty: Option<Arc<DAE::Type>>;
+            let mut fq_class: Arc<Absyn::Path>;
+            let mut ty: Arc<DAE::Type>;
             let mut cache = (*cache).clone();
             let mut ih = (*ih).clone();
             let mut store = (*store).clone();
@@ -603,18 +603,18 @@ pub fn instClassIn(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SCode::Element::CLASS { prefixes: Deref @ SCode::Prefixes { innerOuter: io, .. }, .. } => {
-                    let mut bc: Option<Arc<DAE::Type>> = None;
-                    let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut ci_state: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
-                    let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-                    let mut csets: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
-                    let mut tys: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
-                    let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
-                    let mut oDA: Option<SCode::Attributes> = None;
-                    let mut equalityConstraint: Option<(Arc<Absyn::Path>, i32, DAE::InlineType)> = None;
-                    let mut graph: ConnectionGraph::ConnectionGraph = <ConnectionGraph::ConnectionGraph as ::std::default::Default>::default();
-                    let mut ih: InstanceHierarchy = metamodelica::nil();
-                    let mut store: UnitAbsyn::InstStore = UnitAbsyn::InstStore::NOSTORE;
+                    let mut bc: Option<Arc<DAE::Type>>;
+                    let mut env: FCore::Graph;
+                    let mut ci_state: ClassInf::State;
+                    let mut dae: DAE::DAElist;
+                    let mut csets: DAE::Connect::Sets;
+                    let mut tys: Arc<metamodelica::List<Arc<DAE::Var>>>;
+                    let mut cache: FCore::Cache;
+                    let mut oDA: Option<SCode::Attributes>;
+                    let mut equalityConstraint: Option<(Arc<Absyn::Path>, i32, DAE::InlineType)>;
+                    let mut graph: ConnectionGraph::ConnectionGraph;
+                    let mut ih: InstanceHierarchy;
+                    let mut store: UnitAbsyn::InstStore;
                     let true = (boolOr(AbsynUtil::isNotInnerOuter(io.clone()), AbsynUtil::isOnlyInner(io.clone()))) else { bail!("pattern mismatch") };
                     (cache, env, ih, store, ci_state, graph, csets, dae, tys, bc, oDA, equalityConstraint) = instClassIn2(inCache.clone(), inEnv.clone(), inIH.clone(), inStore.clone(), inMod.clone(), inPrefix.clone(), inState.clone(), inClass.clone(), inVisibility.clone(), inInstDims.clone(), implicitInstantiation.clone(), inCallingScope.clone(), inGraph.clone(), inSets.clone(), instSingleCref.clone())?;
                     Ok((cache.clone(), env.clone(), ih.clone(), store.clone(), dae.clone(), csets.clone(), ci_state.clone(), tys.clone(), bc.clone(), oDA.clone(), equalityConstraint.clone(), graph.clone()))
@@ -625,19 +625,19 @@ pub fn instClassIn(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SCode::Element::CLASS { name: n, restriction: r, encapsulatedPrefix: encflag, prefixes: Deref @ SCode::Prefixes { innerOuter: io, .. }, .. } => {
-                    let mut bc: Option<Arc<DAE::Type>> = None;
-                    let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut ci_state: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
-                    let mut c: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
-                    let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-                    let mut csets: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
-                    let mut tys: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
-                    let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
-                    let mut oDA: Option<SCode::Attributes> = None;
-                    let mut equalityConstraint: Option<(Arc<Absyn::Path>, i32, DAE::InlineType)> = None;
-                    let mut graph: ConnectionGraph::ConnectionGraph = <ConnectionGraph::ConnectionGraph as ::std::default::Default>::default();
-                    let mut ih: InstanceHierarchy = metamodelica::nil();
-                    let mut store: UnitAbsyn::InstStore = UnitAbsyn::InstStore::NOSTORE;
+                    let mut bc: Option<Arc<DAE::Type>>;
+                    let mut env: FCore::Graph;
+                    let mut ci_state: ClassInf::State;
+                    let mut c: Arc<SCode::Element>;
+                    let mut dae: DAE::DAElist;
+                    let mut csets: DAE::Connect::Sets;
+                    let mut tys: Arc<metamodelica::List<Arc<DAE::Var>>>;
+                    let mut cache: FCore::Cache;
+                    let mut oDA: Option<SCode::Attributes>;
+                    let mut equalityConstraint: Option<(Arc<Absyn::Path>, i32, DAE::InlineType)>;
+                    let mut graph: ConnectionGraph::ConnectionGraph;
+                    let mut ih: InstanceHierarchy;
+                    let mut store: UnitAbsyn::InstStore;
                     let mut n = (*n).clone();
                     let true = (boolOr(AbsynUtil::isInnerOuter(io.clone()), AbsynUtil::isOnlyOuter(io.clone()))) else { bail!("pattern mismatch") };
                     let FCore::CL { status: FCore::CLS_INSTANCE { instanceOf: __pa0 }, .. } = (FNode::refData(FGraph::lastScopeRef(inEnv.clone())?)?) else { bail!("pattern mismatch") };
@@ -659,19 +659,19 @@ pub fn instClassIn(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SCode::Element::CLASS { name: n, prefixes: Deref @ SCode::Prefixes { innerOuter: io, .. }, .. } => {
-                    let mut bc: Option<Arc<DAE::Type>> = None;
-                    let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut ci_state: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
-                    let mut c: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
-                    let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-                    let mut csets: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
-                    let mut tys: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
-                    let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
-                    let mut oDA: Option<SCode::Attributes> = None;
-                    let mut equalityConstraint: Option<(Arc<Absyn::Path>, i32, DAE::InlineType)> = None;
-                    let mut graph: ConnectionGraph::ConnectionGraph = <ConnectionGraph::ConnectionGraph as ::std::default::Default>::default();
-                    let mut ih: InstanceHierarchy = metamodelica::nil();
-                    let mut store: UnitAbsyn::InstStore = UnitAbsyn::InstStore::NOSTORE;
+                    let mut bc: Option<Arc<DAE::Type>>;
+                    let mut env: FCore::Graph;
+                    let mut ci_state: ClassInf::State;
+                    let mut c: Arc<SCode::Element>;
+                    let mut dae: DAE::DAElist;
+                    let mut csets: DAE::Connect::Sets;
+                    let mut tys: Arc<metamodelica::List<Arc<DAE::Var>>>;
+                    let mut cache: FCore::Cache;
+                    let mut oDA: Option<SCode::Attributes>;
+                    let mut equalityConstraint: Option<(Arc<Absyn::Path>, i32, DAE::InlineType)>;
+                    let mut graph: ConnectionGraph::ConnectionGraph;
+                    let mut ih: InstanceHierarchy;
+                    let mut store: UnitAbsyn::InstStore;
                     let mut n = (*n).clone();
                     let true = (boolOr(AbsynUtil::isInnerOuter(io.clone()), AbsynUtil::isOnlyOuter(io.clone()))) else { bail!("pattern mismatch") };
                     n = (FGraph::getInstanceOriginalName(inEnv.clone(), (n.clone()).clone())).clone();
@@ -689,20 +689,20 @@ pub fn instClassIn(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SCode::Element::CLASS { name: n, prefixes: Deref @ SCode::Prefixes { innerOuter: io, .. }, info, .. } => {
-                    let mut bc: Option<Arc<DAE::Type>> = None;
-                    let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut ci_state: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
-                    let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-                    let mut csets: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
-                    let mut tys: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
-                    let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
-                    let mut oDA: Option<SCode::Attributes> = None;
-                    let mut equalityConstraint: Option<(Arc<Absyn::Path>, i32, DAE::InlineType)> = None;
-                    let mut graph: ConnectionGraph::ConnectionGraph = <ConnectionGraph::ConnectionGraph as ::std::default::Default>::default();
-                    let mut ih: InstanceHierarchy = metamodelica::nil();
-                    let mut s1: ArcStr = arcstr::literal!("");
-                    let mut s2: ArcStr = arcstr::literal!("");
-                    let mut store: UnitAbsyn::InstStore = UnitAbsyn::InstStore::NOSTORE;
+                    let mut bc: Option<Arc<DAE::Type>>;
+                    let mut env: FCore::Graph;
+                    let mut ci_state: ClassInf::State;
+                    let mut dae: DAE::DAElist;
+                    let mut csets: DAE::Connect::Sets;
+                    let mut tys: Arc<metamodelica::List<Arc<DAE::Var>>>;
+                    let mut cache: FCore::Cache;
+                    let mut oDA: Option<SCode::Attributes>;
+                    let mut equalityConstraint: Option<(Arc<Absyn::Path>, i32, DAE::InlineType)>;
+                    let mut graph: ConnectionGraph::ConnectionGraph;
+                    let mut ih: InstanceHierarchy;
+                    let mut s1: ArcStr;
+                    let mut s2: ArcStr;
+                    let mut store: UnitAbsyn::InstStore;
                     let true = (boolOr(AbsynUtil::isInnerOuter(io.clone()), AbsynUtil::isOnlyOuter(io.clone()))) else { bail!("pattern mismatch") };
                     if !(Config::getGraphicsExpMode()?) {
                         s1 = (n.clone()).clone();
@@ -852,7 +852,7 @@ fn markDerivedRecordOutsideBindings(mut inType: Arc<DAE::Type>, mut inClass: Arc
     }
     outType = (::match_deref::match_deref! { match &(inType.clone()) {
         Deref @ DAE::Type::T_COMPLEX { .. } => {
-            let mut tvars: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
+            let mut tvars: Arc<metamodelica::List<Arc<DAE::Var>>>;
             tvars = metamodelica::nil();
             for mut var in &*var_field!((*inType).varLst, DAE::Type::T_COMPLEX).clone() {
                 let mut var = var.clone();
@@ -925,7 +925,7 @@ fn markTypesVarsOutsideBindings(mut inType: Arc<DAE::Type>, mut inMod: Arc<DAE::
     }
     outType = (::match_deref::match_deref! { match &(inType.clone()) {
         Deref @ DAE::Type::T_COMPLEX { .. } => {
-            let mut tvars: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
+            let mut tvars: Arc<metamodelica::List<Arc<DAE::Var>>>;
             tvars = metamodelica::nil();
             for mut var in &*var_field!((*inType).varLst, DAE::Type::T_COMPLEX).clone() {
                 let mut var = var.clone();
@@ -984,9 +984,9 @@ pub fn instClassIn_dispatch(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, store, mods, pre, ci_state, Deref @ SCode::Element::CLASS { name: n, .. }, _, inst_dims, _, _, graph) => {
-                    let mut bc: Option<Arc<DAE::Type>> = None;
-                    let mut tys: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
-                    let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+                    let mut bc: Option<Arc<DAE::Type>>;
+                    let mut tys: Arc<metamodelica::List<Arc<DAE::Var>>>;
+                    let mut ty: Arc<DAE::Type>;
                     let mut typer: BasicTypeAttrTyper;
                     ty = getBasicTypeType((n.clone()).clone())?;
                     typer = getBasicTypeAttrTyper((n.clone()).clone())?;
@@ -1002,21 +1002,21 @@ pub fn instClassIn_dispatch(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, store, mods, pre, ci_state, c @ Deref @ SCode::Element::CLASS { name: n, restriction: SCode::Restriction::R_ENUMERATION { .. }, classDef: Deref @ SCode::ClassDef::PARTS { elementLst: els, .. }, info, .. }, _, inst_dims, r#impl, callscope, graph) => {
-                    let mut bc: Option<Arc<DAE::Type>> = None;
-                    let mut env_1: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut ci_state_1: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
-                    let mut csets: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
-                    let mut tys: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
-                    let mut env_2: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut env_3: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut comp: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>> = metamodelica::nil();
-                    let mut names: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    let mut eqConstraint: Option<(Arc<Absyn::Path>, i32, DAE::InlineType)> = None;
-                    let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut ty2: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut fq_class: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-                    let mut tys1: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
-                    let mut tys2: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
+                    let mut bc: Option<Arc<DAE::Type>>;
+                    let mut env_1: FCore::Graph;
+                    let mut ci_state_1: ClassInf::State;
+                    let mut csets: DAE::Connect::Sets;
+                    let mut tys: Arc<metamodelica::List<Arc<DAE::Var>>>;
+                    let mut env_2: FCore::Graph;
+                    let mut env_3: FCore::Graph;
+                    let mut comp: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>;
+                    let mut names: Arc<metamodelica::List<ArcStr>>;
+                    let mut eqConstraint: Option<(Arc<Absyn::Path>, i32, DAE::InlineType)>;
+                    let mut ty: Arc<DAE::Type>;
+                    let mut ty2: Arc<DAE::Type>;
+                    let mut fq_class: Arc<Absyn::Path>;
+                    let mut tys1: Arc<metamodelica::List<Arc<DAE::Var>>>;
+                    let mut tys2: Arc<metamodelica::List<Arc<DAE::Var>>>;
                     let mut cache = (*cache).clone();
                     let mut ih = (*ih).clone();
                     let mut store = (*store).clone();
@@ -1044,14 +1044,14 @@ pub fn instClassIn_dispatch(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, store, mods, pre, ci_state, c @ Deref @ SCode::Element::CLASS { name: n, restriction: r, classDef: d, cmt: comment, info, partialPrefix, encapsulatedPrefix, .. }, vis, inst_dims, r#impl, callscope, graph) => {
-                    let mut bc: Option<Arc<DAE::Type>> = None;
-                    let mut env_1: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut ci_state_1: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
-                    let mut csets: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
-                    let mut tys: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
-                    let mut oDA: Option<SCode::Attributes> = None;
-                    let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-                    let mut eqConstraint: Option<(Arc<Absyn::Path>, i32, DAE::InlineType)> = None;
+                    let mut bc: Option<Arc<DAE::Type>>;
+                    let mut env_1: FCore::Graph;
+                    let mut ci_state_1: ClassInf::State;
+                    let mut csets: DAE::Connect::Sets;
+                    let mut tys: Arc<metamodelica::List<Arc<DAE::Var>>>;
+                    let mut oDA: Option<SCode::Attributes>;
+                    let mut dae: DAE::DAElist;
+                    let mut eqConstraint: Option<(Arc<Absyn::Path>, i32, DAE::InlineType)>;
                     let mut cache = (*cache).clone();
                     let mut ih = (*ih).clone();
                     let mut store = (*store).clone();
@@ -1073,7 +1073,7 @@ pub fn instClassIn_dispatch(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, store, _, _, ci_state, c @ Deref @ SCode::Element::CLASS { .. }, _, _, r#impl, _, graph) => {
-                    let mut b: bool = false;
+                    let mut b: bool;
                     b = Flags::getConfigBool(Flags::CHECK_MODEL.clone())? && !(r#impl.clone()) && SCodeUtil::isFunction(c.clone());
                     if !(b.clone()) {
                         ErrorExt::delCheckpoint((literal!("instClassParts")).clone());
@@ -1263,7 +1263,7 @@ fn instBasicTypeAttributes2(mut inSubMod: Arc<DAE::SubMod>, mut inCache: FCore::
     let mut outVar: Arc<DAE::Var>;
     outVar = (::match_deref::match_deref! { match &(inSubMod.clone()) {
         Deref @ DAE::SubMod { ident: name, r#mod: Deref @ DAE::Mod::MOD { binding: Some(DAE::EqMod::TYPED { modifierAsExp: exp, modifierAsValue: val, properties: p, .. }), info, .. } } => {
-            let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+            let mut ty: Arc<DAE::Type>;
             ty = getRealAttributeType((name.clone()).clone(), inBaseType.clone(), info.clone())?;
             instBuiltinAttribute(inCache.clone(), inEnv.clone(), (name.clone()).clone(), val.clone(), exp.clone(), ty.clone(), p.clone())?
         },
@@ -1284,9 +1284,9 @@ fn instBuiltinAttribute(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _, Some(v), expectedTp, DAE::Properties::PROP { type_: bindTp, constFlag: c }) => {
-                    let mut t_1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut bind1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut vbind: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut t_1: Arc<DAE::Type>;
+                    let mut bind1: Arc<DAE::Exp>;
+                    let mut vbind: Arc<DAE::Exp>;
                     let mut v = (*v).clone();
                     let false = (c.clone() == openmodelica_frontend_types::DAE::Const::C_VAR) else { bail!("pattern mismatch") };
                     (bind1, t_1) = Types::matchType(bind.clone(), bindTp.clone(), expectedTp.clone(), true)?;
@@ -1300,9 +1300,9 @@ fn instBuiltinAttribute(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _, Some(v), expectedTp, DAE::Properties::PROP { type_: bindTp @ Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: d, tail: Deref @ metamodelica::List::Nil }, .. }, constFlag: c }) => {
-                    let mut t_1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut bind1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut vbind: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut t_1: Arc<DAE::Type>;
+                    let mut bind1: Arc<DAE::Exp>;
+                    let mut vbind: Arc<DAE::Exp>;
                     let mut v = (*v).clone();
                     let mut expectedTp = (*expectedTp).clone();
                     let false = (c.clone() == openmodelica_frontend_types::DAE::Const::C_VAR) else { bail!("pattern mismatch") };
@@ -1319,9 +1319,9 @@ fn instBuiltinAttribute(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, _, expectedTp, DAE::Properties::PROP { type_: bindTp, constFlag: c }) => {
-                    let mut v: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
-                    let mut t_1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut bind1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut v: Arc<Values::Value>;
+                    let mut t_1: Arc<DAE::Type>;
+                    let mut bind1: Arc<DAE::Exp>;
                     let mut cache = (*cache).clone();
                     let false = (c.clone() == openmodelica_frontend_types::DAE::Const::C_VAR) else { bail!("pattern mismatch") };
                     (bind1, t_1) = Types::matchType(bind.clone(), bindTp.clone(), expectedTp.clone(), true)?;
@@ -1334,9 +1334,9 @@ fn instBuiltinAttribute(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, _, expectedTp, DAE::Properties::PROP { type_: bindTp @ Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: d, tail: Deref @ metamodelica::List::Nil }, .. }, constFlag: c }) => {
-                    let mut v: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
-                    let mut t_1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut bind1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut v: Arc<Values::Value>;
+                    let mut t_1: Arc<DAE::Type>;
+                    let mut bind1: Arc<DAE::Exp>;
                     let mut cache = (*cache).clone();
                     let mut expectedTp = (*expectedTp).clone();
                     let false = (c.clone() == openmodelica_frontend_types::DAE::Const::C_VAR) else { bail!("pattern mismatch") };
@@ -1352,8 +1352,8 @@ fn instBuiltinAttribute(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _, _, expectedTp, DAE::Properties::PROP { type_: bindTp, constFlag: c }) => {
-                    let mut t_1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut bind1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut t_1: Arc<DAE::Type>;
+                    let mut bind1: Arc<DAE::Exp>;
                     if Flags::getConfigBool(Flags::CT_STATE_MACHINES.clone())? {
                         let true = (c.clone() == openmodelica_frontend_types::DAE::Const::C_VAR) else { bail!("pattern mismatch") };
                     } else {
@@ -1368,7 +1368,7 @@ fn instBuiltinAttribute(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _, _, _, DAE::Properties::PROP { type_: _, constFlag: c }) => {
-                    let mut s: ArcStr = arcstr::literal!("");
+                    let mut s: ArcStr;
                     let true = (c.clone() == openmodelica_frontend_types::DAE::Const::C_VAR) else { bail!("pattern mismatch") };
                     s = (ExpressionBasics::printExpStr(bind.clone())?).clone();
                     Error::addMessage(Error::HIGHER_VARIABILITY_BINDING.clone(), list![(id.clone()).clone(), (literal!("PARAM")).clone(), (s.clone()).clone(), (literal!("VAR")).clone()])?;
@@ -1380,8 +1380,8 @@ fn instBuiltinAttribute(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _, _, expectedTp, DAE::Properties::PROP { type_: bindTp, constFlag: _ }) => {
-                    let mut s1: ArcStr = arcstr::literal!("");
-                    let mut s2: ArcStr = arcstr::literal!("");
+                    let mut s1: ArcStr;
+                    let mut s2: ArcStr;
                     if '__try0: {
                         unwrap_break_err!(Types::matchType(bind.clone(), bindTp.clone(), expectedTp.clone(), true), '__try0);
                         Ok::<(), anyhow::Error>(())
@@ -1426,8 +1426,8 @@ fn arrayBasictypeBaseclass(mut inInstDims: Arc<metamodelica::List<Arc<metamodeli
             None
         },
         _ => {
-            let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
+            let mut ty: Arc<DAE::Type>;
+            let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>;
             dims = List::last(inInstDims.clone())?;
             ty = Expression::liftArrayLeftList(inType.clone(), dims.clone());
             Some(ty.clone())
@@ -1629,21 +1629,21 @@ fn instClassdefBasicType(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, store, mods, pre, ci_state, Deref @ SCode::ClassDef::PARTS { elementLst: els, normalEquationLst: Deref @ metamodelica::List::Nil, initialEquationLst: Deref @ metamodelica::List::Nil, normalAlgorithmLst: Deref @ metamodelica::List::Nil, initialAlgorithmLst: Deref @ metamodelica::List::Nil, .. }, inst_dims, r#impl, graph) => {
-                    let mut cdefelts: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
-                    let mut compelts: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
-                    let mut extendselts: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
-                    let mut env1: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut env2: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut env3: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut cdefelts_1: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>> = metamodelica::nil();
-                    let mut cdefelts_2: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>> = metamodelica::nil();
-                    let mut csets: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
-                    let mut dae1: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-                    let mut dae2: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-                    let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-                    let mut tys: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
-                    let mut bc: Option<Arc<DAE::Type>> = None;
-                    let mut eqConstraint: Option<(Arc<Absyn::Path>, i32, DAE::InlineType)> = None;
+                    let mut cdefelts: Arc<metamodelica::List<Arc<SCode::Element>>>;
+                    let mut compelts: Arc<metamodelica::List<Arc<SCode::Element>>>;
+                    let mut extendselts: Arc<metamodelica::List<Arc<SCode::Element>>>;
+                    let mut env1: FCore::Graph;
+                    let mut env2: FCore::Graph;
+                    let mut env3: FCore::Graph;
+                    let mut cdefelts_1: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>;
+                    let mut cdefelts_2: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>;
+                    let mut csets: DAE::Connect::Sets;
+                    let mut dae1: DAE::DAElist;
+                    let mut dae2: DAE::DAElist;
+                    let mut dae: DAE::DAElist;
+                    let mut tys: Arc<metamodelica::List<Arc<DAE::Var>>>;
+                    let mut bc: Option<Arc<DAE::Type>>;
+                    let mut eqConstraint: Option<(Arc<Absyn::Path>, i32, DAE::InlineType)>;
                     let mut cache = (*cache).clone();
                     let mut ih = (*ih).clone();
                     let mut store = (*store).clone();
@@ -1705,18 +1705,18 @@ fn instClassdef2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, store, mods, pre, ci_state, Deref @ SCode::ClassDef::PARTS { elementLst: els, normalEquationLst: Deref @ metamodelica::List::Nil, initialEquationLst: Deref @ metamodelica::List::Nil, normalAlgorithmLst: Deref @ metamodelica::List::Nil, initialAlgorithmLst: Deref @ metamodelica::List::Nil, .. }, re, vis, _, _, inst_dims, r#impl, _, graph, _) => {
-                    let mut cdefelts: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
-                    let mut extendselts: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
-                    let mut extendsclasselts: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
-                    let mut compelts_2_elem: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
-                    let mut env1: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut extcomps: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>> = metamodelica::nil();
-                    let mut csets: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
-                    let mut vars: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
-                    let mut bc: Option<Arc<DAE::Type>> = None;
-                    let mut oDA: Option<SCode::Attributes> = None;
-                    let mut eqConstraint: Option<(Arc<Absyn::Path>, i32, DAE::InlineType)> = None;
-                    let mut fdae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
+                    let mut cdefelts: Arc<metamodelica::List<Arc<SCode::Element>>>;
+                    let mut extendselts: Arc<metamodelica::List<Arc<SCode::Element>>>;
+                    let mut extendsclasselts: Arc<metamodelica::List<Arc<SCode::Element>>>;
+                    let mut compelts_2_elem: Arc<metamodelica::List<Arc<SCode::Element>>>;
+                    let mut env1: FCore::Graph;
+                    let mut extcomps: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>;
+                    let mut csets: DAE::Connect::Sets;
+                    let mut vars: Arc<metamodelica::List<Arc<DAE::Var>>>;
+                    let mut bc: Option<Arc<DAE::Type>>;
+                    let mut oDA: Option<SCode::Attributes>;
+                    let mut eqConstraint: Option<(Arc<Absyn::Path>, i32, DAE::InlineType)>;
+                    let mut fdae: DAE::DAElist;
                     let mut cache = (*cache).clone();
                     let mut env = (*env).clone();
                     let mut ih = (*ih).clone();
@@ -1758,7 +1758,7 @@ fn instClassdef2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, store, mods, _, ci_state, Deref @ SCode::ClassDef::PARTS { elementLst: els, .. }, _, _, _, _, _, r#impl, _, graph, _) => {
-                    let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
+                    let mut dae: DAE::DAElist;
                     let mut cache = (*cache).clone();
                     let mut env = (*env).clone();
                     let mut ih = (*ih).clone();
@@ -1774,61 +1774,61 @@ fn instClassdef2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, store, mods, pre, ci_state, Deref @ SCode::ClassDef::PARTS { elementLst: els, normalEquationLst: eqs, initialEquationLst: initeqs, normalAlgorithmLst: alg, initialAlgorithmLst: initalg, constraintLst: constrs, clsattrs, externalDecl: ed }, re, _, _, _, inst_dims, r#impl, callscope, graph, csets) => {
-                    let mut cdefelts: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
-                    let mut compelts: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
-                    let mut extendselts: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
-                    let mut extendsclasselts: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
-                    let mut compelts_2_elem: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
-                    let mut env1: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut env2: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut env3: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut env5: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut cdefelts_1: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>> = metamodelica::nil();
-                    let mut extcomps: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>> = metamodelica::nil();
-                    let mut compelts_1: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>> = metamodelica::nil();
-                    let mut compelts_2: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>> = metamodelica::nil();
-                    let mut comp_cond: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>> = metamodelica::nil();
-                    let mut csets1: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
-                    let mut csets2: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
-                    let mut csets3: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
-                    let mut csets4: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
-                    let mut csets5: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
-                    let mut dae1: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-                    let mut dae2: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-                    let mut dae3: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-                    let mut dae4: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-                    let mut dae5: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-                    let mut dae6: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-                    let mut dae7: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-                    let mut dae8: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-                    let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-                    let mut ci_state1: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
-                    let mut ci_state2: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
-                    let mut ci_state3: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
-                    let mut ci_state4: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
-                    let mut ci_state5: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
-                    let mut ci_state6: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
-                    let mut vars: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
-                    let mut emods: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
-                    let mut checkMods: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
-                    let mut eqs2: Arc<metamodelica::List<Arc<SCode::Equation>>> = metamodelica::nil();
-                    let mut initeqs2: Arc<metamodelica::List<Arc<SCode::Equation>>> = metamodelica::nil();
-                    let mut eqs_1: Arc<metamodelica::List<Arc<SCode::Equation>>> = metamodelica::nil();
-                    let mut initeqs_1: Arc<metamodelica::List<Arc<SCode::Equation>>> = metamodelica::nil();
-                    let mut alg2: Arc<metamodelica::List<Arc<SCode::AlgorithmSection>>> = metamodelica::nil();
-                    let mut initalg2: Arc<metamodelica::List<Arc<SCode::AlgorithmSection>>> = metamodelica::nil();
-                    let mut alg_1: Arc<metamodelica::List<Arc<SCode::AlgorithmSection>>> = metamodelica::nil();
-                    let mut initalg_1: Arc<metamodelica::List<Arc<SCode::AlgorithmSection>>> = metamodelica::nil();
-                    let mut comments: Arc<metamodelica::List<Arc<SCode::Comment>>> = metamodelica::nil();
-                    let mut eqConstraint: Option<(Arc<Absyn::Path>, i32, DAE::InlineType)> = None;
-                    let mut unrollForLoops: bool = false;
-                    let mut zero_dims: bool = false;
+                    let mut cdefelts: Arc<metamodelica::List<Arc<SCode::Element>>>;
+                    let mut compelts: Arc<metamodelica::List<Arc<SCode::Element>>>;
+                    let mut extendselts: Arc<metamodelica::List<Arc<SCode::Element>>>;
+                    let mut extendsclasselts: Arc<metamodelica::List<Arc<SCode::Element>>>;
+                    let mut compelts_2_elem: Arc<metamodelica::List<Arc<SCode::Element>>>;
+                    let mut env1: FCore::Graph;
+                    let mut env2: FCore::Graph;
+                    let mut env3: FCore::Graph;
+                    let mut env5: FCore::Graph;
+                    let mut cdefelts_1: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>;
+                    let mut extcomps: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>;
+                    let mut compelts_1: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>;
+                    let mut compelts_2: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>;
+                    let mut comp_cond: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>;
+                    let mut csets1: DAE::Connect::Sets;
+                    let mut csets2: DAE::Connect::Sets;
+                    let mut csets3: DAE::Connect::Sets;
+                    let mut csets4: DAE::Connect::Sets;
+                    let mut csets5: DAE::Connect::Sets;
+                    let mut dae1: DAE::DAElist;
+                    let mut dae2: DAE::DAElist;
+                    let mut dae3: DAE::DAElist;
+                    let mut dae4: DAE::DAElist;
+                    let mut dae5: DAE::DAElist;
+                    let mut dae6: DAE::DAElist;
+                    let mut dae7: DAE::DAElist;
+                    let mut dae8: DAE::DAElist;
+                    let mut dae: DAE::DAElist;
+                    let mut ci_state1: ClassInf::State;
+                    let mut ci_state2: ClassInf::State;
+                    let mut ci_state3: ClassInf::State;
+                    let mut ci_state4: ClassInf::State;
+                    let mut ci_state5: ClassInf::State;
+                    let mut ci_state6: ClassInf::State;
+                    let mut vars: Arc<metamodelica::List<Arc<DAE::Var>>>;
+                    let mut emods: Arc<DAE::Mod>;
+                    let mut checkMods: Arc<DAE::Mod>;
+                    let mut eqs2: Arc<metamodelica::List<Arc<SCode::Equation>>>;
+                    let mut initeqs2: Arc<metamodelica::List<Arc<SCode::Equation>>>;
+                    let mut eqs_1: Arc<metamodelica::List<Arc<SCode::Equation>>>;
+                    let mut initeqs_1: Arc<metamodelica::List<Arc<SCode::Equation>>>;
+                    let mut alg2: Arc<metamodelica::List<Arc<SCode::AlgorithmSection>>>;
+                    let mut initalg2: Arc<metamodelica::List<Arc<SCode::AlgorithmSection>>>;
+                    let mut alg_1: Arc<metamodelica::List<Arc<SCode::AlgorithmSection>>>;
+                    let mut initalg_1: Arc<metamodelica::List<Arc<SCode::AlgorithmSection>>>;
+                    let mut comments: Arc<metamodelica::List<Arc<SCode::Comment>>>;
+                    let mut eqConstraint: Option<(Arc<Absyn::Path>, i32, DAE::InlineType)>;
+                    let mut unrollForLoops: bool;
+                    let mut zero_dims: bool;
                     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut elementSource: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
-                    let mut smCompCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
-                    let mut smInitialCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
+                    let mut elementSource: Arc<DAE::ElementSource>;
+                    let mut smCompCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
+                    let mut smInitialCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
                     let mut smCompToFlatSM: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>)>>), i32, (HashTableCG::FuncHashCref, HashTableCG::FuncCrefEqual, HashTableCG::FuncCrefStr, HashTableCG::FuncExpStr));
-                    let mut domainFieldsLst: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>)>> = metamodelica::nil();
+                    let mut domainFieldsLst: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>)>>;
                     let mut cache = (*cache).clone();
                     let mut ih = (*ih).clone();
                     let mut store = (*store).clone();
@@ -1909,28 +1909,28 @@ fn instClassdef2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, store, mods, pre, _, Deref @ SCode::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TPATH { path: cn, arrayDim: ad }, modifications: r#mod, attributes: DA }, re, vis, _, _, inst_dims, r#impl, callscope, graph, _) => {
-                    let mut env3: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut cenv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut cenv_2: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut env_2: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut csets_1: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
-                    let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-                    let mut ci_state2: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
-                    let mut new_ci_state: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
-                    let mut ci_state_1: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
-                    let mut vars: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
-                    let mut bc: Option<Arc<DAE::Type>> = None;
-                    let mut mod_1: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
-                    let mut mods_1: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
-                    let mut r: SCode::Restriction = SCode::Restriction::R_BLOCK;
-                    let mut enc2: SCode::Encapsulated = SCode::Encapsulated::ENCAPSULATED;
-                    let mut inst_dims_1: InstDims = metamodelica::nil();
-                    let mut cn2: ArcStr = arcstr::literal!("");
-                    let mut c: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
-                    let mut eq: Option<DAE::EqMod> = None;
-                    let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
-                    let mut oDA: Option<SCode::Attributes> = None;
-                    let mut eqConstraint: Option<(Arc<Absyn::Path>, i32, DAE::InlineType)> = None;
+                    let mut env3: FCore::Graph;
+                    let mut cenv: FCore::Graph;
+                    let mut cenv_2: FCore::Graph;
+                    let mut env_2: FCore::Graph;
+                    let mut csets_1: DAE::Connect::Sets;
+                    let mut dae: DAE::DAElist;
+                    let mut ci_state2: ClassInf::State;
+                    let mut new_ci_state: ClassInf::State;
+                    let mut ci_state_1: ClassInf::State;
+                    let mut vars: Arc<metamodelica::List<Arc<DAE::Var>>>;
+                    let mut bc: Option<Arc<DAE::Type>>;
+                    let mut mod_1: Arc<DAE::Mod>;
+                    let mut mods_1: Arc<DAE::Mod>;
+                    let mut r: SCode::Restriction;
+                    let mut enc2: SCode::Encapsulated;
+                    let mut inst_dims_1: InstDims;
+                    let mut cn2: ArcStr;
+                    let mut c: Arc<SCode::Element>;
+                    let mut eq: Option<DAE::EqMod>;
+                    let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>;
+                    let mut oDA: Option<SCode::Attributes>;
+                    let mut eqConstraint: Option<(Arc<Absyn::Path>, i32, DAE::InlineType)>;
                     let mut cache = (*cache).clone();
                     let mut ih = (*ih).clone();
                     let mut store = (*store).clone();
@@ -1966,28 +1966,28 @@ fn instClassdef2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, store, mods, pre, ci_state, Deref @ SCode::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TPATH { path: cn, arrayDim: ad }, modifications: r#mod, attributes: DA }, re, vis, _, _, inst_dims, r#impl, callscope, graph, _) => {
-                    let mut cenv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut cenv_2: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut env_2: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut parentEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut csets_1: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
-                    let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-                    let mut new_ci_state: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
-                    let mut ci_state_1: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
-                    let mut vars: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
-                    let mut bc: Option<Arc<DAE::Type>> = None;
-                    let mut mod_1: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
-                    let mut mods_1: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
-                    let mut r: SCode::Restriction = SCode::Restriction::R_BLOCK;
-                    let mut valid_connector: bool = false;
-                    let mut enc2: SCode::Encapsulated = SCode::Encapsulated::ENCAPSULATED;
-                    let mut inst_dims_1: InstDims = metamodelica::nil();
-                    let mut cn2: ArcStr = arcstr::literal!("");
-                    let mut c: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
-                    let mut eq: Option<DAE::EqMod> = None;
-                    let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
-                    let mut oDA: Option<SCode::Attributes> = None;
-                    let mut eqConstraint: Option<(Arc<Absyn::Path>, i32, DAE::InlineType)> = None;
+                    let mut cenv: FCore::Graph;
+                    let mut cenv_2: FCore::Graph;
+                    let mut env_2: FCore::Graph;
+                    let mut parentEnv: FCore::Graph;
+                    let mut csets_1: DAE::Connect::Sets;
+                    let mut dae: DAE::DAElist;
+                    let mut new_ci_state: ClassInf::State;
+                    let mut ci_state_1: ClassInf::State;
+                    let mut vars: Arc<metamodelica::List<Arc<DAE::Var>>>;
+                    let mut bc: Option<Arc<DAE::Type>>;
+                    let mut mod_1: Arc<DAE::Mod>;
+                    let mut mods_1: Arc<DAE::Mod>;
+                    let mut r: SCode::Restriction;
+                    let mut valid_connector: bool;
+                    let mut enc2: SCode::Encapsulated;
+                    let mut inst_dims_1: InstDims;
+                    let mut cn2: ArcStr;
+                    let mut c: Arc<SCode::Element>;
+                    let mut eq: Option<DAE::EqMod>;
+                    let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>;
+                    let mut oDA: Option<SCode::Attributes>;
+                    let mut eqConstraint: Option<(Arc<Absyn::Path>, i32, DAE::InlineType)>;
                     let mut cache = (*cache).clone();
                     let mut ih = (*ih).clone();
                     let mut store = (*store).clone();
@@ -2028,19 +2028,19 @@ fn instClassdef2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, store, mods, pre, ci_state, Deref @ SCode::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TPATH { path: cn, arrayDim: ad }, modifications: r#mod, attributes: DA }, re, vis, partialPrefix, encapsulatedPrefix, inst_dims, r#impl, callscope, graph, _) => {
-                    let mut parentEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut parentClassEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut csets: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
-                    let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-                    let mut vars: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
-                    let mut bc: Option<Arc<DAE::Type>> = None;
-                    let mut mod_1: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
-                    let mut mods_1: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
-                    let mut r: SCode::Restriction = SCode::Restriction::R_BLOCK;
-                    let mut cn2: ArcStr = arcstr::literal!("");
-                    let mut classDefParent: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
-                    let mut oDA: Option<SCode::Attributes> = None;
-                    let mut eqConstraint: Option<(Arc<Absyn::Path>, i32, DAE::InlineType)> = None;
+                    let mut parentEnv: FCore::Graph;
+                    let mut parentClassEnv: FCore::Graph;
+                    let mut csets: DAE::Connect::Sets;
+                    let mut dae: DAE::DAElist;
+                    let mut vars: Arc<metamodelica::List<Arc<DAE::Var>>>;
+                    let mut bc: Option<Arc<DAE::Type>>;
+                    let mut mod_1: Arc<DAE::Mod>;
+                    let mut mods_1: Arc<DAE::Mod>;
+                    let mut r: SCode::Restriction;
+                    let mut cn2: ArcStr;
+                    let mut classDefParent: Arc<SCode::ClassDef>;
+                    let mut oDA: Option<SCode::Attributes>;
+                    let mut eqConstraint: Option<(Arc<Absyn::Path>, i32, DAE::InlineType)>;
                     let mut cache = (*cache).clone();
                     let mut env = (*env).clone();
                     let mut ih = (*ih).clone();
@@ -2090,27 +2090,27 @@ fn instClassdef2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, store, mods, pre, ci_state, Deref @ SCode::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TPATH { path: cn, arrayDim: ad }, modifications: r#mod, attributes: DA }, re, vis, _, _, inst_dims, r#impl, callscope, graph, _) => {
-                    let mut cenv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut cenv_2: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut env_2: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut parentEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut csets_1: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
-                    let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-                    let mut new_ci_state: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
-                    let mut ci_state_1: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
-                    let mut vars: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
-                    let mut bc: Option<Arc<DAE::Type>> = None;
-                    let mut mod_1: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
-                    let mut mods_1: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
-                    let mut r: SCode::Restriction = SCode::Restriction::R_BLOCK;
-                    let mut enc2: SCode::Encapsulated = SCode::Encapsulated::ENCAPSULATED;
-                    let mut inst_dims_1: InstDims = metamodelica::nil();
-                    let mut cn2: ArcStr = arcstr::literal!("");
-                    let mut c: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
-                    let mut eq: Option<DAE::EqMod> = None;
-                    let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
-                    let mut oDA: Option<SCode::Attributes> = None;
-                    let mut eqConstraint: Option<(Arc<Absyn::Path>, i32, DAE::InlineType)> = None;
+                    let mut cenv: FCore::Graph;
+                    let mut cenv_2: FCore::Graph;
+                    let mut env_2: FCore::Graph;
+                    let mut parentEnv: FCore::Graph;
+                    let mut csets_1: DAE::Connect::Sets;
+                    let mut dae: DAE::DAElist;
+                    let mut new_ci_state: ClassInf::State;
+                    let mut ci_state_1: ClassInf::State;
+                    let mut vars: Arc<metamodelica::List<Arc<DAE::Var>>>;
+                    let mut bc: Option<Arc<DAE::Type>>;
+                    let mut mod_1: Arc<DAE::Mod>;
+                    let mut mods_1: Arc<DAE::Mod>;
+                    let mut r: SCode::Restriction;
+                    let mut enc2: SCode::Encapsulated;
+                    let mut inst_dims_1: InstDims;
+                    let mut cn2: ArcStr;
+                    let mut c: Arc<SCode::Element>;
+                    let mut eq: Option<DAE::EqMod>;
+                    let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>;
+                    let mut oDA: Option<SCode::Attributes>;
+                    let mut eqConstraint: Option<(Arc<Absyn::Path>, i32, DAE::InlineType)>;
                     let mut cache = (*cache).clone();
                     let mut ih = (*ih).clone();
                     let mut store = (*store).clone();
@@ -2160,11 +2160,11 @@ fn instClassdef2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, store, mods, pre, _, Deref @ SCode::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TCOMPLEX { path: Deref @ Absyn::Path::IDENT { name: Deref @ "list" }, typeSpecs: Deref @ metamodelica::List::Cons { head: tSpec, tail: Deref @ metamodelica::List::Nil }, arrayDim: None }, modifications: r#mod, attributes: DA }, _, _, _, _, inst_dims, r#impl, _, graph, _) => {
-                    let mut csets: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
-                    let mut bc: Option<Arc<DAE::Type>> = None;
-                    let mut oDA: Option<SCode::Attributes> = None;
-                    let mut tys: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
-                    let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+                    let mut csets: DAE::Connect::Sets;
+                    let mut bc: Option<Arc<DAE::Type>>;
+                    let mut oDA: Option<SCode::Attributes>;
+                    let mut tys: Arc<metamodelica::List<Arc<DAE::Type>>>;
+                    let mut ty: Arc<DAE::Type>;
                     let mut cache = (*cache).clone();
                     let mut ih = (*ih).clone();
                     let true = (Config::acceptMetaModelicaGrammar()?) else { bail!("pattern mismatch") };
@@ -2183,10 +2183,10 @@ fn instClassdef2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, store, mods, pre, _, Deref @ SCode::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TCOMPLEX { path: Deref @ Absyn::Path::IDENT { name: Deref @ "Option" }, typeSpecs: Deref @ metamodelica::List::Cons { head: tSpec, tail: Deref @ metamodelica::List::Nil }, arrayDim: None }, modifications: r#mod, attributes: DA }, _, _, _, _, inst_dims, r#impl, _, graph, _) => {
-                    let mut csets: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
-                    let mut bc: Option<Arc<DAE::Type>> = None;
-                    let mut oDA: Option<SCode::Attributes> = None;
-                    let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+                    let mut csets: DAE::Connect::Sets;
+                    let mut bc: Option<Arc<DAE::Type>>;
+                    let mut oDA: Option<SCode::Attributes>;
+                    let mut ty: Arc<DAE::Type>;
                     let mut cache = (*cache).clone();
                     let mut ih = (*ih).clone();
                     let true = (Config::acceptMetaModelicaGrammar()?) else { bail!("pattern mismatch") };
@@ -2212,10 +2212,10 @@ fn instClassdef2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, store, mods, pre, _, Deref @ SCode::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TCOMPLEX { path: Deref @ Absyn::Path::IDENT { name: Deref @ "tuple" }, typeSpecs: tSpecs, arrayDim: None }, modifications: r#mod, attributes: DA }, _, _, _, _, inst_dims, r#impl, _, graph, _) => {
-                    let mut csets: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
-                    let mut bc: Option<Arc<DAE::Type>> = None;
-                    let mut oDA: Option<SCode::Attributes> = None;
-                    let mut tys: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
+                    let mut csets: DAE::Connect::Sets;
+                    let mut bc: Option<Arc<DAE::Type>>;
+                    let mut oDA: Option<SCode::Attributes>;
+                    let mut tys: Arc<metamodelica::List<Arc<DAE::Type>>>;
                     let mut cache = (*cache).clone();
                     let mut ih = (*ih).clone();
                     let true = (Config::acceptMetaModelicaGrammar()?) else { bail!("pattern mismatch") };
@@ -2233,10 +2233,10 @@ fn instClassdef2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, store, mods, pre, _, Deref @ SCode::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TCOMPLEX { path: Deref @ Absyn::Path::IDENT { name: Deref @ "array" }, typeSpecs: Deref @ metamodelica::List::Cons { head: tSpec, tail: Deref @ metamodelica::List::Nil }, arrayDim: None }, modifications: r#mod, attributes: DA }, _, _, _, _, inst_dims, r#impl, _, graph, _) => {
-                    let mut csets: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
-                    let mut bc: Option<Arc<DAE::Type>> = None;
-                    let mut oDA: Option<SCode::Attributes> = None;
-                    let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+                    let mut csets: DAE::Connect::Sets;
+                    let mut bc: Option<Arc<DAE::Type>>;
+                    let mut oDA: Option<SCode::Attributes>;
+                    let mut ty: Arc<DAE::Type>;
                     let mut cache = (*cache).clone();
                     let mut ih = (*ih).clone();
                     let true = (Config::acceptMetaModelicaGrammar()?) else { bail!("pattern mismatch") };
@@ -2262,9 +2262,9 @@ fn instClassdef2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, store, mods, pre, _, Deref @ SCode::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TCOMPLEX { path: Deref @ Absyn::Path::IDENT { name: Deref @ "polymorphic" }, typeSpecs: Deref @ metamodelica::List::Cons { head: Deref @ Absyn::TypeSpec::TPATH { path: Deref @ Absyn::Path::IDENT { name: Deref @ "Any" }, arrayDim: None }, tail: Deref @ metamodelica::List::Nil }, arrayDim: None }, modifications: r#mod, attributes: DA }, _, _, _, _, inst_dims, r#impl, _, graph, _) => {
-                    let mut csets: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
-                    let mut bc: Option<Arc<DAE::Type>> = None;
-                    let mut oDA: Option<SCode::Attributes> = None;
+                    let mut csets: DAE::Connect::Sets;
+                    let mut bc: Option<Arc<DAE::Type>>;
+                    let mut oDA: Option<SCode::Attributes>;
                     let mut cache = (*cache).clone();
                     let mut ih = (*ih).clone();
                     let false = (Mutable::access(stopInst.clone())) else { bail!("pattern mismatch") };
@@ -2313,17 +2313,17 @@ fn instClassdef2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, store, mods, pre, _, Deref @ SCode::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TCOMPLEX { path: cn, typeSpecs: tSpecs, arrayDim: None }, modifications: r#mod, attributes: DA }, _, _, _, _, inst_dims, r#impl, _, graph, _) => {
-                    let mut cenv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut csets: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
-                    let mut new_ci_state: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
-                    let mut bc: Option<Arc<DAE::Type>> = None;
-                    let mut cn2: ArcStr = arcstr::literal!("");
-                    let mut classDef: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
-                    let mut fq_class: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-                    let mut oDA: Option<SCode::Attributes> = None;
-                    let mut tys: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
-                    let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut typeVars: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+                    let mut cenv: FCore::Graph;
+                    let mut csets: DAE::Connect::Sets;
+                    let mut new_ci_state: ClassInf::State;
+                    let mut bc: Option<Arc<DAE::Type>>;
+                    let mut cn2: ArcStr;
+                    let mut classDef: Arc<SCode::ClassDef>;
+                    let mut fq_class: Arc<Absyn::Path>;
+                    let mut oDA: Option<SCode::Attributes>;
+                    let mut tys: Arc<metamodelica::List<Arc<DAE::Type>>>;
+                    let mut ty: Arc<DAE::Type>;
+                    let mut typeVars: Arc<metamodelica::List<ArcStr>>;
                     let mut cache = (*cache).clone();
                     let mut ih = (*ih).clone();
                     let true = (Config::acceptMetaModelicaGrammar()?) else { bail!("pattern mismatch") };
@@ -2371,7 +2371,7 @@ fn instClassdef2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _, _, _, _, _, _, Deref @ SCode::ClassDef::DERIVED { typeSpec: tSpec @ Deref @ Absyn::TypeSpec::TCOMPLEX { arrayDim: Some(_), .. }, .. }, _, _, _, _, _, _, _, _, _) => {
-                    let mut cns: ArcStr = arcstr::literal!("");
+                    let mut cns: ArcStr;
                     let true = (Config::acceptMetaModelicaGrammar()?) else { bail!("pattern mismatch") };
                     cns = (Dump::unparseTypeSpec(tSpec.clone())?).clone();
                     Error::addSourceMessage(Error::META_INVALID_COMPLEX_TYPE.clone(), list![(cns.clone()).clone()], info.clone())?;
@@ -2383,7 +2383,7 @@ fn instClassdef2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _, _, _, _, _, _, Deref @ SCode::ClassDef::DERIVED { typeSpec: tSpec @ Deref @ Absyn::TypeSpec::TCOMPLEX { path: cn, typeSpecs: tSpecs, .. }, .. }, _, _, _, _, _, _, _, _, _) => {
-                    let mut cns: ArcStr = arcstr::literal!("");
+                    let mut cns: ArcStr;
                     let true = (Config::acceptMetaModelicaGrammar()?) else { bail!("pattern mismatch") };
                     let false = (listMember((AbsynUtil::pathString(cn.clone(), (literal!(".")).clone(), true, false)?, (tSpecs.clone().len() as i32) == 1), list![(literal!("tuple"), false), (literal!("array"), true), (literal!("Option"), true), (literal!("list"), true)])) else { bail!("pattern mismatch") };
                     cns = (Dump::unparseTypeSpec(tSpec.clone())?).clone();
@@ -2396,8 +2396,8 @@ fn instClassdef2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, _, _, _, _, _, Deref @ SCode::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TPATH { path: cn, .. }, .. }, _, _, _, _, _, _, _, _, _) => {
-                    let mut cns: ArcStr = arcstr::literal!("");
-                    let mut scope_str: ArcStr = arcstr::literal!("");
+                    let mut cns: ArcStr;
+                    let mut scope_str: ArcStr;
                     let false = (Mutable::access(stopInst.clone())) else { bail!("pattern mismatch") };
                     if '__try0: {
                         unwrap_break_err!(Lookup::lookupClass(cache.clone(), env.clone(), cn.clone(), None), '__try0);
@@ -2431,7 +2431,7 @@ fn instClassdef2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    let mut s: ArcStr = arcstr::literal!("");
+                    let mut s: ArcStr;
                     let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
                     Debug::traceln((literal!("- Inst.instClassdef failed")).clone())?;
                     s = (FGraph::printGraphPathStr(inEnv.clone())).clone();
@@ -2484,11 +2484,11 @@ fn instClassDefHelper(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut in
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::TypeSpec::TPATH { path: cn, arrayDim: _ }, tail: restTypeSpecs }, pre, dims, r#impl, localAccTypes) => {
-                    let mut cenv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut csets: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
-                    let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut c: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
-                    let mut oDA: Option<SCode::Attributes> = None;
+                    let mut cenv: FCore::Graph;
+                    let mut csets: DAE::Connect::Sets;
+                    let mut ty: Arc<DAE::Type>;
+                    let mut c: Arc<SCode::Element>;
+                    let mut oDA: Option<SCode::Attributes>;
                     let mut cache = (*cache).clone();
                     let mut env = (*env).clone();
                     let mut ih = (*ih).clone();
@@ -2512,8 +2512,8 @@ fn instClassDefHelper(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut in
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::TypeSpec::TPATH { path: cn, arrayDim: _ }, tail: restTypeSpecs }, pre, dims, r#impl, localAccTypes) => {
-                    let mut csets: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
-                    let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+                    let mut csets: DAE::Connect::Sets;
+                    let mut ty: Arc<DAE::Type>;
                     let mut cache = (*cache).clone();
                     let mut env = (*env).clone();
                     let mut ih = (*ih).clone();
@@ -2529,11 +2529,11 @@ fn instClassDefHelper(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut in
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, Deref @ metamodelica::List::Cons { head: tSpec @ Deref @ Absyn::TypeSpec::TCOMPLEX { path: p, typeSpecs: _, arrayDim: _ }, tail: restTypeSpecs }, pre, dims, r#impl, localAccTypes) => {
-                    let mut csets: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
-                    let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut c: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
-                    let mut id: ArcStr = arcstr::literal!("");
-                    let mut oDA: Option<SCode::Attributes> = None;
+                    let mut csets: DAE::Connect::Sets;
+                    let mut ty: Arc<DAE::Type>;
+                    let mut c: Arc<SCode::Element>;
+                    let mut id: ArcStr;
+                    let mut oDA: Option<SCode::Attributes>;
                     let mut cache = (*cache).clone();
                     let mut env = (*env).clone();
                     let mut ih = (*ih).clone();
@@ -2565,16 +2565,16 @@ fn instBasictypeBaseclass(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, store, Deref @ metamodelica::List::Cons { head: Deref @ SCode::Element::EXTENDS { baseClassPath: path, modifications: r#mod, .. }, tail: Deref @ metamodelica::List::Nil }, Deref @ metamodelica::List::Nil, mods, inst_dims) => {
-                    let mut m_1: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
-                    let mut m_2: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
-                    let mut cdef: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
-                    let mut cenv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-                    let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut tys: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
-                    let mut b1: bool = false;
-                    let mut b2: bool = false;
-                    let mut b3: bool = false;
+                    let mut m_1: Arc<DAE::Mod>;
+                    let mut m_2: Arc<DAE::Mod>;
+                    let mut cdef: Arc<SCode::Element>;
+                    let mut cenv: FCore::Graph;
+                    let mut dae: DAE::DAElist;
+                    let mut ty: Arc<DAE::Type>;
+                    let mut tys: Arc<metamodelica::List<Arc<DAE::Var>>>;
+                    let mut b1: bool;
+                    let mut b2: bool;
+                    let mut b3: bool;
                     let mut cache = (*cache).clone();
                     let mut ih = (*ih).clone();
                     let mut store = (*store).clone();
@@ -2624,7 +2624,7 @@ fn rollbackCheck(mut p: Arc<Absyn::Path>) -> () {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    let mut n: ArcStr = arcstr::literal!("");
+                    let mut n: ArcStr;
                     n = (AbsynUtil::pathString(p.clone(), (literal!(".")).clone(), true, false)?).clone();
                     let true = (InstUtil::isBuiltInClass((n.clone()).clone())?) else { bail!("pattern mismatch") };
                     ErrorExt::rollBack((literal!("instBasictypeBaseclass")).clone());
@@ -2653,14 +2653,14 @@ fn instBasictypeBaseclass2(mut inCache: FCore::Cache, mut inEnv1: FCore::Graph, 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, Deref @ metamodelica::List::Cons { head: Deref @ SCode::Element::EXTENDS { baseClassPath: path, modifications: r#mod, info, .. }, tail: Deref @ metamodelica::List::Nil }, Deref @ metamodelica::List::Cons { head: _, tail: _ }, inst_dims) => {
-                    let mut m_1: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
-                    let mut cdef: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
-                    let mut cdef_1: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
-                    let mut cenv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut b1: bool = false;
-                    let mut b2: bool = false;
-                    let mut classname: ArcStr = arcstr::literal!("");
+                    let mut m_1: Arc<DAE::Mod>;
+                    let mut cdef: Arc<SCode::Element>;
+                    let mut cdef_1: Arc<SCode::Element>;
+                    let mut cenv: FCore::Graph;
+                    let mut ty: Arc<DAE::Type>;
+                    let mut b1: bool;
+                    let mut b2: bool;
+                    let mut classname: ArcStr;
                     let mut cache = (*cache).clone();
                     let mut ih = (*ih).clone();
                     (cache, m_1) = Mod::elabModForBasicType(cache.clone(), env.clone(), ih.clone(), openmodelica_frontend_types::DAE::Prefix::NOPRE, r#mod.clone(), true, Mod::ModScope::DERIVED { path: path.clone() }, inInfo.clone())?;
@@ -2703,15 +2703,15 @@ fn partialInstClassdef(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut i
         let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
         (::match_deref::match_deref! { match &(inClassDef.clone()) {
         Deref @ SCode::ClassDef::PARTS { .. } => {
-            let mut partial_prefix: SCode::Partial = SCode::Partial::NOT_PARTIAL;
-            let mut class_name: ArcStr = arcstr::literal!("");
-            let mut cdef_els: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
-            let mut class_ext_els: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
-            let mut extends_els: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
-            let mut emods: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
-            let mut r#mod: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
-            let mut ext_comps: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>> = metamodelica::nil();
-            let mut const_els: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>> = metamodelica::nil();
+            let mut partial_prefix: SCode::Partial;
+            let mut class_name: ArcStr;
+            let mut cdef_els: Arc<metamodelica::List<Arc<SCode::Element>>>;
+            let mut class_ext_els: Arc<metamodelica::List<Arc<SCode::Element>>>;
+            let mut extends_els: Arc<metamodelica::List<Arc<SCode::Element>>>;
+            let mut emods: Arc<DAE::Mod>;
+            let mut r#mod: Arc<DAE::Mod>;
+            let mut ext_comps: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>;
+            let mut const_els: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>;
             partial_prefix = SCodeUtil::getClassPartialPrefix(inClass.clone())?;
             partial_prefix = InstUtil::isPartial(partial_prefix.clone(), inMod.clone());
             class_name = (SCodeUtil::elementName(inClass.clone())?).clone();
@@ -2729,23 +2729,23 @@ fn partialInstClassdef(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut i
             (outCache.clone(), outEnv.clone(), outIH.clone(), outState.clone(), outVars.clone())
         },
         Deref @ SCode::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TPATH { path: class_path, arrayDim: class_dims }, modifications: class_mod, .. } => {
-            let mut class_name: ArcStr = arcstr::literal!("");
-            let mut scope_str: ArcStr = arcstr::literal!("");
-            let mut r#mod: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
-            let mut smod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
-            let mut cls: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
-            let mut cdef: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
-            let mut cenv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-            let mut parent_env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-            let mut der_re: SCode::Restriction = SCode::Restriction::R_BLOCK;
-            let mut parent_re: SCode::Restriction = SCode::Restriction::R_BLOCK;
-            let mut enc: SCode::Encapsulated = SCode::Encapsulated::ENCAPSULATED;
-            let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
-            let mut eq: Option<DAE::EqMod> = None;
-            let mut has_dims: bool = false;
-            let mut is_basic_type: bool = false;
-            let mut inst_dims: InstDims = metamodelica::nil();
-            let mut scope_ty: Option<FCore::ScopeType> = None;
+            let mut class_name: ArcStr;
+            let mut scope_str: ArcStr;
+            let mut r#mod: Arc<DAE::Mod>;
+            let mut smod: Arc<SCode::Mod>;
+            let mut cls: Arc<SCode::Element>;
+            let mut cdef: Arc<SCode::ClassDef>;
+            let mut cenv: FCore::Graph;
+            let mut parent_env: FCore::Graph;
+            let mut der_re: SCode::Restriction;
+            let mut parent_re: SCode::Restriction;
+            let mut enc: SCode::Encapsulated;
+            let mut info: SourceInfo;
+            let mut eq: Option<DAE::EqMod>;
+            let mut has_dims: bool;
+            let mut is_basic_type: bool;
+            let mut inst_dims: InstDims;
+            let mut scope_ty: Option<FCore::ScopeType>;
             info = SCodeUtil::elementInfo(inClass.clone());
             has_dims = !(isNone(class_dims.clone()) || class_dims.clone() == Some(metamodelica::nil()));
             let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(Lookup::lookupClass(inCache.clone(), inEnv.clone(), class_path.clone(), Some(info.clone()))) {
@@ -3052,7 +3052,7 @@ pub fn instElement(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _, _, _, _, _, _, (cls @ Deref @ SCode::Element::CLASS { .. }, cmod), _, _, _, _) => {
-                    let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
+                    let mut env: FCore::Graph;
                     if !(Mod::isEmptyMod(cmod.clone())) {
                         env = FGraph::updateClass(inEnv.clone(), cls.clone(), inPrefix.clone(), cmod.clone(), openmodelica_frontend_dump::FCore::Status::CLS_UNTYPED, inEnv.clone())?;
                     } else {
@@ -3066,53 +3066,53 @@ pub fn instElement(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH:
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, store, mods, pre, ci_state, (el @ Deref @ SCode::Element::COMPONENT { name, typeSpec: Deref @ Absyn::TypeSpec::TPATH { .. }, .. }, cmod), inst_dims, r#impl, graph, csets) => {
-                    let mut own_cref: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
-                    let mut dir: Absyn::Direction = Absyn::Direction::BIDIR;
-                    let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
-                    let mut io: Absyn::InnerOuter = Absyn::InnerOuter::INNER;
-                    let mut t: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-                    let mut ts: Arc<Absyn::TypeSpec> = Arc::new(<Absyn::TypeSpec as ::std::default::Default>::default());
-                    let mut already_declared: bool = false;
-                    let mut is_function_input: bool = false;
-                    let mut graph_new: ConnectionGraph::ConnectionGraph = <ConnectionGraph::ConnectionGraph as ::std::default::Default>::default();
-                    let mut dae_attr: Arc<DAE::Attributes> = Arc::new(<DAE::Attributes as ::std::default::Default>::default());
-                    let mut binding: Arc<DAE::Binding> = Arc::new(DAE::Binding::UNBOUND);
-                    let mut cref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-                    let mut cref2: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-                    let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-                    let mut r#mod: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
-                    let mut class_mod: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
-                    let mut mm: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
-                    let mut mod_1: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
-                    let mut var_class_mod: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
-                    let mut m_1: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
-                    let mut cls_mod: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
-                    let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut new_var: Arc<DAE::Var> = Arc::new(<DAE::Var as ::std::default::Default>::default());
-                    let mut env2: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut cenv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut comp_env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut crefs: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
-                    let mut crefs1: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
-                    let mut crefs2: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
-                    let mut crefs3: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
-                    let mut ad: Arc<metamodelica::List<Arc<Absyn::Subscript>>> = metamodelica::nil();
-                    let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
-                    let mut vars: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
-                    let mut cond: Option<Arc<Absyn::Exp>> = None;
-                    let mut eq: Option<DAE::EqMod> = None;
-                    let mut comment: Arc<SCode::Comment> = Arc::new(<SCode::Comment as ::std::default::Default>::default());
-                    let mut attr: SCode::Attributes = <SCode::Attributes as ::std::default::Default>::default();
-                    let mut cls: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
-                    let mut comp: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
-                    let mut final_prefix: SCode::Final = SCode::Final::FINAL;
-                    let mut m: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
-                    let mut oldmod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
-                    let mut prefixes: Arc<SCode::Prefixes> = Arc::new(<SCode::Prefixes as ::std::default::Default>::default());
+                    let mut own_cref: Arc<Absyn::ComponentRef>;
+                    let mut dir: Absyn::Direction;
+                    let mut info: SourceInfo;
+                    let mut io: Absyn::InnerOuter;
+                    let mut t: Arc<Absyn::Path>;
+                    let mut ts: Arc<Absyn::TypeSpec>;
+                    let mut already_declared: bool;
+                    let mut is_function_input: bool;
+                    let mut graph_new: ConnectionGraph::ConnectionGraph;
+                    let mut dae_attr: Arc<DAE::Attributes>;
+                    let mut binding: Arc<DAE::Binding>;
+                    let mut cref: Arc<DAE::ComponentRef>;
+                    let mut cref2: Arc<DAE::ComponentRef>;
+                    let mut dae: DAE::DAElist;
+                    let mut r#mod: Arc<DAE::Mod>;
+                    let mut class_mod: Arc<DAE::Mod>;
+                    let mut mm: Arc<DAE::Mod>;
+                    let mut mod_1: Arc<DAE::Mod>;
+                    let mut var_class_mod: Arc<DAE::Mod>;
+                    let mut m_1: Arc<DAE::Mod>;
+                    let mut cls_mod: Arc<DAE::Mod>;
+                    let mut ty: Arc<DAE::Type>;
+                    let mut new_var: Arc<DAE::Var>;
+                    let mut env2: FCore::Graph;
+                    let mut cenv: FCore::Graph;
+                    let mut comp_env: FCore::Graph;
+                    let mut crefs: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>;
+                    let mut crefs1: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>;
+                    let mut crefs2: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>;
+                    let mut crefs3: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>;
+                    let mut ad: Arc<metamodelica::List<Arc<Absyn::Subscript>>>;
+                    let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>;
+                    let mut vars: Arc<metamodelica::List<Arc<DAE::Var>>>;
+                    let mut cond: Option<Arc<Absyn::Exp>>;
+                    let mut eq: Option<DAE::EqMod>;
+                    let mut comment: Arc<SCode::Comment>;
+                    let mut attr: SCode::Attributes;
+                    let mut cls: Arc<SCode::Element>;
+                    let mut comp: Arc<SCode::Element>;
+                    let mut final_prefix: SCode::Final;
+                    let mut m: Arc<SCode::Mod>;
+                    let mut oldmod: Arc<SCode::Mod>;
+                    let mut prefixes: Arc<SCode::Prefixes>;
                     let mut topInstance: InnerOuter::TopInstance;
                     let mut sm: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr));
-                    let mut isInSM: bool = false;
-                    let mut elems: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
+                    let mut isInSM: bool;
+                    let mut elems: Arc<metamodelica::List<Arc<DAE::Element>>>;
                     let mut cache = (*cache).clone();
                     let mut env = (*env).clone();
                     let mut ih = (*ih).clone();
@@ -3243,21 +3243,21 @@ pub fn instElement(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, store, mods, pre, ci_state, (comp @ Deref @ SCode::Element::COMPONENT { name, prefixes: prefixes @ Deref @ SCode::Prefixes { finalPrefix: final_prefix, innerOuter: io, .. }, attributes: attr @ SCode::Attributes { arrayDims: ad, connectorType: ct, .. }, typeSpec: ts @ Deref @ Absyn::TypeSpec::TCOMPLEX { path: type_name, .. }, modifications: m, comment, condition: cond, info }, cmod), inst_dims, r#impl, graph, csets) => {
-                    let mut own_cref: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
-                    let mut already_declared: bool = false;
-                    let mut graph_new: ConnectionGraph::ConnectionGraph = <ConnectionGraph::ConnectionGraph as ::std::default::Default>::default();
-                    let mut dae_attr: Arc<DAE::Attributes> = Arc::new(<DAE::Attributes as ::std::default::Default>::default());
-                    let mut binding: Arc<DAE::Binding> = Arc::new(DAE::Binding::UNBOUND);
-                    let mut cref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-                    let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-                    let mut m_1: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
-                    let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut new_var: Arc<DAE::Var> = Arc::new(<DAE::Var as ::std::default::Default>::default());
-                    let mut comp_env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
-                    let mut vars: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
-                    let mut cls: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
-                    let mut id: ArcStr = arcstr::literal!("");
+                    let mut own_cref: Arc<Absyn::ComponentRef>;
+                    let mut already_declared: bool;
+                    let mut graph_new: ConnectionGraph::ConnectionGraph;
+                    let mut dae_attr: Arc<DAE::Attributes>;
+                    let mut binding: Arc<DAE::Binding>;
+                    let mut cref: Arc<DAE::ComponentRef>;
+                    let mut dae: DAE::DAElist;
+                    let mut m_1: Arc<DAE::Mod>;
+                    let mut ty: Arc<DAE::Type>;
+                    let mut new_var: Arc<DAE::Var>;
+                    let mut comp_env: FCore::Graph;
+                    let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>;
+                    let mut vars: Arc<metamodelica::List<Arc<DAE::Var>>>;
+                    let mut cls: Arc<SCode::Element>;
+                    let mut id: ArcStr;
                     let mut cache = (*cache).clone();
                     let mut env = (*env).clone();
                     let mut ih = (*ih).clone();
@@ -3296,9 +3296,9 @@ pub fn instElement(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, _, _, _, pre, ci_state, (Deref @ SCode::Element::COMPONENT { name, attributes: SCode::Attributes { variability: vt, .. }, typeSpec: Deref @ Absyn::TypeSpec::TPATH { path: t, arrayDim: _ }, info, .. }, _), _, _, _, _) => {
-                    let mut ns: ArcStr = arcstr::literal!("");
-                    let mut s: ArcStr = arcstr::literal!("");
-                    let mut scope_str: ArcStr = arcstr::literal!("");
+                    let mut ns: ArcStr;
+                    let mut s: ArcStr;
+                    let mut scope_str: ArcStr;
                     let mut pre = (*pre).clone();
                     if '__try0: {
                         unwrap_break_err!(Lookup::lookupClass(cache.clone(), env.clone(), t.clone(), None), '__try0);
@@ -3394,7 +3394,7 @@ fn updateCompeltsMods_dispatch(mut inCache: FCore::Cache, mut inEnv: FCore::Grap
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, pre, Deref @ metamodelica::List::Cons { head: elMod @ (_, Deref @ DAE::Mod::NOMOD { .. }), tail: xs }, ci_state, r#impl) => {
-                    let mut res: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>> = metamodelica::nil();
+                    let mut res: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>;
                     let mut cache = (*cache).clone();
                     let mut env = (*env).clone();
                     let mut ih = (*ih).clone();
@@ -3407,19 +3407,19 @@ fn updateCompeltsMods_dispatch(mut inCache: FCore::Cache, mut inEnv: FCore::Grap
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, pre, Deref @ metamodelica::List::Cons { head: (comp, cmod @ Deref @ DAE::Mod::REDECL { element: redComp, .. }), tail: xs }, ci_state, r#impl) => {
-                    let mut env2: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut env3: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut umod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
-                    let mut crefs: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
-                    let mut crefs_1: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
-                    let mut cref: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
-                    let mut cmod_1: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
-                    let mut cmod2: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
-                    let mut ltmod: Arc<metamodelica::List<Arc<DAE::Mod>>> = metamodelica::nil();
-                    let mut res: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>> = metamodelica::nil();
-                    let mut name: ArcStr = arcstr::literal!("");
-                    let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
-                    let mut fprefix: SCode::Final = SCode::Final::FINAL;
+                    let mut env2: FCore::Graph;
+                    let mut env3: FCore::Graph;
+                    let mut umod: Arc<SCode::Mod>;
+                    let mut crefs: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>;
+                    let mut crefs_1: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>;
+                    let mut cref: Arc<Absyn::ComponentRef>;
+                    let mut cmod_1: Arc<DAE::Mod>;
+                    let mut cmod2: Arc<DAE::Mod>;
+                    let mut ltmod: Arc<metamodelica::List<Arc<DAE::Mod>>>;
+                    let mut res: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>;
+                    let mut name: ArcStr;
+                    let mut info: SourceInfo;
+                    let mut fprefix: SCode::Final;
                     let mut cache = (*cache).clone();
                     let mut ih = (*ih).clone();
                     info = SCodeUtil::elementInfo(redComp.clone());
@@ -3448,12 +3448,12 @@ fn updateCompeltsMods_dispatch(mut inCache: FCore::Cache, mut inEnv: FCore::Grap
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, pre, Deref @ metamodelica::List::Cons { head: (comp, cmod @ Deref @ DAE::Mod::MOD { .. }), tail: xs }, ci_state, r#impl) => {
-                    let mut env2: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut env3: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut cref: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
-                    let mut res: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>> = metamodelica::nil();
-                    let mut name: ArcStr = arcstr::literal!("");
-                    let mut fprefix: SCode::Final = SCode::Final::FINAL;
+                    let mut env2: FCore::Graph;
+                    let mut env3: FCore::Graph;
+                    let mut cref: Arc<Absyn::ComponentRef>;
+                    let mut res: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>;
+                    let mut name: ArcStr;
+                    let mut fprefix: SCode::Final;
                     let mut cache = (*cache).clone();
                     let mut ih = (*ih).clone();
                     let false = (Mod::isUntypedMod(cmod.clone())?) else { bail!("pattern mismatch") };
@@ -3474,19 +3474,19 @@ fn updateCompeltsMods_dispatch(mut inCache: FCore::Cache, mut inEnv: FCore::Grap
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, pre, Deref @ metamodelica::List::Cons { head: (comp, cmod @ Deref @ DAE::Mod::MOD { .. }), tail: xs }, ci_state, r#impl) => {
-                    let mut env2: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut env3: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut umod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
-                    let mut crefs: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
-                    let mut crefs_1: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
-                    let mut cref: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
-                    let mut cmod_1: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
-                    let mut cmod2: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
-                    let mut ltmod: Arc<metamodelica::List<Arc<DAE::Mod>>> = metamodelica::nil();
-                    let mut res: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>> = metamodelica::nil();
-                    let mut name: ArcStr = arcstr::literal!("");
-                    let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
-                    let mut fprefix: SCode::Final = SCode::Final::FINAL;
+                    let mut env2: FCore::Graph;
+                    let mut env3: FCore::Graph;
+                    let mut umod: Arc<SCode::Mod>;
+                    let mut crefs: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>;
+                    let mut crefs_1: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>;
+                    let mut cref: Arc<Absyn::ComponentRef>;
+                    let mut cmod_1: Arc<DAE::Mod>;
+                    let mut cmod2: Arc<DAE::Mod>;
+                    let mut ltmod: Arc<metamodelica::List<Arc<DAE::Mod>>>;
+                    let mut res: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>;
+                    let mut name: ArcStr;
+                    let mut info: SourceInfo;
+                    let mut fprefix: SCode::Final;
                     let mut cache = (*cache).clone();
                     let mut ih = (*ih).clone();
                     info = SCodeUtil::elementInfo(comp.clone());
@@ -3695,34 +3695,34 @@ fn updateComponentInEnv(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, Deref @ DAE::Mod::REDECL { element: Deref @ SCode::Element::COMPONENT { name, prefixes: prefixes @ Deref @ SCode::Prefixes { visibility, .. }, attributes, modifications: smod, info, .. }, .. }) => {
-                    let mut n: ArcStr = arcstr::literal!("");
-                    let mut id: ArcStr = arcstr::literal!("");
-                    let mut ct: SCode::ConnectorType = SCode::ConnectorType::FLOW;
-                    let mut io: Absyn::InnerOuter = Absyn::InnerOuter::INNER;
-                    let mut attr: SCode::Attributes = <SCode::Attributes as ::std::default::Default>::default();
-                    let mut ad: Arc<metamodelica::List<Arc<Absyn::Subscript>>> = metamodelica::nil();
-                    let mut prl1: SCode::Parallelism = SCode::Parallelism::NON_PARALLEL;
-                    let mut var1: SCode::Variability = SCode::Variability::CONST;
-                    let mut dir: Absyn::Direction = Absyn::Direction::BIDIR;
-                    let mut t: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-                    let mut m: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
-                    let mut cmod: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
-                    let mut mods: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
-                    let mut cl: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
-                    let mut cenv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut env2: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut env_1: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut crefs: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
-                    let mut crefs2: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
-                    let mut crefs3: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
-                    let mut crefs_1: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
-                    let mut crefs_2: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
-                    let mut cond: Option<Arc<Absyn::Exp>> = None;
-                    let mut pf: Arc<SCode::Prefixes> = Arc::new(<SCode::Prefixes as ::std::default::Default>::default());
-                    let mut daeMod: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
-                    let mut idENV: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
+                    let mut n: ArcStr;
+                    let mut id: ArcStr;
+                    let mut ct: SCode::ConnectorType;
+                    let mut io: Absyn::InnerOuter;
+                    let mut attr: SCode::Attributes;
+                    let mut ad: Arc<metamodelica::List<Arc<Absyn::Subscript>>>;
+                    let mut prl1: SCode::Parallelism;
+                    let mut var1: SCode::Variability;
+                    let mut dir: Absyn::Direction;
+                    let mut t: Arc<Absyn::Path>;
+                    let mut m: Arc<SCode::Mod>;
+                    let mut cmod: Arc<DAE::Mod>;
+                    let mut mods: Arc<DAE::Mod>;
+                    let mut cl: Arc<SCode::Element>;
+                    let mut cenv: FCore::Graph;
+                    let mut env2: FCore::Graph;
+                    let mut env_1: FCore::Graph;
+                    let mut crefs: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>;
+                    let mut crefs2: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>;
+                    let mut crefs3: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>;
+                    let mut crefs_1: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>;
+                    let mut crefs_2: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>;
+                    let mut cond: Option<Arc<Absyn::Exp>>;
+                    let mut pf: Arc<SCode::Prefixes>;
+                    let mut daeMod: Arc<DAE::Mod>;
+                    let mut idENV: FCore::Graph;
                     let mut updatedComps: (metamodelica::Array<Arc<metamodelica::List<(Arc<Absyn::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<Absyn::ComponentRef>, i32)>>), i32, (HashTable5::FuncHashCref, HashTable5::FuncCrefEqual, HashTable5::FuncCrefStr, HashTable5::FuncExpStr));
-                    let mut ci_state: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
+                    let mut ci_state: ClassInf::State;
                     let mut cache = (*cache).clone();
                     let mut ih = (*ih).clone();
                     let mut info = (*info).clone();
@@ -3784,8 +3784,8 @@ fn updateComponentInEnv(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, Deref @ DAE::Mod::REDECL { element: Deref @ SCode::Element::CLASS { name, .. }, .. }) => {
-                    let mut id: ArcStr = arcstr::literal!("");
-                    let mut cl: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
+                    let mut id: ArcStr;
+                    let mut cl: Arc<SCode::Element>;
                     let mut updatedComps: (metamodelica::Array<Arc<metamodelica::List<(Arc<Absyn::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<Absyn::ComponentRef>, i32)>>), i32, (HashTable5::FuncHashCref, HashTable5::FuncCrefEqual, HashTable5::FuncCrefStr, HashTable5::FuncExpStr));
                     let mut env = (*env).clone();
                     id = (AbsynUtil::crefFirstIdent(cref.clone())?).clone();
@@ -3802,8 +3802,8 @@ fn updateComponentInEnv(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, _) => {
-                    let mut id: ArcStr = arcstr::literal!("");
-                    let mut is: FCore::Status = FCore::Status::CLS_FULL;
+                    let mut id: ArcStr;
+                    let mut is: FCore::Status;
                     let mut cache = (*cache).clone();
                     id = (AbsynUtil::crefFirstIdent(cref.clone())?).clone();
                     (cache, _, _, _, is, _) = Lookup::lookupIdent(cache.clone(), env.clone(), (id.clone()).clone())?;
@@ -3816,31 +3816,31 @@ fn updateComponentInEnv(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, mods) => {
-                    let mut n: ArcStr = arcstr::literal!("");
-                    let mut id: ArcStr = arcstr::literal!("");
-                    let mut ct: SCode::ConnectorType = SCode::ConnectorType::FLOW;
-                    let mut io: Absyn::InnerOuter = Absyn::InnerOuter::INNER;
-                    let mut attr: SCode::Attributes = <SCode::Attributes as ::std::default::Default>::default();
-                    let mut ad: Arc<metamodelica::List<Arc<Absyn::Subscript>>> = metamodelica::nil();
-                    let mut prl1: SCode::Parallelism = SCode::Parallelism::NON_PARALLEL;
-                    let mut var1: SCode::Variability = SCode::Variability::CONST;
-                    let mut dir: Absyn::Direction = Absyn::Direction::BIDIR;
-                    let mut t: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-                    let mut m: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
-                    let mut cmod: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
-                    let mut cl: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
-                    let mut cenv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut env2: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut env_1: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut crefs: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
-                    let mut crefs_2: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
-                    let mut cond: Option<Arc<Absyn::Exp>> = None;
-                    let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
-                    let mut pf: Arc<SCode::Prefixes> = Arc::new(<SCode::Prefixes as ::std::default::Default>::default());
-                    let mut visibility: SCode::Visibility = SCode::Visibility::PROTECTED;
-                    let mut idENV: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
+                    let mut n: ArcStr;
+                    let mut id: ArcStr;
+                    let mut ct: SCode::ConnectorType;
+                    let mut io: Absyn::InnerOuter;
+                    let mut attr: SCode::Attributes;
+                    let mut ad: Arc<metamodelica::List<Arc<Absyn::Subscript>>>;
+                    let mut prl1: SCode::Parallelism;
+                    let mut var1: SCode::Variability;
+                    let mut dir: Absyn::Direction;
+                    let mut t: Arc<Absyn::Path>;
+                    let mut m: Arc<SCode::Mod>;
+                    let mut cmod: Arc<DAE::Mod>;
+                    let mut cl: Arc<SCode::Element>;
+                    let mut cenv: FCore::Graph;
+                    let mut env2: FCore::Graph;
+                    let mut env_1: FCore::Graph;
+                    let mut crefs: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>;
+                    let mut crefs_2: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>;
+                    let mut cond: Option<Arc<Absyn::Exp>>;
+                    let mut info: SourceInfo;
+                    let mut pf: Arc<SCode::Prefixes>;
+                    let mut visibility: SCode::Visibility;
+                    let mut idENV: FCore::Graph;
                     let mut updatedComps: (metamodelica::Array<Arc<metamodelica::List<(Arc<Absyn::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<Absyn::ComponentRef>, i32)>>), i32, (HashTable5::FuncHashCref, HashTable5::FuncCrefEqual, HashTable5::FuncCrefStr, HashTable5::FuncExpStr));
-                    let mut ci_state: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
+                    let mut ci_state: ClassInf::State;
                     let mut cache = (*cache).clone();
                     let mut ih = (*ih).clone();
                     let mut mods = (*mods).clone();
@@ -3997,8 +3997,8 @@ fn updateComponentInEnv3(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut
         let __mc_input = inInfo.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            let mut r#mod: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
-            let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
+            let mut r#mod: Arc<DAE::Mod>;
+            let mut cache: FCore::Cache;
             ErrorExt::setCheckpoint((literal!("updateComponentInEnv3")).clone());
             (cache, r#mod) = Mod::elabMod(inCache.clone(), inEnv.clone(), inIH.clone(), openmodelica_frontend_types::DAE::Prefix::NOPRE, inMod.clone(), inImpl.clone(), inModScope.clone(), inInfo.clone())?;
             ErrorExt::rollBack((literal!("updateComponentInEnv3")).clone());
@@ -4051,9 +4051,9 @@ fn makeFullyQualifiedFromQual(mut cache: FCore::Cache, mut inEnv: FCore::Graph, 
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    let mut env_1: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut path_2: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-                    let mut name: ArcStr = arcstr::literal!("");
+                    let mut env_1: FCore::Graph;
+                    let mut path_2: Arc<Absyn::Path>;
+                    let mut name: ArcStr;
                     let mut cache: FCore::Cache = cache.clone();
                     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(Lookup::lookupClass(cache.clone(), inEnv.clone(), path.clone(), None)?) {
                         (__pa0, Deref @ SCode::Element::CLASS { name: __pa1, .. }, __pa2) => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
@@ -4071,10 +4071,10 @@ fn makeFullyQualifiedFromQual(mut cache: FCore::Cache, mut inEnv: FCore::Graph, 
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut path3: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-                    let mut crPath: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-                    let mut name: ArcStr = arcstr::literal!("");
+                    let mut env: FCore::Graph;
+                    let mut path3: Arc<Absyn::Path>;
+                    let mut crPath: Arc<DAE::ComponentRef>;
+                    let mut name: ArcStr;
                     let mut cache: FCore::Cache = cache.clone();
                     crPath = ComponentReference::pathToCref(path.clone())?;
                     (cache, _, _, _, _, _, env, _, name) = Lookup::lookupVarInternal(cache.clone(), inEnv.clone(), crPath.clone(), openmodelica_frontend_inst::InstTypes::SearchStrategy::SEARCH_ALSO_BUILTIN)?;
@@ -4087,10 +4087,10 @@ fn makeFullyQualifiedFromQual(mut cache: FCore::Cache, mut inEnv: FCore::Graph, 
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut path3: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-                    let mut crPath: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-                    let mut name: ArcStr = arcstr::literal!("");
+                    let mut env: FCore::Graph;
+                    let mut path3: Arc<Absyn::Path>;
+                    let mut crPath: Arc<DAE::ComponentRef>;
+                    let mut name: ArcStr;
                     let mut cache: FCore::Cache = cache.clone();
                     crPath = ComponentReference::pathToCref(path.clone())?;
                     (cache, env, _, _, _, _, _, _, name) = Lookup::lookupVarInPackages(cache.clone(), inEnv.clone(), crPath.clone(), metamodelica::nil(), Mutable::create(false))?;
@@ -4126,9 +4126,9 @@ pub fn makeFullyQualifiedIdent(mut inCache: FCore::Cache, mut inEnv: FCore::Grap
         let __mc_input = (inCache.clone(), inEnv.clone(), ident.clone());
         if let Ok(__v) = (|| -> Result<_> {
             let (mut cache, mut env, _) = __mc_input.clone() else { bail!("nomatch") };
-            let mut env_1: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-            let mut path_2: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-            let mut name: ArcStr = arcstr::literal!("");
+            let mut env_1: FCore::Graph;
+            let mut path_2: Arc<Absyn::Path>;
+            let mut name: ArcStr;
             let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(Lookup::lookupClassIdent(cache.clone(), env.clone(), (ident.clone()).clone(), None)?) {
                 (__pa0, Deref @ SCode::Element::CLASS { name: __pa1, .. }, __pa2) => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
                 _ => bail!("pattern mismatch"),
@@ -4141,9 +4141,9 @@ pub fn makeFullyQualifiedIdent(mut inCache: FCore::Cache, mut inEnv: FCore::Grap
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (mut cache, mut env, mut s) = __mc_input.clone() else { bail!("nomatch") };
-            let mut path_2: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-            let mut name: ArcStr = arcstr::literal!("");
-            let mut r: metamodelica::Array<FCore::Node> = Default::default();
+            let mut path_2: Arc<Absyn::Path>;
+            let mut name: ArcStr;
+            let mut r: metamodelica::Array<FCore::Node>;
             r = FGraph::lastScopeRef(env.clone())?;
             let false = (FNode::isRefTop(r.clone())?) else { bail!("pattern mismatch") };
             name = (FNode::refName(r.clone())?).clone();
@@ -4157,24 +4157,24 @@ pub fn makeFullyQualifiedIdent(mut inCache: FCore::Cache, mut inEnv: FCore::Grap
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (mut cache, mut env, mut s) = __mc_input.clone() else { bail!("nomatch") };
-            let mut env_1: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-            let mut path_2: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+            let mut env_1: FCore::Graph;
+            let mut path_2: Arc<Absyn::Path>;
             (cache, _, env_1) = Lookup::lookupTypeIdent(cache.clone(), env.clone(), (s.clone()).clone(), None)?;
             path_2 = makeFullyQualified2(env_1.clone(), (s.clone()).clone(), inPath.clone())?;
             Ok((cache.clone(), AbsynUtil::makeFullyQualified(path_2.clone())))
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (mut cache, mut env, _) = __mc_input.clone() else { bail!("nomatch") };
-            let mut path3: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-            let mut name: ArcStr = arcstr::literal!("");
+            let mut path3: Arc<Absyn::Path>;
+            let mut name: ArcStr;
             (cache, _, _, _, _, _, env, _, name) = Lookup::lookupVarInternalIdent(cache.clone(), env.clone(), (ident.clone()).clone(), metamodelica::nil(), openmodelica_frontend_inst::InstTypes::SearchStrategy::SEARCH_ALSO_BUILTIN)?;
             path3 = makeFullyQualified2(env.clone(), (name.clone()).clone(), Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }))?;
             Ok((cache.clone(), AbsynUtil::makeFullyQualified(path3.clone())))
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (mut cache, mut env, _) = __mc_input.clone() else { bail!("nomatch") };
-            let mut path3: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-            let mut name: ArcStr = arcstr::literal!("");
+            let mut path3: Arc<Absyn::Path>;
+            let mut name: ArcStr;
             (cache, env, _, _, _, _, _, _, name) = Lookup::lookupVarInPackagesIdent(cache.clone(), env.clone(), (ident.clone()).clone(), metamodelica::nil(), metamodelica::nil(), Mutable::create(false))?;
             path3 = makeFullyQualified2(env.clone(), (name.clone()).clone(), Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }))?;
             Ok((cache.clone(), AbsynUtil::makeFullyQualified(path3.clone())))
@@ -4248,15 +4248,15 @@ pub fn instList<Type_a: Clone + 'static + metamodelica::gc::MMTrace>(mut inCache
             (cache.clone(), env.clone(), ih.clone(), DAE::emptyDae().clone(), csets.clone(), ci_state.clone(), graph.clone())
         },
         (cache, env, ih, pre, csets, ci_state, Deref @ metamodelica::List::Cons { head: e, tail: es }, r#impl, graph) => {
-            let mut env_1: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-            let mut env_2: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-            let mut csets_1: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
-            let mut csets_2: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
-            let mut ci_state_1: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
-            let mut ci_state_2: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
-            let mut dae1: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-            let mut dae2: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-            let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
+            let mut env_1: FCore::Graph;
+            let mut env_2: FCore::Graph;
+            let mut csets_1: DAE::Connect::Sets;
+            let mut csets_2: DAE::Connect::Sets;
+            let mut ci_state_1: ClassInf::State;
+            let mut ci_state_2: ClassInf::State;
+            let mut dae1: DAE::DAElist;
+            let mut dae2: DAE::DAElist;
+            let mut dae: DAE::DAElist;
             let mut cache = (*cache).clone();
             let mut ih = (*ih).clone();
             let mut graph = (*graph).clone();
@@ -4280,13 +4280,13 @@ fn instConstraints(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPre
             (inCache.clone(), inEnv.clone(), DAE::emptyDae().clone(), inState.clone())
         },
         Deref @ metamodelica::List::Cons { head: constr, tail: rest } => {
-            let mut env1: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-            let mut env2: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-            let mut constraints_1: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-            let mut constraints_2: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-            let mut ci_state: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
-            let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
-            let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
+            let mut env1: FCore::Graph;
+            let mut env2: FCore::Graph;
+            let mut constraints_1: DAE::DAElist;
+            let mut constraints_2: DAE::DAElist;
+            let mut ci_state: ClassInf::State;
+            let mut cache: FCore::Cache;
+            let mut dae: DAE::DAElist;
             (cache, env1, constraints_1, ci_state) = InstSection::instConstraint(inCache.clone(), inEnv.clone(), inPrefix.clone(), inState.clone(), constr.clone(), inImpl.clone())?;
             (cache, env2, constraints_2, ci_state) = instConstraints(cache.clone(), env1.clone(), inPrefix.clone(), ci_state.clone(), rest.clone(), inImpl.clone())?;
             dae = DAEUtil::joinDaes(constraints_1.clone(), constraints_2.clone())?;
@@ -4311,10 +4311,10 @@ fn instClassAttributes(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut i
             (cache.clone(), env.clone(), DAE::emptyDae().clone())
         },
         (_, _, _) => {
-            let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
-            let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-            let mut clsAttrs: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-            let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
+            let mut cache: FCore::Cache;
+            let mut env: FCore::Graph;
+            let mut clsAttrs: DAE::DAElist;
+            let mut dae: DAE::DAElist;
             clsAttrs = DAE::DAElist { elementLst: list![Arc::new(DAE::Element::CLASS_ATTRIBUTES { classAttrs: Arc::new(DAE::ClassAttributes { objetiveE: None, objectiveIntegrandE: None, startTimeE: None, finalTimeE: None }) })] };
             (cache, env, dae) = instClassAttributes2(inCache.clone(), inEnv.clone(), inPrefix.clone(), inAttrs.clone(), inImplicit.clone(), inInfo.clone(), clsAttrs.clone())?;
             (cache.clone(), env.clone(), dae.clone())
@@ -4336,10 +4336,10 @@ fn instClassAttributes2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut 
             return Ok((cache.clone(), env.clone(), clsAttrs.clone()))
         },
         (cache, env, pre, Deref @ metamodelica::List::Cons { head: na, tail: rest }, r#impl, clsAttrs) => {
-            let mut env_2: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-            let mut attrName: ArcStr = arcstr::literal!("");
-            let mut attrExp: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
-            let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut env_2: FCore::Graph;
+            let mut attrName: ArcStr;
+            let mut attrExp: Arc<Absyn::Exp>;
+            let mut outExp: Arc<DAE::Exp>;
             let mut cache = (*cache).clone();
             let mut clsAttrs = (*clsAttrs).clone();
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(na.clone()) {
@@ -4365,9 +4365,9 @@ fn insertClassAttribute(mut inAttrs: DAE::DAElist, mut attrName: ArcStr, mut inA
     let mut outAttrs: DAE::DAElist;
     outAttrs = (::match_deref::match_deref! { match &((inAttrs.clone(), attrName.clone())) {
         (attrs, Deref @ "objective") => {
-            let mut startTimeE: Option<Arc<DAE::Exp>> = None;
-            let mut finalTimeE: Option<Arc<DAE::Exp>> = None;
-            let mut objectiveIntegrandE: Option<Arc<DAE::Exp>> = None;
+            let mut startTimeE: Option<Arc<DAE::Exp>>;
+            let mut finalTimeE: Option<Arc<DAE::Exp>>;
+            let mut objectiveIntegrandE: Option<Arc<DAE::Exp>>;
             let mut attrs = (*attrs).clone();
             let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(attrs.clone()) {
                 DAE::DAElist { elementLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::CLASS_ATTRIBUTES { classAttrs: Deref @ DAE::ClassAttributes { objetiveE: _, objectiveIntegrandE: __pa0, startTimeE: __pa1, finalTimeE: __pa2 } }, tail: Deref @ metamodelica::List::Nil } } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
@@ -4380,9 +4380,9 @@ fn insertClassAttribute(mut inAttrs: DAE::DAElist, mut attrName: ArcStr, mut inA
             attrs.clone()
         },
         (attrs, Deref @ "objectiveIntegrand") => {
-            let mut objectiveE: Option<Arc<DAE::Exp>> = None;
-            let mut startTimeE: Option<Arc<DAE::Exp>> = None;
-            let mut finalTimeE: Option<Arc<DAE::Exp>> = None;
+            let mut objectiveE: Option<Arc<DAE::Exp>>;
+            let mut startTimeE: Option<Arc<DAE::Exp>>;
+            let mut finalTimeE: Option<Arc<DAE::Exp>>;
             let mut attrs = (*attrs).clone();
             let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(attrs.clone()) {
                 DAE::DAElist { elementLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::CLASS_ATTRIBUTES { classAttrs: Deref @ DAE::ClassAttributes { objetiveE: __pa0, objectiveIntegrandE: _, startTimeE: __pa1, finalTimeE: __pa2 } }, tail: Deref @ metamodelica::List::Nil } } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
@@ -4395,9 +4395,9 @@ fn insertClassAttribute(mut inAttrs: DAE::DAElist, mut attrName: ArcStr, mut inA
             attrs.clone()
         },
         (attrs, Deref @ "startTime") => {
-            let mut objectiveE: Option<Arc<DAE::Exp>> = None;
-            let mut finalTimeE: Option<Arc<DAE::Exp>> = None;
-            let mut objectiveIntegrandE: Option<Arc<DAE::Exp>> = None;
+            let mut objectiveE: Option<Arc<DAE::Exp>>;
+            let mut finalTimeE: Option<Arc<DAE::Exp>>;
+            let mut objectiveIntegrandE: Option<Arc<DAE::Exp>>;
             let mut attrs = (*attrs).clone();
             let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(attrs.clone()) {
                 DAE::DAElist { elementLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::CLASS_ATTRIBUTES { classAttrs: Deref @ DAE::ClassAttributes { objetiveE: __pa0, objectiveIntegrandE: __pa1, startTimeE: _, finalTimeE: __pa2 } }, tail: Deref @ metamodelica::List::Nil } } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
@@ -4410,9 +4410,9 @@ fn insertClassAttribute(mut inAttrs: DAE::DAElist, mut attrName: ArcStr, mut inA
             attrs.clone()
         },
         (attrs, Deref @ "finalTime") => {
-            let mut objectiveE: Option<Arc<DAE::Exp>> = None;
-            let mut startTimeE: Option<Arc<DAE::Exp>> = None;
-            let mut objectiveIntegrandE: Option<Arc<DAE::Exp>> = None;
+            let mut objectiveE: Option<Arc<DAE::Exp>>;
+            let mut startTimeE: Option<Arc<DAE::Exp>>;
+            let mut objectiveIntegrandE: Option<Arc<DAE::Exp>>;
             let mut attrs = (*attrs).clone();
             let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(attrs.clone()) {
                 DAE::DAElist { elementLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::CLASS_ATTRIBUTES { classAttrs: Deref @ DAE::ClassAttributes { objetiveE: __pa0, objectiveIntegrandE: __pa1, startTimeE: __pa2, finalTimeE: _ } }, tail: Deref @ metamodelica::List::Nil } } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
@@ -4453,10 +4453,10 @@ pub fn instantiateBoschClass(mut inCache: FCore::Cache, mut inIH: Arc<metamodeli
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, ih, cdecls @ Deref @ metamodelica::List::Cons { head: _, tail: _ }, path @ Deref @ Absyn::Path::IDENT { .. }) => {
-                    let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut env_1: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut env_2: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
+                    let mut env: FCore::Graph;
+                    let mut env_1: FCore::Graph;
+                    let mut env_2: FCore::Graph;
+                    let mut dae: DAE::DAElist;
                     let mut cache = (*cache).clone();
                     let mut ih = (*ih).clone();
                     (cache, env) = Builtin::initialGraph(cache.clone())?;
@@ -4470,11 +4470,11 @@ pub fn instantiateBoschClass(mut inCache: FCore::Cache, mut inIH: Arc<metamodeli
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, ih, cdecls @ Deref @ metamodelica::List::Cons { head: _, tail: _ }, path @ Deref @ Absyn::Path::QUALIFIED { .. }) => {
-                    let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut env_1: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut env_2: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-                    let mut cdef: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
+                    let mut env: FCore::Graph;
+                    let mut env_1: FCore::Graph;
+                    let mut env_2: FCore::Graph;
+                    let mut dae: DAE::DAElist;
+                    let mut cdef: Arc<SCode::Element>;
                     let mut cache = (*cache).clone();
                     let mut ih = (*ih).clone();
                     (cache, env) = Builtin::initialGraph(cache.clone())?;
@@ -4495,7 +4495,7 @@ pub fn instantiateBoschClass(mut inCache: FCore::Cache, mut inIH: Arc<metamodeli
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _, _, path) => {
-                    let mut cname_str: ArcStr = arcstr::literal!("");
+                    let mut cname_str: ArcStr;
                     cname_str = (AbsynUtil::pathString(path.clone(), (literal!(".")).clone(), true, false)?).clone();
                     Error::addMessage(Error::ERROR_FLATTENING.clone(), list![(cname_str.clone()).clone()])?;
                     Ok(bail!("fail"))
@@ -4518,8 +4518,8 @@ fn instBoschClassInProgram(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, m
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, Deref @ metamodelica::List::Cons { head: c @ Deref @ SCode::Element::CLASS { name: name1, .. }, tail: _ }, Deref @ Absyn::Path::IDENT { name: name2 }) => {
-                    let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-                    let mut env_1: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
+                    let mut dae: DAE::DAElist;
+                    let mut env_1: FCore::Graph;
                     let mut cache = (*cache).clone();
                     let mut ih = (*ih).clone();
                     let true = (stringEq((name1.clone()).clone(), (name2.clone()).clone())) else { bail!("pattern mismatch") };
@@ -4532,7 +4532,7 @@ fn instBoschClassInProgram(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, m
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, Deref @ metamodelica::List::Cons { head: Deref @ SCode::Element::CLASS { name: name1, .. }, tail: cs }, path @ Deref @ Absyn::Path::IDENT { name: name2 }) => {
-                    let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
+                    let mut dae: DAE::DAElist;
                     let mut cache = (*cache).clone();
                     let mut env = (*env).clone();
                     let mut ih = (*ih).clone();
@@ -4582,9 +4582,9 @@ fn removeSelfReferenceAndUpdate(mut inCache: FCore::Cache, mut inEnv: FCore::Gra
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, store, cl1, c1, _, _, _, _) => {
-                    let mut cl2: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
-                    let mut i1: i32 = 0;
-                    let mut i2: i32 = 0;
+                    let mut cl2: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>;
+                    let mut i1: i32;
+                    let mut i2: i32;
                     cl2 = InstUtil::removeCrefFromCrefs(cl1.clone(), c1.clone())?;
                     i1 = (cl2.clone().len() as i32);
                     i2 = (cl1.clone().len() as i32);
@@ -4597,17 +4597,17 @@ fn removeSelfReferenceAndUpdate(mut inCache: FCore::Cache, mut inEnv: FCore::Gra
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, store, cl1, c1 @ Deref @ Absyn::ComponentRef::CREF_IDENT { name: n, .. }, sty, state, attr @ SCode::Attributes { arrayDims: ad, connectorType: ct, parallelism: prl1, variability: var1, direction: dir, .. }, inst_dims) => {
-                    let mut cl2: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
-                    let mut compenv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut cenv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut c: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
-                    let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut vis: SCode::Visibility = SCode::Visibility::PROTECTED;
-                    let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
-                    let mut new_var: Arc<DAE::Var> = Arc::new(<DAE::Var as ::std::default::Default>::default());
-                    let mut io: Absyn::InnerOuter = Absyn::InnerOuter::INNER;
-                    let mut m: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
-                    let mut smod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
+                    let mut cl2: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>;
+                    let mut compenv: FCore::Graph;
+                    let mut cenv: FCore::Graph;
+                    let mut c: Arc<SCode::Element>;
+                    let mut ty: Arc<DAE::Type>;
+                    let mut vis: SCode::Visibility;
+                    let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>;
+                    let mut new_var: Arc<DAE::Var>;
+                    let mut io: Absyn::InnerOuter;
+                    let mut m: Arc<DAE::Mod>;
+                    let mut smod: Arc<SCode::Mod>;
                     let mut cache = (*cache).clone();
                     let mut env = (*env).clone();
                     let mut ih = (*ih).clone();
@@ -4642,17 +4642,17 @@ fn removeSelfReferenceAndUpdate(mut inCache: FCore::Cache, mut inEnv: FCore::Gra
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, store, cl1, c1 @ Deref @ Absyn::ComponentRef::CREF_IDENT { name: n, .. }, sty, state, attr @ SCode::Attributes { arrayDims: ad, connectorType: ct, parallelism: prl1, variability: var1, direction: dir, .. }, inst_dims) => {
-                    let mut cl2: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
-                    let mut compenv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut cenv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut c: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
-                    let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut vis: SCode::Visibility = SCode::Visibility::PROTECTED;
-                    let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
-                    let mut new_var: Arc<DAE::Var> = Arc::new(<DAE::Var as ::std::default::Default>::default());
-                    let mut io: Absyn::InnerOuter = Absyn::InnerOuter::INNER;
-                    let mut m: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
-                    let mut smod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
+                    let mut cl2: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>;
+                    let mut compenv: FCore::Graph;
+                    let mut cenv: FCore::Graph;
+                    let mut c: Arc<SCode::Element>;
+                    let mut ty: Arc<DAE::Type>;
+                    let mut vis: SCode::Visibility;
+                    let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>;
+                    let mut new_var: Arc<DAE::Var>;
+                    let mut io: Absyn::InnerOuter;
+                    let mut m: Arc<DAE::Mod>;
+                    let mut smod: Arc<SCode::Mod>;
                     let mut cache = (*cache).clone();
                     let mut env = (*env).clone();
                     let mut ih = (*ih).clone();
@@ -4687,17 +4687,17 @@ fn removeSelfReferenceAndUpdate(mut inCache: FCore::Cache, mut inEnv: FCore::Gra
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, store, cl1, c1 @ Deref @ Absyn::ComponentRef::CREF_IDENT { name: n, .. }, sty, state, attr @ SCode::Attributes { arrayDims: ad, connectorType: ct, parallelism: prl1, variability: var1, direction: dir, .. }, inst_dims) => {
-                    let mut cl2: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
-                    let mut compenv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut cenv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut c: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
-                    let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut vis: SCode::Visibility = SCode::Visibility::PROTECTED;
-                    let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
-                    let mut new_var: Arc<DAE::Var> = Arc::new(<DAE::Var as ::std::default::Default>::default());
-                    let mut io: Absyn::InnerOuter = Absyn::InnerOuter::INNER;
-                    let mut m: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
-                    let mut smod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
+                    let mut cl2: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>;
+                    let mut compenv: FCore::Graph;
+                    let mut cenv: FCore::Graph;
+                    let mut c: Arc<SCode::Element>;
+                    let mut ty: Arc<DAE::Type>;
+                    let mut vis: SCode::Visibility;
+                    let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>;
+                    let mut new_var: Arc<DAE::Var>;
+                    let mut io: Absyn::InnerOuter;
+                    let mut m: Arc<DAE::Mod>;
+                    let mut smod: Arc<SCode::Mod>;
                     let mut cache = (*cache).clone();
                     let mut env = (*env).clone();
                     let mut ih = (*ih).clone();
@@ -4732,16 +4732,16 @@ fn removeSelfReferenceAndUpdate(mut inCache: FCore::Cache, mut inEnv: FCore::Gra
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, store, cl1, c1 @ Deref @ Absyn::ComponentRef::CREF_IDENT { name: n, .. }, sty, state, attr @ SCode::Attributes { arrayDims: ad, connectorType: ct, parallelism: prl1, variability: var1, direction: dir, .. }, inst_dims) => {
-                    let mut cl2: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
-                    let mut compenv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut cenv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut c: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
-                    let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut vis: SCode::Visibility = SCode::Visibility::PROTECTED;
-                    let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
-                    let mut new_var: Arc<DAE::Var> = Arc::new(<DAE::Var as ::std::default::Default>::default());
-                    let mut io: Absyn::InnerOuter = Absyn::InnerOuter::INNER;
-                    let mut m: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
+                    let mut cl2: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>;
+                    let mut compenv: FCore::Graph;
+                    let mut cenv: FCore::Graph;
+                    let mut c: Arc<SCode::Element>;
+                    let mut ty: Arc<DAE::Type>;
+                    let mut vis: SCode::Visibility;
+                    let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>;
+                    let mut new_var: Arc<DAE::Var>;
+                    let mut io: Absyn::InnerOuter;
+                    let mut m: Arc<DAE::Mod>;
                     let mut cache = (*cache).clone();
                     let mut env = (*env).clone();
                     let mut ih = (*ih).clone();
@@ -4775,7 +4775,7 @@ fn removeSelfReferenceAndUpdate(mut inCache: FCore::Cache, mut inEnv: FCore::Gra
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, store, cl1, c1, _, _, _, _) => {
-                    let mut cl2: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
+                    let mut cl2: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>;
                     cl2 = InstUtil::removeCrefFromCrefs(cl1.clone(), c1.clone())?;
                     Ok((cache.clone(), env.clone(), ih.clone(), store.clone(), cl2.clone()))
                 }

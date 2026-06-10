@@ -92,8 +92,8 @@ pub fn path(mut inGraph: Graph, mut inPath: Arc<Absyn::Path>) -> Result<(Graph, 
     let mut outRef: Ref;
     (outGraph, outRef) = (match inGraph.clone() {
         mut g => {
-            let mut r: Ref = Default::default();
-            let mut t: Ref = Default::default();
+            let mut r: Ref;
+            let mut t: Ref;
             t = FGraph::top(g.clone())?;
             r = t.clone();
             (g.clone(), r.clone())
@@ -106,7 +106,7 @@ pub fn all(mut inGraph: Graph) -> Result<Graph> {
     let mut outGraph: Graph;
     outGraph = (match inGraph.clone() {
         mut g => {
-            let mut lst: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
+            let mut lst: Arc<metamodelica::List<metamodelica::Real>>;
             lst = metamodelica::nil();
             System::startTimer();
             g = FResolve::ext(FGraph::top(g.clone())?, g.clone())?;

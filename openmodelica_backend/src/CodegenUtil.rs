@@ -118,7 +118,7 @@ pub fn crefStr(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>) -> Re
     '__tco: loop {
         ::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone())) {
         (txt, Deref @ DAE::ComponentRef::CREF_IDENT { ident: i_ident, subscriptLst: i_subscriptLst, .. }) => {
-            let mut ret_0: ArcStr = arcstr::literal!("");
+            let mut ret_0: ArcStr;
             let mut txt = (*txt).clone();
             ret_0 = (System::unquoteIdentifier((i_ident.clone()).clone())).clone();
             txt = Tpl::writeStr(txt.clone(), (ret_0.clone()).clone())?;
@@ -137,7 +137,7 @@ pub fn crefStr(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>) -> Re
             return Ok(Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(")")).clone() }))?)
         },
         (txt, Deref @ DAE::ComponentRef::CREF_QUAL { ident: i_ident, subscriptLst: i_subscriptLst, componentRef: i_componentRef, .. }) => {
-            let mut ret_1: ArcStr = arcstr::literal!("");
+            let mut ret_1: ArcStr;
             let mut txt = (*txt).clone();
             ret_1 = (System::unquoteIdentifier((i_ident.clone()).clone())).clone();
             txt = Tpl::writeStr(txt.clone(), (ret_1.clone()).clone())?;
@@ -315,7 +315,7 @@ pub fn subscriptStr(mut in_txt: Tpl::Text, mut in_a_subscript: Arc<DAE::Subscrip
             txt.clone()
         },
         (txt, Deref @ DAE::Subscript::INDEX { exp: i_exp @ Deref @ DAE::Exp::CREF { componentRef: _, .. } }) => {
-            let mut ret_0: ArcStr = arcstr::literal!("");
+            let mut ret_0: ArcStr;
             let mut txt = (*txt).clone();
             ret_0 = (ExpressionBasics::printExpStr(i_exp.clone())?).clone();
             txt = Tpl::writeStr(txt.clone(), (ret_0.clone()).clone())?;
@@ -327,7 +327,7 @@ pub fn subscriptStr(mut in_txt: Tpl::Text, mut in_a_subscript: Arc<DAE::Subscrip
             txt.clone()
         },
         (txt, Deref @ DAE::Subscript::INDEX { exp: i_exp }) => {
-            let mut ret_1: ArcStr = arcstr::literal!("");
+            let mut ret_1: ArcStr;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("UNKNOWN_SUBSCRIPT /* ")).clone() }))?;
             ret_1 = (ExpressionBasics::printExpStr(i_exp.clone())?).clone();
@@ -336,7 +336,7 @@ pub fn subscriptStr(mut in_txt: Tpl::Text, mut in_a_subscript: Arc<DAE::Subscrip
             txt.clone()
         },
         (txt, Deref @ DAE::Subscript::SLICE { exp: i_exp }) => {
-            let mut ret_2: ArcStr = arcstr::literal!("");
+            let mut ret_2: ArcStr;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("UNKNOWN_SUBSCRIPT /* ")).clone() }))?;
             ret_2 = (ExpressionBasics::printExpStr(i_exp.clone())?).clone();
@@ -408,16 +408,16 @@ pub fn crefCComment(mut in_txt: Tpl::Text, mut in_a_v: SimCodeVar::SimVar, mut i
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_v.clone(), in_a_vName.clone()) {
         (mut txt, SimCodeVar::SimVar { isProtected: true, .. }, mut a_vName) => {
-            let mut ret_1: bool = false;
-            let mut ret_0: ArcStr = arcstr::literal!("");
+            let mut ret_1: bool;
+            let mut ret_0: ArcStr;
             ret_0 = (Flags::getConfigString(Flags::OBFUSCATE.clone())?).clone();
             ret_1 = stringEq((ret_0.clone()).clone(), (literal!("none")).clone());
             txt = fun_56(txt.clone(), ret_1.clone(), (a_vName.clone()).clone())?;
             txt.clone()
         },
         (mut txt, SimCodeVar::SimVar { name: _, .. }, mut a_vName) => {
-            let mut ret_3: bool = false;
-            let mut ret_2: ArcStr = arcstr::literal!("");
+            let mut ret_3: bool;
+            let mut ret_2: ArcStr;
             ret_2 = (Flags::getConfigString(Flags::OBFUSCATE.clone())?).clone();
             ret_3 = stringEq((ret_2.clone()).clone(), (literal!("full")).clone());
             txt = fun_57(txt.clone(), ret_3.clone(), (a_vName.clone()).clone())?;
@@ -437,7 +437,7 @@ fn fun_59(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_varKind: BackendDAE
             txt.clone()
         },
         (txt, _, a_varKind, a_name) => {
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_0: Tpl::Text;
             let mut txt = (*txt).clone();
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 1 }))?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("/* ")).clone() }))?;
@@ -458,7 +458,7 @@ fn fun_60(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_varKind: BackendDAE
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_varKind.clone(), in_a_name.clone())) {
         (txt, false, a_varKind, a_name) => {
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_0: Tpl::Text;
             let mut txt = (*txt).clone();
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 1 }))?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("/* ")).clone() }))?;
@@ -482,16 +482,16 @@ pub fn crefCCommentWithVariability(mut in_txt: Tpl::Text, mut in_a_v: SimCodeVar
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_v.clone()) {
         (mut txt, SimCodeVar::SimVar { isProtected: true, name: ref i_name, varKind: mut i_varKind, .. }) => {
-            let mut ret_1: bool = false;
-            let mut ret_0: ArcStr = arcstr::literal!("");
+            let mut ret_1: bool;
+            let mut ret_0: ArcStr;
             ret_0 = (Flags::getConfigString(Flags::OBFUSCATE.clone())?).clone();
             ret_1 = stringEq((ret_0.clone()).clone(), (literal!("none")).clone());
             txt = fun_59(txt.clone(), ret_1.clone(), i_varKind.clone(), i_name.clone())?;
             txt.clone()
         },
         (mut txt, SimCodeVar::SimVar { name: ref i_name, varKind: mut i_varKind, .. }) => {
-            let mut ret_3: bool = false;
-            let mut ret_2: ArcStr = arcstr::literal!("");
+            let mut ret_3: bool;
+            let mut ret_2: ArcStr;
             ret_2 = (Flags::getConfigString(Flags::OBFUSCATE.clone())?).clone();
             ret_3 = stringEq((ret_2.clone()).clone(), (literal!("full")).clone());
             txt = fun_60(txt.clone(), ret_3.clone(), i_varKind.clone(), i_name.clone())?;
@@ -541,8 +541,8 @@ pub fn initDefaultValXml(mut in_txt: Tpl::Text, mut in_a_type__: Arc<DAE::Type>)
             txt.clone()
         },
         (txt, i_type__) => {
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_0: ArcStr = arcstr::literal!("");
+            let mut txt_0: Tpl::Text;
+            let mut ret_0: ArcStr;
             let mut txt = (*txt).clone();
             txt_0 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("initial value of unknown type: ")).clone() }))?;
             ret_0 = (TypesDump::unparseType(i_type__.clone())?).clone();
@@ -601,7 +601,7 @@ pub fn initValXml(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_s
             txt.clone()
         },
         (txt, Deref @ DAE::Exp::SCONST { string: i_string }, a_stringQuotes) => {
-            let mut ret_0: ArcStr = arcstr::literal!("");
+            let mut ret_0: ArcStr;
             let mut txt = (*txt).clone();
             txt = Tpl::writeStr(txt.clone(), (a_stringQuotes.clone()).clone())?;
             ret_0 = (Util::escapeModelicaStringToXmlString((i_string.clone()).clone())?).clone();
@@ -622,7 +622,7 @@ pub fn initValXml(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_s
             txt.clone()
         },
         (txt, Deref @ DAE::Exp::REDUCTION { expr: i_expr, .. }, a_stringQuotes) => {
-            let mut ret_1: bool = false;
+            let mut ret_1: bool;
             let mut txt = (*txt).clone();
             ret_1 = Expression::isSimpleLiteralValue(i_expr.clone(), true)?;
             txt = fun_65(txt.clone(), ret_1.clone(), (a_stringQuotes.clone()).clone(), i_expr.clone())?;
@@ -634,7 +634,7 @@ pub fn initValXml(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_s
             txt.clone()
         },
         (txt, i_exp, _) => {
-            let mut txt_2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_2: Tpl::Text;
             let mut txt = (*txt).clone();
             txt_2 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("initial value of unknown type: ")).clone() }))?;
             txt_2 = ExpressionDumpTpl::dumpExp(txt_2.clone(), i_exp.clone(), (literal!("\"")).clone())?;
@@ -910,7 +910,7 @@ fn fun_73(mut in_txt: Tpl::Text, mut in_a_language: ArcStr, mut in_a_name: ArcSt
             txt.clone()
         },
         (txt, i_language, _) => {
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_0: Tpl::Text;
             let mut txt = (*txt).clone();
             txt_0 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Unsupported external language: ")).clone() }))?;
             txt_0 = Tpl::writeStr(txt_0.clone(), (i_language.clone()).clone())?;

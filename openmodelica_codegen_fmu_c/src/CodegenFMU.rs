@@ -42,8 +42,8 @@ fn fun_54(mut in_txt: Tpl::Text, mut in_a_sc_fmiSimulationFlags: Option<SimCode:
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_sc_fmiSimulationFlags.clone(), in_a_fileNamePrefix.clone(), in_a_fileNamePrefixHash.clone()) {
         (mut txt, Some(mut i_fmiSimFlags @ SimCode::FmiSimulationFlags::FMI_SIMULATION_FLAGS { nameValueTuples: _ }), mut a_fileNamePrefix, mut a_fileNamePrefixHash) => {
-            let mut txt_1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_1: Tpl::Text;
+            let mut txt_0: Tpl::Text;
             txt_0 = fmuSimulationFlagsFile(Tpl::emptyTxt.clone(), i_fmiSimFlags.clone())?;
             txt_1 = Tpl::writeText(Tpl::emptyTxt.clone(), a_fileNamePrefixHash.clone())?;
             txt_1 = Tpl::writeTok(txt_1.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".fmutmp/resources/")).clone() }))?;
@@ -63,41 +63,41 @@ pub fn translateModel(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode,
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_simCode.clone(), in_a_FMUVersion.clone(), in_a_FMUType.clone(), in_a_sourceFiles.clone())) {
         (txt, i_sc @ SimCode::SimCode { modelInfo: SimCode::ModelInfo { functions: i_modelInfo_functions, .. }, fileNamePrefix: i_fileNamePrefix, literals: i_literals, recordDecls: i_recordDecls, generic_loop_calls: i_generic__loop__calls @ i_sc_generic__loop__calls, externalFunctionIncludes: i_sc_externalFunctionIncludes, fmiSimulationFlags: i_sc_fmiSimulationFlags, .. }, a_FMUVersion, a_FMUType, a_sourceFiles) => {
-            let mut txt_34: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_33: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_32: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_31: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_30: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_29: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_0___1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_27: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_26: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_25: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_24: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_23: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_22: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_21: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_20: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_0__: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_18: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_17: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_16: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_15: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_14: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_13: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_12: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_11: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_10: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_9: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_8: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_7: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_fileNamePrefixTmpDir: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_5: ArcStr = arcstr::literal!("");
-            let mut l_fileNamePrefixHash: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_3: ArcStr = arcstr::literal!("");
-            let mut l_target: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_1: ArcStr = arcstr::literal!("");
-            let mut l_guid: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_34: Tpl::Text;
+            let mut txt_33: Tpl::Text;
+            let mut txt_32: Tpl::Text;
+            let mut txt_31: Tpl::Text;
+            let mut txt_30: Tpl::Text;
+            let mut txt_29: Tpl::Text;
+            let mut l_0___1: Tpl::Text;
+            let mut txt_27: Tpl::Text;
+            let mut txt_26: Tpl::Text;
+            let mut txt_25: Tpl::Text;
+            let mut txt_24: Tpl::Text;
+            let mut txt_23: Tpl::Text;
+            let mut txt_22: Tpl::Text;
+            let mut txt_21: Tpl::Text;
+            let mut txt_20: Tpl::Text;
+            let mut l_0__: Tpl::Text;
+            let mut txt_18: Tpl::Text;
+            let mut txt_17: Tpl::Text;
+            let mut txt_16: Tpl::Text;
+            let mut txt_15: Tpl::Text;
+            let mut txt_14: Tpl::Text;
+            let mut txt_13: Tpl::Text;
+            let mut txt_12: Tpl::Text;
+            let mut txt_11: Tpl::Text;
+            let mut txt_10: Tpl::Text;
+            let mut txt_9: Tpl::Text;
+            let mut txt_8: Tpl::Text;
+            let mut txt_7: Tpl::Text;
+            let mut l_fileNamePrefixTmpDir: Tpl::Text;
+            let mut ret_5: ArcStr;
+            let mut l_fileNamePrefixHash: Tpl::Text;
+            let mut ret_3: ArcStr;
+            let mut l_target: Tpl::Text;
+            let mut ret_1: ArcStr;
+            let mut l_guid: Tpl::Text;
             ret_1 = (System::getUUIDStr()).clone();
             l_guid = Tpl::writeStr(Tpl::emptyTxt.clone(), (ret_1.clone()).clone())?;
             ret_3 = (Config::simulationCodeTarget()?).clone();
@@ -182,50 +182,50 @@ pub fn generateSimulationFiles(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode:
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_simCode.clone(), in_a_guid.clone(), in_a_modelNamePrefix.clone(), in_a_fmuVersion.clone()) {
         (mut txt, mut i_simCode @ SimCode::SimCode { modelInfo: _, .. }, mut a_guid, mut a_modelNamePrefix, mut a_fmuVersion) => {
-            let mut txt_43: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_42: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_41: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_40: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_39: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_38: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_37: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_36: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_35: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_34: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_33: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_32: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_31: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_30: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_29: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_28: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_27: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_26: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_25: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_24: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_23: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_22: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_21: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_mixheader: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_19: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_18: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_17: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_16: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_15: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_14: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_13: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_12: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_11: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_10: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_9: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_8: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_7: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_6: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_5: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_4: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_3: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_43: Tpl::Text;
+            let mut txt_42: Tpl::Text;
+            let mut txt_41: Tpl::Text;
+            let mut txt_40: Tpl::Text;
+            let mut txt_39: Tpl::Text;
+            let mut txt_38: Tpl::Text;
+            let mut txt_37: Tpl::Text;
+            let mut txt_36: Tpl::Text;
+            let mut txt_35: Tpl::Text;
+            let mut txt_34: Tpl::Text;
+            let mut txt_33: Tpl::Text;
+            let mut txt_32: Tpl::Text;
+            let mut txt_31: Tpl::Text;
+            let mut txt_30: Tpl::Text;
+            let mut txt_29: Tpl::Text;
+            let mut txt_28: Tpl::Text;
+            let mut txt_27: Tpl::Text;
+            let mut txt_26: Tpl::Text;
+            let mut txt_25: Tpl::Text;
+            let mut txt_24: Tpl::Text;
+            let mut txt_23: Tpl::Text;
+            let mut txt_22: Tpl::Text;
+            let mut txt_21: Tpl::Text;
+            let mut l_mixheader: Tpl::Text;
+            let mut txt_19: Tpl::Text;
+            let mut txt_18: Tpl::Text;
+            let mut txt_17: Tpl::Text;
+            let mut txt_16: Tpl::Text;
+            let mut txt_15: Tpl::Text;
+            let mut txt_14: Tpl::Text;
+            let mut txt_13: Tpl::Text;
+            let mut txt_12: Tpl::Text;
+            let mut txt_11: Tpl::Text;
+            let mut txt_10: Tpl::Text;
+            let mut txt_9: Tpl::Text;
+            let mut txt_8: Tpl::Text;
+            let mut txt_7: Tpl::Text;
+            let mut txt_6: Tpl::Text;
+            let mut txt_5: Tpl::Text;
+            let mut txt_4: Tpl::Text;
+            let mut txt_3: Tpl::Text;
+            let mut txt_2: Tpl::Text;
+            let mut txt_1: Tpl::Text;
+            let mut txt_0: Tpl::Text;
             System::tmpTickResetIndex(0, 0);
             System::tmpTickResetIndex(0, 1);
             txt_0 = CodegenC::simulationFile_exo(Tpl::emptyTxt.clone(), i_simCode.clone())?;
@@ -381,7 +381,7 @@ pub fn fmuModelDescriptionFile(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode:
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_simCode.clone(), in_a_guid.clone(), in_a_FMUVersion.clone(), in_a_FMUType.clone(), in_a_sourceFiles.clone())) {
         (txt, i_simCode @ SimCode::SimCode { modelInfo: _, .. }, a_guid, a_FMUVersion, a_FMUType, a_sourceFiles) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")).clone() }))?;
             ret_0 = FMI::isFMIVersion20((a_FMUVersion.clone()).clone())?;
@@ -421,7 +421,7 @@ pub fn fmuSimulationFlagsFile(mut in_txt: Tpl::Text, mut in_a_fmiSimulationFlags
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_fmiSimulationFlags.clone()) {
         (mut txt, SimCode::FmiSimulationFlags::FMI_SIMULATION_FLAGS { nameValueTuples: ref i_flags_nameValueTuples }) => {
-            let mut l_fileContent: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_fileContent: Tpl::Text;
             l_fileContent = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(",\n")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             l_fileContent = lm_59(l_fileContent.clone(), i_flags_nameValueTuples.clone())?;
             l_fileContent = Tpl::popIter(l_fileContent.clone())?;
@@ -458,7 +458,7 @@ fn fun_62(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_simCode: SimCode::S
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_simCode.clone()) {
         (mut txt, false, mut a_simCode) => {
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_0: Tpl::Text;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("#define fmu1_model_interface_setupDataStruc ")).clone() }))?;
             txt_0 = CodegenUtilSimulation::modelNamePrefix(Tpl::emptyTxt.clone(), a_simCode.clone())?;
             txt = CodegenUtil::symbolName(txt.clone(), (Tpl::textString(txt_0.clone())?).clone(), (literal!("setupDataStruc")).clone())?;
@@ -467,7 +467,7 @@ fn fun_62(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_simCode: SimCode::S
             txt.clone()
         },
         (mut txt, _, mut a_simCode) => {
-            let mut txt_1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_1: Tpl::Text;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("#define fmu2_model_interface_setupDataStruc ")).clone() }))?;
             txt_1 = CodegenUtilSimulation::modelNamePrefix(Tpl::emptyTxt.clone(), a_simCode.clone())?;
             txt = CodegenUtil::symbolName(txt.clone(), (Tpl::textString(txt_1.clone())?).clone(), (literal!("setupDataStruc")).clone())?;
@@ -515,10 +515,10 @@ fn fun_65(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_gu
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_simCode.clone(), in_a_guid.clone(), in_a_FMUVersion.clone()) {
         (mut txt, ref i_simCode @ SimCode::SimCode { modelInfo: ref i_modelInfo, .. }, mut a_guid, mut a_FMUVersion) => {
-            let mut ret_3: bool = false;
-            let mut ret_2: bool = false;
-            let mut ret_1: bool = false;
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_3: bool;
+            let mut ret_2: bool;
+            let mut ret_1: bool;
+            let mut txt_0: Tpl::Text;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("#ifndef ")).clone() }))?;
             txt = CodegenUtilSimulation::modelNamePrefix(txt.clone(), i_simCode.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("_FMU_H\n")).clone(), (literal!("#define ")).clone()], lastHasNewLine: false }))?;
@@ -629,7 +629,7 @@ fn fun_68(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_FM
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_simCode.clone(), in_a_FMUVersion.clone(), in_a_FMUType.clone()) {
         (mut txt, ref i_simCode @ SimCode::SimCode { fileNamePrefix: ref i_fileNamePrefix, modelInfo: ref i_modelInfo, .. }, mut a_FMUVersion, mut a_FMUType) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("#include \"")).clone() }))?;
             txt = CodegenUtilSimulation::modelNamePrefix(txt.clone(), i_simCode.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("_FMU.h\"\n")).clone(), (literal!("\n")).clone(), (literal!("// include fmu header files, typedefs and macros\n")).clone(), (literal!("#include <stdio.h>\n")).clone(), (literal!("#include <string.h>\n")).clone(), (literal!("#include <assert.h>\n")).clone(), (literal!("#include \"openmodelica.h\"\n")).clone(), (literal!("#include \"openmodelica_func.h\"\n")).clone(), (literal!("#include \"util/omc_error.h\"\n")).clone(), (literal!("#include \"")).clone()], lastHasNewLine: false }))?;
@@ -681,7 +681,7 @@ fn fun_71(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_simCode: SimCode::S
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_simCode.clone(), in_a_name.clone())) {
         (txt, false, a_simCode, a_name) => {
-            let mut ret_0: i32 = 0;
+            let mut ret_0: i32;
             let mut txt = (*txt).clone();
             ret_0 = SimCodeUtil::lookupVR(a_name.clone(), a_simCode.clone())?;
             txt = Tpl::writeStr(txt.clone(), (intString(ret_0.clone())).clone())?;
@@ -702,8 +702,8 @@ fn lm_72(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar:
             return Ok(txt.clone())
         },
         (txt, Deref @ metamodelica::List::Cons { head: SimCodeVar::SimVar { name: i_name, .. }, tail: rest }, a_simCode) => {
-            let mut ret_1: bool = false;
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_1: bool;
+            let mut txt_0: Tpl::Text;
             let mut txt = (*txt).clone();
             txt_0 = CodegenUtil::crefStr(Tpl::emptyTxt.clone(), i_name.clone())?;
             ret_1 = stringEq((Tpl::textString(txt_0.clone())?).clone(), (literal!("$dummy")).clone());
@@ -724,7 +724,7 @@ fn fun_73(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_simCode: SimCode::S
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_simCode.clone(), in_a_name.clone())) {
         (txt, false, a_simCode, a_name) => {
-            let mut ret_0: i32 = 0;
+            let mut ret_0: i32;
             let mut txt = (*txt).clone();
             ret_0 = SimCodeUtil::lookupVR(a_name.clone(), a_simCode.clone())?;
             txt = Tpl::writeStr(txt.clone(), (intString(ret_0.clone())).clone())?;
@@ -745,8 +745,8 @@ fn lm_74(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar:
             return Ok(txt.clone())
         },
         (txt, Deref @ metamodelica::List::Cons { head: SimCodeVar::SimVar { name: i_name, .. }, tail: rest }, a_simCode) => {
-            let mut ret_1: bool = false;
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_1: bool;
+            let mut txt_0: Tpl::Text;
             let mut txt = (*txt).clone();
             txt_0 = CodegenUtil::crefStr(Tpl::emptyTxt.clone(), i_name.clone())?;
             ret_1 = stringEq((Tpl::textString(txt_0.clone())?).clone(), (literal!("der($dummy)")).clone());
@@ -784,24 +784,24 @@ fn fun_76(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::ModelInfo, mut in_
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_modelInfo.clone(), in_a_simCode.clone())) {
         (txt, SimCode::ModelInfo { varInfo: SimCode::VarInfo { numStateVars: i_varInfo_numStateVars, numDiscreteReal: i_varInfo_numDiscreteReal, numAlgVars: i_varInfo_numAlgVars, numParams: i_varInfo_numParams, numAlgAliasVars: i_varInfo_numAlgAliasVars, numIntAlgVars: i_varInfo_numIntAlgVars, numIntParams: i_varInfo_numIntParams, numIntAliasVars: i_varInfo_numIntAliasVars, numStringAlgVars: i_varInfo_numStringAlgVars, numStringParamVars: i_varInfo_numStringParamVars, numStringAliasVars: i_varInfo_numStringAliasVars, numBoolAlgVars: i_varInfo_numBoolAlgVars, numBoolParams: i_varInfo_numBoolParams, numBoolAliasVars: i_varInfo_numBoolAliasVars, numRealInputVars: i_varInfo_numRealInputVars, numZeroCrossings: i_varInfo_numZeroCrossings, .. }, vars: SimCodeVar::SimVars { stateVars: i_vars_stateVars @ i_listStates, derivativeVars: i_vars_derivativeVars, .. }, functions: i_functions, .. }, a_simCode) => {
-            let mut ret_17: i32 = 0;
-            let mut ret_16: bool = false;
-            let mut l_numberOfRealInputs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_14: i32 = 0;
-            let mut ret_13: i32 = 0;
-            let mut l_numberOfBooleans: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_11: i32 = 0;
-            let mut ret_10: i32 = 0;
-            let mut l_numberOfStrings: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_8: i32 = 0;
-            let mut ret_7: i32 = 0;
-            let mut l_numberOfIntegers: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_5: i32 = 0;
-            let mut ret_4: i32 = 0;
-            let mut ret_3: i32 = 0;
-            let mut ret_2: i32 = 0;
-            let mut ret_1: i32 = 0;
-            let mut l_numberOfReals: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_17: i32;
+            let mut ret_16: bool;
+            let mut l_numberOfRealInputs: Tpl::Text;
+            let mut ret_14: i32;
+            let mut ret_13: i32;
+            let mut l_numberOfBooleans: Tpl::Text;
+            let mut ret_11: i32;
+            let mut ret_10: i32;
+            let mut l_numberOfStrings: Tpl::Text;
+            let mut ret_8: i32;
+            let mut ret_7: i32;
+            let mut l_numberOfIntegers: Tpl::Text;
+            let mut ret_5: i32;
+            let mut ret_4: i32;
+            let mut ret_3: i32;
+            let mut ret_2: i32;
+            let mut ret_1: i32;
+            let mut l_numberOfReals: Tpl::Text;
             let mut txt = (*txt).clone();
             ret_1 = intMul(i_varInfo_numStateVars.clone(), 2);
             ret_2 = intAdd(i_varInfo_numParams.clone(), i_varInfo_numAlgAliasVars.clone());
@@ -897,8 +897,8 @@ pub fn defineExternalFunction(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimCodeFun
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fn.clone())) {
         (txt, Deref @ SimCodeFunction::Function::EXTERNAL_FUNCTION { dynamicLoad: true, extName: i_extName, language: i_language, .. }) => {
-            let mut ret_1: i32 = 0;
-            let mut l_fname: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_1: i32;
+            let mut l_fname: Tpl::Text;
             let mut txt = (*txt).clone();
             l_fname = CodegenUtil::extFunctionName(Tpl::emptyTxt.clone(), (i_extName.clone()).clone(), (i_language.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("#define $P")).clone() }))?;
@@ -1419,8 +1419,8 @@ fn lm_104(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<SimCod
             return Ok((txt.clone(), a_sub.clone()))
         },
         (txt, Deref @ metamodelica::List::Cons { head: Deref @ SimCode::SimEqSystem::SES_SIMPLE_ASSIGN { cref: i_cref, .. }, tail: rest }, a_sub) => {
-            let mut ret_1: ArcStr = arcstr::literal!("");
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_1: ArcStr;
+            let mut txt_0: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_sub = (*a_sub).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("if (sim_verbose) { printf(\"Setting variable start value: %s(start=%f)\\n\", \"")).clone() }))?;
@@ -1522,8 +1522,8 @@ fn fun_108(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_var_index: i32, mu
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_var_index.clone(), in_a_arrayName.clone(), in_a_type__.clone(), in_a_name.clone())) {
         (txt, false, a_var_index, a_arrayName, a_type__, a_name) => {
-            let mut ret_1: bool = false;
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_1: bool;
+            let mut txt_0: Tpl::Text;
             let mut txt = (*txt).clone();
             txt_0 = CodegenUtil::crefStr(Tpl::emptyTxt.clone(), a_name.clone())?;
             ret_1 = stringEq((Tpl::textString(txt_0.clone())?).clone(), (literal!("der($dummy)")).clone());
@@ -1542,8 +1542,8 @@ pub fn initVals(mut in_txt: Tpl::Text, mut in_a_var: SimCodeVar::SimVar, mut in_
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_var.clone(), in_a_arrayName.clone()) {
         (mut txt, SimCodeVar::SimVar { type_: ref i_type__, name: ref i_name, index: mut i_var_index, .. }, mut a_arrayName) => {
-            let mut ret_1: bool = false;
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_1: bool;
+            let mut txt_0: Tpl::Text;
             txt_0 = CodegenUtil::crefStr(Tpl::emptyTxt.clone(), i_name.clone())?;
             ret_1 = stringEq((Tpl::textString(txt_0.clone())?).clone(), (literal!("$dummy")).clone());
             txt = fun_108(txt.clone(), ret_1.clone(), i_var_index.clone(), (a_arrayName.clone()).clone(), i_type__.clone(), i_name.clone())?;
@@ -1699,8 +1699,8 @@ fn fun_113(mut in_txt: Tpl::Text, mut in_a_var_type__: Arc<DAE::Type>) -> Result
             txt.clone()
         },
         (txt, i_var_type__) => {
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_0: ArcStr = arcstr::literal!("");
+            let mut txt_0: Tpl::Text;
+            let mut ret_0: ArcStr;
             let mut txt = (*txt).clone();
             txt_0 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Unknown type for initValDefault: ")).clone() }))?;
             ret_0 = (TypesDump::unparseType(i_var_type__.clone())?).clone();
@@ -1794,7 +1794,7 @@ pub fn initVal(mut in_txt: Tpl::Text, mut in_a_initialValue: Arc<DAE::Exp>) -> R
             txt.clone()
         },
         (txt, Deref @ DAE::Exp::SCONST { string: i_string }) => {
-            let mut ret_0: ArcStr = arcstr::literal!("");
+            let mut ret_0: ArcStr;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\"")).clone() }))?;
             ret_0 = (Util::escapeModelicaStringToXmlString((i_string.clone()).clone())?).clone();
@@ -1813,8 +1813,8 @@ pub fn initVal(mut in_txt: Tpl::Text, mut in_a_initialValue: Arc<DAE::Exp>) -> R
             txt.clone()
         },
         (txt, i_initialValue) => {
-            let mut txt_1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_1: ArcStr = arcstr::literal!("");
+            let mut txt_1: Tpl::Text;
+            let mut ret_1: ArcStr;
             let mut txt = (*txt).clone();
             txt_1 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("initial value of unknown type: ")).clone() }))?;
             ret_1 = (ExpressionBasics::printExpStr(i_initialValue.clone())?).clone();
@@ -2667,7 +2667,7 @@ pub fn setExternalFunction(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::M
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_modelInfo.clone()) {
         (mut txt, SimCode::ModelInfo { vars: SimCodeVar::SimVars { stateVars: _, .. }, functions: ref i_functions, .. }) => {
-            let mut l_externalFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_externalFuncs: Tpl::Text;
             l_externalFuncs = setExternalFunctionsSwitch(Tpl::emptyTxt.clone(), i_functions.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("fmiStatus setExternalFunction(ModelInstance* c, const fmiValueReference vr, const void* value){\n")).clone(), (literal!("  switch (vr) {\n")).clone()], lastHasNewLine: true }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 4 }))?;
@@ -2771,21 +2771,21 @@ fn fun_170(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::ModelInfo, mut in
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_modelInfo.clone(), in_a_simCode.clone()) {
         (mut txt, SimCode::ModelInfo { vars: SimCodeVar::SimVars { aliasVars: ref i_vars_aliasVars, .. }, varInfo: SimCode::VarInfo { numAlgAliasVars: mut i_numAlgAliasVars, numParams: mut i_numParams, numStateVars: mut i_numStateVars, numAlgVars: mut i_numAlgVars, numDiscreteReal: mut i_numDiscreteReal, .. }, .. }, mut a_simCode) => {
-            let mut ret_14: i32 = 0;
-            let mut ret_13: i32 = 0;
-            let mut ret_12: i32 = 0;
-            let mut ret_11: i32 = 0;
-            let mut ret_10: i32 = 0;
-            let mut l_ixEnd: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_8: i32 = 0;
-            let mut ret_7: i32 = 0;
-            let mut ret_6: i32 = 0;
-            let mut ret_5: i32 = 0;
-            let mut l_ixFirstAlias: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_3: i32 = 0;
-            let mut ret_2: i32 = 0;
-            let mut ret_1: i32 = 0;
-            let mut l_ixFirstParam: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_14: i32;
+            let mut ret_13: i32;
+            let mut ret_12: i32;
+            let mut ret_11: i32;
+            let mut ret_10: i32;
+            let mut l_ixEnd: Tpl::Text;
+            let mut ret_8: i32;
+            let mut ret_7: i32;
+            let mut ret_6: i32;
+            let mut ret_5: i32;
+            let mut l_ixFirstAlias: Tpl::Text;
+            let mut ret_3: i32;
+            let mut ret_2: i32;
+            let mut ret_1: i32;
+            let mut l_ixFirstParam: Tpl::Text;
             ret_1 = intMul(2, i_numStateVars.clone());
             ret_2 = intAdd(i_numAlgVars.clone(), i_numDiscreteReal.clone());
             ret_3 = intAdd(ret_1.clone(), ret_2.clone());
@@ -2862,21 +2862,21 @@ fn fun_173(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::ModelInfo) -> Res
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_modelInfo.clone()) {
         (mut txt, SimCode::ModelInfo { vars: SimCodeVar::SimVars { stateVars: _, .. }, varInfo: SimCode::VarInfo { numAlgAliasVars: mut i_numAlgAliasVars, numParams: mut i_numParams, numStateVars: mut i_numStateVars, numAlgVars: mut i_numAlgVars, numDiscreteReal: mut i_numDiscreteReal, .. }, .. }) => {
-            let mut ret_14: i32 = 0;
-            let mut ret_13: i32 = 0;
-            let mut ret_12: i32 = 0;
-            let mut ret_11: i32 = 0;
-            let mut ret_10: i32 = 0;
-            let mut l_ixEnd: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_8: i32 = 0;
-            let mut ret_7: i32 = 0;
-            let mut ret_6: i32 = 0;
-            let mut ret_5: i32 = 0;
-            let mut l_ixFirstAlias: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_3: i32 = 0;
-            let mut ret_2: i32 = 0;
-            let mut ret_1: i32 = 0;
-            let mut l_ixFirstParam: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_14: i32;
+            let mut ret_13: i32;
+            let mut ret_12: i32;
+            let mut ret_11: i32;
+            let mut ret_10: i32;
+            let mut l_ixEnd: Tpl::Text;
+            let mut ret_8: i32;
+            let mut ret_7: i32;
+            let mut ret_6: i32;
+            let mut ret_5: i32;
+            let mut l_ixFirstAlias: Tpl::Text;
+            let mut ret_3: i32;
+            let mut ret_2: i32;
+            let mut ret_1: i32;
+            let mut l_ixFirstParam: Tpl::Text;
             ret_1 = intMul(2, i_numStateVars.clone());
             ret_2 = intAdd(i_numAlgVars.clone(), i_numDiscreteReal.clone());
             ret_3 = intAdd(ret_1.clone(), ret_2.clone());
@@ -2935,14 +2935,14 @@ fn fun_175(mut in_txt: Tpl::Text, mut in_a_v: SimCodeVar::AliasVariable, mut in_
             txt.clone()
         },
         (mut txt, SimCodeVar::AliasVariable::ALIAS { varName: ref i_varName }, mut a_simCode) => {
-            let mut ret_0: i32 = 0;
+            let mut ret_0: i32;
             ret_0 = SimCodeUtil::lookupVR(i_varName.clone(), a_simCode.clone())?;
             txt = Tpl::writeStr(txt.clone(), (intString(ret_0.clone())).clone())?;
             txt.clone()
         },
         (mut txt, SimCodeVar::AliasVariable::NEGATEDALIAS { varName: ref i_varName }, mut a_simCode) => {
-            let mut ret_2: i32 = 0;
-            let mut ret_1: i32 = 0;
+            let mut ret_2: i32;
+            let mut ret_1: i32;
             ret_1 = SimCodeUtil::lookupVR(i_varName.clone(), a_simCode.clone())?;
             ret_2 = intSub(-1, ret_1.clone());
             txt = Tpl::writeStr(txt.clone(), (intString(ret_2.clone())).clone())?;
@@ -3033,12 +3033,12 @@ fn fun_180(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::ModelInfo, mut in
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_modelInfo.clone(), in_a_simCode.clone()) {
         (mut txt, SimCode::ModelInfo { vars: SimCodeVar::SimVars { intAliasVars: ref i_vars_intAliasVars, .. }, varInfo: SimCode::VarInfo { numIntAliasVars: mut i_numAliasVars, numIntParams: mut i_numParams, numIntAlgVars: mut i_numAlgVars, .. }, .. }, mut a_simCode) => {
-            let mut ret_5: i32 = 0;
-            let mut ret_4: i32 = 0;
-            let mut l_ixEnd: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_2: i32 = 0;
-            let mut l_ixFirstAlias: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_ixFirstParam: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_5: i32;
+            let mut ret_4: i32;
+            let mut l_ixEnd: Tpl::Text;
+            let mut ret_2: i32;
+            let mut l_ixFirstAlias: Tpl::Text;
+            let mut l_ixFirstParam: Tpl::Text;
             l_ixFirstParam = Tpl::writeStr(Tpl::emptyTxt.clone(), (intString(i_numAlgVars.clone())).clone())?;
             ret_2 = intAdd(i_numParams.clone(), i_numAlgVars.clone());
             l_ixFirstAlias = Tpl::writeStr(Tpl::emptyTxt.clone(), (intString(ret_2.clone())).clone())?;
@@ -3106,12 +3106,12 @@ fn fun_183(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::ModelInfo) -> Res
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_modelInfo.clone()) {
         (mut txt, SimCode::ModelInfo { vars: SimCodeVar::SimVars { stateVars: _, .. }, varInfo: SimCode::VarInfo { numIntAliasVars: mut i_numAliasVars, numIntParams: mut i_numParams, numIntAlgVars: mut i_numAlgVars, .. }, .. }) => {
-            let mut ret_5: i32 = 0;
-            let mut ret_4: i32 = 0;
-            let mut l_ixEnd: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_2: i32 = 0;
-            let mut l_ixFirstAlias: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_ixFirstParam: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_5: i32;
+            let mut ret_4: i32;
+            let mut l_ixEnd: Tpl::Text;
+            let mut ret_2: i32;
+            let mut l_ixFirstAlias: Tpl::Text;
+            let mut l_ixFirstParam: Tpl::Text;
             l_ixFirstParam = Tpl::writeStr(Tpl::emptyTxt.clone(), (intString(i_numAlgVars.clone())).clone())?;
             ret_2 = intAdd(i_numParams.clone(), i_numAlgVars.clone());
             l_ixFirstAlias = Tpl::writeStr(Tpl::emptyTxt.clone(), (intString(ret_2.clone())).clone())?;
@@ -3505,7 +3505,7 @@ pub fn setExternalFunction2(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_modelInfo.clone()) {
         (mut txt, SimCode::ModelInfo { vars: SimCodeVar::SimVars { stateVars: _, .. }, functions: ref i_functions, .. }) => {
-            let mut l_externalFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_externalFuncs: Tpl::Text;
             l_externalFuncs = setExternalFunctionsSwitch(Tpl::emptyTxt.clone(), i_functions.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("fmi2Status setExternalFunction(ModelInstance* c, const fmi2ValueReference vr, const void* value){\n")).clone(), (literal!("  switch (vr) {\n")).clone()], lastHasNewLine: true }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 4 }))?;
@@ -3552,7 +3552,7 @@ pub fn setExternalFunctionSwitch(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimCode
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fn.clone())) {
         (txt, Deref @ SimCodeFunction::Function::EXTERNAL_FUNCTION { dynamicLoad: true, extName: i_extName, language: i_language, .. }) => {
-            let mut l_fname: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_fname: Tpl::Text;
             let mut txt = (*txt).clone();
             l_fname = CodegenUtil::extFunctionName(Tpl::emptyTxt.clone(), (i_extName.clone()).clone(), (i_language.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("case $P")).clone() }))?;
@@ -3594,7 +3594,7 @@ fn fun_210(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_index: i32, mut in
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_index.clone(), in_a_arrayName.clone(), in_a_simCode.clone(), in_a_name.clone())) {
         (txt, false, a_index, a_arrayName, a_simCode, a_name) => {
-            let mut ret_0: i32 = 0;
+            let mut ret_0: i32;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("case ")).clone() }))?;
             ret_0 = SimCodeUtil::lookupVR(a_name.clone(), a_simCode.clone())?;
@@ -3607,7 +3607,7 @@ fn fun_210(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_index: i32, mut in
             txt.clone()
         },
         (txt, _, a_index, a_arrayName, a_simCode, a_name) => {
-            let mut ret_1: i32 = 0;
+            let mut ret_1: i32;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("case ")).clone() }))?;
             ret_1 = SimCodeUtil::lookupVR(a_name.clone(), a_simCode.clone())?;
@@ -3628,7 +3628,7 @@ fn fun_211(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_index: i32, mut in
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_index.clone(), in_a_simCode.clone(), in_a_name.clone(), in_a_arrayName.clone())) {
         (txt, false, a_index, a_simCode, a_name, a_arrayName) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = stringEq((a_arrayName.clone()).clone(), (literal!("stringVars")).clone());
             txt = fun_210(txt.clone(), ret_0.clone(), a_index.clone(), (a_arrayName.clone()).clone(), a_simCode.clone(), a_name.clone())?;
@@ -3646,8 +3646,8 @@ fn fun_212(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_index: i32, mut in
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_index.clone(), in_a_simCode.clone(), in_a_arrayName.clone(), in_a_name.clone())) {
         (txt, false, a_index, a_simCode, a_arrayName, a_name) => {
-            let mut ret_1: bool = false;
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_1: bool;
+            let mut txt_0: Tpl::Text;
             let mut txt = (*txt).clone();
             txt_0 = CodegenUtil::crefStr(Tpl::emptyTxt.clone(), a_name.clone())?;
             ret_1 = stringEq((Tpl::textString(txt_0.clone())?).clone(), (literal!("der($dummy)")).clone());
@@ -3666,9 +3666,9 @@ fn fun_213(mut in_txt: Tpl::Text, mut in_a_simVar: SimCodeVar::SimVar, mut in_a_
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_simVar.clone(), in_a_simCode.clone(), in_a_arrayName.clone()) {
         (mut txt, SimCodeVar::SimVar { comment: mut i_comment, name: ref i_name, index: mut i_index, .. }, mut a_simCode, mut a_arrayName) => {
-            let mut ret_2: bool = false;
-            let mut txt_1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_description: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_2: bool;
+            let mut txt_1: Tpl::Text;
+            let mut l_description: Tpl::Text;
             l_description = fun_209(Tpl::emptyTxt.clone(), (i_comment.clone()).clone())?;
             txt_1 = CodegenUtil::crefStr(Tpl::emptyTxt.clone(), i_name.clone())?;
             ret_2 = stringEq((Tpl::textString(txt_1.clone())?).clone(), (literal!("$dummy")).clone());
@@ -3710,7 +3710,7 @@ fn fun_216(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_index: i32, mut in
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_index.clone(), in_a_arrayName.clone(), in_a_simCode.clone(), in_a_name.clone())) {
         (txt, false, a_index, a_arrayName, a_simCode, a_name) => {
-            let mut ret_0: i32 = 0;
+            let mut ret_0: i32;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("case ")).clone() }))?;
             ret_0 = SimCodeUtil::lookupVR(a_name.clone(), a_simCode.clone())?;
@@ -3723,7 +3723,7 @@ fn fun_216(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_index: i32, mut in
             txt.clone()
         },
         (txt, _, a_index, a_arrayName, a_simCode, a_name) => {
-            let mut ret_1: i32 = 0;
+            let mut ret_1: i32;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("case ")).clone() }))?;
             ret_1 = SimCodeUtil::lookupVR(a_name.clone(), a_simCode.clone())?;
@@ -3744,8 +3744,8 @@ fn fun_217(mut in_txt: Tpl::Text, mut in_a_simVar: SimCodeVar::SimVar, mut in_a_
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_simVar.clone(), in_a_simCode.clone(), in_a_arrayName.clone()) {
         (mut txt, SimCodeVar::SimVar { comment: mut i_comment, name: ref i_name, index: mut i_index, .. }, mut a_simCode, mut a_arrayName) => {
-            let mut ret_1: bool = false;
-            let mut l_description: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_1: bool;
+            let mut l_description: Tpl::Text;
             l_description = fun_215(Tpl::emptyTxt.clone(), (i_comment.clone()).clone())?;
             ret_1 = stringEq((a_arrayName.clone()).clone(), (literal!("stringParameter")).clone());
             txt = fun_216(txt.clone(), ret_1.clone(), i_index.clone(), (a_arrayName.clone()).clone(), a_simCode.clone(), i_name.clone())?;
@@ -3786,7 +3786,7 @@ fn fun_220(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_simCode: SimCode::
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_simCode.clone(), in_a_varName.clone(), in_a_arrayName.clone(), in_a_crefName.clone())) {
         (txt, false, a_simCode, a_varName, a_arrayName, a_crefName) => {
-            let mut ret_0: i32 = 0;
+            let mut ret_0: i32;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("case ")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), a_crefName.clone())?;
@@ -3814,7 +3814,7 @@ fn fun_221(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_simCode: SimCode::
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_simCode.clone(), in_a_varName.clone(), in_a_arrayName.clone(), in_a_negate.clone(), in_a_crefName.clone())) {
         (txt, false, a_simCode, a_varName, a_arrayName, a_negate, a_crefName) => {
-            let mut ret_0: i32 = 0;
+            let mut ret_0: i32;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("case ")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), a_crefName.clone())?;
@@ -3844,16 +3844,16 @@ fn fun_222(mut in_txt: Tpl::Text, mut in_a_aliasvar: SimCodeVar::AliasVariable, 
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_aliasvar.clone(), in_a_negate.clone(), in_a_simCode.clone(), in_a_arrayName.clone(), in_a_crefName.clone()) {
         (mut txt, SimCodeVar::AliasVariable::ALIAS { varName: ref i_varName }, _, mut a_simCode, mut a_arrayName, mut a_crefName) => {
-            let mut ret_1: bool = false;
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_1: bool;
+            let mut txt_0: Tpl::Text;
             txt_0 = CodegenUtil::crefStr(Tpl::emptyTxt.clone(), i_varName.clone())?;
             ret_1 = stringEq((Tpl::textString(txt_0.clone())?).clone(), (literal!("time")).clone());
             txt = fun_220(txt.clone(), ret_1.clone(), a_simCode.clone(), i_varName.clone(), (a_arrayName.clone()).clone(), a_crefName.clone())?;
             txt.clone()
         },
         (mut txt, SimCodeVar::AliasVariable::NEGATEDALIAS { varName: ref i_varName }, mut a_negate, mut a_simCode, mut a_arrayName, mut a_crefName) => {
-            let mut ret_3: bool = false;
-            let mut txt_2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_3: bool;
+            let mut txt_2: Tpl::Text;
             txt_2 = CodegenUtil::crefStr(Tpl::emptyTxt.clone(), i_varName.clone())?;
             ret_3 = stringEq((Tpl::textString(txt_2.clone())?).clone(), (literal!("time")).clone());
             txt = fun_221(txt.clone(), ret_3.clone(), a_simCode.clone(), i_varName.clone(), (a_arrayName.clone()).clone(), (a_negate.clone()).clone(), a_crefName.clone())?;
@@ -3870,9 +3870,9 @@ fn fun_223(mut in_txt: Tpl::Text, mut in_a_simVar: SimCodeVar::SimVar, mut in_a_
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_simVar.clone(), in_a_simCode.clone(), in_a_arrayName.clone(), in_a_negate.clone()) {
         (mut txt, SimCodeVar::SimVar { comment: mut i_comment, name: ref i_name, aliasvar: mut i_aliasvar, .. }, mut a_simCode, mut a_arrayName, mut a_negate) => {
-            let mut ret_2: i32 = 0;
-            let mut l_crefName: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_description: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_2: i32;
+            let mut l_crefName: Tpl::Text;
+            let mut l_description: Tpl::Text;
             l_description = fun_219(Tpl::emptyTxt.clone(), (i_comment.clone()).clone())?;
             ret_2 = SimCodeUtil::lookupVR(i_name.clone(), a_simCode.clone())?;
             l_crefName = Tpl::writeStr(Tpl::emptyTxt.clone(), (intString(ret_2.clone())).clone())?;
@@ -3914,7 +3914,7 @@ fn fun_226(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_index: i32, mut in
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_index.clone(), in_a_arrayName.clone(), in_a_simCode.clone(), in_a_name.clone())) {
         (txt, false, a_index, a_arrayName, a_simCode, a_name) => {
-            let mut ret_0: i32 = 0;
+            let mut ret_0: i32;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("case ")).clone() }))?;
             ret_0 = SimCodeUtil::lookupVR(a_name.clone(), a_simCode.clone())?;
@@ -3927,7 +3927,7 @@ fn fun_226(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_index: i32, mut in
             txt.clone()
         },
         (txt, _, a_index, a_arrayName, a_simCode, a_name) => {
-            let mut ret_1: i32 = 0;
+            let mut ret_1: i32;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("case ")).clone() }))?;
             ret_1 = SimCodeUtil::lookupVR(a_name.clone(), a_simCode.clone())?;
@@ -3948,7 +3948,7 @@ fn fun_227(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_index: i32, mut in
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_index.clone(), in_a_simCode.clone(), in_a_name.clone(), in_a_arrayName.clone())) {
         (txt, false, a_index, a_simCode, a_name, a_arrayName) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = stringEq((a_arrayName.clone()).clone(), (literal!("stringVars")).clone());
             txt = fun_226(txt.clone(), ret_0.clone(), a_index.clone(), (a_arrayName.clone()).clone(), a_simCode.clone(), a_name.clone())?;
@@ -3966,8 +3966,8 @@ fn fun_228(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_index: i32, mut in
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_index.clone(), in_a_simCode.clone(), in_a_arrayName.clone(), in_a_name.clone())) {
         (txt, false, a_index, a_simCode, a_arrayName, a_name) => {
-            let mut ret_1: bool = false;
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_1: bool;
+            let mut txt_0: Tpl::Text;
             let mut txt = (*txt).clone();
             txt_0 = CodegenUtil::crefStr(Tpl::emptyTxt.clone(), a_name.clone())?;
             ret_1 = stringEq((Tpl::textString(txt_0.clone())?).clone(), (literal!("der($dummy)")).clone());
@@ -3986,9 +3986,9 @@ fn fun_229(mut in_txt: Tpl::Text, mut in_a_simVar: SimCodeVar::SimVar, mut in_a_
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_simVar.clone(), in_a_simCode.clone(), in_a_arrayName.clone()) {
         (mut txt, SimCodeVar::SimVar { comment: mut i_comment, name: ref i_name, index: mut i_index, .. }, mut a_simCode, mut a_arrayName) => {
-            let mut ret_2: bool = false;
-            let mut txt_1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_description: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_2: bool;
+            let mut txt_1: Tpl::Text;
+            let mut l_description: Tpl::Text;
             l_description = fun_225(Tpl::emptyTxt.clone(), (i_comment.clone()).clone())?;
             txt_1 = CodegenUtil::crefStr(Tpl::emptyTxt.clone(), i_name.clone())?;
             ret_2 = stringEq((Tpl::textString(txt_1.clone())?).clone(), (literal!("$dummy")).clone());
@@ -4030,7 +4030,7 @@ fn fun_232(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_index: i32, mut in
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_index.clone(), in_a_arrayName.clone(), in_a_simCode.clone(), in_a_name.clone())) {
         (txt, false, a_index, a_arrayName, a_simCode, a_name) => {
-            let mut ret_0: i32 = 0;
+            let mut ret_0: i32;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("case ")).clone() }))?;
             ret_0 = SimCodeUtil::lookupVR(a_name.clone(), a_simCode.clone())?;
@@ -4043,7 +4043,7 @@ fn fun_232(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_index: i32, mut in
             txt.clone()
         },
         (txt, _, a_index, a_arrayName, a_simCode, a_name) => {
-            let mut ret_1: i32 = 0;
+            let mut ret_1: i32;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("case ")).clone() }))?;
             ret_1 = SimCodeUtil::lookupVR(a_name.clone(), a_simCode.clone())?;
@@ -4064,8 +4064,8 @@ fn fun_233(mut in_txt: Tpl::Text, mut in_a_simVar: SimCodeVar::SimVar, mut in_a_
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_simVar.clone(), in_a_simCode.clone(), in_a_arrayName.clone()) {
         (mut txt, SimCodeVar::SimVar { comment: mut i_comment, name: ref i_name, index: mut i_index, .. }, mut a_simCode, mut a_arrayName) => {
-            let mut ret_1: bool = false;
-            let mut l_description: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_1: bool;
+            let mut l_description: Tpl::Text;
             l_description = fun_231(Tpl::emptyTxt.clone(), (i_comment.clone()).clone())?;
             ret_1 = stringEq((a_arrayName.clone()).clone(), (literal!("stringParameter")).clone());
             txt = fun_232(txt.clone(), ret_1.clone(), i_index.clone(), (a_arrayName.clone()).clone(), a_simCode.clone(), i_name.clone())?;
@@ -4106,7 +4106,7 @@ fn fun_236(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_simCode: SimCode::
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_simCode.clone(), in_a_varName.clone(), in_a_arrayName.clone(), in_a_crefName.clone())) {
         (txt, false, a_simCode, a_varName, a_arrayName, a_crefName) => {
-            let mut ret_0: i32 = 0;
+            let mut ret_0: i32;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("case ")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), a_crefName.clone())?;
@@ -4130,7 +4130,7 @@ fn fun_237(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_negate: ArcStr, mu
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_negate.clone(), in_a_simCode.clone(), in_a_varName.clone(), in_a_arrayName.clone(), in_a_crefName.clone())) {
         (txt, false, a_negate, a_simCode, a_varName, a_arrayName, a_crefName) => {
-            let mut ret_0: i32 = 0;
+            let mut ret_0: i32;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("case ")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), a_crefName.clone())?;
@@ -4156,16 +4156,16 @@ fn fun_238(mut in_txt: Tpl::Text, mut in_a_aliasvar: SimCodeVar::AliasVariable, 
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_aliasvar.clone(), in_a_negate.clone(), in_a_simCode.clone(), in_a_arrayName.clone(), in_a_crefName.clone()) {
         (mut txt, SimCodeVar::AliasVariable::ALIAS { varName: ref i_varName }, _, mut a_simCode, mut a_arrayName, mut a_crefName) => {
-            let mut ret_1: bool = false;
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_1: bool;
+            let mut txt_0: Tpl::Text;
             txt_0 = CodegenUtil::crefStr(Tpl::emptyTxt.clone(), i_varName.clone())?;
             ret_1 = stringEq((Tpl::textString(txt_0.clone())?).clone(), (literal!("time")).clone());
             txt = fun_236(txt.clone(), ret_1.clone(), a_simCode.clone(), i_varName.clone(), (a_arrayName.clone()).clone(), a_crefName.clone())?;
             txt.clone()
         },
         (mut txt, SimCodeVar::AliasVariable::NEGATEDALIAS { varName: ref i_varName }, mut a_negate, mut a_simCode, mut a_arrayName, mut a_crefName) => {
-            let mut ret_3: bool = false;
-            let mut txt_2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_3: bool;
+            let mut txt_2: Tpl::Text;
             txt_2 = CodegenUtil::crefStr(Tpl::emptyTxt.clone(), i_varName.clone())?;
             ret_3 = stringEq((Tpl::textString(txt_2.clone())?).clone(), (literal!("time")).clone());
             txt = fun_237(txt.clone(), ret_3.clone(), (a_negate.clone()).clone(), a_simCode.clone(), i_varName.clone(), (a_arrayName.clone()).clone(), a_crefName.clone())?;
@@ -4182,9 +4182,9 @@ fn fun_239(mut in_txt: Tpl::Text, mut in_a_simVar: SimCodeVar::SimVar, mut in_a_
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_simVar.clone(), in_a_simCode.clone(), in_a_arrayName.clone(), in_a_negate.clone()) {
         (mut txt, SimCodeVar::SimVar { comment: mut i_comment, name: ref i_name, aliasvar: mut i_aliasvar, .. }, mut a_simCode, mut a_arrayName, mut a_negate) => {
-            let mut ret_2: i32 = 0;
-            let mut l_crefName: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_description: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_2: i32;
+            let mut l_crefName: Tpl::Text;
+            let mut l_description: Tpl::Text;
             l_description = fun_235(Tpl::emptyTxt.clone(), (i_comment.clone()).clone())?;
             ret_2 = SimCodeUtil::lookupVR(i_name.clone(), a_simCode.clone())?;
             l_crefName = Tpl::writeStr(Tpl::emptyTxt.clone(), (intString(ret_2.clone())).clone())?;
@@ -4208,7 +4208,7 @@ fn fun_241(mut in_txt: Tpl::Text, mut in_a_var: SimCodeVar::SimVar, mut in_a_ind
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_var.clone(), in_a_index0.clone(), in_a_simCode.clone())) {
         (txt, SimCodeVar::SimVar { name: i_name, type_: Deref @ DAE::Type::T_REAL { varLst: _ }, .. }, a_index0, a_simCode) => {
-            let mut ret_0: i32 = 0;
+            let mut ret_0: i32;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("case ")).clone() }))?;
             ret_0 = SimCodeUtil::lookupVR(i_name.clone(), a_simCode.clone())?;
@@ -4233,7 +4233,7 @@ fn lm_242(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar
             return Ok(txt.clone())
         },
         (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_simCode) => {
-            let mut x_index0: i32 = 0;
+            let mut x_index0: i32;
             let mut txt = (*txt).clone();
             x_index0 = Tpl::getIteri_i0(txt.clone())?;
             txt = fun_241(txt.clone(), i_var.clone(), x_index0.clone(), a_simCode.clone())?;
@@ -4249,7 +4249,7 @@ fn fun_243(mut in_txt: Tpl::Text, mut in_a_var: SimCodeVar::SimVar, mut in_a_ind
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_var.clone(), in_a_index0.clone(), in_a_simCode.clone())) {
         (txt, SimCodeVar::SimVar { name: i_name, type_: Deref @ DAE::Type::T_REAL { varLst: _ }, .. }, a_index0, a_simCode) => {
-            let mut ret_0: i32 = 0;
+            let mut ret_0: i32;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("case ")).clone() }))?;
             ret_0 = SimCodeUtil::lookupVR(i_name.clone(), a_simCode.clone())?;
@@ -4274,7 +4274,7 @@ fn lm_244(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar
             return Ok(txt.clone())
         },
         (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_simCode) => {
-            let mut x_index0: i32 = 0;
+            let mut x_index0: i32;
             let mut txt = (*txt).clone();
             x_index0 = Tpl::getIteri_i0(txt.clone())?;
             txt = fun_243(txt.clone(), i_var.clone(), x_index0.clone(), a_simCode.clone())?;
@@ -4320,8 +4320,8 @@ fn fun_246(mut in_txt: Tpl::Text, mut in_a_var: SimCodeVar::SimVar, mut in_a_FMU
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_var.clone(), in_a_FMUType.clone(), in_a_simCode.clone())) {
         (txt, SimCodeVar::SimVar { name: i_name, type_: Deref @ DAE::Type::T_REAL { varLst: _ }, .. }, a_FMUType, a_simCode) => {
-            let mut ret_1: i32 = 0;
-            let mut ret_0: i32 = 0;
+            let mut ret_1: i32;
+            let mut ret_0: i32;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("case ")).clone() }))?;
             ret_0 = SimCodeUtil::lookupVR(i_name.clone(), a_simCode.clone())?;
@@ -4386,7 +4386,7 @@ fn lm_249(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(i32, Arc<
             return Ok(txt.clone())
         },
         (txt, Deref @ metamodelica::List::Cons { head: (i_index, i_cref), tail: rest }, a_simCode) => {
-            let mut ret_0: i32 = 0;
+            let mut ret_0: i32;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("case ")).clone() }))?;
             ret_0 = SimCodeUtil::lookupVR(i_cref.clone(), a_simCode.clone())?;
@@ -4431,7 +4431,7 @@ fn lm_251(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(i32, Arc<
             return Ok(txt.clone())
         },
         (txt, Deref @ metamodelica::List::Cons { head: (i_index, i_cref), tail: rest }, a_simCode) => {
-            let mut ret_0: i32 = 0;
+            let mut ret_0: i32;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("case ")).clone() }))?;
             ret_0 = SimCodeUtil::lookupVR(i_cref.clone(), a_simCode.clone())?;
@@ -4618,9 +4618,9 @@ fn fun_255(mut in_txt: Tpl::Text, mut in_a_platform: ArcStr, mut in_a_libsPos2: 
             txt.clone()
         },
         (txt, _, a_libsPos2, a_libsPos1, a_dirExtra, a_modelNamePrefix, a_fmuTargetName, a_fileNamePrefix) => {
-            let mut ret_2: bool = false;
-            let mut ret_1: bool = false;
-            let mut ret_0: i32 = 0;
+            let mut ret_2: bool;
+            let mut ret_1: bool;
+            let mut ret_0: i32;
             let mut txt = (*txt).clone();
             txt = Tpl::writeStr(txt.clone(), (a_fileNamePrefix.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("_FMU: nozip\n")).clone() }))?;
@@ -4723,7 +4723,7 @@ pub fn settingsfile(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_simCode.clone()) {
         (mut txt, ref i_simCode @ SimCode::SimCode { modelInfo: SimCode::ModelInfo { varInfo: SimCode::VarInfo { numLinearSystems: ref i_varInfo_numLinearSystems, numNonLinearSystems: ref i_varInfo_numNonLinearSystems, numMixedSystems: ref i_varInfo_numMixedSystems, numStringAlgVars: ref i_varInfo_numStringAlgVars, .. }, .. }, delayedExps: SimCode::DelayedExpression { maxDelayedIndex: ref i_maxDelayedIndex, .. }, fmiSimulationFlags: _, .. }) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("#if !defined(OMC_SIM_SETTINGS_CMDLINE)\n")).clone(), (literal!("#define OMC_SIM_SETTINGS_CMDLINE\n")).clone(), (literal!("#define OMC_NUM_LINEAR_SYSTEMS ")).clone()], lastHasNewLine: false }))?;
             txt = Tpl::writeStr(txt.clone(), (intString(i_varInfo_numLinearSystems.clone())).clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
@@ -5006,22 +5006,22 @@ fn fun_272(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_c
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_simCode.clone(), in_a_common.clone(), in_a_FMUVersion.clone()) {
         (mut txt, ref i_simCode @ SimCode::SimCode { modelInfo: SimCode::ModelInfo { directory: ref i_modelInfo_directory, .. }, makefileParams: SimCodeFunction::MakefileParams { libs: ref i_makefileParams_libs, platform: ref i_makefileParams_platform, omhome: ref i_makefileParams_omhome, .. }, simulationSettingsOpt: _, fileNamePrefix: ref i_fileNamePrefix, fmuTargetName: ref i_fmuTargetName, .. }, mut a_common, mut a_FMUVersion) => {
-            let mut ret_15: ArcStr = arcstr::literal!("");
-            let mut ret_14: ArcStr = arcstr::literal!("");
-            let mut ret_13: ArcStr = arcstr::literal!("");
-            let mut ret_12: ArcStr = arcstr::literal!("");
-            let mut ret_11: ArcStr = arcstr::literal!("");
-            let mut ret_10: bool = false;
-            let mut ret_9: bool = false;
-            let mut l_mkdir: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_7: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_compilecmds: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_5: ArcStr = arcstr::literal!("");
-            let mut l_fmudirname: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_libsPos2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_libsPos1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_libsStr: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_dirExtra: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_15: ArcStr;
+            let mut ret_14: ArcStr;
+            let mut ret_13: ArcStr;
+            let mut ret_12: ArcStr;
+            let mut ret_11: ArcStr;
+            let mut ret_10: bool;
+            let mut ret_9: bool;
+            let mut l_mkdir: Tpl::Text;
+            let mut txt_7: Tpl::Text;
+            let mut l_compilecmds: Tpl::Text;
+            let mut ret_5: ArcStr;
+            let mut l_fmudirname: Tpl::Text;
+            let mut l_libsPos2: Tpl::Text;
+            let mut l_libsPos1: Tpl::Text;
+            let mut l_libsStr: Tpl::Text;
+            let mut l_dirExtra: Tpl::Text;
             l_dirExtra = fun_265(Tpl::emptyTxt.clone(), (i_modelInfo_directory.clone()).clone())?;
             l_libsStr = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             l_libsStr = lm_266(l_libsStr.clone(), i_makefileParams_libs.clone())?;
@@ -5301,14 +5301,14 @@ fn fun_279(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_c
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_simCode.clone(), in_a_common.clone(), in_a_FMUVersion.clone()) {
         (mut txt, ref i_simCode @ SimCode::SimCode { modelInfo: SimCode::ModelInfo { varInfo: SimCode::VarInfo { numZeroCrossings: _, .. }, directory: ref i_modelInfo_directory, .. }, delayedExps: SimCode::DelayedExpression { maxDelayedIndex: _, .. }, makefileParams: SimCodeFunction::MakefileParams { libs: ref i_makefileParams_libs, platform: ref i_makefileParams_platform, omhome: ref i_makefileParams_omhome, includes: ref i_makefileParams_includes, .. }, simulationSettingsOpt: _, fmiSimulationFlags: ref i_fmiSimulationFlags, fileNamePrefix: ref i_fileNamePrefix, fmuTargetName: ref i_fmuTargetName, .. }, mut a_common, mut a_FMUVersion) => {
-            let mut l_thirdPartyInclude: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_platformstr: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_5: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_compilecmds: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_libsPos2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_libsPos1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_libsStr: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_dirExtra: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_thirdPartyInclude: Tpl::Text;
+            let mut l_platformstr: Tpl::Text;
+            let mut txt_5: Tpl::Text;
+            let mut l_compilecmds: Tpl::Text;
+            let mut l_libsPos2: Tpl::Text;
+            let mut l_libsPos1: Tpl::Text;
+            let mut l_libsStr: Tpl::Text;
+            let mut l_dirExtra: Tpl::Text;
             l_dirExtra = fun_273(Tpl::emptyTxt.clone(), (i_modelInfo_directory.clone()).clone())?;
             l_libsStr = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             l_libsStr = lm_274(l_libsStr.clone(), i_makefileParams_libs.clone())?;
@@ -5354,7 +5354,7 @@ fn fun_280(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_target: ArcStr, 
             txt.clone()
         },
         (txt, _, a_target, _, _, _) => {
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_0: Tpl::Text;
             let mut txt = (*txt).clone();
             txt_0 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("target ")).clone() }))?;
             txt_0 = Tpl::writeStr(txt_0.clone(), (a_target.clone()).clone())?;
@@ -5428,7 +5428,7 @@ fn fun_284(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_modelInfo_name: Ar
             txt.clone()
         },
         (txt, _, a_modelInfo_name) => {
-            let mut ret_0: ArcStr = arcstr::literal!("");
+            let mut ret_0: ArcStr;
             let mut txt = (*txt).clone();
             ret_0 = (Config::simCodeTarget()?).clone();
             txt = fun_283(txt.clone(), (ret_0.clone()).clone(), a_modelInfo_name.clone())?;
@@ -5443,12 +5443,12 @@ fn fun_285(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_f
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_simCode.clone(), in_a_fileNamePrefixHash.clone()) {
         (mut txt, SimCode::SimCode { modelInfo: SimCode::ModelInfo { name: ref i_modelInfo_name, .. }, makefileParams: SimCodeFunction::MakefileParams { platform: mut i_makefileParams_platform, omhome: mut i_makefileParams_omhome, .. }, simulationSettingsOpt: _, fileNamePrefix: mut i_fileNamePrefix, .. }, mut a_fileNamePrefixHash) => {
-            let mut ret_5: bool = false;
-            let mut ret_4: bool = false;
-            let mut ret_3: bool = false;
-            let mut ret_2: bool = false;
-            let mut l_mkdir: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_includedir: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_5: bool;
+            let mut ret_4: bool;
+            let mut ret_3: bool;
+            let mut ret_2: bool;
+            let mut l_mkdir: Tpl::Text;
+            let mut l_includedir: Tpl::Text;
             l_includedir = Tpl::writeStr(Tpl::emptyTxt.clone(), (a_fileNamePrefixHash.clone()).clone())?;
             l_includedir = Tpl::writeTok(l_includedir.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".fmutmp/sources/")).clone() }))?;
             l_mkdir = fun_282(Tpl::emptyTxt.clone(), (i_makefileParams_platform.clone()).clone())?;
@@ -5571,7 +5571,7 @@ fn fun_288(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_fileNamePrefix: Ar
             txt.clone()
         },
         (mut txt, _, mut a_fileNamePrefix) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("EXPORTS\n")).clone(), (literal!("  ;***************************************************\n")).clone(), (literal!("  ;Common Functions\n")).clone(), (literal!("  ;****************************************************\n")).clone()], lastHasNewLine: true }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
             txt = Tpl::writeStr(txt.clone(), (a_fileNamePrefix.clone()).clone())?;
@@ -5675,7 +5675,7 @@ pub fn fmudeffile(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_simCode.clone(), in_a_FMUVersion.clone()) {
         (mut txt, SimCode::SimCode { modelInfo: SimCode::ModelInfo { name: _, .. }, makefileParams: SimCodeFunction::MakefileParams { ccompiler: _, .. }, simulationSettingsOpt: _, fileNamePrefix: mut i_fileNamePrefix, .. }, mut a_FMUVersion) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             ret_0 = FMI::isFMIVersion20((a_FMUVersion.clone()).clone())?;
             txt = fun_288(txt.clone(), ret_0.clone(), (i_fileNamePrefix.clone()).clone())?;
             txt.clone()
@@ -5707,7 +5707,7 @@ pub fn importFMUModelDescription(mut in_txt: Tpl::Text, mut in_a_fmi: FMI::FmiIm
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_fmi.clone()) {
         (mut txt, FMI::FmiImport { fmiInfo: FMI::Info { fmiModelIdentifier: mut i_fmiInfo_fmiModelIdentifier, fmiDescription: mut i_fmiInfo_fmiDescription, .. }, fmiExperimentAnnotation: FMI::ExperimentAnnotation { fmiExperimentStartTime: _, .. }, fmiTypeDefinitionsList: ref i_fmiTypeDefinitionsList, fmiModelVariablesList: ref i_fmiModelVariablesList, generateInputConnectors: mut i_generateInputConnectors, generateOutputConnectors: mut i_generateOutputConnectors, .. }) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("model ")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (i_fmiInfo_fmiModelIdentifier.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_Input_Output_FMU")).clone() }))?;
@@ -5931,10 +5931,10 @@ fn fun_304(mut in_txt: Tpl::Text, mut in_a_fmiModelVariable: FMI::ModelVariables
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_fmiModelVariable.clone(), in_a_generateOutputConnectors.clone(), in_a_generateInputConnectors.clone()) {
         (mut txt, FMI::ModelVariables::REALVARIABLE { causality: mut i_causality, name: mut i_name, baseType: mut i_baseType, description: mut i_description, x1Placement: mut i_x1Placement, x2Placement: mut i_x2Placement, y1Placement: mut i_y1Placement, y2Placement: mut i_y2Placement, .. }, mut a_generateOutputConnectors, mut a_generateInputConnectors) => {
-            let mut ret_3: bool = false;
-            let mut ret_2: bool = false;
-            let mut ret_1: bool = false;
-            let mut l_isInputOrOutput: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_3: bool;
+            let mut ret_2: bool;
+            let mut ret_1: bool;
+            let mut l_isInputOrOutput: Tpl::Text;
             ret_1 = stringEq((i_causality.clone()).clone(), (literal!("input")).clone());
             ret_2 = stringEq((i_causality.clone()).clone(), (literal!("output")).clone());
             ret_3 = boolOr(ret_1.clone(), ret_2.clone());
@@ -5943,10 +5943,10 @@ fn fun_304(mut in_txt: Tpl::Text, mut in_a_fmiModelVariable: FMI::ModelVariables
             txt.clone()
         },
         (mut txt, FMI::ModelVariables::INTEGERVARIABLE { causality: mut i_causality, name: mut i_name, baseType: mut i_baseType, description: mut i_description, x1Placement: mut i_x1Placement, x2Placement: mut i_x2Placement, y1Placement: mut i_y1Placement, y2Placement: mut i_y2Placement, .. }, mut a_generateOutputConnectors, mut a_generateInputConnectors) => {
-            let mut ret_6: bool = false;
-            let mut ret_5: bool = false;
-            let mut ret_4: bool = false;
-            let mut l_isInputOrOutput: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_6: bool;
+            let mut ret_5: bool;
+            let mut ret_4: bool;
+            let mut l_isInputOrOutput: Tpl::Text;
             ret_4 = stringEq((i_causality.clone()).clone(), (literal!("input")).clone());
             ret_5 = stringEq((i_causality.clone()).clone(), (literal!("output")).clone());
             ret_6 = boolOr(ret_4.clone(), ret_5.clone());
@@ -5955,10 +5955,10 @@ fn fun_304(mut in_txt: Tpl::Text, mut in_a_fmiModelVariable: FMI::ModelVariables
             txt.clone()
         },
         (mut txt, FMI::ModelVariables::BOOLEANVARIABLE { causality: mut i_causality, name: mut i_name, baseType: mut i_baseType, description: mut i_description, x1Placement: mut i_x1Placement, x2Placement: mut i_x2Placement, y1Placement: mut i_y1Placement, y2Placement: mut i_y2Placement, .. }, mut a_generateOutputConnectors, mut a_generateInputConnectors) => {
-            let mut ret_9: bool = false;
-            let mut ret_8: bool = false;
-            let mut ret_7: bool = false;
-            let mut l_isInputOrOutput: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_9: bool;
+            let mut ret_8: bool;
+            let mut ret_7: bool;
+            let mut l_isInputOrOutput: Tpl::Text;
             ret_7 = stringEq((i_causality.clone()).clone(), (literal!("input")).clone());
             ret_8 = stringEq((i_causality.clone()).clone(), (literal!("output")).clone());
             ret_9 = boolOr(ret_7.clone(), ret_8.clone());
@@ -5967,10 +5967,10 @@ fn fun_304(mut in_txt: Tpl::Text, mut in_a_fmiModelVariable: FMI::ModelVariables
             txt.clone()
         },
         (mut txt, FMI::ModelVariables::STRINGVARIABLE { causality: mut i_causality, name: mut i_name, baseType: mut i_baseType, description: mut i_description, x1Placement: mut i_x1Placement, x2Placement: mut i_x2Placement, y1Placement: mut i_y1Placement, y2Placement: mut i_y2Placement, .. }, mut a_generateOutputConnectors, mut a_generateInputConnectors) => {
-            let mut ret_12: bool = false;
-            let mut ret_11: bool = false;
-            let mut ret_10: bool = false;
-            let mut l_isInputOrOutput: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_12: bool;
+            let mut ret_11: bool;
+            let mut ret_10: bool;
+            let mut l_isInputOrOutput: Tpl::Text;
             ret_10 = stringEq((i_causality.clone()).clone(), (literal!("input")).clone());
             ret_11 = stringEq((i_causality.clone()).clone(), (literal!("output")).clone());
             ret_12 = boolOr(ret_10.clone(), ret_11.clone());
@@ -5979,10 +5979,10 @@ fn fun_304(mut in_txt: Tpl::Text, mut in_a_fmiModelVariable: FMI::ModelVariables
             txt.clone()
         },
         (mut txt, FMI::ModelVariables::ENUMERATIONVARIABLE { causality: mut i_causality, name: mut i_name, baseType: mut i_baseType, description: mut i_description, x1Placement: mut i_x1Placement, x2Placement: mut i_x2Placement, y1Placement: mut i_y1Placement, y2Placement: mut i_y2Placement, .. }, mut a_generateOutputConnectors, mut a_generateInputConnectors) => {
-            let mut ret_15: bool = false;
-            let mut ret_14: bool = false;
-            let mut ret_13: bool = false;
-            let mut l_isInputOrOutput: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_15: bool;
+            let mut ret_14: bool;
+            let mut ret_13: bool;
+            let mut l_isInputOrOutput: Tpl::Text;
             ret_13 = stringEq((i_causality.clone()).clone(), (literal!("input")).clone());
             ret_14 = stringEq((i_causality.clone()).clone(), (literal!("output")).clone());
             ret_15 = boolOr(ret_13.clone(), ret_14.clone());
@@ -6038,10 +6038,10 @@ fn fun_308(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_name: ArcStr, mut 
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_name.clone(), in_a_baseType.clone(), in_a_causality.clone(), in_a_generateOutputConnectors.clone()) {
         (mut txt, false, mut a_name, mut a_baseType, mut a_causality, mut a_generateOutputConnectors) => {
-            let mut ret_3: bool = false;
-            let mut ret_2: bool = false;
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_3: bool;
+            let mut ret_2: bool;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = stringEq((a_causality.clone()).clone(), (literal!("output")).clone());
             ret_1 = stringEq((a_baseType.clone()).clone(), (literal!("Boolean")).clone());
             ret_2 = boolAnd(ret_0.clone(), ret_1.clone());
@@ -6062,10 +6062,10 @@ fn fun_309(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_name: ArcStr, mut 
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_name.clone(), in_a_baseType.clone(), in_a_causality.clone(), in_a_generateOutputConnectors.clone()) {
         (mut txt, false, mut a_name, mut a_baseType, mut a_causality, mut a_generateOutputConnectors) => {
-            let mut ret_3: bool = false;
-            let mut ret_2: bool = false;
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_3: bool;
+            let mut ret_2: bool;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = stringEq((a_causality.clone()).clone(), (literal!("output")).clone());
             ret_1 = stringEq((a_baseType.clone()).clone(), (literal!("Integer")).clone());
             ret_2 = boolAnd(ret_0.clone(), ret_1.clone());
@@ -6086,10 +6086,10 @@ fn fun_310(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_name: ArcStr, mut 
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_name.clone(), in_a_baseType.clone(), in_a_causality.clone(), in_a_generateOutputConnectors.clone()) {
         (mut txt, false, mut a_name, mut a_baseType, mut a_causality, mut a_generateOutputConnectors) => {
-            let mut ret_3: bool = false;
-            let mut ret_2: bool = false;
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_3: bool;
+            let mut ret_2: bool;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = stringEq((a_causality.clone()).clone(), (literal!("output")).clone());
             ret_1 = stringEq((a_baseType.clone()).clone(), (literal!("Real")).clone());
             ret_2 = boolAnd(ret_0.clone(), ret_1.clone());
@@ -6110,10 +6110,10 @@ fn fun_311(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_name: ArcStr, mut 
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_name.clone(), in_a_generateOutputConnectors.clone(), in_a_baseType.clone(), in_a_causality.clone(), in_a_generateInputConnectors.clone()) {
         (mut txt, false, mut a_name, mut a_generateOutputConnectors, mut a_baseType, mut a_causality, mut a_generateInputConnectors) => {
-            let mut ret_3: bool = false;
-            let mut ret_2: bool = false;
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_3: bool;
+            let mut ret_2: bool;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = stringEq((a_causality.clone()).clone(), (literal!("input")).clone());
             ret_1 = stringEq((a_baseType.clone()).clone(), (literal!("Boolean")).clone());
             ret_2 = boolAnd(ret_0.clone(), ret_1.clone());
@@ -6134,10 +6134,10 @@ fn fun_312(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_name: ArcStr, mut 
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_name.clone(), in_a_causality.clone(), in_a_baseType.clone(), in_a_generateInputConnectors.clone(), in_a_generateOutputConnectors.clone()) {
         (mut txt, false, mut a_name, mut a_causality, mut a_baseType, mut a_generateInputConnectors, mut a_generateOutputConnectors) => {
-            let mut ret_3: bool = false;
-            let mut ret_2: bool = false;
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_3: bool;
+            let mut ret_2: bool;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = stringEq((a_causality.clone()).clone(), (literal!("input")).clone());
             ret_1 = stringEq((a_baseType.clone()).clone(), (literal!("Integer")).clone());
             ret_2 = boolAnd(ret_0.clone(), ret_1.clone());
@@ -6216,7 +6216,7 @@ fn fun_316(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_fmiInfo: FMI::Info
             txt.clone()
         },
         (mut txt, _, mut a_fmiInfo, mut a_fmiInfo_fmiModelIdentifier, _) => {
-            let mut ret_0: ArcStr = arcstr::literal!("");
+            let mut ret_0: ArcStr;
             txt = Tpl::writeStr(txt.clone(), (a_fmiInfo_fmiModelIdentifier.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_")).clone() }))?;
             ret_0 = (FMI::getFMIType(a_fmiInfo.clone())?).clone();
@@ -6713,7 +6713,7 @@ fn fun_343(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_fmiInfo: FMI::Info
             txt.clone()
         },
         (mut txt, _, mut a_fmiInfo, mut a_fmiInfo_fmiModelIdentifier, _) => {
-            let mut ret_0: ArcStr = arcstr::literal!("");
+            let mut ret_0: ArcStr;
             txt = Tpl::writeStr(txt.clone(), (a_fmiInfo_fmiModelIdentifier.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_")).clone() }))?;
             ret_0 = (FMI::getFMIType(a_fmiInfo.clone())?).clone();
@@ -6729,81 +6729,81 @@ pub fn importFMU1ModelExchange(mut in_txt: Tpl::Text, mut in_a_fmi: FMI::FmiImpo
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_fmi.clone(), in_a_name.clone()) {
         (mut txt, FMI::FmiImport { fmiInfo: ref i_fmiInfo @ FMI::Info { fmiModelIdentifier: ref i_fmiInfo_fmiModelIdentifier, fmiDescription: ref i_fmiInfo_fmiDescription, fmiNumberOfContinuousStates: ref i_fmiInfo_fmiNumberOfContinuousStates, fmiNumberOfEventIndicators: ref i_fmiInfo_fmiNumberOfEventIndicators, .. }, fmiExperimentAnnotation: FMI::ExperimentAnnotation { fmiExperimentStartTime: mut i_fmiExperimentAnnotation_fmiExperimentStartTime, fmiExperimentStopTime: mut i_fmiExperimentAnnotation_fmiExperimentStopTime, fmiExperimentTolerance: mut i_fmiExperimentAnnotation_fmiExperimentTolerance }, fmiModelVariablesList: ref i_fmiModelVariablesList, fmiTypeDefinitionsList: ref i_fmiTypeDefinitionsList, fmuWorkingDirectory: mut i_fmuWorkingDirectory, fmiLogLevel: mut i_fmiLogLevel, fmiDebugOutput: mut i_fmiDebugOutput, generateInputConnectors: mut i_generateInputConnectors, generateOutputConnectors: mut i_generateOutputConnectors, .. }, mut a_name) => {
-            let mut ret_74: bool = false;
-            let mut ret_73: bool = false;
-            let mut ret_72: i32 = 0;
-            let mut ret_71: bool = false;
-            let mut ret_70: i32 = 0;
-            let mut ret_69: bool = false;
-            let mut ret_68: bool = false;
-            let mut ret_67: bool = false;
-            let mut ret_66: bool = false;
-            let mut ret_65: bool = false;
-            let mut ret_64: bool = false;
-            let mut ret_63: bool = false;
-            let mut ret_62: bool = false;
-            let mut ret_61: bool = false;
-            let mut ret_60: bool = false;
-            let mut ret_59: bool = false;
-            let mut ret_58: bool = false;
-            let mut ret_57: bool = false;
-            let mut ret_56: bool = false;
-            let mut ret_55: bool = false;
-            let mut ret_54: bool = false;
-            let mut ret_53: bool = false;
-            let mut ret_52: bool = false;
-            let mut ret_51: bool = false;
-            let mut ret_50: bool = false;
-            let mut ret_49: bool = false;
-            let mut ret_48: bool = false;
-            let mut ret_47: bool = false;
-            let mut ret_46: bool = false;
-            let mut ret_45: bool = false;
-            let mut ret_44: i32 = 0;
-            let mut ret_43: bool = false;
-            let mut ret_42: bool = false;
-            let mut ret_41: bool = false;
-            let mut ret_40: bool = false;
-            let mut ret_39: i32 = 0;
-            let mut ret_38: i32 = 0;
-            let mut ret_37: bool = false;
-            let mut ret_36: bool = false;
-            let mut l_stringOutputVariablesNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_stringOutputVariablesVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_booleanOutputVariablesNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_booleanOutputVariablesVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_integerOutputVariablesNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_integerOutputVariablesVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_realOutputVariablesNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_realOutputVariablesVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_stringInputVariablesReturnNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_stringStartVariablesNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_stringInputVariablesVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_booleanInputVariablesReturnNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_booleanInputVariablesNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_booleanInputVariablesVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_integerInputVariablesReturnNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_integerInputVariablesNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_integerInputVariablesVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_realInputVariablesReturnNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_realInputVariablesNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_realInputVariablesVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_stringDependentParametersNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_stringDependentParametersVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_booleanDependentParametersNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_booleanDependentParametersVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_integerDependentParametersNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_integerDependentParametersVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_realDependentParametersNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_realDependentParametersVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_stringParametersNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_stringParametersVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_booleanParametersNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_booleanParametersVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_integerParametersNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_integerParametersVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_realParametersNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_realParametersVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_74: bool;
+            let mut ret_73: bool;
+            let mut ret_72: i32;
+            let mut ret_71: bool;
+            let mut ret_70: i32;
+            let mut ret_69: bool;
+            let mut ret_68: bool;
+            let mut ret_67: bool;
+            let mut ret_66: bool;
+            let mut ret_65: bool;
+            let mut ret_64: bool;
+            let mut ret_63: bool;
+            let mut ret_62: bool;
+            let mut ret_61: bool;
+            let mut ret_60: bool;
+            let mut ret_59: bool;
+            let mut ret_58: bool;
+            let mut ret_57: bool;
+            let mut ret_56: bool;
+            let mut ret_55: bool;
+            let mut ret_54: bool;
+            let mut ret_53: bool;
+            let mut ret_52: bool;
+            let mut ret_51: bool;
+            let mut ret_50: bool;
+            let mut ret_49: bool;
+            let mut ret_48: bool;
+            let mut ret_47: bool;
+            let mut ret_46: bool;
+            let mut ret_45: bool;
+            let mut ret_44: i32;
+            let mut ret_43: bool;
+            let mut ret_42: bool;
+            let mut ret_41: bool;
+            let mut ret_40: bool;
+            let mut ret_39: i32;
+            let mut ret_38: i32;
+            let mut ret_37: bool;
+            let mut ret_36: bool;
+            let mut l_stringOutputVariablesNames: Tpl::Text;
+            let mut l_stringOutputVariablesVRs: Tpl::Text;
+            let mut l_booleanOutputVariablesNames: Tpl::Text;
+            let mut l_booleanOutputVariablesVRs: Tpl::Text;
+            let mut l_integerOutputVariablesNames: Tpl::Text;
+            let mut l_integerOutputVariablesVRs: Tpl::Text;
+            let mut l_realOutputVariablesNames: Tpl::Text;
+            let mut l_realOutputVariablesVRs: Tpl::Text;
+            let mut l_stringInputVariablesReturnNames: Tpl::Text;
+            let mut l_stringStartVariablesNames: Tpl::Text;
+            let mut l_stringInputVariablesVRs: Tpl::Text;
+            let mut l_booleanInputVariablesReturnNames: Tpl::Text;
+            let mut l_booleanInputVariablesNames: Tpl::Text;
+            let mut l_booleanInputVariablesVRs: Tpl::Text;
+            let mut l_integerInputVariablesReturnNames: Tpl::Text;
+            let mut l_integerInputVariablesNames: Tpl::Text;
+            let mut l_integerInputVariablesVRs: Tpl::Text;
+            let mut l_realInputVariablesReturnNames: Tpl::Text;
+            let mut l_realInputVariablesNames: Tpl::Text;
+            let mut l_realInputVariablesVRs: Tpl::Text;
+            let mut l_stringDependentParametersNames: Tpl::Text;
+            let mut l_stringDependentParametersVRs: Tpl::Text;
+            let mut l_booleanDependentParametersNames: Tpl::Text;
+            let mut l_booleanDependentParametersVRs: Tpl::Text;
+            let mut l_integerDependentParametersNames: Tpl::Text;
+            let mut l_integerDependentParametersVRs: Tpl::Text;
+            let mut l_realDependentParametersNames: Tpl::Text;
+            let mut l_realDependentParametersVRs: Tpl::Text;
+            let mut l_stringParametersNames: Tpl::Text;
+            let mut l_stringParametersVRs: Tpl::Text;
+            let mut l_booleanParametersNames: Tpl::Text;
+            let mut l_booleanParametersVRs: Tpl::Text;
+            let mut l_integerParametersNames: Tpl::Text;
+            let mut l_integerParametersVRs: Tpl::Text;
+            let mut l_realParametersNames: Tpl::Text;
+            let mut l_realParametersVRs: Tpl::Text;
             l_realParametersVRs = dumpVariables(Tpl::emptyTxt.clone(), i_fmiModelVariablesList.clone(), (literal!("real")).clone(), (literal!("parameter")).clone(), false, 1, (literal!("1.0")).clone())?;
             l_realParametersNames = dumpVariables(Tpl::emptyTxt.clone(), i_fmiModelVariablesList.clone(), (literal!("real")).clone(), (literal!("parameter")).clone(), false, 2, (literal!("1.0")).clone())?;
             l_integerParametersVRs = dumpVariables(Tpl::emptyTxt.clone(), i_fmiModelVariablesList.clone(), (literal!("integer")).clone(), (literal!("parameter")).clone(), false, 1, (literal!("1.0")).clone())?;
@@ -7010,7 +7010,7 @@ fn fun_345(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_fmiInfo: FMI::Info
             txt.clone()
         },
         (mut txt, _, mut a_fmiInfo, mut a_fmiInfo_fmiModelIdentifier, _) => {
-            let mut ret_0: ArcStr = arcstr::literal!("");
+            let mut ret_0: ArcStr;
             txt = Tpl::writeStr(txt.clone(), (a_fmiInfo_fmiModelIdentifier.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_")).clone() }))?;
             ret_0 = (FMI::getFMIType(a_fmiInfo.clone())?).clone();
@@ -7763,7 +7763,7 @@ fn fun_388(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_fmiInfo: FMI::Info
             txt.clone()
         },
         (mut txt, _, mut a_fmiInfo, mut a_fmiInfo_fmiModelIdentifier, _) => {
-            let mut ret_0: ArcStr = arcstr::literal!("");
+            let mut ret_0: ArcStr;
             txt = Tpl::writeStr(txt.clone(), (a_fmiInfo_fmiModelIdentifier.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_")).clone() }))?;
             ret_0 = (FMI::getFMIType(a_fmiInfo.clone())?).clone();
@@ -7779,133 +7779,133 @@ pub fn importFMU2ModelExchange(mut in_txt: Tpl::Text, mut in_a_fmi: FMI::FmiImpo
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_fmi.clone(), in_a_name.clone()) {
         (mut txt, FMI::FmiImport { fmiInfo: ref i_fmiInfo @ FMI::Info { fmiModelIdentifier: ref i_fmiInfo_fmiModelIdentifier, fmiDescription: ref i_fmiInfo_fmiDescription, fmiNumberOfContinuousStates: ref i_fmiInfo_fmiNumberOfContinuousStates, fmiNumberOfEventIndicators: ref i_fmiInfo_fmiNumberOfEventIndicators, .. }, fmiExperimentAnnotation: FMI::ExperimentAnnotation { fmiExperimentStartTime: mut i_fmiExperimentAnnotation_fmiExperimentStartTime, fmiExperimentStopTime: mut i_fmiExperimentAnnotation_fmiExperimentStopTime, fmiExperimentTolerance: mut i_fmiExperimentAnnotation_fmiExperimentTolerance }, fmiModelVariablesList: ref i_fmiModelVariablesList, fmiTypeDefinitionsList: ref i_fmiTypeDefinitionsList, fmuWorkingDirectory: mut i_fmuWorkingDirectory, fmiLogLevel: mut i_fmiLogLevel, fmiDebugOutput: mut i_fmiDebugOutput, generateInputConnectors: mut i_generateInputConnectors, generateOutputConnectors: mut i_generateOutputConnectors, .. }, mut a_name) => {
-            let mut ret_126: bool = false;
-            let mut ret_125: bool = false;
-            let mut ret_124: i32 = 0;
-            let mut ret_123: bool = false;
-            let mut ret_122: bool = false;
-            let mut ret_121: bool = false;
-            let mut ret_120: bool = false;
-            let mut ret_119: bool = false;
-            let mut ret_118: i32 = 0;
-            let mut ret_117: bool = false;
-            let mut ret_116: bool = false;
-            let mut ret_115: bool = false;
-            let mut ret_114: bool = false;
-            let mut ret_113: bool = false;
-            let mut ret_112: bool = false;
-            let mut ret_111: bool = false;
-            let mut ret_110: bool = false;
-            let mut ret_109: bool = false;
-            let mut ret_108: bool = false;
-            let mut ret_107: bool = false;
-            let mut ret_106: bool = false;
-            let mut ret_105: bool = false;
-            let mut ret_104: bool = false;
-            let mut ret_103: bool = false;
-            let mut ret_102: bool = false;
-            let mut ret_101: bool = false;
-            let mut ret_100: bool = false;
-            let mut ret_99: bool = false;
-            let mut ret_98: bool = false;
-            let mut ret_97: bool = false;
-            let mut ret_96: bool = false;
-            let mut ret_95: bool = false;
-            let mut ret_94: bool = false;
-            let mut ret_93: bool = false;
-            let mut ret_92: bool = false;
-            let mut ret_91: bool = false;
-            let mut ret_90: bool = false;
-            let mut ret_89: bool = false;
-            let mut ret_88: i32 = 0;
-            let mut ret_87: bool = false;
-            let mut ret_86: bool = false;
-            let mut ret_85: bool = false;
-            let mut ret_84: bool = false;
-            let mut ret_83: bool = false;
-            let mut ret_82: bool = false;
-            let mut ret_81: bool = false;
-            let mut ret_80: bool = false;
-            let mut ret_79: bool = false;
-            let mut ret_78: bool = false;
-            let mut ret_77: bool = false;
-            let mut ret_76: bool = false;
-            let mut ret_75: i32 = 0;
-            let mut ret_74: i32 = 0;
-            let mut ret_73: bool = false;
-            let mut ret_72: bool = false;
-            let mut l_stringOutputVariablesNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_stringOutputVariablesVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_booleanOutputVariablesNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_booleanOutputVariablesVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_integerOutputVariablesNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_integerOutputVariablesVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_realOutputVariablesNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_realOutputVariablesVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_stringEventInputVariablesReturnNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_stringEventStartVariablesNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_stringEventInputVariablesVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_60: i32 = 0;
-            let mut ret_59: Arc<metamodelica::List<FMI::ModelVariables>> = metamodelica::nil();
-            let mut l_nStringEventInputVariables: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_booleanEventInputVariablesReturnNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_booleanEventInputVariablesNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_booleanEventInputVariablesVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_54: i32 = 0;
-            let mut ret_53: Arc<metamodelica::List<FMI::ModelVariables>> = metamodelica::nil();
-            let mut l_nBooleanEventInputVariables: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_integerEventInputVariablesReturnNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_integerEventInputVariablesNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_integerEventInputVariablesVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_48: i32 = 0;
-            let mut ret_47: Arc<metamodelica::List<FMI::ModelVariables>> = metamodelica::nil();
-            let mut l_nIntegerEventInputVariables: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_realEventInputVariablesReturnNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_realEventInputVariablesNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_realEventInputVariablesVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_42: i32 = 0;
-            let mut ret_41: Arc<metamodelica::List<FMI::ModelVariables>> = metamodelica::nil();
-            let mut l_nRealEventInputVariables: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_stringInputVariablesReturnNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_stringStartVariablesNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_stringInputVariablesVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_36: i32 = 0;
-            let mut ret_35: Arc<metamodelica::List<FMI::ModelVariables>> = metamodelica::nil();
-            let mut l_nStringInputVariables: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_booleanInputVariablesReturnNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_booleanInputVariablesNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_booleanInputVariablesVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_30: i32 = 0;
-            let mut ret_29: Arc<metamodelica::List<FMI::ModelVariables>> = metamodelica::nil();
-            let mut l_nBooleanInputVariables: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_integerInputVariablesReturnNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_integerInputVariablesNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_integerInputVariablesVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_24: i32 = 0;
-            let mut ret_23: Arc<metamodelica::List<FMI::ModelVariables>> = metamodelica::nil();
-            let mut l_nIntegerInputVariables: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_realInputVariablesReturnNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_realInputVariablesNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_realInputVariablesVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_18: i32 = 0;
-            let mut ret_17: Arc<metamodelica::List<FMI::ModelVariables>> = metamodelica::nil();
-            let mut l_nRealInputVariables: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_stringDependentParametersNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_stringDependentParametersVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_booleanDependentParametersNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_booleanDependentParametersVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_integerDependentParametersNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_integerDependentParametersVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_realDependentParametersNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_realDependentParametersVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_stringParametersNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_stringParametersVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_booleanParametersNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_booleanParametersVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_integerParametersNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_integerParametersVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_realParametersNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_realParametersVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_126: bool;
+            let mut ret_125: bool;
+            let mut ret_124: i32;
+            let mut ret_123: bool;
+            let mut ret_122: bool;
+            let mut ret_121: bool;
+            let mut ret_120: bool;
+            let mut ret_119: bool;
+            let mut ret_118: i32;
+            let mut ret_117: bool;
+            let mut ret_116: bool;
+            let mut ret_115: bool;
+            let mut ret_114: bool;
+            let mut ret_113: bool;
+            let mut ret_112: bool;
+            let mut ret_111: bool;
+            let mut ret_110: bool;
+            let mut ret_109: bool;
+            let mut ret_108: bool;
+            let mut ret_107: bool;
+            let mut ret_106: bool;
+            let mut ret_105: bool;
+            let mut ret_104: bool;
+            let mut ret_103: bool;
+            let mut ret_102: bool;
+            let mut ret_101: bool;
+            let mut ret_100: bool;
+            let mut ret_99: bool;
+            let mut ret_98: bool;
+            let mut ret_97: bool;
+            let mut ret_96: bool;
+            let mut ret_95: bool;
+            let mut ret_94: bool;
+            let mut ret_93: bool;
+            let mut ret_92: bool;
+            let mut ret_91: bool;
+            let mut ret_90: bool;
+            let mut ret_89: bool;
+            let mut ret_88: i32;
+            let mut ret_87: bool;
+            let mut ret_86: bool;
+            let mut ret_85: bool;
+            let mut ret_84: bool;
+            let mut ret_83: bool;
+            let mut ret_82: bool;
+            let mut ret_81: bool;
+            let mut ret_80: bool;
+            let mut ret_79: bool;
+            let mut ret_78: bool;
+            let mut ret_77: bool;
+            let mut ret_76: bool;
+            let mut ret_75: i32;
+            let mut ret_74: i32;
+            let mut ret_73: bool;
+            let mut ret_72: bool;
+            let mut l_stringOutputVariablesNames: Tpl::Text;
+            let mut l_stringOutputVariablesVRs: Tpl::Text;
+            let mut l_booleanOutputVariablesNames: Tpl::Text;
+            let mut l_booleanOutputVariablesVRs: Tpl::Text;
+            let mut l_integerOutputVariablesNames: Tpl::Text;
+            let mut l_integerOutputVariablesVRs: Tpl::Text;
+            let mut l_realOutputVariablesNames: Tpl::Text;
+            let mut l_realOutputVariablesVRs: Tpl::Text;
+            let mut l_stringEventInputVariablesReturnNames: Tpl::Text;
+            let mut l_stringEventStartVariablesNames: Tpl::Text;
+            let mut l_stringEventInputVariablesVRs: Tpl::Text;
+            let mut ret_60: i32;
+            let mut ret_59: Arc<metamodelica::List<FMI::ModelVariables>>;
+            let mut l_nStringEventInputVariables: Tpl::Text;
+            let mut l_booleanEventInputVariablesReturnNames: Tpl::Text;
+            let mut l_booleanEventInputVariablesNames: Tpl::Text;
+            let mut l_booleanEventInputVariablesVRs: Tpl::Text;
+            let mut ret_54: i32;
+            let mut ret_53: Arc<metamodelica::List<FMI::ModelVariables>>;
+            let mut l_nBooleanEventInputVariables: Tpl::Text;
+            let mut l_integerEventInputVariablesReturnNames: Tpl::Text;
+            let mut l_integerEventInputVariablesNames: Tpl::Text;
+            let mut l_integerEventInputVariablesVRs: Tpl::Text;
+            let mut ret_48: i32;
+            let mut ret_47: Arc<metamodelica::List<FMI::ModelVariables>>;
+            let mut l_nIntegerEventInputVariables: Tpl::Text;
+            let mut l_realEventInputVariablesReturnNames: Tpl::Text;
+            let mut l_realEventInputVariablesNames: Tpl::Text;
+            let mut l_realEventInputVariablesVRs: Tpl::Text;
+            let mut ret_42: i32;
+            let mut ret_41: Arc<metamodelica::List<FMI::ModelVariables>>;
+            let mut l_nRealEventInputVariables: Tpl::Text;
+            let mut l_stringInputVariablesReturnNames: Tpl::Text;
+            let mut l_stringStartVariablesNames: Tpl::Text;
+            let mut l_stringInputVariablesVRs: Tpl::Text;
+            let mut ret_36: i32;
+            let mut ret_35: Arc<metamodelica::List<FMI::ModelVariables>>;
+            let mut l_nStringInputVariables: Tpl::Text;
+            let mut l_booleanInputVariablesReturnNames: Tpl::Text;
+            let mut l_booleanInputVariablesNames: Tpl::Text;
+            let mut l_booleanInputVariablesVRs: Tpl::Text;
+            let mut ret_30: i32;
+            let mut ret_29: Arc<metamodelica::List<FMI::ModelVariables>>;
+            let mut l_nBooleanInputVariables: Tpl::Text;
+            let mut l_integerInputVariablesReturnNames: Tpl::Text;
+            let mut l_integerInputVariablesNames: Tpl::Text;
+            let mut l_integerInputVariablesVRs: Tpl::Text;
+            let mut ret_24: i32;
+            let mut ret_23: Arc<metamodelica::List<FMI::ModelVariables>>;
+            let mut l_nIntegerInputVariables: Tpl::Text;
+            let mut l_realInputVariablesReturnNames: Tpl::Text;
+            let mut l_realInputVariablesNames: Tpl::Text;
+            let mut l_realInputVariablesVRs: Tpl::Text;
+            let mut ret_18: i32;
+            let mut ret_17: Arc<metamodelica::List<FMI::ModelVariables>>;
+            let mut l_nRealInputVariables: Tpl::Text;
+            let mut l_stringDependentParametersNames: Tpl::Text;
+            let mut l_stringDependentParametersVRs: Tpl::Text;
+            let mut l_booleanDependentParametersNames: Tpl::Text;
+            let mut l_booleanDependentParametersVRs: Tpl::Text;
+            let mut l_integerDependentParametersNames: Tpl::Text;
+            let mut l_integerDependentParametersVRs: Tpl::Text;
+            let mut l_realDependentParametersNames: Tpl::Text;
+            let mut l_realDependentParametersVRs: Tpl::Text;
+            let mut l_stringParametersNames: Tpl::Text;
+            let mut l_stringParametersVRs: Tpl::Text;
+            let mut l_booleanParametersNames: Tpl::Text;
+            let mut l_booleanParametersVRs: Tpl::Text;
+            let mut l_integerParametersNames: Tpl::Text;
+            let mut l_integerParametersVRs: Tpl::Text;
+            let mut l_realParametersNames: Tpl::Text;
+            let mut l_realParametersVRs: Tpl::Text;
             l_realParametersVRs = dumpVariables(Tpl::emptyTxt.clone(), i_fmiModelVariablesList.clone(), (literal!("real")).clone(), (literal!("parameter")).clone(), false, 1, (literal!("2.0")).clone())?;
             l_realParametersNames = dumpVariables(Tpl::emptyTxt.clone(), i_fmiModelVariablesList.clone(), (literal!("real")).clone(), (literal!("parameter")).clone(), false, 2, (literal!("2.0")).clone())?;
             l_integerParametersVRs = dumpVariables(Tpl::emptyTxt.clone(), i_fmiModelVariablesList.clone(), (literal!("integer")).clone(), (literal!("parameter")).clone(), false, 1, (literal!("2.0")).clone())?;
@@ -8202,7 +8202,7 @@ fn fun_390(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_fmiInfo: FMI::Info
             txt.clone()
         },
         (mut txt, _, mut a_fmiInfo, mut a_fmiInfo_fmiModelIdentifier, _) => {
-            let mut ret_0: ArcStr = arcstr::literal!("");
+            let mut ret_0: ArcStr;
             txt = Tpl::writeStr(txt.clone(), (a_fmiInfo_fmiModelIdentifier.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_")).clone() }))?;
             ret_0 = (FMI::getFMIType(a_fmiInfo.clone())?).clone();
@@ -8454,7 +8454,7 @@ fn fun_404(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_fmiInfo: FMI::Info
             txt.clone()
         },
         (mut txt, _, mut a_fmiInfo, mut a_fmiInfo_fmiModelIdentifier, _) => {
-            let mut ret_0: ArcStr = arcstr::literal!("");
+            let mut ret_0: ArcStr;
             txt = Tpl::writeStr(txt.clone(), (a_fmiInfo_fmiModelIdentifier.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_")).clone() }))?;
             ret_0 = (FMI::getFMIType(a_fmiInfo.clone())?).clone();
@@ -8470,65 +8470,65 @@ pub fn importFMU1CoSimulationStandAlone(mut in_txt: Tpl::Text, mut in_a_fmi: FMI
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_fmi.clone(), in_a_name.clone()) {
         (mut txt, FMI::FmiImport { fmiInfo: ref i_fmiInfo @ FMI::Info { fmiModelIdentifier: ref i_fmiInfo_fmiModelIdentifier, fmiDescription: ref i_fmiInfo_fmiDescription, .. }, fmiExperimentAnnotation: FMI::ExperimentAnnotation { fmiExperimentStartTime: mut i_fmiExperimentAnnotation_fmiExperimentStartTime, fmiExperimentStopTime: mut i_fmiExperimentAnnotation_fmiExperimentStopTime, fmiExperimentTolerance: mut i_fmiExperimentAnnotation_fmiExperimentTolerance }, fmiModelVariablesList: ref i_fmiModelVariablesList, fmiTypeDefinitionsList: ref i_fmiTypeDefinitionsList, fmuWorkingDirectory: mut i_fmuWorkingDirectory, fmiLogLevel: mut i_fmiLogLevel, fmiDebugOutput: mut i_fmiDebugOutput, generateInputConnectors: mut i_generateInputConnectors, generateOutputConnectors: mut i_generateOutputConnectors, .. }, mut a_name) => {
-            let mut ret_58: bool = false;
-            let mut ret_57: bool = false;
-            let mut ret_56: bool = false;
-            let mut ret_55: bool = false;
-            let mut ret_54: bool = false;
-            let mut ret_53: bool = false;
-            let mut ret_52: bool = false;
-            let mut ret_51: bool = false;
-            let mut ret_50: bool = false;
-            let mut ret_49: bool = false;
-            let mut ret_48: bool = false;
-            let mut ret_47: bool = false;
-            let mut ret_46: bool = false;
-            let mut ret_45: bool = false;
-            let mut ret_44: bool = false;
-            let mut ret_43: bool = false;
-            let mut ret_42: bool = false;
-            let mut ret_41: bool = false;
-            let mut ret_40: bool = false;
-            let mut ret_39: bool = false;
-            let mut ret_38: bool = false;
-            let mut ret_37: bool = false;
-            let mut ret_36: bool = false;
-            let mut l_stringOutputVariablesNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_stringOutputVariablesVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_booleanOutputVariablesNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_booleanOutputVariablesVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_integerOutputVariablesNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_integerOutputVariablesVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_realOutputVariablesNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_realOutputVariablesVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_stringInputVariablesReturnNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_stringStartVariablesNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_stringInputVariablesVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_booleanInputVariablesReturnNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_booleanInputVariablesNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_booleanInputVariablesVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_integerInputVariablesReturnNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_integerInputVariablesNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_integerInputVariablesVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_realInputVariablesReturnNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_realInputVariablesNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_realInputVariablesVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_stringDependentParametersNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_stringDependentParametersVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_booleanDependentParametersNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_booleanDependentParametersVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_integerDependentParametersNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_integerDependentParametersVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_realDependentParametersNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_realDependentParametersVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_stringParametersNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_stringParametersVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_booleanParametersNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_booleanParametersVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_integerParametersNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_integerParametersVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_realParametersNames: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_realParametersVRs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_58: bool;
+            let mut ret_57: bool;
+            let mut ret_56: bool;
+            let mut ret_55: bool;
+            let mut ret_54: bool;
+            let mut ret_53: bool;
+            let mut ret_52: bool;
+            let mut ret_51: bool;
+            let mut ret_50: bool;
+            let mut ret_49: bool;
+            let mut ret_48: bool;
+            let mut ret_47: bool;
+            let mut ret_46: bool;
+            let mut ret_45: bool;
+            let mut ret_44: bool;
+            let mut ret_43: bool;
+            let mut ret_42: bool;
+            let mut ret_41: bool;
+            let mut ret_40: bool;
+            let mut ret_39: bool;
+            let mut ret_38: bool;
+            let mut ret_37: bool;
+            let mut ret_36: bool;
+            let mut l_stringOutputVariablesNames: Tpl::Text;
+            let mut l_stringOutputVariablesVRs: Tpl::Text;
+            let mut l_booleanOutputVariablesNames: Tpl::Text;
+            let mut l_booleanOutputVariablesVRs: Tpl::Text;
+            let mut l_integerOutputVariablesNames: Tpl::Text;
+            let mut l_integerOutputVariablesVRs: Tpl::Text;
+            let mut l_realOutputVariablesNames: Tpl::Text;
+            let mut l_realOutputVariablesVRs: Tpl::Text;
+            let mut l_stringInputVariablesReturnNames: Tpl::Text;
+            let mut l_stringStartVariablesNames: Tpl::Text;
+            let mut l_stringInputVariablesVRs: Tpl::Text;
+            let mut l_booleanInputVariablesReturnNames: Tpl::Text;
+            let mut l_booleanInputVariablesNames: Tpl::Text;
+            let mut l_booleanInputVariablesVRs: Tpl::Text;
+            let mut l_integerInputVariablesReturnNames: Tpl::Text;
+            let mut l_integerInputVariablesNames: Tpl::Text;
+            let mut l_integerInputVariablesVRs: Tpl::Text;
+            let mut l_realInputVariablesReturnNames: Tpl::Text;
+            let mut l_realInputVariablesNames: Tpl::Text;
+            let mut l_realInputVariablesVRs: Tpl::Text;
+            let mut l_stringDependentParametersNames: Tpl::Text;
+            let mut l_stringDependentParametersVRs: Tpl::Text;
+            let mut l_booleanDependentParametersNames: Tpl::Text;
+            let mut l_booleanDependentParametersVRs: Tpl::Text;
+            let mut l_integerDependentParametersNames: Tpl::Text;
+            let mut l_integerDependentParametersVRs: Tpl::Text;
+            let mut l_realDependentParametersNames: Tpl::Text;
+            let mut l_realDependentParametersVRs: Tpl::Text;
+            let mut l_stringParametersNames: Tpl::Text;
+            let mut l_stringParametersVRs: Tpl::Text;
+            let mut l_booleanParametersNames: Tpl::Text;
+            let mut l_booleanParametersVRs: Tpl::Text;
+            let mut l_integerParametersNames: Tpl::Text;
+            let mut l_integerParametersVRs: Tpl::Text;
+            let mut l_realParametersNames: Tpl::Text;
+            let mut l_realParametersVRs: Tpl::Text;
             l_realParametersVRs = dumpVariables(Tpl::emptyTxt.clone(), i_fmiModelVariablesList.clone(), (literal!("real")).clone(), (literal!("parameter")).clone(), false, 1, (literal!("1.0")).clone())?;
             l_realParametersNames = dumpVariables(Tpl::emptyTxt.clone(), i_fmiModelVariablesList.clone(), (literal!("real")).clone(), (literal!("parameter")).clone(), false, 2, (literal!("1.0")).clone())?;
             l_integerParametersVRs = dumpVariables(Tpl::emptyTxt.clone(), i_fmiModelVariablesList.clone(), (literal!("integer")).clone(), (literal!("parameter")).clone(), false, 1, (literal!("1.0")).clone())?;
@@ -8788,7 +8788,7 @@ fn lm_414(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<FMI::Enume
             return Ok(txt.clone())
         },
         (txt, Deref @ metamodelica::List::Cons { head: i_item, tail: rest }, a_name) => {
-            let mut x_i0: i32 = 0;
+            let mut x_i0: i32;
             let mut txt = (*txt).clone();
             x_i0 = Tpl::getIteri_i0(txt.clone())?;
             txt = dumpFMITypeDefinitionMappingFunctionItems(txt.clone(), i_item.clone(), (a_name.clone()).clone(), x_i0.clone())?;
@@ -8818,8 +8818,8 @@ pub fn dumpFMITypeDefinitionMappingFunction(mut in_txt: Tpl::Text, mut in_a_fmiT
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_fmiTypeDefinition.clone()) {
         (mut txt, FMI::TypeDefinitions { name: mut i_name, items: ref i_items, .. }) => {
-            let mut ret_1: bool = false;
-            let mut ret_0: i32 = 0;
+            let mut ret_1: bool;
+            let mut ret_0: i32;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("function map_")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (i_name.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("_from_integer\n")).clone(), (literal!("  input Integer i;\n")).clone()], lastHasNewLine: true }))?;
@@ -8882,7 +8882,7 @@ pub fn dumpFMITypeDefinitionMappingFunctionItems(mut in_txt: Tpl::Text, mut in_a
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_item.clone(), in_a_typeName.clone(), in_a_i.clone()) {
         (mut txt, FMI::EnumerationItem { name: mut i_name, .. }, mut a_typeName, mut a_i) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             ret_0 = intEq(a_i.clone(), 1);
             txt = fun_417(txt.clone(), ret_0.clone(), (i_name.clone()).clone(), (a_typeName.clone()).clone(), a_i.clone())?;
             txt.clone()
@@ -9181,7 +9181,7 @@ fn fun_430(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_baseType: ArcStr, 
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_baseType.clone(), in_a_causality.clone()) {
         (mut txt, false, mut a_baseType, mut a_causality) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             ret_0 = stringEq((a_causality.clone()).clone(), (literal!("")).clone());
             txt = fun_429(txt.clone(), ret_0.clone(), (a_baseType.clone()).clone(), (a_causality.clone()).clone())?;
             txt.clone()
@@ -9198,10 +9198,10 @@ fn fun_431(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_baseType: ArcStr, 
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_baseType.clone(), in_a_causality.clone(), in_a_generateOutputConnectors.clone()) {
         (mut txt, false, mut a_baseType, mut a_causality, mut a_generateOutputConnectors) => {
-            let mut ret_3: bool = false;
-            let mut ret_2: bool = false;
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_3: bool;
+            let mut ret_2: bool;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = stringEq((a_causality.clone()).clone(), (literal!("output")).clone());
             ret_1 = stringEq((a_baseType.clone()).clone(), (literal!("Boolean")).clone());
             ret_2 = boolAnd(ret_0.clone(), ret_1.clone());
@@ -9221,10 +9221,10 @@ fn fun_432(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_baseType: ArcStr, 
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_baseType.clone(), in_a_causality.clone(), in_a_generateOutputConnectors.clone()) {
         (mut txt, false, mut a_baseType, mut a_causality, mut a_generateOutputConnectors) => {
-            let mut ret_3: bool = false;
-            let mut ret_2: bool = false;
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_3: bool;
+            let mut ret_2: bool;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = stringEq((a_causality.clone()).clone(), (literal!("output")).clone());
             ret_1 = stringEq((a_baseType.clone()).clone(), (literal!("Integer")).clone());
             ret_2 = boolAnd(ret_0.clone(), ret_1.clone());
@@ -9244,10 +9244,10 @@ fn fun_433(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_baseType: ArcStr, 
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_baseType.clone(), in_a_causality.clone(), in_a_generateOutputConnectors.clone()) {
         (mut txt, false, mut a_baseType, mut a_causality, mut a_generateOutputConnectors) => {
-            let mut ret_3: bool = false;
-            let mut ret_2: bool = false;
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_3: bool;
+            let mut ret_2: bool;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = stringEq((a_causality.clone()).clone(), (literal!("output")).clone());
             ret_1 = stringEq((a_baseType.clone()).clone(), (literal!("Real")).clone());
             ret_2 = boolAnd(ret_0.clone(), ret_1.clone());
@@ -9267,10 +9267,10 @@ fn fun_434(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_generateOutputConn
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_generateOutputConnectors.clone(), in_a_baseType.clone(), in_a_causality.clone(), in_a_generateInputConnectors.clone()) {
         (mut txt, false, mut a_generateOutputConnectors, mut a_baseType, mut a_causality, mut a_generateInputConnectors) => {
-            let mut ret_3: bool = false;
-            let mut ret_2: bool = false;
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_3: bool;
+            let mut ret_2: bool;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = stringEq((a_causality.clone()).clone(), (literal!("input")).clone());
             ret_1 = stringEq((a_baseType.clone()).clone(), (literal!("Boolean")).clone());
             ret_2 = boolAnd(ret_0.clone(), ret_1.clone());
@@ -9290,10 +9290,10 @@ fn fun_435(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_causality: ArcStr,
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_causality.clone(), in_a_baseType.clone(), in_a_generateInputConnectors.clone(), in_a_generateOutputConnectors.clone()) {
         (mut txt, false, mut a_causality, mut a_baseType, mut a_generateInputConnectors, mut a_generateOutputConnectors) => {
-            let mut ret_3: bool = false;
-            let mut ret_2: bool = false;
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_3: bool;
+            let mut ret_2: bool;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = stringEq((a_causality.clone()).clone(), (literal!("input")).clone());
             ret_1 = stringEq((a_baseType.clone()).clone(), (literal!("Integer")).clone());
             ret_2 = boolAnd(ret_0.clone(), ret_1.clone());
@@ -9364,9 +9364,9 @@ fn fun_440(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_isFixed: bool, mut
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_isFixed.clone(), in_a_hasStartValue.clone()) {
         (mut txt, false, mut a_isFixed, mut a_hasStartValue) => {
-            let mut ret_2: bool = false;
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_2: bool;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = boolNot(a_hasStartValue.clone());
             ret_1 = boolNot(a_isFixed.clone());
             ret_2 = boolAnd(ret_0.clone(), ret_1.clone());
@@ -9385,8 +9385,8 @@ fn fun_441(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_startValue: metamo
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_startValue.clone(), in_a_isFixed.clone(), in_a_hasStartValue.clone()) {
         (mut txt, false, _, mut a_isFixed, mut a_hasStartValue) => {
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = boolNot(a_hasStartValue.clone());
             ret_1 = boolAnd(ret_0.clone(), a_isFixed.clone());
             txt = fun_440(txt.clone(), ret_1.clone(), a_isFixed.clone(), a_hasStartValue.clone())?;
@@ -9406,8 +9406,8 @@ fn fun_442(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_startValue: metamo
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_startValue.clone(), in_a_isFixed.clone(), in_a_hasStartValue.clone()) {
         (mut txt, false, mut a_startValue, mut a_isFixed, mut a_hasStartValue) => {
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = boolNot(a_isFixed.clone());
             ret_1 = boolAnd(a_hasStartValue.clone(), ret_0.clone());
             txt = fun_441(txt.clone(), ret_1.clone(), a_startValue.clone(), a_isFixed.clone(), a_hasStartValue.clone())?;
@@ -9442,15 +9442,15 @@ fn fun_444(mut in_txt: Tpl::Text, mut in_a_variabilityCausality: ArcStr, mut in_
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_variabilityCausality.clone(), in_a_startValue.clone(), in_a_isFixed.clone(), in_a_hasStartValue.clone())) {
         (txt, Deref @ "parameter", a_startValue, a_isFixed, a_hasStartValue) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = boolAnd(a_hasStartValue.clone(), a_isFixed.clone());
             txt = fun_442(txt.clone(), ret_0.clone(), a_startValue.clone(), a_isFixed.clone(), a_hasStartValue.clone())?;
             txt.clone()
         },
         (txt, Deref @ "", a_startValue, a_isFixed, a_hasStartValue) => {
-            let mut ret_2: bool = false;
-            let mut ret_1: bool = false;
+            let mut ret_2: bool;
+            let mut ret_1: bool;
             let mut txt = (*txt).clone();
             ret_1 = boolNot(a_isFixed.clone());
             ret_2 = boolAnd(a_hasStartValue.clone(), ret_1.clone());
@@ -9485,8 +9485,8 @@ fn fun_446(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_startValue: metamo
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_startValue.clone(), in_a_isFixed.clone(), in_a_hasStartValue.clone()) {
         (mut txt, false, mut a_startValue, mut a_isFixed, mut a_hasStartValue) => {
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = boolNot(a_isFixed.clone());
             ret_1 = boolAnd(a_hasStartValue.clone(), ret_0.clone());
             txt = fun_445(txt.clone(), ret_1.clone(), a_startValue.clone())?;
@@ -9504,9 +9504,9 @@ fn fun_447(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_startValue: metamo
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_startValue.clone(), in_a_isFixed.clone(), in_a_hasStartValue.clone()) {
         (mut txt, false, mut a_startValue, mut a_isFixed, mut a_hasStartValue) => {
-            let mut ret_2: bool = false;
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_2: bool;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = boolNot(a_hasStartValue.clone());
             ret_1 = boolNot(a_isFixed.clone());
             ret_2 = boolAnd(ret_0.clone(), ret_1.clone());
@@ -9525,8 +9525,8 @@ fn fun_448(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_startValue: metamo
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_startValue.clone(), in_a_isFixed.clone(), in_a_hasStartValue.clone()) {
         (mut txt, false, mut a_startValue, mut a_isFixed, mut a_hasStartValue) => {
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = boolNot(a_hasStartValue.clone());
             ret_1 = boolAnd(ret_0.clone(), a_isFixed.clone());
             txt = fun_447(txt.clone(), ret_1.clone(), a_startValue.clone(), a_isFixed.clone(), a_hasStartValue.clone())?;
@@ -9546,8 +9546,8 @@ fn fun_449(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_startValue: metamo
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_startValue.clone(), in_a_isFixed.clone(), in_a_hasStartValue.clone()) {
         (mut txt, false, mut a_startValue, mut a_isFixed, mut a_hasStartValue) => {
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = boolNot(a_isFixed.clone());
             ret_1 = boolAnd(a_hasStartValue.clone(), ret_0.clone());
             txt = fun_448(txt.clone(), ret_1.clone(), a_startValue.clone(), a_isFixed.clone(), a_hasStartValue.clone())?;
@@ -9566,7 +9566,7 @@ fn fun_450(mut in_txt: Tpl::Text, mut in_a_variabilityCausality: ArcStr, mut in_
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_variabilityCausality.clone(), in_a_startValue.clone(), in_a_isFixed.clone(), in_a_hasStartValue.clone())) {
         (txt, Deref @ "parameter", a_startValue, a_isFixed, a_hasStartValue) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = boolAnd(a_hasStartValue.clone(), a_isFixed.clone());
             txt = fun_449(txt.clone(), ret_0.clone(), a_startValue.clone(), a_isFixed.clone(), a_hasStartValue.clone())?;
@@ -9619,9 +9619,9 @@ fn fun_453(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_isFixed: bool, mut
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_isFixed.clone(), in_a_hasStartValue.clone()) {
         (mut txt, false, mut a_isFixed, mut a_hasStartValue) => {
-            let mut ret_2: bool = false;
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_2: bool;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = boolNot(a_hasStartValue.clone());
             ret_1 = boolNot(a_isFixed.clone());
             ret_2 = boolAnd(ret_0.clone(), ret_1.clone());
@@ -9640,8 +9640,8 @@ fn fun_454(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_startValue: i32, m
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_startValue.clone(), in_a_isFixed.clone(), in_a_hasStartValue.clone()) {
         (mut txt, false, _, mut a_isFixed, mut a_hasStartValue) => {
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = boolNot(a_hasStartValue.clone());
             ret_1 = boolAnd(ret_0.clone(), a_isFixed.clone());
             txt = fun_453(txt.clone(), ret_1.clone(), a_isFixed.clone(), a_hasStartValue.clone())?;
@@ -9661,8 +9661,8 @@ fn fun_455(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_startValue: i32, m
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_startValue.clone(), in_a_isFixed.clone(), in_a_hasStartValue.clone()) {
         (mut txt, false, mut a_startValue, mut a_isFixed, mut a_hasStartValue) => {
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = boolNot(a_isFixed.clone());
             ret_1 = boolAnd(a_hasStartValue.clone(), ret_0.clone());
             txt = fun_454(txt.clone(), ret_1.clone(), a_startValue.clone(), a_isFixed.clone(), a_hasStartValue.clone())?;
@@ -9697,15 +9697,15 @@ fn fun_457(mut in_txt: Tpl::Text, mut in_a_variabilityCausality: ArcStr, mut in_
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_variabilityCausality.clone(), in_a_startValue.clone(), in_a_isFixed.clone(), in_a_hasStartValue.clone())) {
         (txt, Deref @ "parameter", a_startValue, a_isFixed, a_hasStartValue) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = boolAnd(a_hasStartValue.clone(), a_isFixed.clone());
             txt = fun_455(txt.clone(), ret_0.clone(), a_startValue.clone(), a_isFixed.clone(), a_hasStartValue.clone())?;
             txt.clone()
         },
         (txt, Deref @ "", a_startValue, a_isFixed, a_hasStartValue) => {
-            let mut ret_2: bool = false;
-            let mut ret_1: bool = false;
+            let mut ret_2: bool;
+            let mut ret_1: bool;
             let mut txt = (*txt).clone();
             ret_1 = boolNot(a_isFixed.clone());
             ret_2 = boolAnd(a_hasStartValue.clone(), ret_1.clone());
@@ -9740,8 +9740,8 @@ fn fun_459(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_startValue: i32, m
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_startValue.clone(), in_a_isFixed.clone(), in_a_hasStartValue.clone()) {
         (mut txt, false, mut a_startValue, mut a_isFixed, mut a_hasStartValue) => {
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = boolNot(a_isFixed.clone());
             ret_1 = boolAnd(a_hasStartValue.clone(), ret_0.clone());
             txt = fun_458(txt.clone(), ret_1.clone(), a_startValue.clone())?;
@@ -9759,9 +9759,9 @@ fn fun_460(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_startValue: i32, m
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_startValue.clone(), in_a_isFixed.clone(), in_a_hasStartValue.clone()) {
         (mut txt, false, mut a_startValue, mut a_isFixed, mut a_hasStartValue) => {
-            let mut ret_2: bool = false;
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_2: bool;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = boolNot(a_hasStartValue.clone());
             ret_1 = boolNot(a_isFixed.clone());
             ret_2 = boolAnd(ret_0.clone(), ret_1.clone());
@@ -9780,8 +9780,8 @@ fn fun_461(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_startValue: i32, m
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_startValue.clone(), in_a_isFixed.clone(), in_a_hasStartValue.clone()) {
         (mut txt, false, mut a_startValue, mut a_isFixed, mut a_hasStartValue) => {
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = boolNot(a_hasStartValue.clone());
             ret_1 = boolAnd(ret_0.clone(), a_isFixed.clone());
             txt = fun_460(txt.clone(), ret_1.clone(), a_startValue.clone(), a_isFixed.clone(), a_hasStartValue.clone())?;
@@ -9801,8 +9801,8 @@ fn fun_462(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_startValue: i32, m
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_startValue.clone(), in_a_isFixed.clone(), in_a_hasStartValue.clone()) {
         (mut txt, false, mut a_startValue, mut a_isFixed, mut a_hasStartValue) => {
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = boolNot(a_isFixed.clone());
             ret_1 = boolAnd(a_hasStartValue.clone(), ret_0.clone());
             txt = fun_461(txt.clone(), ret_1.clone(), a_startValue.clone(), a_isFixed.clone(), a_hasStartValue.clone())?;
@@ -9821,7 +9821,7 @@ fn fun_463(mut in_txt: Tpl::Text, mut in_a_variabilityCausality: ArcStr, mut in_
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_variabilityCausality.clone(), in_a_startValue.clone(), in_a_isFixed.clone(), in_a_hasStartValue.clone())) {
         (txt, Deref @ "parameter", a_startValue, a_isFixed, a_hasStartValue) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = boolAnd(a_hasStartValue.clone(), a_isFixed.clone());
             txt = fun_462(txt.clone(), ret_0.clone(), a_startValue.clone(), a_isFixed.clone(), a_hasStartValue.clone())?;
@@ -9874,9 +9874,9 @@ fn fun_466(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_isFixed: bool, mut
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_isFixed.clone(), in_a_hasStartValue.clone()) {
         (mut txt, false, mut a_isFixed, mut a_hasStartValue) => {
-            let mut ret_2: bool = false;
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_2: bool;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = boolNot(a_hasStartValue.clone());
             ret_1 = boolNot(a_isFixed.clone());
             ret_2 = boolAnd(ret_0.clone(), ret_1.clone());
@@ -9895,8 +9895,8 @@ fn fun_467(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_startValue: bool, 
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_startValue.clone(), in_a_isFixed.clone(), in_a_hasStartValue.clone()) {
         (mut txt, false, _, mut a_isFixed, mut a_hasStartValue) => {
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = boolNot(a_hasStartValue.clone());
             ret_1 = boolAnd(ret_0.clone(), a_isFixed.clone());
             txt = fun_466(txt.clone(), ret_1.clone(), a_isFixed.clone(), a_hasStartValue.clone())?;
@@ -9916,8 +9916,8 @@ fn fun_468(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_startValue: bool, 
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_startValue.clone(), in_a_isFixed.clone(), in_a_hasStartValue.clone()) {
         (mut txt, false, mut a_startValue, mut a_isFixed, mut a_hasStartValue) => {
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = boolNot(a_isFixed.clone());
             ret_1 = boolAnd(a_hasStartValue.clone(), ret_0.clone());
             txt = fun_467(txt.clone(), ret_1.clone(), a_startValue.clone(), a_isFixed.clone(), a_hasStartValue.clone())?;
@@ -9952,15 +9952,15 @@ fn fun_470(mut in_txt: Tpl::Text, mut in_a_variabilityCausality: ArcStr, mut in_
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_variabilityCausality.clone(), in_a_startValue.clone(), in_a_isFixed.clone(), in_a_hasStartValue.clone())) {
         (txt, Deref @ "parameter", a_startValue, a_isFixed, a_hasStartValue) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = boolAnd(a_hasStartValue.clone(), a_isFixed.clone());
             txt = fun_468(txt.clone(), ret_0.clone(), a_startValue.clone(), a_isFixed.clone(), a_hasStartValue.clone())?;
             txt.clone()
         },
         (txt, Deref @ "", a_startValue, a_isFixed, a_hasStartValue) => {
-            let mut ret_2: bool = false;
-            let mut ret_1: bool = false;
+            let mut ret_2: bool;
+            let mut ret_1: bool;
             let mut txt = (*txt).clone();
             ret_1 = boolNot(a_isFixed.clone());
             ret_2 = boolAnd(a_hasStartValue.clone(), ret_1.clone());
@@ -9995,8 +9995,8 @@ fn fun_472(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_startValue: bool, 
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_startValue.clone(), in_a_isFixed.clone(), in_a_hasStartValue.clone()) {
         (mut txt, false, mut a_startValue, mut a_isFixed, mut a_hasStartValue) => {
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = boolNot(a_isFixed.clone());
             ret_1 = boolAnd(a_hasStartValue.clone(), ret_0.clone());
             txt = fun_471(txt.clone(), ret_1.clone(), a_startValue.clone())?;
@@ -10014,9 +10014,9 @@ fn fun_473(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_startValue: bool, 
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_startValue.clone(), in_a_isFixed.clone(), in_a_hasStartValue.clone()) {
         (mut txt, false, mut a_startValue, mut a_isFixed, mut a_hasStartValue) => {
-            let mut ret_2: bool = false;
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_2: bool;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = boolNot(a_hasStartValue.clone());
             ret_1 = boolNot(a_isFixed.clone());
             ret_2 = boolAnd(ret_0.clone(), ret_1.clone());
@@ -10035,8 +10035,8 @@ fn fun_474(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_startValue: bool, 
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_startValue.clone(), in_a_isFixed.clone(), in_a_hasStartValue.clone()) {
         (mut txt, false, mut a_startValue, mut a_isFixed, mut a_hasStartValue) => {
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = boolNot(a_hasStartValue.clone());
             ret_1 = boolAnd(ret_0.clone(), a_isFixed.clone());
             txt = fun_473(txt.clone(), ret_1.clone(), a_startValue.clone(), a_isFixed.clone(), a_hasStartValue.clone())?;
@@ -10056,8 +10056,8 @@ fn fun_475(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_startValue: bool, 
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_startValue.clone(), in_a_isFixed.clone(), in_a_hasStartValue.clone()) {
         (mut txt, false, mut a_startValue, mut a_isFixed, mut a_hasStartValue) => {
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = boolNot(a_isFixed.clone());
             ret_1 = boolAnd(a_hasStartValue.clone(), ret_0.clone());
             txt = fun_474(txt.clone(), ret_1.clone(), a_startValue.clone(), a_isFixed.clone(), a_hasStartValue.clone())?;
@@ -10076,7 +10076,7 @@ fn fun_476(mut in_txt: Tpl::Text, mut in_a_variabilityCausality: ArcStr, mut in_
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_variabilityCausality.clone(), in_a_startValue.clone(), in_a_isFixed.clone(), in_a_hasStartValue.clone())) {
         (txt, Deref @ "parameter", a_startValue, a_isFixed, a_hasStartValue) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = boolAnd(a_hasStartValue.clone(), a_isFixed.clone());
             txt = fun_475(txt.clone(), ret_0.clone(), a_startValue.clone(), a_isFixed.clone(), a_hasStartValue.clone())?;
@@ -10129,9 +10129,9 @@ fn fun_479(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_isFixed: bool, mut
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_isFixed.clone(), in_a_hasStartValue.clone()) {
         (mut txt, false, mut a_isFixed, mut a_hasStartValue) => {
-            let mut ret_2: bool = false;
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_2: bool;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = boolNot(a_hasStartValue.clone());
             ret_1 = boolNot(a_isFixed.clone());
             ret_2 = boolAnd(ret_0.clone(), ret_1.clone());
@@ -10150,8 +10150,8 @@ fn fun_480(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_startValue: ArcStr
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_startValue.clone(), in_a_isFixed.clone(), in_a_hasStartValue.clone()) {
         (mut txt, false, _, mut a_isFixed, mut a_hasStartValue) => {
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = boolNot(a_hasStartValue.clone());
             ret_1 = boolAnd(ret_0.clone(), a_isFixed.clone());
             txt = fun_479(txt.clone(), ret_1.clone(), a_isFixed.clone(), a_hasStartValue.clone())?;
@@ -10171,8 +10171,8 @@ fn fun_481(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_startValue: ArcStr
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_startValue.clone(), in_a_isFixed.clone(), in_a_hasStartValue.clone()) {
         (mut txt, false, mut a_startValue, mut a_isFixed, mut a_hasStartValue) => {
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = boolNot(a_isFixed.clone());
             ret_1 = boolAnd(a_hasStartValue.clone(), ret_0.clone());
             txt = fun_480(txt.clone(), ret_1.clone(), (a_startValue.clone()).clone(), a_isFixed.clone(), a_hasStartValue.clone())?;
@@ -10208,15 +10208,15 @@ fn fun_483(mut in_txt: Tpl::Text, mut in_a_variabilityCausality: ArcStr, mut in_
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_variabilityCausality.clone(), in_a_startValue.clone(), in_a_isFixed.clone(), in_a_hasStartValue.clone())) {
         (txt, Deref @ "parameter", a_startValue, a_isFixed, a_hasStartValue) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = boolAnd(a_hasStartValue.clone(), a_isFixed.clone());
             txt = fun_481(txt.clone(), ret_0.clone(), (a_startValue.clone()).clone(), a_isFixed.clone(), a_hasStartValue.clone())?;
             txt.clone()
         },
         (txt, Deref @ "", a_startValue, a_isFixed, a_hasStartValue) => {
-            let mut ret_2: bool = false;
-            let mut ret_1: bool = false;
+            let mut ret_2: bool;
+            let mut ret_1: bool;
             let mut txt = (*txt).clone();
             ret_1 = boolNot(a_isFixed.clone());
             ret_2 = boolAnd(a_hasStartValue.clone(), ret_1.clone());
@@ -10251,8 +10251,8 @@ fn fun_485(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_startValue: ArcStr
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_startValue.clone(), in_a_isFixed.clone(), in_a_hasStartValue.clone()) {
         (mut txt, false, mut a_startValue, mut a_isFixed, mut a_hasStartValue) => {
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = boolNot(a_isFixed.clone());
             ret_1 = boolAnd(a_hasStartValue.clone(), ret_0.clone());
             txt = fun_484(txt.clone(), ret_1.clone(), (a_startValue.clone()).clone())?;
@@ -10270,9 +10270,9 @@ fn fun_486(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_startValue: ArcStr
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_startValue.clone(), in_a_isFixed.clone(), in_a_hasStartValue.clone()) {
         (mut txt, false, mut a_startValue, mut a_isFixed, mut a_hasStartValue) => {
-            let mut ret_2: bool = false;
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_2: bool;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = boolNot(a_hasStartValue.clone());
             ret_1 = boolNot(a_isFixed.clone());
             ret_2 = boolAnd(ret_0.clone(), ret_1.clone());
@@ -10291,8 +10291,8 @@ fn fun_487(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_startValue: ArcStr
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_startValue.clone(), in_a_isFixed.clone(), in_a_hasStartValue.clone()) {
         (mut txt, false, mut a_startValue, mut a_isFixed, mut a_hasStartValue) => {
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = boolNot(a_hasStartValue.clone());
             ret_1 = boolAnd(ret_0.clone(), a_isFixed.clone());
             txt = fun_486(txt.clone(), ret_1.clone(), (a_startValue.clone()).clone(), a_isFixed.clone(), a_hasStartValue.clone())?;
@@ -10312,8 +10312,8 @@ fn fun_488(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_startValue: ArcStr
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_startValue.clone(), in_a_isFixed.clone(), in_a_hasStartValue.clone()) {
         (mut txt, false, mut a_startValue, mut a_isFixed, mut a_hasStartValue) => {
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = boolNot(a_isFixed.clone());
             ret_1 = boolAnd(a_hasStartValue.clone(), ret_0.clone());
             txt = fun_487(txt.clone(), ret_1.clone(), (a_startValue.clone()).clone(), a_isFixed.clone(), a_hasStartValue.clone())?;
@@ -10333,7 +10333,7 @@ fn fun_489(mut in_txt: Tpl::Text, mut in_a_variabilityCausality: ArcStr, mut in_
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_variabilityCausality.clone(), in_a_startValue.clone(), in_a_isFixed.clone(), in_a_hasStartValue.clone())) {
         (txt, Deref @ "parameter", a_startValue, a_isFixed, a_hasStartValue) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = boolAnd(a_hasStartValue.clone(), a_isFixed.clone());
             txt = fun_488(txt.clone(), ret_0.clone(), (a_startValue.clone()).clone(), a_isFixed.clone(), a_hasStartValue.clone())?;
@@ -10375,7 +10375,7 @@ fn fun_491(mut in_txt: Tpl::Text, mut in_a_hasStartValue: bool, mut in_a_fmiType
             txt.clone()
         },
         (txt, _, a_fmiTypeDefinitionsList, a_baseType, a_startValue) => {
-            let mut ret_0: ArcStr = arcstr::literal!("");
+            let mut ret_0: ArcStr;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" = map_")).clone() }))?;
             ret_0 = (FMI::getEnumerationTypeFromTypes(a_fmiTypeDefinitionsList.clone(), (a_baseType.clone()).clone())?).clone();
@@ -10446,8 +10446,8 @@ fn fun_496(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_x1Placement: i32, 
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_x1Placement.clone(), in_a_x2Placement.clone(), in_a_y1Placement.clone(), in_a_y2Placement.clone(), in_a_generateOutputConnectors.clone(), in_a_causality.clone()) {
         (mut txt, false, mut a_x1Placement, mut a_x2Placement, mut a_y1Placement, mut a_y2Placement, mut a_generateOutputConnectors, mut a_causality) => {
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = stringEq((a_causality.clone()).clone(), (literal!("output")).clone());
             ret_1 = boolAnd(a_generateOutputConnectors.clone(), ret_0.clone());
             txt = fun_495(txt.clone(), ret_1.clone(), a_y2Placement.clone(), a_x2Placement.clone(), a_y1Placement.clone(), a_x1Placement.clone())?;
@@ -10522,7 +10522,7 @@ fn fun_501(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_valueReference: me
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_valueReference.clone(), in_a_name.clone(), in_a_what.clone()) {
         (mut txt, false, _, mut a_name, mut a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             ret_0 = intEq(a_what.clone(), 2);
             txt = fun_500(txt.clone(), ret_0.clone(), (a_name.clone()).clone())?;
             txt.clone()
@@ -10553,7 +10553,7 @@ fn fun_503(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_valueReference: me
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_valueReference.clone(), in_a_name.clone(), in_a_what.clone()) {
         (mut txt, false, _, mut a_name, mut a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             ret_0 = intEq(a_what.clone(), 2);
             txt = fun_502(txt.clone(), ret_0.clone(), (a_name.clone()).clone())?;
             txt.clone()
@@ -10570,14 +10570,14 @@ fn fun_504(mut in_txt: Tpl::Text, mut in_a_fmiModelVariable: FMI::ModelVariables
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fmiModelVariable.clone(), in_a_what.clone())) {
         (txt, FMI::ModelVariables::STRINGVARIABLE { variability: Deref @ "", causality: Deref @ "", name: i_name, valueReference: i_valueReference, .. }, a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = intEq(a_what.clone(), 1);
             txt = fun_501(txt.clone(), ret_0.clone(), i_valueReference.clone(), (i_name.clone()).clone(), a_what.clone())?;
             txt.clone()
         },
         (txt, FMI::ModelVariables::STRINGVARIABLE { variability: Deref @ "", causality: Deref @ "output", name: i_name, valueReference: i_valueReference, .. }, a_what) => {
-            let mut ret_1: bool = false;
+            let mut ret_1: bool;
             let mut txt = (*txt).clone();
             ret_1 = intEq(a_what.clone(), 1);
             txt = fun_503(txt.clone(), ret_1.clone(), i_valueReference.clone(), (i_name.clone()).clone(), a_what.clone())?;
@@ -10623,7 +10623,7 @@ fn fun_507(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_valueReference: me
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_valueReference.clone(), in_a_name.clone(), in_a_what.clone()) {
         (mut txt, false, _, mut a_name, mut a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             ret_0 = intEq(a_what.clone(), 2);
             txt = fun_506(txt.clone(), ret_0.clone(), (a_name.clone()).clone())?;
             txt.clone()
@@ -10654,7 +10654,7 @@ fn fun_509(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_valueReference: me
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_valueReference.clone(), in_a_name.clone(), in_a_what.clone()) {
         (mut txt, false, _, mut a_name, mut a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             ret_0 = intEq(a_what.clone(), 2);
             txt = fun_508(txt.clone(), ret_0.clone(), (a_name.clone()).clone())?;
             txt.clone()
@@ -10671,14 +10671,14 @@ fn fun_510(mut in_txt: Tpl::Text, mut in_a_fmiModelVariable: FMI::ModelVariables
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fmiModelVariable.clone(), in_a_what.clone())) {
         (txt, FMI::ModelVariables::BOOLEANVARIABLE { variability: Deref @ "", causality: Deref @ "", name: i_name, valueReference: i_valueReference, .. }, a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = intEq(a_what.clone(), 1);
             txt = fun_507(txt.clone(), ret_0.clone(), i_valueReference.clone(), (i_name.clone()).clone(), a_what.clone())?;
             txt.clone()
         },
         (txt, FMI::ModelVariables::BOOLEANVARIABLE { variability: Deref @ "", causality: Deref @ "output", name: i_name, valueReference: i_valueReference, .. }, a_what) => {
-            let mut ret_1: bool = false;
+            let mut ret_1: bool;
             let mut txt = (*txt).clone();
             ret_1 = intEq(a_what.clone(), 1);
             txt = fun_509(txt.clone(), ret_1.clone(), i_valueReference.clone(), (i_name.clone()).clone(), a_what.clone())?;
@@ -10696,9 +10696,9 @@ fn fun_511(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_what: i32, mut in_
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_what.clone(), in_a_fmiModelVariable.clone(), in_a_variabilityCausality.clone(), in_a_type.clone()) {
         (mut txt, false, mut a_what, mut a_fmiModelVariable, mut a_variabilityCausality, mut a_type) => {
-            let mut ret_2: bool = false;
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_2: bool;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = stringEq((a_type.clone()).clone(), (literal!("string")).clone());
             ret_1 = stringEq((a_variabilityCausality.clone()).clone(), (literal!("output")).clone());
             ret_2 = boolAnd(ret_0.clone(), ret_1.clone());
@@ -10731,7 +10731,7 @@ fn fun_513(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_valueReference: me
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_valueReference.clone(), in_a_name.clone(), in_a_what.clone()) {
         (mut txt, false, _, mut a_name, mut a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             ret_0 = intEq(a_what.clone(), 2);
             txt = fun_512(txt.clone(), ret_0.clone(), (a_name.clone()).clone())?;
             txt.clone()
@@ -10762,7 +10762,7 @@ fn fun_515(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_valueReference: me
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_valueReference.clone(), in_a_name.clone(), in_a_what.clone()) {
         (mut txt, false, _, mut a_name, mut a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             ret_0 = intEq(a_what.clone(), 2);
             txt = fun_514(txt.clone(), ret_0.clone(), (a_name.clone()).clone())?;
             txt.clone()
@@ -10779,14 +10779,14 @@ fn fun_516(mut in_txt: Tpl::Text, mut in_a_fmiModelVariable: FMI::ModelVariables
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fmiModelVariable.clone(), in_a_what.clone())) {
         (txt, FMI::ModelVariables::INTEGERVARIABLE { variability: Deref @ "", causality: Deref @ "", name: i_name, valueReference: i_valueReference, .. }, a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = intEq(a_what.clone(), 1);
             txt = fun_513(txt.clone(), ret_0.clone(), i_valueReference.clone(), (i_name.clone()).clone(), a_what.clone())?;
             txt.clone()
         },
         (txt, FMI::ModelVariables::INTEGERVARIABLE { variability: Deref @ "", causality: Deref @ "output", name: i_name, valueReference: i_valueReference, .. }, a_what) => {
-            let mut ret_1: bool = false;
+            let mut ret_1: bool;
             let mut txt = (*txt).clone();
             ret_1 = intEq(a_what.clone(), 1);
             txt = fun_515(txt.clone(), ret_1.clone(), i_valueReference.clone(), (i_name.clone()).clone(), a_what.clone())?;
@@ -10804,9 +10804,9 @@ fn fun_517(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_what: i32, mut in_
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_what.clone(), in_a_fmiModelVariable.clone(), in_a_variabilityCausality.clone(), in_a_type.clone()) {
         (mut txt, false, mut a_what, mut a_fmiModelVariable, mut a_variabilityCausality, mut a_type) => {
-            let mut ret_2: bool = false;
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_2: bool;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = stringEq((a_type.clone()).clone(), (literal!("boolean")).clone());
             ret_1 = stringEq((a_variabilityCausality.clone()).clone(), (literal!("output")).clone());
             ret_2 = boolAnd(ret_0.clone(), ret_1.clone());
@@ -10839,7 +10839,7 @@ fn fun_519(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_valueReference: me
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_valueReference.clone(), in_a_name.clone(), in_a_what.clone()) {
         (mut txt, false, _, mut a_name, mut a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             ret_0 = intEq(a_what.clone(), 2);
             txt = fun_518(txt.clone(), ret_0.clone(), (a_name.clone()).clone())?;
             txt.clone()
@@ -10870,7 +10870,7 @@ fn fun_521(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_valueReference: me
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_valueReference.clone(), in_a_name.clone(), in_a_what.clone()) {
         (mut txt, false, _, mut a_name, mut a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             ret_0 = intEq(a_what.clone(), 2);
             txt = fun_520(txt.clone(), ret_0.clone(), (a_name.clone()).clone())?;
             txt.clone()
@@ -10887,14 +10887,14 @@ fn fun_522(mut in_txt: Tpl::Text, mut in_a_fmiModelVariable: FMI::ModelVariables
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fmiModelVariable.clone(), in_a_what.clone())) {
         (txt, FMI::ModelVariables::REALVARIABLE { variability: Deref @ "", causality: Deref @ "", name: i_name, valueReference: i_valueReference, .. }, a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = intEq(a_what.clone(), 1);
             txt = fun_519(txt.clone(), ret_0.clone(), i_valueReference.clone(), (i_name.clone()).clone(), a_what.clone())?;
             txt.clone()
         },
         (txt, FMI::ModelVariables::REALVARIABLE { variability: Deref @ "", causality: Deref @ "output", name: i_name, valueReference: i_valueReference, .. }, a_what) => {
-            let mut ret_1: bool = false;
+            let mut ret_1: bool;
             let mut txt = (*txt).clone();
             ret_1 = intEq(a_what.clone(), 1);
             txt = fun_521(txt.clone(), ret_1.clone(), i_valueReference.clone(), (i_name.clone()).clone(), a_what.clone())?;
@@ -10912,9 +10912,9 @@ fn fun_523(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_what: i32, mut in_
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_what.clone(), in_a_fmiModelVariable.clone(), in_a_variabilityCausality.clone(), in_a_type.clone()) {
         (mut txt, false, mut a_what, mut a_fmiModelVariable, mut a_variabilityCausality, mut a_type) => {
-            let mut ret_2: bool = false;
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_2: bool;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = stringEq((a_type.clone()).clone(), (literal!("integer")).clone());
             ret_1 = stringEq((a_variabilityCausality.clone()).clone(), (literal!("output")).clone());
             ret_2 = boolAnd(ret_0.clone(), ret_1.clone());
@@ -10948,7 +10948,7 @@ fn fun_525(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_name: ArcStr, mut 
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_name.clone(), in_a_what.clone()) {
         (mut txt, false, mut a_name, mut a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             ret_0 = intEq(a_what.clone(), 3);
             txt = fun_524(txt.clone(), ret_0.clone(), (a_name.clone()).clone())?;
             txt.clone()
@@ -10965,7 +10965,7 @@ fn fun_526(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_valueReference: me
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_valueReference.clone(), in_a_name.clone(), in_a_what.clone()) {
         (mut txt, false, _, mut a_name, mut a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             ret_0 = intEq(a_what.clone(), 2);
             txt = fun_525(txt.clone(), ret_0.clone(), (a_name.clone()).clone(), a_what.clone())?;
             txt.clone()
@@ -10982,7 +10982,7 @@ fn fun_527(mut in_txt: Tpl::Text, mut in_a_fmiModelVariable: FMI::ModelVariables
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fmiModelVariable.clone(), in_a_what.clone())) {
         (txt, FMI::ModelVariables::STRINGVARIABLE { causality: Deref @ "input", name: i_name, valueReference: i_valueReference, .. }, a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = intEq(a_what.clone(), 1);
             txt = fun_526(txt.clone(), ret_0.clone(), i_valueReference.clone(), (i_name.clone()).clone(), a_what.clone())?;
@@ -11000,9 +11000,9 @@ fn fun_528(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_what: i32, mut in_
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_what.clone(), in_a_fmiModelVariable.clone(), in_a_variabilityCausality.clone(), in_a_type.clone()) {
         (mut txt, false, mut a_what, mut a_fmiModelVariable, mut a_variabilityCausality, mut a_type) => {
-            let mut ret_2: bool = false;
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_2: bool;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = stringEq((a_type.clone()).clone(), (literal!("real")).clone());
             ret_1 = stringEq((a_variabilityCausality.clone()).clone(), (literal!("output")).clone());
             ret_2 = boolAnd(ret_0.clone(), ret_1.clone());
@@ -11036,7 +11036,7 @@ fn fun_530(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_name: ArcStr, mut 
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_name.clone(), in_a_what.clone()) {
         (mut txt, false, mut a_name, mut a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             ret_0 = intEq(a_what.clone(), 3);
             txt = fun_529(txt.clone(), ret_0.clone(), (a_name.clone()).clone())?;
             txt.clone()
@@ -11053,7 +11053,7 @@ fn fun_531(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_valueReference: me
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_valueReference.clone(), in_a_name.clone(), in_a_what.clone()) {
         (mut txt, false, _, mut a_name, mut a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             ret_0 = intEq(a_what.clone(), 2);
             txt = fun_530(txt.clone(), ret_0.clone(), (a_name.clone()).clone(), a_what.clone())?;
             txt.clone()
@@ -11070,7 +11070,7 @@ fn fun_532(mut in_txt: Tpl::Text, mut in_a_fmiModelVariable: FMI::ModelVariables
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fmiModelVariable.clone(), in_a_what.clone())) {
         (txt, FMI::ModelVariables::BOOLEANVARIABLE { causality: Deref @ "input", name: i_name, valueReference: i_valueReference, .. }, a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = intEq(a_what.clone(), 1);
             txt = fun_531(txt.clone(), ret_0.clone(), i_valueReference.clone(), (i_name.clone()).clone(), a_what.clone())?;
@@ -11088,9 +11088,9 @@ fn fun_533(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_what: i32, mut in_
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_what.clone(), in_a_fmiModelVariable.clone(), in_a_variabilityCausality.clone(), in_a_type.clone()) {
         (mut txt, false, mut a_what, mut a_fmiModelVariable, mut a_variabilityCausality, mut a_type) => {
-            let mut ret_2: bool = false;
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_2: bool;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = stringEq((a_type.clone()).clone(), (literal!("string")).clone());
             ret_1 = stringEq((a_variabilityCausality.clone()).clone(), (literal!("input")).clone());
             ret_2 = boolAnd(ret_0.clone(), ret_1.clone());
@@ -11124,7 +11124,7 @@ fn fun_535(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_name: ArcStr, mut 
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_name.clone(), in_a_what.clone()) {
         (mut txt, false, mut a_name, mut a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             ret_0 = intEq(a_what.clone(), 3);
             txt = fun_534(txt.clone(), ret_0.clone(), (a_name.clone()).clone())?;
             txt.clone()
@@ -11141,7 +11141,7 @@ fn fun_536(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_valueReference: me
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_valueReference.clone(), in_a_name.clone(), in_a_what.clone()) {
         (mut txt, false, _, mut a_name, mut a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             ret_0 = intEq(a_what.clone(), 2);
             txt = fun_535(txt.clone(), ret_0.clone(), (a_name.clone()).clone(), a_what.clone())?;
             txt.clone()
@@ -11158,7 +11158,7 @@ fn fun_537(mut in_txt: Tpl::Text, mut in_a_fmiModelVariable: FMI::ModelVariables
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fmiModelVariable.clone(), in_a_what.clone())) {
         (txt, FMI::ModelVariables::INTEGERVARIABLE { causality: Deref @ "input", name: i_name, valueReference: i_valueReference, .. }, a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = intEq(a_what.clone(), 1);
             txt = fun_536(txt.clone(), ret_0.clone(), i_valueReference.clone(), (i_name.clone()).clone(), a_what.clone())?;
@@ -11176,9 +11176,9 @@ fn fun_538(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_what: i32, mut in_
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_what.clone(), in_a_fmiModelVariable.clone(), in_a_variabilityCausality.clone(), in_a_type.clone()) {
         (mut txt, false, mut a_what, mut a_fmiModelVariable, mut a_variabilityCausality, mut a_type) => {
-            let mut ret_2: bool = false;
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_2: bool;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = stringEq((a_type.clone()).clone(), (literal!("boolean")).clone());
             ret_1 = stringEq((a_variabilityCausality.clone()).clone(), (literal!("input")).clone());
             ret_2 = boolAnd(ret_0.clone(), ret_1.clone());
@@ -11212,7 +11212,7 @@ fn fun_540(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_name: ArcStr, mut 
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_name.clone(), in_a_what.clone()) {
         (mut txt, false, mut a_name, mut a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             ret_0 = intEq(a_what.clone(), 3);
             txt = fun_539(txt.clone(), ret_0.clone(), (a_name.clone()).clone())?;
             txt.clone()
@@ -11229,7 +11229,7 @@ fn fun_541(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_valueReference: me
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_valueReference.clone(), in_a_name.clone(), in_a_what.clone()) {
         (mut txt, false, _, mut a_name, mut a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             ret_0 = intEq(a_what.clone(), 2);
             txt = fun_540(txt.clone(), ret_0.clone(), (a_name.clone()).clone(), a_what.clone())?;
             txt.clone()
@@ -11246,7 +11246,7 @@ fn fun_542(mut in_txt: Tpl::Text, mut in_a_fmiModelVariable: FMI::ModelVariables
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fmiModelVariable.clone(), in_a_what.clone())) {
         (txt, FMI::ModelVariables::REALVARIABLE { causality: Deref @ "input", name: i_name, valueReference: i_valueReference, .. }, a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = intEq(a_what.clone(), 1);
             txt = fun_541(txt.clone(), ret_0.clone(), i_valueReference.clone(), (i_name.clone()).clone(), a_what.clone())?;
@@ -11264,9 +11264,9 @@ fn fun_543(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_what: i32, mut in_
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_what.clone(), in_a_fmiModelVariable.clone(), in_a_variabilityCausality.clone(), in_a_type.clone()) {
         (mut txt, false, mut a_what, mut a_fmiModelVariable, mut a_variabilityCausality, mut a_type) => {
-            let mut ret_2: bool = false;
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_2: bool;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = stringEq((a_type.clone()).clone(), (literal!("integer")).clone());
             ret_1 = stringEq((a_variabilityCausality.clone()).clone(), (literal!("input")).clone());
             ret_2 = boolAnd(ret_0.clone(), ret_1.clone());
@@ -11299,7 +11299,7 @@ fn fun_545(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_valueReference: me
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_valueReference.clone(), in_a_name.clone(), in_a_what.clone()) {
         (mut txt, false, _, mut a_name, mut a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             ret_0 = intEq(a_what.clone(), 2);
             txt = fun_544(txt.clone(), ret_0.clone(), (a_name.clone()).clone())?;
             txt.clone()
@@ -11316,7 +11316,7 @@ fn fun_546(mut in_txt: Tpl::Text, mut in_a_fmiModelVariable: FMI::ModelVariables
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fmiModelVariable.clone(), in_a_what.clone())) {
         (txt, FMI::ModelVariables::STRINGVARIABLE { causality: Deref @ "parameter", hasStartValue: false, isFixed: false, name: i_name, valueReference: i_valueReference, .. }, a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = intEq(a_what.clone(), 1);
             txt = fun_545(txt.clone(), ret_0.clone(), i_valueReference.clone(), (i_name.clone()).clone(), a_what.clone())?;
@@ -11362,7 +11362,7 @@ fn fun_549(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_valueReference: me
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_valueReference.clone(), in_a_name.clone(), in_a_what.clone()) {
         (mut txt, false, _, mut a_name, mut a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             ret_0 = intEq(a_what.clone(), 2);
             txt = fun_548(txt.clone(), ret_0.clone(), (a_name.clone()).clone())?;
             txt.clone()
@@ -11379,7 +11379,7 @@ fn fun_550(mut in_txt: Tpl::Text, mut in_a_fmiModelVariable: FMI::ModelVariables
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fmiModelVariable.clone(), in_a_what.clone())) {
         (txt, FMI::ModelVariables::STRINGVARIABLE { variability: Deref @ "parameter", hasStartValue: false, isFixed: false, name: i_name, valueReference: i_valueReference, .. }, a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = intEq(a_what.clone(), 1);
             txt = fun_549(txt.clone(), ret_0.clone(), i_valueReference.clone(), (i_name.clone()).clone(), a_what.clone())?;
@@ -11397,7 +11397,7 @@ fn fun_551(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_what: i32, mut in_
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_what.clone(), in_a_fmiModelVariable.clone(), in_a_fmiVersion.clone()) {
         (mut txt, false, mut a_what, mut a_fmiModelVariable, mut a_fmiVersion) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             ret_0 = stringEq((a_fmiVersion.clone()).clone(), (literal!("2.0")).clone());
             txt = fun_547(txt.clone(), ret_0.clone(), a_what.clone(), a_fmiModelVariable.clone())?;
             txt.clone()
@@ -11414,9 +11414,9 @@ fn fun_552(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_fmiVersion: ArcStr
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_fmiVersion.clone(), in_a_what.clone(), in_a_fmiModelVariable.clone(), in_a_variabilityCausality.clone(), in_a_type.clone()) {
         (mut txt, false, _, mut a_what, mut a_fmiModelVariable, mut a_variabilityCausality, mut a_type) => {
-            let mut ret_2: bool = false;
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_2: bool;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = stringEq((a_type.clone()).clone(), (literal!("real")).clone());
             ret_1 = stringEq((a_variabilityCausality.clone()).clone(), (literal!("input")).clone());
             ret_2 = boolAnd(ret_0.clone(), ret_1.clone());
@@ -11424,7 +11424,7 @@ fn fun_552(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_fmiVersion: ArcStr
             txt.clone()
         },
         (mut txt, _, mut a_fmiVersion, mut a_what, mut a_fmiModelVariable, _, _) => {
-            let mut ret_3: bool = false;
+            let mut ret_3: bool;
             ret_3 = stringEq((a_fmiVersion.clone()).clone(), (literal!("1.0")).clone());
             txt = fun_551(txt.clone(), ret_3.clone(), a_what.clone(), a_fmiModelVariable.clone(), (a_fmiVersion.clone()).clone())?;
             txt.clone()
@@ -11451,7 +11451,7 @@ fn fun_554(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_valueReference: me
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_valueReference.clone(), in_a_name.clone(), in_a_what.clone()) {
         (mut txt, false, _, mut a_name, mut a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             ret_0 = intEq(a_what.clone(), 2);
             txt = fun_553(txt.clone(), ret_0.clone(), (a_name.clone()).clone())?;
             txt.clone()
@@ -11468,7 +11468,7 @@ fn fun_555(mut in_txt: Tpl::Text, mut in_a_fmiModelVariable: FMI::ModelVariables
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fmiModelVariable.clone(), in_a_what.clone())) {
         (txt, FMI::ModelVariables::BOOLEANVARIABLE { causality: Deref @ "parameter", hasStartValue: false, isFixed: false, name: i_name, valueReference: i_valueReference, .. }, a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = intEq(a_what.clone(), 1);
             txt = fun_554(txt.clone(), ret_0.clone(), i_valueReference.clone(), (i_name.clone()).clone(), a_what.clone())?;
@@ -11514,7 +11514,7 @@ fn fun_558(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_valueReference: me
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_valueReference.clone(), in_a_name.clone(), in_a_what.clone()) {
         (mut txt, false, _, mut a_name, mut a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             ret_0 = intEq(a_what.clone(), 2);
             txt = fun_557(txt.clone(), ret_0.clone(), (a_name.clone()).clone())?;
             txt.clone()
@@ -11531,7 +11531,7 @@ fn fun_559(mut in_txt: Tpl::Text, mut in_a_fmiModelVariable: FMI::ModelVariables
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fmiModelVariable.clone(), in_a_what.clone())) {
         (txt, FMI::ModelVariables::BOOLEANVARIABLE { variability: Deref @ "parameter", hasStartValue: false, isFixed: false, name: i_name, valueReference: i_valueReference, .. }, a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = intEq(a_what.clone(), 1);
             txt = fun_558(txt.clone(), ret_0.clone(), i_valueReference.clone(), (i_name.clone()).clone(), a_what.clone())?;
@@ -11549,7 +11549,7 @@ fn fun_560(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_what: i32, mut in_
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_what.clone(), in_a_fmiModelVariable.clone(), in_a_fmiVersion.clone()) {
         (mut txt, false, mut a_what, mut a_fmiModelVariable, mut a_fmiVersion) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             ret_0 = stringEq((a_fmiVersion.clone()).clone(), (literal!("2.0")).clone());
             txt = fun_556(txt.clone(), ret_0.clone(), a_what.clone(), a_fmiModelVariable.clone())?;
             txt.clone()
@@ -11566,10 +11566,10 @@ fn fun_561(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_fmiVersion: ArcStr
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_fmiVersion.clone(), in_a_what.clone(), in_a_fmiModelVariable.clone(), in_a_dependent.clone(), in_a_variabilityCausality.clone(), in_a_type.clone()) {
         (mut txt, false, mut a_fmiVersion, mut a_what, mut a_fmiModelVariable, mut a_dependent, mut a_variabilityCausality, mut a_type) => {
-            let mut ret_3: bool = false;
-            let mut ret_2: bool = false;
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_3: bool;
+            let mut ret_2: bool;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = stringEq((a_type.clone()).clone(), (literal!("string")).clone());
             ret_1 = stringEq((a_variabilityCausality.clone()).clone(), (literal!("parameter")).clone());
             ret_2 = boolAnd(ret_1.clone(), a_dependent.clone());
@@ -11578,7 +11578,7 @@ fn fun_561(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_fmiVersion: ArcStr
             txt.clone()
         },
         (mut txt, _, mut a_fmiVersion, mut a_what, mut a_fmiModelVariable, _, _, _) => {
-            let mut ret_4: bool = false;
+            let mut ret_4: bool;
             ret_4 = stringEq((a_fmiVersion.clone()).clone(), (literal!("1.0")).clone());
             txt = fun_560(txt.clone(), ret_4.clone(), a_what.clone(), a_fmiModelVariable.clone(), (a_fmiVersion.clone()).clone())?;
             txt.clone()
@@ -11605,7 +11605,7 @@ fn fun_563(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_valueReference: me
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_valueReference.clone(), in_a_name.clone(), in_a_what.clone()) {
         (mut txt, false, _, mut a_name, mut a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             ret_0 = intEq(a_what.clone(), 2);
             txt = fun_562(txt.clone(), ret_0.clone(), (a_name.clone()).clone())?;
             txt.clone()
@@ -11622,7 +11622,7 @@ fn fun_564(mut in_txt: Tpl::Text, mut in_a_fmiModelVariable: FMI::ModelVariables
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fmiModelVariable.clone(), in_a_what.clone())) {
         (txt, FMI::ModelVariables::INTEGERVARIABLE { causality: Deref @ "parameter", hasStartValue: false, isFixed: false, name: i_name, valueReference: i_valueReference, .. }, a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = intEq(a_what.clone(), 1);
             txt = fun_563(txt.clone(), ret_0.clone(), i_valueReference.clone(), (i_name.clone()).clone(), a_what.clone())?;
@@ -11668,7 +11668,7 @@ fn fun_567(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_valueReference: me
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_valueReference.clone(), in_a_name.clone(), in_a_what.clone()) {
         (mut txt, false, _, mut a_name, mut a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             ret_0 = intEq(a_what.clone(), 2);
             txt = fun_566(txt.clone(), ret_0.clone(), (a_name.clone()).clone())?;
             txt.clone()
@@ -11685,7 +11685,7 @@ fn fun_568(mut in_txt: Tpl::Text, mut in_a_fmiModelVariable: FMI::ModelVariables
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fmiModelVariable.clone(), in_a_what.clone())) {
         (txt, FMI::ModelVariables::INTEGERVARIABLE { variability: Deref @ "parameter", hasStartValue: false, isFixed: false, name: i_name, valueReference: i_valueReference, .. }, a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = intEq(a_what.clone(), 1);
             txt = fun_567(txt.clone(), ret_0.clone(), i_valueReference.clone(), (i_name.clone()).clone(), a_what.clone())?;
@@ -11703,7 +11703,7 @@ fn fun_569(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_what: i32, mut in_
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_what.clone(), in_a_fmiModelVariable.clone(), in_a_fmiVersion.clone()) {
         (mut txt, false, mut a_what, mut a_fmiModelVariable, mut a_fmiVersion) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             ret_0 = stringEq((a_fmiVersion.clone()).clone(), (literal!("2.0")).clone());
             txt = fun_565(txt.clone(), ret_0.clone(), a_what.clone(), a_fmiModelVariable.clone())?;
             txt.clone()
@@ -11720,10 +11720,10 @@ fn fun_570(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_fmiVersion: ArcStr
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_fmiVersion.clone(), in_a_what.clone(), in_a_fmiModelVariable.clone(), in_a_dependent.clone(), in_a_variabilityCausality.clone(), in_a_type.clone()) {
         (mut txt, false, mut a_fmiVersion, mut a_what, mut a_fmiModelVariable, mut a_dependent, mut a_variabilityCausality, mut a_type) => {
-            let mut ret_3: bool = false;
-            let mut ret_2: bool = false;
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_3: bool;
+            let mut ret_2: bool;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = stringEq((a_type.clone()).clone(), (literal!("boolean")).clone());
             ret_1 = stringEq((a_variabilityCausality.clone()).clone(), (literal!("parameter")).clone());
             ret_2 = boolAnd(ret_1.clone(), a_dependent.clone());
@@ -11732,7 +11732,7 @@ fn fun_570(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_fmiVersion: ArcStr
             txt.clone()
         },
         (mut txt, _, mut a_fmiVersion, mut a_what, mut a_fmiModelVariable, _, _, _) => {
-            let mut ret_4: bool = false;
+            let mut ret_4: bool;
             ret_4 = stringEq((a_fmiVersion.clone()).clone(), (literal!("1.0")).clone());
             txt = fun_569(txt.clone(), ret_4.clone(), a_what.clone(), a_fmiModelVariable.clone(), (a_fmiVersion.clone()).clone())?;
             txt.clone()
@@ -11759,7 +11759,7 @@ fn fun_572(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_valueReference: me
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_valueReference.clone(), in_a_name.clone(), in_a_what.clone()) {
         (mut txt, false, _, mut a_name, mut a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             ret_0 = intEq(a_what.clone(), 2);
             txt = fun_571(txt.clone(), ret_0.clone(), (a_name.clone()).clone())?;
             txt.clone()
@@ -11776,7 +11776,7 @@ fn fun_573(mut in_txt: Tpl::Text, mut in_a_fmiModelVariable: FMI::ModelVariables
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fmiModelVariable.clone(), in_a_what.clone())) {
         (txt, FMI::ModelVariables::REALVARIABLE { causality: Deref @ "parameter", hasStartValue: false, isFixed: false, name: i_name, valueReference: i_valueReference, .. }, a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = intEq(a_what.clone(), 1);
             txt = fun_572(txt.clone(), ret_0.clone(), i_valueReference.clone(), (i_name.clone()).clone(), a_what.clone())?;
@@ -11822,7 +11822,7 @@ fn fun_576(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_valueReference: me
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_valueReference.clone(), in_a_name.clone(), in_a_what.clone()) {
         (mut txt, false, _, mut a_name, mut a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             ret_0 = intEq(a_what.clone(), 2);
             txt = fun_575(txt.clone(), ret_0.clone(), (a_name.clone()).clone())?;
             txt.clone()
@@ -11839,7 +11839,7 @@ fn fun_577(mut in_txt: Tpl::Text, mut in_a_fmiModelVariable: FMI::ModelVariables
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fmiModelVariable.clone(), in_a_what.clone())) {
         (txt, FMI::ModelVariables::REALVARIABLE { variability: Deref @ "parameter", hasStartValue: false, isFixed: false, name: i_name, valueReference: i_valueReference, .. }, a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = intEq(a_what.clone(), 1);
             txt = fun_576(txt.clone(), ret_0.clone(), i_valueReference.clone(), (i_name.clone()).clone(), a_what.clone())?;
@@ -11857,7 +11857,7 @@ fn fun_578(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_what: i32, mut in_
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_what.clone(), in_a_fmiModelVariable.clone(), in_a_fmiVersion.clone()) {
         (mut txt, false, mut a_what, mut a_fmiModelVariable, mut a_fmiVersion) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             ret_0 = stringEq((a_fmiVersion.clone()).clone(), (literal!("2.0")).clone());
             txt = fun_574(txt.clone(), ret_0.clone(), a_what.clone(), a_fmiModelVariable.clone())?;
             txt.clone()
@@ -11874,10 +11874,10 @@ fn fun_579(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_fmiVersion: ArcStr
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_fmiVersion.clone(), in_a_what.clone(), in_a_fmiModelVariable.clone(), in_a_dependent.clone(), in_a_variabilityCausality.clone(), in_a_type.clone()) {
         (mut txt, false, mut a_fmiVersion, mut a_what, mut a_fmiModelVariable, mut a_dependent, mut a_variabilityCausality, mut a_type) => {
-            let mut ret_3: bool = false;
-            let mut ret_2: bool = false;
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_3: bool;
+            let mut ret_2: bool;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = stringEq((a_type.clone()).clone(), (literal!("integer")).clone());
             ret_1 = stringEq((a_variabilityCausality.clone()).clone(), (literal!("parameter")).clone());
             ret_2 = boolAnd(ret_1.clone(), a_dependent.clone());
@@ -11886,7 +11886,7 @@ fn fun_579(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_fmiVersion: ArcStr
             txt.clone()
         },
         (mut txt, _, mut a_fmiVersion, mut a_what, mut a_fmiModelVariable, _, _, _) => {
-            let mut ret_4: bool = false;
+            let mut ret_4: bool;
             ret_4 = stringEq((a_fmiVersion.clone()).clone(), (literal!("1.0")).clone());
             txt = fun_578(txt.clone(), ret_4.clone(), a_what.clone(), a_fmiModelVariable.clone(), (a_fmiVersion.clone()).clone())?;
             txt.clone()
@@ -11913,7 +11913,7 @@ fn fun_581(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_valueReference: me
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_valueReference.clone(), in_a_name.clone(), in_a_what.clone()) {
         (mut txt, false, _, mut a_name, mut a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             ret_0 = intEq(a_what.clone(), 2);
             txt = fun_580(txt.clone(), ret_0.clone(), (a_name.clone()).clone())?;
             txt.clone()
@@ -11930,7 +11930,7 @@ fn fun_582(mut in_txt: Tpl::Text, mut in_a_fmiModelVariable: FMI::ModelVariables
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fmiModelVariable.clone(), in_a_what.clone())) {
         (txt, FMI::ModelVariables::STRINGVARIABLE { causality: Deref @ "parameter", hasStartValue: true, name: i_name, valueReference: i_valueReference, .. }, a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = intEq(a_what.clone(), 1);
             txt = fun_581(txt.clone(), ret_0.clone(), i_valueReference.clone(), (i_name.clone()).clone(), a_what.clone())?;
@@ -11976,7 +11976,7 @@ fn fun_585(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_valueReference: me
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_valueReference.clone(), in_a_name.clone(), in_a_what.clone()) {
         (mut txt, false, _, mut a_name, mut a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             ret_0 = intEq(a_what.clone(), 2);
             txt = fun_584(txt.clone(), ret_0.clone(), (a_name.clone()).clone())?;
             txt.clone()
@@ -11993,7 +11993,7 @@ fn fun_586(mut in_txt: Tpl::Text, mut in_a_fmiModelVariable: FMI::ModelVariables
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fmiModelVariable.clone(), in_a_what.clone())) {
         (txt, FMI::ModelVariables::STRINGVARIABLE { variability: Deref @ "parameter", hasStartValue: true, name: i_name, valueReference: i_valueReference, .. }, a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = intEq(a_what.clone(), 1);
             txt = fun_585(txt.clone(), ret_0.clone(), i_valueReference.clone(), (i_name.clone()).clone(), a_what.clone())?;
@@ -12011,7 +12011,7 @@ fn fun_587(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_what: i32, mut in_
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_what.clone(), in_a_fmiModelVariable.clone(), in_a_fmiVersion.clone()) {
         (mut txt, false, mut a_what, mut a_fmiModelVariable, mut a_fmiVersion) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             ret_0 = stringEq((a_fmiVersion.clone()).clone(), (literal!("2.0")).clone());
             txt = fun_583(txt.clone(), ret_0.clone(), a_what.clone(), a_fmiModelVariable.clone())?;
             txt.clone()
@@ -12028,10 +12028,10 @@ fn fun_588(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_fmiVersion: ArcStr
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_fmiVersion.clone(), in_a_what.clone(), in_a_fmiModelVariable.clone(), in_a_dependent.clone(), in_a_variabilityCausality.clone(), in_a_type.clone()) {
         (mut txt, false, mut a_fmiVersion, mut a_what, mut a_fmiModelVariable, mut a_dependent, mut a_variabilityCausality, mut a_type) => {
-            let mut ret_3: bool = false;
-            let mut ret_2: bool = false;
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_3: bool;
+            let mut ret_2: bool;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = stringEq((a_type.clone()).clone(), (literal!("real")).clone());
             ret_1 = stringEq((a_variabilityCausality.clone()).clone(), (literal!("parameter")).clone());
             ret_2 = boolAnd(ret_1.clone(), a_dependent.clone());
@@ -12040,7 +12040,7 @@ fn fun_588(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_fmiVersion: ArcStr
             txt.clone()
         },
         (mut txt, _, mut a_fmiVersion, mut a_what, mut a_fmiModelVariable, _, _, _) => {
-            let mut ret_4: bool = false;
+            let mut ret_4: bool;
             ret_4 = stringEq((a_fmiVersion.clone()).clone(), (literal!("1.0")).clone());
             txt = fun_587(txt.clone(), ret_4.clone(), a_what.clone(), a_fmiModelVariable.clone(), (a_fmiVersion.clone()).clone())?;
             txt.clone()
@@ -12067,7 +12067,7 @@ fn fun_590(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_valueReference: me
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_valueReference.clone(), in_a_name.clone(), in_a_what.clone()) {
         (mut txt, false, _, mut a_name, mut a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             ret_0 = intEq(a_what.clone(), 2);
             txt = fun_589(txt.clone(), ret_0.clone(), (a_name.clone()).clone())?;
             txt.clone()
@@ -12084,7 +12084,7 @@ fn fun_591(mut in_txt: Tpl::Text, mut in_a_fmiModelVariable: FMI::ModelVariables
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fmiModelVariable.clone(), in_a_what.clone())) {
         (txt, FMI::ModelVariables::BOOLEANVARIABLE { causality: Deref @ "parameter", hasStartValue: true, name: i_name, valueReference: i_valueReference, .. }, a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = intEq(a_what.clone(), 1);
             txt = fun_590(txt.clone(), ret_0.clone(), i_valueReference.clone(), (i_name.clone()).clone(), a_what.clone())?;
@@ -12130,7 +12130,7 @@ fn fun_594(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_valueReference: me
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_valueReference.clone(), in_a_name.clone(), in_a_what.clone()) {
         (mut txt, false, _, mut a_name, mut a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             ret_0 = intEq(a_what.clone(), 2);
             txt = fun_593(txt.clone(), ret_0.clone(), (a_name.clone()).clone())?;
             txt.clone()
@@ -12147,7 +12147,7 @@ fn fun_595(mut in_txt: Tpl::Text, mut in_a_fmiModelVariable: FMI::ModelVariables
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fmiModelVariable.clone(), in_a_what.clone())) {
         (txt, FMI::ModelVariables::BOOLEANVARIABLE { variability: Deref @ "parameter", hasStartValue: true, name: i_name, valueReference: i_valueReference, .. }, a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = intEq(a_what.clone(), 1);
             txt = fun_594(txt.clone(), ret_0.clone(), i_valueReference.clone(), (i_name.clone()).clone(), a_what.clone())?;
@@ -12165,7 +12165,7 @@ fn fun_596(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_what: i32, mut in_
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_what.clone(), in_a_fmiModelVariable.clone(), in_a_fmiVersion.clone()) {
         (mut txt, false, mut a_what, mut a_fmiModelVariable, mut a_fmiVersion) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             ret_0 = stringEq((a_fmiVersion.clone()).clone(), (literal!("2.0")).clone());
             txt = fun_592(txt.clone(), ret_0.clone(), a_what.clone(), a_fmiModelVariable.clone())?;
             txt.clone()
@@ -12182,11 +12182,11 @@ fn fun_597(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_fmiVersion: ArcStr
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_fmiVersion.clone(), in_a_what.clone(), in_a_fmiModelVariable.clone(), in_a_dependent.clone(), in_a_variabilityCausality.clone(), in_a_type.clone()) {
         (mut txt, false, mut a_fmiVersion, mut a_what, mut a_fmiModelVariable, mut a_dependent, mut a_variabilityCausality, mut a_type) => {
-            let mut ret_4: bool = false;
-            let mut ret_3: bool = false;
-            let mut ret_2: bool = false;
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_4: bool;
+            let mut ret_3: bool;
+            let mut ret_2: bool;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = stringEq((a_type.clone()).clone(), (literal!("string")).clone());
             ret_1 = stringEq((a_variabilityCausality.clone()).clone(), (literal!("parameter")).clone());
             ret_2 = boolNot(a_dependent.clone());
@@ -12196,7 +12196,7 @@ fn fun_597(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_fmiVersion: ArcStr
             txt.clone()
         },
         (mut txt, _, mut a_fmiVersion, mut a_what, mut a_fmiModelVariable, _, _, _) => {
-            let mut ret_5: bool = false;
+            let mut ret_5: bool;
             ret_5 = stringEq((a_fmiVersion.clone()).clone(), (literal!("1.0")).clone());
             txt = fun_596(txt.clone(), ret_5.clone(), a_what.clone(), a_fmiModelVariable.clone(), (a_fmiVersion.clone()).clone())?;
             txt.clone()
@@ -12223,7 +12223,7 @@ fn fun_599(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_valueReference: me
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_valueReference.clone(), in_a_name.clone(), in_a_what.clone()) {
         (mut txt, false, _, mut a_name, mut a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             ret_0 = intEq(a_what.clone(), 2);
             txt = fun_598(txt.clone(), ret_0.clone(), (a_name.clone()).clone())?;
             txt.clone()
@@ -12240,7 +12240,7 @@ fn fun_600(mut in_txt: Tpl::Text, mut in_a_fmiModelVariable: FMI::ModelVariables
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fmiModelVariable.clone(), in_a_what.clone())) {
         (txt, FMI::ModelVariables::INTEGERVARIABLE { causality: Deref @ "parameter", hasStartValue: true, name: i_name, valueReference: i_valueReference, .. }, a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = intEq(a_what.clone(), 1);
             txt = fun_599(txt.clone(), ret_0.clone(), i_valueReference.clone(), (i_name.clone()).clone(), a_what.clone())?;
@@ -12286,7 +12286,7 @@ fn fun_603(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_valueReference: me
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_valueReference.clone(), in_a_name.clone(), in_a_what.clone()) {
         (mut txt, false, _, mut a_name, mut a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             ret_0 = intEq(a_what.clone(), 2);
             txt = fun_602(txt.clone(), ret_0.clone(), (a_name.clone()).clone())?;
             txt.clone()
@@ -12303,7 +12303,7 @@ fn fun_604(mut in_txt: Tpl::Text, mut in_a_fmiModelVariable: FMI::ModelVariables
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fmiModelVariable.clone(), in_a_what.clone())) {
         (txt, FMI::ModelVariables::INTEGERVARIABLE { variability: Deref @ "parameter", hasStartValue: true, name: i_name, valueReference: i_valueReference, .. }, a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = intEq(a_what.clone(), 1);
             txt = fun_603(txt.clone(), ret_0.clone(), i_valueReference.clone(), (i_name.clone()).clone(), a_what.clone())?;
@@ -12321,7 +12321,7 @@ fn fun_605(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_what: i32, mut in_
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_what.clone(), in_a_fmiModelVariable.clone(), in_a_fmiVersion.clone()) {
         (mut txt, false, mut a_what, mut a_fmiModelVariable, mut a_fmiVersion) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             ret_0 = stringEq((a_fmiVersion.clone()).clone(), (literal!("2.0")).clone());
             txt = fun_601(txt.clone(), ret_0.clone(), a_what.clone(), a_fmiModelVariable.clone())?;
             txt.clone()
@@ -12338,11 +12338,11 @@ fn fun_606(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_fmiVersion: ArcStr
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_fmiVersion.clone(), in_a_what.clone(), in_a_fmiModelVariable.clone(), in_a_dependent.clone(), in_a_variabilityCausality.clone(), in_a_type.clone()) {
         (mut txt, false, mut a_fmiVersion, mut a_what, mut a_fmiModelVariable, mut a_dependent, mut a_variabilityCausality, mut a_type) => {
-            let mut ret_4: bool = false;
-            let mut ret_3: bool = false;
-            let mut ret_2: bool = false;
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_4: bool;
+            let mut ret_3: bool;
+            let mut ret_2: bool;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = stringEq((a_type.clone()).clone(), (literal!("boolean")).clone());
             ret_1 = stringEq((a_variabilityCausality.clone()).clone(), (literal!("parameter")).clone());
             ret_2 = boolNot(a_dependent.clone());
@@ -12352,7 +12352,7 @@ fn fun_606(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_fmiVersion: ArcStr
             txt.clone()
         },
         (mut txt, _, mut a_fmiVersion, mut a_what, mut a_fmiModelVariable, _, _, _) => {
-            let mut ret_5: bool = false;
+            let mut ret_5: bool;
             ret_5 = stringEq((a_fmiVersion.clone()).clone(), (literal!("1.0")).clone());
             txt = fun_605(txt.clone(), ret_5.clone(), a_what.clone(), a_fmiModelVariable.clone(), (a_fmiVersion.clone()).clone())?;
             txt.clone()
@@ -12379,7 +12379,7 @@ fn fun_608(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_valueReference: me
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_valueReference.clone(), in_a_name.clone(), in_a_what.clone()) {
         (mut txt, false, _, mut a_name, mut a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             ret_0 = intEq(a_what.clone(), 2);
             txt = fun_607(txt.clone(), ret_0.clone(), (a_name.clone()).clone())?;
             txt.clone()
@@ -12396,7 +12396,7 @@ fn fun_609(mut in_txt: Tpl::Text, mut in_a_fmiModelVariable: FMI::ModelVariables
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fmiModelVariable.clone(), in_a_what.clone())) {
         (txt, FMI::ModelVariables::REALVARIABLE { causality: Deref @ "parameter", hasStartValue: true, name: i_name, valueReference: i_valueReference, .. }, a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = intEq(a_what.clone(), 1);
             txt = fun_608(txt.clone(), ret_0.clone(), i_valueReference.clone(), (i_name.clone()).clone(), a_what.clone())?;
@@ -12442,7 +12442,7 @@ fn fun_612(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_valueReference: me
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_valueReference.clone(), in_a_name.clone(), in_a_what.clone()) {
         (mut txt, false, _, mut a_name, mut a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             ret_0 = intEq(a_what.clone(), 2);
             txt = fun_611(txt.clone(), ret_0.clone(), (a_name.clone()).clone())?;
             txt.clone()
@@ -12459,7 +12459,7 @@ fn fun_613(mut in_txt: Tpl::Text, mut in_a_fmiModelVariable: FMI::ModelVariables
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fmiModelVariable.clone(), in_a_what.clone())) {
         (txt, FMI::ModelVariables::REALVARIABLE { variability: Deref @ "parameter", hasStartValue: true, name: i_name, valueReference: i_valueReference, .. }, a_what) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = intEq(a_what.clone(), 1);
             txt = fun_612(txt.clone(), ret_0.clone(), i_valueReference.clone(), (i_name.clone()).clone(), a_what.clone())?;
@@ -12477,7 +12477,7 @@ fn fun_614(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_what: i32, mut in_
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_what.clone(), in_a_fmiModelVariable.clone(), in_a_fmiVersion.clone()) {
         (mut txt, false, mut a_what, mut a_fmiModelVariable, mut a_fmiVersion) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             ret_0 = stringEq((a_fmiVersion.clone()).clone(), (literal!("2.0")).clone());
             txt = fun_610(txt.clone(), ret_0.clone(), a_what.clone(), a_fmiModelVariable.clone())?;
             txt.clone()
@@ -12494,11 +12494,11 @@ fn fun_615(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_fmiModelVariable: 
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_fmiModelVariable.clone(), in_a_type.clone(), in_a_variabilityCausality.clone(), in_a_dependent.clone(), in_a_what.clone(), in_a_fmiVersion.clone()) {
         (mut txt, false, mut a_fmiModelVariable, mut a_type, mut a_variabilityCausality, mut a_dependent, mut a_what, mut a_fmiVersion) => {
-            let mut ret_4: bool = false;
-            let mut ret_3: bool = false;
-            let mut ret_2: bool = false;
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_4: bool;
+            let mut ret_3: bool;
+            let mut ret_2: bool;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             ret_0 = stringEq((a_type.clone()).clone(), (literal!("integer")).clone());
             ret_1 = stringEq((a_variabilityCausality.clone()).clone(), (literal!("parameter")).clone());
             ret_2 = boolNot(a_dependent.clone());
@@ -12508,7 +12508,7 @@ fn fun_615(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_fmiModelVariable: 
             txt.clone()
         },
         (mut txt, _, mut a_fmiModelVariable, _, _, _, mut a_what, mut a_fmiVersion) => {
-            let mut ret_5: bool = false;
+            let mut ret_5: bool;
             ret_5 = stringEq((a_fmiVersion.clone()).clone(), (literal!("1.0")).clone());
             txt = fun_614(txt.clone(), ret_5.clone(), a_what.clone(), a_fmiModelVariable.clone(), (a_fmiVersion.clone()).clone())?;
             txt.clone()
@@ -12559,7 +12559,7 @@ pub fn dumpOutputGetEnumerationVariable(mut in_txt: Tpl::Text, mut in_a_fmiModel
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fmiModelVariable.clone(), in_a_fmiTypeDefinitionsList.clone(), in_a_fmiGetFunction.clone(), in_a_fmiType.clone())) {
         (txt, FMI::ModelVariables::ENUMERATIONVARIABLE { variability: Deref @ "", causality: Deref @ "", name: i_name, baseType: i_baseType, valueReference: i_valueReference, .. }, a_fmiTypeDefinitionsList, a_fmiGetFunction, a_fmiType) => {
-            let mut ret_0: ArcStr = arcstr::literal!("");
+            let mut ret_0: ArcStr;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("{")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (i_name.clone()).clone())?;
@@ -12577,7 +12577,7 @@ pub fn dumpOutputGetEnumerationVariable(mut in_txt: Tpl::Text, mut in_a_fmiModel
             txt.clone()
         },
         (txt, FMI::ModelVariables::ENUMERATIONVARIABLE { variability: Deref @ "", causality: Deref @ "output", name: i_name, baseType: i_baseType, valueReference: i_valueReference, .. }, a_fmiTypeDefinitionsList, a_fmiGetFunction, a_fmiType) => {
-            let mut ret_1: ArcStr = arcstr::literal!("");
+            let mut ret_1: ArcStr;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("{")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (i_name.clone()).clone())?;
@@ -12827,8 +12827,8 @@ fn fun_633(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -> Result<
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_simCode.clone()) {
         (mut txt, ref i_simCode @ SimCode::SimCode { modelInfo: SimCode::ModelInfo { functions: _, varInfo: SimCode::VarInfo { numZeroCrossings: _, .. }, vars: SimCodeVar::SimVars { stateVars: ref i_vars_stateVars, derivativeVars: ref i_vars_derivativeVars, algVars: ref i_vars_algVars, discreteAlgVars: ref i_vars_discreteAlgVars, realOptimizeConstraintsVars: ref i_vars_realOptimizeConstraintsVars, realOptimizeFinalConstraintsVars: ref i_vars_realOptimizeFinalConstraintsVars, paramVars: ref i_vars_paramVars, intAlgVars: ref i_vars_intAlgVars, intParamVars: ref i_vars_intParamVars, boolAlgVars: ref i_vars_boolAlgVars, boolParamVars: ref i_vars_boolParamVars, stringAlgVars: ref i_vars_stringAlgVars, stringParamVars: ref i_vars_stringParamVars, .. }, .. }, simulationSettingsOpt: Some(SimCode::SimulationSettings { startTime: ref i_s_startTime, stopTime: ref i_s_stopTime, stepSize: ref i_s_stepSize, tolerance: ref i_s_tolerance, method: ref i_s_method, outputFormat: ref i_s_outputFormat, variableFilter: ref i_s_variableFilter, .. }), makefileParams: SimCodeFunction::MakefileParams { omhome: ref i_makefileParams_omhome, .. }, .. }) => {
-            let mut txt_1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_1: Tpl::Text;
+            let mut txt_0: Tpl::Text;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("#include \"simulation_data.h\"\n")).clone(), (literal!("#include \"util/real_array.h\"\n")).clone(), (literal!("\n")).clone(), (literal!("OMC_DISABLE_OPT\n")).clone(), (literal!("\n")).clone(), (literal!("void ")).clone()], lastHasNewLine: false }))?;
             txt_0 = CodegenUtilSimulation::modelNamePrefix(Tpl::emptyTxt.clone(), i_simCode.clone())?;
             txt = CodegenUtil::symbolName(txt.clone(), (Tpl::textString(txt_0.clone())?).clone(), (literal!("read_simulation_info")).clone())?;
@@ -12965,7 +12965,7 @@ fn fun_636(mut in_txt: Tpl::Text, mut in_a_info: SourceInfo, mut in_a_str: ArcSt
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_info.clone(), in_a_str.clone()) {
         (mut txt, SourceInfo { fileName: mut i_fileName, lineNumberStart: mut i_lineNumberStart, columnNumberStart: mut i_columnNumberStart, lineNumberEnd: mut i_lineNumberEnd, columnNumberEnd: mut i_columnNumberEnd, isReadOnly: mut i_isReadOnly, .. }, mut a_str) => {
-            let mut ret_0: ArcStr = arcstr::literal!("");
+            let mut ret_0: ArcStr;
             txt = Tpl::writeStr(txt.clone(), (a_str.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".filename = \"")).clone() }))?;
             ret_0 = (Util::escapeModelicaStringToCString((i_fileName.clone()).clone())).clone();
@@ -13013,7 +13013,7 @@ fn fun_638(mut in_txt: Tpl::Text, mut in_a_comment: ArcStr) -> Result<Tpl::Text>
             txt.clone()
         },
         (txt, i_comment) => {
-            let mut ret_0: ArcStr = arcstr::literal!("");
+            let mut ret_0: ArcStr;
             let mut txt = (*txt).clone();
             ret_0 = (Util::escapeModelicaStringToCString((i_comment.clone()).clone())).clone();
             txt = Tpl::writeStr(txt.clone(), (ret_0.clone()).clone())?;
@@ -13028,16 +13028,16 @@ pub fn ScalarVariableFMU(mut in_txt: Tpl::Text, mut in_a_simVar: SimCodeVar::Sim
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_simVar.clone(), in_a_classType.clone())) {
         (txt, SimCodeVar::SimVar { source: Deref @ DAE::ElementSource { info: i_info, .. }, comment: i_comment, name: i_name, unit: i_unit, displayUnit: i_displayUnit, minValue: i_minValue, maxValue: i_maxValue, initialValue: i_initialValue, nominalValue: i_nominalValue, isFixed: i_isFixed, type_: i_type__, .. }, a_classType) => {
-            let mut txt_9: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_8: ArcStr = arcstr::literal!("");
-            let mut txt_7: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_attrstr: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_infostr: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_description: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_3: i32 = 0;
-            let mut l_ci: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_1: i32 = 0;
-            let mut l_valueReference: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_9: Tpl::Text;
+            let mut ret_8: ArcStr;
+            let mut txt_7: Tpl::Text;
+            let mut l_attrstr: Tpl::Text;
+            let mut l_infostr: Tpl::Text;
+            let mut l_description: Tpl::Text;
+            let mut ret_3: i32;
+            let mut l_ci: Tpl::Text;
+            let mut ret_1: i32;
+            let mut l_valueReference: Tpl::Text;
             let mut txt = (*txt).clone();
             ret_1 = System::tmpTick();
             l_valueReference = Tpl::writeStr(Tpl::emptyTxt.clone(), (intString(ret_1.clone())).clone())?;
@@ -13112,7 +13112,7 @@ fn fun_641(mut in_txt: Tpl::Text, mut in_a_e: Arc<DAE::Exp>, mut in_a_default: A
             txt.clone()
         },
         (txt, Deref @ DAE::Exp::SCONST { string: i_string }, _) => {
-            let mut ret_0: ArcStr = arcstr::literal!("");
+            let mut ret_0: ArcStr;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("mmc_mk_scon(\"")).clone() }))?;
             ret_0 = (Util::escapeModelicaStringToCString((i_string.clone()).clone())).clone();
@@ -13240,8 +13240,8 @@ fn fun_648(mut in_txt: Tpl::Text, mut in_a_type__: Arc<DAE::Type>, mut in_a_attr
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_type__.clone(), in_a_attrstr.clone(), in_a_unit.clone(), in_a_displayUnit.clone(), in_a_minValue.clone(), in_a_maxValue.clone(), in_a_startValue.clone(), in_a_nominalValue.clone(), in_a_isFixed.clone())) {
         (txt, Deref @ DAE::Type::T_REAL { varLst: _ }, a_attrstr, a_unit, a_displayUnit, a_minValue, a_maxValue, a_startValue, a_nominalValue, a_isFixed) => {
-            let mut ret_1: ArcStr = arcstr::literal!("");
-            let mut ret_0: ArcStr = arcstr::literal!("");
+            let mut ret_1: ArcStr;
+            let mut ret_0: ArcStr;
             let mut txt = (*txt).clone();
             txt = Tpl::writeStr(txt.clone(), (a_attrstr.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".unit = \"")).clone() }))?;
@@ -13320,7 +13320,7 @@ fn fun_648(mut in_txt: Tpl::Text, mut in_a_type__: Arc<DAE::Type>, mut in_a_attr
             txt.clone()
         },
         (txt, Deref @ DAE::Type::T_ENUMERATION { names: i_names, .. }, a_attrstr, _, _, a_minValue, a_maxValue, a_startValue, _, a_isFixed) => {
-            let mut ret_2: i32 = 0;
+            let mut ret_2: i32;
             let mut txt = (*txt).clone();
             txt = Tpl::writeStr(txt.clone(), (a_attrstr.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".min = ")).clone() }))?;
@@ -13342,8 +13342,8 @@ fn fun_648(mut in_txt: Tpl::Text, mut in_a_type__: Arc<DAE::Type>, mut in_a_attr
             txt.clone()
         },
         (txt, i_type__, _, _, _, _, _, _, _, _) => {
-            let mut txt_3: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_3: ArcStr = arcstr::literal!("");
+            let mut txt_3: Tpl::Text;
+            let mut ret_3: ArcStr;
             let mut txt = (*txt).clone();
             txt_3 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("ScalarVariableTypeFMU: ")).clone() }))?;
             ret_3 = (TypesDump::unparseType(i_type__.clone())?).clone();

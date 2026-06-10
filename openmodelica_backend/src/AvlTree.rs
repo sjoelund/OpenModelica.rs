@@ -273,7 +273,7 @@ pub fn add<Key: Clone + 'static + metamodelica::gc::MMTrace + PartialEq, Val: Cl
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            let mut r#str: ArcStr = arcstr::literal!("");
+            let mut r#str: ArcStr;
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("AvlTree.add name: ")); __mm_s.push_str(&*name(inTree.clone())?); __mm_s.push_str(&*literal!(" failed!")); ArcStr::from(__mm_s) }).clone();
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(r#str.clone()).clone()])?;
             Ok(bail!("fail"))
@@ -298,13 +298,13 @@ fn addNode<Key: Clone + 'static + metamodelica::gc::MMTrace + PartialEq, Val: Cl
         },
         (Tree { keyCompareFunc, .. }, Deref @ Node::NODE { item: Item::ITEM { key: rkey, .. }, .. }, key, val) => {
             let mut n: Arc<Node<Key, Val>>;
-            let mut order: i32 = 0;
+            let mut order: i32;
             order = keyCompareFunc(key.clone(), rkey.clone())?;
             n = balance(addNode_dispatch(inTree.clone(), inNode.clone(), order.clone(), key.clone(), val.clone())?)?;
             n.clone()
         },
         _ => {
-            let mut r#str: ArcStr = arcstr::literal!("");
+            let mut r#str: ArcStr;
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("AvlTree.addNode name: ")); __mm_s.push_str(&*name(inTree.clone())?); __mm_s.push_str(&*literal!(" failed!")); ArcStr::from(__mm_s) }).clone();
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(r#str.clone()).clone()])?;
             bail!("fail")
@@ -429,7 +429,7 @@ pub fn replace<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clone + 's
             Tree { root: node.clone(), keyCompareFunc: keyCompareFunc.clone(), keyStrFuncOpt: kf.clone(), valStrFuncOpt: vf.clone(), updateCheckFuncOpt: uf.clone(), name: (n.clone()).clone() }
         },
         _ => {
-            let mut r#str: ArcStr = arcstr::literal!("");
+            let mut r#str: ArcStr;
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("AvlTree.replace name: ")); __mm_s.push_str(&*name(inTree.clone())?); __mm_s.push_str(&*literal!(" failed!")); ArcStr::from(__mm_s) }).clone();
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(r#str.clone()).clone()])?;
             bail!("fail")
@@ -443,7 +443,7 @@ pub fn replaceNode<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clone 
     outNode = (::match_deref::match_deref! { match &((inTree.clone(), inNode.clone(), inKey.clone(), inVal.clone())) {
         (Tree { keyCompareFunc, .. }, Deref @ Node::NODE { item: Item::ITEM { key: rkey, .. }, .. }, key, val) => {
             let mut n: Arc<Node<Key, Val>>;
-            let mut order: i32 = 0;
+            let mut order: i32;
             order = keyCompareFunc(key.clone(), rkey.clone())?;
             n = replaceNode_dispatch(inTree.clone(), inNode.clone(), order.clone(), key.clone(), val.clone())?;
             n.clone()
@@ -750,10 +750,10 @@ fn prettyPrintNodeStr<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clo
             literal!("")
         },
         Deref @ Node::NODE { item: Item::NO_ITEM { .. }, left: l, right: r, .. } => {
-            let mut indent: ArcStr = arcstr::literal!("");
-            let mut s1: ArcStr = arcstr::literal!("");
-            let mut s2: ArcStr = arcstr::literal!("");
-            let mut res: ArcStr = arcstr::literal!("");
+            let mut indent: ArcStr;
+            let mut s1: ArcStr;
+            let mut s2: ArcStr;
+            let mut res: ArcStr;
             indent = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone();
             s1 = (prettyPrintNodeStr(inTree.clone(), l.clone(), (indent.clone()).clone())?).clone();
             s2 = (prettyPrintNodeStr(inTree.clone(), r.clone(), (indent.clone()).clone())?).clone();
@@ -761,10 +761,10 @@ fn prettyPrintNodeStr<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clo
             res.clone()
         },
         Deref @ Node::NODE { item: item @ Item::ITEM { .. }, left: l, right: r, .. } => {
-            let mut indent: ArcStr = arcstr::literal!("");
-            let mut s1: ArcStr = arcstr::literal!("");
-            let mut s2: ArcStr = arcstr::literal!("");
-            let mut res: ArcStr = arcstr::literal!("");
+            let mut indent: ArcStr;
+            let mut s1: ArcStr;
+            let mut s2: ArcStr;
+            let mut res: ArcStr;
             indent = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone();
             s1 = (prettyPrintNodeStr(inTree.clone(), l.clone(), (indent.clone()).clone())?).clone();
             s2 = (prettyPrintNodeStr(inTree.clone(), r.clone(), (indent.clone()).clone())?).clone();
@@ -799,10 +799,10 @@ fn printNodeStr<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clone + '
             literal!("")
         },
         Deref @ Node::NODE { item: item @ Item::ITEM { .. }, left, right, .. } => {
-            let mut left_str: ArcStr = arcstr::literal!("");
-            let mut right_str: ArcStr = arcstr::literal!("");
-            let mut item_str: ArcStr = arcstr::literal!("");
-            let mut r#str: ArcStr = arcstr::literal!("");
+            let mut left_str: ArcStr;
+            let mut right_str: ArcStr;
+            let mut item_str: ArcStr;
+            let mut r#str: ArcStr;
             left_str = (printNodeStr(inTree.clone(), left.clone())?).clone();
             right_str = (printNodeStr(inTree.clone(), right.clone())?).clone();
             item_str = (printItemStr(inTree.clone(), item.clone())?).clone();
@@ -821,9 +821,9 @@ pub fn printItemStr<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clone
             literal!("[]")
         },
         Item::ITEM { key: mut key, val: mut val } => {
-            let mut r#str: ArcStr = arcstr::literal!("");
-            let mut keyStr: ArcStr = arcstr::literal!("");
-            let mut valStr: ArcStr = arcstr::literal!("");
+            let mut r#str: ArcStr;
+            let mut keyStr: ArcStr;
+            let mut valStr: ArcStr;
             let mut key2Str: FuncTypeKeyToStr<Key>;
             let mut val2Str: FuncTypeValToStr<Val>;
             key2Str = getKeyToStrFunc(inTree.clone())?;
@@ -901,7 +901,7 @@ pub fn addUnique<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clone + 
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            let mut r#str: ArcStr = arcstr::literal!("");
+            let mut r#str: ArcStr;
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("AvlTree.addUnique name: ")); __mm_s.push_str(&*name(inTree.clone())?); __mm_s.push_str(&*literal!(" failed!")); ArcStr::from(__mm_s) }).clone();
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(r#str.clone()).clone()])?;
             Ok(bail!("fail"))
@@ -932,14 +932,14 @@ fn addNodeUnique<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clone + 
         (Tree { keyCompareFunc, .. }, Deref @ Node::NODE { item: Item::ITEM { key: rkey, .. }, .. }, key, val) => {
             let mut item: Item<Key, Val>;
             let mut n: Arc<Node<Key, Val>>;
-            let mut order: i32 = 0;
+            let mut order: i32;
             order = keyCompareFunc(key.clone(), rkey.clone())?;
             (n, item) = addNodeUnique_dispatch(inTree.clone(), inNode.clone(), order.clone(), key.clone(), val.clone())?;
             n = balance(n.clone())?;
             (n.clone(), item.clone())
         },
         _ => {
-            let mut r#str: ArcStr = arcstr::literal!("");
+            let mut r#str: ArcStr;
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("AvlTree.addNodeUnique name: ")); __mm_s.push_str(&*name(inTree.clone())?); __mm_s.push_str(&*literal!(" failed!")); ArcStr::from(__mm_s) }).clone();
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(r#str.clone()).clone()])?;
             bail!("fail")

@@ -111,10 +111,10 @@ pub fn simple(mut comps: Arc<metamodelica::List<Arc<StrongComponent::NBStrongCom
 pub fn addSimple(mut comp: Arc<StrongComponent::NBStrongComponent>, mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(comp.clone()) {
         Deref @ StrongComponent::SINGLE_COMPONENT { .. } => {
-            let mut varName: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-            let mut solvedEq: Arc<Equation::Equation> = Arc::new(Equation::DUMMY_EQUATION);
-            let mut status: Solve::Status = Solve::Status::UNPROCESSED;
-            let mut replace_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut varName: Arc<ComponentRef::NFComponentRef>;
+            let mut solvedEq: Arc<Equation::Equation>;
+            let mut status: Solve::Status;
+            let mut replace_exp: Arc<Expression::NFExpression>;
             varName = BVariable::getVarName(var_field!((*comp).var, StrongComponent::NBStrongComponent::SINGLE_COMPONENT).clone());
             (solvedEq, status, _) = Solve::solveBody(Pointer::access(var_field!((*comp).eqn, StrongComponent::NBStrongComponent::SINGLE_COMPONENT).clone()), varName.clone(), UnorderedMap::new((std::sync::Arc::new(AbsynUtil::pathHash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(AbsynUtil::pathEqual, Arc<Absyn::Path>, Arc<Absyn::Path>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<bool> + 'static>), 1))?;
             if status.clone() == Solve::Status::EXPLICIT.clone() {
@@ -133,10 +133,10 @@ pub fn addSimple(mut comp: Arc<StrongComponent::NBStrongComponent>, mut replacem
             ()
         },
         Deref @ StrongComponent::SLICED_COMPONENT { .. } => {
-            let mut varName: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-            let mut solvedEq: Arc<Equation::Equation> = Arc::new(Equation::DUMMY_EQUATION);
-            let mut status: Solve::Status = Solve::Status::UNPROCESSED;
-            let mut replace_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut varName: Arc<ComponentRef::NFComponentRef>;
+            let mut solvedEq: Arc<Equation::Equation>;
+            let mut status: Solve::Status;
+            let mut replace_exp: Arc<Expression::NFExpression>;
             varName = BVariable::getVarName(Slice::getT(var_field!((*comp).var, StrongComponent::NBStrongComponent::SLICED_COMPONENT).clone()));
             (solvedEq, status, _) = Solve::solveBody(Pointer::access(Slice::getT(var_field!((*comp).eqn, StrongComponent::NBStrongComponent::SLICED_COMPONENT).clone())), varName.clone(), UnorderedMap::new((std::sync::Arc::new(AbsynUtil::pathHash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(AbsynUtil::pathEqual, Arc<Absyn::Path>, Arc<Absyn::Path>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<bool> + 'static>), 1))?;
             if status.clone() == Solve::Status::EXPLICIT.clone() {
@@ -209,9 +209,9 @@ pub fn applySimpleExp(mut exp: Arc<Expression::NFExpression>, mut replacements: 
     let mut exp: Arc<Expression::NFExpression> = exp;
     exp = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CREF { .. } => {
-            let mut res: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut stripped: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-            let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
+            let mut res: Arc<Expression::NFExpression>;
+            let mut stripped: Arc<ComponentRef::NFComponentRef>;
+            let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>;
             if UnorderedMap::contains(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), replacements.clone())? {
                 res = UnorderedMap::getOrFail(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), replacements.clone())?;
             } else {

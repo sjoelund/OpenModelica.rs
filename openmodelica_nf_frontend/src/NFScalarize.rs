@@ -339,9 +339,9 @@ pub fn scalarizeComplexVariable(mut var: Arc<Variable::NFVariable>, mut vars: Ar
     let mut vars: Arc<metamodelica::List<Arc<Variable::NFVariable>>> = vars;
     vars = (::match_deref::match_deref! { match &(var.backendinfo.attributes.clone()) {
         attr @ Deref @ VariableAttributes::VAR_ATTR_RECORD { .. } => {
-            let mut name: ArcStr = arcstr::literal!("");
-            let mut index: i32 = 0;
-            let mut elem_var: Arc<Variable::NFVariable> = Arc::new(<Variable::NFVariable as ::std::default::Default>::default());
+            let mut name: ArcStr;
+            let mut index: i32;
+            let mut elem_var: Arc<Variable::NFVariable>;
             for mut tpl in &*UnorderedMap::toList(var_field!((**attr).indexMap, VariableAttributes::VariableAttributes::VAR_ATTR_RECORD).clone()) {
                 let mut tpl = tpl.clone();
                 (name, index) = tpl.clone();
@@ -399,9 +399,9 @@ pub fn scalarizeEquation(mut eq: Arc<Equation::NFEquation>, mut equations: Arc<m
     let mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = equations;
     equations = (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ Equation::EQUALITY { lhs, rhs, ty, source: src, .. } if (Type::isArray(ty.clone())) => {
-            let mut lhs_iter: Arc<ExpressionIterator::NFExpressionIterator> = Arc::new(ExpressionIterator::NONE_ITERATOR);
-            let mut rhs_iter: Arc<ExpressionIterator::NFExpressionIterator> = Arc::new(ExpressionIterator::NONE_ITERATOR);
-            let mut scalarize: bool = false;
+            let mut lhs_iter: Arc<ExpressionIterator::NFExpressionIterator>;
+            let mut rhs_iter: Arc<ExpressionIterator::NFExpressionIterator>;
+            let mut scalarize: bool;
             let mut lhs = (*lhs).clone();
             let mut rhs = (*rhs).clone();
             let mut ty = (*ty).clone();

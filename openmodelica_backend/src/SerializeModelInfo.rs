@@ -83,8 +83,8 @@ fn serializeWork(mut code: SimCode::SimCode, mut withOperations: bool) -> Result
         let __mc_input = code.clone();
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let SimCode::SimCode { modelInfo: mut mi @ SimCode::ModelInfo { .. }, .. } = __mc_input.clone() else { bail!("nomatch") };
-            let mut eqsName: ArcStr = arcstr::literal!("");
-            let mut eqsLst: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
+            let mut eqsName: ArcStr;
+            let mut eqsLst: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>;
             let mut fileName: ArcStr = fileName.clone();
             if Config::simCodeTarget()? == literal!("omsic") {
                 fileName = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*code.fullPathPrefix.clone()); __mm_s.push_str(&*arcstr::literal!(Autoconf::pathDelimiter)); __mm_s.push_str(&*code.fileNamePrefix.clone()); __mm_s.push_str(&*literal!("_info.json")); ArcStr::from(__mm_s) }).clone();
@@ -594,12 +594,12 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
             ()
         },
         Deref @ SimCode::SimEqSystem::SES_LINEAR { lSystem: lSystem @ Deref @ SimCode::LinearSystem { .. }, alternativeTearing: None, .. } => {
-            let mut i: i32 = 0;
-            let mut j: i32 = 0;
-            let mut eqs: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
+            let mut i: i32;
+            let mut j: i32;
+            let mut eqs: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>;
             let mut jeqs: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
             let mut constantEqns: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
-            let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
+            let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
             i = (lSystem.beqs.clone().len() as i32);
             j = (lSystem.simJac.clone().len() as i32);
             eqs = SimCodeUtil::sortEqSystems(lSystem.residual.clone())?;
@@ -670,12 +670,12 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
             ()
         },
         Deref @ SimCode::SimEqSystem::SES_LINEAR { lSystem: lSystem @ Deref @ SimCode::LinearSystem { .. }, alternativeTearing: Some(atL @ Deref @ SimCode::LinearSystem { .. }), .. } => {
-            let mut i: i32 = 0;
-            let mut j: i32 = 0;
-            let mut eqs: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
+            let mut i: i32;
+            let mut j: i32;
+            let mut eqs: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>;
             let mut jeqs: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
             let mut constantEqns: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
-            let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
+            let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
             i = (lSystem.beqs.clone().len() as i32);
             j = (lSystem.simJac.clone().len() as i32);
             eqs = SimCodeUtil::sortEqSystems(lSystem.residual.clone())?;
@@ -862,10 +862,10 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
             ()
         },
         Deref @ SimCode::SimEqSystem::SES_NONLINEAR { nlSystem: nlSystem @ Deref @ SimCode::NonlinearSystem { .. }, alternativeTearing: None, .. } => {
-            let mut eqs: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
+            let mut eqs: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>;
             let mut jeqs: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
             let mut constantEqns: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
-            let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
+            let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
             eqs = SimCodeUtil::sortEqSystems(nlSystem.eqs.clone())?;
             serializeEquation(file.clone(), listHead(eqs.clone())?, (section.clone()).clone(), withOperations.clone(), nlSystem.index.clone(), true, if (nlSystem.tornSystem.clone()) {AssignType::TORN.clone()} else {AssignType::NORMAL.clone()})?;
             for mut e in &*listRest(eqs.clone())? {
@@ -915,10 +915,10 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
             ()
         },
         Deref @ SimCode::SimEqSystem::SES_NONLINEAR { nlSystem: nlSystem @ Deref @ SimCode::NonlinearSystem { .. }, alternativeTearing: Some(atNL @ Deref @ SimCode::NonlinearSystem { .. }), .. } => {
-            let mut eqs: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
+            let mut eqs: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>;
             let mut jeqs: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
             let mut constantEqns: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
-            let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
+            let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
             eqs = SimCodeUtil::sortEqSystems(nlSystem.eqs.clone())?;
             serializeEquation(file.clone(), listHead(eqs.clone())?, (section.clone()).clone(), withOperations.clone(), nlSystem.index.clone(), true, if (nlSystem.tornSystem.clone()) {AssignType::TORN.clone()} else {AssignType::NORMAL.clone()})?;
             for mut e in &*listRest(eqs.clone())? {
@@ -1014,7 +1014,7 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
             ()
         },
         Deref @ SimCode::SimEqSystem::SES_IFEQUATION { .. } => {
-            let mut eqs: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
+            let mut eqs: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>;
             eqs = listAppend(List::flatten(({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>>> = metamodelica::nil();
         for mut e in (var_field!((*eq).ifbranches, SimCode::SimEqSystem::SES_IFEQUATION).clone()).into_iter().cloned() {
@@ -1044,7 +1044,7 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
             ()
         },
         Deref @ SimCode::SimEqSystem::SES_MIXED { .. } => {
-            let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
+            let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
             serializeEquation(file.clone(), var_field!((*eq).cont, SimCode::SimEqSystem::SES_MIXED).clone(), (section.clone()).clone(), withOperations.clone(), 0, true, AssignType::NORMAL.clone())?;
             for mut e in &*var_field!((*eq).discEqs, SimCode::SimEqSystem::SES_MIXED).clone() {
                 let mut e = e.clone();

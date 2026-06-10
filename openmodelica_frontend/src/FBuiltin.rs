@@ -486,7 +486,7 @@ pub fn initialGraph(mut inCache: FCore::Cache) -> Result<(FCore::Cache, FCore::G
         })() { graph = __wb0; break 'mc __v; }
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let mut cache = __mc_input.clone() else { bail!("nomatch") };
-            let mut initialProgram: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
+            let mut initialProgram: Arc<metamodelica::List<Arc<SCode::Element>>>;
             let mut graph: FCore::Graph = graph.clone();
             graph = FGraph::new((literal!("graph")).clone(), FCore::dummyTopModel.clone())?;
             graph = FGraphBuild::mkProgramGraph(basicTypes.clone(), openmodelica_frontend_dump::FCore::Kind::BASIC_TYPE, graph.clone())?;
@@ -519,13 +519,13 @@ fn getSetInitialGraph(mut inEnvOpt: Option<FCore::Graph>) -> Result<FCore::Graph
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let None = __mc_input.clone() else { bail!("nomatch") };
-            let mut assocLst: Arc<metamodelica::List<(i32, FCore::Graph)>> = metamodelica::nil();
+            let mut assocLst: Arc<metamodelica::List<(i32, FCore::Graph)>>;
             assocLst = crate::Globals::builtinGraphIndex.with(|__root| __root.borrow().clone());
             Ok(Util::assoc(Flags::getConfigEnum(Flags::GRAMMAR.clone())?, assocLst.clone())?)
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let Some(mut graph) = __mc_input.clone() else { bail!("nomatch") };
-            let mut assocLst: Arc<metamodelica::List<(i32, FCore::Graph)>> = metamodelica::nil();
+            let mut assocLst: Arc<metamodelica::List<(i32, FCore::Graph)>>;
             let true = (intEq(Flags::getConfigEnum(Flags::GRAMMAR.clone())?, Flags::METAMODELICA.clone())) else { bail!("pattern mismatch") };
             assocLst = crate::Globals::builtinGraphIndex.with(|__root| __root.borrow().clone());
             { let __v = metamodelica::cons((Flags::METAMODELICA.clone(), graph.clone()), assocLst.clone()); crate::Globals::builtinGraphIndex.with(|__root| *__root.borrow_mut() = __v) };
@@ -533,7 +533,7 @@ fn getSetInitialGraph(mut inEnvOpt: Option<FCore::Graph>) -> Result<FCore::Graph
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let Some(mut graph) = __mc_input.clone() else { bail!("nomatch") };
-            let mut assocLst: Arc<metamodelica::List<(i32, FCore::Graph)>> = metamodelica::nil();
+            let mut assocLst: Arc<metamodelica::List<(i32, FCore::Graph)>>;
             let true = (intEq(Flags::getConfigEnum(Flags::GRAMMAR.clone())?, Flags::PARMODELICA.clone())) else { bail!("pattern mismatch") };
             assocLst = crate::Globals::builtinGraphIndex.with(|__root| __root.borrow().clone());
             { let __v = metamodelica::cons((Flags::PARMODELICA.clone(), graph.clone()), assocLst.clone()); crate::Globals::builtinGraphIndex.with(|__root| *__root.borrow_mut() = __v) };
@@ -541,7 +541,7 @@ fn getSetInitialGraph(mut inEnvOpt: Option<FCore::Graph>) -> Result<FCore::Graph
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let Some(mut graph) = __mc_input.clone() else { bail!("nomatch") };
-            let mut assocLst: Arc<metamodelica::List<(i32, FCore::Graph)>> = metamodelica::nil();
+            let mut assocLst: Arc<metamodelica::List<(i32, FCore::Graph)>>;
             let true = (intEq(Flags::getConfigEnum(Flags::GRAMMAR.clone())?, Flags::MODELICA.clone()) || intEq(Flags::getConfigEnum(Flags::GRAMMAR.clone())?, Flags::OPTIMICA.clone())) else { bail!("pattern mismatch") };
             assocLst = crate::Globals::builtinGraphIndex.with(|__root| __root.borrow().clone());
             { let __v = metamodelica::cons((Flags::MODELICA.clone(), graph.clone()), assocLst.clone()); crate::Globals::builtinGraphIndex.with(|__root| *__root.borrow_mut() = __v) };
@@ -610,7 +610,7 @@ pub fn getElementWithPathCheckBuiltin(mut inProgram: Arc<metamodelica::List<Arc<
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    let mut sp: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
+                    let mut sp: Arc<metamodelica::List<Arc<SCode::Element>>>;
                     (_, sp) = getInitialFunctions()?;
                     Ok(SCodeUtil::getElementWithPath(sp.clone(), inPath.clone())?)
                 }

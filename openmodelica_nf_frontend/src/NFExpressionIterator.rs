@@ -128,8 +128,8 @@ pub fn fromExp(mut exp: Arc<Expression::NFExpression>, mut backend: bool, mut re
     let mut iterator: Arc<NFExpressionIterator> = Arc::new(NFExpressionIterator::NONE_ITERATOR);
     iterator = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::ARRAY { .. } => {
-            let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut expanded: bool = false;
+            let mut e: Arc<Expression::NFExpression>;
+            let mut expanded: bool;
             (e, expanded) = ExpandExp::expand(exp.clone(), backend.clone(), resize.clone())?;
             if !(expanded.clone()) {
                 Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFExpressionIterator.fromExp")); __mm_s.push_str(&*literal!(" got unexpandable expression `")); __mm_s.push_str(&*Expression::toString(exp.clone())?); __mm_s.push_str(&*literal!("`")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFExpressionIterator.mo"))?;
@@ -137,7 +137,7 @@ pub fn fromExp(mut exp: Arc<Expression::NFExpression>, mut backend: bool, mut re
             makeArrayIterator(e.clone())?
         },
         Deref @ Expression::CREF { .. } => {
-            let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut e: Arc<Expression::NFExpression>;
             (e, _) = ExpandExp::expandCref(exp.clone(), backend.clone(), false)?;
             iterator = (::match_deref::match_deref! { match &(e.clone()) {
         Deref @ Expression::ARRAY { .. } => fromExp(e.clone(), backend.clone(), resize.clone())?,
@@ -147,8 +147,8 @@ pub fn fromExp(mut exp: Arc<Expression::NFExpression>, mut backend: bool, mut re
             iterator.clone()
         },
         _ => {
-            let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut expanded: bool = false;
+            let mut e: Arc<Expression::NFExpression>;
+            let mut expanded: bool;
             (e, expanded) = ExpandExp::expand(exp.clone(), backend.clone(), resize.clone())?;
             if (expanded.clone()) {if (Expression::isEqual(e.clone(), exp.clone())?) {Arc::new(NFExpressionIterator::SCALAR_ITERATOR { exp: exp.clone() })} else {fromExp(e.clone(), backend.clone(), resize.clone())?}} else {crate::NFExpressionIterator::interned_NONE_ITERATOR()}
         },
@@ -200,8 +200,8 @@ pub fn next(mut iterator: Arc<NFExpressionIterator>) -> Result<(Arc<NFExpression
     let mut nextExp: Arc<Expression::NFExpression>;
     (iterator, nextExp) = (::match_deref::match_deref! { match &(iterator.clone()) {
         Deref @ ARRAY_ITERATOR { .. } => {
-            let mut next: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut arrs: Arc<metamodelica::List<metamodelica::Array<Arc<Expression::NFExpression>>>> = metamodelica::nil();
+            let mut next: Arc<Expression::NFExpression>;
+            let mut arrs: Arc<metamodelica::List<metamodelica::Array<Arc<Expression::NFExpression>>>>;
             next = metamodelica::arrayGet(var_field!((*iterator).arr, NFExpressionIterator::ARRAY_ITERATOR).clone(), var_field!((*iterator).index, NFExpressionIterator::ARRAY_ITERATOR).clone())?;
             if var_field!((*iterator).index, NFExpressionIterator::ARRAY_ITERATOR).clone() >= metamodelica::arrayLength(var_field!((*iterator).arr, NFExpressionIterator::ARRAY_ITERATOR).clone()) {
                 arrs = var_field!((*iterator).arrays, NFExpressionIterator::ARRAY_ITERATOR).clone();
@@ -225,7 +225,7 @@ pub fn next(mut iterator: Arc<NFExpressionIterator>) -> Result<(Arc<NFExpression
             (iterator.clone(), var_field!((*iterator).exp, NFExpressionIterator::EACH_ITERATOR).clone())
         },
         Deref @ REPEAT_ITERATOR { current: rest, all: arr } => {
-            let mut next: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut next: Arc<Expression::NFExpression>;
             let mut rest = (*rest).clone();
             if !(rest.clone().is_empty()) {
                 let (__pa0, __pa1) = ::match_deref::match_deref! { match &(rest.clone()) {

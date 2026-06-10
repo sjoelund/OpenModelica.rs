@@ -90,8 +90,8 @@ fn makeDebugResult(mut inFlag: Flags::DebugFlag, mut res: ArcStr) -> ArcStr {
         let __mc_input = inFlag.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let Flags::DebugFlag { name: mut flagstr, .. } = __mc_input.clone() else { bail!("nomatch") };
-            let mut debugstr: ArcStr = arcstr::literal!("");
-            let mut res_with_debug: ArcStr = arcstr::literal!("");
+            let mut debugstr: ArcStr;
+            let mut res_with_debug: ArcStr;
             let true = (Flags::isSet(inFlag.clone())?) else { bail!("pattern mismatch") };
             debugstr = (Print::getString()?).clone();
             res_with_debug = stringAppendList(list![(res.clone()).clone(), (literal!("\n---DEBUG(")).clone(), (flagstr.clone()).clone(), (literal!(")---\n")).clone(), (debugstr.clone()).clone(), (literal!("\n---/DEBUG(")).clone(), (flagstr.clone()).clone(), (literal!(")---\n")).clone()]);
@@ -113,7 +113,7 @@ fn parseCommand(mut inCommand: ArcStr) -> (Option<GlobalScript::Statements>, Opt
         let __mc_input = inCommand.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            let mut stmts: GlobalScript::Statements = <GlobalScript::Statements as ::std::default::Default>::default();
+            let mut stmts: GlobalScript::Statements;
             ErrorExt::setCheckpoint((literal!("parsestring")).clone());
             stmts = Parser::parsestringexp((inCommand.clone()).clone(), (literal!("<interactive>")).clone())?;
             ErrorExt::delCheckpoint((literal!("parsestring")).clone());
@@ -121,7 +121,7 @@ fn parseCommand(mut inCommand: ArcStr) -> (Option<GlobalScript::Statements>, Opt
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            let mut prog: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
+            let mut prog: Absyn::Program;
             ErrorExt::rollBack((literal!("parsestring")).clone());
             prog = Parser::parsestring((inCommand.clone()).clone(), (literal!("<interactive>")).clone(), Config::acceptedGrammar()?, Flags::getConfigEnum(Flags::LANGUAGE_STANDARD.clone())?, Flags::getConfigBool(Flags::STRICT.clone())?)?;
             Ok((None, Some(prog.clone())))
@@ -160,17 +160,17 @@ fn handleCommand2(mut inStatements: Option<GlobalScript::Statements>, mut inProg
         let __mc_input = (inStatements.clone(), inProgram.clone());
         if let Ok(__v) = (|| -> Result<_> {
             let (Some(mut stmts), None) = __mc_input.clone() else { bail!("nomatch") };
-            let mut result: ArcStr = arcstr::literal!("");
+            let mut result: ArcStr;
             result = (Interactive::evaluate(stmts.clone(), false)?).clone();
             Ok(result.clone())
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (None, Some(mut prog)) = __mc_input.clone() else { bail!("nomatch") };
-            let mut prog2: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
-            let mut ast: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
-            let mut result: ArcStr = arcstr::literal!("");
-            let mut vars: Arc<metamodelica::List<InteractiveTypes::Variable>> = metamodelica::nil();
-            let mut table: Arc<SymbolTable::SymbolTable> = Arc::new(<SymbolTable::SymbolTable as ::std::default::Default>::default());
+            let mut prog2: Absyn::Program;
+            let mut ast: Absyn::Program;
+            let mut result: ArcStr;
+            let mut vars: Arc<metamodelica::List<InteractiveTypes::Variable>>;
+            let mut table: Arc<SymbolTable::SymbolTable>;
             table = SymbolTable::get();
             ast = table.ast.clone();
             vars = table.vars.clone();
@@ -189,7 +189,7 @@ fn handleCommand2(mut inStatements: Option<GlobalScript::Statements>, mut inProg
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (None, None) = __mc_input.clone() else { bail!("nomatch") };
-            let mut result: ArcStr = arcstr::literal!("");
+            let mut result: ArcStr;
             Print::printBuf((literal!("Error occurred building AST\n")).clone())?;
             result = (Print::getString()?).clone();
             result = (stringAppend((result.clone()).clone(), (literal!("Syntax Error\n")).clone())).clone();
@@ -198,7 +198,7 @@ fn handleCommand2(mut inStatements: Option<GlobalScript::Statements>, mut inProg
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (_, _) = __mc_input.clone() else { bail!("nomatch") };
-            let mut result: ArcStr = arcstr::literal!("");
+            let mut result: ArcStr;
             let true = (isSome(inStatements.clone()) || isSome(inProgram.clone())) else { bail!("pattern mismatch") };
             result = (Error::printMessagesStr(false)).clone();
             Ok(result.clone())
@@ -218,7 +218,7 @@ fn makeClassDefResult(mut p: Absyn::Program) -> Result<ArcStr> {
     let mut res: ArcStr = arcstr::literal!("");
     res = ((match p.clone() {
         Absyn::Program { classes: ref cls, within_: Absyn::Within::WITHIN { path: ref scope } } => {
-            let mut names: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
+            let mut names: Arc<metamodelica::List<Arc<Absyn::Path>>>;
             names = ({
         let mut __acc: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
         for mut c in (cls.clone()).into_iter().cloned() {
@@ -239,7 +239,7 @@ fn makeClassDefResult(mut p: Absyn::Program) -> Result<ArcStr> {
             res.clone()
         },
         Absyn::Program { classes: ref cls, within_: Absyn::Within::TOP { .. } } => {
-            let mut names: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
+            let mut names: Arc<metamodelica::List<Arc<Absyn::Path>>>;
             names = ({
         let mut __acc: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
         for mut c in (cls.clone()).into_iter().cloned() {
@@ -354,8 +354,8 @@ fn loadLib(mut inLib: ArcStr) -> Result<()> {
         let __mc_input = is_modelica_file.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let true = __mc_input.clone() else { bail!("nomatch") };
-            let mut pnew: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
-            let mut p: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
+            let mut pnew: Absyn::Program;
+            let mut p: Absyn::Program;
             p = SymbolTable::getAbsyn();
             pnew = CevalScript::loadFile((inLib.clone()).clone(), (literal!("UTF-8")).clone(), p.clone(), true, true, false, true)?;
             SymbolTable::setAbsyn(pnew.clone())?;
@@ -363,10 +363,10 @@ fn loadLib(mut inLib: ArcStr) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let false = __mc_input.clone() else { bail!("nomatch") };
-            let mut mp: ArcStr = arcstr::literal!("");
-            let mut pnew: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
-            let mut p: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
-            let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+            let mut mp: ArcStr;
+            let mut pnew: Absyn::Program;
+            let mut p: Absyn::Program;
+            let mut path: Arc<Absyn::Path>;
             path = AbsynUtil::stringPath((inLib.clone()).clone())?;
             mp = (Settings::getModelicaPath(Testsuite::isRunning()?)?).clone();
             p = SymbolTable::getAbsyn();
@@ -605,16 +605,16 @@ fn readSettingsFile(mut filePath: ArcStr) -> Result<()> {
 pub fn setWindowsPaths(mut inOMHome: ArcStr) -> Result<()> {
     let () = (match inOMHome.clone() {
         mut omHome => {
-            let mut oldPath: ArcStr = arcstr::literal!("");
-            let mut newPath: ArcStr = arcstr::literal!("");
-            let mut omdevPath: ArcStr = arcstr::literal!("");
-            let mut msysPath: ArcStr = arcstr::literal!("");
-            let mut mingwDir: ArcStr = arcstr::literal!("");
-            let mut binDir: ArcStr = arcstr::literal!("");
-            let mut libBinDir: ArcStr = arcstr::literal!("");
-            let mut msysBinDir: ArcStr = arcstr::literal!("");
-            let mut hasBinDir: bool = false;
-            let mut hasLibBinDir: bool = false;
+            let mut oldPath: ArcStr;
+            let mut newPath: ArcStr;
+            let mut omdevPath: ArcStr;
+            let mut msysPath: ArcStr;
+            let mut mingwDir: ArcStr;
+            let mut binDir: ArcStr;
+            let mut libBinDir: ArcStr;
+            let mut msysBinDir: ArcStr;
+            let mut hasBinDir: bool;
+            let mut hasLibBinDir: bool;
             System::setEnv((literal!("OPENMODELICAHOME")).clone(), (omHome.clone()).clone(), true);
             omdevPath = (Util::makeValueOrDefault((std::sync::Arc::new(System::readEnv) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>), (literal!("OMDEV")).clone(), (literal!("")).clone())).clone();
             if stringEq((omdevPath.clone()).clone(), (literal!("")).clone()) {

@@ -3219,7 +3219,7 @@ fn removeLastTokenInTree(mut t: Arc<ParseTree>) -> Result<Arc<ParseTree>> {
             crate::SimpleModelicaParser::ParseTree::interned_EMPTY()
         },
         Deref @ ParseTree::NODE { label, nodes } => {
-            let mut node: Arc<ParseTree> = Arc::new(ParseTree::EMPTY);
+            let mut node: Arc<ParseTree>;
             let mut nodes = (*nodes).clone();
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(nodes.clone().reverse()) {
                 Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),

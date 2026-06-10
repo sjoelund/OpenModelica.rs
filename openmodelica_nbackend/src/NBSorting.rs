@@ -292,12 +292,12 @@ pub fn tarjan(mut adj: Arc<Adjacency::Matrix::Matrix>, mut matching: Arc<Matchin
     match '__try0: {
         comps = (::match_deref::match_deref! { match &(adj.clone()) {
         Deref @ Adjacency::Matrix::FINAL { .. } => {
-            let mut comps_indices: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
+            let mut comps_indices: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>;
             let mut phase2_indices: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
-            let mut phase2_adj: Arc<Adjacency::Matrix::Matrix> = Arc::new(<Adjacency::Matrix::Matrix as ::std::default::Default>::default());
-            let mut phase2_matching: Arc<Matching::NBMatching> = Arc::new(<Matching::NBMatching as ::std::default::Default>::default());
-            let mut super_nodes: metamodelica::Array<Arc<SuperNode::SuperNode>> = Default::default();
-            let mut buckets: Arc<UnorderedMap::UnorderedMap<Arc<Mode::Mode>, Arc<Value::Value>>> = <Arc<UnorderedMap::UnorderedMap<Arc<Mode::Mode>, Arc<Value::Value>>> as ::std::default::Default>::default();
+            let mut phase2_adj: Arc<Adjacency::Matrix::Matrix>;
+            let mut phase2_matching: Arc<Matching::NBMatching>;
+            let mut super_nodes: metamodelica::Array<Arc<SuperNode::SuperNode>>;
+            let mut buckets: Arc<UnorderedMap::UnorderedMap<Arc<Mode::Mode>, Arc<Value::Value>>>;
             if unwrap_break_err!(Flags::isSet(Flags::DUMP_SORTING.clone()), '__try0) {
                 metamodelica::print((StringUtil::headline_1((literal!("Sorting")).clone())).clone());
             }
@@ -739,11 +739,11 @@ pub mod SuperNode {
             StrongComponent::createPseudoScalar(var_field!((**node).eqn_indices, SuperNode::ALGEBRAIC_LOOP).clone(), matching.eqn_to_var.clone(), mapping.clone(), vars.clone(), eqns.clone())?
         },
         Deref @ metamodelica::List::Cons { head: node @ Deref @ ARRAY_BUCKET { .. }, tail: Deref @ metamodelica::List::Nil } => {
-            let mut m_local: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
-            let mut matching_local: Arc<Matching::NBMatching> = Arc::new(<Matching::NBMatching as ::std::default::Default>::default());
-            let mut map_back: metamodelica::Array<i32> = Default::default();
-            let mut eqn_arr_idx: i32 = 0;
-            let mut var_arr_idx: i32 = 0;
+            let mut m_local: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+            let mut matching_local: Arc<Matching::NBMatching>;
+            let mut map_back: metamodelica::Array<i32>;
+            let mut eqn_arr_idx: i32;
+            let mut var_arr_idx: i32;
             (m_local, matching_local, map_back) = BackendUtil::getLocalSystem(m.clone(), matching.clone(), var_field!((**node).eqn_indices, SuperNode::ARRAY_BUCKET).clone())?;
             sorted_body_components = tarjanScalar(m_local.clone(), matching_local.clone())?;
             sorted_body_indices = List::flatten(sorted_body_components.clone())?;
@@ -764,9 +764,9 @@ pub mod SuperNode {
             StrongComponent::createPseudoSlice(var_arr_idx.clone(), eqn_arr_idx.clone(), var_field!((**node).cref_to_solve, SuperNode::ARRAY_BUCKET).clone(), sorted_body_indices.clone(), matching.eqn_to_var.clone(), eqns.clone(), mapping.clone(), indep.clone())?
         },
         _ if (List::all(node_comp.clone(), (std::sync::Arc::new(fnptr!(isArrayBucket, Arc<SuperNode>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SuperNode>) -> Result<bool> + 'static>))?) => {
-            let mut m_local: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
-            let mut matching_local: Arc<Matching::NBMatching> = Arc::new(<Matching::NBMatching as ::std::default::Default>::default());
-            let mut map_back: metamodelica::Array<i32> = Default::default();
+            let mut m_local: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+            let mut matching_local: Arc<Matching::NBMatching>;
+            let mut map_back: metamodelica::Array<i32>;
             (m_local, matching_local, map_back) = BackendUtil::getLocalSystem(m.clone(), matching.clone(), List::flatten(({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
         for mut n in (node_comp.clone()).into_iter().cloned() {

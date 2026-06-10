@@ -230,20 +230,20 @@ pub mod SimVar {
         let mut simVar: Arc<SimVar>;
         simVar = (::match_deref::match_deref! { match &(var.clone()) {
         Deref @ Variable::VARIABLE { .. } => {
-            let mut varKind: Arc<VariableKind::VariableKind> = Arc::new(VariableKind::ALGEBRAIC);
-            let mut comment: ArcStr = arcstr::literal!("");
-            let mut unit: ArcStr = arcstr::literal!("");
-            let mut displayUnit: ArcStr = arcstr::literal!("");
-            let mut min: Option<Arc<Expression::NFExpression>> = None;
-            let mut max: Option<Arc<Expression::NFExpression>> = None;
-            let mut start: Option<Arc<Expression::NFExpression>> = None;
-            let mut nominal: Option<Arc<Expression::NFExpression>> = None;
-            let mut isFixed: bool = false;
-            let mut isDiscrete: bool = false;
-            let mut isProtected: bool = false;
-            let mut isValueChangeable: bool = false;
-            let mut causality: Causality = Causality::NONE;
-            let mut result: Arc<SimVar> = Arc::new(<SimVar as ::std::default::Default>::default());
+            let mut varKind: Arc<VariableKind::VariableKind>;
+            let mut comment: ArcStr;
+            let mut unit: ArcStr;
+            let mut displayUnit: ArcStr;
+            let mut min: Option<Arc<Expression::NFExpression>>;
+            let mut max: Option<Arc<Expression::NFExpression>>;
+            let mut start: Option<Arc<Expression::NFExpression>>;
+            let mut nominal: Option<Arc<Expression::NFExpression>>;
+            let mut isFixed: bool;
+            let mut isDiscrete: bool;
+            let mut isProtected: bool;
+            let mut isValueChangeable: bool;
+            let mut causality: Causality;
+            let mut result: Arc<SimVar>;
             comment = (parseComment(var.comment.clone())).clone();
             (varKind, unit, displayUnit, min, max, start, nominal, isFixed, isDiscrete, isProtected) = parseAttributes(var.backendinfo.clone())?;
             (start, isValueChangeable, causality) = parseBinding(start.clone(), var.clone());
@@ -508,8 +508,8 @@ pub mod SimVar {
             openmodelica_backend_types::BackendDAE::VarKind::VARIABLE
         },
         Deref @ VariableKind::STATE { .. } => {
-            let mut var: Arc<Variable::NFVariable> = Arc::new(<Variable::NFVariable as ::std::default::Default>::default());
-            let mut oldCrefOpt: Option<Arc<DAE::ComponentRef>> = None;
+            let mut var: Arc<Variable::NFVariable>;
+            let mut oldCrefOpt: Option<Arc<DAE::ComponentRef>>;
             if isSome(var_field!((*varKind).derivative, VariableKind::VariableKind::STATE).clone()) {
                 var = Pointer::access(Util::getOption(var_field!((*varKind).derivative, VariableKind::VariableKind::STATE).clone())?);
                 oldCrefOpt = Some(ComponentRef::toDAE(var.name.clone())?);
@@ -671,8 +671,8 @@ pub mod Alias {
             literal!("(no alias)")
         },
         Deref @ ALIAS { .. } => {
-            let mut gainStr: ArcStr = arcstr::literal!("");
-            let mut offsetStr: ArcStr = arcstr::literal!("");
+            let mut gainStr: ArcStr;
+            let mut offsetStr: ArcStr;
             gainStr = (if (var_field!((*alias).gain, Alias::ALIAS).clone() == metamodelica::OrderedFloat(1.0_f64)) {literal!("")} else {{ let mut __mm_s = String::new(); __mm_s.push_str(&*realString(var_field!((*alias).gain, Alias::ALIAS).clone())); __mm_s.push_str(&*literal!("*")); ArcStr::from(__mm_s) }}).clone();
             offsetStr = (if (var_field!((*alias).offset, Alias::ALIAS).clone() == metamodelica::OrderedFloat(0.0_f64)) {literal!("")} else {{ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("+")); __mm_s.push_str(&*realString(var_field!((*alias).offset, Alias::ALIAS).clone())); ArcStr::from(__mm_s) }}).clone();
             { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(bound alias: ")); __mm_s.push_str(&*gainStr.clone()); __mm_s.push_str(&*ComponentRef::toString(var_field!((*alias).alias, Alias::ALIAS).clone())?); __mm_s.push_str(&*offsetStr.clone()); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }

@@ -253,8 +253,8 @@ pub fn fromAbsyn(mut bindingExp: Option<Arc<Absyn::Exp>>, mut eachPrefix: bool, 
     let mut binding: Arc<NFBinding>;
     binding = (::match_deref::match_deref! { match &(bindingExp.clone()) {
         Some(exp) => {
-            let mut each_ty: EachType = EachType::NOT_EACH;
-            let mut source: Source = Source::BINDING;
+            let mut each_ty: EachType;
+            let mut source: Source;
             each_ty = if (eachPrefix.clone()) {EachType::EACH.clone()} else {EachType::NOT_EACH.clone()};
             source = if (fromType.clone()) {Source::TYPE.clone()} else {Source::BINDING.clone()};
             Arc::new(NFBinding::RAW_BINDING { bindingExp: exp.clone(), scope: scope.clone(), subs: metamodelica::nil(), eachType: each_ty.clone(), source: source.clone(), confidence: instanceLevel.clone(), info: info.clone() })

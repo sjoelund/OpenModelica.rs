@@ -57,7 +57,6 @@ use openmodelica_frontend_dump::SCodeUtil;
 use openmodelica_frontend_types::SCode;
 use openmodelica_util::Error;
 use openmodelica_util::Flags;
-use openmodelica_util::System;
 
 pub mod LookupStateName {
     use super::*;
@@ -372,7 +371,7 @@ pub mod LookupState {
             bail!("fail")
         },
         (Deref @ COMP_FUNC { .. }, _) => {
-            let mut name_str: ArcStr = arcstr::literal!("");
+            let mut name_str: ArcStr;
             name_str = (LookupStateName::toString(name.clone())?).clone();
             Error::addSourceMessage(Error::FOUND_FUNC_NAME_VIA_COMP_NONCALL.clone(), list![(name_str.clone()).clone()], info.clone())?;
             bail!("fail")
@@ -382,45 +381,45 @@ pub mod LookupState {
             bail!("fail")
         },
         (Deref @ ERROR { errorState: Deref @ COMP_FUNC { .. } }, Deref @ FUNC { .. }) => {
-            let mut name_str: ArcStr = arcstr::literal!("");
-            let mut info2: SourceInfo = <SourceInfo as ::std::default::Default>::default();
+            let mut name_str: ArcStr;
+            let mut info2: SourceInfo;
             name_str = (InstNode::name(node.clone())?).clone();
             info2 = InstNode::info(node.clone());
             Error::addSourceMessage(Error::NON_CLASS_IN_COMP_FUNC_NAME.clone(), list![(name_str.clone()).clone()], info2.clone())?;
             bail!("fail")
         },
         (Deref @ ERROR { errorState: Deref @ COMP_FUNC { .. } }, Deref @ COMP { .. }) => {
-            let mut name_str: ArcStr = arcstr::literal!("");
+            let mut name_str: ArcStr;
             name_str = (InstNode::name(node.clone())?).clone();
             Error::addSourceMessage(Error::UNEXPECTED_COMPONENT_IN_COMPOSITE_NAME.clone(), list![(name_str.clone()).clone(), (LookupStateName::toString(name.clone())?).clone()], info.clone())?;
             bail!("fail")
         },
         (Deref @ ERROR { errorState: Deref @ COMP_FUNC { .. } }, _) => {
-            let mut name_str: ArcStr = arcstr::literal!("");
+            let mut name_str: ArcStr;
             name_str = (InstNode::name(node.clone())?).clone();
             Error::addSourceMessage(Error::LOOKUP_CLASS_VIA_COMP_COMP.clone(), list![(name_str.clone()).clone(), (LookupStateName::toString(name.clone())?).clone()], info.clone())?;
             bail!("fail")
         },
         (Deref @ ERROR { errorState: Deref @ CLASS_COMP { .. } }, Deref @ COMP { .. }) => {
-            let mut name_str: ArcStr = arcstr::literal!("");
+            let mut name_str: ArcStr;
             name_str = (InstNode::name(node.clone())?).clone();
             Error::addSourceMessage(Error::CLASS_IN_COMPOSITE_COMP_NAME.clone(), list![(name_str.clone()).clone(), (LookupStateName::toString(name.clone())?).clone()], info.clone())?;
             bail!("fail")
         },
         (Deref @ ERROR { errorState: Deref @ CLASS_COMP { .. } }, _) => {
-            let mut name_str: ArcStr = arcstr::literal!("");
+            let mut name_str: ArcStr;
             name_str = (InstNode::name(node.clone())?).clone();
             Error::addSourceMessage(Error::LOOKUP_CLASS_VIA_COMP_COMP.clone(), list![(name_str.clone()).clone(), (LookupStateName::toString(name.clone())?).clone()], info.clone())?;
             bail!("fail")
         },
         (Deref @ ERROR { errorState: Deref @ IMPORT { .. } }, _) => {
-            let mut name_str: ArcStr = arcstr::literal!("");
+            let mut name_str: ArcStr;
             name_str = (InstNode::name(node.clone())?).clone();
             Error::addSourceMessage(Error::IMPORT_IN_COMPOSITE_NAME.clone(), list![(name_str.clone()).clone(), (LookupStateName::toString(name.clone())?).clone()], info.clone())?;
             bail!("fail")
         },
         (Deref @ ERROR { errorState: Deref @ PARTIAL_CLASS { .. } }, _) => {
-            let mut node2: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
+            let mut node2: Arc<InstNode::InstNode>;
             if !(InstContext::inRelaxed(context.clone()) || InstContext::inRedeclared(context.clone())) {
                 node2 = listHead(InstNode::scopeList(node.clone(), false, metamodelica::nil())?)?;
                 if InstNode::isComponent(node2.clone())? {

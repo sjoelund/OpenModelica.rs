@@ -406,12 +406,12 @@ fn mergingRhs_der(mut inOuterCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef
     let mut callAttributes: Arc<DAE::CallAttributes> = Arc::new(DAE::CallAttributes { ty: ty.clone(), tuple_: false, builtin: true, isImpure: false, isFunctionPointerCall: false, inlineType: openmodelica_frontend_types::DAE::InlineType::NO_INLINE, tailCall: openmodelica_frontend_types::DAE::TailCall::NO_TAIL });
     res = (::match_deref::match_deref! { match &(inOuterCrefs.clone()) {
         Deref @ metamodelica::List::Cons { head: outerCref, tail: Deref @ metamodelica::List::Nil } => {
-            let mut crefState: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-            let mut outerCrefExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut crefStateExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut ifExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut expCond: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut expElse: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut crefState: Arc<DAE::ComponentRef>;
+            let mut outerCrefExp: Arc<DAE::Exp>;
+            let mut crefStateExp: Arc<DAE::Exp>;
+            let mut ifExp: Arc<DAE::Exp>;
+            let mut expCond: Arc<DAE::Exp>;
+            let mut expElse: Arc<DAE::Exp>;
             outerCrefExp = Arc::new(DAE::Exp::CREF { componentRef: outerCref.clone(), ty: ty.clone() });
             crefState = ComponentReference::crefStripLastIdent(outerCref.clone())?;
             crefStateExp = Arc::new(DAE::Exp::CREF { componentRef: crefState.clone(), ty: ty.clone() });
@@ -421,12 +421,12 @@ fn mergingRhs_der(mut inOuterCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef
             ifExp.clone()
         },
         Deref @ metamodelica::List::Cons { head: outerCref, tail: rest } => {
-            let mut crefState: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-            let mut outerCrefExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut crefStateExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut ifExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut expCond: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut expElse: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut crefState: Arc<DAE::ComponentRef>;
+            let mut outerCrefExp: Arc<DAE::Exp>;
+            let mut crefStateExp: Arc<DAE::Exp>;
+            let mut ifExp: Arc<DAE::Exp>;
+            let mut expCond: Arc<DAE::Exp>;
+            let mut expElse: Arc<DAE::Exp>;
             outerCrefExp = Arc::new(DAE::Exp::CREF { componentRef: outerCref.clone(), ty: ty.clone() });
             crefState = ComponentReference::crefStripLastIdent(outerCref.clone())?;
             crefStateExp = Arc::new(DAE::Exp::CREF { componentRef: crefState.clone(), ty: ty.clone() });
@@ -476,13 +476,13 @@ fn mergingRhs(mut inOuterCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>,
     let mut callAttributes: Arc<DAE::CallAttributes> = Arc::new(DAE::CallAttributes { ty: ty.clone(), tuple_: false, builtin: true, isImpure: false, isFunctionPointerCall: false, inlineType: openmodelica_frontend_types::DAE::InlineType::NO_INLINE, tailCall: openmodelica_frontend_types::DAE::TailCall::NO_TAIL });
     res = (::match_deref::match_deref! { match &(inOuterCrefs.clone()) {
         Deref @ metamodelica::List::Cons { head: outerCref, tail: Deref @ metamodelica::List::Nil } => {
-            let mut crefState: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-            let mut outerCrefExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut innerCrefExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut crefStateExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut ifExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut expCond: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut expElse: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut crefState: Arc<DAE::ComponentRef>;
+            let mut outerCrefExp: Arc<DAE::Exp>;
+            let mut innerCrefExp: Arc<DAE::Exp>;
+            let mut crefStateExp: Arc<DAE::Exp>;
+            let mut ifExp: Arc<DAE::Exp>;
+            let mut expCond: Arc<DAE::Exp>;
+            let mut expElse: Arc<DAE::Exp>;
             outerCrefExp = Arc::new(DAE::Exp::CREF { componentRef: outerCref.clone(), ty: ty.clone() });
             innerCrefExp = Arc::new(DAE::Exp::CREF { componentRef: inInnerCref.clone(), ty: ty.clone() });
             crefState = ComponentReference::crefStripLastIdent(outerCref.clone())?;
@@ -493,12 +493,12 @@ fn mergingRhs(mut inOuterCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>,
             ifExp.clone()
         },
         Deref @ metamodelica::List::Cons { head: outerCref, tail: rest } => {
-            let mut crefState: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-            let mut outerCrefExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut crefStateExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut ifExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut expCond: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut expElse: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut crefState: Arc<DAE::ComponentRef>;
+            let mut outerCrefExp: Arc<DAE::Exp>;
+            let mut crefStateExp: Arc<DAE::Exp>;
+            let mut ifExp: Arc<DAE::Exp>;
+            let mut expCond: Arc<DAE::Exp>;
+            let mut expElse: Arc<DAE::Exp>;
             outerCrefExp = Arc::new(DAE::Exp::CREF { componentRef: outerCref.clone(), ty: ty.clone() });
             crefState = ComponentReference::crefStripLastIdent(outerCref.clone())?;
             crefStateExp = Arc::new(DAE::Exp::CREF { componentRef: crefState.clone(), ty: ty.clone() });
@@ -944,10 +944,10 @@ fn extractSMStates2(mut inElement: Arc<DAE::Element>, mut inTable: SMNodeTable) 
     let mut outTable: SMNodeTable = inTable.clone();
     outTable = (::match_deref::match_deref! { match &(inElement.clone()) {
         Deref @ DAE::Element::NORETCALL { exp: Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "transition" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cref1, .. }, tail: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cref2, .. }, tail: _ } }, .. }, .. } => {
-            let mut smnode1: SMNode = <SMNode as ::std::default::Default>::default();
-            let mut smnode2: SMNode = <SMNode as ::std::default::Default>::default();
-            let mut isInitial1: bool = false;
-            let mut isInitial2: bool = false;
+            let mut smnode1: SMNode;
+            let mut smnode2: SMNode;
+            let mut isInitial1: bool;
+            let mut isInitial2: bool;
             let mut edges1: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr));
             let mut edges2: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr));
             smnode1 = if (BaseHashTable::hasKey(cref1.clone(), outTable.clone())?) {BaseHashTable::get(cref1.clone(), outTable.clone())?} else {SMNode { componentRef: cref1.clone(), isInitial: false, edges: HashSet::emptyHashSet() }};
@@ -969,7 +969,7 @@ fn extractSMStates2(mut inElement: Arc<DAE::Element>, mut inTable: SMNodeTable) 
             outTable.clone()
         },
         Deref @ DAE::Element::NORETCALL { exp: Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "initialState" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cref1, .. }, tail: Deref @ metamodelica::List::Nil }, .. }, .. } => {
-            let mut smnode1: SMNode = <SMNode as ::std::default::Default>::default();
+            let mut smnode1: SMNode;
             let mut edges1: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr));
             smnode1 = if (BaseHashTable::hasKey(cref1.clone(), outTable.clone())?) {BaseHashTable::get(cref1.clone(), outTable.clone())?} else {SMNode { componentRef: cref1.clone(), isInitial: true, edges: HashSet::emptyHashSet() }};
             let SMNode { componentRef: _, isInitial: _, edges: __pa0 } = (smnode1.clone()) else { bail!("pattern mismatch") };

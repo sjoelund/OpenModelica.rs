@@ -218,7 +218,7 @@ fn notification2(mut inLt1: Arc<metamodelica::List<(Arc<ComponentRef::NFComponen
             if !((::match_deref::match_deref! { match &(t1.clone()) {
         (__esc_cr1, Unit::Unit::MASTER { .. }) => {
             cr1 = (*__esc_cr1).clone();
-            let mut b: bool = false;
+            let mut b: bool;
             b = false;
             if '__try0: {
                 let Unit::UNIT { s: __pa1, m: __pa2, g: __pa3, A: __pa4, K: __pa5, mol: __pa6, cd: __pa7, factor: __pa8 } = (unwrap_break_err!(UnorderedMap::getOrFail((ComponentRef::stripSubscripts(cr1.clone())).0, inHtCr2U2.clone()), '__try0)) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
@@ -296,11 +296,11 @@ fn foldEquation2(mut eq: Arc<Equation::NFEquation>, mut dumpEqInitStruct: bool, 
     let mut inconsistentUnits: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
     inconsistentUnits = (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ Equation::EQUALITY { lhs: lhs @ Deref @ Expression::TUPLE { .. }, rhs: rhs @ Deref @ Expression::CALL { .. }, .. } if (!(Function::isBuiltin(Call::typedFunction(var_field!((**rhs).call, Expression::NFExpression::CALL).clone())?))) => {
-            let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
-            let mut icu2: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
-            let mut fn_name: ArcStr = arcstr::literal!("");
-            let mut out_vars: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            let mut out_units: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+            let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
+            let mut icu2: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
+            let mut fn_name: ArcStr;
+            let mut out_vars: Arc<metamodelica::List<ArcStr>>;
+            let mut out_units: Arc<metamodelica::List<ArcStr>>;
             fn_name = (AbsynUtil::pathString(AbsynUtil::makeNotFullyQualified(Call::functionName(var_field!((**rhs).call, Expression::NFExpression::CALL).clone())?), (literal!(".")).clone(), true, false)?).clone();
             (_, out_vars, _, out_units) = getCallUnits((fn_name.clone()).clone(), var_field!((**rhs).call, Expression::NFExpression::CALL).clone(), fnCache.clone())?;
             icu1 = foldCallArg1(var_field!((**lhs).elements, Expression::NFExpression::TUPLE).clone(), htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone(), Unit::Unit::MASTER { varList: metamodelica::nil() }, out_units.clone(), out_vars.clone(), (fn_name.clone()).clone())?;
@@ -308,16 +308,16 @@ fn foldEquation2(mut eq: Arc<Equation::NFEquation>, mut dumpEqInitStruct: bool, 
             List::append_reverse(icu1.clone(), icu2.clone())
         },
         Deref @ Equation::EQUALITY { rhs: rhs @ Deref @ Expression::CALL { .. }, .. } if (!(Function::isBuiltin(Call::typedFunction(var_field!((**rhs).call, Expression::NFExpression::CALL).clone())?))) => {
-            let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
-            let mut icu2: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
-            let mut fn_name: ArcStr = arcstr::literal!("");
-            let mut formal_args: ArcStr = arcstr::literal!("");
-            let mut formal_var: ArcStr = arcstr::literal!("");
-            let mut out_vars: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            let mut out_units: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            let mut unit1: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
-            let mut unit2: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
-            let mut b: bool = false;
+            let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
+            let mut icu2: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
+            let mut fn_name: ArcStr;
+            let mut formal_args: ArcStr;
+            let mut formal_var: ArcStr;
+            let mut out_vars: Arc<metamodelica::List<ArcStr>>;
+            let mut out_units: Arc<metamodelica::List<ArcStr>>;
+            let mut unit1: Unit::Unit;
+            let mut unit2: Unit::Unit;
+            let mut b: bool;
             fn_name = (AbsynUtil::pathString(AbsynUtil::makeNotFullyQualified(Call::functionName(var_field!((**rhs).call, Expression::NFExpression::CALL).clone())?), (literal!(".")).clone(), true, false)?).clone();
             (_, out_vars, _, out_units) = getCallUnits((fn_name.clone()).clone(), var_field!((**rhs).call, Expression::NFExpression::CALL).clone(), fnCache.clone())?;
             (unit1, _) = insertUnitInEquation(var_field!((*eq).lhs, Equation::NFEquation::EQUALITY).clone(), Unit::Unit::MASTER { varList: metamodelica::nil() }, htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone());
@@ -334,7 +334,7 @@ fn foldEquation2(mut eq: Arc<Equation::NFEquation>, mut dumpEqInitStruct: bool, 
             List::append_reverse(icu1.clone(), icu2.clone())
         },
         Deref @ Equation::EQUALITY { .. } => {
-            let mut temp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut temp: Arc<Expression::NFExpression>;
             temp = Arc::new(Expression::NFExpression::BINARY { exp1: var_field!((*eq).rhs, Equation::NFEquation::EQUALITY).clone(), operator: Operator::makeSub(crate::NFType::interned_REAL()), exp2: var_field!((*eq).lhs, Equation::NFEquation::EQUALITY).clone() });
             if dumpEqInitStruct.clone() {
                 metamodelica::print((Expression::toString(temp.clone())?).clone());
@@ -344,7 +344,7 @@ fn foldEquation2(mut eq: Arc<Equation::NFEquation>, mut dumpEqInitStruct: bool, 
             inconsistentUnits.clone()
         },
         Deref @ Equation::WHEN { branches: Deref @ metamodelica::List::Cons { head: Deref @ Equation::Branch::BRANCH { body: eql, .. }, tail: _ }, .. } => {
-            let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
+            let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
             inconsistentUnits = metamodelica::nil();
             for mut e in &*eql.clone() {
                 let mut e = e.clone();
@@ -380,11 +380,11 @@ fn insertUnitInEquation(mut eq: Arc<Expression::NFExpression>, mut unit: Unit::U
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Expression::BINARY { exp1, operator: Deref @ Operator::OPERATOR { op: Operator::Op::SUB, .. }, exp2 } => {
-                    let mut unit1: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
-                    let mut unit2: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
-                    let mut op_unit: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
-                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
-                    let mut icu2: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
+                    let mut unit1: Unit::Unit;
+                    let mut unit2: Unit::Unit;
+                    let mut op_unit: Unit::Unit;
+                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
+                    let mut icu2: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp2.clone(), unit.clone(), htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone())) {
                         (__pa0 @ Unit::Unit::UNIT { .. }, __pa1) => (__pa0.clone(), __pa1.clone()),
                         _ => bail!("pattern mismatch"),
@@ -402,11 +402,11 @@ fn insertUnitInEquation(mut eq: Arc<Expression::NFExpression>, mut unit: Unit::U
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Expression::BINARY { exp1, operator: Deref @ Operator::OPERATOR { op: Operator::Op::SUB, .. }, exp2 } => {
-                    let mut unit1: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
-                    let mut unit2: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
-                    let mut op_unit: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
-                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
-                    let mut icu2: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
+                    let mut unit1: Unit::Unit;
+                    let mut unit2: Unit::Unit;
+                    let mut op_unit: Unit::Unit;
+                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
+                    let mut icu2: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
                     (unit1, icu2) = insertUnitInEquation(exp1.clone(), unit.clone(), htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone());
                     (unit2, icu1) = insertUnitInEquation(exp2.clone(), unit1.clone(), htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone());
                     let (true, __pa0) = (unitTypesEqual(unit1.clone(), unit2.clone(), htCr2U.clone())?) else { bail!("pattern mismatch") };
@@ -419,10 +419,10 @@ fn insertUnitInEquation(mut eq: Arc<Expression::NFExpression>, mut unit: Unit::U
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Expression::BINARY { exp1, operator: Deref @ Operator::OPERATOR { op: Operator::Op::SUB, .. }, exp2 } => {
-                    let mut unit1: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
-                    let mut unit2: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
-                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
-                    let mut icu2: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
+                    let mut unit1: Unit::Unit;
+                    let mut unit2: Unit::Unit;
+                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
+                    let mut icu2: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp2.clone(), unit.clone(), htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone())) {
                         (__pa0 @ Unit::Unit::UNIT { .. }, __pa1) => (__pa0.clone(), __pa1.clone()),
                         _ => bail!("pattern mismatch"),
@@ -439,10 +439,10 @@ fn insertUnitInEquation(mut eq: Arc<Expression::NFExpression>, mut unit: Unit::U
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Expression::BINARY { exp1, operator: Deref @ Operator::OPERATOR { op: Operator::Op::SUB, .. }, exp2 } => {
-                    let mut unit1: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
-                    let mut unit2: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
-                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
-                    let mut icu2: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
+                    let mut unit1: Unit::Unit;
+                    let mut unit2: Unit::Unit;
+                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
+                    let mut icu2: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
                     (unit1, icu2) = insertUnitInEquation(exp1.clone(), unit.clone(), htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone());
                     (unit2, icu1) = insertUnitInEquation(exp2.clone(), unit1.clone(), htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone());
                     let (false, _) = (unitTypesEqual(unit1.clone(), unit2.clone(), htCr2U.clone())?) else { bail!("pattern mismatch") };
@@ -454,11 +454,11 @@ fn insertUnitInEquation(mut eq: Arc<Expression::NFExpression>, mut unit: Unit::U
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Expression::BINARY { exp1, operator: Deref @ Operator::OPERATOR { op: Operator::Op::ADD, .. }, exp2 } => {
-                    let mut unit1: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
-                    let mut unit2: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
-                    let mut op_unit: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
-                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
-                    let mut icu2: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
+                    let mut unit1: Unit::Unit;
+                    let mut unit2: Unit::Unit;
+                    let mut op_unit: Unit::Unit;
+                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
+                    let mut icu2: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp2.clone(), unit.clone(), htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone())) {
                         (__pa0 @ Unit::Unit::UNIT { .. }, __pa1) => (__pa0.clone(), __pa1.clone()),
                         _ => bail!("pattern mismatch"),
@@ -476,11 +476,11 @@ fn insertUnitInEquation(mut eq: Arc<Expression::NFExpression>, mut unit: Unit::U
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Expression::BINARY { exp1, operator: Deref @ Operator::OPERATOR { op: Operator::Op::ADD, .. }, exp2 } => {
-                    let mut unit1: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
-                    let mut unit2: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
-                    let mut op_unit: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
-                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
-                    let mut icu2: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
+                    let mut unit1: Unit::Unit;
+                    let mut unit2: Unit::Unit;
+                    let mut op_unit: Unit::Unit;
+                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
+                    let mut icu2: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
                     (unit1, icu2) = insertUnitInEquation(exp1.clone(), unit.clone(), htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone());
                     (unit2, icu1) = insertUnitInEquation(exp2.clone(), unit1.clone(), htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone());
                     let (true, __pa0) = (unitTypesEqual(unit1.clone(), unit2.clone(), htCr2U.clone())?) else { bail!("pattern mismatch") };
@@ -493,10 +493,10 @@ fn insertUnitInEquation(mut eq: Arc<Expression::NFExpression>, mut unit: Unit::U
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Expression::BINARY { exp1, operator: Deref @ Operator::OPERATOR { op: Operator::Op::ADD, .. }, exp2 } => {
-                    let mut unit1: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
-                    let mut unit2: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
-                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
-                    let mut icu2: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
+                    let mut unit1: Unit::Unit;
+                    let mut unit2: Unit::Unit;
+                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
+                    let mut icu2: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp2.clone(), unit.clone(), htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone())) {
                         (__pa0 @ Unit::Unit::UNIT { .. }, __pa1) => (__pa0.clone(), __pa1.clone()),
                         _ => bail!("pattern mismatch"),
@@ -513,10 +513,10 @@ fn insertUnitInEquation(mut eq: Arc<Expression::NFExpression>, mut unit: Unit::U
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Expression::BINARY { exp1, operator: Deref @ Operator::OPERATOR { op: Operator::Op::ADD, .. }, exp2 } => {
-                    let mut unit1: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
-                    let mut unit2: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
-                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
-                    let mut icu2: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
+                    let mut unit1: Unit::Unit;
+                    let mut unit2: Unit::Unit;
+                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
+                    let mut icu2: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
                     (unit1, icu2) = insertUnitInEquation(exp1.clone(), unit.clone(), htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone());
                     (unit2, icu1) = insertUnitInEquation(exp2.clone(), unit1.clone(), htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone());
                     let (false, _) = (unitTypesEqual(unit1.clone(), unit2.clone(), htCr2U.clone())?) else { bail!("pattern mismatch") };
@@ -528,11 +528,11 @@ fn insertUnitInEquation(mut eq: Arc<Expression::NFExpression>, mut unit: Unit::U
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Expression::BINARY { exp1, operator: Deref @ Operator::OPERATOR { op: Operator::Op::MUL, .. }, exp2 } => {
-                    let mut unit1: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
-                    let mut unit2: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
-                    let mut op_unit: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
-                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
-                    let mut icu2: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
+                    let mut unit1: Unit::Unit;
+                    let mut unit2: Unit::Unit;
+                    let mut op_unit: Unit::Unit;
+                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
+                    let mut icu2: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), Unit::Unit::MASTER { varList: metamodelica::nil() }, htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone())) {
                         (__pa0 @ Unit::Unit::UNIT { .. }, __pa1) => (__pa0.clone(), __pa1.clone()),
                         _ => bail!("pattern mismatch"),
@@ -556,8 +556,8 @@ fn insertUnitInEquation(mut eq: Arc<Expression::NFExpression>, mut unit: Unit::U
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Expression::BINARY { exp1, operator: Deref @ Operator::OPERATOR { op: Operator::Op::MUL, .. }, exp2 } => {
                     if !((Unit::isMaster(unit.clone()))) { bail!("guard") }
-                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
-                    let mut icu2: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
+                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
+                    let mut icu2: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
                     let __pa0 = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), Unit::Unit::MASTER { varList: metamodelica::nil() }, htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone())) {
                         (Unit::Unit::MASTER { .. }, __pa0) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -577,11 +577,11 @@ fn insertUnitInEquation(mut eq: Arc<Expression::NFExpression>, mut unit: Unit::U
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Expression::BINARY { exp1, operator: Deref @ Operator::OPERATOR { op: Operator::Op::MUL, .. }, exp2 } => {
                     if !((Unit::isUnit(unit.clone()))) { bail!("guard") }
-                    let mut unit2: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
-                    let mut op_unit: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
-                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
-                    let mut icu2: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
-                    let mut vars: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
+                    let mut unit2: Unit::Unit;
+                    let mut op_unit: Unit::Unit;
+                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
+                    let mut icu2: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
+                    let mut vars: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), Unit::Unit::MASTER { varList: metamodelica::nil() }, htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone())) {
                         (Unit::Unit::MASTER { varList: __pa0 }, __pa1) => (__pa0.clone(), __pa1.clone()),
                         _ => bail!("pattern mismatch"),
@@ -606,8 +606,8 @@ fn insertUnitInEquation(mut eq: Arc<Expression::NFExpression>, mut unit: Unit::U
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Expression::BINARY { exp1, operator: Deref @ Operator::OPERATOR { op: Operator::Op::MUL, .. }, exp2 } => {
                     if !((Unit::isMaster(unit.clone()))) { bail!("guard") }
-                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
-                    let mut icu2: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
+                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
+                    let mut icu2: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
                     let __pa0 = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), Unit::Unit::MASTER { varList: metamodelica::nil() }, htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone())) {
                         (Unit::Unit::UNIT { .. }, __pa0) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -627,11 +627,11 @@ fn insertUnitInEquation(mut eq: Arc<Expression::NFExpression>, mut unit: Unit::U
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Expression::BINARY { exp1, operator: Deref @ Operator::OPERATOR { op: Operator::Op::MUL, .. }, exp2 } => {
                     if !((Unit::isUnit(unit.clone()))) { bail!("guard") }
-                    let mut unit2: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
-                    let mut op_unit: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
-                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
-                    let mut icu2: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
-                    let mut vars: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
+                    let mut unit2: Unit::Unit;
+                    let mut op_unit: Unit::Unit;
+                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
+                    let mut icu2: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
+                    let mut vars: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), Unit::Unit::MASTER { varList: metamodelica::nil() }, htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone())) {
                         (__pa0 @ Unit::Unit::UNIT { .. }, __pa1) => (__pa0.clone(), __pa1.clone()),
                         _ => bail!("pattern mismatch"),
@@ -655,8 +655,8 @@ fn insertUnitInEquation(mut eq: Arc<Expression::NFExpression>, mut unit: Unit::U
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Expression::BINARY { exp1, operator: Deref @ Operator::OPERATOR { op: Operator::Op::MUL, .. }, exp2 } => {
-                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
-                    let mut icu2: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
+                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
+                    let mut icu2: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
                     let __pa0 = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), Unit::Unit::MASTER { varList: metamodelica::nil() }, htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone())) {
                         (Unit::Unit::MASTER { .. }, __pa0) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -675,11 +675,11 @@ fn insertUnitInEquation(mut eq: Arc<Expression::NFExpression>, mut unit: Unit::U
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Expression::BINARY { exp1, operator: Deref @ Operator::OPERATOR { op: Operator::Op::DIV, .. }, exp2 } => {
-                    let mut unit1: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
-                    let mut unit2: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
-                    let mut op_unit: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
-                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
-                    let mut icu2: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
+                    let mut unit1: Unit::Unit;
+                    let mut unit2: Unit::Unit;
+                    let mut op_unit: Unit::Unit;
+                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
+                    let mut icu2: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), Unit::Unit::MASTER { varList: metamodelica::nil() }, htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone())) {
                         (__pa0 @ Unit::Unit::UNIT { .. }, __pa1) => (__pa0.clone(), __pa1.clone()),
                         _ => bail!("pattern mismatch"),
@@ -703,8 +703,8 @@ fn insertUnitInEquation(mut eq: Arc<Expression::NFExpression>, mut unit: Unit::U
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Expression::BINARY { exp1, operator: Deref @ Operator::OPERATOR { op: Operator::Op::DIV, .. }, exp2 } => {
                     if !((Unit::isMaster(unit.clone()))) { bail!("guard") }
-                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
-                    let mut icu2: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
+                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
+                    let mut icu2: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
                     let mut inconsistentUnits: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = inconsistentUnits.clone();
                     let __pa0 = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), Unit::Unit::MASTER { varList: metamodelica::nil() }, htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone())) {
                         (Unit::Unit::MASTER { .. }, __pa0) => __pa0.clone(),
@@ -726,11 +726,11 @@ fn insertUnitInEquation(mut eq: Arc<Expression::NFExpression>, mut unit: Unit::U
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Expression::BINARY { exp1, operator: Deref @ Operator::OPERATOR { op: Operator::Op::DIV, .. }, exp2 } => {
                     if !((Unit::isUnit(unit.clone()))) { bail!("guard") }
-                    let mut unit2: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
-                    let mut op_unit: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
-                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
-                    let mut icu2: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
-                    let mut vars: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
+                    let mut unit2: Unit::Unit;
+                    let mut op_unit: Unit::Unit;
+                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
+                    let mut icu2: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
+                    let mut vars: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), Unit::Unit::MASTER { varList: metamodelica::nil() }, htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone())) {
                         (Unit::Unit::MASTER { varList: __pa0 }, __pa1) => (__pa0.clone(), __pa1.clone()),
                         _ => bail!("pattern mismatch"),
@@ -755,8 +755,8 @@ fn insertUnitInEquation(mut eq: Arc<Expression::NFExpression>, mut unit: Unit::U
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Expression::BINARY { exp1, operator: Deref @ Operator::OPERATOR { op: Operator::Op::DIV, .. }, exp2 } => {
                     if !((Unit::isMaster(unit.clone()))) { bail!("guard") }
-                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
-                    let mut icu2: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
+                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
+                    let mut icu2: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
                     let __pa0 = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), Unit::Unit::MASTER { varList: metamodelica::nil() }, htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone())) {
                         (Unit::Unit::UNIT { .. }, __pa0) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -776,11 +776,11 @@ fn insertUnitInEquation(mut eq: Arc<Expression::NFExpression>, mut unit: Unit::U
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Expression::BINARY { exp1, operator: Deref @ Operator::OPERATOR { op: Operator::Op::DIV, .. }, exp2 } => {
                     if !((Unit::isUnit(unit.clone()))) { bail!("guard") }
-                    let mut unit2: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
-                    let mut op_unit: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
-                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
-                    let mut icu2: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
-                    let mut vars: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
+                    let mut unit2: Unit::Unit;
+                    let mut op_unit: Unit::Unit;
+                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
+                    let mut icu2: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
+                    let mut vars: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), Unit::Unit::MASTER { varList: metamodelica::nil() }, htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone())) {
                         (__pa0 @ Unit::Unit::UNIT { .. }, __pa1) => (__pa0.clone(), __pa1.clone()),
                         _ => bail!("pattern mismatch"),
@@ -804,8 +804,8 @@ fn insertUnitInEquation(mut eq: Arc<Expression::NFExpression>, mut unit: Unit::U
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Expression::BINARY { exp1, operator: Deref @ Operator::OPERATOR { op: Operator::Op::DIV, .. }, exp2 } => {
-                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
-                    let mut icu2: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
+                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
+                    let mut icu2: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
                     let __pa0 = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), Unit::Unit::MASTER { varList: metamodelica::nil() }, htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone())) {
                         (Unit::Unit::MASTER { .. }, __pa0) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -824,10 +824,10 @@ fn insertUnitInEquation(mut eq: Arc<Expression::NFExpression>, mut unit: Unit::U
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Expression::BINARY { exp1, operator: Deref @ Operator::OPERATOR { op: Operator::Op::POW, .. }, exp2: exp2 @ Deref @ Expression::REAL { .. } } => {
-                    let mut unit1: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
-                    let mut op_unit: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
-                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
-                    let mut i: i32 = 0;
+                    let mut unit1: Unit::Unit;
+                    let mut op_unit: Unit::Unit;
+                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
+                    let mut i: i32;
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), Unit::Unit::MASTER { varList: metamodelica::nil() }, htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone())) {
                         (__pa0 @ Unit::Unit::UNIT { .. }, __pa1) => (__pa0.clone(), __pa1.clone()),
                         _ => bail!("pattern mismatch"),
@@ -847,9 +847,9 @@ fn insertUnitInEquation(mut eq: Arc<Expression::NFExpression>, mut unit: Unit::U
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Expression::BINARY { exp1, operator: Deref @ Operator::OPERATOR { op: Operator::Op::POW, .. }, exp2: exp2 @ Deref @ Expression::REAL { .. } } => {
                     if !((Unit::isUnit(unit.clone()))) { bail!("guard") }
-                    let mut op_unit: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
-                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
-                    let mut vars: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
+                    let mut op_unit: Unit::Unit;
+                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
+                    let mut vars: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(insertUnitInEquation(exp1.clone(), Unit::Unit::MASTER { varList: metamodelica::nil() }, htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone())) {
                         (Unit::Unit::MASTER { varList: __pa0 }, __pa1) => (__pa0.clone(), __pa1.clone()),
                         _ => bail!("pattern mismatch"),
@@ -867,7 +867,7 @@ fn insertUnitInEquation(mut eq: Arc<Expression::NFExpression>, mut unit: Unit::U
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Expression::BINARY { exp1, operator: Deref @ Operator::OPERATOR { op: Operator::Op::POW, .. }, exp2: Deref @ Expression::REAL { .. } } => {
-                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
+                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
                     (_, icu1) = insertUnitInEquation(exp1.clone(), Unit::Unit::MASTER { varList: metamodelica::nil() }, htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone());
                     Ok((Unit::Unit::MASTER { varList: metamodelica::nil() }, icu1.clone()))
                 }
@@ -877,8 +877,8 @@ fn insertUnitInEquation(mut eq: Arc<Expression::NFExpression>, mut unit: Unit::U
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Expression::CALL { .. } => {
-                    let mut op_unit: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
-                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
+                    let mut op_unit: Unit::Unit;
+                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
                     (op_unit, icu1) = insertUnitInEquationCall(var_field!((*eq).call, Expression::NFExpression::CALL).clone(), unit.clone(), htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone())?;
                     Ok((op_unit.clone(), icu1.clone()))
                 }
@@ -888,12 +888,12 @@ fn insertUnitInEquation(mut eq: Arc<Expression::NFExpression>, mut unit: Unit::U
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Expression::IF { .. } => {
-                    let mut unit1: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
-                    let mut unit2: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
-                    let mut op_unit: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
-                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
-                    let mut icu2: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
-                    let mut b: bool = false;
+                    let mut unit1: Unit::Unit;
+                    let mut unit2: Unit::Unit;
+                    let mut op_unit: Unit::Unit;
+                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
+                    let mut icu2: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
+                    let mut b: bool;
                     let mut inconsistentUnits: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = inconsistentUnits.clone();
                     (unit1, icu1) = insertUnitInEquation(var_field!((*eq).trueBranch, Expression::NFExpression::IF).clone(), unit.clone(), htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone());
                     (unit2, icu2) = insertUnitInEquation(var_field!((*eq).falseBranch, Expression::NFExpression::IF).clone(), unit1.clone(), htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone());
@@ -911,12 +911,12 @@ fn insertUnitInEquation(mut eq: Arc<Expression::NFExpression>, mut unit: Unit::U
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Expression::RELATION { .. } => {
-                    let mut unit1: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
-                    let mut unit2: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
-                    let mut op_unit: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
-                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
-                    let mut icu2: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
-                    let mut b: bool = false;
+                    let mut unit1: Unit::Unit;
+                    let mut unit2: Unit::Unit;
+                    let mut op_unit: Unit::Unit;
+                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
+                    let mut icu2: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
+                    let mut b: bool;
                     let mut inconsistentUnits: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = inconsistentUnits.clone();
                     (unit1, icu1) = insertUnitInEquation(var_field!((*eq).exp1, Expression::NFExpression::RELATION).clone(), unit.clone(), htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone());
                     (unit2, icu2) = insertUnitInEquation(var_field!((*eq).exp2, Expression::NFExpression::RELATION).clone(), unit.clone(), htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone());
@@ -934,8 +934,8 @@ fn insertUnitInEquation(mut eq: Arc<Expression::NFExpression>, mut unit: Unit::U
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Expression::UNARY { operator: Deref @ Operator::OPERATOR { op: Operator::Op::UMINUS, .. }, .. } => {
-                    let mut op_unit: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
-                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
+                    let mut op_unit: Unit::Unit;
+                    let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>;
                     (op_unit, icu1) = insertUnitInEquation(var_field!((*eq).exp, Expression::NFExpression::UNARY).clone(), unit.clone(), htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone());
                     Ok((op_unit.clone(), icu1.clone()))
                 }
@@ -946,7 +946,7 @@ fn insertUnitInEquation(mut eq: Arc<Expression::NFExpression>, mut unit: Unit::U
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Expression::CREF { .. } => {
                     if !((ComponentRef::isTime(var_field!((*eq).cref, Expression::NFExpression::CREF).clone())?)) { bail!("guard") }
-                    let mut op_unit: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
+                    let mut op_unit: Unit::Unit;
                     op_unit = Unit::SECOND().clone();
                     addUnit2HtS2U((literal!("time")).clone(), op_unit.clone(), htS2U.clone())?;
                     addUnit2HtU2S((literal!("time")).clone(), op_unit.clone(), htU2S.clone())?;
@@ -1208,10 +1208,10 @@ fn updateHtCr2U(mut cref: Arc<ComponentRef::NFComponentRef>, mut unit: Unit::Uni
 fn Errorfunction(mut inexpList: Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>, mut inEq: Arc<Equation::NFEquation>, mut inHtU2S: Arc<UnorderedMap::UnorderedMap<Unit::Unit, ArcStr>>) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(inexpList.clone()) {
         expList => {
-            let mut s: ArcStr = arcstr::literal!("");
-            let mut s1: ArcStr = arcstr::literal!("");
-            let mut s2: ArcStr = arcstr::literal!("");
-            let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
+            let mut s: ArcStr;
+            let mut s1: ArcStr;
+            let mut s2: ArcStr;
+            let mut info: SourceInfo;
             info = Equation::info(inEq.clone())?;
             s = (Equation::toString(inEq.clone(), (literal!("")).clone())?).clone();
             s1 = (Errorfunction2(expList.clone(), inHtU2S.clone())?).clone();
@@ -1229,17 +1229,17 @@ fn Errorfunction2(mut inexpList: Arc<metamodelica::List<(Arc<Expression::NFExpre
     let mut outS: ArcStr;
     outS = ((::match_deref::match_deref! { match &(inexpList.clone()) {
         Deref @ metamodelica::List::Cons { head: (exp, ut), tail: Deref @ metamodelica::List::Nil } => {
-            let mut s: ArcStr = arcstr::literal!("");
-            let mut s1: ArcStr = arcstr::literal!("");
+            let mut s: ArcStr;
+            let mut s1: ArcStr;
             s = (Expression::toString(exp.clone())?).clone();
             s1 = (Unit::unitString(ut.clone(), inHtU2S.clone())?).clone();
             s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- sub-expression \"")); __mm_s.push_str(&*s.clone()); __mm_s.push_str(&*literal!("\" has unit \"")); __mm_s.push_str(&*s1.clone()); __mm_s.push_str(&*literal!("\"")); ArcStr::from(__mm_s) }).clone();
             s.clone()
         },
         Deref @ metamodelica::List::Cons { head: (exp, ut), tail: expList } => {
-            let mut s: ArcStr = arcstr::literal!("");
-            let mut s1: ArcStr = arcstr::literal!("");
-            let mut s2: ArcStr = arcstr::literal!("");
+            let mut s: ArcStr;
+            let mut s1: ArcStr;
+            let mut s2: ArcStr;
             s = (Expression::toString(exp.clone())?).clone();
             s1 = (Unit::unitString(ut.clone(), inHtU2S.clone())?).clone();
             s2 = (Errorfunction2(expList.clone(), inHtU2S.clone())?).clone();

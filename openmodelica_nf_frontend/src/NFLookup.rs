@@ -510,12 +510,12 @@ pub fn lookupNames(mut name: Arc<Absyn::Path>, mut scope: Arc<InstNode::InstNode
     let mut self_reference: bool = false;
     (nodes, state) = (::match_deref::match_deref! { match &(name.clone()) {
         Deref @ Absyn::Path::IDENT { .. } => {
-            let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
+            let mut node: Arc<InstNode::InstNode>;
             (node, state, _) = lookupFirstIdent((var_field!((*name).name, Absyn::Path::IDENT).clone()).clone(), scope.clone(), context.clone())?;
             (list![node.clone()], state.clone())
         },
         Deref @ Absyn::Path::QUALIFIED { .. } => {
-            let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
+            let mut node: Arc<InstNode::InstNode>;
             (node, state, self_reference) = lookupFirstIdent((var_field!((*name).name, Absyn::Path::QUALIFIED).clone()).clone(), scope.clone(), context.clone())?;
             lookupLocalNames(var_field!((*name).path, Absyn::Path::QUALIFIED).clone(), node.clone(), list![node.clone()], state.clone(), context.clone(), self_reference.clone())?
         },
@@ -890,7 +890,7 @@ pub fn makeInnerNode(mut node: Arc<InstNode::InstNode>) -> Result<Arc<InstNode::
         Deref @ InstNode::COMPONENT_NODE { .. } => {
             let mut def: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
             let mut prefs: Arc<SCode::Prefixes> = Arc::new(<SCode::Prefixes as ::std::default::Default>::default());
-            let mut comp: Arc<Component::NFComponent> = Arc::new(Component::WILD);
+            let mut comp: Arc<Component::NFComponent>;
             comp = InstNode::component(node.clone())?;
             (comp, def) = (::match_deref::match_deref! { match &(comp.clone()) {
         Deref @ Component::COMPONENT_DEF { definition: __esc_def @ Deref @ SCode::Element::COMPONENT { prefixes: __esc_prefs, .. }, .. } => {

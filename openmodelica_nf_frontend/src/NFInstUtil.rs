@@ -311,7 +311,7 @@ pub fn expandSlicedCrefsStmt(mut stmt: Arc<Statement::NFStatement>) -> Result<Ar
             stmt.clone()
         },
         _ => {
-            let mut stmt2: Arc<Statement::NFStatement> = Arc::new(<Statement::NFStatement as ::std::default::Default>::default());
+            let mut stmt2: Arc<Statement::NFStatement>;
             stmt2 = Statement::mapExpShallow(stmt.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = (std::sync::Arc::new(fnptr!(addTrailingWholeIndices, Arc<Expression::NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             Statement::mapExpShallow(stmt2.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = (std::sync::Arc::new(expandSlicedCrefsExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?
         },

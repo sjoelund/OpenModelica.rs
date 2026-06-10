@@ -105,9 +105,9 @@ pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<BackendDAE::NB
     func = getModule()?;
     bdae = (::match_deref::match_deref! { match &(bdae.clone()) {
         Deref @ BackendDAE::MAIN { .. } => {
-            let mut varData: Arc<VarData::VarData> = Arc::new(VarData::VAR_DATA_EMPTY);
-            let mut eqData: Arc<EqData::EqData> = Arc::new(EqData::EQ_DATA_EMPTY);
-            let mut eventInfo: Arc<EventInfo::EventInfo> = Arc::new(<EventInfo::EventInfo as ::std::default::Default>::default());
+            let mut varData: Arc<VarData::VarData>;
+            let mut eqData: Arc<EqData::EqData>;
+            let mut eventInfo: Arc<EventInfo::EventInfo>;
             (varData, eqData, eventInfo) = func(var_field!((*bdae).varData, BackendDAE::NBackendDAE::MAIN).clone(), var_field!((*bdae).eqData, BackendDAE::NBackendDAE::MAIN).clone(), var_field!((*bdae).eventInfo, BackendDAE::NBackendDAE::MAIN).clone(), var_field!((*bdae).funcMap, BackendDAE::NBackendDAE::MAIN).clone())?;
             assign_variant_field!(bdae => BackendDAE::NBackendDAE::MAIN;
                 varData = varData.clone(),
@@ -435,10 +435,10 @@ pub mod TimeEvent {
         let mut failed: bool = false;
         (exp, bucket, failed) = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::LBINARY { .. } if (Operator::getMathClassification(var_field!((*exp).operator, Expression::NFExpression::LBINARY).clone())? == Operator::MathClassification::LOGICAL.clone()) => {
-            let mut exp1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut exp2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut b1: bool = false;
-            let mut b2: bool = false;
+            let mut exp1: Arc<Expression::NFExpression>;
+            let mut exp2: Arc<Expression::NFExpression>;
+            let mut b1: bool;
+            let mut b2: bool;
             (exp1, bucket, b1) = create(var_field!((*exp).exp1, Expression::NFExpression::LBINARY).clone(), bucket.clone(), iter.clone(), eqn.clone(), funcMap.clone(), createEqn.clone())?;
             (exp2, bucket, b2) = create(var_field!((*exp).exp2, Expression::NFExpression::LBINARY).clone(), bucket.clone(), iter.clone(), eqn.clone(), funcMap.clone(), createEqn.clone())?;
             failed = b1.clone() || b2.clone();
@@ -469,19 +469,19 @@ pub mod TimeEvent {
         let mut containsTime: Pointer::Pointer<bool> = Pointer::create(false);
         (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CALL { .. } => {
-            let mut call: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
+            let mut call: Arc<Call::NFCall>;
             (call, bucket, failed, _) = createSample(var_field!((*exp).call, Expression::NFExpression::CALL).clone(), bucket.clone(), iter.clone())?;
             assign_variant_field!(exp => Expression::NFExpression::CALL; call = call.clone());
             (exp.clone(), failed.clone())
         },
         Deref @ Expression::RELATION { .. } if (Operator::getMathClassification(var_field!((*exp).operator, Expression::NFExpression::RELATION).clone())? == Operator::MathClassification::RELATION.clone()) => {
-            let mut tmpEqn: Arc<Equation::Equation> = Arc::new(Equation::DUMMY_EQUATION);
-            let mut status: Solve::Status = Solve::Status::UNPROCESSED;
-            let mut can_trigger: bool = false;
-            let mut invert: Solve::RelationInversion = Solve::RelationInversion::TRUE;
-            let mut trigger: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut new_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut timeEvent: Arc<TimeEvent> = Arc::new(<TimeEvent as ::std::default::Default>::default());
+            let mut tmpEqn: Arc<Equation::Equation>;
+            let mut status: Solve::Status;
+            let mut can_trigger: bool;
+            let mut invert: Solve::RelationInversion;
+            let mut trigger: Arc<Expression::NFExpression>;
+            let mut new_exp: Arc<Expression::NFExpression>;
+            let mut timeEvent: Arc<TimeEvent>;
             tmpEqn = Pointer::access(BEquation::Equation::makeAssignment(var_field!((*exp).exp1, Expression::NFExpression::RELATION).clone(), var_field!((*exp).exp2, Expression::NFExpression::RELATION).clone(), Pointer::create(0), (arcstr::literal!(BVariable::TEMPORARY_STR)).clone(), crate::NBEquation::Iterator::interned_EMPTY(), BEquation::default(EquationKind::UNKNOWN.clone(), false, None, None))?);
             BEquation::Equation::map(tmpEqn.clone(), (std::sync::Arc::new({ let __pe_b1 = containsTime.clone(); move |__pe_a0| containsTimeTraverseExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>), Some((std::sync::Arc::new({ let __pe_b1 = containsTime.clone(); move |__pe_a0| containsTimeTraverseCref(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<Arc<ComponentRef::NFComponentRef>> + 'static>)), (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             if Pointer::access(containsTime.clone()) {
@@ -540,7 +540,7 @@ pub mod TimeEvent {
             (false, true)
         },
         (Deref @ "sample", Deref @ metamodelica::List::Cons { head: start, tail: Deref @ metamodelica::List::Cons { head: interval, tail: Deref @ metamodelica::List::Nil } }) => {
-            let mut timeEvent: Arc<TimeEvent> = Arc::new(<TimeEvent as ::std::default::Default>::default());
+            let mut timeEvent: Arc<TimeEvent>;
             timeEvent = Arc::new(TimeEvent::SAMPLE { index: UnorderedSet::size(bucket.time_set.clone()), start: start.clone(), interval: interval.clone(), iter: iter.clone() });
             if !(UnorderedSet::contains(timeEvent.clone(), bucket.time_set.clone())?) {
                 UnorderedSet::add(timeEvent.clone(), bucket.time_set.clone())?;
@@ -697,10 +697,10 @@ pub mod StateEvent {
             stmt.clone()
         },
         Deref @ Statement::FOR { range: Some(range), .. } => {
-            let mut name: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-            let mut new_frames: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)>> = metamodelica::nil();
-            let mut new_stmt: Arc<Statement::NFStatement> = Arc::new(<Statement::NFStatement as ::std::default::Default>::default());
-            let mut new_stmts: Arc<metamodelica::List<Arc<Statement::NFStatement>>> = metamodelica::nil();
+            let mut name: Arc<ComponentRef::NFComponentRef>;
+            let mut new_frames: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)>>;
+            let mut new_stmt: Arc<Statement::NFStatement>;
+            let mut new_stmts: Arc<metamodelica::List<Arc<Statement::NFStatement>>>;
             new_stmts = metamodelica::nil();
             name = ComponentRef::fromNode(var_field!((*stmt).iterator, Statement::NFStatement::FOR).clone(), openmodelica_nf_frontend::NFType::interned_INTEGER(), metamodelica::nil(), ComponentRef::Origin::CREF.clone());
             name = BackendDAE::lowerComponentReference(name.clone(), variables.clone(), true)?;
@@ -715,7 +715,7 @@ pub mod StateEvent {
             stmt.clone()
         },
         _ => {
-            let mut iter: Arc<Iterator::Iterator> = Arc::new(Iterator::EMPTY);
+            let mut iter: Arc<Iterator::Iterator>;
             iter = BEquation::Iterator::fromFrames(frames.clone().reverse());
             stmt = Statement::mapExp(stmt.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = (std::sync::Arc::new({ let __pe_b1 = bucket_ptr.clone(); let __pe_b2 = iter.clone(); let __pe_b3 = eqn.clone(); let __pe_b4 = funcMap.clone(); let __pe_b5 = false; move |__pe_a0| collectEventsTraverse(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>); move |__pe_a0| Expression::fakeMap(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             stmt.clone()
@@ -845,7 +845,7 @@ pub mod CompositeEvent {
         let mut failed: bool = false;
         (exp, bucket, failed) = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::LBINARY { exp1: exp1 @ Deref @ Expression::CALL { call }, operator: Deref @ Operator::OPERATOR { op: Operator::Op::AND, .. }, .. } if (BackendUtil::isOnlyTimeDependent(exp1.clone())?) => {
-            let mut exp2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut exp2: Arc<Expression::NFExpression>;
             let mut exp1 = (*exp1).clone();
             let mut call = (*call).clone();
             (call, exp2, bucket, failed) = checkDirectComposite(call.clone(), var_field!((*exp).exp2, Expression::NFExpression::LBINARY).clone(), bucket.clone(), iter.clone(), createEqn.clone())?;
@@ -859,7 +859,7 @@ pub mod CompositeEvent {
             (exp.clone(), bucket.clone(), failed.clone())
         },
         Deref @ Expression::LBINARY { exp2: exp2 @ Deref @ Expression::CALL { call }, operator: Deref @ Operator::OPERATOR { op: Operator::Op::AND, .. }, .. } if (BackendUtil::isOnlyTimeDependent(exp2.clone())?) => {
-            let mut exp1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut exp1: Arc<Expression::NFExpression>;
             let mut exp2 = (*exp2).clone();
             let mut call = (*call).clone();
             (call, exp1, bucket, failed) = checkDirectComposite(call.clone(), var_field!((*exp).exp1, Expression::NFExpression::LBINARY).clone(), bucket.clone(), iter.clone(), createEqn.clone())?;
@@ -873,8 +873,8 @@ pub mod CompositeEvent {
             (exp.clone(), bucket.clone(), failed.clone())
         },
         Deref @ Expression::LBINARY { operator: Deref @ Operator::OPERATOR { op: Operator::Op::AND, .. }, .. } => {
-            let mut exp1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut exp2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut exp1: Arc<Expression::NFExpression>;
+            let mut exp2: Arc<Expression::NFExpression>;
             (exp1, bucket, failed) = create(var_field!((*exp).exp1, Expression::NFExpression::LBINARY).clone(), bucket.clone(), iter.clone(), createEqn.clone())?;
             if !(failed.clone()) {
                 assign_variant_field!(exp => Expression::NFExpression::LBINARY; exp1 = exp1.clone());
@@ -1182,25 +1182,25 @@ fn collectEventsTraverse(mut exp: Arc<Expression::NFExpression>, mut bucket_ptr:
     let mut exp: Arc<Expression::NFExpression> = exp;
     exp = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::LUNARY { .. } => {
-            let mut bucket: Arc<Bucket> = Arc::new(<Bucket as ::std::default::Default>::default());
+            let mut bucket: Arc<Bucket>;
             (exp, bucket) = collectEventsCondition(exp.clone(), Pointer::access(bucket_ptr.clone()), iter.clone(), eqn.clone(), funcMap.clone(), createEqn.clone())?;
             Pointer::update(bucket_ptr.clone(), bucket.clone());
             exp.clone()
         },
         Deref @ Expression::LBINARY { .. } => {
-            let mut bucket: Arc<Bucket> = Arc::new(<Bucket as ::std::default::Default>::default());
+            let mut bucket: Arc<Bucket>;
             (exp, bucket) = collectEventsCondition(exp.clone(), Pointer::access(bucket_ptr.clone()), iter.clone(), eqn.clone(), funcMap.clone(), createEqn.clone())?;
             Pointer::update(bucket_ptr.clone(), bucket.clone());
             exp.clone()
         },
         Deref @ Expression::RELATION { .. } => {
-            let mut bucket: Arc<Bucket> = Arc::new(<Bucket as ::std::default::Default>::default());
+            let mut bucket: Arc<Bucket>;
             (exp, bucket) = collectEventsCondition(exp.clone(), Pointer::access(bucket_ptr.clone()), iter.clone(), eqn.clone(), funcMap.clone(), createEqn.clone())?;
             Pointer::update(bucket_ptr.clone(), bucket.clone());
             exp.clone()
         },
         Deref @ Expression::CALL { .. } if (Call::isNamed(var_field!((*exp).call, Expression::NFExpression::CALL).clone(), (literal!("sample")).clone())?) => {
-            let mut bucket: Arc<Bucket> = Arc::new(<Bucket as ::std::default::Default>::default());
+            let mut bucket: Arc<Bucket>;
             (exp, bucket) = collectEventsCondition(exp.clone(), Pointer::access(bucket_ptr.clone()), iter.clone(), eqn.clone(), funcMap.clone(), createEqn.clone())?;
             Pointer::update(bucket_ptr.clone(), bucket.clone());
             exp.clone()
@@ -1212,19 +1212,19 @@ fn collectEventsTraverse(mut exp: Arc<Expression::NFExpression>, mut bucket_ptr:
             exp.clone()
         },
         Deref @ Expression::CALL { call: Deref @ Call::TYPED_CALL { arguments: Deref @ metamodelica::List::Cons { head: Deref @ Expression::CREF { .. }, tail: Deref @ metamodelica::List::Nil }, .. } } if (Call::isNamed(var_field!((*exp).call, Expression::NFExpression::CALL).clone(), (literal!("pre")).clone())?) => {
-            let mut bucket: Arc<Bucket> = Arc::new(<Bucket as ::std::default::Default>::default());
+            let mut bucket: Arc<Bucket>;
             (exp, bucket) = CompositeEvent::add(exp.clone(), iter.clone(), Pointer::access(bucket_ptr.clone()), createEqn.clone())?;
             Pointer::update(bucket_ptr.clone(), bucket.clone());
             exp.clone()
         },
         Deref @ Expression::CREF { .. } if (BVariable::isPrevious(BVariable::getVarPointer(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), metamodelica::sourceInfo!("NBackEnd/Modules/2_Pre/NBEvents.mo"))?)) => {
-            let mut bucket: Arc<Bucket> = Arc::new(<Bucket as ::std::default::Default>::default());
+            let mut bucket: Arc<Bucket>;
             (exp, bucket) = CompositeEvent::add(exp.clone(), iter.clone(), Pointer::access(bucket_ptr.clone()), createEqn.clone())?;
             Pointer::update(bucket_ptr.clone(), bucket.clone());
             exp.clone()
         },
         Deref @ Expression::CALL { call: call @ Deref @ Call::TYPED_REDUCTION { .. } } => {
-            let mut new_frames: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)>> = metamodelica::nil();
+            let mut new_frames: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)>>;
             let mut call = (*call).clone();
             new_frames = ({
         let mut __acc: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<_>)>> = metamodelica::nil();

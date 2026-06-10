@@ -273,23 +273,23 @@ pub mod SimJacobian {
         let mut tmpVars_ptr: Pointer::Pointer<Arc<metamodelica::List<Arc<SimVar::SimVar>>>> = Pointer::create(metamodelica::nil());
         (::match_deref::match_deref! { match &(jacobian.clone()) {
         Deref @ BackendDAE::JACOBIAN { varData: varData @ Deref @ BVariable::VarData::VAR_DATA_JAC { .. }, .. } => {
-            let mut columnEqn: Arc<SimStrongComponent::Block::Block> = Arc::new(<SimStrongComponent::Block::Block as ::std::default::Default>::default());
-            let mut seed_vec: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
-            let mut res_vec: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
-            let mut tmp_vec: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
-            let mut seedVars: Arc<metamodelica::List<Arc<SimVar::SimVar>>> = metamodelica::nil();
-            let mut resVars: Arc<metamodelica::List<Arc<SimVar::SimVar>>> = metamodelica::nil();
-            let mut tmpVars: Arc<metamodelica::List<Arc<SimVar::SimVar>>> = metamodelica::nil();
-            let mut jac_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<SimVar::SimVar>>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<SimVar::SimVar>>> as ::std::default::Default>::default();
-            let mut local_idx_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> as ::std::default::Default>::default();
-            let mut cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-            let mut sparsity: Arc<metamodelica::List<(i32, Arc<metamodelica::List<i32>>)>> = metamodelica::nil();
-            let mut sparsityT: Arc<metamodelica::List<(i32, Arc<metamodelica::List<i32>>)>> = metamodelica::nil();
-            let mut coloring: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
-            let mut rowColoring: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
-            let mut jac: Arc<SimJacobian> = Arc::new(<SimJacobian as ::std::default::Default>::default());
-            let mut sim_map: Arc<UnorderedMap::UnorderedMap<Arc<Identifier::Identifier>, i32>> = <Arc<UnorderedMap::UnorderedMap<Arc<Identifier::Identifier>, i32>> as ::std::default::Default>::default();
-            let mut generic_loop_calls: Arc<metamodelica::List<Arc<SimGenericCall::NSimGenericCall>>> = metamodelica::nil();
+            let mut columnEqn: Arc<SimStrongComponent::Block::Block>;
+            let mut seed_vec: Arc<VariablePointers::VariablePointers>;
+            let mut res_vec: Arc<VariablePointers::VariablePointers>;
+            let mut tmp_vec: Arc<VariablePointers::VariablePointers>;
+            let mut seedVars: Arc<metamodelica::List<Arc<SimVar::SimVar>>>;
+            let mut resVars: Arc<metamodelica::List<Arc<SimVar::SimVar>>>;
+            let mut tmpVars: Arc<metamodelica::List<Arc<SimVar::SimVar>>>;
+            let mut jac_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<SimVar::SimVar>>>;
+            let mut local_idx_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>;
+            let mut cref: Arc<ComponentRef::NFComponentRef>;
+            let mut sparsity: Arc<metamodelica::List<(i32, Arc<metamodelica::List<i32>>)>>;
+            let mut sparsityT: Arc<metamodelica::List<(i32, Arc<metamodelica::List<i32>>)>>;
+            let mut coloring: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>;
+            let mut rowColoring: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>;
+            let mut jac: Arc<SimJacobian>;
+            let mut sim_map: Arc<UnorderedMap::UnorderedMap<Arc<Identifier::Identifier>, i32>>;
+            let mut generic_loop_calls: Arc<metamodelica::List<Arc<SimGenericCall::NSimGenericCall>>>;
             sim_map = indices.generic_call_map.clone();
             indices.generic_call_map = UnorderedMap::new((std::sync::Arc::new(SimCode::Identifier::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Identifier::Identifier>) -> Result<i32> + 'static>), (std::sync::Arc::new(SimCode::Identifier::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Identifier::Identifier>, Arc<Identifier::Identifier>) -> Result<bool> + 'static>), 1);
             for mut i in ({let __s=metamodelica::arrayLength(var_field!((*jacobian).comps, BackendDAE::NBackendDAE::JACOBIAN).clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {

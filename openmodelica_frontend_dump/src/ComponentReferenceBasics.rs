@@ -59,8 +59,8 @@ pub fn crefDims(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<Arc<metamo
             TypesDump::getDimensions(idType.clone())
         },
         Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: cr, identType: idType, .. } => {
-            let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
-            let mut res: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
+            let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>;
+            let mut res: Arc<metamodelica::List<Arc<DAE::Dimension>>>;
             dims = TypesDump::getDimensions(idType.clone());
             res = crefDims(cr.clone())?;
             res = listAppend(dims.clone(), res.clone());
@@ -78,7 +78,7 @@ pub fn crefSubs(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<Arc<metamo
             subs.clone()
         },
         Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: cr, subscriptLst: subs, .. } => {
-            let mut res: Arc<metamodelica::List<Arc<DAE::Subscript>>> = metamodelica::nil();
+            let mut res: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
             res = crefSubs(cr.clone())?;
             res = listAppend(subs.clone(), res.clone());
             res.clone()
@@ -142,7 +142,7 @@ pub fn crefLastIdent(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<ArcSt
             return Ok(id.clone())
         },
         Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: cr, .. } => {
-            let mut res: ArcStr = arcstr::literal!("");
+            let mut res: ArcStr;
             { inComponentRef = cr.clone(); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
@@ -157,7 +157,7 @@ pub fn crefLastCref(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<Arc<DA
             return Ok(inComponentRef.clone())
         },
         Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: cr, .. } => {
-            let mut res: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
+            let mut res: Arc<DAE::ComponentRef>;
             { inComponentRef = cr.clone(); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
@@ -682,7 +682,7 @@ pub fn crefContainedIn(mut containerCref: Arc<DAE::ComponentRef>, mut containedC
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (full @ Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: cr2, .. }, partOf) => {
-                    let mut res: bool = false;
+                    let mut res: bool;
                     let false = (crefEqualNoStringCompare(full.clone(), partOf.clone())?) else { bail!("pattern mismatch") };
                     res = crefContainedIn(cr2.clone(), partOf.clone());
                     Ok(res.clone())
@@ -792,7 +792,7 @@ pub fn crefEqualVerySlowStringCompareDoNotUse(mut inComponentRef1: Arc<DAE::Comp
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::ComponentRef::CREF_IDENT { ident: n1, subscriptLst: Deref @ metamodelica::List::Nil, .. }, Deref @ DAE::ComponentRef::CREF_IDENT { ident: n2, subscriptLst: idx2 @ Deref @ metamodelica::List::Cons { head: _, tail: _ }, .. }) => {
-                    let mut s1: ArcStr = arcstr::literal!("");
+                    let mut s1: ArcStr;
                     let 0 = (System::stringFind((n1.clone()).clone(), (n2.clone()).clone())?) else { bail!("pattern mismatch") };
                     s1 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*n2.clone()); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*ExpressionBasics::printListStr(idx2.clone(), (std::sync::Arc::new(ExpressionBasics::printSubscriptStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Subscript>) -> Result<ArcStr> + 'static>), (literal!(",")).clone())?); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone();
                     let true = (stringEq((s1.clone()).clone(), (n1.clone()).clone())) else { bail!("pattern mismatch") };
@@ -804,7 +804,7 @@ pub fn crefEqualVerySlowStringCompareDoNotUse(mut inComponentRef1: Arc<DAE::Comp
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::ComponentRef::CREF_IDENT { ident: n1, subscriptLst: idx2 @ Deref @ metamodelica::List::Cons { head: _, tail: _ }, .. }, Deref @ DAE::ComponentRef::CREF_IDENT { ident: n2, subscriptLst: Deref @ metamodelica::List::Nil, .. }) => {
-                    let mut s1: ArcStr = arcstr::literal!("");
+                    let mut s1: ArcStr;
                     let 0 = (System::stringFind((n2.clone()).clone(), (n1.clone()).clone())?) else { bail!("pattern mismatch") };
                     s1 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*n1.clone()); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*ExpressionBasics::printListStr(idx2.clone(), (std::sync::Arc::new(ExpressionBasics::printSubscriptStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Subscript>) -> Result<ArcStr> + 'static>), (literal!(",")).clone())?); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone();
                     let true = (stringEq((s1.clone()).clone(), (n2.clone()).clone())) else { bail!("pattern mismatch") };
@@ -827,8 +827,8 @@ pub fn crefEqualVerySlowStringCompareDoNotUse(mut inComponentRef1: Arc<DAE::Comp
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cr1 @ Deref @ DAE::ComponentRef::CREF_QUAL { ident: n1, .. }, cr2 @ Deref @ DAE::ComponentRef::CREF_IDENT { ident: n2, .. }) => {
-                    let mut s1: ArcStr = arcstr::literal!("");
-                    let mut s2: ArcStr = arcstr::literal!("");
+                    let mut s1: ArcStr;
+                    let mut s2: ArcStr;
                     let 0 = (System::stringFind((n2.clone()).clone(), (n1.clone()).clone())?) else { bail!("pattern mismatch") };
                     s1 = (printComponentRefStr(cr1.clone())?).clone();
                     s2 = (printComponentRefStr(cr2.clone())?).clone();
@@ -841,8 +841,8 @@ pub fn crefEqualVerySlowStringCompareDoNotUse(mut inComponentRef1: Arc<DAE::Comp
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cr1 @ Deref @ DAE::ComponentRef::CREF_IDENT { ident: n1, .. }, cr2 @ Deref @ DAE::ComponentRef::CREF_QUAL { ident: n2, .. }) => {
-                    let mut s1: ArcStr = arcstr::literal!("");
-                    let mut s2: ArcStr = arcstr::literal!("");
+                    let mut s1: ArcStr;
+                    let mut s2: ArcStr;
                     let 0 = (System::stringFind((n1.clone()).clone(), (n2.clone()).clone())?) else { bail!("pattern mismatch") };
                     s1 = (printComponentRefStr(cr1.clone())?).clone();
                     s2 = (printComponentRefStr(cr2.clone())?).clone();
@@ -909,7 +909,7 @@ fn crefEqualWithoutSubs2(mut refEq: bool, mut icr1: Arc<DAE::ComponentRef>, mut 
             return stringEq((n1.clone()).clone(), (n2.clone()).clone())
         },
         (_, Deref @ DAE::ComponentRef::CREF_QUAL { ident: n1, componentRef: cr1, .. }, Deref @ DAE::ComponentRef::CREF_QUAL { ident: n2, componentRef: cr2, .. }) => {
-            let mut r: bool = false;
+            let mut r: bool;
             r = stringEq((n1.clone()).clone(), (n2.clone()).clone());
             if (r.clone()) {{ (refEq, icr1, icr2) = (referenceEq(&*(cr1.clone()),&*(cr2.clone())), cr1.clone(), cr2.clone()); continue '__tco; }} else {return false}
         },
@@ -928,7 +928,7 @@ pub fn crefStripLastSubs(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<A
             makeCrefIdent((id.clone()).clone(), t2.clone(), metamodelica::nil())
         },
         Deref @ DAE::ComponentRef::CREF_QUAL { ident: id, identType: t2, subscriptLst: s, componentRef: cr } => {
-            let mut cr_1: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
+            let mut cr_1: Arc<DAE::ComponentRef>;
             cr_1 = crefStripLastSubs(cr.clone())?;
             makeCrefQual((id.clone()).clone(), t2.clone(), s.clone(), cr_1.clone())
         },
@@ -956,15 +956,15 @@ pub fn printComponentRefStr(mut inComponentRef: Arc<DAE::ComponentRef>) -> Resul
             s.clone()
         },
         Deref @ DAE::ComponentRef::CREF_IDENT { ident: s, subscriptLst: subs, .. } => {
-            let mut r#str: ArcStr = arcstr::literal!("");
+            let mut r#str: ArcStr;
             r#str = (printComponentRef2Str((s.clone()).clone(), subs.clone())?).clone();
             r#str.clone()
         },
         Deref @ DAE::ComponentRef::CREF_QUAL { ident: s, subscriptLst: subs, componentRef: cr, .. } => {
-            let mut r#str: ArcStr = arcstr::literal!("");
-            let mut strrest: ArcStr = arcstr::literal!("");
-            let mut strseb: ArcStr = arcstr::literal!("");
-            let mut b: bool = false;
+            let mut r#str: ArcStr;
+            let mut strrest: ArcStr;
+            let mut strseb: ArcStr;
+            let mut b: bool;
             b = Config::modelicaOutput()?;
             r#str = (printComponentRef2Str((s.clone()).clone(), subs.clone())?).clone();
             strrest = (printComponentRefStr(cr.clone())?).clone();
@@ -987,10 +987,10 @@ pub fn printComponentRef2Str(mut inIdent: ArcStr, mut inSubscriptLst: Arc<metamo
             s.clone()
         },
         (s, l) => {
-            let mut r#str: ArcStr = arcstr::literal!("");
-            let mut strseba: ArcStr = arcstr::literal!("");
-            let mut strsebb: ArcStr = arcstr::literal!("");
-            let mut b: bool = false;
+            let mut r#str: ArcStr;
+            let mut strseba: ArcStr;
+            let mut strsebb: ArcStr;
+            let mut b: bool;
             b = Config::modelicaOutput()?;
             r#str = (ExpressionBasics::printListStr(l.clone(), (std::sync::Arc::new(ExpressionBasics::printSubscriptStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Subscript>) -> Result<ArcStr> + 'static>), (literal!(",")).clone())?).clone();
             (strseba, strsebb) = if (b.clone()) {(literal!("_L"), literal!("_R"))} else {(literal!("["), literal!("]"))};

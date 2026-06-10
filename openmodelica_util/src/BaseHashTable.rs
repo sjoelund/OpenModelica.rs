@@ -205,9 +205,9 @@ pub fn addNoUpdCheck<Key: Clone + 'static + metamodelica::gc::MMTrace, Value: Cl
     let mut outHashTable: HashTable<Key, Value>;
     outHashTable = (match (entry.clone(), hashTable.clone()) {
         (ref v @ (ref key, _), (mut hashvec, mut varr, mut bsize, ref fntpl @ (ref hashFunc, _, _, _))) => {
-            let mut indx: i32 = 0;
-            let mut newpos: i32 = 0;
-            let mut indexes: HashNode<Key> = metamodelica::nil();
+            let mut indx: i32;
+            let mut newpos: i32;
+            let mut indexes: HashNode<Key>;
             indx = intMod(hashFunc(key.clone())?, bsize.clone()) + 1;
             (varr, newpos) = valueArrayAdd(varr.clone(), v.clone())?;
             indexes = ({let __elt = hashvec.borrow()[(indx.clone()-1) as usize].clone(); __elt});

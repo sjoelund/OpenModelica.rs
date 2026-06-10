@@ -285,7 +285,7 @@ fn createSimCode(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut inInitDAE: A
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    let mut numProc: i32 = 0;
+                    let mut numProc: i32;
                     let true = (Flags::isSet(Flags::HPCOM.clone())?) else { bail!("pattern mismatch") };
                     numProc = Flags::getConfigInt(Flags::NUM_PROC.clone())?;
                     let true = (numProc.clone() == 0) else { bail!("pattern mismatch") };
@@ -298,7 +298,7 @@ fn createSimCode(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut inInitDAE: A
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    let mut numProc: i32 = 0;
+                    let mut numProc: i32;
                     let true = (Flags::isSet(Flags::HPCOM.clone())?) else { bail!("pattern mismatch") };
                     numProc = Flags::getConfigInt(Flags::NUM_PROC.clone())?;
                     let true = (numProc.clone() > 0) else { bail!("pattern mismatch") };
@@ -310,7 +310,7 @@ fn createSimCode(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut inInitDAE: A
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    let mut tmpSimCode: SimCode::SimCode = <SimCode::SimCode as ::std::default::Default>::default();
+                    let mut tmpSimCode: SimCode::SimCode;
                     (tmpSimCode, _) = SimCodeUtil::createSimCode(inBackendDAE.clone(), inInitDAE.clone(), inInitDAE_lambda0.clone(), inInlineData.clone(), inRemovedInitialEquationLst.clone(), inClassName.clone(), (filenamePrefix.clone()).clone(), (inString11.clone()).clone(), functions.clone(), externalFunctionIncludes.clone(), includeDirs.clone(), libs.clone(), libPaths.clone(), program.clone(), simSettingsOpt.clone(), recordDecls.clone(), literals.clone(), args.clone(), isFMU.clone(), (FMUVersion.clone()).clone(), (fmuTargetName.clone()).clone(), inFMIDer.clone())?;
                     Ok(tmpSimCode.clone())
                 }
@@ -460,13 +460,13 @@ fn callTargetTemplates(mut simCode: SimCode::SimCode, mut target: ArcStr) -> Res
         },
         Deref @ "C" => {
             let mut r#str: ArcStr = arcstr::literal!("");
-            let mut guid: ArcStr = arcstr::literal!("");
-            let mut codegenFuncs: Arc<metamodelica::List<PartialRunTpl>> = metamodelica::nil();
-            let mut numThreads: i32 = 0;
-            let mut n: i32 = 0;
-            let mut strs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            let mut tmp: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            let mut matches: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+            let mut guid: ArcStr;
+            let mut codegenFuncs: Arc<metamodelica::List<PartialRunTpl>>;
+            let mut numThreads: i32;
+            let mut n: i32;
+            let mut strs: Arc<metamodelica::List<ArcStr>>;
+            let mut tmp: Arc<metamodelica::List<ArcStr>>;
+            let mut matches: Arc<metamodelica::List<ArcStr>>;
             guid = (System::getUUIDStr()).clone();
             System::realtimeTick(ClockIndexes::RT_PROFILER0.clone())?;
             codegenFuncs = metamodelica::nil();
@@ -542,11 +542,11 @@ fn callTargetTemplates(mut simCode: SimCode::SimCode, mut target: ArcStr) -> Res
             ()
         },
         Deref @ "ExperimentalEmbeddedC" => {
-            let mut r#str: ArcStr = arcstr::literal!("");
-            let mut codegenFuncs: Arc<metamodelica::List<PartialRunTpl>> = metamodelica::nil();
-            let mut numThreads: i32 = 0;
-            let mut strs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            let mut tmp: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+            let mut r#str: ArcStr;
+            let mut codegenFuncs: Arc<metamodelica::List<PartialRunTpl>>;
+            let mut numThreads: i32;
+            let mut strs: Arc<metamodelica::List<ArcStr>>;
+            let mut tmp: Arc<metamodelica::List<ArcStr>>;
             System::realtimeTick(ClockIndexes::RT_PROFILER0.clone())?;
             codegenFuncs = metamodelica::nil();
             for mut f in &*list![((std::sync::Arc::new(CodegenEmbeddedC::mainFile) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, SimCode::SimCode) -> Result<Tpl::Text> + 'static>), literal!("_main.c"))] {
@@ -581,7 +581,7 @@ fn callTargetTemplates(mut simCode: SimCode::SimCode, mut target: ArcStr) -> Res
             ()
         },
         Deref @ "JavaScript" => {
-            let mut guid: ArcStr = arcstr::literal!("");
+            let mut guid: ArcStr;
             guid = (System::getUUIDStr()).clone();
             Tpl::tplNoret((std::sync::Arc::new(CodegenC::translateModel) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, SimCode::SimCode) -> Result<Tpl::Text> + 'static>), simCode.clone())?;
             SerializeInitXML::simulationInitFile(simCode.clone(), (guid.clone()).clone())?;
@@ -599,7 +599,7 @@ fn callTargetTemplates(mut simCode: SimCode::SimCode, mut target: ArcStr) -> Res
             ()
         },
         _ => {
-            let mut r#str: ArcStr = arcstr::literal!("");
+            let mut r#str: ArcStr;
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Unknown template target: ")); __mm_s.push_str(&*target.clone()); ArcStr::from(__mm_s) }).clone();
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(r#str.clone()).clone()])?;
             bail!("fail")
@@ -639,39 +639,39 @@ fn callTargetTemplatesFMU(mut simCode: SimCode::SimCode, mut target: ArcStr, mut
         let mut needSundials: bool = false;
         (::match_deref::match_deref! { match &((simCode.clone(), target.clone())) {
         (SimCode::SimCode { .. }, Deref @ "C") => {
-            let mut r#str: ArcStr = arcstr::literal!("");
-            let mut newdir: ArcStr = arcstr::literal!("");
-            let mut newpath: ArcStr = arcstr::literal!("");
-            let mut resourcesDir: ArcStr = arcstr::literal!("");
-            let mut dirname: ArcStr = arcstr::literal!("");
-            let mut htmlFile: ArcStr = arcstr::literal!("");
-            let mut fmutmp: ArcStr = arcstr::literal!("");
-            let mut b: bool = false;
-            let mut exportDocumentation: bool = false;
-            let mut fileNamePrefixHash: ArcStr = arcstr::literal!("");
-            let mut install_include_omc_dir: ArcStr = arcstr::literal!("");
-            let mut install_include_omc_c_dir: ArcStr = arcstr::literal!("");
-            let mut install_share_buildproject_dir: ArcStr = arcstr::literal!("");
-            let mut install_fmu_sources_dir: ArcStr = arcstr::literal!("");
-            let mut fmu_tmp_sources_dir: ArcStr = arcstr::literal!("");
-            let mut cmakelistsStr: ArcStr = arcstr::literal!("");
-            let mut needCvode: ArcStr = arcstr::literal!("");
-            let mut cvodeDirectory: ArcStr = arcstr::literal!("");
-            let mut modelDefinesHeaderStr: ArcStr = arcstr::literal!("");
-            let mut model_desc_src_files: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            let mut fmi2HeaderFiles: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            let mut modelica_standard_table_sources: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            let mut dgesv_sources: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            let mut cminpack_sources: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            let mut simrt_c_sundials_sources: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            let mut simrt_linear_solver_sources: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            let mut simrt_non_linear_solver_sources: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            let mut simrt_mixed_solver_sources: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            let mut fmi_export_files: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            let mut model_gen_files: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            let mut model_all_gen_files: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            let mut shared_source_files: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            let mut varInfo: SimCode::VarInfo = <SimCode::VarInfo as ::std::default::Default>::default();
+            let mut r#str: ArcStr;
+            let mut newdir: ArcStr;
+            let mut newpath: ArcStr;
+            let mut resourcesDir: ArcStr;
+            let mut dirname: ArcStr;
+            let mut htmlFile: ArcStr;
+            let mut fmutmp: ArcStr;
+            let mut b: bool;
+            let mut exportDocumentation: bool;
+            let mut fileNamePrefixHash: ArcStr;
+            let mut install_include_omc_dir: ArcStr;
+            let mut install_include_omc_c_dir: ArcStr;
+            let mut install_share_buildproject_dir: ArcStr;
+            let mut install_fmu_sources_dir: ArcStr;
+            let mut fmu_tmp_sources_dir: ArcStr;
+            let mut cmakelistsStr: ArcStr;
+            let mut needCvode: ArcStr;
+            let mut cvodeDirectory: ArcStr;
+            let mut modelDefinesHeaderStr: ArcStr;
+            let mut model_desc_src_files: Arc<metamodelica::List<ArcStr>>;
+            let mut fmi2HeaderFiles: Arc<metamodelica::List<ArcStr>>;
+            let mut modelica_standard_table_sources: Arc<metamodelica::List<ArcStr>>;
+            let mut dgesv_sources: Arc<metamodelica::List<ArcStr>>;
+            let mut cminpack_sources: Arc<metamodelica::List<ArcStr>>;
+            let mut simrt_c_sundials_sources: Arc<metamodelica::List<ArcStr>>;
+            let mut simrt_linear_solver_sources: Arc<metamodelica::List<ArcStr>>;
+            let mut simrt_non_linear_solver_sources: Arc<metamodelica::List<ArcStr>>;
+            let mut simrt_mixed_solver_sources: Arc<metamodelica::List<ArcStr>>;
+            let mut fmi_export_files: Arc<metamodelica::List<ArcStr>>;
+            let mut model_gen_files: Arc<metamodelica::List<ArcStr>>;
+            let mut model_all_gen_files: Arc<metamodelica::List<ArcStr>>;
+            let mut shared_source_files: Arc<metamodelica::List<ArcStr>>;
+            let mut varInfo: SimCode::VarInfo;
             fileNamePrefixHash = (Util::hashFileNamePrefix((simCode.fileNamePrefix.clone()).clone())?).clone();
             fmutmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*fileNamePrefixHash.clone()); __mm_s.push_str(&*literal!(".fmutmp")); ArcStr::from(__mm_s) }).clone();
             if System::directoryExists((fmutmp.clone()).clone()) {
@@ -812,8 +812,8 @@ fn callTargetTemplatesFMU(mut simCode: SimCode::SimCode, mut target: ArcStr, mut
             }
             let () = (::match_deref::match_deref! { match &(Flags::getConfigString(Flags::FMU_RUNTIME_DEPENDS.clone())?) {
         Deref @ "default" => {
-            let mut cmakeVersion: SemanticVersion::Version = <SemanticVersion::Version as ::std::default::Default>::default();
-            let mut minimumVersion: SemanticVersion::Version = <SemanticVersion::Version as ::std::default::Default>::default();
+            let mut cmakeVersion: SemanticVersion::Version;
+            let mut minimumVersion: SemanticVersion::Version;
             cmakeVersion = SimCodeUtil::getCMakeVersion((arcstr::literal!(Autoconf::cmake)).clone())?;
             minimumVersion = SemanticVersion::Version::SEMVER { major: 3, minor: 21, patch: 0, prerelease: metamodelica::nil(), meta: metamodelica::nil() };
             if SemanticVersion::compare(minimumVersion.clone(), cmakeVersion.clone(), true, false)? <= 0 {
@@ -887,8 +887,8 @@ fn callTargetTemplatesFMU(mut simCode: SimCode::SimCode, mut target: ArcStr, mut
             ()
         },
         (_, Deref @ "omsic") => {
-            let mut guid: ArcStr = arcstr::literal!("");
-            let mut fileprefix: ArcStr = arcstr::literal!("");
+            let mut guid: ArcStr;
+            let mut fileprefix: ArcStr;
             guid = (System::getUUIDStr()).clone();
             fileprefix = (simCode.fileNamePrefix.clone()).clone();
             if System::directoryExists((simCode.fullPathPrefix.clone()).clone()) {
@@ -923,7 +923,7 @@ fn callTargetTemplatesFMU(mut simCode: SimCode::SimCode, mut target: ArcStr, mut
             ()
         },
         _ => {
-            let mut r#str: ArcStr = arcstr::literal!("");
+            let mut r#str: ArcStr;
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Unknown FMU template target: ")); __mm_s.push_str(&*target.clone()); ArcStr::from(__mm_s) }).clone();
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(r#str.clone()).clone()])?;
             bail!("fail")
@@ -1116,19 +1116,19 @@ fn translateModelCallBackendOB(mut kind: TranslateModelKind, mut cache: FCore::C
     (outLibs, outFileDir) = (match inEnv.clone() {
         mut graph => {
             let mut file_dir: ArcStr = arcstr::literal!("");
-            let mut description: ArcStr = arcstr::literal!("");
+            let mut description: ArcStr;
             let mut fmuType: ArcStr = arcstr::literal!("");
             let mut libs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-            let mut dlow: Arc<BackendDAE::BackendDAE> = Arc::new(<BackendDAE::BackendDAE as ::std::default::Default>::default());
-            let mut initDAE: Arc<BackendDAE::BackendDAE> = Arc::new(<BackendDAE::BackendDAE as ::std::default::Default>::default());
-            let mut initDAE_lambda0: Option<Arc<BackendDAE::BackendDAE>> = None;
-            let mut inlineData: Option<BackendDAE::InlineData> = None;
-            let mut removedInitialEquationLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
-            let mut strPreOptModules: Option<Arc<metamodelica::List<ArcStr>>> = None;
-            let mut isFMI2: bool = false;
-            let mut fmiDer: Arc<metamodelica::List<(Option<(Arc<BackendDAE::BackendDAE>, ArcStr, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>, (Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>), i32), Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>>>, (Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>), i32))>> = metamodelica::nil();
-            let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
+            let mut dae: DAE::DAElist;
+            let mut dlow: Arc<BackendDAE::BackendDAE>;
+            let mut initDAE: Arc<BackendDAE::BackendDAE>;
+            let mut initDAE_lambda0: Option<Arc<BackendDAE::BackendDAE>>;
+            let mut inlineData: Option<BackendDAE::InlineData>;
+            let mut removedInitialEquationLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
+            let mut strPreOptModules: Option<Arc<metamodelica::List<ArcStr>>>;
+            let mut isFMI2: bool;
+            let mut fmiDer: Arc<metamodelica::List<(Option<(Arc<BackendDAE::BackendDAE>, ArcStr, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>, (Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>), i32), Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>>>, (Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>), i32))>>;
+            let mut funcs: Arc<AvlTreePathFunction::Tree>;
             System::realtimeTick(ClockIndexes::RT_CLOCK_BACKEND.clone())?;
             dae = DAEUtil::transformationsBeforeBackend(cache.clone(), graph.clone(), inDae.clone(), (std::sync::Arc::new(StateMachineFlatten::stateMachineToDataFlow) as std::sync::Arc<dyn ::std::ops::Fn(FCore::Cache, FCore::Graph, DAE::DAElist) -> Result<DAE::DAElist> + 'static>))?;
             ExecStat::execStat((literal!("Transformations before backend")).clone())?;
@@ -1216,14 +1216,14 @@ pub fn translateModelCallBackendOBDAEMode(mut cache: FCore::Cache, mut inEnv: FC
         let __mc_input = inEnv.clone();
         if let Ok((__v, __wb0, __wb1, __wb2, __wb3, __wb4)) = (|| -> Result<_> {
             let mut graph = __mc_input.clone() else { bail!("nomatch") };
-            let mut file_dir: ArcStr = arcstr::literal!("");
-            let mut description: ArcStr = arcstr::literal!("");
-            let mut libs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-            let mut dlow: Arc<BackendDAE::BackendDAE> = Arc::new(<BackendDAE::BackendDAE as ::std::default::Default>::default());
-            let mut initDAE: Arc<BackendDAE::BackendDAE> = Arc::new(<BackendDAE::BackendDAE as ::std::default::Default>::default());
-            let mut initDAE_lambda0_option: Option<Arc<BackendDAE::BackendDAE>> = None;
-            let mut removedInitialEquationLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
+            let mut file_dir: ArcStr;
+            let mut description: ArcStr;
+            let mut libs: Arc<metamodelica::List<ArcStr>>;
+            let mut dae: DAE::DAElist;
+            let mut dlow: Arc<BackendDAE::BackendDAE>;
+            let mut initDAE: Arc<BackendDAE::BackendDAE>;
+            let mut initDAE_lambda0_option: Option<Arc<BackendDAE::BackendDAE>>;
+            let mut removedInitialEquationLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
             let mut cache: FCore::Cache = cache.clone();
             let mut generateFunctions: bool = generateFunctions.clone();
             let mut timeBackend: metamodelica::Real = timeBackend.clone();
@@ -1264,7 +1264,7 @@ pub fn translateModelCallBackendOBDAEMode(mut cache: FCore::Cache, mut inEnv: FC
         })() { cache = __wb0; generateFunctions = __wb1; timeBackend = __wb2; timeSimCode = __wb3; timeTemplates = __wb4; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            let mut resstr: ArcStr = arcstr::literal!("");
+            let mut resstr: ArcStr;
             resstr = AbsynUtil::pathStringNoQual(className.clone(), (literal!(".")).clone(), false, false)?;
             resstr = stringAppendList(list![(literal!("SimCode DAEmode: The model ")).clone(), (resstr.clone()).clone(), (literal!(" could not be translated")).clone()]);
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(resstr.clone()).clone()])?;

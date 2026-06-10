@@ -183,8 +183,8 @@ fn fun_57(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>, mut in_
     let mut out_a_preExp: Tpl::Text;
     (out_txt, out_a_auxFunction, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_eq.clone(), in_a_auxFunction.clone(), in_a_varDecls.clone(), in_a_preExp.clone(), in_a_context.clone())) {
         (txt, Deref @ SimCode::SimEqSystem::SES_SIMPLE_ASSIGN { cref: i_cref, exp: i_exp, .. }, a_auxFunction, a_varDecls, a_preExp, a_context) => {
-            let mut l_expPart: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_crefStr: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_expPart: Tpl::Text;
+            let mut l_crefStr: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_auxFunction = (*a_auxFunction).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -200,7 +200,7 @@ fn fun_57(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>, mut in_
             (txt.clone(), a_auxFunction.clone(), a_varDecls.clone(), a_preExp.clone())
         },
         (txt, Deref @ SimCode::SimEqSystem::SES_RESIDUAL { exp: i_exp, .. }, a_auxFunction, a_varDecls, a_preExp, a_context) => {
-            let mut l_expPart: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_expPart: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_auxFunction = (*a_auxFunction).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -214,7 +214,7 @@ fn fun_57(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>, mut in_
             (txt.clone(), a_auxFunction.clone(), a_varDecls.clone(), a_preExp.clone())
         },
         (txt, i_eq @ Deref @ SimCode::SimEqSystem::SES_WHEN { index: _, .. }, a_auxFunction, a_varDecls, a_preExp, a_context) => {
-            let mut l_whenEq: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_whenEq: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_auxFunction = (*a_auxFunction).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -246,7 +246,7 @@ fn fun_59(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>, mut in_
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_eq.clone(), in_a_modelNamePrefixStr.clone(), in_a_input.clone(), in_a_omsiName.clone())) {
         (txt, Deref @ SimCode::SimEqSystem::SES_SIMPLE_ASSIGN { index: i_index, .. }, a_modelNamePrefixStr, a_input, _) => {
-            let mut l_i: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_i: Tpl::Text;
             let mut txt = (*txt).clone();
             l_i = Tpl::writeStr(Tpl::emptyTxt.clone(), (intString(i_index.clone())).clone())?;
             txt = CodegenUtil::symbolName(txt.clone(), (a_modelNamePrefixStr.clone()).clone(), (literal!("eqFunction")).clone())?;
@@ -258,7 +258,7 @@ fn fun_59(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>, mut in_
             txt.clone()
         },
         (txt, Deref @ SimCode::SimEqSystem::SES_WHEN { index: i_index, .. }, a_modelNamePrefixStr, a_input, _) => {
-            let mut l_i: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_i: Tpl::Text;
             let mut txt = (*txt).clone();
             l_i = Tpl::writeStr(Tpl::emptyTxt.clone(), (intString(i_index.clone())).clone())?;
             txt = CodegenUtil::symbolName(txt.clone(), (a_modelNamePrefixStr.clone()).clone(), (literal!("eqFunction")).clone())?;
@@ -313,7 +313,7 @@ fn lm_61(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<SimCode
             return Ok(txt.clone())
         },
         (txt, Deref @ metamodelica::List::Cons { head: i_col, tail: rest }) => {
-            let mut l_columnsString: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_columnsString: Tpl::Text;
             let mut txt = (*txt).clone();
             l_columnsString = generateMatrixColumnInitialization(Tpl::emptyTxt.clone(), i_col.clone())?;
             { (in_txt, in_items) = (txt.clone(), rest.clone()); continue '__tco; }
@@ -327,7 +327,7 @@ fn fun_62(mut in_txt: Tpl::Text, mut in_a_matrix: Option<Arc<SimCode::Derivative
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_matrix.clone(), in_a_columnsString.clone())) {
         (txt, Some(Deref @ SimCode::DerivativeMatrix { columns: i_m_columns, .. }), a_columnsString) => {
-            let mut l_0__: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_0__: Tpl::Text;
             let mut txt = (*txt).clone();
             l_0__ = lm_61(Tpl::emptyTxt.clone(), i_m_columns.clone())?;
             txt = Tpl::writeTok(txt.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
@@ -378,7 +378,7 @@ fn fun_65(mut in_txt: Tpl::Text, mut in_a_column: Arc<SimCode::OMSIFunction>, mu
     let mut out_a_body: Tpl::Text;
     (out_txt, out_a_auxFunction, out_a_varDecls, out_a_body) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_column.clone(), in_a_auxFunction.clone(), in_a_varDecls.clone(), in_a_body.clone())) {
         (txt, Deref @ SimCode::OMSIFunction { equations: i_equations, context: i_omsiFunction_context, .. }, a_auxFunction, a_varDecls, a_body) => {
-            let mut l_0__: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_0__: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_auxFunction = (*a_auxFunction).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -433,7 +433,7 @@ fn fun_68(mut in_txt: Tpl::Text, mut in_a_matrix: Option<Arc<SimCode::Derivative
     let mut out_a_functionPrototypes: Tpl::Text;
     (out_txt, out_a_functionPrototypes) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_matrix.clone(), in_a_omsiName.clone(), in_a_functionPrototypes.clone(), in_a_index.clone(), in_a_modelName.clone())) {
         (txt, Some(Deref @ SimCode::DerivativeMatrix { columns: i_m_columns, .. }), a_omsiName, a_functionPrototypes, a_index, a_modelName) => {
-            let mut l_columnsString: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_columnsString: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_functionPrototypes = (*a_functionPrototypes).clone();
             l_columnsString = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\n")).clone(), (literal!("\n")).clone()], lastHasNewLine: true })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -482,7 +482,7 @@ fn fun_71(mut in_txt: Tpl::Text, mut in_a_column: Arc<SimCode::OMSIFunction>, mu
     let mut out_a_functionPrototypes: Tpl::Text;
     (out_txt, out_a_functionPrototypes) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_column.clone(), in_a_functionPrototypes.clone(), in_a_modelName.clone())) {
         (txt, Deref @ SimCode::OMSIFunction { equations: i_equations, context: i_omsiFunction_context, .. }, a_functionPrototypes, a_modelName) => {
-            let mut l_bodyBuffer: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_bodyBuffer: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_functionPrototypes = (*a_functionPrototypes).clone();
             l_bodyBuffer = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -536,7 +536,7 @@ fn fun_74(mut in_txt: Tpl::Text, mut in_a_column: Arc<SimCode::OMSIFunction>, mu
     let mut out_a_functionPrototypes: Tpl::Text;
     (out_txt, out_a_functionPrototypes) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_column.clone(), in_a_index.clone(), in_a_functionPrototypes.clone(), in_a_omsiName.clone(), in_a_modelName.clone())) {
         (txt, Deref @ SimCode::OMSIFunction { equations: i_equations, .. }, a_index, a_functionPrototypes, a_omsiName, a_modelName) => {
-            let mut l_bodyBuffer: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_bodyBuffer: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_functionPrototypes = (*a_functionPrototypes).clone();
             l_bodyBuffer = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -591,7 +591,7 @@ fn lm_76(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Co
             return Ok(txt.clone())
         },
         (txt, Deref @ metamodelica::List::Cons { head: i_cr, tail: rest }, a_context) => {
-            let mut ret_0: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
+            let mut ret_0: Arc<DAE::ComponentRef>;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(")).clone() }))?;
             txt = CodegenCFunctions::crefOMSI(txt.clone(), i_cr.clone(), a_context.clone())?;
@@ -654,9 +654,9 @@ fn fun_79(mut in_txt: Tpl::Text, mut in_a_stmt: BackendDAE::WhenOperator, mut in
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_auxFunction, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_stmt.clone(), in_a_auxFunction.clone(), in_a_varDecls.clone(), in_a_context.clone())) {
         (txt, BackendDAE::WhenOperator::ASSIGN { left: Deref @ DAE::Exp::CREF { componentRef: i_left, .. }, right: i_right, .. }, a_auxFunction, a_varDecls, a_context) => {
-            let mut l_rhs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_lhs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_preExp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_rhs: Tpl::Text;
+            let mut l_lhs: Tpl::Text;
+            let mut l_preExp: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_auxFunction = (*a_auxFunction).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -674,10 +674,10 @@ fn fun_79(mut in_txt: Tpl::Text, mut in_a_stmt: BackendDAE::WhenOperator, mut in
             (txt.clone(), a_auxFunction.clone(), a_varDecls.clone())
         },
         (txt, BackendDAE::WhenOperator::REINIT { stateVar: i_stateVar, value: i_value, source: _ }, a_auxFunction, a_varDecls, a_context) => {
-            let mut ret_4: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let mut l_val: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_lhs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_preExp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_4: Arc<DAE::Type>;
+            let mut l_val: Tpl::Text;
+            let mut l_lhs: Tpl::Text;
+            let mut l_preExp: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_auxFunction = (*a_auxFunction).clone();
             let mut a_varDecls = (*a_varDecls).clone();
@@ -727,9 +727,9 @@ pub fn equationWhen(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem
     let mut out_a_auxFunction: Tpl::Text;
     (out_txt, out_a_varDecls, out_a_auxFunction) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_eq.clone(), in_a_context.clone(), in_a_varDecls.clone(), in_a_auxFunction.clone())) {
         (txt, Deref @ SimCode::SimEqSystem::SES_WHEN { whenStmtLst: i_whenStmtLst, conditions: i_conditions, elseWhen: None, .. }, a_context, a_varDecls, a_auxFunction) => {
-            let mut l_assign: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_1: bool = false;
-            let mut l_helpIf: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_assign: Tpl::Text;
+            let mut ret_1: bool;
+            let mut l_helpIf: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             let mut a_auxFunction = (*a_auxFunction).clone();

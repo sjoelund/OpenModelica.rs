@@ -264,7 +264,7 @@ pub fn toListForm(mut value: Arc<JSON>) -> Result<Arc<JSON>> {
     let mut outValue: Arc<JSON>;
     outValue = (::match_deref::match_deref! { match &(value.clone()) {
         Deref @ OBJECT { .. } => {
-            let mut pairs: Arc<metamodelica::List<(ArcStr, Arc<JSON>)>> = metamodelica::nil();
+            let mut pairs: Arc<metamodelica::List<(ArcStr, Arc<JSON>)>>;
             pairs = metamodelica::nil();
             for mut i in 1..=UnorderedMap::size(var_field!((*value).values, JSON::OBJECT).clone()) {
                 pairs = metamodelica::cons((UnorderedMap::keyAt(var_field!((*value).values, JSON::OBJECT).clone(), i.clone())?, toListForm(UnorderedMap::valueAt(var_field!((*value).values, JSON::OBJECT).clone(), i.clone())?)?), pairs.clone());
@@ -272,9 +272,9 @@ pub fn toListForm(mut value: Arc<JSON>) -> Result<Arc<JSON>> {
             Arc::new(JSON::LIST_OBJECT { values: pairs.clone().reverse() })
         },
         Deref @ LIST_OBJECT { .. } => {
-            let mut pairs: Arc<metamodelica::List<(ArcStr, Arc<JSON>)>> = metamodelica::nil();
-            let mut key: ArcStr = arcstr::literal!("");
-            let mut v: Arc<JSON> = Arc::new(JSON::FALSE);
+            let mut pairs: Arc<metamodelica::List<(ArcStr, Arc<JSON>)>>;
+            let mut key: ArcStr;
+            let mut v: Arc<JSON>;
             pairs = metamodelica::nil();
             for mut p in &*var_field!((*value).values, JSON::LIST_OBJECT).clone() {
                 let mut p = p.clone();
@@ -284,7 +284,7 @@ pub fn toListForm(mut value: Arc<JSON>) -> Result<Arc<JSON>> {
             Arc::new(JSON::LIST_OBJECT { values: pairs.clone().reverse() })
         },
         Deref @ ARRAY { .. } => {
-            let mut elems: Arc<metamodelica::List<Arc<JSON>>> = metamodelica::nil();
+            let mut elems: Arc<metamodelica::List<Arc<JSON>>>;
             elems = metamodelica::nil();
             for mut i in ({let __s=Vector::size(var_field!((*value).values, JSON::ARRAY).clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
                 elems = metamodelica::cons(toListForm(Vector::getNoBounds(var_field!((*value).values, JSON::ARRAY).clone(), i.clone()))?, elems.clone());
@@ -292,7 +292,7 @@ pub fn toListForm(mut value: Arc<JSON>) -> Result<Arc<JSON>> {
             Arc::new(JSON::LIST { values: elems.clone() })
         },
         Deref @ LIST { .. } => {
-            let mut elems: Arc<metamodelica::List<Arc<JSON>>> = metamodelica::nil();
+            let mut elems: Arc<metamodelica::List<Arc<JSON>>>;
             elems = metamodelica::nil();
             for mut e in &*var_field!((*value).values, JSON::LIST).clone().reverse() {
                 let mut e = e.clone();

@@ -1685,8 +1685,8 @@ fn checkConnectionsArgument(mut arg: Arc<Expression::NFExpression>, mut ty: Arc<
         Deref @ Expression::CREF { .. } => {
             let mut ty2: Arc<Type::NFType> = Arc::new(Type::ANY);
             let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
-            let mut valid_cref: bool = false;
-            let mut isConnector: bool = false;
+            let mut valid_cref: bool;
+            let mut isConnector: bool;
             (valid_cref, isConnector) = (::match_deref::match_deref! { match &(var_field!((*arg).cref, Expression::NFExpression::CREF).clone()) {
         Deref @ ComponentRef::CREF { node: __esc_node, origin: ComponentRef::Origin::CREF, restCref: Deref @ ComponentRef::CREF { ty: __esc_ty2, origin: ComponentRef::Origin::CREF, .. }, .. } => {
             node = (*__esc_node).clone();
@@ -1956,7 +1956,7 @@ fn typeActualInStreamCall2(mut name: ArcStr, mut r#fn: Arc<Function::Function>, 
     let mut callExp: Arc<Expression::NFExpression>;
     callExp = (::match_deref::match_deref! { match &(arg.clone()) {
         Deref @ Expression::CREF { .. } => {
-            let mut arg_node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
+            let mut arg_node: Arc<InstNode::InstNode>;
             arg_node = ComponentRef::node(var_field!((*arg).cref, Expression::NFExpression::CREF).clone())?;
             if !(InstNode::isComponent(arg_node.clone())?) || !(Prefixes::ConnectorType::isStream(Component::connectorType(InstNode::component(arg_node.clone())?))) {
                 Error::addSourceMessageAndFail(Error::NON_STREAM_OPERAND_IN_STREAM_OPERATOR.clone(), list![(ComponentRef::toString(var_field!((*arg).cref, Expression::NFExpression::CREF).clone())?).clone(), (name.clone()).clone()], info.clone())?;

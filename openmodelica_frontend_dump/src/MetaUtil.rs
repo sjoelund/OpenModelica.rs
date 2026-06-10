@@ -251,7 +251,7 @@ fn fixElementItems(mut inElementItems: Arc<metamodelica::List<Arc<Absyn::Element
             let __x = (::match_deref::match_deref! { match &(e.clone()) {
         Deref @ Absyn::ElementItem::ELEMENTITEM { element: Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::CLASSDEF { class_: __esc_c @ Deref @ Absyn::Class { restriction: Absyn::Restriction::R_RECORD { .. }, .. }, .. }, .. } } => {
             c = (*__esc_c).clone();
-            let mut body: Arc<Absyn::ClassDef> = Arc::new(<Absyn::ClassDef as ::std::default::Default>::default());
+            let mut body: Arc<Absyn::ClassDef>;
             body = c.body.clone();
             let () = (::match_deref::match_deref! { match &(body.clone()) {
         Deref @ Absyn::ClassDef::PARTS { typeVars: Deref @ metamodelica::List::Cons { head: _, tail: _ }, .. } => {

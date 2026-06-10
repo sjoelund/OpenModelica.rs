@@ -64,7 +64,7 @@ pub fn main(mut inFile: ArcStr) -> Result<()> {
             ()
         },
         file => {
-            let mut strErrBuf: ArcStr = arcstr::literal!("");
+            let mut strErrBuf: ArcStr;
             Print::clearBuf();
             translateFile((file.clone()).clone())?;
             strErrBuf = (Print::getErrorString()?).clone();
@@ -82,13 +82,13 @@ pub fn translateFile(mut inFile: ArcStr) -> Result<()> {
         let __mc_input = inFile.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let mut file = __mc_input.clone() else { bail!("nomatch") };
-            let mut destFile: ArcStr = arcstr::literal!("");
-            let mut res: ArcStr = arcstr::literal!("");
-            let mut txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut tplPackage: TplAbsyn::TemplPackage = <TplAbsyn::TemplPackage as ::std::default::Default>::default();
-            let mut mmPckg: TplAbsyn::MMPackage = <TplAbsyn::MMPackage as ::std::default::Default>::default();
-            let mut nErrors: i32 = 0;
-            let mut wasError: bool = false;
+            let mut destFile: ArcStr;
+            let mut res: ArcStr;
+            let mut txt: Tpl::Text;
+            let mut tplPackage: TplAbsyn::TemplPackage;
+            let mut mmPckg: TplAbsyn::MMPackage;
+            let mut nErrors: i32;
+            let mut wasError: bool;
             metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nProcessing file '")); __mm_s.push_str(&*file.clone()); __mm_s.push_str(&*literal!("'\n")); ArcStr::from(__mm_s) }).clone());
             nErrors = Error::getNumErrorMessages();
             destFile = (System::stringReplace(({ let mut __mm_s = String::new(); __mm_s.push_str(&*file.clone()); __mm_s.push_str(&*literal!("*")); ArcStr::from(__mm_s) }).clone(), (literal!(".tpl*")).clone(), (literal!(".mo")).clone())?).clone();
@@ -126,8 +126,8 @@ pub fn testStringEquality(mut inStringReturned: ArcStr, mut inStringShouldBe: Ar
         let __mc_input = (inStringReturned.clone(), inStringShouldBe.clone(), inPrintResult.clone(), inPrintErrorBuffer.clone(), inTestLabel.clone(), inNotPassedCnt.clone());
         if let Ok(__v) = (|| -> Result<_> {
             let (mut strRet, mut strShouldBe, mut printResult, mut printErrBuf, mut strLabel, mut notPassedCnt) = __mc_input.clone() else { bail!("nomatch") };
-            let mut strRes: ArcStr = arcstr::literal!("");
-            let mut strErrBuf: ArcStr = arcstr::literal!("");
+            let mut strRes: ArcStr;
+            let mut strErrBuf: ArcStr;
             let true = (stringEq((strRet.clone()).clone(), (strShouldBe.clone()).clone())) else { bail!("pattern mismatch") };
             metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n**************************************************\n")); __mm_s.push_str(&*strLabel.clone()); ArcStr::from(__mm_s) }).clone());
             strRes = (if (printResult.clone()) {{ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("  returned <<\n")); __mm_s.push_str(&*strRet.clone()); __mm_s.push_str(&*literal!(">>\n")); ArcStr::from(__mm_s) }} else {literal!("\n result not shown \n")}).clone();
@@ -141,8 +141,8 @@ pub fn testStringEquality(mut inStringReturned: ArcStr, mut inStringShouldBe: Ar
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (mut strRet, mut strShouldBe, mut printResult, mut printErrBuf, mut strLabel, mut notPassedCnt) = __mc_input.clone() else { bail!("nomatch") };
-            let mut strRes: ArcStr = arcstr::literal!("");
-            let mut strErrBuf: ArcStr = arcstr::literal!("");
+            let mut strRes: ArcStr;
+            let mut strErrBuf: ArcStr;
             let false = (stringEq((strRet.clone()).clone(), (strShouldBe.clone()).clone())) else { bail!("pattern mismatch") };
             metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n##################################################\n")); __mm_s.push_str(&*strLabel.clone()); ArcStr::from(__mm_s) }).clone());
             strRes = (if (printResult.clone()) {{ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("  returned <<\n")); __mm_s.push_str(&*strRet.clone()); __mm_s.push_str(&*literal!(">>\nshould be <<\n")); __mm_s.push_str(&*strShouldBe.clone()); __mm_s.push_str(&*literal!(">>\n")); ArcStr::from(__mm_s) }} else {literal!("\n result not shown \n")}).clone();
@@ -171,8 +171,8 @@ pub fn testTranslateTplFile(mut inFile: ArcStr, mut inPrintResult: bool, mut inP
         let __mc_input = (inFile.clone(), inPrintResult.clone(), inPrintErrorBuffer.clone(), inNotPassedCnt.clone());
         if let Ok(__v) = (|| -> Result<_> {
             let (mut file, mut printRes, mut printErrBuf, mut notPassedCnt) = __mc_input.clone() else { bail!("nomatch") };
-            let mut res: ArcStr = arcstr::literal!("");
-            let mut resToBe: ArcStr = arcstr::literal!("");
+            let mut res: ArcStr;
+            let mut resToBe: ArcStr;
             System::writeFile(({ let mut __mm_s = String::new(); __mm_s.push_str(&*file.clone()); __mm_s.push_str(&*literal!(".mo")); ArcStr::from(__mm_s) }).clone(), (literal!("Test failed.")).clone())?;
             translateFile(({ let mut __mm_s = String::new(); __mm_s.push_str(&*file.clone()); __mm_s.push_str(&*literal!(".tpl")); ArcStr::from(__mm_s) }).clone())?;
             res = (System::stringReplace((System::readFile(({ let mut __mm_s = String::new(); __mm_s.push_str(&*file.clone()); __mm_s.push_str(&*literal!(".mo")); ArcStr::from(__mm_s) }).clone())?).clone(), intStringChar(13), (literal!("")).clone())?).clone();
@@ -182,8 +182,8 @@ pub fn testTranslateTplFile(mut inFile: ArcStr, mut inPrintResult: bool, mut inP
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (mut file, mut printRes, mut printErrBuf, mut notPassedCnt) = __mc_input.clone() else { bail!("nomatch") };
-            let mut res: ArcStr = arcstr::literal!("");
-            let mut resToBe: ArcStr = arcstr::literal!("");
+            let mut res: ArcStr;
+            let mut resToBe: ArcStr;
             System::writeFile(({ let mut __mm_s = String::new(); __mm_s.push_str(&*file.clone()); __mm_s.push_str(&*literal!(".mo")); ArcStr::from(__mm_s) }).clone(), (literal!("Test failed.")).clone())?;
             res = (System::stringReplace((System::readFile(({ let mut __mm_s = String::new(); __mm_s.push_str(&*file.clone()); __mm_s.push_str(&*literal!(".mo")); ArcStr::from(__mm_s) }).clone())?).clone(), intStringChar(13), (literal!("")).clone())?).clone();
             resToBe = (System::stringReplace((System::readFile(({ let mut __mm_s = String::new(); __mm_s.push_str(&*file.clone()); __mm_s.push_str(&*literal!("__testShouldBe.mo")); ArcStr::from(__mm_s) }).clone())?).clone(), intStringChar(13), (literal!("")).clone())?).clone();
@@ -201,25 +201,25 @@ pub fn tplMainTest(mut inFile: ArcStr) -> Result<()> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ "a" => {
-                    let mut r#str: ArcStr = arcstr::literal!("");
-                    let mut strOut: ArcStr = arcstr::literal!("");
-                    let mut ident: ArcStr = arcstr::literal!("");
-                    let mut cval: ArcStr = arcstr::literal!("");
-                    let mut chars: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    let mut txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-                    let mut tequal: bool = false;
-                    let mut tplPackage: TplAbsyn::TemplPackage = <TplAbsyn::TemplPackage as ::std::default::Default>::default();
-                    let mut mmPckg: TplAbsyn::MMPackage = <TplAbsyn::MMPackage as ::std::default::Default>::default();
-                    let mut pid: Arc<TplAbsyn::PathIdent> = Arc::new(<TplAbsyn::PathIdent as ::std::default::Default>::default());
-                    let mut ts: Arc<TplAbsyn::TypeSignature> = Arc::new(TplAbsyn::TypeSignature::BOOLEAN_TYPE);
-                    let mut astDefs: Arc<metamodelica::List<TplAbsyn::ASTDef>> = metamodelica::nil();
-                    let mut expB: Arc<TplAbsyn::ExpressionBase> = Arc::new(TplAbsyn::ExpressionBase::ERROR_EXP);
-                    let mut tok: Arc<Tpl::StringToken> = Arc::new(Tpl::StringToken::ST_NEW_LINE);
-                    let mut tstart: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-                    let mut lnum: i32 = 0;
-                    let mut colnum: i32 = 0;
-                    let mut llen: i32 = 0;
-                    let mut notPassedCnt: i32 = 0;
+                    let mut r#str: ArcStr;
+                    let mut strOut: ArcStr;
+                    let mut ident: ArcStr;
+                    let mut cval: ArcStr;
+                    let mut chars: Arc<metamodelica::List<ArcStr>>;
+                    let mut txt: Tpl::Text;
+                    let mut tequal: bool;
+                    let mut tplPackage: TplAbsyn::TemplPackage;
+                    let mut mmPckg: TplAbsyn::MMPackage;
+                    let mut pid: Arc<TplAbsyn::PathIdent>;
+                    let mut ts: Arc<TplAbsyn::TypeSignature>;
+                    let mut astDefs: Arc<metamodelica::List<TplAbsyn::ASTDef>>;
+                    let mut expB: Arc<TplAbsyn::ExpressionBase>;
+                    let mut tok: Arc<Tpl::StringToken>;
+                    let mut tstart: metamodelica::Real;
+                    let mut lnum: i32;
+                    let mut colnum: i32;
+                    let mut llen: i32;
+                    let mut notPassedCnt: i32;
                     notPassedCnt = 0;
                     Print::clearErrorBuf();
                     metamodelica::print((literal!("\n A Test:\n")).clone());

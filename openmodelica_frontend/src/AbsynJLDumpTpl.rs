@@ -39,9 +39,9 @@ fn lm_10(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::Class>
         let mut lstElt_10 = lstElt_10.clone();
         (txt, a_preText) = (::match_deref::match_deref! { match &(lstElt_10.clone()) {
         i_cls => {
-            let mut l_res: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_1: i32 = 0;
-            let mut l_ix: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_res: Tpl::Text;
+            let mut ret_1: i32;
+            let mut l_ix: Tpl::Text;
             ret_1 = System::tmpTick();
             l_ix = Tpl::writeStr(Tpl::emptyTxt.clone(), (intString(ret_1.clone())).clone())?;
             (l_res, a_preText) = dumpClass(Tpl::emptyTxt.clone(), a_preText.clone(), i_cls.clone(), a_options.clone())?;
@@ -73,8 +73,8 @@ fn fun_11(mut in_txt: Tpl::Text, mut in_a_program: Absyn::Program, mut in_a_preT
             (txt.clone(), a_preText.clone())
         },
         (txt, Absyn::Program { within_: i_within__, classes: i_classes }, a_preText, a_options) => {
-            let mut l_cls__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_within__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_cls__str: Tpl::Text;
+            let mut l_within__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             l_within__str = dumpWithin(Tpl::emptyTxt.clone(), i_within__.clone())?;
@@ -109,15 +109,15 @@ fn fun_13(mut in_txt: Tpl::Text, mut in_a_cls: Arc<Absyn::Class>, mut in_a_preTe
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cls.clone(), in_a_preText.clone(), in_a_options.clone())) {
         (txt, Deref @ Absyn::Class { name: i_name, partialPrefix: i_partialPrefix, finalPrefix: i_finalPrefix, encapsulatedPrefix: i_encapsulatedPrefix, restriction: i_restriction, body: i_body, info: i_info, .. }, a_preText, a_options) => {
-            let mut ret_8: i32 = 0;
-            let mut l_ix: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_i: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_cd: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_r: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_ep: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_fp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_pp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_n: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_8: i32;
+            let mut l_ix: Tpl::Text;
+            let mut l_i: Tpl::Text;
+            let mut l_cd: Tpl::Text;
+            let mut l_r: Tpl::Text;
+            let mut l_ep: Tpl::Text;
+            let mut l_fp: Tpl::Text;
+            let mut l_pp: Tpl::Text;
+            let mut l_n: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             l_n = Tpl::writeStr(Tpl::emptyTxt.clone(), (i_name.clone()).clone())?;
@@ -188,9 +188,9 @@ fn lm_16(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::Annota
         let mut lstElt_16 = lstElt_16.clone();
         (txt, a_preText) = (::match_deref::match_deref! { match &(lstElt_16.clone()) {
         i_a => {
-            let mut l_res: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_1: i32 = 0;
-            let mut l_ix: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_res: Tpl::Text;
+            let mut ret_1: i32;
+            let mut l_ix: Tpl::Text;
             ret_1 = System::tmpTick();
             l_ix = Tpl::writeStr(Tpl::emptyTxt.clone(), (intString(ret_1.clone())).clone())?;
             (l_res, a_preText) = dumpAnnotation(Tpl::emptyTxt.clone(), a_preText.clone(), i_a.clone())?;
@@ -217,9 +217,9 @@ fn lm_17(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::ClassP
         let mut lstElt_17 = lstElt_17.clone();
         (txt, a_preText) = (::match_deref::match_deref! { match &(lstElt_17.clone()) {
         i_class__part => {
-            let mut l_res: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_1: i32 = 0;
-            let mut l_ix: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_res: Tpl::Text;
+            let mut ret_1: i32;
+            let mut l_ix: Tpl::Text;
             ret_1 = System::tmpTick();
             l_ix = Tpl::writeStr(Tpl::emptyTxt.clone(), (intString(ret_1.clone())).clone())?;
             (l_res, a_preText) = dumpClassPart(Tpl::emptyTxt.clone(), a_preText.clone(), i_class__part.clone(), a_options.clone())?;
@@ -365,12 +365,12 @@ fn fun_25(mut in_txt: Tpl::Text, mut in_a_cdef: Arc<Absyn::ClassDef>, mut in_a_p
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cdef.clone(), in_a_preText.clone(), in_a_options.clone())) {
         (txt, Deref @ Absyn::ClassDef::PARTS { typeVars: i_typeVars, ann: i_ann, comment: i_comment, classParts: i_classParts, classAttrs: i_classAttrs }, a_preText, a_options) => {
-            let mut l_attr__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_body__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_cmt__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_2: Arc<metamodelica::List<Arc<Absyn::Annotation>>> = metamodelica::nil();
-            let mut l_ann__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_tvs__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_attr__str: Tpl::Text;
+            let mut l_body__str: Tpl::Text;
+            let mut l_cmt__str: Tpl::Text;
+            let mut ret_2: Arc<metamodelica::List<Arc<Absyn::Annotation>>>;
+            let mut l_ann__str: Tpl::Text;
+            let mut l_tvs__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             l_tvs__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -401,10 +401,10 @@ fn fun_25(mut in_txt: Tpl::Text, mut in_a_cdef: Arc<Absyn::ClassDef>, mut in_a_p
             (txt.clone(), a_preText.clone())
         },
         (txt, Deref @ Absyn::ClassDef::DERIVED { attributes: i_attributes, typeSpec: i_typeSpec, arguments: i_arguments, comment: i_comment_1 }, a_preText, _) => {
-            let mut l_arg__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_ty__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_attr__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_cmt__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_arg__str: Tpl::Text;
+            let mut l_ty__str: Tpl::Text;
+            let mut l_attr__str: Tpl::Text;
+            let mut l_cmt__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             (l_attr__str, a_preText) = dumpElementAttr(Tpl::emptyTxt.clone(), a_preText.clone(), i_attributes.clone())?;
@@ -425,11 +425,11 @@ fn fun_25(mut in_txt: Tpl::Text, mut in_a_cdef: Arc<Absyn::ClassDef>, mut in_a_p
             (txt.clone(), a_preText.clone())
         },
         (txt, Deref @ Absyn::ClassDef::CLASS_EXTENDS { parts: i_parts, modifications: i_modifications, comment: i_comment, ann: i_ann, baseClassName: i_baseClassName }, a_preText, a_options) => {
-            let mut ret_9: Arc<metamodelica::List<Arc<Absyn::Annotation>>> = metamodelica::nil();
-            let mut l_mod__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_body__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_cmt__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_ann__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_9: Arc<metamodelica::List<Arc<Absyn::Annotation>>>;
+            let mut l_mod__str: Tpl::Text;
+            let mut l_body__str: Tpl::Text;
+            let mut l_cmt__str: Tpl::Text;
+            let mut l_ann__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             l_body__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -455,8 +455,8 @@ fn fun_25(mut in_txt: Tpl::Text, mut in_a_cdef: Arc<Absyn::ClassDef>, mut in_a_p
             (txt.clone(), a_preText.clone())
         },
         (txt, Deref @ Absyn::ClassDef::ENUMERATION { enumLiterals: i_enumLiterals, comment: i_comment_1 }, a_preText, _) => {
-            let mut l_enum__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_cmt__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_enum__str: Tpl::Text;
+            let mut l_cmt__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             (l_enum__str, a_preText) = dumpEnumDef(Tpl::emptyTxt.clone(), a_preText.clone(), i_enumLiterals.clone())?;
@@ -469,8 +469,8 @@ fn fun_25(mut in_txt: Tpl::Text, mut in_a_cdef: Arc<Absyn::ClassDef>, mut in_a_p
             (txt.clone(), a_preText.clone())
         },
         (txt, Deref @ Absyn::ClassDef::OVERLOAD { functionNames: i_functionNames, comment: i_comment_1 }, a_preText, _) => {
-            let mut l_funcs__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_cmt__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_funcs__str: Tpl::Text;
+            let mut l_cmt__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             l_funcs__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -526,7 +526,7 @@ fn fun_28(mut in_txt: Tpl::Text, mut in_a_enum__def: Arc<Absyn::EnumDef>, mut in
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_enum__def.clone(), in_a_preText.clone())) {
         (txt, Deref @ Absyn::EnumDef::ENUMLITERALS { enumLiterals: i_enumLiterals }, a_preText) => {
-            let mut l_els: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_els: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             l_els = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -562,7 +562,7 @@ fn fun_30(mut in_txt: Tpl::Text, mut in_a_lit: Arc<Absyn::EnumLiteral>, mut in_a
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_lit.clone(), in_a_preText.clone())) {
         (txt, Deref @ Absyn::EnumLiteral { comment: i_comment, literal: i_literal }, a_preText) => {
-            let mut l_cmt__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_cmt__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             (l_cmt__str, a_preText) = dumpCommentOpt(Tpl::emptyTxt.clone(), a_preText.clone(), i_comment.clone())?;
@@ -662,7 +662,7 @@ pub fn dumpRestriction(mut in_txt: Tpl::Text, mut in_a_restriction: Absyn::Restr
             txt.clone()
         },
         (mut txt, Absyn::Restriction::R_FUNCTION { functionRestriction: mut i_functionRestriction }) => {
-            let mut l_prefix__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_prefix__str: Tpl::Text;
             l_prefix__str = fun_32(Tpl::emptyTxt.clone(), i_functionRestriction.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("R_FUNCTION(")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), l_prefix__str.clone())?;
@@ -939,11 +939,11 @@ fn fun_46(mut in_txt: Tpl::Text, mut in_a_externalDecl: Arc<Absyn::ExternalDecl>
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_externalDecl.clone(), in_a_ann__str.clone(), in_a_preText.clone())) {
         (txt, Deref @ Absyn::ExternalDecl { funcName: i_funcName, lang: i_lang, output_: i_output__, args: i_args, annotation_: i_annotation__ }, a_ann__str, a_preText) => {
-            let mut l_ann2__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_args__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_output__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_lang__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_fn__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_ann2__str: Tpl::Text;
+            let mut l_args__str: Tpl::Text;
+            let mut l_output__str: Tpl::Text;
+            let mut l_lang__str: Tpl::Text;
+            let mut l_fn__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             l_fn__str = fun_42(Tpl::emptyTxt.clone(), i_funcName.clone())?;
@@ -981,7 +981,7 @@ fn fun_47(mut in_txt: Tpl::Text, mut in_a_class__part: Arc<Absyn::ClassPart>, mu
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_class__part.clone(), in_a_preText.clone(), in_a_options.clone())) {
         (txt, Deref @ Absyn::ClassPart::PUBLIC { contents: i_contents }, a_preText, a_options) => {
-            let mut l_el__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_el__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             l_el__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -993,7 +993,7 @@ fn fun_47(mut in_txt: Tpl::Text, mut in_a_class__part: Arc<Absyn::ClassPart>, mu
             (txt.clone(), a_preText.clone())
         },
         (txt, Deref @ Absyn::ClassPart::PROTECTED { contents: i_contents }, a_preText, a_options) => {
-            let mut l_el__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_el__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             l_el__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -1005,7 +1005,7 @@ fn fun_47(mut in_txt: Tpl::Text, mut in_a_class__part: Arc<Absyn::ClassPart>, mu
             (txt.clone(), a_preText.clone())
         },
         (txt, Deref @ Absyn::ClassPart::CONSTRAINTS { contents: i_contents_1 }, a_preText, _) => {
-            let mut l_el__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_el__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             l_el__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -1017,7 +1017,7 @@ fn fun_47(mut in_txt: Tpl::Text, mut in_a_class__part: Arc<Absyn::ClassPart>, mu
             (txt.clone(), a_preText.clone())
         },
         (txt, Deref @ Absyn::ClassPart::EQUATIONS { contents: i_contents_2 }, a_preText, _) => {
-            let mut l_el__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_el__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             l_el__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -1029,7 +1029,7 @@ fn fun_47(mut in_txt: Tpl::Text, mut in_a_class__part: Arc<Absyn::ClassPart>, mu
             (txt.clone(), a_preText.clone())
         },
         (txt, Deref @ Absyn::ClassPart::INITIALEQUATIONS { contents: i_contents_2 }, a_preText, _) => {
-            let mut l_el__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_el__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             l_el__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -1041,7 +1041,7 @@ fn fun_47(mut in_txt: Tpl::Text, mut in_a_class__part: Arc<Absyn::ClassPart>, mu
             (txt.clone(), a_preText.clone())
         },
         (txt, Deref @ Absyn::ClassPart::ALGORITHMS { contents: i_contents_3 }, a_preText, _) => {
-            let mut l_el__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_el__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             l_el__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -1053,7 +1053,7 @@ fn fun_47(mut in_txt: Tpl::Text, mut in_a_class__part: Arc<Absyn::ClassPart>, mu
             (txt.clone(), a_preText.clone())
         },
         (txt, Deref @ Absyn::ClassPart::INITIALALGORITHMS { contents: i_contents_3 }, a_preText, _) => {
-            let mut l_el__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_el__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             l_el__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -1065,7 +1065,7 @@ fn fun_47(mut in_txt: Tpl::Text, mut in_a_class__part: Arc<Absyn::ClassPart>, mu
             (txt.clone(), a_preText.clone())
         },
         (txt, Deref @ Absyn::ClassPart::EXTERNAL { annotation_: i_annotation__, externalDecl: i_externalDecl }, a_preText, _) => {
-            let mut l_ann__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_ann__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             (l_ann__str, a_preText) = fun_41(Tpl::emptyTxt.clone(), i_annotation__.clone(), a_preText.clone())?;
@@ -1126,7 +1126,7 @@ pub fn dumpInfo(mut in_txt: Tpl::Text, mut in_a_info: SourceInfo) -> Result<Tpl:
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_info.clone()) {
         (mut txt, SourceInfo { isReadOnly: mut i_isReadOnly, fileName: mut i_fileName, lineNumberStart: mut i_lineNumberStart, columnNumberStart: mut i_columnNumberStart, lineNumberEnd: mut i_lineNumberEnd, columnNumberEnd: mut i_columnNumberEnd, .. }) => {
-            let mut l_rm__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_rm__str: Tpl::Text;
             l_rm__str = fun_50(Tpl::emptyTxt.clone(), i_isReadOnly.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("SOURCEINFO(\"")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (i_fileName.clone()).clone())?;
@@ -1366,12 +1366,12 @@ fn fun_65(mut in_txt: Tpl::Text, mut in_a_earg: Arc<Absyn::ElementArg>, mut in_a
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_earg.clone(), in_a_preText.clone())) {
         (txt, Deref @ Absyn::ElementArg::MODIFICATION { eachPrefix: i_eachPrefix, finalPrefix: i_finalPrefix, path: i_path, modification: i_modification, comment: i_comment, info: i_info }, a_preText) => {
-            let mut l_info__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_cmt__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_mod__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_path__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_final__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_each__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_info__str: Tpl::Text;
+            let mut l_cmt__str: Tpl::Text;
+            let mut l_mod__str: Tpl::Text;
+            let mut l_path__str: Tpl::Text;
+            let mut l_final__str: Tpl::Text;
+            let mut l_each__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             l_each__str = dumpEach(Tpl::emptyTxt.clone(), i_eachPrefix.clone())?;
@@ -1396,12 +1396,12 @@ fn fun_65(mut in_txt: Tpl::Text, mut in_a_earg: Arc<Absyn::ElementArg>, mut in_a
             (txt.clone(), a_preText.clone())
         },
         (txt, Deref @ Absyn::ElementArg::REDECLARATION { eachPrefix: i_eachPrefix, finalPrefix: i_finalPrefix, redeclareKeywords: i_redeclareKeywords, elementSpec: i_elementSpec, constrainClass: i_constrainClass, info: i_info }, a_preText) => {
-            let mut l_cc__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_elem__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_redecl__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_info__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_final__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_each__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_cc__str: Tpl::Text;
+            let mut l_elem__str: Tpl::Text;
+            let mut l_redecl__str: Tpl::Text;
+            let mut l_info__str: Tpl::Text;
+            let mut l_final__str: Tpl::Text;
+            let mut l_each__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             l_each__str = dumpEach(Tpl::emptyTxt.clone(), i_eachPrefix.clone())?;
@@ -1555,8 +1555,8 @@ fn fun_73(mut in_txt: Tpl::Text, mut in_a_mod: Arc<Absyn::Modification>, mut in_
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_mod.clone(), in_a_preText.clone())) {
         (txt, Deref @ Absyn::Modification { elementArgLst: i_elementArgLst, eqMod: i_eqMod }, a_preText) => {
-            let mut l_eq__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_arg__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_eq__str: Tpl::Text;
+            let mut l_arg__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             l_arg__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -1590,8 +1590,8 @@ fn fun_75(mut in_txt: Tpl::Text, mut in_a_eqmod: Arc<Absyn::EqMod>, mut in_a_pre
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_eqmod.clone(), in_a_preText.clone())) {
         (txt, Deref @ Absyn::EqMod::EQMOD { exp: i_exp, info: i_info }, a_preText) => {
-            let mut l_info__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_exp__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_info__str: Tpl::Text;
+            let mut l_exp__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             (l_exp__str, a_preText) = dumpExp(Tpl::emptyTxt.clone(), a_preText.clone(), i_exp.clone())?;
@@ -1672,9 +1672,9 @@ fn fun_79(mut in_txt: Tpl::Text, mut in_a_elem: Arc<Absyn::ElementSpec>, mut in_
             (txt.clone(), a_preText.clone())
         },
         (txt, Deref @ Absyn::ElementSpec::EXTENDS { path: i_path, elementArg: i_elementArg, annotationOpt: i_annotationOpt }, a_preText, _) => {
-            let mut l_ann__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_args__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_bc__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_ann__str: Tpl::Text;
+            let mut l_args__str: Tpl::Text;
+            let mut l_bc__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             l_bc__str = dumpPath(Tpl::emptyTxt.clone(), i_path.clone())?;
@@ -1692,9 +1692,9 @@ fn fun_79(mut in_txt: Tpl::Text, mut in_a_elem: Arc<Absyn::ElementSpec>, mut in_
             (txt.clone(), a_preText.clone())
         },
         (txt, Deref @ Absyn::ElementSpec::COMPONENTS { typeSpec: i_typeSpec, attributes: i_attributes, components: i_components }, a_preText, _) => {
-            let mut l_comps__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_attr__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_ty__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_comps__str: Tpl::Text;
+            let mut l_attr__str: Tpl::Text;
+            let mut l_ty__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             (l_ty__str, a_preText) = dumpTypeSpec(Tpl::emptyTxt.clone(), a_preText.clone(), i_typeSpec.clone())?;
@@ -1712,8 +1712,8 @@ fn fun_79(mut in_txt: Tpl::Text, mut in_a_elem: Arc<Absyn::ElementSpec>, mut in_
             (txt.clone(), a_preText.clone())
         },
         (txt, Deref @ Absyn::ElementSpec::IMPORT { comment: i_comment, info: i_info, import_: i_import__ }, a_preText, _) => {
-            let mut l_info__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_cmt__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_info__str: Tpl::Text;
+            let mut l_cmt__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             (l_cmt__str, a_preText) = dumpCommentOpt(Tpl::emptyTxt.clone(), a_preText.clone(), i_comment.clone())?;
@@ -1777,13 +1777,13 @@ fn fun_83(mut in_txt: Tpl::Text, mut in_a_attr: Absyn::ElementAttributes, mut in
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = (match (in_txt.clone(), in_a_attr.clone(), in_a_preText.clone()) {
         (mut txt, Absyn::ElementAttributes { flowPrefix: mut i_flowPrefix, streamPrefix: mut i_streamPrefix, parallelism: mut i_parallelism, isField: mut i_isField, variability: mut i_variability, direction: mut i_direction, arrayDim: ref i_arrayDim }, mut a_preText) => {
-            let mut l_array__dim: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_dir__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_var__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_field__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_par__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_stream__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_flow__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_array__dim: Tpl::Text;
+            let mut l_dir__str: Tpl::Text;
+            let mut l_var__str: Tpl::Text;
+            let mut l_field__str: Tpl::Text;
+            let mut l_par__str: Tpl::Text;
+            let mut l_stream__str: Tpl::Text;
+            let mut l_flow__str: Tpl::Text;
             l_flow__str = fun_81(Tpl::emptyTxt.clone(), i_flowPrefix.clone())?;
             l_stream__str = fun_82(Tpl::emptyTxt.clone(), i_streamPrefix.clone())?;
             l_par__str = dumpParallelism(Tpl::emptyTxt.clone(), i_parallelism.clone())?;
@@ -1941,7 +1941,7 @@ fn fun_91(mut in_txt: Tpl::Text, mut in_a_cc: Arc<Absyn::ConstrainClass>, mut in
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cc.clone(), in_a_preText.clone())) {
         (txt, Deref @ Absyn::ConstrainClass { comment: i_comment, elementSpec: i_elementSpec }, a_preText) => {
-            let mut l_cmt__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_cmt__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             (l_cmt__str, a_preText) = dumpCommentOpt(Tpl::emptyTxt.clone(), a_preText.clone(), i_comment.clone())?;
@@ -1972,11 +1972,11 @@ fn fun_93(mut in_txt: Tpl::Text, mut in_a_comp: Arc<Absyn::ComponentItem>, mut i
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_comp.clone(), in_a_preText.clone())) {
         (txt, Deref @ Absyn::ComponentItem { component: i_component, condition: i_condition, comment: i_comment }, a_preText) => {
-            let mut ret_4: i32 = 0;
-            let mut l_ix: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_cmt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_cond__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_comp__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_4: i32;
+            let mut l_ix: Tpl::Text;
+            let mut l_cmt: Tpl::Text;
+            let mut l_cond__str: Tpl::Text;
+            let mut l_comp__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             (l_comp__str, a_preText) = dumpComponent(Tpl::emptyTxt.clone(), a_preText.clone(), i_component.clone())?;
@@ -2040,9 +2040,9 @@ fn fun_96(mut in_txt: Tpl::Text, mut in_a_comp: Absyn::Component, mut in_a_preTe
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = (match (in_txt.clone(), in_a_comp.clone(), in_a_preText.clone()) {
         (mut txt, Absyn::Component { arrayDim: ref i_arrayDim, modification: mut i_modification, name: mut i_name }, mut a_preText) => {
-            let mut ret_2: ArcStr = arcstr::literal!("");
-            let mut l_mod__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_dim__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_2: ArcStr;
+            let mut l_mod__str: Tpl::Text;
+            let mut l_dim__str: Tpl::Text;
             (l_dim__str, a_preText) = dumpSubscripts(Tpl::emptyTxt.clone(), a_preText.clone(), i_arrayDim.clone())?;
             (l_mod__str, a_preText) = fun_95(Tpl::emptyTxt.clone(), i_modification.clone(), a_preText.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("COMPONENT(\"")).clone() }))?;
@@ -2117,7 +2117,7 @@ pub fn dumpImport(mut in_txt: Tpl::Text, mut in_a_imp: Absyn::Import) -> Result<
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_imp.clone()) {
         (mut txt, Absyn::Import::NAMED_IMPORT { name: mut i_name, path: ref i_path }) => {
-            let mut ret_0: ArcStr = arcstr::literal!("");
+            let mut ret_0: ArcStr;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("NAMED_IMPORT(\"")).clone() }))?;
             ret_0 = (Util::escapeModelicaStringToJLString((i_name.clone()).clone())?).clone();
             txt = Tpl::writeStr(txt.clone(), (ret_0.clone()).clone())?;
@@ -2139,8 +2139,8 @@ pub fn dumpImport(mut in_txt: Tpl::Text, mut in_a_imp: Absyn::Import) -> Result<
             txt.clone()
         },
         (mut txt, Absyn::Import::GROUP_IMPORT { prefix: ref i_prefix, groups: ref i_groups }) => {
-            let mut l_groups__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_prefix__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_groups__str: Tpl::Text;
+            let mut l_prefix__str: Tpl::Text;
             l_prefix__str = dumpPath(Tpl::emptyTxt.clone(), i_prefix.clone())?;
             l_groups__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(",")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             l_groups__str = lm_100(l_groups__str.clone(), i_groups.clone())?;
@@ -2163,7 +2163,7 @@ pub fn dumpGroupImport(mut in_txt: Tpl::Text, mut in_a_gimp: Absyn::GroupImport)
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_gimp.clone()) {
         (mut txt, Absyn::GroupImport::GROUP_IMPORT_NAME { name: mut i_name }) => {
-            let mut ret_0: ArcStr = arcstr::literal!("");
+            let mut ret_0: ArcStr;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("GROUP_IMPORT_NAME(\"")).clone() }))?;
             ret_0 = (Util::escapeModelicaStringToJLString((i_name.clone()).clone())?).clone();
             txt = Tpl::writeStr(txt.clone(), (ret_0.clone()).clone())?;
@@ -2171,8 +2171,8 @@ pub fn dumpGroupImport(mut in_txt: Tpl::Text, mut in_a_gimp: Absyn::GroupImport)
             txt.clone()
         },
         (mut txt, Absyn::GroupImport::GROUP_IMPORT_RENAME { rename: mut i_rename, name: mut i_name }) => {
-            let mut ret_2: ArcStr = arcstr::literal!("");
-            let mut ret_1: ArcStr = arcstr::literal!("");
+            let mut ret_2: ArcStr;
+            let mut ret_1: ArcStr;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("GROUP_IMPORT_RENAME(\"")).clone() }))?;
             ret_1 = (Util::escapeModelicaStringToJLString((i_rename.clone()).clone())?).clone();
             txt = Tpl::writeStr(txt.clone(), (ret_1.clone()).clone())?;
@@ -2202,8 +2202,8 @@ fn fun_103(mut in_txt: Tpl::Text, mut in_a_eitem: Arc<Absyn::ElementItem>, mut i
             (txt.clone(), a_preText.clone())
         },
         (txt, Deref @ Absyn::ElementItem::LEXER_COMMENT { comment: i_comment }, a_preText, _) => {
-            let mut ret_1: ArcStr = arcstr::literal!("");
-            let mut ret_0: ArcStr = arcstr::literal!("");
+            let mut ret_1: ArcStr;
+            let mut ret_0: ArcStr;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("LEXER_COMMENT(\"")).clone() }))?;
             ret_0 = (System::trimWhitespace((i_comment.clone()).clone())).clone();
@@ -2291,13 +2291,13 @@ fn fun_108(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_info: SourceInfo, 
             (txt.clone(), a_preText.clone())
         },
         (txt, _, a_info, a_constrainClass, a_options, a_specification, a_preText, a_innerOuter, a_redeclareKeywords, a_finalPrefix) => {
-            let mut l_info__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_cc__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_ec__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_io__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_repl__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_redecl__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_final__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_info__str: Tpl::Text;
+            let mut l_cc__str: Tpl::Text;
+            let mut l_ec__str: Tpl::Text;
+            let mut l_io__str: Tpl::Text;
+            let mut l_repl__str: Tpl::Text;
+            let mut l_redecl__str: Tpl::Text;
+            let mut l_final__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             l_final__str = dumpFinal(Tpl::emptyTxt.clone(), a_finalPrefix.clone())?;
@@ -2383,9 +2383,9 @@ fn fun_112(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_string: ArcStr, mu
             txt.clone()
         },
         (mut txt, _, mut a_string, mut a_info, mut a_optName) => {
-            let mut l_string__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_info__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_name__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_string__str: Tpl::Text;
+            let mut l_info__str: Tpl::Text;
+            let mut l_name__str: Tpl::Text;
             l_name__str = fun_111(Tpl::emptyTxt.clone(), a_optName.clone())?;
             l_info__str = dumpInfo(Tpl::emptyTxt.clone(), a_info.clone())?;
             l_string__str = Tpl::writeStr(Tpl::emptyTxt.clone(), (a_string.clone()).clone())?;
@@ -2407,10 +2407,10 @@ fn fun_113(mut in_txt: Tpl::Text, mut in_a_elem: Arc<Absyn::Element>, mut in_a_p
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_elem.clone(), in_a_preText.clone(), in_a_options.clone())) {
         (txt, i_elem @ Deref @ Absyn::Element::ELEMENT { info: i_info, finalPrefix: i_finalPrefix, redeclareKeywords: i_redeclareKeywords, innerOuter: i_innerOuter, specification: i_specification, constrainClass: i_constrainClass }, a_preText, a_options) => {
-            let mut ret_3: bool = false;
-            let mut ret_2: bool = false;
-            let mut ret_1: bool = false;
-            let mut ret_0: bool = false;
+            let mut ret_3: bool;
+            let mut ret_2: bool;
+            let mut ret_1: bool;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             ret_0 = Dump::boolUnparseFileFromInfo(i_info.clone(), a_options.clone())?;
@@ -2421,8 +2421,8 @@ fn fun_113(mut in_txt: Tpl::Text, mut in_a_elem: Arc<Absyn::Element>, mut in_a_p
             (txt.clone(), a_preText.clone())
         },
         (txt, Deref @ Absyn::Element::DEFINEUNIT { args: i_args, name: i_name, .. }, a_preText, _) => {
-            let mut ret_5: ArcStr = arcstr::literal!("");
-            let mut l_args__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_5: ArcStr;
+            let mut l_args__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             (l_args__str, a_preText) = fun_110(Tpl::emptyTxt.clone(), i_args.clone(), a_preText.clone())?;
@@ -2435,7 +2435,7 @@ fn fun_113(mut in_txt: Tpl::Text, mut in_a_elem: Arc<Absyn::Element>, mut in_a_p
             (txt.clone(), a_preText.clone())
         },
         (txt, Deref @ Absyn::Element::TEXT { info: i_info, optName: i_optName, string: i_string }, a_preText, a_options) => {
-            let mut ret_6: bool = false;
+            let mut ret_6: bool;
             let mut txt = (*txt).clone();
             ret_6 = Dump::boolUnparseFileFromInfo(i_info.clone(), a_options.clone())?;
             txt = fun_112(txt.clone(), ret_6.clone(), (i_string.clone()).clone(), i_info.clone(), i_optName.clone())?;
@@ -2461,9 +2461,9 @@ fn fun_115(mut in_txt: Tpl::Text, mut in_a_eq: Arc<Absyn::EquationItem>, mut in_
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_eq.clone(), in_a_preText.clone())) {
         (txt, Deref @ Absyn::EquationItem::EQUATIONITEM { equation_: i_equation__, comment: i_comment, info: i_info }, a_preText) => {
-            let mut l_info__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_cmt__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_eq__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_info__str: Tpl::Text;
+            let mut l_cmt__str: Tpl::Text;
+            let mut l_eq__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             (l_eq__str, a_preText) = dumpEquation(Tpl::emptyTxt.clone(), a_preText.clone(), i_equation__.clone())?;
@@ -2479,8 +2479,8 @@ fn fun_115(mut in_txt: Tpl::Text, mut in_a_eq: Arc<Absyn::EquationItem>, mut in_
             (txt.clone(), a_preText.clone())
         },
         (txt, Deref @ Absyn::EquationItem::EQUATIONITEMCOMMENT { comment: i_comment_1 }, a_preText) => {
-            let mut ret_4: ArcStr = arcstr::literal!("");
-            let mut ret_3: ArcStr = arcstr::literal!("");
+            let mut ret_4: ArcStr;
+            let mut ret_3: ArcStr;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("EQUATIONITEMCOMMENT(\"")).clone() }))?;
             ret_3 = (System::trimWhitespace((i_comment_1.clone()).clone())).clone();
@@ -2577,10 +2577,10 @@ fn fun_121(mut in_txt: Tpl::Text, mut in_a_eq: Arc<Absyn::Equation>, mut in_a_pr
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_eq.clone(), in_a_preText.clone())) {
         (txt, Deref @ Absyn::Equation::EQ_IF { ifExp: i_ifExp, equationTrueItems: i_equationTrueItems, elseIfBranches: i_elseIfBranches, equationElseItems: i_equationElseItems }, a_preText) => {
-            let mut l_else__branch__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_elseif__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_eq__true__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_if__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_else__branch__str: Tpl::Text;
+            let mut l_elseif__str: Tpl::Text;
+            let mut l_eq__true__str: Tpl::Text;
+            let mut l_if__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             (l_if__str, a_preText) = dumpExp(Tpl::emptyTxt.clone(), a_preText.clone(), i_ifExp.clone())?;
@@ -2601,8 +2601,8 @@ fn fun_121(mut in_txt: Tpl::Text, mut in_a_eq: Arc<Absyn::Equation>, mut in_a_pr
             (txt.clone(), a_preText.clone())
         },
         (txt, Deref @ Absyn::Equation::EQ_EQUALS { leftSide: i_leftSide, rightSide: i_rightSide }, a_preText) => {
-            let mut l_rhs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_lhs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_rhs: Tpl::Text;
+            let mut l_lhs: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             (l_lhs, a_preText) = dumpLhsExp(Tpl::emptyTxt.clone(), a_preText.clone(), i_leftSide.clone())?;
@@ -2615,9 +2615,9 @@ fn fun_121(mut in_txt: Tpl::Text, mut in_a_eq: Arc<Absyn::Equation>, mut in_a_pr
             (txt.clone(), a_preText.clone())
         },
         (txt, Deref @ Absyn::Equation::EQ_PDE { leftSide: i_leftSide, rightSide: i_rightSide, domain: i_domain }, a_preText) => {
-            let mut l_domain__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_rhs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_lhs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_domain__str: Tpl::Text;
+            let mut l_rhs: Tpl::Text;
+            let mut l_lhs: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             (l_lhs, a_preText) = dumpLhsExp(Tpl::emptyTxt.clone(), a_preText.clone(), i_leftSide.clone())?;
@@ -2633,8 +2633,8 @@ fn fun_121(mut in_txt: Tpl::Text, mut in_a_eq: Arc<Absyn::Equation>, mut in_a_pr
             (txt.clone(), a_preText.clone())
         },
         (txt, Deref @ Absyn::Equation::EQ_CONNECT { connector1: i_connector1, connector2: i_connector2 }, a_preText) => {
-            let mut l_c2__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_c1__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_c2__str: Tpl::Text;
+            let mut l_c1__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             (l_c1__str, a_preText) = dumpCref(Tpl::emptyTxt.clone(), a_preText.clone(), i_connector1.clone())?;
@@ -2647,8 +2647,8 @@ fn fun_121(mut in_txt: Tpl::Text, mut in_a_eq: Arc<Absyn::Equation>, mut in_a_pr
             (txt.clone(), a_preText.clone())
         },
         (txt, Deref @ Absyn::Equation::EQ_FOR { iterators: i_iterators, forEquations: i_forEquations }, a_preText) => {
-            let mut l_body__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_iter__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_body__str: Tpl::Text;
+            let mut l_iter__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             (l_iter__str, a_preText) = dumpForIterators(Tpl::emptyTxt.clone(), a_preText.clone(), i_iterators.clone())?;
@@ -2661,9 +2661,9 @@ fn fun_121(mut in_txt: Tpl::Text, mut in_a_eq: Arc<Absyn::Equation>, mut in_a_pr
             (txt.clone(), a_preText.clone())
         },
         (txt, Deref @ Absyn::Equation::EQ_WHEN_E { whenExp: i_whenExp, elseWhenEquations: i_elseWhenEquations, whenEquations: i_whenEquations }, a_preText) => {
-            let mut l_when__eqs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_elsewhen__eqs__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_when__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_when__eqs: Tpl::Text;
+            let mut l_elsewhen__eqs__str: Tpl::Text;
+            let mut l_when__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             (l_when__str, a_preText) = dumpExp(Tpl::emptyTxt.clone(), a_preText.clone(), i_whenExp.clone())?;
@@ -2681,8 +2681,8 @@ fn fun_121(mut in_txt: Tpl::Text, mut in_a_eq: Arc<Absyn::Equation>, mut in_a_pr
             (txt.clone(), a_preText.clone())
         },
         (txt, Deref @ Absyn::Equation::EQ_NORETCALL { functionName: i_functionName, functionArgs: i_functionArgs }, a_preText) => {
-            let mut l_args__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_name__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_args__str: Tpl::Text;
+            let mut l_name__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             (l_name__str, a_preText) = dumpCref(Tpl::emptyTxt.clone(), a_preText.clone(), i_functionName.clone())?;
@@ -2695,7 +2695,7 @@ fn fun_121(mut in_txt: Tpl::Text, mut in_a_eq: Arc<Absyn::Equation>, mut in_a_pr
             (txt.clone(), a_preText.clone())
         },
         (txt, Deref @ Absyn::Equation::EQ_FAILURE { equ: i_equ }, a_preText) => {
-            let mut l_eq__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_eq__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             (l_eq__str, a_preText) = dumpEquationItem(Tpl::emptyTxt.clone(), a_preText.clone(), i_equ.clone())?;
@@ -2754,11 +2754,11 @@ fn fun_125(mut in_txt: Tpl::Text, mut in_a_alg: Arc<Absyn::AlgorithmItem>, mut i
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_alg.clone(), in_a_preText.clone())) {
         (txt, Deref @ Absyn::AlgorithmItem::ALGORITHMITEM { algorithm_: i_algorithm__, comment: i_comment, info: i_info }, a_preText) => {
-            let mut ret_4: i32 = 0;
-            let mut l_ix: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_info__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_cmt__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_alg__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_4: i32;
+            let mut l_ix: Tpl::Text;
+            let mut l_info__str: Tpl::Text;
+            let mut l_cmt__str: Tpl::Text;
+            let mut l_alg__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             (l_alg__str, a_preText) = dumpAlgorithm(Tpl::emptyTxt.clone(), a_preText.clone(), i_algorithm__.clone())?;
@@ -2865,8 +2865,8 @@ fn fun_130(mut in_txt: Tpl::Text, mut in_a_alg: Arc<Absyn::Algorithm>, mut in_a_
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_alg.clone(), in_a_preText.clone())) {
         (txt, Deref @ Absyn::Algorithm::ALG_ASSIGN { assignComponent: i_assignComponent, value: i_value }, a_preText) => {
-            let mut l_rhs__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_lhs__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_rhs__str: Tpl::Text;
+            let mut l_lhs__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             (l_lhs__str, a_preText) = dumpLhsExp(Tpl::emptyTxt.clone(), a_preText.clone(), i_assignComponent.clone())?;
@@ -2879,11 +2879,11 @@ fn fun_130(mut in_txt: Tpl::Text, mut in_a_alg: Arc<Absyn::Algorithm>, mut in_a_
             (txt.clone(), a_preText.clone())
         },
         (txt, Deref @ Absyn::Algorithm::ALG_IF { ifExp: i_ifExp, trueBranch: i_trueBranch, elseIfAlgorithmBranch: i_elseIfAlgorithmBranch, elseBranch: i_elseBranch }, a_preText) => {
-            let mut l_else__branch: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_else__branch__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_else__if__alg__branch: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_true__branch: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_if__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_else__branch: Tpl::Text;
+            let mut l_else__branch__str: Tpl::Text;
+            let mut l_else__if__alg__branch: Tpl::Text;
+            let mut l_true__branch: Tpl::Text;
+            let mut l_if__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             (l_if__str, a_preText) = dumpExp(Tpl::emptyTxt.clone(), a_preText.clone(), i_ifExp.clone())?;
@@ -2905,8 +2905,8 @@ fn fun_130(mut in_txt: Tpl::Text, mut in_a_alg: Arc<Absyn::Algorithm>, mut in_a_
             (txt.clone(), a_preText.clone())
         },
         (txt, Deref @ Absyn::Algorithm::ALG_FOR { iterators: i_iterators, forBody: i_forBody }, a_preText) => {
-            let mut l_body__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_iter__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_body__str: Tpl::Text;
+            let mut l_iter__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             (l_iter__str, a_preText) = dumpForIterators(Tpl::emptyTxt.clone(), a_preText.clone(), i_iterators.clone())?;
@@ -2919,8 +2919,8 @@ fn fun_130(mut in_txt: Tpl::Text, mut in_a_alg: Arc<Absyn::Algorithm>, mut in_a_
             (txt.clone(), a_preText.clone())
         },
         (txt, Deref @ Absyn::Algorithm::ALG_PARFOR { iterators: i_iterators, parforBody: i_parforBody }, a_preText) => {
-            let mut l_body__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_iter__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_body__str: Tpl::Text;
+            let mut l_iter__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             (l_iter__str, a_preText) = dumpForIterators(Tpl::emptyTxt.clone(), a_preText.clone(), i_iterators.clone())?;
@@ -2943,7 +2943,7 @@ fn fun_130(mut in_txt: Tpl::Text, mut in_a_alg: Arc<Absyn::Algorithm>, mut in_a_
             (txt.clone(), a_preText.clone())
         },
         (txt, Deref @ Absyn::Algorithm::ALG_WHEN_A { elseWhenAlgorithmBranch: i_elseWhenAlgorithmBranch, boolExpr: i_boolExpr, whenBody: i_whenBody }, a_preText) => {
-            let mut l_ewab: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_ewab: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             l_ewab = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -2959,8 +2959,8 @@ fn fun_130(mut in_txt: Tpl::Text, mut in_a_alg: Arc<Absyn::Algorithm>, mut in_a_
             (txt.clone(), a_preText.clone())
         },
         (txt, Deref @ Absyn::Algorithm::ALG_NORETCALL { functionCall: i_functionCall, functionArgs: i_functionArgs }, a_preText) => {
-            let mut l_args__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_name__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_args__str: Tpl::Text;
+            let mut l_name__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             (l_name__str, a_preText) = dumpCref(Tpl::emptyTxt.clone(), a_preText.clone(), i_functionCall.clone())?;
@@ -2983,7 +2983,7 @@ fn fun_130(mut in_txt: Tpl::Text, mut in_a_alg: Arc<Absyn::Algorithm>, mut in_a_
             (txt.clone(), a_preText.clone())
         },
         (txt, Deref @ Absyn::Algorithm::ALG_FAILURE { equ: i_equ }, a_preText) => {
-            let mut l_arg__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_arg__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             (l_arg__str, a_preText) = fun_129(Tpl::emptyTxt.clone(), i_equ.clone(), a_preText.clone())?;
@@ -3026,7 +3026,7 @@ fn fun_132(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_path: Arc<Absyn::P
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_path.clone(), in_a_name.clone())) {
         (txt, false, _, a_name) => {
-            let mut ret_0: ArcStr = arcstr::literal!("");
+            let mut ret_0: ArcStr;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("IDENT(\"")).clone() }))?;
             ret_0 = (Util::escapeModelicaStringToJLString((a_name.clone()).clone())?).clone();
@@ -3035,7 +3035,7 @@ fn fun_132(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_path: Arc<Absyn::P
             txt.clone()
         },
         (txt, _, a_path, a_name) => {
-            let mut ret_1: ArcStr = arcstr::literal!("");
+            let mut ret_1: ArcStr;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("QUALIFIED(\"")).clone() }))?;
             ret_1 = (Util::escapeModelicaStringToJLString((a_name.clone()).clone())?).clone();
@@ -3061,14 +3061,14 @@ pub fn dumpPath(mut in_txt: Tpl::Text, mut in_a_path: Arc<Absyn::Path>) -> Resul
             txt.clone()
         },
         (txt, Deref @ Absyn::Path::QUALIFIED { name: i_name, path: i_path }) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = Flags::getConfigBool(Flags::MODELICA_OUTPUT.clone())?;
             txt = fun_132(txt.clone(), ret_0.clone(), i_path.clone(), (i_name.clone()).clone())?;
             txt.clone()
         },
         (txt, Deref @ Absyn::Path::IDENT { name: i_name }) => {
-            let mut ret_1: ArcStr = arcstr::literal!("");
+            let mut ret_1: ArcStr;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("IDENT(\"")).clone() }))?;
             ret_1 = (Util::escapeModelicaStringToJLString((i_name.clone()).clone())?).clone();
@@ -3145,8 +3145,8 @@ fn fun_137(mut in_txt: Tpl::Text, mut in_a_typeSpec: Arc<Absyn::TypeSpec>, mut i
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_typeSpec.clone(), in_a_preText.clone())) {
         (txt, Deref @ Absyn::TypeSpec::TPATH { path: i_path, arrayDim: i_arrayDim }, a_preText) => {
-            let mut l_arraydim__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_path__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_arraydim__str: Tpl::Text;
+            let mut l_path__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             l_path__str = dumpPath(Tpl::emptyTxt.clone(), i_path.clone())?;
@@ -3159,9 +3159,9 @@ fn fun_137(mut in_txt: Tpl::Text, mut in_a_typeSpec: Arc<Absyn::TypeSpec>, mut i
             (txt.clone(), a_preText.clone())
         },
         (txt, Deref @ Absyn::TypeSpec::TCOMPLEX { path: i_path, typeSpecs: i_typeSpecs, arrayDim: i_arrayDim }, a_preText) => {
-            let mut l_ty__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_arraydim__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_path__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_ty__str: Tpl::Text;
+            let mut l_arraydim__str: Tpl::Text;
+            let mut l_path__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             l_path__str = dumpPath(Tpl::emptyTxt.clone(), i_path.clone())?;
@@ -3407,7 +3407,7 @@ fn fun_151(mut in_txt: Tpl::Text, mut in_a_exp: Arc<Absyn::Exp>, mut in_a_preTex
             (txt.clone(), a_preText.clone())
         },
         (txt, Deref @ Absyn::Exp::STRING { value: i_value_1 }, a_preText) => {
-            let mut ret_0: ArcStr = arcstr::literal!("");
+            let mut ret_0: ArcStr;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("STRING(\"")).clone() }))?;
             ret_0 = (Util::escapeModelicaStringToJLString((i_value_1.clone()).clone())?).clone();
@@ -3423,9 +3423,9 @@ fn fun_151(mut in_txt: Tpl::Text, mut in_a_exp: Arc<Absyn::Exp>, mut in_a_preTex
             (txt.clone(), a_preText.clone())
         },
         (txt, i_e @ Deref @ Absyn::Exp::BINARY { exp1: i_exp1, exp2: i_exp2, op: i_op }, a_preText) => {
-            let mut l_op__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_rhs__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_lhs__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_op__str: Tpl::Text;
+            let mut l_rhs__str: Tpl::Text;
+            let mut l_lhs__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             (l_lhs__str, a_preText) = dumpOperand(Tpl::emptyTxt.clone(), a_preText.clone(), i_exp1.clone(), i_e.clone(), true)?;
@@ -3441,8 +3441,8 @@ fn fun_151(mut in_txt: Tpl::Text, mut in_a_exp: Arc<Absyn::Exp>, mut in_a_preTex
             (txt.clone(), a_preText.clone())
         },
         (txt, i_e @ Deref @ Absyn::Exp::UNARY { exp: i_exp, op: i_op }, a_preText) => {
-            let mut l_exp__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_op__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_exp__str: Tpl::Text;
+            let mut l_op__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             (l_exp__str, a_preText) = dumpOperand(Tpl::emptyTxt.clone(), a_preText.clone(), i_exp.clone(), i_e.clone(), false)?;
@@ -3455,9 +3455,9 @@ fn fun_151(mut in_txt: Tpl::Text, mut in_a_exp: Arc<Absyn::Exp>, mut in_a_preTex
             (txt.clone(), a_preText.clone())
         },
         (txt, i_e @ Deref @ Absyn::Exp::LBINARY { exp1: i_exp1, exp2: i_exp2, op: i_op }, a_preText) => {
-            let mut l_op__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_rhs__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_lhs__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_op__str: Tpl::Text;
+            let mut l_rhs__str: Tpl::Text;
+            let mut l_lhs__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             (l_lhs__str, a_preText) = dumpOperand(Tpl::emptyTxt.clone(), a_preText.clone(), i_exp1.clone(), i_e.clone(), true)?;
@@ -3473,8 +3473,8 @@ fn fun_151(mut in_txt: Tpl::Text, mut in_a_exp: Arc<Absyn::Exp>, mut in_a_preTex
             (txt.clone(), a_preText.clone())
         },
         (txt, i_e @ Deref @ Absyn::Exp::LUNARY { exp: i_exp, op: i_op }, a_preText) => {
-            let mut l_exp__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_op__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_exp__str: Tpl::Text;
+            let mut l_op__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             (l_exp__str, a_preText) = dumpOperand(Tpl::emptyTxt.clone(), a_preText.clone(), i_exp.clone(), i_e.clone(), false)?;
@@ -3487,9 +3487,9 @@ fn fun_151(mut in_txt: Tpl::Text, mut in_a_exp: Arc<Absyn::Exp>, mut in_a_preTex
             (txt.clone(), a_preText.clone())
         },
         (txt, i_e @ Deref @ Absyn::Exp::RELATION { exp1: i_exp1, exp2: i_exp2, op: i_op }, a_preText) => {
-            let mut l_op__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_rhs__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_lhs__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_op__str: Tpl::Text;
+            let mut l_rhs__str: Tpl::Text;
+            let mut l_lhs__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             (l_lhs__str, a_preText) = dumpOperand(Tpl::emptyTxt.clone(), a_preText.clone(), i_exp1.clone(), i_e.clone(), true)?;
@@ -3511,8 +3511,8 @@ fn fun_151(mut in_txt: Tpl::Text, mut in_a_exp: Arc<Absyn::Exp>, mut in_a_preTex
             (txt.clone(), a_preText.clone())
         },
         (txt, Deref @ Absyn::Exp::CALL { function_: Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "$array", .. }, functionArgs: i_functionArgs, .. }, a_preText) => {
-            let mut ret_6: ArcStr = arcstr::literal!("");
-            let mut l_args__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_6: ArcStr;
+            let mut l_args__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             (l_args__str, a_preText) = dumpFunctionArgs(Tpl::emptyTxt.clone(), a_preText.clone(), i_functionArgs.clone())?;
@@ -3525,8 +3525,8 @@ fn fun_151(mut in_txt: Tpl::Text, mut in_a_exp: Arc<Absyn::Exp>, mut in_a_preTex
             (txt.clone(), a_preText.clone())
         },
         (txt, Deref @ Absyn::Exp::CALL { function_: i_function__, functionArgs: i_functionArgs, .. }, a_preText) => {
-            let mut l_func__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_args__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_func__str: Tpl::Text;
+            let mut l_args__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             (l_func__str, a_preText) = dumpCref(Tpl::emptyTxt.clone(), a_preText.clone(), i_function__.clone())?;
@@ -3539,8 +3539,8 @@ fn fun_151(mut in_txt: Tpl::Text, mut in_a_exp: Arc<Absyn::Exp>, mut in_a_preTex
             (txt.clone(), a_preText.clone())
         },
         (txt, Deref @ Absyn::Exp::PARTEVALFUNCTION { function_: i_function__, functionArgs: i_functionArgs }, a_preText) => {
-            let mut l_func__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_args__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_func__str: Tpl::Text;
+            let mut l_args__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             (l_func__str, a_preText) = dumpCref(Tpl::emptyTxt.clone(), a_preText.clone(), i_function__.clone())?;
@@ -3553,7 +3553,7 @@ fn fun_151(mut in_txt: Tpl::Text, mut in_a_exp: Arc<Absyn::Exp>, mut in_a_preTex
             (txt.clone(), a_preText.clone())
         },
         (txt, Deref @ Absyn::Exp::ARRAY { arrayExp: i_arrayExp }, a_preText) => {
-            let mut l_array__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_array__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             l_array__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -3565,7 +3565,7 @@ fn fun_151(mut in_txt: Tpl::Text, mut in_a_exp: Arc<Absyn::Exp>, mut in_a_preTex
             (txt.clone(), a_preText.clone())
         },
         (txt, Deref @ Absyn::Exp::MATRIX { matrix: i_matrix }, a_preText) => {
-            let mut l_matrix__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_matrix__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             l_matrix__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -3577,9 +3577,9 @@ fn fun_151(mut in_txt: Tpl::Text, mut in_a_exp: Arc<Absyn::Exp>, mut in_a_preTex
             (txt.clone(), a_preText.clone())
         },
         (txt, i_e @ Deref @ Absyn::Exp::RANGE { step: Some(i_step), start: i_start, stop: i_stop }, a_preText) => {
-            let mut l_stop__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_step__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_start__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_stop__str: Tpl::Text;
+            let mut l_step__str: Tpl::Text;
+            let mut l_start__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             (l_start__str, a_preText) = dumpOperand(Tpl::emptyTxt.clone(), a_preText.clone(), i_start.clone(), i_e.clone(), false)?;
@@ -3595,8 +3595,8 @@ fn fun_151(mut in_txt: Tpl::Text, mut in_a_exp: Arc<Absyn::Exp>, mut in_a_preTex
             (txt.clone(), a_preText.clone())
         },
         (txt, i_e @ Deref @ Absyn::Exp::RANGE { step: None, start: i_start, stop: i_stop }, a_preText) => {
-            let mut l_stop__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_start__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_stop__str: Tpl::Text;
+            let mut l_start__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             (l_start__str, a_preText) = dumpOperand(Tpl::emptyTxt.clone(), a_preText.clone(), i_start.clone(), i_e.clone(), false)?;
@@ -3609,7 +3609,7 @@ fn fun_151(mut in_txt: Tpl::Text, mut in_a_exp: Arc<Absyn::Exp>, mut in_a_preTex
             (txt.clone(), a_preText.clone())
         },
         (txt, Deref @ Absyn::Exp::TUPLE { expressions: i_expressions }, a_preText) => {
-            let mut l_tuple__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_tuple__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             l_tuple__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("")).clone() })), separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -3634,7 +3634,7 @@ fn fun_151(mut in_txt: Tpl::Text, mut in_a_exp: Arc<Absyn::Exp>, mut in_a_preTex
             (txt.clone(), a_preText.clone())
         },
         (txt, Deref @ Absyn::Exp::AS { exp: i_exp, id: i_id }, a_preText) => {
-            let mut l_exp__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_exp__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             (l_exp__str, a_preText) = dumpExp(Tpl::emptyTxt.clone(), a_preText.clone(), i_exp.clone())?;
@@ -3646,8 +3646,8 @@ fn fun_151(mut in_txt: Tpl::Text, mut in_a_exp: Arc<Absyn::Exp>, mut in_a_preTex
             (txt.clone(), a_preText.clone())
         },
         (txt, Deref @ Absyn::Exp::CONS { head: i_head, rest: i_rest }, a_preText) => {
-            let mut l_rest__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_head__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_rest__str: Tpl::Text;
+            let mut l_head__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             (l_head__str, a_preText) = dumpExp(Tpl::emptyTxt.clone(), a_preText.clone(), i_head.clone())?;
@@ -3666,7 +3666,7 @@ fn fun_151(mut in_txt: Tpl::Text, mut in_a_exp: Arc<Absyn::Exp>, mut in_a_preTex
             (txt.clone(), a_preText.clone())
         },
         (txt, Deref @ Absyn::Exp::LIST { exps: i_exps }, a_preText) => {
-            let mut l_list__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_list__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             l_list__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -3746,10 +3746,10 @@ fn fun_156(mut in_txt: Tpl::Text, mut in_a_if__exp: Arc<Absyn::Exp>, mut in_a_pr
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_if__exp.clone(), in_a_preText.clone())) {
         (txt, Deref @ Absyn::Exp::IFEXP { ifExp: i_ifExp, trueBranch: i_trueBranch, elseBranch: i_elseBranch, elseIfBranch: i_elseIfBranch }, a_preText) => {
-            let mut l_else__if__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_else__branch__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_true__branch__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_cond__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_else__if__str: Tpl::Text;
+            let mut l_else__branch__str: Tpl::Text;
+            let mut l_true__branch__str: Tpl::Text;
+            let mut l_cond__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             (l_cond__str, a_preText) = dumpExp(Tpl::emptyTxt.clone(), a_preText.clone(), i_ifExp.clone())?;
@@ -3789,8 +3789,8 @@ fn lm_158(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<(Arc<Absyn::Exp>
         let mut lstElt_158 = lstElt_158.clone();
         (txt, a_preText) = (::match_deref::match_deref! { match &(lstElt_158.clone()) {
         (i_cond, i_branch) => {
-            let mut l_branch__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_cond__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_branch__str: Tpl::Text;
+            let mut l_cond__str: Tpl::Text;
             (l_cond__str, a_preText) = dumpExp(Tpl::emptyTxt.clone(), a_preText.clone(), i_cond.clone())?;
             (l_branch__str, a_preText) = dumpExp(Tpl::emptyTxt.clone(), a_preText.clone(), i_branch.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(")).clone() }))?;
@@ -3882,8 +3882,8 @@ fn fun_163(mut in_txt: Tpl::Text, mut in_a_code: Arc<Absyn::CodeNode>, mut in_a_
             (txt.clone(), a_preText.clone())
         },
         (txt, Deref @ Absyn::CodeNode::C_CONSTRAINTSECTION { boolean: i_boolean, equationItemLst: i_equationItemLst }, a_preText) => {
-            let mut l_equation__is__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_initial__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_equation__is__str: Tpl::Text;
+            let mut l_initial__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             l_initial__str = fun_160(Tpl::emptyTxt.clone(), i_boolean.clone())?;
@@ -3896,8 +3896,8 @@ fn fun_163(mut in_txt: Tpl::Text, mut in_a_code: Arc<Absyn::CodeNode>, mut in_a_
             (txt.clone(), a_preText.clone())
         },
         (txt, Deref @ Absyn::CodeNode::C_EQUATIONSECTION { boolean: i_boolean, equationItemLst: i_equationItemLst }, a_preText) => {
-            let mut l_eql__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_initial__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_eql__str: Tpl::Text;
+            let mut l_initial__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             l_initial__str = fun_161(Tpl::emptyTxt.clone(), i_boolean.clone())?;
@@ -3910,8 +3910,8 @@ fn fun_163(mut in_txt: Tpl::Text, mut in_a_code: Arc<Absyn::CodeNode>, mut in_a_
             (txt.clone(), a_preText.clone())
         },
         (txt, Deref @ Absyn::CodeNode::C_ALGORITHMSECTION { boolean: i_boolean, algorithmItemLst: i_algorithmItemLst }, a_preText) => {
-            let mut l_algs__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_initial__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_algs__str: Tpl::Text;
+            let mut l_initial__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             l_initial__str = fun_162(Tpl::emptyTxt.clone(), i_boolean.clone())?;
@@ -3983,11 +3983,11 @@ fn fun_166(mut in_txt: Tpl::Text, mut in_a_match__exp: Arc<Absyn::Exp>, mut in_a
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_match__exp.clone(), in_a_preText.clone())) {
         (txt, Deref @ Absyn::Exp::MATCHEXP { matchTy: i_matchTy, inputExp: i_inputExp, localDecls: i_localDecls, cases: i_cases, comment: i_comment }, a_preText) => {
-            let mut l_cmt__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_cases__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_locals__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_input__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_ty__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_cmt__str: Tpl::Text;
+            let mut l_cases__str: Tpl::Text;
+            let mut l_locals__str: Tpl::Text;
+            let mut l_input__str: Tpl::Text;
+            let mut l_ty__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             l_ty__str = dumpMatchType(Tpl::emptyTxt.clone(), i_matchTy.clone())?;
@@ -4233,15 +4233,15 @@ fn fun_179(mut in_txt: Tpl::Text, mut in_a_c: Arc<Absyn::Case>, mut in_a_preText
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_c.clone(), in_a_preText.clone())) {
         (txt, Deref @ Absyn::Case::CASE { pattern: i_pattern, patternGuard: i_patternGuard, patternInfo: i_patternInfo, localDecls: i_localDecls, classPart: i_classPart, result: i_result, resultInfo: i_resultInfo, comment: i_comment, info: i_info }, a_preText) => {
-            let mut l_i__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_cmt__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_r__i__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_result__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_eql__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_local__decls__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_p__info__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_guard__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_pattern__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_i__str: Tpl::Text;
+            let mut l_cmt__str: Tpl::Text;
+            let mut l_r__i__str: Tpl::Text;
+            let mut l_result__str: Tpl::Text;
+            let mut l_eql__str: Tpl::Text;
+            let mut l_local__decls__str: Tpl::Text;
+            let mut l_p__info__str: Tpl::Text;
+            let mut l_guard__str: Tpl::Text;
+            let mut l_pattern__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             (l_pattern__str, a_preText) = dumpExp(Tpl::emptyTxt.clone(), a_preText.clone(), i_pattern.clone())?;
@@ -4277,12 +4277,12 @@ fn fun_179(mut in_txt: Tpl::Text, mut in_a_c: Arc<Absyn::Case>, mut in_a_preText
             (txt.clone(), a_preText.clone())
         },
         (txt, Deref @ Absyn::Case::ELSE { localDecls: i_localDecls, classPart: i_classPart, result: i_result, comment: i_comment, resultInfo: i_resultInfo, info: i_info }, a_preText) => {
-            let mut l_info__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_cmt__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_r__i__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_result__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_eql__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_local__decls__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_info__str: Tpl::Text;
+            let mut l_cmt__str: Tpl::Text;
+            let mut l_r__i__str: Tpl::Text;
+            let mut l_result__str: Tpl::Text;
+            let mut l_eql__str: Tpl::Text;
+            let mut l_local__decls__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             l_local__decls__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -4445,7 +4445,7 @@ fn fun_183(mut in_txt: Tpl::Text, mut in_a_cref: Arc<Absyn::ComponentRef>, mut i
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cref.clone(), in_a_preText.clone())) {
         (txt, Deref @ Absyn::ComponentRef::CREF_QUAL { name: i_name, subscripts: i_subscripts, componentRef: i_componentRef }, a_preText) => {
-            let mut ret_0: ArcStr = arcstr::literal!("");
+            let mut ret_0: ArcStr;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("CREF_QUAL(\"")).clone() }))?;
@@ -4459,7 +4459,7 @@ fn fun_183(mut in_txt: Tpl::Text, mut in_a_cref: Arc<Absyn::ComponentRef>, mut i
             (txt.clone(), a_preText.clone())
         },
         (txt, Deref @ Absyn::ComponentRef::CREF_IDENT { name: i_name, subscripts: i_subscripts }, a_preText) => {
-            let mut ret_1: ArcStr = arcstr::literal!("");
+            let mut ret_1: ArcStr;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("CREF_IDENT(\"")).clone() }))?;
@@ -4479,7 +4479,7 @@ fn fun_183(mut in_txt: Tpl::Text, mut in_a_cref: Arc<Absyn::ComponentRef>, mut i
             (txt.clone(), a_preText.clone())
         },
         (txt, Deref @ Absyn::ComponentRef::WILD { .. }, a_preText) => {
-            let mut ret_2: bool = false;
+            let mut ret_2: bool;
             let mut txt = (*txt).clone();
             ret_2 = Config::acceptMetaModelicaGrammar()?;
             txt = fun_182(txt.clone(), ret_2.clone())?;
@@ -4576,8 +4576,8 @@ fn fun_189(mut in_txt: Tpl::Text, mut in_a_args: Arc<Absyn::FunctionArgs>, mut i
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_args.clone(), in_a_preText.clone())) {
         (txt, Deref @ Absyn::FunctionArgs::FUNCTIONARGS { args: i_args, argNames: i_argNames }, a_preText) => {
-            let mut l_namedargs__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_args__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_namedargs__str: Tpl::Text;
+            let mut l_args__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             l_args__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -4594,9 +4594,9 @@ fn fun_189(mut in_txt: Tpl::Text, mut in_a_args: Arc<Absyn::FunctionArgs>, mut i
             (txt.clone(), a_preText.clone())
         },
         (txt, Deref @ Absyn::FunctionArgs::FOR_ITER_FARG { exp: i_exp, iterators: i_iterators, iterType: i_iterType }, a_preText) => {
-            let mut l_iter__type__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_iter__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_exp__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_iter__type__str: Tpl::Text;
+            let mut l_iter__str: Tpl::Text;
+            let mut l_exp__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             (l_exp__str, a_preText) = dumpExp(Tpl::emptyTxt.clone(), a_preText.clone(), i_exp.clone())?;
@@ -4732,9 +4732,9 @@ fn fun_197(mut in_txt: Tpl::Text, mut in_a_iterator: Arc<Absyn::ForIterator>, mu
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_iterator.clone(), in_a_preText.clone())) {
         (txt, Deref @ Absyn::ForIterator { guardExp: i_guardExp, range: i_range, name: i_name }, a_preText) => {
-            let mut ret_2: ArcStr = arcstr::literal!("");
-            let mut l_re: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_ge: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_2: ArcStr;
+            let mut l_re: Tpl::Text;
+            let mut l_ge: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preText = (*a_preText).clone();
             (l_ge, a_preText) = fun_195(Tpl::emptyTxt.clone(), i_guardExp.clone(), a_preText.clone())?;

@@ -73,10 +73,10 @@ pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<BackendDAE::NB
         (::match_deref::match_deref! { match &(bdae.clone()) {
         Deref @ BackendDAE::MAIN { varData: varData @ Deref @ BVariable::VarData::VAR_DATA_SIM { .. }, eqData: eqData @ Deref @ EqData::EQ_DATA_SIM { .. }, .. } => {
             let mut bind_eqn: Pointer::Pointer<Arc<Equation::Equation>>;
-            let mut bound_vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
-            let mut bound_clocks: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
+            let mut bound_vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>;
+            let mut bound_clocks: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>;
             let mut parent: Pointer::Pointer<Arc<Variable::NFVariable>>;
-            let mut skip_record_element: bool = false;
+            let mut skip_record_element: bool;
             let mut eqData = (*eqData).clone();
             bound_vars = ({
         let mut __acc: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();

@@ -121,7 +121,7 @@ pub fn add(mut inTree: Arc<Tree>, mut inKey: Key) -> Result<Arc<Tree>> {
             Arc::new(Tree::LEAF { key: inKey.clone() })
         },
         Deref @ Tree::NODE { key, .. } => {
-            let mut key_comp: i32 = 0;
+            let mut key_comp: i32;
             key_comp = keyCompare(inKey.clone(), key.clone())?;
             if key_comp.clone() == -1 {
                 assign_variant_field!(tree => Tree::NODE; left = add(var_field!((*tree).left, Tree::NODE).clone(), inKey.clone())?);
@@ -131,8 +131,8 @@ pub fn add(mut inTree: Arc<Tree>, mut inKey: Key) -> Result<Arc<Tree>> {
             if (key_comp.clone() == 0) {tree.clone()} else {balance(tree.clone())?}
         },
         Deref @ Tree::LEAF { key } => {
-            let mut key_comp: i32 = 0;
-            let mut outTree: Arc<Tree> = Arc::new(Tree::EMPTY);
+            let mut key_comp: i32;
+            let mut outTree: Arc<Tree>;
             key_comp = keyCompare(inKey.clone(), key.clone())?;
             if key_comp.clone() == -1 {
                 outTree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: inKey.clone() }), right: crate::AvlSetCR::Tree::interned_EMPTY() });
@@ -164,10 +164,10 @@ fn balance(mut inTree: Arc<Tree>) -> Result<Arc<Tree>> {
             inTree.clone()
         },
         Deref @ Tree::NODE { .. } => {
-            let mut lh: i32 = 0;
-            let mut rh: i32 = 0;
-            let mut diff: i32 = 0;
-            let mut balanced_tree: Arc<Tree> = Arc::new(Tree::EMPTY);
+            let mut lh: i32;
+            let mut rh: i32;
+            let mut diff: i32;
+            let mut balanced_tree: Arc<Tree>;
             lh = height(var_field!((*outTree).left, Tree::NODE).clone());
             rh = height(var_field!((*outTree).right, Tree::NODE).clone());
             diff = lh.clone() - rh.clone();
@@ -449,12 +449,12 @@ fn rotateLeft(mut inNode: Arc<Tree>) -> Result<Arc<Tree>> {
     let mut outNode: Arc<Tree> = inNode.clone();
     outNode = (::match_deref::match_deref! { match &(outNode.clone()) {
         Deref @ Tree::NODE { right: child @ Deref @ Tree::NODE { .. }, .. } => {
-            let mut node: Arc<Tree> = Arc::new(Tree::EMPTY);
+            let mut node: Arc<Tree>;
             node = setTreeLeftRight(outNode.clone(), var_field!((*outNode).left, Tree::NODE).clone(), var_field!((**child).left, Tree::NODE).clone())?;
             setTreeLeftRight(child.clone(), node.clone(), var_field!((**child).right, Tree::NODE).clone())?
         },
         Deref @ Tree::NODE { right: child @ Deref @ Tree::LEAF { .. }, .. } => {
-            let mut node: Arc<Tree> = Arc::new(Tree::EMPTY);
+            let mut node: Arc<Tree>;
             node = setTreeLeftRight(outNode.clone(), var_field!((*outNode).left, Tree::NODE).clone(), crate::AvlSetCR::Tree::interned_EMPTY())?;
             setTreeLeftRight(child.clone(), node.clone(), crate::AvlSetCR::Tree::interned_EMPTY())?
         },
@@ -470,12 +470,12 @@ fn rotateRight(mut inNode: Arc<Tree>) -> Result<Arc<Tree>> {
     let mut outNode: Arc<Tree> = inNode.clone();
     outNode = (::match_deref::match_deref! { match &(outNode.clone()) {
         Deref @ Tree::NODE { left: child @ Deref @ Tree::NODE { .. }, .. } => {
-            let mut node: Arc<Tree> = Arc::new(Tree::EMPTY);
+            let mut node: Arc<Tree>;
             node = setTreeLeftRight(outNode.clone(), var_field!((**child).right, Tree::NODE).clone(), var_field!((*outNode).right, Tree::NODE).clone())?;
             setTreeLeftRight(child.clone(), var_field!((**child).left, Tree::NODE).clone(), node.clone())?
         },
         Deref @ Tree::NODE { left: child @ Deref @ Tree::LEAF { .. }, .. } => {
-            let mut node: Arc<Tree> = Arc::new(Tree::EMPTY);
+            let mut node: Arc<Tree>;
             node = setTreeLeftRight(outNode.clone(), crate::AvlSetCR::Tree::interned_EMPTY(), var_field!((*outNode).right, Tree::NODE).clone())?;
             setTreeLeftRight(child.clone(), crate::AvlSetCR::Tree::interned_EMPTY(), node.clone())?
         },

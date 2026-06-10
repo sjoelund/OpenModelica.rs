@@ -2057,7 +2057,7 @@ pub mod InstNode {
         let mut outType: Arc<DAE::Type>;
         outType = (::match_deref::match_deref! { match &(clsNode.clone()) {
         Deref @ CLASS_NODE { .. } => {
-            let mut cls: Arc<Class::NFClass> = Arc::new(Class::NOT_INSTANTIATED);
+            let mut cls: Arc<Class::NFClass>;
             let mut state: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
             let mut res: Arc<Restriction::NFRestriction> = Arc::new(Restriction::BLOCK);
             cls = Pointer::access(var_field!((*clsNode).cls, InstNode::CLASS_NODE).clone());
@@ -2093,7 +2093,7 @@ pub mod InstNode {
         let mut outType: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
         outType = (::match_deref::match_deref! { match &(clsNode.clone()) {
         Deref @ CLASS_NODE { .. } => {
-            let mut cls: Arc<Class::NFClass> = Arc::new(Class::NOT_INSTANTIATED);
+            let mut cls: Arc<Class::NFClass>;
             let mut vars: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
             let mut state: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
             let mut res: Arc<Restriction::NFRestriction> = Arc::new(Restriction::BLOCK);
@@ -2151,7 +2151,7 @@ pub mod InstNode {
         let mut node: Arc<InstNode> = node;
         let () = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { .. } => {
-            let mut cls: Arc<Class::NFClass> = Arc::new(Class::NOT_INSTANTIATED);
+            let mut cls: Arc<Class::NFClass>;
             cls = Pointer::access(var_field!((*node).cls, InstNode::CLASS_NODE).clone());
             cls = Class::classTreeApply(cls.clone(), (std::sync::Arc::new(ClassTree::clone) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ClassTree::ClassTree>) -> Result<Arc<ClassTree::ClassTree>> + 'static>))?;
             assign_variant_field!(node => InstNode::CLASS_NODE;
@@ -2161,7 +2161,7 @@ pub mod InstNode {
             ()
         },
         Deref @ COMPONENT_NODE { .. } => {
-            let mut comp: Arc<Component::NFComponent> = Arc::new(Component::WILD);
+            let mut comp: Arc<Component::NFComponent>;
             comp = Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone());
             comp = Component::setClassInstance(clone(Component::classInstance(comp.clone()))?, comp.clone())?;
             assign_variant_field!(node => InstNode::COMPONENT_NODE; component = Pointer::create(comp.clone()));
@@ -2255,7 +2255,7 @@ pub mod InstNode {
         let mut binding_exp: Option<Arc<Expression::NFExpression>> = None;
         binding_exp = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ COMPONENT_NODE { .. } => {
-            let mut scope: Arc<InstNode> = Arc::new(InstNode::EMPTY_NODE);
+            let mut scope: Arc<InstNode>;
             scope = instanceParent(node.clone())?;
             match '__try0: {
                 binding_exp = Binding::getExpOpt(Component::getImplicitBinding(Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone()), scope.clone()));
@@ -2271,7 +2271,7 @@ pub mod InstNode {
             binding_exp.clone()
         },
         Deref @ VAR_NODE { .. } => {
-            let mut var: Arc<Variable::NFVariable> = Arc::new(<Variable::NFVariable as ::std::default::Default>::default());
+            let mut var: Arc<Variable::NFVariable>;
             var = Pointer::access(var_field!((*node).varPointer, InstNode::VAR_NODE).clone());
             Binding::getExpOpt(var.binding.clone())
         },

@@ -286,8 +286,8 @@ fn getLicenseAnnotationWork1(mut r#mod: Option<Arc<Absyn::Modification>>) -> Res
     let mut license: (ArcStr, ArcStr);
     license = (::match_deref::match_deref! { match &(r#mod.clone()) {
         Some(Deref @ Absyn::Modification { elementArgLst: arglst, .. }) => {
-            let mut libraryKey: ArcStr = arcstr::literal!("");
-            let mut licenseFile: ArcStr = arcstr::literal!("");
+            let mut libraryKey: ArcStr;
+            let mut licenseFile: ArcStr;
             (libraryKey, licenseFile) = getLicenseAnnotationWork2(arglst.clone())?;
             (libraryKey.clone(), licenseFile.clone())
         },
@@ -303,13 +303,13 @@ fn getLicenseAnnotationWork2(mut eltArgs: Arc<metamodelica::List<Arc<Absyn::Elem
             return Ok((literal!(""), literal!("")))
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "License" }, modification: r#mod, .. }, tail: _ } => {
-            let mut libraryKey: ArcStr = arcstr::literal!("");
-            let mut licenseFile: ArcStr = arcstr::literal!("");
+            let mut libraryKey: ArcStr;
+            let mut licenseFile: ArcStr;
             return Ok(getLicenseAnnotationTuple(r#mod.clone())?)
         },
         Deref @ metamodelica::List::Cons { head: _, tail: xs } => {
-            let mut libraryKey: ArcStr = arcstr::literal!("");
-            let mut licenseFile: ArcStr = arcstr::literal!("");
+            let mut libraryKey: ArcStr;
+            let mut licenseFile: ArcStr;
             { eltArgs = xs.clone(); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
@@ -321,8 +321,8 @@ fn getLicenseAnnotationTuple(mut r#mod: Option<Arc<Absyn::Modification>>) -> Res
     let mut license: (ArcStr, ArcStr);
     license = (::match_deref::match_deref! { match &(r#mod.clone()) {
         Some(Deref @ Absyn::Modification { elementArgLst: arglst, .. }) => {
-            let mut libraryKey: ArcStr = arcstr::literal!("");
-            let mut licenseFile: ArcStr = arcstr::literal!("");
+            let mut libraryKey: ArcStr;
+            let mut licenseFile: ArcStr;
             libraryKey = (getLicenseAnnotationLibraryKey(arglst.clone())).clone();
             licenseFile = (getLicenseAnnotationLicenseFile(arglst.clone())).clone();
             (libraryKey.clone(), licenseFile.clone())
@@ -342,7 +342,7 @@ fn getLicenseAnnotationLibraryKey(mut eltArgs: Arc<metamodelica::List<Arc<Absyn:
             return s.clone()
         },
         Deref @ metamodelica::List::Cons { head: _, tail: xs } => {
-            let mut s: ArcStr = arcstr::literal!("");
+            let mut s: ArcStr;
             { eltArgs = xs.clone(); continue '__tco; }
         },
         _ => unreachable!("tail-call lowered match: no arm matched"),
@@ -360,7 +360,7 @@ fn getLicenseAnnotationLicenseFile(mut eltArgs: Arc<metamodelica::List<Arc<Absyn
             return s.clone()
         },
         Deref @ metamodelica::List::Cons { head: _, tail: xs } => {
-            let mut s: ArcStr = arcstr::literal!("");
+            let mut s: ArcStr;
             { eltArgs = xs.clone(); continue '__tco; }
         },
         _ => unreachable!("tail-call lowered match: no arm matched"),
@@ -394,11 +394,11 @@ fn getFeaturesAnnotationList2(mut eltArgs: Arc<metamodelica::List<Arc<Absyn::Ele
             return Ok(metamodelica::nil())
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "features" }, modification: Some(Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::EQMOD { exp: Deref @ Absyn::Exp::ARRAY { arrayExp: expList }, .. }, .. }), .. }, tail: _ } => {
-            let mut featuresList: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+            let mut featuresList: Arc<metamodelica::List<ArcStr>>;
             return Ok(List::map(expList.clone(), (std::sync::Arc::new(fnptr!(expToString, Arc<Absyn::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<ArcStr> + 'static>))?)
         },
         Deref @ metamodelica::List::Cons { head: _, tail: xs } => {
-            let mut featuresList: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+            let mut featuresList: Arc<metamodelica::List<ArcStr>>;
             { eltArgs = xs.clone(); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),

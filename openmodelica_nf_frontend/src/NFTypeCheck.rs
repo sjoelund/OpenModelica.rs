@@ -405,12 +405,12 @@ fn checkOverloadedBinaryArrayAddSub2(mut exp1: Arc<Expression::NFExpression>, mu
     (outExp, outType) = (::match_deref::match_deref! { match &((exp1.clone(), exp2.clone())) {
         (Deref @ Expression::ARRAY { elements: arr1, .. }, Deref @ Expression::ARRAY { elements: arr2, .. }) => {
             let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-            let mut ty1: Arc<Type::NFType> = Arc::new(Type::ANY);
-            let mut ty2: Arc<Type::NFType> = Arc::new(Type::ANY);
-            let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut arr: metamodelica::Array<Arc<Expression::NFExpression>> = Default::default();
+            let mut ty1: Arc<Type::NFType>;
+            let mut ty2: Arc<Type::NFType>;
+            let mut e: Arc<Expression::NFExpression>;
+            let mut e1: Arc<Expression::NFExpression>;
+            let mut e2: Arc<Expression::NFExpression>;
+            let mut arr: metamodelica::Array<Arc<Expression::NFExpression>>;
             if arr1.clone().borrow().is_empty() {
                 ty1 = Type::arrayElementType(type1.clone());
                 ty2 = Type::arrayElementType(type2.clone());
@@ -2193,7 +2193,7 @@ pub fn getRangeTypeInt(mut startExp: Arc<Expression::NFExpression>, mut stepExp:
             Dimension::fromInteger(std::cmp::max(intDiv(var_field!((*stopExp).value, Expression::NFExpression::INTEGER).clone() - var_field!((*startExp).value, Expression::NFExpression::INTEGER).clone(), step.clone()) + 1, 0), Prefixes::Variability::CONSTANT.clone())
         },
         (Deref @ Expression::INTEGER { value: 1 }, None, _) => {
-            let mut dim_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut dim_exp: Arc<Expression::NFExpression>;
             dim_exp = SimplifyExp::simplify(stopExp.clone(), false)?;
             Dimension::fromExp(dim_exp.clone(), Expression::variability(dim_exp.clone())?)?
         },
@@ -2201,10 +2201,10 @@ pub fn getRangeTypeInt(mut startExp: Arc<Expression::NFExpression>, mut stepExp:
             Dimension::fromInteger(1, Prefixes::Variability::CONSTANT.clone())
         },
         _ => {
-            let mut step_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut dim_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut var: Variability = Variability::CONSTANT;
-            let mut pur: Purity = Purity::PURE;
+            let mut step_exp: Arc<Expression::NFExpression>;
+            let mut dim_exp: Arc<Expression::NFExpression>;
+            let mut var: Variability;
+            let mut pur: Purity;
             dim_exp = Arc::new(Expression::NFExpression::BINARY { exp1: stopExp.clone(), operator: Operator::makeSub(crate::NFType::interned_INTEGER()), exp2: startExp.clone() });
             var = Prefixes::variabilityMax(Expression::variability(stopExp.clone())?, Expression::variability(startExp.clone())?);
             pur = Prefixes::purityMin(Expression::purity(stopExp.clone())?, Expression::purity(startExp.clone())?);
@@ -2245,10 +2245,10 @@ pub fn getRangeTypeReal(mut startExp: Arc<Expression::NFExpression>, mut stepExp
             Dimension::fromInteger(1, Prefixes::Variability::CONSTANT.clone())
         },
         _ => {
-            let mut dim_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut step_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut var: Variability = Variability::CONSTANT;
-            let mut pur: Purity = Purity::PURE;
+            let mut dim_exp: Arc<Expression::NFExpression>;
+            let mut step_exp: Arc<Expression::NFExpression>;
+            let mut var: Variability;
+            let mut pur: Purity;
             dim_exp = Arc::new(Expression::NFExpression::BINARY { exp1: stopExp.clone(), operator: Operator::makeSub(crate::NFType::interned_REAL()), exp2: startExp.clone() });
             var = Prefixes::variabilityMax(Expression::variability(stopExp.clone())?, Expression::variability(startExp.clone())?);
             pur = Prefixes::purityMin(Expression::purity(stopExp.clone())?, Expression::purity(startExp.clone())?);
@@ -2278,13 +2278,13 @@ pub fn getRangeTypeBool(mut startExp: Arc<Expression::NFExpression>, mut stopExp
     let mut dim: Arc<Dimension::NFDimension> = Arc::new(Dimension::BOOLEAN);
     dim = (::match_deref::match_deref! { match &((startExp.clone(), stopExp.clone())) {
         (Deref @ Expression::BOOLEAN { .. }, Deref @ Expression::BOOLEAN { .. }) => {
-            let mut sz: i32 = 0;
+            let mut sz: i32;
             sz = if (var_field!((*startExp).value, Expression::NFExpression::BOOLEAN).clone() == var_field!((*stopExp).value, Expression::NFExpression::BOOLEAN).clone()) {1} else if (var_field!((*startExp).value, Expression::NFExpression::BOOLEAN).clone() < var_field!((*stopExp).value, Expression::NFExpression::BOOLEAN).clone()) {2} else {0};
             Dimension::fromInteger(sz.clone(), Prefixes::Variability::CONSTANT.clone())
         },
         _ => {
-            let mut dim_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut var: Variability = Variability::CONSTANT;
+            let mut dim_exp: Arc<Expression::NFExpression>;
+            let mut var: Variability;
             if Expression::isEqual(startExp.clone(), stopExp.clone())? {
                 dim = Dimension::fromInteger(1, Prefixes::Variability::CONSTANT.clone());
             } else {
@@ -2310,8 +2310,8 @@ pub fn getRangeTypeEnum(mut startExp: Arc<Expression::NFExpression>, mut stopExp
             Dimension::fromExp(stopExp.clone(), Expression::variability(stopExp.clone())?)?
         },
         _ => {
-            let mut dim_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut var: Variability = Variability::CONSTANT;
+            let mut dim_exp: Arc<Expression::NFExpression>;
+            let mut var: Variability;
             if Expression::isEqual(startExp.clone(), stopExp.clone())? {
                 dim = Dimension::fromInteger(1, Prefixes::Variability::CONSTANT.clone());
             } else {
@@ -2332,10 +2332,10 @@ pub fn matchBinding(mut binding: Arc<Binding::NFBinding>, mut componentType: Arc
     let mut binding: Arc<Binding::NFBinding> = binding;
     let () = (::match_deref::match_deref! { match &(binding.clone()) {
         Deref @ Binding::TYPED_BINDING { bindingExp: exp, .. } => {
-            let mut ty_match: MatchKind = MatchKind::EXACT;
-            let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-            let mut bind_ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-            let mut comp_ty: Arc<Type::NFType> = Arc::new(Type::ANY);
+            let mut ty_match: MatchKind;
+            let mut ty: Arc<Type::NFType>;
+            let mut bind_ty: Arc<Type::NFType>;
+            let mut comp_ty: Arc<Type::NFType>;
             let mut exp = (*exp).clone();
             (bind_ty, comp_ty) = elaborateBindingType(exp.clone(), component.clone(), var_field!((*binding).bindingType, Binding::NFBinding::TYPED_BINDING).clone(), componentType.clone())?;
             (exp, ty, ty_match) = matchTypes(bind_ty.clone(), comp_ty.clone(), exp.clone(), ALLOW_UNKNOWN.clone())?;

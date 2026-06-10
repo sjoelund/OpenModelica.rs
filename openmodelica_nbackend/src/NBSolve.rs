@@ -252,7 +252,7 @@ pub fn solvePartition(mut partition: Arc<Partition::Partition>, mut funcMap: Arc
             listAppend(alias_comps.clone(), solved_comps.clone())
         },
         _ => {
-            let mut alias_comps: Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>> = metamodelica::nil();
+            let mut alias_comps: Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>>;
             (alias_comps, implicit_index) = solveStrongComponent(comp.clone(), funcMap.clone(), kind.clone(), implicit_index.clone(), slicing_map.clone(), varData.clone(), eqData.clone())?;
             UnorderedMap::add(comp.clone(), ({
         let mut __acc: Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>> = metamodelica::nil();
@@ -299,7 +299,7 @@ pub fn solveStrongComponent(mut comp: Arc<StrongComponent::NBStrongComponent>, m
         let mut failed_inner: Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>> = metamodelica::nil();
         (::match_deref::match_deref! { match &(comp.clone()) {
         Deref @ StrongComponent::SINGLE_COMPONENT { .. } => {
-            let mut eqn: Arc<Equation::Equation> = Arc::new(Equation::DUMMY_EQUATION);
+            let mut eqn: Arc<Equation::Equation>;
             (eqn, solve_status, implicit_index) = unwrap_break_err!(solveSingleStrongComponent(Pointer::access(var_field!((*comp).eqn, StrongComponent::NBStrongComponent::SINGLE_COMPONENT).clone()), Pointer::access(var_field!((*comp).var, StrongComponent::NBStrongComponent::SINGLE_COMPONENT).clone()), funcMap.clone(), kind.clone(), implicit_index.clone(), slicing_map.clone(), varData.clone(), eqData.clone()), '__try0);
             (list![Arc::new(StrongComponent::NBStrongComponent::SINGLE_COMPONENT { var: var_field!((*comp).var, StrongComponent::NBStrongComponent::SINGLE_COMPONENT).clone(), eqn: Pointer::create(eqn.clone()), status: solve_status.clone() })], solve_status.clone())
         },
@@ -309,7 +309,7 @@ pub fn solveStrongComponent(mut comp: Arc<StrongComponent::NBStrongComponent>, m
         },
         Deref @ StrongComponent::MULTI_COMPONENT { .. } => {
             let mut eqn_ptr: Pointer::Pointer<Arc<Equation::Equation>>;
-            let mut eqn: Arc<Equation::Equation> = Arc::new(Equation::DUMMY_EQUATION);
+            let mut eqn: Arc<Equation::Equation>;
             let mut eqn_slice: Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>;
             let mut solved_comp: Arc<StrongComponent::NBStrongComponent> = Arc::new(<StrongComponent::NBStrongComponent as ::std::default::Default>::default());
             let mut strict: Arc<Tearing::NBTearing> = Arc::new(<Tearing::NBTearing as ::std::default::Default>::default());
@@ -464,8 +464,8 @@ pub fn solveStrongComponent(mut comp: Arc<StrongComponent::NBStrongComponent>, m
             (list![solved_comp.clone()], solve_status.clone())
         },
         Deref @ StrongComponent::ALGEBRAIC_LOOP { strict, .. } => {
-            let mut tmp: Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>> = metamodelica::nil();
-            let mut err_str: ArcStr = arcstr::literal!("");
+            let mut tmp: Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>>;
+            let mut err_str: ArcStr;
             let mut strict = (*strict).clone();
             for mut index in ({let __s=metamodelica::arrayLength(strict.innerEquations.clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
                 (tmp, implicit_index) = unwrap_break_err!(solveStrongComponent(({let __elt = strict.innerEquations.borrow()[(index.clone()-1) as usize].clone(); __elt}), funcMap.clone(), kind.clone(), implicit_index.clone(), slicing_map.clone(), varData.clone(), eqData.clone()), '__try0);
@@ -494,7 +494,7 @@ pub fn solveStrongComponent(mut comp: Arc<StrongComponent::NBStrongComponent>, m
             (list![comp.clone()], Status::IMPLICIT.clone())
         },
         Deref @ StrongComponent::SLICED_COMPONENT { eqn: eqn_slice, .. } if (Equation::isForEquation(Slice::getT(eqn_slice.clone()))) => {
-            let mut generic_comp: Arc<StrongComponent::NBStrongComponent> = Arc::new(<StrongComponent::NBStrongComponent as ::std::default::Default>::default());
+            let mut generic_comp: Arc<StrongComponent::NBStrongComponent>;
             (generic_comp, solve_status, implicit_index) = unwrap_break_err!(solveGenericEquation(comp.clone(), funcMap.clone(), kind.clone(), implicit_index.clone(), slicing_map.clone(), varData.clone(), eqData.clone()), '__try0);
             (list![generic_comp.clone()], solve_status.clone())
         },
@@ -508,7 +508,7 @@ pub fn solveStrongComponent(mut comp: Arc<StrongComponent::NBStrongComponent>, m
             (list![comp.clone()], solve_status.clone())
         },
         Deref @ StrongComponent::SLICED_COMPONENT { .. } => {
-            let mut eqn: Arc<Equation::Equation> = Arc::new(Equation::DUMMY_EQUATION);
+            let mut eqn: Arc<Equation::Equation>;
             let mut eqn_slice: Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>;
             (eqn, solve_status, implicit_index) = unwrap_break_err!(solveSingleStrongComponent(Pointer::access(Slice::getT(var_field!((*comp).eqn, StrongComponent::NBStrongComponent::SLICED_COMPONENT).clone())), unwrap_break_err!(Variable::fromCref(var_field!((*comp).var_cref, StrongComponent::NBStrongComponent::SLICED_COMPONENT).clone()), '__try0), funcMap.clone(), kind.clone(), implicit_index.clone(), slicing_map.clone(), varData.clone(), eqData.clone()), '__try0);
             if solve_status.clone() < Status::UNSOLVABLE.clone() {
@@ -521,7 +521,7 @@ pub fn solveStrongComponent(mut comp: Arc<StrongComponent::NBStrongComponent>, m
             (list![comp.clone()], solve_status.clone())
         },
         Deref @ StrongComponent::RESIZABLE_COMPONENT { .. } => {
-            let mut eqn: Arc<Equation::Equation> = Arc::new(Equation::DUMMY_EQUATION);
+            let mut eqn: Arc<Equation::Equation>;
             (eqn, solve_status, implicit_index, _) = unwrap_break_err!(solveEquation(Pointer::access(Slice::getT(var_field!((*comp).eqn, StrongComponent::NBStrongComponent::RESIZABLE_COMPONENT).clone())), var_field!((*comp).var_cref, StrongComponent::NBStrongComponent::RESIZABLE_COMPONENT).clone(), funcMap.clone(), kind.clone(), implicit_index.clone(), slicing_map.clone(), varData.clone(), eqData.clone()), '__try0);
             eqn = unwrap_break_err!(Equation::applyForOrder(eqn.clone(), var_field!((*comp).order, StrongComponent::NBStrongComponent::RESIZABLE_COMPONENT).clone()), '__try0);
             assign_variant_field!(comp => StrongComponent::NBStrongComponent::RESIZABLE_COMPONENT;
@@ -531,7 +531,7 @@ pub fn solveStrongComponent(mut comp: Arc<StrongComponent::NBStrongComponent>, m
             (list![comp.clone()], solve_status.clone())
         },
         Deref @ StrongComponent::ENTWINED_COMPONENT { .. } => {
-            let mut generic_comp: Arc<StrongComponent::NBStrongComponent> = Arc::new(<StrongComponent::NBStrongComponent as ::std::default::Default>::default());
+            let mut generic_comp: Arc<StrongComponent::NBStrongComponent>;
             for mut slice in &*var_field!((*comp).entwined_slices, StrongComponent::NBStrongComponent::ENTWINED_COMPONENT).clone() {
                 let mut slice = slice.clone();
                 (generic_comp, solve_status, implicit_index) = unwrap_break_err!(solveGenericEquation(slice.clone(), funcMap.clone(), kind.clone(), implicit_index.clone(), slicing_map.clone(), varData.clone(), eqData.clone()), '__try0);
@@ -639,7 +639,7 @@ pub fn solveMultiStrongComponent(mut eqn_slice: Arc<Slice::NBSlice<Pointer::Poin
     let mut eqn: Arc<Equation::Equation> = Pointer::access(Slice::getT(eqn_slice.clone()));
     (eqn_slice, status) = (::match_deref::match_deref! { match &(eqn.clone()) {
         Deref @ Equation::IF_EQUATION { .. } => {
-            let mut if_body: Arc<IfEquationBody::IfEquationBody> = Arc::new(<IfEquationBody::IfEquationBody as ::std::default::Default>::default());
+            let mut if_body: Arc<IfEquationBody::IfEquationBody>;
             (if_body, status, implicit_index) = solveIfBody(var_field!((*eqn).body, Equation::Equation::IF_EQUATION).clone(), BVariable::VariablePointers::fromList(({
         let mut __acc: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
         for mut v in (var_slices.clone()).into_iter().cloned() {
@@ -658,12 +658,12 @@ pub fn solveMultiStrongComponent(mut eqn_slice: Arc<Slice::NBSlice<Pointer::Poin
             (Arc::new(Slice::NBSlice { t: Pointer::clone(Slice::getT(eqn_slice.clone())), indices: eqn_slice.indices.clone() }), Status::EXPLICIT.clone())
         },
         Deref @ Equation::RECORD_EQUATION { .. } => {
-            let mut solved_eqn: Arc<Equation::Equation> = Arc::new(Equation::DUMMY_EQUATION);
+            let mut solved_eqn: Arc<Equation::Equation>;
             (solved_eqn, status) = solveMultiRecordStrongComponent(eqn.clone(), var_slices.clone(), funcMap.clone())?;
             (Arc::new(Slice::NBSlice { t: Pointer::create(solved_eqn.clone()), indices: eqn_slice.indices.clone() }), status.clone())
         },
         Deref @ Equation::ARRAY_EQUATION { .. } => {
-            let mut solved_eqn: Arc<Equation::Equation> = Arc::new(Equation::DUMMY_EQUATION);
+            let mut solved_eqn: Arc<Equation::Equation>;
             (solved_eqn, status) = solveMultiRecordStrongComponent(eqn.clone(), var_slices.clone(), funcMap.clone())?;
             (Arc::new(Slice::NBSlice { t: Pointer::create(solved_eqn.clone()), indices: eqn_slice.indices.clone() }), status.clone())
         },
@@ -738,7 +738,7 @@ pub fn solveEquation(mut eqn: Arc<Equation::Equation>, mut cref: Arc<ComponentRe
         Deref @ Equation::FOR_EQUATION { body: Deref @ metamodelica::List::Cons { head: body @ Deref @ Equation::IF_EQUATION { .. }, tail: Deref @ metamodelica::List::Nil }, .. } => {
             let mut body_slice: Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>;
             let mut indexed_var: Pointer::Pointer<Arc<Variable::NFVariable>>;
-            let mut dummy: Arc<Iterator::Iterator> = Arc::new(Iterator::EMPTY);
+            let mut dummy: Arc<Iterator::Iterator>;
             (indexed_var, _) = BVariable::makeVarPtrCyclic(BVariable::getVar(cref.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/3_Post/NBSolve.mo"))?, cref.clone())?;
             dummy = Iterator::dummy(var_field!((*eqn).iter, Equation::Equation::FOR_EQUATION).clone())?;
             (body_slice, status, implicit_index) = solveMultiStrongComponent(Arc::new(Slice::NBSlice { t: Pointer::create(body.clone()), indices: metamodelica::nil() }), list![Arc::new(Slice::NBSlice { t: indexed_var.clone(), indices: metamodelica::nil() })], funcMap.clone(), kind.clone(), implicit_index.clone(), slicing_map.clone(), dummy.clone(), varData.clone(), eqData.clone())?;
@@ -872,7 +872,7 @@ pub fn solveSimple(mut eqn: Arc<Equation::Equation>, mut cref: Arc<ComponentRef:
             (eqn.clone(), status.clone(), invertRelation.clone())
         },
         Deref @ Equation::IF_EQUATION { .. } => {
-            let mut if_body: Arc<IfEquationBody::IfEquationBody> = Arc::new(<IfEquationBody::IfEquationBody as ::std::default::Default>::default());
+            let mut if_body: Arc<IfEquationBody::IfEquationBody>;
             (if_body, status, invertRelation) = solveSimpleIf(var_field!((*eqn).body, Equation::Equation::IF_EQUATION).clone(), cref.clone())?;
             if status.clone() == Status::EXPLICIT.clone() {
                 assign_variant_field!(eqn => Equation::Equation::IF_EQUATION; body = if_body.clone());

@@ -324,7 +324,7 @@ pub fn typeNormalCall(mut call: Arc<NFCall>, mut context: i32, mut info: SourceI
     let mut call: Arc<NFCall> = call;
     call = (::match_deref::match_deref! { match &(call.clone()) {
         Deref @ UNTYPED_CALL { .. } => {
-            let mut fn_context: i32 = 0;
+            let mut fn_context: i32;
             if InstContext::inRelaxed(context.clone()) {
                 fn_context = InstContext::set(InstContext::FUNCTION.clone(), InstContext::RELAXED.clone());
             } else {
@@ -510,7 +510,7 @@ pub fn variability(mut call: Arc<NFCall>) -> Result<Variability> {
     let mut var: Variability = Variability::CONSTANT;
     var = (::match_deref::match_deref! { match &(call.clone()) {
         Deref @ UNTYPED_CALL { .. } => {
-            let mut var_set: bool = false;
+            let mut var_set: bool;
             var_set = true;
             if ComponentRef::isSimple(var_field!((*call).r#ref, NFCall::UNTYPED_CALL).clone()) {
                 var = (::match_deref::match_deref! { match &(ComponentRef::firstName(var_field!((*call).r#ref, NFCall::UNTYPED_CALL).clone(), false)?) {
@@ -1201,8 +1201,8 @@ pub fn toAbsyn(mut call: Arc<NFCall>) -> Result<Arc<Absyn::Exp>> {
     let mut absynCall: Arc<Absyn::Exp>;
     absynCall = (::match_deref::match_deref! { match &(call.clone()) {
         Deref @ UNTYPED_CALL { .. } => {
-            let mut pargs: Arc<metamodelica::List<Arc<Absyn::Exp>>> = metamodelica::nil();
-            let mut nargs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>> = metamodelica::nil();
+            let mut pargs: Arc<metamodelica::List<Arc<Absyn::Exp>>>;
+            let mut nargs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>;
             pargs = ({
         let mut __acc: Arc<metamodelica::List<Arc<Absyn::Exp>>> = metamodelica::nil();
         for mut arg in (var_field!((*call).arguments, NFCall::UNTYPED_CALL).clone()).into_iter().cloned() {
@@ -1222,8 +1222,8 @@ pub fn toAbsyn(mut call: Arc<NFCall>) -> Result<Arc<Absyn::Exp>> {
             AbsynUtil::makeCall(ComponentRef::toAbsyn(var_field!((*call).r#ref, NFCall::UNTYPED_CALL).clone())?, pargs.clone(), nargs.clone())
         },
         Deref @ ARG_TYPED_CALL { .. } => {
-            let mut pargs: Arc<metamodelica::List<Arc<Absyn::Exp>>> = metamodelica::nil();
-            let mut nargs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>> = metamodelica::nil();
+            let mut pargs: Arc<metamodelica::List<Arc<Absyn::Exp>>>;
+            let mut nargs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>;
             pargs = ({
         let mut __acc: Arc<metamodelica::List<Arc<Absyn::Exp>>> = metamodelica::nil();
         for mut arg in (var_field!((*call).positional_args, NFCall::ARG_TYPED_CALL).clone()).into_iter().cloned() {
@@ -1243,7 +1243,7 @@ pub fn toAbsyn(mut call: Arc<NFCall>) -> Result<Arc<Absyn::Exp>> {
             AbsynUtil::makeCall(ComponentRef::toAbsyn(var_field!((*call).r#ref, NFCall::ARG_TYPED_CALL).clone())?, pargs.clone(), nargs.clone())
         },
         Deref @ TYPED_CALL { .. } => {
-            let mut pargs: Arc<metamodelica::List<Arc<Absyn::Exp>>> = metamodelica::nil();
+            let mut pargs: Arc<metamodelica::List<Arc<Absyn::Exp>>>;
             pargs = ({
         let mut __acc: Arc<metamodelica::List<Arc<Absyn::Exp>>> = metamodelica::nil();
         for mut arg in (var_field!((*call).arguments, NFCall::TYPED_CALL).clone()).into_iter().cloned() {
@@ -1308,8 +1308,8 @@ pub fn toDAE_work(mut call: Arc<NFCall>) -> Result<Arc<DAE::Exp>> {
     }), attr: NFCallAttributes::toDAE(var_field!((*call).attributes, NFCall::TYPED_CALL).clone(), var_field!((*call).ty, NFCall::TYPED_CALL).clone())? })
         },
         Deref @ TYPED_ARRAY_CONSTRUCTOR { .. } => {
-            let mut fold_id: ArcStr = arcstr::literal!("");
-            let mut res_id: ArcStr = arcstr::literal!("");
+            let mut fold_id: ArcStr;
+            let mut res_id: ArcStr;
             fold_id = (Util::getTempVariableIndex()).clone();
             res_id = (Util::getTempVariableIndex()).clone();
             Arc::new(DAE::Exp::REDUCTION { reductionInfo: Arc::new(DAE::ReductionInfo { path: Function::name(NFBuiltinFuncs::ARRAY_FUNC().clone()), iterType: openmodelica_ast::Absyn::ReductionIterType::COMBINE, exprType: Type::toDAE(var_field!((*call).ty, NFCall::TYPED_ARRAY_CONSTRUCTOR).clone(), true)?, defaultValue: None, foldName: (fold_id.clone()).clone(), resultName: (res_id.clone()).clone(), foldExp: None }), expr: Expression::toDAE(var_field!((*call).exp, NFCall::TYPED_ARRAY_CONSTRUCTOR).clone(), false)?, iterators: ({
@@ -1322,9 +1322,9 @@ pub fn toDAE_work(mut call: Arc<NFCall>) -> Result<Arc<DAE::Exp>> {
     }) })
         },
         Deref @ TYPED_REDUCTION { .. } => {
-            let mut fold_id: ArcStr = arcstr::literal!("");
-            let mut res_id: ArcStr = arcstr::literal!("");
-            let mut fold_exp: Option<Arc<Expression::NFExpression>> = None;
+            let mut fold_id: ArcStr;
+            let mut res_id: ArcStr;
+            let mut fold_exp: Option<Arc<Expression::NFExpression>>;
             (fold_exp, fold_id, res_id) = var_field!((*call).foldExp, NFCall::TYPED_REDUCTION).clone();
             Arc::new(DAE::Exp::REDUCTION { reductionInfo: Arc::new(DAE::ReductionInfo { path: Function::name(var_field!((*call).r#fn, NFCall::TYPED_REDUCTION).clone()), iterType: openmodelica_ast::Absyn::ReductionIterType::COMBINE, exprType: Type::toDAE(var_field!((*call).ty, NFCall::TYPED_REDUCTION).clone(), true)?, defaultValue: Util::applyOption(var_field!((*call).defaultExp, NFCall::TYPED_REDUCTION).clone(), (std::sync::Arc::new(Expression::toDAEValue) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Values::Value>> + 'static>))?, foldName: (fold_id.clone()).clone(), resultName: (res_id.clone()).clone(), foldExp: Util::applyOption(fold_exp.clone(), (std::sync::Arc::new({ let __pe_b1 = false; move |__pe_a0| Expression::toDAE(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<DAE::Exp>> + 'static>))? }), expr: Expression::toDAE(var_field!((*call).exp, NFCall::TYPED_REDUCTION).clone(), false)?, iterators: ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::ReductionIterator>>> = metamodelica::nil();
@@ -1348,8 +1348,8 @@ pub fn expandReduction(mut call: Arc<NFCall>) -> Result<Arc<NFCall>> {
     let mut outCall: Arc<NFCall> = Arc::new(<NFCall as ::std::default::Default>::default());
     outCall = (::match_deref::match_deref! { match &(call.clone()) {
         Deref @ TYPED_ARRAY_CONSTRUCTOR { iters, .. } if ((iters.clone().len() as i32) > 1) => {
-            let mut iter: (Arc<InstNode::InstNode>, Arc<Expression::NFExpression>) = (Arc::new(InstNode::EMPTY_NODE), Arc::new(Expression::END));
-            let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
+            let mut iter: (Arc<InstNode::InstNode>, Arc<Expression::NFExpression>);
+            let mut ty: Arc<Type::NFType>;
             let mut iters = (*iters).clone();
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(iters.clone()) {
                 Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
@@ -1367,7 +1367,7 @@ pub fn expandReduction(mut call: Arc<NFCall>) -> Result<Arc<NFCall>> {
             outCall.clone()
         },
         Deref @ TYPED_REDUCTION { iters, .. } if ((iters.clone().len() as i32) > 1) => {
-            let mut iter: (Arc<InstNode::InstNode>, Arc<Expression::NFExpression>) = (Arc::new(InstNode::EMPTY_NODE), Arc::new(Expression::END));
+            let mut iter: (Arc<InstNode::InstNode>, Arc<Expression::NFExpression>);
             let mut iters = (*iters).clone();
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(iters.clone()) {
                 Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
@@ -1414,7 +1414,7 @@ pub fn retype(mut call: Arc<NFCall>) -> Arc<NFCall> {
     let mut call: Arc<NFCall> = call;
     let () = (::match_deref::match_deref! { match &(call.clone()) {
         Deref @ TYPED_ARRAY_CONSTRUCTOR { .. } => {
-            let mut dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>> = metamodelica::nil();
+            let mut dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>>;
             dims = metamodelica::nil();
             for mut i in &*var_field!((*call).iters, NFCall::TYPED_ARRAY_CONSTRUCTOR).clone().reverse() {
                 let mut i = i.clone();
@@ -1485,7 +1485,7 @@ pub fn containsExp(mut call: Arc<NFCall>, mut func: Arc<dyn ::std::ops::Fn(Arc<E
     let mut res: bool = false;
     res = (::match_deref::match_deref! { match &(call.clone()) {
         Deref @ UNTYPED_CALL { .. } => {
-            let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut e: Arc<Expression::NFExpression>;
             res = Expression::listContains(var_field!((*call).arguments, NFCall::UNTYPED_CALL).clone(), func.clone())?;
             if !(res.clone()) {
                 for mut arg in &*var_field!((*call).named_args, NFCall::UNTYPED_CALL).clone() {
@@ -1542,7 +1542,7 @@ pub fn containsExpShallow(mut call: Arc<NFCall>, mut func: Arc<dyn ::std::ops::F
     let mut res: bool = false;
     res = (::match_deref::match_deref! { match &(call.clone()) {
         Deref @ UNTYPED_CALL { .. } => {
-            let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut e: Arc<Expression::NFExpression>;
             res = List::any(var_field!((*call).arguments, NFCall::UNTYPED_CALL).clone(), func.clone())?;
             if !(res.clone()) {
                 for mut arg in &*var_field!((*call).named_args, NFCall::UNTYPED_CALL).clone() {
@@ -1598,7 +1598,7 @@ pub fn applyExp(mut call: Arc<NFCall>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expr
 
     let () = (::match_deref::match_deref! { match &(call.clone()) {
         Deref @ UNTYPED_CALL { .. } => {
-            let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut e: Arc<Expression::NFExpression>;
             Expression::applyList(var_field!((*call).arguments, NFCall::UNTYPED_CALL).clone(), func.clone())?;
             for mut arg in &*var_field!((*call).named_args, NFCall::UNTYPED_CALL).clone() {
                 let mut arg = arg.clone();
@@ -1666,7 +1666,7 @@ pub fn applyExpShallow(mut call: Arc<NFCall>, mut func: Arc<dyn ::std::ops::Fn(A
 
     let () = (::match_deref::match_deref! { match &(call.clone()) {
         Deref @ UNTYPED_CALL { .. } => {
-            let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut e: Arc<Expression::NFExpression>;
             Expression::applyListShallow(var_field!((*call).arguments, NFCall::UNTYPED_CALL).clone(), func.clone())?;
             for mut arg in &*var_field!((*call).named_args, NFCall::UNTYPED_CALL).clone() {
                 let mut arg = arg.clone();
@@ -1735,7 +1735,7 @@ pub fn foldExp<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut call: Arc<
     let mut foldArg: ArgT = foldArg;
     let () = (::match_deref::match_deref! { match &(call.clone()) {
         Deref @ UNTYPED_CALL { .. } => {
-            let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut e: Arc<Expression::NFExpression>;
             foldArg = Expression::foldList(var_field!((*call).arguments, NFCall::UNTYPED_CALL).clone(), func.clone(), foldArg.clone())?;
             for mut arg in &*var_field!((*call).named_args, NFCall::UNTYPED_CALL).clone() {
                 let mut arg = arg.clone();
@@ -1804,10 +1804,10 @@ pub fn mapExp(mut call: Arc<NFCall>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expres
     let mut outCall: Arc<NFCall>;
     outCall = (::match_deref::match_deref! { match &(call.clone()) {
         Deref @ UNTYPED_CALL { .. } => {
-            let mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-            let mut nargs: Arc<metamodelica::List<(ArcStr, Arc<Expression::NFExpression>)>> = metamodelica::nil();
-            let mut s: ArcStr = arcstr::literal!("");
-            let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
+            let mut nargs: Arc<metamodelica::List<(ArcStr, Arc<Expression::NFExpression>)>>;
+            let mut s: ArcStr;
+            let mut e: Arc<Expression::NFExpression>;
             args = ({
         let mut __acc: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
         for mut arg in (var_field!((*call).arguments, NFCall::UNTYPED_CALL).clone()).into_iter().cloned() {
@@ -1826,8 +1826,8 @@ pub fn mapExp(mut call: Arc<NFCall>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expres
             Arc::new(NFCall::UNTYPED_CALL { r#ref: var_field!((*call).r#ref, NFCall::UNTYPED_CALL).clone(), arguments: args.clone(), named_args: nargs.clone().reverse(), call_scope: var_field!((*call).call_scope, NFCall::UNTYPED_CALL).clone() })
         },
         Deref @ ARG_TYPED_CALL { .. } => {
-            let mut targs: Arc<metamodelica::List<Arc<TypedArg>>> = metamodelica::nil();
-            let mut tnargs: Arc<metamodelica::List<Arc<TypedArg>>> = metamodelica::nil();
+            let mut targs: Arc<metamodelica::List<Arc<TypedArg>>>;
+            let mut tnargs: Arc<metamodelica::List<Arc<TypedArg>>>;
             targs = metamodelica::nil();
             tnargs = metamodelica::nil();
             for mut arg in &*var_field!((*call).positional_args, NFCall::ARG_TYPED_CALL).clone() {
@@ -1843,7 +1843,7 @@ pub fn mapExp(mut call: Arc<NFCall>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expres
             Arc::new(NFCall::ARG_TYPED_CALL { r#ref: var_field!((*call).r#ref, NFCall::ARG_TYPED_CALL).clone(), positional_args: targs.clone().reverse(), named_args: tnargs.clone().reverse(), call_scope: var_field!((*call).call_scope, NFCall::ARG_TYPED_CALL).clone() })
         },
         Deref @ TYPED_CALL { .. } => {
-            let mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
+            let mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
             args = ({
         let mut __acc: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
         for mut arg in (var_field!((*call).arguments, NFCall::TYPED_CALL).clone()).into_iter().cloned() {
@@ -1855,31 +1855,31 @@ pub fn mapExp(mut call: Arc<NFCall>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expres
             Arc::new(NFCall::TYPED_CALL { r#fn: var_field!((*call).r#fn, NFCall::TYPED_CALL).clone(), ty: var_field!((*call).ty, NFCall::TYPED_CALL).clone(), var: var_field!((*call).var, NFCall::TYPED_CALL).clone(), purity: var_field!((*call).purity, NFCall::TYPED_CALL).clone(), arguments: args.clone(), attributes: var_field!((*call).attributes, NFCall::TYPED_CALL).clone() })
         },
         Deref @ UNTYPED_ARRAY_CONSTRUCTOR { .. } => {
-            let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut iters: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>> = metamodelica::nil();
+            let mut e: Arc<Expression::NFExpression>;
+            let mut iters: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>>;
             e = Expression::map(var_field!((*call).exp, NFCall::UNTYPED_ARRAY_CONSTRUCTOR).clone(), func.clone())?;
             iters = mapIteratorsExp(var_field!((*call).iters, NFCall::UNTYPED_ARRAY_CONSTRUCTOR).clone(), func.clone())?;
             Arc::new(NFCall::UNTYPED_ARRAY_CONSTRUCTOR { exp: e.clone(), iters: iters.clone() })
         },
         Deref @ TYPED_ARRAY_CONSTRUCTOR { .. } => {
-            let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut iters: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>> = metamodelica::nil();
+            let mut e: Arc<Expression::NFExpression>;
+            let mut iters: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>>;
             e = Expression::map(var_field!((*call).exp, NFCall::TYPED_ARRAY_CONSTRUCTOR).clone(), func.clone())?;
             iters = mapIteratorsExp(var_field!((*call).iters, NFCall::TYPED_ARRAY_CONSTRUCTOR).clone(), func.clone())?;
             Arc::new(NFCall::TYPED_ARRAY_CONSTRUCTOR { ty: var_field!((*call).ty, NFCall::TYPED_ARRAY_CONSTRUCTOR).clone(), var: var_field!((*call).var, NFCall::TYPED_ARRAY_CONSTRUCTOR).clone(), purity: var_field!((*call).purity, NFCall::TYPED_ARRAY_CONSTRUCTOR).clone(), exp: e.clone(), iters: iters.clone() })
         },
         Deref @ UNTYPED_REDUCTION { .. } => {
-            let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut iters: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>> = metamodelica::nil();
+            let mut e: Arc<Expression::NFExpression>;
+            let mut iters: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>>;
             e = Expression::map(var_field!((*call).exp, NFCall::UNTYPED_REDUCTION).clone(), func.clone())?;
             iters = mapIteratorsExp(var_field!((*call).iters, NFCall::UNTYPED_REDUCTION).clone(), func.clone())?;
             Arc::new(NFCall::UNTYPED_REDUCTION { r#ref: var_field!((*call).r#ref, NFCall::UNTYPED_REDUCTION).clone(), exp: e.clone(), iters: iters.clone() })
         },
         Deref @ TYPED_REDUCTION { .. } => {
-            let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut iters: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>> = metamodelica::nil();
-            let mut default_exp: Option<Arc<Expression::NFExpression>> = None;
-            let mut fold_exp: (Option<Arc<Expression::NFExpression>>, ArcStr, ArcStr) = (None, arcstr::literal!(""), arcstr::literal!(""));
+            let mut e: Arc<Expression::NFExpression>;
+            let mut iters: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>>;
+            let mut default_exp: Option<Arc<Expression::NFExpression>>;
+            let mut fold_exp: (Option<Arc<Expression::NFExpression>>, ArcStr, ArcStr);
             e = Expression::map(var_field!((*call).exp, NFCall::TYPED_REDUCTION).clone(), func.clone())?;
             iters = mapIteratorsExp(var_field!((*call).iters, NFCall::TYPED_REDUCTION).clone(), func.clone())?;
             default_exp = Util::applyOption(var_field!((*call).defaultExp, NFCall::TYPED_REDUCTION).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
@@ -1914,10 +1914,10 @@ pub fn mapExpShallow(mut call: Arc<NFCall>, mut func: Arc<dyn ::std::ops::Fn(Arc
     let mut outCall: Arc<NFCall>;
     outCall = (::match_deref::match_deref! { match &(call.clone()) {
         Deref @ UNTYPED_CALL { .. } => {
-            let mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-            let mut nargs: Arc<metamodelica::List<(ArcStr, Arc<Expression::NFExpression>)>> = metamodelica::nil();
-            let mut s: ArcStr = arcstr::literal!("");
-            let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
+            let mut nargs: Arc<metamodelica::List<(ArcStr, Arc<Expression::NFExpression>)>>;
+            let mut s: ArcStr;
+            let mut e: Arc<Expression::NFExpression>;
             args = ({
         let mut __acc: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
         for mut arg in (var_field!((*call).arguments, NFCall::UNTYPED_CALL).clone()).into_iter().cloned() {
@@ -1936,8 +1936,8 @@ pub fn mapExpShallow(mut call: Arc<NFCall>, mut func: Arc<dyn ::std::ops::Fn(Arc
             Arc::new(NFCall::UNTYPED_CALL { r#ref: var_field!((*call).r#ref, NFCall::UNTYPED_CALL).clone(), arguments: args.clone(), named_args: nargs.clone().reverse(), call_scope: var_field!((*call).call_scope, NFCall::UNTYPED_CALL).clone() })
         },
         Deref @ ARG_TYPED_CALL { .. } => {
-            let mut targs: Arc<metamodelica::List<Arc<TypedArg>>> = metamodelica::nil();
-            let mut tnargs: Arc<metamodelica::List<Arc<TypedArg>>> = metamodelica::nil();
+            let mut targs: Arc<metamodelica::List<Arc<TypedArg>>>;
+            let mut tnargs: Arc<metamodelica::List<Arc<TypedArg>>>;
             targs = metamodelica::nil();
             tnargs = metamodelica::nil();
             for mut arg in &*var_field!((*call).positional_args, NFCall::ARG_TYPED_CALL).clone() {
@@ -1953,7 +1953,7 @@ pub fn mapExpShallow(mut call: Arc<NFCall>, mut func: Arc<dyn ::std::ops::Fn(Arc
             Arc::new(NFCall::ARG_TYPED_CALL { r#ref: var_field!((*call).r#ref, NFCall::ARG_TYPED_CALL).clone(), positional_args: targs.clone().reverse(), named_args: tnargs.clone().reverse(), call_scope: var_field!((*call).call_scope, NFCall::ARG_TYPED_CALL).clone() })
         },
         Deref @ TYPED_CALL { .. } => {
-            let mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
+            let mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
             args = ({
         let mut __acc: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
         for mut arg in (var_field!((*call).arguments, NFCall::TYPED_CALL).clone()).into_iter().cloned() {
@@ -1965,31 +1965,31 @@ pub fn mapExpShallow(mut call: Arc<NFCall>, mut func: Arc<dyn ::std::ops::Fn(Arc
             Arc::new(NFCall::TYPED_CALL { r#fn: var_field!((*call).r#fn, NFCall::TYPED_CALL).clone(), ty: var_field!((*call).ty, NFCall::TYPED_CALL).clone(), var: var_field!((*call).var, NFCall::TYPED_CALL).clone(), purity: var_field!((*call).purity, NFCall::TYPED_CALL).clone(), arguments: args.clone(), attributes: var_field!((*call).attributes, NFCall::TYPED_CALL).clone() })
         },
         Deref @ UNTYPED_ARRAY_CONSTRUCTOR { .. } => {
-            let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut iters: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>> = metamodelica::nil();
+            let mut e: Arc<Expression::NFExpression>;
+            let mut iters: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>>;
             e = func(var_field!((*call).exp, NFCall::UNTYPED_ARRAY_CONSTRUCTOR).clone())?;
             iters = mapIteratorsExpShallow(var_field!((*call).iters, NFCall::UNTYPED_ARRAY_CONSTRUCTOR).clone(), func.clone())?;
             Arc::new(NFCall::UNTYPED_ARRAY_CONSTRUCTOR { exp: e.clone(), iters: iters.clone() })
         },
         Deref @ TYPED_ARRAY_CONSTRUCTOR { .. } => {
-            let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut iters: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>> = metamodelica::nil();
+            let mut e: Arc<Expression::NFExpression>;
+            let mut iters: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>>;
             e = func(var_field!((*call).exp, NFCall::TYPED_ARRAY_CONSTRUCTOR).clone())?;
             iters = mapIteratorsExpShallow(var_field!((*call).iters, NFCall::TYPED_ARRAY_CONSTRUCTOR).clone(), func.clone())?;
             Arc::new(NFCall::TYPED_ARRAY_CONSTRUCTOR { ty: var_field!((*call).ty, NFCall::TYPED_ARRAY_CONSTRUCTOR).clone(), var: var_field!((*call).var, NFCall::TYPED_ARRAY_CONSTRUCTOR).clone(), purity: var_field!((*call).purity, NFCall::TYPED_ARRAY_CONSTRUCTOR).clone(), exp: e.clone(), iters: iters.clone() })
         },
         Deref @ UNTYPED_REDUCTION { .. } => {
-            let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut iters: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>> = metamodelica::nil();
+            let mut e: Arc<Expression::NFExpression>;
+            let mut iters: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>>;
             e = func(var_field!((*call).exp, NFCall::UNTYPED_REDUCTION).clone())?;
             iters = mapIteratorsExpShallow(var_field!((*call).iters, NFCall::UNTYPED_REDUCTION).clone(), func.clone())?;
             Arc::new(NFCall::UNTYPED_REDUCTION { r#ref: var_field!((*call).r#ref, NFCall::UNTYPED_REDUCTION).clone(), exp: e.clone(), iters: iters.clone() })
         },
         Deref @ TYPED_REDUCTION { .. } => {
-            let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut iters: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>> = metamodelica::nil();
-            let mut default_exp: Option<Arc<Expression::NFExpression>> = None;
-            let mut fold_exp: (Option<Arc<Expression::NFExpression>>, ArcStr, ArcStr) = (None, arcstr::literal!(""), arcstr::literal!(""));
+            let mut e: Arc<Expression::NFExpression>;
+            let mut iters: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>>;
+            let mut default_exp: Option<Arc<Expression::NFExpression>>;
+            let mut fold_exp: (Option<Arc<Expression::NFExpression>>, ArcStr, ArcStr);
             e = func(var_field!((*call).exp, NFCall::TYPED_REDUCTION).clone())?;
             iters = mapIteratorsExpShallow(var_field!((*call).iters, NFCall::TYPED_REDUCTION).clone(), func.clone())?;
             default_exp = Expression::mapShallowOpt(var_field!((*call).defaultExp, NFCall::TYPED_REDUCTION).clone(), func.clone())?;
@@ -2025,10 +2025,10 @@ pub fn mapFoldExp<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut call: A
     let mut foldArg: ArgT = foldArg;
     outCall = (::match_deref::match_deref! { match &(call.clone()) {
         Deref @ UNTYPED_CALL { .. } => {
-            let mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-            let mut nargs: Arc<metamodelica::List<(ArcStr, Arc<Expression::NFExpression>)>> = metamodelica::nil();
-            let mut s: ArcStr = arcstr::literal!("");
-            let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
+            let mut nargs: Arc<metamodelica::List<(ArcStr, Arc<Expression::NFExpression>)>>;
+            let mut s: ArcStr;
+            let mut e: Arc<Expression::NFExpression>;
             (args, foldArg) = List::map1Fold(var_field!((*call).arguments, NFCall::UNTYPED_CALL).clone(), (std::sync::Arc::new(Expression::mapFold) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, _, _) -> Result<_> + 'static>), func.clone(), foldArg.clone())?;
             nargs = metamodelica::nil();
             for mut arg in &*var_field!((*call).named_args, NFCall::UNTYPED_CALL).clone() {
@@ -2040,9 +2040,9 @@ pub fn mapFoldExp<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut call: A
             Arc::new(NFCall::UNTYPED_CALL { r#ref: var_field!((*call).r#ref, NFCall::UNTYPED_CALL).clone(), arguments: args.clone(), named_args: nargs.clone().reverse(), call_scope: var_field!((*call).call_scope, NFCall::UNTYPED_CALL).clone() })
         },
         Deref @ ARG_TYPED_CALL { .. } => {
-            let mut targs: Arc<metamodelica::List<Arc<TypedArg>>> = metamodelica::nil();
-            let mut tnargs: Arc<metamodelica::List<Arc<TypedArg>>> = metamodelica::nil();
-            let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut targs: Arc<metamodelica::List<Arc<TypedArg>>>;
+            let mut tnargs: Arc<metamodelica::List<Arc<TypedArg>>>;
+            let mut e: Arc<Expression::NFExpression>;
             targs = metamodelica::nil();
             tnargs = metamodelica::nil();
             for mut arg in &*var_field!((*call).positional_args, NFCall::ARG_TYPED_CALL).clone() {
@@ -2060,37 +2060,37 @@ pub fn mapFoldExp<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut call: A
             Arc::new(NFCall::ARG_TYPED_CALL { r#ref: var_field!((*call).r#ref, NFCall::ARG_TYPED_CALL).clone(), positional_args: targs.clone().reverse(), named_args: tnargs.clone().reverse(), call_scope: var_field!((*call).call_scope, NFCall::ARG_TYPED_CALL).clone() })
         },
         Deref @ TYPED_CALL { .. } => {
-            let mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
+            let mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
             (args, foldArg) = List::map1Fold(var_field!((*call).arguments, NFCall::TYPED_CALL).clone(), (std::sync::Arc::new(Expression::mapFold) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, _, _) -> Result<_> + 'static>), func.clone(), foldArg.clone())?;
             Arc::new(NFCall::TYPED_CALL { r#fn: var_field!((*call).r#fn, NFCall::TYPED_CALL).clone(), ty: var_field!((*call).ty, NFCall::TYPED_CALL).clone(), var: var_field!((*call).var, NFCall::TYPED_CALL).clone(), purity: var_field!((*call).purity, NFCall::TYPED_CALL).clone(), arguments: args.clone(), attributes: var_field!((*call).attributes, NFCall::TYPED_CALL).clone() })
         },
         Deref @ UNTYPED_ARRAY_CONSTRUCTOR { .. } => {
-            let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut iters: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>> = metamodelica::nil();
+            let mut e: Arc<Expression::NFExpression>;
+            let mut iters: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>>;
             (e, foldArg) = Expression::mapFold(var_field!((*call).exp, NFCall::UNTYPED_ARRAY_CONSTRUCTOR).clone(), func.clone(), foldArg.clone())?;
             (iters, foldArg) = mapFoldIteratorsExp(var_field!((*call).iters, NFCall::UNTYPED_ARRAY_CONSTRUCTOR).clone(), func.clone(), foldArg.clone())?;
             Arc::new(NFCall::UNTYPED_ARRAY_CONSTRUCTOR { exp: e.clone(), iters: iters.clone() })
         },
         Deref @ TYPED_ARRAY_CONSTRUCTOR { .. } => {
-            let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut iters: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>> = metamodelica::nil();
+            let mut e: Arc<Expression::NFExpression>;
+            let mut iters: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>>;
             (e, foldArg) = Expression::mapFold(var_field!((*call).exp, NFCall::TYPED_ARRAY_CONSTRUCTOR).clone(), func.clone(), foldArg.clone())?;
             (iters, foldArg) = mapFoldIteratorsExp(var_field!((*call).iters, NFCall::TYPED_ARRAY_CONSTRUCTOR).clone(), func.clone(), foldArg.clone())?;
             Arc::new(NFCall::TYPED_ARRAY_CONSTRUCTOR { ty: var_field!((*call).ty, NFCall::TYPED_ARRAY_CONSTRUCTOR).clone(), var: var_field!((*call).var, NFCall::TYPED_ARRAY_CONSTRUCTOR).clone(), purity: var_field!((*call).purity, NFCall::TYPED_ARRAY_CONSTRUCTOR).clone(), exp: e.clone(), iters: iters.clone() })
         },
         Deref @ UNTYPED_REDUCTION { .. } => {
-            let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut iters: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>> = metamodelica::nil();
+            let mut e: Arc<Expression::NFExpression>;
+            let mut iters: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>>;
             (e, foldArg) = Expression::mapFold(var_field!((*call).exp, NFCall::UNTYPED_REDUCTION).clone(), func.clone(), foldArg.clone())?;
             (iters, foldArg) = mapFoldIteratorsExp(var_field!((*call).iters, NFCall::UNTYPED_REDUCTION).clone(), func.clone(), foldArg.clone())?;
             Arc::new(NFCall::UNTYPED_REDUCTION { r#ref: var_field!((*call).r#ref, NFCall::UNTYPED_REDUCTION).clone(), exp: e.clone(), iters: iters.clone() })
         },
         Deref @ TYPED_REDUCTION { .. } => {
-            let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut iters: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>> = metamodelica::nil();
-            let mut default_exp: Option<Arc<Expression::NFExpression>> = None;
-            let mut fold_exp: (Option<Arc<Expression::NFExpression>>, ArcStr, ArcStr) = (None, arcstr::literal!(""), arcstr::literal!(""));
-            let mut oe: Option<Arc<Expression::NFExpression>> = None;
+            let mut e: Arc<Expression::NFExpression>;
+            let mut iters: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>>;
+            let mut default_exp: Option<Arc<Expression::NFExpression>>;
+            let mut fold_exp: (Option<Arc<Expression::NFExpression>>, ArcStr, ArcStr);
+            let mut oe: Option<Arc<Expression::NFExpression>>;
             (e, foldArg) = Expression::mapFold(var_field!((*call).exp, NFCall::TYPED_REDUCTION).clone(), func.clone(), foldArg.clone())?;
             (iters, foldArg) = mapFoldIteratorsExp(var_field!((*call).iters, NFCall::TYPED_REDUCTION).clone(), func.clone(), foldArg.clone())?;
             (default_exp, foldArg) = Expression::mapFoldOpt(var_field!((*call).defaultExp, NFCall::TYPED_REDUCTION).clone(), func.clone(), foldArg.clone())?;
@@ -2133,10 +2133,10 @@ pub fn mapFoldExpShallow<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut 
     let mut foldArg: ArgT = foldArg;
     outCall = (::match_deref::match_deref! { match &(call.clone()) {
         Deref @ UNTYPED_CALL { .. } => {
-            let mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-            let mut nargs: Arc<metamodelica::List<(ArcStr, Arc<Expression::NFExpression>)>> = metamodelica::nil();
-            let mut s: ArcStr = arcstr::literal!("");
-            let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
+            let mut nargs: Arc<metamodelica::List<(ArcStr, Arc<Expression::NFExpression>)>>;
+            let mut s: ArcStr;
+            let mut e: Arc<Expression::NFExpression>;
             (args, foldArg) = List::mapFold(var_field!((*call).arguments, NFCall::UNTYPED_CALL).clone(), func.clone(), foldArg.clone())?;
             nargs = metamodelica::nil();
             for mut arg in &*var_field!((*call).named_args, NFCall::UNTYPED_CALL).clone() {
@@ -2148,9 +2148,9 @@ pub fn mapFoldExpShallow<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut 
             Arc::new(NFCall::UNTYPED_CALL { r#ref: var_field!((*call).r#ref, NFCall::UNTYPED_CALL).clone(), arguments: args.clone(), named_args: nargs.clone().reverse(), call_scope: var_field!((*call).call_scope, NFCall::UNTYPED_CALL).clone() })
         },
         Deref @ ARG_TYPED_CALL { .. } => {
-            let mut targs: Arc<metamodelica::List<Arc<TypedArg>>> = metamodelica::nil();
-            let mut tnargs: Arc<metamodelica::List<Arc<TypedArg>>> = metamodelica::nil();
-            let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut targs: Arc<metamodelica::List<Arc<TypedArg>>>;
+            let mut tnargs: Arc<metamodelica::List<Arc<TypedArg>>>;
+            let mut e: Arc<Expression::NFExpression>;
             targs = metamodelica::nil();
             tnargs = metamodelica::nil();
             for mut arg in &*var_field!((*call).positional_args, NFCall::ARG_TYPED_CALL).clone() {
@@ -2168,37 +2168,37 @@ pub fn mapFoldExpShallow<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut 
             Arc::new(NFCall::ARG_TYPED_CALL { r#ref: var_field!((*call).r#ref, NFCall::ARG_TYPED_CALL).clone(), positional_args: targs.clone().reverse(), named_args: tnargs.clone().reverse(), call_scope: var_field!((*call).call_scope, NFCall::ARG_TYPED_CALL).clone() })
         },
         Deref @ TYPED_CALL { .. } => {
-            let mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
+            let mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
             (args, foldArg) = List::mapFold(var_field!((*call).arguments, NFCall::TYPED_CALL).clone(), func.clone(), foldArg.clone())?;
             Arc::new(NFCall::TYPED_CALL { r#fn: var_field!((*call).r#fn, NFCall::TYPED_CALL).clone(), ty: var_field!((*call).ty, NFCall::TYPED_CALL).clone(), var: var_field!((*call).var, NFCall::TYPED_CALL).clone(), purity: var_field!((*call).purity, NFCall::TYPED_CALL).clone(), arguments: args.clone(), attributes: var_field!((*call).attributes, NFCall::TYPED_CALL).clone() })
         },
         Deref @ UNTYPED_ARRAY_CONSTRUCTOR { .. } => {
-            let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut iters: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>> = metamodelica::nil();
+            let mut e: Arc<Expression::NFExpression>;
+            let mut iters: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>>;
             (e, foldArg) = func(var_field!((*call).exp, NFCall::UNTYPED_ARRAY_CONSTRUCTOR).clone(), foldArg.clone())?;
             (iters, _) = mapFoldIteratorsExpShallow(var_field!((*call).iters, NFCall::UNTYPED_ARRAY_CONSTRUCTOR).clone(), func.clone(), foldArg.clone())?;
             Arc::new(NFCall::UNTYPED_ARRAY_CONSTRUCTOR { exp: e.clone(), iters: iters.clone() })
         },
         Deref @ TYPED_ARRAY_CONSTRUCTOR { .. } => {
-            let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut iters: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>> = metamodelica::nil();
+            let mut e: Arc<Expression::NFExpression>;
+            let mut iters: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>>;
             (e, foldArg) = func(var_field!((*call).exp, NFCall::TYPED_ARRAY_CONSTRUCTOR).clone(), foldArg.clone())?;
             (iters, _) = mapFoldIteratorsExpShallow(var_field!((*call).iters, NFCall::TYPED_ARRAY_CONSTRUCTOR).clone(), func.clone(), foldArg.clone())?;
             Arc::new(NFCall::TYPED_ARRAY_CONSTRUCTOR { ty: var_field!((*call).ty, NFCall::TYPED_ARRAY_CONSTRUCTOR).clone(), var: var_field!((*call).var, NFCall::TYPED_ARRAY_CONSTRUCTOR).clone(), purity: var_field!((*call).purity, NFCall::TYPED_ARRAY_CONSTRUCTOR).clone(), exp: e.clone(), iters: iters.clone() })
         },
         Deref @ UNTYPED_REDUCTION { .. } => {
-            let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut iters: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>> = metamodelica::nil();
+            let mut e: Arc<Expression::NFExpression>;
+            let mut iters: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>>;
             (e, foldArg) = func(var_field!((*call).exp, NFCall::UNTYPED_REDUCTION).clone(), foldArg.clone())?;
             (iters, _) = mapFoldIteratorsExpShallow(var_field!((*call).iters, NFCall::UNTYPED_REDUCTION).clone(), func.clone(), foldArg.clone())?;
             Arc::new(NFCall::UNTYPED_REDUCTION { r#ref: var_field!((*call).r#ref, NFCall::UNTYPED_REDUCTION).clone(), exp: e.clone(), iters: iters.clone() })
         },
         Deref @ TYPED_REDUCTION { .. } => {
-            let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut iters: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>> = metamodelica::nil();
-            let mut default_exp: Option<Arc<Expression::NFExpression>> = None;
-            let mut fold_exp: (Option<Arc<Expression::NFExpression>>, ArcStr, ArcStr) = (None, arcstr::literal!(""), arcstr::literal!(""));
-            let mut oe: Option<Arc<Expression::NFExpression>> = None;
+            let mut e: Arc<Expression::NFExpression>;
+            let mut iters: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>>;
+            let mut default_exp: Option<Arc<Expression::NFExpression>>;
+            let mut fold_exp: (Option<Arc<Expression::NFExpression>>, ArcStr, ArcStr);
+            let mut oe: Option<Arc<Expression::NFExpression>>;
             (e, foldArg) = func(var_field!((*call).exp, NFCall::TYPED_REDUCTION).clone(), foldArg.clone())?;
             (iters, _) = mapFoldIteratorsExpShallow(var_field!((*call).iters, NFCall::TYPED_REDUCTION).clone(), func.clone(), foldArg.clone())?;
             (default_exp, foldArg) = Expression::mapFoldOptShallow(var_field!((*call).defaultExp, NFCall::TYPED_REDUCTION).clone(), func.clone(), foldArg.clone())?;
@@ -2465,7 +2465,7 @@ fn instIteratorCallArgs(mut args: Arc<Absyn::FunctionArgs>, mut scope: Arc<InstN
     let mut iters: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>> = metamodelica::nil();
     let () = (::match_deref::match_deref! { match &(args.clone()) {
         Deref @ Absyn::FunctionArgs::FOR_ITER_FARG { .. } => {
-            let mut for_scope: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
+            let mut for_scope: Arc<InstNode::InstNode>;
             (for_scope, iters) = instIterators(var_field!((*args).iterators, Absyn::FunctionArgs::FOR_ITER_FARG).clone(), scope.clone(), context.clone(), info.clone())?;
             exp = Inst::instExp(var_field!((*args).exp, Absyn::FunctionArgs::FOR_ITER_FARG).clone(), for_scope.clone(), context.clone(), info.clone())?;
             ()
@@ -2698,13 +2698,13 @@ fn typeArgs(mut call: Arc<NFCall>, mut context: i32, mut info: SourceInfo) -> Re
     call = (::match_deref::match_deref! { match &(call.clone()) {
         Deref @ UNTYPED_CALL { .. } => {
             let mut arg: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut arg_ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-            let mut arg_var: Variability = Variability::CONSTANT;
-            let mut arg_pur: Purity = Purity::PURE;
-            let mut typed_args: Arc<metamodelica::List<Arc<TypedArg>>> = metamodelica::nil();
-            let mut typed_nargs: Arc<metamodelica::List<Arc<TypedArg>>> = metamodelica::nil();
-            let mut name: ArcStr = arcstr::literal!("");
-            let mut next_context: i32 = 0;
+            let mut arg_ty: Arc<Type::NFType>;
+            let mut arg_var: Variability;
+            let mut arg_pur: Purity;
+            let mut typed_args: Arc<metamodelica::List<Arc<TypedArg>>>;
+            let mut typed_nargs: Arc<metamodelica::List<Arc<TypedArg>>>;
+            let mut name: ArcStr;
+            let mut next_context: i32;
             typed_args = metamodelica::nil();
             next_context = InstContext::set(context.clone(), InstContext::SUBEXPRESSION.clone());
             for mut arg in &*var_field!((*call).arguments, NFCall::UNTYPED_CALL).clone() {
@@ -2927,7 +2927,7 @@ fn evaluateCallTypeDim(mut dim: Arc<Dimension::NFDimension>, mut r#fn: Arc<Funct
     let mut ptree: ParameterTree = ptree;
     dim = (::match_deref::match_deref! { match &(dim.clone()) {
         Deref @ Dimension::EXP { .. } => {
-            let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut exp: Arc<Expression::NFExpression>;
             ptree = buildParameterTree(r#fn.clone(), args.clone(), ptree.clone())?;
             exp = Expression::map(var_field!((*dim).exp, Dimension::NFDimension::EXP).clone(), (std::sync::Arc::new({ let __pe_b1 = ptree.clone(); move |__pe_a0| evaluateCallTypeDimExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             ErrorExt::setCheckpoint(literal!("NFCall.evaluateCallTypeDim"));

@@ -281,7 +281,7 @@ fn groupStateMachines(mut equations: Arc<metamodelica::List<Arc<Equation::NFEqua
         let mut eq = eq.clone();
         let () = (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ Equation::NORETCALL { exp: Deref @ Expression::CALL { call: eqCall }, .. } => {
-            let mut fname: ArcStr = arcstr::literal!("");
+            let mut fname: ArcStr;
             fname = (Call::functionNameLast(eqCall.clone())?).clone();
             if stringEq((fname.clone()).clone(), (literal!("transition")).clone()) {
                 let (__pa0, __pa1) = ::match_deref::match_deref! { match &(List::firstN(Call::arguments(eqCall.clone())?, 2)?) {

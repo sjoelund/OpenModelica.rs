@@ -181,9 +181,9 @@ pub fn checkSystemVariabilities(mut partition: Arc<Partition::Partition>) -> Res
         for mut scc in __range0 {
             let () = (::match_deref::match_deref! { match &(scc.clone()) {
         Deref @ StrongComponent::SINGLE_COMPONENT { .. } => {
-            let mut ty1: Arc<Type::NFType> = Arc::new(Type::ANY);
-            let mut ty2: Arc<Type::NFType> = Arc::new(Type::ANY);
-            let mut kind: TypeCheck::MatchKind = TypeCheck::MatchKind::EXACT;
+            let mut ty1: Arc<Type::NFType>;
+            let mut ty2: Arc<Type::NFType>;
+            let mut kind: TypeCheck::MatchKind;
             ty1 = Type::removeSizeOneArraysAndRecords(Variable::typeOf(Pointer::access(var_field!((*scc).var, StrongComponent::NBStrongComponent::SINGLE_COMPONENT).clone())))?;
             ty2 = Type::removeSizeOneArraysAndRecords(BEquation::Equation::getType(Pointer::access(var_field!((*scc).eqn, StrongComponent::NBStrongComponent::SINGLE_COMPONENT).clone()), false)?)?;
             (_, _, kind) = TypeCheck::matchTypes(ty1.clone(), ty2.clone(), Expression::fromCref(BVariable::getVarName(var_field!((*scc).var, StrongComponent::NBStrongComponent::SINGLE_COMPONENT).clone()), false)?, TypeCheck::DEFAULT_OPTIONS.clone())?;
@@ -252,14 +252,14 @@ fn causalizePseudoArray(mut partition: Arc<Partition::Partition>, mut varData: A
     let mut comps: Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>> = metamodelica::nil();
     (variables, equations, full, matching, comps) = (match kind.clone() {
         mut kind if (BPartition::kindIsInitial(kind.clone())) => {
-            let mut fixable: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
-            let mut unfixable: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
-            let mut initials: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
-            let mut simulation: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
-            let mut vo: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> as ::std::default::Default>::default();
-            let mut vn: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> as ::std::default::Default>::default();
-            let mut eo: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> as ::std::default::Default>::default();
-            let mut en: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> as ::std::default::Default>::default();
+            let mut fixable: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>;
+            let mut unfixable: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>;
+            let mut initials: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>;
+            let mut simulation: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>;
+            let mut vo: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>;
+            let mut vn: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>;
+            let mut eo: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>;
+            let mut en: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>;
             assign_field!(
                 partition.unknowns = BVariable::VariablePointers::compress(partition.unknowns.clone())?,
                 partition.equations = BEquation::EquationPointers::compress(partition.equations.clone())?

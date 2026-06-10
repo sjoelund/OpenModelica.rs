@@ -69,22 +69,22 @@ pub fn typeConvert(mut inType1: Arc<DAE::Type>, mut inType2: Arc<DAE::Type>, mut
             metamodelica::nil()
         },
         (from @ Deref @ DAE::Type::T_INTEGER { .. }, to @ Deref @ DAE::Type::T_REAL { .. }, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { integer: i }, tail: vrest }) => {
-            let mut vallst: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-            let mut rval: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+            let mut vallst: Arc<metamodelica::List<Arc<Values::Value>>>;
+            let mut rval: metamodelica::Real;
             vallst = typeConvert(from.clone(), to.clone(), vrest.clone())?;
             rval = intReal(i.clone());
             metamodelica::cons(Arc::new(Values::Value::REAL { real: rval.clone() }), vallst.clone())
         },
         (from @ Deref @ DAE::Type::T_REAL { .. }, to @ Deref @ DAE::Type::T_INTEGER { .. }, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: r }, tail: vrest }) => {
-            let mut vallst: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-            let mut ival: i32 = 0;
+            let mut vallst: Arc<metamodelica::List<Arc<Values::Value>>>;
+            let mut ival: i32;
             vallst = typeConvert(from.clone(), to.clone(), vrest.clone())?;
             ival = ((r.clone()).0.floor() as i32);
             metamodelica::cons(Arc::new(Values::Value::INTEGER { integer: ival.clone() }), vallst.clone())
         },
         (from, to, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: vals, dimLst: dims }, tail: vrest }) => {
-            let mut vallst: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-            let mut vallst2: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
+            let mut vallst: Arc<metamodelica::List<Arc<Values::Value>>>;
+            let mut vallst2: Arc<metamodelica::List<Arc<Values::Value>>>;
             vallst = typeConvert(from.clone(), to.clone(), vals.clone())?;
             vallst2 = typeConvert(from.clone(), to.clone(), vrest.clone())?;
             metamodelica::cons(Arc::new(Values::Value::ARRAY { valueLst: vallst.clone(), dimLst: dims.clone() }), vallst2.clone())
@@ -143,8 +143,8 @@ pub fn valueExpType(mut inValue: Arc<Values::Value>) -> Result<Arc<DAE::Type>> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Values::Value::ARRAY { valueLst: valLst, dimLst: int_dims } => {
-                    let mut eltTp: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
+                    let mut eltTp: Arc<DAE::Type>;
+                    let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>;
                     eltTp = valueExpType(listHead(valLst.clone())?)?;
                     dims = List::map(int_dims.clone(), (std::sync::Arc::new(fnptr!(Expression::intDimension, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<Arc<DAE::Dimension>> + 'static>))?;
                     Ok(Arc::new(DAE::Type::T_ARRAY { ty: eltTp.clone(), dims: dims.clone() }))
@@ -155,8 +155,8 @@ pub fn valueExpType(mut inValue: Arc<Values::Value>) -> Result<Arc<DAE::Type>> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Values::Value::RECORD { record_: path, orderd: valLst, comp: nameLst, index: _ } => {
-                    let mut eltTps: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
-                    let mut varLst: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
+                    let mut eltTps: Arc<metamodelica::List<Arc<DAE::Type>>>;
+                    let mut varLst: Arc<metamodelica::List<Arc<DAE::Var>>>;
                     eltTps = List::map(valLst.clone(), (std::sync::Arc::new(valueExpType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<Arc<DAE::Type>> + 'static>))?;
                     varLst = List::threadMap(eltTps.clone(), nameLst.clone(), (std::sync::Arc::new(fnptr!(valueExpTypeExpVar, Arc<DAE::Type>, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>, ArcStr) -> Result<Arc<DAE::Var>> + 'static>))?;
                     Ok(Arc::new(DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path: path.clone() }, varLst: varLst.clone(), equalityConstraint: None, usedExternally: false }))
@@ -240,7 +240,7 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Values::Value::INTEGER { integer: iv1 }, Deref @ Values::Value::INTEGER { integer: iv2 }, Values::IntRealOp::MULOP { .. }) => {
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e: Arc<DAE::Exp>;
                     let mut outv: Arc<Values::Value> = outv.clone();
                     e = ExpressionSimplify::safeIntOp(iv1.clone(), iv2.clone(), openmodelica_frontend_inst::ExpressionSimplifyTypes::IntOp::MULOP)?;
                     outv = expValue(e.clone())?;
@@ -252,8 +252,8 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Values::Value::REAL { real: rv1 }, Deref @ Values::Value::INTEGER { integer: iv2 }, Values::IntRealOp::MULOP { .. }) => {
-                    let mut rv2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-                    let mut rv3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+                    let mut rv2: metamodelica::Real;
+                    let mut rv3: metamodelica::Real;
                     rv2 = intReal(iv2.clone());
                     rv3 = rv1.clone() * rv2.clone();
                     Ok(Arc::new(Values::Value::REAL { real: rv3.clone() }))
@@ -264,8 +264,8 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Values::Value::INTEGER { integer: iv1 }, Deref @ Values::Value::REAL { real: rv2 }, Values::IntRealOp::MULOP { .. }) => {
-                    let mut rv1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-                    let mut rv3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+                    let mut rv1: metamodelica::Real;
+                    let mut rv3: metamodelica::Real;
                     rv1 = intReal(iv1.clone());
                     rv3 = rv1.clone() * rv2.clone();
                     Ok(Arc::new(Values::Value::REAL { real: rv3.clone() }))
@@ -276,7 +276,7 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Values::Value::REAL { real: rv1 }, Deref @ Values::Value::REAL { real: rv2 }, Values::IntRealOp::MULOP { .. }) => {
-                    let mut rv3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+                    let mut rv3: metamodelica::Real;
                     rv3 = rv1.clone() * rv2.clone();
                     Ok(Arc::new(Values::Value::REAL { real: rv3.clone() }))
                 }
@@ -286,7 +286,7 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Values::Value::INTEGER { integer: iv1 }, Deref @ Values::Value::INTEGER { integer: iv2 }, Values::IntRealOp::DIVOP { .. }) => {
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e: Arc<DAE::Exp>;
                     let mut outv: Arc<Values::Value> = outv.clone();
                     e = ExpressionSimplify::safeIntOp(iv1.clone(), iv2.clone(), openmodelica_frontend_inst::ExpressionSimplifyTypes::IntOp::DIVOP)?;
                     outv = expValue(e.clone())?;
@@ -298,8 +298,8 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Values::Value::REAL { real: rv1 }, Deref @ Values::Value::INTEGER { integer: iv2 }, Values::IntRealOp::DIVOP { .. }) => {
-                    let mut rv2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-                    let mut rv3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+                    let mut rv2: metamodelica::Real;
+                    let mut rv3: metamodelica::Real;
                     rv2 = intReal(iv2.clone());
                     rv3 = rv1.clone() / rv2.clone();
                     Ok(Arc::new(Values::Value::REAL { real: rv3.clone() }))
@@ -310,8 +310,8 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Values::Value::INTEGER { integer: iv1 }, Deref @ Values::Value::REAL { real: rv2 }, Values::IntRealOp::DIVOP { .. }) => {
-                    let mut rv1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-                    let mut rv3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+                    let mut rv1: metamodelica::Real;
+                    let mut rv3: metamodelica::Real;
                     rv1 = intReal(iv1.clone());
                     rv3 = rv1.clone() / rv2.clone();
                     Ok(Arc::new(Values::Value::REAL { real: rv3.clone() }))
@@ -322,7 +322,7 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Values::Value::REAL { real: rv1 }, Deref @ Values::Value::REAL { real: rv2 }, Values::IntRealOp::DIVOP { .. }) => {
-                    let mut rv3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+                    let mut rv3: metamodelica::Real;
                     rv3 = rv1.clone() / rv2.clone();
                     Ok(Arc::new(Values::Value::REAL { real: rv3.clone() }))
                 }
@@ -332,9 +332,9 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Values::Value::INTEGER { integer: iv1 }, Deref @ Values::Value::INTEGER { integer: iv2 }, Values::IntRealOp::POWOP { .. }) => {
-                    let mut rv1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-                    let mut rv2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-                    let mut rv3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+                    let mut rv1: metamodelica::Real;
+                    let mut rv2: metamodelica::Real;
+                    let mut rv3: metamodelica::Real;
                     let true = (iv2.clone() < 0) else { bail!("pattern mismatch") };
                     rv1 = intReal(iv1.clone());
                     rv2 = intReal(iv2.clone());
@@ -347,7 +347,7 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Values::Value::INTEGER { integer: iv1 }, Deref @ Values::Value::INTEGER { integer: iv2 }, Values::IntRealOp::POWOP { .. }) => {
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e: Arc<DAE::Exp>;
                     let mut outv: Arc<Values::Value> = outv.clone();
                     e = ExpressionSimplify::safeIntOp(iv1.clone(), iv2.clone(), openmodelica_frontend_inst::ExpressionSimplifyTypes::IntOp::POWOP)?;
                     outv = expValue(e.clone())?;
@@ -359,8 +359,8 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Values::Value::REAL { real: rv1 }, Deref @ Values::Value::INTEGER { integer: iv2 }, Values::IntRealOp::POWOP { .. }) => {
-                    let mut rv2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-                    let mut rv3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+                    let mut rv2: metamodelica::Real;
+                    let mut rv3: metamodelica::Real;
                     rv2 = intReal(iv2.clone());
                     rv3 = realPow(rv1.clone(), rv2.clone());
                     Ok(Arc::new(Values::Value::REAL { real: rv3.clone() }))
@@ -371,8 +371,8 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Values::Value::INTEGER { integer: iv1 }, Deref @ Values::Value::REAL { real: rv2 }, Values::IntRealOp::POWOP { .. }) => {
-                    let mut iv2: i32 = 0;
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut iv2: i32;
+                    let mut e: Arc<DAE::Exp>;
                     let mut outv: Arc<Values::Value> = outv.clone();
                     iv2 = ((rv2.clone()).0.floor() as i32);
                     e = ExpressionSimplify::safeIntOp(iv1.clone(), iv2.clone(), openmodelica_frontend_inst::ExpressionSimplifyTypes::IntOp::POWOP)?;
@@ -385,8 +385,8 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Values::Value::INTEGER { integer: iv1 }, Deref @ Values::Value::REAL { real: rv2 }, Values::IntRealOp::POWOP { .. }) => {
-                    let mut rv1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-                    let mut rv3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+                    let mut rv1: metamodelica::Real;
+                    let mut rv3: metamodelica::Real;
                     rv1 = intReal(iv1.clone());
                     rv3 = realPow(rv1.clone(), rv2.clone());
                     Ok(Arc::new(Values::Value::REAL { real: rv3.clone() }))
@@ -397,7 +397,7 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Values::Value::REAL { real: rv1 }, Deref @ Values::Value::REAL { real: rv2 }, Values::IntRealOp::POWOP { .. }) => {
-                    let mut rv3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+                    let mut rv3: metamodelica::Real;
                     rv3 = realPow(rv1.clone(), rv2.clone());
                     Ok(Arc::new(Values::Value::REAL { real: rv3.clone() }))
                 }
@@ -407,7 +407,7 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Values::Value::INTEGER { integer: iv1 }, Deref @ Values::Value::INTEGER { integer: iv2 }, Values::IntRealOp::ADDOP { .. }) => {
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e: Arc<DAE::Exp>;
                     let mut outv: Arc<Values::Value> = outv.clone();
                     e = ExpressionSimplify::safeIntOp(iv1.clone(), iv2.clone(), openmodelica_frontend_inst::ExpressionSimplifyTypes::IntOp::ADDOP)?;
                     outv = expValue(e.clone())?;
@@ -419,8 +419,8 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Values::Value::REAL { real: rv1 }, Deref @ Values::Value::INTEGER { integer: iv2 }, Values::IntRealOp::ADDOP { .. }) => {
-                    let mut rv2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-                    let mut rv3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+                    let mut rv2: metamodelica::Real;
+                    let mut rv3: metamodelica::Real;
                     rv2 = intReal(iv2.clone());
                     rv3 = rv1.clone() + rv2.clone();
                     Ok(Arc::new(Values::Value::REAL { real: rv3.clone() }))
@@ -431,8 +431,8 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Values::Value::INTEGER { integer: iv1 }, Deref @ Values::Value::REAL { real: rv2 }, Values::IntRealOp::ADDOP { .. }) => {
-                    let mut rv1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-                    let mut rv3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+                    let mut rv1: metamodelica::Real;
+                    let mut rv3: metamodelica::Real;
                     rv1 = intReal(iv1.clone());
                     rv3 = rv1.clone() + rv2.clone();
                     Ok(Arc::new(Values::Value::REAL { real: rv3.clone() }))
@@ -443,7 +443,7 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Values::Value::REAL { real: rv1 }, Deref @ Values::Value::REAL { real: rv2 }, Values::IntRealOp::ADDOP { .. }) => {
-                    let mut rv3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+                    let mut rv3: metamodelica::Real;
                     rv3 = rv1.clone() + rv2.clone();
                     Ok(Arc::new(Values::Value::REAL { real: rv3.clone() }))
                 }
@@ -453,7 +453,7 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Values::Value::INTEGER { integer: iv1 }, Deref @ Values::Value::INTEGER { integer: iv2 }, Values::IntRealOp::SUBOP { .. }) => {
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e: Arc<DAE::Exp>;
                     let mut outv: Arc<Values::Value> = outv.clone();
                     e = ExpressionSimplify::safeIntOp(iv1.clone(), iv2.clone(), openmodelica_frontend_inst::ExpressionSimplifyTypes::IntOp::SUBOP)?;
                     outv = expValue(e.clone())?;
@@ -465,8 +465,8 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Values::Value::REAL { real: rv1 }, Deref @ Values::Value::INTEGER { integer: iv2 }, Values::IntRealOp::SUBOP { .. }) => {
-                    let mut rv2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-                    let mut rv3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+                    let mut rv2: metamodelica::Real;
+                    let mut rv3: metamodelica::Real;
                     rv2 = intReal(iv2.clone());
                     rv3 = rv1.clone() - rv2.clone();
                     Ok(Arc::new(Values::Value::REAL { real: rv3.clone() }))
@@ -477,8 +477,8 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Values::Value::INTEGER { integer: iv1 }, Deref @ Values::Value::REAL { real: rv2 }, Values::IntRealOp::SUBOP { .. }) => {
-                    let mut rv1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-                    let mut rv3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+                    let mut rv1: metamodelica::Real;
+                    let mut rv3: metamodelica::Real;
                     rv1 = intReal(iv1.clone());
                     rv3 = rv1.clone() - rv2.clone();
                     Ok(Arc::new(Values::Value::REAL { real: rv3.clone() }))
@@ -489,7 +489,7 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Values::Value::REAL { real: rv1 }, Deref @ Values::Value::REAL { real: rv2 }, Values::IntRealOp::SUBOP { .. }) => {
-                    let mut rv3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+                    let mut rv3: metamodelica::Real;
                     rv3 = rv1.clone() - rv2.clone();
                     Ok(Arc::new(Values::Value::REAL { real: rv3.clone() }))
                 }
@@ -508,18 +508,18 @@ pub fn safeLessEq(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>) ->
             r1.clone() <= r2.clone()
         },
         (Deref @ Values::Value::REAL { real: r1 }, _) => {
-            let mut r2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+            let mut r2: metamodelica::Real;
             r2 = intReal(valueInteger(val2.clone())?);
             r1.clone() <= r2.clone()
         },
         (_, Deref @ Values::Value::REAL { real: r2 }) => {
-            let mut r1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+            let mut r1: metamodelica::Real;
             r1 = intReal(valueInteger(val1.clone())?);
             r1.clone() <= r2.clone()
         },
         (_, _) => {
-            let mut i1: i32 = 0;
-            let mut i2: i32 = 0;
+            let mut i1: i32;
+            let mut i2: i32;
             i1 = valueInteger(val1.clone())?;
             i2 = valueInteger(val2.clone())?;
             i1.clone() <= i2.clone()
@@ -540,29 +540,29 @@ pub fn addElementwiseArrayelt(mut inValueLst1: Arc<metamodelica::List<Arc<Values
     let mut outValueLst: Arc<metamodelica::List<Arc<Values::Value>>>;
     outValueLst = (::match_deref::match_deref! { match &((inValueLst1.clone(), inValueLst2.clone())) {
         (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: v1lst, dimLst: dims }, tail: rest1 }, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: v2lst, .. }, tail: rest2 }) => {
-            let mut reslst: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-            let mut res2: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
+            let mut reslst: Arc<metamodelica::List<Arc<Values::Value>>>;
+            let mut res2: Arc<metamodelica::List<Arc<Values::Value>>>;
             reslst = addElementwiseArrayelt(v1lst.clone(), v2lst.clone())?;
             res2 = addElementwiseArrayelt(rest1.clone(), rest2.clone())?;
             metamodelica::cons(Arc::new(Values::Value::ARRAY { valueLst: reslst.clone(), dimLst: dims.clone() }), res2.clone())
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { integer: v1 }, tail: rest1 }, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { integer: v2 }, tail: rest2 }) => {
-            let mut res2: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-            let mut res: i32 = 0;
+            let mut res2: Arc<metamodelica::List<Arc<Values::Value>>>;
+            let mut res: i32;
             res = v1.clone() + v2.clone();
             res2 = addElementwiseArrayelt(rest1.clone(), rest2.clone())?;
             metamodelica::cons(Arc::new(Values::Value::INTEGER { integer: res.clone() }), res2.clone())
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: r1 }, tail: rest1 }, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: r2 }, tail: rest2 }) => {
-            let mut res2: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-            let mut rres: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+            let mut res2: Arc<metamodelica::List<Arc<Values::Value>>>;
+            let mut rres: metamodelica::Real;
             rres = r1.clone() + r2.clone();
             res2 = addElementwiseArrayelt(rest1.clone(), rest2.clone())?;
             metamodelica::cons(Arc::new(Values::Value::REAL { real: rres.clone() }), res2.clone())
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: s1 }, tail: rest1 }, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: s2 }, tail: rest2 }) => {
-            let mut res2: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-            let mut sres: ArcStr = arcstr::literal!("");
+            let mut res2: Arc<metamodelica::List<Arc<Values::Value>>>;
+            let mut sres: ArcStr;
             sres = (stringAppend((s1.clone()).clone(), (s2.clone()).clone())).clone();
             res2 = addElementwiseArrayelt(rest1.clone(), rest2.clone())?;
             metamodelica::cons(Arc::new(Values::Value::STRING { string: (sres.clone()).clone() }), res2.clone())
@@ -579,22 +579,22 @@ pub fn subElementwiseArrayelt(mut inValueLst1: Arc<metamodelica::List<Arc<Values
     let mut outValueLst: Arc<metamodelica::List<Arc<Values::Value>>>;
     outValueLst = (::match_deref::match_deref! { match &((inValueLst1.clone(), inValueLst2.clone())) {
         (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: v1lst, dimLst: dims }, tail: rest1 }, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: v2lst, .. }, tail: rest2 }) => {
-            let mut reslst: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-            let mut res2: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
+            let mut reslst: Arc<metamodelica::List<Arc<Values::Value>>>;
+            let mut res2: Arc<metamodelica::List<Arc<Values::Value>>>;
             reslst = subElementwiseArrayelt(v1lst.clone(), v2lst.clone())?;
             res2 = subElementwiseArrayelt(rest1.clone(), rest2.clone())?;
             metamodelica::cons(Arc::new(Values::Value::ARRAY { valueLst: reslst.clone(), dimLst: dims.clone() }), res2.clone())
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { integer: v1 }, tail: rest1 }, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { integer: v2 }, tail: rest2 }) => {
-            let mut res2: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-            let mut res: i32 = 0;
+            let mut res2: Arc<metamodelica::List<Arc<Values::Value>>>;
+            let mut res: i32;
             res = v1.clone() - v2.clone();
             res2 = subElementwiseArrayelt(rest1.clone(), rest2.clone())?;
             metamodelica::cons(Arc::new(Values::Value::INTEGER { integer: res.clone() }), res2.clone())
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: r1 }, tail: rest1 }, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: r2 }, tail: rest2 }) => {
-            let mut res2: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-            let mut rres: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+            let mut res2: Arc<metamodelica::List<Arc<Values::Value>>>;
+            let mut rres: metamodelica::Real;
             rres = r1.clone() - r2.clone();
             res2 = subElementwiseArrayelt(rest1.clone(), rest2.clone())?;
             metamodelica::cons(Arc::new(Values::Value::REAL { real: rres.clone() }), res2.clone())
@@ -611,22 +611,22 @@ pub fn mulElementwiseArrayelt(mut inValueLst1: Arc<metamodelica::List<Arc<Values
     let mut outValueLst: Arc<metamodelica::List<Arc<Values::Value>>>;
     outValueLst = (::match_deref::match_deref! { match &((inValueLst1.clone(), inValueLst2.clone())) {
         (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: v1lst, dimLst: dims }, tail: rest1 }, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: v2lst, .. }, tail: rest2 }) => {
-            let mut reslst: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-            let mut res2: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
+            let mut reslst: Arc<metamodelica::List<Arc<Values::Value>>>;
+            let mut res2: Arc<metamodelica::List<Arc<Values::Value>>>;
             reslst = mulElementwiseArrayelt(v1lst.clone(), v2lst.clone())?;
             res2 = mulElementwiseArrayelt(rest1.clone(), rest2.clone())?;
             metamodelica::cons(Arc::new(Values::Value::ARRAY { valueLst: reslst.clone(), dimLst: dims.clone() }), res2.clone())
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { integer: v1 }, tail: rest1 }, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { integer: v2 }, tail: rest2 }) => {
-            let mut res2: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-            let mut res: i32 = 0;
+            let mut res2: Arc<metamodelica::List<Arc<Values::Value>>>;
+            let mut res: i32;
             res = v1.clone() * v2.clone();
             res2 = mulElementwiseArrayelt(rest1.clone(), rest2.clone())?;
             metamodelica::cons(Arc::new(Values::Value::INTEGER { integer: res.clone() }), res2.clone())
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: r1 }, tail: rest1 }, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: r2 }, tail: rest2 }) => {
-            let mut res2: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-            let mut rres: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+            let mut res2: Arc<metamodelica::List<Arc<Values::Value>>>;
+            let mut rres: metamodelica::Real;
             rres = r1.clone() * r2.clone();
             res2 = mulElementwiseArrayelt(rest1.clone(), rest2.clone())?;
             metamodelica::cons(Arc::new(Values::Value::REAL { real: rres.clone() }), res2.clone())
@@ -643,17 +643,17 @@ pub fn divElementwiseArrayelt(mut inValueLst1: Arc<metamodelica::List<Arc<Values
     let mut outValueLst: Arc<metamodelica::List<Arc<Values::Value>>>;
     outValueLst = (::match_deref::match_deref! { match &((inValueLst1.clone(), inValueLst2.clone())) {
         (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: v1lst, dimLst: dims }, tail: rest1 }, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: v2lst, .. }, tail: rest2 }) => {
-            let mut reslst: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-            let mut res2: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
+            let mut reslst: Arc<metamodelica::List<Arc<Values::Value>>>;
+            let mut res2: Arc<metamodelica::List<Arc<Values::Value>>>;
             reslst = divElementwiseArrayelt(v1lst.clone(), v2lst.clone())?;
             res2 = divElementwiseArrayelt(rest1.clone(), rest2.clone())?;
             metamodelica::cons(Arc::new(Values::Value::ARRAY { valueLst: reslst.clone(), dimLst: dims.clone() }), res2.clone())
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { integer: i1 }, tail: rest1 }, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { integer: i2 }, tail: rest2 }) => {
-            let mut res2: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-            let mut res: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut r1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut r2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+            let mut res2: Arc<metamodelica::List<Arc<Values::Value>>>;
+            let mut res: metamodelica::Real;
+            let mut r1: metamodelica::Real;
+            let mut r2: metamodelica::Real;
             r1 = intReal(i1.clone());
             r2 = intReal(i2.clone());
             res = r1.clone() / r2.clone();
@@ -661,8 +661,8 @@ pub fn divElementwiseArrayelt(mut inValueLst1: Arc<metamodelica::List<Arc<Values
             metamodelica::cons(Arc::new(Values::Value::REAL { real: res.clone() }), res2.clone())
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: r1 }, tail: rest1 }, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: r2 }, tail: rest2 }) => {
-            let mut res2: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-            let mut res: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+            let mut res2: Arc<metamodelica::List<Arc<Values::Value>>>;
+            let mut res: metamodelica::Real;
             res = r1.clone() / r2.clone();
             res2 = divElementwiseArrayelt(rest1.clone(), rest2.clone())?;
             metamodelica::cons(Arc::new(Values::Value::REAL { real: res.clone() }), res2.clone())
@@ -679,17 +679,17 @@ pub fn powElementwiseArrayelt(mut inValueLst1: Arc<metamodelica::List<Arc<Values
     let mut outValueLst: Arc<metamodelica::List<Arc<Values::Value>>>;
     outValueLst = (::match_deref::match_deref! { match &((inValueLst1.clone(), inValueLst2.clone())) {
         (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: v1lst, dimLst: dims }, tail: rest1 }, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: v2lst, .. }, tail: rest2 }) => {
-            let mut reslst: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-            let mut res2: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
+            let mut reslst: Arc<metamodelica::List<Arc<Values::Value>>>;
+            let mut res2: Arc<metamodelica::List<Arc<Values::Value>>>;
             reslst = powElementwiseArrayelt(v1lst.clone(), v2lst.clone())?;
             res2 = powElementwiseArrayelt(rest1.clone(), rest2.clone())?;
             metamodelica::cons(Arc::new(Values::Value::ARRAY { valueLst: reslst.clone(), dimLst: dims.clone() }), res2.clone())
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { integer: i1 }, tail: rest1 }, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { integer: i2 }, tail: rest2 }) => {
-            let mut res2: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-            let mut res: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut r1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut r2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+            let mut res2: Arc<metamodelica::List<Arc<Values::Value>>>;
+            let mut res: metamodelica::Real;
+            let mut r1: metamodelica::Real;
+            let mut r2: metamodelica::Real;
             r1 = intReal(i1.clone());
             r2 = intReal(i2.clone());
             res = (r1.clone()).powf(r2.clone());
@@ -697,8 +697,8 @@ pub fn powElementwiseArrayelt(mut inValueLst1: Arc<metamodelica::List<Arc<Values
             metamodelica::cons(Arc::new(Values::Value::REAL { real: res.clone() }), res2.clone())
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: r1 }, tail: rest1 }, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: r2 }, tail: rest2 }) => {
-            let mut res2: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-            let mut res: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+            let mut res2: Arc<metamodelica::List<Arc<Values::Value>>>;
+            let mut res: metamodelica::Real;
             res = (r1.clone()).powf(r2.clone());
             res2 = powElementwiseArrayelt(rest1.clone(), rest2.clone())?;
             metamodelica::cons(Arc::new(Values::Value::REAL { real: res.clone() }), res2.clone())
@@ -784,15 +784,15 @@ pub fn valueExp(mut inValue: Arc<Values::Value>, mut originalExp: Option<Arc<DAE
             valueExpArray(vallist.clone(), int_dims.clone(), originalExp.clone())?
         },
         Deref @ Values::Value::TUPLE { valueLst: vallist } => {
-            let mut explist: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
+            let mut explist: Arc<metamodelica::List<Arc<DAE::Exp>>>;
             explist = List::map(vallist.clone(), (std::sync::Arc::new({ let __pe_b1 = None; move |__pe_a0| valueExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<Arc<DAE::Exp>> + 'static>))?;
             Arc::new(DAE::Exp::TUPLE { PR: explist.clone() })
         },
         Deref @ Values::Value::RECORD { record_: path, orderd: vallist, comp: namelst, index: (-1) } => {
-            let mut t: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-            let mut tpl: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
-            let mut varlst: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
+            let mut t: Arc<DAE::Type>;
+            let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+            let mut tpl: Arc<metamodelica::List<Arc<DAE::Type>>>;
+            let mut varlst: Arc<metamodelica::List<Arc<DAE::Var>>>;
             expl = List::map(vallist.clone(), (std::sync::Arc::new({ let __pe_b1 = None; move |__pe_a0| valueExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<Arc<DAE::Exp>> + 'static>))?;
             tpl = List::map(expl.clone(), (std::sync::Arc::new(Expression::r#typeof) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<DAE::Type>> + 'static>))?;
             varlst = List::threadMap(namelst.clone(), tpl.clone(), (std::sync::Arc::new(fnptr!(Expression::makeVar, ArcStr, Arc<DAE::Type>)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<DAE::Type>) -> Result<Arc<DAE::Var>> + 'static>))?;
@@ -803,12 +803,12 @@ pub fn valueExp(mut inValue: Arc<Values::Value>, mut originalExp: Option<Arc<DAE
             Arc::new(DAE::Exp::ENUM_LITERAL { name: path.clone(), index: ix.clone() })
         },
         Deref @ Values::Value::TUPLE { valueLst: vallist } => {
-            let mut explist: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
+            let mut explist: Arc<metamodelica::List<Arc<DAE::Exp>>>;
             explist = List::map(vallist.clone(), (std::sync::Arc::new({ let __pe_b1 = None; move |__pe_a0| valueExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<Arc<DAE::Exp>> + 'static>))?;
             Arc::new(DAE::Exp::TUPLE { PR: explist.clone() })
         },
         Deref @ Values::Value::OPTION { some: Some(v) } => {
-            let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e: Arc<DAE::Exp>;
             e = valueExp(v.clone(), None)?;
             (e, _) = Types::matchType(e.clone(), Types::typeOfValue(v.clone())?, DAE::T_METABOXED_DEFAULT().clone(), true)?;
             Arc::new(DAE::Exp::META_OPTION { exp: Some(e.clone()) })
@@ -817,8 +817,8 @@ pub fn valueExp(mut inValue: Arc<Values::Value>, mut originalExp: Option<Arc<DAE
             Arc::new(DAE::Exp::META_OPTION { exp: None })
         },
         Deref @ Values::Value::META_TUPLE { valueLst: vallist } => {
-            let mut explist: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-            let mut typelist: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
+            let mut explist: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+            let mut typelist: Arc<metamodelica::List<Arc<DAE::Type>>>;
             explist = List::map(vallist.clone(), (std::sync::Arc::new({ let __pe_b1 = None; move |__pe_a0| valueExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<Arc<DAE::Exp>> + 'static>))?;
             typelist = List::map(vallist.clone(), (std::sync::Arc::new(Types::typeOfValue) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<Arc<DAE::Type>> + 'static>))?;
             (explist, _) = Types::matchTypeTuple(explist.clone(), typelist.clone(), List::map(typelist.clone(), (std::sync::Arc::new(fnptr!(Types::boxIfUnboxedType, Arc<DAE::Type>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<Arc<DAE::Type>> + 'static>))?, true)?;
@@ -828,9 +828,9 @@ pub fn valueExp(mut inValue: Arc<Values::Value>, mut originalExp: Option<Arc<DAE
             Arc::new(DAE::Exp::LIST { valList: metamodelica::nil() })
         },
         Deref @ Values::Value::LIST { valueLst: vallist } => {
-            let mut explist: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-            let mut vt: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let mut typelist: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
+            let mut explist: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+            let mut vt: Arc<DAE::Type>;
+            let mut typelist: Arc<metamodelica::List<Arc<DAE::Type>>>;
             explist = List::map(vallist.clone(), (std::sync::Arc::new({ let __pe_b1 = None; move |__pe_a0| valueExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<Arc<DAE::Exp>> + 'static>))?;
             typelist = List::map(vallist.clone(), (std::sync::Arc::new(Types::typeOfValue) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<Arc<DAE::Type>> + 'static>))?;
             vt = Types::boxIfUnboxedType(List::reduce(typelist.clone(), (std::sync::Arc::new(Types::superType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>, Arc<DAE::Type>) -> Result<Arc<DAE::Type>> + 'static>))?);
@@ -838,9 +838,9 @@ pub fn valueExp(mut inValue: Arc<Values::Value>, mut originalExp: Option<Arc<DAE
             Arc::new(DAE::Exp::LIST { valList: explist.clone() })
         },
         Deref @ Values::Value::META_ARRAY { valueLst: vallist } => {
-            let mut explist: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-            let mut vt: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let mut typelist: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
+            let mut explist: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+            let mut vt: Arc<DAE::Type>;
+            let mut typelist: Arc<metamodelica::List<Arc<DAE::Type>>>;
             explist = List::map(vallist.clone(), (std::sync::Arc::new({ let __pe_b1 = None; move |__pe_a0| valueExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<Arc<DAE::Exp>> + 'static>))?;
             typelist = List::map(vallist.clone(), (std::sync::Arc::new(Types::typeOfValue) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<Arc<DAE::Type>> + 'static>))?;
             vt = Types::boxIfUnboxedType(List::reduce(typelist.clone(), (std::sync::Arc::new(Types::superType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>, Arc<DAE::Type>) -> Result<Arc<DAE::Type>> + 'static>))?);
@@ -848,8 +848,8 @@ pub fn valueExp(mut inValue: Arc<Values::Value>, mut originalExp: Option<Arc<DAE
             Expression::makeBuiltinCall((literal!("listArrayLiteral")).clone(), list![Arc::new(DAE::Exp::LIST { valList: explist.clone() })], Arc::new(DAE::Type::T_METAARRAY { ty: vt.clone() }), false)
         },
         Deref @ Values::Value::RECORD { record_: path, orderd: vallist, comp: namelst, index: ix } => {
-            let mut explist: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-            let mut typelist: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
+            let mut explist: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+            let mut typelist: Arc<metamodelica::List<Arc<DAE::Type>>>;
             let true = (ix.clone() >= 0) else { bail!("pattern mismatch") };
             explist = List::map(vallist.clone(), (std::sync::Arc::new({ let __pe_b1 = None; move |__pe_a0| valueExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<Arc<DAE::Exp>> + 'static>))?;
             typelist = List::map(vallist.clone(), (std::sync::Arc::new(Types::typeOfValue) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<Arc<DAE::Type>> + 'static>))?;
@@ -860,7 +860,7 @@ pub fn valueExp(mut inValue: Arc<Values::Value>, mut originalExp: Option<Arc<DAE
             Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("fail")).clone() }), expLst: metamodelica::nil(), attr: DAE::callAttrBuiltinOther().clone() })
         },
         Deref @ Values::Value::META_BOX { value: v } => {
-            let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e: Arc<DAE::Exp>;
             e = valueExp(v.clone(), None)?;
             Arc::new(DAE::Exp::BOX { exp: e.clone() })
         },
@@ -868,8 +868,8 @@ pub fn valueExp(mut inValue: Arc<Values::Value>, mut originalExp: Option<Arc<DAE
             Arc::new(DAE::Exp::CODE { code: code.clone(), ty: DAE::T_UNKNOWN_DEFAULT().clone() })
         },
         Deref @ Values::Value::EMPTY { scope, name, tyStr, ty: valType } => {
-            let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut ety: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+            let mut e: Arc<DAE::Exp>;
+            let mut ety: Arc<DAE::Type>;
             if isSome(originalExp.clone()) {
                 let __pa0 = ::match_deref::match_deref! { match &(originalExp.clone()) {
                     Some(__pa0) => __pa0.clone(),
@@ -886,7 +886,7 @@ pub fn valueExp(mut inValue: Arc<Values::Value>, mut originalExp: Option<Arc<DAE
             Arc::new(DAE::Exp::TUPLE { PR: metamodelica::nil() })
         },
         v => {
-            let mut s: ArcStr = arcstr::literal!("");
+            let mut s: ArcStr;
             s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("ValuesUtil.valueExp failed for ")); __mm_s.push_str(&*ValuesDump::valString(v.clone())?); ArcStr::from(__mm_s) }).clone();
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(s.clone()).clone()])?;
             bail!("fail")
@@ -911,7 +911,7 @@ fn valueExpArray(mut values: Arc<metamodelica::List<Arc<Values::Value>>>, mut in
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Nil, _, _) => {
-                    let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
+                    let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>;
                     dims = List::map(inDims.clone(), (std::sync::Arc::new(fnptr!(Expression::intDimension, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<Arc<DAE::Dimension>> + 'static>))?;
                     Ok(Arc::new(DAE::Exp::ARRAY { ty: Arc::new(DAE::Type::T_ARRAY { ty: DAE::T_UNKNOWN_DEFAULT().clone(), dims: dims.clone() }), scalar: false, array: metamodelica::nil() }))
                 }
@@ -921,9 +921,9 @@ fn valueExpArray(mut values: Arc<metamodelica::List<Arc<Values::Value>>>, mut in
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: Deref @ metamodelica::List::Cons { head: v, tail: xs }, .. }, tail: xs2 }, Deref @ metamodelica::List::Cons { head: dim, tail: int_dims }, _) => {
-                    let mut explist: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut t: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut mexpl: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>> = metamodelica::nil();
+                    let mut explist: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+                    let mut t: Arc<DAE::Type>;
+                    let mut mexpl: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>>;
                     if '__try0: {
                         ::match_deref::match_deref! { match &(v.clone()) {
                             Deref @ Values::Value::ARRAY { .. } => (),
@@ -947,10 +947,10 @@ fn valueExpArray(mut values: Arc<metamodelica::List<Arc<Values::Value>>>, mut in
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: Deref @ metamodelica::List::Cons { head: v, tail: xs }, .. }, tail: Deref @ metamodelica::List::Nil }, _, _) => {
-                    let mut explist: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut t: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut vt: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut dim: i32 = 0;
+                    let mut explist: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+                    let mut t: Arc<DAE::Type>;
+                    let mut vt: Arc<DAE::Type>;
+                    let mut dim: i32;
                     if '__try0: {
                         ::match_deref::match_deref! { match &(v.clone()) {
                             Deref @ Values::Value::ARRAY { .. } => (),
@@ -973,11 +973,11 @@ fn valueExpArray(mut values: Arc<metamodelica::List<Arc<Values::Value>>>, mut in
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: v, tail: xs }, _, Some(Deref @ DAE::Exp::ARRAY { array: exps1, .. })) => {
-                    let mut explist: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut t: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut vt: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut dim: i32 = 0;
-                    let mut b: bool = false;
+                    let mut explist: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+                    let mut t: Arc<DAE::Type>;
+                    let mut vt: Arc<DAE::Type>;
+                    let mut dim: i32;
+                    let mut b: bool;
                     explist = ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
         let __thr_src0 = values.clone();
@@ -1010,11 +1010,11 @@ fn valueExpArray(mut values: Arc<metamodelica::List<Arc<Values::Value>>>, mut in
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: v, tail: xs }, _, _) => {
-                    let mut explist: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut t: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut vt: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut dim: i32 = 0;
-                    let mut b: bool = false;
+                    let mut explist: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+                    let mut t: Arc<DAE::Type>;
+                    let mut vt: Arc<DAE::Type>;
+                    let mut dim: i32;
+                    let mut b: bool;
                     explist = List::map(metamodelica::cons(v.clone(), xs.clone()), (std::sync::Arc::new({ let __pe_b1 = None; move |__pe_a0| valueExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<Arc<DAE::Exp>> + 'static>))?;
                     vt = Types::typeOfValue(v.clone())?;
                     t = Types::simplifyType(vt.clone())?;
@@ -1067,7 +1067,7 @@ pub fn valueReals(mut inValue: Arc<metamodelica::List<Arc<Values::Value>>>) -> A
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: r }, tail: rest } => {
-                    let mut res: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
+                    let mut res: Arc<metamodelica::List<metamodelica::Real>>;
                     res = valueReals(rest.clone());
                     Ok(metamodelica::cons(r.clone(), res.clone()))
                 }
@@ -1077,8 +1077,8 @@ pub fn valueReals(mut inValue: Arc<metamodelica::List<Arc<Values::Value>>>) -> A
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { integer: i }, tail: rest } => {
-                    let mut r: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-                    let mut res: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
+                    let mut r: metamodelica::Real;
+                    let mut res: Arc<metamodelica::List<metamodelica::Real>>;
                     r = intReal(i.clone());
                     res = valueReals(rest.clone());
                     Ok(metamodelica::cons(r.clone(), res.clone()))
@@ -1089,7 +1089,7 @@ pub fn valueReals(mut inValue: Arc<metamodelica::List<Arc<Values::Value>>>) -> A
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
-                    let mut res: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
+                    let mut res: Arc<metamodelica::List<metamodelica::Real>>;
                     res = valueReals(rest.clone());
                     Ok(res.clone())
                 }
@@ -1150,7 +1150,7 @@ pub fn matrixValueReals(mut inValue: Arc<Values::Value>) -> Result<Arc<metamodel
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Values::Value::ARRAY { valueLst: vals, .. } => {
-                    let mut reals: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
+                    let mut reals: Arc<metamodelica::List<metamodelica::Real>>;
                     reals = valueReals(vals.clone());
                     Ok(List::map(reals.clone(), std::sync::Arc::new(fnptr!(List::create, _)))?)
                 }
@@ -1179,17 +1179,17 @@ pub fn valueNeg(mut inValue: Arc<Values::Value>) -> Result<Arc<Values::Value>> {
     let mut outValue: Arc<Values::Value>;
     outValue = (::match_deref::match_deref! { match &(inValue.clone()) {
         Deref @ Values::Value::REAL { real: r } => {
-            let mut r_1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+            let mut r_1: metamodelica::Real;
             r_1 = -(r.clone());
             Arc::new(Values::Value::REAL { real: r_1.clone() })
         },
         Deref @ Values::Value::INTEGER { integer: i } => {
-            let mut i_1: i32 = 0;
+            let mut i_1: i32;
             i_1 = -(i.clone());
             Arc::new(Values::Value::INTEGER { integer: i_1.clone() })
         },
         Deref @ Values::Value::ARRAY { valueLst: vlst, dimLst: dims } => {
-            let mut vlst_1: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
+            let mut vlst_1: Arc<metamodelica::List<Arc<Values::Value>>>;
             vlst_1 = List::map(vlst.clone(), (std::sync::Arc::new(valueNeg) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<Arc<Values::Value>> + 'static>))?;
             Arc::new(Values::Value::ARRAY { valueLst: vlst_1.clone(), dimLst: dims.clone() })
         },
@@ -1415,7 +1415,7 @@ pub fn multScalarProduct(mut inValueLst1: Arc<metamodelica::List<Arc<Values::Val
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { integer: i1 }, tail: v1lst @ Deref @ metamodelica::List::Cons { head: _, tail: _ } }, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { integer: i2 }, tail: v2lst @ Deref @ metamodelica::List::Cons { head: _, tail: _ } }) => {
-                    let mut res: i32 = 0;
+                    let mut res: i32;
                     let mut i1 = (*i1).clone();
                     let mut i2 = (*i2).clone();
                     i1 = i1.clone() * i2.clone();
@@ -1433,7 +1433,7 @@ pub fn multScalarProduct(mut inValueLst1: Arc<metamodelica::List<Arc<Values::Val
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { integer: v1 }, tail: Deref @ metamodelica::List::Nil }, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { integer: v2 }, tail: Deref @ metamodelica::List::Nil }) => {
-                    let mut res: i32 = 0;
+                    let mut res: i32;
                     res = v1.clone() * v2.clone();
                     Ok(Arc::new(Values::Value::INTEGER { integer: res.clone() }))
                 }
@@ -1443,7 +1443,7 @@ pub fn multScalarProduct(mut inValueLst1: Arc<metamodelica::List<Arc<Values::Val
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: r1 }, tail: v1lst @ Deref @ metamodelica::List::Cons { head: _, tail: _ } }, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: r2 }, tail: v2lst @ Deref @ metamodelica::List::Cons { head: _, tail: _ } }) => {
-                    let mut rres: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+                    let mut rres: metamodelica::Real;
                     let mut r1 = (*r1).clone();
                     let mut r2 = (*r2).clone();
                     r1 = r1.clone() * r2.clone();
@@ -1461,7 +1461,7 @@ pub fn multScalarProduct(mut inValueLst1: Arc<metamodelica::List<Arc<Values::Val
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: r1 }, tail: Deref @ metamodelica::List::Nil }, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: r2 }, tail: Deref @ metamodelica::List::Nil }) => {
-                    let mut rres: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+                    let mut rres: metamodelica::Real;
                     rres = r1.clone() * r2.clone();
                     Ok(Arc::new(Values::Value::REAL { real: rres.clone() }))
                 }
@@ -1471,10 +1471,10 @@ pub fn multScalarProduct(mut inValueLst1: Arc<metamodelica::List<Arc<Values::Val
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: v2lst, .. }, tail: rest }, vlst @ Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { .. }, tail: _ }) => {
-                    let mut dim: i32 = 0;
-                    let mut vres: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-                    let mut sres: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
-                    let mut dims: Arc<metamodelica::List<i32>> = metamodelica::nil();
+                    let mut dim: i32;
+                    let mut vres: Arc<metamodelica::List<Arc<Values::Value>>>;
+                    let mut sres: Arc<Values::Value>;
+                    let mut dims: Arc<metamodelica::List<i32>>;
                     sres = multScalarProduct(v2lst.clone(), vlst.clone())?;
                     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(multScalarProduct(rest.clone(), vlst.clone())?) {
                         Deref @ Values::Value::ARRAY { valueLst: __pa0, dimLst: Deref @ metamodelica::List::Cons { head: __pa1, tail: __pa2 } } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
@@ -1500,10 +1500,10 @@ pub fn multScalarProduct(mut inValueLst1: Arc<metamodelica::List<Arc<Values::Val
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: v2lst, .. }, tail: rest }, vlst @ Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { .. }, tail: _ }) => {
-                    let mut dim: i32 = 0;
-                    let mut vres: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-                    let mut sres: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
-                    let mut dims: Arc<metamodelica::List<i32>> = metamodelica::nil();
+                    let mut dim: i32;
+                    let mut vres: Arc<metamodelica::List<Arc<Values::Value>>>;
+                    let mut sres: Arc<Values::Value>;
+                    let mut dims: Arc<metamodelica::List<i32>>;
                     sres = multScalarProduct(v2lst.clone(), vlst.clone())?;
                     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(multScalarProduct(rest.clone(), vlst.clone())?) {
                         Deref @ Values::Value::ARRAY { valueLst: __pa0, dimLst: Deref @ metamodelica::List::Cons { head: __pa1, tail: __pa2 } } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
@@ -1529,12 +1529,12 @@ pub fn multScalarProduct(mut inValueLst1: Arc<metamodelica::List<Arc<Values::Val
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (vlst @ Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { .. }, tail: _ }, mat @ Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: _, tail: _ } }, .. }, tail: _ }) => {
-                    let mut dim: i32 = 0;
-                    let mut col: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-                    let mut mat_1: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-                    let mut vals: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-                    let mut v: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
-                    let mut dims: Arc<metamodelica::List<i32>> = metamodelica::nil();
+                    let mut dim: i32;
+                    let mut col: Arc<metamodelica::List<Arc<Values::Value>>>;
+                    let mut mat_1: Arc<metamodelica::List<Arc<Values::Value>>>;
+                    let mut vals: Arc<metamodelica::List<Arc<Values::Value>>>;
+                    let mut v: Arc<Values::Value>;
+                    let mut dims: Arc<metamodelica::List<i32>>;
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(matrixStripFirstColumn(mat.clone())?) {
                         (Deref @ Values::Value::ARRAY { valueLst: __pa0, .. }, __pa1) => (__pa0.clone(), __pa1.clone()),
                         _ => bail!("pattern mismatch"),
@@ -1557,8 +1557,8 @@ pub fn multScalarProduct(mut inValueLst1: Arc<metamodelica::List<Arc<Values::Val
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (vlst @ Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { .. }, tail: _ }, mat @ Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil }, .. }, tail: _ }) => {
-                    let mut i1: i32 = 0;
-                    let mut col: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
+                    let mut i1: i32;
+                    let mut col: Arc<metamodelica::List<Arc<Values::Value>>>;
                     let __pa0 = ::match_deref::match_deref! { match &(matrixStripFirstColumn(mat.clone())?) {
                         (Deref @ Values::Value::ARRAY { valueLst: __pa0, .. }, _) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -1577,12 +1577,12 @@ pub fn multScalarProduct(mut inValueLst1: Arc<metamodelica::List<Arc<Values::Val
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (vlst @ Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { .. }, tail: _ }, mat @ Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: _, tail: _ } }, .. }, tail: _ }) => {
-                    let mut dim: i32 = 0;
-                    let mut col: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-                    let mut mat_1: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-                    let mut vals: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-                    let mut v: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
-                    let mut dims: Arc<metamodelica::List<i32>> = metamodelica::nil();
+                    let mut dim: i32;
+                    let mut col: Arc<metamodelica::List<Arc<Values::Value>>>;
+                    let mut mat_1: Arc<metamodelica::List<Arc<Values::Value>>>;
+                    let mut vals: Arc<metamodelica::List<Arc<Values::Value>>>;
+                    let mut v: Arc<Values::Value>;
+                    let mut dims: Arc<metamodelica::List<i32>>;
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(matrixStripFirstColumn(mat.clone())?) {
                         (Deref @ Values::Value::ARRAY { valueLst: __pa0, .. }, __pa1) => (__pa0.clone(), __pa1.clone()),
                         _ => bail!("pattern mismatch"),
@@ -1606,8 +1606,8 @@ pub fn multScalarProduct(mut inValueLst1: Arc<metamodelica::List<Arc<Values::Val
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (vlst @ Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { .. }, tail: _ }, mat @ Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil }, .. }, tail: _ }) => {
-                    let mut col: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-                    let mut r1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+                    let mut col: Arc<metamodelica::List<Arc<Values::Value>>>;
+                    let mut r1: metamodelica::Real;
                     let __pa0 = ::match_deref::match_deref! { match &(matrixStripFirstColumn(mat.clone())?) {
                         (Deref @ Values::Value::ARRAY { valueLst: __pa0, .. }, _) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -1642,18 +1642,18 @@ pub fn crossProduct(mut inValueLst1: Arc<metamodelica::List<Arc<Values::Value>>>
     let mut outValue: Arc<Values::Value>;
     outValue = (::match_deref::match_deref! { match &((inValueLst1.clone(), inValueLst2.clone())) {
         (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: x1 }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: x2 }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: x3 }, tail: Deref @ metamodelica::List::Nil } } }, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: y1 }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: y2 }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: y3 }, tail: Deref @ metamodelica::List::Nil } } }) => {
-            let mut z1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut z2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut z3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+            let mut z1: metamodelica::Real;
+            let mut z2: metamodelica::Real;
+            let mut z3: metamodelica::Real;
             z1 = ((x2.clone()) * (y3.clone())) - ((x3.clone()) * (y2.clone()));
             z2 = ((x3.clone()) * (y1.clone())) - ((x1.clone()) * (y3.clone()));
             z3 = ((x1.clone()) * (y2.clone())) - ((x2.clone()) * (y1.clone()));
             ValuesMake::makeArray(list![Arc::new(Values::Value::REAL { real: z1.clone() }), Arc::new(Values::Value::REAL { real: z2.clone() }), Arc::new(Values::Value::REAL { real: z3.clone() })])
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { integer: ix1 }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { integer: ix2 }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { integer: ix3 }, tail: Deref @ metamodelica::List::Nil } } }, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { integer: iy1 }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { integer: iy2 }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { integer: iy3 }, tail: Deref @ metamodelica::List::Nil } } }) => {
-            let mut iz1: i32 = 0;
-            let mut iz2: i32 = 0;
-            let mut iz3: i32 = 0;
+            let mut iz1: i32;
+            let mut iz2: i32;
+            let mut iz3: i32;
             iz1 = intSub(intMul(ix2.clone(), iy3.clone()), intMul(ix3.clone(), iy2.clone()));
             iz2 = intSub(intMul(ix3.clone(), iy1.clone()), intMul(ix1.clone(), iy3.clone()));
             iz3 = intSub(intMul(ix1.clone(), iy2.clone()), intMul(ix2.clone(), iy1.clone()));
@@ -1672,8 +1672,8 @@ pub fn multMatrix(mut inValueLst1: Arc<metamodelica::List<Arc<Values::Value>>>, 
     let mut outValueLst: Arc<metamodelica::List<Arc<Values::Value>>>;
     outValueLst = (::match_deref::match_deref! { match &((inValueLst1.clone(), inValueLst2.clone())) {
         (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: v1lst, .. }, tail: rest1 }, m2 @ Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { .. }, tail: _ }) => {
-            let mut res1: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
-            let mut res2: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
+            let mut res1: Arc<Values::Value>;
+            let mut res2: Arc<metamodelica::List<Arc<Values::Value>>>;
             res1 = multScalarProduct(v1lst.clone(), m2.clone())?;
             res2 = multMatrix(rest1.clone(), m2.clone())?;
             metamodelica::cons(res1.clone(), res2.clone())
@@ -1691,9 +1691,9 @@ fn matrixStripFirstColumn(mut inValueLst: Arc<metamodelica::List<Arc<Values::Val
     let mut outValueLst: Arc<metamodelica::List<Arc<Values::Value>>>;
     (outValue, outValueLst) = (::match_deref::match_deref! { match &(inValueLst.clone()) {
         Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: Deref @ metamodelica::List::Cons { head: v1, tail: vrest }, dimLst: Deref @ metamodelica::List::Cons { head: dim, tail: Deref @ metamodelica::List::Nil } }, tail: rest } => {
-            let mut resl: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-            let mut resl2: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-            let mut i: i32 = 0;
+            let mut resl: Arc<metamodelica::List<Arc<Values::Value>>>;
+            let mut resl2: Arc<metamodelica::List<Arc<Values::Value>>>;
+            let mut i: i32;
             let mut dim = (*dim).clone();
             let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(matrixStripFirstColumn(rest.clone())?) {
                 (Deref @ Values::Value::ARRAY { valueLst: __pa0, dimLst: Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Nil } }, __pa2) => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
@@ -1721,8 +1721,8 @@ pub fn intlistToValue(mut inIntegerLst: Arc<metamodelica::List<i32>>) -> Result<
             Arc::new(Values::Value::ARRAY { valueLst: metamodelica::nil(), dimLst: list![0] })
         },
         Deref @ metamodelica::List::Cons { head: i, tail: lst } => {
-            let mut res: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-            let mut len: i32 = 0;
+            let mut res: Arc<metamodelica::List<Arc<Values::Value>>>;
+            let mut len: i32;
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(intlistToValue(lst.clone())?) {
                 Deref @ Values::Value::ARRAY { valueLst: __pa0, dimLst: Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Nil } } => (__pa0.clone(), __pa1.clone()),
                 _ => bail!("pattern mismatch"),
@@ -1762,8 +1762,8 @@ pub fn writePtolemyplotDataset(mut inString1: ArcStr, mut inValue2: Arc<Values::
     let mut outInteger: i32;
     outInteger = (::match_deref::match_deref! { match &((inString1.clone(), inValue2.clone(), inStringLst3.clone(), inString4.clone())) {
         (filename, Deref @ Values::Value::ARRAY { valueLst: Deref @ metamodelica::List::Cons { head: t, tail: rest }, .. }, Deref @ metamodelica::List::Cons { head: _, tail: varnames }, message) => {
-            let mut r#str: ArcStr = arcstr::literal!("");
-            let mut handle: i32 = 0;
+            let mut r#str: ArcStr;
+            let mut handle: i32;
             handle = Print::saveAndClearBuf()?;
             Print::printBuf((literal!("#Ptolemy Plot generated by OpenModelica\nTitleText: ")).clone())?;
             Print::printBuf((message.clone()).clone())?;
@@ -1846,8 +1846,8 @@ pub fn reverseMatrix(mut inValue: Arc<Values::Value>) -> Arc<Values::Value> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Values::Value::ARRAY { valueLst: lst, dimLst: dims } => {
-                    let mut lst_1: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-                    let mut lst_2: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
+                    let mut lst_1: Arc<metamodelica::List<Arc<Values::Value>>>;
+                    let mut lst_2: Arc<metamodelica::List<Arc<Values::Value>>>;
                     lst_1 = List::map(lst.clone(), (std::sync::Arc::new(fnptr!(reverseMatrix, Arc<Values::Value>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<Arc<Values::Value>> + 'static>))?;
                     lst_2 = lst_1.clone().reverse();
                     Ok(Arc::new(Values::Value::ARRAY { valueLst: lst_2.clone(), dimLst: dims.clone() }))
@@ -1875,17 +1875,17 @@ pub fn nthnthArrayelt(mut inLst: Arc<metamodelica::List<Arc<Values::Value>>>, mu
             return Ok(preRes.clone())
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { integer: n }, tail: vlst2 }, Deref @ Values::Value::ARRAY { valueLst: vlst, .. }, _) => {
-            let mut res: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
+            let mut res: Arc<Values::Value>;
             res = (vlst.clone()).get(n.clone())?;
             { (inLst, inValue, lastValue) = (vlst2.clone(), res.clone(), res.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ENUM_LITERAL { index: n, .. }, tail: vlst2 }, Deref @ Values::Value::ARRAY { valueLst: vlst, .. }, _) => {
-            let mut res: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
+            let mut res: Arc<Values::Value>;
             res = (vlst.clone()).get(n.clone())?;
             { (inLst, inValue, lastValue) = (vlst2.clone(), res.clone(), res.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: b }, tail: vlst2 }, Deref @ Values::Value::ARRAY { valueLst: vlst, .. }, _) => {
-            let mut res: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
+            let mut res: Arc<Values::Value>;
             res = (vlst.clone()).get(if (b.clone()) {2} else {1})?;
             { (inLst, inValue, lastValue) = (vlst2.clone(), res.clone(), res.clone()); continue '__tco; }
         },
@@ -2096,7 +2096,7 @@ pub fn typeConvertRecord(mut inValue: Arc<Values::Value>, mut inType: Arc<DAE::T
             Arc::new(Values::Value::REAL { real: intReal(var_field!((*outValue).integer, Values::Value::INTEGER).clone()) })
         },
         (Deref @ Values::Value::ARRAY { .. }, Deref @ DAE::Type::T_ARRAY { .. }) => {
-            let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+            let mut ty: Arc<DAE::Type>;
             ty = Expression::unliftArray(inType.clone())?;
             assign_variant_field!(outValue => Values::Value::ARRAY; valueLst = ({
         let mut __acc: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();

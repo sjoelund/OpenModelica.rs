@@ -114,7 +114,7 @@ pub fn printPrefixStr(mut inPrefix: DAE::Prefix) -> Result<ArcStr> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 DAE::Prefix::PREFIX { compPre: Deref @ DAE::ComponentPrefix::PRE { prefix: r#str, dimensions: _, subscripts: ss, next: Deref @ DAE::ComponentPrefix::NOCOMPPRE { .. }, ci_state: _, info: _ }, classPre: _ } => {
-                    let mut s: ArcStr = arcstr::literal!("");
+                    let mut s: ArcStr;
                     s = (stringAppend((r#str.clone()).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*stringDelimitList(List::map(ss.clone(), (std::sync::Arc::new(ExpressionDump::subscriptString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Subscript>) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone())); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone())).clone();
                     Ok(s.clone())
                 }
@@ -124,9 +124,9 @@ pub fn printPrefixStr(mut inPrefix: DAE::Prefix) -> Result<ArcStr> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 DAE::Prefix::PREFIX { compPre: Deref @ DAE::ComponentPrefix::PRE { prefix: r#str, dimensions: _, subscripts: Deref @ metamodelica::List::Nil, next: rest, ci_state: _, info: _ }, classPre: cp } => {
-                    let mut s: ArcStr = arcstr::literal!("");
-                    let mut rest_1: ArcStr = arcstr::literal!("");
-                    let mut s_1: ArcStr = arcstr::literal!("");
+                    let mut s: ArcStr;
+                    let mut rest_1: ArcStr;
+                    let mut s_1: ArcStr;
                     rest_1 = (printPrefixStr(DAE::Prefix::PREFIX { compPre: rest.clone(), classPre: cp.clone() })?).clone();
                     s = (stringAppend((rest_1.clone()).clone(), (literal!(".")).clone())).clone();
                     s_1 = (stringAppend((s.clone()).clone(), (r#str.clone()).clone())).clone();
@@ -138,10 +138,10 @@ pub fn printPrefixStr(mut inPrefix: DAE::Prefix) -> Result<ArcStr> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 DAE::Prefix::PREFIX { compPre: Deref @ DAE::ComponentPrefix::PRE { prefix: r#str, dimensions: _, subscripts: ss, next: rest, ci_state: _, info: _ }, classPre: cp } => {
-                    let mut s: ArcStr = arcstr::literal!("");
-                    let mut rest_1: ArcStr = arcstr::literal!("");
-                    let mut s_1: ArcStr = arcstr::literal!("");
-                    let mut s_2: ArcStr = arcstr::literal!("");
+                    let mut s: ArcStr;
+                    let mut rest_1: ArcStr;
+                    let mut s_1: ArcStr;
+                    let mut s_2: ArcStr;
                     rest_1 = (printPrefixStr(DAE::Prefix::PREFIX { compPre: rest.clone(), classPre: cp.clone() })?).clone();
                     s = (stringAppend((rest_1.clone()).clone(), (literal!(".")).clone())).clone();
                     s_1 = (stringAppend((s.clone()).clone(), (r#str.clone()).clone())).clone();
@@ -268,7 +268,7 @@ pub fn prefixLast(mut inPrefix: DAE::Prefix) -> Result<DAE::Prefix> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 DAE::Prefix::PREFIX { compPre: Deref @ DAE::ComponentPrefix::PRE { next: p, .. }, classPre: cp } => {
-                    let mut res: DAE::Prefix = DAE::Prefix::NOPRE;
+                    let mut res: DAE::Prefix;
                     res = prefixLast(DAE::Prefix::PREFIX { compPre: p.clone(), classPre: cp.clone() })?;
                     Ok(res.clone())
                 }
@@ -316,11 +316,11 @@ pub fn prefixPath(mut inPath: Arc<Absyn::Path>, mut inPrefix: DAE::Prefix) -> Re
             return Ok(p.clone())
         },
         (p, DAE::Prefix::PREFIX { compPre: Deref @ DAE::ComponentPrefix::PRE { prefix: s, next: Deref @ DAE::ComponentPrefix::NOCOMPPRE { .. }, .. }, classPre: _ }) => {
-            let mut p_1: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+            let mut p_1: Arc<Absyn::Path>;
             return Ok(Arc::new(Absyn::Path::QUALIFIED { name: (s.clone()).clone(), path: p.clone() }))
         },
         (p, DAE::Prefix::PREFIX { compPre: Deref @ DAE::ComponentPrefix::PRE { prefix: s, next: ss, .. }, classPre: cp }) => {
-            let mut p_1: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+            let mut p_1: Arc<Absyn::Path>;
             { (inPath, inPrefix) = (Arc::new(Absyn::Path::QUALIFIED { name: (s.clone()).clone(), path: p.clone() }), DAE::Prefix::PREFIX { compPre: ss.clone(), classPre: cp.clone() }); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
@@ -394,18 +394,18 @@ fn prefixToCref2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: I
             return Ok((cache.clone(), cref.clone()))
         },
         (cache, env, DAE::Prefix::PREFIX { compPre: Deref @ DAE::ComponentPrefix::PRE { prefix: i, dimensions: ds, subscripts: s, next: xs, ci_state, .. }, classPre: cp }, None) => {
-            let mut cref_1: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-            let mut cref_: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-            let mut ident_ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+            let mut cref_1: Arc<DAE::ComponentRef>;
+            let mut cref_: Arc<DAE::ComponentRef>;
+            let mut ident_ty: Arc<DAE::Type>;
             let mut cache = (*cache).clone();
             ident_ty = Expression::liftArrayLeftList(Arc::new(DAE::Type::T_COMPLEX { complexClassType: ci_state.clone(), varLst: metamodelica::nil(), equalityConstraint: None, usedExternally: false }), ds.clone());
             cref_ = ComponentReferenceBasics::makeCrefIdent((i.clone()).clone(), ident_ty.clone(), s.clone());
             { (inCache, inEnv, inIH, inPrefix, inExpComponentRefOption) = (cache.clone(), env.clone(), inIH.clone(), DAE::Prefix::PREFIX { compPre: xs.clone(), classPre: cp.clone() }, Some(cref_.clone())); continue '__tco; }
         },
         (cache, env, DAE::Prefix::PREFIX { compPre: Deref @ DAE::ComponentPrefix::PRE { prefix: i, dimensions: ds, subscripts: s, next: xs, ci_state, .. }, classPre: cp }, Some(cref)) => {
-            let mut cref_1: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-            let mut cref_2: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-            let mut ident_ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+            let mut cref_1: Arc<DAE::ComponentRef>;
+            let mut cref_2: Arc<DAE::ComponentRef>;
+            let mut ident_ty: Arc<DAE::Type>;
             let mut cache = (*cache).clone();
             let mut cref = (*cref).clone();
             (cache, cref) = prefixSubscriptsInCref(cache.clone(), env.clone(), inIH.clone(), inPrefix.clone(), cref.clone())?;
@@ -437,14 +437,14 @@ pub fn prefixToCrefOpt2(mut inPrefix: DAE::Prefix, mut inExpComponentRefOption: 
             return Ok(Some(cref.clone()))
         },
         (DAE::Prefix::PREFIX { compPre: Deref @ DAE::ComponentPrefix::PRE { prefix: i, subscripts: s, next: xs, .. }, classPre: cp }, None) => {
-            let mut cref_1: Option<Arc<DAE::ComponentRef>> = None;
-            let mut cref_: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
+            let mut cref_1: Option<Arc<DAE::ComponentRef>>;
+            let mut cref_: Arc<DAE::ComponentRef>;
             cref_ = ComponentReferenceBasics::makeCrefIdent((i.clone()).clone(), Arc::new(DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::UNKNOWN { path: Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }) }, varLst: metamodelica::nil(), equalityConstraint: None, usedExternally: false }), s.clone());
             { (inPrefix, inExpComponentRefOption) = (DAE::Prefix::PREFIX { compPre: xs.clone(), classPre: cp.clone() }, Some(cref_.clone())); continue '__tco; }
         },
         (DAE::Prefix::PREFIX { compPre: Deref @ DAE::ComponentPrefix::PRE { prefix: i, subscripts: s, next: xs, .. }, classPre: cp }, Some(cref)) => {
-            let mut cref_1: Option<Arc<DAE::ComponentRef>> = None;
-            let mut cref_: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
+            let mut cref_1: Option<Arc<DAE::ComponentRef>>;
+            let mut cref_: Arc<DAE::ComponentRef>;
             cref_ = ComponentReferenceBasics::makeCrefQual((i.clone()).clone(), Arc::new(DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::UNKNOWN { path: Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }) }, varLst: metamodelica::nil(), equalityConstraint: None, usedExternally: false }), s.clone(), cref.clone());
             { (inPrefix, inExpComponentRefOption) = (DAE::Prefix::PREFIX { compPre: xs.clone(), classPre: cp.clone() }, Some(cref_.clone())); continue '__tco; }
         },
@@ -460,7 +460,7 @@ pub fn makeCrefFromPrefixNoFail(mut pre: DAE::Prefix) -> Result<Arc<DAE::Compone
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 DAE::Prefix::NOPRE { .. } => {
-                    let mut c: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
+                    let mut c: Arc<DAE::ComponentRef>;
                     c = ComponentReferenceBasics::makeCrefIdent((literal!("")).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), metamodelica::nil());
                     Ok(c.clone())
                 }
@@ -470,7 +470,7 @@ pub fn makeCrefFromPrefixNoFail(mut pre: DAE::Prefix) -> Result<Arc<DAE::Compone
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 DAE::Prefix::PREFIX { compPre: Deref @ DAE::ComponentPrefix::NOCOMPPRE { .. }, classPre: _ } => {
-                    let mut c: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
+                    let mut c: Arc<DAE::ComponentRef>;
                     c = ComponentReferenceBasics::makeCrefIdent((literal!("")).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), metamodelica::nil());
                     Ok(c.clone())
                 }
@@ -480,7 +480,7 @@ pub fn makeCrefFromPrefixNoFail(mut pre: DAE::Prefix) -> Result<Arc<DAE::Compone
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    let mut c: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
+                    let mut c: Arc<DAE::ComponentRef>;
                     c = prefixToCref(pre.clone())?;
                     Ok(c.clone())
                 }
@@ -503,7 +503,7 @@ fn prefixSubscriptsInCrefWork(mut inCache: FCore::Cache, mut inEnv: FCore::Graph
     '__tco: loop {
         ::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inCr.clone())) {
         (cache, env, Deref @ DAE::ComponentRef::CREF_IDENT { ident: id, identType: tp, subscriptLst: subs }) => {
-            let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
+            let mut cr: Arc<DAE::ComponentRef>;
             let mut cache = (*cache).clone();
             let mut subs = (*subs).clone();
             (cache, subs) = prefixSubscripts(cache.clone(), env.clone(), inIH.clone(), pre.clone(), subs.clone())?;
@@ -511,7 +511,7 @@ fn prefixSubscriptsInCrefWork(mut inCache: FCore::Cache, mut inEnv: FCore::Graph
             return Ok((cache.clone(), ComponentReference::implode_reverse(metamodelica::cons(cr.clone(), acc.clone()))?))
         },
         (cache, env, Deref @ DAE::ComponentRef::CREF_QUAL { ident: id, identType: tp, subscriptLst: subs, componentRef: cr }) => {
-            let mut crid: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
+            let mut crid: Arc<DAE::ComponentRef>;
             let mut cache = (*cache).clone();
             let mut subs = (*subs).clone();
             let mut cr = (*cr).clone();
@@ -582,7 +582,7 @@ pub fn prefixCrefInnerOuter(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
     let mut outCref: Arc<DAE::ComponentRef>;
     (outCache, outCref) = (::match_deref::match_deref! { match &((inCache.clone(), inIH.clone(), inCref.clone(), inPrefix.clone())) {
         (cache, ih, cref, pre) => {
-            let mut newCref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
+            let mut newCref: Arc<DAE::ComponentRef>;
             newCref = InnerOuter::prefixOuterCrefWithTheInnerPrefix(ih.clone(), cref.clone(), pre.clone())?;
             (cache.clone(), newCref.clone())
         },
@@ -627,8 +627,8 @@ fn prefixExpWork(mut cache: FCore::Cache, mut env: FCore::Graph, mut ih: Arc<met
             (cache.clone(), e.clone())
         },
         (Deref @ DAE::Exp::CREF { componentRef: cr, ty: t }, _) => {
-            let mut crefExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut cr_1: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
+            let mut crefExp: Arc<DAE::Exp>;
+            let mut cr_1: Arc<DAE::ComponentRef>;
             let mut t = (*t).clone();
             if System::getHasInnerOuterDefinitions() && !(ih.clone().is_empty()) {
                 if '__try0: {
@@ -653,9 +653,9 @@ fn prefixExpWork(mut cache: FCore::Cache, mut env: FCore::Graph, mut ih: Arc<met
             (cache.clone(), Arc::new(DAE::Exp::CLKCONST { clk: clk.clone() }))
         },
         (Deref @ DAE::Exp::ASUB { exp: e1, sub: subs }, _) => {
-            let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut es_1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-            let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
+            let mut e2: Arc<DAE::Exp>;
+            let mut es_1: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+            let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>>;
             let mut e1 = (*e1).clone();
             expl = ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
@@ -671,71 +671,71 @@ fn prefixExpWork(mut cache: FCore::Cache, mut env: FCore::Graph, mut ih: Arc<met
             (cache.clone(), e2.clone())
         },
         (Deref @ DAE::Exp::TSUB { exp: e1, ix: index_, ty: t }, _) => {
-            let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e2: Arc<DAE::Exp>;
             let mut e1 = (*e1).clone();
             (cache, e1) = prefixExpWork(cache.clone(), env.clone(), ih.clone(), e1.clone(), pre.clone())?;
             e2 = Arc::new(DAE::Exp::TSUB { exp: e1.clone(), ix: index_.clone(), ty: t.clone() });
             (cache.clone(), e2.clone())
         },
         (Deref @ DAE::Exp::BINARY { exp1: e1, operator: o, exp2: e2 }, _) => {
-            let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut e2_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e1_1: Arc<DAE::Exp>;
+            let mut e2_1: Arc<DAE::Exp>;
             (cache, e1_1) = prefixExpWork(cache.clone(), env.clone(), ih.clone(), e1.clone(), pre.clone())?;
             (cache, e2_1) = prefixExpWork(cache.clone(), env.clone(), ih.clone(), e2.clone(), pre.clone())?;
             (cache.clone(), Arc::new(DAE::Exp::BINARY { exp1: e1_1.clone(), operator: o.clone(), exp2: e2_1.clone() }))
         },
         (Deref @ DAE::Exp::UNARY { operator: o, exp: e1 }, _) => {
-            let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e1_1: Arc<DAE::Exp>;
             (cache, e1_1) = prefixExpWork(cache.clone(), env.clone(), ih.clone(), e1.clone(), pre.clone())?;
             (cache.clone(), Arc::new(DAE::Exp::UNARY { operator: o.clone(), exp: e1_1.clone() }))
         },
         (Deref @ DAE::Exp::LBINARY { exp1: e1, operator: o, exp2: e2 }, _) => {
-            let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut e2_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e1_1: Arc<DAE::Exp>;
+            let mut e2_1: Arc<DAE::Exp>;
             (cache, e1_1) = prefixExpWork(cache.clone(), env.clone(), ih.clone(), e1.clone(), pre.clone())?;
             (cache, e2_1) = prefixExpWork(cache.clone(), env.clone(), ih.clone(), e2.clone(), pre.clone())?;
             (cache.clone(), Arc::new(DAE::Exp::LBINARY { exp1: e1_1.clone(), operator: o.clone(), exp2: e2_1.clone() }))
         },
         (Deref @ DAE::Exp::LUNARY { operator: o, exp: e1 }, _) => {
-            let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e1_1: Arc<DAE::Exp>;
             (cache, e1_1) = prefixExpWork(cache.clone(), env.clone(), ih.clone(), e1.clone(), pre.clone())?;
             (cache.clone(), Arc::new(DAE::Exp::LUNARY { operator: o.clone(), exp: e1_1.clone() }))
         },
         (Deref @ DAE::Exp::RELATION { exp1: e1, operator: o, exp2: e2, index: index_, optionExpisASUB: isExpisASUB }, _) => {
-            let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut e2_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e1_1: Arc<DAE::Exp>;
+            let mut e2_1: Arc<DAE::Exp>;
             (cache, e1_1) = prefixExpWork(cache.clone(), env.clone(), ih.clone(), e1.clone(), pre.clone())?;
             (cache, e2_1) = prefixExpWork(cache.clone(), env.clone(), ih.clone(), e2.clone(), pre.clone())?;
             (cache.clone(), Arc::new(DAE::Exp::RELATION { exp1: e1_1.clone(), operator: o.clone(), exp2: e2_1.clone(), index: index_.clone(), optionExpisASUB: isExpisASUB.clone() }))
         },
         (Deref @ DAE::Exp::IFEXP { expCond: e1, expThen: e2, expElse: e3 }, _) => {
-            let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut e2_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut e3_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e1_1: Arc<DAE::Exp>;
+            let mut e2_1: Arc<DAE::Exp>;
+            let mut e3_1: Arc<DAE::Exp>;
             (cache, e1_1) = prefixExpWork(cache.clone(), env.clone(), ih.clone(), e1.clone(), pre.clone())?;
             (cache, e2_1) = prefixExpWork(cache.clone(), env.clone(), ih.clone(), e2.clone(), pre.clone())?;
             (cache, e3_1) = prefixExpWork(cache.clone(), env.clone(), ih.clone(), e3.clone(), pre.clone())?;
             (cache.clone(), Arc::new(DAE::Exp::IFEXP { expCond: e1_1.clone(), expThen: e2_1.clone(), expElse: e3_1.clone() }))
         },
         (Deref @ DAE::Exp::SIZE { exp: cref, sz: Some(dim) }, _) => {
-            let mut cref_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut dim_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut cref_1: Arc<DAE::Exp>;
+            let mut dim_1: Arc<DAE::Exp>;
             (cache, cref_1) = prefixExpWork(cache.clone(), env.clone(), ih.clone(), cref.clone(), pre.clone())?;
             (cache, dim_1) = prefixExpWork(cache.clone(), env.clone(), ih.clone(), dim.clone(), pre.clone())?;
             (cache.clone(), Arc::new(DAE::Exp::SIZE { exp: cref_1.clone(), sz: Some(dim_1.clone()) }))
         },
         (Deref @ DAE::Exp::SIZE { exp: cref, sz: None }, _) => {
-            let mut cref_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut cref_1: Arc<DAE::Exp>;
             (cache, cref_1) = prefixExpWork(cache.clone(), env.clone(), ih.clone(), cref.clone(), pre.clone())?;
             (cache.clone(), Arc::new(DAE::Exp::SIZE { exp: cref_1.clone(), sz: None }))
         },
         (Deref @ DAE::Exp::CALL { path: f, expLst: es, attr }, _) => {
-            let mut es_1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
+            let mut es_1: Arc<metamodelica::List<Arc<DAE::Exp>>>;
             (cache, es_1) = prefixExpList(cache.clone(), env.clone(), ih.clone(), es.clone(), pre.clone())?;
             (cache.clone(), Arc::new(DAE::Exp::CALL { path: f.clone(), expLst: es_1.clone(), attr: attr.clone() }))
         },
         (e @ Deref @ DAE::Exp::PARTEVALFUNCTION { .. }, _) => {
-            let mut es_1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
+            let mut es_1: Arc<metamodelica::List<Arc<DAE::Exp>>>;
             let mut e = (*e).clone();
             (cache, es_1) = prefixExpList(cache.clone(), env.clone(), ih.clone(), var_field!((*e).expList, DAE::Exp::PARTEVALFUNCTION).clone(), pre.clone())?;
             assign_variant_field!(e => DAE::Exp::PARTEVALFUNCTION; expList = es_1.clone());
@@ -749,12 +749,12 @@ fn prefixExpWork(mut cache: FCore::Cache, mut env: FCore::Graph, mut ih: Arc<met
             (cache.clone(), inExp.clone())
         },
         (Deref @ DAE::Exp::ARRAY { ty: t, scalar: sc, array: es }, _) => {
-            let mut es_1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
+            let mut es_1: Arc<metamodelica::List<Arc<DAE::Exp>>>;
             (cache, es_1) = prefixExpList(cache.clone(), env.clone(), ih.clone(), es.clone(), pre.clone())?;
             (cache.clone(), Arc::new(DAE::Exp::ARRAY { ty: t.clone(), scalar: sc.clone(), array: es_1.clone() }))
         },
         (Deref @ DAE::Exp::TUPLE { PR: es }, _) => {
-            let mut es_1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
+            let mut es_1: Arc<metamodelica::List<Arc<DAE::Exp>>>;
             (cache, es_1) = prefixExpList(cache.clone(), env.clone(), ih.clone(), es.clone(), pre.clone())?;
             (cache.clone(), Arc::new(DAE::Exp::TUPLE { PR: es_1.clone() }))
         },
@@ -762,8 +762,8 @@ fn prefixExpWork(mut cache: FCore::Cache, mut env: FCore::Graph, mut ih: Arc<met
             (cache.clone(), inExp.clone())
         },
         (Deref @ DAE::Exp::MATRIX { ty: t, integer: a, matrix: Deref @ metamodelica::List::Cons { head: x, tail: xs } }, _) => {
-            let mut x_1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-            let mut xs_1: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>> = metamodelica::nil();
+            let mut x_1: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+            let mut xs_1: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>>;
             let mut t = (*t).clone();
             (cache, x_1) = prefixExpList(cache.clone(), env.clone(), ih.clone(), x.clone(), pre.clone())?;
             let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(prefixExpWork(cache.clone(), env.clone(), ih.clone(), Arc::new(DAE::Exp::MATRIX { ty: t.clone(), integer: a.clone(), matrix: xs.clone() }), pre.clone())?) {
@@ -776,35 +776,35 @@ fn prefixExpWork(mut cache: FCore::Cache, mut env: FCore::Graph, mut ih: Arc<met
             (cache.clone(), Arc::new(DAE::Exp::MATRIX { ty: t.clone(), integer: a.clone(), matrix: metamodelica::cons(x_1.clone(), xs_1.clone()) }))
         },
         (Deref @ DAE::Exp::RANGE { ty: t, start, step: None, stop }, _) => {
-            let mut start_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut stop_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut start_1: Arc<DAE::Exp>;
+            let mut stop_1: Arc<DAE::Exp>;
             (cache, start_1) = prefixExpWork(cache.clone(), env.clone(), ih.clone(), start.clone(), pre.clone())?;
             (cache, stop_1) = prefixExpWork(cache.clone(), env.clone(), ih.clone(), stop.clone(), pre.clone())?;
             (cache.clone(), Arc::new(DAE::Exp::RANGE { ty: t.clone(), start: start_1.clone(), step: None, stop: stop_1.clone() }))
         },
         (Deref @ DAE::Exp::RANGE { ty: t, start, step: Some(step), stop }, _) => {
-            let mut start_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut stop_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut step_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut start_1: Arc<DAE::Exp>;
+            let mut stop_1: Arc<DAE::Exp>;
+            let mut step_1: Arc<DAE::Exp>;
             (cache, start_1) = prefixExpWork(cache.clone(), env.clone(), ih.clone(), start.clone(), pre.clone())?;
             (cache, step_1) = prefixExpWork(cache.clone(), env.clone(), ih.clone(), step.clone(), pre.clone())?;
             (cache, stop_1) = prefixExpWork(cache.clone(), env.clone(), ih.clone(), stop.clone(), pre.clone())?;
             (cache.clone(), Arc::new(DAE::Exp::RANGE { ty: t.clone(), start: start_1.clone(), step: Some(step_1.clone()), stop: stop_1.clone() }))
         },
         (Deref @ DAE::Exp::CAST { ty: tp, exp: e }, _) => {
-            let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e_1: Arc<DAE::Exp>;
             (cache, e_1) = prefixExpWork(cache.clone(), env.clone(), ih.clone(), e.clone(), pre.clone())?;
             (cache.clone(), Arc::new(DAE::Exp::CAST { ty: tp.clone(), exp: e_1.clone() }))
         },
         (Deref @ DAE::Exp::REDUCTION { reductionInfo, expr: exp, iterators: riters }, _) => {
-            let mut exp_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut exp_1: Arc<DAE::Exp>;
             let mut riters = (*riters).clone();
             (cache, exp_1) = prefixExpWork(cache.clone(), env.clone(), ih.clone(), exp.clone(), pre.clone())?;
             (cache, riters) = prefixIterators(cache.clone(), env.clone(), ih.clone(), riters.clone(), pre.clone())?;
             (cache.clone(), Arc::new(DAE::Exp::REDUCTION { reductionInfo: reductionInfo.clone(), expr: exp_1.clone(), iterators: riters.clone() }))
         },
         (Deref @ DAE::Exp::LIST { valList: es }, _) => {
-            let mut es_1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
+            let mut es_1: Arc<metamodelica::List<Arc<DAE::Exp>>>;
             (cache, es_1) = prefixExpList(cache.clone(), env.clone(), ih.clone(), es.clone(), pre.clone())?;
             (cache.clone(), Arc::new(DAE::Exp::LIST { valList: es_1.clone() }))
         },
@@ -816,7 +816,7 @@ fn prefixExpWork(mut cache: FCore::Cache, mut env: FCore::Graph, mut ih: Arc<met
             (cache.clone(), Arc::new(DAE::Exp::CONS { car: e1.clone(), cdr: e2.clone() }))
         },
         (Deref @ DAE::Exp::META_TUPLE { listExp: es }, _) => {
-            let mut es_1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
+            let mut es_1: Arc<metamodelica::List<Arc<DAE::Exp>>>;
             (cache, es_1) = prefixExpList(cache.clone(), env.clone(), ih.clone(), es.clone(), pre.clone())?;
             (cache.clone(), Arc::new(DAE::Exp::META_TUPLE { listExp: es_1.clone() }))
         },
@@ -829,7 +829,7 @@ fn prefixExpWork(mut cache: FCore::Cache, mut env: FCore::Graph, mut ih: Arc<met
             (cache.clone(), Arc::new(DAE::Exp::META_OPTION { exp: None }))
         },
         (Deref @ DAE::Exp::METARECORDCALL { .. }, _) => {
-            let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
+            let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>>;
             (cache, expl) = prefixExpList(cache.clone(), env.clone(), ih.clone(), var_field!((*inExp).args, DAE::Exp::METARECORDCALL).clone(), pre.clone())?;
             (cache.clone(), Arc::new(DAE::Exp::METARECORDCALL { path: var_field!((*inExp).path, DAE::Exp::METARECORDCALL).clone(), args: expl.clone(), fieldNames: var_field!((*inExp).fieldNames, DAE::Exp::METARECORDCALL).clone(), index: var_field!((*inExp).index, DAE::Exp::METARECORDCALL).clone(), typeVars: var_field!((*inExp).typeVars, DAE::Exp::METARECORDCALL).clone() }))
         },
@@ -883,7 +883,7 @@ fn prefixExpCref2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: 
     let mut outCref: Arc<DAE::Exp>;
     (outCache, outCref) = (::match_deref::match_deref! { match &((inCache.clone(), inIsIter.clone(), inCref.clone())) {
         (cache, Some(false), Deref @ DAE::Exp::CREF { componentRef: cr, ty }) => {
-            let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut exp: Arc<DAE::Exp>;
             let mut cache = (*cache).clone();
             let mut cr = (*cr).clone();
             let mut ty = (*ty).clone();
@@ -896,7 +896,7 @@ fn prefixExpCref2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: 
             (inCache.clone(), inCref.clone())
         },
         (cache, None, Deref @ DAE::Exp::CREF { componentRef: cr, ty }) => {
-            let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut exp: Arc<DAE::Exp>;
             let mut cache = (*cache).clone();
             let mut cr = (*cr).clone();
             let mut ty = (*ty).clone();
@@ -918,7 +918,7 @@ fn prefixIterators(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut ih: I
             (cache.clone(), metamodelica::nil())
         },
         (cache, env, Deref @ metamodelica::List::Cons { head: Deref @ DAE::ReductionIterator { id, exp, guardExp: Some(gexp), ty }, tail: iters }) => {
-            let mut iter: Arc<DAE::ReductionIterator> = Arc::new(<DAE::ReductionIterator as ::std::default::Default>::default());
+            let mut iter: Arc<DAE::ReductionIterator>;
             let mut cache = (*cache).clone();
             let mut exp = (*exp).clone();
             let mut gexp = (*gexp).clone();
@@ -930,7 +930,7 @@ fn prefixIterators(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut ih: I
             (cache.clone(), metamodelica::cons(iter.clone(), iters.clone()))
         },
         (cache, env, Deref @ metamodelica::List::Cons { head: Deref @ DAE::ReductionIterator { id, exp, guardExp: None, ty }, tail: iters }) => {
-            let mut iter: Arc<DAE::ReductionIterator> = Arc::new(<DAE::ReductionIterator as ::std::default::Default>::default());
+            let mut iter: Arc<DAE::ReductionIterator>;
             let mut cache = (*cache).clone();
             let mut exp = (*exp).clone();
             let mut iters = (*iters).clone();
@@ -966,7 +966,7 @@ fn prefixStatements(mut cache: FCore::Cache, mut env: FCore::Graph, mut inIH: In
         let mut st = st.clone();
         let () = (::match_deref::match_deref! { match &(st.clone()) {
         Deref @ DAE::Statement::STMT_ASSIGN { type_: t, exp1: e1, exp: e, source } => {
-            let mut elem: Arc<DAE::Statement> = Arc::new(<DAE::Statement as ::std::default::Default>::default());
+            let mut elem: Arc<DAE::Statement>;
             let mut e1 = (*e1).clone();
             let mut e = (*e).clone();
             (outCache, e1) = prefixExpWork(outCache.clone(), env.clone(), inIH.clone(), e1.clone(), p.clone())?;
@@ -976,7 +976,7 @@ fn prefixStatements(mut cache: FCore::Cache, mut env: FCore::Graph, mut inIH: In
             ()
         },
         Deref @ DAE::Statement::STMT_TUPLE_ASSIGN { type_: t, expExpLst: eLst, exp: e, source } => {
-            let mut elem: Arc<DAE::Statement> = Arc::new(<DAE::Statement as ::std::default::Default>::default());
+            let mut elem: Arc<DAE::Statement>;
             let mut eLst = (*eLst).clone();
             let mut e = (*e).clone();
             (outCache, e) = prefixExpWork(outCache.clone(), env.clone(), inIH.clone(), e.clone(), p.clone())?;
@@ -986,7 +986,7 @@ fn prefixStatements(mut cache: FCore::Cache, mut env: FCore::Graph, mut inIH: In
             ()
         },
         Deref @ DAE::Statement::STMT_ASSIGN_ARR { type_: t, lhs: e1, exp: e, source } => {
-            let mut elem: Arc<DAE::Statement> = Arc::new(<DAE::Statement as ::std::default::Default>::default());
+            let mut elem: Arc<DAE::Statement>;
             let mut e1 = (*e1).clone();
             let mut e = (*e).clone();
             (outCache, e1) = prefixExpWork(outCache.clone(), env.clone(), inIH.clone(), e1.clone(), p.clone())?;
@@ -996,7 +996,7 @@ fn prefixStatements(mut cache: FCore::Cache, mut env: FCore::Graph, mut inIH: In
             ()
         },
         Deref @ DAE::Statement::STMT_FOR { type_: t, iterIsArray: bool, iter: id, range: e, statementLst: sList, source } => {
-            let mut elem: Arc<DAE::Statement> = Arc::new(<DAE::Statement as ::std::default::Default>::default());
+            let mut elem: Arc<DAE::Statement>;
             let mut e = (*e).clone();
             let mut sList = (*sList).clone();
             (outCache, e) = prefixExpWork(outCache.clone(), env.clone(), inIH.clone(), e.clone(), p.clone())?;
@@ -1006,7 +1006,7 @@ fn prefixStatements(mut cache: FCore::Cache, mut env: FCore::Graph, mut inIH: In
             ()
         },
         Deref @ DAE::Statement::STMT_IF { exp: e1, statementLst: sList, else_: elseBranch, source } => {
-            let mut elem: Arc<DAE::Statement> = Arc::new(<DAE::Statement as ::std::default::Default>::default());
+            let mut elem: Arc<DAE::Statement>;
             let mut e1 = (*e1).clone();
             let mut sList = (*sList).clone();
             let mut elseBranch = (*elseBranch).clone();
@@ -1018,7 +1018,7 @@ fn prefixStatements(mut cache: FCore::Cache, mut env: FCore::Graph, mut inIH: In
             ()
         },
         Deref @ DAE::Statement::STMT_WHILE { exp: e1, statementLst: sList, source } => {
-            let mut elem: Arc<DAE::Statement> = Arc::new(<DAE::Statement as ::std::default::Default>::default());
+            let mut elem: Arc<DAE::Statement>;
             let mut e1 = (*e1).clone();
             let mut sList = (*sList).clone();
             (outCache, e1) = prefixExpWork(outCache.clone(), env.clone(), inIH.clone(), e1.clone(), p.clone())?;
@@ -1028,7 +1028,7 @@ fn prefixStatements(mut cache: FCore::Cache, mut env: FCore::Graph, mut inIH: In
             ()
         },
         Deref @ DAE::Statement::STMT_ASSERT { cond: e1, msg: e2, level: e3, source } => {
-            let mut elem: Arc<DAE::Statement> = Arc::new(<DAE::Statement as ::std::default::Default>::default());
+            let mut elem: Arc<DAE::Statement>;
             let mut e1 = (*e1).clone();
             let mut e2 = (*e2).clone();
             let mut e3 = (*e3).clone();
@@ -1040,7 +1040,7 @@ fn prefixStatements(mut cache: FCore::Cache, mut env: FCore::Graph, mut inIH: In
             ()
         },
         Deref @ DAE::Statement::STMT_FAILURE { body: b, source } => {
-            let mut elem: Arc<DAE::Statement> = Arc::new(<DAE::Statement as ::std::default::Default>::default());
+            let mut elem: Arc<DAE::Statement>;
             let mut b = (*b).clone();
             (outCache, b) = prefixStatements(outCache.clone(), env.clone(), inIH.clone(), b.clone(), p.clone())?;
             elem = Arc::new(DAE::Statement::STMT_FAILURE { body: b.clone(), source: source.clone() });
@@ -1048,13 +1048,13 @@ fn prefixStatements(mut cache: FCore::Cache, mut env: FCore::Graph, mut inIH: In
             ()
         },
         Deref @ DAE::Statement::STMT_RETURN { source } => {
-            let mut elem: Arc<DAE::Statement> = Arc::new(<DAE::Statement as ::std::default::Default>::default());
+            let mut elem: Arc<DAE::Statement>;
             elem = Arc::new(DAE::Statement::STMT_RETURN { source: source.clone() });
             outStmts = metamodelica::cons(elem.clone(), outStmts.clone());
             ()
         },
         Deref @ DAE::Statement::STMT_BREAK { source } => {
-            let mut elem: Arc<DAE::Statement> = Arc::new(<DAE::Statement as ::std::default::Default>::default());
+            let mut elem: Arc<DAE::Statement>;
             elem = Arc::new(DAE::Statement::STMT_BREAK { source: source.clone() });
             outStmts = metamodelica::cons(elem.clone(), outStmts.clone());
             ()
@@ -1074,7 +1074,7 @@ fn prefixElse(mut cache: FCore::Cache, mut env: FCore::Graph, mut inIH: Instance
             (localCache.clone(), openmodelica_frontend_types::DAE::Else::interned_NOELSE())
         },
         (localCache, localEnv, ih, Deref @ DAE::Else::ELSEIF { exp: e, statementLst: lStmt, else_: el }, pre) => {
-            let mut stmt: Arc<DAE::Else> = Arc::new(DAE::Else::NOELSE);
+            let mut stmt: Arc<DAE::Else>;
             let mut localCache = (*localCache).clone();
             let mut e = (*e).clone();
             let mut lStmt = (*lStmt).clone();
@@ -1086,7 +1086,7 @@ fn prefixElse(mut cache: FCore::Cache, mut env: FCore::Graph, mut inIH: Instance
             (localCache.clone(), stmt.clone())
         },
         (localCache, localEnv, ih, Deref @ DAE::Else::ELSE { statementLst: lStmt }, pre) => {
-            let mut stmt: Arc<DAE::Else> = Arc::new(DAE::Else::NOELSE);
+            let mut stmt: Arc<DAE::Else>;
             let mut localCache = (*localCache).clone();
             let mut lStmt = (*lStmt).clone();
             (localCache, lStmt) = prefixStatements(localCache.clone(), localEnv.clone(), ih.clone(), lStmt.clone(), pre.clone())?;
@@ -1154,7 +1154,7 @@ fn prefixArrayDimensions(mut ty: Arc<DAE::Type>, mut tpl: (FCore::Cache, FCore::
     let mut otpl: (FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::Prefix);
     (oty, otpl) = (::match_deref::match_deref! { match &((oty.clone(), tpl.clone())) {
         (Deref @ DAE::Type::T_ARRAY { .. }, (cache, env, ih, pre)) => {
-            let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
+            let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>;
             let mut cache = (*cache).clone();
             (cache, dims) = prefixDimensions(cache.clone(), env.clone(), ih.clone(), pre.clone(), var_field!((*oty).dims, DAE::Type::T_ARRAY).clone());
             assign_variant_field!(oty => DAE::Type::T_ARRAY; dims = dims.clone());
@@ -1184,8 +1184,8 @@ pub fn prefixDimensions(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ DAE::Dimension::DIM_EXP { exp: e }, tail: rest } => {
-                    let mut new: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
-                    let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
+                    let mut new: Arc<metamodelica::List<Arc<DAE::Dimension>>>;
+                    let mut cache: FCore::Cache;
                     let mut e = (*e).clone();
                     (cache, e) = prefixExpWork(inCache.clone(), inEnv.clone(), inIH.clone(), e.clone(), inPre.clone())?;
                     (cache, new) = prefixDimensions(cache.clone(), inEnv.clone(), inIH.clone(), inPre.clone(), rest.clone());
@@ -1197,8 +1197,8 @@ pub fn prefixDimensions(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: d, tail: rest } => {
-                    let mut new: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
-                    let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
+                    let mut new: Arc<metamodelica::List<Arc<DAE::Dimension>>>;
+                    let mut cache: FCore::Cache;
                     (cache, new) = prefixDimensions(inCache.clone(), inEnv.clone(), inIH.clone(), inPre.clone(), rest.clone());
                     Ok((cache.clone(), metamodelica::cons(d.clone(), new.clone())))
                 }
@@ -1236,7 +1236,7 @@ pub fn prefixClockKind(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut i
             (cache.clone(), inClkKind.clone())
         },
         (cache, env, ih, Deref @ DAE::ClockKind::RATIONAL_CLOCK { intervalCounter: e, resolution }, p) => {
-            let mut clkKind: Arc<DAE::ClockKind> = Arc::new(DAE::ClockKind::INFERRED_CLOCK);
+            let mut clkKind: Arc<DAE::ClockKind>;
             let mut cache = (*cache).clone();
             let mut e = (*e).clone();
             let mut resolution = (*resolution).clone();
@@ -1246,7 +1246,7 @@ pub fn prefixClockKind(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut i
             (cache.clone(), clkKind.clone())
         },
         (cache, env, ih, Deref @ DAE::ClockKind::REAL_CLOCK { interval: e }, p) => {
-            let mut clkKind: Arc<DAE::ClockKind> = Arc::new(DAE::ClockKind::INFERRED_CLOCK);
+            let mut clkKind: Arc<DAE::ClockKind>;
             let mut cache = (*cache).clone();
             let mut e = (*e).clone();
             (cache, e) = prefixExpWork(cache.clone(), env.clone(), ih.clone(), e.clone(), p.clone())?;
@@ -1254,7 +1254,7 @@ pub fn prefixClockKind(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut i
             (cache.clone(), clkKind.clone())
         },
         (cache, env, ih, Deref @ DAE::ClockKind::EVENT_CLOCK { condition: e, startInterval: interval }, p) => {
-            let mut clkKind: Arc<DAE::ClockKind> = Arc::new(DAE::ClockKind::INFERRED_CLOCK);
+            let mut clkKind: Arc<DAE::ClockKind>;
             let mut cache = (*cache).clone();
             let mut e = (*e).clone();
             let mut interval = (*interval).clone();
@@ -1264,7 +1264,7 @@ pub fn prefixClockKind(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut i
             (cache.clone(), clkKind.clone())
         },
         (cache, env, ih, Deref @ DAE::ClockKind::SOLVER_CLOCK { c: e, solverMethod: method }, p) => {
-            let mut clkKind: Arc<DAE::ClockKind> = Arc::new(DAE::ClockKind::INFERRED_CLOCK);
+            let mut clkKind: Arc<DAE::ClockKind>;
             let mut cache = (*cache).clone();
             let mut e = (*e).clone();
             let mut method = (*method).clone();
@@ -1362,7 +1362,7 @@ fn removeCompPrefixFromCrefExp(mut inExp: Arc<DAE::Exp>, mut inB: bool, mut inCo
     let mut b: bool;
     (outExp, b) = (::match_deref::match_deref! { match &(inExp.clone()) {
         exp @ Deref @ DAE::Exp::CREF { componentRef: Deref @ DAE::ComponentRef::CREF_QUAL { .. }, .. } => {
-            let mut cref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
+            let mut cref: Arc<DAE::ComponentRef>;
             let mut exp = (*exp).clone();
             cref = removePrefixFromCref(var_field!((*exp).componentRef, DAE::Exp::CREF).clone(), inCompPref.clone())?;
             assign_variant_field!(exp => DAE::Exp::CREF; componentRef = cref.clone());
@@ -1391,7 +1391,7 @@ fn removePrefixFromCref(mut inCref: Arc<DAE::ComponentRef>, mut inCompPref: Arc<
             return Ok(var_field!((**cref).componentRef, DAE::ComponentRef::CREF_QUAL).clone())
         },
         (Deref @ DAE::ComponentRef::CREF_QUAL { ident: _, .. }, pref @ Deref @ DAE::ComponentPrefix::PRE { next: Deref @ DAE::ComponentPrefix::PRE { prefix: _, .. }, .. }) => {
-            let mut cref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
+            let mut cref: Arc<DAE::ComponentRef>;
             let mut pref = (*pref).clone();
             cref = removePrefixFromCref(inCref.clone(), var_field!((*pref).next, DAE::ComponentPrefix::PRE).clone())?;
             assign_variant_field!(pref => DAE::ComponentPrefix::PRE; next = openmodelica_frontend_types::DAE::ComponentPrefix::interned_NOCOMPPRE());

@@ -25,9 +25,9 @@ fn lm_46(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVa
         let mut lstElt_46 = lstElt_46.clone();
         txt = (match lstElt_46.clone() {
         SimCodeVar::SimVar { name: ref i_v_name, .. } => {
-            let mut x_index0: i32 = 0;
-            let mut ret_1: ArcStr = arcstr::literal!("");
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut x_index0: i32;
+            let mut ret_1: ArcStr;
+            let mut txt_0: Tpl::Text;
             x_index0 = Tpl::getIteri_i0(txt.clone())?;
             txt = Tpl::writeStr(txt.clone(), (intString(x_index0.clone())).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(": ")).clone() }))?;
@@ -61,8 +61,8 @@ pub fn dumpAlias(mut in_txt: Tpl::Text, mut in_a_alias: SimCodeVar::AliasVariabl
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_alias.clone()) {
         (mut txt, SimCodeVar::AliasVariable::ALIAS { varName: ref i_varName }) => {
-            let mut ret_1: ArcStr = arcstr::literal!("");
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_1: ArcStr;
+            let mut txt_0: Tpl::Text;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<alias>")).clone() }))?;
             txt_0 = CodegenUtil::crefStrNoUnderscore(Tpl::emptyTxt.clone(), i_varName.clone())?;
             ret_1 = (Util::escapeModelicaStringToXmlString((Tpl::textString(txt_0.clone())?).clone())?).clone();
@@ -71,8 +71,8 @@ pub fn dumpAlias(mut in_txt: Tpl::Text, mut in_a_alias: SimCodeVar::AliasVariabl
             txt.clone()
         },
         (mut txt, SimCodeVar::AliasVariable::NEGATEDALIAS { varName: ref i_varName }) => {
-            let mut ret_3: ArcStr = arcstr::literal!("");
-            let mut txt_2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_3: ArcStr;
+            let mut txt_2: Tpl::Text;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 1 }))?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<alias negated=\"true\">")).clone() }))?;
             txt_2 = CodegenUtil::crefStrNoUnderscore(Tpl::emptyTxt.clone(), i_varName.clone())?;

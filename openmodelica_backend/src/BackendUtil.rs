@@ -112,8 +112,8 @@ fn modelicaStringToCStr1(mut inString: ArcStr, mut inReplacePatternLst: Arc<meta
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (r#str, Deref @ metamodelica::List::Cons { head: ReplacePattern { from, to }, tail: res }) => {
-                    let mut str_1: ArcStr = arcstr::literal!("");
-                    let mut res_str: ArcStr = arcstr::literal!("");
+                    let mut str_1: ArcStr;
+                    let mut res_str: ArcStr;
                     str_1 = (modelicaStringToCStr1((r#str.clone()).clone(), res.clone())?).clone();
                     res_str = (System::stringReplace((str_1.clone()).clone(), (from.clone()).clone(), (to.clone()).clone())?).clone();
                     Ok(res_str.clone())
@@ -141,8 +141,8 @@ fn modelicaStringToCStr2(mut inDerName: ArcStr) -> Result<ArcStr> {
         let __mc_input = inDerName.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let mut derName = __mc_input.clone() else { bail!("nomatch") };
-            let mut name: ArcStr = arcstr::literal!("");
-            let mut names: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+            let mut name: ArcStr;
+            let mut names: Arc<metamodelica::List<ArcStr>>;
             let 0 = (System::strncmp((derName.clone()).clone(), (literal!("der(")).clone(), 4)) else { bail!("pattern mismatch") };
             let __pa0 = ::match_deref::match_deref! { match &(System::strtok((derName.clone()).clone(), (literal!("()")).clone())) {
                 Deref @ metamodelica::List::Cons { head: _, tail: __pa0 } => __pa0.clone(),
@@ -155,7 +155,7 @@ fn modelicaStringToCStr2(mut inDerName: ArcStr) -> Result<ArcStr> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let mut derName = __mc_input.clone() else { bail!("nomatch") };
-            let mut name: ArcStr = arcstr::literal!("");
+            let mut name: ArcStr;
             let 0 = (System::strncmp((derName.clone()).clone(), (literal!("pre(")).clone(), 4)) else { bail!("pattern mismatch") };
             let __pa0 = ::match_deref::match_deref! { match &(System::strtok((derName.clone()).clone(), (literal!("()")).clone())) {
                 Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: __pa0, tail: _ } } => __pa0.clone(),

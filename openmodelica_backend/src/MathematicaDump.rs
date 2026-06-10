@@ -65,19 +65,19 @@ pub fn dumpMmaDAEStr(mut inTuple: (BackendDAE::Variables, BackendDAE::Variables,
     let mut res: ArcStr = arcstr::literal!("");
     res = ((::match_deref::match_deref! { match &(inTuple.clone()) {
         (vars, knvars, eqns, ieqns) => {
-            let mut allVarStr: ArcStr = arcstr::literal!("");
-            let mut s1_1: ArcStr = arcstr::literal!("");
-            let mut s1_2: ArcStr = arcstr::literal!("");
-            let mut s1_3: ArcStr = arcstr::literal!("");
-            let mut s1_4: ArcStr = arcstr::literal!("");
-            let mut s1_5: ArcStr = arcstr::literal!("");
-            let mut s3: ArcStr = arcstr::literal!("");
-            let mut s4: ArcStr = arcstr::literal!("");
-            let mut params: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            let mut inputs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            let mut states: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            let mut algs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            let mut outputs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+            let mut allVarStr: ArcStr;
+            let mut s1_1: ArcStr;
+            let mut s1_2: ArcStr;
+            let mut s1_3: ArcStr;
+            let mut s1_4: ArcStr;
+            let mut s1_5: ArcStr;
+            let mut s3: ArcStr;
+            let mut s4: ArcStr;
+            let mut params: Arc<metamodelica::List<ArcStr>>;
+            let mut inputs: Arc<metamodelica::List<ArcStr>>;
+            let mut states: Arc<metamodelica::List<ArcStr>>;
+            let mut algs: Arc<metamodelica::List<ArcStr>>;
+            let mut outputs: Arc<metamodelica::List<ArcStr>>;
             (states, algs, outputs, _) = printMmaVarsStr(vars.clone())?;
             (params, inputs) = printMmaParamsStr(knvars.clone())?;
             s1_1 = (Util::stringDelimitListNonEmptyElts(states.clone(), (literal!(",")).clone())?).clone();
@@ -100,7 +100,7 @@ pub fn printMmaEqnsStr(mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::Equati
     let mut res: ArcStr = arcstr::literal!("");
     res = ((::match_deref::match_deref! { match &(inEqns.clone()) {
         eqns => {
-            let mut s1: ArcStr = arcstr::literal!("");
+            let mut s1: ArcStr;
             s1 = (Util::stringDelimitListNonEmptyElts(List::map1(eqns.clone(), (std::sync::Arc::new(printMmaEqnStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>, (BackendDAE::Variables, BackendDAE::Variables)) -> Result<ArcStr> + 'static>), inTuple.clone())?, (literal!(",")).clone())?).clone();
             res = stringAppendList(list![(literal!("{")).clone(), (s1.clone()).clone(), (literal!("}")).clone()]);
             res.clone()
@@ -114,31 +114,31 @@ pub fn printMmaEqnStr(mut eqn: Arc<BackendDAE::Equation>, mut inTuple: (BackendD
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = ((::match_deref::match_deref! { match &((eqn.clone(), inTuple.clone())) {
         (Deref @ BackendDAE::Equation::EQUATION { exp: e1, scalar: e2, .. }, (vars, knvars)) => {
-            let mut s1: ArcStr = arcstr::literal!("");
-            let mut s2: ArcStr = arcstr::literal!("");
+            let mut s1: ArcStr;
+            let mut s2: ArcStr;
             s1 = (printExpMmaStr(e1.clone(), vars.clone(), knvars.clone())?).clone();
             s2 = (printExpMmaStr(e2.clone(), vars.clone(), knvars.clone())?).clone();
             r#str = stringAppendList(list![(s1.clone()).clone(), (literal!("==")).clone(), (s2.clone()).clone()]);
             r#str.clone()
         },
         (Deref @ BackendDAE::Equation::SOLVED_EQUATION { componentRef: cr, exp: e2, .. }, (vars, knvars)) => {
-            let mut s1: ArcStr = arcstr::literal!("");
-            let mut s2: ArcStr = arcstr::literal!("");
+            let mut s1: ArcStr;
+            let mut s2: ArcStr;
             s1 = (printComponentRefMmaStr(cr.clone(), vars.clone(), knvars.clone())?).clone();
             s2 = (printExpMmaStr(e2.clone(), vars.clone(), knvars.clone())?).clone();
             r#str = stringAppendList(list![(s1.clone()).clone(), (literal!("==")).clone(), (s2.clone()).clone()]);
             r#str.clone()
         },
         (Deref @ BackendDAE::Equation::ARRAY_EQUATION { left: e1, right: e2, .. }, (vars, knvars)) => {
-            let mut s1: ArcStr = arcstr::literal!("");
-            let mut s2: ArcStr = arcstr::literal!("");
+            let mut s1: ArcStr;
+            let mut s2: ArcStr;
             s1 = (printExpMmaStr(e1.clone(), vars.clone(), knvars.clone())?).clone();
             s2 = (printExpMmaStr(e2.clone(), vars.clone(), knvars.clone())?).clone();
             r#str = stringAppendList(list![(s1.clone()).clone(), (literal!("==")).clone(), (s2.clone()).clone()]);
             r#str.clone()
         },
         (Deref @ BackendDAE::Equation::RESIDUAL_EQUATION { exp: e1, .. }, (vars, knvars)) => {
-            let mut s1: ArcStr = arcstr::literal!("");
+            let mut s1: ArcStr;
             s1 = (printExpMmaStr(e1.clone(), vars.clone(), knvars.clone())?).clone();
             r#str = stringAppendList(list![(s1.clone()).clone(), (literal!("== 0")).clone()]);
             r#str.clone()
@@ -152,8 +152,8 @@ pub fn printMmaEqnStr(mut eqn: Arc<BackendDAE::Equation>, mut inTuple: (BackendD
             r#str.clone()
         },
         (Deref @ BackendDAE::Equation::COMPLEX_EQUATION { left: e1, right: e2, .. }, (vars, knvars)) => {
-            let mut s1: ArcStr = arcstr::literal!("");
-            let mut s2: ArcStr = arcstr::literal!("");
+            let mut s1: ArcStr;
+            let mut s2: ArcStr;
             s1 = (printExpMmaStr(e1.clone(), vars.clone(), knvars.clone())?).clone();
             s2 = (printExpMmaStr(e2.clone(), vars.clone(), knvars.clone())?).clone();
             r#str = stringAppendList(list![(s1.clone()).clone(), (literal!("==")).clone(), (s2.clone()).clone()]);
@@ -178,7 +178,7 @@ fn printExp2MmaStr(mut inExp: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mu
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::ICONST { integer: i } => {
-                    let mut s: ArcStr = arcstr::literal!("");
+                    let mut s: ArcStr;
                     s = (intString(i.clone())).clone();
                     Ok(s.clone())
                 }
@@ -188,8 +188,8 @@ fn printExp2MmaStr(mut inExp: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mu
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::RCONST { real: x } => {
-                    let mut s: ArcStr = arcstr::literal!("");
-                    let mut x2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+                    let mut s: ArcStr;
+                    let mut x2: metamodelica::Real;
                     x2 = intReal(((x.clone()).0.floor() as i32));
                     let true = (realEq(x2.clone(), x.clone())) else { bail!("pattern mismatch") };
                     s = (intString(((x.clone()).0.floor() as i32))).clone();
@@ -201,7 +201,7 @@ fn printExp2MmaStr(mut inExp: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mu
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::RCONST { real: x } => {
-                    let mut s: ArcStr = arcstr::literal!("");
+                    let mut s: ArcStr;
                     s = (realString(x.clone())).clone();
                     s = stringAppendList(list![(literal!("ToExpression[StringReplace[\"")).clone(), (s.clone()).clone(), (literal!("\",\"e\"->\"*1.0*10^\"]]")).clone()]);
                     Ok(s.clone())
@@ -212,8 +212,8 @@ fn printExp2MmaStr(mut inExp: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mu
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::SCONST { string: s } => {
-                    let mut s_1: ArcStr = arcstr::literal!("");
-                    let mut s_2: ArcStr = arcstr::literal!("");
+                    let mut s_1: ArcStr;
+                    let mut s_2: ArcStr;
                     s_1 = (stringAppend((literal!("\"")).clone(), (s.clone()).clone())).clone();
                     s_2 = (stringAppend((s_1.clone()).clone(), (literal!("\"")).clone())).clone();
                     Ok(s_2.clone())
@@ -240,7 +240,7 @@ fn printExp2MmaStr(mut inExp: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mu
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CREF { componentRef: cr, .. } => {
-                    let mut s: ArcStr = arcstr::literal!("");
+                    let mut s: ArcStr;
                     s = (printComponentRefMmaStr(cr.clone(), vars.clone(), knvars.clone())?).clone();
                     Ok(s.clone())
                 }
@@ -250,16 +250,16 @@ fn printExp2MmaStr(mut inExp: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mu
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 e @ Deref @ DAE::Exp::BINARY { exp1: e1, operator: op, exp2: e2 } => {
-                    let mut s: ArcStr = arcstr::literal!("");
-                    let mut s_1: ArcStr = arcstr::literal!("");
-                    let mut s1_1: ArcStr = arcstr::literal!("");
-                    let mut s2_1: ArcStr = arcstr::literal!("");
-                    let mut sym: ArcStr = arcstr::literal!("");
-                    let mut s2: ArcStr = arcstr::literal!("");
-                    let mut p: i32 = 0;
-                    let mut p1: i32 = 0;
-                    let mut p2: i32 = 0;
-                    let mut s1: ArcStr = arcstr::literal!("");
+                    let mut s: ArcStr;
+                    let mut s_1: ArcStr;
+                    let mut s1_1: ArcStr;
+                    let mut s2_1: ArcStr;
+                    let mut sym: ArcStr;
+                    let mut s2: ArcStr;
+                    let mut p: i32;
+                    let mut p1: i32;
+                    let mut p2: i32;
+                    let mut s1: ArcStr;
                     sym = (ExpressionDump::binopSymbol(op.clone())?).clone();
                     s1 = (printExp2MmaStr(e1.clone(), vars.clone(), knvars.clone())?).clone();
                     s2 = (printExp2MmaStr(e2.clone(), vars.clone(), knvars.clone())?).clone();
@@ -278,12 +278,12 @@ fn printExp2MmaStr(mut inExp: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mu
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 e @ Deref @ DAE::Exp::UNARY { operator: op, exp: e1 } => {
-                    let mut s: ArcStr = arcstr::literal!("");
-                    let mut s_1: ArcStr = arcstr::literal!("");
-                    let mut s_2: ArcStr = arcstr::literal!("");
-                    let mut sym: ArcStr = arcstr::literal!("");
-                    let mut p: i32 = 0;
-                    let mut p1: i32 = 0;
+                    let mut s: ArcStr;
+                    let mut s_1: ArcStr;
+                    let mut s_2: ArcStr;
+                    let mut sym: ArcStr;
+                    let mut p: i32;
+                    let mut p1: i32;
                     sym = (ExpressionDump::unaryopSymbol(op.clone())?).clone();
                     s = (printExp2MmaStr(e1.clone(), vars.clone(), knvars.clone())?).clone();
                     p = ExpressionDump::expPriority(e.clone());
@@ -298,16 +298,16 @@ fn printExp2MmaStr(mut inExp: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mu
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 e @ Deref @ DAE::Exp::LBINARY { exp1: e1, operator: op, exp2: e2 } => {
-                    let mut s: ArcStr = arcstr::literal!("");
-                    let mut s_1: ArcStr = arcstr::literal!("");
-                    let mut s1_1: ArcStr = arcstr::literal!("");
-                    let mut s2_1: ArcStr = arcstr::literal!("");
-                    let mut sym: ArcStr = arcstr::literal!("");
-                    let mut s2: ArcStr = arcstr::literal!("");
-                    let mut p: i32 = 0;
-                    let mut p1: i32 = 0;
-                    let mut p2: i32 = 0;
-                    let mut s1: ArcStr = arcstr::literal!("");
+                    let mut s: ArcStr;
+                    let mut s_1: ArcStr;
+                    let mut s1_1: ArcStr;
+                    let mut s2_1: ArcStr;
+                    let mut sym: ArcStr;
+                    let mut s2: ArcStr;
+                    let mut p: i32;
+                    let mut p1: i32;
+                    let mut p2: i32;
+                    let mut s1: ArcStr;
                     sym = (lbinopSymbolMma(op.clone())?).clone();
                     s1 = (printExp2MmaStr(e1.clone(), vars.clone(), knvars.clone())?).clone();
                     s2 = (printExp2MmaStr(e2.clone(), vars.clone(), knvars.clone())?).clone();
@@ -326,12 +326,12 @@ fn printExp2MmaStr(mut inExp: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mu
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 e @ Deref @ DAE::Exp::LUNARY { operator: op, exp: e1 } => {
-                    let mut s: ArcStr = arcstr::literal!("");
-                    let mut s_1: ArcStr = arcstr::literal!("");
-                    let mut s_2: ArcStr = arcstr::literal!("");
-                    let mut sym: ArcStr = arcstr::literal!("");
-                    let mut p: i32 = 0;
-                    let mut p1: i32 = 0;
+                    let mut s: ArcStr;
+                    let mut s_1: ArcStr;
+                    let mut s_2: ArcStr;
+                    let mut sym: ArcStr;
+                    let mut p: i32;
+                    let mut p1: i32;
                     sym = (lunaryopSymbolMma(op.clone())?).clone();
                     s = (printExp2MmaStr(e1.clone(), vars.clone(), knvars.clone())?).clone();
                     p = ExpressionDump::expPriority(e.clone());
@@ -346,15 +346,15 @@ fn printExp2MmaStr(mut inExp: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mu
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 e @ Deref @ DAE::Exp::RELATION { exp1: e1, operator: op, exp2: e2, .. } => {
-                    let mut s: ArcStr = arcstr::literal!("");
-                    let mut s_1: ArcStr = arcstr::literal!("");
-                    let mut s1_1: ArcStr = arcstr::literal!("");
-                    let mut s2_1: ArcStr = arcstr::literal!("");
-                    let mut sym: ArcStr = arcstr::literal!("");
-                    let mut s2: ArcStr = arcstr::literal!("");
-                    let mut p: i32 = 0;
-                    let mut p1: i32 = 0;
-                    let mut s1: ArcStr = arcstr::literal!("");
+                    let mut s: ArcStr;
+                    let mut s_1: ArcStr;
+                    let mut s1_1: ArcStr;
+                    let mut s2_1: ArcStr;
+                    let mut sym: ArcStr;
+                    let mut s2: ArcStr;
+                    let mut p: i32;
+                    let mut p1: i32;
+                    let mut s1: ArcStr;
                     sym = (relopSymbolMma(op.clone())?).clone();
                     s1 = (printExp2MmaStr(e1.clone(), vars.clone(), knvars.clone())?).clone();
                     s2 = (printExp2MmaStr(e2.clone(), vars.clone(), knvars.clone())?).clone();
@@ -372,10 +372,10 @@ fn printExp2MmaStr(mut inExp: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mu
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::IFEXP { expCond: c, expThen: t, expElse: f } => {
-                    let mut ifstr: ArcStr = arcstr::literal!("");
-                    let mut thenstr: ArcStr = arcstr::literal!("");
-                    let mut elsestr: ArcStr = arcstr::literal!("");
-                    let mut res: ArcStr = arcstr::literal!("");
+                    let mut ifstr: ArcStr;
+                    let mut thenstr: ArcStr;
+                    let mut elsestr: ArcStr;
+                    let mut res: ArcStr;
                     ifstr = (printExp2MmaStr(c.clone(), vars.clone(), knvars.clone())?).clone();
                     thenstr = (printExp2MmaStr(t.clone(), vars.clone(), knvars.clone())?).clone();
                     elsestr = (printExp2MmaStr(f.clone(), vars.clone(), knvars.clone())?).clone();
@@ -388,8 +388,8 @@ fn printExp2MmaStr(mut inExp: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mu
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, expLst: Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Nil }, .. } => {
-                    let mut s_1: ArcStr = arcstr::literal!("");
-                    let mut s_2: ArcStr = arcstr::literal!("");
+                    let mut s_1: ArcStr;
+                    let mut s_2: ArcStr;
                     s_1 = (printExpMmaStr(e.clone(), vars.clone(), knvars.clone())?).clone();
                     s_2 = stringAppendList(list![(literal!("D[")).clone(), (s_1.clone()).clone(), (literal!(",\\[FormalT]]")).clone()]);
                     Ok(s_2.clone())
@@ -400,7 +400,7 @@ fn printExp2MmaStr(mut inExp: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mu
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::QUALIFIED { name: Deref @ "Modelica", path: Deref @ Absyn::Path::QUALIFIED { name: Deref @ "Math", path } }, expLst, attr: call_attr } => {
-                    let mut s: ArcStr = arcstr::literal!("");
+                    let mut s: ArcStr;
                     s = (printExp2MmaStr(Arc::new(DAE::Exp::CALL { path: path.clone(), expLst: expLst.clone(), attr: call_attr.clone() }), vars.clone(), knvars.clone())?).clone();
                     Ok(s.clone())
                 }
@@ -410,7 +410,7 @@ fn printExp2MmaStr(mut inExp: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mu
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::FULLYQUALIFIED { path: Deref @ Absyn::Path::QUALIFIED { name: Deref @ "Modelica", path: Deref @ Absyn::Path::QUALIFIED { name: Deref @ "Math", path } } }, expLst, attr: call_attr } => {
-                    let mut s: ArcStr = arcstr::literal!("");
+                    let mut s: ArcStr;
                     s = (printExp2MmaStr(Arc::new(DAE::Exp::CALL { path: path.clone(), expLst: expLst.clone(), attr: call_attr.clone() }), vars.clone(), knvars.clone())?).clone();
                     Ok(s.clone())
                 }
@@ -420,9 +420,9 @@ fn printExp2MmaStr(mut inExp: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mu
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: fname }, expLst, .. } => {
-                    let mut s_1: ArcStr = arcstr::literal!("");
-                    let mut s_2: ArcStr = arcstr::literal!("");
-                    let mut s1: ArcStr = arcstr::literal!("");
+                    let mut s_1: ArcStr;
+                    let mut s_2: ArcStr;
+                    let mut s1: ArcStr;
                     s1 = (printBuiltinMmaFunc((fname.clone()).clone())?).clone();
                     s_1 = stringDelimitList(List::map2(expLst.clone(), (std::sync::Arc::new(printExpMmaStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, BackendDAE::Variables, BackendDAE::Variables) -> Result<ArcStr> + 'static>), vars.clone(), knvars.clone())?, (literal!(",")).clone());
                     s_2 = stringAppendList(list![(s1.clone()).clone(), (literal!("[")).clone(), (s_1.clone()).clone(), (literal!("]")).clone()]);
@@ -434,9 +434,9 @@ fn printExp2MmaStr(mut inExp: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mu
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "atan2" }, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Cons { head: e2, tail: Deref @ metamodelica::List::Nil } }, .. } => {
-                    let mut s_1: ArcStr = arcstr::literal!("");
-                    let mut s_2: ArcStr = arcstr::literal!("");
-                    let mut s_11: ArcStr = arcstr::literal!("");
+                    let mut s_1: ArcStr;
+                    let mut s_2: ArcStr;
+                    let mut s_11: ArcStr;
                     s_1 = (printExpMmaStr(e1.clone(), vars.clone(), knvars.clone())?).clone();
                     s_11 = (printExpMmaStr(e2.clone(), vars.clone(), knvars.clone())?).clone();
                     s_2 = stringAppendList(list![(literal!("ArcTan[")).clone(), (s_1.clone()).clone(), (literal!(",")).clone(), (s_11.clone()).clone(), (literal!("]")).clone()]);
@@ -448,8 +448,8 @@ fn printExp2MmaStr(mut inExp: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mu
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "log10" }, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil }, .. } => {
-                    let mut s_1: ArcStr = arcstr::literal!("");
-                    let mut s_2: ArcStr = arcstr::literal!("");
+                    let mut s_1: ArcStr;
+                    let mut s_2: ArcStr;
                     s_1 = (printExpMmaStr(e1.clone(), vars.clone(), knvars.clone())?).clone();
                     s_2 = stringAppendList(list![(literal!("Log[")).clone(), (s_1.clone()).clone(), (literal!(",10]")).clone()]);
                     Ok(s_2.clone())
@@ -460,11 +460,11 @@ fn printExp2MmaStr(mut inExp: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mu
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: fcn, expLst: args, .. } => {
-                    let mut s: ArcStr = arcstr::literal!("");
-                    let mut s_1: ArcStr = arcstr::literal!("");
-                    let mut s_2: ArcStr = arcstr::literal!("");
-                    let mut fs: ArcStr = arcstr::literal!("");
-                    let mut argstr: ArcStr = arcstr::literal!("");
+                    let mut s: ArcStr;
+                    let mut s_1: ArcStr;
+                    let mut s_2: ArcStr;
+                    let mut fs: ArcStr;
+                    let mut argstr: ArcStr;
                     fs = (AbsynUtil::pathString(fcn.clone(), (literal!(".")).clone(), true, false)?).clone();
                     fs = (translateKnownMmaFuncs((fs.clone()).clone())?).clone();
                     argstr = stringDelimitList(List::map2(args.clone(), (std::sync::Arc::new(printExpMmaStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, BackendDAE::Variables, BackendDAE::Variables) -> Result<ArcStr> + 'static>), vars.clone(), knvars.clone())?, (literal!(",")).clone());
@@ -479,9 +479,9 @@ fn printExp2MmaStr(mut inExp: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mu
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: fcn, expLst: args, .. } => {
-                    let mut s_2: ArcStr = arcstr::literal!("");
-                    let mut fs: ArcStr = arcstr::literal!("");
-                    let mut argstr: ArcStr = arcstr::literal!("");
+                    let mut s_2: ArcStr;
+                    let mut fs: ArcStr;
+                    let mut argstr: ArcStr;
                     fs = (AbsynUtil::pathString(fcn.clone(), (literal!(".")).clone(), true, false)?).clone();
                     argstr = stringDelimitList(List::map2(args.clone(), (std::sync::Arc::new(printExpMmaStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, BackendDAE::Variables, BackendDAE::Variables) -> Result<ArcStr> + 'static>), vars.clone(), knvars.clone())?, (literal!(",")).clone());
                     s_2 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FunctionCall[\"")); __mm_s.push_str(&*fs.clone()); __mm_s.push_str(&*literal!("\"][")); __mm_s.push_str(&*argstr.clone()); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone();
@@ -493,9 +493,9 @@ fn printExp2MmaStr(mut inExp: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mu
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::RECORD { path: fcn, exps: args, .. } => {
-                    let mut s_2: ArcStr = arcstr::literal!("");
-                    let mut fs: ArcStr = arcstr::literal!("");
-                    let mut argstr: ArcStr = arcstr::literal!("");
+                    let mut s_2: ArcStr;
+                    let mut fs: ArcStr;
+                    let mut argstr: ArcStr;
                     fs = (AbsynUtil::pathString(fcn.clone(), (literal!(".")).clone(), true, false)?).clone();
                     argstr = stringDelimitList(List::map2(args.clone(), (std::sync::Arc::new(printExpMmaStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, BackendDAE::Variables, BackendDAE::Variables) -> Result<ArcStr> + 'static>), vars.clone(), knvars.clone())?, (literal!(",")).clone());
                     s_2 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FunctionCall[\"")); __mm_s.push_str(&*fs.clone()); __mm_s.push_str(&*literal!("\"][")); __mm_s.push_str(&*argstr.clone()); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone();
@@ -507,9 +507,9 @@ fn printExp2MmaStr(mut inExp: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mu
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::ARRAY { array: es, .. } => {
-                    let mut s: ArcStr = arcstr::literal!("");
-                    let mut s_1: ArcStr = arcstr::literal!("");
-                    let mut s_2: ArcStr = arcstr::literal!("");
+                    let mut s: ArcStr;
+                    let mut s_1: ArcStr;
+                    let mut s_2: ArcStr;
                     s = stringDelimitList(List::map2(es.clone(), (std::sync::Arc::new(printExpMmaStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, BackendDAE::Variables, BackendDAE::Variables) -> Result<ArcStr> + 'static>), vars.clone(), knvars.clone())?, (literal!(",")).clone());
                     s_1 = (stringAppend((literal!("{")).clone(), (s.clone()).clone())).clone();
                     s_2 = (stringAppend((s_1.clone()).clone(), (literal!("}")).clone())).clone();
@@ -521,9 +521,9 @@ fn printExp2MmaStr(mut inExp: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mu
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::TUPLE { PR: es } => {
-                    let mut s: ArcStr = arcstr::literal!("");
-                    let mut s_1: ArcStr = arcstr::literal!("");
-                    let mut s_2: ArcStr = arcstr::literal!("");
+                    let mut s: ArcStr;
+                    let mut s_1: ArcStr;
+                    let mut s_2: ArcStr;
                     s = stringDelimitList(List::map2(es.clone(), (std::sync::Arc::new(printExpMmaStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, BackendDAE::Variables, BackendDAE::Variables) -> Result<ArcStr> + 'static>), vars.clone(), knvars.clone())?, (literal!(",")).clone());
                     s_1 = (stringAppend((literal!("{")).clone(), (s.clone()).clone())).clone();
                     s_2 = (stringAppend((s_1.clone()).clone(), (literal!("}")).clone())).clone();
@@ -535,9 +535,9 @@ fn printExp2MmaStr(mut inExp: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mu
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::MATRIX { matrix, .. } => {
-                    let mut s: ArcStr = arcstr::literal!("");
-                    let mut s_1: ArcStr = arcstr::literal!("");
-                    let mut s_2: ArcStr = arcstr::literal!("");
+                    let mut s: ArcStr;
+                    let mut s_1: ArcStr;
+                    let mut s_2: ArcStr;
                     s = stringDelimitList(List::map2(matrix.clone(), (std::sync::Arc::new(printRowMmaStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<DAE::Exp>>>, BackendDAE::Variables, BackendDAE::Variables) -> Result<ArcStr> + 'static>), vars.clone(), knvars.clone())?, (literal!("},{")).clone());
                     s_1 = (stringAppend((literal!("{{")).clone(), (s.clone()).clone())).clone();
                     s_2 = (stringAppend((s_1.clone()).clone(), (literal!("}}")).clone())).clone();
@@ -549,14 +549,14 @@ fn printExp2MmaStr(mut inExp: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mu
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 e @ Deref @ DAE::Exp::RANGE { start, step: None, stop, .. } => {
-                    let mut s1_1: ArcStr = arcstr::literal!("");
-                    let mut s3: ArcStr = arcstr::literal!("");
-                    let mut s3_1: ArcStr = arcstr::literal!("");
-                    let mut s_3: ArcStr = arcstr::literal!("");
-                    let mut p: i32 = 0;
-                    let mut pstart: i32 = 0;
-                    let mut pstop: i32 = 0;
-                    let mut s1: ArcStr = arcstr::literal!("");
+                    let mut s1_1: ArcStr;
+                    let mut s3: ArcStr;
+                    let mut s3_1: ArcStr;
+                    let mut s_3: ArcStr;
+                    let mut p: i32;
+                    let mut pstart: i32;
+                    let mut pstop: i32;
+                    let mut s1: ArcStr;
                     s1 = (printExp2MmaStr(start.clone(), vars.clone(), knvars.clone())?).clone();
                     s3 = (printExp2MmaStr(stop.clone(), vars.clone(), knvars.clone())?).clone();
                     p = ExpressionDump::expPriority(e.clone());
@@ -573,10 +573,10 @@ fn printExp2MmaStr(mut inExp: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mu
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::RANGE { start, step: Some(step), stop, .. } => {
-                    let mut s2: ArcStr = arcstr::literal!("");
-                    let mut s3: ArcStr = arcstr::literal!("");
-                    let mut s4: ArcStr = arcstr::literal!("");
-                    let mut s_5: ArcStr = arcstr::literal!("");
+                    let mut s2: ArcStr;
+                    let mut s3: ArcStr;
+                    let mut s4: ArcStr;
+                    let mut s_5: ArcStr;
                     s2 = (printExp2MmaStr(start.clone(), vars.clone(), knvars.clone())?).clone();
                     s3 = (printExp2MmaStr(step.clone(), vars.clone(), knvars.clone())?).clone();
                     s4 = (printExp2MmaStr(stop.clone(), vars.clone(), knvars.clone())?).clone();
@@ -589,7 +589,7 @@ fn printExp2MmaStr(mut inExp: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mu
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CAST { ty: Deref @ DAE::Type::T_REAL { .. }, exp: Deref @ DAE::Exp::ICONST { integer: ival } } => {
-                    let mut res: ArcStr = arcstr::literal!("");
+                    let mut res: ArcStr;
                     res = (intString(ival.clone())).clone();
                     Ok(res.clone())
                 }
@@ -599,8 +599,8 @@ fn printExp2MmaStr(mut inExp: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mu
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CAST { ty: Deref @ DAE::Type::T_REAL { .. }, exp: Deref @ DAE::Exp::UNARY { operator: DAE::Operator::UMINUS { .. }, exp: Deref @ DAE::Exp::ICONST { integer: ival } } } => {
-                    let mut res: ArcStr = arcstr::literal!("");
-                    let mut res2: ArcStr = arcstr::literal!("");
+                    let mut res: ArcStr;
+                    let mut res2: ArcStr;
                     res = (intString(ival.clone())).clone();
                     res2 = (stringAppend((literal!("-")).clone(), (res.clone()).clone())).clone();
                     Ok(res2.clone())
@@ -611,7 +611,7 @@ fn printExp2MmaStr(mut inExp: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mu
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CAST { ty: Deref @ DAE::Type::T_REAL { .. }, exp: e } => {
-                    let mut s: ArcStr = arcstr::literal!("");
+                    let mut s: ArcStr;
                     s = (printExpMmaStr(e.clone(), vars.clone(), knvars.clone())?).clone();
                     Ok(s.clone())
                 }
@@ -621,13 +621,13 @@ fn printExp2MmaStr(mut inExp: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mu
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 e @ Deref @ DAE::Exp::ASUB { exp: e1, sub: subs } => {
-                    let mut s1_1: ArcStr = arcstr::literal!("");
-                    let mut s4: ArcStr = arcstr::literal!("");
-                    let mut s_4: ArcStr = arcstr::literal!("");
-                    let mut p: i32 = 0;
-                    let mut pe1: i32 = 0;
-                    let mut s1: ArcStr = arcstr::literal!("");
-                    let mut ae1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
+                    let mut s1_1: ArcStr;
+                    let mut s4: ArcStr;
+                    let mut s_4: ArcStr;
+                    let mut p: i32;
+                    let mut pe1: i32;
+                    let mut s1: ArcStr;
+                    let mut ae1: Arc<metamodelica::List<Arc<DAE::Exp>>>;
                     ae1 = ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
         for mut sub in (subs.clone()).into_iter().cloned() {
@@ -650,9 +650,9 @@ fn printExp2MmaStr(mut inExp: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mu
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::SIZE { exp: e, sz: Some(dim) } => {
-                    let mut r#str: ArcStr = arcstr::literal!("");
-                    let mut crstr: ArcStr = arcstr::literal!("");
-                    let mut dimstr: ArcStr = arcstr::literal!("");
+                    let mut r#str: ArcStr;
+                    let mut crstr: ArcStr;
+                    let mut dimstr: ArcStr;
                     crstr = (printExpMmaStr(e.clone(), vars.clone(), knvars.clone())?).clone();
                     dimstr = (printExpMmaStr(dim.clone(), vars.clone(), knvars.clone())?).clone();
                     r#str = stringAppendList(list![(literal!("Dimensions[")).clone(), (crstr.clone()).clone(), (literal!("][[")).clone(), (dimstr.clone()).clone(), (literal!("]]")).clone()]);
@@ -664,8 +664,8 @@ fn printExp2MmaStr(mut inExp: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mu
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::SIZE { exp: e, sz: None } => {
-                    let mut r#str: ArcStr = arcstr::literal!("");
-                    let mut crstr: ArcStr = arcstr::literal!("");
+                    let mut r#str: ArcStr;
+                    let mut crstr: ArcStr;
                     crstr = (printExpMmaStr(e.clone(), vars.clone(), knvars.clone())?).clone();
                     r#str = stringAppendList(list![(literal!("Dimensions[")).clone(), (crstr.clone()).clone(), (literal!("]")).clone()]);
                     Ok(r#str.clone())
@@ -676,10 +676,10 @@ fn printExp2MmaStr(mut inExp: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mu
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::REDUCTION { reductionInfo: Deref @ DAE::ReductionInfo { path: fcn, .. }, expr: exp, iterators: Deref @ metamodelica::List::Cons { head: Deref @ DAE::ReductionIterator { id, exp: iterexp, .. }, tail: _ } } => {
-                    let mut fs: ArcStr = arcstr::literal!("");
-                    let mut r#str: ArcStr = arcstr::literal!("");
-                    let mut expstr: ArcStr = arcstr::literal!("");
-                    let mut iterstr: ArcStr = arcstr::literal!("");
+                    let mut fs: ArcStr;
+                    let mut r#str: ArcStr;
+                    let mut expstr: ArcStr;
+                    let mut iterstr: ArcStr;
                     fs = (AbsynUtil::pathString(fcn.clone(), (literal!(".")).clone(), true, false)?).clone();
                     expstr = (printExpMmaStr(exp.clone(), vars.clone(), knvars.clone())?).clone();
                     iterstr = (printExpMmaStr(iterexp.clone(), vars.clone(), knvars.clone())?).clone();
@@ -692,7 +692,7 @@ fn printExp2MmaStr(mut inExp: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mu
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::ENUM_LITERAL { name: path, .. } => {
-                    let mut r#str: ArcStr = arcstr::literal!("");
+                    let mut r#str: ArcStr;
                     r#str = (AbsynUtil::pathString(path.clone(), (literal!(".")).clone(), true, false)?).clone();
                     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Missing[\"ModelicaName\",\"")); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\"]")); ArcStr::from(__mm_s) }).clone();
                     Ok(r#str.clone())
@@ -703,7 +703,7 @@ fn printExp2MmaStr(mut inExp: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mu
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 e => {
-                    let mut r#str: ArcStr = arcstr::literal!("");
+                    let mut r#str: ArcStr;
                     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Missing[\"UnknownExpression\",\"")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e.clone())?); __mm_s.push_str(&*literal!("\"]")); ArcStr::from(__mm_s) }).clone();
                     Ok(r#str.clone())
                 }
@@ -730,7 +730,7 @@ fn printComponentRefMmaStr(mut cr: Arc<DAE::ComponentRef>, mut vars: BackendDAE:
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    let mut nameStr: ArcStr = arcstr::literal!("");
+                    let mut nameStr: ArcStr;
                     let mut res: ArcStr = res.clone();
                     BackendVariable::getVar(cr.clone(), vars.clone())?;
                     nameStr = (ComponentReferenceBasics::printComponentRefStr(cr.clone())?).clone();
@@ -753,10 +753,10 @@ fn printComponentRefMmaStr(mut cr: Arc<DAE::ComponentRef>, mut vars: BackendDAE:
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    let mut nameStr: ArcStr = arcstr::literal!("");
-                    let mut isInput: bool = false;
-                    let mut isOutput: bool = false;
-                    let mut v: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
+                    let mut nameStr: ArcStr;
+                    let mut isInput: bool;
+                    let mut isOutput: bool;
+                    let mut v: BackendDAE::Var;
                     let mut res: ArcStr = res.clone();
                     let __pa0 = ::match_deref::match_deref! { match &(BackendVariable::getVar(cr.clone(), knvars.clone())?) {
                         (Deref @ metamodelica::List::Cons { head: __pa0, tail: _ }, _) => __pa0.clone(),
@@ -784,7 +784,7 @@ fn printComponentRefMmaStr(mut cr: Arc<DAE::ComponentRef>, mut vars: BackendDAE:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    let mut nameStr: ArcStr = arcstr::literal!("");
+                    let mut nameStr: ArcStr;
                     if '__try0: {
                         unwrap_break_err!(BackendVariable::getVar(cr.clone(), vars.clone()), '__try0);
                         Ok::<(), anyhow::Error>(())
@@ -931,8 +931,8 @@ fn dumpSingleAlgorithmStr(mut algs: Arc<DAE::Algorithm>) -> Result<ArcStr> {
     let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(algs.clone()) {
         Deref @ DAE::Algorithm { statementLst: stmts } => {
-            let mut r#str: ArcStr = arcstr::literal!("");
-            let mut myStream: IOStream::IOStream = <IOStream::IOStream as ::std::default::Default>::default();
+            let mut r#str: ArcStr;
+            let mut myStream: IOStream::IOStream;
             myStream = IOStream::create((literal!("")).clone(), openmodelica_util::IOStream::IOStreamType::LIST)?;
             myStream = DAEDump::dumpAlgorithmStream(Arc::new(DAE::Element::ALGORITHM { algorithm_: Arc::new(DAE::Algorithm { statementLst: stmts.clone() }), source: DAE::emptyElementSource().clone() }), myStream.clone());
             r#str = (IOStream::string(myStream.clone())?).clone();
@@ -950,7 +950,7 @@ pub fn printMmaVarsStr(mut vars: BackendDAE::Variables) -> Result<(Arc<metamodel
     let mut inputs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     (states, algs, outputs, inputs) = (match vars.clone() {
         _ => {
-            let mut varLst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
+            let mut varLst: Arc<metamodelica::List<BackendDAE::Var>>;
             varLst = BackendVariable::varList(vars.clone())?;
             varLst = varLst.clone().reverse();
             states = List::map2(varLst.clone(), (std::sync::Arc::new(fnptr!(printMmaVarStr, BackendDAE::Var, bool, BackendDAE::Variables)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, bool, BackendDAE::Variables) -> Result<ArcStr> + 'static>), true, vars.clone())?;
@@ -978,7 +978,7 @@ pub fn printMmaVarStr(mut v: BackendDAE::Var, mut selectKind: bool, mut allVars:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (BackendDAE::Var { varName: name, varKind: BackendDAE::VarKind::STATE { .. }, .. }, true) => {
-                    let mut nameStr: ArcStr = arcstr::literal!("");
+                    let mut nameStr: ArcStr;
                     nameStr = (printComponentRefMmaStr(name.clone(), allVars.clone(), BackendVariable::emptyVars(BaseHashTable::bigBucketSize.clone()))?).clone();
                     Ok(nameStr.clone())
                 }
@@ -988,7 +988,7 @@ pub fn printMmaVarStr(mut v: BackendDAE::Var, mut selectKind: bool, mut allVars:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (BackendDAE::Var { varName: name, varKind: BackendDAE::VarKind::VARIABLE { .. }, .. }, false) => {
-                    let mut nameStr: ArcStr = arcstr::literal!("");
+                    let mut nameStr: ArcStr;
                     nameStr = (printComponentRefMmaStr(name.clone(), allVars.clone(), BackendVariable::emptyVars(BaseHashTable::bigBucketSize.clone()))?).clone();
                     Ok(nameStr.clone())
                 }
@@ -998,7 +998,7 @@ pub fn printMmaVarStr(mut v: BackendDAE::Var, mut selectKind: bool, mut allVars:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (BackendDAE::Var { varName: name, varKind: BackendDAE::VarKind::DUMMY_DER { .. }, .. }, false) => {
-                    let mut nameStr: ArcStr = arcstr::literal!("");
+                    let mut nameStr: ArcStr;
                     nameStr = (printComponentRefMmaStr(name.clone(), allVars.clone(), BackendVariable::emptyVars(BaseHashTable::bigBucketSize.clone()))?).clone();
                     Ok(nameStr.clone())
                 }
@@ -1008,7 +1008,7 @@ pub fn printMmaVarStr(mut v: BackendDAE::Var, mut selectKind: bool, mut allVars:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (BackendDAE::Var { varName: name, varKind: BackendDAE::VarKind::DUMMY_STATE { .. }, .. }, false) => {
-                    let mut nameStr: ArcStr = arcstr::literal!("");
+                    let mut nameStr: ArcStr;
                     nameStr = (printComponentRefMmaStr(name.clone(), allVars.clone(), BackendVariable::emptyVars(BaseHashTable::bigBucketSize.clone()))?).clone();
                     Ok(nameStr.clone())
                 }
@@ -1018,7 +1018,7 @@ pub fn printMmaVarStr(mut v: BackendDAE::Var, mut selectKind: bool, mut allVars:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (BackendDAE::Var { varName: name, varKind: BackendDAE::VarKind::DISCRETE { .. }, .. }, false) => {
-                    let mut nameStr: ArcStr = arcstr::literal!("");
+                    let mut nameStr: ArcStr;
                     nameStr = (printComponentRefMmaStr(name.clone(), allVars.clone(), BackendVariable::emptyVars(BaseHashTable::bigBucketSize.clone()))?).clone();
                     Ok(nameStr.clone())
                 }
@@ -1099,7 +1099,7 @@ pub fn printMmaParamsStr(mut knvars: BackendDAE::Variables) -> Result<(Arc<metam
     let mut inputs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     (params, inputs) = (match knvars.clone() {
         _ => {
-            let mut varLst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
+            let mut varLst: Arc<metamodelica::List<BackendDAE::Var>>;
             varLst = BackendVariable::varList(knvars.clone())?;
             params = List::map(varLst.clone(), (std::sync::Arc::new(fnptr!(printMmaParamStr, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<ArcStr> + 'static>))?;
             inputs = List::map(varLst.clone(), (std::sync::Arc::new(fnptr!(printMmaInputStr, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<ArcStr> + 'static>))?;
@@ -1116,8 +1116,8 @@ fn printMmaParamStr(mut param: BackendDAE::Var) -> ArcStr {
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 BackendDAE::Var { varName: name, varKind: BackendDAE::VarKind::PARAM { .. }, bindExp: Some(exp), .. } => {
-                    let mut expStr: ArcStr = arcstr::literal!("");
-                    let mut paramStr: ArcStr = arcstr::literal!("");
+                    let mut expStr: ArcStr;
+                    let mut paramStr: ArcStr;
                     let mut r#str: ArcStr = r#str.clone();
                     expStr = (printExpMmaStr(exp.clone(), BackendVariable::emptyVars(BaseHashTable::bigBucketSize.clone()), BackendVariable::emptyVars(BaseHashTable::bigBucketSize.clone()))?).clone();
                     paramStr = (printComponentRefMmaStr(name.clone(), BackendVariable::emptyVars(BaseHashTable::bigBucketSize.clone()), BackendVariable::emptyVars(BaseHashTable::bigBucketSize.clone()))?).clone();
@@ -1130,9 +1130,9 @@ fn printMmaParamStr(mut param: BackendDAE::Var) -> ArcStr {
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 BackendDAE::Var { varName: name, varKind: BackendDAE::VarKind::PARAM { .. }, bindExp: None, values: val, .. } => {
-                    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut expStr: ArcStr = arcstr::literal!("");
-                    let mut paramStr: ArcStr = arcstr::literal!("");
+                    let mut exp: Arc<DAE::Exp>;
+                    let mut expStr: ArcStr;
+                    let mut paramStr: ArcStr;
                     let mut r#str: ArcStr = r#str.clone();
                     let __pa0 = ::match_deref::match_deref! { match &(getStartAttribute(val.clone())) {
                         Some(__pa0) => __pa0.clone(),
@@ -1150,8 +1150,8 @@ fn printMmaParamStr(mut param: BackendDAE::Var) -> ArcStr {
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 BackendDAE::Var { varName: name, varKind: BackendDAE::VarKind::PARAM { .. }, bindExp: None, values: val, .. } => {
-                    let mut expStr: ArcStr = arcstr::literal!("");
-                    let mut paramStr: ArcStr = arcstr::literal!("");
+                    let mut expStr: ArcStr;
+                    let mut paramStr: ArcStr;
                     let mut r#str: ArcStr = r#str.clone();
                     ::match_deref::match_deref! { match &(getStartAttribute(val.clone())) {
                         None => (),
@@ -1168,7 +1168,7 @@ fn printMmaParamStr(mut param: BackendDAE::Var) -> ArcStr {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 BackendDAE::Var { varName: name, varKind: BackendDAE::VarKind::PARAM { .. }, .. } => {
-                    let mut paramStr: ArcStr = arcstr::literal!("");
+                    let mut paramStr: ArcStr;
                     paramStr = (printComponentRefMmaStr(name.clone(), BackendVariable::emptyVars(BaseHashTable::bigBucketSize.clone()), BackendVariable::emptyVars(BaseHashTable::bigBucketSize.clone()))?).clone();
                     Ok(paramStr.clone())
                 }

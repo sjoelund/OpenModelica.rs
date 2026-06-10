@@ -80,11 +80,11 @@ pub fn flattenClass(mut inClass: Arc<SCode::Element>, mut inEnv: Env) -> Result<
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SCode::Element::CLASS { name, classDef: cdef, info, .. } => {
-                    let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
-                    let mut env: Env = metamodelica::nil();
-                    let mut cls_env: Arc<NFSCodeEnv::Frame> = Arc::new(<NFSCodeEnv::Frame as ::std::default::Default>::default());
-                    let mut cls: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
-                    let mut cls_ty: NFSCodeEnv::ClassType = NFSCodeEnv::ClassType::BASIC_TYPE;
+                    let mut item: Item;
+                    let mut env: Env;
+                    let mut cls_env: Arc<NFSCodeEnv::Frame>;
+                    let mut cls: Arc<SCode::Element>;
+                    let mut cls_ty: NFSCodeEnv::ClassType;
                     let mut cdef = (*cdef).clone();
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(NFSCodeLookup::lookupInClass((name.clone()).clone(), inEnv.clone())?) {
                         (Deref @ NFSCodeEnv::Item::CLASS { env: Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Nil }, classType: __pa1, .. }, _) => (__pa0.clone(), __pa1.clone()),
@@ -128,7 +128,7 @@ fn flattenClassDef(mut inClassDef: Arc<SCode::ClassDef>, mut inEnv: Env, mut inI
     let mut outEnv: Env;
     (outClassDef, outEnv) = (::match_deref::match_deref! { match &((inClassDef.clone(), inEnv.clone())) {
         (Deref @ SCode::ClassDef::PARTS { elementLst: el, normalEquationLst: neql, initialEquationLst: ieql, normalAlgorithmLst: nal, initialAlgorithmLst: ial, constraintLst: nco, clsattrs: clats, externalDecl: extdecl }, _) => {
-            let mut env: Env = metamodelica::nil();
+            let mut env: Env;
             let mut el = (*el).clone();
             let mut neql = (*neql).clone();
             let mut ieql = (*ieql).clone();
@@ -145,7 +145,7 @@ fn flattenClassDef(mut inClassDef: Arc<SCode::ClassDef>, mut inEnv: Env, mut inI
             (Arc::new(SCode::ClassDef::PARTS { elementLst: el.clone(), normalEquationLst: neql.clone(), initialEquationLst: ieql.clone(), normalAlgorithmLst: nal.clone(), initialAlgorithmLst: ial.clone(), constraintLst: nco.clone(), clsattrs: clats.clone(), externalDecl: extdecl.clone() }), env.clone())
         },
         (Deref @ SCode::ClassDef::CLASS_EXTENDS { modifications: mods, composition: cdef }, _) => {
-            let mut env: Env = metamodelica::nil();
+            let mut env: Env;
             let mut mods = (*mods).clone();
             let mut cdef = (*cdef).clone();
             (cdef, env) = flattenClassDef(cdef.clone(), inEnv.clone(), inInfo.clone())?;
@@ -202,17 +202,17 @@ fn flattenElement(mut inElement: Arc<SCode::Element>, mut inEnv: Env) -> Result<
     let mut outEnv: Env;
     (outElement, outEnv) = (::match_deref::match_deref! { match &(inElement.clone()) {
         Deref @ SCode::Element::COMPONENT { name, .. } => {
-            let mut env: Env = metamodelica::nil();
-            let mut elem: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
-            let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
+            let mut env: Env;
+            let mut elem: Arc<SCode::Element>;
+            let mut item: Item;
             elem = flattenComponent(inElement.clone(), inEnv.clone())?;
             item = NFSCodeEnv::newVarItem(elem.clone(), true);
             env = NFSCodeEnv::updateItemInEnv(item.clone(), inEnv.clone(), (name.clone()).clone())?;
             (elem.clone(), env.clone())
         },
         Deref @ SCode::Element::CLASS { .. } => {
-            let mut env: Env = metamodelica::nil();
-            let mut elem: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
+            let mut env: Env;
+            let mut elem: Arc<SCode::Element>;
             (elem, env) = flattenClass(inElement.clone(), inEnv.clone())?;
             (elem.clone(), env.clone())
         },
@@ -345,7 +345,7 @@ fn flattenEquationTraverser(mut eq: Arc<SCode::Equation>, mut env: Env) -> Resul
             (eq.clone(), env.clone())
         },
         _ => {
-            let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
+            let mut info: SourceInfo;
             info = SCodeUtil::getEquationInfo(eq.clone())?;
             (eq, _) = SCodeUtil::mapFoldEquationExps(eq.clone(), (std::sync::Arc::new(traverseExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, SourceInfo)) -> Result<(Arc<Absyn::Exp>, (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, SourceInfo))> + 'static>), (env.clone(), info.clone()))?;
             (eq.clone(), env.clone())
@@ -406,7 +406,7 @@ fn flattenStatementTraverser(mut stmt: Arc<SCode::Statement>, mut env: Env) -> R
             (stmt.clone(), env.clone())
         },
         _ => {
-            let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
+            let mut info: SourceInfo;
             info = SCodeUtil::getStatementInfo(stmt.clone())?;
             (stmt, _) = SCodeUtil::mapFoldStatementExps(stmt.clone(), (std::sync::Arc::new(traverseExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, SourceInfo)) -> Result<(Arc<Absyn::Exp>, (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, SourceInfo))> + 'static>), (env.clone(), info.clone()))?;
             (stmt.clone(), env.clone())
@@ -472,7 +472,7 @@ fn flattenRedeclare(mut inElement: Arc<SCode::Element>, mut inEnv: Env) -> Resul
     let mut outElement: Arc<SCode::Element>;
     outElement = (::match_deref::match_deref! { match &(inElement.clone()) {
         Deref @ SCode::Element::CLASS { name, prefixes, encapsulatedPrefix: ep, partialPrefix: pp, restriction: res, classDef: cdef @ Deref @ SCode::ClassDef::DERIVED { .. }, cmt, info } => {
-            let mut cdef2: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
+            let mut cdef2: Arc<SCode::ClassDef>;
             cdef2 = flattenDerivedClassDef(cdef.clone(), inEnv.clone(), info.clone())?;
             Arc::new(SCode::Element::CLASS { name: (name.clone()).clone(), prefixes: prefixes.clone(), encapsulatedPrefix: ep.clone(), partialPrefix: pp.clone(), restriction: res.clone(), classDef: cdef2.clone(), cmt: cmt.clone(), info: info.clone() })
         },
@@ -480,7 +480,7 @@ fn flattenRedeclare(mut inElement: Arc<SCode::Element>, mut inEnv: Env) -> Resul
             inElement.clone()
         },
         Deref @ SCode::Element::COMPONENT { .. } => {
-            let mut element: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
+            let mut element: Arc<SCode::Element>;
             element = flattenComponent(inElement.clone(), inEnv.clone())?;
             element.clone()
         },

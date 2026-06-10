@@ -114,9 +114,9 @@ pub fn ext_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Graph {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (mut r, mut g) = __mc_input.clone() else { bail!("nomatch") };
-            let mut rr: Ref = Default::default();
-            let mut p: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-            let mut e: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
+            let mut rr: Ref;
+            let mut p: Arc<Absyn::Path>;
+            let mut e: Arc<SCode::Element>;
             let true = (FNode::isRefExtends(r.clone())?) else { bail!("pattern mismatch") };
             let false = (FNode::isRefDerived(r.clone())?) else { bail!("pattern mismatch") };
             let FCore::EX { e: __pa0, .. } = (FNode::refData(r.clone())?) else { bail!("pattern mismatch") };
@@ -128,8 +128,8 @@ pub fn ext_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Graph {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (mut r, mut g) = __mc_input.clone() else { bail!("nomatch") };
-            let mut p: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-            let mut e: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
+            let mut p: Arc<Absyn::Path>;
+            let mut e: Arc<SCode::Element>;
             let true = (FNode::isRefExtends(r.clone())?) else { bail!("pattern mismatch") };
             let false = (FNode::isRefDerived(r.clone())?) else { bail!("pattern mismatch") };
             let FCore::EX { e: __pa0, .. } = (FNode::refData(r.clone())?) else { bail!("pattern mismatch") };
@@ -175,8 +175,8 @@ pub fn derived_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Graph {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (mut r, mut g) = __mc_input.clone() else { bail!("nomatch") };
-            let mut rr: Ref = Default::default();
-            let mut p: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+            let mut rr: Ref;
+            let mut p: Arc<Absyn::Path>;
             let true = (FNode::isRefDerived(r.clone())?) else { bail!("pattern mismatch") };
             let __pa0 = ::match_deref::match_deref! { match &(FNode::refData(r.clone())?) {
                 FCore::Data::CL { e: Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TPATH { path: __pa0, arrayDim: _ }, .. }, .. }, .. } => __pa0.clone(),
@@ -189,7 +189,7 @@ pub fn derived_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Graph {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (mut r, mut g) = __mc_input.clone() else { bail!("nomatch") };
-            let mut p: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+            let mut p: Arc<Absyn::Path>;
             let true = (FNode::isRefDerived(r.clone())?) else { bail!("pattern mismatch") };
             let __pa0 = ::match_deref::match_deref! { match &(FNode::refData(r.clone())?) {
                 FCore::Data::CL { e: Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TPATH { path: __pa0, arrayDim: _ }, .. }, .. }, .. } => __pa0.clone(),
@@ -236,9 +236,9 @@ pub fn ty_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Graph {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (mut r, mut g) = __mc_input.clone() else { bail!("nomatch") };
-            let mut rr: Ref = Default::default();
-            let mut p: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-            let mut e: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
+            let mut rr: Ref;
+            let mut p: Arc<Absyn::Path>;
+            let mut e: Arc<SCode::Element>;
             let true = (FNode::isRefComponent(r.clone())?) else { bail!("pattern mismatch") };
             let FCore::CO { e: __pa0, .. } = (FNode::refData(r.clone())?) else { bail!("pattern mismatch") };
             e = __pa0.clone();
@@ -249,8 +249,8 @@ pub fn ty_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Graph {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (mut r, mut g) = __mc_input.clone() else { bail!("nomatch") };
-            let mut p: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-            let mut e: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
+            let mut p: Arc<Absyn::Path>;
+            let mut e: Arc<SCode::Element>;
             let true = (FNode::isRefComponent(r.clone())?) else { bail!("pattern mismatch") };
             let FCore::CO { e: __pa0, .. } = (FNode::refData(r.clone())?) else { bail!("pattern mismatch") };
             e = __pa0.clone();
@@ -295,8 +295,8 @@ pub fn cc_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Graph {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (mut r, mut g) = __mc_input.clone() else { bail!("nomatch") };
-            let mut rr: Ref = Default::default();
-            let mut p: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+            let mut rr: Ref;
+            let mut p: Arc<Absyn::Path>;
             let true = (FNode::isRefConstrainClass(r.clone())?) else { bail!("pattern mismatch") };
             let __pa0 = ::match_deref::match_deref! { match &(FNode::refData(r.clone())?) {
                 FCore::Data::CC { cc: Deref @ SCode::ConstrainClass { constrainingClass: __pa0, .. } } => __pa0.clone(),
@@ -309,7 +309,7 @@ pub fn cc_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Graph {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (mut r, mut g) = __mc_input.clone() else { bail!("nomatch") };
-            let mut p: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+            let mut p: Arc<Absyn::Path>;
             let true = (FNode::isRefConstrainClass(r.clone())?) else { bail!("pattern mismatch") };
             let __pa0 = ::match_deref::match_deref! { match &(FNode::refData(r.clone())?) {
                 FCore::Data::CC { cc: Deref @ SCode::ConstrainClass { constrainingClass: __pa0, .. } } => __pa0.clone(),
@@ -356,9 +356,9 @@ pub fn clsext_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Graph {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (mut r, mut g) = __mc_input.clone() else { bail!("nomatch") };
-            let mut rr: Ref = Default::default();
-            let mut p: Ref = Default::default();
-            let mut id: Name = arcstr::literal!("");
+            let mut rr: Ref;
+            let mut p: Ref;
+            let mut id: Name;
             let true = (FNode::isRefClassExtends(r.clone())?) else { bail!("pattern mismatch") };
             let __pa0 = ::match_deref::match_deref! { match &(FNode::refData(r.clone())?) {
                 FCore::Data::CL { e: Deref @ SCode::Element::CLASS { name: __pa0, .. }, .. } => __pa0.clone(),
@@ -376,8 +376,8 @@ pub fn clsext_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Graph {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (mut r, mut g) = __mc_input.clone() else { bail!("nomatch") };
-            let mut p: Ref = Default::default();
-            let mut id: Name = arcstr::literal!("");
+            let mut p: Ref;
+            let mut id: Name;
             let true = (FNode::isRefClassExtends(r.clone())?) else { bail!("pattern mismatch") };
             let __pa0 = ::match_deref::match_deref! { match &(FNode::refData(r.clone())?) {
                 FCore::Data::CL { e: Deref @ SCode::Element::CLASS { name: __pa0, .. }, .. } => __pa0.clone(),
@@ -430,8 +430,8 @@ pub fn cr_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Graph {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (mut r, mut g) = __mc_input.clone() else { bail!("nomatch") };
-            let mut rr: Ref = Default::default();
-            let mut cr: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
+            let mut rr: Ref;
+            let mut cr: Arc<Absyn::ComponentRef>;
             let true = (FNode::isRefCref(r.clone())?) else { bail!("pattern mismatch") };
             let FCore::CR { r: __pa0 } = (FNode::refData(r.clone())?) else { bail!("pattern mismatch") };
             cr = __pa0.clone();
@@ -441,7 +441,7 @@ pub fn cr_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Graph {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (mut r, mut g) = __mc_input.clone() else { bail!("nomatch") };
-            let mut cr: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
+            let mut cr: Arc<Absyn::ComponentRef>;
             let true = (FNode::isRefCref(r.clone())?) else { bail!("pattern mismatch") };
             let FCore::CR { r: __pa0 } = (FNode::refData(r.clone())?) else { bail!("pattern mismatch") };
             cr = __pa0.clone();
@@ -485,8 +485,8 @@ pub fn mod_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Graph {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (mut r, mut g) = __mc_input.clone() else { bail!("nomatch") };
-            let mut rr: Ref = Default::default();
-            let mut cr: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
+            let mut rr: Ref;
+            let mut cr: Arc<Absyn::ComponentRef>;
             let true = (FNode::isRefMod(r.clone())? && !(FNode::isRefModHolder(r.clone())?) && !(ClassInfUtil::isBasicTypeComponentName((FNode::refName(r.clone())?).clone()))) else { bail!("pattern mismatch") };
             cr = AbsynUtil::pathToCref(AbsynUtil::stringListPath(FNode::namesUpToParentName(r.clone(), (arcstr::literal!(FNode::modNodeName)).clone())?)?)?;
             (g, rr) = FLookup::cr(g.clone(), FNode::getModifierTarget(r.clone())?, cr.clone(), FLookup::ignoreNothing.clone(), FLookup::dummyLookupOption.clone())?;
@@ -495,7 +495,7 @@ pub fn mod_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Graph {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (mut r, mut g) = __mc_input.clone() else { bail!("nomatch") };
-            let mut cr: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
+            let mut cr: Arc<Absyn::ComponentRef>;
             let true = (FNode::isRefMod(r.clone())? && !(FNode::isRefModHolder(r.clone())?) && !(ClassInfUtil::isBasicTypeComponentName((FNode::refName(r.clone())?).clone()))) else { bail!("pattern mismatch") };
             cr = AbsynUtil::pathToCref(AbsynUtil::stringListPath(FNode::namesUpToParentName(r.clone(), (arcstr::literal!(FNode::modNodeName)).clone())?)?)?;
             if '__try0: {
@@ -539,9 +539,9 @@ pub fn elred_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Graph {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (mut r, mut g) = __mc_input.clone() else { bail!("nomatch") };
-            let mut rr: Ref = Default::default();
-            let mut p: Ref = Default::default();
-            let mut id: Name = arcstr::literal!("");
+            let mut rr: Ref;
+            let mut p: Ref;
+            let mut id: Name;
             let true = (FNode::isRefRedeclare(r.clone())?) else { bail!("pattern mismatch") };
             let true = (FNode::isRefClass(r.clone())? && !(FNode::isRefClassExtends(r.clone())?) || FNode::isRefComponent(r.clone())?) else { bail!("pattern mismatch") };
             id = (SCodeUtil::elementName(FNode::getElement(FNode::fromRef(r.clone())?)?)?).clone();
@@ -556,8 +556,8 @@ pub fn elred_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Graph {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (mut r, mut g) = __mc_input.clone() else { bail!("nomatch") };
-            let mut p: Ref = Default::default();
-            let mut id: Name = arcstr::literal!("");
+            let mut p: Ref;
+            let mut id: Name;
             let true = (FNode::isRefRedeclare(r.clone())?) else { bail!("pattern mismatch") };
             let true = (FNode::isRefClass(r.clone())? && !(FNode::isRefClassExtends(r.clone())?) || FNode::isRefComponent(r.clone())?) else { bail!("pattern mismatch") };
             id = (SCodeUtil::elementName(FNode::getElement(FNode::fromRef(r.clone())?)?)?).clone();

@@ -134,7 +134,7 @@ pub fn noNameHashExp(mut exp: Arc<Expression::NFExpression>, mut r#mod: i32) -> 
             0
         },
         Deref @ Expression::CREF { .. } => {
-            let mut var: Arc<Variable::NFVariable> = Arc::new(<Variable::NFVariable as ::std::default::Default>::default());
+            let mut var: Arc<Variable::NFVariable>;
             var = BVariable::getVar(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBBackendUtil.mo"))?;
             stringHashDjb2Mod((BackendInfo::toString(var.backendinfo.clone())?).clone(), r#mod.clone())
         },
@@ -192,8 +192,8 @@ pub fn noNameHashExp(mut exp: Arc<Expression::NFExpression>, mut r#mod: i32) -> 
             stringHashDjb2Mod((literal!("end")).clone(), r#mod.clone())
         },
         Deref @ Expression::BINARY { .. } => {
-            let mut hash1: i32 = 0;
-            let mut hash2: i32 = 0;
+            let mut hash1: i32;
+            let mut hash2: i32;
             hash1 = noNameHashExp(var_field!((*exp).exp1, Expression::NFExpression::BINARY).clone(), r#mod.clone())?;
             hash2 = noNameHashExp(var_field!((*exp).exp2, Expression::NFExpression::BINARY).clone(), r#mod.clone())?;
             hash = (match Operator::classify(var_field!((*exp).operator, Expression::NFExpression::BINARY).clone())? {
@@ -212,8 +212,8 @@ pub fn noNameHashExp(mut exp: Arc<Expression::NFExpression>, mut r#mod: i32) -> 
             -(noNameHashExp(var_field!((*exp).exp, Expression::NFExpression::UNARY).clone(), r#mod.clone())?)
         },
         Deref @ Expression::LBINARY { .. } => {
-            let mut hash1: i32 = 0;
-            let mut hash2: i32 = 0;
+            let mut hash1: i32;
+            let mut hash2: i32;
             hash1 = noNameHashExp(var_field!((*exp).exp1, Expression::NFExpression::LBINARY).clone(), r#mod.clone())?;
             hash2 = noNameHashExp(var_field!((*exp).exp2, Expression::NFExpression::LBINARY).clone(), r#mod.clone())?;
             hash = (match var_field!((*exp).operator, Expression::NFExpression::LBINARY).op.clone() {
@@ -227,8 +227,8 @@ pub fn noNameHashExp(mut exp: Arc<Expression::NFExpression>, mut r#mod: i32) -> 
             -(noNameHashExp(var_field!((*exp).exp, Expression::NFExpression::LUNARY).clone(), r#mod.clone())?)
         },
         Deref @ Expression::RELATION { .. } => {
-            let mut hash1: i32 = 0;
-            let mut hash2: i32 = 0;
+            let mut hash1: i32;
+            let mut hash2: i32;
             hash1 = noNameHashExp(var_field!((*exp).exp1, Expression::NFExpression::RELATION).clone(), r#mod.clone())?;
             hash2 = noNameHashExp(var_field!((*exp).exp2, Expression::NFExpression::RELATION).clone(), r#mod.clone())?;
             hash = (match var_field!((*exp).operator, Expression::NFExpression::RELATION).op.clone() {

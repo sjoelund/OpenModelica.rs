@@ -142,11 +142,11 @@ pub fn createBasePartitions(mut clock_collector: Arc<UnorderedMap::UnorderedMap<
         let mut base = base.clone();
         let () = (::match_deref::match_deref! { match &(base.clone()) {
         Deref @ BASE_PARTITION { baseClock: Deref @ BClock::BASE_CLOCK { clock: Deref @ ClockKind::EVENT_CLOCK { condition: Deref @ Expression::CREF { cref: cond, .. }, .. } }, .. } => {
-            let mut source: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
-            let mut fire: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut stmt: Arc<WhenStatement::WhenStatement> = Arc::new(<WhenStatement::WhenStatement as ::std::default::Default>::default());
-            let mut attr: Arc<EquationAttributes::EquationAttributes> = Arc::new(<EquationAttributes::EquationAttributes as ::std::default::Default>::default());
-            let mut blck: Arc<Block::Block> = Arc::new(<Block::Block as ::std::default::Default>::default());
+            let mut source: Arc<DAE::ElementSource>;
+            let mut fire: Arc<Expression::NFExpression>;
+            let mut stmt: Arc<WhenStatement::WhenStatement>;
+            let mut attr: Arc<EquationAttributes::EquationAttributes>;
+            let mut blck: Arc<Block::Block>;
             source = DAE::emptyElementSource().clone();
             fire = Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(BuiltinFuncs::CLOCK_FIRE().clone(), list![Arc::new(Expression::NFExpression::INTEGER { value: clock_idx.clone() })], Prefixes::Variability::CONSTANT.clone(), Prefixes::Purity::PURE.clone(), BuiltinFuncs::CLOCK_FIRE().returnType.clone()) });
             stmt = Arc::new(WhenStatement::WhenStatement::NORETCALL { exp: fire.clone(), source: source.clone() });

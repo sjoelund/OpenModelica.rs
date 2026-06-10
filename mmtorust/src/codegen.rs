@@ -13209,6 +13209,11 @@ fn emit_match<'a>(kind: &MatchKind, input: &TypedExp, cases: &[TypedCase], as_bi
                     let pat_binding_names: std::collections::HashSet<String> =
                         typedexp::pat_bindings(&case.pattern).iter().map(|(n, _)| n.clone()).collect();
                     let arm_alias_scope = current_scope_children(ctx, top_level);
+                    // Which no-initialiser case-locals are read before assignment
+                    // inside this arm, and so must keep the implicit type-default.
+                    let arm_local_names: HashSet<String> =
+                        case.locals.iter().map(|(n, _, _, _)| n.clone()).collect();
+                    let arm_default_needs = arm_locals_needing_default(case, &arm_local_names);
                     for (name, ty, default, type_spec) in &case.locals {
                         // Always register the local in the arm's env so any later
                         // `name := ...` becomes a plain re-assignment and not a
@@ -13301,8 +13306,13 @@ fn emit_match<'a>(kind: &MatchKind, input: &TypedExp, cases: &[TypedCase], as_bi
                                 // E0381's any path that reads the local without
                                 // unconditionally assigning it first — a
                                 // common MM pattern (`if … then x := …; end if;
-                                // … use(x)`).
-                                if let Some(def) = ty_default_init_with_hier(ty, ctx, top_level) {
+                                // … use(x)`). `arm_default_needs` (a use-before-def
+                                // analysis over the arm body) restricts the
+                                // placeholder to the locals actually read before
+                                // assignment; the rest are declared bare so Rust's
+                                // own definite-assignment check applies.
+                                if arm_default_needs.contains(name)
+                                    && let Some(def) = ty_default_init_with_hier(ty, ctx, top_level) {
                                     body.push_str(&format!("            let mut {}: {ty_s} = {def};\n", escape_ident(name)));
                                 } else {
                                     body.push_str(&format!("            let mut {}: {ty_s};\n", escape_ident(name)));
@@ -13756,6 +13766,11 @@ fn emit_match<'a>(kind: &MatchKind, input: &TypedExp, cases: &[TypedCase], as_bi
                     let pat_binding_names: std::collections::HashSet<String> =
                         typedexp::pat_bindings(&case.pattern).iter().map(|(n, _)| n.clone()).collect();
                     let arm_alias_scope = current_scope_children(ctx, top_level);
+                    // Which no-initialiser case-locals are read before assignment
+                    // inside this arm (see the MatchKind::Match path).
+                    let arm_local_names: HashSet<String> =
+                        case.locals.iter().map(|(n, _, _, _)| n.clone()).collect();
+                    let arm_default_needs = arm_locals_needing_default(case, &arm_local_names);
                     for (name, ty, default, type_spec) in &case.locals {
                         local_env.vars.insert(name.clone(), ty.clone());
                         if pat_binding_names.contains(name) {
@@ -13809,7 +13824,11 @@ fn emit_match<'a>(kind: &MatchKind, input: &TypedExp, cases: &[TypedCase], as_bi
                                 // Mirror function-locals default-init so arms
                                 // that conditionally assign protected locals
                                 // type-check on the unconditional read paths.
-                                if let Some(def) = ty_default_init_with_hier(ty, ctx, top_level) {
+                                // `arm_default_needs` restricts the placeholder to
+                                // the locals read before assignment (see the
+                                // MatchKind::Match path).
+                                if arm_default_needs.contains(name)
+                                    && let Some(def) = ty_default_init_with_hier(ty, ctx, top_level) {
                                     body.push_str(&format!("            let mut {}: {ty_s} = {def};\n", escape_ident(name)));
                                 } else {
                                     body.push_str(&format!("            let mut {}: {ty_s};\n", escape_ident(name)));
@@ -18350,6 +18369,38 @@ fn vars_needing_default(
     if analysis.walk_stmts(stmts, &mut assigned) == UbdFlow::Falls {
         let outs: Vec<String> = outputs.iter().cloned().collect();
         for o in outs { analysis.read(&o, &assigned); }
+    }
+    analysis.needs
+}
+
+/// Compute which of a match/matchcontinue arm's no-initialiser case-locals are
+/// read on some control-flow path *before* being assigned within the arm. Only
+/// those need the implicit MetaModelica type-default initialiser
+/// (`let mut x: T = <zero>;`); the rest are declared `let mut x: T;` and rely on
+/// Rust's own definite-assignment checking — keeping the placeholder default
+/// from masking bugs, bloating the output, or pulling in a `Default` bound.
+///
+/// This mirrors [`vars_needing_default`] for a function's outputs/protected
+/// locals, with two differences: an arm local starts unassigned (no
+/// `pre_assigned` set — match-level locals with an `= init` are hoisted and
+/// handled separately), and the implicit "read at the end of the block" is the
+/// arm's concrete `result` expression rather than a tuple of outputs. The
+/// arm's `guard` is not consulted: per-arm no-initialiser locals are declared
+/// inside the arm body, which the emitted guard precedes, so a guard cannot
+/// read one.
+///
+/// `tracked` must list the candidate arm-local names. Because each variable's
+/// definite-assignment state is independent, supplying a superset is harmless;
+/// callers pass every case-local name.
+fn arm_locals_needing_default(
+    case: &typedexp::TypedCase,
+    tracked: &HashSet<String>,
+) -> HashSet<String> {
+    let no_outputs: HashSet<String> = HashSet::new();
+    let mut analysis = UseBeforeDef { tracked, outputs: &no_outputs, needs: HashSet::new() };
+    let mut assigned: HashSet<String> = HashSet::new();
+    if analysis.walk_stmts(&case.stmts, &mut assigned) == UbdFlow::Falls {
+        analysis.walk_exp(&case.result, &assigned);
     }
     analysis.needs
 }

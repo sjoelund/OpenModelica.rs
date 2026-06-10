@@ -73,10 +73,10 @@ fn calculateSimulationTimes(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
         if let Ok((__v, __wb0, __wb1, __wb2)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::CREF { .. }, tail: Deref @ metamodelica::List::Nil }, args, r#impl, pre, info) => {
-                    let mut intervals: i32 = 0;
-                    let mut rstepTime: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-                    let mut rstopTime: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-                    let mut rstartTime: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+                    let mut intervals: i32;
+                    let mut rstepTime: metamodelica::Real;
+                    let mut rstopTime: metamodelica::Real;
+                    let mut rstartTime: metamodelica::Real;
                     let mut cache = (*cache).clone();
                     let mut numberOfIntervals: Arc<DAE::Exp> = numberOfIntervals.clone();
                     let mut startTime: Arc<DAE::Exp> = startTime.clone();
@@ -133,22 +133,22 @@ pub fn getSimulationArguments(mut inCache: FCore::Cache, mut inEnv: FCore::Graph
     let mut outSimulationArguments: Arc<metamodelica::List<Arc<DAE::Exp>>>;
     (outCache, outSimulationArguments) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inAbsynExpLst.clone(), inAbsynNamedArgLst.clone(), inImplInst.clone(), inPrefix.clone(), inInfo.clone())) {
         (cache, env, Deref @ metamodelica::List::Cons { head: crexp, tail: Deref @ metamodelica::List::Nil }, args, r#impl, pre, info) => {
-            let mut cname_str: ArcStr = arcstr::literal!("");
-            let mut className: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-            let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut startTime: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut stopTime: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut numberOfIntervals: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut tolerance: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut method: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut cflags: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut simflags: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut fileNamePrefix: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut options: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut outputFormat: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut variableFilter: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut defaulSimOpt: InteractiveTypes::SimulationOptions = <InteractiveTypes::SimulationOptions as ::std::default::Default>::default();
-            let mut v: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
+            let mut cname_str: ArcStr;
+            let mut className: Arc<Absyn::Path>;
+            let mut exp: Arc<DAE::Exp>;
+            let mut startTime: Arc<DAE::Exp>;
+            let mut stopTime: Arc<DAE::Exp>;
+            let mut numberOfIntervals: Arc<DAE::Exp>;
+            let mut tolerance: Arc<DAE::Exp>;
+            let mut method: Arc<DAE::Exp>;
+            let mut cflags: Arc<DAE::Exp>;
+            let mut simflags: Arc<DAE::Exp>;
+            let mut fileNamePrefix: Arc<DAE::Exp>;
+            let mut options: Arc<DAE::Exp>;
+            let mut outputFormat: Arc<DAE::Exp>;
+            let mut variableFilter: Arc<DAE::Exp>;
+            let mut defaulSimOpt: InteractiveTypes::SimulationOptions;
+            let mut v: Arc<Values::Value>;
             let mut cache = (*cache).clone();
             checkSimulationArguments(args.clone(), (callName.clone()).clone(), info.clone())?;
             exp = Static::elabCodeExp(crexp.clone(), cache.clone(), env.clone(), openmodelica_frontend_types::DAE::CodeType::C_TYPENAME, info.clone())?;
@@ -229,9 +229,9 @@ fn elabCallInteractive_work(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, cr2 @ Deref @ Absyn::ComponentRef::CREF_IDENT { .. }, _, _, r#impl, _) => {
-                    let mut cr: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
-                    let mut exp_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+                    let mut cr: Arc<Absyn::ComponentRef>;
+                    let mut exp_1: Arc<DAE::Exp>;
+                    let mut prop: DAE::Properties;
                     let mut cache = (*cache).clone();
                     ErrorExt::setCheckpoint((literal!("Scripting")).clone());
                     cr = AbsynUtil::joinCrefs(Arc::new(Absyn::ComponentRef::CREF_QUAL { name: (literal!("OpenModelica")).clone(), subscripts: metamodelica::nil(), componentRef: Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (literal!("Scripting")).clone(), subscripts: metamodelica::nil() }) }), cr2.clone())?;
@@ -254,7 +254,7 @@ fn elabCallInteractive_work(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "translateModel", .. }, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::CREF { .. }, tail: Deref @ metamodelica::List::Nil }, args, _, _) => {
-                    let mut simulationArgs: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
+                    let mut simulationArgs: Arc<metamodelica::List<Arc<DAE::Exp>>>;
                     let mut cache = (*cache).clone();
                     (cache, simulationArgs) = getSimulationArguments(cache.clone(), env.clone(), inExps.clone(), args.clone(), inImplInst.clone(), inPrefix.clone(), (literal!("translateModel")).clone(), info.clone(), None)?;
                     Ok((cache.clone(), Expression::makePureBuiltinCall((literal!("translateModel")).clone(), simulationArgs.clone(), DAE::T_STRING_DEFAULT().clone()), DAE::Properties::PROP { type_: DAE::T_STRING_DEFAULT().clone(), constFlag: openmodelica_frontend_types::DAE::Const::C_VAR }))
@@ -265,10 +265,10 @@ fn elabCallInteractive_work(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "modelEquationsUC", .. }, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::CREF { componentRef: cr }, tail: Deref @ metamodelica::List::Nil }, args, r#impl, pre) => {
-                    let mut cr_1: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-                    let mut outputFile: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut dumpExtractionSteps: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut className: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+                    let mut cr_1: Arc<DAE::ComponentRef>;
+                    let mut outputFile: Arc<DAE::Exp>;
+                    let mut dumpExtractionSteps: Arc<DAE::Exp>;
+                    let mut className: Arc<Absyn::Path>;
                     let mut cache = (*cache).clone();
                     (cache, cr_1) = Static::elabUntypedCref(cache.clone(), env.clone(), cr.clone(), r#impl.clone(), pre.clone(), info.clone())?;
                     className = ComponentReference::crefToPathIgnoreSubs(cr_1.clone())?;
@@ -282,10 +282,10 @@ fn elabCallInteractive_work(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "translateModelCPP", .. }, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::CREF { componentRef: cr }, tail: Deref @ metamodelica::List::Nil }, args, r#impl, pre) => {
-                    let mut cname_str: Ident = arcstr::literal!("");
-                    let mut filenameprefix: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut recordtype: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut className: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+                    let mut cname_str: Ident;
+                    let mut filenameprefix: Arc<DAE::Exp>;
+                    let mut recordtype: Arc<DAE::Type>;
+                    let mut className: Arc<Absyn::Path>;
                     let mut cache = (*cache).clone();
                     className = AbsynUtil::crefToPath(cr.clone())?;
                     cname_str = (AbsynUtil::pathString(className.clone(), (literal!(".")).clone(), true, false)?).clone();
@@ -299,10 +299,10 @@ fn elabCallInteractive_work(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "translateModelXML", .. }, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::CREF { componentRef: cr }, tail: Deref @ metamodelica::List::Nil }, args, r#impl, pre) => {
-                    let mut cname_str: Ident = arcstr::literal!("");
-                    let mut filenameprefix: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut recordtype: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut className: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+                    let mut cname_str: Ident;
+                    let mut filenameprefix: Arc<DAE::Exp>;
+                    let mut recordtype: Arc<DAE::Type>;
+                    let mut className: Arc<Absyn::Path>;
                     let mut cache = (*cache).clone();
                     className = AbsynUtil::crefToPath(cr.clone())?;
                     cname_str = (AbsynUtil::pathString(className.clone(), (literal!(".")).clone(), true, false)?).clone();
@@ -316,10 +316,10 @@ fn elabCallInteractive_work(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "exportDAEtoMatlab", .. }, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::CREF { componentRef: cr }, tail: Deref @ metamodelica::List::Nil }, args, r#impl, pre) => {
-                    let mut cname_str: Ident = arcstr::literal!("");
-                    let mut filenameprefix: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut recordtype: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut className: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+                    let mut cname_str: Ident;
+                    let mut filenameprefix: Arc<DAE::Exp>;
+                    let mut recordtype: Arc<DAE::Type>;
+                    let mut className: Arc<Absyn::Path>;
                     let mut cache = (*cache).clone();
                     className = AbsynUtil::crefToPath(cr.clone())?;
                     cname_str = (AbsynUtil::pathString(className.clone(), (literal!(".")).clone(), true, false)?).clone();
@@ -333,7 +333,7 @@ fn elabCallInteractive_work(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "buildModel", .. }, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::CREF { .. }, tail: Deref @ metamodelica::List::Nil }, args, _, _) => {
-                    let mut simulationArgs: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
+                    let mut simulationArgs: Arc<metamodelica::List<Arc<DAE::Exp>>>;
                     let mut cache = (*cache).clone();
                     (cache, simulationArgs) = getSimulationArguments(cache.clone(), env.clone(), inExps.clone(), args.clone(), inImplInst.clone(), inPrefix.clone(), (literal!("buildModel")).clone(), info.clone(), None)?;
                     Ok((cache.clone(), Expression::makePureBuiltinCall((literal!("buildModel")).clone(), simulationArgs.clone(), DAE::T_UNKNOWN_DEFAULT().clone()), DAE::Properties::PROP { type_: Arc::new(DAE::Type::T_ARRAY { ty: DAE::T_STRING_DEFAULT().clone(), dims: list![Arc::new(DAE::Dimension::DIM_INTEGER { integer: 2 })] }), constFlag: openmodelica_frontend_types::DAE::Const::C_VAR }))
@@ -344,7 +344,7 @@ fn elabCallInteractive_work(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "buildModelBeast", .. }, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::CREF { .. }, tail: Deref @ metamodelica::List::Nil }, args, _, _) => {
-                    let mut simulationArgs: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
+                    let mut simulationArgs: Arc<metamodelica::List<Arc<DAE::Exp>>>;
                     let mut cache = (*cache).clone();
                     (cache, simulationArgs) = getSimulationArguments(cache.clone(), env.clone(), inExps.clone(), args.clone(), inImplInst.clone(), inPrefix.clone(), (literal!("buildModelBeast")).clone(), info.clone(), None)?;
                     Ok((cache.clone(), Expression::makePureBuiltinCall((literal!("buildModelBeast")).clone(), simulationArgs.clone(), DAE::T_UNKNOWN_DEFAULT().clone()), DAE::Properties::PROP { type_: Arc::new(DAE::Type::T_ARRAY { ty: DAE::T_STRING_DEFAULT().clone(), dims: list![Arc::new(DAE::Dimension::DIM_INTEGER { integer: 2 })] }), constFlag: openmodelica_frontend_types::DAE::Const::C_VAR }))
@@ -355,8 +355,8 @@ fn elabCallInteractive_work(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "simulate", .. }, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::CREF { .. }, tail: Deref @ metamodelica::List::Nil }, args, _, _) => {
-                    let mut recordtype: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut simulationArgs: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
+                    let mut recordtype: Arc<DAE::Type>;
+                    let mut simulationArgs: Arc<metamodelica::List<Arc<DAE::Exp>>>;
                     let mut cache = (*cache).clone();
                     (cache, simulationArgs) = getSimulationArguments(cache.clone(), env.clone(), inExps.clone(), args.clone(), inImplInst.clone(), inPrefix.clone(), (literal!("simulate")).clone(), info.clone(), None)?;
                     recordtype = CevalScriptBackend::getSimulationResultType()?;
@@ -368,8 +368,8 @@ fn elabCallInteractive_work(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "simulation", .. }, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::CREF { .. }, tail: Deref @ metamodelica::List::Nil }, args, _, _) => {
-                    let mut recordtype: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut simulationArgs: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
+                    let mut recordtype: Arc<DAE::Type>;
+                    let mut simulationArgs: Arc<metamodelica::List<Arc<DAE::Exp>>>;
                     let mut cache = (*cache).clone();
                     (cache, simulationArgs) = getSimulationArguments(cache.clone(), env.clone(), inExps.clone(), args.clone(), inImplInst.clone(), inPrefix.clone(), (literal!("simulation")).clone(), info.clone(), None)?;
                     recordtype = CevalScriptBackend::getDrModelicaSimulationResultType()?;
@@ -381,8 +381,8 @@ fn elabCallInteractive_work(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "linearize", .. }, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::CREF { .. }, tail: Deref @ metamodelica::List::Nil }, args, _, _) => {
-                    let mut recordtype: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut simulationArgs: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
+                    let mut recordtype: Arc<DAE::Type>;
+                    let mut simulationArgs: Arc<metamodelica::List<Arc<DAE::Exp>>>;
                     let mut cache = (*cache).clone();
                     (cache, simulationArgs) = getSimulationArguments(cache.clone(), env.clone(), inExps.clone(), args.clone(), inImplInst.clone(), inPrefix.clone(), (literal!("linearize")).clone(), info.clone(), None)?;
                     recordtype = CevalScriptBackend::getSimulationResultType()?;
@@ -394,8 +394,8 @@ fn elabCallInteractive_work(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "optimize", .. }, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::CREF { .. }, tail: Deref @ metamodelica::List::Nil }, args, _, _) => {
-                    let mut recordtype: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut simulationArgs: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
+                    let mut recordtype: Arc<DAE::Type>;
+                    let mut simulationArgs: Arc<metamodelica::List<Arc<DAE::Exp>>>;
                     let mut cache = (*cache).clone();
                     (cache, simulationArgs) = getSimulationArguments(cache.clone(), env.clone(), inExps.clone(), args.clone(), inImplInst.clone(), inPrefix.clone(), (literal!("optimize")).clone(), info.clone(), None)?;
                     recordtype = CevalScriptBackend::getSimulationResultType()?;
@@ -407,8 +407,8 @@ fn elabCallInteractive_work(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "moo", .. }, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::CREF { .. }, tail: Deref @ metamodelica::List::Nil }, args, _, _) => {
-                    let mut recordtype: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut simulationArgs: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
+                    let mut recordtype: Arc<DAE::Type>;
+                    let mut simulationArgs: Arc<metamodelica::List<Arc<DAE::Exp>>>;
                     let mut cache = (*cache).clone();
                     (cache, simulationArgs) = getSimulationArguments(cache.clone(), env.clone(), inExps.clone(), args.clone(), inImplInst.clone(), inPrefix.clone(), (literal!("moo")).clone(), info.clone(), None)?;
                     recordtype = CevalScriptBackend::getSimulationResultType()?;
@@ -420,8 +420,8 @@ fn elabCallInteractive_work(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "jacobian", .. }, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::CREF { componentRef: cr }, tail: Deref @ metamodelica::List::Nil }, _, r#impl, pre) => {
-                    let mut cr_1: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-                    let mut crefExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut cr_1: Arc<DAE::ComponentRef>;
+                    let mut crefExp: Arc<DAE::Exp>;
                     let mut cache = (*cache).clone();
                     (cache, cr_1) = Static::elabUntypedCref(cache.clone(), env.clone(), cr.clone(), r#impl.clone(), pre.clone(), info.clone())?;
                     crefExp = Expression::crefExp(cr_1.clone())?;
@@ -433,7 +433,7 @@ fn elabCallInteractive_work(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "timing", .. }, Deref @ metamodelica::List::Cons { head: exp, tail: Deref @ metamodelica::List::Nil }, Deref @ metamodelica::List::Nil, r#impl, pre) => {
-                    let mut exp_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut exp_1: Arc<DAE::Exp>;
                     let mut cache = (*cache).clone();
                     (cache, exp_1, _) = elabExp(cache.clone(), env.clone(), exp.clone(), r#impl.clone(), true, pre.clone(), info.clone())?;
                     Ok((cache.clone(), Expression::makePureBuiltinCall((literal!("timing")).clone(), list![exp_1.clone()], DAE::T_REAL_DEFAULT().clone()), DAE::Properties::PROP { type_: DAE::T_REAL_DEFAULT().clone(), constFlag: openmodelica_frontend_types::DAE::Const::C_VAR }))
@@ -444,8 +444,8 @@ fn elabCallInteractive_work(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, _, Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "checkExamplePackages", .. }, Deref @ metamodelica::List::Nil, args, _, _) => {
-                    let mut excludeList: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut excludeListSize: i32 = 0;
+                    let mut excludeList: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+                    let mut excludeListSize: i32;
                     excludeList = Static::getOptionalNamedArgExpList((literal!("exclude")).clone(), args.clone());
                     excludeListSize = (excludeList.clone().len() as i32);
                     Ok((cache.clone(), Expression::makePureBuiltinCall((literal!("checkExamplePackages")).clone(), list![Arc::new(DAE::Exp::ARRAY { ty: Arc::new(DAE::Type::T_ARRAY { ty: DAE::T_UNKNOWN_DEFAULT().clone(), dims: list![Arc::new(DAE::Dimension::DIM_INTEGER { integer: excludeListSize.clone() })] }), scalar: false, array: excludeList.clone() })], DAE::T_STRING_DEFAULT().clone()), DAE::Properties::PROP { type_: DAE::T_BOOL_DEFAULT().clone(), constFlag: openmodelica_frontend_types::DAE::Const::C_CONST }))
@@ -456,8 +456,8 @@ fn elabCallInteractive_work(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, _, Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "checkExamplePackages", .. }, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::STRING { value: r#str }, tail: Deref @ metamodelica::List::Nil }, args, _, _) => {
-                    let mut excludeList: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut excludeListSize: i32 = 0;
+                    let mut excludeList: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+                    let mut excludeListSize: i32;
                     excludeList = Static::getOptionalNamedArgExpList((literal!("exclude")).clone(), args.clone());
                     excludeListSize = (excludeList.clone().len() as i32);
                     Ok((cache.clone(), Expression::makePureBuiltinCall((literal!("checkExamplePackages")).clone(), list![Arc::new(DAE::Exp::ARRAY { ty: Arc::new(DAE::Type::T_ARRAY { ty: DAE::T_UNKNOWN_DEFAULT().clone(), dims: list![Arc::new(DAE::Dimension::DIM_INTEGER { integer: excludeListSize.clone() })] }), scalar: false, array: excludeList.clone() }), Arc::new(DAE::Exp::SCONST { string: (r#str.clone()).clone() })], DAE::T_STRING_DEFAULT().clone()), DAE::Properties::PROP { type_: DAE::T_BOOL_DEFAULT().clone(), constFlag: openmodelica_frontend_types::DAE::Const::C_CONST }))
@@ -468,9 +468,9 @@ fn elabCallInteractive_work(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, _, Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "checkExamplePackages", .. }, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::CREF { componentRef: cr }, tail: Deref @ metamodelica::List::Nil }, args, _, _) => {
-                    let mut excludeList: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut excludeListSize: i32 = 0;
-                    let mut className: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+                    let mut excludeList: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+                    let mut excludeListSize: i32;
+                    let mut className: Arc<Absyn::Path>;
                     className = AbsynUtil::crefToPath(cr.clone())?;
                     excludeList = Static::getOptionalNamedArgExpList((literal!("exclude")).clone(), args.clone());
                     excludeListSize = (excludeList.clone().len() as i32);
@@ -482,9 +482,9 @@ fn elabCallInteractive_work(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, _, Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "checkExamplePackages", .. }, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::CREF { componentRef: cr }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::STRING { value: r#str }, tail: Deref @ metamodelica::List::Nil } }, args, _, _) => {
-                    let mut excludeList: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut excludeListSize: i32 = 0;
-                    let mut className: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+                    let mut excludeList: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+                    let mut excludeListSize: i32;
+                    let mut className: Arc<Absyn::Path>;
                     className = AbsynUtil::crefToPath(cr.clone())?;
                     excludeList = Static::getOptionalNamedArgExpList((literal!("exclude")).clone(), args.clone());
                     excludeListSize = (excludeList.clone().len() as i32);
@@ -515,8 +515,8 @@ fn elabExp2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<A
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, Deref @ Absyn::Exp::CALL { function_: r#fn, functionArgs: Deref @ Absyn::FunctionArgs::FUNCTIONARGS { args, argNames: nargs }, .. }, r#impl, _, pre) => {
-                    let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+                    let mut e_1: Arc<DAE::Exp>;
+                    let mut prop: DAE::Properties;
                     let mut cache = (*cache).clone();
                     (cache, e_1, prop) = elabCall(cache.clone(), env.clone(), r#fn.clone(), args.clone(), nargs.clone(), r#impl.clone(), pre.clone(), info.clone(), Error::getNumErrorMessages())?;
                     (e_1, _) = ExpressionSimplify::simplify1(e_1.clone())?;
@@ -528,8 +528,8 @@ fn elabExp2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<A
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, exp, r#impl, doVect, pre) => {
-                    let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+                    let mut e_1: Arc<DAE::Exp>;
+                    let mut prop: DAE::Properties;
                     let mut cache = (*cache).clone();
                     (cache, e_1, prop) = Static::elabExp(cache.clone(), env.clone(), exp.clone(), r#impl.clone(), doVect.clone(), pre.clone(), info.clone())?;
                     Ok((cache.clone(), e_1.clone(), prop.clone()))
@@ -548,8 +548,8 @@ fn elabCall(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inComponentR
     let mut outProperties: DAE::Properties;
     (outCache, outExp, outProperties) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inComponentRef.clone(), inAbsynExpLst.clone(), inAbsynNamedArgLst.clone(), inImplInst.clone(), inPrefix.clone())) {
         (cache, env, r#fn, args, nargs, r#impl, pre) => {
-            let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+            let mut e: Arc<DAE::Exp>;
+            let mut prop: DAE::Properties;
             let mut cache = (*cache).clone();
             (cache, e, prop) = elabCallInteractive_work(cache.clone(), env.clone(), r#fn.clone(), args.clone(), nargs.clone(), r#impl.clone(), pre.clone(), info.clone())?;
             (cache.clone(), e.clone(), prop.clone())
@@ -568,8 +568,8 @@ pub fn elabGraphicsExp(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut i
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, Deref @ Absyn::Exp::CALL { function_: r#fn, functionArgs: Deref @ Absyn::FunctionArgs::FUNCTIONARGS { args, argNames: nargs }, .. }, _, pre) => {
-                    let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+                    let mut e_1: Arc<DAE::Exp>;
+                    let mut prop: DAE::Properties;
                     let mut cache = (*cache).clone();
                     (cache, e_1, prop) = elabCall(cache.clone(), env.clone(), r#fn.clone(), args.clone(), nargs.clone(), true, pre.clone(), info.clone(), Error::getNumErrorMessages())?;
                     Ok((cache.clone(), e_1.clone(), prop.clone()))
@@ -580,8 +580,8 @@ pub fn elabGraphicsExp(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut i
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, e, r#impl, pre) => {
-                    let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+                    let mut e_1: Arc<DAE::Exp>;
+                    let mut prop: DAE::Properties;
                     let mut cache = (*cache).clone();
                     (cache, e_1, prop) = Static::elabGraphicsExp(cache.clone(), env.clone(), e.clone(), r#impl.clone(), pre.clone(), info.clone())?;
                     Ok((cache.clone(), e_1.clone(), prop.clone()))

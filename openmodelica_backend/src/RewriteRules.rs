@@ -134,8 +134,8 @@ pub fn rewriteFrontEnd(mut inExp: Arc<Absyn::Exp>) -> Result<(Arc<Absyn::Exp>, b
     let mut isChanged: bool;
     (outExp, isChanged) = (::match_deref::match_deref! { match &(inExp.clone()) {
         _ => {
-            let mut rules: Rules = metamodelica::nil();
-            let mut b: bool = false;
+            let mut rules: Rules;
+            let mut b: bool;
             rules = getRulesFrontEnd(getAllRules()?);
             (outExp, b) = matchAndRewriteExpFrontEnd(inExp.clone(), rules.clone())?;
             (outExp.clone(), b.clone())
@@ -161,8 +161,8 @@ pub fn matchAndRewriteExpFrontEnd(mut inExp: Arc<Absyn::Exp>, mut inRules: Rules
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Rule::FRONTEND_RULE { from, to }, tail: _ } => {
-                    let mut binds: Binds = metamodelica::nil();
-                    let mut b: bool = false;
+                    let mut binds: Binds;
+                    let mut b: bool;
                     let mut outExp: Arc<Absyn::Exp> = outExp.clone();
                     let __pa0 = ::match_deref::match_deref! { match &(matchesFrontEnd(inExp.clone(), from.clone(), metamodelica::nil())?) {
                         __pa0 @ Deref @ metamodelica::List::Cons { head: _, tail: _ } => __pa0.clone(),
@@ -180,7 +180,7 @@ pub fn matchAndRewriteExpFrontEnd(mut inExp: Arc<Absyn::Exp>, mut inRules: Rules
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
-                    let mut b: bool = false;
+                    let mut b: bool;
                     let mut outExp: Arc<Absyn::Exp> = outExp.clone();
                     (outExp, b) = matchAndRewriteExpFrontEnd(inExp.clone(), rest.clone())?;
                     Ok(((outExp.clone(), b.clone()), outExp.clone()))
@@ -204,7 +204,7 @@ pub fn replaceBindsFrontEnd(mut inExp: Arc<Absyn::Exp>, mut inBinds: Binds) -> R
     let mut outBinds: Binds;
     (outExp, outBinds) = (::match_deref::match_deref! { match &((inExp.clone(), inBinds.clone())) {
         (e1 @ Deref @ Absyn::Exp::CREF { componentRef: _ }, bnds) => {
-            let mut e2: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
+            let mut e2: Arc<Absyn::Exp>;
             e2 = replaceBindFrontEnd(e1.clone(), bnds.clone())?;
             (e2.clone(), bnds.clone())
         },
@@ -600,7 +600,7 @@ pub fn isPlaceHolderFrontEnd(mut inExp: Arc<Absyn::Exp>) -> Result<bool> {
     let mut isHolder: bool;
     isHolder = (::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ Absyn::Exp::CREF { componentRef: Deref @ Absyn::ComponentRef::CREF_IDENT { name, subscripts: _ } } => {
-            let mut b: bool = false;
+            let mut b: bool;
             b = intEq(System::stringFind((name.clone()).clone(), (literal!("'$")).clone())?, 0);
             b.clone()
         },
@@ -619,8 +619,8 @@ pub fn rewriteBackEnd(mut inExp: Arc<DAE::Exp>) -> Result<(Arc<DAE::Exp>, bool)>
     let mut isChanged: bool;
     (outExp, isChanged) = (::match_deref::match_deref! { match &(inExp.clone()) {
         _ => {
-            let mut rules: Rules = metamodelica::nil();
-            let mut b: bool = false;
+            let mut rules: Rules;
+            let mut b: bool;
             rules = getRulesBackEnd(getAllRules()?);
             (outExp, b) = matchAndRewriteExpBackEnd(inExp.clone(), rules.clone())?;
             (outExp.clone(), b.clone())
@@ -646,10 +646,10 @@ pub fn matchAndRewriteExpBackEnd(mut inExp: Arc<DAE::Exp>, mut inRules: Rules) -
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Rule::BACKEND_RULE { from: afrom, to: ato }, tail: _ } => {
-                    let mut from: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut to: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut binds: Binds = metamodelica::nil();
-                    let mut b: bool = false;
+                    let mut from: Arc<DAE::Exp>;
+                    let mut to: Arc<DAE::Exp>;
+                    let mut binds: Binds;
+                    let mut b: bool;
                     let mut outExp: Arc<DAE::Exp> = outExp.clone();
                     from = Expression::fromAbsynExp(afrom.clone())?;
                     to = Expression::fromAbsynExp(ato.clone())?;
@@ -669,7 +669,7 @@ pub fn matchAndRewriteExpBackEnd(mut inExp: Arc<DAE::Exp>, mut inRules: Rules) -
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
-                    let mut b: bool = false;
+                    let mut b: bool;
                     let mut outExp: Arc<DAE::Exp> = outExp.clone();
                     (outExp, b) = matchAndRewriteExpBackEnd(inExp.clone(), rest.clone())?;
                     Ok(((outExp.clone(), b.clone()), outExp.clone()))
@@ -693,7 +693,7 @@ pub fn replaceBindsBackEnd(mut inExp: Arc<DAE::Exp>, mut inBinds: Binds) -> Resu
     let mut outBinds: Binds;
     (outExp, outBinds) = (::match_deref::match_deref! { match &((inExp.clone(), inBinds.clone())) {
         (e1 @ Deref @ DAE::Exp::CREF { componentRef: _, ty: _ }, bnds) => {
-            let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e2: Arc<DAE::Exp>;
             e2 = replaceBindBackEnd(e1.clone(), bnds.clone())?;
             (e2.clone(), bnds.clone())
         },
@@ -1005,7 +1005,7 @@ pub fn isPlaceHolderBackEnd(mut inExp: Arc<DAE::Exp>) -> Result<bool> {
     let mut isHolder: bool;
     isHolder = (::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ DAE::Exp::CREF { componentRef: Deref @ DAE::ComponentRef::CREF_IDENT { ident: name, .. }, ty: _ } => {
-            let mut b: bool = false;
+            let mut b: bool;
             b = intEq(System::stringFind((name.clone()).clone(), (literal!("'$")).clone())?, 0);
             b.clone()
         },
@@ -1132,7 +1132,7 @@ fn operatorMatches(mut op1: DAE::Operator, mut op2: DAE::Operator) -> Result<boo
 pub fn loadRules() -> Result<()> {
     let () = (match () {
         () => {
-            let mut file: ArcStr = arcstr::literal!("");
+            let mut file: ArcStr;
             file = (Flags::getConfigString(Flags::REWRITE_RULES_FILE.clone())?).clone();
             loadRulesFromFile((file.clone()).clone())?;
             ()
@@ -1235,7 +1235,7 @@ pub fn loadRulesFromFile(mut inFile: ArcStr) -> Result<()> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    let mut oR: Option<Arc<metamodelica::List<Rule>>> = None;
+                    let mut oR: Option<Arc<metamodelica::List<Rule>>>;
                     oR = crate::Globals::rewriteRulesIndex.with(|__root| __root.borrow().clone());
                     let true = (isSome(oR.clone())) else { bail!("pattern mismatch") };
                     Ok(())
@@ -1246,8 +1246,8 @@ pub fn loadRulesFromFile(mut inFile: ArcStr) -> Result<()> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    let mut stmts: Arc<metamodelica::List<GlobalScript::Statement>> = metamodelica::nil();
-                    let mut rules: Rules = metamodelica::nil();
+                    let mut stmts: Arc<metamodelica::List<GlobalScript::Statement>>;
+                    let mut rules: Rules;
                     ::match_deref::match_deref! { match &(crate::Globals::rewriteRulesIndex.with(|__root| __root.borrow().clone())) {
                         None => (),
                         _ => bail!("pattern mismatch"),
@@ -1301,7 +1301,7 @@ pub fn getRulesFrontEnd(mut inRules: Rules) -> Rules {
             return metamodelica::nil()
         },
         Deref @ metamodelica::List::Cons { head: r @ Rule::FRONTEND_RULE { .. }, tail: rest } => {
-            let mut lst: Rules = metamodelica::nil();
+            let mut lst: Rules;
             lst = getRulesFrontEnd(rest.clone());
             return metamodelica::cons(r.clone(), lst.clone())
         },
@@ -1320,7 +1320,7 @@ pub fn getRulesBackEnd(mut inRules: Rules) -> Rules {
             return metamodelica::nil()
         },
         Deref @ metamodelica::List::Cons { head: r @ Rule::BACKEND_RULE { .. }, tail: rest } => {
-            let mut lst: Rules = metamodelica::nil();
+            let mut lst: Rules;
             lst = getRulesBackEnd(rest.clone());
             return metamodelica::cons(r.clone(), lst.clone())
         },
@@ -1347,7 +1347,7 @@ fn stmtsToRules(mut inStmts: Arc<metamodelica::List<GlobalScript::Statement>>, m
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: GlobalScript::Statement::IEXP { exp: Deref @ Absyn::Exp::CALL { function_: Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "rewrite", .. }, functionArgs: Deref @ Absyn::FunctionArgs::FUNCTIONARGS { args: Deref @ metamodelica::List::Cons { head: from, tail: Deref @ metamodelica::List::Cons { head: to, tail: Deref @ metamodelica::List::Nil } }, argNames: Deref @ metamodelica::List::Nil }, .. }, .. }, tail: rest } => {
-                    let mut acc: Rules = metamodelica::nil();
+                    let mut acc: Rules;
                     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FrontEnd rule: ")); __mm_s.push_str(&*Dump::printExpStr(from.clone())?); __mm_s.push_str(&*literal!(" -> ")); __mm_s.push_str(&*Dump::printExpStr(to.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     acc = stmtsToRules(rest.clone(), metamodelica::cons(Rule::FRONTEND_RULE { from: from.clone(), to: to.clone() }, inAcc.clone()))?;
                     Ok(acc.clone())
@@ -1358,7 +1358,7 @@ fn stmtsToRules(mut inStmts: Arc<metamodelica::List<GlobalScript::Statement>>, m
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: GlobalScript::Statement::IEXP { exp: Deref @ Absyn::Exp::CALL { function_: Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "rewriteFrontEnd", .. }, functionArgs: Deref @ Absyn::FunctionArgs::FUNCTIONARGS { args: Deref @ metamodelica::List::Cons { head: from, tail: Deref @ metamodelica::List::Cons { head: to, tail: Deref @ metamodelica::List::Nil } }, argNames: Deref @ metamodelica::List::Nil }, .. }, .. }, tail: rest } => {
-                    let mut acc: Rules = metamodelica::nil();
+                    let mut acc: Rules;
                     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FrontEnd rule: ")); __mm_s.push_str(&*Dump::printExpStr(from.clone())?); __mm_s.push_str(&*literal!(" -> ")); __mm_s.push_str(&*Dump::printExpStr(to.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     acc = stmtsToRules(rest.clone(), metamodelica::cons(Rule::FRONTEND_RULE { from: from.clone(), to: to.clone() }, inAcc.clone()))?;
                     Ok(acc.clone())
@@ -1369,7 +1369,7 @@ fn stmtsToRules(mut inStmts: Arc<metamodelica::List<GlobalScript::Statement>>, m
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: GlobalScript::Statement::IEXP { exp: Deref @ Absyn::Exp::CALL { function_: Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "rewriteBackEnd", .. }, functionArgs: Deref @ Absyn::FunctionArgs::FUNCTIONARGS { args: Deref @ metamodelica::List::Cons { head: from, tail: Deref @ metamodelica::List::Cons { head: to, tail: Deref @ metamodelica::List::Nil } }, argNames: Deref @ metamodelica::List::Nil }, .. }, .. }, tail: rest } => {
-                    let mut acc: Rules = metamodelica::nil();
+                    let mut acc: Rules;
                     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("BackEnd rule: ")); __mm_s.push_str(&*Dump::printExpStr(from.clone())?); __mm_s.push_str(&*literal!(" -> ")); __mm_s.push_str(&*Dump::printExpStr(to.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     acc = stmtsToRules(rest.clone(), metamodelica::cons(Rule::BACKEND_RULE { from: from.clone(), to: to.clone() }, inAcc.clone()))?;
                     Ok(acc.clone())

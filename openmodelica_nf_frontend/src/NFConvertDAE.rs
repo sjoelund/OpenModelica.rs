@@ -560,15 +560,15 @@ fn convertEquation(mut eq: Arc<Equation::NFEquation>, mut elements: Arc<metamode
     let mut elements: Arc<metamodelica::List<Arc<DAE::Element>>> = elements;
     elements = (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ Equation::EQUALITY { lhs: lhs @ Deref @ Expression::CREF { .. }, rhs: rhs @ Deref @ Expression::CREF { .. }, .. } if (Type::isScalarBuiltin(var_field!((*eq).ty, Equation::NFEquation::EQUALITY).clone())?) => {
-            let mut cr1: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-            let mut cr2: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
+            let mut cr1: Arc<DAE::ComponentRef>;
+            let mut cr2: Arc<DAE::ComponentRef>;
             cr1 = ComponentRef::toDAE(var_field!((**lhs).cref, Expression::NFExpression::CREF).clone())?;
             cr2 = ComponentRef::toDAE(var_field!((**rhs).cref, Expression::NFExpression::CREF).clone())?;
             metamodelica::cons(Arc::new(DAE::Element::EQUEQUATION { cr1: cr1.clone(), cr2: cr2.clone(), source: var_field!((*eq).source, Equation::NFEquation::EQUALITY).clone() }), elements.clone())
         },
         Deref @ Equation::EQUALITY { .. } => {
-            let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e1: Arc<DAE::Exp>;
+            let mut e2: Arc<DAE::Exp>;
             e1 = Expression::toDAE(var_field!((*eq).lhs, Equation::NFEquation::EQUALITY).clone(), false)?;
             e2 = Expression::toDAE(var_field!((*eq).rhs, Equation::NFEquation::EQUALITY).clone(), false)?;
             metamodelica::cons(if (Type::isComplex(var_field!((*eq).ty, Equation::NFEquation::EQUALITY).clone())) {Arc::new(DAE::Element::COMPLEX_EQUATION { lhs: e1.clone(), rhs: e2.clone(), source: var_field!((*eq).source, Equation::NFEquation::EQUALITY).clone() })} else if (Type::isArray(var_field!((*eq).ty, Equation::NFEquation::EQUALITY).clone())) {Arc::new(DAE::Element::ARRAY_EQUATION { dimension: ({
@@ -590,9 +590,9 @@ fn convertEquation(mut eq: Arc<Equation::NFEquation>, mut elements: Arc<metamode
             metamodelica::cons(convertWhenEquation(var_field!((*eq).branches, Equation::NFEquation::WHEN).clone(), var_field!((*eq).source, Equation::NFEquation::WHEN).clone())?, elements.clone())
         },
         Deref @ Equation::ASSERT { .. } => {
-            let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e1: Arc<DAE::Exp>;
+            let mut e2: Arc<DAE::Exp>;
+            let mut e3: Arc<DAE::Exp>;
             e1 = Expression::toDAE(var_field!((*eq).condition, Equation::NFEquation::ASSERT).clone(), false)?;
             e2 = Expression::toDAE(var_field!((*eq).message, Equation::NFEquation::ASSERT).clone(), false)?;
             e3 = Expression::toDAE(var_field!((*eq).level, Equation::NFEquation::ASSERT).clone(), false)?;
@@ -602,8 +602,8 @@ fn convertEquation(mut eq: Arc<Equation::NFEquation>, mut elements: Arc<metamode
             metamodelica::cons(Arc::new(DAE::Element::TERMINATE { message: Expression::toDAE(var_field!((*eq).message, Equation::NFEquation::TERMINATE).clone(), false)?, source: var_field!((*eq).source, Equation::NFEquation::TERMINATE).clone() }), elements.clone())
         },
         Deref @ Equation::REINIT { .. } => {
-            let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut cr1: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
+            let mut e1: Arc<DAE::Exp>;
+            let mut cr1: Arc<DAE::ComponentRef>;
             cr1 = ComponentRef::toDAE(Expression::toCref(var_field!((*eq).cref, Equation::NFEquation::REINIT).clone())?)?;
             e1 = Expression::toDAE(var_field!((*eq).reinitExp, Equation::NFEquation::REINIT).clone(), false)?;
             metamodelica::cons(Arc::new(DAE::Element::REINIT { componentRef: cr1.clone(), exp: e1.clone(), source: var_field!((*eq).source, Equation::NFEquation::REINIT).clone() }), elements.clone())
@@ -748,8 +748,8 @@ fn convertInitialEquation(mut eq: Arc<Equation::NFEquation>, mut elements: Arc<m
     let mut elements: Arc<metamodelica::List<Arc<DAE::Element>>> = elements;
     elements = (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ Equation::EQUALITY { .. } => {
-            let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e1: Arc<DAE::Exp>;
+            let mut e2: Arc<DAE::Exp>;
             e1 = Expression::toDAE(var_field!((*eq).lhs, Equation::NFEquation::EQUALITY).clone(), false)?;
             e2 = Expression::toDAE(var_field!((*eq).rhs, Equation::NFEquation::EQUALITY).clone(), false)?;
             metamodelica::cons(if (Type::isComplex(var_field!((*eq).ty, Equation::NFEquation::EQUALITY).clone())) {Arc::new(DAE::Element::INITIAL_COMPLEX_EQUATION { lhs: e1.clone(), rhs: e2.clone(), source: var_field!((*eq).source, Equation::NFEquation::EQUALITY).clone() })} else if (Type::isArray(var_field!((*eq).ty, Equation::NFEquation::EQUALITY).clone())) {Arc::new(DAE::Element::INITIAL_ARRAY_EQUATION { dimension: ({
@@ -768,9 +768,9 @@ fn convertInitialEquation(mut eq: Arc<Equation::NFEquation>, mut elements: Arc<m
             metamodelica::cons(convertIfEquation(var_field!((*eq).branches, Equation::NFEquation::IF).clone(), var_field!((*eq).source, Equation::NFEquation::IF).clone(), true)?, elements.clone())
         },
         Deref @ Equation::ASSERT { .. } => {
-            let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e1: Arc<DAE::Exp>;
+            let mut e2: Arc<DAE::Exp>;
+            let mut e3: Arc<DAE::Exp>;
             e1 = Expression::toDAE(var_field!((*eq).condition, Equation::NFEquation::ASSERT).clone(), false)?;
             e2 = Expression::toDAE(var_field!((*eq).message, Equation::NFEquation::ASSERT).clone(), false)?;
             e3 = Expression::toDAE(var_field!((*eq).level, Equation::NFEquation::ASSERT).clone(), false)?;
@@ -817,7 +817,7 @@ fn convertStatement(mut stmt: Arc<Statement::NFStatement>) -> Result<Arc<DAE::St
             convertAssignment(stmt.clone())?
         },
         Deref @ Statement::FUNCTION_ARRAY_INIT { .. } => {
-            let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+            let mut ty: Arc<DAE::Type>;
             ty = Type::toDAE(var_field!((*stmt).ty, Statement::NFStatement::FUNCTION_ARRAY_INIT).clone(), true)?;
             Arc::new(DAE::Statement::STMT_ARRAY_INIT { name: (var_field!((*stmt).name, Statement::NFStatement::FUNCTION_ARRAY_INIT).clone()).clone(), ty: ty.clone(), source: var_field!((*stmt).source, Statement::NFStatement::FUNCTION_ARRAY_INIT).clone() })
         },
@@ -831,9 +831,9 @@ fn convertStatement(mut stmt: Arc<Statement::NFStatement>) -> Result<Arc<DAE::St
             convertWhenStatement(var_field!((*stmt).branches, Statement::NFStatement::WHEN).clone(), var_field!((*stmt).source, Statement::NFStatement::WHEN).clone())?
         },
         Deref @ Statement::ASSERT { .. } => {
-            let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e1: Arc<DAE::Exp>;
+            let mut e2: Arc<DAE::Exp>;
+            let mut e3: Arc<DAE::Exp>;
             e1 = Expression::toDAE(var_field!((*stmt).condition, Statement::NFStatement::ASSERT).clone(), false)?;
             e2 = Expression::toDAE(var_field!((*stmt).message, Statement::NFStatement::ASSERT).clone(), false)?;
             e3 = Expression::toDAE(var_field!((*stmt).level, Statement::NFStatement::ASSERT).clone(), false)?;
@@ -843,8 +843,8 @@ fn convertStatement(mut stmt: Arc<Statement::NFStatement>) -> Result<Arc<DAE::St
             Arc::new(DAE::Statement::STMT_TERMINATE { msg: Expression::toDAE(var_field!((*stmt).message, Statement::NFStatement::TERMINATE).clone(), false)?, source: var_field!((*stmt).source, Statement::NFStatement::TERMINATE).clone() })
         },
         Deref @ Statement::REINIT { .. } => {
-            let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e1: Arc<DAE::Exp>;
+            let mut e2: Arc<DAE::Exp>;
             e1 = Expression::toDAE(var_field!((*stmt).cref, Statement::NFStatement::REINIT).clone(), false)?;
             e2 = Expression::toDAE(var_field!((*stmt).reinitExp, Statement::NFStatement::REINIT).clone(), false)?;
             Arc::new(DAE::Statement::STMT_REINIT { var: e1.clone(), value: e2.clone(), source: var_field!((*stmt).source, Statement::NFStatement::REINIT).clone() })
@@ -853,8 +853,8 @@ fn convertStatement(mut stmt: Arc<Statement::NFStatement>) -> Result<Arc<DAE::St
             Arc::new(DAE::Statement::STMT_NORETCALL { exp: Expression::toDAE(var_field!((*stmt).exp, Statement::NFStatement::NORETCALL).clone(), false)?, source: var_field!((*stmt).source, Statement::NFStatement::NORETCALL).clone() })
         },
         Deref @ Statement::WHILE { .. } => {
-            let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut body: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
+            let mut e1: Arc<DAE::Exp>;
+            let mut body: Arc<metamodelica::List<Arc<DAE::Statement>>>;
             e1 = Expression::toDAE(var_field!((*stmt).condition, Statement::NFStatement::WHILE).clone(), false)?;
             body = convertStatements(var_field!((*stmt).body, Statement::NFStatement::WHILE).clone())?;
             Arc::new(DAE::Statement::STMT_WHILE { exp: e1.clone(), statementLst: body.clone(), source: var_field!((*stmt).source, Statement::NFStatement::WHILE).clone() })
@@ -1085,16 +1085,16 @@ pub fn convertFunctionTree(mut funcs: Arc<Flatten::FunctionTreeImpl::Tree>) -> R
     let mut dfuncs: Arc<AvlTreePathFunction::Tree>;
     dfuncs = (::match_deref::match_deref! { match &(funcs.clone()) {
         Deref @ Flatten::FunctionTreeImpl::Tree::NODE { .. } => {
-            let mut left: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
-            let mut right: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
-            let mut r#fn: DAE::Function = <DAE::Function as ::std::default::Default>::default();
+            let mut left: Arc<AvlTreePathFunction::Tree>;
+            let mut right: Arc<AvlTreePathFunction::Tree>;
+            let mut r#fn: DAE::Function;
             r#fn = convertFunction(var_field!((*funcs).value, Flatten::FunctionTreeImpl::Tree::NODE).clone())?;
             left = convertFunctionTree(var_field!((*funcs).left, Flatten::FunctionTreeImpl::Tree::NODE).clone())?;
             right = convertFunctionTree(var_field!((*funcs).right, Flatten::FunctionTreeImpl::Tree::NODE).clone())?;
             Arc::new(AvlTreePathFunction::Tree::NODE { key: var_field!((*funcs).key, Flatten::FunctionTreeImpl::Tree::NODE).clone(), value: Some(r#fn.clone()), height: var_field!((*funcs).height, Flatten::FunctionTreeImpl::Tree::NODE).clone(), left: left.clone(), right: right.clone() })
         },
         Deref @ Flatten::FunctionTreeImpl::Tree::LEAF { .. } => {
-            let mut r#fn: DAE::Function = <DAE::Function as ::std::default::Default>::default();
+            let mut r#fn: DAE::Function;
             r#fn = convertFunction(var_field!((*funcs).value, Flatten::FunctionTreeImpl::Tree::LEAF).clone())?;
             Arc::new(AvlTreePathFunction::Tree::LEAF { key: var_field!((*funcs).key, Flatten::FunctionTreeImpl::Tree::LEAF).clone(), value: Some(r#fn.clone()) })
         },
@@ -1221,7 +1221,7 @@ fn convertExternalDeclArg(mut exp: Arc<Expression::NFExpression>) -> Result<DAE:
     let mut arg: DAE::ExtArg;
     arg = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CREF { cref: cref @ Deref @ ComponentRef::CREF { .. }, .. } => {
-            let mut dir: Absyn::Direction = Absyn::Direction::BIDIR;
+            let mut dir: Absyn::Direction;
             dir = Prefixes::directionToAbsyn(Component::direction(InstNode::component(var_field!((**cref).node, ComponentRef::NFComponentRef::CREF).clone())?));
             DAE::ExtArg::EXTARG { componentRef: ComponentRef::toDAE(cref.clone())?, direction: dir.clone(), type_: Type::toDAE(var_field!((*exp).ty, Expression::NFExpression::CREF).clone(), true)? }
         },
@@ -1240,7 +1240,7 @@ fn convertExternalDeclOutput(mut cref: Arc<ComponentRef::NFComponentRef>) -> Res
     let mut arg: DAE::ExtArg;
     arg = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ ComponentRef::CREF { .. } => {
-            let mut dir: Absyn::Direction = Absyn::Direction::BIDIR;
+            let mut dir: Absyn::Direction;
             dir = Prefixes::directionToAbsyn(Component::direction(InstNode::component(var_field!((*cref).node, ComponentRef::NFComponentRef::CREF).clone())?));
             DAE::ExtArg::EXTARG { componentRef: ComponentRef::toDAE(cref.clone())?, direction: dir.clone(), type_: Type::toDAE(var_field!((*cref).ty, ComponentRef::NFComponentRef::CREF).clone(), true)? }
         },

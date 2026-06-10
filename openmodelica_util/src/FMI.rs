@@ -506,7 +506,7 @@ pub fn getEnumerationTypeFromTypes(mut inTypeDefinitionsList: Arc<metamodelica::
             return Ok(name_.clone())
         },
         (Deref @ metamodelica::List::Cons { head: _, tail: xs }, baseType) => {
-            let mut name_: ArcStr = arcstr::literal!("");
+            let mut name_: ArcStr;
             { (inTypeDefinitionsList, inBaseType) = (xs.clone(), (baseType.clone()).clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Nil, _) => {

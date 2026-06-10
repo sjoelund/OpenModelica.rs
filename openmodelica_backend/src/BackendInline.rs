@@ -180,10 +180,10 @@ pub fn inlineEq(mut inEquation: Arc<BackendDAE::Equation>, mut fns: (Option<Arc<
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ BackendDAE::Equation::EQUATION { exp: e1, scalar: e2, source, attr } => {
-                    let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut e2_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut b1: bool = false;
-                    let mut b2: bool = false;
+                    let mut e1_1: Arc<DAE::Exp>;
+                    let mut e2_1: Arc<DAE::Exp>;
+                    let mut b1: bool;
+                    let mut b2: bool;
                     let mut source = (*source).clone();
                     (e1_1, source, b1, _) = Inline::inlineExp(e1.clone(), fns.clone(), source.clone());
                     (e2_1, source, b2, _) = Inline::inlineExp(e2.clone(), fns.clone(), source.clone());
@@ -196,11 +196,11 @@ pub fn inlineEq(mut inEquation: Arc<BackendDAE::Equation>, mut fns: (Option<Arc<
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ BackendDAE::Equation::ARRAY_EQUATION { dimSize, left: e1, right: e2, source, attr, recordSize } => {
-                    let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut e2_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut b1: bool = false;
-                    let mut b2: bool = false;
-                    let mut eqn: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
+                    let mut e1_1: Arc<DAE::Exp>;
+                    let mut e2_1: Arc<DAE::Exp>;
+                    let mut b1: bool;
+                    let mut b2: bool;
+                    let mut eqn: Arc<BackendDAE::Equation>;
                     let mut source = (*source).clone();
                     (e1_1, source, b1, _) = Inline::inlineExp(e1.clone(), fns.clone(), source.clone());
                     (e2_1, source, b2, _) = Inline::inlineExp(e2.clone(), fns.clone(), source.clone());
@@ -232,7 +232,7 @@ pub fn inlineEq(mut inEquation: Arc<BackendDAE::Equation>, mut fns: (Option<Arc<
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ BackendDAE::Equation::SOLVED_EQUATION { componentRef: cref, exp: e, source, attr } => {
-                    let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e_1: Arc<DAE::Exp>;
                     let mut source = (*source).clone();
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(Inline::inlineExp(e.clone(), fns.clone(), source.clone())) {
                         (__pa0, __pa1, true, _) => (__pa0.clone(), __pa1.clone()),
@@ -248,7 +248,7 @@ pub fn inlineEq(mut inEquation: Arc<BackendDAE::Equation>, mut fns: (Option<Arc<
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ BackendDAE::Equation::RESIDUAL_EQUATION { exp: e, source, attr } => {
-                    let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e_1: Arc<DAE::Exp>;
                     let mut source = (*source).clone();
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(Inline::inlineExp(e.clone(), fns.clone(), source.clone())) {
                         (__pa0, __pa1, true, _) => (__pa0.clone(), __pa1.clone()),
@@ -264,8 +264,8 @@ pub fn inlineEq(mut inEquation: Arc<BackendDAE::Equation>, mut fns: (Option<Arc<
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ BackendDAE::Equation::ALGORITHM { size, alg: Deref @ DAE::Algorithm { statementLst: stmts }, source, expand: crefExpand, attr } => {
-                    let mut alg: Arc<DAE::Algorithm> = Arc::new(<DAE::Algorithm as ::std::default::Default>::default());
-                    let mut stmts1: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
+                    let mut alg: Arc<DAE::Algorithm>;
+                    let mut stmts1: Arc<metamodelica::List<Arc<DAE::Statement>>>;
                     let __pa0 = ::match_deref::match_deref! { match &(Inline::inlineStatements(stmts.clone(), fns.clone(), metamodelica::nil(), false)) {
                         (__pa0, true) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -280,7 +280,7 @@ pub fn inlineEq(mut inEquation: Arc<BackendDAE::Equation>, mut fns: (Option<Arc<
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ BackendDAE::Equation::WHEN_EQUATION { size, whenEquation: weq, source, attr } => {
-                    let mut weq_1: Arc<BackendDAE::WhenEquation> = Arc::new(<BackendDAE::WhenEquation as ::std::default::Default>::default());
+                    let mut weq_1: Arc<BackendDAE::WhenEquation>;
                     let mut source = (*source).clone();
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inlineWhenEq(weq.clone(), fns.clone(), source.clone())?) {
                         (__pa0, __pa1, true) => (__pa0.clone(), __pa1.clone()),
@@ -296,10 +296,10 @@ pub fn inlineEq(mut inEquation: Arc<BackendDAE::Equation>, mut fns: (Option<Arc<
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ BackendDAE::Equation::COMPLEX_EQUATION { size, left: e1, right: e2, source, attr } => {
-                    let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut e2_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut b1: bool = false;
-                    let mut b2: bool = false;
+                    let mut e1_1: Arc<DAE::Exp>;
+                    let mut e2_1: Arc<DAE::Exp>;
+                    let mut b1: bool;
+                    let mut b2: bool;
                     let mut source = (*source).clone();
                     (e1_1, source, b1, _) = Inline::inlineExp(e1.clone(), fns.clone(), source.clone());
                     (e2_1, source, b2, _) = Inline::inlineExp(e2.clone(), fns.clone(), source.clone());
@@ -312,9 +312,9 @@ pub fn inlineEq(mut inEquation: Arc<BackendDAE::Equation>, mut fns: (Option<Arc<
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ BackendDAE::Equation::IF_EQUATION { conditions: explst, eqnstrue: eqnslst, eqnsfalse: eqns, source, attr } => {
-                    let mut b1: bool = false;
-                    let mut b2: bool = false;
-                    let mut b3: bool = false;
+                    let mut b1: bool;
+                    let mut b2: bool;
+                    let mut b3: bool;
                     let mut explst = (*explst).clone();
                     let mut eqnslst = (*eqnslst).clone();
                     let mut eqns = (*eqns).clone();
@@ -348,8 +348,8 @@ fn inlineEqsLst(mut inEqnsList: Arc<metamodelica::List<Arc<metamodelica::List<Ar
             return (iAcc.clone().reverse(), iInlined.clone())
         },
         Deref @ metamodelica::List::Cons { head: eqn, tail: rest } => {
-            let mut acc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>> = metamodelica::nil();
-            let mut inlined: bool = false;
+            let mut acc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>>;
+            let mut inlined: bool;
             let mut eqn = (*eqn).clone();
             (eqn, inlined) = inlineEqs(eqn.clone(), inFunctions.clone(), metamodelica::nil(), false);
             { (inEqnsList, inFunctions, iAcc, iInlined) = (rest.clone(), inFunctions.clone(), metamodelica::cons(eqn.clone(), iAcc.clone()), inlined.clone() || iInlined.clone()); continue '__tco; }
@@ -366,8 +366,8 @@ pub fn inlineEqs(mut inEqnsList: Arc<metamodelica::List<Arc<BackendDAE::Equation
             return (iAcc.clone().reverse(), iInlined.clone())
         },
         Deref @ metamodelica::List::Cons { head: eqn, tail: rest } => {
-            let mut acc: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
-            let mut inlined: bool = false;
+            let mut acc: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
+            let mut inlined: bool;
             let mut eqn = (*eqn).clone();
             (eqn, inlined) = inlineEq(eqn.clone(), inFunctions.clone());
             { (inEqnsList, inFunctions, iAcc, iInlined) = (rest.clone(), inFunctions.clone(), metamodelica::cons(eqn.clone(), iAcc.clone()), inlined.clone() || iInlined.clone()); continue '__tco; }
@@ -383,11 +383,11 @@ fn inlineWhenEq(mut inWhenEquation: Arc<BackendDAE::WhenEquation>, mut fns: (Opt
     let mut inlined: bool;
     (outWhenEquation, outSource, inlined) = (::match_deref::match_deref! { match &(inWhenEquation.clone()) {
         Deref @ BackendDAE::WhenEquation { condition: cond, whenStmtLst, elsewhenPart: oelsewe } => {
-            let mut source: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
-            let mut b1: bool = false;
-            let mut b2: bool = false;
-            let mut b3: bool = false;
-            let mut elsewe: Arc<BackendDAE::WhenEquation> = Arc::new(<BackendDAE::WhenEquation as ::std::default::Default>::default());
+            let mut source: Arc<DAE::ElementSource>;
+            let mut b1: bool;
+            let mut b2: bool;
+            let mut b3: bool;
+            let mut elsewe: Arc<BackendDAE::WhenEquation>;
             let mut cond = (*cond).clone();
             let mut whenStmtLst = (*whenStmtLst).clone();
             let mut oelsewe = (*oelsewe).clone();
@@ -419,7 +419,7 @@ fn inlineWhenOps(mut inWhenOps: Arc<metamodelica::List<BackendDAE::WhenOperator>
         let mut whenOp = whenOp.clone();
         let () = (match whenOp.clone() {
         BackendDAE::WhenOperator::ASSIGN { left: ref e1, right: ref e2, source: mut source } => {
-            let mut b: bool = false;
+            let mut b: bool;
             let mut e2 = e2.clone();
             let mut source = source.clone();
             (e2, source, b, _) = Inline::inlineExp(e2.clone(), fns.clone(), source.clone());
@@ -428,7 +428,7 @@ fn inlineWhenOps(mut inWhenOps: Arc<metamodelica::List<BackendDAE::WhenOperator>
             ()
         },
         BackendDAE::WhenOperator::REINIT { stateVar: ref cr, value: ref e2, source: mut source } => {
-            let mut b: bool = false;
+            let mut b: bool;
             let mut e2 = e2.clone();
             let mut source = source.clone();
             (e2, source, b, _) = Inline::inlineExp(e2.clone(), fns.clone(), source.clone());
@@ -437,8 +437,8 @@ fn inlineWhenOps(mut inWhenOps: Arc<metamodelica::List<BackendDAE::WhenOperator>
             ()
         },
         BackendDAE::WhenOperator::ASSERT { condition: ref e1, message: ref e2, level: mut level, source: mut source } => {
-            let mut b: bool = false;
-            let mut b2: bool = false;
+            let mut b: bool;
+            let mut b2: bool;
             let mut e1 = e1.clone();
             let mut e2 = e2.clone();
             let mut source = source.clone();
@@ -449,7 +449,7 @@ fn inlineWhenOps(mut inWhenOps: Arc<metamodelica::List<BackendDAE::WhenOperator>
             ()
         },
         BackendDAE::WhenOperator::TERMINATE { message: ref e1, source: mut source } => {
-            let mut b: bool = false;
+            let mut b: bool;
             let mut e1 = e1.clone();
             let mut source = source.clone();
             (e1, source, b, _) = Inline::inlineExp(e1.clone(), fns.clone(), source.clone());
@@ -458,7 +458,7 @@ fn inlineWhenOps(mut inWhenOps: Arc<metamodelica::List<BackendDAE::WhenOperator>
             ()
         },
         BackendDAE::WhenOperator::NORETCALL { exp: ref e1, source: mut source } => {
-            let mut b: bool = false;
+            let mut b: bool;
             let mut e1 = e1.clone();
             let mut source = source.clone();
             (e1, source, b, _) = Inline::inlineExp(e1.clone(), fns.clone(), source.clone());
@@ -524,8 +524,8 @@ fn inlineVarOpt(mut inVarOption: Option<BackendDAE::Var>, mut fns: (Option<Arc<A
             (None, false)
         },
         Some(mut var) => {
-            let mut var2: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
-            let mut b: bool = false;
+            let mut var2: BackendDAE::Var;
+            let mut b: bool;
             (var2, b) = inlineVar(var.clone(), fns.clone());
             (if ({ let __refeq_sl = &(var.clone()); let __refeq_sr = &(var2.clone()); referenceEq(&*(__refeq_sl.varName),&*(__refeq_sr.varName)) && (match (&(__refeq_sl.varKind), &(__refeq_sr.varKind)) { (BackendDAE::VarKind::ALG_STATE, BackendDAE::VarKind::ALG_STATE) => true, (BackendDAE::VarKind::ALG_STATE_OLD, BackendDAE::VarKind::ALG_STATE_OLD) => true, (BackendDAE::VarKind::CLOCKED_STATE { previousName: __refeq_v0l, isStartFixed: __refeq_v1l }, BackendDAE::VarKind::CLOCKED_STATE { previousName: __refeq_v0r, isStartFixed: __refeq_v1r }) => referenceEq(&*(*__refeq_v0l),&*(*__refeq_v0r)) && ((*__refeq_v1l) == (*__refeq_v1r)), (BackendDAE::VarKind::CONST, BackendDAE::VarKind::CONST) => true, (BackendDAE::VarKind::DAE_AUX_VAR, BackendDAE::VarKind::DAE_AUX_VAR) => true, (BackendDAE::VarKind::DAE_RESIDUAL_VAR, BackendDAE::VarKind::DAE_RESIDUAL_VAR) => true, (BackendDAE::VarKind::DISCRETE, BackendDAE::VarKind::DISCRETE) => true, (BackendDAE::VarKind::DUMMY_DER, BackendDAE::VarKind::DUMMY_DER) => true, (BackendDAE::VarKind::DUMMY_STATE, BackendDAE::VarKind::DUMMY_STATE) => true, (BackendDAE::VarKind::EXTOBJ { fullClassName: __refeq_v0l }, BackendDAE::VarKind::EXTOBJ { fullClassName: __refeq_v0r }) => referenceEq(&*(*__refeq_v0l),&*(*__refeq_v0r)), (BackendDAE::VarKind::JAC_TMP_VAR, BackendDAE::VarKind::JAC_TMP_VAR) => true, (BackendDAE::VarKind::JAC_VAR, BackendDAE::VarKind::JAC_VAR) => true, (BackendDAE::VarKind::LOOP_ITERATION, BackendDAE::VarKind::LOOP_ITERATION) => true, (BackendDAE::VarKind::LOOP_SOLVED, BackendDAE::VarKind::LOOP_SOLVED) => true, (BackendDAE::VarKind::OPT_CONSTR, BackendDAE::VarKind::OPT_CONSTR) => true, (BackendDAE::VarKind::OPT_FCONSTR, BackendDAE::VarKind::OPT_FCONSTR) => true, (BackendDAE::VarKind::OPT_INPUT_DER, BackendDAE::VarKind::OPT_INPUT_DER) => true, (BackendDAE::VarKind::OPT_INPUT_WITH_DER, BackendDAE::VarKind::OPT_INPUT_WITH_DER) => true, (BackendDAE::VarKind::OPT_LOOP_INPUT { replaceExp: __refeq_v0l }, BackendDAE::VarKind::OPT_LOOP_INPUT { replaceExp: __refeq_v0r }) => referenceEq(&*(*__refeq_v0l),&*(*__refeq_v0r)), (BackendDAE::VarKind::OPT_TGRID, BackendDAE::VarKind::OPT_TGRID) => true, (BackendDAE::VarKind::PARAM, BackendDAE::VarKind::PARAM) => true, (BackendDAE::VarKind::SEED_VAR, BackendDAE::VarKind::SEED_VAR) => true, (BackendDAE::VarKind::STATE { index: __refeq_v0l, derName: __refeq_v1l, natural: __refeq_v2l }, BackendDAE::VarKind::STATE { index: __refeq_v0r, derName: __refeq_v1r, natural: __refeq_v2r }) => ((*__refeq_v0l) == (*__refeq_v0r)) && (match (&(*__refeq_v1l), &(*__refeq_v1r)) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && ((*__refeq_v2l) == (*__refeq_v2r)), (BackendDAE::VarKind::STATE_DER, BackendDAE::VarKind::STATE_DER) => true, (BackendDAE::VarKind::VARIABLE, BackendDAE::VarKind::VARIABLE) => true, _ => false }) && (match (&(__refeq_sl.varDirection), &(__refeq_sr.varDirection)) { (DAE::VarDirection::BIDIR, DAE::VarDirection::BIDIR) => true, (DAE::VarDirection::INPUT, DAE::VarDirection::INPUT) => true, (DAE::VarDirection::OUTPUT, DAE::VarDirection::OUTPUT) => true, _ => false }) && (match (&(__refeq_sl.varParallelism), &(__refeq_sr.varParallelism)) { (DAE::VarParallelism::NON_PARALLEL, DAE::VarParallelism::NON_PARALLEL) => true, (DAE::VarParallelism::PARGLOBAL, DAE::VarParallelism::PARGLOBAL) => true, (DAE::VarParallelism::PARLOCAL, DAE::VarParallelism::PARLOCAL) => true, _ => false }) && referenceEq(&*(__refeq_sl.varType),&*(__refeq_sr.varType)) && (match (&(__refeq_sl.bindExp), &(__refeq_sr.bindExp)) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && (match (&(__refeq_sl.tplExp), &(__refeq_sr.tplExp)) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && metamodelica::ReferenceEq::reference_eq(&*(__refeq_sl.arryDim), &*(__refeq_sr.arryDim)) && referenceEq(&*(__refeq_sl.source),&*(__refeq_sr.source)) && (match (&(__refeq_sl.values), &(__refeq_sr.values)) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && (match (&(__refeq_sl.tearingSelectOption), &(__refeq_sr.tearingSelectOption)) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => (match (&(*__refeq_l), &(*__refeq_r)) { (BackendDAE::TearingSelect::ALWAYS, BackendDAE::TearingSelect::ALWAYS) => true, (BackendDAE::TearingSelect::AVOID, BackendDAE::TearingSelect::AVOID) => true, (BackendDAE::TearingSelect::DEFAULT, BackendDAE::TearingSelect::DEFAULT) => true, (BackendDAE::TearingSelect::NEVER, BackendDAE::TearingSelect::NEVER) => true, (BackendDAE::TearingSelect::PREFER, BackendDAE::TearingSelect::PREFER) => true, _ => false }), _ => false }) && (match (&(__refeq_sl.hideResult), &(__refeq_sr.hideResult)) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && (match (&(__refeq_sl.comment), &(__refeq_sr.comment)) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && referenceEq(&*(__refeq_sl.connectorType),&*(__refeq_sr.connectorType)) && (match (&(__refeq_sl.innerOuter), &(__refeq_sr.innerOuter)) { (DAE::VarInnerOuter::INNER, DAE::VarInnerOuter::INNER) => true, (DAE::VarInnerOuter::INNER_OUTER, DAE::VarInnerOuter::INNER_OUTER) => true, (DAE::VarInnerOuter::NOT_INNER_OUTER, DAE::VarInnerOuter::NOT_INNER_OUTER) => true, (DAE::VarInnerOuter::OUTER, DAE::VarInnerOuter::OUTER) => true, _ => false }) && ((__refeq_sl.unreplaceable) == (__refeq_sr.unreplaceable)) && ((__refeq_sl.initNonlinear) == (__refeq_sr.initNonlinear)) && ((__refeq_sl.encrypted) == (__refeq_sr.encrypted)) }) {inVarOption.clone()} else {Some(var2.clone())}, b.clone())
         },
@@ -538,9 +538,9 @@ fn inlineVar(mut inVar: BackendDAE::Var, mut inElementList: (Option<Arc<AvlTreeP
     let mut inlined: bool;
     (outVar, inlined) = (match inVar.clone() {
         BackendDAE::Var { varName: mut varName, varKind: mut varKind, varDirection: mut varDirection, varParallelism: mut varParallelism, varType: mut varType, bindExp: mut bind, tplExp: mut tplExp, arryDim: ref arrayDim, source: mut source, values: mut values, tearingSelectOption: mut ts, hideResult: mut hideResult, comment: mut comment, connectorType: ref ct, innerOuter: mut io, unreplaceable: mut unreplaceable, initNonlinear: _, encrypted: mut e } => {
-            let mut values1: Option<Arc<DAE::VariableAttributes>> = None;
-            let mut b1: bool = false;
-            let mut b2: bool = false;
+            let mut values1: Option<Arc<DAE::VariableAttributes>>;
+            let mut b1: bool;
+            let mut b2: bool;
             let mut source = source.clone();
             (bind, source, b1) = Inline::inlineExpOpt(bind.clone(), inElementList.clone(), source.clone());
             (values1, source, b2) = Inline::inlineStartAttribute(values.clone(), source.clone(), inElementList.clone());
@@ -582,7 +582,7 @@ fn inlineZeroCrossing(mut zc: BackendDAE::ZeroCrossing, mut fns: (Option<Arc<Avl
     let mut zc: BackendDAE::ZeroCrossing = zc;
     zc = (match zc.clone() {
         BackendDAE::ZeroCrossing { relation_: ref e, .. } => {
-            let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e_1: Arc<DAE::Exp>;
             (e_1, _, _, _) = Inline::inlineExp(e.clone(), fns.clone(), DAE::emptyElementSource().clone());
             if (!(referenceEq(&*(e.clone()),&*(e_1.clone())))) {BackendDAE::ZeroCrossing { index: zc.index.clone(), relation_: e_1.clone(), occurEquLst: zc.occurEquLst.clone(), iter: zc.iter.clone() }} else {zc.clone()}
         },
@@ -731,9 +731,9 @@ fn inlineEqAppend(mut inEquation: Arc<BackendDAE::Equation>, mut fns: (Option<Ar
         if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ BackendDAE::Equation::EQUATION { exp: e1, scalar: e2, source, attr } => {
-                    let mut b1: bool = false;
-                    let mut b2: bool = false;
-                    let mut b3: bool = false;
+                    let mut b1: bool;
+                    let mut b2: bool;
+                    let mut b3: bool;
                     let mut e1 = (*e1).clone();
                     let mut e2 = (*e2).clone();
                     let mut source = (*source).clone();
@@ -750,9 +750,9 @@ fn inlineEqAppend(mut inEquation: Arc<BackendDAE::Equation>, mut fns: (Option<Ar
         if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ BackendDAE::Equation::COMPLEX_EQUATION { left: e1, right: e2, source, attr, .. } => {
-                    let mut b1: bool = false;
-                    let mut b2: bool = false;
-                    let mut b3: bool = false;
+                    let mut b1: bool;
+                    let mut b2: bool;
+                    let mut b3: bool;
                     let mut e1 = (*e1).clone();
                     let mut e2 = (*e2).clone();
                     let mut source = (*source).clone();
@@ -772,9 +772,9 @@ fn inlineEqAppend(mut inEquation: Arc<BackendDAE::Equation>, mut fns: (Option<Ar
         if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ BackendDAE::Equation::ARRAY_EQUATION { left: e1, right: e2, source, attr, .. } => {
-                    let mut b1: bool = false;
-                    let mut b2: bool = false;
-                    let mut b3: bool = false;
+                    let mut b1: bool;
+                    let mut b2: bool;
+                    let mut b3: bool;
                     let mut e1 = (*e1).clone();
                     let mut e2 = (*e2).clone();
                     let mut source = (*source).clone();
@@ -791,7 +791,7 @@ fn inlineEqAppend(mut inEquation: Arc<BackendDAE::Equation>, mut fns: (Option<Ar
         if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ BackendDAE::Equation::SOLVED_EQUATION { componentRef: cref, exp: e2, source, attr } => {
-                    let mut b2: bool = false;
+                    let mut b2: bool;
                     let mut e2 = (*e2).clone();
                     let mut source = (*source).clone();
                     let mut outEqs: Arc<BackendDAE::EqSystem> = outEqs.clone();
@@ -805,7 +805,7 @@ fn inlineEqAppend(mut inEquation: Arc<BackendDAE::Equation>, mut fns: (Option<Ar
         if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ BackendDAE::Equation::RESIDUAL_EQUATION { exp: e1, source, attr } => {
-                    let mut b1: bool = false;
+                    let mut b1: bool;
                     let mut e1 = (*e1).clone();
                     let mut source = (*source).clone();
                     let mut outEqs: Arc<BackendDAE::EqSystem> = outEqs.clone();
@@ -819,8 +819,8 @@ fn inlineEqAppend(mut inEquation: Arc<BackendDAE::Equation>, mut fns: (Option<Ar
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 eqn @ Deref @ BackendDAE::Equation::ALGORITHM { size, alg: Deref @ DAE::Algorithm { statementLst: stmts }, source, expand: crefExpand, attr } => {
-                    let mut b1: bool = false;
-                    let mut stmts1: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
+                    let mut b1: bool;
+                    let mut stmts1: Arc<metamodelica::List<Arc<DAE::Statement>>>;
                     let mut eqn = (*eqn).clone();
                     (stmts1, b1) = Inline::inlineStatements(stmts.clone(), fns.clone(), metamodelica::nil(), false);
                     if b1.clone() {
@@ -834,8 +834,8 @@ fn inlineEqAppend(mut inEquation: Arc<BackendDAE::Equation>, mut fns: (Option<Ar
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 eqn @ Deref @ BackendDAE::Equation::WHEN_EQUATION { size, whenEquation: weq, source, attr } => {
-                    let mut b1: bool = false;
-                    let mut weq_1: Arc<BackendDAE::WhenEquation> = Arc::new(<BackendDAE::WhenEquation as ::std::default::Default>::default());
+                    let mut b1: bool;
+                    let mut weq_1: Arc<BackendDAE::WhenEquation>;
                     let mut eqn = (*eqn).clone();
                     let mut source = (*source).clone();
                     (weq_1, source, b1) = inlineWhenEq(weq.clone(), fns.clone(), source.clone())?;
@@ -850,9 +850,9 @@ fn inlineEqAppend(mut inEquation: Arc<BackendDAE::Equation>, mut fns: (Option<Ar
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 eqn @ Deref @ BackendDAE::Equation::IF_EQUATION { conditions: explst, eqnstrue: eqnslst, eqnsfalse: eqns, source, attr } => {
-                    let mut b1: bool = false;
-                    let mut b2: bool = false;
-                    let mut b3: bool = false;
+                    let mut b1: bool;
+                    let mut b2: bool;
+                    let mut b3: bool;
                     let mut eqn = (*eqn).clone();
                     let mut explst = (*explst).clone();
                     let mut eqnslst = (*eqnslst).clone();
@@ -894,10 +894,10 @@ fn inlineCallsAppend(mut inExp: Arc<DAE::Exp>, mut fns: (Option<Arc<AvlTreePathF
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 e => {
-                    let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut source: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
-                    let mut b: bool = false;
+                    let mut e1: Arc<DAE::Exp>;
+                    let mut e2: Arc<DAE::Exp>;
+                    let mut source: Arc<DAE::ElementSource>;
+                    let mut b: bool;
                     let mut outEqs: Arc<BackendDAE::EqSystem> = outEqs.clone();
                     let (__pa0, (_, __pa1, __pa2, _)) = Expression::traverseExpBottomUp(e.clone(), (std::sync::Arc::new(fnptr!(inlineCallsWork, Arc<DAE::Exp>, ((Option<Arc<AvlTreePathFunction::Tree>>, Arc<metamodelica::List<DAE::InlineType>>), Arc<BackendDAE::EqSystem>, bool, bool))) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ((Option<Arc<AvlTreePathFunction::Tree>>, Arc<metamodelica::List<DAE::InlineType>>), Arc<BackendDAE::EqSystem>, bool, bool)) -> Result<(Arc<DAE::Exp>, ((Option<Arc<AvlTreePathFunction::Tree>>, Arc<metamodelica::List<DAE::InlineType>>), Arc<BackendDAE::EqSystem>, bool, bool))> + 'static>), (fns.clone(), inEqs.clone(), false, false))?;
                     e1 = __pa0.clone();
@@ -952,12 +952,12 @@ fn inlineCallsWork(mut inExp: Arc<DAE::Exp>, mut inTuple: ((Option<Arc<AvlTreePa
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::CALL { path: p, expLst: args, attr: Deref @ DAE::CallAttributes { inlineType, .. } }, (fns, eqSys, _, false)) => {
                     if !((Inline::checkInlineType(inlineType.clone(), fns.clone()) && Flags::getConfigEnum(Flags::INLINE_METHOD.clone())? == 2)) { bail!("guard") }
-                    let mut r#fn: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
-                    let mut outputCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
-                    let mut newExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut comment: Option<Arc<SCode::Comment>> = None;
-                    let mut funcname: ArcStr = arcstr::literal!("");
-                    let mut newEqSys: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
+                    let mut r#fn: Arc<metamodelica::List<Arc<DAE::Element>>>;
+                    let mut outputCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
+                    let mut newExp: Arc<DAE::Exp>;
+                    let mut comment: Option<Arc<SCode::Comment>>;
+                    let mut funcname: ArcStr;
+                    let mut newEqSys: Arc<BackendDAE::EqSystem>;
                     (r#fn, comment) = Inline::getFunctionBody(p.clone(), fns.clone())?;
                     funcname = (BackendUtil::modelicaStringToCStr((AbsynUtil::pathString(p.clone(), (literal!(".")).clone(), true, false)?).clone(), false)?).clone();
                     if Flags::isSet(Flags::DUMPBACKENDINLINE_VERBOSE.clone())? {
@@ -988,8 +988,8 @@ fn inlineCallsWork(mut inExp: Arc<DAE::Exp>, mut inTuple: ((Option<Arc<AvlTreePa
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::CALL { path: p, expLst: _, attr: Deref @ DAE::CallAttributes { inlineType, .. } }, (fns, eqSys, b, insideIfExp)) => {
-                    let mut newExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut funcname: ArcStr = arcstr::literal!("");
+                    let mut newExp: Arc<DAE::Exp>;
+                    let mut funcname: ArcStr;
                     (newExp, _) = Inline::inlineCall(inExp.clone(), metamodelica::nil(), fns.clone());
                     if Flags::isSet(Flags::DUMPBACKENDINLINE_VERBOSE.clone())? {
                         funcname = (BackendUtil::modelicaStringToCStr((AbsynUtil::pathString(p.clone(), (literal!(".")).clone(), true, false)?).clone(), false)?).clone();
@@ -1104,15 +1104,15 @@ fn createEqnSysfromFunction(mut fns: Arc<metamodelica::List<Arc<DAE::Element>>>,
             ()
         },
         Deref @ DAE::Element::VAR { componentRef: cr, direction: DAE::VarDirection::OUTPUT { .. }, kind: DAE::VarKind::VARIABLE { .. }, .. } if (!(Expression::isRecordType(ComponentReference::crefTypeFull(cr.clone())?)) && ComponentReference::crefDepth(cr.clone())? > 0) => {
-            let mut crVar: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-            let mut varLst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
+            let mut crVar: Arc<DAE::ComponentRef>;
+            let mut varLst: Arc<metamodelica::List<BackendDAE::Var>>;
             (crVar, varLst, repl) = createReplacementVariables(cr.clone(), (funcname.clone()).clone(), repl.clone())?;
             outEqs = BackendVariable::addVarsDAE(varLst.clone(), outEqs.clone())?;
             oOutput = metamodelica::cons(crVar.clone(), oOutput.clone());
             ()
         },
         Deref @ DAE::Element::VAR { componentRef: cr, protection: DAE::VarVisibility::PROTECTED { .. }, binding: None, .. } if (!(Expression::isRecordType(ComponentReference::crefTypeFull(cr.clone())?))) => {
-            let mut varLst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
+            let mut varLst: Arc<metamodelica::List<BackendDAE::Var>>;
             (_, varLst, repl) = createReplacementVariables(cr.clone(), (funcname.clone()).clone(), repl.clone())?;
             varLst = ({
         let mut __acc: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
@@ -1126,10 +1126,10 @@ fn createEqnSysfromFunction(mut fns: Arc<metamodelica::List<Arc<DAE::Element>>>,
             ()
         },
         Deref @ DAE::Element::VAR { componentRef: cr, protection: DAE::VarVisibility::PROTECTED { .. }, binding: Some(eBind), .. } if (!(Expression::isRecordType(ComponentReference::crefTypeFull(cr.clone())?))) => {
-            let mut crVar: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-            let mut eVar: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut eq: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
-            let mut varLst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
+            let mut crVar: Arc<DAE::ComponentRef>;
+            let mut eVar: Arc<DAE::Exp>;
+            let mut eq: Arc<BackendDAE::Equation>;
+            let mut varLst: Arc<metamodelica::List<BackendDAE::Var>>;
             (crVar, varLst, repl) = createReplacementVariables(cr.clone(), (funcname.clone()).clone(), repl.clone())?;
             eVar = Expression::crefExp(crVar.clone())?;
             varLst = ({
@@ -1190,10 +1190,10 @@ fn addReplacement(mut iCr: Arc<DAE::ComponentRef>, mut iExp: Arc<DAE::Exp>, mut 
             BackendVarTransform::addReplacement(iRepl.clone(), iCr.clone(), iExp.clone(), None)?
         },
         Deref @ DAE::ComponentRef::CREF_IDENT { identType: tp, .. } if (Expression::isArrayType(tp.clone())) => {
-            let mut repl: BackendVarTransform::VariableReplacements = <BackendVarTransform::VariableReplacements as ::std::default::Default>::default();
-            let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
-            let mut arrExp: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-            let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut repl: BackendVarTransform::VariableReplacements;
+            let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
+            let mut arrExp: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+            let mut e: Arc<DAE::Exp>;
             crefs = ComponentReference::expandCref(iCr.clone(), false);
             repl = iRepl.clone();
             arrExp = Expression::getArrayOrRangeContents(iExp.clone())?;

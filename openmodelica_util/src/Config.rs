@@ -449,8 +449,8 @@ pub fn setLanguageStandardFromMSL(mut inLibraryName: ArcStr, mut force: bool) ->
         let __mc_input = inLibraryName.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            let mut version: ArcStr = arcstr::literal!("");
-            let mut new_std: LanguageStandard = LanguageStandard::_1_x;
+            let mut version: ArcStr;
+            let mut new_std: LanguageStandard;
             let __pa0 = ::match_deref::match_deref! { match &(System::strtok((inLibraryName.clone()).clone(), (literal!(" ")).clone())) {
                 Deref @ metamodelica::List::Cons { head: Deref @ "Modelica", tail: Deref @ metamodelica::List::Cons { head: __pa0, tail: _ } } => __pa0.clone(),
                 _ => bail!("pattern mismatch"),

@@ -319,8 +319,8 @@ pub mod ImportTreeImpl {
             Arc::new(Tree::LEAF { key: (inKey.clone()).clone(), value: inValue.clone() })
         },
         Deref @ Tree::NODE { key, .. } => {
-            let mut value: Value = <ImportData as ::std::default::Default>::default();
-            let mut key_comp: i32 = 0;
+            let mut value: Value;
+            let mut key_comp: i32;
             key_comp = keyCompare((inKey.clone()).clone(), (key.clone()).clone());
             if key_comp.clone() == -1 {
                 assign_variant_field!(tree => Tree::NODE; left = add(var_field!((*tree).left, Tree::NODE).clone(), (inKey.clone()).clone(), inValue.clone(), conflictFunc.clone())?);
@@ -335,9 +335,9 @@ pub mod ImportTreeImpl {
             if (key_comp.clone() == 0) {tree.clone()} else {balance(tree.clone())?}
         },
         Deref @ Tree::LEAF { .. } => {
-            let mut value: Value = <ImportData as ::std::default::Default>::default();
-            let mut key_comp: i32 = 0;
-            let mut outTree: Arc<Tree> = Arc::new(Tree::EMPTY);
+            let mut value: Value;
+            let mut key_comp: i32;
+            let mut outTree: Arc<Tree>;
             key_comp = keyCompare((inKey.clone()).clone(), (var_field!((*tree).key, Tree::LEAF).clone()).clone());
             if key_comp.clone() == -1 {
                 outTree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: (inKey.clone()).clone(), value: inValue.clone() }), right: crate::Conversion::ImportTreeImpl::Tree::interned_EMPTY() });
@@ -428,10 +428,10 @@ pub mod ImportTreeImpl {
             inTree.clone()
         },
         Deref @ Tree::NODE { .. } => {
-            let mut lh: i32 = 0;
-            let mut rh: i32 = 0;
-            let mut diff: i32 = 0;
-            let mut balanced_tree: Arc<Tree> = Arc::new(Tree::EMPTY);
+            let mut lh: i32;
+            let mut rh: i32;
+            let mut diff: i32;
+            let mut balanced_tree: Arc<Tree>;
             lh = height(var_field!((*outTree).left, Tree::NODE).clone());
             rh = height(var_field!((*outTree).right, Tree::NODE).clone());
             diff = lh.clone() - rh.clone();
@@ -492,7 +492,7 @@ pub mod ImportTreeImpl {
         let mut value: FT = value;
         value = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { .. } => {
-            let mut c: bool = false;
+            let mut c: bool;
             (value, c) = foldFunc((var_field!((*tree).key, Tree::NODE).clone()).clone(), var_field!((*tree).value, Tree::NODE).clone(), value.clone())?;
             if c.clone() {
                 value = foldCond(var_field!((*tree).left, Tree::NODE).clone(), foldFunc.clone(), value.clone())?;
@@ -501,7 +501,7 @@ pub mod ImportTreeImpl {
             value.clone()
         },
         Deref @ Tree::LEAF { .. } => {
-            let mut c: bool = false;
+            let mut c: bool;
             (value, c) = foldFunc((var_field!((*tree).key, Tree::LEAF).clone()).clone(), var_field!((*tree).value, Tree::LEAF).clone(), value.clone())?;
             value.clone()
         },
@@ -740,9 +740,9 @@ pub mod ImportTreeImpl {
         let mut outTree: Arc<Tree> = inTree.clone();
         outTree = (::match_deref::match_deref! { match &(outTree.clone()) {
         Deref @ Tree::NODE { key, value, .. } => {
-            let mut new_value: Value = <ImportData as ::std::default::Default>::default();
-            let mut new_left: Arc<Tree> = Arc::new(Tree::EMPTY);
-            let mut new_right: Arc<Tree> = Arc::new(Tree::EMPTY);
+            let mut new_value: Value;
+            let mut new_left: Arc<Tree>;
+            let mut new_right: Arc<Tree>;
             new_left = map(var_field!((*outTree).left, Tree::NODE).clone(), inFunc.clone())?;
             new_value = inFunc((key.clone()).clone(), value.clone())?;
             new_right = map(var_field!((*outTree).right, Tree::NODE).clone(), inFunc.clone())?;
@@ -752,7 +752,7 @@ pub mod ImportTreeImpl {
             outTree.clone()
         },
         Deref @ Tree::LEAF { key, value } => {
-            let mut new_value: Value = <ImportData as ::std::default::Default>::default();
+            let mut new_value: Value;
             new_value = inFunc((key.clone()).clone(), value.clone())?;
             if !({ let __refeq_sl = &(value.clone()); let __refeq_sr = &(new_value.clone()); referenceEq(&*(__refeq_sl.originalPath),&*(__refeq_sr.originalPath)) && referenceEq(&*(__refeq_sl.convertedPath),&*(__refeq_sr.convertedPath)) && referenceEq(&*(__refeq_sl.importName),&*(__refeq_sr.importName)) && ((__refeq_sl.shadowed) == (__refeq_sr.shadowed)) }) {
                 assign_variant_field!(outTree => Tree::LEAF; value = new_value.clone());
@@ -774,9 +774,9 @@ pub mod ImportTreeImpl {
         let mut outResult: FT = inStartValue.clone();
         outTree = (::match_deref::match_deref! { match &(outTree.clone()) {
         Deref @ Tree::NODE { key, value, .. } => {
-            let mut new_value: Value = <ImportData as ::std::default::Default>::default();
-            let mut new_left: Arc<Tree> = Arc::new(Tree::EMPTY);
-            let mut new_right: Arc<Tree> = Arc::new(Tree::EMPTY);
+            let mut new_value: Value;
+            let mut new_left: Arc<Tree>;
+            let mut new_right: Arc<Tree>;
             (new_left, outResult) = mapFold(var_field!((*outTree).left, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
             (new_value, outResult) = inFunc((key.clone()).clone(), value.clone(), outResult.clone())?;
             (new_right, outResult) = mapFold(var_field!((*outTree).right, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
@@ -786,7 +786,7 @@ pub mod ImportTreeImpl {
             outTree.clone()
         },
         Deref @ Tree::LEAF { key, value } => {
-            let mut new_value: Value = <ImportData as ::std::default::Default>::default();
+            let mut new_value: Value;
             (new_value, outResult) = inFunc((key.clone()).clone(), value.clone(), outResult.clone())?;
             if !({ let __refeq_sl = &(value.clone()); let __refeq_sr = &(new_value.clone()); referenceEq(&*(__refeq_sl.originalPath),&*(__refeq_sr.originalPath)) && referenceEq(&*(__refeq_sl.convertedPath),&*(__refeq_sr.convertedPath)) && referenceEq(&*(__refeq_sl.importName),&*(__refeq_sr.importName)) && ((__refeq_sl.shadowed) == (__refeq_sr.shadowed)) }) {
                 assign_variant_field!(outTree => Tree::LEAF; value = new_value.clone());
@@ -860,12 +860,12 @@ pub mod ImportTreeImpl {
         let mut outNode: Arc<Tree> = inNode.clone();
         outNode = (::match_deref::match_deref! { match &(outNode.clone()) {
         Deref @ Tree::NODE { right: child @ Deref @ Tree::NODE { .. }, .. } => {
-            let mut node: Arc<Tree> = Arc::new(Tree::EMPTY);
+            let mut node: Arc<Tree>;
             node = setTreeLeftRight(outNode.clone(), var_field!((*outNode).left, Tree::NODE).clone(), var_field!((**child).left, Tree::NODE).clone())?;
             setTreeLeftRight(child.clone(), node.clone(), var_field!((**child).right, Tree::NODE).clone())?
         },
         Deref @ Tree::NODE { right: child @ Deref @ Tree::LEAF { .. }, .. } => {
-            let mut node: Arc<Tree> = Arc::new(Tree::EMPTY);
+            let mut node: Arc<Tree>;
             node = setTreeLeftRight(outNode.clone(), var_field!((*outNode).left, Tree::NODE).clone(), crate::Conversion::ImportTreeImpl::Tree::interned_EMPTY())?;
             setTreeLeftRight(child.clone(), node.clone(), crate::Conversion::ImportTreeImpl::Tree::interned_EMPTY())?
         },
@@ -881,12 +881,12 @@ pub mod ImportTreeImpl {
         let mut outNode: Arc<Tree> = inNode.clone();
         outNode = (::match_deref::match_deref! { match &(outNode.clone()) {
         Deref @ Tree::NODE { left: child @ Deref @ Tree::NODE { .. }, .. } => {
-            let mut node: Arc<Tree> = Arc::new(Tree::EMPTY);
+            let mut node: Arc<Tree>;
             node = setTreeLeftRight(outNode.clone(), var_field!((**child).right, Tree::NODE).clone(), var_field!((*outNode).right, Tree::NODE).clone())?;
             setTreeLeftRight(child.clone(), var_field!((**child).left, Tree::NODE).clone(), node.clone())?
         },
         Deref @ Tree::NODE { left: child @ Deref @ Tree::LEAF { .. }, .. } => {
-            let mut node: Arc<Tree> = Arc::new(Tree::EMPTY);
+            let mut node: Arc<Tree>;
             node = setTreeLeftRight(outNode.clone(), crate::Conversion::ImportTreeImpl::Tree::interned_EMPTY(), var_field!((*outNode).right, Tree::NODE).clone())?;
             setTreeLeftRight(child.clone(), crate::Conversion::ImportTreeImpl::Tree::interned_EMPTY(), node.clone())?
         },
@@ -1175,8 +1175,8 @@ fn parseConvertElement(mut args: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut i
     let mut rules: Arc<ConversionRules::ConversionRules> = rules;
     let () = (::match_deref::match_deref! { match &(args.clone()) {
         Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::STRING { value: cls_name }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::STRING { value: old_name }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::STRING { value: new_name }, tail: Deref @ metamodelica::List::Nil } } } => {
-            let mut old_path: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            let mut rule: ConversionRule = ConversionRule::CLASS_IF;
+            let mut old_path: Arc<metamodelica::List<ArcStr>>;
+            let mut rule: ConversionRule;
             old_path = parsePathList((cls_name.clone()).clone())?;
             rule = ConversionRule::ELEMENT { oldPath: metamodelica::arrayFromVec(old_path.clone().into_iter().cloned().collect()), oldName: (old_name.clone()).clone(), newName: (new_name.clone()).clone() };
             rules = addRule(old_path.clone(), rule.clone(), rules.clone())?;
@@ -1292,7 +1292,7 @@ fn parseConvertMessage(mut args: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut i
     let mut rules: Arc<ConversionRules::ConversionRules> = rules;
     let () = (::match_deref::match_deref! { match &(args.clone()) {
         Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::STRING { value: cls_name }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::STRING { value: msg }, tail: Deref @ metamodelica::List::Nil } } => {
-            let mut rule: ConversionRule = ConversionRule::CLASS_IF;
+            let mut rule: ConversionRule;
             rule = ConversionRule::MESSAGE { message: (msg.clone()).clone() };
             rules = addRule(parsePathList((cls_name.clone()).clone())?, rule.clone(), rules.clone())?;
             ()
@@ -1582,9 +1582,9 @@ fn convertClassDef(mut cdef: Arc<Absyn::ClassDef>, mut rules: Arc<ConversionRule
             ()
         },
         Deref @ Absyn::ClassDef::DERIVED { .. } => {
-            let mut local_rules: RuleTable = <Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<metamodelica::List<ConversionRule>>>> as ::std::default::Default>::default();
-            let mut mod_rules: Arc<metamodelica::List<ConversionRule>> = metamodelica::nil();
-            let mut ty: Arc<Absyn::TypeSpec> = Arc::new(<Absyn::TypeSpec as ::std::default::Default>::default());
+            let mut local_rules: RuleTable;
+            let mut mod_rules: Arc<metamodelica::List<ConversionRule>>;
+            let mut ty: Arc<Absyn::TypeSpec>;
             (ty, local_rules, mod_rules) = convertTypeSpec(var_field!((*cdef).typeSpec, Absyn::ClassDef::DERIVED).clone(), rules.clone(), env.clone(), info.clone())?;
             assign_variant_field!(cdef => Absyn::ClassDef::DERIVED;
                 typeSpec = ty.clone(),
@@ -1594,8 +1594,8 @@ fn convertClassDef(mut cdef: Arc<Absyn::ClassDef>, mut rules: Arc<ConversionRule
             ()
         },
         Deref @ Absyn::ClassDef::CLASS_EXTENDS { .. } => {
-            let mut local_rules: RuleTable = <Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<metamodelica::List<ConversionRule>>>> as ::std::default::Default>::default();
-            let mut mod_rules: Arc<metamodelica::List<ConversionRule>> = metamodelica::nil();
+            let mut local_rules: RuleTable;
+            let mut mod_rules: Arc<metamodelica::List<ConversionRule>>;
             (local_rules, mod_rules) = lookupClassExtendsRules((var_field!((*cdef).baseClassName, Absyn::ClassDef::CLASS_EXTENDS).clone()).clone(), extendsRules.clone())?;
             assign_variant_field!(cdef => Absyn::ClassDef::CLASS_EXTENDS; modifications = convertModification2(mod_rules.clone(), var_field!((*cdef).modifications, Absyn::ClassDef::CLASS_EXTENDS).clone())?);
             assign_variant_field!(cdef => Absyn::ClassDef::CLASS_EXTENDS;
@@ -1685,7 +1685,7 @@ fn convertElementArg(mut arg: Arc<Absyn::ElementArg>, mut localRules: RuleTable,
     let mut arg: Arc<Absyn::ElementArg> = arg;
     let () = (::match_deref::match_deref! { match &(arg.clone()) {
         Deref @ Absyn::ElementArg::MODIFICATION { .. } => {
-            let mut mod_rules: Arc<metamodelica::List<ConversionRule>> = metamodelica::nil();
+            let mut mod_rules: Arc<metamodelica::List<ConversionRule>>;
             mod_rules = UnorderedMap::getOrDefault((AbsynUtil::pathString(var_field!((*arg).path, Absyn::ElementArg::MODIFICATION).clone(), (literal!(".")).clone(), true, false)?).clone(), localRules.clone(), metamodelica::nil())?;
             for mut rule in &*mod_rules.clone() {
                 let mut rule = rule.clone();
@@ -2037,7 +2037,7 @@ fn convertElement(mut element: Arc<Absyn::Element>, mut rules: Arc<ConversionRul
             ()
         },
         Deref @ Absyn::Element::DEFINEUNIT { .. } => {
-            let mut local_rules: RuleTable = <Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<metamodelica::List<ConversionRule>>>> as ::std::default::Default>::default();
+            let mut local_rules: RuleTable;
             local_rules = newRuleTable();
             assign_variant_field!(element => Absyn::Element::DEFINEUNIT; args = ({
         let mut __acc: Arc<metamodelica::List<Arc<Absyn::NamedArg>>> = metamodelica::nil();
@@ -2071,10 +2071,10 @@ fn convertElementSpec(mut spec: Arc<Absyn::ElementSpec>, mut rules: Arc<Conversi
             ()
         },
         Deref @ Absyn::ElementSpec::EXTENDS { .. } => {
-            let mut local_rules: RuleTable = <Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<metamodelica::List<ConversionRule>>>> as ::std::default::Default>::default();
-            let mut mod_rules: Arc<metamodelica::List<ConversionRule>> = metamodelica::nil();
-            let mut ty_path: Arc<Path> = Arc::new(<Path as ::std::default::Default>::default());
-            let mut import_path: Option<(Arc<Path>, ArcStr)> = None;
+            let mut local_rules: RuleTable;
+            let mut mod_rules: Arc<metamodelica::List<ConversionRule>>;
+            let mut ty_path: Arc<Path>;
+            let mut import_path: Option<(Arc<Path>, ArcStr)>;
             (ty_path, import_path) = applyImportsToPath(var_field!((*spec).path, Absyn::ElementSpec::EXTENDS).clone(), env.imports.clone())?;
             (_, local_rules, mod_rules) = lookupTypeRules(ty_path.clone(), rules.clone(), env.clone())?;
             ty_path = convertPath(ty_path.clone(), rules.clone(), env.imports.clone(), info.clone())?;
@@ -2090,9 +2090,9 @@ fn convertElementSpec(mut spec: Arc<Absyn::ElementSpec>, mut rules: Arc<Conversi
             ()
         },
         Deref @ Absyn::ElementSpec::COMPONENTS { .. } => {
-            let mut local_rules: RuleTable = <Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<metamodelica::List<ConversionRule>>>> as ::std::default::Default>::default();
-            let mut mod_rules: Arc<metamodelica::List<ConversionRule>> = metamodelica::nil();
-            let mut ty: Arc<Absyn::TypeSpec> = Arc::new(<Absyn::TypeSpec as ::std::default::Default>::default());
+            let mut local_rules: RuleTable;
+            let mut mod_rules: Arc<metamodelica::List<ConversionRule>>;
+            let mut ty: Arc<Absyn::TypeSpec>;
             (ty, local_rules, mod_rules) = convertTypeSpec(var_field!((*spec).typeSpec, Absyn::ElementSpec::COMPONENTS).clone(), rules.clone(), env.clone(), info.clone())?;
             assign_variant_field!(spec => Absyn::ElementSpec::COMPONENTS;
                 typeSpec = ty.clone(),
@@ -3147,7 +3147,7 @@ fn addComponentTypesToEnv(mut parts: Arc<metamodelica::List<Arc<Absyn::ClassPart
 fn addComponentTypesToEnv2(mut element: Arc<Absyn::ElementItem>, mut components: TypeTable) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(element.clone()) {
         Deref @ Absyn::ElementItem::ELEMENTITEM { element: Deref @ Absyn::Element::ELEMENT { specification: comps @ Deref @ Absyn::ElementSpec::COMPONENTS { .. }, .. } } => {
-            let mut ty_path: Arc<Path> = Arc::new(<Path as ::std::default::Default>::default());
+            let mut ty_path: Arc<Path>;
             ty_path = AbsynUtil::typeSpecPath(var_field!((**comps).typeSpec, Absyn::ElementSpec::COMPONENTS).clone())?;
             for mut c in &*var_field!((**comps).components, Absyn::ElementSpec::COMPONENTS).clone() {
                 let mut c = c.clone();

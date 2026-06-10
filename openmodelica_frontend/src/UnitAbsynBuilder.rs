@@ -99,8 +99,8 @@ fn retrieveUnitsFromEnv(mut p: Arc<Absyn::Path>, mut tpl: (FCore::Cache, FCore::
         let __mc_input = tpl.clone();
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-            let mut r: metamodelica::Array<FCore::Node> = Default::default();
+            let mut env: FCore::Graph;
+            let mut r: metamodelica::Array<FCore::Node>;
             let mut du: Arc<metamodelica::List<Arc<SCode::Element>>> = du.clone();
             (_, _, env) = Lookup::lookupClass(Util::tuple21(tpl.clone()), Util::tuple22(tpl.clone()), p.clone(), None)?;
             r = FGraph::lastScopeRef(env.clone())?;
@@ -212,8 +212,8 @@ fn registerUnitInClass(mut inTpl: (Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cl @ Deref @ Absyn::Class { .. }, pa, i) => {
-                    let mut defunits: Arc<metamodelica::List<Arc<Absyn::Element>>> = metamodelica::nil();
-                    let mut elts: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
+                    let mut defunits: Arc<metamodelica::List<Arc<Absyn::Element>>>;
+                    let mut elts: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>;
                     elts = AbsynUtil::getElementItemsInClass(cl.clone())?;
                     defunits = AbsynUtil::getDefineUnitsInElements(elts.clone());
                     registerDefineunits(defunits.clone())?;
@@ -275,8 +275,8 @@ fn registerDefineunits2(mut elts: Arc<metamodelica::List<Arc<Absyn::Element>>>) 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: du @ Deref @ Absyn::Element::DEFINEUNIT { .. }, tail: rest } => {
-                    let mut exp: ArcStr = arcstr::literal!("");
-                    let mut name: ArcStr = arcstr::literal!("");
+                    let mut exp: ArcStr;
+                    let mut name: ArcStr;
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(AbsynToSCode::translateElement(du.clone(), openmodelica_frontend_types::SCode::Visibility::PUBLIC)?) {
                         Deref @ metamodelica::List::Cons { head: Deref @ SCode::Element::DEFINEUNIT { name: __pa0, visibility: _, exp: Some(__pa1), weight: _, .. }, tail: Deref @ metamodelica::List::Nil } => (__pa0.clone(), __pa1.clone()),
                         _ => bail!("pattern mismatch"),
@@ -293,7 +293,7 @@ fn registerDefineunits2(mut elts: Arc<metamodelica::List<Arc<Absyn::Element>>>) 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: du @ Deref @ Absyn::Element::DEFINEUNIT { .. }, tail: rest } => {
-                    let mut name: ArcStr = arcstr::literal!("");
+                    let mut name: ArcStr;
                     let __pa0 = ::match_deref::match_deref! { match &(AbsynToSCode::translateElement(du.clone(), openmodelica_frontend_types::SCode::Visibility::PUBLIC)?) {
                         Deref @ metamodelica::List::Cons { head: Deref @ SCode::Element::DEFINEUNIT { name: __pa0, visibility: _, exp: None, weight: _, .. }, tail: Deref @ metamodelica::List::Nil } => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -336,7 +336,7 @@ pub fn add(mut unit: UnitAbsyn::Unit, mut ist: UnitAbsyn::Store) -> Result<(Unit
         })() { index = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let UnitAbsyn::Store { storeVector: mut vector, numElts: mut numElts } = __mc_input.clone() else { bail!("nomatch") };
-            let mut newIndx: i32 = 0;
+            let mut newIndx: i32;
             newIndx = numElts.clone() + 1;
             vector = metamodelica::arrayUpdate(vector.clone(), newIndx.clone(), Some(unit.clone()))?;
             Ok((UnitAbsyn::Store { storeVector: vector.clone(), numElts: newIndx.clone() }, newIndx.clone()))
@@ -363,7 +363,7 @@ fn expandStore(mut st: UnitAbsyn::Store) -> Result<UnitAbsyn::Store> {
     let mut outSt: UnitAbsyn::Store;
     outSt = (match st.clone() {
         UnitAbsyn::Store { storeVector: mut vector, numElts: mut indx } => {
-            let mut incr: i32 = 0;
+            let mut incr: i32;
             incr = intMin(1, ((intReal(indx.clone()) * metamodelica::OrderedFloat(0.4_f64)).0.floor() as i32));
             vector = Array::expand(incr.clone(), vector.clone(), None)?;
             UnitAbsyn::Store { storeVector: vector.clone(), numElts: indx.clone() }
@@ -441,7 +441,7 @@ fn emptyInstStore2(mut wantInstStore: bool) -> UnitAbsyn::InstStore {
     let mut st: UnitAbsyn::InstStore;
     st = (match wantInstStore.clone() {
         true => {
-            let mut s: UnitAbsyn::Store = <UnitAbsyn::Store as ::std::default::Default>::default();
+            let mut s: UnitAbsyn::Store;
             let mut ht: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, i32)>>), i32, (HashTable::FuncHashCref, HashTable::FuncCrefEqual, HashTable::FuncCrefStr, HashTable::FuncExpStr));
             s = emptyStore();
             ht = HashTable::emptyHashTable();
@@ -477,37 +477,37 @@ pub fn printTermStr(mut term: Arc<UnitAbsyn::UnitTerm>) -> Result<ArcStr> {
     let mut r#str: ArcStr;
     r#str = ((::match_deref::match_deref! { match &(term.clone()) {
         Deref @ UnitAbsyn::UnitTerm::ADD { ut1: _, ut2: _, origExp: e } => {
-            let mut s1: ArcStr = arcstr::literal!("");
+            let mut s1: ArcStr;
             s1 = (ExpressionBasics::printExpStr(e.clone())?).clone();
             s1.clone()
         },
         Deref @ UnitAbsyn::UnitTerm::SUB { ut1: _, ut2: _, origExp: e } => {
-            let mut s1: ArcStr = arcstr::literal!("");
+            let mut s1: ArcStr;
             s1 = (ExpressionBasics::printExpStr(e.clone())?).clone();
             s1.clone()
         },
         Deref @ UnitAbsyn::UnitTerm::MUL { ut1: _, ut2: _, origExp: e } => {
-            let mut s1: ArcStr = arcstr::literal!("");
+            let mut s1: ArcStr;
             s1 = (ExpressionBasics::printExpStr(e.clone())?).clone();
             s1.clone()
         },
         Deref @ UnitAbsyn::UnitTerm::DIV { ut1: _, ut2: _, origExp: e } => {
-            let mut s1: ArcStr = arcstr::literal!("");
+            let mut s1: ArcStr;
             s1 = (ExpressionBasics::printExpStr(e.clone())?).clone();
             s1.clone()
         },
         Deref @ UnitAbsyn::UnitTerm::EQN { ut1: _, ut2: _, origExp: e } => {
-            let mut s1: ArcStr = arcstr::literal!("");
+            let mut s1: ArcStr;
             s1 = (ExpressionBasics::printExpStr(e.clone())?).clone();
             s1.clone()
         },
         Deref @ UnitAbsyn::UnitTerm::LOC { loc: _, origExp: e } => {
-            let mut s1: ArcStr = arcstr::literal!("");
+            let mut s1: ArcStr;
             s1 = (ExpressionBasics::printExpStr(e.clone())?).clone();
             s1.clone()
         },
         Deref @ UnitAbsyn::UnitTerm::POW { ut1: _, exponent: MMath::Rational { nom: _, denom: _ }, origExp: e } => {
-            let mut s1: ArcStr = arcstr::literal!("");
+            let mut s1: ArcStr;
             s1 = (ExpressionBasics::printExpStr(e.clone())?).clone();
             s1.clone()
         },
@@ -535,7 +535,7 @@ pub fn printInstStore(mut st: UnitAbsyn::InstStore) -> Result<()> {
 pub fn printStore(mut st: UnitAbsyn::Store) -> Result<()> {
     let () = (match st.clone() {
         UnitAbsyn::Store { storeVector: mut vector, numElts: _ } => {
-            let mut lst: Arc<metamodelica::List<Option<UnitAbsyn::Unit>>> = metamodelica::nil();
+            let mut lst: Arc<metamodelica::List<Option<UnitAbsyn::Unit>>>;
             lst = Arc::new(vector.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>());
             printStore2(lst.clone(), 1)?;
             ()
@@ -699,7 +699,7 @@ pub fn joinTypeParams(mut inums: Arc<metamodelica::List<i32>>, mut idenoms: Arc<
             metamodelica::nil()
         },
         (Deref @ metamodelica::List::Cons { head: i1, tail: nums }, Deref @ metamodelica::List::Cons { head: i2, tail: denoms }, Deref @ metamodelica::List::Cons { head: tpParam, tail: tpstrs }) => {
-            let mut s: ArcStr = arcstr::literal!("");
+            let mut s: ArcStr;
             let mut tpParam = (*tpParam).clone();
             typeParams = joinTypeParams(nums.clone(), denoms.clone(), tpstrs.clone(), funcInstIdOpt.clone())?;
             s = (Util::applyOptionOrDefault(funcInstIdOpt.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>), (literal!("")).clone())?).clone();
@@ -739,7 +739,7 @@ pub fn instBuildUnitTerms(mut env: FCore::Graph, mut dae: DAE::DAElist, mut comp
         })() { break 'mc __v; }
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let UnitAbsyn::InstStore::INSTSTORE { store: mut st, ht: mut ht, checkResult: mut res } = __mc_input.clone() else { bail!("nomatch") };
-            let mut terms2: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = metamodelica::nil();
+            let mut terms2: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>;
             let mut terms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = terms.clone();
             (terms, st) = buildTerms(env.clone(), dae.clone(), ht.clone(), st.clone())?;
             (terms2, st) = buildTerms(env.clone(), compDae.clone(), ht.clone(), st.clone())?;
@@ -894,8 +894,8 @@ fn createTypeParameterLocations2(mut istore: UnitAbsyn::Store, mut iht: (metamod
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (UnitAbsyn::Store { storeVector: mut vect, numElts: mut numElts }, mut ht, mut nextElt) = __mc_input.clone() else { bail!("nomatch") };
-            let mut unit: UnitAbsyn::Unit = UnitAbsyn::Unit::UNSPECIFIED;
-            let mut store: UnitAbsyn::Store = <UnitAbsyn::Store as ::std::default::Default>::default();
+            let mut unit: UnitAbsyn::Unit;
+            let mut store: UnitAbsyn::Store;
             let __pa0 = ::match_deref::match_deref! { match &(({let __elt = vect.borrow()[(i.clone()-1) as usize].clone(); __elt})) {
                 Some(__pa0) => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
@@ -908,7 +908,7 @@ fn createTypeParameterLocations2(mut istore: UnitAbsyn::Store, mut iht: (metamod
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (UnitAbsyn::Store { storeVector: mut vect, numElts: mut numElts }, mut ht, mut nextElt) = __mc_input.clone() else { bail!("nomatch") };
-            let mut store: UnitAbsyn::Store = <UnitAbsyn::Store as ::std::default::Default>::default();
+            let mut store: UnitAbsyn::Store;
             (store, ht, nextElt) = createTypeParameterLocations2(UnitAbsyn::Store { storeVector: vect.clone(), numElts: numElts.clone() }, ht.clone(), i.clone() + 1, nextElt.clone())?;
             Ok((store.clone(), ht.clone(), nextElt.clone()))
         })() { break 'mc __v; }
@@ -951,8 +951,8 @@ fn createTypeParameterLocations4(mut iparams: Arc<metamodelica::List<(MMath::Rat
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: (r, UnitAbsyn::TypeParameter { name, indx: 0 }), tail: params }, ht, nextElt) => {
-                    let mut indx: i32 = 0;
-                    let mut cref_: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
+                    let mut indx: i32;
+                    let mut cref_: Arc<DAE::ComponentRef>;
                     let mut params = (*params).clone();
                     let mut ht = (*ht).clone();
                     let mut nextElt = (*nextElt).clone();
@@ -967,7 +967,7 @@ fn createTypeParameterLocations4(mut iparams: Arc<metamodelica::List<(MMath::Rat
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: (r, UnitAbsyn::TypeParameter { name, indx: 0 }), tail: params }, ht, nextElt) => {
-                    let mut cref_: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
+                    let mut cref_: Arc<DAE::ComponentRef>;
                     let mut params = (*params).clone();
                     let mut ht = (*ht).clone();
                     let mut nextElt = (*nextElt).clone();
@@ -1029,10 +1029,10 @@ fn buildTerms(mut env: FCore::Graph, mut dae: DAE::DAElist, mut ht: (metamodelic
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::DAElist { elementLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::EQUATION { exp: e1, scalar: e2, source: _ }, tail: elts } }, store) => {
-                    let mut ut1: Arc<UnitAbsyn::UnitTerm> = Arc::new(<UnitAbsyn::UnitTerm as ::std::default::Default>::default());
-                    let mut ut2: Arc<UnitAbsyn::UnitTerm> = Arc::new(<UnitAbsyn::UnitTerm as ::std::default::Default>::default());
-                    let mut terms1: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = metamodelica::nil();
-                    let mut terms2: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = metamodelica::nil();
+                    let mut ut1: Arc<UnitAbsyn::UnitTerm>;
+                    let mut ut2: Arc<UnitAbsyn::UnitTerm>;
+                    let mut terms1: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>;
+                    let mut terms2: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>;
                     let mut store = (*store).clone();
                     let mut terms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = terms.clone();
                     (ut1, terms1, store) = buildTermExp(env.clone(), e1.clone(), false, ht.clone(), store.clone())?;
@@ -1047,12 +1047,12 @@ fn buildTerms(mut env: FCore::Graph, mut dae: DAE::DAElist, mut ht: (metamodelic
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::DAElist { elementLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::EQUEQUATION { cr1, cr2, source: _ }, tail: elts } }, store) => {
-                    let mut crefExp1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut crefExp2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut ut1: Arc<UnitAbsyn::UnitTerm> = Arc::new(<UnitAbsyn::UnitTerm as ::std::default::Default>::default());
-                    let mut ut2: Arc<UnitAbsyn::UnitTerm> = Arc::new(<UnitAbsyn::UnitTerm as ::std::default::Default>::default());
-                    let mut terms1: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = metamodelica::nil();
-                    let mut terms2: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = metamodelica::nil();
+                    let mut crefExp1: Arc<DAE::Exp>;
+                    let mut crefExp2: Arc<DAE::Exp>;
+                    let mut ut1: Arc<UnitAbsyn::UnitTerm>;
+                    let mut ut2: Arc<UnitAbsyn::UnitTerm>;
+                    let mut terms1: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>;
+                    let mut terms2: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>;
                     let mut store = (*store).clone();
                     let mut terms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = terms.clone();
                     crefExp1 = Expression::crefExp(cr1.clone())?;
@@ -1069,11 +1069,11 @@ fn buildTerms(mut env: FCore::Graph, mut dae: DAE::DAElist, mut ht: (metamodelic
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::DAElist { elementLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::VAR { componentRef: cr1 @ Deref @ DAE::ComponentRef::CREF_IDENT { ident: _, identType: _, subscriptLst: _ }, binding: Some(e1), .. }, tail: elts } }, store) => {
-                    let mut crefExp1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut ut1: Arc<UnitAbsyn::UnitTerm> = Arc::new(<UnitAbsyn::UnitTerm as ::std::default::Default>::default());
-                    let mut ut2: Arc<UnitAbsyn::UnitTerm> = Arc::new(<UnitAbsyn::UnitTerm as ::std::default::Default>::default());
-                    let mut terms1: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = metamodelica::nil();
-                    let mut terms2: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = metamodelica::nil();
+                    let mut crefExp1: Arc<DAE::Exp>;
+                    let mut ut1: Arc<UnitAbsyn::UnitTerm>;
+                    let mut ut2: Arc<UnitAbsyn::UnitTerm>;
+                    let mut terms1: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>;
+                    let mut terms2: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>;
                     let mut store = (*store).clone();
                     let mut terms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = terms.clone();
                     crefExp1 = Expression::crefExp(cr1.clone())?;
@@ -1089,11 +1089,11 @@ fn buildTerms(mut env: FCore::Graph, mut dae: DAE::DAElist, mut ht: (metamodelic
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::DAElist { elementLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::DEFINE { componentRef: cr1, exp: e1, source: _ }, tail: elts } }, store) => {
-                    let mut crefExp1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut ut1: Arc<UnitAbsyn::UnitTerm> = Arc::new(<UnitAbsyn::UnitTerm as ::std::default::Default>::default());
-                    let mut ut2: Arc<UnitAbsyn::UnitTerm> = Arc::new(<UnitAbsyn::UnitTerm as ::std::default::Default>::default());
-                    let mut terms1: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = metamodelica::nil();
-                    let mut terms2: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = metamodelica::nil();
+                    let mut crefExp1: Arc<DAE::Exp>;
+                    let mut ut1: Arc<UnitAbsyn::UnitTerm>;
+                    let mut ut2: Arc<UnitAbsyn::UnitTerm>;
+                    let mut terms1: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>;
+                    let mut terms2: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>;
                     let mut store = (*store).clone();
                     let mut terms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = terms.clone();
                     crefExp1 = Expression::crefExp(cr1.clone())?;
@@ -1131,9 +1131,9 @@ fn buildTermExp(mut env: FCore::Graph, mut exp: Arc<DAE::Exp>, mut idivOrMul: bo
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::ICONST { integer: i }, divOrMul, ht, store) => {
-                    let mut indx: i32 = 0;
-                    let mut s1: ArcStr = arcstr::literal!("");
-                    let mut u: UnitAbsyn::Unit = UnitAbsyn::Unit::UNSPECIFIED;
+                    let mut indx: i32;
+                    let mut s1: ArcStr;
+                    let mut u: UnitAbsyn::Unit;
                     let mut ht = (*ht).clone();
                     let mut store = (*store).clone();
                     s1 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("$")); __mm_s.push_str(&*intString(tick())); __mm_s.push_str(&*literal!("_")); __mm_s.push_str(&*intString(i.clone())); ArcStr::from(__mm_s) }).clone();
@@ -1148,9 +1148,9 @@ fn buildTermExp(mut env: FCore::Graph, mut exp: Arc<DAE::Exp>, mut idivOrMul: bo
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::RCONST { real: r }, divOrMul, ht, store) => {
-                    let mut indx: i32 = 0;
-                    let mut s1: ArcStr = arcstr::literal!("");
-                    let mut u: UnitAbsyn::Unit = UnitAbsyn::Unit::UNSPECIFIED;
+                    let mut indx: i32;
+                    let mut s1: ArcStr;
+                    let mut u: UnitAbsyn::Unit;
                     let mut ht = (*ht).clone();
                     let mut store = (*store).clone();
                     s1 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("$")); __mm_s.push_str(&*intString(tick())); __mm_s.push_str(&*literal!("_")); __mm_s.push_str(&*realString(r.clone())); ArcStr::from(__mm_s) }).clone();
@@ -1165,7 +1165,7 @@ fn buildTermExp(mut env: FCore::Graph, mut exp: Arc<DAE::Exp>, mut idivOrMul: bo
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::CAST { ty: _, exp: e1 }, divOrMul, ht, store) => {
-                    let mut terms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = metamodelica::nil();
+                    let mut terms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>;
                     let mut store = (*store).clone();
                     let mut ut: Arc<UnitAbsyn::UnitTerm> = ut.clone();
                     (ut, terms, store) = buildTermExp(env.clone(), e1.clone(), divOrMul.clone(), ht.clone(), store.clone())?;
@@ -1177,7 +1177,7 @@ fn buildTermExp(mut env: FCore::Graph, mut exp: Arc<DAE::Exp>, mut idivOrMul: bo
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CREF { componentRef: cr, ty: _ }, _, ht, store) => {
-                    let mut indx: i32 = 0;
+                    let mut indx: i32;
                     indx = BaseHashTable::get(cr.clone(), ht.clone())?;
                     Ok((Arc::new(UnitAbsyn::UnitTerm::LOC { loc: indx.clone(), origExp: e.clone() }), metamodelica::nil(), store.clone()))
                 }
@@ -1187,10 +1187,10 @@ fn buildTermExp(mut env: FCore::Graph, mut exp: Arc<DAE::Exp>, mut idivOrMul: bo
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::POW { ty: _ }, exp2: e2 @ Deref @ DAE::Exp::ICONST { integer: i } }, divOrMul, ht, store) => {
-                    let mut ut1: Arc<UnitAbsyn::UnitTerm> = Arc::new(<UnitAbsyn::UnitTerm as ::std::default::Default>::default());
-                    let mut terms1: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = metamodelica::nil();
-                    let mut terms2: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = metamodelica::nil();
-                    let mut terms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = metamodelica::nil();
+                    let mut ut1: Arc<UnitAbsyn::UnitTerm>;
+                    let mut terms1: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>;
+                    let mut terms2: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>;
+                    let mut terms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>;
                     let mut store = (*store).clone();
                     let mut ut: Arc<UnitAbsyn::UnitTerm> = ut.clone();
                     (ut1, terms1, store) = buildTermExp(env.clone(), e1.clone(), divOrMul.clone(), ht.clone(), store.clone())?;
@@ -1205,11 +1205,11 @@ fn buildTermExp(mut env: FCore::Graph, mut exp: Arc<DAE::Exp>, mut idivOrMul: bo
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::POW { ty: _ }, exp2: e2 @ Deref @ DAE::Exp::RCONST { real: r } }, divOrMul, ht, store) => {
-                    let mut i: i32 = 0;
-                    let mut ut1: Arc<UnitAbsyn::UnitTerm> = Arc::new(<UnitAbsyn::UnitTerm as ::std::default::Default>::default());
-                    let mut terms1: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = metamodelica::nil();
-                    let mut terms2: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = metamodelica::nil();
-                    let mut terms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = metamodelica::nil();
+                    let mut i: i32;
+                    let mut ut1: Arc<UnitAbsyn::UnitTerm>;
+                    let mut terms1: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>;
+                    let mut terms2: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>;
+                    let mut terms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>;
                     let mut store = (*store).clone();
                     let mut ut: Arc<UnitAbsyn::UnitTerm> = ut.clone();
                     (ut1, terms1, store) = buildTermExp(env.clone(), e1.clone(), divOrMul.clone(), ht.clone(), store.clone())?;
@@ -1226,11 +1226,11 @@ fn buildTermExp(mut env: FCore::Graph, mut exp: Arc<DAE::Exp>, mut idivOrMul: bo
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::BINARY { exp1: e1, operator: op, exp2: e2 }, divOrMul, ht, store) => {
-                    let mut ut1: Arc<UnitAbsyn::UnitTerm> = Arc::new(<UnitAbsyn::UnitTerm as ::std::default::Default>::default());
-                    let mut ut2: Arc<UnitAbsyn::UnitTerm> = Arc::new(<UnitAbsyn::UnitTerm as ::std::default::Default>::default());
-                    let mut terms1: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = metamodelica::nil();
-                    let mut terms2: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = metamodelica::nil();
-                    let mut terms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = metamodelica::nil();
+                    let mut ut1: Arc<UnitAbsyn::UnitTerm>;
+                    let mut ut2: Arc<UnitAbsyn::UnitTerm>;
+                    let mut terms1: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>;
+                    let mut terms2: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>;
+                    let mut terms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>;
                     let mut divOrMul = (*divOrMul).clone();
                     let mut store = (*store).clone();
                     let mut ut: Arc<UnitAbsyn::UnitTerm> = ut.clone();
@@ -1247,7 +1247,7 @@ fn buildTermExp(mut env: FCore::Graph, mut exp: Arc<DAE::Exp>, mut idivOrMul: bo
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::BINARY { exp1: e1, operator: op, exp2: _ }, divOrMul, ht, store) => {
-                    let mut terms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = metamodelica::nil();
+                    let mut terms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>;
                     let mut divOrMul = (*divOrMul).clone();
                     let mut store = (*store).clone();
                     let mut ut: Arc<UnitAbsyn::UnitTerm> = ut.clone();
@@ -1265,7 +1265,7 @@ fn buildTermExp(mut env: FCore::Graph, mut exp: Arc<DAE::Exp>, mut idivOrMul: bo
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::BINARY { exp1: e1, operator: op, exp2: e2 }, divOrMul, ht, store) => {
-                    let mut terms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = metamodelica::nil();
+                    let mut terms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>;
                     let mut divOrMul = (*divOrMul).clone();
                     let mut store = (*store).clone();
                     let mut ut: Arc<UnitAbsyn::UnitTerm> = ut.clone();
@@ -1283,7 +1283,7 @@ fn buildTermExp(mut env: FCore::Graph, mut exp: Arc<DAE::Exp>, mut idivOrMul: bo
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::UNARY { operator: _, exp: e1 }, divOrMul, ht, store) => {
-                    let mut terms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = metamodelica::nil();
+                    let mut terms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>;
                     let mut store = (*store).clone();
                     let mut ut: Arc<UnitAbsyn::UnitTerm> = ut.clone();
                     (ut, terms, store) = buildTermExp(env.clone(), e1.clone(), divOrMul.clone(), ht.clone(), store.clone())?;
@@ -1295,11 +1295,11 @@ fn buildTermExp(mut env: FCore::Graph, mut exp: Arc<DAE::Exp>, mut idivOrMul: bo
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::IFEXP { expCond: _, expThen: e1, expElse: e2 }, divOrMul, ht, store) => {
-                    let mut ut1: Arc<UnitAbsyn::UnitTerm> = Arc::new(<UnitAbsyn::UnitTerm as ::std::default::Default>::default());
-                    let mut ut2: Arc<UnitAbsyn::UnitTerm> = Arc::new(<UnitAbsyn::UnitTerm as ::std::default::Default>::default());
-                    let mut terms1: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = metamodelica::nil();
-                    let mut terms2: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = metamodelica::nil();
-                    let mut terms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = metamodelica::nil();
+                    let mut ut1: Arc<UnitAbsyn::UnitTerm>;
+                    let mut ut2: Arc<UnitAbsyn::UnitTerm>;
+                    let mut terms1: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>;
+                    let mut terms2: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>;
+                    let mut terms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>;
                     let mut divOrMul = (*divOrMul).clone();
                     let mut store = (*store).clone();
                     divOrMul = false;
@@ -1314,7 +1314,7 @@ fn buildTermExp(mut env: FCore::Graph, mut exp: Arc<DAE::Exp>, mut idivOrMul: bo
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CALL { path, expLst: expl, .. }, divOrMul, ht, store) => {
-                    let mut terms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = metamodelica::nil();
+                    let mut terms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>;
                     let mut divOrMul = (*divOrMul).clone();
                     let mut store = (*store).clone();
                     let mut ut: Arc<UnitAbsyn::UnitTerm> = ut.clone();
@@ -1328,8 +1328,8 @@ fn buildTermExp(mut env: FCore::Graph, mut exp: Arc<DAE::Exp>, mut idivOrMul: bo
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::ARRAY { ty: _, scalar: _, array: expl }, _, ht, store) => {
-                    let mut terms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = metamodelica::nil();
-                    let mut uts: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = metamodelica::nil();
+                    let mut terms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>;
+                    let mut uts: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>;
                     let mut store = (*store).clone();
                     let mut ut: Arc<UnitAbsyn::UnitTerm> = ut.clone();
                     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("vector =")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
@@ -1349,9 +1349,9 @@ fn buildTermExp(mut env: FCore::Graph, mut exp: Arc<DAE::Exp>, mut idivOrMul: bo
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::MATRIX { matrix: mexpl, .. }, _, ht, store) => {
-                    let mut terms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = metamodelica::nil();
-                    let mut uts: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = metamodelica::nil();
-                    let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
+                    let mut terms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>;
+                    let mut uts: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>;
+                    let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>>;
                     let mut store = (*store).clone();
                     let mut ut: Arc<UnitAbsyn::UnitTerm> = ut.clone();
                     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Matrix =")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
@@ -1420,12 +1420,12 @@ fn buildTermCall(mut env: FCore::Graph, mut path: Arc<Absyn::Path>, mut funcCall
     let mut outStore: UnitAbsyn::Store;
     (ut, extraTerms, outStore) = (match istore.clone() {
         mut store => {
-            let mut formalParamIndxs: Arc<metamodelica::List<i32>> = metamodelica::nil();
-            let mut funcInstId: i32 = 0;
-            let mut actTermLst: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = metamodelica::nil();
-            let mut terms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = metamodelica::nil();
-            let mut extraTerms2: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = metamodelica::nil();
-            let mut functp: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+            let mut formalParamIndxs: Arc<metamodelica::List<i32>>;
+            let mut funcInstId: i32;
+            let mut actTermLst: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>;
+            let mut terms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>;
+            let mut extraTerms2: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>;
+            let mut functp: Arc<DAE::Type>;
             (_, functp, _) = Lookup::lookupType(FCore::noCache(), env.clone(), path.clone(), None)?;
             funcInstId = tick();
             (store, formalParamIndxs) = buildFuncTypeStores(functp.clone(), funcInstId.clone(), store.clone())?;
@@ -1454,11 +1454,11 @@ fn buildResultTerms(mut ifunctp: Arc<DAE::Type>, mut funcInstId: i32, mut funcCa
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Type::T_FUNCTION { funcArg: _, funcResultType: functp, functionAttributes: _, path: _ }, store) => {
-                    let mut unitStr: ArcStr = arcstr::literal!("");
-                    let mut unit: UnitAbsyn::Unit = UnitAbsyn::Unit::UNSPECIFIED;
-                    let mut indx: i32 = 0;
-                    let mut indx2: i32 = 0;
-                    let mut unspec: bool = false;
+                    let mut unitStr: ArcStr;
+                    let mut unit: UnitAbsyn::Unit;
+                    let mut indx: i32;
+                    let mut indx2: i32;
+                    let mut unspec: bool;
                     let mut store = (*store).clone();
                     unitStr = (getUnitStr(functp.clone())?).clone();
                     unspec = 0 == stringCompare((unitStr.clone()).clone(), (literal!("")).clone());
@@ -1506,10 +1506,10 @@ fn buildTupleResultTerms(mut ifunctps: Arc<metamodelica::List<Arc<DAE::Type>>>, 
             (metamodelica::nil(), metamodelica::nil(), store.clone())
         },
         (Deref @ metamodelica::List::Cons { head: tp, tail: functps }, store) => {
-            let mut terms1: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = metamodelica::nil();
-            let mut terms2: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = metamodelica::nil();
-            let mut extraTerms1: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = metamodelica::nil();
-            let mut extraTerms2: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = metamodelica::nil();
+            let mut terms1: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>;
+            let mut terms2: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>;
+            let mut extraTerms1: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>;
+            let mut extraTerms2: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>;
             let mut store = (*store).clone();
             (terms1, extraTerms1, store) = buildResultTerms(tp.clone(), funcInstId.clone(), funcCallExp.clone(), store.clone())?;
             (terms2, extraTerms2, store) = buildTupleResultTerms(functps.clone(), funcInstId.clone(), funcCallExp.clone(), store.clone())?;
@@ -1539,9 +1539,9 @@ fn buildTermExpList(mut env: FCore::Graph, mut iexpl: Arc<metamodelica::List<Arc
         if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: e, tail: expl }, store) => {
-                    let mut eterms1: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = metamodelica::nil();
-                    let mut eterms2: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = metamodelica::nil();
-                    let mut ut: Arc<UnitAbsyn::UnitTerm> = Arc::new(<UnitAbsyn::UnitTerm as ::std::default::Default>::default());
+                    let mut eterms1: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>;
+                    let mut eterms2: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>;
+                    let mut ut: Arc<UnitAbsyn::UnitTerm>;
                     let mut store = (*store).clone();
                     let mut extraTerms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = extraTerms.clone();
                     let mut terms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = terms.clone();
@@ -1605,9 +1605,9 @@ fn buildFuncTypeStores2(mut ifargs: Arc<metamodelica::List<Arc<DAE::FuncArg>>>, 
             (store.clone(), metamodelica::nil())
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { ty: tp, .. }, tail: fargs }, store) => {
-            let mut unitStr: ArcStr = arcstr::literal!("");
-            let mut indx: i32 = 0;
-            let mut unit: UnitAbsyn::Unit = UnitAbsyn::Unit::UNSPECIFIED;
+            let mut unitStr: ArcStr;
+            let mut indx: i32;
+            let mut unit: UnitAbsyn::Unit;
             let mut store = (*store).clone();
             unitStr = (getUnitStr(tp.clone())?).clone();
             unit = str2unit((unitStr.clone()).clone(), Some(funcInstId.clone()))?;
@@ -1690,7 +1690,7 @@ fn buildFormal2ActualParamTerms(mut iformalParamIndxs: Arc<metamodelica::List<i3
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: loc1, tail: formalParamIndxs }, Deref @ metamodelica::List::Cons { head: ut, tail: actualParamIndxs }) => {
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e: Arc<DAE::Exp>;
                     let mut terms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = terms.clone();
                     terms = buildFormal2ActualParamTerms(formalParamIndxs.clone(), actualParamIndxs.clone())?;
                     e = origExpInTerm(ut.clone())?;
@@ -1770,10 +1770,10 @@ fn buildStores2(mut dae: DAE::DAElist, mut inStore: UnitAbsyn::Store, mut inHt: 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 DAE::DAElist { elementLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::VAR { componentRef: cr, variableAttributesOption: attropt, .. }, tail: elts } } => {
-                    let mut indx: i32 = 0;
-                    let mut unitStr: ArcStr = arcstr::literal!("");
-                    let mut unit: UnitAbsyn::Unit = UnitAbsyn::Unit::UNSPECIFIED;
-                    let mut store: UnitAbsyn::Store = <UnitAbsyn::Store as ::std::default::Default>::default();
+                    let mut indx: i32;
+                    let mut unitStr: ArcStr;
+                    let mut unit: UnitAbsyn::Unit;
+                    let mut store: UnitAbsyn::Store;
                     let mut ht: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, i32)>>), i32, (HashTable::FuncHashCref, HashTable::FuncCrefEqual, HashTable::FuncCrefStr, HashTable::FuncExpStr));
                     let __pa0 = ::match_deref::match_deref! { match &(DAEUtil::getUnitAttr(attropt.clone())) {
                         Deref @ DAE::Exp::SCONST { string: __pa0 } => __pa0.clone(),
@@ -1792,8 +1792,8 @@ fn buildStores2(mut dae: DAE::DAElist, mut inStore: UnitAbsyn::Store, mut inHt: 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 DAE::DAElist { elementLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::VAR { componentRef: cr, .. }, tail: _ } } => {
-                    let mut indx: i32 = 0;
-                    let mut store: UnitAbsyn::Store = <UnitAbsyn::Store as ::std::default::Default>::default();
+                    let mut indx: i32;
+                    let mut store: UnitAbsyn::Store;
                     let mut ht: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, i32)>>), i32, (HashTable::FuncHashCref, HashTable::FuncCrefEqual, HashTable::FuncCrefStr, HashTable::FuncExpStr));
                     (store, indx) = add(crate::UnitAbsyn::Unit::UNSPECIFIED, inStore.clone())?;
                     ht = BaseHashTable::add((cr.clone(), indx.clone()), inHt.clone())?;
@@ -1805,7 +1805,7 @@ fn buildStores2(mut dae: DAE::DAElist, mut inStore: UnitAbsyn::Store, mut inHt: 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 DAE::DAElist { elementLst: Deref @ metamodelica::List::Cons { head: _, tail: elts } } => {
-                    let mut store: UnitAbsyn::Store = <UnitAbsyn::Store as ::std::default::Default>::default();
+                    let mut store: UnitAbsyn::Store;
                     let mut ht: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, i32)>>), i32, (HashTable::FuncHashCref, HashTable::FuncCrefEqual, HashTable::FuncCrefStr, HashTable::FuncExpStr));
                     (store, ht) = buildStores2(DAE::DAElist { elementLst: elts.clone() }, inStore.clone(), inHt.clone())?;
                     Ok((store.clone(), ht.clone()))
@@ -1868,10 +1868,10 @@ fn buildStoreExp(mut exp: Arc<DAE::Exp>, mut inStore: UnitAbsyn::Store, mut inHt
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::RCONST { real: r }, store, ht) => {
-                    let mut s1: ArcStr = arcstr::literal!("");
-                    let mut indx: i32 = 0;
-                    let mut unit: UnitAbsyn::Unit = UnitAbsyn::Unit::UNSPECIFIED;
-                    let mut cref_: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
+                    let mut s1: ArcStr;
+                    let mut indx: i32;
+                    let mut unit: UnitAbsyn::Unit;
+                    let mut cref_: Arc<DAE::ComponentRef>;
                     let mut store = (*store).clone();
                     let mut ht = (*ht).clone();
                     unit = selectConstantUnit(parentOp.clone())?;
@@ -1887,10 +1887,10 @@ fn buildStoreExp(mut exp: Arc<DAE::Exp>, mut inStore: UnitAbsyn::Store, mut inHt
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::CAST { ty: _, exp: Deref @ DAE::Exp::ICONST { integer: i } }, store, ht) => {
-                    let mut s1: ArcStr = arcstr::literal!("");
-                    let mut indx: i32 = 0;
-                    let mut unit: UnitAbsyn::Unit = UnitAbsyn::Unit::UNSPECIFIED;
-                    let mut cref_: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
+                    let mut s1: ArcStr;
+                    let mut indx: i32;
+                    let mut unit: UnitAbsyn::Unit;
+                    let mut cref_: Arc<DAE::ComponentRef>;
                     let mut store = (*store).clone();
                     let mut ht = (*ht).clone();
                     unit = selectConstantUnit(parentOp.clone())?;
@@ -1955,8 +1955,8 @@ pub fn unitMultiply(mut u1: UnitAbsyn::Unit, mut u2: UnitAbsyn::Unit) -> Result<
     let mut u: UnitAbsyn::Unit;
     u = (match (u1.clone(), u2.clone()) {
         (UnitAbsyn::Unit::SPECIFIED { specified: UnitAbsyn::SpecUnit { typeParameters: ref tparams1, units: ref units1 } }, UnitAbsyn::Unit::SPECIFIED { specified: UnitAbsyn::SpecUnit { typeParameters: ref tparams2, units: ref units2 } }) => {
-            let mut tparams: Arc<metamodelica::List<(MMath::Rational, UnitAbsyn::TypeParameter)>> = metamodelica::nil();
-            let mut units: Arc<metamodelica::List<MMath::Rational>> = metamodelica::nil();
+            let mut tparams: Arc<metamodelica::List<(MMath::Rational, UnitAbsyn::TypeParameter)>>;
+            let mut units: Arc<metamodelica::List<MMath::Rational>>;
             tparams = listAppend(tparams1.clone(), tparams2.clone());
             units = List::threadMap(units1.clone(), units2.clone(), (std::sync::Arc::new(MMath::addRational) as std::sync::Arc<dyn ::std::ops::Fn(MMath::Rational, MMath::Rational) -> Result<MMath::Rational> + 'static>))?;
             UnitAbsyn::Unit::SPECIFIED { specified: UnitAbsyn::SpecUnit { typeParameters: tparams.clone(), units: units.clone() } }
@@ -1981,11 +1981,11 @@ pub fn unit2str(mut unit: UnitAbsyn::Unit) -> Result<ArcStr> {
     let mut res: ArcStr = arcstr::literal!("");
     res = ((match unit.clone() {
         UnitAbsyn::Unit::SPECIFIED { specified: UnitAbsyn::SpecUnit { typeParameters: ref typeParams, units: mut units } } => {
-            let mut nums: Arc<metamodelica::List<i32>> = metamodelica::nil();
-            let mut denoms: Arc<metamodelica::List<i32>> = metamodelica::nil();
-            let mut tpnoms: Arc<metamodelica::List<i32>> = metamodelica::nil();
-            let mut tpdenoms: Arc<metamodelica::List<i32>> = metamodelica::nil();
-            let mut tpstrs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+            let mut nums: Arc<metamodelica::List<i32>>;
+            let mut denoms: Arc<metamodelica::List<i32>>;
+            let mut tpnoms: Arc<metamodelica::List<i32>>;
+            let mut tpdenoms: Arc<metamodelica::List<i32>>;
+            let mut tpstrs: Arc<metamodelica::List<ArcStr>>;
             (nums, denoms) = splitRationals(units.clone())?;
             (tpnoms, tpdenoms, tpstrs) = splitTypeParams(typeParams.clone())?;
             res = (UnitParserExt::unit2str(nums.clone(), denoms.clone(), tpnoms.clone(), tpdenoms.clone(), tpstrs.clone(), metamodelica::OrderedFloat(1.0_f64), metamodelica::OrderedFloat(0.0_f64))).clone();

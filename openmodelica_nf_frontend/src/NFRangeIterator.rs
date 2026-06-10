@@ -154,8 +154,8 @@ pub fn fromExp(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<NFRangeIter
     }).into_iter().cloned().collect()), index: 1 })
         },
         Deref @ Expression::RANGE { start: Deref @ Expression::ENUM_LITERAL { ty, index: istart, .. }, step: None, stop: Deref @ Expression::ENUM_LITERAL { index: istop, .. }, .. } => {
-            let mut literals: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            let mut values: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
+            let mut literals: Arc<metamodelica::List<ArcStr>>;
+            let mut values: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
             let __pa0 = ::match_deref::match_deref! { match &(ty.clone()) {
                 Deref @ Type::ENUMERATION { literals: __pa0, .. } => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
@@ -175,8 +175,8 @@ pub fn fromExp(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<NFRangeIter
             Arc::new(NFRangeIterator::ARRAY_RANGE { values: metamodelica::arrayFromVec(values.clone().into_iter().cloned().collect()), index: 1 })
         },
         Deref @ Expression::TYPENAME { ty: Deref @ Type::ARRAY { elementType: ty @ Deref @ Type::ENUMERATION { literals, .. }, .. } } => {
-            let mut istep: i32 = 0;
-            let mut values: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
+            let mut istep: i32;
+            let mut values: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
             values = metamodelica::nil();
             istep = 0;
             for mut l in &*literals.clone() {

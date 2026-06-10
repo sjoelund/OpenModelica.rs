@@ -95,7 +95,7 @@ fn fun_18(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_name: ArcStr) -> Re
             txt.clone()
         },
         (mut txt, _, mut a_name) => {
-            let mut ret_0: ArcStr = arcstr::literal!("");
+            let mut ret_0: ArcStr;
             ret_0 = (System::stringReplace((a_name.clone()).clone(), (literal!(".")).clone(), (literal!("__")).clone())?).clone();
             txt = Tpl::writeStr(txt.clone(), (ret_0.clone()).clone())?;
             txt.clone()
@@ -124,10 +124,10 @@ pub fn dumpComp(mut in_txt: Tpl::Text, mut in_a_fixedDae: Arc<DAEDumpTypes::comp
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fixedDae.clone())) {
         (txt, Deref @ DAEDumpTypes::compWithSplitElements { comment: i_comment, name: i_name, spltElems: i_spltElems }) => {
-            let mut ret_3: bool = false;
-            let mut l_name__rep: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_ann__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_cmt__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_3: bool;
+            let mut l_name__rep: Tpl::Text;
+            let mut l_ann__str: Tpl::Text;
+            let mut l_cmt__str: Tpl::Text;
             let mut txt = (*txt).clone();
             l_cmt__str = dumpCommentOpt(Tpl::emptyTxt.clone(), i_comment.clone())?;
             l_ann__str = dumpClassAnnotation(Tpl::emptyTxt.clone(), i_comment.clone())?;
@@ -176,12 +176,12 @@ pub fn dumpCompStream(mut in_txt: Tpl::Text, mut in_a_elems: Arc<DAEDumpTypes::s
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_elems.clone())) {
         (txt, Deref @ DAEDumpTypes::splitElements { v: i_v, ie: i_ie, ia: i_ia, e: i_e, a: i_a, sm: i_sm, .. }) => {
-            let mut l_sm__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_al__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_eq__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_ial__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_ieq__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_var__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_sm__str: Tpl::Text;
+            let mut l_al__str: Tpl::Text;
+            let mut l_eq__str: Tpl::Text;
+            let mut l_ial__str: Tpl::Text;
+            let mut l_ieq__str: Tpl::Text;
+            let mut l_var__str: Tpl::Text;
             let mut txt = (*txt).clone();
             l_var__str = dumpVars(Tpl::emptyTxt.clone(), i_v.clone())?;
             l_ieq__str = dumpInitialEquationSection(Tpl::emptyTxt.clone(), i_ie.clone())?;
@@ -331,10 +331,10 @@ pub fn dumpFunction(mut in_txt: Tpl::Text, mut in_a_function: DAE::Function) -> 
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_function.clone())) {
         (txt, DAE::Function::FUNCTION { functions: i_functions @ Deref @ metamodelica::List::Cons { head: DAE::FunctionDefinition::FUNCTION_PARTIAL_DERIVATIVE { derivedFunction: _, .. }, tail: Deref @ metamodelica::List::Nil }, path: i_path, comment: i_comment, isImpure: i_isImpure, .. }) => {
-            let mut l_impure__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_ann__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_cmt__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_fn__name: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_impure__str: Tpl::Text;
+            let mut l_ann__str: Tpl::Text;
+            let mut l_cmt__str: Tpl::Text;
+            let mut l_fn__name: Tpl::Text;
             let mut txt = (*txt).clone();
             l_fn__name = AbsynDumpTpl::dumpPathNoQual(Tpl::emptyTxt.clone(), i_path.clone())?;
             l_cmt__str = dumpCommentOpt(Tpl::emptyTxt.clone(), i_comment.clone())?;
@@ -352,9 +352,9 @@ pub fn dumpFunction(mut in_txt: Tpl::Text, mut in_a_function: DAE::Function) -> 
             txt.clone()
         },
         (txt, DAE::Function::FUNCTION { comment: i_comment, isImpure: i_isImpure, path: i_path, functions: i_functions, .. }) => {
-            let mut l_impure__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_ann__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_cmt__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_impure__str: Tpl::Text;
+            let mut l_ann__str: Tpl::Text;
+            let mut l_cmt__str: Tpl::Text;
             let mut txt = (*txt).clone();
             l_cmt__str = dumpCommentOpt(Tpl::emptyTxt.clone(), i_comment.clone())?;
             l_ann__str = dumpClassAnnotation(Tpl::emptyTxt.clone(), i_comment.clone())?;
@@ -375,7 +375,7 @@ pub fn dumpFunction(mut in_txt: Tpl::Text, mut in_a_function: DAE::Function) -> 
             txt.clone()
         },
         (txt, DAE::Function::RECORD_CONSTRUCTOR { path: i_path, type_: i_type__, .. }) => {
-            let mut ret_4: bool = false;
+            let mut ret_4: bool;
             let mut txt = (*txt).clone();
             ret_4 = Flags::isSet(Flags::PRINT_RECORD_TYPES.clone())?;
             txt = fun_29(txt.clone(), ret_4.clone(), i_type__.clone(), i_path.clone())?;
@@ -448,7 +448,7 @@ pub fn dumpFunctionDefinition(mut in_txt: Tpl::Text, mut in_a_functions: DAE::Fu
             txt.clone()
         },
         (mut txt, DAE::FunctionDefinition::FUNCTION_PARTIAL_DERIVATIVE { derivedVars: ref i_derivedVars, derivedFunction: ref i_derivedFunction }) => {
-            let mut l_vars: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_vars: Tpl::Text;
             l_vars = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             l_vars = lm_33(l_vars.clone(), i_derivedVars.clone())?;
             l_vars = Tpl::popIter(l_vars.clone())?;
@@ -528,13 +528,13 @@ pub fn dumpExternalDecl(mut in_txt: Tpl::Text, mut in_a_externalDecl: DAE::Exter
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_externalDecl.clone()) {
         (mut txt, DAE::ExternalDecl { name: mut i_name, args: ref i_args, returnArg: mut i_returnArg, language: mut i_language, ann: mut i_ann }) => {
-            let mut l_ann__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_lang__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_output__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_ext__output__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_func__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_func__args__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_func__name__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_ann__str: Tpl::Text;
+            let mut l_lang__str: Tpl::Text;
+            let mut l_output__str: Tpl::Text;
+            let mut l_ext__output__str: Tpl::Text;
+            let mut l_func__str: Tpl::Text;
+            let mut l_func__args__str: Tpl::Text;
+            let mut l_func__name__str: Tpl::Text;
             l_func__name__str = Tpl::writeStr(Tpl::emptyTxt.clone(), (i_name.clone()).clone())?;
             l_func__args__str = dumpExtArgs(Tpl::emptyTxt.clone(), i_args.clone())?;
             l_func__str = fun_35(Tpl::emptyTxt.clone(), l_func__name__str.clone(), l_func__args__str.clone())?;
@@ -656,10 +656,10 @@ pub fn dumpRecordVar(mut in_txt: Tpl::Text, mut in_a_v: Arc<DAE::Var>) -> Result
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_v.clone())) {
         (txt, Deref @ DAE::Var { attributes: i_attributes, binding: i_binding, ty: i_ty, name: i_name, .. }) => {
-            let mut l_ty__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_attr: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_binding__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_attr__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_ty__str: Tpl::Text;
+            let mut l_attr: Tpl::Text;
+            let mut l_binding__str: Tpl::Text;
+            let mut l_attr__str: Tpl::Text;
             let mut txt = (*txt).clone();
             l_attr__str = dumpRecordConstructorInputAttr(Tpl::emptyTxt.clone(), i_attributes.clone())?;
             l_binding__str = dumpRecordConstructorBinding(Tpl::emptyTxt.clone(), i_binding.clone())?;
@@ -851,7 +851,7 @@ pub fn dumpFunctionAnnotation(mut in_txt: Tpl::Text, mut in_a_lst: Arc<DAE::Elem
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_lst.clone())) {
         (txt, Deref @ DAE::Element::COMMENT { cmt: i_cmt }) => {
-            let mut l_x: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_x: Tpl::Text;
             let mut txt = (*txt).clone();
             l_x = dumpCommentAnnotationNoOpt(Tpl::emptyTxt.clone(), i_cmt.clone())?;
             txt = fun_53(txt.clone(), l_x.clone())?;
@@ -996,20 +996,20 @@ pub fn dumpVar(mut in_txt: Tpl::Text, mut in_a_lst: Arc<DAE::Element>, mut in_a_
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_lst.clone(), in_a_printTypeDimension.clone())) {
         (txt, Deref @ DAE::Element::VAR { variableAttributesOption: i_variableAttributesOption, protection: i_protection, parallelism: i_parallelism, kind: i_kind, direction: i_direction, ty: i_ty, dims: i_dims, componentRef: i_componentRef, binding: i_binding, comment: i_comment, .. }, a_printTypeDimension) => {
-            let mut l_binding__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_ann__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_cmt__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_varAttr: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_bindingExp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_varName: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_dim__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_varType: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_attr: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_varDirection: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_varKind: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_varParallelism: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_varVisibility: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_final: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_binding__str: Tpl::Text;
+            let mut l_ann__str: Tpl::Text;
+            let mut l_cmt__str: Tpl::Text;
+            let mut l_varAttr: Tpl::Text;
+            let mut l_bindingExp: Tpl::Text;
+            let mut l_varName: Tpl::Text;
+            let mut l_dim__str: Tpl::Text;
+            let mut l_varType: Tpl::Text;
+            let mut l_attr: Tpl::Text;
+            let mut l_varDirection: Tpl::Text;
+            let mut l_varKind: Tpl::Text;
+            let mut l_varParallelism: Tpl::Text;
+            let mut l_varVisibility: Tpl::Text;
+            let mut l_final: Tpl::Text;
             let mut txt = (*txt).clone();
             l_final = fun_58(Tpl::emptyTxt.clone(), i_variableAttributesOption.clone())?;
             l_varVisibility = dumpVarVisibility(Tpl::emptyTxt.clone(), i_protection.clone())?;
@@ -1215,7 +1215,7 @@ pub fn dumpType(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_att
             return Ok((txt.clone(), a_attributes.clone()))
         },
         (txt, Deref @ DAE::Type::T_ENUMERATION { names: i_names, .. }, a_attributes) => {
-            let mut l_lit__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_lit__str: Tpl::Text;
             let mut txt = (*txt).clone();
             l_lit__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             l_lit__str = lm_69(l_lit__str.clone(), i_names.clone())?;
@@ -1226,7 +1226,7 @@ pub fn dumpType(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_att
             return Ok((txt.clone(), a_attributes.clone()))
         },
         (txt, Deref @ DAE::Type::T_ARRAY { ty: i_ty, dims: i_dims }, a_attributes) => {
-            let mut txt_1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_1: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_attributes = (*a_attributes).clone();
             txt_1 = dumpDimensions(Tpl::emptyTxt.clone(), i_dims.clone())?;
@@ -1238,7 +1238,7 @@ pub fn dumpType(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_att
             return Ok((txt.clone(), a_attributes.clone()))
         },
         (txt, Deref @ DAE::Type::T_COMPLEX { complexClassType: i_complexClassType, .. }, a_attributes) => {
-            let mut ret_2: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+            let mut ret_2: Arc<Absyn::Path>;
             let mut txt = (*txt).clone();
             ret_2 = ClassInfUtil::getStateName(i_complexClassType.clone());
             txt = AbsynDumpTpl::dumpPath(txt.clone(), ret_2.clone())?;
@@ -1388,8 +1388,8 @@ pub fn dumpArrayType(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_
     '__tco: loop {
         ::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_dims__accum.clone(), in_a_attributes.clone())) {
         (txt, Deref @ DAE::Type::T_ARRAY { dims: i_dims, ty: i_ty }, a_dims__accum, a_attributes) => {
-            let mut l_dims__accum__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_dims__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_dims__accum__str: Tpl::Text;
+            let mut l_dims__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_attributes = (*a_attributes).clone();
             l_dims__str = dumpDimensions(Tpl::emptyTxt.clone(), i_dims.clone())?;
@@ -1397,8 +1397,8 @@ pub fn dumpArrayType(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_
             { (in_txt, in_a_ty, in_a_dims__accum, in_a_attributes) = (txt.clone(), i_ty.clone(), (Tpl::textString(l_dims__accum__str.clone())?).clone(), a_attributes.clone()); continue '__tco; }
         },
         (txt, i_ty, a_dims__accum, a_attributes) => {
-            let mut l_ty__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_dims__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_ty__str: Tpl::Text;
+            let mut l_dims__str: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_attributes = (*a_attributes).clone();
             (l_ty__str, a_attributes) = dumpType(Tpl::emptyTxt.clone(), i_ty.clone(), a_attributes.clone())?;
@@ -1461,10 +1461,10 @@ pub fn dumpFunctionType(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> R
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone())) {
         (txt, Deref @ DAE::Type::T_FUNCTION { funcArg: i_funcArg, path: i_path, funcResultType: i_funcResultType, .. }) => {
-            let mut l_res__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_attr: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_src__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_args__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_res__str: Tpl::Text;
+            let mut l_attr: Tpl::Text;
+            let mut l_src__str: Tpl::Text;
+            let mut l_args__str: Tpl::Text;
             let mut txt = (*txt).clone();
             l_args__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             l_args__str = lm_76(l_args__str.clone(), i_funcArg.clone())?;
@@ -1510,11 +1510,11 @@ pub fn dumpFuncArg(mut in_txt: Tpl::Text, mut in_a_arg: Arc<DAE::FuncArg>) -> Re
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_arg.clone())) {
         (txt, Deref @ DAE::FuncArg { ty: i_ty, r#const: i_const, par: i_par, defaultBinding: i_defaultBinding, name: i_name }) => {
-            let mut l_binding__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_p__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_c__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_ty__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_attr: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_binding__str: Tpl::Text;
+            let mut l_p__str: Tpl::Text;
+            let mut l_c__str: Tpl::Text;
+            let mut l_ty__str: Tpl::Text;
+            let mut l_attr: Tpl::Text;
             let mut txt = (*txt).clone();
             l_attr = Tpl::emptyTxt.clone();
             (l_ty__str, l_attr) = dumpType(Tpl::emptyTxt.clone(), i_ty.clone(), l_attr.clone())?;
@@ -1541,9 +1541,9 @@ pub fn dumpRecordType(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Res
     '__tco: loop {
         ::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone())) {
         (txt, Deref @ DAE::Type::T_COMPLEX { complexClassType: i_complexClassType, varLst: i_varLst, .. }) => {
-            let mut l_vars: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_1: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-            let mut l_name: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_vars: Tpl::Text;
+            let mut ret_1: Arc<Absyn::Path>;
+            let mut l_name: Tpl::Text;
             let mut txt = (*txt).clone();
             ret_1 = ClassInfUtil::getStateName(i_complexClassType.clone());
             l_name = AbsynDumpTpl::dumpPath(Tpl::emptyTxt.clone(), ret_1.clone())?;
@@ -2216,19 +2216,19 @@ pub fn dumpVariableAttributes(mut in_txt: Tpl::Text, mut in_a_variableAttributes
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_variableAttributesOption.clone())) {
         (txt, Deref @ DAE::VariableAttributes::VAR_ATTR_REAL { quantity: i_quantity, unit: i_unit, displayUnit: i_displayUnit, min: i_min, max: i_max, start: i_start, fixed: i_fixed, nominal: i_nominal, stateSelectOption: i_stateSelectOption, uncertainOption: i_uncertainOption, distributionOption: i_distributionOption, startOrigin: i_startOrigin, .. }) => {
-            let mut l_attrs__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_so__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_dist__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_uncert__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_statesel__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_nominal__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_fixed__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_start__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_max__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_min__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_displayunit__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_unit__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_quantity__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_attrs__str: Tpl::Text;
+            let mut l_so__str: Tpl::Text;
+            let mut l_dist__str: Tpl::Text;
+            let mut l_uncert__str: Tpl::Text;
+            let mut l_statesel__str: Tpl::Text;
+            let mut l_nominal__str: Tpl::Text;
+            let mut l_fixed__str: Tpl::Text;
+            let mut l_start__str: Tpl::Text;
+            let mut l_max__str: Tpl::Text;
+            let mut l_min__str: Tpl::Text;
+            let mut l_displayunit__str: Tpl::Text;
+            let mut l_unit__str: Tpl::Text;
+            let mut l_quantity__str: Tpl::Text;
             let mut txt = (*txt).clone();
             l_quantity__str = dumpExpAttrOpt(Tpl::emptyTxt.clone(), i_quantity.clone(), (literal!("quantity")).clone())?;
             l_unit__str = dumpExpAttrOpt(Tpl::emptyTxt.clone(), i_unit.clone(), (literal!("unit")).clone())?;
@@ -2260,15 +2260,15 @@ pub fn dumpVariableAttributes(mut in_txt: Tpl::Text, mut in_a_variableAttributes
             txt.clone()
         },
         (txt, Deref @ DAE::VariableAttributes::VAR_ATTR_INT { quantity: i_quantity, min: i_min, max: i_max, start: i_start, fixed: i_fixed, uncertainOption: i_uncertainOption, distributionOption: i_distributionOption, startOrigin: i_startOrigin, .. }) => {
-            let mut l_attrs__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_so__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_dist__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_uncert__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_fixed__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_start__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_max__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_min__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_quantity__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_attrs__str: Tpl::Text;
+            let mut l_so__str: Tpl::Text;
+            let mut l_dist__str: Tpl::Text;
+            let mut l_uncert__str: Tpl::Text;
+            let mut l_fixed__str: Tpl::Text;
+            let mut l_start__str: Tpl::Text;
+            let mut l_max__str: Tpl::Text;
+            let mut l_min__str: Tpl::Text;
+            let mut l_quantity__str: Tpl::Text;
             let mut txt = (*txt).clone();
             l_quantity__str = dumpExpAttrOpt(Tpl::emptyTxt.clone(), i_quantity.clone(), (literal!("quantity")).clone())?;
             l_min__str = dumpExpAttrOpt(Tpl::emptyTxt.clone(), i_min.clone(), (literal!("min")).clone())?;
@@ -2292,11 +2292,11 @@ pub fn dumpVariableAttributes(mut in_txt: Tpl::Text, mut in_a_variableAttributes
             txt.clone()
         },
         (txt, Deref @ DAE::VariableAttributes::VAR_ATTR_BOOL { quantity: i_quantity, start: i_start, fixed: i_fixed, startOrigin: i_startOrigin, .. }) => {
-            let mut l_attrs__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_so__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_fixed__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_start__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_quantity__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_attrs__str: Tpl::Text;
+            let mut l_so__str: Tpl::Text;
+            let mut l_fixed__str: Tpl::Text;
+            let mut l_start__str: Tpl::Text;
+            let mut l_quantity__str: Tpl::Text;
             let mut txt = (*txt).clone();
             l_quantity__str = dumpExpAttrOpt(Tpl::emptyTxt.clone(), i_quantity.clone(), (literal!("quantity")).clone())?;
             l_start__str = dumpExpAttrOpt(Tpl::emptyTxt.clone(), i_start.clone(), (literal!("start")).clone())?;
@@ -2312,10 +2312,10 @@ pub fn dumpVariableAttributes(mut in_txt: Tpl::Text, mut in_a_variableAttributes
             txt.clone()
         },
         (txt, Deref @ DAE::VariableAttributes::VAR_ATTR_STRING { quantity: i_quantity, start: i_start, startOrigin: i_startOrigin, .. }) => {
-            let mut l_attrs__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_so__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_start__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_quantity__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_attrs__str: Tpl::Text;
+            let mut l_so__str: Tpl::Text;
+            let mut l_start__str: Tpl::Text;
+            let mut l_quantity__str: Tpl::Text;
             let mut txt = (*txt).clone();
             l_quantity__str = dumpExpAttrOpt(Tpl::emptyTxt.clone(), i_quantity.clone(), (literal!("quantity")).clone())?;
             l_start__str = dumpExpAttrOpt(Tpl::emptyTxt.clone(), i_start.clone(), (literal!("start")).clone())?;
@@ -2329,13 +2329,13 @@ pub fn dumpVariableAttributes(mut in_txt: Tpl::Text, mut in_a_variableAttributes
             txt.clone()
         },
         (txt, Deref @ DAE::VariableAttributes::VAR_ATTR_ENUMERATION { quantity: i_quantity, min: i_min, max: i_max, start: i_start, fixed: i_fixed, startOrigin: i_startOrigin, .. }) => {
-            let mut l_attrs__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_so__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_fixed__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_start__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_max__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_min__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_quantity__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_attrs__str: Tpl::Text;
+            let mut l_so__str: Tpl::Text;
+            let mut l_fixed__str: Tpl::Text;
+            let mut l_start__str: Tpl::Text;
+            let mut l_max__str: Tpl::Text;
+            let mut l_min__str: Tpl::Text;
+            let mut l_quantity__str: Tpl::Text;
             let mut txt = (*txt).clone();
             l_quantity__str = dumpExpAttrOpt(Tpl::emptyTxt.clone(), i_quantity.clone(), (literal!("quantity")).clone())?;
             l_min__str = dumpExpAttrOpt(Tpl::emptyTxt.clone(), i_min.clone(), (literal!("min")).clone())?;
@@ -2505,9 +2505,9 @@ pub fn dumpDistribution(mut in_txt: Tpl::Text, mut in_a_distribution: Arc<DAE::D
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_distribution.clone())) {
         (txt, Deref @ DAE::Distribution { name: i_name, params: i_params, paramNames: i_paramNames }) => {
-            let mut l_paramnames__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_params__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_name__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_paramnames__str: Tpl::Text;
+            let mut l_params__str: Tpl::Text;
+            let mut l_name__str: Tpl::Text;
             let mut txt = (*txt).clone();
             l_name__str = dumpExp(Tpl::emptyTxt.clone(), i_name.clone())?;
             l_params__str = dumpExp(Tpl::emptyTxt.clone(), i_params.clone())?;
@@ -2581,7 +2581,7 @@ pub fn dumpCref(mut in_txt: Tpl::Text, mut in_a_c: Arc<DAE::ComponentRef>) -> Re
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_c.clone())) {
         (txt, Deref @ DAE::ComponentRef::CREF_QUAL { ident: i_ident, subscriptLst: i_subscriptLst, componentRef: i_componentRef, .. }) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = Flags::getConfigBool(Flags::MODELICA_OUTPUT.clone())?;
             txt = fun_140(txt.clone(), ret_0.clone(), i_componentRef.clone(), i_subscriptLst.clone(), (i_ident.clone()).clone())?;
@@ -2632,7 +2632,7 @@ pub fn dumpTypeDimensions(mut in_txt: Tpl::Text, mut in_a_dimensionLst: Arc<meta
             txt.clone()
         },
         (txt, i_dimensionLst) => {
-            let mut l_sub__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_sub__str: Tpl::Text;
             let mut txt = (*txt).clone();
             l_sub__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             l_sub__str = lm_142(l_sub__str.clone(), i_dimensionLst.clone())?;
@@ -2683,7 +2683,7 @@ fn fun_146(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_subscriptLst: Arc<
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_subscriptLst.clone())) {
         (txt, false, a_subscriptLst) => {
-            let mut l_sub__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_sub__str: Tpl::Text;
             let mut txt = (*txt).clone();
             l_sub__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(",")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             l_sub__str = lm_144(l_sub__str.clone(), a_subscriptLst.clone())?;
@@ -2694,7 +2694,7 @@ fn fun_146(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_subscriptLst: Arc<
             txt.clone()
         },
         (txt, _, a_subscriptLst) => {
-            let mut l_sub__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_sub__str: Tpl::Text;
             let mut txt = (*txt).clone();
             l_sub__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             l_sub__str = lm_145(l_sub__str.clone(), a_subscriptLst.clone())?;
@@ -2715,7 +2715,7 @@ pub fn dumpSubscripts(mut in_txt: Tpl::Text, mut in_a_subscriptLst: Arc<metamode
             txt.clone()
         },
         (txt, i_subscriptLst) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = Flags::getConfigBool(Flags::MODELICA_OUTPUT.clone())?;
             txt = fun_146(txt.clone(), ret_0.clone(), i_subscriptLst.clone())?;
@@ -3189,10 +3189,10 @@ pub fn dumpWhenEquation(mut in_txt: Tpl::Text, mut in_a_lst: Arc<DAE::Element>) 
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_lst.clone())) {
         (txt, Deref @ DAE::Element::WHEN_EQUATION { condition: i_condition, equations: i_equations, elsewhen_: i_elsewhen__, source: i_source }) => {
-            let mut l_src__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_elsewhen__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_body__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_when__cond__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_src__str: Tpl::Text;
+            let mut l_elsewhen__str: Tpl::Text;
+            let mut l_body__str: Tpl::Text;
+            let mut l_when__cond__str: Tpl::Text;
             let mut txt = (*txt).clone();
             l_when__cond__str = dumpExp(Tpl::emptyTxt.clone(), i_condition.clone())?;
             l_body__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -3247,9 +3247,9 @@ pub fn dumpForEquation(mut in_txt: Tpl::Text, mut in_a_lst: Arc<DAE::Element>) -
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_lst.clone())) {
         (txt, Deref @ DAE::Element::FOR_EQUATION { range: i_range, equations: i_equations, source: i_source, iter: i_iter, .. }) => {
-            let mut l_src__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_body__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_range__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_src__str: Tpl::Text;
+            let mut l_body__str: Tpl::Text;
+            let mut l_range__str: Tpl::Text;
             let mut txt = (*txt).clone();
             l_range__str = dumpExp(Tpl::emptyTxt.clone(), i_range.clone())?;
             l_body__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -3271,9 +3271,9 @@ pub fn dumpForEquation(mut in_txt: Tpl::Text, mut in_a_lst: Arc<DAE::Element>) -
             txt.clone()
         },
         (txt, Deref @ DAE::Element::INITIAL_FOR_EQUATION { range: i_range, equations: i_equations, source: i_source, iter: i_iter, .. }) => {
-            let mut l_src__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_body__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_range__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_src__str: Tpl::Text;
+            let mut l_body__str: Tpl::Text;
+            let mut l_range__str: Tpl::Text;
             let mut txt = (*txt).clone();
             l_range__str = dumpExp(Tpl::emptyTxt.clone(), i_range.clone())?;
             l_body__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -3359,11 +3359,11 @@ fn fun_174(mut in_txt: Tpl::Text, mut in_a_branches: Arc<metamodelica::List<Arc<
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_branches.clone(), in_a_src.clone(), in_a_else__branch.clone(), in_a_elseif__conds.clone(), in_a_if__cond.clone())) {
         (txt, Deref @ metamodelica::List::Cons { head: i_if__branch, tail: i_elseif__branches }, a_src, a_else__branch, a_elseif__conds, a_if__cond) => {
-            let mut l_src__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_else__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_elseif__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_if__branch__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_if__cond__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_src__str: Tpl::Text;
+            let mut l_else__str: Tpl::Text;
+            let mut l_elseif__str: Tpl::Text;
+            let mut l_if__branch__str: Tpl::Text;
+            let mut l_if__cond__str: Tpl::Text;
             let mut txt = (*txt).clone();
             l_if__cond__str = dumpExp(Tpl::emptyTxt.clone(), a_if__cond.clone())?;
             l_if__branch__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -3432,9 +3432,9 @@ fn fun_177(mut in_txt: Tpl::Text, mut in_a_equations: Arc<metamodelica::List<Arc
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_equations.clone(), in_a_rest__conds.clone(), in_a_cond.clone())) {
         (txt, Deref @ metamodelica::List::Cons { head: i_branch, tail: i_rest__branches }, a_rest__conds, a_cond) => {
-            let mut l_rest__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_branch__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_cond__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_rest__str: Tpl::Text;
+            let mut l_branch__str: Tpl::Text;
+            let mut l_cond__str: Tpl::Text;
             let mut txt = (*txt).clone();
             l_cond__str = dumpExp(Tpl::emptyTxt.clone(), a_cond.clone())?;
             l_branch__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -3748,9 +3748,9 @@ pub fn dumpTupleAssignStatement(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::S
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_stmt.clone())) {
         (txt, Deref @ DAE::Statement::STMT_TUPLE_ASSIGN { expExpLst: i_expExpLst, exp: i_exp, source: i_source, .. }) => {
-            let mut l_src__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_rhs__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_lhs__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_src__str: Tpl::Text;
+            let mut l_rhs__str: Tpl::Text;
+            let mut l_lhs__str: Tpl::Text;
             let mut txt = (*txt).clone();
             l_lhs__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             l_lhs__str = lm_191(l_lhs__str.clone(), i_expExpLst.clone())?;
@@ -3777,9 +3777,9 @@ pub fn dumpArrayAssignStatement(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::S
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_stmt.clone())) {
         (txt, Deref @ DAE::Statement::STMT_ASSIGN_ARR { lhs: i_lhs, exp: i_exp, source: i_source, .. }) => {
-            let mut l_src__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_rhs__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_lhs__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_src__str: Tpl::Text;
+            let mut l_rhs__str: Tpl::Text;
+            let mut l_lhs__str: Tpl::Text;
             let mut txt = (*txt).clone();
             l_lhs__str = dumpExp(Tpl::emptyTxt.clone(), i_lhs.clone())?;
             l_rhs__str = dumpExp(Tpl::emptyTxt.clone(), i_exp.clone())?;
@@ -3819,10 +3819,10 @@ pub fn dumpIfStatement(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_stmt.clone())) {
         (txt, Deref @ DAE::Statement::STMT_IF { exp: i_exp, statementLst: i_statementLst, else_: i_else__, source: i_source }) => {
-            let mut l_src__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_else__if__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_true__branch__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_if__cond__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_src__str: Tpl::Text;
+            let mut l_else__if__str: Tpl::Text;
+            let mut l_true__branch__str: Tpl::Text;
+            let mut l_if__cond__str: Tpl::Text;
             let mut txt = (*txt).clone();
             l_if__cond__str = dumpExp(Tpl::emptyTxt.clone(), i_exp.clone())?;
             l_true__branch__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -3888,9 +3888,9 @@ pub fn dumpElseIfStatements(mut in_txt: Tpl::Text, mut in_a_else__: Arc<DAE::Els
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_else__.clone())) {
         (txt, Deref @ DAE::Else::ELSEIF { exp: i_exp, statementLst: i_statementLst, else_: i_else__ }) => {
-            let mut l_else__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_elseif__body__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_elseif__cond__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_else__str: Tpl::Text;
+            let mut l_elseif__body__str: Tpl::Text;
+            let mut l_elseif__cond__str: Tpl::Text;
             let mut txt = (*txt).clone();
             l_elseif__cond__str = dumpExp(Tpl::emptyTxt.clone(), i_exp.clone())?;
             l_elseif__body__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -3908,7 +3908,7 @@ pub fn dumpElseIfStatements(mut in_txt: Tpl::Text, mut in_a_else__: Arc<DAE::Els
             txt.clone()
         },
         (txt, Deref @ DAE::Else::ELSE { statementLst: i_statementLst }) => {
-            let mut l_else__body__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_else__body__str: Tpl::Text;
             let mut txt = (*txt).clone();
             l_else__body__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             l_else__body__str = lm_197(l_else__body__str.clone(), i_statementLst.clone())?;
@@ -3947,9 +3947,9 @@ pub fn dumpForStatement(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_stmt.clone())) {
         (txt, Deref @ DAE::Statement::STMT_FOR { range: i_range, statementLst: i_statementLst, source: i_source, iter: i_iter, .. }) => {
-            let mut l_src__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_alg__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_range__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_src__str: Tpl::Text;
+            let mut l_alg__str: Tpl::Text;
+            let mut l_range__str: Tpl::Text;
             let mut txt = (*txt).clone();
             l_range__str = dumpExp(Tpl::emptyTxt.clone(), i_range.clone())?;
             l_alg__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -3998,9 +3998,9 @@ pub fn dumpParForStatement(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statem
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_stmt.clone())) {
         (txt, Deref @ DAE::Statement::STMT_PARFOR { range: i_range, statementLst: i_statementLst, source: i_source, iter: i_iter, .. }) => {
-            let mut l_src__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_alg__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_range__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_src__str: Tpl::Text;
+            let mut l_alg__str: Tpl::Text;
+            let mut l_range__str: Tpl::Text;
             let mut txt = (*txt).clone();
             l_range__str = dumpExp(Tpl::emptyTxt.clone(), i_range.clone())?;
             l_alg__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -4049,9 +4049,9 @@ pub fn dumpWhileStatement(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Stateme
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_stmt.clone())) {
         (txt, Deref @ DAE::Statement::STMT_WHILE { exp: i_exp, statementLst: i_statementLst, source: i_source }) => {
-            let mut l_src__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_body__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_while__cond: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_src__str: Tpl::Text;
+            let mut l_body__str: Tpl::Text;
+            let mut l_while__cond: Tpl::Text;
             let mut txt = (*txt).clone();
             l_while__cond = dumpExp(Tpl::emptyTxt.clone(), i_exp.clone())?;
             l_body__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -4149,10 +4149,10 @@ pub fn dumpWhenStatement(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statemen
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_stmt.clone())) {
         (txt, Deref @ DAE::Statement::STMT_WHEN { exp: i_exp, statementLst: i_statementLst, elseWhen: i_elseWhen, source: i_source, .. }) => {
-            let mut l_src__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_elsewhen__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_body__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_when__cond__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_src__str: Tpl::Text;
+            let mut l_elsewhen__str: Tpl::Text;
+            let mut l_body__str: Tpl::Text;
+            let mut l_when__cond__str: Tpl::Text;
             let mut txt = (*txt).clone();
             l_when__cond__str = dumpExp(Tpl::emptyTxt.clone(), i_exp.clone())?;
             l_body__str = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -4175,9 +4175,9 @@ pub fn dumpReinitStatement(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statem
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_stmt.clone())) {
         (txt, Deref @ DAE::Statement::STMT_REINIT { var: i_var, value: i_value, source: i_source }) => {
-            let mut l_src__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_new__exp__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_exp__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_src__str: Tpl::Text;
+            let mut l_new__exp__str: Tpl::Text;
+            let mut l_exp__str: Tpl::Text;
             let mut txt = (*txt).clone();
             l_exp__str = dumpExp(Tpl::emptyTxt.clone(), i_var.clone())?;
             l_new__exp__str = dumpExp(Tpl::emptyTxt.clone(), i_value.clone())?;
@@ -4219,7 +4219,7 @@ pub fn dumpStateMachineSection(mut in_txt: Tpl::Text, mut in_a_fixedDae: Arc<DAE
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fixedDae.clone())) {
         (txt, Deref @ DAEDumpTypes::compWithSplitElements { comment: i_comment, name: i_name, spltElems: i_spltElems }) => {
-            let mut l_kind: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_kind: Tpl::Text;
             let mut txt = (*txt).clone();
             l_kind = fun_210(Tpl::emptyTxt.clone(), i_comment.clone())?;
             txt = Tpl::writeText(txt.clone(), l_kind.clone())?;
@@ -4262,7 +4262,7 @@ pub fn dumpStateMachineComment(mut in_txt: Tpl::Text, mut in_a_cmt: Arc<SCode::C
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cmt.clone())) {
         (txt, Deref @ SCode::Comment { comment: i_comment, .. }) => {
-            let mut l_kind__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_kind__str: Tpl::Text;
             let mut txt = (*txt).clone();
             l_kind__str = fun_212(Tpl::emptyTxt.clone(), i_comment.clone())?;
             txt = Tpl::writeText(txt.clone(), l_kind__str.clone())?;
@@ -4400,7 +4400,7 @@ pub fn dumpCommentStr(mut in_txt: Tpl::Text, mut in_a_comment: Option<ArcStr>) -
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_comment.clone()) {
         (mut txt, Some(mut i_cmt)) => {
-            let mut ret_0: ArcStr = arcstr::literal!("");
+            let mut ret_0: ArcStr;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() }))?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\"")).clone() }))?;
             ret_0 = (System::escapedString((i_cmt.clone()).clone(), false)).clone();
@@ -4455,8 +4455,8 @@ fn fun_226(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_ann__mod: Arc<SCod
             txt.clone()
         },
         (txt, _, a_ann__mod) => {
-            let mut ret_1: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
-            let mut l_ann__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_1: Arc<SCode::Mod>;
+            let mut l_ann__str: Tpl::Text;
             let mut txt = (*txt).clone();
             ret_1 = DAEDumpTypes::filterStructuralMods(a_ann__mod.clone())?;
             l_ann__str = SCodeDumpTpl::dumpModifier(Tpl::emptyTxt.clone(), ret_1.clone(), SCodeDump::defaultOptions.clone())?;
@@ -4472,7 +4472,7 @@ fn fun_227(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_ann__mod: Arc<SCod
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_ann__mod.clone())) {
         (txt, false, a_ann__mod) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = Config::showStructuralAnnotations()?;
             txt = fun_226(txt.clone(), ret_0.clone(), a_ann__mod.clone())?;
@@ -4493,7 +4493,7 @@ pub fn dumpAnnotation(mut in_txt: Tpl::Text, mut in_a_annotation: Arc<SCode::Ann
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_annotation.clone())) {
         (txt, Deref @ SCode::Annotation { modification: i_ann__mod }) => {
-            let mut ret_0: bool = false;
+            let mut ret_0: bool;
             let mut txt = (*txt).clone();
             ret_0 = Config::showAnnotations()?;
             txt = fun_227(txt.clone(), ret_0.clone(), i_ann__mod.clone())?;

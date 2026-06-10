@@ -125,9 +125,9 @@ pub fn isExpressionNotFixed(mut exp: Arc<Expression::NFExpression>, mut requireF
     let mut isNotFixed: bool = false;
     isNotFixed = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CREF { .. } if (ComponentRef::isCref(var_field!((*exp).cref, Expression::NFExpression::CREF).clone()) && !(ComponentRef::isIterator(var_field!((*exp).cref, Expression::NFExpression::CREF).clone()))) => {
-            let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
-            let mut c: Arc<Component::NFComponent> = Arc::new(Component::WILD);
-            let mut var: Variability = Variability::CONSTANT;
+            let mut node: Arc<InstNode::InstNode>;
+            let mut c: Arc<Component::NFComponent>;
+            let mut var: Variability;
             node = ComponentRef::node(var_field!((*exp).cref, Expression::NFExpression::CREF).clone())?;
             if InstNode::isComponent(node.clone())? {
                 c = InstNode::component(node.clone())?;
@@ -188,7 +188,7 @@ pub fn markExp(mut exp: Arc<Expression::NFExpression>) -> Result<()> {
     use crate::NFComponentRef::Origin;
     let () = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CREF { cref: Deref @ ComponentRef::CREF { node, origin: ComponentRef::Origin::CREF { .. }, .. }, .. } => {
-            let mut comp: Arc<Component::NFComponent> = Arc::new(Component::WILD);
+            let mut comp: Arc<Component::NFComponent>;
             if InstNode::isComponent(node.clone())? {
                 comp = InstNode::component(node.clone())?;
                 if Component::variability(comp.clone())? == Variability::PARAMETER.clone() {
@@ -199,7 +199,7 @@ pub fn markExp(mut exp: Arc<Expression::NFExpression>) -> Result<()> {
             ()
         },
         Deref @ Expression::SIZE { .. } => {
-            let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut e: Arc<Expression::NFExpression>;
             markSubscriptsInExp(var_field!((*exp).exp, Expression::NFExpression::SIZE).clone())?;
             if isSome(var_field!((*exp).dimIndex, Expression::NFExpression::SIZE).clone()) {
                 let __pa0 = ::match_deref::match_deref! { match &(var_field!((*exp).dimIndex, Expression::NFExpression::SIZE).clone()) {

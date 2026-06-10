@@ -118,7 +118,7 @@ pub fn initialGraph(mut inCache: FCore::Cache) -> Result<(FCore::Cache, FCore::G
         })() { graph = __wb0; break 'mc __v; }
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let mut cache = __mc_input.clone() else { bail!("nomatch") };
-            let mut initialProgram: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
+            let mut initialProgram: Arc<metamodelica::List<Arc<SCode::Element>>>;
             let mut graph: FCore::Graph = graph.clone();
             graph = FGraph::new((literal!("graph")).clone(), FCore::dummyTopModel.clone())?;
             graph = FGraphBuildEnv::mkProgramGraph(FBuiltin::getBasicTypes()?, openmodelica_frontend_dump::FCore::Kind::BASIC_TYPE, graph.clone())?;
@@ -152,16 +152,16 @@ fn getSetInitialGraph(mut inEnvOpt: Option<FCore::Graph>) -> Result<FCore::Graph
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let None = __mc_input.clone() else { bail!("nomatch") };
-            let mut assocLst: Arc<metamodelica::List<(i32, FCore::Graph)>> = metamodelica::nil();
-            let mut graph: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
+            let mut assocLst: Arc<metamodelica::List<(i32, FCore::Graph)>>;
+            let mut graph: FCore::Graph;
             assocLst = crate::Globals::builtinGraphIndex.with(|__root| __root.borrow().clone());
             graph = FGraph::clone(Util::assoc(Flags::getConfigEnum(Flags::GRAMMAR.clone())?, assocLst.clone())?)?;
             Ok(graph.clone())
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let Some(mut graph) = __mc_input.clone() else { bail!("nomatch") };
-            let mut assocLst: Arc<metamodelica::List<(i32, FCore::Graph)>> = metamodelica::nil();
-            let mut f: i32 = 0;
+            let mut assocLst: Arc<metamodelica::List<(i32, FCore::Graph)>>;
+            let mut f: i32;
             assocLst = crate::Globals::builtinGraphIndex.with(|__root| __root.borrow().clone());
             f = Flags::getConfigEnum(Flags::GRAMMAR.clone())?;
             assocLst = if (f.clone() == Flags::METAMODELICA.clone()) {metamodelica::cons((Flags::METAMODELICA.clone(), graph.clone()), assocLst.clone())} else {if (f.clone() == Flags::PARMODELICA.clone()) {metamodelica::cons((Flags::PARMODELICA.clone(), graph.clone()), assocLst.clone())} else {if (f.clone() == Flags::MODELICA.clone()) {metamodelica::cons((Flags::MODELICA.clone(), graph.clone()), assocLst.clone())} else {assocLst.clone()}}};

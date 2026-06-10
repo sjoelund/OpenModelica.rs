@@ -269,7 +269,7 @@ fn statementInputsOutputs(mut statement: Arc<Statement::NFStatement>, mut inputs
             ()
         },
         Deref @ Statement::IF { branches, .. } => {
-            let mut stmts: Arc<metamodelica::List<Arc<Statement::NFStatement>>> = metamodelica::nil();
+            let mut stmts: Arc<metamodelica::List<Arc<Statement::NFStatement>>>;
             for mut branch in &*branches.clone() {
                 let mut branch = branch.clone();
                 (_, stmts) = branch.clone();
@@ -281,7 +281,7 @@ fn statementInputsOutputs(mut statement: Arc<Statement::NFStatement>, mut inputs
             ()
         },
         Deref @ Statement::WHEN { branches, .. } => {
-            let mut stmts: Arc<metamodelica::List<Arc<Statement::NFStatement>>> = metamodelica::nil();
+            let mut stmts: Arc<metamodelica::List<Arc<Statement::NFStatement>>>;
             for mut branch in &*branches.clone() {
                 let mut branch = branch.clone();
                 (_, stmts) = branch.clone();

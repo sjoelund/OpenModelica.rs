@@ -23,10 +23,10 @@ pub fn markdownFile(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_simCode.clone()) {
         (mut txt, ref i_simCode @ SimCode::SimCode { fileNamePrefix: ref i_fileNamePrefix, .. }) => {
-            let mut txt_3: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_3: Tpl::Text;
+            let mut txt_2: Tpl::Text;
+            let mut txt_1: Tpl::Text;
+            let mut txt_0: Tpl::Text;
             txt_0 = markdownContents(Tpl::emptyTxt.clone(), i_simCode.clone())?;
             txt_1 = Tpl::writeStr(Tpl::emptyTxt.clone(), (i_fileNamePrefix.clone()).clone())?;
             txt_1 = Tpl::writeTok(txt_1.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".md")).clone() }))?;
@@ -76,8 +76,8 @@ pub fn markdownContents(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCod
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_simCode.clone()) {
         (mut txt, SimCode::SimCode { modelInfo: SimCode::ModelInfo { functions: _, varInfo: SimCode::VarInfo { numZeroCrossings: _, .. }, vars: SimCodeVar::SimVars { stateVars: _, .. }, name: ref i_modelInfo_name, .. }, simulationSettingsOpt: Some(SimCode::SimulationSettings { stopTime: mut i_s_stopTime, numberOfIntervals: mut i_s_numberOfIntervals, tolerance: mut i_s_tolerance, .. }), makefileParams: SimCodeFunction::MakefileParams { ccompiler: _, .. }, fileNamePrefix: mut i_fileNamePrefix, .. }) => {
-            let mut ret_1: ArcStr = arcstr::literal!("");
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_1: ArcStr;
+            let mut txt_0: Tpl::Text;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("# OpenModelica simulation example\n")).clone(), (literal!("## ")).clone()], lastHasNewLine: false }))?;
             txt_0 = CodegenUtil::dotPath(Tpl::emptyTxt.clone(), i_modelInfo_name.clone())?;
             ret_1 = (Util::escapeModelicaStringToXmlString((Tpl::textString(txt_0.clone())?).clone())?).clone();

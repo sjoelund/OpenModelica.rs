@@ -137,8 +137,8 @@ fn simplifyWithOptions(mut inExp: Arc<DAE::Exp>, mut options: ExpressionSimplify
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e, ExpressionSimplifyTypes::Evaluate::DO_EVAL { .. }) => {
-                    let mut eNew: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut b: bool = false;
+                    let mut eNew: Arc<DAE::Exp>;
+                    let mut b: bool;
                     (eNew, _) = simplify1WithOptions(e.clone(), options.clone())?;
                     Error::assertionOrAddSourceMessage(Expression::isConstValue(eNew.clone())?, Error::INTERNAL_ERROR.clone(), list![(literal!("eval exp failed")).clone()], Absyn::dummyInfo.clone())?;
                     b = !(ExpressionBasics::expEqual(e.clone(), eNew.clone())?);
@@ -150,8 +150,8 @@ fn simplifyWithOptions(mut inExp: Arc<DAE::Exp>, mut options: ExpressionSimplify
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e, _) => {
-                    let mut eNew: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut b: bool = false;
+                    let mut eNew: Arc<DAE::Exp>;
+                    let mut b: bool;
                     let false = (Config::getNoSimplify()?) else { bail!("pattern mismatch") };
                     (eNew, _) = simplify1WithOptions(e.clone(), options.clone())?;
                     eNew = simplify2(eNew.clone(), true, true)?;
@@ -165,8 +165,8 @@ fn simplifyWithOptions(mut inExp: Arc<DAE::Exp>, mut options: ExpressionSimplify
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e, _) => {
-                    let mut eNew: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut b: bool = false;
+                    let mut eNew: Arc<DAE::Exp>;
+                    let mut b: bool;
                     (eNew, b) = simplify1WithOptions(e.clone(), options.clone())?;
                     Ok((eNew.clone(), b.clone()))
                 }
@@ -218,7 +218,7 @@ pub fn simplifyWork(mut inExp: Arc<DAE::Exp>, mut options: ExpressionSimplifyTyp
             (e.clone(), options.clone())
         },
         Deref @ DAE::Exp::ASUB { exp: e, sub: subs } => {
-            let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
+            let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>>;
             let mut e = (*e).clone();
             expl = ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
@@ -235,43 +235,43 @@ pub fn simplifyWork(mut inExp: Arc<DAE::Exp>, mut options: ExpressionSimplifyTyp
             (simplifyTSub(inExp.clone())?, options.clone())
         },
         Deref @ DAE::Exp::UNARY { operator: op, exp: e1 } => {
-            let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e: Arc<DAE::Exp>;
             e = simplifyUnary(inExp.clone(), op.clone(), e1.clone());
             (e.clone(), options.clone())
         },
         Deref @ DAE::Exp::BINARY { exp1: e1, operator: op, exp2: e2 } => {
-            let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e: Arc<DAE::Exp>;
             e = simplifyBinary(inExp.clone(), op.clone(), e1.clone(), e2.clone())?;
             (e.clone(), options.clone())
         },
         Deref @ DAE::Exp::RELATION { exp1: e1, operator: op, exp2: e2, index: index_, optionExpisASUB: isExpisASUB } => {
-            let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e: Arc<DAE::Exp>;
             e = simplifyRelation(inExp.clone(), op.clone(), e1.clone(), e2.clone(), index_.clone(), isExpisASUB.clone());
             (e.clone(), options.clone())
         },
         Deref @ DAE::Exp::LUNARY { operator: op, exp: e1 } => {
-            let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e: Arc<DAE::Exp>;
             e = simplifyUnary(inExp.clone(), op.clone(), e1.clone());
             (e.clone(), options.clone())
         },
         Deref @ DAE::Exp::LBINARY { exp1: e1, operator: op, exp2: e2 } => {
-            let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e: Arc<DAE::Exp>;
             e = simplifyLBinary(inExp.clone(), op.clone(), e1.clone(), e2.clone())?;
             (e.clone(), options.clone())
         },
         Deref @ DAE::Exp::IFEXP { expCond: e1, expThen: e2, expElse: e3 } => {
-            let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e: Arc<DAE::Exp>;
             e = simplifyIfExp(inExp.clone(), e1.clone(), e2.clone(), e3.clone())?;
             (e.clone(), options.clone())
         },
         Deref @ DAE::Exp::CREF { componentRef: c_1, ty: t } => {
-            let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e: Arc<DAE::Exp>;
             e = simplifyCref(inExp.clone(), c_1.clone(), t.clone());
             (e.clone(), options.clone())
         },
         Deref @ DAE::Exp::REDUCTION { reductionInfo, expr: e1, iterators: riters } => {
-            let mut exp1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut b2: bool = false;
+            let mut exp1: Arc<DAE::Exp>;
+            let mut b2: bool;
             let mut riters = (*riters).clone();
             (riters, b2) = simplifyReductionIterators(riters.clone(), metamodelica::nil(), false)?;
             exp1 = if (b2.clone()) {Arc::new(DAE::Exp::REDUCTION { reductionInfo: reductionInfo.clone(), expr: e1.clone(), iterators: riters.clone() })} else {inExp.clone()};
@@ -397,8 +397,8 @@ fn simplifyAsubExp(mut origExp: Arc<DAE::Exp>, mut inExp: Arc<DAE::Exp>, mut inS
                     let mut istep: i32 = 0;
                     let mut istop: i32 = 0;
                     let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut subs: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut hasRange: bool = false;
+                    let mut subs: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+                    let mut hasRange: bool;
                     let mut step: Option<Arc<DAE::Exp>> = None;
                     hasRange = false;
                     subs = ({
@@ -487,7 +487,7 @@ fn simplifyCall(mut inExp: Arc<DAE::Exp>) -> Arc<DAE::Exp> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "noEvent" }, expLst: Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Nil }, .. } => {
-                    let mut b2: bool = false;
+                    let mut b2: bool;
                     b2 = Expression::isRelation(e.clone()) || Expression::isEventTriggeringFunctionExp(e.clone());
                     Ok(if (!(b2.clone())) {simplifyNoEvent(e.clone())?} else {inExp.clone()})
                 }
@@ -545,7 +545,7 @@ fn simplifyCall(mut inExp: Arc<DAE::Exp>) -> Arc<DAE::Exp> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "pre" }, expLst: Deref @ metamodelica::List::Cons { head: e @ Deref @ DAE::Exp::ASUB { exp, .. }, tail: Deref @ metamodelica::List::Nil }, .. } => {
-                    let mut b2: bool = false;
+                    let mut b2: bool;
                     b2 = Expression::isConst(exp.clone())?;
                     Ok(if (b2.clone()) {e.clone()} else {inExp.clone()})
                 }
@@ -555,7 +555,7 @@ fn simplifyCall(mut inExp: Arc<DAE::Exp>) -> Arc<DAE::Exp> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "previous" }, expLst: Deref @ metamodelica::List::Cons { head: e @ Deref @ DAE::Exp::ASUB { exp, .. }, tail: Deref @ metamodelica::List::Nil }, .. } => {
-                    let mut b2: bool = false;
+                    let mut b2: bool;
                     b2 = Expression::isConst(exp.clone())?;
                     Ok(if (b2.clone()) {e.clone()} else {inExp.clone()})
                 }
@@ -565,7 +565,7 @@ fn simplifyCall(mut inExp: Arc<DAE::Exp>) -> Arc<DAE::Exp> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "change" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::ASUB { exp, .. }, tail: Deref @ metamodelica::List::Nil }, .. } => {
-                    let mut b2: bool = false;
+                    let mut b2: bool;
                     b2 = Expression::isConst(exp.clone())?;
                     Ok(if (b2.clone()) {Arc::new(DAE::Exp::BCONST { bool: false })} else {inExp.clone()})
                 }
@@ -575,7 +575,7 @@ fn simplifyCall(mut inExp: Arc<DAE::Exp>) -> Arc<DAE::Exp> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "edge" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::ASUB { exp, .. }, tail: Deref @ metamodelica::List::Nil }, .. } => {
-                    let mut b2: bool = false;
+                    let mut b2: bool;
                     b2 = Expression::isConst(exp.clone())?;
                     Ok(if (b2.clone()) {Arc::new(DAE::Exp::BCONST { bool: false })} else {inExp.clone()})
                 }
@@ -642,7 +642,7 @@ fn simplifyCall(mut inExp: Arc<DAE::Exp>) -> Arc<DAE::Exp> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "identity" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::ICONST { integer: n }, tail: Deref @ metamodelica::List::Nil }, .. } => {
-                    let mut matrix: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
+                    let mut matrix: Arc<metamodelica::List<Arc<DAE::Exp>>>;
                     matrix = ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
         for mut j in (1..=n.clone()).into_iter() {
@@ -666,9 +666,9 @@ fn simplifyCall(mut inExp: Arc<DAE::Exp>) -> Arc<DAE::Exp> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "diagonal" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::ARRAY { array: expl, ty: tp, .. }, tail: Deref @ metamodelica::List::Nil }, .. } => {
-                    let mut zero: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut matrix: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut n: i32 = 0;
+                    let mut zero: Arc<DAE::Exp>;
+                    let mut matrix: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+                    let mut n: i32;
                     let mut tp = (*tp).clone();
                     n = (expl.clone().len() as i32);
                     tp = Types::arrayElementType(tp.clone());
@@ -764,7 +764,7 @@ fn simplifyCall(mut inExp: Arc<DAE::Exp>) -> Arc<DAE::Exp> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "atan2" }, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Cons { head: e2, tail: Deref @ metamodelica::List::Nil } }, .. } => {
                     if !((Expression::isZero(e2.clone())?)) { bail!("guard") }
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e: Arc<DAE::Exp>;
                     e = Expression::makePureBuiltinCall((literal!("sign")).clone(), list![e1.clone()], DAE::T_REAL_DEFAULT().clone());
                     Ok(Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(1.570796326794896619231321691639751442_f64) }), operator: DAE::Operator::MUL { ty: DAE::T_REAL_DEFAULT().clone() }, exp2: e.clone() }))
                 }
@@ -791,7 +791,7 @@ fn simplifyCall(mut inExp: Arc<DAE::Exp>) -> Arc<DAE::Exp> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "abs" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::UNARY { operator: DAE::Operator::UMINUS { ty: tp }, exp: e1 }, tail: Deref @ metamodelica::List::Nil }, .. } => {
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e: Arc<DAE::Exp>;
                     e = Expression::makePureBuiltinCall((literal!("abs")).clone(), list![e1.clone()], tp.clone());
                     Ok(e.clone())
                 }
@@ -933,15 +933,15 @@ fn checkSimplify(mut check: bool, mut before: Arc<DAE::Exp>, mut after: Arc<DAE:
             ()
         },
         true => {
-            let mut c1: i32 = 0;
-            let mut c2: i32 = 0;
-            let mut b: bool = false;
-            let mut s1: ArcStr = arcstr::literal!("");
-            let mut s2: ArcStr = arcstr::literal!("");
-            let mut s3: ArcStr = arcstr::literal!("");
-            let mut s4: ArcStr = arcstr::literal!("");
-            let mut ty1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let mut ty2: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+            let mut c1: i32;
+            let mut c2: i32;
+            let mut b: bool;
+            let mut s1: ArcStr;
+            let mut s2: ArcStr;
+            let mut s3: ArcStr;
+            let mut s4: ArcStr;
+            let mut ty1: Arc<DAE::Type>;
+            let mut ty2: Arc<DAE::Type>;
             ty1 = Expression::r#typeof(before.clone())?;
             ty2 = Expression::r#typeof(after.clone())?;
             b = ty1.clone() == ty2.clone();
@@ -977,8 +977,8 @@ fn simplify1FixP(mut inExp: Arc<DAE::Exp>, mut inOptions: ExpressionSimplifyType
             return Ok((exp.clone(), hasChanged.clone()))
         },
         (exp, options, 0, _) => {
-            let mut str1: ArcStr = arcstr::literal!("");
-            let mut str2: ArcStr = arcstr::literal!("");
+            let mut str1: ArcStr;
+            let mut str2: ArcStr;
             let mut exp = (*exp).clone();
             str1 = (ExpressionBasics::printExpStr(exp.clone())?).clone();
             (exp, _) = Expression::traverseExpBottomUp(exp.clone(), (std::sync::Arc::new(simplifyWork) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ExpressionSimplifyTypes::Evaluate) -> Result<(Arc<DAE::Exp>, ExpressionSimplifyTypes::Evaluate)> + 'static>), options.clone())?;
@@ -987,8 +987,8 @@ fn simplify1FixP(mut inExp: Arc<DAE::Exp>, mut inOptions: ExpressionSimplifyType
             return Ok((exp.clone(), hasChanged.clone()))
         },
         (exp, options, _, true) => {
-            let mut expAfterSimplify: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut b: bool = false;
+            let mut expAfterSimplify: Arc<DAE::Exp>;
+            let mut b: bool;
             let mut options = (*options).clone();
             ErrorExt::setCheckpoint((literal!("ExpressionSimplify")).clone());
             (expAfterSimplify, options) = Expression::traverseExpBottomUp(exp.clone(), (std::sync::Arc::new(simplifyWork) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ExpressionSimplifyTypes::Evaluate) -> Result<(Arc<DAE::Exp>, ExpressionSimplifyTypes::Evaluate)> + 'static>), options.clone())?;
@@ -1012,7 +1012,7 @@ fn simplifyReductionIterators(mut inIters: Arc<metamodelica::List<Arc<DAE::Reduc
             return Ok((acc.clone().reverse(), change.clone()))
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::ReductionIterator { id, exp, guardExp: Some(Deref @ DAE::Exp::BCONST { bool: true }), ty }, tail: iters }, acc, _) => {
-            let mut change: bool = false;
+            let mut change: bool;
             let mut iters = (*iters).clone();
             { (inIters, inAcc, inChange) = (iters.clone(), metamodelica::cons(Arc::new(DAE::ReductionIterator { id: (id.clone()).clone(), exp: exp.clone(), guardExp: None, ty: ty.clone() }), acc.clone()), true); continue '__tco; }
         },
@@ -1064,7 +1064,7 @@ fn simplifyMetaModelicaCalls(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
     let mut outExp: Arc<DAE::Exp>;
     outExp = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "listAppend" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::LIST { valList: el }, tail: Deref @ metamodelica::List::Cons { head: e2, tail: Deref @ metamodelica::List::Nil } }, .. } => {
-            let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e: Arc<DAE::Exp>;
             e = List::fold(el.clone().reverse(), (std::sync::Arc::new(fnptr!(Expression::makeCons, Arc<DAE::Exp>, Arc<DAE::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> + 'static>), e2.clone())?;
             e.clone()
         },
@@ -1072,22 +1072,22 @@ fn simplifyMetaModelicaCalls(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
             e1.clone()
         },
         Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "intString" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::ICONST { integer: i }, tail: Deref @ metamodelica::List::Nil }, .. } => {
-            let mut s: ArcStr = arcstr::literal!("");
+            let mut s: ArcStr;
             s = (intString(i.clone())).clone();
             Arc::new(DAE::Exp::SCONST { string: (s.clone()).clone() })
         },
         Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "realString" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::RCONST { real: r }, tail: Deref @ metamodelica::List::Nil }, .. } => {
-            let mut s: ArcStr = arcstr::literal!("");
+            let mut s: ArcStr;
             s = (realString(r.clone())).clone();
             Arc::new(DAE::Exp::SCONST { string: (s.clone()).clone() })
         },
         Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "boolString" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::BCONST { bool: b }, tail: Deref @ metamodelica::List::Nil }, .. } => {
-            let mut s: ArcStr = arcstr::literal!("");
+            let mut s: ArcStr;
             s = (boolString(b.clone())).clone();
             Arc::new(DAE::Exp::SCONST { string: (s.clone()).clone() })
         },
         Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "listReverse" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::LIST { valList: el }, tail: Deref @ metamodelica::List::Nil }, .. } => {
-            let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e1_1: Arc<DAE::Exp>;
             let mut el = (*el).clone();
             el = el.clone().reverse();
             e1_1 = Arc::new(DAE::Exp::LIST { valList: el.clone() });
@@ -1104,7 +1104,7 @@ fn simplifyMetaModelicaCalls(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
             e1.clone()
         },
         Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "listLength" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::LIST { valList: el }, tail: Deref @ metamodelica::List::Nil }, .. } => {
-            let mut i: i32 = 0;
+            let mut i: i32;
             i = (el.clone().len() as i32);
             Arc::new(DAE::Exp::ICONST { integer: i.clone() })
         },
@@ -1158,8 +1158,8 @@ fn simplifyMatch(mut exp: Arc<DAE::Exp>) -> Arc<DAE::Exp> {
             e.clone()
         },
         Deref @ DAE::Exp::MATCHEXPRESSION { inputs: Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Nil }, et: ty, localDecls: Deref @ metamodelica::List::Nil, cases: Deref @ metamodelica::List::Cons { head: Deref @ DAE::MatchCase { patterns: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Pattern::PAT_CONSTANT { exp: Deref @ DAE::Exp::BCONST { bool: b1 }, .. }, tail: Deref @ metamodelica::List::Nil }, localDecls: Deref @ metamodelica::List::Nil, body: Deref @ metamodelica::List::Nil, result: Some(e1), .. }, tail: Deref @ metamodelica::List::Cons { head: Deref @ DAE::MatchCase { patterns: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Pattern::PAT_CONSTANT { exp: Deref @ DAE::Exp::BCONST { bool: b2 }, .. }, tail: Deref @ metamodelica::List::Nil }, localDecls: Deref @ metamodelica::List::Nil, body: Deref @ metamodelica::List::Nil, result: Some(e2), .. }, tail: Deref @ metamodelica::List::Nil } }, .. } if (!(boolEq(b1.clone(), b2.clone())) && !(Types::isTuple(ty.clone()))) => {
-            let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut e2_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e1_1: Arc<DAE::Exp>;
+            let mut e2_1: Arc<DAE::Exp>;
             let mut e = (*e).clone();
             e1_1 = if (b1.clone()) {e1.clone()} else {e2.clone()};
             e2_1 = if (b1.clone()) {e2.clone()} else {e1.clone()};
@@ -1167,8 +1167,8 @@ fn simplifyMatch(mut exp: Arc<DAE::Exp>) -> Arc<DAE::Exp> {
             e.clone()
         },
         Deref @ DAE::Exp::MATCHEXPRESSION { matchType: DAE::MatchType::MATCH { .. }, et: ty, inputs: Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Nil }, localDecls: Deref @ metamodelica::List::Nil, cases: Deref @ metamodelica::List::Cons { head: Deref @ DAE::MatchCase { patterns: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Pattern::PAT_CONSTANT { exp: Deref @ DAE::Exp::BCONST { bool: b1 }, .. }, tail: Deref @ metamodelica::List::Nil }, localDecls: Deref @ metamodelica::List::Nil, body: Deref @ metamodelica::List::Nil, result: Some(e1), .. }, tail: Deref @ metamodelica::List::Cons { head: Deref @ DAE::MatchCase { patterns: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Pattern::PAT_WILD { .. }, tail: Deref @ metamodelica::List::Nil }, localDecls: Deref @ metamodelica::List::Nil, body: Deref @ metamodelica::List::Nil, result: Some(e2), .. }, tail: Deref @ metamodelica::List::Nil } }, .. } if (!(Types::isTuple(ty.clone()))) => {
-            let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut e2_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e1_1: Arc<DAE::Exp>;
+            let mut e2_1: Arc<DAE::Exp>;
             let mut e = (*e).clone();
             e1_1 = if (b1.clone()) {e1.clone()} else {e2.clone()};
             e2_1 = if (b1.clone()) {e2.clone()} else {e1.clone()};
@@ -1190,7 +1190,7 @@ fn simplifyCast(mut origExp: Arc<DAE::Exp>, mut exp: Arc<DAE::Exp>, mut tp: Type
             Arc::new(DAE::Exp::RCONST { real: r.clone() })
         },
         (Deref @ DAE::Exp::ICONST { integer: i }, Deref @ DAE::Type::T_REAL { .. }) => {
-            let mut r: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+            let mut r: metamodelica::Real;
             r = intReal(i.clone());
             Arc::new(DAE::Exp::RCONST { real: r.clone() })
         },
@@ -1205,8 +1205,8 @@ fn simplifyCast(mut origExp: Arc<DAE::Exp>, mut exp: Arc<DAE::Exp>, mut tp: Type
             Arc::new(DAE::Exp::UNARY { operator: DAE::Operator::UMINUS { ty: tp.clone() }, exp: e.clone() })
         },
         (Deref @ DAE::Exp::ARRAY { ty: _, scalar: b, array: exps }, _) => {
-            let mut exps_1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-            let mut tp_1: Type = Arc::new(DAE::Type::T_NORETCALL);
+            let mut exps_1: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+            let mut tp_1: Type;
             tp_1 = Expression::unliftArray(tp.clone())?;
             exps_1 = List::map1(exps.clone(), (std::sync::Arc::new(fnptr!(addCast, Arc<DAE::Exp>, Arc<DAE::Type>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Type>) -> Result<Arc<DAE::Exp>> + 'static>), tp_1.clone())?;
             Arc::new(DAE::Exp::ARRAY { ty: tp.clone(), scalar: b.clone(), array: exps_1.clone() })
@@ -1221,16 +1221,16 @@ fn simplifyCast(mut origExp: Arc<DAE::Exp>, mut exp: Arc<DAE::Exp>, mut tp: Type
             Arc::new(DAE::Exp::RANGE { ty: tp.clone(), start: e1.clone(), step: eo.clone(), stop: e2.clone() })
         },
         (Deref @ DAE::Exp::IFEXP { expCond: cond, expThen: e1, expElse: e2 }, _) => {
-            let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut e2_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e1_1: Arc<DAE::Exp>;
+            let mut e2_1: Arc<DAE::Exp>;
             e1_1 = Arc::new(DAE::Exp::CAST { ty: tp.clone(), exp: e1.clone() });
             e2_1 = Arc::new(DAE::Exp::CAST { ty: tp.clone(), exp: e2.clone() });
             Arc::new(DAE::Exp::IFEXP { expCond: cond.clone(), expThen: e1_1.clone(), expElse: e2_1.clone() })
         },
         (Deref @ DAE::Exp::MATRIX { ty: _, integer: n, matrix: mexps }, _) => {
-            let mut tp1: Type = Arc::new(DAE::Type::T_NORETCALL);
-            let mut tp2: Type = Arc::new(DAE::Type::T_NORETCALL);
-            let mut mexps_1: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>> = metamodelica::nil();
+            let mut tp1: Type;
+            let mut tp2: Type;
+            let mut mexps_1: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>>;
             tp1 = Expression::unliftArray(tp.clone())?;
             tp2 = Expression::unliftArray(tp1.clone())?;
             mexps_1 = List::map1List(mexps.clone(), (std::sync::Arc::new(fnptr!(addCast, Arc<DAE::Exp>, Arc<DAE::Type>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Type>) -> Result<Arc<DAE::Exp>> + 'static>), tp2.clone())?;
@@ -1243,7 +1243,7 @@ fn simplifyCast(mut origExp: Arc<DAE::Exp>, mut exp: Arc<DAE::Exp>, mut tp: Type
             Arc::new(DAE::Exp::RECORD { path: p3.clone(), exps: exps.clone(), comp: fieldNames.clone(), ty: tp.clone() })
         },
         (Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "fill" }, expLst: Deref @ metamodelica::List::Cons { head: e, tail: exps }, .. }, _) => {
-            let mut tp_1: Type = Arc::new(DAE::Type::T_NORETCALL);
+            let mut tp_1: Type;
             let mut e = (*e).clone();
             tp_1 = List::fold(exps.clone(), (std::sync::Arc::new(Expression::unliftArrayIgnoreFirst) as std::sync::Arc<dyn ::std::ops::Fn(_, Arc<DAE::Type>) -> Result<Arc<DAE::Type>> + 'static>), tp.clone())?;
             e = Arc::new(DAE::Exp::CAST { ty: tp_1.clone(), exp: e.clone() });
@@ -1256,8 +1256,8 @@ fn simplifyCast(mut origExp: Arc<DAE::Exp>, mut exp: Arc<DAE::Exp>, mut tp: Type
             Expression::makePureBuiltinCall((literal!("cat")).clone(), metamodelica::cons(e.clone(), exps.clone()), tp.clone())
         },
         (e, _) => {
-            let mut t1: Type = Arc::new(DAE::Type::T_NORETCALL);
-            let mut t2: Type = Arc::new(DAE::Type::T_NORETCALL);
+            let mut t1: Type;
+            let mut t2: Type;
             t1 = Expression::arrayEltType(tp.clone());
             t2 = Expression::arrayEltType(Expression::r#typeof(e.clone())?);
             if (t1.clone() == t2.clone()) {e.clone()} else {origExp.clone()}
@@ -1321,10 +1321,10 @@ pub fn elabBuiltinFill2(mut inCache: FCore::Cache, mut inExp: Arc<DAE::Exp>, mut
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, s, sty, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { integer: v }, tail: Deref @ metamodelica::List::Nil }, c1) => {
-                    let mut arraylist: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut at: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut is_scalar: bool = false;
-                    let mut sty2: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+                    let mut arraylist: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+                    let mut at: Arc<DAE::Type>;
+                    let mut is_scalar: bool;
+                    let mut sty2: Arc<DAE::Type>;
                     let mut v = (*v).clone();
                     let true = (intLt(v.clone(), 0)) else { bail!("pattern mismatch") };
                     v = 0;
@@ -1340,10 +1340,10 @@ pub fn elabBuiltinFill2(mut inCache: FCore::Cache, mut inExp: Arc<DAE::Exp>, mut
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, s, sty, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { integer: v }, tail: Deref @ metamodelica::List::Nil }, c1) => {
-                    let mut arraylist: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut at: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut is_scalar: bool = false;
-                    let mut sty2: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+                    let mut arraylist: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+                    let mut at: Arc<DAE::Type>;
+                    let mut is_scalar: bool;
+                    let mut sty2: Arc<DAE::Type>;
                     arraylist = List::fill(s.clone(), v.clone());
                     sty2 = Arc::new(DAE::Type::T_ARRAY { ty: sty.clone(), dims: list![Arc::new(DAE::Dimension::DIM_INTEGER { integer: v.clone() })] });
                     at = Types::simplifyType(sty2.clone())?;
@@ -1356,11 +1356,11 @@ pub fn elabBuiltinFill2(mut inCache: FCore::Cache, mut inExp: Arc<DAE::Exp>, mut
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, s, sty, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { integer: v }, tail: rest }, c1) => {
-                    let mut arraylist: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut at: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut sty2: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+                    let mut arraylist: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+                    let mut at: Arc<DAE::Type>;
+                    let mut exp: Arc<DAE::Exp>;
+                    let mut ty: Arc<DAE::Type>;
+                    let mut sty2: Arc<DAE::Type>;
                     let mut cache = (*cache).clone();
                     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(elabBuiltinFill2(cache.clone(), s.clone(), sty.clone(), rest.clone(), c1.clone(), inDims.clone(), inInfo.clone())?) {
                         (__pa0, __pa1, DAE::Properties::PROP { type_: __pa2, constFlag: _ }) => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
@@ -1380,7 +1380,7 @@ pub fn elabBuiltinFill2(mut inCache: FCore::Cache, mut inExp: Arc<DAE::Exp>, mut
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    let mut r#str: ArcStr = arcstr::literal!("");
+                    let mut r#str: ArcStr;
                     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("ExpressionSimplify.elabBuiltinFill2 failed for expression: fill(")); __mm_s.push_str(&*Dump::printExpLstStr(inDims.clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
                     Error::addSourceMessage(Error::INTERNAL_ERROR.clone(), list![(r#str.clone()).clone()], inInfo.clone())?;
                     Ok(bail!("fail"))
@@ -1401,8 +1401,8 @@ fn simplifyBuiltinCalls(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name }, expLst: Deref @ metamodelica::List::Cons { head: e @ Deref @ DAE::Exp::ARRAY { .. }, tail: Deref @ metamodelica::List::Nil }, attr: Deref @ DAE::CallAttributes { ty: tp, .. } } => {
                     if !((name.clone() == literal!("max") || name.clone() == literal!("min"))) { bail!("guard") }
-                    let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+                    let mut e1: Arc<DAE::Exp>;
                     expl = Expression::flattenArrayExpToList(e.clone());
                     e1 = Expression::makeScalarArray(expl.clone(), tp.clone());
                     let false = (ExpressionBasics::expEqual(e.clone(), e1.clone())?) else { bail!("pattern mismatch") };
@@ -1437,9 +1437,9 @@ fn simplifyBuiltinCalls(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "max" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::ARRAY { array: es, .. }, tail: Deref @ metamodelica::List::Nil }, attr: Deref @ DAE::CallAttributes { ty: tp, .. } } => {
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut i1: i32 = 0;
-                    let mut i2: i32 = 0;
+                    let mut e: Arc<DAE::Exp>;
+                    let mut i1: i32;
+                    let mut i2: i32;
                     let mut es = (*es).clone();
                     i1 = (es.clone().len() as i32);
                     es = List::union(es.clone(), metamodelica::nil());
@@ -1466,9 +1466,9 @@ fn simplifyBuiltinCalls(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "min" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::ARRAY { array: es, .. }, tail: Deref @ metamodelica::List::Nil }, attr: Deref @ DAE::CallAttributes { ty: tp, .. } } => {
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut i1: i32 = 0;
-                    let mut i2: i32 = 0;
+                    let mut e: Arc<DAE::Exp>;
+                    let mut i1: i32;
+                    let mut i2: i32;
                     let mut es = (*es).clone();
                     i1 = (es.clone().len() as i32);
                     es = List::union(es.clone(), metamodelica::nil());
@@ -1495,7 +1495,7 @@ fn simplifyBuiltinCalls(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "min" }, attr: Deref @ DAE::CallAttributes { ty: tp, .. }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::ARRAY { array: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Cons { head: e2, tail: Deref @ metamodelica::List::Nil } }, .. }, tail: Deref @ metamodelica::List::Nil } } => {
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e: Arc<DAE::Exp>;
                     e = Expression::makePureBuiltinCall((literal!("min")).clone(), list![e1.clone(), e2.clone()], tp.clone());
                     Ok(e.clone())
                 }
@@ -1505,7 +1505,7 @@ fn simplifyBuiltinCalls(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "max" }, attr: Deref @ DAE::CallAttributes { ty: tp, .. }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::ARRAY { array: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Cons { head: e2, tail: Deref @ metamodelica::List::Nil } }, .. }, tail: Deref @ metamodelica::List::Nil } } => {
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e: Arc<DAE::Exp>;
                     e = Expression::makePureBuiltinCall((literal!("max")).clone(), list![e1.clone(), e2.clone()], tp.clone());
                     Ok(e.clone())
                 }
@@ -1515,7 +1515,7 @@ fn simplifyBuiltinCalls(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "min" }, attr: Deref @ DAE::CallAttributes { ty: Deref @ DAE::Type::T_BOOL { .. }, .. }, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Cons { head: e2, tail: Deref @ metamodelica::List::Nil } } } => {
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e: Arc<DAE::Exp>;
                     e = Arc::new(DAE::Exp::LBINARY { exp1: e1.clone(), operator: DAE::Operator::AND { ty: DAE::T_BOOL_DEFAULT().clone() }, exp2: e2.clone() });
                     Ok(e.clone())
                 }
@@ -1525,7 +1525,7 @@ fn simplifyBuiltinCalls(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "max" }, attr: Deref @ DAE::CallAttributes { ty: Deref @ DAE::Type::T_BOOL { .. }, .. }, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Cons { head: e2, tail: Deref @ metamodelica::List::Nil } } } => {
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e: Arc<DAE::Exp>;
                     e = Arc::new(DAE::Exp::LBINARY { exp1: e1.clone(), operator: DAE::Operator::OR { ty: DAE::T_BOOL_DEFAULT().clone() }, exp2: e2.clone() });
                     Ok(e.clone())
                 }
@@ -1535,7 +1535,7 @@ fn simplifyBuiltinCalls(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "min" }, attr: Deref @ DAE::CallAttributes { ty: Deref @ DAE::Type::T_BOOL { .. }, .. }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::ARRAY { array: expl, .. }, tail: Deref @ metamodelica::List::Nil } } => {
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e: Arc<DAE::Exp>;
                     e = Expression::makeLBinary(expl.clone(), DAE::Operator::AND { ty: DAE::T_BOOL_DEFAULT().clone() })?;
                     Ok(e.clone())
                 }
@@ -1545,7 +1545,7 @@ fn simplifyBuiltinCalls(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "max" }, attr: Deref @ DAE::CallAttributes { ty: Deref @ DAE::Type::T_BOOL { .. }, .. }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::ARRAY { array: expl, .. }, tail: Deref @ metamodelica::List::Nil } } => {
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e: Arc<DAE::Exp>;
                     e = Expression::makeLBinary(expl.clone(), DAE::Operator::OR { ty: DAE::T_BOOL_DEFAULT().clone() })?;
                     Ok(e.clone())
                 }
@@ -1555,8 +1555,8 @@ fn simplifyBuiltinCalls(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::ARRAY { array: expl @ Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: _, tail: _ } }, .. }, tail: Deref @ metamodelica::List::Nil }, attr: Deref @ DAE::CallAttributes { ty: tp, .. } } => {
-                    let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e1: Arc<DAE::Exp>;
+                    let mut e2: Arc<DAE::Exp>;
                     let mut expl = (*expl).clone();
                     let true = (Config::scalarizeMinMax()?) else { bail!("pattern mismatch") };
                     let true = (stringEq((name.clone()).clone(), (literal!("max")).clone()) || stringEq((name.clone()).clone(), (literal!("min")).clone())) else { bail!("pattern mismatch") };
@@ -1577,10 +1577,10 @@ fn simplifyBuiltinCalls(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 e @ Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "cross" }, expLst: expl, .. } => {
-                    let mut tp: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut v1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut v2: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut scalar: bool = false;
+                    let mut tp: Arc<DAE::Type>;
+                    let mut v1: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+                    let mut v2: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+                    let mut scalar: bool;
                     let mut expl = (*expl).clone();
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(expl.clone()) {
                         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::ARRAY { array: __pa0, .. }, tail: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::ARRAY { array: __pa1, .. }, tail: Deref @ metamodelica::List::Nil } } => (__pa0.clone(), __pa1.clone()),
@@ -1599,8 +1599,8 @@ fn simplifyBuiltinCalls(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 e @ Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "skew" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::ARRAY { array: v1, .. }, tail: Deref @ metamodelica::List::Nil }, .. } => {
-                    let mut mexpl: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>> = metamodelica::nil();
-                    let mut tp: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+                    let mut mexpl: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>>;
+                    let mut tp: Arc<DAE::Type>;
                     mexpl = simplifySkew(v1.clone())?;
                     tp = Expression::r#typeof(e.clone())?;
                     Ok(Arc::new(DAE::Exp::MATRIX { ty: tp.clone(), integer: 3, matrix: mexpl.clone() }))
@@ -1611,7 +1611,7 @@ fn simplifyBuiltinCalls(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "fill" }, expLst: Deref @ metamodelica::List::Cons { head: e, tail: expl }, .. } => {
-                    let mut valueLst: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
+                    let mut valueLst: Arc<metamodelica::List<Arc<Values::Value>>>;
                     let mut outExp: Arc<DAE::Exp> = outExp.clone();
                     valueLst = List::map(expl.clone(), (std::sync::Arc::new(ValuesUtil::expValue) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<Values::Value>> + 'static>))?;
                     (_, outExp, _) = elabBuiltinFill2(FCore::noCache(), e.clone(), Expression::r#typeof(e.clone())?, valueLst.clone(), openmodelica_frontend_types::DAE::Const::C_CONST, metamodelica::nil(), Absyn::dummyInfo.clone())?;
@@ -1639,7 +1639,7 @@ fn simplifyBuiltinCalls(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "sqrt" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::POW { ty: Deref @ DAE::Type::T_REAL { .. } }, exp2: e2 }, tail: Deref @ metamodelica::List::Nil }, .. } => {
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e: Arc<DAE::Exp>;
                     e = Arc::new(DAE::Exp::BINARY { exp1: e1.clone(), operator: DAE::Operator::POW { ty: DAE::T_REAL_DEFAULT().clone() }, exp2: Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.5_f64) }), operator: DAE::Operator::MUL { ty: DAE::T_REAL_DEFAULT().clone() }, exp2: e2.clone() }) });
                     Ok(Expression::makePureBuiltinCall((literal!("abs")).clone(), list![e.clone()], DAE::T_REAL_DEFAULT().clone()))
                 }
@@ -1657,8 +1657,8 @@ fn simplifyBuiltinCalls(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "sqrt" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::BINARY { exp1: e1 @ Deref @ DAE::Exp::RCONST { real: r1 }, operator: DAE::Operator::MUL { ty: tp }, exp2: e2 }, tail: Deref @ metamodelica::List::Nil }, .. } => {
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e: Arc<DAE::Exp>;
+                    let mut e3: Arc<DAE::Exp>;
                     let true = (r1.clone() >= metamodelica::OrderedFloat(0.0_f64)) else { bail!("pattern mismatch") };
                     e = Expression::makePureBuiltinCall((literal!("sqrt")).clone(), list![e1.clone()], DAE::T_REAL_DEFAULT().clone());
                     e3 = Expression::makePureBuiltinCall((literal!("sqrt")).clone(), list![e2.clone()], DAE::T_REAL_DEFAULT().clone());
@@ -1670,11 +1670,11 @@ fn simplifyBuiltinCalls(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "exp" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::UNARY { operator: DAE::Operator::UMINUS { .. }, exp: e1 }, tail: Deref @ metamodelica::List::Nil }, .. } => {
-                    let mut es: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut es: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+                    let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+                    let mut e: Arc<DAE::Exp>;
+                    let mut e2: Arc<DAE::Exp>;
+                    let mut e3: Arc<DAE::Exp>;
                     expl = Expression::expandFactors(e1.clone())?;
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(List::split1OnTrue(expl.clone(), (std::sync::Arc::new(fnptr!(Expression::isFunCall, Arc<DAE::Exp>, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArcStr) -> Result<bool> + 'static>), (literal!("log")).clone())?) {
                         (Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Nil }, __pa1) => (__pa0.clone(), __pa1.clone()),
@@ -1696,11 +1696,11 @@ fn simplifyBuiltinCalls(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "exp" }, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil }, .. } => {
-                    let mut es: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut es: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+                    let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+                    let mut e: Arc<DAE::Exp>;
+                    let mut e2: Arc<DAE::Exp>;
+                    let mut e3: Arc<DAE::Exp>;
                     expl = Expression::expandFactors(e1.clone())?;
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(List::split1OnTrue(expl.clone(), (std::sync::Arc::new(fnptr!(Expression::isFunCall, Arc<DAE::Exp>, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArcStr) -> Result<bool> + 'static>), (literal!("log")).clone())?) {
                         (Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Nil }, __pa1) => (__pa0.clone(), __pa1.clone()),
@@ -1722,7 +1722,7 @@ fn simplifyBuiltinCalls(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::BINARY { exp1: Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "exp" }, expLst: Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Nil }, .. }, operator: DAE::Operator::POW { ty: Deref @ DAE::Type::T_REAL { .. } }, exp2: e2 } => {
-                    let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e3: Arc<DAE::Exp>;
                     e3 = Expression::expMul(e.clone(), e2.clone())?;
                     Ok(Expression::makePureBuiltinCall((literal!("exp")).clone(), list![e3.clone()], DAE::T_REAL_DEFAULT().clone()))
                 }
@@ -1732,7 +1732,7 @@ fn simplifyBuiltinCalls(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "log" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::POW { ty: Deref @ DAE::Type::T_REAL { .. } }, exp2: Deref @ DAE::Exp::RCONST { real: r1 } }, tail: Deref @ metamodelica::List::Nil }, .. } => {
-                    let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e3: Arc<DAE::Exp>;
                     let __rlit0 = (realMod(r1.clone(), metamodelica::OrderedFloat(2.0_f64)));
                     if !(__rlit0.eq(&metamodelica::OrderedFloat((1.0) as f64))) { bail!("pattern mismatch") }
                     e3 = Expression::makePureBuiltinCall((literal!("log")).clone(), list![e1.clone()], DAE::T_REAL_DEFAULT().clone());
@@ -1745,7 +1745,7 @@ fn simplifyBuiltinCalls(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "log" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::BINARY { exp1: Deref @ DAE::Exp::RCONST { real: __rlit_1 }, operator: DAE::Operator::DIV { ty: Deref @ DAE::Type::T_REAL { .. } }, exp2: e2 }, tail: Deref @ metamodelica::List::Nil }, .. } => {
                     if !(__rlit_1.eq(&metamodelica::OrderedFloat((1.0) as f64))) { bail!("guard") }
-                    let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e3: Arc<DAE::Exp>;
                     e3 = Expression::makePureBuiltinCall((literal!("log")).clone(), list![e2.clone()], DAE::T_REAL_DEFAULT().clone());
                     Ok(Arc::new(DAE::Exp::UNARY { operator: DAE::Operator::UMINUS { ty: DAE::T_REAL_DEFAULT().clone() }, exp: e3.clone() }))
                 }
@@ -1755,7 +1755,7 @@ fn simplifyBuiltinCalls(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "log" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "sqrt" }, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil }, .. }, tail: Deref @ metamodelica::List::Nil }, .. } => {
-                    let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e3: Arc<DAE::Exp>;
                     e3 = Expression::makePureBuiltinCall((literal!("log")).clone(), list![e1.clone()], DAE::T_REAL_DEFAULT().clone());
                     Ok(Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.5_f64) }), operator: DAE::Operator::MUL { ty: DAE::T_REAL_DEFAULT().clone() }, exp2: e3.clone() }))
                 }
@@ -1802,7 +1802,7 @@ fn simplifyBuiltinCalls(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "delay" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::BINARY { exp1: e1, operator: op, exp2: e2 }, tail: Deref @ metamodelica::List::Cons { head: e3, tail: Deref @ metamodelica::List::Cons { head: e4, tail: Deref @ metamodelica::List::Nil } } }, attr: Deref @ DAE::CallAttributes { ty: tp, .. } } => {
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e: Arc<DAE::Exp>;
                     let true = (Expression::isConst(e1.clone())?) else { bail!("pattern mismatch") };
                     e = Expression::makeImpureBuiltinCall((literal!("delay")).clone(), list![e2.clone(), e3.clone(), e4.clone()], tp.clone());
                     Ok(Arc::new(DAE::Exp::BINARY { exp1: e1.clone(), operator: op.clone(), exp2: e.clone() }))
@@ -1813,7 +1813,7 @@ fn simplifyBuiltinCalls(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "delay" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::BINARY { exp1: e1, operator: op, exp2: e2 }, tail: Deref @ metamodelica::List::Cons { head: e3, tail: Deref @ metamodelica::List::Cons { head: e4, tail: Deref @ metamodelica::List::Nil } } }, attr: Deref @ DAE::CallAttributes { ty: tp, .. } } => {
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e: Arc<DAE::Exp>;
                     let true = (Expression::isConst(e2.clone())?) else { bail!("pattern mismatch") };
                     e = Expression::makeImpureBuiltinCall((literal!("delay")).clone(), list![e1.clone(), e3.clone(), e4.clone()], tp.clone());
                     Ok(Arc::new(DAE::Exp::BINARY { exp1: e.clone(), operator: op.clone(), exp2: e2.clone() }))
@@ -1842,10 +1842,10 @@ fn simplifyBuiltinCalls(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "sum" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::MATRIX { ty: tp1, matrix: mexpl, .. }, tail: Deref @ metamodelica::List::Nil }, attr: Deref @ DAE::CallAttributes { ty: tp2, .. } } => {
-                    let mut es: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut sc: bool = false;
-                    let mut dim: i32 = 0;
+                    let mut es: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+                    let mut e: Arc<DAE::Exp>;
+                    let mut sc: bool;
+                    let mut dim: i32;
                     let mut tp1 = (*tp1).clone();
                     es = List::flatten(mexpl.clone())?;
                     tp1 = Expression::unliftArray(Expression::unliftArray(tp1.clone())?)?;
@@ -1864,9 +1864,9 @@ fn simplifyBuiltinCalls(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "sum" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::ARRAY { array: es, ty: tp1, scalar: false }, tail: Deref @ metamodelica::List::Nil }, attr: Deref @ DAE::CallAttributes { ty: tp2, .. } } => {
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut sc: bool = false;
-                    let mut dim: i32 = 0;
+                    let mut e: Arc<DAE::Exp>;
+                    let mut sc: bool;
+                    let mut dim: i32;
                     let mut es = (*es).clone();
                     let mut tp1 = (*tp1).clone();
                     es = simplifyCat(1, es.clone())?;
@@ -1896,7 +1896,7 @@ fn simplifyBuiltinCalls(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "sum" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::ARRAY { array: es, scalar: true, .. }, tail: Deref @ metamodelica::List::Nil }, .. } => {
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e: Arc<DAE::Exp>;
                     e = Expression::makeSum(es.clone())?;
                     Ok(e.clone())
                 }
@@ -1914,7 +1914,7 @@ fn simplifyBuiltinCalls(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "cat" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::ICONST { integer: i }, tail: es }, attr: Deref @ DAE::CallAttributes { ty: tp, .. } } => {
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e: Arc<DAE::Exp>;
                     let mut es = (*es).clone();
                     es = simplifyCat(i.clone(), es.clone())?;
                     e = Expression::makePureBuiltinCall((literal!("cat")).clone(), metamodelica::cons(Arc::new(DAE::Exp::ICONST { integer: i.clone() }), es.clone()), tp.clone());
@@ -1926,8 +1926,8 @@ fn simplifyBuiltinCalls(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "cat" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::ICONST { integer: i }, tail: es }, attr: Deref @ DAE::CallAttributes { .. } } => {
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut dims: Arc<metamodelica::List<i32>> = metamodelica::nil();
+                    let mut e: Arc<DAE::Exp>;
+                    let mut dims: Arc<metamodelica::List<i32>>;
                     let mut es = (*es).clone();
                     (es, dims) = ExpressionBasics::evalCat(i.clone(), es.clone(), (std::sync::Arc::new(Expression::getArrayOrMatrixContents) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> + 'static>), (std::sync::Arc::new(ExpressionBasics::printExpStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>))?;
                     e = Expression::listToArray(es.clone(), ({
@@ -1955,8 +1955,8 @@ fn simplifyBuiltinCalls(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "promote" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::ARRAY { ty: tp1 @ Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil }, .. }, scalar: sc, array: es }, tail: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::ICONST { integer: 2 }, tail: Deref @ metamodelica::List::Nil } }, .. } => {
-                    let mut tp: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut i: i32 = 0;
+                    let mut tp: Arc<DAE::Type>;
+                    let mut i: i32;
                     let mut es = (*es).clone();
                     tp = Types::liftArray(Types::unliftArray(tp1.clone())?, Arc::new(DAE::Dimension::DIM_INTEGER { integer: 1 }));
                     es = List::map2(List::map(es.clone(), std::sync::Arc::new(fnptr!(List::create, _)))?, (std::sync::Arc::new(fnptr!(Expression::makeArray, Arc<metamodelica::List<Arc<DAE::Exp>>>, Arc<DAE::Type>, bool)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<DAE::Exp>>>, Arc<DAE::Type>, bool) -> Result<Arc<DAE::Exp>> + 'static>), tp.clone(), sc.clone())?;
@@ -1971,8 +1971,8 @@ fn simplifyBuiltinCalls(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "promote" }, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::ICONST { integer: i }, tail: Deref @ metamodelica::List::Nil } }, .. } => {
                     if !((!(Types::isArray(Expression::r#typeof(e1.clone())?)))) { bail!("guard") }
-                    let mut tp: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut tp1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+                    let mut tp: Arc<DAE::Type>;
+                    let mut tp1: Arc<DAE::Type>;
                     let mut e1 = (*e1).clone();
                     tp = Expression::r#typeof(e1.clone())?;
                     for mut j in 1..=i.clone() {
@@ -2002,7 +2002,7 @@ fn simplifyBuiltinCalls(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "symmetric" }, expLst: Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Nil }, attr: Deref @ DAE::CallAttributes { ty: tp, .. } } => {
-                    let mut mexpl: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>> = metamodelica::nil();
+                    let mut mexpl: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>>;
                     let mut es: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
                     let mut tp1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut marr: metamodelica::Array<metamodelica::Array<Arc<DAE::Exp>>> = Default::default();
@@ -2042,7 +2042,7 @@ fn simplifyBuiltinCalls(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "vector" }, expLst: es @ Deref @ metamodelica::List::Cons { head: e, tail: _ }, attr: Deref @ DAE::CallAttributes { ty: Deref @ DAE::Type::T_ARRAY { ty: tp, dims: _ }, .. } } => {
-                    let mut i: i32 = 0;
+                    let mut i: i32;
                     let mut tp = (*tp).clone();
                     let false = (Types::isArray(Expression::r#typeof(e.clone())?)) else { bail!("pattern mismatch") };
                     i = (es.clone().len() as i32);
@@ -2063,8 +2063,8 @@ fn simplifyBuiltinCalls(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "vector" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::MATRIX { matrix: mexpl, .. }, tail: Deref @ metamodelica::List::Nil }, attr: Deref @ DAE::CallAttributes { ty: tp, .. } } => {
-                    let mut es: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut es: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+                    let mut e: Arc<DAE::Exp>;
                     es = List::flatten(mexpl.clone())?;
                     es = List::map1(es.clone(), (std::sync::Arc::new(fnptr!(Expression::makeVectorCall, Arc<DAE::Exp>, Arc<DAE::Type>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Type>) -> Result<Arc<DAE::Exp>> + 'static>), tp.clone())?;
                     e = Expression::makePureBuiltinCall((literal!("cat")).clone(), metamodelica::cons(Arc::new(DAE::Exp::ICONST { integer: 1 }), es.clone()), tp.clone());
@@ -2076,7 +2076,7 @@ fn simplifyBuiltinCalls(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "vector" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::ARRAY { array: es, .. }, tail: Deref @ metamodelica::List::Nil }, attr: Deref @ DAE::CallAttributes { ty: tp, .. } } => {
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e: Arc<DAE::Exp>;
                     let mut es = (*es).clone();
                     es = List::map1(es.clone(), (std::sync::Arc::new(fnptr!(Expression::makeVectorCall, Arc<DAE::Exp>, Arc<DAE::Type>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Type>) -> Result<Arc<DAE::Exp>> + 'static>), tp.clone())?;
                     e = Expression::makePureBuiltinCall((literal!("cat")).clone(), metamodelica::cons(Arc::new(DAE::Exp::ICONST { integer: 1 }), es.clone()), tp.clone());
@@ -2128,8 +2128,8 @@ fn simplifyBuiltinCalls(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "OpenModelica_uriToFilename" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::SCONST { string: s1 }, tail: Deref @ metamodelica::List::Nil }, .. } => {
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut s2: ArcStr = arcstr::literal!("");
+                    let mut e: Arc<DAE::Exp>;
+                    let mut s2: ArcStr;
                     s2 = uriToFilename((s1.clone()).clone())?;
                     if Flags::getConfigBool(Flags::BUILDING_FMU.clone())? {
                         e = Expression::makeImpureBuiltinCall((literal!("OpenModelica_fmuLoadResource")).clone(), list![Arc::new(DAE::Exp::SCONST { string: (s2.clone()).clone() })], DAE::T_STRING_DEFAULT().clone());
@@ -2189,9 +2189,9 @@ fn simplifySymmetric(mut marr: metamodelica::Array<metamodelica::Array<Arc<DAE::
             ()
         },
         _ => {
-            let mut v1: metamodelica::Array<Arc<DAE::Exp>> = Default::default();
-            let mut v2: metamodelica::Array<Arc<DAE::Exp>> = Default::default();
-            let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut v1: metamodelica::Array<Arc<DAE::Exp>>;
+            let mut v2: metamodelica::Array<Arc<DAE::Exp>>;
+            let mut exp: Arc<DAE::Exp>;
             v1 = metamodelica::arrayGet(marr.clone(), i1.clone())?;
             v2 = metamodelica::arrayGet(marr.clone(), i2.clone())?;
             exp = metamodelica::arrayGet(v1.clone(), i2.clone())?;
@@ -2207,7 +2207,7 @@ fn simplifyCat(mut inDim: i32, mut inExpList: Arc<metamodelica::List<Arc<DAE::Ex
     let mut outExpList: Arc<metamodelica::List<Arc<DAE::Exp>>>;
     outExpList = (match inDim.clone() {
         1 => {
-            let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
+            let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>>;
             expl = List::map(inExpList.clone(), (std::sync::Arc::new(simplifyCatArg) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> + 'static>))?;
             simplifyCat2(inDim.clone(), expl.clone(), metamodelica::nil(), false)?
         },
@@ -2250,9 +2250,9 @@ fn simplifyCat2(mut dim: i32, mut ies: Arc<metamodelica::List<Arc<DAE::Exp>>>, m
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (1, Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::ARRAY { array: es1, scalar: sc, ty: Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: dim1, tail: dims }, ty: etp } }, tail: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::ARRAY { array: es2, ty: Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: dim2, tail: _ }, .. }, .. }, tail: es } }, _) => {
-                    let mut esn: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut ndim: Arc<DAE::Dimension> = Arc::new(DAE::Dimension::DIM_BOOLEAN);
+                    let mut esn: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+                    let mut e: Arc<DAE::Exp>;
+                    let mut ndim: Arc<DAE::Dimension>;
                     let mut etp = (*etp).clone();
                     esn = listAppend(es1.clone(), es2.clone());
                     ndim = Expression::addDimensions(dim1.clone(), dim2.clone());
@@ -2266,9 +2266,9 @@ fn simplifyCat2(mut dim: i32, mut ies: Arc<metamodelica::List<Arc<DAE::Exp>>>, m
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (2, Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::MATRIX { matrix: ms1, integer: i, ty: Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: dim11, tail: Deref @ metamodelica::List::Cons { head: dim1, tail: dims } }, ty: etp } }, tail: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::MATRIX { matrix: ms2, ty: Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: dim2, tail: _ } }, .. }, .. }, tail: es } }, _) => {
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut ndim: Arc<DAE::Dimension> = Arc::new(DAE::Dimension::DIM_BOOLEAN);
-                    let mut mss: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>> = metamodelica::nil();
+                    let mut e: Arc<DAE::Exp>;
+                    let mut ndim: Arc<DAE::Dimension>;
+                    let mut mss: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>>;
                     let mut etp = (*etp).clone();
                     mss = List::threadMap(ms1.clone(), ms2.clone(), Arc::new(fnptr!(listAppend, Arc<metamodelica::List<Arc<DAE::Exp>>>, Arc<metamodelica::List<Arc<DAE::Exp>>>)))?;
                     ndim = Expression::addDimensions(dim1.clone(), dim2.clone());
@@ -2296,25 +2296,25 @@ fn simplifyBuiltinStringFormat(mut exp: Arc<DAE::Exp>, mut len_exp: Arc<DAE::Exp
     let mut outExp: Arc<DAE::Exp>;
     outExp = (::match_deref::match_deref! { match &((exp.clone(), len_exp.clone(), just_exp.clone())) {
         (Deref @ DAE::Exp::ICONST { integer: i }, Deref @ DAE::Exp::ICONST { integer: len }, Deref @ DAE::Exp::BCONST { bool: just }) => {
-            let mut r#str: ArcStr = arcstr::literal!("");
+            let mut r#str: ArcStr;
             r#str = (intString(i.clone())).clone();
             r#str = (cevalBuiltinStringFormat((r#str.clone()).clone(), ((r#str.clone()).clone().len() as i32), len.clone(), just.clone())).clone();
             Arc::new(DAE::Exp::SCONST { string: (r#str.clone()).clone() })
         },
         (Deref @ DAE::Exp::RCONST { real: r }, Deref @ DAE::Exp::ICONST { integer: len }, Deref @ DAE::Exp::BCONST { bool: just }) => {
-            let mut r#str: ArcStr = arcstr::literal!("");
+            let mut r#str: ArcStr;
             r#str = (realString(r.clone())).clone();
             r#str = (cevalBuiltinStringFormat((r#str.clone()).clone(), ((r#str.clone()).clone().len() as i32), len.clone(), just.clone())).clone();
             Arc::new(DAE::Exp::SCONST { string: (r#str.clone()).clone() })
         },
         (Deref @ DAE::Exp::BCONST { bool: b }, Deref @ DAE::Exp::ICONST { integer: len }, Deref @ DAE::Exp::BCONST { bool: just }) => {
-            let mut r#str: ArcStr = arcstr::literal!("");
+            let mut r#str: ArcStr;
             r#str = (boolString(b.clone())).clone();
             r#str = (cevalBuiltinStringFormat((r#str.clone()).clone(), ((r#str.clone()).clone().len() as i32), len.clone(), just.clone())).clone();
             Arc::new(DAE::Exp::SCONST { string: (r#str.clone()).clone() })
         },
         (Deref @ DAE::Exp::ENUM_LITERAL { name, .. }, Deref @ DAE::Exp::ICONST { integer: len }, Deref @ DAE::Exp::BCONST { bool: just }) => {
-            let mut r#str: ArcStr = arcstr::literal!("");
+            let mut r#str: ArcStr;
             r#str = (AbsynUtil::pathLastIdent(name.clone())?).clone();
             r#str = (cevalBuiltinStringFormat((r#str.clone()).clone(), ((r#str.clone()).clone().len() as i32), len.clone(), just.clone())).clone();
             Arc::new(DAE::Exp::SCONST { string: (r#str.clone()).clone() })
@@ -2350,7 +2350,7 @@ fn simplifyStringAppendList(mut iexpl: Arc<metamodelica::List<Arc<DAE::Exp>>>, m
             Expression::makePureBuiltinCall((literal!("stringAppendList")).clone(), list![exp.clone()], DAE::T_STRING_DEFAULT().clone())
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::SCONST { string: s1 }, tail: rest }, Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::SCONST { string: s2 }, tail: acc }, _) => {
-            let mut s: ArcStr = arcstr::literal!("");
+            let mut s: ArcStr;
             s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*s2.clone()); __mm_s.push_str(&*s1.clone()); ArcStr::from(__mm_s) }).clone();
             simplifyStringAppendList(rest.clone(), metamodelica::cons(Arc::new(DAE::Exp::SCONST { string: (s.clone()).clone() }), acc.clone()), true)?
         },
@@ -2370,7 +2370,7 @@ fn simplifyBuiltinConstantCalls(mut name: ArcStr, mut exp: Arc<DAE::Exp>) -> Res
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "der", Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Nil }, .. }) => {
-                    let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e1: Arc<DAE::Exp>;
                     e1 = simplifyBuiltinConstantDer(e.clone())?;
                     Ok(e1.clone())
                 }
@@ -2412,7 +2412,7 @@ fn simplifyBuiltinConstantCalls(mut name: ArcStr, mut exp: Arc<DAE::Exp>) -> Res
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "sqrt", Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Nil }, .. }) => {
-                    let mut r: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+                    let mut r: metamodelica::Real;
                     r = (Expression::toReal(e.clone())?).sqrt();
                     Ok(Arc::new(DAE::Exp::RCONST { real: r.clone() }))
                 }
@@ -2442,7 +2442,7 @@ fn simplifyBuiltinConstantCalls(mut name: ArcStr, mut exp: Arc<DAE::Exp>) -> Res
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "sin", Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Nil }, .. }) => {
-                    let mut r: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+                    let mut r: metamodelica::Real;
                     r = (Expression::toReal(e.clone())?).sin();
                     Ok(Arc::new(DAE::Exp::RCONST { real: r.clone() }))
                 }
@@ -2452,7 +2452,7 @@ fn simplifyBuiltinConstantCalls(mut name: ArcStr, mut exp: Arc<DAE::Exp>) -> Res
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "cos", Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Nil }, .. }) => {
-                    let mut r: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+                    let mut r: metamodelica::Real;
                     r = (Expression::toReal(e.clone())?).cos();
                     Ok(Arc::new(DAE::Exp::RCONST { real: r.clone() }))
                 }
@@ -2462,7 +2462,7 @@ fn simplifyBuiltinConstantCalls(mut name: ArcStr, mut exp: Arc<DAE::Exp>) -> Res
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "asin", Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Nil }, .. }) => {
-                    let mut r: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+                    let mut r: metamodelica::Real;
                     r = Expression::toReal(e.clone())?;
                     let true = (r.clone() >= metamodelica::OrderedFloat(-1.0_f64) && r.clone() <= metamodelica::OrderedFloat(1.0_f64)) else { bail!("pattern mismatch") };
                     r = (r.clone()).asin();
@@ -2474,7 +2474,7 @@ fn simplifyBuiltinConstantCalls(mut name: ArcStr, mut exp: Arc<DAE::Exp>) -> Res
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "acos", Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Nil }, .. }) => {
-                    let mut r: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+                    let mut r: metamodelica::Real;
                     r = Expression::toReal(e.clone())?;
                     let true = (r.clone() >= metamodelica::OrderedFloat(-1.0_f64) && r.clone() <= metamodelica::OrderedFloat(1.0_f64)) else { bail!("pattern mismatch") };
                     r = (Expression::toReal(e.clone())?).acos();
@@ -2486,7 +2486,7 @@ fn simplifyBuiltinConstantCalls(mut name: ArcStr, mut exp: Arc<DAE::Exp>) -> Res
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "tan", Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Nil }, .. }) => {
-                    let mut r: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+                    let mut r: metamodelica::Real;
                     r = (Expression::toReal(e.clone())?).tan();
                     Ok(Arc::new(DAE::Exp::RCONST { real: r.clone() }))
                 }
@@ -2496,7 +2496,7 @@ fn simplifyBuiltinConstantCalls(mut name: ArcStr, mut exp: Arc<DAE::Exp>) -> Res
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "exp", Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Nil }, .. }) => {
-                    let mut r: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+                    let mut r: metamodelica::Real;
                     r = (Expression::toReal(e.clone())?).exp();
                     Ok(Arc::new(DAE::Exp::RCONST { real: r.clone() }))
                 }
@@ -2506,7 +2506,7 @@ fn simplifyBuiltinConstantCalls(mut name: ArcStr, mut exp: Arc<DAE::Exp>) -> Res
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "log", Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Nil }, .. }) => {
-                    let mut r: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+                    let mut r: metamodelica::Real;
                     r = Expression::toReal(e.clone())?;
                     let true = (r.clone() > metamodelica::OrderedFloat((0) as f64)) else { bail!("pattern mismatch") };
                     r = (r.clone()).ln();
@@ -2518,7 +2518,7 @@ fn simplifyBuiltinConstantCalls(mut name: ArcStr, mut exp: Arc<DAE::Exp>) -> Res
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "log10", Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Nil }, .. }) => {
-                    let mut r: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+                    let mut r: metamodelica::Real;
                     r = Expression::toReal(e.clone())?;
                     let true = (r.clone() > metamodelica::OrderedFloat((0) as f64)) else { bail!("pattern mismatch") };
                     r = (r.clone()).log10();
@@ -2540,9 +2540,9 @@ fn simplifyBuiltinConstantCalls(mut name: ArcStr, mut exp: Arc<DAE::Exp>) -> Res
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "min", Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil } }, attr: Deref @ DAE::CallAttributes { ty: Deref @ DAE::Type::T_REAL { .. }, .. }, .. }) => {
-                    let mut r: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-                    let mut v1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-                    let mut v2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+                    let mut r: metamodelica::Real;
+                    let mut v1: metamodelica::Real;
+                    let mut v2: metamodelica::Real;
                     v1 = Expression::toReal(e.clone())?;
                     v2 = Expression::toReal(e1.clone())?;
                     r = std::cmp::min(v1.clone(), v2.clone());
@@ -2554,7 +2554,7 @@ fn simplifyBuiltinConstantCalls(mut name: ArcStr, mut exp: Arc<DAE::Exp>) -> Res
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "min", Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: e @ Deref @ DAE::Exp::ENUM_LITERAL { index: i, .. }, tail: Deref @ metamodelica::List::Cons { head: e1 @ Deref @ DAE::Exp::ENUM_LITERAL { index: j, .. }, tail: Deref @ metamodelica::List::Nil } }, .. }) => {
-                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e2: Arc<DAE::Exp>;
                     e2 = if (i.clone() < j.clone()) {e.clone()} else {e1.clone()};
                     Ok(e2.clone())
                 }
@@ -2574,9 +2574,9 @@ fn simplifyBuiltinConstantCalls(mut name: ArcStr, mut exp: Arc<DAE::Exp>) -> Res
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "max", Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil } }, attr: Deref @ DAE::CallAttributes { ty: Deref @ DAE::Type::T_REAL { .. }, .. }, .. }) => {
-                    let mut r: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-                    let mut v1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-                    let mut v2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+                    let mut r: metamodelica::Real;
+                    let mut v1: metamodelica::Real;
+                    let mut v2: metamodelica::Real;
                     v1 = Expression::toReal(e.clone())?;
                     v2 = Expression::toReal(e1.clone())?;
                     r = std::cmp::max(v1.clone(), v2.clone());
@@ -2588,7 +2588,7 @@ fn simplifyBuiltinConstantCalls(mut name: ArcStr, mut exp: Arc<DAE::Exp>) -> Res
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "max", Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: e @ Deref @ DAE::Exp::ENUM_LITERAL { index: i, .. }, tail: Deref @ metamodelica::List::Cons { head: e1 @ Deref @ DAE::Exp::ENUM_LITERAL { index: j, .. }, tail: Deref @ metamodelica::List::Nil } }, .. }) => {
-                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e2: Arc<DAE::Exp>;
                     e2 = if (i.clone() > j.clone()) {e.clone()} else {e1.clone()};
                     Ok(e2.clone())
                 }
@@ -2598,7 +2598,7 @@ fn simplifyBuiltinConstantCalls(mut name: ArcStr, mut exp: Arc<DAE::Exp>) -> Res
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "sign", Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::RCONST { real: r }, tail: Deref @ metamodelica::List::Nil }, .. }) => {
-                    let mut i: i32 = 0;
+                    let mut i: i32;
                     i = if (realEq(r.clone(), metamodelica::OrderedFloat(0.0_f64))) {0} else {if (realGt(r.clone(), metamodelica::OrderedFloat(0.0_f64))) {1} else {-1}};
                     Ok(Arc::new(DAE::Exp::ICONST { integer: i.clone() }))
                 }
@@ -2617,8 +2617,8 @@ fn simplifyCref(mut origExp: Arc<DAE::Exp>, mut inCREF: ComponentRef, mut inType
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::ComponentRef::CREF_IDENT { ident: idn, identType: t2, subscriptLst: ssl @ Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::SLICE { exp: Deref @ DAE::Exp::ARRAY { ty: _, scalar: _, array: _ } }, tail: _ } } => {
-                    let mut cr: ComponentRef = Arc::new(DAE::ComponentRef::WILD);
-                    let mut expCref: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut cr: ComponentRef;
+                    let mut expCref: Arc<DAE::Exp>;
                     let mut exp: Arc<DAE::Exp> = exp.clone();
                     cr = ComponentReferenceBasics::makeCrefIdent((idn.clone()).clone(), t2.clone(), metamodelica::nil());
                     expCref = Expression::makeCrefExp(cr.clone(), inType.clone())?;
@@ -2631,8 +2631,8 @@ fn simplifyCref(mut origExp: Arc<DAE::Exp>, mut inCREF: ComponentRef, mut inType
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::ComponentRef::CREF_IDENT { subscriptLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::SLICE { exp: Deref @ DAE::Exp::RANGE { .. } }, tail: _ }, .. } => {
-                    let mut cr: ComponentRef = Arc::new(DAE::ComponentRef::WILD);
-                    let mut expCref: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut cr: ComponentRef;
+                    let mut expCref: Arc<DAE::Exp>;
                     cr = ComponentReference::crefStripSubs(inCREF.clone())?;
                     expCref = Expression::makeCrefExp(cr.clone(), inType.clone())?;
                     Ok(simplifyCref2(expCref.clone(), var_field!((*inCREF).subscriptLst, DAE::ComponentRef::CREF_IDENT).clone())?)
@@ -2679,11 +2679,11 @@ fn simplifyCref2(mut inExp: Arc<DAE::Exp>, mut inSsl: Arc<metamodelica::List<Arc
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::CREF { componentRef: cr @ Deref @ DAE::ComponentRef::CREF_IDENT { ident: _, identType: _, subscriptLst: _ }, ty: t }, Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::SLICE { exp: Deref @ DAE::Exp::ARRAY { ty: _, scalar: _, array: expl_1 } }, tail: ssl }) => {
-                    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut subs: Arc<metamodelica::List<Arc<DAE::Subscript>>> = metamodelica::nil();
-                    let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
-                    let mut dim: i32 = 0;
+                    let mut exp: Arc<DAE::Exp>;
+                    let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+                    let mut subs: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
+                    let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
+                    let mut dim: i32;
                     let mut t = (*t).clone();
                     subs = List::map(expl_1.clone(), (std::sync::Arc::new(fnptr!(Expression::makeIndexSubscript, Arc<DAE::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<DAE::Subscript>> + 'static>))?;
                     crefs = List::map1r(List::map(subs.clone(), std::sync::Arc::new(fnptr!(List::create, _)))?, (std::sync::Arc::new(ComponentReference::subscriptCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<Arc<DAE::ComponentRef>> + 'static>), cr.clone())?;
@@ -2699,11 +2699,11 @@ fn simplifyCref2(mut inExp: Arc<DAE::Exp>, mut inSsl: Arc<metamodelica::List<Arc
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::CREF { componentRef: cr @ Deref @ DAE::ComponentRef::CREF_IDENT { .. }, ty: t }, Deref @ metamodelica::List::Cons { head: ss @ Deref @ DAE::Subscript::SLICE { exp: Deref @ DAE::Exp::RANGE { .. } }, tail: ssl }) => {
-                    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut subs: Arc<metamodelica::List<Arc<DAE::Subscript>>> = metamodelica::nil();
-                    let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
-                    let mut dim: i32 = 0;
+                    let mut exp: Arc<DAE::Exp>;
+                    let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+                    let mut subs: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
+                    let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
+                    let mut dim: i32;
                     let mut t = (*t).clone();
                     subs = Expression::expandSliceExp(var_field!((**ss).exp, DAE::Subscript::SLICE).clone())?;
                     crefs = ({
@@ -2800,12 +2800,12 @@ pub fn simplify2(mut inExp: Arc<DAE::Exp>, mut simplifyAddOrSub: bool, mut simpl
     }
     outExp = (::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ DAE::Exp::BINARY { operator: op, .. } if (simplifyAddOrSub.clone() && Expression::isAddOrSub(op.clone())) => {
-            let mut exp_2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut exp_3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut resConst: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut lstConstExp: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-            let mut lstExp: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-            let mut hasConst: bool = false;
+            let mut exp_2: Arc<DAE::Exp>;
+            let mut exp_3: Arc<DAE::Exp>;
+            let mut resConst: Arc<DAE::Exp>;
+            let mut lstConstExp: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+            let mut lstExp: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+            let mut hasConst: bool;
             lstExp = Expression::terms(inExp.clone())?;
             (lstConstExp, lstExp) = List::splitOnTrue(lstExp.clone(), (std::sync::Arc::new(Expression::isConstValue) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>))?;
             hasConst = !(lstConstExp.clone().is_empty());
@@ -2823,11 +2823,11 @@ pub fn simplify2(mut inExp: Arc<DAE::Exp>, mut simplifyAddOrSub: bool, mut simpl
             Arc::new(DAE::Exp::BINARY { exp1: e1.clone(), operator: op.clone(), exp2: e2.clone() })
         },
         Deref @ DAE::Exp::BINARY { operator: op, .. } if (simplifyMulOrDiv.clone() && Expression::isMulOrDiv(op.clone())) => {
-            let mut exp_2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut exp_3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut resConst: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut lstConstExp: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-            let mut lstExp: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
+            let mut exp_2: Arc<DAE::Exp>;
+            let mut exp_3: Arc<DAE::Exp>;
+            let mut resConst: Arc<DAE::Exp>;
+            let mut lstConstExp: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+            let mut lstExp: Arc<metamodelica::List<Arc<DAE::Exp>>>;
             lstExp = Expression::factors(inExp.clone())?;
             (lstConstExp, lstExp) = List::splitOnTrue(lstExp.clone(), (std::sync::Arc::new(Expression::isConst) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>))?;
             if !(lstConstExp.clone().is_empty()) {
@@ -2903,7 +2903,7 @@ fn simplifyBinaryArray(mut inExp1: Arc<DAE::Exp>, mut inOperator2: Operator, mut
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e1, DAE::Operator::MUL_MATRIX_PRODUCT { .. }, e2) => {
-                    let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e_1: Arc<DAE::Exp>;
                     e_1 = simplifyMatrixProduct(e1.clone(), e2.clone())?;
                     Ok(e_1.clone())
                 }
@@ -2913,7 +2913,7 @@ fn simplifyBinaryArray(mut inExp1: Arc<DAE::Exp>, mut inOperator2: Operator, mut
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e1, op @ DAE::Operator::ADD_ARR { .. }, e2) => {
-                    let mut a1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut a1: Arc<DAE::Exp>;
                     a1 = simplifyVectorBinary0(e1.clone(), op.clone(), e2.clone())?;
                     Ok(a1.clone())
                 }
@@ -2923,7 +2923,7 @@ fn simplifyBinaryArray(mut inExp1: Arc<DAE::Exp>, mut inOperator2: Operator, mut
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e1, op @ DAE::Operator::SUB_ARR { .. }, e2) => {
-                    let mut a1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut a1: Arc<DAE::Exp>;
                     a1 = simplifyVectorBinary0(e1.clone(), op.clone(), e2.clone())?;
                     Ok(a1.clone())
                 }
@@ -2933,7 +2933,7 @@ fn simplifyBinaryArray(mut inExp1: Arc<DAE::Exp>, mut inOperator2: Operator, mut
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e1, op @ DAE::Operator::MUL_ARR { .. }, e2) => {
-                    let mut a1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut a1: Arc<DAE::Exp>;
                     a1 = simplifyVectorBinary(e1.clone(), op.clone(), e2.clone())?;
                     Ok(a1.clone())
                 }
@@ -2943,7 +2943,7 @@ fn simplifyBinaryArray(mut inExp1: Arc<DAE::Exp>, mut inOperator2: Operator, mut
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e1, op @ DAE::Operator::DIV_ARR { .. }, e2) => {
-                    let mut a1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut a1: Arc<DAE::Exp>;
                     a1 = simplifyVectorBinary(e1.clone(), op.clone(), e2.clone())?;
                     Ok(a1.clone())
                 }
@@ -2953,8 +2953,8 @@ fn simplifyBinaryArray(mut inExp1: Arc<DAE::Exp>, mut inOperator2: Operator, mut
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e1, DAE::Operator::POW_ARR { .. }, e2) => {
-                    let mut a1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut tp: Type = Arc::new(DAE::Type::T_NORETCALL);
+                    let mut a1: Arc<DAE::Exp>;
+                    let mut tp: Type;
                     tp = Expression::r#typeof(e1.clone())?;
                     a1 = simplifyMatrixPow(e1.clone(), tp.clone(), e2.clone())?;
                     Ok(a1.clone())
@@ -2965,8 +2965,8 @@ fn simplifyBinaryArray(mut inExp1: Arc<DAE::Exp>, mut inOperator2: Operator, mut
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e1, DAE::Operator::POW_ARR2 { .. }, e2) => {
-                    let mut a1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut tp: Type = Arc::new(DAE::Type::T_NORETCALL);
+                    let mut a1: Arc<DAE::Exp>;
+                    let mut tp: Type;
                     tp = Expression::r#typeof(e1.clone())?;
                     a1 = simplifyVectorBinary(e1.clone(), DAE::Operator::POW_ARR2 { ty: tp.clone() }, e2.clone())?;
                     Ok(a1.clone())
@@ -3015,7 +3015,7 @@ fn simplifyBinaryArray(mut inExp1: Arc<DAE::Exp>, mut inOperator2: Operator, mut
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e1, DAE::Operator::MUL_SCALAR_PRODUCT { .. }, e2) => {
-                    let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut res: Arc<DAE::Exp>;
                     res = simplifyScalarProduct(e1.clone(), e2.clone())?;
                     Ok(res.clone())
                 }
@@ -3025,7 +3025,7 @@ fn simplifyBinaryArray(mut inExp1: Arc<DAE::Exp>, mut inOperator2: Operator, mut
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e1, op @ DAE::Operator::ADD_ARR { .. }, e2) => {
-                    let mut a1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut a1: Arc<DAE::Exp>;
                     a1 = simplifyMatrixBinary(e1.clone(), op.clone(), e2.clone())?;
                     Ok(a1.clone())
                 }
@@ -3035,7 +3035,7 @@ fn simplifyBinaryArray(mut inExp1: Arc<DAE::Exp>, mut inOperator2: Operator, mut
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e1, op @ DAE::Operator::SUB_ARR { .. }, e2) => {
-                    let mut a1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut a1: Arc<DAE::Exp>;
                     a1 = simplifyMatrixBinary(e1.clone(), op.clone(), e2.clone())?;
                     Ok(a1.clone())
                 }
@@ -3045,7 +3045,7 @@ fn simplifyBinaryArray(mut inExp1: Arc<DAE::Exp>, mut inOperator2: Operator, mut
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e1, op @ DAE::Operator::MUL_ARR { .. }, e2) => {
-                    let mut a1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut a1: Arc<DAE::Exp>;
                     a1 = simplifyMatrixBinary(e1.clone(), op.clone(), e2.clone())?;
                     Ok(a1.clone())
                 }
@@ -3055,7 +3055,7 @@ fn simplifyBinaryArray(mut inExp1: Arc<DAE::Exp>, mut inOperator2: Operator, mut
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e1, op @ DAE::Operator::DIV_ARR { .. }, e2) => {
-                    let mut a1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut a1: Arc<DAE::Exp>;
                     a1 = simplifyMatrixBinary(e1.clone(), op.clone(), e2.clone())?;
                     Ok(a1.clone())
                 }
@@ -3065,7 +3065,7 @@ fn simplifyBinaryArray(mut inExp1: Arc<DAE::Exp>, mut inOperator2: Operator, mut
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e1, op @ DAE::Operator::POW_ARR2 { .. }, e2) => {
-                    let mut a1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut a1: Arc<DAE::Exp>;
                     a1 = simplifyMatrixBinary(e1.clone(), op.clone(), e2.clone())?;
                     Ok(a1.clone())
                 }
@@ -3075,7 +3075,7 @@ fn simplifyBinaryArray(mut inExp1: Arc<DAE::Exp>, mut inOperator2: Operator, mut
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, DAE::Operator::MUL_ARRAY_SCALAR { ty: tp }, e2) => {
-                    let mut a1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut a1: Arc<DAE::Exp>;
                     let true = (Expression::isZero(e2.clone())?) else { bail!("pattern mismatch") };
                     (a1, _) = Expression::makeZeroExpression(Expression::arrayDimension(tp.clone()))?;
                     Ok(a1.clone())
@@ -3086,8 +3086,8 @@ fn simplifyBinaryArray(mut inExp1: Arc<DAE::Exp>, mut inOperator2: Operator, mut
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e1, DAE::Operator::DIV_ARR { .. }, _) => {
-                    let mut a1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut tp: Type = Arc::new(DAE::Type::T_NORETCALL);
+                    let mut a1: Arc<DAE::Exp>;
+                    let mut tp: Type;
                     let true = (Expression::isZero(e1.clone())?) else { bail!("pattern mismatch") };
                     tp = Expression::r#typeof(e1.clone())?;
                     (a1, _) = Expression::makeZeroExpression(Expression::arrayDimension(tp.clone()))?;
@@ -3099,8 +3099,8 @@ fn simplifyBinaryArray(mut inExp1: Arc<DAE::Exp>, mut inOperator2: Operator, mut
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e1, DAE::Operator::DIV_ARRAY_SCALAR { .. }, _) => {
-                    let mut a1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut tp: Type = Arc::new(DAE::Type::T_NORETCALL);
+                    let mut a1: Arc<DAE::Exp>;
+                    let mut tp: Type;
                     let true = (Expression::isZero(e1.clone())?) else { bail!("pattern mismatch") };
                     tp = Expression::r#typeof(e1.clone())?;
                     (a1, _) = Expression::makeZeroExpression(Expression::arrayDimension(tp.clone()))?;
@@ -3121,18 +3121,18 @@ pub fn simplifyScalarProduct(mut inVector1: Arc<DAE::Exp>, mut inVector2: Arc<DA
             Expression::makeConstZero(tp.clone())
         },
         (Deref @ DAE::Exp::ARRAY { array: expl1, .. }, Deref @ DAE::Exp::ARRAY { array: expl2, .. }) => {
-            let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-            let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+            let mut exp: Arc<DAE::Exp>;
             let true = (Expression::isVector(inVector1.clone()) && Expression::isVector(inVector2.clone())) else { bail!("pattern mismatch") };
             expl = List::threadMap(expl1.clone(), expl2.clone(), (std::sync::Arc::new(Expression::expMul) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> + 'static>))?;
             exp = List::reduce(expl.clone(), (std::sync::Arc::new(Expression::expAdd) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> + 'static>))?;
             exp.clone()
         },
         (Deref @ DAE::Exp::CREF { componentRef: cr1, .. }, Deref @ DAE::Exp::CREF { componentRef: cr2, .. }) if (Config::simCodeTarget()? != literal!("Cpp")) => {
-            let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-            let mut expl1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-            let mut expl2: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-            let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+            let mut expl1: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+            let mut expl2: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+            let mut exp: Arc<DAE::Exp>;
             expl1 = ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
         for mut c in (ComponentReference::expandCref(cr1.clone(), true)).into_iter().cloned() {
@@ -3215,7 +3215,7 @@ fn simplifyVectorBinary0(mut e1: Arc<DAE::Exp>, mut op: Operator, mut e2: Arc<DA
         let __mc_input = op.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            let mut a1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut a1: Arc<DAE::Exp>;
             a1 = simplifyVectorBinary(e1.clone(), op.clone(), e2.clone())?;
             Ok(a1.clone())
         })() { break 'mc __v; }
@@ -3320,10 +3320,10 @@ fn simplifyMatrixPow(mut inExp1: Arc<DAE::Exp>, mut inType: Type, mut inExp2: Ar
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::MATRIX { ty: tp1, integer: size1, .. }, Deref @ DAE::Exp::ICONST { integer: i }) => {
-                    let mut expl_1: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>> = metamodelica::nil();
-                    let mut expl2: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>> = metamodelica::nil();
-                    let mut el: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut range: Arc<metamodelica::List<i32>> = metamodelica::nil();
+                    let mut expl_1: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>>;
+                    let mut expl2: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>>;
+                    let mut el: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+                    let mut range: Arc<metamodelica::List<i32>>;
                     let 0 = (i.clone()) else { bail!("pattern mismatch") };
                     el = List::fill(Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) }), size1.clone());
                     expl2 = List::fill(el.clone(), size1.clone());
@@ -3346,7 +3346,7 @@ fn simplifyMatrixPow(mut inExp1: Arc<DAE::Exp>, mut inType: Type, mut inExp2: Ar
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (m @ Deref @ DAE::Exp::MATRIX { .. }, Deref @ DAE::Exp::ICONST { integer: i }) => {
-                    let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut res: Arc<DAE::Exp>;
                     let 2 = (i.clone()) else { bail!("pattern mismatch") };
                     res = simplifyMatrixProduct(m.clone(), m.clone())?;
                     Ok(res.clone())
@@ -3357,9 +3357,9 @@ fn simplifyMatrixPow(mut inExp1: Arc<DAE::Exp>, mut inType: Type, mut inExp2: Ar
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (m @ Deref @ DAE::Exp::MATRIX { ty: tp1, .. }, Deref @ DAE::Exp::ICONST { integer: i }) => {
-                    let mut i_1: i32 = 0;
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut i_1: i32;
+                    let mut e: Arc<DAE::Exp>;
+                    let mut res: Arc<DAE::Exp>;
                     let true = (i.clone() > 3) else { bail!("pattern mismatch") };
                     let 0 = (intMod(i.clone(), 2)) else { bail!("pattern mismatch") };
                     i_1 = intDiv(i.clone(), 2);
@@ -3373,9 +3373,9 @@ fn simplifyMatrixPow(mut inExp1: Arc<DAE::Exp>, mut inType: Type, mut inExp2: Ar
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (m @ Deref @ DAE::Exp::MATRIX { ty: tp1, .. }, Deref @ DAE::Exp::ICONST { integer: i }) => {
-                    let mut i_1: i32 = 0;
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut i_1: i32;
+                    let mut e: Arc<DAE::Exp>;
+                    let mut res: Arc<DAE::Exp>;
                     let true = (1 < i.clone()) else { bail!("pattern mismatch") };
                     i_1 = i.clone() - 1;
                     e = simplifyMatrixPow(m.clone(), tp1.clone(), Arc::new(DAE::Exp::ICONST { integer: i_1.clone() }))?;
@@ -3405,7 +3405,7 @@ fn simplifyMatrixPow1(mut inRange: Arc<metamodelica::List<i32>>, mut inMatrix: A
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: i, tail: Deref @ metamodelica::List::Nil }, Deref @ metamodelica::List::Cons { head: row, tail: Deref @ metamodelica::List::Nil }, e) => {
-                    let mut row1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
+                    let mut row1: Arc<metamodelica::List<Arc<DAE::Exp>>>;
                     row1 = List::replaceAt(e.clone(), i.clone() + 1, row.clone())?;
                     Ok(list![row1.clone()])
                 }
@@ -3415,8 +3415,8 @@ fn simplifyMatrixPow1(mut inRange: Arc<metamodelica::List<i32>>, mut inMatrix: A
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: i, tail: rr }, Deref @ metamodelica::List::Cons { head: row, tail: rm }, e) => {
-                    let mut rm1: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>> = metamodelica::nil();
-                    let mut row1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
+                    let mut rm1: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>>;
+                    let mut row1: Arc<metamodelica::List<Arc<DAE::Exp>>>;
                     row1 = List::replaceAt(e.clone(), i.clone() + 1, row.clone())?;
                     rm1 = simplifyMatrixPow1(rr.clone(), rm.clone(), e.clone())?;
                     Ok(metamodelica::cons(row1.clone(), rm1.clone()))
@@ -3447,7 +3447,7 @@ fn simplifyMatrixProduct2(mut inMatrix1: Arc<DAE::Exp>, mut inMatrix2: Arc<DAE::
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::ARRAY { ty: ty @ Deref @ DAE::Type::T_ARRAY { dims, .. }, .. }, Deref @ DAE::Exp::ARRAY { .. }) => {
-                    let mut zero: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut zero: Arc<DAE::Exp>;
                     let mut dims = (*dims).clone();
                     let true = (Expression::arrayContainZeroDimension(dims.clone())) else { bail!("pattern mismatch") };
                     zero = Expression::makeConstZero(ty.clone());
@@ -3472,7 +3472,7 @@ fn simplifyMatrixProduct2(mut inMatrix1: Arc<DAE::Exp>, mut inMatrix2: Arc<DAE::
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::ARRAY { ty: Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil }, .. }, .. }, Deref @ DAE::Exp::ARRAY { ty: Deref @ DAE::Type::T_ARRAY { ty, dims: Deref @ metamodelica::List::Cons { head: m, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil } } }, array: expl2, .. }) => {
-                    let mut expl1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
+                    let mut expl1: Arc<metamodelica::List<Arc<DAE::Exp>>>;
                     let mut ty = (*ty).clone();
                     expl1 = List::map1r(expl2.clone(), (std::sync::Arc::new(simplifyScalarProduct) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> + 'static>), inMatrix1.clone())?;
                     ty = Arc::new(DAE::Type::T_ARRAY { ty: ty.clone(), dims: list![m.clone()] });
@@ -3484,8 +3484,8 @@ fn simplifyMatrixProduct2(mut inMatrix1: Arc<DAE::Exp>, mut inMatrix2: Arc<DAE::
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::ARRAY { ty: Deref @ DAE::Type::T_ARRAY { ty, dims: Deref @ metamodelica::List::Cons { head: n, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil } } }, array: expl1, .. }, Deref @ DAE::Exp::ARRAY { ty: Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: p, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil } }, .. }, array: expl2, .. }) => {
-                    let mut row_ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut matrix: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>> = metamodelica::nil();
+                    let mut row_ty: Arc<DAE::Type>;
+                    let mut matrix: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>>;
                     let mut expl1 = (*expl1).clone();
                     matrix = List::map1(expl1.clone(), (std::sync::Arc::new(simplifyMatrixProduct3) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> + 'static>), expl2.clone())?;
                     row_ty = Arc::new(DAE::Type::T_ARRAY { ty: ty.clone(), dims: list![p.clone()] });
@@ -3530,7 +3530,7 @@ fn simplifyBinarySortConstants(mut inExp: Arc<DAE::Exp>) -> Arc<DAE::Exp> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 e @ Deref @ DAE::Exp::BINARY { operator: DAE::Operator::MUL { .. }, .. } => {
-                    let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut res: Arc<DAE::Exp>;
                     res = simplifyBinarySortConstantsMul(e.clone())?;
                     Ok(res.clone())
                 }
@@ -3552,12 +3552,12 @@ fn simplifyBinarySortConstants(mut inExp: Arc<DAE::Exp>) -> Arc<DAE::Exp> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 e @ Deref @ DAE::Exp::BINARY { operator: DAE::Operator::ADD { .. }, .. } => {
-                    let mut e_lst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut const_es1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut notconst_es1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut res1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut res2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e_lst: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+                    let mut const_es1: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+                    let mut notconst_es1: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+                    let mut res: Arc<DAE::Exp>;
+                    let mut res1: Arc<DAE::Exp>;
+                    let mut res2: Arc<DAE::Exp>;
                     e_lst = Expression::terms(e.clone())?;
                     (const_es1, notconst_es1) = List::splitOnTrue(e_lst.clone(), (std::sync::Arc::new(Expression::isConstValue) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>))?;
                     if !(const_es1.clone().is_empty()) {
@@ -3593,9 +3593,9 @@ fn simplifyBinaryCoeff(mut inExp: Arc<DAE::Exp>) -> Arc<DAE::Exp> {
             ::match_deref::match_deref! { match &__mc_input {
                 e @ Deref @ DAE::Exp::BINARY { operator: DAE::Operator::MUL { ty: tp }, .. } => {
                     if !((Types::isScalarReal(tp.clone()))) { bail!("guard") }
-                    let mut e_lst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut e_lst_1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e_lst: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+                    let mut e_lst_1: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+                    let mut res: Arc<DAE::Exp>;
                     e_lst = Expression::factors(e.clone())?;
                     e_lst_1 = simplifyMul(e_lst.clone())?;
                     res = Expression::makeProductLst(e_lst_1.clone())?;
@@ -3607,12 +3607,12 @@ fn simplifyBinaryCoeff(mut inExp: Arc<DAE::Exp>) -> Arc<DAE::Exp> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::DIV { .. }, exp2: e2 } => {
-                    let mut e_lst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut e_lst_1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut e1_lst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut e2_lst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut e2_lst_1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e_lst: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+                    let mut e_lst_1: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+                    let mut e1_lst: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+                    let mut e2_lst: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+                    let mut e2_lst_1: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+                    let mut res: Arc<DAE::Exp>;
                     let false = (Expression::isZero(e2.clone())?) else { bail!("pattern mismatch") };
                     e1_lst = Expression::factors(e1.clone())?;
                     e2_lst = Expression::factors(e2.clone())?;
@@ -3628,9 +3628,9 @@ fn simplifyBinaryCoeff(mut inExp: Arc<DAE::Exp>) -> Arc<DAE::Exp> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 e @ Deref @ DAE::Exp::BINARY { operator: DAE::Operator::ADD { .. }, .. } => {
-                    let mut e_lst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut e_lst_1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e_lst: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+                    let mut e_lst_1: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+                    let mut res: Arc<DAE::Exp>;
                     e_lst = Expression::terms(e.clone())?;
                     e_lst_1 = simplifyAdd(e_lst.clone())?;
                     res = Expression::makeSum(e_lst_1.clone())?;
@@ -3642,11 +3642,11 @@ fn simplifyBinaryCoeff(mut inExp: Arc<DAE::Exp>) -> Arc<DAE::Exp> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::SUB { .. }, exp2: e2 } => {
-                    let mut e_lst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut e_lst_1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut e1_lst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut e2_lst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e_lst: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+                    let mut e_lst_1: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+                    let mut e1_lst: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+                    let mut e2_lst: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+                    let mut res: Arc<DAE::Exp>;
                     e1_lst = Expression::terms(e1.clone())?;
                     e2_lst = Expression::terms(e2.clone())?;
                     e2_lst = List::map(e2_lst.clone(), (std::sync::Arc::new(Expression::negate) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> + 'static>))?;
@@ -3832,9 +3832,9 @@ fn simplifyAddJoinTerms(mut inTplExpRealLst: Arc<metamodelica::List<(Arc<DAE::Ex
             outTplExpRealLst.clone()
         },
         _ => {
-            let mut exp1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut coeff1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut coeff_map: Arc<UnorderedMap::UnorderedMap<Arc<DAE::Exp>, metamodelica::Real>> = <Arc<UnorderedMap::UnorderedMap<Arc<DAE::Exp>, metamodelica::Real>> as ::std::default::Default>::default();
+            let mut exp1: Arc<DAE::Exp>;
+            let mut coeff1: metamodelica::Real;
+            let mut coeff_map: Arc<UnorderedMap::UnorderedMap<Arc<DAE::Exp>, metamodelica::Real>>;
             coeff_map = UnorderedMap::new((std::sync::Arc::new(ExpressionBasics::hashExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>), (std::sync::Arc::new(ExpressionBasics::expEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>), (inTplExpRealLst.clone().len() as i32));
             for mut tpl in &*inTplExpRealLst.clone() {
                 let mut tpl = tpl.clone();
@@ -3883,7 +3883,7 @@ fn simplifyBinaryAddCoeff2(mut inExp: Arc<DAE::Exp>) -> Result<(Arc<DAE::Exp>, m
             (inExp.clone(), metamodelica::OrderedFloat(1.0_f64))
         },
         Deref @ DAE::Exp::UNARY { operator: DAE::Operator::UMINUS { ty: Deref @ DAE::Type::T_REAL { .. } }, exp } => {
-            let mut coeff: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+            let mut coeff: metamodelica::Real;
             let mut exp = (*exp).clone();
             (exp, coeff) = simplifyBinaryAddCoeff2(exp.clone())?;
             coeff = (metamodelica::OrderedFloat(-1.0_f64)) * (coeff.clone());
@@ -3896,12 +3896,12 @@ fn simplifyBinaryAddCoeff2(mut inExp: Arc<DAE::Exp>) -> Result<(Arc<DAE::Exp>, m
             (e1.clone(), coeff.clone())
         },
         Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::MUL { .. }, exp2: Deref @ DAE::Exp::ICONST { integer: icoeff } } => {
-            let mut coeff_1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+            let mut coeff_1: metamodelica::Real;
             coeff_1 = intReal(icoeff.clone());
             (e1.clone(), coeff_1.clone())
         },
         Deref @ DAE::Exp::BINARY { exp1: Deref @ DAE::Exp::ICONST { integer: icoeff }, operator: DAE::Operator::MUL { .. }, exp2: e1 } => {
-            let mut coeff_1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+            let mut coeff_1: metamodelica::Real;
             coeff_1 = intReal(icoeff.clone());
             (e1.clone(), coeff_1.clone())
         },
@@ -3926,17 +3926,17 @@ fn simplifyBinaryMulCoeff2(mut inExp: Arc<DAE::Exp>) -> Result<(Arc<DAE::Exp>, m
             (e1.clone(), coeff.clone())
         },
         Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::POW { .. }, exp2: Deref @ DAE::Exp::UNARY { operator: DAE::Operator::UMINUS { .. }, exp: Deref @ DAE::Exp::RCONST { real: coeff } } } => {
-            let mut coeff_1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+            let mut coeff_1: metamodelica::Real;
             coeff_1 = metamodelica::OrderedFloat(0.0_f64) - coeff.clone();
             (e1.clone(), coeff_1.clone())
         },
         Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::POW { .. }, exp2: Deref @ DAE::Exp::ICONST { integer: icoeff } } => {
-            let mut coeff_1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+            let mut coeff_1: metamodelica::Real;
             coeff_1 = intReal(icoeff.clone());
             (e1.clone(), coeff_1.clone())
         },
         Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::POW { .. }, exp2: Deref @ DAE::Exp::UNARY { operator: DAE::Operator::UMINUS { .. }, exp: Deref @ DAE::Exp::ICONST { integer: icoeff } } } => {
-            let mut coeff_1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+            let mut coeff_1: metamodelica::Real;
             coeff_1 = metamodelica::OrderedFloat(0.0_f64) - intReal(icoeff.clone());
             (e1.clone(), coeff_1.clone())
         },
@@ -3981,52 +3981,52 @@ fn simplifyAsub0(mut ie: Arc<DAE::Exp>, mut sub: i32, mut inSubExp: Arc<DAE::Exp
     let mut res: Arc<DAE::Exp>;
     res = (::match_deref::match_deref! { match &(ie.clone()) {
         Deref @ DAE::Exp::ARRAY { ty: _, scalar: _, array: exps } => {
-            let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut exp: Arc<DAE::Exp>;
             exp = (exps.clone()).get(sub.clone())?;
             exp.clone()
         },
         Deref @ DAE::Exp::RANGE { start: Deref @ DAE::Exp::BCONST { bool: bstart }, stop: Deref @ DAE::Exp::BCONST { bool: bstop }, .. } => {
-            let mut b: bool = false;
+            let mut b: bool;
             b = (simplifyRangeBool(bstart.clone(), bstop.clone())).get(sub.clone())?;
             Arc::new(DAE::Exp::BCONST { bool: b.clone() })
         },
         Deref @ DAE::Exp::RANGE { start: Deref @ DAE::Exp::ICONST { integer: istart }, step: None, stop: Deref @ DAE::Exp::ICONST { integer: istop }, .. } => {
-            let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut ival: i32 = 0;
+            let mut exp: Arc<DAE::Exp>;
+            let mut ival: i32;
             ival = (simplifyRange(istart.clone(), 1, istop.clone())?).get(sub.clone())?;
             exp = Arc::new(DAE::Exp::ICONST { integer: ival.clone() });
             exp.clone()
         },
         Deref @ DAE::Exp::RANGE { start: Deref @ DAE::Exp::ICONST { integer: istart }, step: Some(Deref @ DAE::Exp::ICONST { integer: istep }), stop: Deref @ DAE::Exp::ICONST { integer: istop }, .. } => {
-            let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut ival: i32 = 0;
+            let mut exp: Arc<DAE::Exp>;
+            let mut ival: i32;
             ival = (simplifyRange(istart.clone(), istep.clone(), istop.clone())?).get(sub.clone())?;
             exp = Arc::new(DAE::Exp::ICONST { integer: ival.clone() });
             exp.clone()
         },
         Deref @ DAE::Exp::RANGE { start: Deref @ DAE::Exp::RCONST { real: rstart }, step: None, stop: Deref @ DAE::Exp::RCONST { real: rstop }, .. } => {
-            let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut rval: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+            let mut exp: Arc<DAE::Exp>;
+            let mut rval: metamodelica::Real;
             rval = (simplifyRangeReal(rstart.clone(), metamodelica::OrderedFloat(1.0_f64), rstop.clone())).get(sub.clone())?;
             exp = Arc::new(DAE::Exp::RCONST { real: rval.clone() });
             exp.clone()
         },
         Deref @ DAE::Exp::RANGE { start: Deref @ DAE::Exp::RCONST { real: rstart }, step: Some(Deref @ DAE::Exp::RCONST { real: rstep }), stop: Deref @ DAE::Exp::RCONST { real: rstop }, .. } => {
-            let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut rval: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+            let mut exp: Arc<DAE::Exp>;
+            let mut rval: metamodelica::Real;
             rval = (simplifyRangeReal(rstart.clone(), rstep.clone(), rstop.clone())).get(sub.clone())?;
             exp = Arc::new(DAE::Exp::RCONST { real: rval.clone() });
             exp.clone()
         },
         Deref @ DAE::Exp::MATRIX { ty: t, integer: _, matrix: mexps } => {
-            let mut t1: Type = Arc::new(DAE::Type::T_NORETCALL);
-            let mut mexpl: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
+            let mut t1: Type;
+            let mut mexpl: Arc<metamodelica::List<Arc<DAE::Exp>>>;
             t1 = Expression::unliftArray(t.clone())?;
             mexpl = (mexps.clone()).get(sub.clone())?;
             Arc::new(DAE::Exp::ARRAY { ty: t1.clone(), scalar: true, array: mexpl.clone() })
         },
         Deref @ DAE::Exp::IFEXP { expCond: cond, expThen: e1, expElse: e2 } => {
-            let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e: Arc<DAE::Exp>;
             let mut e1 = (*e1).clone();
             let mut e2 = (*e2).clone();
             e1 = Expression::makeASUB(e1.clone(), list![inSubExp.clone()])?;
@@ -4035,8 +4035,8 @@ fn simplifyAsub0(mut ie: Arc<DAE::Exp>, mut sub: i32, mut inSubExp: Arc<DAE::Exp
             e.clone()
         },
         Deref @ DAE::Exp::CREF { componentRef: c, ty: t } => {
-            let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut c_1: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
+            let mut exp: Arc<DAE::Exp>;
+            let mut c_1: Arc<DAE::ComponentRef>;
             let mut t = (*t).clone();
             let true = (Types::isArray(t.clone())) else { bail!("pattern mismatch") };
             t = Expression::unliftArray(t.clone())?;
@@ -4045,7 +4045,7 @@ fn simplifyAsub0(mut ie: Arc<DAE::Exp>, mut sub: i32, mut inSubExp: Arc<DAE::Exp
             exp.clone()
         },
         Deref @ DAE::Exp::BINARY { exp1: e1, operator: op, exp2: e2 } if (Expression::isMulOrDiv(op.clone()) || Expression::isAddOrSub(op.clone())) => {
-            let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e: Arc<DAE::Exp>;
             let mut e1 = (*e1).clone();
             let mut e2 = (*e2).clone();
             e1 = Expression::makeASUB(e1.clone(), list![inSubExp.clone()])?;
@@ -4065,8 +4065,8 @@ fn simplifyAsubCref(mut cr: Arc<DAE::ComponentRef>, mut sub: Arc<DAE::Exp>) -> R
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::ComponentRef::CREF_IDENT { ident: idn, identType: t2, subscriptLst: s } => {
-                    let mut c_1: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-                    let mut s_1: Arc<metamodelica::List<Arc<DAE::Subscript>>> = metamodelica::nil();
+                    let mut c_1: Arc<DAE::ComponentRef>;
+                    let mut s_1: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
                     s_1 = Expression::subscriptsAppend(s.clone(), sub.clone())?;
                     c_1 = ComponentReferenceBasics::makeCrefIdent((idn.clone()).clone(), t2.clone(), s_1.clone());
                     Ok(c_1.clone())
@@ -4077,8 +4077,8 @@ fn simplifyAsubCref(mut cr: Arc<DAE::ComponentRef>, mut sub: Arc<DAE::Exp>) -> R
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::ComponentRef::CREF_QUAL { ident: idn, identType: t2 @ Deref @ DAE::Type::T_ARRAY { dims, .. }, subscriptLst: s, componentRef: c } => {
-                    let mut c_1: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-                    let mut s_1: Arc<metamodelica::List<Arc<DAE::Subscript>>> = metamodelica::nil();
+                    let mut c_1: Arc<DAE::ComponentRef>;
+                    let mut s_1: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
                     let true = ((dims.clone().len() as i32) > (s.clone().len() as i32)) else { bail!("pattern mismatch") };
                     s_1 = Expression::subscriptsAppend(s.clone(), sub.clone())?;
                     c_1 = ComponentReferenceBasics::makeCrefQual((idn.clone()).clone(), t2.clone(), s_1.clone(), c.clone());
@@ -4100,7 +4100,7 @@ fn simplifyAsubCref(mut cr: Arc<DAE::ComponentRef>, mut sub: Arc<DAE::Exp>) -> R
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::ComponentRef::CREF_QUAL { ident: idn, identType: t2, subscriptLst: s, componentRef: c } => {
-                    let mut c_1: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
+                    let mut c_1: Arc<DAE::ComponentRef>;
                     c_1 = simplifyAsubCref(c.clone(), sub.clone())?;
                     c_1 = ComponentReferenceBasics::makeCrefQual((idn.clone()).clone(), t2.clone(), s.clone(), c_1.clone());
                     Ok(c_1.clone())
@@ -4120,7 +4120,7 @@ fn simplifyAsub(mut inExp: Arc<DAE::Exp>, mut inSub: Arc<DAE::Exp>) -> Result<Ar
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e, sub) => {
-                    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut exp: Arc<DAE::Exp>;
                     exp = simplifyAsub0(e.clone(), Expression::expInt(sub.clone())?, inSub.clone())?;
                     Ok(exp.clone())
                 }
@@ -4130,11 +4130,11 @@ fn simplifyAsub(mut inExp: Arc<DAE::Exp>, mut inSub: Arc<DAE::Exp>) -> Result<Ar
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::UNARY { operator: DAE::Operator::UMINUS_ARR { .. }, exp: e }, sub) => {
-                    let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut t2: Type = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut op2: Operator = <DAE::Operator as ::std::default::Default>::default();
-                    let mut b: bool = false;
+                    let mut e_1: Arc<DAE::Exp>;
+                    let mut exp: Arc<DAE::Exp>;
+                    let mut t2: Type;
+                    let mut op2: Operator;
+                    let mut b: bool;
                     e_1 = simplifyAsub(e.clone(), sub.clone())?;
                     t2 = Expression::r#typeof(e_1.clone())?;
                     b = DAEUtil::expTypeArray(t2.clone());
@@ -4148,9 +4148,9 @@ fn simplifyAsub(mut inExp: Arc<DAE::Exp>, mut inSub: Arc<DAE::Exp>) -> Result<Ar
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::LUNARY { operator: DAE::Operator::NOT { .. }, exp: e }, sub) => {
-                    let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut t2: Type = Arc::new(DAE::Type::T_NORETCALL);
+                    let mut e_1: Arc<DAE::Exp>;
+                    let mut exp: Arc<DAE::Exp>;
+                    let mut t2: Type;
                     e_1 = simplifyAsub(e.clone(), sub.clone())?;
                     t2 = Expression::r#typeof(e_1.clone())?;
                     exp = Arc::new(DAE::Exp::LUNARY { operator: DAE::Operator::NOT { ty: t2.clone() }, exp: e_1.clone() });
@@ -4162,12 +4162,12 @@ fn simplifyAsub(mut inExp: Arc<DAE::Exp>, mut inSub: Arc<DAE::Exp>) -> Result<Ar
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::SUB_ARR { .. }, exp2: e2 }, sub) => {
-                    let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut e2_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut t2: Type = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut op2: Operator = <DAE::Operator as ::std::default::Default>::default();
-                    let mut b: bool = false;
+                    let mut e1_1: Arc<DAE::Exp>;
+                    let mut e2_1: Arc<DAE::Exp>;
+                    let mut exp: Arc<DAE::Exp>;
+                    let mut t2: Type;
+                    let mut op2: Operator;
+                    let mut b: bool;
                     e1_1 = simplifyAsub(e1.clone(), sub.clone())?;
                     e2_1 = simplifyAsub(e2.clone(), sub.clone())?;
                     t2 = Expression::r#typeof(e1_1.clone())?;
@@ -4182,11 +4182,11 @@ fn simplifyAsub(mut inExp: Arc<DAE::Exp>, mut inSub: Arc<DAE::Exp>) -> Result<Ar
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::MUL_ARRAY_SCALAR { .. }, exp2: e2 }, sub) => {
-                    let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut t2: Type = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut op: Operator = <DAE::Operator as ::std::default::Default>::default();
-                    let mut b: bool = false;
+                    let mut e1_1: Arc<DAE::Exp>;
+                    let mut exp: Arc<DAE::Exp>;
+                    let mut t2: Type;
+                    let mut op: Operator;
+                    let mut b: bool;
                     e1_1 = simplifyAsub(e1.clone(), sub.clone())?;
                     t2 = Expression::r#typeof(e1_1.clone())?;
                     b = DAEUtil::expTypeArray(t2.clone());
@@ -4200,11 +4200,11 @@ fn simplifyAsub(mut inExp: Arc<DAE::Exp>, mut inSub: Arc<DAE::Exp>) -> Result<Ar
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::ADD_ARRAY_SCALAR { .. }, exp2: e2 }, sub) => {
-                    let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut t2: Type = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut op: Operator = <DAE::Operator as ::std::default::Default>::default();
-                    let mut b: bool = false;
+                    let mut e1_1: Arc<DAE::Exp>;
+                    let mut exp: Arc<DAE::Exp>;
+                    let mut t2: Type;
+                    let mut op: Operator;
+                    let mut b: bool;
                     e1_1 = simplifyAsub(e1.clone(), sub.clone())?;
                     t2 = Expression::r#typeof(e1_1.clone())?;
                     b = DAEUtil::expTypeArray(t2.clone());
@@ -4218,11 +4218,11 @@ fn simplifyAsub(mut inExp: Arc<DAE::Exp>, mut inSub: Arc<DAE::Exp>) -> Result<Ar
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::SUB_SCALAR_ARRAY { .. }, exp2: e2 }, sub) => {
-                    let mut e2_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut t2: Type = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut op: Operator = <DAE::Operator as ::std::default::Default>::default();
-                    let mut b: bool = false;
+                    let mut e2_1: Arc<DAE::Exp>;
+                    let mut exp: Arc<DAE::Exp>;
+                    let mut t2: Type;
+                    let mut op: Operator;
+                    let mut b: bool;
                     e2_1 = simplifyAsub(e2.clone(), sub.clone())?;
                     t2 = Expression::r#typeof(e2_1.clone())?;
                     b = DAEUtil::expTypeArray(t2.clone());
@@ -4236,7 +4236,7 @@ fn simplifyAsub(mut inExp: Arc<DAE::Exp>, mut inSub: Arc<DAE::Exp>) -> Result<Ar
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::MUL_MATRIX_PRODUCT { .. }, exp2: e2 }, sub) => {
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e: Arc<DAE::Exp>;
                     e = simplifyMatrixProduct(e1.clone(), e2.clone())?;
                     e = simplifyAsub(e.clone(), sub.clone())?;
                     Ok(e.clone())
@@ -4247,11 +4247,11 @@ fn simplifyAsub(mut inExp: Arc<DAE::Exp>, mut inSub: Arc<DAE::Exp>) -> Result<Ar
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::DIV_SCALAR_ARRAY { .. }, exp2: e2 }, sub) => {
-                    let mut e2_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut t2: Type = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut op: Operator = <DAE::Operator as ::std::default::Default>::default();
-                    let mut b: bool = false;
+                    let mut e2_1: Arc<DAE::Exp>;
+                    let mut exp: Arc<DAE::Exp>;
+                    let mut t2: Type;
+                    let mut op: Operator;
+                    let mut b: bool;
                     e2_1 = simplifyAsub(e2.clone(), sub.clone())?;
                     t2 = Expression::r#typeof(e2_1.clone())?;
                     b = DAEUtil::expTypeArray(t2.clone());
@@ -4265,11 +4265,11 @@ fn simplifyAsub(mut inExp: Arc<DAE::Exp>, mut inSub: Arc<DAE::Exp>) -> Result<Ar
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::DIV_ARRAY_SCALAR { .. }, exp2: e2 }, sub) => {
-                    let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut t2: Type = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut op: Operator = <DAE::Operator as ::std::default::Default>::default();
-                    let mut b: bool = false;
+                    let mut e1_1: Arc<DAE::Exp>;
+                    let mut exp: Arc<DAE::Exp>;
+                    let mut t2: Type;
+                    let mut op: Operator;
+                    let mut b: bool;
                     e1_1 = simplifyAsub(e1.clone(), sub.clone())?;
                     t2 = Expression::r#typeof(e1_1.clone())?;
                     b = DAEUtil::expTypeArray(t2.clone());
@@ -4283,11 +4283,11 @@ fn simplifyAsub(mut inExp: Arc<DAE::Exp>, mut inSub: Arc<DAE::Exp>) -> Result<Ar
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::POW_SCALAR_ARRAY { .. }, exp2: e2 }, sub) => {
-                    let mut e2_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut t2: Type = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut op: Operator = <DAE::Operator as ::std::default::Default>::default();
-                    let mut b: bool = false;
+                    let mut e2_1: Arc<DAE::Exp>;
+                    let mut exp: Arc<DAE::Exp>;
+                    let mut t2: Type;
+                    let mut op: Operator;
+                    let mut b: bool;
                     e2_1 = simplifyAsub(e2.clone(), sub.clone())?;
                     t2 = Expression::r#typeof(e2_1.clone())?;
                     b = DAEUtil::expTypeArray(t2.clone());
@@ -4301,11 +4301,11 @@ fn simplifyAsub(mut inExp: Arc<DAE::Exp>, mut inSub: Arc<DAE::Exp>) -> Result<Ar
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::POW_ARRAY_SCALAR { .. }, exp2: e2 }, sub) => {
-                    let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut t2: Type = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut op: Operator = <DAE::Operator as ::std::default::Default>::default();
-                    let mut b: bool = false;
+                    let mut e1_1: Arc<DAE::Exp>;
+                    let mut exp: Arc<DAE::Exp>;
+                    let mut t2: Type;
+                    let mut op: Operator;
+                    let mut b: bool;
                     e1_1 = simplifyAsub(e1.clone(), sub.clone())?;
                     t2 = Expression::r#typeof(e1_1.clone())?;
                     b = DAEUtil::expTypeArray(t2.clone());
@@ -4319,12 +4319,12 @@ fn simplifyAsub(mut inExp: Arc<DAE::Exp>, mut inSub: Arc<DAE::Exp>) -> Result<Ar
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::ADD_ARR { .. }, exp2: e2 }, sub) => {
-                    let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut e2_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut t2: Type = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut op2: Operator = <DAE::Operator as ::std::default::Default>::default();
-                    let mut b: bool = false;
+                    let mut e1_1: Arc<DAE::Exp>;
+                    let mut e2_1: Arc<DAE::Exp>;
+                    let mut exp: Arc<DAE::Exp>;
+                    let mut t2: Type;
+                    let mut op2: Operator;
+                    let mut b: bool;
                     e1_1 = simplifyAsub(e1.clone(), sub.clone())?;
                     e2_1 = simplifyAsub(e2.clone(), sub.clone())?;
                     t2 = Expression::r#typeof(e1_1.clone())?;
@@ -4339,12 +4339,12 @@ fn simplifyAsub(mut inExp: Arc<DAE::Exp>, mut inSub: Arc<DAE::Exp>) -> Result<Ar
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::MUL_ARR { .. }, exp2: e2 }, sub) => {
-                    let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut e2_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut t2: Type = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut op2: Operator = <DAE::Operator as ::std::default::Default>::default();
-                    let mut b: bool = false;
+                    let mut e1_1: Arc<DAE::Exp>;
+                    let mut e2_1: Arc<DAE::Exp>;
+                    let mut exp: Arc<DAE::Exp>;
+                    let mut t2: Type;
+                    let mut op2: Operator;
+                    let mut b: bool;
                     e1_1 = simplifyAsub(e1.clone(), sub.clone())?;
                     e2_1 = simplifyAsub(e2.clone(), sub.clone())?;
                     t2 = Expression::r#typeof(e1_1.clone())?;
@@ -4359,12 +4359,12 @@ fn simplifyAsub(mut inExp: Arc<DAE::Exp>, mut inSub: Arc<DAE::Exp>) -> Result<Ar
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::DIV_ARR { .. }, exp2: e2 }, sub) => {
-                    let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut e2_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut t2: Type = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut op2: Operator = <DAE::Operator as ::std::default::Default>::default();
-                    let mut b: bool = false;
+                    let mut e1_1: Arc<DAE::Exp>;
+                    let mut e2_1: Arc<DAE::Exp>;
+                    let mut exp: Arc<DAE::Exp>;
+                    let mut t2: Type;
+                    let mut op2: Operator;
+                    let mut b: bool;
                     e1_1 = simplifyAsub(e1.clone(), sub.clone())?;
                     e2_1 = simplifyAsub(e2.clone(), sub.clone())?;
                     t2 = Expression::r#typeof(e1_1.clone())?;
@@ -4379,12 +4379,12 @@ fn simplifyAsub(mut inExp: Arc<DAE::Exp>, mut inSub: Arc<DAE::Exp>) -> Result<Ar
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::POW_ARR2 { .. }, exp2: e2 }, sub) => {
-                    let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut e2_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut t2: Type = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut op2: Operator = <DAE::Operator as ::std::default::Default>::default();
-                    let mut b: bool = false;
+                    let mut e1_1: Arc<DAE::Exp>;
+                    let mut e2_1: Arc<DAE::Exp>;
+                    let mut exp: Arc<DAE::Exp>;
+                    let mut t2: Type;
+                    let mut op2: Operator;
+                    let mut b: bool;
                     e1_1 = simplifyAsub(e1.clone(), sub.clone())?;
                     e2_1 = simplifyAsub(e2.clone(), sub.clone())?;
                     t2 = Expression::r#typeof(e1_1.clone())?;
@@ -4399,10 +4399,10 @@ fn simplifyAsub(mut inExp: Arc<DAE::Exp>, mut inSub: Arc<DAE::Exp>) -> Result<Ar
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::LBINARY { exp1: e1, operator: op, exp2: e2 }, sub) => {
-                    let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut e2_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut t2: Type = Arc::new(DAE::Type::T_NORETCALL);
+                    let mut e1_1: Arc<DAE::Exp>;
+                    let mut e2_1: Arc<DAE::Exp>;
+                    let mut exp: Arc<DAE::Exp>;
+                    let mut t2: Type;
                     let mut op = (*op).clone();
                     e1_1 = simplifyAsub(e1.clone(), sub.clone())?;
                     e2_1 = simplifyAsub(e2.clone(), sub.clone())?;
@@ -4417,8 +4417,8 @@ fn simplifyAsub(mut inExp: Arc<DAE::Exp>, mut inSub: Arc<DAE::Exp>) -> Result<Ar
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::ARRAY { array: exps, .. }, sub) => {
-                    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut indx: i32 = 0;
+                    let mut exp: Arc<DAE::Exp>;
+                    let mut indx: i32;
                     indx = Expression::expInt(sub.clone())?;
                     exp = (exps.clone()).get(indx.clone())?;
                     Ok(exp.clone())
@@ -4429,9 +4429,9 @@ fn simplifyAsub(mut inExp: Arc<DAE::Exp>, mut inSub: Arc<DAE::Exp>) -> Result<Ar
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::MATRIX { ty: t, matrix: lstexps, .. }, sub) => {
-                    let mut t_1: Type = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut indx: i32 = 0;
-                    let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
+                    let mut t_1: Type;
+                    let mut indx: i32;
+                    let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>>;
                     indx = Expression::expInt(sub.clone())?;
                     expl = (lstexps.clone()).get(indx.clone())?;
                     t_1 = Expression::unliftArray(t.clone())?;
@@ -4443,8 +4443,8 @@ fn simplifyAsub(mut inExp: Arc<DAE::Exp>, mut inSub: Arc<DAE::Exp>) -> Result<Ar
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::IFEXP { expCond: cond, expThen: e1, expElse: e2 }, sub) => {
-                    let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut e2_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e1_1: Arc<DAE::Exp>;
+                    let mut e2_1: Arc<DAE::Exp>;
                     e1_1 = simplifyAsub(e1.clone(), sub.clone())?;
                     e2_1 = simplifyAsub(e2.clone(), sub.clone())?;
                     Ok(Arc::new(DAE::Exp::IFEXP { expCond: cond.clone(), expThen: e1_1.clone(), expElse: e2_1.clone() }))
@@ -4553,108 +4553,108 @@ fn simplifyBinaryConst(mut inOperator1: Operator, mut inExp2: Arc<DAE::Exp>, mut
     let mut outExp: Arc<DAE::Exp>;
     outExp = (::match_deref::match_deref! { match &((inOperator1.clone(), inExp2.clone(), inExp3.clone())) {
         (DAE::Operator::ADD { .. }, Deref @ DAE::Exp::ICONST { integer: ie1 }, Deref @ DAE::Exp::ICONST { integer: ie2 }) => {
-            let mut val: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut val: Arc<DAE::Exp>;
             val = safeIntOp(ie1.clone(), ie2.clone(), openmodelica_frontend_inst::ExpressionSimplifyTypes::IntOp::ADDOP)?;
             val.clone()
         },
         (DAE::Operator::ADD { .. }, Deref @ DAE::Exp::RCONST { real: re1 }, Deref @ DAE::Exp::RCONST { real: re2 }) => {
-            let mut re3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+            let mut re3: metamodelica::Real;
             re3 = re1.clone() + re2.clone();
             Arc::new(DAE::Exp::RCONST { real: re3.clone() })
         },
         (DAE::Operator::ADD { .. }, Deref @ DAE::Exp::RCONST { real: re1 }, Deref @ DAE::Exp::ICONST { integer: ie2 }) => {
-            let mut e2_1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut re3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+            let mut e2_1: metamodelica::Real;
+            let mut re3: metamodelica::Real;
             e2_1 = intReal(ie2.clone());
             re3 = re1.clone() + e2_1.clone();
             Arc::new(DAE::Exp::RCONST { real: re3.clone() })
         },
         (DAE::Operator::ADD { .. }, Deref @ DAE::Exp::ICONST { integer: ie1 }, Deref @ DAE::Exp::RCONST { real: re2 }) => {
-            let mut e1_1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut re3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+            let mut e1_1: metamodelica::Real;
+            let mut re3: metamodelica::Real;
             e1_1 = intReal(ie1.clone());
             re3 = e1_1.clone() + re2.clone();
             Arc::new(DAE::Exp::RCONST { real: re3.clone() })
         },
         (DAE::Operator::ADD { .. }, Deref @ DAE::Exp::SCONST { string: s1 }, Deref @ DAE::Exp::SCONST { string: s2 }) => {
-            let mut r#str: ArcStr = arcstr::literal!("");
+            let mut r#str: ArcStr;
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*s1.clone()); __mm_s.push_str(&*s2.clone()); ArcStr::from(__mm_s) }).clone();
             Arc::new(DAE::Exp::SCONST { string: (r#str.clone()).clone() })
         },
         (DAE::Operator::SUB { .. }, Deref @ DAE::Exp::ICONST { integer: ie1 }, Deref @ DAE::Exp::ICONST { integer: ie2 }) => {
-            let mut val: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut val: Arc<DAE::Exp>;
             val = safeIntOp(ie1.clone(), ie2.clone(), openmodelica_frontend_inst::ExpressionSimplifyTypes::IntOp::SUBOP)?;
             val.clone()
         },
         (DAE::Operator::SUB { .. }, Deref @ DAE::Exp::RCONST { real: re1 }, Deref @ DAE::Exp::RCONST { real: re2 }) => {
-            let mut re3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+            let mut re3: metamodelica::Real;
             re3 = re1.clone() - re2.clone();
             Arc::new(DAE::Exp::RCONST { real: re3.clone() })
         },
         (DAE::Operator::SUB { .. }, Deref @ DAE::Exp::RCONST { real: re1 }, Deref @ DAE::Exp::ICONST { integer: ie2 }) => {
-            let mut e2_1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut re3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+            let mut e2_1: metamodelica::Real;
+            let mut re3: metamodelica::Real;
             e2_1 = intReal(ie2.clone());
             re3 = re1.clone() - e2_1.clone();
             Arc::new(DAE::Exp::RCONST { real: re3.clone() })
         },
         (DAE::Operator::SUB { .. }, Deref @ DAE::Exp::ICONST { integer: ie1 }, Deref @ DAE::Exp::RCONST { real: re2 }) => {
-            let mut e1_1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut re3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+            let mut e1_1: metamodelica::Real;
+            let mut re3: metamodelica::Real;
             e1_1 = intReal(ie1.clone());
             re3 = e1_1.clone() - re2.clone();
             Arc::new(DAE::Exp::RCONST { real: re3.clone() })
         },
         (DAE::Operator::MUL { .. }, Deref @ DAE::Exp::ICONST { integer: ie1 }, Deref @ DAE::Exp::ICONST { integer: ie2 }) => {
-            let mut val: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut val: Arc<DAE::Exp>;
             val = safeIntOp(ie1.clone(), ie2.clone(), openmodelica_frontend_inst::ExpressionSimplifyTypes::IntOp::MULOP)?;
             val.clone()
         },
         (DAE::Operator::MUL { .. }, Deref @ DAE::Exp::RCONST { real: re1 }, Deref @ DAE::Exp::RCONST { real: re2 }) => {
-            let mut re3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+            let mut re3: metamodelica::Real;
             re3 = re1.clone() * re2.clone();
             Arc::new(DAE::Exp::RCONST { real: re3.clone() })
         },
         (DAE::Operator::MUL { .. }, Deref @ DAE::Exp::RCONST { real: re1 }, Deref @ DAE::Exp::ICONST { integer: ie2 }) => {
-            let mut e2_1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut re3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+            let mut e2_1: metamodelica::Real;
+            let mut re3: metamodelica::Real;
             e2_1 = intReal(ie2.clone());
             re3 = re1.clone() * e2_1.clone();
             Arc::new(DAE::Exp::RCONST { real: re3.clone() })
         },
         (DAE::Operator::MUL { .. }, Deref @ DAE::Exp::ICONST { integer: ie1 }, Deref @ DAE::Exp::RCONST { real: re2 }) => {
-            let mut e1_1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut re3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+            let mut e1_1: metamodelica::Real;
+            let mut re3: metamodelica::Real;
             e1_1 = intReal(ie1.clone());
             re3 = e1_1.clone() * re2.clone();
             Arc::new(DAE::Exp::RCONST { real: re3.clone() })
         },
         (DAE::Operator::DIV { .. }, Deref @ DAE::Exp::ICONST { integer: ie1 }, Deref @ DAE::Exp::ICONST { integer: ie2 }) => {
-            let mut val: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut val: Arc<DAE::Exp>;
             val = safeIntOp(ie1.clone(), ie2.clone(), openmodelica_frontend_inst::ExpressionSimplifyTypes::IntOp::DIVOP)?;
             val.clone()
         },
         (DAE::Operator::DIV { .. }, Deref @ DAE::Exp::RCONST { real: re1 }, Deref @ DAE::Exp::RCONST { real: re2 }) => {
-            let mut re3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+            let mut re3: metamodelica::Real;
             re3 = re1.clone() / re2.clone();
             Arc::new(DAE::Exp::RCONST { real: re3.clone() })
         },
         (DAE::Operator::DIV { .. }, Deref @ DAE::Exp::RCONST { real: re1 }, Deref @ DAE::Exp::ICONST { integer: ie2 }) => {
-            let mut e2_1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut re3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+            let mut e2_1: metamodelica::Real;
+            let mut re3: metamodelica::Real;
             e2_1 = intReal(ie2.clone());
             re3 = re1.clone() / e2_1.clone();
             Arc::new(DAE::Exp::RCONST { real: re3.clone() })
         },
         (DAE::Operator::DIV { .. }, Deref @ DAE::Exp::ICONST { integer: ie1 }, Deref @ DAE::Exp::RCONST { real: re2 }) => {
-            let mut e1_1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut re3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+            let mut e1_1: metamodelica::Real;
+            let mut re3: metamodelica::Real;
             e1_1 = intReal(ie1.clone());
             re3 = e1_1.clone() / re2.clone();
             Arc::new(DAE::Exp::RCONST { real: re3.clone() })
         },
         (DAE::Operator::POW { .. }, Deref @ DAE::Exp::RCONST { real: re1 }, Deref @ DAE::Exp::RCONST { real: re2 }) => {
-            let mut re3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+            let mut re3: metamodelica::Real;
             re3 = (re1.clone()).powf(re2.clone());
             Arc::new(DAE::Exp::RCONST { real: re3.clone() })
         },
@@ -4673,8 +4673,8 @@ fn simplifyRelationConst(mut op: Operator, mut e1: Arc<DAE::Exp>, mut e2: Arc<DA
             false
         },
         (DAE::Operator::LESS { .. }, _, _) => {
-            let mut v1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut v2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+            let mut v1: metamodelica::Real;
+            let mut v2: metamodelica::Real;
             v1 = Expression::toReal(e1.clone())?;
             v2 = Expression::toReal(e2.clone())?;
             b = v1.clone() < v2.clone();
@@ -4687,8 +4687,8 @@ fn simplifyRelationConst(mut op: Operator, mut e1: Arc<DAE::Exp>, mut e2: Arc<DA
             true
         },
         (DAE::Operator::LESSEQ { .. }, _, _) => {
-            let mut v1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut v2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+            let mut v1: metamodelica::Real;
+            let mut v2: metamodelica::Real;
             v1 = Expression::toReal(e1.clone())?;
             v2 = Expression::toReal(e2.clone())?;
             b = v1.clone() <= v2.clone();
@@ -4701,8 +4701,8 @@ fn simplifyRelationConst(mut op: Operator, mut e1: Arc<DAE::Exp>, mut e2: Arc<DA
             stringEqual((s1.clone()).clone(), (s2.clone()).clone())
         },
         (DAE::Operator::EQUAL { .. }, _, _) => {
-            let mut v1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut v2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+            let mut v1: metamodelica::Real;
+            let mut v2: metamodelica::Real;
             v1 = Expression::toReal(e1.clone())?;
             v2 = Expression::toReal(e2.clone())?;
             realEq(v1.clone(), v2.clone())
@@ -4731,9 +4731,9 @@ pub fn safeIntOp(mut val1: i32, mut val2: i32, mut op: ExpressionSimplifyTypes::
     let mut outv: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     outv = (match op.clone() {
         ExpressionSimplifyTypes::IntOp::MULOP { .. } => {
-            let mut rv1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut rv2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut rv3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+            let mut rv1: metamodelica::Real;
+            let mut rv2: metamodelica::Real;
+            let mut rv3: metamodelica::Real;
             rv1 = intReal(val1.clone());
             rv2 = intReal(val2.clone());
             rv3 = rv1.clone() * rv2.clone();
@@ -4741,14 +4741,14 @@ pub fn safeIntOp(mut val1: i32, mut val2: i32, mut op: ExpressionSimplifyTypes::
             outv.clone()
         },
         ExpressionSimplifyTypes::IntOp::DIVOP { .. } => {
-            let mut ires: i32 = 0;
+            let mut ires: i32;
             ires = intDiv(val1.clone(), val2.clone());
             Arc::new(DAE::Exp::ICONST { integer: ires.clone() })
         },
         ExpressionSimplifyTypes::IntOp::SUBOP { .. } => {
-            let mut rv1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut rv2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut rv3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+            let mut rv1: metamodelica::Real;
+            let mut rv2: metamodelica::Real;
+            let mut rv3: metamodelica::Real;
             rv1 = intReal(val1.clone());
             rv2 = intReal(val2.clone());
             rv3 = rv1.clone() - rv2.clone();
@@ -4756,9 +4756,9 @@ pub fn safeIntOp(mut val1: i32, mut val2: i32, mut op: ExpressionSimplifyTypes::
             outv.clone()
         },
         ExpressionSimplifyTypes::IntOp::ADDOP { .. } => {
-            let mut rv1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut rv2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut rv3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+            let mut rv1: metamodelica::Real;
+            let mut rv2: metamodelica::Real;
+            let mut rv3: metamodelica::Real;
             rv1 = intReal(val1.clone());
             rv2 = intReal(val2.clone());
             rv3 = rv1.clone() + rv2.clone();
@@ -4766,9 +4766,9 @@ pub fn safeIntOp(mut val1: i32, mut val2: i32, mut op: ExpressionSimplifyTypes::
             outv.clone()
         },
         ExpressionSimplifyTypes::IntOp::POWOP { .. } => {
-            let mut rv1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut rv2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut rv3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+            let mut rv1: metamodelica::Real;
+            let mut rv2: metamodelica::Real;
+            let mut rv3: metamodelica::Real;
             rv1 = intReal(val1.clone());
             rv2 = intReal(val2.clone());
             rv3 = realPow(rv1.clone(), rv2.clone());
@@ -4787,8 +4787,8 @@ fn simplifyBinaryCommutativeWork(mut op: Operator, mut lhs: Arc<DAE::Exp>, mut r
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::MUL { ty: _ }, Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "sin" }, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil }, .. }, Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "cos" }, expLst: Deref @ metamodelica::List::Cons { head: e2, tail: Deref @ metamodelica::List::Nil }, .. }) => {
                     if !((ExpressionBasics::expEqual(e1.clone(), e2.clone())?)) { bail!("guard") }
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut op1: Operator = <DAE::Operator as ::std::default::Default>::default();
+                    let mut e: Arc<DAE::Exp>;
+                    let mut op1: Operator;
                     op1 = DAE::Operator::MUL { ty: DAE::T_REAL_DEFAULT().clone() };
                     e = Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(2.0_f64) }), operator: op1.clone(), exp2: e1.clone() });
                     e = Expression::makePureBuiltinCall((literal!("sin")).clone(), list![e.clone()], DAE::T_REAL_DEFAULT().clone());
@@ -4862,7 +4862,7 @@ fn simplifyBinaryCommutativeWork(mut op: Operator, mut lhs: Arc<DAE::Exp>, mut r
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::MUL { ty: tp }, e1, Deref @ DAE::Exp::BINARY { exp1: e2, operator: DAE::Operator::DIV { ty: tp2 }, exp2: e3 }) => {
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e: Arc<DAE::Exp>;
                     let __pa0 = ::match_deref::match_deref! { match &(simplify1(Arc::new(DAE::Exp::BINARY { exp1: e1.clone(), operator: DAE::Operator::MUL { ty: tp.clone() }, exp2: e2.clone() }))?) {
                         (__pa0, true) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -4992,7 +4992,7 @@ fn simplifyBinaryCommutativeWork(mut op: Operator, mut lhs: Arc<DAE::Exp>, mut r
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::MUL { .. }, e1, Deref @ DAE::Exp::BINARY { exp1: e3, operator: op1 @ DAE::Operator::POW { ty: tp }, exp2: e4 }) => {
                     if !((ExpressionBasics::expEqual(e1.clone(), e3.clone())?)) { bail!("guard") }
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e: Arc<DAE::Exp>;
                     e = Expression::makeConstOne(tp.clone());
                     Ok(Arc::new(DAE::Exp::BINARY { exp1: e1.clone(), operator: op1.clone(), exp2: Arc::new(DAE::Exp::BINARY { exp1: e.clone(), operator: DAE::Operator::ADD { ty: tp.clone() }, exp2: e4.clone() }) }))
                 }
@@ -5038,7 +5038,7 @@ fn simplifyBinary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut lhs
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (oper, e1, e2, true, true) => {
-                    let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e3: Arc<DAE::Exp>;
                     e3 = simplifyBinaryConst(oper.clone(), e1.clone(), e2.clone())?;
                     Ok(e3.clone())
                 }
@@ -5066,7 +5066,7 @@ fn simplifyBinary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut lhs
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::MUL { .. }, e1, Deref @ DAE::Exp::BINARY { exp1: e2, operator: op1 @ DAE::Operator::POW { ty: ty2 }, exp2: Deref @ DAE::Exp::UNARY { exp: e3, operator: DAE::Operator::UMINUS { .. } } }, _, _) => {
-                    let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut res: Arc<DAE::Exp>;
                     res = Arc::new(DAE::Exp::BINARY { exp1: e1.clone(), operator: DAE::Operator::DIV { ty: ty2.clone() }, exp2: Arc::new(DAE::Exp::BINARY { exp1: e2.clone(), operator: op1.clone(), exp2: e3.clone() }) });
                     Ok(res.clone())
                 }
@@ -5076,7 +5076,7 @@ fn simplifyBinary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut lhs
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::DIV { .. }, e1, Deref @ DAE::Exp::BINARY { exp1: e2, operator: op1 @ DAE::Operator::POW { ty: ty2 }, exp2: Deref @ DAE::Exp::UNARY { exp: e3, operator: DAE::Operator::UMINUS { .. } } }, _, _) => {
-                    let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut res: Arc<DAE::Exp>;
                     res = Arc::new(DAE::Exp::BINARY { exp1: e1.clone(), operator: DAE::Operator::MUL { ty: ty2.clone() }, exp2: Arc::new(DAE::Exp::BINARY { exp1: e2.clone(), operator: op1.clone(), exp2: e3.clone() }) });
                     Ok(res.clone())
                 }
@@ -5086,7 +5086,7 @@ fn simplifyBinary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut lhs
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::MUL { .. }, e1, Deref @ DAE::Exp::BINARY { exp1: e2, operator: op1 @ DAE::Operator::POW { ty: ty2 }, exp2: Deref @ DAE::Exp::RCONST { real: r } }, _, _) => {
-                    let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut res: Arc<DAE::Exp>;
                     let mut r = (*r).clone();
                     let true = (realLt(r.clone(), metamodelica::OrderedFloat(0.0_f64))) else { bail!("pattern mismatch") };
                     r = -(r.clone());
@@ -5099,7 +5099,7 @@ fn simplifyBinary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut lhs
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::DIV { .. }, e1, Deref @ DAE::Exp::BINARY { exp1: e2, operator: op1 @ DAE::Operator::POW { ty: ty2 }, exp2: Deref @ DAE::Exp::RCONST { real: r } }, _, _) => {
-                    let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut res: Arc<DAE::Exp>;
                     let mut r = (*r).clone();
                     let true = (realLt(r.clone(), metamodelica::OrderedFloat(0.0_f64))) else { bail!("pattern mismatch") };
                     r = -(r.clone());
@@ -5112,8 +5112,8 @@ fn simplifyBinary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut lhs
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::DIV { ty: _ }, Deref @ DAE::Exp::BINARY { exp1: Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::MUL { ty: _ }, exp2: e2 }, operator: op1, exp2: e3 }, e4, _, _) => {
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e: Arc<DAE::Exp>;
+                    let mut res: Arc<DAE::Exp>;
                     let true = (Expression::isAddOrSub(op1.clone())) else { bail!("pattern mismatch") };
                     let true = (ExpressionBasics::expEqual(e2.clone(), e4.clone())?) else { bail!("pattern mismatch") };
                     e = Expression::makeDiv(e3.clone(), e4.clone())?;
@@ -5126,8 +5126,8 @@ fn simplifyBinary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut lhs
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::DIV { ty: _ }, Deref @ DAE::Exp::BINARY { exp1: e3, operator: op1, exp2: Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::MUL { ty: _ }, exp2: e2 } }, e4, _, _) => {
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e: Arc<DAE::Exp>;
+                    let mut res: Arc<DAE::Exp>;
                     let true = (Expression::isAddOrSub(op1.clone())) else { bail!("pattern mismatch") };
                     let true = (ExpressionBasics::expEqual(e2.clone(), e4.clone())?) else { bail!("pattern mismatch") };
                     e = Expression::makeDiv(e3.clone(), e4.clone())?;
@@ -5140,9 +5140,9 @@ fn simplifyBinary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut lhs
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::DIV { ty: _ }, Deref @ DAE::Exp::BINARY { exp1: Deref @ DAE::Exp::BINARY { exp1: e1, operator: op2 @ DAE::Operator::MUL { .. }, exp2: Deref @ DAE::Exp::BINARY { exp1: e2, operator: DAE::Operator::MUL { ty: _ }, exp2: e3 } }, operator: op1, exp2: e4 }, e5, _, _) => {
-                    let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e1_1: Arc<DAE::Exp>;
+                    let mut e: Arc<DAE::Exp>;
+                    let mut res: Arc<DAE::Exp>;
                     let true = (Expression::isAddOrSub(op1.clone())) else { bail!("pattern mismatch") };
                     let true = (ExpressionBasics::expEqual(e3.clone(), e5.clone())?) else { bail!("pattern mismatch") };
                     e = Expression::makeDiv(e4.clone(), e3.clone())?;
@@ -5156,8 +5156,8 @@ fn simplifyBinary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut lhs
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (op2, Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "abs" }, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil }, .. }, Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "abs" }, expLst: Deref @ metamodelica::List::Cons { head: e2, tail: Deref @ metamodelica::List::Nil }, .. }, _, _) => {
-                    let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut ty: Type = Arc::new(DAE::Type::T_NORETCALL);
+                    let mut res: Arc<DAE::Exp>;
+                    let mut ty: Type;
                     let true = (Expression::isMulOrDiv(op2.clone())) else { bail!("pattern mismatch") };
                     ty = Expression::r#typeof(e1.clone())?;
                     res = Arc::new(DAE::Exp::BINARY { exp1: e1.clone(), operator: op2.clone(), exp2: e2.clone() });
@@ -5169,9 +5169,9 @@ fn simplifyBinary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut lhs
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::DIV { ty }, e1, Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "exp" }, expLst: Deref @ metamodelica::List::Cons { head: e2, tail: Deref @ metamodelica::List::Nil }, .. }, _, _) => {
-                    let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e3: Arc<DAE::Exp>;
+                    let mut e: Arc<DAE::Exp>;
+                    let mut res: Arc<DAE::Exp>;
                     e = Arc::new(DAE::Exp::UNARY { operator: DAE::Operator::UMINUS { ty: ty.clone() }, exp: e2.clone() });
                     (e, _) = simplify1(e.clone())?;
                     e3 = Expression::makePureBuiltinCall((literal!("exp")).clone(), list![e.clone()], ty.clone());
@@ -5184,8 +5184,8 @@ fn simplifyBinary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut lhs
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::MUL { ty }, Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "exp" }, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil }, .. }, Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "exp" }, expLst: Deref @ metamodelica::List::Cons { head: e2, tail: Deref @ metamodelica::List::Nil }, .. }, _, _) => {
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e: Arc<DAE::Exp>;
+                    let mut res: Arc<DAE::Exp>;
                     let false = (Expression::isConstValue(e1.clone())? || Expression::isConstValue(e2.clone())?) else { bail!("pattern mismatch") };
                     e = Arc::new(DAE::Exp::BINARY { exp1: e1.clone(), operator: DAE::Operator::ADD { ty: ty.clone() }, exp2: e2.clone() });
                     res = Expression::makePureBuiltinCall((literal!("exp")).clone(), list![e.clone()], ty.clone());
@@ -5197,10 +5197,10 @@ fn simplifyBinary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut lhs
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (op1 @ DAE::Operator::DIV { .. }, Deref @ DAE::Exp::BINARY { exp1: e1, operator: op2 @ DAE::Operator::ADD { .. }, exp2: e2 }, e3, _, true) => {
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut e4: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut b: bool = false;
-                    let mut b2: bool = false;
+                    let mut e: Arc<DAE::Exp>;
+                    let mut e4: Arc<DAE::Exp>;
+                    let mut b: bool;
+                    let mut b2: bool;
                     (e, b) = simplify1(Arc::new(DAE::Exp::BINARY { exp1: e1.clone(), operator: op1.clone(), exp2: e3.clone() }))?;
                     (e4, b2) = simplify1(Arc::new(DAE::Exp::BINARY { exp1: e2.clone(), operator: op1.clone(), exp2: e3.clone() }))?;
                     let true = (b.clone() || b2.clone()) else { bail!("pattern mismatch") };
@@ -5212,10 +5212,10 @@ fn simplifyBinary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut lhs
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (op1 @ DAE::Operator::DIV { .. }, Deref @ DAE::Exp::BINARY { exp1: e1, operator: op2 @ DAE::Operator::SUB { .. }, exp2: e2 }, e3, _, true) => {
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut e4: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut b: bool = false;
-                    let mut b2: bool = false;
+                    let mut e: Arc<DAE::Exp>;
+                    let mut e4: Arc<DAE::Exp>;
+                    let mut b: bool;
+                    let mut b2: bool;
                     (e, b) = simplify1(Arc::new(DAE::Exp::BINARY { exp1: e1.clone(), operator: op1.clone(), exp2: e3.clone() }))?;
                     (e4, b2) = simplify1(Arc::new(DAE::Exp::BINARY { exp1: e2.clone(), operator: op1.clone(), exp2: e3.clone() }))?;
                     let true = (b.clone() || b2.clone()) else { bail!("pattern mismatch") };
@@ -5279,8 +5279,8 @@ fn simplifyBinary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut lhs
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::DIV { .. }, Deref @ DAE::Exp::BINARY { exp1: Deref @ DAE::Exp::UNARY { operator: DAE::Operator::UMINUS { .. }, exp: e1 }, operator: DAE::Operator::MUL { .. }, exp2: e2 }, e3, _, _) => {
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut tp2: Type = Arc::new(DAE::Type::T_NORETCALL);
+                    let mut e: Arc<DAE::Exp>;
+                    let mut tp2: Type;
                     let true = (ExpressionBasics::expEqual(e1.clone(), e3.clone())?) else { bail!("pattern mismatch") };
                     tp2 = Expression::r#typeof(e2.clone())?;
                     e = Arc::new(DAE::Exp::UNARY { operator: DAE::Operator::UMINUS { ty: tp2.clone() }, exp: e2.clone() });
@@ -5292,8 +5292,8 @@ fn simplifyBinary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut lhs
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::DIV { .. }, Deref @ DAE::Exp::BINARY { exp1: Deref @ DAE::Exp::UNARY { operator: DAE::Operator::UMINUS { .. }, exp: e1 }, operator: DAE::Operator::MUL { .. }, exp2: e2 }, e3, _, _) => {
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut tp2: Type = Arc::new(DAE::Type::T_NORETCALL);
+                    let mut e: Arc<DAE::Exp>;
+                    let mut tp2: Type;
                     let true = (ExpressionBasics::expEqual(e2.clone(), e3.clone())?) else { bail!("pattern mismatch") };
                     tp2 = Expression::r#typeof(e1.clone())?;
                     e = Arc::new(DAE::Exp::UNARY { operator: DAE::Operator::UMINUS { ty: tp2.clone() }, exp: e1.clone() });
@@ -5305,7 +5305,7 @@ fn simplifyBinary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut lhs
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::DIV { .. }, Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::MUL { .. }, exp2: e2 }, Deref @ DAE::Exp::UNARY { operator: DAE::Operator::UMINUS { .. }, exp: e3 }, _, _) => {
-                    let mut tp2: Type = Arc::new(DAE::Type::T_NORETCALL);
+                    let mut tp2: Type;
                     let true = (ExpressionBasics::expEqual(e2.clone(), e3.clone())?) else { bail!("pattern mismatch") };
                     tp2 = Expression::r#typeof(e1.clone())?;
                     Ok(Arc::new(DAE::Exp::UNARY { operator: DAE::Operator::UMINUS { ty: tp2.clone() }, exp: e1.clone() }))
@@ -5316,7 +5316,7 @@ fn simplifyBinary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut lhs
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::DIV { .. }, Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::MUL { .. }, exp2: e2 }, Deref @ DAE::Exp::UNARY { operator: DAE::Operator::UMINUS { .. }, exp: e3 }, _, _) => {
-                    let mut tp2: Type = Arc::new(DAE::Type::T_NORETCALL);
+                    let mut tp2: Type;
                     let true = (ExpressionBasics::expEqual(e1.clone(), e3.clone())?) else { bail!("pattern mismatch") };
                     tp2 = Expression::r#typeof(e2.clone())?;
                     Ok(Arc::new(DAE::Exp::UNARY { operator: DAE::Operator::UMINUS { ty: tp2.clone() }, exp: e2.clone() }))
@@ -5354,7 +5354,7 @@ fn simplifyBinary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut lhs
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::ADD { ty }, e1, e2, _, _) => {
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e: Arc<DAE::Exp>;
                     let true = (Types::isRealOrSubTypeReal(ty.clone())) else { bail!("pattern mismatch") };
                     let true = (ExpressionBasics::expEqual(e1.clone(), e2.clone())?) else { bail!("pattern mismatch") };
                     e = Expression::makeConstNumber(ty.clone(), 2);
@@ -5409,7 +5409,7 @@ fn simplifyBinary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut lhs
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::DIV { ty }, e1, e2, _, _) => {
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e: Arc<DAE::Exp>;
                     let true = (Expression::isConstMinusOne(e2.clone())) else { bail!("pattern mismatch") };
                     e = Arc::new(DAE::Exp::UNARY { operator: DAE::Operator::UMINUS { ty: ty.clone() }, exp: e1.clone() });
                     Ok(e.clone())
@@ -5420,7 +5420,7 @@ fn simplifyBinary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut lhs
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::DIV { ty }, e1, e2, _, _) => {
-                    let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut res: Arc<DAE::Exp>;
                     let false = (Expression::isZero(e2.clone())?) else { bail!("pattern mismatch") };
                     let true = (ExpressionBasics::expEqual(e1.clone(), e2.clone())?) else { bail!("pattern mismatch") };
                     res = Expression::makeConstOne(ty.clone());
@@ -5432,7 +5432,7 @@ fn simplifyBinary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut lhs
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::MUL { ty }, e1, e2, _, _) => {
-                    let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut res: Arc<DAE::Exp>;
                     let false = (Expression::isZero(e2.clone())?) else { bail!("pattern mismatch") };
                     let true = (Types::isRealOrSubTypeReal(ty.clone())) else { bail!("pattern mismatch") };
                     let true = (ExpressionBasics::expEqual(e1.clone(), e2.clone())?) else { bail!("pattern mismatch") };
@@ -5445,8 +5445,8 @@ fn simplifyBinary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut lhs
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::DIV { ty: tp }, e1, Deref @ DAE::Exp::RCONST { real: r1 }, _, _) => {
-                    let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut r: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+                    let mut e3: Arc<DAE::Exp>;
+                    let mut r: metamodelica::Real;
                     let mut r1 = (*r1).clone();
                     let true = (realAbs(r1.clone()) > metamodelica::OrderedFloat(0.0_f64)) else { bail!("pattern mismatch") };
                     r = metamodelica::OrderedFloat(1.0_f64) / r1.clone();
@@ -5462,7 +5462,7 @@ fn simplifyBinary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut lhs
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (op2 @ DAE::Operator::DIV { ty: tp }, e1, Deref @ DAE::Exp::BINARY { exp1: Deref @ DAE::Exp::RCONST { real: r1 }, operator: DAE::Operator::MUL { ty: _ }, exp2: e3 }, _, _) => {
-                    let mut r: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+                    let mut r: metamodelica::Real;
                     let mut r1 = (*r1).clone();
                     let true = (realAbs(r1.clone()) > metamodelica::OrderedFloat(0.0_f64)) else { bail!("pattern mismatch") };
                     r = metamodelica::OrderedFloat(1.0_f64) / r1.clone();
@@ -5526,7 +5526,7 @@ fn simplifyBinary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut lhs
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (op1 @ DAE::Operator::DIV { ty }, e1, Deref @ DAE::Exp::UNARY { operator: DAE::Operator::UMINUS { .. }, exp: e2 }, _, _) => {
-                    let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e1_1: Arc<DAE::Exp>;
                     e1_1 = Arc::new(DAE::Exp::UNARY { operator: DAE::Operator::UMINUS { ty: ty.clone() }, exp: e1.clone() });
                     Ok(Arc::new(DAE::Exp::BINARY { exp1: e1_1.clone(), operator: op1.clone(), exp2: e2.clone() }))
                 }
@@ -5536,7 +5536,7 @@ fn simplifyBinary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut lhs
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (op1 @ DAE::Operator::DIV { .. }, Deref @ DAE::Exp::BINARY { exp1: e2, operator: op2 @ DAE::Operator::MUL { .. }, exp2: e3 }, e1, _, true) => {
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e: Arc<DAE::Exp>;
                     let true = (Expression::isConstValue(e3.clone())?) else { bail!("pattern mismatch") };
                     let __pa0 = ::match_deref::match_deref! { match &(simplify1(Arc::new(DAE::Exp::BINARY { exp1: e3.clone(), operator: op1.clone(), exp2: e1.clone() }))?) {
                         (__pa0, true) => __pa0.clone(),
@@ -5551,7 +5551,7 @@ fn simplifyBinary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut lhs
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (op1 @ DAE::Operator::DIV { .. }, Deref @ DAE::Exp::BINARY { exp1: e2, operator: op2 @ DAE::Operator::MUL { .. }, exp2: e3 }, e1, _, true) => {
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e: Arc<DAE::Exp>;
                     let true = (Expression::isConstValue(e2.clone())?) else { bail!("pattern mismatch") };
                     let __pa0 = ::match_deref::match_deref! { match &(simplify1(Arc::new(DAE::Exp::BINARY { exp1: e2.clone(), operator: op1.clone(), exp2: e1.clone() }))?) {
                         (__pa0, true) => __pa0.clone(),
@@ -5575,7 +5575,7 @@ fn simplifyBinary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut lhs
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::POW { ty: tp }, e2, e, _, _) => {
-                    let mut one: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut one: Arc<DAE::Exp>;
                     let true = (Expression::isConstMinusOne(e.clone())) else { bail!("pattern mismatch") };
                     one = Expression::makeConstOne(tp.clone());
                     Ok(Arc::new(DAE::Exp::BINARY { exp1: one.clone(), operator: DAE::Operator::DIV { ty: DAE::T_REAL_DEFAULT().clone() }, exp2: e2.clone() }))
@@ -5586,7 +5586,7 @@ fn simplifyBinary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut lhs
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::POW { .. }, e1, e, _, true) => {
-                    let mut tp: Type = Arc::new(DAE::Type::T_NORETCALL);
+                    let mut tp: Type;
                     let true = (Expression::isZero(e.clone())?) else { bail!("pattern mismatch") };
                     tp = Expression::r#typeof(e1.clone())?;
                     Ok(Expression::makeConstOne(tp.clone()))
@@ -5623,7 +5623,7 @@ fn simplifyBinary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut lhs
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::DIV { .. }, Deref @ DAE::Exp::BINARY { exp1: e1, operator: op1 @ DAE::Operator::POW { ty }, exp2: e2 }, e3, _, _) => {
-                    let mut e4: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e4: Arc<DAE::Exp>;
                     let true = (ExpressionBasics::expEqual(e1.clone(), e3.clone())?) else { bail!("pattern mismatch") };
                     e4 = Expression::makeConstOne(ty.clone());
                     e4 = Arc::new(DAE::Exp::BINARY { exp1: e2.clone(), operator: DAE::Operator::SUB { ty: ty.clone() }, exp2: e4.clone() });
@@ -5635,7 +5635,7 @@ fn simplifyBinary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut lhs
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::DIV { .. }, Deref @ DAE::Exp::BINARY { exp1: Deref @ DAE::Exp::BINARY { exp1: e1, operator: op1 @ DAE::Operator::POW { ty }, exp2: e2 }, operator: op2 @ DAE::Operator::MUL { ty: _ }, exp2: e5 }, e3, _, _) => {
-                    let mut e4: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e4: Arc<DAE::Exp>;
                     let true = (ExpressionBasics::expEqual(e1.clone(), e3.clone())?) else { bail!("pattern mismatch") };
                     e4 = Expression::makeConstOne(ty.clone());
                     e4 = Arc::new(DAE::Exp::BINARY { exp1: e2.clone(), operator: DAE::Operator::SUB { ty: ty.clone() }, exp2: e4.clone() });
@@ -5647,7 +5647,7 @@ fn simplifyBinary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut lhs
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::DIV { .. }, e3, Deref @ DAE::Exp::BINARY { exp1: e1, operator: op1 @ DAE::Operator::POW { ty }, exp2: e2 }, _, _) => {
-                    let mut e4: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e4: Arc<DAE::Exp>;
                     let true = (ExpressionBasics::expEqual(e1.clone(), e3.clone())?) else { bail!("pattern mismatch") };
                     e4 = Expression::makeConstOne(ty.clone());
                     e4 = Arc::new(DAE::Exp::BINARY { exp1: e4.clone(), operator: DAE::Operator::SUB { ty: ty.clone() }, exp2: e2.clone() });
@@ -5679,8 +5679,8 @@ fn simplifyBinary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut lhs
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (op1, Deref @ DAE::Exp::IFEXP { expCond: e1, expThen: e2, expElse: e3 }, Deref @ DAE::Exp::IFEXP { expCond: e4, expThen: e5, expElse: e6 }, _, _) => {
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e: Arc<DAE::Exp>;
+                    let mut res: Arc<DAE::Exp>;
                     let true = (ExpressionBasics::expEqual(e1.clone(), e4.clone())?) else { bail!("pattern mismatch") };
                     e = Arc::new(DAE::Exp::BINARY { exp1: e2.clone(), operator: op1.clone(), exp2: e5.clone() });
                     res = Arc::new(DAE::Exp::BINARY { exp1: e3.clone(), operator: op1.clone(), exp2: e6.clone() });
@@ -5692,7 +5692,7 @@ fn simplifyBinary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut lhs
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::SUB { ty }, Deref @ DAE::Exp::BINARY { exp1: e @ Deref @ DAE::Exp::UNARY { operator: DAE::Operator::UMINUS { .. }, exp: e1 }, operator: op2 @ DAE::Operator::MUL { .. }, exp2: e2 }, Deref @ DAE::Exp::BINARY { exp1: e3, operator: DAE::Operator::MUL { .. }, exp2: e4 }, false, false) => {
-                    let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut res: Arc<DAE::Exp>;
                     let true = (ExpressionBasics::expEqual(e1.clone(), e3.clone())?) else { bail!("pattern mismatch") };
                     res = Arc::new(DAE::Exp::BINARY { exp1: e.clone(), operator: op2.clone(), exp2: Arc::new(DAE::Exp::BINARY { exp1: e2.clone(), operator: DAE::Operator::ADD { ty: ty.clone() }, exp2: e4.clone() }) });
                     Ok(res.clone())
@@ -5703,7 +5703,7 @@ fn simplifyBinary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut lhs
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::SUB { ty }, Deref @ DAE::Exp::BINARY { exp1: e @ Deref @ DAE::Exp::UNARY { operator: DAE::Operator::UMINUS { .. }, exp: e1 }, operator: DAE::Operator::DIV { .. }, exp2: e2 }, Deref @ DAE::Exp::BINARY { exp1: e3, operator: DAE::Operator::DIV { .. }, exp2: e4 }, false, false) => {
-                    let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut res: Arc<DAE::Exp>;
                     let true = (ExpressionBasics::expEqual(e1.clone(), e3.clone())?) else { bail!("pattern mismatch") };
                     res = Arc::new(DAE::Exp::BINARY { exp1: e.clone(), operator: DAE::Operator::MUL { ty: ty.clone() }, exp2: Arc::new(DAE::Exp::BINARY { exp1: Expression::inverseFactors(e2.clone())?, operator: DAE::Operator::ADD { ty: ty.clone() }, exp2: Expression::inverseFactors(e4.clone())? }) });
                     Ok(res.clone())
@@ -5778,9 +5778,9 @@ fn simplifyBinary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut lhs
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::POW { .. }, e1, e2 @ Deref @ DAE::Exp::RCONST { real: r }, _, true) => {
                     if !((r.clone() != intReal(((r.clone()).0.floor() as i32)))) { bail!("guard") }
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut exp_lst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut exp_lst_1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
+                    let mut e: Arc<DAE::Exp>;
+                    let mut exp_lst: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+                    let mut exp_lst_1: Arc<metamodelica::List<Arc<DAE::Exp>>>;
                     let mut outExp: Arc<DAE::Exp> = outExp.clone();
                     let __pa0 = ::match_deref::match_deref! { match &(Expression::factors(e1.clone())?) {
                         __pa0 @ Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: _, tail: _ } } } => __pa0.clone(),
@@ -5802,8 +5802,8 @@ fn simplifyBinary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut lhs
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::POW { .. }, e1, e2, _, true) => {
                     if !((Expression::isEvaluatedConst(e2.clone()))) { bail!("guard") }
-                    let mut exp_lst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut exp_lst_1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
+                    let mut exp_lst: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+                    let mut exp_lst_1: Arc<metamodelica::List<Arc<DAE::Exp>>>;
                     let __pa0 = ::match_deref::match_deref! { match &(Expression::factors(e1.clone())?) {
                         __pa0 @ Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: _, tail: _ } } } => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -5820,7 +5820,7 @@ fn simplifyBinary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut lhs
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::POW { .. }, Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::POW { .. }, exp2: e2 }, e3, _, _) => {
                     if !((Expression::isEven(e2.clone()))) { bail!("guard") }
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e: Arc<DAE::Exp>;
                     if Expression::isEvaluatedConst(e3.clone()) {
                         e = simplifyBinaryConst(DAE::Operator::MUL { ty: DAE::T_REAL_DEFAULT().clone() }, e2.clone(), e3.clone())?;
                         let false = (Expression::isEven(e.clone())) else { bail!("pattern mismatch") };
@@ -5852,9 +5852,9 @@ fn simplifyBinary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut lhs
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (op2 @ DAE::Operator::DIV { ty }, Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "tan" }, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil }, .. }, Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "sin" }, expLst: Deref @ metamodelica::List::Cons { head: e2, tail: Deref @ metamodelica::List::Nil }, .. }, _, _) => {
-                    let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut e4: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e3: Arc<DAE::Exp>;
+                    let mut e: Arc<DAE::Exp>;
+                    let mut e4: Arc<DAE::Exp>;
                     let true = (ExpressionBasics::expEqual(e1.clone(), e2.clone())?) else { bail!("pattern mismatch") };
                     e3 = Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(1.0_f64) });
                     e4 = Expression::makePureBuiltinCall((literal!("cos")).clone(), list![e2.clone()], ty.clone());
@@ -5867,7 +5867,7 @@ fn simplifyBinary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut lhs
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::DIV { ty }, Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "sin" }, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil }, .. }, Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "tan" }, expLst: Deref @ metamodelica::List::Cons { head: e2, tail: Deref @ metamodelica::List::Nil }, .. }, _, _) => {
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e: Arc<DAE::Exp>;
                     let true = (ExpressionBasics::expEqual(e1.clone(), e2.clone())?) else { bail!("pattern mismatch") };
                     e = Expression::makePureBuiltinCall((literal!("cos")).clone(), list![e2.clone()], ty.clone());
                     Ok(e.clone())
@@ -5878,9 +5878,9 @@ fn simplifyBinary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut lhs
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (op2 @ DAE::Operator::DIV { ty }, e1, Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "tan" }, expLst: Deref @ metamodelica::List::Cons { head: e2, tail: Deref @ metamodelica::List::Nil }, .. }, _, _) => {
-                    let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut e4: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e3: Arc<DAE::Exp>;
+                    let mut e: Arc<DAE::Exp>;
+                    let mut e4: Arc<DAE::Exp>;
                     e3 = Expression::makePureBuiltinCall((literal!("sin")).clone(), list![e2.clone()], ty.clone());
                     e4 = Expression::makePureBuiltinCall((literal!("cos")).clone(), list![e2.clone()], ty.clone());
                     e = Arc::new(DAE::Exp::BINARY { exp1: e4.clone(), operator: op2.clone(), exp2: e3.clone() });
@@ -5901,9 +5901,9 @@ fn simplifyBinary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut lhs
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (op2 @ DAE::Operator::DIV { ty }, Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "tanh" }, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil }, .. }, Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "sinh" }, expLst: Deref @ metamodelica::List::Cons { head: e2, tail: Deref @ metamodelica::List::Nil }, .. }, _, _) => {
-                    let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut e4: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e3: Arc<DAE::Exp>;
+                    let mut e: Arc<DAE::Exp>;
+                    let mut e4: Arc<DAE::Exp>;
                     let true = (ExpressionBasics::expEqual(e1.clone(), e2.clone())?) else { bail!("pattern mismatch") };
                     e3 = Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(1.0_f64) });
                     e4 = Expression::makePureBuiltinCall((literal!("cosh")).clone(), list![e2.clone()], ty.clone());
@@ -5916,7 +5916,7 @@ fn simplifyBinary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut lhs
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::DIV { ty }, Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "sinh" }, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil }, .. }, Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "tanh" }, expLst: Deref @ metamodelica::List::Cons { head: e2, tail: Deref @ metamodelica::List::Nil }, .. }, _, _) => {
-                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e: Arc<DAE::Exp>;
                     let true = (ExpressionBasics::expEqual(e1.clone(), e2.clone())?) else { bail!("pattern mismatch") };
                     e = Expression::makePureBuiltinCall((literal!("cosh")).clone(), list![e2.clone()], ty.clone());
                     Ok(e.clone())
@@ -5927,7 +5927,7 @@ fn simplifyBinary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut lhs
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::MUL { ty }, e1, Deref @ DAE::Exp::UNARY { operator: DAE::Operator::UMINUS { .. }, exp: e2 }, _, _) => {
-                    let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e1_1: Arc<DAE::Exp>;
                     e1_1 = Arc::new(DAE::Exp::UNARY { operator: DAE::Operator::UMINUS { ty: ty.clone() }, exp: e1.clone() });
                     Ok(Arc::new(DAE::Exp::BINARY { exp1: e1_1.clone(), operator: DAE::Operator::MUL { ty: ty.clone() }, exp2: e2.clone() }))
                 }
@@ -6011,23 +6011,23 @@ fn simplifyTwoBinaryExpressions(mut e1: Arc<DAE::Exp>, mut lhsOperator: Operator
             Arc::new(DAE::Exp::BINARY { exp1: e2.clone(), operator: op2.clone(), exp2: Arc::new(DAE::Exp::BINARY { exp1: e1.clone(), operator: op1.clone(), exp2: e3.clone() }) })
         },
         (_, DAE::Operator::POW { .. }, _, DAE::Operator::MUL { .. }, _, DAE::Operator::POW { .. }, _, _, _, _, true, _, _, _) => {
-            let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut res: Arc<DAE::Exp>;
             res = Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::BINARY { exp1: e1.clone(), operator: mainOperator.clone(), exp2: e3.clone() }), operator: lhsOperator.clone(), exp2: e2.clone() });
             res.clone()
         },
         (_, DAE::Operator::POW { .. }, _, DAE::Operator::DIV { .. }, _, DAE::Operator::POW { .. }, _, _, _, _, true, _, _, _) => {
-            let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut res: Arc<DAE::Exp>;
             res = Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::BINARY { exp1: e1.clone(), operator: mainOperator.clone(), exp2: e3.clone() }), operator: lhsOperator.clone(), exp2: e2.clone() });
             res.clone()
         },
         (_, DAE::Operator::POW { .. }, _, DAE::Operator::MUL { .. }, _, DAE::Operator::POW { .. }, _, true, _, _, _, _, _, _) => {
-            let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut res: Arc<DAE::Exp>;
             res = Expression::expAdd(e2.clone(), e4.clone())?;
             res = Expression::expPow(e1.clone(), res.clone())?;
             res.clone()
         },
         (_, DAE::Operator::POW { .. }, _, DAE::Operator::DIV { .. }, _, DAE::Operator::POW { .. }, _, true, _, _, _, _, _, _) => {
-            let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut res: Arc<DAE::Exp>;
             res = Expression::expSub(e2.clone(), e4.clone())?;
             res = Expression::expPow(e1.clone(), res.clone())?;
             res.clone()
@@ -6036,43 +6036,43 @@ fn simplifyTwoBinaryExpressions(mut e1: Arc<DAE::Exp>, mut lhsOperator: Operator
             Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::BINARY { exp1: e1.clone(), operator: op1.clone(), exp2: e3.clone() }), operator: op2.clone(), exp2: e4.clone() })
         },
         (_, op @ DAE::Operator::MUL { ty }, _, op1, _, DAE::Operator::DIV { ty: _ }, _, true, _, _, _, false, _, _) if (Expression::isAddOrSub(op1.clone())) => {
-            let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut one: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e: Arc<DAE::Exp>;
+            let mut one: Arc<DAE::Exp>;
             one = Expression::makeConstOne(ty.clone());
             e = Expression::makeDiv(one.clone(), e4.clone())?;
             Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::BINARY { exp1: e2.clone(), operator: op1.clone(), exp2: e.clone() }), operator: op.clone(), exp2: e1.clone() })
         },
         (_, DAE::Operator::DIV { ty }, _, op1, _, DAE::Operator::MUL { ty: _ }, _, true, _, _, _, false, _, _) if (Expression::isAddOrSub(op1.clone())) => {
-            let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut one: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e: Arc<DAE::Exp>;
+            let mut one: Arc<DAE::Exp>;
             one = Expression::makeConstOne(ty.clone());
             e = Expression::makeDiv(one.clone(), e2.clone())?;
             Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::BINARY { exp1: e.clone(), operator: op1.clone(), exp2: e4.clone() }), operator: DAE::Operator::MUL { ty: ty.clone() }, exp2: e1.clone() })
         },
         (e1_1, op2, e_3, op1, e, _, _, _, _, _, true, _, false, true) if (Expression::isAddOrSub(op1.clone()) && Expression::isMulOrDiv(op2.clone())) => {
-            let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut res: Arc<DAE::Exp>;
             res = Arc::new(DAE::Exp::BINARY { exp1: e1_1.clone(), operator: op1.clone(), exp2: e.clone() });
             Arc::new(DAE::Exp::BINARY { exp1: res.clone(), operator: op2.clone(), exp2: e_3.clone() })
         },
         (Deref @ DAE::Exp::BINARY { exp1: e_1, operator: op2, exp2: e_2 }, op @ DAE::Operator::MUL { ty: _ }, e_3, op1, e, op3, e_6, _, _, _, _, _, _, _) if (!(Expression::isConstValue(e_2.clone())?) && ExpressionBasics::expEqual(e_2.clone(), e_6.clone())? && Expression::operatorEqual(op2.clone(), op3.clone())? && Expression::isAddOrSub(op1.clone()) && Expression::isMulOrDiv(op2.clone())) => {
-            let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e1_1: Arc<DAE::Exp>;
+            let mut res: Arc<DAE::Exp>;
             e1_1 = Arc::new(DAE::Exp::BINARY { exp1: e_1.clone(), operator: op.clone(), exp2: e_3.clone() });
             res = Arc::new(DAE::Exp::BINARY { exp1: e1_1.clone(), operator: op1.clone(), exp2: e.clone() });
             Arc::new(DAE::Exp::BINARY { exp1: res.clone(), operator: op2.clone(), exp2: e_2.clone() })
         },
         (Deref @ DAE::Exp::BINARY { exp1: e_1, operator: op2, exp2: e_2 }, op @ DAE::Operator::MUL { ty: _ }, e_3, op1, Deref @ DAE::Exp::BINARY { exp1: e_4, operator: op3, exp2: e_5 }, DAE::Operator::MUL { ty: _ }, e_6, _, _, _, _, _, _, _) if (!(Expression::isConstValue(e_2.clone())?) && ExpressionBasics::expEqual(e_2.clone(), e_5.clone())? && Expression::operatorEqual(op2.clone(), op3.clone())? && Expression::isAddOrSub(op1.clone()) && Expression::isMulOrDiv(op2.clone())) => {
-            let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e1_1: Arc<DAE::Exp>;
+            let mut e: Arc<DAE::Exp>;
+            let mut res: Arc<DAE::Exp>;
             e1_1 = Arc::new(DAE::Exp::BINARY { exp1: e_1.clone(), operator: op.clone(), exp2: e_3.clone() });
             e = Arc::new(DAE::Exp::BINARY { exp1: e_4.clone(), operator: op.clone(), exp2: e_6.clone() });
             res = Arc::new(DAE::Exp::BINARY { exp1: e1_1.clone(), operator: op1.clone(), exp2: e.clone() });
             Arc::new(DAE::Exp::BINARY { exp1: res.clone(), operator: op2.clone(), exp2: e_2.clone() })
         },
         (e_1, op2, e_3, op1, Deref @ DAE::Exp::BINARY { exp1: e_4, operator: op3, exp2: e_5 }, op @ DAE::Operator::MUL { ty: _ }, e_6, _, _, _, _, _, false, _) if (ExpressionBasics::expEqual(e_3.clone(), e_5.clone())? && Expression::operatorEqual(op2.clone(), op3.clone())? && Expression::isAddOrSub(op1.clone()) && Expression::isMulOrDiv(op2.clone())) => {
-            let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e: Arc<DAE::Exp>;
+            let mut res: Arc<DAE::Exp>;
             e = Arc::new(DAE::Exp::BINARY { exp1: e_4.clone(), operator: op.clone(), exp2: e_6.clone() });
             res = Arc::new(DAE::Exp::BINARY { exp1: e_1.clone(), operator: op1.clone(), exp2: e.clone() });
             Arc::new(DAE::Exp::BINARY { exp1: res.clone(), operator: op2.clone(), exp2: e_3.clone() })
@@ -6142,7 +6142,7 @@ fn simplifyRelation(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut i
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (oper, e1, e2) => {
-                    let mut b: bool = false;
+                    let mut b: bool;
                     let true = (Expression::isConstValue(e1.clone())?) else { bail!("pattern mismatch") };
                     let true = (Expression::isConstValue(e2.clone())?) else { bail!("pattern mismatch") };
                     b = simplifyRelationConst(oper.clone(), e1.clone(), e2.clone())?;
@@ -6256,7 +6256,7 @@ fn simplifyUnary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut inEx
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::NOT { .. }, e1) => {
-                    let mut b1: bool = false;
+                    let mut b1: bool;
                     b1 = Expression::toBool(e1.clone())?;
                     b1 = !(b1.clone());
                     Ok(Arc::new(DAE::Exp::BCONST { bool: b1.clone() }))
@@ -6275,7 +6275,7 @@ fn simplifyUnary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut inEx
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::UMINUS { .. }, Deref @ DAE::Exp::ICONST { integer: i }) => {
-                    let mut i_1: i32 = 0;
+                    let mut i_1: i32;
                     i_1 = intNeg(i.clone());
                     Ok(Arc::new(DAE::Exp::ICONST { integer: i_1.clone() }))
                 }
@@ -6285,7 +6285,7 @@ fn simplifyUnary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut inEx
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::UMINUS { .. }, Deref @ DAE::Exp::RCONST { real: r }) => {
-                    let mut r_1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+                    let mut r_1: metamodelica::Real;
                     r_1 = -(r.clone());
                     Ok(Arc::new(DAE::Exp::RCONST { real: r_1.clone() }))
                 }
@@ -6345,7 +6345,7 @@ fn simplifyUnary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut inEx
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (op2 @ DAE::Operator::UMINUS { .. }, Deref @ DAE::Exp::BINARY { exp1: e1, operator: op @ DAE::Operator::ADD { .. }, exp2: e2 }) => {
-                    let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e_1: Arc<DAE::Exp>;
                     let __pa0 = ::match_deref::match_deref! { match &(simplify1(Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::UNARY { operator: op2.clone(), exp: e1.clone() }), operator: op.clone(), exp2: Arc::new(DAE::Exp::UNARY { operator: op2.clone(), exp: e2.clone() }) }))?) {
                         (__pa0, true) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -6501,12 +6501,12 @@ fn simplifyBuiltinConstantDer(mut inExp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>>
             Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) })
         },
         Deref @ DAE::Exp::ARRAY { ty: Deref @ DAE::Type::T_ARRAY { ty: Deref @ DAE::Type::T_REAL { .. }, dims }, .. } => {
-            let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e: Arc<DAE::Exp>;
             (e, _) = Expression::makeZeroExpression(dims.clone())?;
             e.clone()
         },
         Deref @ DAE::Exp::ARRAY { ty: Deref @ DAE::Type::T_ARRAY { ty: Deref @ DAE::Type::T_INTEGER { .. }, dims }, .. } => {
-            let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e: Arc<DAE::Exp>;
             (e, _) = Expression::makeZeroExpression(dims.clone())?;
             e.clone()
         },
@@ -6519,45 +6519,45 @@ fn removeOperatorDimension(mut inop: Operator) -> Result<Operator> {
     let mut outop: Operator;
     outop = (match inop.clone() {
         DAE::Operator::ADD_ARR { ty: ref ty1 } => {
-            let mut ty2: Type = Arc::new(DAE::Type::T_NORETCALL);
-            let mut b: bool = false;
-            let mut op: Operator = <DAE::Operator as ::std::default::Default>::default();
+            let mut ty2: Type;
+            let mut b: bool;
+            let mut op: Operator;
             ty2 = Expression::unliftArray(ty1.clone())?;
             b = DAEUtil::expTypeArray(ty2.clone());
             op = if (b.clone()) {DAE::Operator::ADD_ARR { ty: ty2.clone() }} else {DAE::Operator::ADD { ty: ty2.clone() }};
             op.clone()
         },
         DAE::Operator::SUB_ARR { ty: ref ty1 } => {
-            let mut ty2: Type = Arc::new(DAE::Type::T_NORETCALL);
-            let mut b: bool = false;
-            let mut op: Operator = <DAE::Operator as ::std::default::Default>::default();
+            let mut ty2: Type;
+            let mut b: bool;
+            let mut op: Operator;
             ty2 = Expression::unliftArray(ty1.clone())?;
             b = DAEUtil::expTypeArray(ty2.clone());
             op = if (b.clone()) {DAE::Operator::SUB_ARR { ty: ty2.clone() }} else {DAE::Operator::SUB { ty: ty2.clone() }};
             op.clone()
         },
         DAE::Operator::DIV_ARR { ty: ref ty1 } => {
-            let mut ty2: Type = Arc::new(DAE::Type::T_NORETCALL);
-            let mut b: bool = false;
-            let mut op: Operator = <DAE::Operator as ::std::default::Default>::default();
+            let mut ty2: Type;
+            let mut b: bool;
+            let mut op: Operator;
             ty2 = Expression::unliftArray(ty1.clone())?;
             b = DAEUtil::expTypeArray(ty2.clone());
             op = if (b.clone()) {DAE::Operator::DIV_ARR { ty: ty2.clone() }} else {DAE::Operator::DIV { ty: ty2.clone() }};
             op.clone()
         },
         DAE::Operator::MUL_ARR { ty: ref ty1 } => {
-            let mut ty2: Type = Arc::new(DAE::Type::T_NORETCALL);
-            let mut b: bool = false;
-            let mut op: Operator = <DAE::Operator as ::std::default::Default>::default();
+            let mut ty2: Type;
+            let mut b: bool;
+            let mut op: Operator;
             ty2 = Expression::unliftArray(ty1.clone())?;
             b = DAEUtil::expTypeArray(ty2.clone());
             op = if (b.clone()) {DAE::Operator::MUL_ARR { ty: ty2.clone() }} else {DAE::Operator::MUL { ty: ty2.clone() }};
             op.clone()
         },
         DAE::Operator::POW_ARR2 { ty: ref ty1 } => {
-            let mut ty2: Type = Arc::new(DAE::Type::T_NORETCALL);
-            let mut b: bool = false;
-            let mut op: Operator = <DAE::Operator as ::std::default::Default>::default();
+            let mut ty2: Type;
+            let mut b: bool;
+            let mut op: Operator;
             ty2 = Expression::unliftArray(ty1.clone())?;
             b = DAEUtil::expTypeArray(ty2.clone());
             op = if (b.clone()) {DAE::Operator::POW_ARR2 { ty: ty2.clone() }} else {DAE::Operator::POW { ty: ty2.clone() }};
@@ -6586,7 +6586,7 @@ pub fn simplifyRangeReal(mut inStart: metamodelica::Real, mut inStep: metamodeli
         let __mc_input = inStop.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            let mut error_str: ArcStr = arcstr::literal!("");
+            let mut error_str: ArcStr;
             let true = (realAbs(inStep.clone()) <= metamodelica::OrderedFloat(1e-14_f64)) else { bail!("pattern mismatch") };
             error_str = stringDelimitList(List::map(list![inStart.clone(), inStep.clone(), inStop.clone()], (std::sync::Arc::new(fnptr!(realString, metamodelica::Real)) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Real) -> Result<ArcStr> + 'static>))?, (literal!(":")).clone());
             Error::addMessage(Error::ZERO_STEP_IN_ARRAY_CONSTRUCTOR.clone(), list![(error_str.clone()).clone()])?;
@@ -6599,7 +6599,7 @@ pub fn simplifyRangeReal(mut inStart: metamodelica::Real, mut inStep: metamodeli
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            let mut steps: i32 = 0;
+            let mut steps: i32;
             steps = Util::realRangeSize(inStart.clone(), inStep.clone(), inStop.clone()) - 1;
             Ok(simplifyRangeReal2(inStart.clone(), inStep.clone(), steps.clone(), metamodelica::nil()))
         })() { break 'mc __v; }
@@ -6615,8 +6615,8 @@ fn simplifyRangeReal2(mut inStart: metamodelica::Real, mut inStep: metamodelica:
             return inValues.clone()
         },
         _ => {
-            let mut next: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut vals: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
+            let mut next: metamodelica::Real;
+            let mut vals: Arc<metamodelica::List<metamodelica::Real>>;
             next = inStart.clone() + inStep.clone() * intReal(inSteps.clone());
             vals = metamodelica::cons(next.clone(), inValues.clone());
             { (inStart, inStep, inSteps, inValues) = (inStart.clone(), inStep.clone(), inSteps.clone() - 1, vals.clone()); continue '__tco; }
@@ -6632,7 +6632,7 @@ fn simplifyReduction(mut inReduction: Arc<DAE::Exp>) -> Arc<DAE::Exp> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::REDUCTION { iterators, reductionInfo: Deref @ DAE::ReductionInfo { defaultValue: Some(v), .. }, .. } => {
-                    let mut expr: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut expr: Arc<DAE::Exp>;
                     let true = (hasZeroLengthIterator(iterators.clone())) else { bail!("pattern mismatch") };
                     expr = ValuesUtil::valueExp(v.clone(), None)?;
                     Ok(expr.clone())
@@ -6643,7 +6643,7 @@ fn simplifyReduction(mut inReduction: Arc<DAE::Exp>) -> Arc<DAE::Exp> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::REDUCTION { iterators, .. } => {
-                    let mut expr: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut expr: Arc<DAE::Exp>;
                     let true = (hasZeroLengthIterator(iterators.clone())) else { bail!("pattern mismatch") };
                     expr = ValuesUtil::valueExp(openmodelica_frontend_types::Values::Value::interned_META_FAIL(), None)?;
                     Ok(expr.clone())
@@ -6654,8 +6654,8 @@ fn simplifyReduction(mut inReduction: Arc<DAE::Exp>) -> Arc<DAE::Exp> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::REDUCTION { reductionInfo: Deref @ DAE::ReductionInfo { path, foldName, resultName, foldExp, exprType: ty, defaultValue, .. }, expr, iterators: Deref @ metamodelica::List::Cons { head: Deref @ DAE::ReductionIterator { id: iter_name, guardExp: None, exp: range, .. }, tail: Deref @ metamodelica::List::Nil } } => {
-                    let mut values: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut ety: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+                    let mut values: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+                    let mut ety: Arc<DAE::Type>;
                     let mut expr = (*expr).clone();
                     values = Expression::getArrayOrRangeContents(range.clone())?;
                     ety = Types::simplifyType(ty.clone())?;
@@ -6669,10 +6669,10 @@ fn simplifyReduction(mut inReduction: Arc<DAE::Exp>) -> Arc<DAE::Exp> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::REDUCTION { reductionInfo: Deref @ DAE::ReductionInfo { path, iterType: Absyn::ReductionIterType::THREAD { .. }, foldName, resultName, exprType: ty, foldExp, defaultValue }, expr, iterators } => {
-                    let mut range: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut iter_name: ArcStr = arcstr::literal!("");
-                    let mut values: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut ety: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+                    let mut range: Arc<DAE::Exp>;
+                    let mut iter_name: ArcStr;
+                    let mut values: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+                    let mut ety: Arc<DAE::Type>;
                     let mut expr = (*expr).clone();
                     let mut iterators = (*iterators).clone();
                     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(iterators.clone()) {
@@ -6695,9 +6695,9 @@ fn simplifyReduction(mut inReduction: Arc<DAE::Exp>) -> Arc<DAE::Exp> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::REDUCTION { reductionInfo: Deref @ DAE::ReductionInfo { path: path @ Deref @ Absyn::Path::IDENT { name: Deref @ "array" }, iterType: Absyn::ReductionIterType::COMBINE { .. }, foldName, resultName, exprType: ty, .. }, expr, iterators: Deref @ metamodelica::List::Cons { head: iter, tail: iterators @ Deref @ metamodelica::List::Cons { head: _, tail: _ } } } => {
-                    let mut ty1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut foldName2: ArcStr = arcstr::literal!("");
-                    let mut resultName2: ArcStr = arcstr::literal!("");
+                    let mut ty1: Arc<DAE::Type>;
+                    let mut foldName2: ArcStr;
+                    let mut resultName2: ArcStr;
                     let mut expr = (*expr).clone();
                     foldName2 = (Util::getTempVariableIndex()).clone();
                     resultName2 = (Util::getTempVariableIndex()).clone();
@@ -6712,8 +6712,8 @@ fn simplifyReduction(mut inReduction: Arc<DAE::Exp>) -> Arc<DAE::Exp> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::REDUCTION { reductionInfo: Deref @ DAE::ReductionInfo { path, iterType: Absyn::ReductionIterType::COMBINE { .. }, foldName, resultName, exprType: ty, foldExp: None, defaultValue }, expr, iterators: Deref @ metamodelica::List::Cons { head: iter, tail: iterators @ Deref @ metamodelica::List::Cons { head: _, tail: _ } } } => {
-                    let mut foldName2: ArcStr = arcstr::literal!("");
-                    let mut resultName2: ArcStr = arcstr::literal!("");
+                    let mut foldName2: ArcStr;
+                    let mut resultName2: ArcStr;
                     let mut expr = (*expr).clone();
                     foldName2 = (Util::getTempVariableIndex()).clone();
                     resultName2 = (Util::getTempVariableIndex()).clone();
@@ -6727,9 +6727,9 @@ fn simplifyReduction(mut inReduction: Arc<DAE::Exp>) -> Arc<DAE::Exp> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::REDUCTION { reductionInfo: Deref @ DAE::ReductionInfo { path, iterType: Absyn::ReductionIterType::COMBINE { .. }, foldName, resultName, exprType: ty, foldExp: Some(foldExpr), defaultValue }, expr, iterators: Deref @ metamodelica::List::Cons { head: iter, tail: iterators @ Deref @ metamodelica::List::Cons { head: _, tail: _ } } } => {
-                    let mut foldExpr2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut foldName2: ArcStr = arcstr::literal!("");
-                    let mut resultName2: ArcStr = arcstr::literal!("");
+                    let mut foldExpr2: Arc<DAE::Exp>;
+                    let mut foldName2: ArcStr;
+                    let mut resultName2: ArcStr;
                     let mut expr = (*expr).clone();
                     foldName2 = (Util::getTempVariableIndex()).clone();
                     resultName2 = (Util::getTempVariableIndex()).clone();
@@ -6832,8 +6832,8 @@ fn replaceIteratorWithExpTraverser(mut inExp: Arc<DAE::Exp>, mut inTpl: (ArcStr,
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::CREF { componentRef: Deref @ DAE::ComponentRef::CREF_QUAL { ident: id, identType: _, subscriptLst: Deref @ metamodelica::List::Nil, componentRef: Deref @ DAE::ComponentRef::CREF_IDENT { ident: id2, identType: _, subscriptLst: Deref @ metamodelica::List::Nil } }, .. }, tpl @ (name, Deref @ DAE::Exp::CALL { expLst: exps, path: callPath, attr: Deref @ DAE::CallAttributes { ty: Deref @ DAE::Type::T_COMPLEX { varLst, complexClassType: ClassInf::State::RECORD { path: recordPath }, .. }, .. } }, _)) => {
-                    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut i: i32 = 0;
+                    let mut exp: Arc<DAE::Exp>;
+                    let mut i: i32;
                     let true = (stringEq((name.clone()).clone(), (id.clone()).clone())) else { bail!("pattern mismatch") };
                     let true = (AbsynUtil::pathEqual(callPath.clone(), recordPath.clone())) else { bail!("pattern mismatch") };
                     let true = ((varLst.clone().len() as i32) == (exps.clone().len() as i32)) else { bail!("pattern mismatch") };
@@ -6871,9 +6871,9 @@ fn simplifyReductionFoldPhase(mut path: Arc<Absyn::Path>, mut optFoldExp: Option
     let mut checkForSimplifications: bool;
     (exp, checkForSimplifications) = (::match_deref::match_deref! { match &((path.clone(), optFoldExp.clone(), inExps.clone(), defaultValue.clone())) {
         (Deref @ Absyn::Path::IDENT { name: Deref @ "array" }, _, _, _) => {
-            let mut aty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let mut ty2: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let mut length: i32 = 0;
+            let mut aty: Arc<DAE::Type>;
+            let mut ty2: Arc<DAE::Type>;
+            let mut length: i32;
             aty = Types::unliftArray(Types::expTypetoTypesType(ty.clone()))?;
             length = (inExps.clone().len() as i32);
             ty2 = Types::liftArray(aty.clone(), Arc::new(DAE::Dimension::DIM_INTEGER { integer: length.clone() }));
@@ -6887,12 +6887,12 @@ fn simplifyReductionFoldPhase(mut path: Arc<Absyn::Path>, mut optFoldExp: Option
             bail!("fail")
         },
         (Deref @ Absyn::Path::IDENT { name: Deref @ "min" }, _, _, _) => {
-            let mut arr_exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut arr_exp: Arc<DAE::Exp>;
             arr_exp = Expression::makeScalarArray(inExps.clone(), ty.clone());
             (Expression::makePureBuiltinCall((literal!("min")).clone(), list![arr_exp.clone()], ty.clone()), true)
         },
         (Deref @ Absyn::Path::IDENT { name: Deref @ "max" }, _, _, _) => {
-            let mut arr_exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut arr_exp: Arc<DAE::Exp>;
             arr_exp = Expression::makeScalarArray(inExps.clone(), ty.clone());
             (Expression::makePureBuiltinCall((literal!("max")).clone(), list![arr_exp.clone()], ty.clone()), true)
         },
@@ -6978,8 +6978,8 @@ pub fn simplifyList1(mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result
         for mut exp in (expl.clone()).into_iter().cloned() {
             let __x = (::match_deref::match_deref! { match &(exp.clone()) {
         _ => {
-            let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut b2: bool = false;
+            let mut e: Arc<DAE::Exp>;
+            let mut b2: bool;
             (e, b2) = simplify(exp.clone())?;
             outBool = metamodelica::cons(b2.clone(), outBool.clone());
             e.clone()
@@ -7041,7 +7041,7 @@ pub fn simplifyAddSymbolicOperation(mut exp: Arc<DAE::EquationExp>, mut source: 
     let mut outSource: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
     (outExp, outSource) = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ DAE::EquationExp::PARTIAL_EQUATION { exp: e } => {
-            let mut changed: bool = false;
+            let mut changed: bool;
             let mut e = (*e).clone();
             (e, changed) = simplify(e.clone())?;
             outExp = if (changed.clone()) {Arc::new(DAE::EquationExp::PARTIAL_EQUATION { exp: e.clone() })} else {exp.clone()};
@@ -7049,7 +7049,7 @@ pub fn simplifyAddSymbolicOperation(mut exp: Arc<DAE::EquationExp>, mut source: 
             (outExp.clone(), outSource.clone())
         },
         Deref @ DAE::EquationExp::RESIDUAL_EXP { exp: e } => {
-            let mut changed: bool = false;
+            let mut changed: bool;
             let mut e = (*e).clone();
             (e, changed) = simplify(e.clone())?;
             outExp = if (changed.clone()) {Arc::new(DAE::EquationExp::RESIDUAL_EXP { exp: e.clone() })} else {exp.clone()};
@@ -7057,9 +7057,9 @@ pub fn simplifyAddSymbolicOperation(mut exp: Arc<DAE::EquationExp>, mut source: 
             (outExp.clone(), outSource.clone())
         },
         Deref @ DAE::EquationExp::EQUALITY_EXPS { lhs: e1, rhs: e2 } => {
-            let mut changed: bool = false;
-            let mut changed1: bool = false;
-            let mut changed2: bool = false;
+            let mut changed: bool;
+            let mut changed1: bool;
+            let mut changed2: bool;
             let mut e1 = (*e1).clone();
             let mut e2 = (*e2).clone();
             (e1, changed1) = simplify(e1.clone())?;
@@ -7094,11 +7094,11 @@ fn simplifySize(mut origExp: Arc<DAE::Exp>, mut exp: Arc<DAE::Exp>, mut optDim: 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Some(dimExp) => {
-                    let mut i: i32 = 0;
-                    let mut n: i32 = 0;
-                    let mut t: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
-                    let mut dim: Arc<DAE::Dimension> = Arc::new(DAE::Dimension::DIM_BOOLEAN);
+                    let mut i: i32;
+                    let mut n: i32;
+                    let mut t: Arc<DAE::Type>;
+                    let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>;
+                    let mut dim: Arc<DAE::Dimension>;
                     i = Expression::expInt(dimExp.clone())?;
                     t = Expression::r#typeof(exp.clone())?;
                     dims = Expression::arrayDimension(t.clone());

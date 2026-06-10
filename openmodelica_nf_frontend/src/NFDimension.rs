@@ -186,7 +186,7 @@ pub fn fromExp(mut exp: Arc<Expression::NFExpression>, mut var: Variability) -> 
             { (exp, var) = (Expression::arrayFirstScalar(var_field!((*exp).exp, Expression::NFExpression::SUBSCRIPTED_EXP).clone())?, var.clone()); continue '__tco; }
         },
         _ => {
-            let mut exp_simple: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut exp_simple: Arc<Expression::NFExpression>;
             let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             let mut value: i32 = 0;
@@ -737,17 +737,17 @@ pub fn mapExp(mut dim: Arc<NFDimension>, mut func: Arc<dyn ::std::ops::Fn(Arc<Ex
     let mut outDim: Arc<NFDimension>;
     outDim = (::match_deref::match_deref! { match &(dim.clone()) {
         Deref @ UNTYPED { dimension: e1, .. } => {
-            let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut e2: Arc<Expression::NFExpression>;
             e2 = Expression::map(e1.clone(), func.clone())?;
             if (referenceEq(&*(e1.clone()),&*(e2.clone()))) {dim.clone()} else {Arc::new(NFDimension::UNTYPED { dimension: e2.clone(), isProcessing: var_field!((*dim).isProcessing, NFDimension::UNTYPED).clone() })}
         },
         Deref @ EXP { exp: e1, .. } => {
-            let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut e2: Arc<Expression::NFExpression>;
             e2 = Expression::map(e1.clone(), func.clone())?;
             if (referenceEq(&*(e1.clone()),&*(e2.clone()))) {dim.clone()} else {fromExp(e2.clone(), var_field!((*dim).var, NFDimension::EXP).clone())?}
         },
         Deref @ RESIZABLE { exp: e1, .. } => {
-            let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut e2: Arc<Expression::NFExpression>;
             e2 = Expression::map(e1.clone(), func.clone())?;
             if (referenceEq(&*(e1.clone()),&*(e2.clone()))) {dim.clone()} else {fromExp(e2.clone(), var_field!((*dim).var, NFDimension::RESIZABLE).clone())?}
         },
@@ -802,7 +802,7 @@ pub fn simplify(mut dim: Arc<NFDimension>) -> Result<Arc<NFDimension>> {
     let mut dim: Arc<NFDimension> = dim;
     dim = (::match_deref::match_deref! { match &(dim.clone()) {
         Deref @ EXP { .. } => {
-            let mut simple: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut simple: Arc<Expression::NFExpression>;
             simple = SimplifyExp::simplify(var_field!((*dim).exp, NFDimension::EXP).clone(), false)?;
             fromExp(simple.clone(), Expression::variability(simple.clone())?)?
         },

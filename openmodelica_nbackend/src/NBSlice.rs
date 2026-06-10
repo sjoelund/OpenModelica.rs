@@ -819,11 +819,11 @@ fn resolveEqualInertia(mut frame_inertia_lst: Arc<metamodelica::List<(i32, (meta
         rest = __pa3.clone();
         tpl1 = (::match_deref::match_deref! { match &((tpl1.clone(), tpl2.clone())) {
         ((inertia1, (loc1, (name1, _, _))), (inertia2, (loc2, (name2, _, _)))) if (inertia1.clone() == inertia2.clone()) => {
-            let mut m: i32 = 0;
-            let mut b: i32 = 0;
-            let mut addOp: Arc<Operator::NFOperator> = Arc::new(<Operator::NFOperator as ::std::default::Default>::default());
-            let mut mulOp: Arc<Operator::NFOperator> = Arc::new(<Operator::NFOperator as ::std::default::Default>::default());
-            let mut linMap: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut m: i32;
+            let mut b: i32;
+            let mut addOp: Arc<Operator::NFOperator>;
+            let mut mulOp: Arc<Operator::NFOperator>;
+            let mut linMap: Arc<Expression::NFExpression>;
             addOp = Operator::fromClassification((Operator::MathClassification::ADDITION.clone(), Operator::SizeClassification::SCALAR.clone()), openmodelica_nf_frontend::NFType::interned_INTEGER())?;
             mulOp = Operator::fromClassification((Operator::MathClassification::MULTIPLICATION.clone(), Operator::SizeClassification::SCALAR.clone()), openmodelica_nf_frontend::NFType::interned_INTEGER())?;
             if metamodelica::arrayLength(loc1.clone()) != metamodelica::arrayLength(loc2.clone()) {
@@ -1171,7 +1171,7 @@ fn resolveSkips(mut index: i32, mut ty: Arc<Type::NFType>, mut skips: Arc<metamo
             (index.clone(), ty.clone())
         },
         (Deref @ Type::TUPLE { types: rest_ty, .. }, Deref @ metamodelica::List::Cons { head: skip, tail: rest }) if (skip.clone() <= (rest_ty.clone().len() as i32)) => {
-            let mut sub_ty: Arc<Type::NFType> = Arc::new(Type::ANY);
+            let mut sub_ty: Arc<Type::NFType>;
             let mut rest_ty = (*rest_ty).clone();
             for mut i in 1..=skip.clone() - 1 {
                 let (__pa0, __pa1) = ::match_deref::match_deref! { match &(rest_ty.clone()) {
@@ -1251,7 +1251,7 @@ fn resolveSkips(mut index: i32, mut ty: Arc<Type::NFType>, mut skips: Arc<metamo
             resolveSkips(index.clone(), var_field!((*ty).elementType, Type::NFType::ARRAY).clone(), rest.clone(), cref.clone(), fullmap.clone())?
         },
         (Deref @ Type::ARRAY { .. }, rest) if (List::compareLength(rest.clone(), var_field!((*ty).dimensions, Type::NFType::ARRAY).clone())? >= 0) => {
-            let mut tail: Arc<metamodelica::List<i32>> = metamodelica::nil();
+            let mut tail: Arc<metamodelica::List<i32>>;
             let mut rest = (*rest).clone();
             (rest, tail) = List::split(rest.clone(), (var_field!((*ty).dimensions, Type::NFType::ARRAY).clone().len() as i32))?;
             index = locationToIndex(({
@@ -1265,8 +1265,8 @@ fn resolveSkips(mut index: i32, mut ty: Arc<Type::NFType>, mut skips: Arc<metamo
             resolveSkips(index.clone(), var_field!((*ty).elementType, Type::NFType::ARRAY).clone(), tail.clone(), cref.clone(), fullmap.clone())?
         },
         (Deref @ Type::ARRAY { .. }, rest) => {
-            let mut rest_dim: Arc<metamodelica::List<Arc<Dimension::NFDimension>>> = metamodelica::nil();
-            let mut tail_dim: Arc<metamodelica::List<Arc<Dimension::NFDimension>>> = metamodelica::nil();
+            let mut rest_dim: Arc<metamodelica::List<Arc<Dimension::NFDimension>>>;
+            let mut tail_dim: Arc<metamodelica::List<Arc<Dimension::NFDimension>>>;
             (rest_dim, tail_dim) = List::split(var_field!((*ty).dimensions, Type::NFType::ARRAY).clone(), (rest.clone().len() as i32))?;
             index = locationToIndex(({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -1528,8 +1528,8 @@ fn resolveAllReduced(mut cref: Arc<ComponentRef::NFComponentRef>, mut original_c
 fn resolveEquationDimensions(mut lst: Arc<metamodelica::List<(Arc<Dimension::NFDimension>, bool)>>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>>>, mut key: metamodelica::Array<i32>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut modes: Arc<UnorderedMap::UnorderedMap<(i32, i32), Arc<Mode::Mode>>>, mut mode: Arc<Mode::Mode>, mut eqn_idx_ptr: Pointer::Pointer<i32>, mut index: i32) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(lst.clone()) {
         Deref @ metamodelica::List::Nil => {
-            let mut eqn_idx: i32 = 0;
-            let mut scal_lst: Arc<metamodelica::List<i32>> = metamodelica::nil();
+            let mut eqn_idx: i32;
+            let mut scal_lst: Arc<metamodelica::List<i32>>;
             eqn_idx = Pointer::access(eqn_idx_ptr.clone());
             scal_lst = UnorderedMap::getSafe(Arc::new(key.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>()), map.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBSlice.mo"))?;
             for mut scal_idx in &*scal_lst.clone() {
@@ -1577,8 +1577,8 @@ fn addMatrixEntry(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut 
 fn resolveReductions(mut lst: Arc<metamodelica::List<(Arc<Subscript::NFSubscript>, Arc<Dimension::NFDimension>, bool)>>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<metamodelica::List<i32>>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>>, mut key: metamodelica::Array<i32>, mut stripped: Arc<ComponentRef::NFComponentRef>, mut acc: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>, mut index: i32) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(lst.clone()) {
         Deref @ metamodelica::List::Nil => {
-            let mut cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-            let mut val: Val1 = metamodelica::nil();
+            let mut cref: Arc<ComponentRef::NFComponentRef>;
+            let mut val: Val1;
             cref = ComponentRef::mergeSubscripts(acc.clone().reverse(), stripped.clone(), true, false, false)?;
             val = ComponentRef::scalarizeAll(cref.clone(), true)?;
             UnorderedMap::add(Arc::new(key.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>()), val.clone(), map.clone())?;
@@ -1589,7 +1589,7 @@ fn resolveReductions(mut lst: Arc<metamodelica::List<(Arc<Subscript::NFSubscript
             ()
         },
         Deref @ metamodelica::List::Cons { head: (sub, dim, true), tail: rest } => {
-            let mut sub_idx: i32 = 0;
+            let mut sub_idx: i32;
             sub_idx = 1;
             for mut s in &*Subscript::scalarize(sub.clone(), dim.clone(), true)? {
                 let mut s = s.clone();
@@ -1608,7 +1608,7 @@ fn combineFrames2Indices(mut first: i32, mut sizes: Arc<metamodelica::List<i32>>
     let mut indices: Arc<metamodelica::List<i32>> = indices;
     indices = (::match_deref::match_deref! { match &(frames.clone()) {
         Deref @ metamodelica::List::Nil => {
-            let mut values: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
+            let mut values: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>;
             values = resolveDimensionsSubscripts(sizes.clone(), subs.clone(), replacements.clone(), resize.clone())?;
             ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -1623,10 +1623,10 @@ fn combineFrames2Indices(mut first: i32, mut sizes: Arc<metamodelica::List<i32>>
             let mut start: i32 = 0;
             let mut step: i32 = 0;
             let mut stop: i32 = 0;
-            let mut values: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
+            let mut values: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>;
             let mut iterator_exps: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
             let mut iterator_lst: Arc<metamodelica::List<i32>> = metamodelica::nil();
-            let mut sub_idx: i32 = 0;
+            let mut sub_idx: i32;
             iterator_lst = (::match_deref::match_deref! { match &(range.clone()) {
         Deref @ Expression::RANGE { .. } => {
             (start, step, stop) = Expression::getIntegerRange(range.clone(), resize.clone())?;
@@ -1783,9 +1783,9 @@ fn resolveDimensionsSubscript(mut replaced: Arc<Expression::NFExpression>, mut s
             list![var_field!((*rep).index, Expression::NFExpression::ENUM_LITERAL).clone()]
         },
         Deref @ Expression::RANGE { .. } => {
-            let mut start: i32 = 0;
-            let mut step: i32 = 0;
-            let mut stop: i32 = 0;
+            let mut start: i32;
+            let mut step: i32;
+            let mut stop: i32;
             (start, step, stop) = Expression::getIntegerRange(rep.clone(), resize.clone())?;
             List::intRange3(start.clone(), step.clone(), stop.clone())?
         },

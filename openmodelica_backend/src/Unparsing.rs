@@ -95,16 +95,16 @@ fn lm_46(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Type>>>)
         let mut lstElt_46 = lstElt_46.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_46.clone()) {
         Deref @ DAE::Type::T_METARECORD { fields: i_ty_fields, path: i_path, .. } => {
-            let mut ret_9: ArcStr = arcstr::literal!("");
-            let mut str_8: ArcStr = arcstr::literal!("");
-            let mut l_fieldsDescription: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_6: i32 = 0;
-            let mut l_nElts: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_4: ArcStr = arcstr::literal!("");
-            let mut ret_3: ArcStr = arcstr::literal!("");
-            let mut ret_2: ArcStr = arcstr::literal!("");
-            let mut l_omcname: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_fieldsStr: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_9: ArcStr;
+            let mut str_8: ArcStr;
+            let mut l_fieldsDescription: Tpl::Text;
+            let mut ret_6: i32;
+            let mut l_nElts: Tpl::Text;
+            let mut ret_4: ArcStr;
+            let mut ret_3: ArcStr;
+            let mut ret_2: ArcStr;
+            let mut l_omcname: Tpl::Text;
+            let mut l_fieldsStr: Tpl::Text;
             l_fieldsStr = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(",")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             l_fieldsStr = lm_44(l_fieldsStr.clone(), i_ty_fields.clone())?;
             l_fieldsStr = Tpl::popIter(l_fieldsStr.clone())?;
@@ -378,8 +378,8 @@ fn fun_56(mut in_txt: Tpl::Text, mut in_a_p_elementLst: Arc<metamodelica::List<A
             txt.clone()
         },
         (txt, i_p_elementLst, a_fields, a_omcname, a_ctor, a_fullname) => {
-            let mut ret_1: i32 = 0;
-            let mut ret_0: i32 = 0;
+            let mut ret_1: i32;
+            let mut ret_0: i32;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("#define ")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), a_fullname.clone())?;
@@ -407,18 +407,18 @@ pub fn elementExternalHeader(mut in_txt: Tpl::Text, mut in_a_elt: Arc<SCode::Ele
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_elt.clone(), in_a_pack.clone())) {
         (txt, Deref @ SCode::Element::CLASS { restriction: SCode::Restriction::R_METARECORD { moved: true, name: i_r_name, index: i_r_index, .. }, classDef: Deref @ SCode::ClassDef::PARTS { elementLst: i_p_elementLst, .. }, name: i_c_name, .. }, a_pack) => {
-            let mut str_11: ArcStr = arcstr::literal!("");
-            let mut l_fieldsDescription: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_9: i32 = 0;
-            let mut l_ctor: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_7: ArcStr = arcstr::literal!("");
-            let mut l_fullname: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_5: i32 = 0;
-            let mut l_nElts: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_3: ArcStr = arcstr::literal!("");
-            let mut l_omcname: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_fieldsStr: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_fields: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut str_11: ArcStr;
+            let mut l_fieldsDescription: Tpl::Text;
+            let mut ret_9: i32;
+            let mut l_ctor: Tpl::Text;
+            let mut ret_7: ArcStr;
+            let mut l_fullname: Tpl::Text;
+            let mut ret_5: i32;
+            let mut l_nElts: Tpl::Text;
+            let mut ret_3: ArcStr;
+            let mut l_omcname: Tpl::Text;
+            let mut l_fieldsStr: Tpl::Text;
+            let mut l_fields: Tpl::Text;
             let mut txt = (*txt).clone();
             l_fields = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(",")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             l_fields = lm_53(l_fields.clone(), i_p_elementLst.clone())?;
@@ -692,7 +692,7 @@ fn fun_68(mut in_txt: Tpl::Text, mut in_mArg: i32, mut in_a_fields1: Tpl::Text, 
             txt.clone()
         },
         (txt, 1, _, a_fields2, a_p_elementLst, a_fieldsWithType, a_omcname, a_fullname) => {
-            let mut ret_0: i32 = 0;
+            let mut ret_0: i32;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("static inline jl_value_t* ")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), a_fullname.clone())?;
@@ -712,7 +712,7 @@ fn fun_68(mut in_txt: Tpl::Text, mut in_mArg: i32, mut in_a_fields1: Tpl::Text, 
             txt.clone()
         },
         (txt, 2, _, a_fields2, a_p_elementLst, a_fieldsWithType, a_omcname, a_fullname) => {
-            let mut ret_1: i32 = 0;
+            let mut ret_1: i32;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("static inline jl_value_t* ")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), a_fullname.clone())?;
@@ -732,7 +732,7 @@ fn fun_68(mut in_txt: Tpl::Text, mut in_mArg: i32, mut in_a_fields1: Tpl::Text, 
             txt.clone()
         },
         (txt, 3, _, a_fields2, a_p_elementLst, a_fieldsWithType, a_omcname, a_fullname) => {
-            let mut ret_2: i32 = 0;
+            let mut ret_2: i32;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("static inline jl_value_t* ")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), a_fullname.clone())?;
@@ -752,8 +752,8 @@ fn fun_68(mut in_txt: Tpl::Text, mut in_mArg: i32, mut in_a_fields1: Tpl::Text, 
             txt.clone()
         },
         (txt, _, a_fields1, _, a_p_elementLst, a_fieldsWithType, a_omcname, a_fullname) => {
-            let mut ret_4: i32 = 0;
-            let mut ret_3: i32 = 0;
+            let mut ret_4: i32;
+            let mut ret_3: i32;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("static inline jl_value_t* ")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), a_fullname.clone())?;
@@ -787,7 +787,7 @@ fn fun_69(mut in_txt: Tpl::Text, mut in_a_elt: Arc<SCode::Element>, mut in_a_buf
     let mut out_a_buf2: Tpl::Text;
     (out_txt, out_a_buf1, out_a_buf2) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_elt.clone(), in_a_buf1.clone(), in_a_buf2.clone(), in_a_pack.clone())) {
         (txt, Deref @ SCode::Element::CLASS { restriction: SCode::Restriction::R_UNIONTYPE { .. }, classDef: Deref @ SCode::ClassDef::PARTS { elementLst: _, .. }, name: i_c_name, .. }, a_buf1, a_buf2, a_pack) => {
-            let mut l_omcname: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_omcname: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_buf1 = (*a_buf1).clone();
             let mut a_buf2 = (*a_buf2).clone();
@@ -813,15 +813,15 @@ fn fun_69(mut in_txt: Tpl::Text, mut in_a_elt: Arc<SCode::Element>, mut in_a_buf
             (txt.clone(), a_buf1.clone(), a_buf2.clone())
         },
         (txt, Deref @ SCode::Element::CLASS { restriction: SCode::Restriction::R_METARECORD { moved: true, name: i_r_name, .. }, classDef: Deref @ SCode::ClassDef::PARTS { elementLst: i_p_elementLst, .. }, name: i_c_name, .. }, a_buf1, a_buf2, a_pack) => {
-            let mut ret_8: i32 = 0;
-            let mut ret_7: ArcStr = arcstr::literal!("");
-            let mut l_fullname: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_5: ArcStr = arcstr::literal!("");
-            let mut l_funcName: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_fieldsWithType: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_fields2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_fields1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_omcname: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_8: i32;
+            let mut ret_7: ArcStr;
+            let mut l_fullname: Tpl::Text;
+            let mut ret_5: ArcStr;
+            let mut l_funcName: Tpl::Text;
+            let mut l_fieldsWithType: Tpl::Text;
+            let mut l_fields2: Tpl::Text;
+            let mut l_fields1: Tpl::Text;
+            let mut l_omcname: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_buf1 = (*a_buf1).clone();
             let mut a_buf2 = (*a_buf2).clone();

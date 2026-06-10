@@ -39,11 +39,11 @@ fn fun_53(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_mo
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_simCode.clone(), in_a_modelNameOMSIC.clone())) {
         (txt, SimCode::SimCode { modelInfo: SimCode::ModelInfo { name: _, .. }, fileNamePrefix: i_fileNamePrefix, fullPathPrefix: i_fullPathPrefix, omsiData: Some(SimCode::OMSIData { simulation: i_simulation @ Deref @ SimCode::OMSIFunction { equations: _, .. }, initialization: i_initialization @ Deref @ SimCode::OMSIFunction { equations: _, .. } }), .. }, a_modelNameOMSIC) => {
-            let mut txt_4: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_content_1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_content: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_modelNamePrefix: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_4: Tpl::Text;
+            let mut l_content_1: Tpl::Text;
+            let mut txt_2: Tpl::Text;
+            let mut l_content: Tpl::Text;
+            let mut l_modelNamePrefix: Tpl::Text;
             l_modelNamePrefix = Tpl::writeText(Tpl::emptyTxt.clone(), a_modelNameOMSIC.clone())?;
             l_content = generateOmsiFunctionCode(Tpl::emptyTxt.clone(), i_simulation.clone(), (Tpl::textString(l_modelNamePrefix.clone())?).clone(), (literal!("")).clone(), (literal!("sim_eqns")).clone())?;
             txt_2 = Tpl::writeStr(Tpl::emptyTxt.clone(), (i_fullPathPrefix.clone()).clone())?;
@@ -213,7 +213,7 @@ fn fun_59(mut in_txt: Tpl::Text, mut in_a_eqsystem: Arc<SimCode::SimEqSystem>, m
     let mut out_a_evaluationCode: Tpl::Text;
     (out_txt, out_a_includes, out_a_residualCall, out_a_functionCall, out_a_functionPrototypes, out_a_evaluationCode) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_eqsystem.clone(), in_a_fullPathPrefix.clone(), in_a_fileNamePrefix.clone(), in_a_includes.clone(), in_a_residualCall.clone(), in_a_omsiName.clone(), in_a_funcCallArgName.clone(), in_a_functionCall.clone(), in_a_functionPrototypes.clone(), in_a_context.clone(), in_a_modelFunctionnamePrefixStr.clone(), in_a_FileNamePrefix.clone(), in_a_evaluationCode.clone())) {
         (txt, i_eqsystem @ Deref @ SimCode::SimEqSystem::SES_SIMPLE_ASSIGN { index: _, .. }, _, _, a_includes, a_residualCall, a_omsiName, a_funcCallArgName, a_functionCall, a_functionPrototypes, a_context, a_modelFunctionnamePrefixStr, a_FileNamePrefix, a_evaluationCode) => {
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_0: Tpl::Text;
             let mut a_functionCall = (*a_functionCall).clone();
             let mut a_functionPrototypes = (*a_functionPrototypes).clone();
             let mut a_evaluationCode = (*a_evaluationCode).clone();
@@ -226,7 +226,7 @@ fn fun_59(mut in_txt: Tpl::Text, mut in_a_eqsystem: Arc<SimCode::SimEqSystem>, m
             (txt.clone(), a_includes.clone(), a_residualCall.clone(), a_functionCall.clone(), a_functionPrototypes.clone(), a_evaluationCode.clone())
         },
         (txt, i_eqsystem @ Deref @ SimCode::SimEqSystem::SES_RESIDUAL { index: _, .. }, _, _, a_includes, a_residualCall, a_omsiName, a_funcCallArgName, a_functionCall, a_functionPrototypes, a_context, a_modelFunctionnamePrefixStr, a_FileNamePrefix, a_evaluationCode) => {
-            let mut txt_1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_1: Tpl::Text;
             let mut a_residualCall = (*a_residualCall).clone();
             let mut a_functionPrototypes = (*a_functionPrototypes).clone();
             let mut a_evaluationCode = (*a_evaluationCode).clone();
@@ -239,9 +239,9 @@ fn fun_59(mut in_txt: Tpl::Text, mut in_a_eqsystem: Arc<SimCode::SimEqSystem>, m
             (txt.clone(), a_includes.clone(), a_residualCall.clone(), a_functionCall.clone(), a_functionPrototypes.clone(), a_evaluationCode.clone())
         },
         (txt, i_algSystem @ Deref @ SimCode::SimEqSystem::SES_ALGEBRAIC_SYSTEM { algSysIndex: i_algSystem_algSysIndex @ i_algSysIndex, .. }, a_fullPathPrefix, a_fileNamePrefix, a_includes, a_residualCall, a_omsiName, a_funcCallArgName, a_functionCall, a_functionPrototypes, _, a_modelFunctionnamePrefixStr, a_FileNamePrefix, a_evaluationCode) => {
-            let mut txt_4: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_content: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_4: Tpl::Text;
+            let mut l_content: Tpl::Text;
+            let mut txt_2: Tpl::Text;
             let mut a_includes = (*a_includes).clone();
             let mut a_functionCall = (*a_functionCall).clone();
             a_includes = Tpl::writeTok(a_includes.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("#include \"")).clone() }))?;
@@ -274,7 +274,7 @@ fn fun_59(mut in_txt: Tpl::Text, mut in_a_eqsystem: Arc<SimCode::SimEqSystem>, m
             (txt.clone(), a_includes.clone(), a_residualCall.clone(), a_functionCall.clone(), a_functionPrototypes.clone(), a_evaluationCode.clone())
         },
         (txt, i_whenEq @ Deref @ SimCode::SimEqSystem::SES_WHEN { index: _, .. }, _, _, a_includes, a_residualCall, a_omsiName, a_funcCallArgName, a_functionCall, a_functionPrototypes, a_context, a_modelFunctionnamePrefixStr, a_FileNamePrefix, a_evaluationCode) => {
-            let mut txt_5: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_5: Tpl::Text;
             let mut a_functionCall = (*a_functionCall).clone();
             let mut a_functionPrototypes = (*a_functionPrototypes).clone();
             let mut a_evaluationCode = (*a_evaluationCode).clone();
@@ -325,7 +325,7 @@ fn fun_61(mut in_txt: Tpl::Text, mut in_a_omsiFunction: Arc<SimCode::OMSIFunctio
     let mut out_a_evaluationCode: Tpl::Text;
     (out_txt, out_a_includes, out_a_residualCall, out_a_functionCall, out_a_functionPrototypes, out_a_evaluationCode) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_omsiFunction.clone(), in_a_fullPathPrefix.clone(), in_a_fileNamePrefix.clone(), in_a_includes.clone(), in_a_residualCall.clone(), in_a_omsiName.clone(), in_a_funcCallArgName.clone(), in_a_functionCall.clone(), in_a_functionPrototypes.clone(), in_a_modelFunctionnamePrefixStr.clone(), in_a_FileNamePrefix.clone(), in_a_evaluationCode.clone())) {
         (txt, Deref @ SimCode::OMSIFunction { context: i_context @ SimCodeFunction::Context::OMSI_CONTEXT { hashTable: _ }, equations: i_equations, .. }, a_fullPathPrefix, a_fileNamePrefix, a_includes, a_residualCall, a_omsiName, a_funcCallArgName, a_functionCall, a_functionPrototypes, a_modelFunctionnamePrefixStr, a_FileNamePrefix, a_evaluationCode) => {
-            let mut l_0__: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_0__: Tpl::Text;
             let mut a_includes = (*a_includes).clone();
             let mut a_residualCall = (*a_residualCall).clone();
             let mut a_functionCall = (*a_functionCall).clone();
@@ -427,7 +427,7 @@ fn fun_65(mut in_txt: Tpl::Text, mut in_a_omsiFunction: Arc<SimCode::OMSIFunctio
     let mut out_a_evaluationCode: Tpl::Text;
     (out_txt, out_a_functionPrototypes, out_a_evaluationCode) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_omsiFunction.clone(), in_a_functionPrototypes.clone(), in_a_FunctionnamePrefix.clone(), in_a_FileNamePrefix.clone(), in_a_evaluationCode.clone())) {
         (txt, Deref @ SimCode::OMSIFunction { context: i_context @ SimCodeFunction::Context::OMSI_CONTEXT { hashTable: _ }, equations: i_equations, .. }, a_functionPrototypes, a_FunctionnamePrefix, a_FileNamePrefix, a_evaluationCode) => {
-            let mut l_0__: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_0__: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_functionPrototypes = (*a_functionPrototypes).clone();
             let mut a_evaluationCode = (*a_evaluationCode).clone();
@@ -469,14 +469,14 @@ fn fun_67(mut in_txt: Tpl::Text, mut in_a_equationSystem: Arc<SimCode::SimEqSyst
     let mut out_a_includes: Tpl::Text;
     (out_txt, out_a_residualCall, out_a_functionCall, out_a_evaluationCode, out_a_functionPrototypes, out_a_includes) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_equationSystem.clone(), in_a_fullPathPrefix.clone(), in_a_fileNamePrefix.clone(), in_a_residualCall.clone(), in_a_functionCall.clone(), in_a_evaluationCode.clone(), in_a_omsiName.clone(), in_a_functionPrototypes.clone(), in_a_FileNamePrefix.clone(), in_a_includes.clone())) {
         (txt, i_algSystem @ Deref @ SimCode::SimEqSystem::SES_ALGEBRAIC_SYSTEM { matrix: None, residual: i_residual, algSysIndex: i_algSystem_algSysIndex, .. }, a_fullPathPrefix, a_fileNamePrefix, a_residualCall, a_functionCall, a_evaluationCode, a_omsiName, a_functionPrototypes, a_FileNamePrefix, a_includes) => {
-            let mut txt_7: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_headerFileContent: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_headerFileName: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_matrixString: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_3: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
-            let mut l_equationInfos: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_0__: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_initlaizationFunction: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_7: Tpl::Text;
+            let mut l_headerFileContent: Tpl::Text;
+            let mut l_headerFileName: Tpl::Text;
+            let mut l_matrixString: Tpl::Text;
+            let mut ret_3: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>;
+            let mut l_equationInfos: Tpl::Text;
+            let mut l_0__: Tpl::Text;
+            let mut l_initlaizationFunction: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_residualCall = (*a_residualCall).clone();
             let mut a_functionCall = (*a_functionCall).clone();
@@ -567,15 +567,15 @@ fn fun_67(mut in_txt: Tpl::Text, mut in_a_equationSystem: Arc<SimCode::SimEqSyst
             (txt.clone(), a_residualCall.clone(), a_functionCall.clone(), a_evaluationCode.clone(), a_functionPrototypes.clone(), a_includes.clone())
         },
         (txt, i_algSystem @ Deref @ SimCode::SimEqSystem::SES_ALGEBRAIC_SYSTEM { matrix: i_matrix @ Some(Deref @ SimCode::DerivativeMatrix { columns: _, .. }), residual: i_residual, algSysIndex: i_algSystem_algSysIndex, .. }, a_fullPathPrefix, a_fileNamePrefix, a_residualCall, a_functionCall, a_evaluationCode, a_omsiName, a_functionPrototypes, a_FileNamePrefix, a_includes) => {
-            let mut txt_10: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_0___1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_8: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
-            let mut l_headerFileContent: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_headerFileName: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_matrixString: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_equationInfos: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_0__: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_initlaizationFunction: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_10: Tpl::Text;
+            let mut l_0___1: Tpl::Text;
+            let mut ret_8: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>;
+            let mut l_headerFileContent: Tpl::Text;
+            let mut l_headerFileName: Tpl::Text;
+            let mut l_matrixString: Tpl::Text;
+            let mut l_equationInfos: Tpl::Text;
+            let mut l_0__: Tpl::Text;
+            let mut l_initlaizationFunction: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_residualCall = (*a_residualCall).clone();
             let mut a_functionCall = (*a_functionCall).clone();
@@ -743,7 +743,7 @@ fn lm_70(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SimCode::OMSI
         let mut lstElt_70 = lstElt_70.clone();
         (txt, a_includes, a_functionPrototypes) = (::match_deref::match_deref! { match &(lstElt_70.clone()) {
         i_column => {
-            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_0: Tpl::Text;
             txt_0 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("derivativeMatFunc_")).clone() }))?;
             txt_0 = Tpl::writeStr(txt_0.clone(), (a_index.clone()).clone())?;
             (txt, a_functionPrototypes, a_includes) = generateInitalizationOMSIFunction(txt.clone(), i_column.clone(), (Tpl::textString(txt_0.clone())?).clone(), (a_FileNamePrefix.clone()).clone(), (literal!("")).clone(), a_functionPrototypes.clone(), a_includes.clone(), true, (a_omsiName.clone()).clone())?;
@@ -762,7 +762,7 @@ fn fun_71(mut in_txt: Tpl::Text, mut in_a_matrix: Option<Arc<SimCode::Derivative
     let mut out_a_functionPrototypes: Tpl::Text;
     (out_txt, out_a_includes, out_a_functionPrototypes) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_matrix.clone(), in_a_omsiName.clone(), in_a_includes.clone(), in_a_functionPrototypes.clone(), in_a_FileNamePrefix.clone(), in_a_index.clone())) {
         (txt, Some(Deref @ SimCode::DerivativeMatrix { columns: i_derMat_columns, .. }), a_omsiName, a_includes, a_functionPrototypes, a_FileNamePrefix, a_index) => {
-            let mut l_initalizationCodeCol: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_initalizationCodeCol: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_includes = (*a_includes).clone();
             let mut a_functionPrototypes = (*a_functionPrototypes).clone();
@@ -943,10 +943,10 @@ pub fn generateInitalizationAlgSystem(mut in_txt: Tpl::Text, mut in_a_equationSy
     let mut out_a_includes: Tpl::Text;
     (out_txt, out_a_functionPrototypes, out_a_includes) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_equationSystem.clone(), in_a_FileNamePrefix.clone(), in_a_functionPrototypes.clone(), in_a_includes.clone(), in_a_omsiName.clone())) {
         (txt, Deref @ SimCode::SimEqSystem::SES_ALGEBRAIC_SYSTEM { dim_n: i_dim__n, residual: i_residual @ Deref @ SimCode::OMSIFunction { equations: _, .. }, matrix: i_matrix, algSysIndex: i_algSysIndex, zeroCrossingConditions: i_zeroCrossingConditions, linearSystem: i_linearSystem, .. }, a_FileNamePrefix, a_functionPrototypes, a_includes, a_omsiName) => {
-            let mut txt_3: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_2: i32 = 0;
-            let mut ret_1: i32 = 0;
-            let mut l_zeroCrossingIndices: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_3: Tpl::Text;
+            let mut ret_2: i32;
+            let mut ret_1: i32;
+            let mut l_zeroCrossingIndices: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_functionPrototypes = (*a_functionPrototypes).clone();
             let mut a_includes = (*a_includes).clone();
@@ -1068,8 +1068,8 @@ fn fun_80(mut in_txt: Tpl::Text, mut in_a_variable: SimCodeVar::SimVar, mut in_a
             (txt.clone(), a_stringIndex.clone(), a_stringName.clone())
         },
         (mut txt, mut i_var @ SimCodeVar::SimVar { name: _, .. }, mut a_stringIndex, mut a_stringName) => {
-            let mut ret_1: ArcStr = arcstr::literal!("");
-            let mut ret_0: SimCode::SimCode = <SimCode::SimCode as ::std::default::Default>::default();
+            let mut ret_1: ArcStr;
+            let mut ret_0: SimCode::SimCode;
             a_stringName = CodegenUtil::crefCCommentWithVariability(a_stringName.clone(), i_var.clone())?;
             ret_0 = SimCodeUtil::getSimCode()?;
             ret_1 = (SimCodeUtil::getValueReference(i_var.clone(), ret_0.clone(), false)?).clone();
@@ -1089,11 +1089,11 @@ fn lm_81(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVa
         let mut lstElt_81 = lstElt_81.clone();
         txt = (match lstElt_81.clone() {
         mut i_variable => {
-            let mut x_i0: i32 = 0;
-            let mut l_0__: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_stringIndex: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_stringName: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_stringType: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut x_i0: i32;
+            let mut l_0__: Tpl::Text;
+            let mut l_stringIndex: Tpl::Text;
+            let mut l_stringName: Tpl::Text;
+            let mut l_stringType: Tpl::Text;
             x_i0 = Tpl::getIteri_i0(txt.clone())?;
             l_stringType = fun_79(Tpl::emptyTxt.clone(), i_variable.clone())?;
             l_stringName = Tpl::emptyTxt.clone();
@@ -1218,14 +1218,14 @@ fn fun_88(mut in_txt: Tpl::Text, mut in_a_omsiFunction: Arc<SimCode::OMSIFunctio
     let mut out_a_includes: Tpl::Text;
     (out_txt, out_a_functionPrototypes, out_a_includes) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_omsiFunction.clone(), in_a_functionName.clone(), in_a_FileNamePrefix.clone(), in_a_functionPrototypes.clone(), in_a_includes.clone(), in_a_hasLocalVars.clone(), in_a_omsiName.clone())) {
         (txt, Deref @ SimCode::OMSIFunction { nAlgebraicSystems: i_nAlgebraicSystems, equations: i_equations, inputVars: i_inputVars, innerVars: i_innerVars, outputVars: i_outputVars, nAllVars: i_nAllVars, .. }, a_functionName, a_FileNamePrefix, a_functionPrototypes, a_includes, a_hasLocalVars, a_omsiName) => {
-            let mut ret_7: i32 = 0;
-            let mut ret_6: i32 = 0;
-            let mut ret_5: i32 = 0;
-            let mut ret_4: i32 = 0;
-            let mut ret_3: i32 = 0;
-            let mut ret_2: i32 = 0;
-            let mut l_algSystemInit: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_evaluationTarget: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_7: i32;
+            let mut ret_6: i32;
+            let mut ret_5: i32;
+            let mut ret_4: i32;
+            let mut ret_3: i32;
+            let mut ret_2: i32;
+            let mut l_algSystemInit: Tpl::Text;
+            let mut l_evaluationTarget: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_functionPrototypes = (*a_functionPrototypes).clone();
             let mut a_includes = (*a_includes).clone();
@@ -1355,7 +1355,7 @@ fn lm_91(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SimCode::SimE
         let mut lstElt_91 = lstElt_91.clone();
         txt = (::match_deref::match_deref! { match &(lstElt_91.clone()) {
         i_equation => {
-            let mut x_i0: i32 = 0;
+            let mut x_i0: i32;
             x_i0 = Tpl::getIteri_i0(txt.clone())?;
             txt = fun_90(txt.clone(), i_equation.clone(), x_i0.clone(), (a_omsiName.clone()).clone(), (a_FileNamePrefix.clone()).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
@@ -1383,9 +1383,9 @@ fn fun_93(mut in_txt: Tpl::Text, mut in_a_timeEvent: BackendDAE::TimeEvent, mut 
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_auxFunction, out_a_varDecls) = (match (in_txt.clone(), in_a_timeEvent.clone(), in_a_i0.clone(), in_a_auxFunction.clone(), in_a_varDecls.clone()) {
         (mut txt, BackendDAE::TimeEvent::SAMPLE_TIME_EVENT { startExp: ref i_startExp, intervalExp: ref i_intervalExp, index: mut i_index, .. }, mut a_i0, mut a_auxFunction, mut a_varDecls) => {
-            let mut l_e2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_e1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut l_preExp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_e2: Tpl::Text;
+            let mut l_e1: Tpl::Text;
+            let mut l_preExp: Tpl::Text;
             l_preExp = Tpl::emptyTxt.clone();
             (l_e1, l_preExp, a_varDecls, a_auxFunction) = CodegenCFunctions::daeExp(Tpl::emptyTxt.clone(), i_startExp.clone(), SimCodeFunction::contextOther().clone(), l_preExp.clone(), a_varDecls.clone(), a_auxFunction.clone())?;
             (l_e2, l_preExp, a_varDecls, a_auxFunction) = CodegenCFunctions::daeExp(Tpl::emptyTxt.clone(), i_intervalExp.clone(), SimCodeFunction::contextOther().clone(), l_preExp.clone(), a_varDecls.clone(), a_auxFunction.clone())?;
@@ -1423,7 +1423,7 @@ fn lm_94(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<BackendDAE::TimeE
         let mut lstElt_94 = lstElt_94.clone();
         (txt, a_auxFunction, a_varDecls) = (match lstElt_94.clone() {
         mut i_timeEvent => {
-            let mut x_i0: i32 = 0;
+            let mut x_i0: i32;
             x_i0 = Tpl::getIteri_i0(txt.clone())?;
             (txt, a_auxFunction, a_varDecls) = fun_93(txt.clone(), i_timeEvent.clone(), x_i0.clone(), a_auxFunction.clone(), a_varDecls.clone())?;
             txt = Tpl::nextIter(txt.clone())?;

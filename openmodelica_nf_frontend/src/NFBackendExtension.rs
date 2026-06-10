@@ -232,7 +232,7 @@ pub mod BackendInfo {
             List::fill(binfo.clone(), length.clone())
         },
         _ => {
-            let mut scalar_attributes: Arc<metamodelica::List<Arc<VariableAttributes::VariableAttributes>>> = metamodelica::nil();
+            let mut scalar_attributes: Arc<metamodelica::List<Arc<VariableAttributes::VariableAttributes>>>;
             scalar_attributes = VariableAttributes::scalarize(binfo.attributes.clone(), length.clone())?;
             ({
         let mut __acc: Arc<metamodelica::List<Arc<BackendInfo>>> = metamodelica::nil();

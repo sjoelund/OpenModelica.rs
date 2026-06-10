@@ -765,9 +765,9 @@ pub fn mergeSubscriptsMapped(mut cref: Arc<NFComponentRef>, mut dims_map: Arc<Un
         let mut ty: Arc<Type::NFType> = getSubscriptedType(cref.clone(), false)?;
         (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { .. } if (Type::isArray(ty.clone())) => {
-            let mut dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>> = metamodelica::nil();
-            let mut new_cref: Arc<NFComponentRef> = Arc::new(NFComponentRef::EMPTY);
-            let mut num_local_dims: i32 = 0;
+            let mut dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>>;
+            let mut new_cref: Arc<NFComponentRef>;
+            let mut num_local_dims: i32;
             dims = Type::arrayDims(ty.clone());
             num_local_dims = (Type::arrayDims(var_field!((*cref).ty, NFComponentRef::CREF).clone()).len() as i32);
             new_cref = cref.clone();
@@ -872,7 +872,7 @@ pub fn setSubscriptsList(mut subscripts: Arc<metamodelica::List<Arc<metamodelica
     let mut cref: Arc<NFComponentRef> = cref;
     cref = (::match_deref::match_deref! { match &((subscripts.clone(), cref.clone())) {
         (Deref @ metamodelica::List::Cons { head: subs, tail: rest_subs }, Deref @ CREF { .. }) => {
-            let mut rest_cref: Arc<NFComponentRef> = Arc::new(NFComponentRef::EMPTY);
+            let mut rest_cref: Arc<NFComponentRef>;
             rest_cref = setSubscriptsList(rest_subs.clone(), var_field!((*cref).restCref, NFComponentRef::CREF).clone())?;
             Arc::new(NFComponentRef::CREF { node: var_field!((*cref).node, NFComponentRef::CREF).clone(), subscripts: subs.clone(), ty: var_field!((*cref).ty, NFComponentRef::CREF).clone(), origin: var_field!((*cref).origin, NFComponentRef::CREF).clone(), restCref: rest_cref.clone() })
         },
@@ -897,8 +897,8 @@ pub fn subscriptsAllWithWhole(mut cref: Arc<NFComponentRef>, mut accumSubs: Arc<
     '__tco: loop {
         ::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { subscripts: Deref @ metamodelica::List::Nil, .. } => {
-            let mut sizes_: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-            let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
+            let mut sizes_: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
+            let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>;
             sizes_ = sizes_local_exp(cref.clone(), false)?;
             subs = metamodelica::nil();
             for mut size in &*sizes_.clone().reverse() {
@@ -1067,9 +1067,9 @@ pub fn fillSubscripts(mut cref: Arc<NFComponentRef>) -> Arc<NFComponentRef> {
     let mut cref: Arc<NFComponentRef> = cref;
     let () = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { .. } => {
-            let mut dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>> = metamodelica::nil();
-            let mut dim_count: i32 = 0;
-            let mut sub_count: i32 = 0;
+            let mut dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>>;
+            let mut dim_count: i32;
+            let mut sub_count: i32;
             dims = Type::arrayDims(var_field!((*cref).ty, NFComponentRef::CREF).clone());
             dim_count = (dims.clone().len() as i32);
             sub_count = (var_field!((*cref).subscripts, NFComponentRef::CREF).clone().len() as i32);
@@ -1091,8 +1091,8 @@ pub fn replaceWholeSubscripts(mut cref: Arc<NFComponentRef>) -> Result<Arc<NFCom
     let mut cref: Arc<NFComponentRef> = cref;
     let () = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { .. } => {
-            let mut dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>> = metamodelica::nil();
-            let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
+            let mut dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>>;
+            let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>;
             if List::any(var_field!((*cref).subscripts, NFComponentRef::CREF).clone(), (std::sync::Arc::new(fnptr!(Subscript::isWhole, Arc<Subscript::NFSubscript>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Subscript::NFSubscript>) -> Result<bool> + 'static>))? {
                 dims = Type::arrayDims(var_field!((*cref).ty, NFComponentRef::CREF).clone());
                 subs = metamodelica::nil();
@@ -1281,8 +1281,8 @@ pub fn toDAE_impl(mut cref: Arc<NFComponentRef>, mut accumCref: Arc<DAE::Compone
             accumCref.clone()
         },
         Deref @ CREF { .. } => {
-            let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-            let mut dty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+            let mut ty: Arc<Type::NFType>;
+            let mut dty: Arc<DAE::Type>;
             ty = if (Type::isUnknown(var_field!((*cref).ty, NFComponentRef::CREF).clone())) {InstNode::getType(var_field!((*cref).node, NFComponentRef::CREF).clone())?} else {var_field!((*cref).ty, NFComponentRef::CREF).clone()};
             dty = Type::toDAE(ty.clone(), false)?;
             dcref = Arc::new(DAE::ComponentRef::CREF_QUAL { ident: (InstNode::name(var_field!((*cref).node, NFComponentRef::CREF).clone())?).clone(), identType: dty.clone(), subscriptLst: ({
@@ -1310,7 +1310,7 @@ pub fn toString_impl(mut cref: Arc<NFComponentRef>, mut strl: Arc<metamodelica::
     let mut strl: Arc<metamodelica::List<ArcStr>> = strl;
     strl = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { .. } => {
-            let mut r#str: ArcStr = arcstr::literal!("");
+            let mut r#str: ArcStr;
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*InstNode::name(var_field!((*cref).node, NFComponentRef::CREF).clone())?); __mm_s.push_str(&*Subscript::toStringList(var_field!((*cref).subscripts, NFComponentRef::CREF).clone())?); ArcStr::from(__mm_s) }).clone();
             toString_impl(var_field!((*cref).restCref, NFComponentRef::CREF).clone(), metamodelica::cons((r#str.clone()).clone(), strl.clone()))?
         },
@@ -1518,8 +1518,8 @@ pub fn scalarize(mut cref: Arc<NFComponentRef>, mut resize: bool) -> Result<Arc<
     let mut crefs: Arc<metamodelica::List<Arc<NFComponentRef>>>;
     crefs = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { ty: Deref @ Type::ARRAY { .. }, .. } => {
-            let mut dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>> = metamodelica::nil();
-            let mut subs: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>> = metamodelica::nil();
+            let mut dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>>;
+            let mut subs: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>>;
             dims = Type::arrayDims(var_field!((*cref).ty, NFComponentRef::CREF).clone());
             subs = Subscript::scalarizeList(var_field!((*cref).subscripts, NFComponentRef::CREF).clone(), dims.clone(), resize.clone())?;
             subs = List::combination(subs.clone());
@@ -1560,7 +1560,7 @@ pub fn scalarizeAll_Nesting(mut nested_crefs: Arc<metamodelica::List<Arc<metamod
     let mut crefs: Arc<metamodelica::List<Arc<NFComponentRef>>> = crefs;
     crefs = (::match_deref::match_deref! { match &(nested_crefs.clone()) {
         Deref @ metamodelica::List::Cons { head: head, tail: tail } => {
-            let mut empty: bool = false;
+            let mut empty: bool;
             empty = tail.clone().is_empty();
             for mut head_cref in &*head.clone() {
                 let mut head_cref = head_cref.clone();
@@ -1707,7 +1707,7 @@ pub fn evaluateSubscripts(mut cref: Arc<NFComponentRef>) -> Result<Arc<NFCompone
             cref.clone()
         },
         Deref @ CREF { origin: Origin::CREF { .. }, .. } => {
-            let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
+            let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>;
             subs = ({
         let mut __acc: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
         for mut s in (var_field!((*cref).subscripts, NFComponentRef::CREF).clone()).into_iter().cloned() {
@@ -2002,8 +2002,8 @@ pub fn mapExp(mut cref: Arc<NFComponentRef>, mut func: Arc<dyn ::std::ops::Fn(Ar
     let mut outCref: Arc<NFComponentRef>;
     outCref = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { .. } => {
-            let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
-            let mut rest: Arc<NFComponentRef> = Arc::new(NFComponentRef::EMPTY);
+            let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>;
+            let mut rest: Arc<NFComponentRef>;
             subs = ({
         let mut __acc: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
         for mut s in (var_field!((*cref).subscripts, NFComponentRef::CREF).clone()).into_iter().cloned() {
@@ -2029,8 +2029,8 @@ pub fn mapExpShallow(mut cref: Arc<NFComponentRef>, mut func: Arc<dyn ::std::ops
     let mut outCref: Arc<NFComponentRef>;
     outCref = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { .. } => {
-            let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
-            let mut rest: Arc<NFComponentRef> = Arc::new(NFComponentRef::EMPTY);
+            let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>;
+            let mut rest: Arc<NFComponentRef>;
             subs = ({
         let mut __acc: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
         for mut s in (var_field!((*cref).subscripts, NFComponentRef::CREF).clone()).into_iter().cloned() {
@@ -2073,8 +2073,8 @@ pub fn mapFoldExp<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut cref: A
     let mut arg: ArgT = arg;
     outCref = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { .. } => {
-            let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
-            let mut rest: Arc<NFComponentRef> = Arc::new(NFComponentRef::EMPTY);
+            let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>;
+            let mut rest: Arc<NFComponentRef>;
             (subs, arg) = List::map1Fold(var_field!((*cref).subscripts, NFComponentRef::CREF).clone(), (std::sync::Arc::new(Subscript::mapFoldExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Subscript::NFSubscript>, _, _) -> Result<_> + 'static>), func.clone(), arg.clone())?;
             (rest, arg) = mapFoldExp(var_field!((*cref).restCref, NFComponentRef::CREF).clone(), func.clone(), arg.clone())?;
             Arc::new(NFComponentRef::CREF { node: var_field!((*cref).node, NFComponentRef::CREF).clone(), subscripts: subs.clone(), ty: var_field!((*cref).ty, NFComponentRef::CREF).clone(), origin: var_field!((*cref).origin, NFComponentRef::CREF).clone(), restCref: rest.clone() })
@@ -2094,8 +2094,8 @@ pub fn mapFoldExpShallow<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut 
     let mut arg: ArgT = arg;
     outCref = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { .. } => {
-            let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
-            let mut rest: Arc<NFComponentRef> = Arc::new(NFComponentRef::EMPTY);
+            let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>;
+            let mut rest: Arc<NFComponentRef>;
             (subs, arg) = List::map1Fold(var_field!((*cref).subscripts, NFComponentRef::CREF).clone(), (std::sync::Arc::new(Subscript::mapFoldExpShallow) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Subscript::NFSubscript>, _, _) -> Result<_> + 'static>), func.clone(), arg.clone())?;
             (rest, arg) = mapFoldExpShallow(var_field!((*cref).restCref, NFComponentRef::CREF).clone(), func.clone(), arg.clone())?;
             Arc::new(NFComponentRef::CREF { node: var_field!((*cref).node, NFComponentRef::CREF).clone(), subscripts: subs.clone(), ty: var_field!((*cref).ty, NFComponentRef::CREF).clone(), origin: var_field!((*cref).origin, NFComponentRef::CREF).clone(), restCref: rest.clone() })
@@ -2146,8 +2146,8 @@ pub fn mapTypes(mut cref: Arc<NFComponentRef>, mut func: Arc<dyn ::std::ops::Fn(
     let mut outCref: Arc<NFComponentRef>;
     outCref = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { .. } => {
-            let mut rest: Arc<NFComponentRef> = Arc::new(NFComponentRef::EMPTY);
-            let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
+            let mut rest: Arc<NFComponentRef>;
+            let mut ty: Arc<Type::NFType>;
             ty = func(var_field!((*cref).ty, NFComponentRef::CREF).clone())?;
             rest = mapTypes(var_field!((*cref).restCref, NFComponentRef::CREF).clone(), func.clone())?;
             Arc::new(NFComponentRef::CREF { node: var_field!((*cref).node, NFComponentRef::CREF).clone(), subscripts: var_field!((*cref).subscripts, NFComponentRef::CREF).clone(), ty: ty.clone(), origin: var_field!((*cref).origin, NFComponentRef::CREF).clone(), restCref: rest.clone() })
@@ -2166,8 +2166,8 @@ pub fn mapNodes(mut cref: Arc<NFComponentRef>, mut func: Arc<dyn ::std::ops::Fn(
     let mut outCref: Arc<NFComponentRef>;
     outCref = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { .. } => {
-            let mut rest: Arc<NFComponentRef> = Arc::new(NFComponentRef::EMPTY);
-            let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
+            let mut rest: Arc<NFComponentRef>;
+            let mut node: Arc<InstNode::InstNode>;
             node = func(var_field!((*cref).node, NFComponentRef::CREF).clone())?;
             rest = mapNodes(var_field!((*cref).restCref, NFComponentRef::CREF).clone(), func.clone())?;
             Arc::new(NFComponentRef::CREF { node: node.clone(), subscripts: var_field!((*cref).subscripts, NFComponentRef::CREF).clone(), ty: var_field!((*cref).ty, NFComponentRef::CREF).clone(), origin: var_field!((*cref).origin, NFComponentRef::CREF).clone(), restCref: rest.clone() })

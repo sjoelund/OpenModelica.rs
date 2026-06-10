@@ -128,12 +128,12 @@ fn addElementRedeclarationsToEnv2(mut inRedeclare: Arc<SCode::Element>, mut inEn
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    let mut name: ArcStr = arcstr::literal!("");
-                    let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
-                    let mut env_path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-                    let mut ext_pathl: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
-                    let mut env: Env = metamodelica::nil();
-                    let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
+                    let mut name: ArcStr;
+                    let mut info: SourceInfo;
+                    let mut env_path: Arc<Absyn::Path>;
+                    let mut ext_pathl: Arc<metamodelica::List<Arc<Absyn::Path>>>;
+                    let mut env: Env;
+                    let mut item: Item;
                     name = (SCodeUtil::elementName(inRedeclare.clone())?).clone();
                     info = SCodeUtil::elementInfo(inRedeclare.clone());
                     ext_pathl = lookupElementRedeclaration((name.clone()).clone(), inEnv.clone(), info.clone())?;
@@ -166,7 +166,7 @@ fn lookupElementRedeclaration(mut inName: ArcStr, mut inEnv: Env, mut inInfo: So
         let __mc_input = inInfo.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            let mut paths: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
+            let mut paths: Arc<metamodelica::List<Arc<Absyn::Path>>>;
             paths = NFSCodeLookup::lookupBaseClasses((inName.clone()).clone(), inEnv.clone())?;
             Ok(paths.clone())
         })() { break 'mc __v; }
@@ -204,8 +204,8 @@ fn addRedeclareToEnvExtendsTable2(mut inRedeclaredElement: Item, mut inBaseClass
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: bc1, tail: rest_bc }, Deref @ metamodelica::List::Cons { head: Deref @ NFSCodeEnv::Extends { baseClass: bc2, redeclareModifiers: el, index, info }, tail: exl }) => {
-                    let mut ex: Extends = Arc::new(<NFSCodeEnv::Extends as ::std::default::Default>::default());
-                    let mut redecl: Arc<NFSCodeEnv::Redeclaration> = Arc::new(<NFSCodeEnv::Redeclaration as ::std::default::Default>::default());
+                    let mut ex: Extends;
+                    let mut redecl: Arc<NFSCodeEnv::Redeclaration>;
                     let mut exl = (*exl).clone();
                     let true = (AbsynUtil::pathEqual(bc1.clone(), bc2.clone())) else { bail!("pattern mismatch") };
                     redecl = Arc::new(NFSCodeEnv::Redeclaration::PROCESSED_MODIFIER { modifier: inRedeclaredElement.clone() });
@@ -247,9 +247,9 @@ pub fn processRedeclare(mut inRedeclare: Arc<NFSCodeEnv::Redeclaration>, mut inE
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ NFSCodeEnv::Redeclaration::RAW_MODIFIER { modifier: el @ Deref @ SCode::Element::CLASS { .. } } => {
-                    let mut el_item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
-                    let mut redecl_item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
-                    let mut cls_env: Env = metamodelica::nil();
+                    let mut el_item: Item;
+                    let mut redecl_item: Item;
+                    let mut cls_env: Env;
                     cls_env = NFSCodeEnv::makeClassEnvironment(el.clone(), true)?;
                     el_item = NFSCodeEnv::newClassItem(el.clone(), cls_env.clone(), crate::NFSCodeEnv::ClassType::USERDEFINED);
                     redecl_item = Arc::new(NFSCodeEnv::Item::REDECLARED_ITEM { item: el_item.clone(), declaredEnv: inEnv.clone() });
@@ -261,8 +261,8 @@ pub fn processRedeclare(mut inRedeclare: Arc<NFSCodeEnv::Redeclaration>, mut inE
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ NFSCodeEnv::Redeclaration::RAW_MODIFIER { modifier: el @ Deref @ SCode::Element::COMPONENT { .. } } => {
-                    let mut el_item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
-                    let mut redecl_item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
+                    let mut el_item: Item;
+                    let mut redecl_item: Item;
                     el_item = NFSCodeEnv::newVarItem(el.clone(), true);
                     redecl_item = Arc::new(NFSCodeEnv::Item::REDECLARED_ITEM { item: el_item.clone(), declaredEnv: inEnv.clone() });
                     Ok(Arc::new(NFSCodeEnv::Redeclaration::PROCESSED_MODIFIER { modifier: redecl_item.clone() }))
@@ -304,8 +304,8 @@ pub fn replaceRedeclares(mut inRedeclares: Arc<metamodelica::List<Arc<NFSCodeEnv
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let NFSCodeLookup::RedeclareReplaceStrategy::INSERT_REDECLARES { .. } = __mc_input.clone() else { bail!("nomatch") };
-            let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
-            let mut env: Env = metamodelica::nil();
+            let mut item: Item;
+            let mut env: Env;
             (item, env, _) = replaceRedeclaredElementsInEnv(inRedeclares.clone(), inClassItem.clone(), inClassEnv.clone(), inElementEnv.clone(), NFInstPrefix::emptyPrefix().clone())?;
             Ok((Some(item.clone()), Some(env.clone())))
         })() { break 'mc __v; }
@@ -335,9 +335,9 @@ pub fn replaceRedeclaredElementsInEnv(mut inRedeclares: Arc<metamodelica::List<A
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, Deref @ NFSCodeEnv::Item::CLASS { cls, env: Deref @ metamodelica::List::Cons { head: item_env, tail: Deref @ metamodelica::List::Nil }, classType: cls_ty }) => {
-                    let mut env: Env = metamodelica::nil();
-                    let mut redecls: Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>> = metamodelica::nil();
-                    let mut repl: Replacements = metamodelica::nil();
+                    let mut env: Env;
+                    let mut redecls: Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>>;
+                    let mut repl: Replacements;
                     let mut item_env = (*item_env).clone();
                     env = NFSCodeEnv::enterFrame(item_env.clone(), inTypeEnv.clone());
                     redecls = List::map2(inRedeclares.clone(), (std::sync::Arc::new(processRedeclare) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFSCodeEnv::Redeclaration>, Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, Arc<NFInstPrefix::Prefix>) -> Result<Arc<NFSCodeEnv::Redeclaration>> + 'static>), inElementEnv.clone(), inPrefix.clone())?;
@@ -373,7 +373,7 @@ pub fn extractRedeclaresFromModifier(mut inMod: Arc<SCode::Mod>) -> Result<Arc<m
     let mut outRedeclares: Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>>;
     outRedeclares = (::match_deref::match_deref! { match &(inMod.clone()) {
         Deref @ SCode::Mod::MOD { subModLst: sub_mods, .. } => {
-            let mut redeclares: Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>> = metamodelica::nil();
+            let mut redeclares: Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>>;
             redeclares = List::fold(sub_mods.clone(), (std::sync::Arc::new(extractRedeclareFromSubMod) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>, Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>>) -> Result<Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>>> + 'static>), metamodelica::nil())?;
             redeclares.clone()
         },
@@ -389,7 +389,7 @@ fn extractRedeclareFromSubMod(mut inMod: Arc<SCode::SubMod>, mut inRedeclares: A
     let mut outRedeclares: Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>>;
     outRedeclares = (::match_deref::match_deref! { match &(inMod.clone()) {
         Deref @ SCode::SubMod { r#mod: Deref @ SCode::Mod::REDECL { element: el, .. }, .. } => {
-            let mut redecl: Arc<NFSCodeEnv::Redeclaration> = Arc::new(<NFSCodeEnv::Redeclaration as ::std::default::Default>::default());
+            let mut redecl: Arc<NFSCodeEnv::Redeclaration>;
             redecl = Arc::new(NFSCodeEnv::Redeclaration::RAW_MODIFIER { modifier: el.clone() });
             NFSCodeCheck::checkDuplicateRedeclarations(redecl.clone(), inRedeclares.clone())?;
             metamodelica::cons(redecl.clone(), inRedeclares.clone())
@@ -409,8 +409,8 @@ fn replaceRedeclaredElementInEnv(mut inRedeclare: Arc<NFSCodeEnv::Redeclaration>
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ NFSCodeEnv::Redeclaration::PROCESSED_MODIFIER { modifier: item } => {
-                    let mut name: ArcStr = arcstr::literal!("");
-                    let mut envRpl: (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, Arc<metamodelica::List<Replacement>>) = (metamodelica::nil(), metamodelica::nil());
+                    let mut name: ArcStr;
+                    let mut envRpl: (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, Arc<metamodelica::List<Replacement>>);
                     name = (NFSCodeEnv::getItemName(item.clone())?).clone();
                     envRpl = pushRedeclareIntoExtendsNoFail((name.clone()).clone(), item.clone(), inEnv.clone());
                     Ok(replaceElementInScope((name.clone()).clone(), item.clone(), envRpl.clone())?)
@@ -421,8 +421,8 @@ fn replaceRedeclaredElementInEnv(mut inRedeclare: Arc<NFSCodeEnv::Redeclaration>
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ NFSCodeEnv::Redeclaration::PROCESSED_MODIFIER { modifier: item } => {
-                    let mut name: ArcStr = arcstr::literal!("");
-                    let mut bcl: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
+                    let mut name: ArcStr;
+                    let mut bcl: Arc<metamodelica::List<Arc<Absyn::Path>>>;
                     name = (NFSCodeEnv::getItemName(item.clone())?).clone();
                     bcl = NFSCodeLookup::lookupBaseClasses((name.clone()).clone(), Util::tuple21(inEnv.clone()))?;
                     Ok(pushRedeclareIntoExtends((name.clone()).clone(), item.clone(), bcl.clone(), inEnv.clone())?)
@@ -433,9 +433,9 @@ fn replaceRedeclaredElementInEnv(mut inRedeclare: Arc<NFSCodeEnv::Redeclaration>
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ NFSCodeEnv::Redeclaration::PROCESSED_MODIFIER { modifier: item } => {
-                    let mut name: ArcStr = arcstr::literal!("");
-                    let mut scope_name: ArcStr = arcstr::literal!("");
-                    let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
+                    let mut name: ArcStr;
+                    let mut scope_name: ArcStr;
+                    let mut info: SourceInfo;
                     scope_name = (NFSCodeEnv::getScopeName(Util::tuple21(inEnv.clone()))?).clone();
                     name = (NFSCodeEnv::getItemName(item.clone())?).clone();
                     info = NFSCodeEnv::getItemInfo(item.clone())?;
@@ -457,8 +457,8 @@ fn pushRedeclareIntoExtendsNoFail(mut inName: ArcStr, mut inRedeclare: Item, mut
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    let mut bcl: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
-                    let mut envRpl: (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, Arc<metamodelica::List<Replacement>>) = (metamodelica::nil(), metamodelica::nil());
+                    let mut bcl: Arc<metamodelica::List<Arc<Absyn::Path>>>;
+                    let mut envRpl: (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, Arc<metamodelica::List<Replacement>>);
                     bcl = NFSCodeLookup::lookupBaseClasses((inName.clone()).clone(), Util::tuple21(inEnv.clone()))?;
                     envRpl = pushRedeclareIntoExtends((inName.clone()).clone(), inRedeclare.clone(), bcl.clone(), inEnv.clone())?;
                     Ok(envRpl.clone())
@@ -524,9 +524,9 @@ fn pushRedeclareIntoExtends2(mut inName: ArcStr, mut inRedeclare: Item, mut inBa
             inExtends.clone()
         },
         (_, Deref @ metamodelica::List::Nil) => {
-            let mut bc_strl: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            let mut bcl_str: ArcStr = arcstr::literal!("");
-            let mut err_msg: ArcStr = arcstr::literal!("");
+            let mut bc_strl: Arc<metamodelica::List<ArcStr>>;
+            let mut bcl_str: ArcStr;
+            let mut err_msg: ArcStr;
             bc_strl = ({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut p in (inBaseClasses.clone()).into_iter().cloned() {
@@ -566,8 +566,8 @@ pub fn replaceElementInScope(mut inElementName: ArcStr, mut inElement: Item, mut
     let mut outEnv: (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, Arc<metamodelica::List<Replacement>>);
     outEnv = (::match_deref::match_deref! { match &(inEnv.clone()) {
         (env @ Deref @ metamodelica::List::Cons { head: Deref @ NFSCodeEnv::Frame { clsAndVars: tree, .. }, tail: _ }, repl) => {
-            let mut old_item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
-            let mut new_item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
+            let mut old_item: Item;
+            let mut new_item: Item;
             let mut env = (*env).clone();
             let mut tree = (*tree).clone();
             let mut repl = (*repl).clone();

@@ -107,7 +107,7 @@ pub fn flattenClassInProgram(mut inClassName: Arc<Absyn::Path>, mut inProgram: A
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 prog => {
-                    let mut env: Env = metamodelica::nil();
+                    let mut env: Env;
                     let mut prog = (*prog).clone();
                     System::tmpTickResetIndex(0, NFSCodeEnv::tmpTickIndex.clone());
                     System::tmpTickResetIndex(1, NFSCodeEnv::extendsTickIndex.clone());
@@ -146,7 +146,7 @@ pub fn flattenCompleteProgram(mut inProgram: Arc<metamodelica::List<Arc<SCode::E
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 prog => {
-                    let mut env: Env = metamodelica::nil();
+                    let mut env: Env;
                     let mut prog = (*prog).clone();
                     env = NFSCodeEnv::buildInitialEnv()?;
                     env = NFSCodeEnv::extendEnvWithClasses(prog.clone(), env.clone())?;

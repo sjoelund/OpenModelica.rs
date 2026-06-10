@@ -93,7 +93,7 @@ pub fn expand(mut exp: Arc<Expression::NFExpression>, mut backend: bool, mut res
             (exp.clone(), true)
         },
         Deref @ Expression::ARRAY { .. } => {
-            let mut arr: metamodelica::Array<Arc<Expression::NFExpression>> = Default::default();
+            let mut arr: metamodelica::Array<Arc<Expression::NFExpression>>;
             (arr, expanded) = expandArray(var_field!((*exp).elements, Expression::NFExpression::ARRAY).clone())?;
             assign_variant_field!(exp => Expression::NFExpression::ARRAY; elements = arr.clone());
             (exp.clone(), expanded.clone())
@@ -264,7 +264,7 @@ pub fn expandTypename(mut ty: Arc<Type::NFType>) -> Result<Arc<Expression::NFExp
             Expression::makeArray(ty.clone(), metamodelica::arrayFromVec(list![Arc::new(Expression::NFExpression::BOOLEAN { value: false }), Arc::new(Expression::NFExpression::BOOLEAN { value: true })].into_iter().cloned().collect()), true)
         },
         Deref @ Type::ARRAY { elementType: Deref @ Type::ENUMERATION { .. }, .. } => {
-            let mut lits: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
+            let mut lits: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
             lits = Expression::makeEnumLiterals(var_field!((*ty).elementType, Type::NFType::ARRAY).clone())?;
             Expression::makeArray(ty.clone(), metamodelica::arrayFromVec(lits.clone().into_iter().cloned().collect()), true)
         },
@@ -446,7 +446,7 @@ pub fn expandBuiltinGeneric2(mut exp: Arc<Expression::NFExpression>, mut r#fn: A
             exp.clone()
         },
         Deref @ Expression::ARRAY { .. } => {
-            let mut arr: metamodelica::Array<Arc<Expression::NFExpression>> = Default::default();
+            let mut arr: metamodelica::Array<Arc<Expression::NFExpression>>;
             arr = Array::map(var_field!((*exp).elements, Expression::NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b1 = r#fn.clone(); let __pe_b2 = ty.clone(); let __pe_b3 = var.clone(); let __pe_b4 = pur.clone(); let __pe_b5 = attr.clone(); move |__pe_a0| expandBuiltinGeneric2(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             Expression::makeArray(Type::setArrayElementType(var_field!((*exp).ty, Expression::NFExpression::ARRAY).clone(), ty.clone()), arr.clone(), false)
         },
@@ -526,9 +526,9 @@ pub fn expandSize(mut exp: Arc<Expression::NFExpression>) -> (Arc<Expression::NF
     let mut expanded: bool = true;
     outExp = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::SIZE { exp: e, dimIndex: None } => {
-            let mut dims: i32 = 0;
-            let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-            let mut expl: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
+            let mut dims: i32;
+            let mut ty: Arc<Type::NFType>;
+            let mut expl: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
             ty = Expression::typeOf(e.clone());
             dims = Type::dimensionCount(ty.clone());
             expl = ({

@@ -79,10 +79,10 @@ pub fn binary(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inOperator
     '__tco: loop {
         ::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inOperator1.clone(), inProp1.clone(), inExp1.clone(), inProp2.clone(), inExp2.clone())) {
         (_, _, _, props1 @ DAE::Properties::PROP_TUPLE { .. }, _, DAE::Properties::PROP { .. }, _) if (!(Config::acceptMetaModelicaGrammar()?)) => {
-            let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
-            let mut type1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+            let mut cache: FCore::Cache;
+            let mut type1: Arc<DAE::Type>;
+            let mut exp: Arc<DAE::Exp>;
+            let mut prop: DAE::Properties;
             let ref __pa1 @ DAE::PROP { type_: ref __pa0, constFlag: _ } = (Types::propTupleFirstProp(props1.clone())?) else { bail!("pattern mismatch") };
             type1 = __pa0.clone();
             prop = __pa1.clone();
@@ -90,10 +90,10 @@ pub fn binary(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inOperator
             { (inCache, inEnv, inOperator1, inProp1, inExp1, inProp2, inExp2, AbExp, AbExp1, AbExp2, inImpl, inPre, inInfo) = (inCache.clone(), inEnv.clone(), inOperator1.clone(), prop.clone(), exp.clone(), inProp2.clone(), inExp2.clone(), AbExp.clone(), AbExp1.clone(), AbExp2.clone(), inImpl.clone(), inPre.clone(), inInfo.clone()); continue '__tco; }
         },
         (_, _, _, DAE::Properties::PROP { .. }, _, props2 @ DAE::Properties::PROP_TUPLE { .. }, _) if (!(Config::acceptMetaModelicaGrammar()?)) => {
-            let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
-            let mut type2: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+            let mut cache: FCore::Cache;
+            let mut type2: Arc<DAE::Type>;
+            let mut exp: Arc<DAE::Exp>;
+            let mut prop: DAE::Properties;
             let ref __pa1 @ DAE::PROP { type_: ref __pa0, constFlag: _ } = (Types::propTupleFirstProp(props2.clone())?) else { bail!("pattern mismatch") };
             type2 = __pa0.clone();
             prop = __pa1.clone();
@@ -101,14 +101,14 @@ pub fn binary(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inOperator
             { (inCache, inEnv, inOperator1, inProp1, inExp1, inProp2, inExp2, AbExp, AbExp1, AbExp2, inImpl, inPre, inInfo) = (inCache.clone(), inEnv.clone(), inOperator1.clone(), inProp1.clone(), inExp1.clone(), prop.clone(), exp.clone(), AbExp.clone(), AbExp1.clone(), AbExp2.clone(), inImpl.clone(), inPre.clone(), inInfo.clone()); continue '__tco; }
         },
         (cache, env, aboper, DAE::Properties::PROP { type_: type1, constFlag: const1 }, exp1, DAE::Properties::PROP { type_: type2, constFlag: const2 }, exp2) => {
-            let mut opList: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = metamodelica::nil();
-            let mut otype: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut r#const: DAE::Const = DAE::Const::C_CONST;
-            let mut oper: DAE::Operator = <DAE::Operator as ::std::default::Default>::default();
-            let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
-            let mut functionTree: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
-            let mut didInline: bool = false;
+            let mut opList: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>>;
+            let mut otype: Arc<DAE::Type>;
+            let mut exp: Arc<DAE::Exp>;
+            let mut r#const: DAE::Const;
+            let mut oper: DAE::Operator;
+            let mut prop: DAE::Properties;
+            let mut functionTree: Arc<AvlTreePathFunction::Tree>;
+            let mut didInline: bool;
             let mut cache = (*cache).clone();
             let mut type1 = (*type1).clone();
             let mut exp1 = (*exp1).clone();
@@ -158,10 +158,10 @@ pub fn unary(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inOperator1
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _, _, DAE::Properties::PROP_TUPLE { .. }, exp1, _) => {
-                    let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
-                    let mut type1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+                    let mut cache: FCore::Cache;
+                    let mut type1: Arc<DAE::Type>;
+                    let mut exp: Arc<DAE::Exp>;
+                    let mut prop: DAE::Properties;
                     let false = (Config::acceptMetaModelicaGrammar()?) else { bail!("pattern mismatch") };
                     let ref __pa1 @ DAE::PROP { type_: ref __pa0, constFlag: _ } = (Types::propTupleFirstProp(inProp1.clone())?) else { bail!("pattern mismatch") };
                     type1 = __pa0.clone();
@@ -176,11 +176,11 @@ pub fn unary(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inOperator1
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _, aboper, DAE::Properties::PROP { type_: type1, constFlag: r#const }, exp1, _) => {
-                    let mut opList: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = metamodelica::nil();
-                    let mut otype: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut oper: DAE::Operator = <DAE::Operator as ::std::default::Default>::default();
-                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+                    let mut opList: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>>;
+                    let mut otype: Arc<DAE::Type>;
+                    let mut exp: Arc<DAE::Exp>;
+                    let mut oper: DAE::Operator;
+                    let mut prop: DAE::Properties;
                     let mut exp1 = (*exp1).clone();
                     let false = (Types::isRecord(Types::arrayElementType(type1.clone()))) else { bail!("pattern mismatch") };
                     opList = operatorsUnary(aboper.clone())?;
@@ -201,15 +201,15 @@ pub fn unary(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inOperator1
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, aboper, DAE::Properties::PROP { type_: type1, constFlag: _ }, _, absexp1) => {
-                    let mut str1: ArcStr = arcstr::literal!("");
-                    let mut operNames: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
-                    let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-                    let mut operatorEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut recordEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut operatorCl: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
-                    let mut types: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
-                    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+                    let mut str1: ArcStr;
+                    let mut operNames: Arc<metamodelica::List<Arc<Absyn::Path>>>;
+                    let mut path: Arc<Absyn::Path>;
+                    let mut operatorEnv: FCore::Graph;
+                    let mut recordEnv: FCore::Graph;
+                    let mut operatorCl: Arc<SCode::Element>;
+                    let mut types: Arc<metamodelica::List<Arc<DAE::Type>>>;
+                    let mut exp: Arc<DAE::Exp>;
+                    let mut prop: DAE::Properties;
                     let mut cache = (*cache).clone();
                     path = getRecordPath(type1.clone())?;
                     path = AbsynUtil::makeFullyQualified(path.clone());
@@ -248,16 +248,16 @@ pub fn string(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp1: Ar
     let mut outProp: DAE::Properties;
     (outCache, outExp, outProp) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inExp1.clone())) {
         (cache, env, Deref @ Absyn::Exp::CALL { function_: Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "String", subscripts: _ }, functionArgs: Deref @ Absyn::FunctionArgs::FUNCTIONARGS { args: Deref @ metamodelica::List::Cons { head: exp1, tail: restargs }, argNames: nargs }, .. }) => {
-            let mut str1: ArcStr = arcstr::literal!("");
-            let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-            let mut operNames: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
-            let mut recordEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-            let mut operatorEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-            let mut operatorCl: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
-            let mut types: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
-            let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
-            let mut type1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let mut daeExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut str1: ArcStr;
+            let mut path: Arc<Absyn::Path>;
+            let mut operNames: Arc<metamodelica::List<Arc<Absyn::Path>>>;
+            let mut recordEnv: FCore::Graph;
+            let mut operatorEnv: FCore::Graph;
+            let mut operatorCl: Arc<SCode::Element>;
+            let mut types: Arc<metamodelica::List<Arc<DAE::Type>>>;
+            let mut prop: DAE::Properties;
+            let mut type1: Arc<DAE::Type>;
+            let mut daeExp: Arc<DAE::Exp>;
             let mut cache = (*cache).clone();
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(Static::elabExp(cache.clone(), env.clone(), exp1.clone(), inImpl.clone(), inDoVect.clone(), inPre.clone(), inInfo.clone())?) {
                 (__pa0, _, DAE::Properties::PROP { type_: __pa1, constFlag: _ }) => (__pa0.clone(), __pa1.clone()),
@@ -301,10 +301,10 @@ pub fn elabArglist(mut inTypes: Arc<metamodelica::List<Arc<DAE::Type>>>, mut inA
             (metamodelica::nil(), metamodelica::nil())
         },
         (Deref @ metamodelica::List::Cons { head: pt, tail: pts }, Deref @ metamodelica::List::Cons { head: (arg, atype), tail: args }) => {
-            let mut arg_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut atype_1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let mut args_1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-            let mut atypes_1: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
+            let mut arg_1: Arc<DAE::Exp>;
+            let mut atype_1: Arc<DAE::Type>;
+            let mut args_1: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+            let mut atypes_1: Arc<metamodelica::List<Arc<DAE::Type>>>;
             (arg_1, atype_1) = Types::matchType(arg.clone(), atype.clone(), pt.clone(), false)?;
             (args_1, atypes_1) = elabArglist(pts.clone(), args.clone())?;
             (metamodelica::cons(arg_1.clone(), args_1.clone()), metamodelica::cons(atype_1.clone(), atypes_1.clone()))
@@ -352,10 +352,10 @@ fn deoverloadBinaryUserdefNoConstructor(mut inTypeList: Arc<metamodelica::List<A
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Type::T_FUNCTION { path, funcResultType: ty, functionAttributes: attr, funcArg: Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { ty: ty1, .. }, tail: Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { ty: ty2, .. }, tail: restArgs } } }, tail: types }, acc) => {
-                    let mut daeExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut lhs: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut rhs: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut tpl: (Arc<DAE::Exp>, Option<Arc<DAE::Type>>) = (Arc::new(<DAE::Exp as ::std::default::Default>::default()), None);
+                    let mut daeExp: Arc<DAE::Exp>;
+                    let mut lhs: Arc<DAE::Exp>;
+                    let mut rhs: Arc<DAE::Exp>;
+                    let mut tpl: (Arc<DAE::Exp>, Option<Arc<DAE::Type>>);
                     let mut acc = (*acc).clone();
                     (lhs, _) = Types::matchType(inLhs.clone(), lhsType.clone(), ty1.clone(), false)?;
                     (rhs, _) = Types::matchType(inRhs.clone(), rhsType.clone(), ty2.clone(), false)?;
@@ -370,7 +370,7 @@ fn deoverloadBinaryUserdefNoConstructor(mut inTypeList: Arc<metamodelica::List<A
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: _, tail: types }, _) => {
-                    let mut acc: Arc<metamodelica::List<(Arc<DAE::Exp>, Option<Arc<DAE::Type>>)>> = metamodelica::nil();
+                    let mut acc: Arc<metamodelica::List<(Arc<DAE::Exp>, Option<Arc<DAE::Type>>)>>;
                     acc = deoverloadBinaryUserdefNoConstructor(types.clone(), inLhs.clone(), inRhs.clone(), lhsType.clone(), rhsType.clone(), inAcc.clone())?;
                     Ok(acc.clone())
                 }
@@ -435,8 +435,8 @@ fn deoverloadUnaryUserdefNoConstructor(mut inTypeList: Arc<metamodelica::List<Ar
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Type::T_FUNCTION { path, funcResultType: ty, functionAttributes: attr, funcArg: Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { ty: ty1, .. }, tail: restArgs } }, tail: types }, acc) => {
-                    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut daeExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut exp: Arc<DAE::Exp>;
+                    let mut daeExp: Arc<DAE::Exp>;
                     let mut acc = (*acc).clone();
                     (exp, _) = Types::matchType(inExp.clone(), inType.clone(), ty1.clone(), false)?;
                     daeExp = makeCallFillRestDefaults(path.clone(), list![exp.clone()], restArgs.clone(), Types::makeCallAttr(ty.clone(), attr.clone()))?;
@@ -449,7 +449,7 @@ fn deoverloadUnaryUserdefNoConstructor(mut inTypeList: Arc<metamodelica::List<Ar
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: _, tail: types }, _) => {
-                    let mut acc: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
+                    let mut acc: Arc<metamodelica::List<Arc<DAE::Exp>>>;
                     acc = deoverloadUnaryUserdefNoConstructor(types.clone(), inExp.clone(), inType.clone(), inAcc.clone())?;
                     Ok(acc.clone())
                 }
@@ -476,14 +476,14 @@ fn binaryUserdef(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inOper:
     let mut outType: Arc<DAE::Type>;
     (outCache, outExp, foldType, outType) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inOper.clone(), inExp1.clone(), inExp2.clone(), inType1.clone(), inType2.clone())) {
         (cache, env, op, exp1, exp2, type1, type2) => {
-            let mut bool1: bool = false;
-            let mut bool2: bool = false;
-            let mut opStr: ArcStr = arcstr::literal!("");
-            let mut types: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
-            let mut types1: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
-            let mut types2: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
-            let mut daeExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut exps: Arc<metamodelica::List<(Arc<DAE::Exp>, Option<Arc<DAE::Type>>)>> = metamodelica::nil();
+            let mut bool1: bool;
+            let mut bool2: bool;
+            let mut opStr: ArcStr;
+            let mut types: Arc<metamodelica::List<Arc<DAE::Type>>>;
+            let mut types1: Arc<metamodelica::List<Arc<DAE::Type>>>;
+            let mut types2: Arc<metamodelica::List<Arc<DAE::Type>>>;
+            let mut daeExp: Arc<DAE::Exp>;
+            let mut exps: Arc<metamodelica::List<(Arc<DAE::Exp>, Option<Arc<DAE::Type>>)>>;
             let mut cache = (*cache).clone();
             bool1 = Types::arrayType(type1.clone());
             bool2 = Types::arrayType(type2.clone());
@@ -520,13 +520,13 @@ fn binaryUserdefArray(mut inCache: FCore::Cache, mut env: FCore::Graph, mut inEx
             (inCache.clone(), inExps.clone())
         },
         (Deref @ metamodelica::List::Nil, true) => {
-            let mut isRelation: bool = false;
-            let mut isVector1: bool = false;
-            let mut isVector2: bool = false;
-            let mut isScalar1: bool = false;
-            let mut isScalar2: bool = false;
-            let mut isMatrix1: bool = false;
-            let mut isMatrix2: bool = false;
+            let mut isRelation: bool;
+            let mut isVector1: bool;
+            let mut isVector2: bool;
+            let mut isScalar1: bool;
+            let mut isScalar2: bool;
+            let mut isMatrix1: bool;
+            let mut isMatrix2: bool;
             isRelation = listMember(inOper.clone(), list![openmodelica_ast::Absyn::Operator::LESS, openmodelica_ast::Absyn::Operator::LESSEQ, openmodelica_ast::Absyn::Operator::GREATER, openmodelica_ast::Absyn::Operator::GREATEREQ, openmodelica_ast::Absyn::Operator::EQUAL, openmodelica_ast::Absyn::Operator::NEQUAL]);
             Error::assertionOrAddSourceMessage(!(isRelation.clone()), Error::COMPILER_ERROR.clone(), list![(literal!("Not supporting overloading of relation array operations")).clone()], info.clone())?;
             isScalar1 = !(Types::arrayType(inType1.clone()));
@@ -553,15 +553,15 @@ fn binaryUserdefArray2(mut inCache: FCore::Cache, mut env: FCore::Graph, mut isS
     (cache, exps) = (match (inCache.clone(), isScalar1.clone(), isVector1.clone(), isMatrix1.clone(), isScalar2.clone(), isVector2.clone(), isMatrix2.clone(), inOper.clone()) {
         (mut __esc_cache, false, _, _, true, _, _, _) => {
             cache = __esc_cache.clone();
-            let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut cr: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut newType1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let mut resType: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let mut dim1: Arc<DAE::Dimension> = Arc::new(DAE::Dimension::DIM_BOOLEAN);
-            let mut foldName: ArcStr = arcstr::literal!("");
-            let mut resultName: ArcStr = arcstr::literal!("");
-            let mut iterName: ArcStr = arcstr::literal!("");
-            let mut op: Absyn::Operator = Absyn::Operator::ADD;
+            let mut exp: Arc<DAE::Exp>;
+            let mut cr: Arc<DAE::Exp>;
+            let mut newType1: Arc<DAE::Type>;
+            let mut resType: Arc<DAE::Type>;
+            let mut dim1: Arc<DAE::Dimension>;
+            let mut foldName: ArcStr;
+            let mut resultName: ArcStr;
+            let mut iterName: ArcStr;
+            let mut op: Absyn::Operator;
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inType1.clone()) {
                 Deref @ DAE::Type::T_ARRAY { ty: __pa0, dims: Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Nil } } => (__pa0.clone(), __pa1.clone()),
                 _ => bail!("pattern mismatch"),
@@ -580,15 +580,15 @@ fn binaryUserdefArray2(mut inCache: FCore::Cache, mut env: FCore::Graph, mut isS
         },
         (mut __esc_cache, true, _, _, false, _, _, _) => {
             cache = __esc_cache.clone();
-            let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut cr: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut newType2: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let mut resType: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let mut dim2: Arc<DAE::Dimension> = Arc::new(DAE::Dimension::DIM_BOOLEAN);
-            let mut foldName: ArcStr = arcstr::literal!("");
-            let mut resultName: ArcStr = arcstr::literal!("");
-            let mut iterName: ArcStr = arcstr::literal!("");
-            let mut op: Absyn::Operator = Absyn::Operator::ADD;
+            let mut exp: Arc<DAE::Exp>;
+            let mut cr: Arc<DAE::Exp>;
+            let mut newType2: Arc<DAE::Type>;
+            let mut resType: Arc<DAE::Type>;
+            let mut dim2: Arc<DAE::Dimension>;
+            let mut foldName: ArcStr;
+            let mut resultName: ArcStr;
+            let mut iterName: ArcStr;
+            let mut op: Absyn::Operator;
             op = Util::assoc(inOper.clone(), list![(openmodelica_ast::Absyn::Operator::ADD_EW, openmodelica_ast::Absyn::Operator::ADD_EW), (openmodelica_ast::Absyn::Operator::SUB_EW, openmodelica_ast::Absyn::Operator::SUB_EW), (openmodelica_ast::Absyn::Operator::MUL, openmodelica_ast::Absyn::Operator::MUL_EW), (openmodelica_ast::Absyn::Operator::MUL_EW, openmodelica_ast::Absyn::Operator::MUL_EW), (openmodelica_ast::Absyn::Operator::DIV_EW, openmodelica_ast::Absyn::Operator::DIV_EW), (openmodelica_ast::Absyn::Operator::POW_EW, openmodelica_ast::Absyn::Operator::POW_EW)])?;
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inType2.clone()) {
                 Deref @ DAE::Type::T_ARRAY { ty: __pa0, dims: Deref @ metamodelica::List::Cons { head: __pa1, tail: _ } } => (__pa0.clone(), __pa1.clone()),
@@ -613,33 +613,33 @@ fn binaryUserdefArray2(mut inCache: FCore::Cache, mut env: FCore::Graph, mut isS
         },
         (mut __esc_cache, _, _, true, _, true, _, Absyn::Operator::MUL { .. }) => {
             cache = __esc_cache.clone();
-            let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut cr: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut cr1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut cr2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut cr3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut cr4: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut foldExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut newType1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let mut newType2: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let mut resType: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let mut newType1_1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let mut dim2: Arc<DAE::Dimension> = Arc::new(DAE::Dimension::DIM_BOOLEAN);
-            let mut dim1_1: Arc<DAE::Dimension> = Arc::new(DAE::Dimension::DIM_BOOLEAN);
-            let mut dim1_2: Arc<DAE::Dimension> = Arc::new(DAE::Dimension::DIM_BOOLEAN);
-            let mut iter: Arc<DAE::ReductionIterator> = Arc::new(<DAE::ReductionIterator as ::std::default::Default>::default());
-            let mut iter1: Arc<DAE::ReductionIterator> = Arc::new(<DAE::ReductionIterator as ::std::default::Default>::default());
-            let mut iter2: Arc<DAE::ReductionIterator> = Arc::new(<DAE::ReductionIterator as ::std::default::Default>::default());
-            let mut foldName1: ArcStr = arcstr::literal!("");
-            let mut resultName1: ArcStr = arcstr::literal!("");
-            let mut foldName2: ArcStr = arcstr::literal!("");
-            let mut resultName2: ArcStr = arcstr::literal!("");
-            let mut iterName: ArcStr = arcstr::literal!("");
-            let mut iterName1: ArcStr = arcstr::literal!("");
-            let mut iterName2: ArcStr = arcstr::literal!("");
-            let mut zeroConstructor: Option<Arc<Values::Value>> = None;
-            let mut zeroTypes: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
+            let mut exp: Arc<DAE::Exp>;
+            let mut cr: Arc<DAE::Exp>;
+            let mut cr1: Arc<DAE::Exp>;
+            let mut cr2: Arc<DAE::Exp>;
+            let mut cr3: Arc<DAE::Exp>;
+            let mut cr4: Arc<DAE::Exp>;
+            let mut foldExp: Arc<DAE::Exp>;
+            let mut newType1: Arc<DAE::Type>;
+            let mut newType2: Arc<DAE::Type>;
+            let mut resType: Arc<DAE::Type>;
+            let mut newType1_1: Arc<DAE::Type>;
+            let mut ty: Arc<DAE::Type>;
+            let mut dim2: Arc<DAE::Dimension>;
+            let mut dim1_1: Arc<DAE::Dimension>;
+            let mut dim1_2: Arc<DAE::Dimension>;
+            let mut iter: Arc<DAE::ReductionIterator>;
+            let mut iter1: Arc<DAE::ReductionIterator>;
+            let mut iter2: Arc<DAE::ReductionIterator>;
+            let mut foldName1: ArcStr;
+            let mut resultName1: ArcStr;
+            let mut foldName2: ArcStr;
+            let mut resultName2: ArcStr;
+            let mut iterName: ArcStr;
+            let mut iterName1: ArcStr;
+            let mut iterName2: ArcStr;
+            let mut zeroConstructor: Option<Arc<Values::Value>>;
+            let mut zeroTypes: Arc<metamodelica::List<Arc<DAE::Type>>>;
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inType1.clone()) {
                 Deref @ DAE::Type::T_ARRAY { ty: __pa0, dims: Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Nil } } => (__pa0.clone(), __pa1.clone()),
                 _ => bail!("pattern mismatch"),
@@ -692,41 +692,41 @@ fn binaryUserdefArray2(mut inCache: FCore::Cache, mut env: FCore::Graph, mut isS
         },
         (mut __esc_cache, _, _, true, _, _, true, Absyn::Operator::MUL { .. }) => {
             cache = __esc_cache.clone();
-            let mut mulExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut cr1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut cr2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut cr3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut cr4: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut cr5: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut cr6: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut foldExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut transposed: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut newType1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let mut newType2: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let mut newType1_1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let mut newType2_1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let mut dim1_1: Arc<DAE::Dimension> = Arc::new(DAE::Dimension::DIM_BOOLEAN);
-            let mut dim1_2: Arc<DAE::Dimension> = Arc::new(DAE::Dimension::DIM_BOOLEAN);
-            let mut dim2_1: Arc<DAE::Dimension> = Arc::new(DAE::Dimension::DIM_BOOLEAN);
-            let mut dim2_2: Arc<DAE::Dimension> = Arc::new(DAE::Dimension::DIM_BOOLEAN);
-            let mut iter1: Arc<DAE::ReductionIterator> = Arc::new(<DAE::ReductionIterator as ::std::default::Default>::default());
-            let mut iter2: Arc<DAE::ReductionIterator> = Arc::new(<DAE::ReductionIterator as ::std::default::Default>::default());
-            let mut iter3: Arc<DAE::ReductionIterator> = Arc::new(<DAE::ReductionIterator as ::std::default::Default>::default());
-            let mut iter4: Arc<DAE::ReductionIterator> = Arc::new(<DAE::ReductionIterator as ::std::default::Default>::default());
-            let mut foldName: ArcStr = arcstr::literal!("");
-            let mut resultName: ArcStr = arcstr::literal!("");
-            let mut foldName1: ArcStr = arcstr::literal!("");
-            let mut resultName1: ArcStr = arcstr::literal!("");
-            let mut foldName2: ArcStr = arcstr::literal!("");
-            let mut resultName2: ArcStr = arcstr::literal!("");
-            let mut iterName1: ArcStr = arcstr::literal!("");
-            let mut iterName2: ArcStr = arcstr::literal!("");
-            let mut iterName3: ArcStr = arcstr::literal!("");
-            let mut iterName4: ArcStr = arcstr::literal!("");
-            let mut zeroConstructor: Option<Arc<Values::Value>> = None;
-            let mut zeroTypes: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
+            let mut mulExp: Arc<DAE::Exp>;
+            let mut exp: Arc<DAE::Exp>;
+            let mut cr1: Arc<DAE::Exp>;
+            let mut cr2: Arc<DAE::Exp>;
+            let mut cr3: Arc<DAE::Exp>;
+            let mut cr4: Arc<DAE::Exp>;
+            let mut cr5: Arc<DAE::Exp>;
+            let mut cr6: Arc<DAE::Exp>;
+            let mut foldExp: Arc<DAE::Exp>;
+            let mut transposed: Arc<DAE::Exp>;
+            let mut newType1: Arc<DAE::Type>;
+            let mut newType2: Arc<DAE::Type>;
+            let mut newType1_1: Arc<DAE::Type>;
+            let mut newType2_1: Arc<DAE::Type>;
+            let mut ty: Arc<DAE::Type>;
+            let mut dim1_1: Arc<DAE::Dimension>;
+            let mut dim1_2: Arc<DAE::Dimension>;
+            let mut dim2_1: Arc<DAE::Dimension>;
+            let mut dim2_2: Arc<DAE::Dimension>;
+            let mut iter1: Arc<DAE::ReductionIterator>;
+            let mut iter2: Arc<DAE::ReductionIterator>;
+            let mut iter3: Arc<DAE::ReductionIterator>;
+            let mut iter4: Arc<DAE::ReductionIterator>;
+            let mut foldName: ArcStr;
+            let mut resultName: ArcStr;
+            let mut foldName1: ArcStr;
+            let mut resultName1: ArcStr;
+            let mut foldName2: ArcStr;
+            let mut resultName2: ArcStr;
+            let mut iterName1: ArcStr;
+            let mut iterName2: ArcStr;
+            let mut iterName3: ArcStr;
+            let mut iterName4: ArcStr;
+            let mut zeroConstructor: Option<Arc<Values::Value>>;
+            let mut zeroTypes: Arc<metamodelica::List<Arc<DAE::Type>>>;
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inType1.clone()) {
                 Deref @ DAE::Type::T_ARRAY { ty: __pa0, dims: Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Nil } } => (__pa0.clone(), __pa1.clone()),
                 _ => bail!("pattern mismatch"),
@@ -792,21 +792,21 @@ fn binaryUserdefArray2(mut inCache: FCore::Cache, mut env: FCore::Graph, mut isS
         },
         (mut __esc_cache, false, _, _, false, _, _, _) => {
             cache = __esc_cache.clone();
-            let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut cr1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut cr2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut newType1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let mut newType2: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let mut resType: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let mut dim1: Arc<DAE::Dimension> = Arc::new(DAE::Dimension::DIM_BOOLEAN);
-            let mut dim2: Arc<DAE::Dimension> = Arc::new(DAE::Dimension::DIM_BOOLEAN);
-            let mut iter1: Arc<DAE::ReductionIterator> = Arc::new(<DAE::ReductionIterator as ::std::default::Default>::default());
-            let mut iter2: Arc<DAE::ReductionIterator> = Arc::new(<DAE::ReductionIterator as ::std::default::Default>::default());
-            let mut foldName: ArcStr = arcstr::literal!("");
-            let mut resultName: ArcStr = arcstr::literal!("");
-            let mut iterName1: ArcStr = arcstr::literal!("");
-            let mut iterName2: ArcStr = arcstr::literal!("");
-            let mut op: Absyn::Operator = Absyn::Operator::ADD;
+            let mut exp: Arc<DAE::Exp>;
+            let mut cr1: Arc<DAE::Exp>;
+            let mut cr2: Arc<DAE::Exp>;
+            let mut newType1: Arc<DAE::Type>;
+            let mut newType2: Arc<DAE::Type>;
+            let mut resType: Arc<DAE::Type>;
+            let mut dim1: Arc<DAE::Dimension>;
+            let mut dim2: Arc<DAE::Dimension>;
+            let mut iter1: Arc<DAE::ReductionIterator>;
+            let mut iter2: Arc<DAE::ReductionIterator>;
+            let mut foldName: ArcStr;
+            let mut resultName: ArcStr;
+            let mut iterName1: ArcStr;
+            let mut iterName2: ArcStr;
+            let mut op: Absyn::Operator;
             op = Util::assoc(inOper.clone(), list![(openmodelica_ast::Absyn::Operator::ADD, openmodelica_ast::Absyn::Operator::ADD_EW), (openmodelica_ast::Absyn::Operator::ADD_EW, openmodelica_ast::Absyn::Operator::ADD_EW), (openmodelica_ast::Absyn::Operator::SUB, openmodelica_ast::Absyn::Operator::SUB_EW), (openmodelica_ast::Absyn::Operator::SUB_EW, openmodelica_ast::Absyn::Operator::SUB_EW), (openmodelica_ast::Absyn::Operator::MUL_EW, openmodelica_ast::Absyn::Operator::MUL_EW), (openmodelica_ast::Absyn::Operator::DIV_EW, openmodelica_ast::Absyn::Operator::DIV_EW), (openmodelica_ast::Absyn::Operator::POW_EW, openmodelica_ast::Absyn::Operator::POW_EW), (openmodelica_ast::Absyn::Operator::AND, openmodelica_ast::Absyn::Operator::AND), (openmodelica_ast::Absyn::Operator::OR, openmodelica_ast::Absyn::Operator::OR)])?;
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inType1.clone()) {
                 Deref @ DAE::Type::T_ARRAY { ty: __pa0, dims: Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Nil } } => (__pa0.clone(), __pa1.clone()),
@@ -1145,11 +1145,11 @@ fn operatorsBinary(mut inOperator: Absyn::Operator, mut t1: Arc<DAE::Type>, mut 
             powTypes.clone()
         },
         Absyn::Operator::POW_EW { .. } => {
-            let mut realarrs: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = metamodelica::nil();
-            let mut scalars: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = metamodelica::nil();
-            let mut types: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = metamodelica::nil();
-            let mut realscalararrs: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = metamodelica::nil();
-            let mut realarrsscalar: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = metamodelica::nil();
+            let mut realarrs: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>>;
+            let mut scalars: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>>;
+            let mut types: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>>;
+            let mut realscalararrs: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>>;
+            let mut realarrsscalar: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>>;
             realarrs = operatorReturn(DAE::Operator::POW_ARR2 { ty: Arc::new(DAE::Type::T_ARRAY { ty: DAE::T_REAL_DEFAULT().clone(), dims: list![openmodelica_frontend_types::DAE::Dimension::interned_DIM_UNKNOWN()] }) }, realarrtypes().clone(), realarrtypes().clone(), realarrtypes().clone());
             scalars = list![(DAE::Operator::POW { ty: DAE::T_REAL_DEFAULT().clone() }, list![DAE::T_REAL_DEFAULT().clone(), DAE::T_REAL_DEFAULT().clone()], DAE::T_REAL_DEFAULT().clone())];
             realscalararrs = operatorReturn(DAE::Operator::POW_SCALAR_ARRAY { ty: Arc::new(DAE::Type::T_ARRAY { ty: DAE::T_REAL_DEFAULT().clone(), dims: list![openmodelica_frontend_types::DAE::Dimension::interned_DIM_UNKNOWN()] }) }, realtypes().clone(), realarrtypes().clone(), realarrtypes().clone());
@@ -1164,51 +1164,51 @@ fn operatorsBinary(mut inOperator: Absyn::Operator, mut t1: Arc<DAE::Type>, mut 
             orTypes.clone()
         },
         Absyn::Operator::LESS { .. } => {
-            let mut scalars: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = metamodelica::nil();
-            let mut types: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = metamodelica::nil();
-            let mut enum_op: (DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>) = (<DAE::Operator as ::std::default::Default>::default(), metamodelica::nil(), Arc::new(DAE::Type::T_NORETCALL));
+            let mut scalars: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>>;
+            let mut types: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>>;
+            let mut enum_op: (DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>);
             enum_op = makeEnumOperator(DAE::Operator::LESS { ty: DAE::T_ENUMERATION_DEFAULT().clone() }, t1.clone(), t2.clone());
             scalars = list![(DAE::Operator::LESS { ty: DAE::T_INTEGER_DEFAULT().clone() }, list![DAE::T_INTEGER_DEFAULT().clone(), DAE::T_INTEGER_DEFAULT().clone()], DAE::T_BOOL_DEFAULT().clone()), enum_op.clone(), (DAE::Operator::LESS { ty: DAE::T_REAL_DEFAULT().clone() }, list![DAE::T_REAL_DEFAULT().clone(), DAE::T_REAL_DEFAULT().clone()], DAE::T_BOOL_DEFAULT().clone()), (DAE::Operator::LESS { ty: DAE::T_BOOL_DEFAULT().clone() }, list![DAE::T_BOOL_DEFAULT().clone(), DAE::T_BOOL_DEFAULT().clone()], DAE::T_BOOL_DEFAULT().clone()), (DAE::Operator::LESS { ty: DAE::T_STRING_DEFAULT().clone() }, list![DAE::T_STRING_DEFAULT().clone(), DAE::T_STRING_DEFAULT().clone()], DAE::T_BOOL_DEFAULT().clone())];
             types = unwrap_break_err!(List::flatten(list![scalars.clone()]), '__try0);
             types.clone()
         },
         Absyn::Operator::LESSEQ { .. } => {
-            let mut scalars: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = metamodelica::nil();
-            let mut types: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = metamodelica::nil();
-            let mut enum_op: (DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>) = (<DAE::Operator as ::std::default::Default>::default(), metamodelica::nil(), Arc::new(DAE::Type::T_NORETCALL));
+            let mut scalars: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>>;
+            let mut types: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>>;
+            let mut enum_op: (DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>);
             enum_op = makeEnumOperator(DAE::Operator::LESSEQ { ty: DAE::T_ENUMERATION_DEFAULT().clone() }, t1.clone(), t2.clone());
             scalars = list![(DAE::Operator::LESSEQ { ty: DAE::T_INTEGER_DEFAULT().clone() }, list![DAE::T_INTEGER_DEFAULT().clone(), DAE::T_INTEGER_DEFAULT().clone()], DAE::T_BOOL_DEFAULT().clone()), enum_op.clone(), (DAE::Operator::LESSEQ { ty: DAE::T_REAL_DEFAULT().clone() }, list![DAE::T_REAL_DEFAULT().clone(), DAE::T_REAL_DEFAULT().clone()], DAE::T_BOOL_DEFAULT().clone()), (DAE::Operator::LESSEQ { ty: DAE::T_BOOL_DEFAULT().clone() }, list![DAE::T_BOOL_DEFAULT().clone(), DAE::T_BOOL_DEFAULT().clone()], DAE::T_BOOL_DEFAULT().clone()), (DAE::Operator::LESSEQ { ty: DAE::T_STRING_DEFAULT().clone() }, list![DAE::T_STRING_DEFAULT().clone(), DAE::T_STRING_DEFAULT().clone()], DAE::T_BOOL_DEFAULT().clone())];
             types = unwrap_break_err!(List::flatten(list![scalars.clone()]), '__try0);
             types.clone()
         },
         Absyn::Operator::GREATER { .. } => {
-            let mut scalars: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = metamodelica::nil();
-            let mut types: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = metamodelica::nil();
-            let mut enum_op: (DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>) = (<DAE::Operator as ::std::default::Default>::default(), metamodelica::nil(), Arc::new(DAE::Type::T_NORETCALL));
+            let mut scalars: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>>;
+            let mut types: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>>;
+            let mut enum_op: (DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>);
             enum_op = makeEnumOperator(DAE::Operator::GREATER { ty: DAE::T_ENUMERATION_DEFAULT().clone() }, t1.clone(), t2.clone());
             scalars = list![(DAE::Operator::GREATER { ty: DAE::T_INTEGER_DEFAULT().clone() }, list![DAE::T_INTEGER_DEFAULT().clone(), DAE::T_INTEGER_DEFAULT().clone()], DAE::T_BOOL_DEFAULT().clone()), enum_op.clone(), (DAE::Operator::GREATER { ty: DAE::T_REAL_DEFAULT().clone() }, list![DAE::T_REAL_DEFAULT().clone(), DAE::T_REAL_DEFAULT().clone()], DAE::T_BOOL_DEFAULT().clone()), (DAE::Operator::GREATER { ty: DAE::T_BOOL_DEFAULT().clone() }, list![DAE::T_BOOL_DEFAULT().clone(), DAE::T_BOOL_DEFAULT().clone()], DAE::T_BOOL_DEFAULT().clone()), (DAE::Operator::GREATER { ty: DAE::T_STRING_DEFAULT().clone() }, list![DAE::T_STRING_DEFAULT().clone(), DAE::T_STRING_DEFAULT().clone()], DAE::T_BOOL_DEFAULT().clone())];
             types = unwrap_break_err!(List::flatten(list![scalars.clone()]), '__try0);
             types.clone()
         },
         Absyn::Operator::GREATEREQ { .. } => {
-            let mut scalars: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = metamodelica::nil();
-            let mut types: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = metamodelica::nil();
-            let mut enum_op: (DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>) = (<DAE::Operator as ::std::default::Default>::default(), metamodelica::nil(), Arc::new(DAE::Type::T_NORETCALL));
+            let mut scalars: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>>;
+            let mut types: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>>;
+            let mut enum_op: (DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>);
             enum_op = makeEnumOperator(DAE::Operator::GREATEREQ { ty: DAE::T_ENUMERATION_DEFAULT().clone() }, t1.clone(), t2.clone());
             scalars = list![(DAE::Operator::GREATEREQ { ty: DAE::T_INTEGER_DEFAULT().clone() }, list![DAE::T_INTEGER_DEFAULT().clone(), DAE::T_INTEGER_DEFAULT().clone()], DAE::T_BOOL_DEFAULT().clone()), enum_op.clone(), (DAE::Operator::GREATEREQ { ty: DAE::T_REAL_DEFAULT().clone() }, list![DAE::T_REAL_DEFAULT().clone(), DAE::T_REAL_DEFAULT().clone()], DAE::T_BOOL_DEFAULT().clone()), (DAE::Operator::GREATEREQ { ty: DAE::T_BOOL_DEFAULT().clone() }, list![DAE::T_BOOL_DEFAULT().clone(), DAE::T_BOOL_DEFAULT().clone()], DAE::T_BOOL_DEFAULT().clone()), (DAE::Operator::GREATEREQ { ty: DAE::T_STRING_DEFAULT().clone() }, list![DAE::T_STRING_DEFAULT().clone(), DAE::T_STRING_DEFAULT().clone()], DAE::T_BOOL_DEFAULT().clone())];
             types = unwrap_break_err!(List::flatten(list![scalars.clone()]), '__try0);
             types.clone()
         },
         Absyn::Operator::EQUAL { .. } => {
-            let mut types: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = metamodelica::nil();
-            let mut enum_op: (DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>) = (<DAE::Operator as ::std::default::Default>::default(), metamodelica::nil(), Arc::new(DAE::Type::T_NORETCALL));
+            let mut types: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>>;
+            let mut enum_op: (DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>);
             enum_op = makeEnumOperator(DAE::Operator::EQUAL { ty: DAE::T_ENUMERATION_DEFAULT().clone() }, t1.clone(), t2.clone());
             types = metamodelica::cons((DAE::Operator::EQUAL { ty: DAE::T_INTEGER_DEFAULT().clone() }, list![DAE::T_INTEGER_DEFAULT().clone(), DAE::T_INTEGER_DEFAULT().clone()], DAE::T_BOOL_DEFAULT().clone()), metamodelica::cons(enum_op.clone(), metamodelica::cons((DAE::Operator::EQUAL { ty: DAE::T_REAL_DEFAULT().clone() }, list![DAE::T_REAL_DEFAULT().clone(), DAE::T_REAL_DEFAULT().clone()], DAE::T_BOOL_DEFAULT().clone()), metamodelica::cons((DAE::Operator::EQUAL { ty: DAE::T_STRING_DEFAULT().clone() }, list![DAE::T_STRING_DEFAULT().clone(), DAE::T_STRING_DEFAULT().clone()], DAE::T_BOOL_DEFAULT().clone()), metamodelica::cons((DAE::Operator::EQUAL { ty: DAE::T_BOOL_DEFAULT().clone() }, list![DAE::T_BOOL_DEFAULT().clone(), DAE::T_BOOL_DEFAULT().clone()], DAE::T_BOOL_DEFAULT().clone()), metamodelica::nil())))));
             types.clone()
         },
         Absyn::Operator::NEQUAL { .. } => {
-            let mut types: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = metamodelica::nil();
-            let mut enum_op: (DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>) = (<DAE::Operator as ::std::default::Default>::default(), metamodelica::nil(), Arc::new(DAE::Type::T_NORETCALL));
+            let mut types: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>>;
+            let mut enum_op: (DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>);
             enum_op = makeEnumOperator(DAE::Operator::NEQUAL { ty: DAE::T_ENUMERATION_DEFAULT().clone() }, t1.clone(), t2.clone());
             types = metamodelica::cons((DAE::Operator::NEQUAL { ty: DAE::T_INTEGER_DEFAULT().clone() }, list![DAE::T_INTEGER_DEFAULT().clone(), DAE::T_INTEGER_DEFAULT().clone()], DAE::T_BOOL_DEFAULT().clone()), metamodelica::cons(enum_op.clone(), metamodelica::cons((DAE::Operator::NEQUAL { ty: DAE::T_REAL_DEFAULT().clone() }, list![DAE::T_REAL_DEFAULT().clone(), DAE::T_REAL_DEFAULT().clone()], DAE::T_BOOL_DEFAULT().clone()), metamodelica::cons((DAE::Operator::NEQUAL { ty: DAE::T_STRING_DEFAULT().clone() }, list![DAE::T_STRING_DEFAULT().clone(), DAE::T_STRING_DEFAULT().clone()], DAE::T_BOOL_DEFAULT().clone()), metamodelica::cons((DAE::Operator::NEQUAL { ty: DAE::T_BOOL_DEFAULT().clone() }, list![DAE::T_BOOL_DEFAULT().clone(), DAE::T_BOOL_DEFAULT().clone()], DAE::T_BOOL_DEFAULT().clone()), metamodelica::nil())))));
             types.clone()
@@ -1233,10 +1233,10 @@ fn operatorsUnary(mut op: Absyn::Operator) -> Result<Arc<metamodelica::List<(DAE
     let mut ops: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>>;
     ops = (match op.clone() {
         Absyn::Operator::UMINUS { .. } => {
-            let mut intarrs: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = metamodelica::nil();
-            let mut realarrs: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = metamodelica::nil();
-            let mut scalars: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = metamodelica::nil();
-            let mut types: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = metamodelica::nil();
+            let mut intarrs: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>>;
+            let mut realarrs: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>>;
+            let mut scalars: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>>;
+            let mut types: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>>;
             scalars = list![(DAE::Operator::UMINUS { ty: DAE::T_INTEGER_DEFAULT().clone() }, list![DAE::T_INTEGER_DEFAULT().clone()], DAE::T_INTEGER_DEFAULT().clone()), (DAE::Operator::UMINUS { ty: DAE::T_REAL_DEFAULT().clone() }, list![DAE::T_REAL_DEFAULT().clone()], DAE::T_REAL_DEFAULT().clone())];
             intarrs = operatorReturnUnary(DAE::Operator::UMINUS_ARR { ty: Arc::new(DAE::Type::T_ARRAY { ty: DAE::T_INTEGER_DEFAULT().clone(), dims: list![openmodelica_frontend_types::DAE::Dimension::interned_DIM_UNKNOWN()] }) }, intarrtypes().clone(), intarrtypes().clone())?;
             realarrs = operatorReturnUnary(DAE::Operator::UMINUS_ARR { ty: Arc::new(DAE::Type::T_ARRAY { ty: DAE::T_REAL_DEFAULT().clone(), dims: list![openmodelica_frontend_types::DAE::Dimension::interned_DIM_UNKNOWN()] }) }, realarrtypes().clone(), realarrtypes().clone())?;
@@ -1244,9 +1244,9 @@ fn operatorsUnary(mut op: Absyn::Operator) -> Result<Arc<metamodelica::List<(DAE
             types.clone()
         },
         Absyn::Operator::NOT { .. } => {
-            let mut boolarrs: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = metamodelica::nil();
-            let mut scalars: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = metamodelica::nil();
-            let mut types: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = metamodelica::nil();
+            let mut boolarrs: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>>;
+            let mut scalars: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>>;
+            let mut types: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>>;
             scalars = list![(DAE::Operator::NOT { ty: DAE::T_BOOL_DEFAULT().clone() }, list![DAE::T_BOOL_DEFAULT().clone()], DAE::T_BOOL_DEFAULT().clone())];
             boolarrs = operatorReturnUnary(DAE::Operator::NOT { ty: DAE::T_BOOL_DEFAULT().clone() }, boolarrtypes().clone(), boolarrtypes().clone())?;
             types = List::flatten(list![scalars.clone(), boolarrs.clone()])?;
@@ -1268,8 +1268,8 @@ fn makeEnumOperator(mut inOp: DAE::Operator, mut inType1: Arc<DAE::Type>, mut in
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Type::T_ENUMERATION { .. }, Deref @ DAE::Type::T_ENUMERATION { .. }) => {
-                    let mut op_ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut op: DAE::Operator = <DAE::Operator as ::std::default::Default>::default();
+                    let mut op_ty: Arc<DAE::Type>;
+                    let mut op: DAE::Operator;
                     op_ty = Types::simplifyType(inType1.clone())?;
                     op = Expression::setOpType(inOp.clone(), op_ty.clone())?;
                     Ok((op.clone(), list![inType1.clone(), inType2.clone()], DAE::T_BOOL_DEFAULT().clone()))
@@ -1280,8 +1280,8 @@ fn makeEnumOperator(mut inOp: DAE::Operator, mut inType1: Arc<DAE::Type>, mut in
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Type::T_ENUMERATION { .. }, _) => {
-                    let mut op_ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut op: DAE::Operator = <DAE::Operator as ::std::default::Default>::default();
+                    let mut op_ty: Arc<DAE::Type>;
+                    let mut op: DAE::Operator;
                     op_ty = Types::simplifyType(inType1.clone())?;
                     op = Expression::setOpType(inOp.clone(), op_ty.clone())?;
                     Ok((op.clone(), list![inType1.clone(), inType1.clone()], DAE::T_BOOL_DEFAULT().clone()))
@@ -1292,8 +1292,8 @@ fn makeEnumOperator(mut inOp: DAE::Operator, mut inType1: Arc<DAE::Type>, mut in
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, Deref @ DAE::Type::T_ENUMERATION { .. }) => {
-                    let mut op_ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut op: DAE::Operator = <DAE::Operator as ::std::default::Default>::default();
+                    let mut op_ty: Arc<DAE::Type>;
+                    let mut op: DAE::Operator;
                     op_ty = Types::simplifyType(inType2.clone())?;
                     op = Expression::setOpType(inOp.clone(), op_ty.clone())?;
                     Ok((op.clone(), list![inType2.clone(), inType2.clone()], DAE::T_BOOL_DEFAULT().clone()))
@@ -1321,8 +1321,8 @@ fn buildOperatorTypes(mut inTypes: Arc<metamodelica::List<Arc<DAE::Type>>>, mut 
             metamodelica::nil()
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Type::T_FUNCTION { funcArg: args, funcResultType: tp, .. }, tail: tps }, funcname) => {
-            let mut argtypes: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
-            let mut rest: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = metamodelica::nil();
+            let mut argtypes: Arc<metamodelica::List<Arc<DAE::Type>>>;
+            let mut rest: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>>;
             argtypes = List::map(args.clone(), (std::sync::Arc::new(Types::funcArgType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::FuncArg>) -> Result<Arc<DAE::Type>> + 'static>))?;
             rest = buildOperatorTypes(tps.clone(), funcname.clone())?;
             metamodelica::cons((DAE::Operator::USERDEFINED { fqName: funcname.clone() }, argtypes.clone(), tp.clone()), rest.clone())
@@ -1364,8 +1364,8 @@ fn operatorReturnUnary(mut inOperator: DAE::Operator, mut inArgTypes: Arc<metamo
             metamodelica::nil()
         },
         (op, Deref @ metamodelica::List::Cons { head: l, tail: lr }, Deref @ metamodelica::List::Cons { head: re, tail: rer }) => {
-            let mut rest: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = metamodelica::nil();
-            let mut t: (DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>) = (<DAE::Operator as ::std::default::Default>::default(), metamodelica::nil(), Arc::new(DAE::Type::T_NORETCALL));
+            let mut rest: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>>;
+            let mut t: (DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>);
             rest = operatorReturnUnary(op.clone(), lr.clone(), rer.clone())?;
             t = (op.clone(), list![l.clone()], re.clone());
             metamodelica::cons(t.clone(), rest.clone())
@@ -1515,8 +1515,8 @@ pub mod AvlTreePathPathEnv {
             Arc::new(Tree::LEAF { key: inKey.clone(), value: inValue.clone() })
         },
         Deref @ Tree::NODE { key, .. } => {
-            let mut value: Value = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-            let mut key_comp: i32 = 0;
+            let mut value: Value;
+            let mut key_comp: i32;
             key_comp = keyCompare(inKey.clone(), key.clone())?;
             if key_comp.clone() == -1 {
                 assign_variant_field!(tree => Tree::NODE; left = add(var_field!((*tree).left, Tree::NODE).clone(), inKey.clone(), inValue.clone(), conflictFunc.clone())?);
@@ -1531,9 +1531,9 @@ pub mod AvlTreePathPathEnv {
             if (key_comp.clone() == 0) {tree.clone()} else {balance(tree.clone())?}
         },
         Deref @ Tree::LEAF { .. } => {
-            let mut value: Value = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-            let mut key_comp: i32 = 0;
-            let mut outTree: Arc<Tree> = Arc::new(Tree::EMPTY);
+            let mut value: Value;
+            let mut key_comp: i32;
+            let mut outTree: Arc<Tree>;
             key_comp = keyCompare(inKey.clone(), var_field!((*tree).key, Tree::LEAF).clone())?;
             if key_comp.clone() == -1 {
                 outTree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: inKey.clone(), value: inValue.clone() }), right: crate::OperatorOverloading::AvlTreePathPathEnv::Tree::interned_EMPTY() });
@@ -1624,10 +1624,10 @@ pub mod AvlTreePathPathEnv {
             inTree.clone()
         },
         Deref @ Tree::NODE { .. } => {
-            let mut lh: i32 = 0;
-            let mut rh: i32 = 0;
-            let mut diff: i32 = 0;
-            let mut balanced_tree: Arc<Tree> = Arc::new(Tree::EMPTY);
+            let mut lh: i32;
+            let mut rh: i32;
+            let mut diff: i32;
+            let mut balanced_tree: Arc<Tree>;
             lh = height(var_field!((*outTree).left, Tree::NODE).clone());
             rh = height(var_field!((*outTree).right, Tree::NODE).clone());
             diff = lh.clone() - rh.clone();
@@ -1688,7 +1688,7 @@ pub mod AvlTreePathPathEnv {
         let mut value: FT = value;
         value = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { .. } => {
-            let mut c: bool = false;
+            let mut c: bool;
             (value, c) = foldFunc(var_field!((*tree).key, Tree::NODE).clone(), var_field!((*tree).value, Tree::NODE).clone(), value.clone())?;
             if c.clone() {
                 value = foldCond(var_field!((*tree).left, Tree::NODE).clone(), foldFunc.clone(), value.clone())?;
@@ -1697,7 +1697,7 @@ pub mod AvlTreePathPathEnv {
             value.clone()
         },
         Deref @ Tree::LEAF { .. } => {
-            let mut c: bool = false;
+            let mut c: bool;
             (value, c) = foldFunc(var_field!((*tree).key, Tree::LEAF).clone(), var_field!((*tree).value, Tree::LEAF).clone(), value.clone())?;
             value.clone()
         },
@@ -1936,9 +1936,9 @@ pub mod AvlTreePathPathEnv {
         let mut outTree: Arc<Tree> = inTree.clone();
         outTree = (::match_deref::match_deref! { match &(outTree.clone()) {
         Deref @ Tree::NODE { key, value, .. } => {
-            let mut new_value: Value = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-            let mut new_left: Arc<Tree> = Arc::new(Tree::EMPTY);
-            let mut new_right: Arc<Tree> = Arc::new(Tree::EMPTY);
+            let mut new_value: Value;
+            let mut new_left: Arc<Tree>;
+            let mut new_right: Arc<Tree>;
             new_left = map(var_field!((*outTree).left, Tree::NODE).clone(), inFunc.clone())?;
             new_value = inFunc(key.clone(), value.clone())?;
             new_right = map(var_field!((*outTree).right, Tree::NODE).clone(), inFunc.clone())?;
@@ -1948,7 +1948,7 @@ pub mod AvlTreePathPathEnv {
             outTree.clone()
         },
         Deref @ Tree::LEAF { key, value } => {
-            let mut new_value: Value = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+            let mut new_value: Value;
             new_value = inFunc(key.clone(), value.clone())?;
             if !(referenceEq(&*(value.clone()),&*(new_value.clone()))) {
                 assign_variant_field!(outTree => Tree::LEAF; value = new_value.clone());
@@ -1970,9 +1970,9 @@ pub mod AvlTreePathPathEnv {
         let mut outResult: FT = inStartValue.clone();
         outTree = (::match_deref::match_deref! { match &(outTree.clone()) {
         Deref @ Tree::NODE { key, value, .. } => {
-            let mut new_value: Value = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-            let mut new_left: Arc<Tree> = Arc::new(Tree::EMPTY);
-            let mut new_right: Arc<Tree> = Arc::new(Tree::EMPTY);
+            let mut new_value: Value;
+            let mut new_left: Arc<Tree>;
+            let mut new_right: Arc<Tree>;
             (new_left, outResult) = mapFold(var_field!((*outTree).left, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
             (new_value, outResult) = inFunc(key.clone(), value.clone(), outResult.clone())?;
             (new_right, outResult) = mapFold(var_field!((*outTree).right, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
@@ -1982,7 +1982,7 @@ pub mod AvlTreePathPathEnv {
             outTree.clone()
         },
         Deref @ Tree::LEAF { key, value } => {
-            let mut new_value: Value = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+            let mut new_value: Value;
             (new_value, outResult) = inFunc(key.clone(), value.clone(), outResult.clone())?;
             if !(referenceEq(&*(value.clone()),&*(new_value.clone()))) {
                 assign_variant_field!(outTree => Tree::LEAF; value = new_value.clone());
@@ -2056,12 +2056,12 @@ pub mod AvlTreePathPathEnv {
         let mut outNode: Arc<Tree> = inNode.clone();
         outNode = (::match_deref::match_deref! { match &(outNode.clone()) {
         Deref @ Tree::NODE { right: child @ Deref @ Tree::NODE { .. }, .. } => {
-            let mut node: Arc<Tree> = Arc::new(Tree::EMPTY);
+            let mut node: Arc<Tree>;
             node = setTreeLeftRight(outNode.clone(), var_field!((*outNode).left, Tree::NODE).clone(), var_field!((**child).left, Tree::NODE).clone())?;
             setTreeLeftRight(child.clone(), node.clone(), var_field!((**child).right, Tree::NODE).clone())?
         },
         Deref @ Tree::NODE { right: child @ Deref @ Tree::LEAF { .. }, .. } => {
-            let mut node: Arc<Tree> = Arc::new(Tree::EMPTY);
+            let mut node: Arc<Tree>;
             node = setTreeLeftRight(outNode.clone(), var_field!((*outNode).left, Tree::NODE).clone(), crate::OperatorOverloading::AvlTreePathPathEnv::Tree::interned_EMPTY())?;
             setTreeLeftRight(child.clone(), node.clone(), crate::OperatorOverloading::AvlTreePathPathEnv::Tree::interned_EMPTY())?
         },
@@ -2077,12 +2077,12 @@ pub mod AvlTreePathPathEnv {
         let mut outNode: Arc<Tree> = inNode.clone();
         outNode = (::match_deref::match_deref! { match &(outNode.clone()) {
         Deref @ Tree::NODE { left: child @ Deref @ Tree::NODE { .. }, .. } => {
-            let mut node: Arc<Tree> = Arc::new(Tree::EMPTY);
+            let mut node: Arc<Tree>;
             node = setTreeLeftRight(outNode.clone(), var_field!((**child).right, Tree::NODE).clone(), var_field!((*outNode).right, Tree::NODE).clone())?;
             setTreeLeftRight(child.clone(), var_field!((**child).left, Tree::NODE).clone(), node.clone())?
         },
         Deref @ Tree::NODE { left: child @ Deref @ Tree::LEAF { .. }, .. } => {
-            let mut node: Arc<Tree> = Arc::new(Tree::EMPTY);
+            let mut node: Arc<Tree>;
             node = setTreeLeftRight(outNode.clone(), crate::OperatorOverloading::AvlTreePathPathEnv::Tree::interned_EMPTY(), var_field!((*outNode).right, Tree::NODE).clone())?;
             setTreeLeftRight(child.clone(), crate::OperatorOverloading::AvlTreePathPathEnv::Tree::interned_EMPTY(), node.clone())?
         },
@@ -2236,8 +2236,8 @@ pub mod AvlTreePathOperatorTypes {
             Arc::new(Tree::LEAF { key: inKey.clone(), value: inValue.clone() })
         },
         Deref @ Tree::NODE { key, .. } => {
-            let mut value: Value = metamodelica::nil();
-            let mut key_comp: i32 = 0;
+            let mut value: Value;
+            let mut key_comp: i32;
             key_comp = keyCompare(inKey.clone(), key.clone())?;
             if key_comp.clone() == -1 {
                 assign_variant_field!(tree => Tree::NODE; left = add(var_field!((*tree).left, Tree::NODE).clone(), inKey.clone(), inValue.clone(), conflictFunc.clone())?);
@@ -2252,9 +2252,9 @@ pub mod AvlTreePathOperatorTypes {
             if (key_comp.clone() == 0) {tree.clone()} else {balance(tree.clone())?}
         },
         Deref @ Tree::LEAF { .. } => {
-            let mut value: Value = metamodelica::nil();
-            let mut key_comp: i32 = 0;
-            let mut outTree: Arc<Tree> = Arc::new(Tree::EMPTY);
+            let mut value: Value;
+            let mut key_comp: i32;
+            let mut outTree: Arc<Tree>;
             key_comp = keyCompare(inKey.clone(), var_field!((*tree).key, Tree::LEAF).clone())?;
             if key_comp.clone() == -1 {
                 outTree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: inKey.clone(), value: inValue.clone() }), right: crate::OperatorOverloading::AvlTreePathOperatorTypes::Tree::interned_EMPTY() });
@@ -2345,10 +2345,10 @@ pub mod AvlTreePathOperatorTypes {
             inTree.clone()
         },
         Deref @ Tree::NODE { .. } => {
-            let mut lh: i32 = 0;
-            let mut rh: i32 = 0;
-            let mut diff: i32 = 0;
-            let mut balanced_tree: Arc<Tree> = Arc::new(Tree::EMPTY);
+            let mut lh: i32;
+            let mut rh: i32;
+            let mut diff: i32;
+            let mut balanced_tree: Arc<Tree>;
             lh = height(var_field!((*outTree).left, Tree::NODE).clone());
             rh = height(var_field!((*outTree).right, Tree::NODE).clone());
             diff = lh.clone() - rh.clone();
@@ -2409,7 +2409,7 @@ pub mod AvlTreePathOperatorTypes {
         let mut value: FT = value;
         value = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { .. } => {
-            let mut c: bool = false;
+            let mut c: bool;
             (value, c) = foldFunc(var_field!((*tree).key, Tree::NODE).clone(), var_field!((*tree).value, Tree::NODE).clone(), value.clone())?;
             if c.clone() {
                 value = foldCond(var_field!((*tree).left, Tree::NODE).clone(), foldFunc.clone(), value.clone())?;
@@ -2418,7 +2418,7 @@ pub mod AvlTreePathOperatorTypes {
             value.clone()
         },
         Deref @ Tree::LEAF { .. } => {
-            let mut c: bool = false;
+            let mut c: bool;
             (value, c) = foldFunc(var_field!((*tree).key, Tree::LEAF).clone(), var_field!((*tree).value, Tree::LEAF).clone(), value.clone())?;
             value.clone()
         },
@@ -2657,9 +2657,9 @@ pub mod AvlTreePathOperatorTypes {
         let mut outTree: Arc<Tree> = inTree.clone();
         outTree = (::match_deref::match_deref! { match &(outTree.clone()) {
         Deref @ Tree::NODE { key, value, .. } => {
-            let mut new_value: Value = metamodelica::nil();
-            let mut new_left: Arc<Tree> = Arc::new(Tree::EMPTY);
-            let mut new_right: Arc<Tree> = Arc::new(Tree::EMPTY);
+            let mut new_value: Value;
+            let mut new_left: Arc<Tree>;
+            let mut new_right: Arc<Tree>;
             new_left = map(var_field!((*outTree).left, Tree::NODE).clone(), inFunc.clone())?;
             new_value = inFunc(key.clone(), value.clone())?;
             new_right = map(var_field!((*outTree).right, Tree::NODE).clone(), inFunc.clone())?;
@@ -2669,7 +2669,7 @@ pub mod AvlTreePathOperatorTypes {
             outTree.clone()
         },
         Deref @ Tree::LEAF { key, value } => {
-            let mut new_value: Value = metamodelica::nil();
+            let mut new_value: Value;
             new_value = inFunc(key.clone(), value.clone())?;
             if !(metamodelica::ReferenceEq::reference_eq(&*(value.clone()), &*(new_value.clone()))) {
                 assign_variant_field!(outTree => Tree::LEAF; value = new_value.clone());
@@ -2691,9 +2691,9 @@ pub mod AvlTreePathOperatorTypes {
         let mut outResult: FT = inStartValue.clone();
         outTree = (::match_deref::match_deref! { match &(outTree.clone()) {
         Deref @ Tree::NODE { key, value, .. } => {
-            let mut new_value: Value = metamodelica::nil();
-            let mut new_left: Arc<Tree> = Arc::new(Tree::EMPTY);
-            let mut new_right: Arc<Tree> = Arc::new(Tree::EMPTY);
+            let mut new_value: Value;
+            let mut new_left: Arc<Tree>;
+            let mut new_right: Arc<Tree>;
             (new_left, outResult) = mapFold(var_field!((*outTree).left, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
             (new_value, outResult) = inFunc(key.clone(), value.clone(), outResult.clone())?;
             (new_right, outResult) = mapFold(var_field!((*outTree).right, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
@@ -2703,7 +2703,7 @@ pub mod AvlTreePathOperatorTypes {
             outTree.clone()
         },
         Deref @ Tree::LEAF { key, value } => {
-            let mut new_value: Value = metamodelica::nil();
+            let mut new_value: Value;
             (new_value, outResult) = inFunc(key.clone(), value.clone(), outResult.clone())?;
             if !(metamodelica::ReferenceEq::reference_eq(&*(value.clone()), &*(new_value.clone()))) {
                 assign_variant_field!(outTree => Tree::LEAF; value = new_value.clone());
@@ -2777,12 +2777,12 @@ pub mod AvlTreePathOperatorTypes {
         let mut outNode: Arc<Tree> = inNode.clone();
         outNode = (::match_deref::match_deref! { match &(outNode.clone()) {
         Deref @ Tree::NODE { right: child @ Deref @ Tree::NODE { .. }, .. } => {
-            let mut node: Arc<Tree> = Arc::new(Tree::EMPTY);
+            let mut node: Arc<Tree>;
             node = setTreeLeftRight(outNode.clone(), var_field!((*outNode).left, Tree::NODE).clone(), var_field!((**child).left, Tree::NODE).clone())?;
             setTreeLeftRight(child.clone(), node.clone(), var_field!((**child).right, Tree::NODE).clone())?
         },
         Deref @ Tree::NODE { right: child @ Deref @ Tree::LEAF { .. }, .. } => {
-            let mut node: Arc<Tree> = Arc::new(Tree::EMPTY);
+            let mut node: Arc<Tree>;
             node = setTreeLeftRight(outNode.clone(), var_field!((*outNode).left, Tree::NODE).clone(), crate::OperatorOverloading::AvlTreePathOperatorTypes::Tree::interned_EMPTY())?;
             setTreeLeftRight(child.clone(), node.clone(), crate::OperatorOverloading::AvlTreePathOperatorTypes::Tree::interned_EMPTY())?
         },
@@ -2798,12 +2798,12 @@ pub mod AvlTreePathOperatorTypes {
         let mut outNode: Arc<Tree> = inNode.clone();
         outNode = (::match_deref::match_deref! { match &(outNode.clone()) {
         Deref @ Tree::NODE { left: child @ Deref @ Tree::NODE { .. }, .. } => {
-            let mut node: Arc<Tree> = Arc::new(Tree::EMPTY);
+            let mut node: Arc<Tree>;
             node = setTreeLeftRight(outNode.clone(), var_field!((**child).right, Tree::NODE).clone(), var_field!((*outNode).right, Tree::NODE).clone())?;
             setTreeLeftRight(child.clone(), var_field!((**child).left, Tree::NODE).clone(), node.clone())?
         },
         Deref @ Tree::NODE { left: child @ Deref @ Tree::LEAF { .. }, .. } => {
-            let mut node: Arc<Tree> = Arc::new(Tree::EMPTY);
+            let mut node: Arc<Tree>;
             node = setTreeLeftRight(outNode.clone(), crate::OperatorOverloading::AvlTreePathOperatorTypes::Tree::interned_EMPTY(), var_field!((*outNode).right, Tree::NODE).clone())?;
             setTreeLeftRight(child.clone(), crate::OperatorOverloading::AvlTreePathOperatorTypes::Tree::interned_EMPTY(), node.clone())?
         },
@@ -2928,7 +2928,7 @@ fn lookupOperatorBaseClass(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, m
             cache = (*__esc_cache).clone();
             path = (*__esc_path).clone();
             env = (*__esc_env).clone();
-            let mut cl: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
+            let mut cl: Arc<SCode::Element>;
             (cache, cl, env) = Lookup::lookupClass(cache.clone(), env.clone(), path.clone(), None)?;
             (cache, path, env) = lookupOperatorBaseClass(cache.clone(), env.clone(), cl.clone())?;
             (cache.clone(), path.clone(), env.clone())
@@ -2951,13 +2951,13 @@ fn checkOperatorFunctionOneOutput(mut ty: Arc<DAE::Type>, mut opType: Arc<DAE::T
             false
         },
         Deref @ DAE::Type::T_FUNCTION { funcArg: Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { ty: ty1, defaultBinding: None, .. }, tail: Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { ty: ty2, defaultBinding: None, .. }, tail: _ } }, .. } => {
-            let mut b: bool = false;
+            let mut b: bool;
             b = Types::equivtypesOrRecordSubtypeOf(Types::arrayElementType(ty1.clone()), opType.clone()) || Types::equivtypesOrRecordSubtypeOf(Types::arrayElementType(ty2.clone()), opType.clone());
             checkOperatorFunctionOneOutputError(b.clone(), opType.clone(), ty.clone(), info.clone())?;
             b.clone()
         },
         Deref @ DAE::Type::T_FUNCTION { funcArg: Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { ty: ty1, defaultBinding: None, .. }, tail: _ }, .. } => {
-            let mut b: bool = false;
+            let mut b: bool;
             b = Types::equivtypesOrRecordSubtypeOf(Types::arrayElementType(ty1.clone()), opType.clone());
             checkOperatorFunctionOneOutputError(b.clone(), opType.clone(), ty.clone(), info.clone())?;
             b.clone()
@@ -2976,8 +2976,8 @@ fn checkOperatorFunctionOneOutputError(mut ok: bool, mut opType: Arc<DAE::Type>,
             ()
         },
         _ => {
-            let mut str1: ArcStr = arcstr::literal!("");
-            let mut str2: ArcStr = arcstr::literal!("");
+            let mut str1: ArcStr;
+            let mut str2: ArcStr;
             str1 = (TypesDump::unparseType(opType.clone())?).clone();
             str2 = (TypesDump::unparseType(ty.clone())?).clone();
             Error::addSourceMessage(Error::OP_OVERLOAD_OPERATOR_NOT_INPUT.clone(), list![(str1.clone()).clone(), (str2.clone()).clone()], info.clone())?;
@@ -3074,10 +3074,10 @@ fn deoverload(mut inOperators: Arc<metamodelica::List<(DAE::Operator, Arc<metamo
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: (op, params, rtype), tail: _ }, args, pre) => {
-                    let mut args_1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut types_1: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
-                    let mut rtype_1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+                    let mut args_1: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+                    let mut types_1: Arc<metamodelica::List<Arc<DAE::Type>>>;
+                    let mut rtype_1: Arc<DAE::Type>;
+                    let mut ty: Arc<DAE::Type>;
                     let mut op = (*op).clone();
                     (args_1, types_1) = elabArglist(params.clone(), args.clone())?;
                     rtype_1 = computeReturnType(op.clone(), types_1.clone(), rtype.clone(), pre.clone(), info.clone())?;
@@ -3091,9 +3091,9 @@ fn deoverload(mut inOperators: Arc<metamodelica::List<(DAE::Operator, Arc<metamo
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: _, tail: xs }, args, pre) => {
-                    let mut args_1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut rtype: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut op: DAE::Operator = <DAE::Operator as ::std::default::Default>::default();
+                    let mut args_1: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+                    let mut rtype: Arc<DAE::Type>;
+                    let mut op: DAE::Operator;
                     (op, args_1, rtype) = deoverload(xs.clone(), args.clone(), aexp.clone(), pre.clone(), info.clone())?;
                     Ok((op.clone(), args_1.clone(), rtype.clone()))
                 }
@@ -3103,13 +3103,13 @@ fn deoverload(mut inOperators: Arc<metamodelica::List<(DAE::Operator, Arc<metamo
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Nil, args, pre) => {
-                    let mut exps: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut tps: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
-                    let mut exps_str: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    let mut tps_str: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    let mut pre_str: ArcStr = arcstr::literal!("");
-                    let mut s: ArcStr = arcstr::literal!("");
-                    let mut tpsstr: ArcStr = arcstr::literal!("");
+                    let mut exps: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+                    let mut tps: Arc<metamodelica::List<Arc<DAE::Type>>>;
+                    let mut exps_str: Arc<metamodelica::List<ArcStr>>;
+                    let mut tps_str: Arc<metamodelica::List<ArcStr>>;
+                    let mut pre_str: ArcStr;
+                    let mut s: ArcStr;
+                    let mut tpsstr: ArcStr;
                     s = (Dump::printExpStr(aexp.clone())?).clone();
                     exps = List::map(args.clone(), std::sync::Arc::new(fnptr!(Util::tuple21, _)))?;
                     tps = List::map(args.clone(), std::sync::Arc::new(fnptr!(Util::tuple22, _)))?;
@@ -3154,9 +3154,9 @@ fn computeReturnType(mut inOperator: DAE::Operator, mut inTypesTypeLst: Arc<meta
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::ADD_ARR { .. }, Deref @ metamodelica::List::Cons { head: typ1, tail: Deref @ metamodelica::List::Cons { head: typ2, tail: Deref @ metamodelica::List::Nil } }, _, pre) => {
-                    let mut t1_str: ArcStr = arcstr::literal!("");
-                    let mut t2_str: ArcStr = arcstr::literal!("");
-                    let mut pre_str: ArcStr = arcstr::literal!("");
+                    let mut t1_str: ArcStr;
+                    let mut t2_str: ArcStr;
+                    let mut pre_str: ArcStr;
                     t1_str = (TypesDump::unparseType(typ1.clone())?).clone();
                     t2_str = (TypesDump::unparseType(typ2.clone())?).clone();
                     pre_str = (PrefixUtil::printPrefixStr3(pre.clone())?).clone();
@@ -3187,9 +3187,9 @@ fn computeReturnType(mut inOperator: DAE::Operator, mut inTypesTypeLst: Arc<meta
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::SUB_ARR { .. }, Deref @ metamodelica::List::Cons { head: typ1, tail: Deref @ metamodelica::List::Cons { head: typ2, tail: Deref @ metamodelica::List::Nil } }, _, pre) => {
-                    let mut t1_str: ArcStr = arcstr::literal!("");
-                    let mut t2_str: ArcStr = arcstr::literal!("");
-                    let mut pre_str: ArcStr = arcstr::literal!("");
+                    let mut t1_str: ArcStr;
+                    let mut t2_str: ArcStr;
+                    let mut pre_str: ArcStr;
                     t1_str = (TypesDump::unparseType(typ1.clone())?).clone();
                     t2_str = (TypesDump::unparseType(typ2.clone())?).clone();
                     pre_str = (PrefixUtil::printPrefixStr3(pre.clone())?).clone();
@@ -3220,9 +3220,9 @@ fn computeReturnType(mut inOperator: DAE::Operator, mut inTypesTypeLst: Arc<meta
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::MUL_ARR { .. }, Deref @ metamodelica::List::Cons { head: typ1, tail: Deref @ metamodelica::List::Cons { head: typ2, tail: Deref @ metamodelica::List::Nil } }, _, pre) => {
-                    let mut t1_str: ArcStr = arcstr::literal!("");
-                    let mut t2_str: ArcStr = arcstr::literal!("");
-                    let mut pre_str: ArcStr = arcstr::literal!("");
+                    let mut t1_str: ArcStr;
+                    let mut t2_str: ArcStr;
+                    let mut pre_str: ArcStr;
                     t1_str = (TypesDump::unparseType(typ1.clone())?).clone();
                     t2_str = (TypesDump::unparseType(typ2.clone())?).clone();
                     pre_str = (PrefixUtil::printPrefixStr3(pre.clone())?).clone();
@@ -3253,9 +3253,9 @@ fn computeReturnType(mut inOperator: DAE::Operator, mut inTypesTypeLst: Arc<meta
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::DIV_ARR { .. }, Deref @ metamodelica::List::Cons { head: typ1, tail: Deref @ metamodelica::List::Cons { head: typ2, tail: Deref @ metamodelica::List::Nil } }, _, pre) => {
-                    let mut t1_str: ArcStr = arcstr::literal!("");
-                    let mut t2_str: ArcStr = arcstr::literal!("");
-                    let mut pre_str: ArcStr = arcstr::literal!("");
+                    let mut t1_str: ArcStr;
+                    let mut t2_str: ArcStr;
+                    let mut pre_str: ArcStr;
                     t1_str = (TypesDump::unparseType(typ1.clone())?).clone();
                     t2_str = (TypesDump::unparseType(typ2.clone())?).clone();
                     pre_str = (PrefixUtil::printPrefixStr3(pre.clone())?).clone();
@@ -3268,8 +3268,8 @@ fn computeReturnType(mut inOperator: DAE::Operator, mut inTypesTypeLst: Arc<meta
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::POW_ARR { .. }, Deref @ metamodelica::List::Cons { head: typ1, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil } }, _, _) => {
-                    let mut m: Arc<DAE::Dimension> = Arc::new(DAE::Dimension::DIM_BOOLEAN);
-                    let mut n: Arc<DAE::Dimension> = Arc::new(DAE::Dimension::DIM_BOOLEAN);
+                    let mut m: Arc<DAE::Dimension>;
+                    let mut n: Arc<DAE::Dimension>;
                     let 2 = (nDims(typ1.clone())?) else { bail!("pattern mismatch") };
                     n = Types::getDimensionNth(typ1.clone(), 1)?;
                     m = Types::getDimensionNth(typ1.clone(), 2)?;
@@ -3300,9 +3300,9 @@ fn computeReturnType(mut inOperator: DAE::Operator, mut inTypesTypeLst: Arc<meta
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::POW_ARR2 { .. }, Deref @ metamodelica::List::Cons { head: typ1, tail: Deref @ metamodelica::List::Cons { head: typ2, tail: Deref @ metamodelica::List::Nil } }, _, pre) => {
-                    let mut t1_str: ArcStr = arcstr::literal!("");
-                    let mut t2_str: ArcStr = arcstr::literal!("");
-                    let mut pre_str: ArcStr = arcstr::literal!("");
+                    let mut t1_str: ArcStr;
+                    let mut t2_str: ArcStr;
+                    let mut pre_str: ArcStr;
                     t1_str = (TypesDump::unparseType(typ1.clone())?).clone();
                     t2_str = (TypesDump::unparseType(typ2.clone())?).clone();
                     pre_str = (PrefixUtil::printPrefixStr3(pre.clone())?).clone();
@@ -3333,9 +3333,9 @@ fn computeReturnType(mut inOperator: DAE::Operator, mut inTypesTypeLst: Arc<meta
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::MUL_SCALAR_PRODUCT { .. }, Deref @ metamodelica::List::Cons { head: typ1, tail: Deref @ metamodelica::List::Cons { head: typ2, tail: Deref @ metamodelica::List::Nil } }, _, pre) => {
-                    let mut t1_str: ArcStr = arcstr::literal!("");
-                    let mut t2_str: ArcStr = arcstr::literal!("");
-                    let mut pre_str: ArcStr = arcstr::literal!("");
+                    let mut t1_str: ArcStr;
+                    let mut t2_str: ArcStr;
+                    let mut pre_str: ArcStr;
                     t1_str = (TypesDump::unparseType(typ1.clone())?).clone();
                     t2_str = (TypesDump::unparseType(typ2.clone())?).clone();
                     pre_str = (PrefixUtil::printPrefixStr3(pre.clone())?).clone();
@@ -3348,11 +3348,11 @@ fn computeReturnType(mut inOperator: DAE::Operator, mut inTypesTypeLst: Arc<meta
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::MUL_MATRIX_PRODUCT { .. }, Deref @ metamodelica::List::Cons { head: typ1, tail: Deref @ metamodelica::List::Cons { head: typ2, tail: Deref @ metamodelica::List::Nil } }, _, _) => {
-                    let mut rtype: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut etype: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut n1: Arc<DAE::Dimension> = Arc::new(DAE::Dimension::DIM_BOOLEAN);
-                    let mut n2: Arc<DAE::Dimension> = Arc::new(DAE::Dimension::DIM_BOOLEAN);
-                    let mut m: Arc<DAE::Dimension> = Arc::new(DAE::Dimension::DIM_BOOLEAN);
+                    let mut rtype: Arc<DAE::Type>;
+                    let mut etype: Arc<DAE::Type>;
+                    let mut n1: Arc<DAE::Dimension>;
+                    let mut n2: Arc<DAE::Dimension>;
+                    let mut m: Arc<DAE::Dimension>;
                     let 1 = (nDims(typ1.clone())?) else { bail!("pattern mismatch") };
                     let 2 = (nDims(typ2.clone())?) else { bail!("pattern mismatch") };
                     n1 = Types::getDimensionNth(typ1.clone(), 1)?;
@@ -3369,11 +3369,11 @@ fn computeReturnType(mut inOperator: DAE::Operator, mut inTypesTypeLst: Arc<meta
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::MUL_MATRIX_PRODUCT { .. }, Deref @ metamodelica::List::Cons { head: typ1, tail: Deref @ metamodelica::List::Cons { head: typ2, tail: Deref @ metamodelica::List::Nil } }, _, _) => {
-                    let mut rtype: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut etype: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut n: Arc<DAE::Dimension> = Arc::new(DAE::Dimension::DIM_BOOLEAN);
-                    let mut m1: Arc<DAE::Dimension> = Arc::new(DAE::Dimension::DIM_BOOLEAN);
-                    let mut m2: Arc<DAE::Dimension> = Arc::new(DAE::Dimension::DIM_BOOLEAN);
+                    let mut rtype: Arc<DAE::Type>;
+                    let mut etype: Arc<DAE::Type>;
+                    let mut n: Arc<DAE::Dimension>;
+                    let mut m1: Arc<DAE::Dimension>;
+                    let mut m2: Arc<DAE::Dimension>;
                     let 2 = (nDims(typ1.clone())?) else { bail!("pattern mismatch") };
                     let 1 = (nDims(typ2.clone())?) else { bail!("pattern mismatch") };
                     n = Types::getDimensionNth(typ1.clone(), 1)?;
@@ -3390,12 +3390,12 @@ fn computeReturnType(mut inOperator: DAE::Operator, mut inTypesTypeLst: Arc<meta
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::MUL_MATRIX_PRODUCT { .. }, Deref @ metamodelica::List::Cons { head: typ1, tail: Deref @ metamodelica::List::Cons { head: typ2, tail: Deref @ metamodelica::List::Nil } }, _, _) => {
-                    let mut rtype: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut etype: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut n: Arc<DAE::Dimension> = Arc::new(DAE::Dimension::DIM_BOOLEAN);
-                    let mut m1: Arc<DAE::Dimension> = Arc::new(DAE::Dimension::DIM_BOOLEAN);
-                    let mut m2: Arc<DAE::Dimension> = Arc::new(DAE::Dimension::DIM_BOOLEAN);
-                    let mut p: Arc<DAE::Dimension> = Arc::new(DAE::Dimension::DIM_BOOLEAN);
+                    let mut rtype: Arc<DAE::Type>;
+                    let mut etype: Arc<DAE::Type>;
+                    let mut n: Arc<DAE::Dimension>;
+                    let mut m1: Arc<DAE::Dimension>;
+                    let mut m2: Arc<DAE::Dimension>;
+                    let mut p: Arc<DAE::Dimension>;
                     let 2 = (nDims(typ1.clone())?) else { bail!("pattern mismatch") };
                     let 2 = (nDims(typ2.clone())?) else { bail!("pattern mismatch") };
                     n = Types::getDimensionNth(typ1.clone(), 1)?;
@@ -3413,9 +3413,9 @@ fn computeReturnType(mut inOperator: DAE::Operator, mut inTypesTypeLst: Arc<meta
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::MUL_MATRIX_PRODUCT { .. }, Deref @ metamodelica::List::Cons { head: typ1, tail: Deref @ metamodelica::List::Cons { head: typ2, tail: Deref @ metamodelica::List::Nil } }, _, pre) => {
-                    let mut t1_str: ArcStr = arcstr::literal!("");
-                    let mut t2_str: ArcStr = arcstr::literal!("");
-                    let mut pre_str: ArcStr = arcstr::literal!("");
+                    let mut t1_str: ArcStr;
+                    let mut t2_str: ArcStr;
+                    let mut pre_str: ArcStr;
                     t1_str = (TypesDump::unparseType(typ1.clone())?).clone();
                     t2_str = (TypesDump::unparseType(typ2.clone())?).clone();
                     pre_str = (PrefixUtil::printPrefixStr3(pre.clone())?).clone();
@@ -3549,9 +3549,9 @@ fn computeReturnType(mut inOperator: DAE::Operator, mut inTypesTypeLst: Arc<meta
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::AND { .. }, Deref @ metamodelica::List::Cons { head: typ1, tail: Deref @ metamodelica::List::Cons { head: typ2, tail: Deref @ metamodelica::List::Nil } }, _, pre) => {
-                    let mut t1_str: ArcStr = arcstr::literal!("");
-                    let mut t2_str: ArcStr = arcstr::literal!("");
-                    let mut pre_str: ArcStr = arcstr::literal!("");
+                    let mut t1_str: ArcStr;
+                    let mut t2_str: ArcStr;
+                    let mut pre_str: ArcStr;
                     t1_str = (TypesDump::unparseType(typ1.clone())?).clone();
                     t2_str = (TypesDump::unparseType(typ2.clone())?).clone();
                     pre_str = (PrefixUtil::printPrefixStr3(pre.clone())?).clone();
@@ -3573,9 +3573,9 @@ fn computeReturnType(mut inOperator: DAE::Operator, mut inTypesTypeLst: Arc<meta
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::OR { .. }, Deref @ metamodelica::List::Cons { head: typ1, tail: Deref @ metamodelica::List::Cons { head: typ2, tail: Deref @ metamodelica::List::Nil } }, _, pre) => {
-                    let mut t1_str: ArcStr = arcstr::literal!("");
-                    let mut t2_str: ArcStr = arcstr::literal!("");
-                    let mut pre_str: ArcStr = arcstr::literal!("");
+                    let mut t1_str: ArcStr;
+                    let mut t2_str: ArcStr;
+                    let mut pre_str: ArcStr;
                     t1_str = (TypesDump::unparseType(typ1.clone())?).clone();
                     t2_str = (TypesDump::unparseType(typ2.clone())?).clone();
                     pre_str = (PrefixUtil::printPrefixStr3(pre.clone())?).clone();
@@ -3670,12 +3670,12 @@ fn nDims(mut inType: Arc<DAE::Type>) -> Result<i32> {
             return Ok(0)
         },
         Deref @ DAE::Type::T_ARRAY { ty: t, .. } => {
-            let mut ns: i32 = 0;
+            let mut ns: i32;
             ns = nDims(t.clone())?;
             return Ok(ns.clone() + 1)
         },
         Deref @ DAE::Type::T_SUBTYPE_BASIC { complexType: t, .. } => {
-            let mut ns: i32 = 0;
+            let mut ns: i32;
             { inType = t.clone(); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
@@ -3705,11 +3705,11 @@ fn elementType(mut inType: Arc<DAE::Type>) -> Result<Arc<DAE::Type>> {
             return Ok(t.clone())
         },
         Deref @ DAE::Type::T_ARRAY { ty: t, .. } => {
-            let mut t_1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+            let mut t_1: Arc<DAE::Type>;
             { inType = t.clone(); continue '__tco; }
         },
         Deref @ DAE::Type::T_SUBTYPE_BASIC { complexType: t, .. } => {
-            let mut t_1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+            let mut t_1: Arc<DAE::Type>;
             { inType = t.clone(); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
@@ -3821,10 +3821,10 @@ fn warnUnsafeRelations(mut inEnv: FCore::Graph, mut inExp: Arc<Absyn::Exp>, mut 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::Exp::RELATION { exp1: _, op: _, exp2: _ }, DAE::Const::C_VAR { .. }) => {
-                    let mut b1: bool = false;
-                    let mut b2: bool = false;
-                    let mut stmtString: ArcStr = arcstr::literal!("");
-                    let mut opString: ArcStr = arcstr::literal!("");
+                    let mut b1: bool;
+                    let mut b2: bool;
+                    let mut stmtString: ArcStr;
+                    let mut opString: ArcStr;
                     b1 = Types::isReal(t1.clone());
                     b2 = Types::isReal(t1.clone());
                     let true = (boolOr(b1.clone(), b2.clone())) else { bail!("pattern mismatch") };
@@ -3876,11 +3876,11 @@ fn binaryCastConstructor(mut inCache: FCore::Cache, mut env: FCore::Graph, mut i
             (inCache.clone(), exps.clone())
         },
         Deref @ metamodelica::List::Nil => {
-            let mut args: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::FuncArg>>>>> = metamodelica::nil();
-            let mut tys1: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
-            let mut tys2: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
-            let mut exps1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-            let mut exps2: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
+            let mut args: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::FuncArg>>>>>;
+            let mut tys1: Arc<metamodelica::List<Arc<DAE::Type>>>;
+            let mut tys2: Arc<metamodelica::List<Arc<DAE::Type>>>;
+            let mut exps1: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+            let mut exps2: Arc<metamodelica::List<Arc<DAE::Exp>>>;
             args = List::map(types.clone(), (std::sync::Arc::new(Types::getFuncArg) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<Arc<metamodelica::List<Arc<DAE::FuncArg>>>> + 'static>))?;
             tys1 = List::mapMap(args.clone(), (std::sync::Arc::new(listHead) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>), (std::sync::Arc::new(Types::funcArgType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::FuncArg>) -> Result<Arc<DAE::Type>> + 'static>))?;
             args = List::map(args.clone(), (std::sync::Arc::new(listRest) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>))?;
@@ -3914,7 +3914,7 @@ fn getZeroConstructor(mut inCache: FCore::Cache, mut env: FCore::Graph, mut zexp
             (inCache.clone(), None)
         },
         Deref @ metamodelica::List::Cons { head: zc, tail: Deref @ metamodelica::List::Nil } => {
-            let mut v: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
+            let mut v: Arc<Values::Value>;
             (cache, v) = Ceval::ceval(inCache.clone(), env.clone(), zc.clone(), r#impl.clone(), Absyn::Msg::MSG { info: info.clone() }, 0)?;
             (cache.clone(), Some(v.clone()))
         },

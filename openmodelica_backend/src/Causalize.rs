@@ -80,8 +80,8 @@ pub fn singularSystemCheck(mut nvars: i32, mut neqns: i32, mut isyst: Arc<Backen
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (_, BackendDAE::EquationConstraints::EXACT { .. }) = __mc_input.clone() else { bail!("nomatch") };
-            let mut esize_str: ArcStr = arcstr::literal!("");
-            let mut vsize_str: ArcStr = arcstr::literal!("");
+            let mut esize_str: ArcStr;
+            let mut vsize_str: ArcStr;
             let true = (intGt(nvars.clone(), neqns.clone())) else { bail!("pattern mismatch") };
             esize_str = (intString(neqns.clone())).clone();
             vsize_str = (intString(nvars.clone())).clone();
@@ -91,8 +91,8 @@ pub fn singularSystemCheck(mut nvars: i32, mut neqns: i32, mut isyst: Arc<Backen
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            let mut esize_str: ArcStr = arcstr::literal!("");
-            let mut vsize_str: ArcStr = arcstr::literal!("");
+            let mut esize_str: ArcStr;
+            let mut vsize_str: ArcStr;
             let true = (intLt(nvars.clone(), neqns.clone())) else { bail!("pattern mismatch") };
             esize_str = (intString(neqns.clone())).clone();
             vsize_str = (intString(nvars.clone())).clone();
@@ -158,7 +158,7 @@ fn freeStateAssignments(mut inVar: BackendDAE::Var, mut inTpl: (i32, metamodelic
     let mut outTpl: (i32, metamodelica::Array<i32>, metamodelica::Array<i32>);
     (outVar, outTpl) = (match (inVar.clone(), inTpl.clone()) {
         (mut var @ BackendDAE::Var { varKind: BackendDAE::VarKind::STATE { .. }, .. }, (mut index, mut ass1, mut ass2)) => {
-            let mut e: i32 = 0;
+            let mut e: i32;
             e = ({let __elt = ass1.borrow()[(index.clone()-1) as usize].clone(); __elt});
             ass1 = metamodelica::arrayUpdate(ass1.clone(), index.clone(), -1)?;
             ass2 = metamodelica::arrayUpdate(ass2.clone(), e.clone(), -1)?;

@@ -72,8 +72,8 @@ pub fn checkRecursiveShortDefinition(mut inTypeSpec: Arc<Absyn::TypeSpec>, mut i
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: _ } => {
-                    let mut ts_path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-                    let mut ty_path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+                    let mut ts_path: Arc<Absyn::Path>;
+                    let mut ty_path: Arc<Absyn::Path>;
                     ts_path = AbsynUtil::typeSpecPath(inTypeSpec.clone())?;
                     ty_path = NFSCodeEnv::getEnvPath(inTypeEnv.clone())?;
                     let false = (isSelfReference((inTypeName.clone()).clone(), ty_path.clone(), ts_path.clone())?) else { bail!("pattern mismatch") };
@@ -85,7 +85,7 @@ pub fn checkRecursiveShortDefinition(mut inTypeSpec: Arc<Absyn::TypeSpec>, mut i
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    let mut ty: ArcStr = arcstr::literal!("");
+                    let mut ty: ArcStr;
                     ty = (Dump::unparseTypeSpec(inTypeSpec.clone())?).clone();
                     Error::addSourceMessage(Error::RECURSIVE_SHORT_CLASS_DEFINITION.clone(), list![(inTypeName.clone()).clone(), (ty.clone()).clone()], inInfo.clone())?;
                     Ok(bail!("fail"))
@@ -140,7 +140,7 @@ pub fn checkRedeclareModifier2(mut inModifier: Arc<SCode::Element>, mut inBaseCl
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SCode::Element::CLASS { name, classDef: Deref @ SCode::ClassDef::DERIVED { typeSpec: ty, .. }, .. } => {
-                    let mut ty_path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+                    let mut ty_path: Arc<Absyn::Path>;
                     ty_path = AbsynUtil::typeSpecPath(ty.clone())?;
                     let false = (isSelfReference((name.clone()).clone(), inBaseClass.clone(), ty_path.clone())?) else { bail!("pattern mismatch") };
                     Ok(())
@@ -151,7 +151,7 @@ pub fn checkRedeclareModifier2(mut inModifier: Arc<SCode::Element>, mut inBaseCl
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SCode::Element::CLASS { name, classDef: Deref @ SCode::ClassDef::DERIVED { typeSpec: ty, .. }, info, .. } => {
-                    let mut ty_str: ArcStr = arcstr::literal!("");
+                    let mut ty_str: ArcStr;
                     ty_str = (Dump::unparseTypeSpec(ty.clone())?).clone();
                     Error::addSourceMessage(Error::RECURSIVE_SHORT_CLASS_DEFINITION.clone(), list![(name.clone()).clone(), (ty_str.clone()).clone()], info.clone())?;
                     Ok(bail!("fail"))
@@ -181,8 +181,8 @@ pub fn checkModifierIfRedeclare(mut inItem: Arc<NFSCodeEnv::Item>, mut inModifie
 pub fn checkRedeclaredElementPrefix(mut inItem: Arc<NFSCodeEnv::Item>, mut inReplacement: Arc<SCode::Element>, mut inInfo: SourceInfo) -> Result<()> {
     let () = (::match_deref::match_deref! { match &((inItem.clone(), inReplacement.clone())) {
         (Deref @ NFSCodeEnv::Item::VAR { var: Deref @ SCode::Element::COMPONENT { name, prefixes: Deref @ SCode::Prefixes { finalPrefix: fin, replaceablePrefix: repl, .. }, attributes: SCode::Attributes { variability: var, .. }, typeSpec: ty1, info, .. }, .. }, Deref @ SCode::Element::COMPONENT { prefixes: Deref @ SCode::Prefixes { .. }, typeSpec: ty2, .. }) => {
-            let mut ty: ArcStr = arcstr::literal!("");
-            let mut ok: bool = false;
+            let mut ty: ArcStr;
+            let mut ok: bool;
             ty = (literal!("component")).clone();
             ok = checkCompRedeclarationReplaceable((name.clone()).clone(), repl.clone(), ty1.clone(), ty2.clone(), inInfo.clone(), info.clone())?;
             ok = checkRedeclarationFinal((name.clone()).clone(), (ty.clone()).clone(), fin.clone(), inInfo.clone(), info.clone())? && ok.clone();
@@ -191,8 +191,8 @@ pub fn checkRedeclaredElementPrefix(mut inItem: Arc<NFSCodeEnv::Item>, mut inRep
             ()
         },
         (Deref @ NFSCodeEnv::Item::CLASS { cls: Deref @ SCode::Element::CLASS { name, prefixes: Deref @ SCode::Prefixes { finalPrefix: fin, replaceablePrefix: repl, .. }, restriction: res, info, .. }, .. }, Deref @ SCode::Element::CLASS { prefixes: Deref @ SCode::Prefixes { .. }, .. }) => {
-            let mut ty: ArcStr = arcstr::literal!("");
-            let mut ok: bool = false;
+            let mut ty: ArcStr;
+            let mut ok: bool;
             ty = (SCodeDump::restrictionStringPP(res.clone())?).clone();
             ok = checkClassRedeclarationReplaceable((name.clone()).clone(), repl.clone(), inInfo.clone(), info.clone())?;
             ok = checkRedeclarationFinal((name.clone()).clone(), (ty.clone()).clone(), fin.clone(), inInfo.clone(), info.clone())? && ok.clone();
@@ -200,14 +200,14 @@ pub fn checkRedeclaredElementPrefix(mut inItem: Arc<NFSCodeEnv::Item>, mut inRep
             ()
         },
         (Deref @ NFSCodeEnv::Item::VAR { var: Deref @ SCode::Element::COMPONENT { name, info, .. }, .. }, Deref @ SCode::Element::CLASS { restriction: res, .. }) => {
-            let mut ty: ArcStr = arcstr::literal!("");
+            let mut ty: ArcStr;
             ty = (SCodeDump::restrictionStringPP(res.clone())?).clone();
             ty = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("a ")); __mm_s.push_str(&*ty.clone()); ArcStr::from(__mm_s) }).clone();
             Error::addMultiSourceMessage(Error::INVALID_REDECLARE_AS.clone(), list![(literal!("component")).clone(), (name.clone()).clone(), (ty.clone()).clone()], list![inInfo.clone(), info.clone()])?;
             bail!("fail")
         },
         (Deref @ NFSCodeEnv::Item::CLASS { cls: Deref @ SCode::Element::CLASS { restriction: res, info, .. }, .. }, Deref @ SCode::Element::COMPONENT { name, .. }) => {
-            let mut ty: ArcStr = arcstr::literal!("");
+            let mut ty: ArcStr;
             ty = (SCodeDump::restrictionStringPP(res.clone())?).clone();
             Error::addMultiSourceMessage(Error::INVALID_REDECLARE_AS.clone(), list![(ty.clone()).clone(), (name.clone()).clone(), (literal!("a component")).clone()], list![inInfo.clone(), info.clone()])?;
             bail!("fail")
@@ -310,8 +310,8 @@ fn checkDuplicateRedeclarations2(mut inRedeclareName: ArcStr, mut inRedeclareInf
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: redecl, tail: _ } => {
-                    let mut el_name: ArcStr = arcstr::literal!("");
-                    let mut el_info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
+                    let mut el_name: ArcStr;
+                    let mut el_info: SourceInfo;
                     (el_name, el_info) = NFSCodeEnv::getRedeclarationNameInfo(redecl.clone())?;
                     let true = (stringEqual((inRedeclareName.clone()).clone(), (el_name.clone()).clone())) else { bail!("pattern mismatch") };
                     Error::addSourceMessage(Error::ERROR_FROM_HERE.clone(), metamodelica::nil(), el_info.clone())?;
@@ -357,7 +357,7 @@ pub fn checkRecursiveComponentDeclaration(mut inComponentName: ArcStr, mut inCom
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, Deref @ metamodelica::List::Cons { head: Deref @ NFSCodeEnv::Frame { name: Some(cls_name), .. }, tail: Deref @ metamodelica::List::Cons { head: Deref @ NFSCodeEnv::Frame { clsAndVars: tree, .. }, tail: _ } }) => {
-                    let mut el: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
+                    let mut el: Arc<SCode::Element>;
                     let __pa0 = ::match_deref::match_deref! { match &(NFSCodeEnv::EnvTree::get(tree.clone(), (cls_name.clone()).clone())?) {
                         Deref @ NFSCodeEnv::Item::CLASS { cls: __pa0, .. } => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -372,7 +372,7 @@ pub fn checkRecursiveComponentDeclaration(mut inComponentName: ArcStr, mut inCom
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, Deref @ metamodelica::List::Cons { head: Deref @ NFSCodeEnv::Frame { name: Some(cls_name), .. }, tail: Deref @ metamodelica::List::Cons { head: Deref @ NFSCodeEnv::Frame { clsAndVars: tree, .. }, tail: _ } }) => {
-                    let mut el: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
+                    let mut el: Arc<SCode::Element>;
                     let __pa0 = ::match_deref::match_deref! { match &(NFSCodeEnv::EnvTree::get(tree.clone(), (cls_name.clone()).clone())?) {
                         Deref @ NFSCodeEnv::Item::CLASS { cls: __pa0, .. } => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -387,7 +387,7 @@ pub fn checkRecursiveComponentDeclaration(mut inComponentName: ArcStr, mut inCom
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    let mut ty_name: ArcStr = arcstr::literal!("");
+                    let mut ty_name: ArcStr;
                     ty_name = (NFSCodeEnv::getItemName(inTypeItem.clone())?).clone();
                     Error::addSourceMessage(Error::RECURSIVE_DEFINITION.clone(), list![(inComponentName.clone()).clone(), (ty_name.clone()).clone()], inComponentInfo.clone())?;
                     Ok(bail!("fail"))
@@ -453,8 +453,8 @@ pub fn checkInstanceRestriction(mut inItem: Arc<NFSCodeEnv::Item>, mut inPrefix:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ NFSCodeEnv::Item::CLASS { cls: Deref @ SCode::Element::CLASS { restriction: res, .. }, .. } => {
-                    let mut pre_str: ArcStr = arcstr::literal!("");
-                    let mut res_str: ArcStr = arcstr::literal!("");
+                    let mut pre_str: ArcStr;
+                    let mut res_str: ArcStr;
                     res_str = (SCodeDump::restrictionStringPP(res.clone())?).clone();
                     pre_str = (NFInstDump::prefixStr(inPrefix.clone())?).clone();
                     Error::addSourceMessage(Error::INVALID_CLASS_RESTRICTION.clone(), list![(res_str.clone()).clone(), (pre_str.clone()).clone()], inInfo.clone())?;

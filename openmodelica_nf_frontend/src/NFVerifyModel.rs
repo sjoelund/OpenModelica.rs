@@ -279,9 +279,9 @@ fn checkSubscriptBounds_traverser(mut exp: Arc<Expression::NFExpression>, mut is
 fn checkSubscriptBoundsCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut isPartial: bool, mut info: SourceInfo) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ ComponentRef::CREF { subscripts: subs @ Deref @ metamodelica::List::Cons { head: _, tail: _ }, ty: Deref @ Type::ARRAY { dimensions: dims, .. }, .. } => {
-            let mut d: Arc<Dimension::NFDimension> = Arc::new(Dimension::BOOLEAN);
-            let mut int_sub: i32 = 0;
-            let mut index: i32 = 0;
+            let mut d: Arc<Dimension::NFDimension>;
+            let mut int_sub: i32;
+            let mut index: i32;
             let mut dims = (*dims).clone();
             index = 1;
             for mut s in &*subs.clone() {
@@ -399,7 +399,7 @@ fn checkDiscreteRealEquation(mut body_eqn: Arc<Equation::NFEquation>, mut discre
 fn checkDiscreteRealStatement(mut statement: Arc<Statement::NFStatement>, mut discreteReals: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut when_found: bool) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(statement.clone()) {
         Deref @ Statement::WHEN { branches, .. } => {
-            let mut body: Arc<metamodelica::List<Arc<Statement::NFStatement>>> = metamodelica::nil();
+            let mut body: Arc<metamodelica::List<Arc<Statement::NFStatement>>>;
             for mut branch in &*branches.clone() {
                 let mut branch = branch.clone();
                 (_, body) = branch.clone();
@@ -415,7 +415,7 @@ fn checkDiscreteRealStatement(mut statement: Arc<Statement::NFStatement>, mut di
             ()
         },
         Deref @ Statement::IF { branches, .. } => {
-            let mut body: Arc<metamodelica::List<Arc<Statement::NFStatement>>> = metamodelica::nil();
+            let mut body: Arc<metamodelica::List<Arc<Statement::NFStatement>>>;
             for mut branch in &*branches.clone() {
                 let mut branch = branch.clone();
                 (_, body) = branch.clone();

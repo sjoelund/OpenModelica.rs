@@ -142,7 +142,7 @@ pub fn introduceSlicedStateAlias(mut varData: Arc<VarData::VarData>, mut eqData:
         let mut aux_index: Pointer::Pointer<i32> = Pointer::create(1);
         (::match_deref::match_deref! { match &((eqData.clone(), varData.clone())) {
         (Deref @ BEquation::EqData::EQ_DATA_SIM { .. }, Deref @ BVariable::VarData::VAR_DATA_SIM { .. }) => {
-            let mut set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
+            let mut set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
             BEquation::EquationPointers::map(var_field!((*eqData).simulation, EqData::EqData::EQ_DATA_SIM).clone(), (std::sync::Arc::new({ let __pe_b1 = map.clone(); move |__pe_a0| collectSlicedStatesAliasEquation(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::Equation>) -> Result<Arc<Equation::Equation>> + 'static>))?;
             set = getSlicedStatesSet(map.clone())?;
             if !(UnorderedSet::isEmpty(set.clone())) {
@@ -554,7 +554,7 @@ fn introduceFunctionAlias(mut exp: Arc<Expression::NFExpression>, mut map: Arc<U
             exp.clone()
         },
         Deref @ Expression::TUPLE_ELEMENT { tupleExp: sub_exp @ Deref @ Expression::TUPLE { .. }, .. } => {
-            let mut new_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut new_exp: Arc<Expression::NFExpression>;
             if var_field!((*exp).index, Expression::NFExpression::TUPLE_ELEMENT).clone() > (var_field!((**sub_exp).elements, Expression::NFExpression::TUPLE).clone().len() as i32) {
                 Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBFunctionAlias.introduceFunctionAlias")); __mm_s.push_str(&*literal!(" failed to get subscripted tuple element: ")); __mm_s.push_str(&*Expression::toString(exp.clone())?); ArcStr::from(__mm_s) }).clone()])?;
                 bail!("fail");
@@ -903,15 +903,15 @@ fn collectSlicedStatesAlias(mut exp: Arc<Expression::NFExpression>, mut iter: Ar
     let mut exp: Arc<Expression::NFExpression> = exp;
     exp = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CALL { call: Deref @ Call::TYPED_CALL { r#fn: Deref @ Function::FUNCTION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, .. }, arguments: Deref @ metamodelica::List::Cons { head: arg, tail: Deref @ metamodelica::List::Nil }, .. } } => {
-            let mut iter_size: i32 = 0;
-            let mut cref_size: i32 = 0;
-            let mut var_size: i32 = 0;
-            let mut call_crefs: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
-            let mut stripped_cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-            let mut indices: Arc<UnorderedSet::UnorderedSet<i32>> = <Arc<UnorderedSet::UnorderedSet<i32>> as ::std::default::Default>::default();
-            let mut names: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-            let mut ranges: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-            let mut maps: Arc<metamodelica::List<Option<Arc<Iterator::Iterator>>>> = metamodelica::nil();
+            let mut iter_size: i32;
+            let mut cref_size: i32;
+            let mut var_size: i32;
+            let mut call_crefs: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
+            let mut stripped_cref: Arc<ComponentRef::NFComponentRef>;
+            let mut indices: Arc<UnorderedSet::UnorderedSet<i32>>;
+            let mut names: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
+            let mut ranges: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
+            let mut maps: Arc<metamodelica::List<Option<Arc<Iterator::Iterator>>>>;
             iter_size = BEquation::Iterator::size(iter.clone(), true)?;
             call_crefs = UnorderedSet::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
             Slice::filterExp(arg.clone(), (std::sync::Arc::new({ let __pe_b2 = false; move |__pe_a0, __pe_a1| Slice::getContinuous(__pe_a0, __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<ComponentRef::NFComponentRef>> + 'static>), call_crefs.clone())?;
@@ -980,17 +980,17 @@ fn introduceSlicedStateAliasExp(mut exp: Arc<Expression::NFExpression>, mut set:
             exp.clone()
         },
         Deref @ Expression::CALL { call: Deref @ Call::TYPED_ARRAY_CONSTRUCTOR { .. } } => {
-            let mut new_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut new_exp: Arc<Expression::NFExpression>;
             new_exp = Expression::mapShallow(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = set.clone(); let __pe_b2 = map.clone(); let __pe_b3 = BEquation::Iterator::expand(iter.clone(), var_field!((*exp).call, Expression::NFExpression::CALL).clone())?; let __pe_b4 = aux_index.clone(); move |__pe_a0| introduceSlicedStateAliasExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             new_exp.clone()
         },
         Deref @ Expression::CALL { call: Deref @ Call::TYPED_REDUCTION { .. } } => {
-            let mut new_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut new_exp: Arc<Expression::NFExpression>;
             new_exp = Expression::mapShallow(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = set.clone(); let __pe_b2 = map.clone(); let __pe_b3 = BEquation::Iterator::expand(iter.clone(), var_field!((*exp).call, Expression::NFExpression::CALL).clone())?; let __pe_b4 = aux_index.clone(); move |__pe_a0| introduceSlicedStateAliasExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             new_exp.clone()
         },
         _ => {
-            let mut new_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut new_exp: Arc<Expression::NFExpression>;
             new_exp = Expression::mapShallow(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = set.clone(); let __pe_b2 = map.clone(); let __pe_b3 = iter.clone(); let __pe_b4 = aux_index.clone(); move |__pe_a0| introduceSlicedStateAliasExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             new_exp.clone()
         },

@@ -526,7 +526,7 @@ pub fn toString<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inArray: met
             inNameStr.clone()
         },
         _ => {
-            let mut r#str: ArcStr = arcstr::literal!("");
+            let mut r#str: ArcStr;
             r#str = stringDelimitList(List::map(lst.clone(), inPrintFunc.clone())?, (inDelimitStr.clone()).clone());
             r#str = stringAppendList(list![(inNameStr.clone()).clone(), (inBeginStr.clone()).clone(), (r#str.clone()).clone(), (endStr.clone()).clone()]);
             r#str.clone()

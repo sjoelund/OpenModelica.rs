@@ -59,15 +59,15 @@ pub fn fixUniontype(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inSt
     let mut outType: Option<Arc<DAE::Type>>;
     outType = (::match_deref::match_deref! { match &((inState.clone(), inClassDef.clone())) {
         (ClassInf::State::META_UNIONTYPE { typeVars, .. }, Deref @ SCode::ClassDef::PARTS { .. }) => {
-            let mut p: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-            let mut p2: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+            let mut p: Arc<Absyn::Path>;
+            let mut p2: Arc<Absyn::Path>;
             let mut utPathOfRestriction: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-            let mut utPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-            let mut isSingleton: bool = false;
-            let mut singletonType: Arc<DAE::EvaluateSingletonType> = Arc::new(DAE::EvaluateSingletonType::NOT_SINGLETON);
-            let mut paths: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
-            let mut typeVarsTypes: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
-            let mut names: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+            let mut utPath: Arc<Absyn::Path>;
+            let mut isSingleton: bool;
+            let mut singletonType: Arc<DAE::EvaluateSingletonType>;
+            let mut paths: Arc<metamodelica::List<Arc<Absyn::Path>>>;
+            let mut typeVarsTypes: Arc<metamodelica::List<Arc<DAE::Type>>>;
+            let mut names: Arc<metamodelica::List<ArcStr>>;
             utPath = var_field!(inState.path, ClassInf::State::META_UNIONTYPE).clone();
             p = AbsynUtil::makeFullyQualified(var_field!(inState.path, ClassInf::State::META_UNIONTYPE).clone());
             names = SCodeUtil::elementNames(({

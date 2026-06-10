@@ -57,7 +57,7 @@ pub fn refactorGraphicalAnnotation(mut wholeAST: Absyn::Program, mut classToRefa
     let mut changedClass: Arc<Absyn::Class>;
     changedClass = (::match_deref::match_deref! { match &(classToRefactor.clone()) {
         _ => {
-            let mut c: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
+            let mut c: Arc<Absyn::Class>;
             c = refactorGraphAnnInClass(classToRefactor.clone(), wholeAST.clone(), Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }))?;
             c.clone()
         },
@@ -73,9 +73,9 @@ fn refactorGraphAnnInClass(mut inClass: Arc<Absyn::Class>, mut inProgram: Absyn:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (outClass @ Deref @ Absyn::Class { name: n, body: d, .. }, p, Deref @ Absyn::Path::IDENT { name: Deref @ "" }) => {
-                    let mut resultClassDef: Arc<Absyn::ClassDef> = Arc::new(<Absyn::ClassDef as ::std::default::Default>::default());
-                    let mut cPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-                    let mut env: Interactive::GraphicEnvCache = <Interactive::GraphicEnvCache as ::std::default::Default>::default();
+                    let mut resultClassDef: Arc<Absyn::ClassDef>;
+                    let mut cPath: Arc<Absyn::Path>;
+                    let mut env: Interactive::GraphicEnvCache;
                     let mut outClass = (*outClass).clone();
                     cPath = Arc::new(Absyn::Path::IDENT { name: (n.clone()).clone() });
                     env = Interactive::getClassEnv(p.clone(), cPath.clone())?;
@@ -89,7 +89,7 @@ fn refactorGraphAnnInClass(mut inClass: Arc<Absyn::Class>, mut inProgram: Absyn:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (outClass @ Deref @ Absyn::Class { name: n, body: d, .. }, p, cPath) => {
-                    let mut env: Interactive::GraphicEnvCache = <Interactive::GraphicEnvCache as ::std::default::Default>::default();
+                    let mut env: Interactive::GraphicEnvCache;
                     let mut cPath = (*cPath).clone();
                     cPath = AbsynUtil::joinPaths(cPath.clone(), Arc::new(Absyn::Path::IDENT { name: (n.clone()).clone() }))?;
                     env = Interactive::getClassEnv(p.clone(), cPath.clone())?;
@@ -111,7 +111,7 @@ fn refactorGraphAnnInClassDef(mut inDef: Arc<Absyn::ClassDef>, mut inProgram: Ab
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::ClassDef::PARTS { typeVars, classAttrs, classParts: cp, ann, comment: cmt }, p, cPath, env) => {
-                    let mut resultPart: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
+                    let mut resultPart: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>;
                     resultPart = refactorGraphAnnInClassParts(cp.clone(), p.clone(), cPath.clone(), env.clone())?;
                     Ok(Arc::new(Absyn::ClassDef::PARTS { typeVars: typeVars.clone(), classAttrs: classAttrs.clone(), classParts: resultPart.clone(), ann: ann.clone(), comment: cmt.clone() }))
                 }
@@ -121,7 +121,7 @@ fn refactorGraphAnnInClassDef(mut inDef: Arc<Absyn::ClassDef>, mut inProgram: Ab
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::ClassDef::DERIVED { typeSpec: ts, attributes: attrs, arguments: args, comment: Some(Deref @ Absyn::Comment { annotation_: Some(Deref @ Absyn::Annotation { elementArgs: annList }), comment: cmt }) }, p, _, _) => {
-                    let mut resAnnList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
+                    let mut resAnnList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
                     resAnnList = transformClassAnnList(annList.clone(), list![(literal!("Class")).clone()], metamodelica::nil(), p.clone())?;
                     Ok(Arc::new(Absyn::ClassDef::DERIVED { typeSpec: ts.clone(), attributes: attrs.clone(), arguments: args.clone(), comment: Some(Arc::new(Absyn::Comment { annotation_: Some(Arc::new(Absyn::Annotation { elementArgs: resAnnList.clone() })), comment: cmt.clone() })) }))
                 }
@@ -148,8 +148,8 @@ fn refactorGraphAnnInClassParts(mut inParts: Arc<metamodelica::List<Arc<Absyn::C
             metamodelica::nil()
         },
         (Deref @ metamodelica::List::Cons { head: firstPart, tail: restParts }, p, cPath) => {
-            let mut resParts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
-            let mut resultPart: Arc<Absyn::ClassPart> = Arc::new(<Absyn::ClassPart as ::std::default::Default>::default());
+            let mut resParts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>;
+            let mut resultPart: Arc<Absyn::ClassPart>;
             resultPart = refactorGraphAnnInClassPart(firstPart.clone(), p.clone(), cPath.clone(), env.clone());
             resParts = refactorGraphAnnInClassParts(restParts.clone(), p.clone(), cPath.clone(), env.clone())?;
             metamodelica::cons(resultPart.clone(), resParts.clone())
@@ -166,7 +166,7 @@ fn refactorGraphAnnInClassPart(mut inPart: Arc<Absyn::ClassPart>, mut inProgram:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::ClassPart::PUBLIC { contents: elContent }, p, cPath, env) => {
-                    let mut resultElContent: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
+                    let mut resultElContent: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>;
                     resultElContent = refactorGraphAnnInContentList(elContent.clone(), (std::sync::Arc::new(refactorGraphAnnInElItem) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::ElementItem>, Absyn::Program, Arc<Absyn::Path>, Interactive::GraphicEnvCache) -> Result<Arc<Absyn::ElementItem>> + 'static>), p.clone(), cPath.clone(), env.clone())?;
                     Ok(Arc::new(Absyn::ClassPart::PUBLIC { contents: resultElContent.clone() }))
                 }
@@ -176,7 +176,7 @@ fn refactorGraphAnnInClassPart(mut inPart: Arc<Absyn::ClassPart>, mut inProgram:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::ClassPart::PROTECTED { contents: elContent }, p, cPath, env) => {
-                    let mut resultElContent: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
+                    let mut resultElContent: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>;
                     resultElContent = refactorGraphAnnInContentList(elContent.clone(), (std::sync::Arc::new(refactorGraphAnnInElItem) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::ElementItem>, Absyn::Program, Arc<Absyn::Path>, Interactive::GraphicEnvCache) -> Result<Arc<Absyn::ElementItem>> + 'static>), p.clone(), cPath.clone(), env.clone())?;
                     Ok(Arc::new(Absyn::ClassPart::PROTECTED { contents: resultElContent.clone() }))
                 }
@@ -186,7 +186,7 @@ fn refactorGraphAnnInClassPart(mut inPart: Arc<Absyn::ClassPart>, mut inProgram:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::ClassPart::EQUATIONS { contents: eqContent }, p, cPath, env) => {
-                    let mut resultEqContent: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
+                    let mut resultEqContent: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>;
                     resultEqContent = refactorGraphAnnInContentList(eqContent.clone(), (std::sync::Arc::new(fnptr!(refactorGraphAnnInEqItem, Arc<Absyn::EquationItem>, Absyn::Program, Arc<Absyn::Path>, Interactive::GraphicEnvCache)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::EquationItem>, Absyn::Program, Arc<Absyn::Path>, Interactive::GraphicEnvCache) -> Result<Arc<Absyn::EquationItem>> + 'static>), p.clone(), cPath.clone(), env.clone())?;
                     Ok(Arc::new(Absyn::ClassPart::EQUATIONS { contents: resultEqContent.clone() }))
                 }
@@ -196,7 +196,7 @@ fn refactorGraphAnnInClassPart(mut inPart: Arc<Absyn::ClassPart>, mut inProgram:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::ClassPart::ALGORITHMS { contents: algContent }, p, cPath, env) => {
-                    let mut resultAlgContent: Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>> = metamodelica::nil();
+                    let mut resultAlgContent: Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>;
                     resultAlgContent = refactorGraphAnnInContentList(algContent.clone(), (std::sync::Arc::new(fnptr!(refactorGraphAnnInAlgItem, Arc<Absyn::AlgorithmItem>, Absyn::Program, Arc<Absyn::Path>, Interactive::GraphicEnvCache)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::AlgorithmItem>, Absyn::Program, Arc<Absyn::Path>, Interactive::GraphicEnvCache) -> Result<Arc<Absyn::AlgorithmItem>> + 'static>), p.clone(), cPath.clone(), env.clone())?;
                     Ok(Arc::new(Absyn::ClassPart::ALGORITHMS { contents: resultAlgContent.clone() }))
                 }
@@ -206,7 +206,7 @@ fn refactorGraphAnnInClassPart(mut inPart: Arc<Absyn::ClassPart>, mut inProgram:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::ClassPart::INITIALEQUATIONS { contents: eqContent }, p, cPath, env) => {
-                    let mut resultEqContent: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
+                    let mut resultEqContent: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>;
                     resultEqContent = refactorGraphAnnInContentList(eqContent.clone(), (std::sync::Arc::new(fnptr!(refactorGraphAnnInEqItem, Arc<Absyn::EquationItem>, Absyn::Program, Arc<Absyn::Path>, Interactive::GraphicEnvCache)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::EquationItem>, Absyn::Program, Arc<Absyn::Path>, Interactive::GraphicEnvCache) -> Result<Arc<Absyn::EquationItem>> + 'static>), p.clone(), cPath.clone(), env.clone())?;
                     Ok(Arc::new(Absyn::ClassPart::INITIALEQUATIONS { contents: resultEqContent.clone() }))
                 }
@@ -216,7 +216,7 @@ fn refactorGraphAnnInClassPart(mut inPart: Arc<Absyn::ClassPart>, mut inProgram:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::ClassPart::INITIALALGORITHMS { contents: algContent }, p, cPath, env) => {
-                    let mut resultAlgContent: Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>> = metamodelica::nil();
+                    let mut resultAlgContent: Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>;
                     resultAlgContent = refactorGraphAnnInContentList(algContent.clone(), (std::sync::Arc::new(fnptr!(refactorGraphAnnInAlgItem, Arc<Absyn::AlgorithmItem>, Absyn::Program, Arc<Absyn::Path>, Interactive::GraphicEnvCache)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::AlgorithmItem>, Absyn::Program, Arc<Absyn::Path>, Interactive::GraphicEnvCache) -> Result<Arc<Absyn::AlgorithmItem>> + 'static>), p.clone(), cPath.clone(), env.clone())?;
                     Ok(Arc::new(Absyn::ClassPart::INITIALALGORITHMS { contents: resultAlgContent.clone() }))
                 }
@@ -245,7 +245,7 @@ fn refactorGraphAnnInContentList<contentType: Clone + 'static + metamodelica::gc
             metamodelica::nil()
         },
         (Deref @ metamodelica::List::Cons { head: firstItem, tail: restList }, p, cPath, env) => {
-            let mut resList: Arc<metamodelica::List<contentType>> = metamodelica::nil();
+            let mut resList: Arc<metamodelica::List<contentType>>;
             let mut resultItem: contentType;
             resultItem = refactorGraphAnnInItem(firstItem.clone(), p.clone(), cPath.clone(), env.clone())?;
             resList = refactorGraphAnnInContentList(restList.clone(), refactorGraphAnnInItem.clone(), p.clone(), cPath.clone(), env.clone())?;
@@ -260,7 +260,7 @@ fn refactorGraphAnnInElItem(mut inItem: Arc<Absyn::ElementItem>, mut inProgram: 
     let mut outItem: Arc<Absyn::ElementItem>;
     outItem = (::match_deref::match_deref! { match &((inItem.clone(), inProgram.clone(), classPath.clone(), inClassEnv.clone())) {
         (Deref @ Absyn::ElementItem::ELEMENTITEM { element: el }, p, cPath, env) => {
-            let mut resultElement: Arc<Absyn::Element> = Arc::new(<Absyn::Element as ::std::default::Default>::default());
+            let mut resultElement: Arc<Absyn::Element>;
             resultElement = refactorGraphAnnInElement(el.clone(), p.clone(), cPath.clone(), env.clone())?;
             Arc::new(Absyn::ElementItem::ELEMENTITEM { element: resultElement.clone() })
         },
@@ -325,7 +325,7 @@ fn refactorGraphAnnInElement(mut inElement: Arc<Absyn::Element>, mut inProgram: 
     let mut outElement: Arc<Absyn::Element>;
     outElement = (::match_deref::match_deref! { match &((inElement.clone(), inProgram.clone(), classPath.clone(), inClassEnv.clone())) {
         (Deref @ Absyn::Element::ELEMENT { finalPrefix: f, redeclareKeywords: rdk, innerOuter: io, specification: es, info: i, constrainClass: cc }, p, cPath, env) => {
-            let mut resultSpec: Arc<Absyn::ElementSpec> = Arc::new(<Absyn::ElementSpec as ::std::default::Default>::default());
+            let mut resultSpec: Arc<Absyn::ElementSpec>;
             let mut cc = (*cc).clone();
             cc = refactorConstrainClass(cc.clone(), p.clone(), cPath.clone(), env.clone())?;
             resultSpec = refactorGraphAnnInElSpec(es.clone(), p.clone(), cPath.clone(), env.clone());
@@ -340,7 +340,7 @@ fn refactorConstrainClass(mut inCC: Option<Arc<Absyn::ConstrainClass>>, mut inPr
     let mut outCC: Option<Arc<Absyn::ConstrainClass>>;
     outCC = (::match_deref::match_deref! { match &((inCC.clone(), inProgram.clone(), classPath.clone(), inClassEnv.clone())) {
         (Some(Deref @ Absyn::ConstrainClass { elementSpec: es, comment: com }), p, cPath, env) => {
-            let mut resultSpec: Arc<Absyn::ElementSpec> = Arc::new(<Absyn::ElementSpec as ::std::default::Default>::default());
+            let mut resultSpec: Arc<Absyn::ElementSpec>;
             resultSpec = refactorGraphAnnInElSpec(es.clone(), p.clone(), cPath.clone(), env.clone());
             Some(Arc::new(Absyn::ConstrainClass { elementSpec: resultSpec.clone(), comment: com.clone() }))
         },
@@ -359,7 +359,7 @@ fn refactorGraphAnnInElSpec(mut inSpec: Arc<Absyn::ElementSpec>, mut inProgram: 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::ElementSpec::CLASSDEF { replaceable_: r, class_: cl }, p, cPath, _) => {
-                    let mut cl1: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
+                    let mut cl1: Arc<Absyn::Class>;
                     cl1 = refactorGraphAnnInClass(cl.clone(), p.clone(), cPath.clone())?;
                     Ok(Arc::new(Absyn::ElementSpec::CLASSDEF { replaceable_: r.clone(), class_: cl1.clone() }))
                 }
@@ -369,8 +369,8 @@ fn refactorGraphAnnInElSpec(mut inSpec: Arc<Absyn::ElementSpec>, mut inProgram: 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::ElementSpec::COMPONENTS { attributes: at, typeSpec: Deref @ Absyn::TypeSpec::TPATH { path, arrayDim: z }, components: Deref @ metamodelica::List::Cons { head: firstComp, tail: restCompList } }, p, cPath, env) => {
-                    let mut resultComp: Arc<Absyn::ComponentItem> = Arc::new(<Absyn::ComponentItem as ::std::default::Default>::default());
-                    let mut resCompList: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>> = metamodelica::nil();
+                    let mut resultComp: Arc<Absyn::ComponentItem>;
+                    let mut resCompList: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>;
                     let mut at = (*at).clone();
                     let mut path = (*path).clone();
                     let mut z = (*z).clone();
@@ -443,10 +443,10 @@ fn transformComponentAnnList(mut inArgs: Arc<metamodelica::List<Arc<Absyn::Eleme
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { finalPrefix: fi, eachPrefix: e, path: Deref @ Absyn::Path::IDENT { name: Deref @ "extent" }, modification: Some(Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::EQMOD { exp: Deref @ Absyn::Exp::MATRIX { matrix: Deref @ metamodelica::List::Cons { head: Deref @ metamodelica::List::Cons { head: x1, tail: Deref @ metamodelica::List::Cons { head: y1, tail: Deref @ metamodelica::List::Nil } }, tail: Deref @ metamodelica::List::Cons { head: Deref @ metamodelica::List::Cons { head: x2, tail: Deref @ metamodelica::List::Cons { head: y2, tail: Deref @ metamodelica::List::Nil } }, tail: Deref @ metamodelica::List::Nil } } }, .. }, .. }), comment: com, info }, tail: rest }, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Component", tail: _ }, res, cPath, path, p, env) => {
-                    let mut trans: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
-                    let mut iconTrans: Arc<Absyn::ElementArg> = Arc::new(<Absyn::ElementArg as ::std::default::Default>::default());
-                    let mut diagramTrans: Arc<Absyn::ElementArg> = Arc::new(<Absyn::ElementArg as ::std::default::Default>::default());
-                    let mut rot: Option<metamodelica::Real> = None;
+                    let mut trans: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
+                    let mut iconTrans: Arc<Absyn::ElementArg>;
+                    let mut diagramTrans: Arc<Absyn::ElementArg>;
+                    let mut rot: Option<metamodelica::Real>;
                     let mut res = (*res).clone();
                     let Absyn::R_CONNECTOR { .. } = (getRestrictionFromPath(cPath.clone(), path.clone(), p.clone(), env.clone())?) else { bail!("pattern mismatch") };
                     rot = getRotationDegree(listAppend(res.clone(), rest.clone()));
@@ -463,8 +463,8 @@ fn transformComponentAnnList(mut inArgs: Arc<metamodelica::List<Arc<Absyn::Eleme
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { finalPrefix: fi, eachPrefix: e, path: Deref @ Absyn::Path::IDENT { name: Deref @ "extent" }, modification: Some(Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::EQMOD { exp: Deref @ Absyn::Exp::MATRIX { matrix: Deref @ metamodelica::List::Cons { head: Deref @ metamodelica::List::Cons { head: x1, tail: Deref @ metamodelica::List::Cons { head: y1, tail: Deref @ metamodelica::List::Nil } }, tail: Deref @ metamodelica::List::Cons { head: Deref @ metamodelica::List::Cons { head: x2, tail: Deref @ metamodelica::List::Cons { head: y2, tail: Deref @ metamodelica::List::Nil } }, tail: Deref @ metamodelica::List::Nil } } }, .. }, .. }), comment: com, info }, tail: rest }, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Component", tail: _ }, res, cPath, path, p, env) => {
-                    let mut diagramTrans: Arc<Absyn::ElementArg> = Arc::new(<Absyn::ElementArg as ::std::default::Default>::default());
-                    let mut rot: Option<metamodelica::Real> = None;
+                    let mut diagramTrans: Arc<Absyn::ElementArg>;
+                    let mut rot: Option<metamodelica::Real>;
                     let mut res = (*res).clone();
                     rot = getRotationDegree(listAppend(res.clone(), rest.clone()));
                     diagramTrans = getDiagramTransformation(x1.clone(), y1.clone(), x2.clone(), y2.clone(), rot.clone(), cPath.clone(), path.clone(), p.clone(), env.clone())?;
@@ -498,9 +498,9 @@ fn getRestrictionFromPath(mut classPath: Arc<Absyn::Path>, mut inPath: Arc<Absyn
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cPath, path, p, _) => {
-                    let mut cdef: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
-                    let mut fullPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-                    let mut restriction: Absyn::Restriction = Absyn::Restriction::R_BLOCK;
+                    let mut cdef: Arc<Absyn::Class>;
+                    let mut fullPath: Arc<Absyn::Path>;
+                    let mut restriction: Absyn::Restriction;
                     fullPath = fixPaths(cPath.clone(), path.clone());
                     cdef = ProgramUtil::getPathedClassInProgram(fullPath.clone(), p.clone(), false, false)?;
                     restriction = getRestrictionInClass(cdef.clone())?;
@@ -512,9 +512,9 @@ fn getRestrictionFromPath(mut classPath: Arc<Absyn::Path>, mut inPath: Arc<Absyn
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, path, p, env) => {
-                    let mut cdef: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
-                    let mut fullPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-                    let mut restriction: Absyn::Restriction = Absyn::Restriction::R_BLOCK;
+                    let mut cdef: Arc<Absyn::Class>;
+                    let mut fullPath: Arc<Absyn::Path>;
+                    let mut restriction: Absyn::Restriction;
                     (_, fullPath) = Interactive::mkFullyQual(env.clone(), path.clone(), false)?;
                     cdef = ProgramUtil::getPathedClassInProgram(fullPath.clone(), p.clone(), false, false)?;
                     restriction = getRestrictionInClass(cdef.clone())?;
@@ -562,7 +562,7 @@ fn getRotationDegree(mut inList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "rotation" }, modification: Some(Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::EQMOD { exp: ex, .. }, .. }), .. }, tail: _ } => {
-                    let mut rot: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+                    let mut rot: metamodelica::Real;
                     rot = getValueFromExp(ex.clone())?;
                     Ok(Some(rot.clone()))
                 }
@@ -572,7 +572,7 @@ fn getRotationDegree(mut inList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
-                    let mut res: Option<metamodelica::Real> = None;
+                    let mut res: Option<metamodelica::Real>;
                     res = getRotationDegree(rest.clone());
                     Ok(res.clone())
                 }
@@ -588,20 +588,20 @@ fn getIconTransformation(mut ax1: Arc<Absyn::Exp>, mut ay1: Arc<Absyn::Exp>, mut
     let mut iconTrans: Arc<Absyn::ElementArg>;
     iconTrans = (::match_deref::match_deref! { match &((ax1.clone(), ay1.clone(), ax2.clone(), ay2.clone(), inRotation.clone(), classPath.clone(), inPath.clone(), inProg.clone(), inClassEnv.clone())) {
         (x1, y1, x2, y2, None, cPath, path, p, env) => {
-            let mut rcx1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut rcy1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut rcx2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut rcy2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut rax1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut ray1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut rax2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut ray2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut scale: Arc<Absyn::ElementArg> = Arc::new(<Absyn::ElementArg as ::std::default::Default>::default());
-            let mut aspectRatio: Arc<Absyn::ElementArg> = Arc::new(<Absyn::ElementArg as ::std::default::Default>::default());
-            let mut x: Arc<Absyn::ElementArg> = Arc::new(<Absyn::ElementArg as ::std::default::Default>::default());
-            let mut y: Arc<Absyn::ElementArg> = Arc::new(<Absyn::ElementArg as ::std::default::Default>::default());
-            let mut flipHorizontal: Arc<Absyn::ElementArg> = Arc::new(<Absyn::ElementArg as ::std::default::Default>::default());
-            let mut flipVertical: Arc<Absyn::ElementArg> = Arc::new(<Absyn::ElementArg as ::std::default::Default>::default());
+            let mut rcx1: metamodelica::Real;
+            let mut rcy1: metamodelica::Real;
+            let mut rcx2: metamodelica::Real;
+            let mut rcy2: metamodelica::Real;
+            let mut rax1: metamodelica::Real;
+            let mut ray1: metamodelica::Real;
+            let mut rax2: metamodelica::Real;
+            let mut ray2: metamodelica::Real;
+            let mut scale: Arc<Absyn::ElementArg>;
+            let mut aspectRatio: Arc<Absyn::ElementArg>;
+            let mut x: Arc<Absyn::ElementArg>;
+            let mut y: Arc<Absyn::ElementArg>;
+            let mut flipHorizontal: Arc<Absyn::ElementArg>;
+            let mut flipVertical: Arc<Absyn::ElementArg>;
             let mut x1 = (*x1).clone();
             let mut y1 = (*y1).clone();
             let mut x2 = (*x2).clone();
@@ -624,21 +624,21 @@ fn getIconTransformation(mut ax1: Arc<Absyn::Exp>, mut ay1: Arc<Absyn::Exp>, mut
             Arc::new(Absyn::ElementArg::MODIFICATION { finalPrefix: false, eachPrefix: openmodelica_ast::Absyn::Each::NON_EACH, path: Arc::new(Absyn::Path::IDENT { name: (literal!("iconTransformation")).clone() }), modification: Some(Arc::new(Absyn::Modification { elementArgLst: list![x.clone(), y.clone(), scale.clone(), aspectRatio.clone(), flipHorizontal.clone(), flipVertical.clone()], eqMod: openmodelica_ast::Absyn::EqMod::interned_NOMOD() })), comment: None, info: Absyn::dummyInfo.clone() })
         },
         (x1, y1, x2, y2, Some(rot), cPath, path, p, env) => {
-            let mut rcx1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut rcy1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut rcx2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut rcy2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut rax1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut ray1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut rax2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut ray2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut scale: Arc<Absyn::ElementArg> = Arc::new(<Absyn::ElementArg as ::std::default::Default>::default());
-            let mut aspectRatio: Arc<Absyn::ElementArg> = Arc::new(<Absyn::ElementArg as ::std::default::Default>::default());
-            let mut x: Arc<Absyn::ElementArg> = Arc::new(<Absyn::ElementArg as ::std::default::Default>::default());
-            let mut y: Arc<Absyn::ElementArg> = Arc::new(<Absyn::ElementArg as ::std::default::Default>::default());
-            let mut flipHorizontal: Arc<Absyn::ElementArg> = Arc::new(<Absyn::ElementArg as ::std::default::Default>::default());
-            let mut flipVertical: Arc<Absyn::ElementArg> = Arc::new(<Absyn::ElementArg as ::std::default::Default>::default());
-            let mut rotation: Arc<Absyn::ElementArg> = Arc::new(<Absyn::ElementArg as ::std::default::Default>::default());
+            let mut rcx1: metamodelica::Real;
+            let mut rcy1: metamodelica::Real;
+            let mut rcx2: metamodelica::Real;
+            let mut rcy2: metamodelica::Real;
+            let mut rax1: metamodelica::Real;
+            let mut ray1: metamodelica::Real;
+            let mut rax2: metamodelica::Real;
+            let mut ray2: metamodelica::Real;
+            let mut scale: Arc<Absyn::ElementArg>;
+            let mut aspectRatio: Arc<Absyn::ElementArg>;
+            let mut x: Arc<Absyn::ElementArg>;
+            let mut y: Arc<Absyn::ElementArg>;
+            let mut flipHorizontal: Arc<Absyn::ElementArg>;
+            let mut flipVertical: Arc<Absyn::ElementArg>;
+            let mut rotation: Arc<Absyn::ElementArg>;
             let mut x1 = (*x1).clone();
             let mut y1 = (*y1).clone();
             let mut x2 = (*x2).clone();
@@ -670,20 +670,20 @@ fn getDiagramTransformation(mut ax1: Arc<Absyn::Exp>, mut ay1: Arc<Absyn::Exp>, 
     let mut trans: Arc<Absyn::ElementArg>;
     trans = (::match_deref::match_deref! { match &((ax1.clone(), ay1.clone(), ax2.clone(), ay2.clone(), inRotation.clone(), classPath.clone(), inPath.clone(), inProg.clone(), inClassEnv.clone())) {
         (x1, y1, x2, y2, None, cPath, path, p, env) => {
-            let mut rcx1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut rcy1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut rcx2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut rcy2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut rax1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut ray1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut rax2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut ray2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut scale: Arc<Absyn::ElementArg> = Arc::new(<Absyn::ElementArg as ::std::default::Default>::default());
-            let mut aspectRatio: Arc<Absyn::ElementArg> = Arc::new(<Absyn::ElementArg as ::std::default::Default>::default());
-            let mut x: Arc<Absyn::ElementArg> = Arc::new(<Absyn::ElementArg as ::std::default::Default>::default());
-            let mut y: Arc<Absyn::ElementArg> = Arc::new(<Absyn::ElementArg as ::std::default::Default>::default());
-            let mut flipHorizontal: Arc<Absyn::ElementArg> = Arc::new(<Absyn::ElementArg as ::std::default::Default>::default());
-            let mut flipVertical: Arc<Absyn::ElementArg> = Arc::new(<Absyn::ElementArg as ::std::default::Default>::default());
+            let mut rcx1: metamodelica::Real;
+            let mut rcy1: metamodelica::Real;
+            let mut rcx2: metamodelica::Real;
+            let mut rcy2: metamodelica::Real;
+            let mut rax1: metamodelica::Real;
+            let mut ray1: metamodelica::Real;
+            let mut rax2: metamodelica::Real;
+            let mut ray2: metamodelica::Real;
+            let mut scale: Arc<Absyn::ElementArg>;
+            let mut aspectRatio: Arc<Absyn::ElementArg>;
+            let mut x: Arc<Absyn::ElementArg>;
+            let mut y: Arc<Absyn::ElementArg>;
+            let mut flipHorizontal: Arc<Absyn::ElementArg>;
+            let mut flipVertical: Arc<Absyn::ElementArg>;
             let mut x1 = (*x1).clone();
             let mut y1 = (*y1).clone();
             let mut x2 = (*x2).clone();
@@ -706,21 +706,21 @@ fn getDiagramTransformation(mut ax1: Arc<Absyn::Exp>, mut ay1: Arc<Absyn::Exp>, 
             Arc::new(Absyn::ElementArg::MODIFICATION { finalPrefix: false, eachPrefix: openmodelica_ast::Absyn::Each::NON_EACH, path: Arc::new(Absyn::Path::IDENT { name: (literal!("transformation")).clone() }), modification: Some(Arc::new(Absyn::Modification { elementArgLst: list![x.clone(), y.clone(), scale.clone(), aspectRatio.clone(), flipHorizontal.clone(), flipVertical.clone()], eqMod: openmodelica_ast::Absyn::EqMod::interned_NOMOD() })), comment: None, info: Absyn::dummyInfo.clone() })
         },
         (x1, y1, x2, y2, Some(rot), cPath, path, p, env) => {
-            let mut rcx1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut rcy1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut rcx2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut rcy2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut rax1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut ray1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut rax2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut ray2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut scale: Arc<Absyn::ElementArg> = Arc::new(<Absyn::ElementArg as ::std::default::Default>::default());
-            let mut aspectRatio: Arc<Absyn::ElementArg> = Arc::new(<Absyn::ElementArg as ::std::default::Default>::default());
-            let mut x: Arc<Absyn::ElementArg> = Arc::new(<Absyn::ElementArg as ::std::default::Default>::default());
-            let mut y: Arc<Absyn::ElementArg> = Arc::new(<Absyn::ElementArg as ::std::default::Default>::default());
-            let mut flipHorizontal: Arc<Absyn::ElementArg> = Arc::new(<Absyn::ElementArg as ::std::default::Default>::default());
-            let mut flipVertical: Arc<Absyn::ElementArg> = Arc::new(<Absyn::ElementArg as ::std::default::Default>::default());
-            let mut rotation: Arc<Absyn::ElementArg> = Arc::new(<Absyn::ElementArg as ::std::default::Default>::default());
+            let mut rcx1: metamodelica::Real;
+            let mut rcy1: metamodelica::Real;
+            let mut rcx2: metamodelica::Real;
+            let mut rcy2: metamodelica::Real;
+            let mut rax1: metamodelica::Real;
+            let mut ray1: metamodelica::Real;
+            let mut rax2: metamodelica::Real;
+            let mut ray2: metamodelica::Real;
+            let mut scale: Arc<Absyn::ElementArg>;
+            let mut aspectRatio: Arc<Absyn::ElementArg>;
+            let mut x: Arc<Absyn::ElementArg>;
+            let mut y: Arc<Absyn::ElementArg>;
+            let mut flipHorizontal: Arc<Absyn::ElementArg>;
+            let mut flipVertical: Arc<Absyn::ElementArg>;
+            let mut rotation: Arc<Absyn::ElementArg>;
             let mut x1 = (*x1).clone();
             let mut y1 = (*y1).clone();
             let mut x2 = (*x2).clone();
@@ -752,8 +752,8 @@ fn getAspectRatioAnn(mut x1: metamodelica::Real, mut x2: metamodelica::Real, mut
     let mut aspectRatio: Arc<Absyn::ElementArg>;
     aspectRatio = (match (x1.clone(), x2.clone(), y1.clone(), y2.clone(), cx1.clone(), cy1.clone(), cx2.clone(), cy2.clone()) {
         (mut rx1, mut rx2, mut ry1, mut ry2, mut crx1, mut cry1, mut crx2, mut cry2) => {
-            let mut aspect: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut s: ArcStr = arcstr::literal!("");
+            let mut aspect: metamodelica::Real;
+            let mut s: ArcStr;
             aspect = realAbs(ry2.clone() - ry1.clone()) * realAbs(cry2.clone() - cry1.clone()) / (realAbs(rx2.clone() - rx1.clone()) * realAbs(crx2.clone() - crx1.clone()));
             s = (realString(aspect.clone())).clone();
             Arc::new(Absyn::ElementArg::MODIFICATION { finalPrefix: false, eachPrefix: openmodelica_ast::Absyn::Each::NON_EACH, path: Arc::new(Absyn::Path::IDENT { name: (literal!("aspectRatio")).clone() }), modification: Some(Arc::new(Absyn::Modification { elementArgLst: metamodelica::nil(), eqMod: Arc::new(Absyn::EqMod::EQMOD { exp: Arc::new(Absyn::Exp::REAL { value: (s.clone()).clone() }), info: Absyn::dummyInfo.clone() }) })), comment: None, info: Absyn::dummyInfo.clone() })
@@ -766,8 +766,8 @@ fn getXYAnn(mut val1: metamodelica::Real, mut val2: metamodelica::Real, mut name
     let mut res: Arc<Absyn::ElementArg>;
     res = (match (val1.clone(), val2.clone(), name.clone()) {
         (mut x1, mut x2, mut n) => {
-            let mut value: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut s: ArcStr = arcstr::literal!("");
+            let mut value: metamodelica::Real;
+            let mut s: ArcStr;
             value = (x1.clone() + x2.clone()) / metamodelica::OrderedFloat(2.0_f64);
             s = (realString(value.clone())).clone();
             Arc::new(Absyn::ElementArg::MODIFICATION { finalPrefix: false, eachPrefix: openmodelica_ast::Absyn::Each::NON_EACH, path: Arc::new(Absyn::Path::IDENT { name: (n.clone()).clone() }), modification: Some(Arc::new(Absyn::Modification { elementArgLst: metamodelica::nil(), eqMod: Arc::new(Absyn::EqMod::EQMOD { exp: Arc::new(Absyn::Exp::REAL { value: (s.clone()).clone() }), info: Absyn::dummyInfo.clone() }) })), comment: None, info: Absyn::dummyInfo.clone() })
@@ -780,8 +780,8 @@ fn getScaleAnn(mut ax1: metamodelica::Real, mut ax2: metamodelica::Real, mut cx1
     let mut scale: Arc<Absyn::ElementArg>;
     scale = (match (ax1.clone(), ax2.clone(), cx1.clone(), cx2.clone()) {
         (mut arx1, mut arx2, mut crx1, mut crx2) => {
-            let mut scaleFac: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut s: ArcStr = arcstr::literal!("");
+            let mut scaleFac: metamodelica::Real;
+            let mut s: ArcStr;
             scaleFac = realAbs(arx1.clone() - arx2.clone()) / realAbs(crx1.clone() - crx2.clone());
             s = (realString(scaleFac.clone())).clone();
             Arc::new(Absyn::ElementArg::MODIFICATION { finalPrefix: false, eachPrefix: openmodelica_ast::Absyn::Each::NON_EACH, path: Arc::new(Absyn::Path::IDENT { name: (literal!("scale")).clone() }), modification: Some(Arc::new(Absyn::Modification { elementArgLst: metamodelica::nil(), eqMod: Arc::new(Absyn::EqMod::EQMOD { exp: Arc::new(Absyn::Exp::REAL { value: (s.clone()).clone() }), info: Absyn::dummyInfo.clone() }) })), comment: None, info: Absyn::dummyInfo.clone() })
@@ -818,12 +818,12 @@ fn getCoordsInPath(mut classPath: Arc<Absyn::Path>, mut inPath: Arc<Absyn::Path>
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cPath, path, p, context, _) => {
-                    let mut cdef: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
-                    let mut x1: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
-                    let mut y1: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
-                    let mut x2: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
-                    let mut y2: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
-                    let mut fullPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+                    let mut cdef: Arc<Absyn::Class>;
+                    let mut x1: Arc<Absyn::Exp>;
+                    let mut y1: Arc<Absyn::Exp>;
+                    let mut x2: Arc<Absyn::Exp>;
+                    let mut y2: Arc<Absyn::Exp>;
+                    let mut fullPath: Arc<Absyn::Path>;
                     fullPath = fixPaths(cPath.clone(), path.clone());
                     cdef = ProgramUtil::getPathedClassInProgram(fullPath.clone(), p.clone(), false, false)?;
                     (x1, y1, x2, y2) = getCoordsInClass(cdef.clone(), context.clone())?;
@@ -835,12 +835,12 @@ fn getCoordsInPath(mut classPath: Arc<Absyn::Path>, mut inPath: Arc<Absyn::Path>
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, path, p, context, env) => {
-                    let mut cdef: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
-                    let mut x1: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
-                    let mut y1: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
-                    let mut x2: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
-                    let mut y2: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
-                    let mut fullPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+                    let mut cdef: Arc<Absyn::Class>;
+                    let mut x1: Arc<Absyn::Exp>;
+                    let mut y1: Arc<Absyn::Exp>;
+                    let mut x2: Arc<Absyn::Exp>;
+                    let mut y2: Arc<Absyn::Exp>;
+                    let mut fullPath: Arc<Absyn::Path>;
                     (_, fullPath) = Interactive::mkFullyQual(env.clone(), path.clone(), false)?;
                     cdef = ProgramUtil::getPathedClassInProgram(fullPath.clone(), p.clone(), false, false)?;
                     (x1, y1, x2, y2) = getCoordsInClass(cdef.clone(), context.clone())?;
@@ -869,7 +869,7 @@ fn getCoordsInClass(mut inClass: Arc<Absyn::Class>, mut contextToGetCoordsFrom: 
     let mut y2: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     (x1, y1, x2, y2) = (::match_deref::match_deref! { match &((inClass.clone(), contextToGetCoordsFrom.clone())) {
         (Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::PARTS { ann, .. }, .. }, context) => {
-            let mut annlst: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
+            let mut annlst: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
             annlst = List::flatten(List::map(ann.clone(), (std::sync::Arc::new(AbsynUtil::annotationToElementArgs) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Annotation>) -> Result<Arc<metamodelica::List<Arc<Absyn::ElementArg>>>> + 'static>))?)?;
             (x1, y1, x2, y2) = getCoordsInAnnList(annlst.clone(), context.clone())?;
             (x1.clone(), y1.clone(), x2.clone(), y2.clone())
@@ -1052,7 +1052,7 @@ fn transformConnectAnnList(mut inArgs: Arc<metamodelica::List<Arc<Absyn::Element
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { finalPrefix: fi, eachPrefix: e, path: Deref @ Absyn::Path::IDENT { name: Deref @ "points" }, modification: Some(Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::EQMOD { exp: Deref @ Absyn::Exp::MATRIX { matrix: expMatrix }, info }, .. }), comment: com, info: mod_info }, tail: rest }, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Connect", tail: _ }, res, p) => {
-                    let mut expLst: Arc<metamodelica::List<Arc<Absyn::Exp>>> = metamodelica::nil();
+                    let mut expLst: Arc<metamodelica::List<Arc<Absyn::Exp>>>;
                     let mut context = (*context).clone();
                     let mut res = (*res).clone();
                     context = addContext(context.clone(), (literal!("Line")).clone());
@@ -1066,7 +1066,7 @@ fn transformConnectAnnList(mut inArgs: Arc<metamodelica::List<Arc<Absyn::Element
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { finalPrefix: fi, eachPrefix: e, path: Deref @ Absyn::Path::IDENT { name: Deref @ "points" }, modification: Some(Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::EQMOD { exp: Deref @ Absyn::Exp::MATRIX { matrix: expMatrix }, info }, .. }), comment: com, info: mod_info }, tail: rest }, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Line", tail: _ }, res, p) => {
-                    let mut expLst: Arc<metamodelica::List<Arc<Absyn::Exp>>> = metamodelica::nil();
+                    let mut expLst: Arc<metamodelica::List<Arc<Absyn::Exp>>>;
                     let mut res = (*res).clone();
                     expLst = List::map(expMatrix.clone(), (std::sync::Arc::new(fnptr!(matrixToArray, Arc<metamodelica::List<Arc<Absyn::Exp>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Absyn::Exp>>>) -> Result<Arc<Absyn::Exp>> + 'static>))?;
                     res = transformConnectAnnList(rest.clone(), context.clone(), res.clone(), p.clone())?;
@@ -1108,9 +1108,9 @@ fn transformConnectAnnList(mut inArgs: Arc<metamodelica::List<Arc<Absyn::Element
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { finalPrefix: fi, eachPrefix: e, path: Deref @ Absyn::Path::IDENT { name: Deref @ "color" }, modification: Some(Deref @ Absyn::Modification { elementArgLst: args, eqMod: Deref @ Absyn::EqMod::EQMOD { exp: Deref @ Absyn::Exp::INTEGER { value: x }, info } }), comment: com, info: mod_info }, tail: rest }, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Line", tail: _ }, res, p) => {
-                    let mut color1: i32 = 0;
-                    let mut color2: i32 = 0;
-                    let mut color3: i32 = 0;
+                    let mut color1: i32;
+                    let mut color2: i32;
+                    let mut color3: i32;
                     let mut res = (*res).clone();
                     (color1, color2, color3) = getMappedColor(x.clone())?;
                     res = transformConnectAnnList(rest.clone(), context.clone(), res.clone(), p.clone())?;
@@ -1122,7 +1122,7 @@ fn transformConnectAnnList(mut inArgs: Arc<metamodelica::List<Arc<Absyn::Element
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { finalPrefix: fi, eachPrefix: e, path: Deref @ Absyn::Path::IDENT { name: Deref @ "pattern" }, modification: Some(Deref @ Absyn::Modification { elementArgLst: args, eqMod: Deref @ Absyn::EqMod::EQMOD { exp: Deref @ Absyn::Exp::INTEGER { value: x }, .. } }), comment: com, info: mod_info }, tail: rest }, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Line", tail: _ }, res, p) => {
-                    let mut val: ArcStr = arcstr::literal!("");
+                    let mut val: ArcStr;
                     let mut res = (*res).clone();
                     val = ((patternMapList.clone()).get(x.clone() + 1)?).clone();
                     res = transformConnectAnnList(rest.clone(), context.clone(), res.clone(), p.clone())?;
@@ -1134,8 +1134,8 @@ fn transformConnectAnnList(mut inArgs: Arc<metamodelica::List<Arc<Absyn::Element
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { finalPrefix: fi, eachPrefix: e, path: Deref @ Absyn::Path::IDENT { name: Deref @ "thickness" }, modification: Some(Deref @ Absyn::Modification { elementArgLst: args, eqMod: Deref @ Absyn::EqMod::EQMOD { exp: Deref @ Absyn::Exp::INTEGER { value: x }, .. } }), comment: com, info: mod_info }, tail: rest }, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Line", tail: _ }, res, p) => {
-                    let mut s: ArcStr = arcstr::literal!("");
-                    let mut thick: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+                    let mut s: ArcStr;
+                    let mut thick: metamodelica::Real;
                     let mut res = (*res).clone();
                     thick = (thicknessMapList.clone()).get(x.clone())?;
                     res = transformConnectAnnList(rest.clone(), context.clone(), res.clone(), p.clone())?;
@@ -1158,9 +1158,9 @@ fn transformConnectAnnList(mut inArgs: Arc<metamodelica::List<Arc<Absyn::Element
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { finalPrefix: fi, eachPrefix: e, path: Deref @ Absyn::Path::IDENT { name: Deref @ "arrow" }, modification: Some(Deref @ Absyn::Modification { elementArgLst: args, eqMod: Deref @ Absyn::EqMod::EQMOD { exp: Deref @ Absyn::Exp::INTEGER { value: x }, .. } }), comment: com, info: mod_info }, tail: rest }, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Line", tail: _ }, res, p) => {
-                    let mut val1: ArcStr = arcstr::literal!("");
-                    let mut val2: ArcStr = arcstr::literal!("");
-                    let mut arrows: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+                    let mut val1: ArcStr;
+                    let mut val2: ArcStr;
+                    let mut arrows: Arc<metamodelica::List<ArcStr>>;
                     let mut res = (*res).clone();
                     arrows = (arrowMapList.clone()).get(x.clone() + 1)?;
                     val1 = ((arrows.clone()).get(1)?).clone();
@@ -1201,8 +1201,8 @@ fn transformClassAnnList(mut inArgs: Arc<metamodelica::List<Arc<Absyn::ElementAr
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { finalPrefix: fi, eachPrefix: e, path: Deref @ Absyn::Path::IDENT { name: Deref @ "Icon" }, modification: Some(Deref @ Absyn::Modification { elementArgLst: args, eqMod }), comment: com, info: mod_info }, tail: rest }, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Class", tail: c }, res, p) => {
-                    let mut argRes: Arc<metamodelica::List<Arc<Absyn::Exp>>> = metamodelica::nil();
-                    let mut coord: Arc<Absyn::ElementArg> = Arc::new(<Absyn::ElementArg as ::std::default::Default>::default());
+                    let mut argRes: Arc<metamodelica::List<Arc<Absyn::Exp>>>;
+                    let mut coord: Arc<Absyn::ElementArg>;
                     let mut c = (*c).clone();
                     let mut res = (*res).clone();
                     c = addContext(context.clone(), (literal!("Layer")).clone());
@@ -1217,8 +1217,8 @@ fn transformClassAnnList(mut inArgs: Arc<metamodelica::List<Arc<Absyn::ElementAr
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { finalPrefix: fi, eachPrefix: e, path: Deref @ Absyn::Path::IDENT { name: Deref @ "Diagram" }, modification: Some(Deref @ Absyn::Modification { elementArgLst: args, eqMod }), comment: com, info: mod_info }, tail: rest }, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Class", tail: c }, res, p) => {
-                    let mut argRes: Arc<metamodelica::List<Arc<Absyn::Exp>>> = metamodelica::nil();
-                    let mut coord: Arc<Absyn::ElementArg> = Arc::new(<Absyn::ElementArg as ::std::default::Default>::default());
+                    let mut argRes: Arc<metamodelica::List<Arc<Absyn::Exp>>>;
+                    let mut coord: Arc<Absyn::ElementArg>;
                     let mut c = (*c).clone();
                     let mut res = (*res).clone();
                     c = addContext(context.clone(), (literal!("Layer")).clone());
@@ -1246,7 +1246,7 @@ fn transformClassAnnList(mut inArgs: Arc<metamodelica::List<Arc<Absyn::ElementAr
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { finalPrefix: fi, eachPrefix: e, path: Deref @ Absyn::Path::IDENT { name: Deref @ "Coordsys" }, modification: Some(Deref @ Absyn::Modification { elementArgLst: args, eqMod }), comment: com, info: mod_info }, tail: rest }, context, res, p) => {
-                    let mut coord: Arc<Absyn::ElementArg> = Arc::new(<Absyn::ElementArg as ::std::default::Default>::default());
+                    let mut coord: Arc<Absyn::ElementArg>;
                     let mut res = (*res).clone();
                     res = metamodelica::cons(Arc::new(Absyn::ElementArg::MODIFICATION { finalPrefix: fi.clone(), eachPrefix: e.clone(), path: Arc::new(Absyn::Path::IDENT { name: (literal!("Coordsys")).clone() }), modification: Some(Arc::new(Absyn::Modification { elementArgLst: args.clone(), eqMod: eqMod.clone() })), comment: com.clone(), info: mod_info.clone() }), res.clone());
                     coord = getCoordSysAnn(listAppend(res.clone(), rest.clone()), p.clone())?;
@@ -1337,7 +1337,7 @@ fn isLayerAnnInList(mut inList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>)
             return true
         },
         Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
-            let mut res: bool = false;
+            let mut res: bool;
             { inList = rest.clone(); continue '__tco; }
         },
         _ => unreachable!("tail-call lowered match: no arm matched"),
@@ -1370,7 +1370,7 @@ fn getCoordSysAnn(mut inArgs: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, m
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: _, tail: rest }, p) => {
-                    let mut res: Arc<Absyn::ElementArg> = Arc::new(<Absyn::ElementArg as ::std::default::Default>::default());
+                    let mut res: Arc<Absyn::ElementArg>;
                     res = getCoordSysAnn(rest.clone(), p.clone())?;
                     Ok(res.clone())
                 }
@@ -1397,8 +1397,8 @@ fn transAnnLstToCalls(mut inArgs: Arc<metamodelica::List<Arc<Absyn::ElementArg>>
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "Line" }, modification: Some(Deref @ Absyn::Modification { elementArgLst: args, .. }), .. }, tail: rest }, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Layer", tail: c }) => {
-                    let mut restRes: Arc<metamodelica::List<Arc<Absyn::Exp>>> = metamodelica::nil();
-                    let mut argRes: Arc<metamodelica::List<Arc<Absyn::NamedArg>>> = metamodelica::nil();
+                    let mut restRes: Arc<metamodelica::List<Arc<Absyn::Exp>>>;
+                    let mut argRes: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>;
                     let mut c = (*c).clone();
                     c = addContext(context.clone(), (literal!("Line")).clone());
                     argRes = transAnnLstToNamedArgs(args.clone(), c.clone())?;
@@ -1415,8 +1415,8 @@ fn transAnnLstToCalls(mut inArgs: Arc<metamodelica::List<Arc<Absyn::ElementArg>>
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: n }, modification: Some(Deref @ Absyn::Modification { elementArgLst: args, .. }), .. }, tail: rest }, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Layer", tail: c }) => {
-                    let mut restRes: Arc<metamodelica::List<Arc<Absyn::Exp>>> = metamodelica::nil();
-                    let mut argRes: Arc<metamodelica::List<Arc<Absyn::NamedArg>>> = metamodelica::nil();
+                    let mut restRes: Arc<metamodelica::List<Arc<Absyn::Exp>>>;
+                    let mut argRes: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>;
                     let mut c = (*c).clone();
                     c = addContext(context.clone(), (n.clone()).clone());
                     let true = (isLinebasedGraphic(c.clone())) else { bail!("pattern mismatch") };
@@ -1434,8 +1434,8 @@ fn transAnnLstToCalls(mut inArgs: Arc<metamodelica::List<Arc<Absyn::ElementArg>>
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: n }, modification: Some(Deref @ Absyn::Modification { elementArgLst: args, .. }), .. }, tail: rest }, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Layer", tail: c }) => {
-                    let mut restRes: Arc<metamodelica::List<Arc<Absyn::Exp>>> = metamodelica::nil();
-                    let mut argRes: Arc<metamodelica::List<Arc<Absyn::NamedArg>>> = metamodelica::nil();
+                    let mut restRes: Arc<metamodelica::List<Arc<Absyn::Exp>>>;
+                    let mut argRes: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>;
                     let mut c = (*c).clone();
                     c = addContext(context.clone(), (n.clone()).clone());
                     argRes = transAnnLstToNamedArgs(args.clone(), c.clone())?;
@@ -1448,7 +1448,7 @@ fn transAnnLstToCalls(mut inArgs: Arc<metamodelica::List<Arc<Absyn::ElementArg>>
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: _, tail: rest }, context) => {
-                    let mut res: Arc<metamodelica::List<Arc<Absyn::Exp>>> = metamodelica::nil();
+                    let mut res: Arc<metamodelica::List<Arc<Absyn::Exp>>>;
                     res = transAnnLstToCalls(rest.clone(), context.clone())?;
                     Ok(res.clone())
                 }
@@ -1487,7 +1487,7 @@ fn transAnnLstToNamedArgs(mut inArgs: Arc<metamodelica::List<Arc<Absyn::ElementA
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "extent" }, modification: Some(Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::EQMOD { exp: Deref @ Absyn::Exp::MATRIX { matrix: Deref @ metamodelica::List::Cons { head: Deref @ metamodelica::List::Cons { head: x1, tail: Deref @ metamodelica::List::Cons { head: y1, tail: Deref @ metamodelica::List::Nil } }, tail: Deref @ metamodelica::List::Cons { head: Deref @ metamodelica::List::Cons { head: x2, tail: Deref @ metamodelica::List::Cons { head: y2, tail: Deref @ metamodelica::List::Nil } }, tail: Deref @ metamodelica::List::Nil } } }, .. }, .. }), .. }, tail: rest }, context) => {
-                    let mut restRes: Arc<metamodelica::List<Arc<Absyn::NamedArg>>> = metamodelica::nil();
+                    let mut restRes: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>;
                     restRes = transAnnLstToNamedArgs(rest.clone(), context.clone())?;
                     Ok(metamodelica::cons(Arc::new(Absyn::NamedArg { argName: (literal!("extent")).clone(), argValue: Arc::new(Absyn::Exp::ARRAY { arrayExp: list![Arc::new(Absyn::Exp::ARRAY { arrayExp: list![x1.clone(), y1.clone()] }), Arc::new(Absyn::Exp::ARRAY { arrayExp: list![x2.clone(), y2.clone()] })] }) }), restRes.clone()))
                 }
@@ -1497,9 +1497,9 @@ fn transAnnLstToNamedArgs(mut inArgs: Arc<metamodelica::List<Arc<Absyn::ElementA
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "style" }, modification: Some(Deref @ Absyn::Modification { elementArgLst: args, .. }), .. }, tail: rest }, context) => {
-                    let mut res: Arc<metamodelica::List<Arc<Absyn::NamedArg>>> = metamodelica::nil();
-                    let mut restRes: Arc<metamodelica::List<Arc<Absyn::NamedArg>>> = metamodelica::nil();
-                    let mut argRes: Arc<metamodelica::List<Arc<Absyn::NamedArg>>> = metamodelica::nil();
+                    let mut res: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>;
+                    let mut restRes: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>;
+                    let mut argRes: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>;
                     let mut args = (*args).clone();
                     restRes = transAnnLstToNamedArgs(rest.clone(), context.clone())?;
                     args = cleanStyleAttrs(args.clone(), metamodelica::nil(), context.clone())?;
@@ -1513,10 +1513,10 @@ fn transAnnLstToNamedArgs(mut inArgs: Arc<metamodelica::List<Arc<Absyn::ElementA
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "color" }, modification: Some(Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::EQMOD { exp: Deref @ Absyn::Exp::INTEGER { value: x }, .. }, .. }), .. }, tail: rest }, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Text", tail: _ }) => {
-                    let mut restRes: Arc<metamodelica::List<Arc<Absyn::NamedArg>>> = metamodelica::nil();
-                    let mut color1: i32 = 0;
-                    let mut color2: i32 = 0;
-                    let mut color3: i32 = 0;
+                    let mut restRes: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>;
+                    let mut color1: i32;
+                    let mut color2: i32;
+                    let mut color3: i32;
                     (color1, color2, color3) = getMappedColor(x.clone())?;
                     restRes = transAnnLstToNamedArgs(rest.clone(), context.clone())?;
                     Ok(metamodelica::cons(Arc::new(Absyn::NamedArg { argName: (literal!("fillColor")).clone(), argValue: Arc::new(Absyn::Exp::ARRAY { arrayExp: list![Arc::new(Absyn::Exp::INTEGER { value: color1.clone() }), Arc::new(Absyn::Exp::INTEGER { value: color2.clone() }), Arc::new(Absyn::Exp::INTEGER { value: color3.clone() })] }) }), restRes.clone()))
@@ -1527,10 +1527,10 @@ fn transAnnLstToNamedArgs(mut inArgs: Arc<metamodelica::List<Arc<Absyn::ElementA
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "color" }, modification: Some(Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::EQMOD { exp: Deref @ Absyn::Exp::INTEGER { value: x }, .. }, .. }), .. }, tail: rest }, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Line", tail: _ }) => {
-                    let mut restRes: Arc<metamodelica::List<Arc<Absyn::NamedArg>>> = metamodelica::nil();
-                    let mut color1: i32 = 0;
-                    let mut color2: i32 = 0;
-                    let mut color3: i32 = 0;
+                    let mut restRes: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>;
+                    let mut color1: i32;
+                    let mut color2: i32;
+                    let mut color3: i32;
                     (color1, color2, color3) = getMappedColor(x.clone())?;
                     restRes = transAnnLstToNamedArgs(rest.clone(), context.clone())?;
                     Ok(metamodelica::cons(Arc::new(Absyn::NamedArg { argName: (literal!("color")).clone(), argValue: Arc::new(Absyn::Exp::ARRAY { arrayExp: list![Arc::new(Absyn::Exp::INTEGER { value: color1.clone() }), Arc::new(Absyn::Exp::INTEGER { value: color2.clone() }), Arc::new(Absyn::Exp::INTEGER { value: color3.clone() })] }) }), restRes.clone()))
@@ -1541,10 +1541,10 @@ fn transAnnLstToNamedArgs(mut inArgs: Arc<metamodelica::List<Arc<Absyn::ElementA
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "color" }, modification: Some(Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::EQMOD { exp: Deref @ Absyn::Exp::INTEGER { value: x }, .. }, .. }), .. }, tail: rest }, context) => {
-                    let mut restRes: Arc<metamodelica::List<Arc<Absyn::NamedArg>>> = metamodelica::nil();
-                    let mut color1: i32 = 0;
-                    let mut color2: i32 = 0;
-                    let mut color3: i32 = 0;
+                    let mut restRes: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>;
+                    let mut color1: i32;
+                    let mut color2: i32;
+                    let mut color3: i32;
                     (color1, color2, color3) = getMappedColor(x.clone())?;
                     restRes = transAnnLstToNamedArgs(rest.clone(), context.clone())?;
                     Ok(metamodelica::cons(Arc::new(Absyn::NamedArg { argName: (literal!("lineColor")).clone(), argValue: Arc::new(Absyn::Exp::ARRAY { arrayExp: list![Arc::new(Absyn::Exp::INTEGER { value: color1.clone() }), Arc::new(Absyn::Exp::INTEGER { value: color2.clone() }), Arc::new(Absyn::Exp::INTEGER { value: color3.clone() })] }) }), restRes.clone()))
@@ -1555,10 +1555,10 @@ fn transAnnLstToNamedArgs(mut inArgs: Arc<metamodelica::List<Arc<Absyn::ElementA
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "fillColor" }, modification: Some(Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::EQMOD { exp: Deref @ Absyn::Exp::INTEGER { value: x }, .. }, .. }), .. }, tail: rest }, context) => {
-                    let mut restRes: Arc<metamodelica::List<Arc<Absyn::NamedArg>>> = metamodelica::nil();
-                    let mut color1: i32 = 0;
-                    let mut color2: i32 = 0;
-                    let mut color3: i32 = 0;
+                    let mut restRes: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>;
+                    let mut color1: i32;
+                    let mut color2: i32;
+                    let mut color3: i32;
                     (color1, color2, color3) = getMappedColor(x.clone())?;
                     restRes = transAnnLstToNamedArgs(rest.clone(), context.clone())?;
                     Ok(metamodelica::cons(Arc::new(Absyn::NamedArg { argName: (literal!("fillColor")).clone(), argValue: Arc::new(Absyn::Exp::ARRAY { arrayExp: list![Arc::new(Absyn::Exp::INTEGER { value: color1.clone() }), Arc::new(Absyn::Exp::INTEGER { value: color2.clone() }), Arc::new(Absyn::Exp::INTEGER { value: color3.clone() })] }) }), restRes.clone()))
@@ -1569,8 +1569,8 @@ fn transAnnLstToNamedArgs(mut inArgs: Arc<metamodelica::List<Arc<Absyn::ElementA
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "pattern" }, modification: Some(Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::EQMOD { exp: Deref @ Absyn::Exp::INTEGER { value: x }, .. }, .. }), .. }, tail: rest }, context) => {
-                    let mut restRes: Arc<metamodelica::List<Arc<Absyn::NamedArg>>> = metamodelica::nil();
-                    let mut val: ArcStr = arcstr::literal!("");
+                    let mut restRes: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>;
+                    let mut val: ArcStr;
                     val = ((patternMapList.clone()).get(x.clone() + 1)?).clone();
                     restRes = transAnnLstToNamedArgs(rest.clone(), context.clone())?;
                     Ok(metamodelica::cons(Arc::new(Absyn::NamedArg { argName: (literal!("pattern")).clone(), argValue: Arc::new(Absyn::Exp::CREF { componentRef: Arc::new(Absyn::ComponentRef::CREF_QUAL { name: (literal!("LinePattern")).clone(), subscripts: metamodelica::nil(), componentRef: Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (val.clone()).clone(), subscripts: metamodelica::nil() }) }) }) }), restRes.clone()))
@@ -1581,8 +1581,8 @@ fn transAnnLstToNamedArgs(mut inArgs: Arc<metamodelica::List<Arc<Absyn::ElementA
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "fillPattern" }, modification: Some(Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::EQMOD { exp: Deref @ Absyn::Exp::INTEGER { value: x }, .. }, .. }), .. }, tail: rest }, context) => {
-                    let mut restRes: Arc<metamodelica::List<Arc<Absyn::NamedArg>>> = metamodelica::nil();
-                    let mut val: ArcStr = arcstr::literal!("");
+                    let mut restRes: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>;
+                    let mut val: ArcStr;
                     val = ((fillPatternMapList.clone()).get(x.clone() + 1)?).clone();
                     restRes = transAnnLstToNamedArgs(rest.clone(), context.clone())?;
                     Ok(metamodelica::cons(Arc::new(Absyn::NamedArg { argName: (literal!("fillPattern")).clone(), argValue: Arc::new(Absyn::Exp::CREF { componentRef: Arc::new(Absyn::ComponentRef::CREF_QUAL { name: (literal!("FillPattern")).clone(), subscripts: metamodelica::nil(), componentRef: Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (val.clone()).clone(), subscripts: metamodelica::nil() }) }) }) }), restRes.clone()))
@@ -1593,9 +1593,9 @@ fn transAnnLstToNamedArgs(mut inArgs: Arc<metamodelica::List<Arc<Absyn::ElementA
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "thickness" }, modification: Some(Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::EQMOD { exp: Deref @ Absyn::Exp::INTEGER { value: x }, .. }, .. }), .. }, tail: rest }, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Line", tail: _ }) => {
-                    let mut restRes: Arc<metamodelica::List<Arc<Absyn::NamedArg>>> = metamodelica::nil();
-                    let mut s: ArcStr = arcstr::literal!("");
-                    let mut thick: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+                    let mut restRes: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>;
+                    let mut s: ArcStr;
+                    let mut thick: metamodelica::Real;
                     thick = (thicknessMapList.clone()).get(x.clone())?;
                     restRes = transAnnLstToNamedArgs(rest.clone(), context.clone())?;
                     s = (realString(thick.clone())).clone();
@@ -1607,9 +1607,9 @@ fn transAnnLstToNamedArgs(mut inArgs: Arc<metamodelica::List<Arc<Absyn::ElementA
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "thickness" }, modification: Some(Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::EQMOD { exp: Deref @ Absyn::Exp::INTEGER { value: x }, .. }, .. }), .. }, tail: rest }, context) => {
-                    let mut restRes: Arc<metamodelica::List<Arc<Absyn::NamedArg>>> = metamodelica::nil();
-                    let mut s: ArcStr = arcstr::literal!("");
-                    let mut thick: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+                    let mut restRes: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>;
+                    let mut s: ArcStr;
+                    let mut thick: metamodelica::Real;
                     thick = (thicknessMapList.clone()).get(x.clone())?;
                     restRes = transAnnLstToNamedArgs(rest.clone(), context.clone())?;
                     s = (realString(thick.clone())).clone();
@@ -1621,8 +1621,8 @@ fn transAnnLstToNamedArgs(mut inArgs: Arc<metamodelica::List<Arc<Absyn::ElementA
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "gradient" }, modification: Some(Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::EQMOD { exp: Deref @ Absyn::Exp::INTEGER { value: x }, .. }, .. }), .. }, tail: rest }, context) => {
-                    let mut restRes: Arc<metamodelica::List<Arc<Absyn::NamedArg>>> = metamodelica::nil();
-                    let mut val: ArcStr = arcstr::literal!("");
+                    let mut restRes: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>;
+                    let mut val: ArcStr;
                     val = ((gradientMapList.clone()).get(x.clone() + 1)?).clone();
                     restRes = transAnnLstToNamedArgs(rest.clone(), context.clone())?;
                     Ok(metamodelica::cons(Arc::new(Absyn::NamedArg { argName: (literal!("fillPattern")).clone(), argValue: Arc::new(Absyn::Exp::CREF { componentRef: Arc::new(Absyn::ComponentRef::CREF_QUAL { name: (literal!("FillPattern")).clone(), subscripts: metamodelica::nil(), componentRef: Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (val.clone()).clone(), subscripts: metamodelica::nil() }) }) }) }), restRes.clone()))
@@ -1633,7 +1633,7 @@ fn transAnnLstToNamedArgs(mut inArgs: Arc<metamodelica::List<Arc<Absyn::ElementA
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "smooth" }, modification: Some(Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::EQMOD { exp, .. }, .. }), .. }, tail: rest }, context) => {
-                    let mut restRes: Arc<metamodelica::List<Arc<Absyn::NamedArg>>> = metamodelica::nil();
+                    let mut restRes: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>;
                     restRes = transAnnLstToNamedArgs(rest.clone(), context.clone())?;
                     Ok(metamodelica::cons(Arc::new(Absyn::NamedArg { argName: (literal!("smooth")).clone(), argValue: exp.clone() }), restRes.clone()))
                 }
@@ -1643,10 +1643,10 @@ fn transAnnLstToNamedArgs(mut inArgs: Arc<metamodelica::List<Arc<Absyn::ElementA
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "arrow" }, modification: Some(Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::EQMOD { exp: Deref @ Absyn::Exp::INTEGER { value: x }, .. }, .. }), .. }, tail: rest }, context) => {
-                    let mut restRes: Arc<metamodelica::List<Arc<Absyn::NamedArg>>> = metamodelica::nil();
-                    let mut arrows: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    let mut val1: ArcStr = arcstr::literal!("");
-                    let mut val2: ArcStr = arcstr::literal!("");
+                    let mut restRes: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>;
+                    let mut arrows: Arc<metamodelica::List<ArcStr>>;
+                    let mut val1: ArcStr;
+                    let mut val2: ArcStr;
                     arrows = (arrowMapList.clone()).get(x.clone() + 1)?;
                     val1 = ((arrows.clone()).get(1)?).clone();
                     val2 = ((arrows.clone()).get(2)?).clone();
@@ -1659,7 +1659,7 @@ fn transAnnLstToNamedArgs(mut inArgs: Arc<metamodelica::List<Arc<Absyn::ElementA
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "textStyle" }, modification: Some(Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::EQMOD { exp, .. }, .. }), .. }, tail: rest }, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Text", tail: _ }) => {
-                    let mut restRes: Arc<metamodelica::List<Arc<Absyn::NamedArg>>> = metamodelica::nil();
+                    let mut restRes: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>;
                     restRes = transAnnLstToNamedArgs(rest.clone(), context.clone())?;
                     Ok(metamodelica::cons(Arc::new(Absyn::NamedArg { argName: (literal!("textStyle")).clone(), argValue: exp.clone() }), restRes.clone()))
                 }
@@ -1669,7 +1669,7 @@ fn transAnnLstToNamedArgs(mut inArgs: Arc<metamodelica::List<Arc<Absyn::ElementA
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "font" }, modification: Some(Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::EQMOD { exp, .. }, .. }), .. }, tail: rest }, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Text", tail: _ }) => {
-                    let mut restRes: Arc<metamodelica::List<Arc<Absyn::NamedArg>>> = metamodelica::nil();
+                    let mut restRes: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>;
                     restRes = transAnnLstToNamedArgs(rest.clone(), context.clone())?;
                     Ok(metamodelica::cons(Arc::new(Absyn::NamedArg { argName: (literal!("font")).clone(), argValue: exp.clone() }), restRes.clone()))
                 }
@@ -1679,7 +1679,7 @@ fn transAnnLstToNamedArgs(mut inArgs: Arc<metamodelica::List<Arc<Absyn::ElementA
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "string" }, modification: Some(Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::EQMOD { exp, .. }, .. }), .. }, tail: rest }, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Text", tail: _ }) => {
-                    let mut restRes: Arc<metamodelica::List<Arc<Absyn::NamedArg>>> = metamodelica::nil();
+                    let mut restRes: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>;
                     restRes = transAnnLstToNamedArgs(rest.clone(), context.clone())?;
                     Ok(metamodelica::cons(Arc::new(Absyn::NamedArg { argName: (literal!("textString")).clone(), argValue: exp.clone() }), restRes.clone()))
                 }
@@ -1689,7 +1689,7 @@ fn transAnnLstToNamedArgs(mut inArgs: Arc<metamodelica::List<Arc<Absyn::ElementA
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "name" }, modification: Some(Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::EQMOD { exp, .. }, .. }), .. }, tail: rest }, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Bitmap", tail: _ }) => {
-                    let mut restRes: Arc<metamodelica::List<Arc<Absyn::NamedArg>>> = metamodelica::nil();
+                    let mut restRes: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>;
                     restRes = transAnnLstToNamedArgs(rest.clone(), context.clone())?;
                     Ok(metamodelica::cons(Arc::new(Absyn::NamedArg { argName: (literal!("fileName")).clone(), argValue: exp.clone() }), restRes.clone()))
                 }
@@ -1699,8 +1699,8 @@ fn transAnnLstToNamedArgs(mut inArgs: Arc<metamodelica::List<Arc<Absyn::ElementA
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "points" }, modification: Some(Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::EQMOD { exp: Deref @ Absyn::Exp::MATRIX { matrix: expMatrix }, .. }, .. }), .. }, tail: rest }, context) => {
-                    let mut expLst: Arc<metamodelica::List<Arc<Absyn::Exp>>> = metamodelica::nil();
-                    let mut restRes: Arc<metamodelica::List<Arc<Absyn::NamedArg>>> = metamodelica::nil();
+                    let mut expLst: Arc<metamodelica::List<Arc<Absyn::Exp>>>;
+                    let mut restRes: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>;
                     expLst = List::map(expMatrix.clone(), (std::sync::Arc::new(fnptr!(matrixToArray, Arc<metamodelica::List<Arc<Absyn::Exp>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Absyn::Exp>>>) -> Result<Arc<Absyn::Exp>> + 'static>))?;
                     restRes = transAnnLstToNamedArgs(rest.clone(), context.clone())?;
                     Ok(metamodelica::cons(Arc::new(Absyn::NamedArg { argName: (literal!("points")).clone(), argValue: Arc::new(Absyn::Exp::ARRAY { arrayExp: expLst.clone() }) }), restRes.clone()))
@@ -1711,7 +1711,7 @@ fn transAnnLstToNamedArgs(mut inArgs: Arc<metamodelica::List<Arc<Absyn::ElementA
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: _, tail: rest }, context) => {
-                    let mut res: Arc<metamodelica::List<Arc<Absyn::NamedArg>>> = metamodelica::nil();
+                    let mut res: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>;
                     res = transAnnLstToNamedArgs(rest.clone(), context.clone())?;
                     Ok(res.clone())
                 }
@@ -1822,108 +1822,108 @@ fn cleanStyleAttrs2(mut inArgs: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>,
             return Ok(resultList.clone())
         },
         (Deref @ metamodelica::List::Cons { head: arg @ Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "color" }, .. }, tail: rest }, resultList, context) => {
-            let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
+            let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
             let mut resultList = (*resultList).clone();
             resultList = List::appendElt(arg.clone(), resultList.clone());
             { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: arg @ Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "fillColor" }, .. }, tail: rest }, resultList, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Rectangle", tail: _ }) if (!(isGradientInList(listAppend(rest.clone(), resultList.clone()))) && !(isFillPatternInList(listAppend(rest.clone(), resultList.clone())))) => {
-            let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
+            let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
             let mut resultList = (*resultList).clone();
             resultList = insertFillPatternInList(resultList.clone());
             resultList = List::appendElt(arg.clone(), resultList.clone());
             { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: arg @ Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "fillColor" }, .. }, tail: rest }, resultList, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Ellipse", tail: _ }) if (!(isGradientInList(listAppend(rest.clone(), resultList.clone()))) && !(isFillPatternInList(listAppend(rest.clone(), resultList.clone())))) => {
-            let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
+            let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
             let mut resultList = (*resultList).clone();
             resultList = insertFillPatternInList(resultList.clone());
             resultList = List::appendElt(arg.clone(), resultList.clone());
             { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: arg @ Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "fillColor" }, .. }, tail: rest }, resultList, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Polygon", tail: _ }) if (!(isGradientInList(listAppend(rest.clone(), resultList.clone()))) && !(isFillPatternInList(listAppend(rest.clone(), resultList.clone())))) => {
-            let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
+            let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
             let mut resultList = (*resultList).clone();
             resultList = insertFillPatternInList(resultList.clone());
             resultList = List::appendElt(arg.clone(), resultList.clone());
             { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: arg @ Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "fillColor" }, .. }, tail: rest }, resultList, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Rectangle", tail: _ }) => {
-            let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
+            let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
             let mut resultList = (*resultList).clone();
             resultList = List::appendElt(arg.clone(), resultList.clone());
             { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: arg @ Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "fillColor" }, .. }, tail: rest }, resultList, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Ellipse", tail: _ }) => {
-            let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
+            let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
             let mut resultList = (*resultList).clone();
             resultList = List::appendElt(arg.clone(), resultList.clone());
             { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: arg @ Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "fillColor" }, .. }, tail: rest }, resultList, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Polygon", tail: _ }) => {
-            let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
+            let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
             let mut resultList = (*resultList).clone();
             resultList = List::appendElt(arg.clone(), resultList.clone());
             { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: arg @ Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "pattern" }, .. }, tail: rest }, resultList, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Rectangle", tail: _ }) => {
-            let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
+            let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
             let mut resultList = (*resultList).clone();
             resultList = List::appendElt(arg.clone(), resultList.clone());
             { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: arg @ Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "pattern" }, .. }, tail: rest }, resultList, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Ellipse", tail: _ }) => {
-            let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
+            let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
             let mut resultList = (*resultList).clone();
             resultList = List::appendElt(arg.clone(), resultList.clone());
             { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: arg @ Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "pattern" }, .. }, tail: rest }, resultList, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Polygon", tail: _ }) => {
-            let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
+            let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
             let mut resultList = (*resultList).clone();
             resultList = List::appendElt(arg.clone(), resultList.clone());
             { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: arg @ Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "pattern" }, .. }, tail: rest }, resultList, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Line", tail: _ }) => {
-            let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
+            let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
             let mut resultList = (*resultList).clone();
             resultList = List::appendElt(arg.clone(), resultList.clone());
             { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: arg @ Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "fillPattern" }, .. }, tail: rest }, resultList, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Rectangle", tail: _ }) => {
-            let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
+            let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
             let mut resultList = (*resultList).clone();
             resultList = List::appendElt(arg.clone(), resultList.clone());
             { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: arg @ Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "fillPattern" }, .. }, tail: rest }, resultList, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Ellipse", tail: _ }) => {
-            let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
+            let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
             let mut resultList = (*resultList).clone();
             resultList = List::appendElt(arg.clone(), resultList.clone());
             { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: arg @ Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "fillPattern" }, .. }, tail: rest }, resultList, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Polygon", tail: _ }) => {
-            let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
+            let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
             let mut resultList = (*resultList).clone();
             resultList = List::appendElt(arg.clone(), resultList.clone());
             { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "thickness" }, .. }, tail: rest }, resultList, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Bitmap", tail: _ }) => {
-            let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
+            let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
             { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: arg @ Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "thickness" }, .. }, tail: rest }, resultList, context) => {
-            let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
+            let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
             let mut resultList = (*resultList).clone();
             resultList = List::appendElt(arg.clone(), resultList.clone());
             { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "gradient" }, modification: Some(Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::EQMOD { exp: Deref @ Absyn::Exp::INTEGER { value: 0 }, .. }, .. }), .. }, tail: rest }, resultList, context) => {
-            let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
+            let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
             { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: arg @ Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "gradient" }, .. }, tail: rest }, resultList, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Rectangle", tail: _ }) => {
-            let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
+            let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
             let mut rest = (*rest).clone();
             let mut resultList = (*resultList).clone();
             rest = removeFillPatternInList(rest.clone());
@@ -1935,7 +1935,7 @@ fn cleanStyleAttrs2(mut inArgs: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>,
             { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: arg @ Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "gradient" }, .. }, tail: rest }, resultList, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Ellipse", tail: _ }) => {
-            let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
+            let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
             let mut rest = (*rest).clone();
             let mut resultList = (*resultList).clone();
             rest = removeFillPatternInList(rest.clone());
@@ -1947,37 +1947,37 @@ fn cleanStyleAttrs2(mut inArgs: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>,
             { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: arg @ Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "smooth" }, .. }, tail: rest }, resultList, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Polygon", tail: _ }) => {
-            let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
+            let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
             let mut resultList = (*resultList).clone();
             resultList = List::appendElt(arg.clone(), resultList.clone());
             { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: arg @ Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "smooth" }, .. }, tail: rest }, resultList, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Line", tail: _ }) => {
-            let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
+            let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
             let mut resultList = (*resultList).clone();
             resultList = List::appendElt(arg.clone(), resultList.clone());
             { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: arg @ Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "arrow" }, .. }, tail: rest }, resultList, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Line", tail: _ }) => {
-            let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
+            let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
             let mut resultList = (*resultList).clone();
             resultList = List::appendElt(arg.clone(), resultList.clone());
             { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: arg @ Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "textStyle" }, .. }, tail: rest }, resultList, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Text", tail: _ }) => {
-            let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
+            let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
             let mut resultList = (*resultList).clone();
             resultList = List::appendElt(arg.clone(), resultList.clone());
             { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: arg @ Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "font" }, .. }, tail: rest }, resultList, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Text", tail: _ }) => {
-            let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
+            let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
             let mut resultList = (*resultList).clone();
             resultList = List::appendElt(arg.clone(), resultList.clone());
             { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: _, tail: rest }, resultList, context) => {
-            let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
+            let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
             { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
@@ -2008,7 +2008,7 @@ fn isGradientInList(mut inArgs: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>)
             return true
         },
         Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
-            let mut res: bool = false;
+            let mut res: bool;
             { inArgs = rest.clone(); continue '__tco; }
         },
         _ => unreachable!("tail-call lowered match: no arm matched"),
@@ -2026,7 +2026,7 @@ fn isFillPatternInList(mut inArgs: Arc<metamodelica::List<Arc<Absyn::ElementArg>
             return true
         },
         Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
-            let mut res: bool = false;
+            let mut res: bool;
             { inArgs = rest.clone(); continue '__tco; }
         },
         _ => unreachable!("tail-call lowered match: no arm matched"),
@@ -2044,7 +2044,7 @@ fn removeFillPatternInList(mut inList: Arc<metamodelica::List<Arc<Absyn::Element
             rest.clone()
         },
         Deref @ metamodelica::List::Cons { head: arg, tail: rest } => {
-            let mut lst: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
+            let mut lst: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
             lst = removeFillPatternInList(rest.clone());
             metamodelica::cons(arg.clone(), lst.clone())
         },
@@ -2106,20 +2106,20 @@ fn setDefaultLineInList(mut inList: Arc<metamodelica::List<Arc<Absyn::ElementArg
             return metamodelica::nil()
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "thickness" }, modification: Some(Deref @ Absyn::Modification { .. }), .. }, tail: rest } => {
-            let mut lst: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
+            let mut lst: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
             { inList = rest.clone(); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "pattern" }, modification: Some(Deref @ Absyn::Modification { .. }), .. }, tail: rest } => {
-            let mut lst: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
+            let mut lst: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
             { inList = rest.clone(); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { finalPrefix: fi, eachPrefix: e, path: Deref @ Absyn::Path::IDENT { name: Deref @ "color" }, modification: Some(Deref @ Absyn::Modification { elementArgLst: args, .. }), comment: com, info }, tail: rest } => {
-            let mut lst: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
+            let mut lst: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
             lst = setDefaultLineInList(rest.clone());
             return metamodelica::cons(Arc::new(Absyn::ElementArg::MODIFICATION { finalPrefix: fi.clone(), eachPrefix: e.clone(), path: Arc::new(Absyn::Path::IDENT { name: (literal!("color")).clone() }), modification: Some(Arc::new(Absyn::Modification { elementArgLst: args.clone(), eqMod: Arc::new(Absyn::EqMod::EQMOD { exp: Arc::new(Absyn::Exp::INTEGER { value: 0 }), info: Absyn::dummyInfo.clone() }) })), comment: com.clone(), info: info.clone() }), lst.clone())
         },
         Deref @ metamodelica::List::Cons { head: arg, tail: rest } => {
-            let mut lst: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
+            let mut lst: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
             lst = setDefaultLineInList(rest.clone());
             return metamodelica::cons(arg.clone(), lst.clone())
         },
@@ -2134,7 +2134,7 @@ fn getMappedColor(mut inColor: i32) -> Result<(i32, i32, i32)> {
     let mut color3: i32 = 0;
     (color1, color2, color3) = (match inColor.clone() {
         mut color => {
-            let mut rcol: rgbColor = metamodelica::nil();
+            let mut rcol: rgbColor;
             rcol = (colorMapList.clone()).get(color.clone() + 1)?;
             color1 = (rcol.clone()).get(1)?;
             color2 = (rcol.clone()).get(2)?;
@@ -2271,10 +2271,10 @@ fn fixPaths(mut inPath1: Arc<Absyn::Path>, mut inPath2: Arc<Absyn::Path>) -> Arc
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (ip1, ip2) => {
-                    let mut p1: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-                    let mut str1: ArcStr = arcstr::literal!("");
-                    let mut str2: ArcStr = arcstr::literal!("");
-                    let mut out: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+                    let mut p1: Arc<Absyn::Path>;
+                    let mut str1: ArcStr;
+                    let mut str2: ArcStr;
+                    let mut out: Arc<Absyn::Path>;
                     str1 = (AbsynUtil::pathLastIdent(ip1.clone())?).clone();
                     str2 = (AbsynUtil::pathFirstIdent(ip2.clone())?).clone();
                     let false = (stringEq((str1.clone()).clone(), (str2.clone()).clone())) else { bail!("pattern mismatch") };
@@ -2288,10 +2288,10 @@ fn fixPaths(mut inPath1: Arc<Absyn::Path>, mut inPath2: Arc<Absyn::Path>) -> Arc
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (ip1, ip2) => {
-                    let mut p1: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-                    let mut str1: ArcStr = arcstr::literal!("");
-                    let mut str2: ArcStr = arcstr::literal!("");
-                    let mut out: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+                    let mut p1: Arc<Absyn::Path>;
+                    let mut str1: ArcStr;
+                    let mut str2: ArcStr;
+                    let mut out: Arc<Absyn::Path>;
                     str1 = (AbsynUtil::pathLastIdent(ip1.clone())?).clone();
                     str2 = (AbsynUtil::pathFirstIdent(ip2.clone())?).clone();
                     let true = (stringEq((str1.clone()).clone(), (str2.clone()).clone())) else { bail!("pattern mismatch") };

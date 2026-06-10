@@ -312,7 +312,7 @@ pub mod Association {
         let mut exp: Arc<Expression::NFExpression> = exp;
         exp = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CREF { .. } if (BVariable::isClockOrClocked(BVariable::getVarPointer(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), metamodelica::sourceInfo!("NBackEnd/Classes/NBPartition.mo"))?)) => {
-            let mut clock_opt: Option<Arc<BClock::BClock>> = None;
+            let mut clock_opt: Option<Arc<BClock::BClock>>;
             if UnorderedMap::contains(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), info.baseClocks.clone())? {
                 clock_opt = Some(UnorderedMap::getSafe(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), info.baseClocks.clone(), metamodelica::sourceInfo!("NBackEnd/Classes/NBPartition.mo"))?);
             } else if UnorderedMap::contains(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), info.subClocks.clone())? {

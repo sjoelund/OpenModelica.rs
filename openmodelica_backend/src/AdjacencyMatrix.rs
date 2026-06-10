@@ -92,13 +92,13 @@ fn traverseAdjacencyMatrix2<T: Clone + 'static + metamodelica::gc::MMTrace>(mut 
             return Ok((inM.clone(), inTypeA.clone()))
         },
         false => {
-            let mut m1: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
-            let mut m2: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+            let mut m1: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+            let mut m2: metamodelica::Array<Arc<metamodelica::List<i32>>>;
             let mut extArg: T;
             let mut extArg1: T;
             let mut extArg2: T;
-            let mut eqns: Arc<metamodelica::List<i32>> = metamodelica::nil();
-            let mut eqns1: Arc<metamodelica::List<i32>> = metamodelica::nil();
+            let mut eqns: Arc<metamodelica::List<i32>>;
+            let mut eqns1: Arc<metamodelica::List<i32>>;
             (eqns, extArg) = func(({let __elt = inM.borrow()[(pos.clone()-1) as usize].clone(); __elt}), pos.clone(), inTypeA.clone())?;
             eqns1 = List::removeOnTrue(pos.clone(), (std::sync::Arc::new(fnptr!(intLt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), eqns.clone())?;
             (m1, extArg1) = traverseAdjacencyMatrixList(eqns1.clone(), inM.clone(), func.clone(), metamodelica::arrayLength(inM.clone()), pos.clone(), extArg.clone())?;
@@ -126,12 +126,12 @@ fn traverseAdjacencyMatrixList<T: Clone + 'static + metamodelica::gc::MMTrace>(m
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: pos, tail: rest } => {
-                    let mut m: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+                    let mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>;
                     let mut extArg: T;
                     let mut extArg1: T;
-                    let mut eqns: Arc<metamodelica::List<i32>> = metamodelica::nil();
-                    let mut eqns1: Arc<metamodelica::List<i32>> = metamodelica::nil();
-                    let mut alleqns: Arc<metamodelica::List<i32>> = metamodelica::nil();
+                    let mut eqns: Arc<metamodelica::List<i32>>;
+                    let mut eqns1: Arc<metamodelica::List<i32>>;
+                    let mut alleqns: Arc<metamodelica::List<i32>>;
                     let true = (intLt(pos.clone(), len.clone() + 1)) else { bail!("pattern mismatch") };
                     let true = (intLt(pos.clone(), maxpos.clone())) else { bail!("pattern mismatch") };
                     (eqns, extArg) = func(({let __elt = inM.borrow()[(pos.clone()-1) as usize].clone(); __elt}), pos.clone(), inTypeA.clone())?;
@@ -146,7 +146,7 @@ fn traverseAdjacencyMatrixList<T: Clone + 'static + metamodelica::gc::MMTrace>(m
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: pos, tail: rest } => {
-                    let mut m: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+                    let mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>;
                     let mut extArg: T;
                     let true = (intLt(pos.clone(), len.clone() + 1)) else { bail!("pattern mismatch") };
                     (m, extArg) = traverseAdjacencyMatrixList(rest.clone(), inM.clone(), func.clone(), len.clone(), maxpos.clone(), inTypeA.clone())?;
@@ -177,7 +177,7 @@ pub fn getOtherEqSysAdjacencyMatrix(mut m: metamodelica::Array<Arc<metamodelica:
             return Ok(mnew.clone())
         },
         _ if (intGt(({let __elt = skip.borrow()[(index.clone()-1) as usize].clone(); __elt}), 0)) => {
-            let mut row: Arc<metamodelica::List<i32>> = metamodelica::nil();
+            let mut row: Arc<metamodelica::List<i32>>;
             row = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut r in (({let __elt = m.borrow()[(index.clone()-1) as usize].clone(); __elt})).into_iter().cloned() {
@@ -223,9 +223,9 @@ fn transposeRow(mut row: Arc<metamodelica::List<i32>>, mut mt: metamodelica::Arr
             (mt.clone(), indx.clone() + 1)
         },
         Deref @ metamodelica::List::Cons { head: i, tail: res } => {
-            let mut indx1: i32 = 0;
-            let mut iabs: i32 = 0;
-            let mut col: Arc<metamodelica::List<i32>> = metamodelica::nil();
+            let mut indx1: i32;
+            let mut iabs: i32;
+            let mut col: Arc<metamodelica::List<i32>>;
             iabs = intAbs(i.clone());
             mt = Array::expand(iabs.clone() - metamodelica::arrayLength(mt.clone()), mt.clone(), metamodelica::nil())?;
             col = ({let __elt = mt.borrow()[(iabs.clone()-1) as usize].clone(); __elt});

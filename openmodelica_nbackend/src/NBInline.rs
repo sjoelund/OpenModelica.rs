@@ -93,8 +93,8 @@ pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>, mut inline_types: Arc<metamo
     let mut bdae: Arc<BackendDAE::NBackendDAE> = bdae;
     bdae = (::match_deref::match_deref! { match &(bdae.clone()) {
         Deref @ BackendDAE::MAIN { .. } => {
-            let mut eqData: Arc<EqData::EqData> = Arc::new(EqData::EQ_DATA_EMPTY);
-            let mut varData: Arc<VarData::VarData> = Arc::new(VarData::VAR_DATA_EMPTY);
+            let mut eqData: Arc<EqData::EqData>;
+            let mut varData: Arc<VarData::VarData>;
             if Flags::isSet(Flags::DUMPBACKENDINLINE.clone())? {
                 metamodelica::print((StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[dumpBackendInline] Inlining operatations for: ")); __mm_s.push_str(&*List::toString(inline_types.clone(), (std::sync::Arc::new(fnptr!(DAEDump::dumpInlineTypeBackendStr, DAE::InlineType)) as std::sync::Arc<dyn ::std::ops::Fn(DAE::InlineType) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone())).clone());
             }
@@ -121,12 +121,12 @@ pub fn inlineForEquation(mut eqn: Arc<Equation::Equation>) -> Result<Arc<Equatio
     let mut eqn: Arc<Equation::Equation> = eqn;
     eqn = (::match_deref::match_deref! { match &(eqn.clone()) {
         Deref @ BEquation::Equation::FOR_EQUATION { body: Deref @ metamodelica::List::Cons { head: new_eqn, tail: Deref @ metamodelica::List::Nil }, .. } if (BEquation::Iterator::size(var_field!((*eqn).iter, Equation::Equation::FOR_EQUATION).clone(), false)? == 1 && !(BEquation::Iterator::isResizable(var_field!((*eqn).iter, Equation::Equation::FOR_EQUATION).clone())?)) => {
-            let mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> as ::std::default::Default>::default();
-            let mut names: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-            let mut ranges: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-            let mut name: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-            let mut range: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut start: i32 = 0;
+            let mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>;
+            let mut names: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
+            let mut ranges: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
+            let mut name: Arc<ComponentRef::NFComponentRef>;
+            let mut range: Arc<Expression::NFExpression>;
+            let mut start: i32;
             let mut new_eqn = (*new_eqn).clone();
             replacements = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
             (names, ranges, _) = BEquation::Iterator::getFrames(var_field!((*eqn).iter, Equation::Equation::FOR_EQUATION).clone())?;
@@ -193,7 +193,7 @@ pub fn inlineArrayConstructorSingle(mut eqn: Arc<Equation::Equation>, mut iter: 
             (unwrap_break_err!(inlineArrayConstructor(eqn.clone(), var_field!((**rhs).cref, Expression::NFExpression::CREF).clone(), var_field!((**call).exp, Call::NFCall::TYPED_ARRAY_CONSTRUCTOR).clone(), var_field!((**call).iters, Call::NFCall::TYPED_ARRAY_CONSTRUCTOR).clone(), var_field!((*eqn).attr, Equation::Equation::ARRAY_EQUATION).clone(), iter.clone(), variables.clone(), new_eqns.clone(), set.clone(), index.clone()), '__try0), true)
         },
         Deref @ BEquation::Equation::FOR_EQUATION { body: Deref @ metamodelica::List::Cons { head: body, tail: Deref @ metamodelica::List::Nil }, .. } => {
-            let mut new_eqn: Arc<Equation::Equation> = Arc::new(Equation::DUMMY_EQUATION);
+            let mut new_eqn: Arc<Equation::Equation>;
             (new_eqn, changed) = unwrap_break_err!(inlineArrayConstructorSingle(body.clone(), var_field!((*eqn).iter, Equation::Equation::FOR_EQUATION).clone(), variables.clone(), set.clone(), index.clone(), new_eqns.clone()), '__try0);
             new_eqn = if (changed.clone()) {new_eqn.clone()} else {eqn.clone()};
             (new_eqn.clone(), changed.clone())
@@ -297,8 +297,8 @@ pub fn inlineRecordTupleArrayEquation(mut eqn: Arc<Equation::Equation>, mut iter
             unwrap_break_err!(inlineArrayEquation(eqn.clone(), var_field!((**lhs).elements, Expression::NFExpression::ARRAY).clone(), var_field!((**rhs).elements, Expression::NFExpression::ARRAY).clone(), var_field!((*eqn).attr, Equation::Equation::ARRAY_EQUATION).clone(), iter.clone(), variables.clone(), new_eqns.clone(), set.clone(), index.clone()), '__try0)
         },
         Deref @ BEquation::Equation::ARRAY_EQUATION { lhs: lhs @ Deref @ Expression::CREF { .. }, rhs: rhs @ Deref @ Expression::ARRAY { .. }, .. } => {
-            let mut dim: Arc<Dimension::NFDimension> = Arc::new(Dimension::BOOLEAN);
-            let mut elements: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
+            let mut dim: Arc<Dimension::NFDimension>;
+            let mut elements: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
             dim = unwrap_break_err!(listHead(Type::arrayDims(var_field!((**lhs).ty, Expression::NFExpression::CREF).clone())), '__try0);
             elements = ({
         let mut __acc: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
@@ -311,8 +311,8 @@ pub fn inlineRecordTupleArrayEquation(mut eqn: Arc<Equation::Equation>, mut iter
             unwrap_break_err!(inlineArrayEquation(eqn.clone(), metamodelica::arrayFromVec(elements.clone().into_iter().cloned().collect()), var_field!((**rhs).elements, Expression::NFExpression::ARRAY).clone(), var_field!((*eqn).attr, Equation::Equation::ARRAY_EQUATION).clone(), iter.clone(), variables.clone(), new_eqns.clone(), set.clone(), index.clone()), '__try0)
         },
         Deref @ BEquation::Equation::ARRAY_EQUATION { lhs: lhs @ Deref @ Expression::ARRAY { .. }, rhs: rhs @ Deref @ Expression::CREF { .. }, .. } => {
-            let mut dim: Arc<Dimension::NFDimension> = Arc::new(Dimension::BOOLEAN);
-            let mut elements: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
+            let mut dim: Arc<Dimension::NFDimension>;
+            let mut elements: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
             dim = unwrap_break_err!(listHead(Type::arrayDims(var_field!((**rhs).ty, Expression::NFExpression::CREF).clone())), '__try0);
             elements = ({
         let mut __acc: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
@@ -343,13 +343,13 @@ pub fn inlineRecordTupleArrayEquation(mut eqn: Arc<Equation::Equation>, mut iter
             unwrap_break_err!(inlinePromoteCall(eqn.clone(), var_field!((**rhs).cref, Expression::NFExpression::CREF).clone(), unwrap_break_err!(Call::arguments(call.clone()), '__try0), var_field!((*eqn).attr, Equation::Equation::ARRAY_EQUATION).clone(), iter.clone(), variables.clone(), new_eqns.clone(), set.clone(), index.clone()), '__try0)
         },
         Deref @ BEquation::Equation::FOR_EQUATION { body: Deref @ metamodelica::List::Cons { head: body, tail: Deref @ metamodelica::List::Nil }, .. } => {
-            let mut new_eqn: Arc<Equation::Equation> = Arc::new(Equation::DUMMY_EQUATION);
+            let mut new_eqn: Arc<Equation::Equation>;
             new_eqn = unwrap_break_err!(inlineRecordTupleArrayEquation(body.clone(), var_field!((*eqn).iter, Equation::Equation::FOR_EQUATION).clone(), variables.clone(), new_eqns.clone(), set.clone(), index.clone(), true), '__try0);
             new_eqn = if (BEquation::Equation::isDummy(new_eqn.clone())) {new_eqn.clone()} else {eqn.clone()};
             new_eqn.clone()
         },
         Deref @ BEquation::Equation::IF_EQUATION { .. } if (unwrap_break_err!(BEquation::IfEquationBody::isRecordOrTupleEquation(var_field!((*eqn).body, Equation::Equation::IF_EQUATION).clone()), '__try0)) => {
-            let mut new_eqn: Arc<Equation::Equation> = Arc::new(Equation::DUMMY_EQUATION);
+            let mut new_eqn: Arc<Equation::Equation>;
             new_eqn = unwrap_break_err!(inlineRecordTupleArrayIfEquation(eqn.clone(), var_field!((*eqn).body, Equation::Equation::IF_EQUATION).clone(), iter.clone(), variables.clone(), new_eqns.clone(), set.clone(), index.clone(), inlineSimple.clone()), '__try0);
             new_eqn = if (BEquation::Equation::isDummy(new_eqn.clone())) {new_eqn.clone()} else {eqn.clone()};
             new_eqn.clone()
@@ -665,9 +665,9 @@ fn inlineCatCallLiterals(mut exp: Arc<Expression::NFExpression>, mut cref: Arc<C
     let mut shift: Arc<Expression::NFExpression> = shift;
     let () = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::ARRAY { .. } => {
-            let mut sub_idx: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut is_cat_dim: bool = false;
-            let mut sub: Arc<Subscript::NFSubscript> = Arc::new(Subscript::WHOLE);
+            let mut sub_idx: Arc<Expression::NFExpression>;
+            let mut is_cat_dim: bool;
+            let mut sub: Arc<Subscript::NFSubscript>;
             is_cat_dim = n.clone() == (subs.clone().len() as i32) + 1;
             sub_idx = if (is_cat_dim.clone()) {bumpShift(shift.clone(), Arc::new(Expression::NFExpression::INTEGER { value: 1 }))?} else {Arc::new(Expression::NFExpression::INTEGER { value: 1 })};
             let __range0 = var_field!((*exp).elements, Expression::NFExpression::ARRAY).clone().borrow().iter().cloned().collect::<Vec<_>>();
@@ -682,8 +682,8 @@ fn inlineCatCallLiterals(mut exp: Arc<Expression::NFExpression>, mut cref: Arc<C
             ()
         },
         _ => {
-            let mut lhs: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-            let mut lhs_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut lhs: Arc<ComponentRef::NFComponentRef>;
+            let mut lhs_exp: Arc<Expression::NFExpression>;
             let mut new_eqn: Pointer::Pointer<Arc<Equation::Equation>>;
             lhs = ComponentRef::mergeSubscripts(subs.clone().reverse(), cref.clone(), false, false, false)?;
             lhs_exp = Expression::fromCref(lhs.clone(), false)?;
@@ -753,7 +753,7 @@ fn inlineRecordConstructorElements(mut exp: Arc<Expression::NFExpression>) -> Re
     let mut exp: Arc<Expression::NFExpression> = exp;
     exp = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::RECORD_ELEMENT { recordExp: Deref @ Expression::CALL { call: call @ Deref @ Call::TYPED_CALL { r#fn, .. } }, .. } => {
-            let mut new_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut new_exp: Arc<Expression::NFExpression>;
             if Function::isDefaultRecordConstructor(r#fn.clone()) {
                 new_exp = (var_field!((**call).arguments, Call::NFCall::TYPED_CALL).clone()).get(var_field!((*exp).index, Expression::NFExpression::RECORD_ELEMENT).clone())?;
             } else if Function::isNonDefaultRecordConstructor(r#fn.clone()) {
@@ -778,7 +778,7 @@ fn getElementList(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<metamode
             var_field!((*exp).elements, Expression::NFExpression::TUPLE).clone()
         },
         Deref @ Expression::TUPLE_ELEMENT { tupleExp: sub_exp @ Deref @ Expression::TUPLE { .. }, .. } => {
-            let mut elem: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut elem: Arc<Expression::NFExpression>;
             if var_field!((*exp).index, Expression::NFExpression::TUPLE_ELEMENT).clone() > (var_field!((**sub_exp).elements, Expression::NFExpression::TUPLE).clone().len() as i32) {
                 Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBInline.getElementList")); __mm_s.push_str(&*literal!(" failed to get subscripted tuple element: ")); __mm_s.push_str(&*Expression::toString(exp.clone())?); ArcStr::from(__mm_s) }).clone()])?;
                 bail!("fail");
@@ -918,7 +918,7 @@ pub mod InlineRating {
         let mut exp: Arc<Expression::NFExpression> = exp;
         let () = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CREF { .. } => {
-            let mut iro: Option<Arc<InlineRating>> = None;
+            let mut iro: Option<Arc<InlineRating>>;
             iro = UnorderedMap::get(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), local_map.clone())?;
             if isSome(iro.clone()) {
                 Pointer::update(irp.clone(), add(Pointer::access(irp.clone()), multiply(Util::getOption(iro.clone())?, i.clone()))?);
@@ -982,8 +982,8 @@ pub mod InlineRating {
         } else {
             cont = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CALL { .. } if (functionInlineable(Call::typedFunction(var_field!((*exp).call, Expression::NFExpression::CALL).clone())?)?) => {
-            let mut r#fn: Arc<Function::Function> = Arc::new(<Function::Function as ::std::default::Default>::default());
-            let mut lir: Option<Arc<InlineRating>> = None;
+            let mut r#fn: Arc<Function::Function>;
+            let mut lir: Option<Arc<InlineRating>>;
             r#fn = Call::typedFunction(var_field!((*exp).call, Expression::NFExpression::CALL).clone())?;
             lir = UnorderedMap::get(r#fn.clone(), func_map.clone())?;
             if isSome(lir.clone()) {

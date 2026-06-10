@@ -235,7 +235,7 @@ pub mod Function {
             { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("KERNEL_FUNCTION(")); __mm_s.push_str(&*tmp.clone()); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }
         },
         Deref @ EXTERNAL_FUNCTION { .. } => {
-            let mut ls: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+            let mut ls: Arc<metamodelica::List<ArcStr>>;
             tmp = (literal!("\n")).clone();
             tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp.clone()); __mm_s.push_str(&*literal!("  name: ")); __mm_s.push_str(&*AbsynUtil::pathString(var_field!((*func).name, Function::EXTERNAL_FUNCTION).clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!(",\n")); ArcStr::from(__mm_s) }).clone();
             tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp.clone()); __mm_s.push_str(&*literal!("  extName: ")); __mm_s.push_str(&*var_field!((*func).extName, Function::EXTERNAL_FUNCTION).clone()); __mm_s.push_str(&*literal!(",\n")); ArcStr::from(__mm_s) }).clone();

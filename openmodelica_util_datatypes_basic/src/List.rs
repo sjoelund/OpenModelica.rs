@@ -3444,7 +3444,7 @@ pub fn toString<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inList: Arc<
             inNameStr.clone()
         },
         _ => {
-            let mut r#str: ArcStr = arcstr::literal!("");
+            let mut r#str: ArcStr;
             r#str = stringDelimitList(map(lst.clone(), inPrintFunc.clone())?, (inDelimitStr.clone()).clone());
             r#str = stringAppendList(list![(inNameStr.clone()).clone(), (inBeginStr.clone()).clone(), (r#str.clone()).clone(), (endStr.clone()).clone()]);
             r#str.clone()
@@ -3616,7 +3616,7 @@ fn combination_tail<TI: Clone + 'static + metamodelica::gc::MMTrace>(mut inEleme
     let mut outElements: Arc<metamodelica::List<Arc<metamodelica::List<TI>>>>;
     outElements = (::match_deref::match_deref! { match &(inElements.clone()) {
         Deref @ metamodelica::List::Cons { head: head, tail: rest } => {
-            let mut acc: Arc<metamodelica::List<Arc<metamodelica::List<TI>>>> = metamodelica::nil();
+            let mut acc: Arc<metamodelica::List<Arc<metamodelica::List<TI>>>>;
             acc = inAccumElems.clone();
             for mut e in &*head.clone() {
                 let mut e = e.clone();
@@ -3648,7 +3648,7 @@ fn combinationMap_tail<TI: Clone + 'static + metamodelica::gc::MMTrace, TO: Clon
     let mut outElements: Arc<metamodelica::List<TO>>;
     outElements = (::match_deref::match_deref! { match &(inElements.clone()) {
         Deref @ metamodelica::List::Cons { head: head, tail: rest } => {
-            let mut acc: Arc<metamodelica::List<TO>> = metamodelica::nil();
+            let mut acc: Arc<metamodelica::List<TO>>;
             acc = inAccumElems.clone();
             for mut e in &*head.clone() {
                 let mut e = e.clone();
@@ -3848,7 +3848,7 @@ pub fn allCombinations<T: Clone + 'static + metamodelica::gc::MMTrace>(mut lst: 
     let mut out: Arc<metamodelica::List<Arc<metamodelica::List<T>>>>;
     out = (match maxTotalSize.clone() {
         Some(mut maxSz) => {
-            let mut sz: i32 = 0;
+            let mut sz: i32;
             sz = intMul((lst.clone().len() as i32), applyAndFold(lst.clone(), (std::sync::Arc::new(fnptr!(intMul, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<i32> + 'static>), std::sync::Arc::new(fnptr!(listLength, _)), 1)?);
             let true = (sz.clone() <= maxSz.clone()) else { bail!("pattern mismatch") };
             allCombinations2(lst.clone())
@@ -3883,7 +3883,7 @@ fn allCombinations3<T: Clone + 'static + metamodelica::gc::MMTrace>(mut ilst1: A
             return iacc.clone().reverse()
         },
         Deref @ metamodelica::List::Cons { head: x, tail: lst1 } => {
-            let mut acc: Arc<metamodelica::List<Arc<metamodelica::List<T>>>> = metamodelica::nil();
+            let mut acc: Arc<metamodelica::List<Arc<metamodelica::List<T>>>>;
             acc = allCombinations4(x.clone(), ilst2.clone(), iacc.clone());
             { (ilst1, ilst2, iacc) = (lst1.clone(), ilst2.clone(), acc.clone()); continue '__tco; }
         },
