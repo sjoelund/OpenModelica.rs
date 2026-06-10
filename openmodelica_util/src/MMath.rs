@@ -75,7 +75,7 @@ pub static RAT0: Rational = Rational { nom: 0, denom: 1 };
 
 pub static RAT1: Rational = Rational { nom: 1, denom: 1 };
 
-pub fn isGreaterThan(mut r1: Rational, mut r2: Rational) -> bool {
+pub(crate) fn isGreaterThan(mut r1: Rational, mut r2: Rational) -> bool {
     let mut b: bool;
     b = realGt(metamodelica::OrderedFloat((r1.nom.clone()) as f64) / metamodelica::OrderedFloat((r1.denom.clone()) as f64), metamodelica::OrderedFloat((r2.nom.clone()) as f64) / metamodelica::OrderedFloat((r2.denom.clone()) as f64));
     b
@@ -183,7 +183,7 @@ pub fn divRational(mut r1: Rational, mut r2: Rational) -> Result<Rational> {
     Ok(r)
 }
 
-pub fn intGcd(mut i1: i32, mut i2: i32) -> i32 {
+pub(crate) fn intGcd(mut i1: i32, mut i2: i32) -> i32 {
     '__tco: loop {
         match i2.clone() {
         0 => return i1.clone(),
@@ -193,7 +193,7 @@ pub fn intGcd(mut i1: i32, mut i2: i32) -> i32 {
 }
 
 /* Tests */
-pub fn testRational() -> () {
+pub(crate) fn testRational() -> () {
     let () = 'mc: {
         let __mc_input = ();
         if let Ok(__v) = (|| -> Result<_> {

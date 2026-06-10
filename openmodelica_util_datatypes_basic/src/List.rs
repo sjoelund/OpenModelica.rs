@@ -496,7 +496,7 @@ pub fn firstN<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inList: Arc<me
     Ok(outList)
 }
 
-pub fn firstN_reverse<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inList: Arc<metamodelica::List<T>>, mut N: i32) -> Result<Arc<metamodelica::List<T>>> {
+pub(crate) fn firstN_reverse<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inList: Arc<metamodelica::List<T>>, mut N: i32) -> Result<Arc<metamodelica::List<T>>> {
     let mut outList: Arc<metamodelica::List<T>> = metamodelica::nil();
     let mut e: T;
     let mut rest: Arc<metamodelica::List<T>>;

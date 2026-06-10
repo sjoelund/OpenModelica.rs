@@ -434,7 +434,7 @@ fn getVariabilityForExp(mut expIn: Arc<DAE::Exp>) -> Result<Variability> {
 // evaluate functions
 //
 // =============================================================================
-pub fn evalFunctions(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Arc<BackendDAE::BackendDAE> {
+pub(crate) fn evalFunctions(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Arc<BackendDAE::BackendDAE> {
     let mut outDAE: Arc<BackendDAE::BackendDAE>;
     let mut changed: bool;
     let mut eqSysts: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>>;
@@ -603,7 +603,7 @@ fn evalFunctions_findFuncs(mut eqIn: Arc<BackendDAE::Equation>, mut shared: Arc<
     (eqIn, shared, addEqs, idx, changed, callSign)
 }
 
-pub fn evaluateConstantFunctionCallExp(mut expIn: Arc<DAE::Exp>, mut funcsIn: Arc<AvlTreePathFunction::Tree>, mut evalConstArgsOnly: bool, mut recursionLimit: i32) -> Arc<DAE::Exp> {
+pub(crate) fn evaluateConstantFunctionCallExp(mut expIn: Arc<DAE::Exp>, mut funcsIn: Arc<AvlTreePathFunction::Tree>, mut evalConstArgsOnly: bool, mut recursionLimit: i32) -> Arc<DAE::Exp> {
     let mut expOut: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     expOut = 'mc: {
         let __mc_input = expIn.clone();
@@ -786,7 +786,7 @@ fn doNotInline(mut func: DAE::Function) -> bool {
     dontInline
 }
 
-pub fn evaluateConstantFunction(mut rhsExpIn: Arc<DAE::Exp>, mut lhsExpIn: Arc<DAE::Exp>, mut funcsIn: Arc<AvlTreePathFunction::Tree>, mut eqIdx: i32, mut callSignLstIn: Arc<metamodelica::List<CallSignature>>, mut recursionLimit: i32) -> Result<(Arc<DAE::Exp>, Arc<DAE::Exp>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<AvlTreePathFunction::Tree>, i32, bool, Arc<metamodelica::List<CallSignature>>)> {
+pub(crate) fn evaluateConstantFunction(mut rhsExpIn: Arc<DAE::Exp>, mut lhsExpIn: Arc<DAE::Exp>, mut funcsIn: Arc<AvlTreePathFunction::Tree>, mut eqIdx: i32, mut callSignLstIn: Arc<metamodelica::List<CallSignature>>, mut recursionLimit: i32) -> Result<(Arc<DAE::Exp>, Arc<DAE::Exp>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<AvlTreePathFunction::Tree>, i32, bool, Arc<metamodelica::List<CallSignature>>)> {
     let mut rhsExpOut: Arc<DAE::Exp>;
     let mut lhsExpOut: Arc<DAE::Exp>;
     let mut addedEquations: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
@@ -1287,7 +1287,7 @@ fn setRecordTypes(mut inExp: Arc<DAE::Exp>) -> Arc<DAE::Exp> {
     outExp
 }
 
-pub fn getCrefsForRecord(mut e: Arc<DAE::Exp>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> {
+pub(crate) fn getCrefsForRecord(mut e: Arc<DAE::Exp>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> {
     let mut es: Arc<metamodelica::List<Arc<DAE::Exp>>>;
     es = (::match_deref::match_deref! { match &(e.clone()) {
         Deref @ DAE::Exp::CREF { componentRef: cref, .. } => {
@@ -3308,7 +3308,7 @@ fn setTypesForScalarCrefs(mut allCrefs: Arc<metamodelica::List<Arc<DAE::Componen
     Ok(crefsOut)
 }
 
-pub fn getRecordScalars(mut crefIn: Arc<DAE::ComponentRef>) -> Arc<metamodelica::List<Arc<DAE::ComponentRef>>> {
+pub(crate) fn getRecordScalars(mut crefIn: Arc<DAE::ComponentRef>) -> Arc<metamodelica::List<Arc<DAE::ComponentRef>>> {
     let mut crefsOut: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
     match '__try0: {
         crefsOut = ComponentReference::expandCref(crefIn.clone(), true);

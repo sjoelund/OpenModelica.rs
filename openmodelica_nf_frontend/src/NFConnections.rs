@@ -121,36 +121,36 @@ pub type BROKEN_EDGE = BrokenEdge;
 
 pub type BrokenEdges = Arc<metamodelica::List<BrokenEdge>>;
 
-pub fn new() -> Arc<NFConnections> {
+pub(crate) fn new() -> Arc<NFConnections> {
     let mut conns: Arc<NFConnections> = Arc::new(NFConnections { connections: metamodelica::nil(), flows: metamodelica::nil(), broken: metamodelica::nil() });
     conns
 }
 
-pub fn fromConnectionList(mut connl: Arc<metamodelica::List<Arc<Connection::NFConnection>>>) -> Arc<NFConnections> {
+pub(crate) fn fromConnectionList(mut connl: Arc<metamodelica::List<Arc<Connection::NFConnection>>>) -> Arc<NFConnections> {
     let mut conns: Arc<NFConnections>;
     conns = Arc::new(NFConnections { connections: connl.clone(), flows: metamodelica::nil(), broken: metamodelica::nil() });
     conns
 }
 
-pub fn addConnection(mut conn: Arc<Connection::NFConnection>, mut conns: Arc<NFConnections>) -> Arc<NFConnections> {
+pub(crate) fn addConnection(mut conn: Arc<Connection::NFConnection>, mut conns: Arc<NFConnections>) -> Arc<NFConnections> {
     let mut conns: Arc<NFConnections> = conns;
     assign_field!(conns.connections = metamodelica::cons(conn.clone(), conns.connections.clone()));
     conns
 }
 
-pub fn addFlow(mut conn: Arc<Connector::NFConnector>, mut conns: Arc<NFConnections>) -> Arc<NFConnections> {
+pub(crate) fn addFlow(mut conn: Arc<Connector::NFConnector>, mut conns: Arc<NFConnections>) -> Arc<NFConnections> {
     let mut conns: Arc<NFConnections> = conns;
     assign_field!(conns.flows = metamodelica::cons(conn.clone(), conns.flows.clone()));
     conns
 }
 
-pub fn addBroken(mut broken: BrokenEdges, mut conns: Arc<NFConnections>) -> Arc<NFConnections> {
+pub(crate) fn addBroken(mut broken: BrokenEdges, mut conns: Arc<NFConnections>) -> Arc<NFConnections> {
     let mut conns: Arc<NFConnections> = conns;
     assign_field!(conns.broken = broken.clone());
     conns
 }
 
-pub fn collectConnections(mut flatModel: Arc<FlatModel::NFFlatModel>, mut isDeleted: Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>) -> Result<(Arc<FlatModel::NFFlatModel>, Arc<NFConnections>)> {
+pub(crate) fn collectConnections(mut flatModel: Arc<FlatModel::NFFlatModel>, mut isDeleted: Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>) -> Result<(Arc<FlatModel::NFFlatModel>, Arc<NFConnections>)> {
     pub type IsDeleted = std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>;
 
     let mut flatModel: Arc<FlatModel::NFFlatModel> = flatModel;
@@ -183,7 +183,7 @@ pub fn collectConnections(mut flatModel: Arc<FlatModel::NFFlatModel>, mut isDele
     Ok((flatModel, conns))
 }
 
-pub fn collectFlows(mut flatModel: Arc<FlatModel::NFFlatModel>, mut conns: Arc<NFConnections>) -> Result<Arc<NFConnections>> {
+pub(crate) fn collectFlows(mut flatModel: Arc<FlatModel::NFFlatModel>, mut conns: Arc<NFConnections>) -> Result<Arc<NFConnections>> {
     let mut conns: Arc<NFConnections> = conns;
     let mut comp: Arc<Component::NFComponent>;
     let mut c: Arc<Connector::NFConnector>;
@@ -204,7 +204,7 @@ pub fn collectFlows(mut flatModel: Arc<FlatModel::NFFlatModel>, mut conns: Arc<N
     Ok(conns)
 }
 
-pub fn makeConnections(mut lhsCref: Arc<ComponentRef::NFComponentRef>, mut lhsType: Arc<Type::NFType>, mut rhsCref: Arc<ComponentRef::NFComponentRef>, mut rhsType: Arc<Type::NFType>, mut source: Arc<DAE::ElementSource>, mut isDeleted: Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>, mut connections: Arc<metamodelica::List<Arc<Connection::NFConnection>>>) -> Result<Arc<metamodelica::List<Arc<Connection::NFConnection>>>> {
+pub(crate) fn makeConnections(mut lhsCref: Arc<ComponentRef::NFComponentRef>, mut lhsType: Arc<Type::NFType>, mut rhsCref: Arc<ComponentRef::NFComponentRef>, mut rhsType: Arc<Type::NFType>, mut source: Arc<DAE::ElementSource>, mut isDeleted: Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>, mut connections: Arc<metamodelica::List<Arc<Connection::NFConnection>>>) -> Result<Arc<metamodelica::List<Arc<Connection::NFConnection>>>> {
     pub type IsDeleted = std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>;
 
     let mut connections: Arc<metamodelica::List<Arc<Connection::NFConnection>>> = connections;
@@ -236,7 +236,7 @@ pub fn makeConnections(mut lhsCref: Arc<ComponentRef::NFComponentRef>, mut lhsTy
     Ok(connections)
 }
 
-pub fn makeConnectors(mut cref: Arc<ComponentRef::NFComponentRef>, mut ty: Arc<Type::NFType>, mut source: Arc<DAE::ElementSource>) -> Result<Arc<metamodelica::List<Arc<Connector::NFConnector>>>> {
+pub(crate) fn makeConnectors(mut cref: Arc<ComponentRef::NFComponentRef>, mut ty: Arc<Type::NFType>, mut source: Arc<DAE::ElementSource>) -> Result<Arc<metamodelica::List<Arc<Connector::NFConnector>>>> {
     let mut connectors: Arc<metamodelica::List<Arc<Connector::NFConnector>>> = metamodelica::nil();
     let mut cref_exp: Arc<Expression::NFExpression>;
     let mut expanded: bool;
@@ -254,7 +254,7 @@ pub fn makeConnectors(mut cref: Arc<ComponentRef::NFComponentRef>, mut ty: Arc<T
     Ok(connectors)
 }
 
-pub fn split(mut conns: Arc<NFConnections>) -> Result<Arc<NFConnections>> {
+pub(crate) fn split(mut conns: Arc<NFConnections>) -> Result<Arc<NFConnections>> {
     let mut conns: Arc<NFConnections> = conns;
     assign_field!(
         conns.flows = List::mapFlat(conns.flows.clone(), (std::sync::Arc::new(Connector::split) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>) -> Result<Arc<metamodelica::List<Arc<Connector::NFConnector>>>> + 'static>))?,
@@ -263,13 +263,13 @@ pub fn split(mut conns: Arc<NFConnections>) -> Result<Arc<NFConnections>> {
     Ok(conns)
 }
 
-pub fn connectCount(mut conn: Arc<Connector::NFConnector>, mut connectCounts: Arc<UnorderedMap::UnorderedMap<Arc<Connector::NFConnector>, i32>>) -> Result<i32> {
+pub(crate) fn connectCount(mut conn: Arc<Connector::NFConnector>, mut connectCounts: Arc<UnorderedMap::UnorderedMap<Arc<Connector::NFConnector>, i32>>) -> Result<i32> {
     let mut count: i32;
     count = UnorderedMap::getOrDefault(conn.clone(), connectCounts.clone(), 0)?;
     Ok(count)
 }
 
-pub fn scalarize(mut conns: Arc<NFConnections>, mut keepSingleConnectedArrays: bool) -> Result<Arc<NFConnections>> {
+pub(crate) fn scalarize(mut conns: Arc<NFConnections>, mut keepSingleConnectedArrays: bool) -> Result<Arc<NFConnections>> {
     let mut conns: Arc<NFConnections> = conns;
     let mut connect_counts: Arc<UnorderedMap::UnorderedMap<Arc<Connector::NFConnector>, i32>>;
     let mut flows: Arc<metamodelica::List<Arc<Connector::NFConnector>>> = metamodelica::nil();
@@ -307,7 +307,7 @@ pub fn scalarize(mut conns: Arc<NFConnections>, mut keepSingleConnectedArrays: b
     Ok(conns)
 }
 
-pub fn analyseArrayConnections(mut conns: Arc<NFConnections>) -> Result<Arc<UnorderedMap::UnorderedMap<Arc<Connector::NFConnector>, i32>>> {
+pub(crate) fn analyseArrayConnections(mut conns: Arc<NFConnections>) -> Result<Arc<UnorderedMap::UnorderedMap<Arc<Connector::NFConnector>, i32>>> {
     let mut connectCounts: Arc<UnorderedMap::UnorderedMap<Arc<Connector::NFConnector>, i32>>;
     connectCounts = UnorderedMap::new((std::sync::Arc::new(Connector::hashNoSubs) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>) -> Result<i32> + 'static>), (std::sync::Arc::new(Connector::isEqualNoSubs) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>, Arc<Connector::NFConnector>) -> Result<bool> + 'static>), (conns.connections.clone().len() as i32));
     for mut conn in &*conns.connections.clone() {
@@ -318,7 +318,7 @@ pub fn analyseArrayConnections(mut conns: Arc<NFConnections>) -> Result<Arc<Unor
     Ok(connectCounts)
 }
 
-pub fn analyseArrayConnector(mut conn: Arc<Connector::NFConnector>, mut connectCounts: Arc<UnorderedMap::UnorderedMap<Arc<Connector::NFConnector>, i32>>) -> Result<()> {
+pub(crate) fn analyseArrayConnector(mut conn: Arc<Connector::NFConnector>, mut connectCounts: Arc<UnorderedMap::UnorderedMap<Arc<Connector::NFConnector>, i32>>) -> Result<()> {
     fn update(mut count: Option<i32>) -> i32 {
         let mut outCount: i32 = 0;
         outCount = (match count.clone() {
@@ -339,7 +339,7 @@ pub fn analyseArrayConnector(mut conn: Arc<Connector::NFConnector>, mut connectC
     Ok(())
 }
 
-pub fn toString(mut conns: Arc<NFConnections>) -> Result<ArcStr> {
+pub(crate) fn toString(mut conns: Arc<NFConnections>) -> Result<ArcStr> {
     let mut r#str: ArcStr;
     let mut strl: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     strl = metamodelica::cons((literal!("FLOWS:")).clone(), strl.clone());
@@ -357,7 +357,7 @@ pub fn toString(mut conns: Arc<NFConnections>) -> Result<ArcStr> {
     Ok(r#str)
 }
 
-pub fn toStringList(mut conns: Arc<NFConnections>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>> {
+pub(crate) fn toStringList(mut conns: Arc<NFConnections>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>> {
     let mut strl: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>> = metamodelica::nil();
     strl = ({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>> = metamodelica::nil();

@@ -138,7 +138,7 @@ pub mod BClock {
         }
     }
     pub use self::BClock::{BASE_CLOCK,SUB_CLOCK,INFERRED_CLOCK};
-    pub fn toString(mut clock: Arc<BClock>) -> Result<ArcStr> {
+    pub(crate) fn toString(mut clock: Arc<BClock>) -> Result<ArcStr> {
         let mut r#str: ArcStr;
         r#str = ((::match_deref::match_deref! { match &(clock.clone()) {
         Deref @ BASE_CLOCK { .. } => ClockKind::toDebugString(var_field!((*clock).clock, BClock::BASE_CLOCK).clone())?,
@@ -150,12 +150,12 @@ pub mod BClock {
         Ok(r#str)
     }
 
-    pub fn hash(mut clock: Arc<BClock>) -> Result<i32> {
+    pub(crate) fn hash(mut clock: Arc<BClock>) -> Result<i32> {
         let mut i: i32 = stringHashDjb2((toString(clock.clone())?).clone());
         Ok(i)
     }
 
-    pub fn isEqual(mut clock1: Arc<BClock>, mut clock2: Arc<BClock>) -> Result<bool> {
+    pub(crate) fn isEqual(mut clock1: Arc<BClock>, mut clock2: Arc<BClock>) -> Result<bool> {
         let mut b: bool;
         b = (::match_deref::match_deref! { match &((clock1.clone(), clock2.clone())) {
         (Deref @ BASE_CLOCK { .. }, Deref @ BASE_CLOCK { .. }) => ClockKind::compare(var_field!((*clock1).clock, BClock::BASE_CLOCK).clone(), var_field!((*clock2).clock, BClock::BASE_CLOCK).clone())? == 0,
@@ -167,7 +167,7 @@ pub mod BClock {
         Ok(b)
     }
 
-    pub fn add(mut eqn: Arc<Equation::Equation>, mut info: Arc<ClockedInfo::ClockedInfo>) -> Result<()> {
+    pub(crate) fn add(mut eqn: Arc<Equation::Equation>, mut info: Arc<ClockedInfo::ClockedInfo>) -> Result<()> {
         let () = (::match_deref::match_deref! { match &((BEquation::Equation::getLHS(eqn.clone())?, BEquation::Equation::getRHS(eqn.clone())?)) {
         (Some(Deref @ Expression::CREF { cref: clock_name, .. }), Some(exp)) if (Expression::isClockOrSampleFunction(exp.clone())?) => {
             create(clock_name.clone(), exp.clone(), info.clone())?;
@@ -185,7 +185,7 @@ pub mod BClock {
         Ok(())
     }
 
-    pub fn isBaseClock(mut clock: Arc<BClock>) -> bool {
+    pub(crate) fn isBaseClock(mut clock: Arc<BClock>) -> bool {
         let mut b: bool;
         b = (::match_deref::match_deref! { match &(clock.clone()) {
         Deref @ BASE_CLOCK { .. } => true,
@@ -195,7 +195,7 @@ pub mod BClock {
         b
     }
 
-    pub fn isInferredClock(mut clock: Arc<BClock>) -> bool {
+    pub(crate) fn isInferredClock(mut clock: Arc<BClock>) -> bool {
         let mut b: bool;
         b = (::match_deref::match_deref! { match &(clock.clone()) {
         Deref @ BASE_CLOCK { clock: Deref @ ClockKind::INFERRED_CLOCK { .. } } => true,
@@ -206,7 +206,7 @@ pub mod BClock {
         b
     }
 
-    pub fn isEventClock(mut clock: Arc<BClock>) -> bool {
+    pub(crate) fn isEventClock(mut clock: Arc<BClock>) -> bool {
         let mut b: bool;
         b = (::match_deref::match_deref! { match &(clock.clone()) {
         Deref @ BASE_CLOCK { clock: Deref @ ClockKind::EVENT_CLOCK { .. } } => true,
@@ -216,7 +216,7 @@ pub mod BClock {
         b
     }
 
-    pub fn baseClockInferrence(mut clock: Arc<BClock>, mut base_clock_inferrence: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<BClock>>>) -> Result<Arc<BClock>> {
+    pub(crate) fn baseClockInferrence(mut clock: Arc<BClock>, mut base_clock_inferrence: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<BClock>>>) -> Result<Arc<BClock>> {
         let mut clock: Arc<BClock> = clock;
         clock = (::match_deref::match_deref! { match &(clock.clone()) {
         Deref @ INFERRED_CLOCK { .. } => {
@@ -235,7 +235,7 @@ pub mod BClock {
         Ok(clock)
     }
 
-    pub fn convertBase(mut clock: Arc<BClock>) -> Result<Arc<OldDAE::ClockKind>> {
+    pub(crate) fn convertBase(mut clock: Arc<BClock>) -> Result<Arc<OldDAE::ClockKind>> {
         let mut oldClock: Arc<OldDAE::ClockKind>;
         oldClock = (::match_deref::match_deref! { match &(clock.clone()) {
         Deref @ BASE_CLOCK { .. } => ClockKind::toDAE(var_field!((*clock).clock, BClock::BASE_CLOCK).clone())?,
@@ -248,7 +248,7 @@ pub mod BClock {
         Ok(oldClock)
     }
 
-    pub fn convertSub(mut clock: Arc<BClock>) -> Result<OldBackendDAE::SubClock> {
+    pub(crate) fn convertSub(mut clock: Arc<BClock>) -> Result<OldBackendDAE::SubClock> {
         let mut oldClock: OldBackendDAE::SubClock;
         oldClock = (::match_deref::match_deref! { match &(clock.clone()) {
         Deref @ SUB_CLOCK { .. } => OldBackendDAE::SubClock::SUBCLOCK { factor: NBBackendUtil::convertRational(var_field!((*clock).factor, BClock::SUB_CLOCK).clone()), shift: NBBackendUtil::convertRational(var_field!((*clock).shift, BClock::SUB_CLOCK).clone()), solver: var_field!((*clock).solver, BClock::SUB_CLOCK).clone() },
@@ -261,7 +261,7 @@ pub mod BClock {
         Ok(oldClock)
     }
 
-    pub fn toExp(mut clock: Arc<BClock>) -> Result<Arc<Expression::NFExpression>> {
+    pub(crate) fn toExp(mut clock: Arc<BClock>) -> Result<Arc<Expression::NFExpression>> {
         let mut exp: Arc<Expression::NFExpression>;
         exp = (::match_deref::match_deref! { match &(clock.clone()) {
         Deref @ BASE_CLOCK { .. } => Arc::new(Expression::NFExpression::CLKCONST { clk: var_field!((*clock).clock, BClock::BASE_CLOCK).clone() }),
@@ -368,7 +368,7 @@ pub mod BClock {
         Ok((subClock, baseClock))
     }
 
-    pub fn updateSubClock(mut dest: Arc<BClock>, mut src: Arc<BClock>) -> Result<Arc<BClock>> {
+    pub(crate) fn updateSubClock(mut dest: Arc<BClock>, mut src: Arc<BClock>) -> Result<Arc<BClock>> {
         let mut dest: Arc<BClock> = dest;
         dest = (::match_deref::match_deref! { match &((dest.clone(), src.clone())) {
         (Deref @ SUB_CLOCK { .. }, Deref @ SUB_CLOCK { .. }) => {
@@ -418,12 +418,12 @@ pub mod ClockedInfo {
     }
     pub type CLOCKED_INFO = ClockedInfo;
 
-    pub fn new() -> Arc<ClockedInfo> {
+    pub(crate) fn new() -> Arc<ClockedInfo> {
         let mut info: Arc<ClockedInfo> = Arc::new(ClockedInfo { baseClocks: UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1), subClocks: UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1), subToBase: UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1), baseToSub: UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1) });
         info
     }
 
-    pub fn toString(mut info: Arc<ClockedInfo>) -> Result<ArcStr> {
+    pub(crate) fn toString(mut info: Arc<ClockedInfo>) -> Result<ArcStr> {
         let mut r#str: ArcStr = literal!("");
         if !(isEmpty(info.clone())) {
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_2((literal!("Clocked Info")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
@@ -435,12 +435,12 @@ pub mod ClockedInfo {
         Ok(r#str)
     }
 
-    pub fn isEmpty(mut info: Arc<ClockedInfo>) -> bool {
+    pub(crate) fn isEmpty(mut info: Arc<ClockedInfo>) -> bool {
         let mut b: bool = UnorderedMap::isEmpty(info.baseClocks.clone());
         b
     }
 
-    pub fn resolveSubClocks(mut info: Arc<ClockedInfo>, mut clock_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>>>) -> Result<()> {
+    pub(crate) fn resolveSubClocks(mut info: Arc<ClockedInfo>, mut clock_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>>>) -> Result<()> {
         for mut cref in &*UnorderedMap::keyList(clock_map.clone()) {
             let mut cref = cref.clone();
             resolveImplicitSubClock(cref.clone(), info.clone(), clock_map.clone())?;
@@ -456,7 +456,7 @@ pub mod ClockedInfo {
         Ok(())
     }
 
-    pub fn baseClockCount(mut info: Arc<ClockedInfo>, mut countInferred: bool) -> Result<i32> {
+    pub(crate) fn baseClockCount(mut info: Arc<ClockedInfo>, mut countInferred: bool) -> Result<i32> {
         let mut count: i32 = UnorderedMap::size(info.baseClocks.clone());
         if !(countInferred.clone()) {
             count = count.clone() - List::count(UnorderedMap::valueList(info.baseClocks.clone()), (std::sync::Arc::new(fnptr!(BClock::isInferredClock, Arc<BClock::BClock>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BClock::BClock>) -> Result<bool> + 'static>))?;
@@ -464,7 +464,7 @@ pub mod ClockedInfo {
         Ok(count)
     }
 
-    pub fn subClockCount(mut info: Arc<ClockedInfo>) -> i32 {
+    pub(crate) fn subClockCount(mut info: Arc<ClockedInfo>) -> i32 {
         let mut count: i32 = UnorderedMap::size(info.subClocks.clone());
         count
     }
@@ -526,7 +526,7 @@ pub mod ClockedInfo {
 // =========================================================================
 //                      MAIN ROUTINE, PLEASE DO NOT CHANGE
 // =========================================================================
-pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>, mut kind: Partition::Kind) -> Result<Arc<BackendDAE::NBackendDAE>> {
+pub(crate) fn main(mut bdae: Arc<BackendDAE::NBackendDAE>, mut kind: Partition::Kind) -> Result<Arc<BackendDAE::NBackendDAE>> {
     let mut bdae: Arc<BackendDAE::NBackendDAE> = bdae;
     let mut func: Module::partitioningInterface;
     func = getModule()?;
@@ -570,7 +570,7 @@ pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>, mut kind: Partition::Kind) -
     Ok(bdae)
 }
 
-pub fn getModule() -> Result<Arc<dyn ::std::ops::Fn(Partition::Kind, Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>, Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>, Arc<ClockedInfo::ClockedInfo>) -> Result<Arc<metamodelica::List<Arc<Partition::Partition::Partition>>>> + 'static>> {
+pub(crate) fn getModule() -> Result<Arc<dyn ::std::ops::Fn(Partition::Kind, Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>, Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>, Arc<ClockedInfo::ClockedInfo>) -> Result<Arc<metamodelica::List<Arc<Partition::Partition::Partition>>>> + 'static>> {
     let mut func: Module::partitioningInterface;
     let mut flag: ArcStr = literal!("clocked");
     func = (::match_deref::match_deref! { match &(flag.clone()) {
@@ -583,7 +583,7 @@ pub fn getModule() -> Result<Arc<dyn ::std::ops::Fn(Partition::Kind, Arc<Variabl
     Ok(func)
 }
 
-pub fn categorize(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<BackendDAE::NBackendDAE>> {
+pub(crate) fn categorize(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<BackendDAE::NBackendDAE>> {
     let mut bdae: Arc<BackendDAE::NBackendDAE> = bdae;
     bdae = ({
         let mut ode: DoubleEnded::MutableList<Arc<Partition::Partition::Partition>> = DoubleEnded::fromList(metamodelica::nil())?;
@@ -616,7 +616,7 @@ pub fn categorize(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<BackendD
     Ok(bdae)
 }
 
-pub fn extractClocksEqn(mut eqn: Arc<Equation::Equation>, mut clck_coll: Arc<UnorderedMap::UnorderedMap<Arc<BClock::BClock>, Arc<ComponentRef::NFComponentRef>>>, mut infr_coll: Arc<UnorderedMap::UnorderedMap<Arc<BClock::BClock>, Arc<ComponentRef::NFComponentRef>>>, mut new_clocks: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>>, mut new_infers: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>>, mut idx: Pointer::Pointer<i32>) -> Result<Arc<Equation::Equation>> {
+pub(crate) fn extractClocksEqn(mut eqn: Arc<Equation::Equation>, mut clck_coll: Arc<UnorderedMap::UnorderedMap<Arc<BClock::BClock>, Arc<ComponentRef::NFComponentRef>>>, mut infr_coll: Arc<UnorderedMap::UnorderedMap<Arc<BClock::BClock>, Arc<ComponentRef::NFComponentRef>>>, mut new_clocks: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>>, mut new_infers: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>>, mut idx: Pointer::Pointer<i32>) -> Result<Arc<Equation::Equation>> {
     let mut eqn: Arc<Equation::Equation> = eqn;
     eqn = (::match_deref::match_deref! { match &(eqn.clone()) {
         Deref @ BEquation::Equation::WHEN_EQUATION { .. } => {
@@ -630,7 +630,7 @@ pub fn extractClocksEqn(mut eqn: Arc<Equation::Equation>, mut clck_coll: Arc<Uno
     Ok(eqn)
 }
 
-pub fn extractClocksWhenCond(mut body_opt: Option<Arc<WhenEquationBody::WhenEquationBody>>, mut clck_coll: Arc<UnorderedMap::UnorderedMap<Arc<BClock::BClock>, Arc<ComponentRef::NFComponentRef>>>, mut infr_coll: Arc<UnorderedMap::UnorderedMap<Arc<BClock::BClock>, Arc<ComponentRef::NFComponentRef>>>, mut new_clocks: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>>, mut new_infers: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>>, mut idx: Pointer::Pointer<i32>) -> Result<Option<Arc<WhenEquationBody::WhenEquationBody>>> {
+pub(crate) fn extractClocksWhenCond(mut body_opt: Option<Arc<WhenEquationBody::WhenEquationBody>>, mut clck_coll: Arc<UnorderedMap::UnorderedMap<Arc<BClock::BClock>, Arc<ComponentRef::NFComponentRef>>>, mut infr_coll: Arc<UnorderedMap::UnorderedMap<Arc<BClock::BClock>, Arc<ComponentRef::NFComponentRef>>>, mut new_clocks: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>>, mut new_infers: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>>, mut idx: Pointer::Pointer<i32>) -> Result<Option<Arc<WhenEquationBody::WhenEquationBody>>> {
     let mut body_opt: Option<Arc<WhenEquationBody::WhenEquationBody>> = body_opt;
     body_opt = (::match_deref::match_deref! { match &(body_opt.clone()) {
         Some(body) => {
@@ -649,7 +649,7 @@ pub fn extractClocksWhenCond(mut body_opt: Option<Arc<WhenEquationBody::WhenEqua
     Ok(body_opt)
 }
 
-pub fn extractClocks(mut exp: Arc<Expression::NFExpression>, mut clck_coll: Arc<UnorderedMap::UnorderedMap<Arc<BClock::BClock>, Arc<ComponentRef::NFComponentRef>>>, mut infr_coll: Arc<UnorderedMap::UnorderedMap<Arc<BClock::BClock>, Arc<ComponentRef::NFComponentRef>>>, mut new_clocks: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>>, mut new_infers: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>>, mut idx: Pointer::Pointer<i32>, mut when_cond: bool) -> Result<Arc<Expression::NFExpression>> {
+pub(crate) fn extractClocks(mut exp: Arc<Expression::NFExpression>, mut clck_coll: Arc<UnorderedMap::UnorderedMap<Arc<BClock::BClock>, Arc<ComponentRef::NFComponentRef>>>, mut infr_coll: Arc<UnorderedMap::UnorderedMap<Arc<BClock::BClock>, Arc<ComponentRef::NFComponentRef>>>, mut new_clocks: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>>, mut new_infers: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>>, mut idx: Pointer::Pointer<i32>, mut when_cond: bool) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression> = exp;
     exp = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CLKCONST { .. } if (when_cond.clone() || !(ClockKind::isInferred(var_field!((*exp).clk, Expression::NFExpression::CLKCONST).clone()))) => {
@@ -726,13 +726,13 @@ pub mod Cluster {
 
     pub type CLUSTER = Cluster;
 
-    pub fn toString(mut cluster: Arc<Cluster>) -> Result<ArcStr> {
+    pub(crate) fn toString(mut cluster: Arc<Cluster>) -> Result<ArcStr> {
         let mut r#str: ArcStr;
         r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("### Cluster Variables:\n")); __mm_s.push_str(&*UnorderedSet::toString(cluster.variables.clone(), (std::sync::Arc::new(ComponentRef::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<ArcStr> + 'static>), (literal!("\n")).clone())?); __mm_s.push_str(&*literal!("\n### Cluster Equation Identifiers:\n")); __mm_s.push_str(&*UnorderedSet::toString(cluster.eqn_idnts.clone(), (std::sync::Arc::new(ComponentRef::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<ArcStr> + 'static>), (literal!("\n")).clone())?); ArcStr::from(__mm_s) }).clone();
         Ok(r#str)
     }
 
-    pub fn addElement(mut cluster_opt: Option<Arc<Cluster>>, mut cref: Arc<ComponentRef::NFComponentRef>, mut ty: ClusterElementType) -> Result<Arc<Cluster>> {
+    pub(crate) fn addElement(mut cluster_opt: Option<Arc<Cluster>>, mut cref: Arc<ComponentRef::NFComponentRef>, mut ty: ClusterElementType) -> Result<Arc<Cluster>> {
         let mut cluster: Arc<Cluster> = Arc::new(<Cluster as ::std::default::Default>::default());
         cluster = (::match_deref::match_deref! { match &(cluster_opt.clone()) {
         Some(__esc_cluster) => {
@@ -759,7 +759,7 @@ pub mod Cluster {
         Ok(cluster)
     }
 
-    pub fn addToClockMap(mut cluster: Arc<Cluster>, mut equations: Arc<EquationPointers::EquationPointers>, mut info: Arc<ClockedInfo::ClockedInfo>, mut clock_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>>>) -> Result<()> {
+    pub(crate) fn addToClockMap(mut cluster: Arc<Cluster>, mut equations: Arc<EquationPointers::EquationPointers>, mut info: Arc<ClockedInfo::ClockedInfo>, mut clock_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>>>) -> Result<()> {
         fn findClock(mut exp: Arc<Expression::NFExpression>, mut info: Arc<ClockedInfo::ClockedInfo>, mut clock_ptr: Pointer::Pointer<Option<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<Expression::NFExpression>> {
             let mut exp: Arc<Expression::NFExpression> = exp;
             let mut clock_opt: Option<Arc<ComponentRef::NFComponentRef>> = Pointer::access(clock_ptr.clone());
@@ -801,7 +801,7 @@ pub mod Cluster {
         Ok(())
     }
 
-    pub fn toPartition(mut cluster: Arc<Cluster>, mut variables: Arc<VariablePointers::VariablePointers>, mut equations: Arc<EquationPointers::EquationPointers>, mut kind: Partition::Kind, mut info: Arc<ClockedInfo::ClockedInfo>, mut held_crefs: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut infer_del: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<Partition::Partition::Partition>> {
+    pub(crate) fn toPartition(mut cluster: Arc<Cluster>, mut variables: Arc<VariablePointers::VariablePointers>, mut equations: Arc<EquationPointers::EquationPointers>, mut kind: Partition::Kind, mut info: Arc<ClockedInfo::ClockedInfo>, mut held_crefs: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut infer_del: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<Partition::Partition::Partition>> {
         let mut partition: Arc<Partition::Partition::Partition>;
         let mut cvars: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = UnorderedSet::toList(cluster.variables.clone());
         let mut cidnt: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = UnorderedSet::toList(cluster.eqn_idnts.clone());
@@ -906,7 +906,7 @@ pub mod DisjointSetForest {
 
     pub type FOREST = DisjointSetForest;
 
-    pub fn new(mut n: i32) -> Arc<DisjointSetForest> {
+    pub(crate) fn new(mut n: i32) -> Arc<DisjointSetForest> {
         let mut dsf: Arc<DisjointSetForest>;
         dsf = Arc::new(DisjointSetForest { parent: Pointer::create(metamodelica::arrayFromVec(({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -919,7 +919,7 @@ pub mod DisjointSetForest {
         dsf
     }
 
-    pub fn find(mut dsf: Arc<DisjointSetForest>, mut index: i32) -> i32 {
+    pub(crate) fn find(mut dsf: Arc<DisjointSetForest>, mut index: i32) -> i32 {
         let mut index: i32 = index;
         let mut parent: metamodelica::Array<i32> = Pointer::access(dsf.parent.clone());
         while index.clone() != ({let __elt = parent.borrow()[(index.clone()-1) as usize].clone(); __elt}) {
@@ -934,7 +934,7 @@ pub mod DisjointSetForest {
         index
     }
 
-    pub fn unite(mut dsf: Arc<DisjointSetForest>, mut indices: Arc<metamodelica::List<i32>>) -> Result<i32> {
+    pub(crate) fn unite(mut dsf: Arc<DisjointSetForest>, mut indices: Arc<metamodelica::List<i32>>) -> Result<i32> {
         let mut root: i32;
         let mut roots: Arc<metamodelica::List<i32>> = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -1433,7 +1433,7 @@ fn addCrefToSet(mut cref: Arc<ComponentRef::NFComponentRef>, mut set: Arc<Unorde
 }
 
 fn replaceClockedFunctions(mut exp: Arc<Expression::NFExpression>, mut held_crefs: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<Expression::NFExpression>> {
-    pub fn replaceSample(mut exp: Arc<Expression::NFExpression>, mut call: Arc<Call::NFCall>, mut basic: bool) -> Result<Arc<Expression::NFExpression>> {
+    pub(crate) fn replaceSample(mut exp: Arc<Expression::NFExpression>, mut call: Arc<Call::NFCall>, mut basic: bool) -> Result<Arc<Expression::NFExpression>> {
         let mut exp: Arc<Expression::NFExpression> = exp;
         let mut arg1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
         let mut arg2: Arc<Expression::NFExpression> = Arc::new(Expression::END);

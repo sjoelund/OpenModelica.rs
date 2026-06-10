@@ -102,7 +102,7 @@ use openmodelica_util_datatypes_basic::List;
 //   - printVariables
 //   - printVarList
 // =============================================================================
-pub fn printBackendDAE(mut inBackendDAE: Arc<BackendDAE::BackendDAE>) -> Result<()> {
+pub(crate) fn printBackendDAE(mut inBackendDAE: Arc<BackendDAE::BackendDAE>) -> Result<()> {
     let mut eqs: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>>;
     let mut shared: Arc<BackendDAE::Shared>;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inBackendDAE.clone()) {
@@ -117,7 +117,7 @@ pub fn printBackendDAE(mut inBackendDAE: Arc<BackendDAE::BackendDAE>) -> Result<
     Ok(())
 }
 
-pub fn printEqSystem(mut inSyst: Arc<BackendDAE::EqSystem>) -> Result<()> {
+pub(crate) fn printEqSystem(mut inSyst: Arc<BackendDAE::EqSystem>) -> Result<()> {
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*partitionKindString(inSyst.partitionKind.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     dumpVariables(inSyst.orderedVars.clone(), (literal!("Variables")).clone())?;
     dumpEquationArray(inSyst.orderedEqs.clone(), (literal!("Equations")).clone())?;
@@ -131,17 +131,17 @@ pub fn printEqSystem(mut inSyst: Arc<BackendDAE::EqSystem>) -> Result<()> {
     Ok(())
 }
 
-pub fn printEquation(mut inEquation: Arc<BackendDAE::Equation>) -> Result<()> {
+pub(crate) fn printEquation(mut inEquation: Arc<BackendDAE::Equation>) -> Result<()> {
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*equationString(inEquation.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     Ok(())
 }
 
-pub fn printEquationArray(mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>) -> Result<()> {
+pub(crate) fn printEquationArray(mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>) -> Result<()> {
     List::fold(BackendEquation::equationList(eqns.clone())?, (std::sync::Arc::new(printEquationList2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>, (i32, i32)) -> Result<(i32, i32)> + 'static>), (1, 1))?;
     Ok(())
 }
 
-pub fn printEquationList(mut eqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) -> Result<()> {
+pub(crate) fn printEquationList(mut eqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) -> Result<()> {
     List::fold(eqns.clone(), (std::sync::Arc::new(printEquationList2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>, (i32, i32)) -> Result<(i32, i32)> + 'static>), (1, 1))?;
     Ok(())
 }
@@ -160,7 +160,7 @@ fn printEquationList2(mut inEquation: Arc<BackendDAE::Equation>, mut inInteger: 
     Ok(oInteger)
 }
 
-pub fn equationListString(mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut heading: ArcStr) -> Result<ArcStr> {
+pub(crate) fn equationListString(mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut heading: ArcStr) -> Result<ArcStr> {
     let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(heading.clone()) {
         Deref @ "" => {
@@ -192,7 +192,7 @@ fn equationList2String(mut inEquation: Arc<BackendDAE::Equation>, mut inTuple: (
     Ok(outTuple)
 }
 
-pub fn printEquations(mut inIntegerLst: Arc<metamodelica::List<i32>>, mut syst: Arc<BackendDAE::EqSystem>) -> Result<()> {
+pub(crate) fn printEquations(mut inIntegerLst: Arc<metamodelica::List<i32>>, mut syst: Arc<BackendDAE::EqSystem>) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(inIntegerLst.clone()) {
         Deref @ metamodelica::List::Nil => {
             ()
@@ -220,7 +220,7 @@ fn printEquationNo(mut inInteger: i32, mut syst: Arc<BackendDAE::EqSystem>) -> R
     Ok(())
 }
 
-pub fn printClassAttributes(mut optimicaFun: Arc<DAE::ClassAttributes>) -> Result<()> {
+pub(crate) fn printClassAttributes(mut optimicaFun: Arc<DAE::ClassAttributes>) -> Result<()> {
     let mut e1: Option<Arc<DAE::Exp>>;
     let mut e2: Option<Arc<DAE::Exp>>;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(optimicaFun.clone()) {
@@ -237,7 +237,7 @@ pub fn printClassAttributes(mut optimicaFun: Arc<DAE::ClassAttributes>) -> Resul
     Ok(())
 }
 
-pub fn printShared(mut inShared: Arc<BackendDAE::Shared>) -> Result<()> {
+pub(crate) fn printShared(mut inShared: Arc<BackendDAE::Shared>) -> Result<()> {
     metamodelica::print((literal!("\nBackendDAEType: ")).clone());
     printBackendDAEType(inShared.backendDAEType.clone())?;
     metamodelica::print((literal!("\n\n")).clone());
@@ -264,7 +264,7 @@ pub fn printShared(mut inShared: Arc<BackendDAE::Shared>) -> Result<()> {
     Ok(())
 }
 
-pub fn printBasePartitions(mut basePartitions: metamodelica::Array<BackendDAE::BasePartition>) -> Result<()> {
+pub(crate) fn printBasePartitions(mut basePartitions: metamodelica::Array<BackendDAE::BasePartition>) -> Result<()> {
     let mut clkExpStr: ArcStr;
     let mut nSubClocksStr: ArcStr;
     for mut i in 1..=metamodelica::arrayLength(basePartitions.clone()) {
@@ -275,7 +275,7 @@ pub fn printBasePartitions(mut basePartitions: metamodelica::Array<BackendDAE::B
     Ok(())
 }
 
-pub fn printSubPartitions(mut subPartitions: metamodelica::Array<BackendDAE::SubPartition>) -> Result<()> {
+pub(crate) fn printSubPartitions(mut subPartitions: metamodelica::Array<BackendDAE::SubPartition>) -> Result<()> {
     let mut subClockStr: ArcStr;
     let mut eventStr: ArcStr;
     for mut i in 1..=metamodelica::arrayLength(subPartitions.clone()) {
@@ -286,7 +286,7 @@ pub fn printSubPartitions(mut subPartitions: metamodelica::Array<BackendDAE::Sub
     Ok(())
 }
 
-pub fn subClockString(mut subClock: BackendDAE::SubClock) -> Result<ArcStr> {
+pub(crate) fn subClockString(mut subClock: BackendDAE::SubClock) -> Result<ArcStr> {
     let mut subClockString: ArcStr = arcstr::literal!("");
     subClockString = ((match subClock.clone() {
         BackendDAE::SubClock::INFERED_SUBCLOCK { .. } => {
@@ -310,7 +310,7 @@ pub fn subClockString(mut subClock: BackendDAE::SubClock) -> Result<ArcStr> {
     Ok(subClockString)
 }
 
-pub fn optionString(mut option: Option<ArcStr>) -> ArcStr {
+pub(crate) fn optionString(mut option: Option<ArcStr>) -> ArcStr {
     let mut optionString: ArcStr;
     optionString = ((match option.clone() {
         Some(mut s) => {
@@ -323,12 +323,12 @@ pub fn optionString(mut option: Option<ArcStr>) -> ArcStr {
     optionString
 }
 
-pub fn printBackendDAEType(mut btp: BackendDAE::BackendDAEType) -> Result<()> {
+pub(crate) fn printBackendDAEType(mut btp: BackendDAE::BackendDAEType) -> Result<()> {
     metamodelica::print((printBackendDAEType2String(btp.clone())?).clone());
     Ok(())
 }
 
-pub fn printBackendDAEType2String(mut btp: BackendDAE::BackendDAEType) -> Result<ArcStr> {
+pub(crate) fn printBackendDAEType2String(mut btp: BackendDAE::BackendDAEType) -> Result<ArcStr> {
     let mut r#str: ArcStr;
     r#str = ((match btp.clone() {
         BackendDAE::BackendDAEType::SIMULATION { .. } => literal!("simulation"),
@@ -343,7 +343,7 @@ pub fn printBackendDAEType2String(mut btp: BackendDAE::BackendDAEType) -> Result
     Ok(r#str)
 }
 
-pub fn printStateSets(mut stateSets: Arc<metamodelica::List<BackendDAE::StateSet>>) -> Result<()> {
+pub(crate) fn printStateSets(mut stateSets: Arc<metamodelica::List<BackendDAE::StateSet>>) -> Result<()> {
     List::map_0(stateSets.clone(), (std::sync::Arc::new(printStateSet) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::StateSet) -> Result<()> + 'static>))?;
     Ok(())
 }
@@ -359,17 +359,17 @@ fn printStateSet(mut inStateSet: BackendDAE::StateSet) -> Result<()> {
     Ok(())
 }
 
-pub fn printVar(mut inVar: BackendDAE::Var) -> Result<()> {
+pub(crate) fn printVar(mut inVar: BackendDAE::Var) -> Result<()> {
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*varString(inVar.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     Ok(())
 }
 
-pub fn printVariables(mut vars: BackendDAE::Variables) -> Result<()> {
+pub(crate) fn printVariables(mut vars: BackendDAE::Variables) -> Result<()> {
     List::fold(BackendVariable::varList(vars.clone())?, (std::sync::Arc::new(printVars1) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, i32) -> Result<i32> + 'static>), 1)?;
     Ok(())
 }
 
-pub fn printVarList(mut vars: Arc<metamodelica::List<BackendDAE::Var>>) -> Result<()> {
+pub(crate) fn printVarList(mut vars: Arc<metamodelica::List<BackendDAE::Var>>) -> Result<()> {
     List::fold(vars.clone(), (std::sync::Arc::new(printVars1) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, i32) -> Result<i32> + 'static>), 1)?;
     Ok(())
 }
@@ -383,7 +383,7 @@ fn printVars1(mut inVar: BackendDAE::Var, mut inVarNo: i32) -> Result<i32> {
     Ok(outVarNo)
 }
 
-pub fn varListString(mut inVars: Arc<metamodelica::List<BackendDAE::Var>>, mut heading: ArcStr) -> Result<ArcStr> {
+pub(crate) fn varListString(mut inVars: Arc<metamodelica::List<BackendDAE::Var>>, mut heading: ArcStr) -> Result<ArcStr> {
     let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(heading.clone()) {
         Deref @ "" => {
@@ -413,7 +413,7 @@ fn var1String(mut inVar: BackendDAE::Var, mut inTpl: (i32, ArcStr)) -> Result<(i
     Ok(outTpl)
 }
 
-pub fn varListStringShort(mut inVars: Arc<metamodelica::List<BackendDAE::Var>>, mut heading: ArcStr) -> Result<ArcStr> {
+pub(crate) fn varListStringShort(mut inVars: Arc<metamodelica::List<BackendDAE::Var>>, mut heading: ArcStr) -> Result<ArcStr> {
     let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(heading.clone()) {
         Deref @ "" => {
@@ -443,7 +443,7 @@ fn varNameString(mut inVar: BackendDAE::Var, mut inTpl: (i32, ArcStr)) -> Result
     Ok(outTpl)
 }
 
-pub fn varListStringIndented(mut inVars: Arc<metamodelica::List<BackendDAE::Var>>, mut heading: ArcStr) -> Result<ArcStr> {
+pub(crate) fn varListStringIndented(mut inVars: Arc<metamodelica::List<BackendDAE::Var>>, mut heading: ArcStr) -> Result<ArcStr> {
     let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(heading.clone()) {
         Deref @ "" => {
@@ -506,7 +506,7 @@ fn printExternalObjectClasses(mut cls: Arc<metamodelica::List<BackendDAE::Extern
     Ok(())
 }
 
-pub fn printSparsityPatternCrefs(mut inPattern: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>) -> Result<()> {
+pub(crate) fn printSparsityPatternCrefs(mut inPattern: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>) -> Result<()> {
     for mut e in &*inPattern.clone() {
         let mut e = e.clone();
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(Util::tuple21(e.clone()))?); __mm_s.push_str(&*literal!(" affects the following (")); __mm_s.push_str(&*intString((Util::tuple22(e.clone()).len() as i32))); __mm_s.push_str(&*literal!(") outputs\n  ")); ArcStr::from(__mm_s) }).clone());
@@ -519,14 +519,14 @@ pub fn printSparsityPatternCrefs(mut inPattern: Arc<metamodelica::List<(Arc<DAE:
 // section for all graphviz* functions
 //
 // =============================================================================
-pub fn graphvizBackendDAE(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut inFileNameSuffix: ArcStr) -> Result<()> {
+pub(crate) fn graphvizBackendDAE(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut inFileNameSuffix: ArcStr) -> Result<()> {
     let mut dae: Arc<BackendDAE::BackendDAE>;
     dae = setAdjacencyMatrix(inBackendDAE.clone())?;
     Tpl::tplNoret2((std::sync::Arc::new(GraphvizDump::dumpBackendDAE) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, Arc<BackendDAE::BackendDAE>, ArcStr) -> Result<Tpl::Text> + 'static>), dae.clone(), (inFileNameSuffix.clone()).clone())?;
     Ok(())
 }
 
-pub fn graphvizAdjacencyMatrix(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut inFileNameSuffix: ArcStr) -> Result<()> {
+pub(crate) fn graphvizAdjacencyMatrix(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut inFileNameSuffix: ArcStr) -> Result<()> {
     let mut dae: Arc<BackendDAE::BackendDAE>;
     dae = setAdjacencyMatrix(inBackendDAE.clone())?;
     Tpl::tplNoret2((std::sync::Arc::new(GraphvizDump::dumpAdjacencyMatrix) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, Arc<BackendDAE::BackendDAE>, ArcStr) -> Result<Tpl::Text> + 'static>), dae.clone(), (inFileNameSuffix.clone()).clone())?;
@@ -580,27 +580,27 @@ pub const BORDER: &'static str = "########################################";
 
 pub const UNDERLINE: &'static str = "========================================";
 
-pub fn dumpDAE(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
+pub(crate) fn dumpDAE(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut outDAE: Arc<BackendDAE::BackendDAE> = inDAE.clone();
     dumpBackendDAE(inDAE.clone(), (literal!("dumpDAE")).clone())?;
     Ok(outDAE)
 }
 
-pub fn dumpBackendDAE(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut heading: ArcStr) -> Result<()> {
+pub(crate) fn dumpBackendDAE(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut heading: ArcStr) -> Result<()> {
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*heading.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
     printBackendDAE(inBackendDAE.clone())?;
     metamodelica::print((literal!("\n")).clone());
     Ok(())
 }
 
-pub fn dumpEqSystem(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut heading: ArcStr) -> Result<()> {
+pub(crate) fn dumpEqSystem(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut heading: ArcStr) -> Result<()> {
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*heading.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     printEqSystem(inEqSystem.clone())?;
     metamodelica::print((literal!("\n")).clone());
     Ok(())
 }
 
-pub fn dumpEqSystemShort(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut heading: ArcStr) -> Result<()> {
+pub(crate) fn dumpEqSystemShort(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut heading: ArcStr) -> Result<()> {
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*heading.clone()); __mm_s.push_str(&*literal!(" (")); __mm_s.push_str(&*partitionKindString(inEqSystem.partitionKind.clone())?); __mm_s.push_str(&*literal!(")\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     dumpVariables(inEqSystem.orderedVars.clone(), (literal!("Variables")).clone())?;
     dumpEquationArray(inEqSystem.orderedEqs.clone(), (literal!("Equations")).clone())?;
@@ -608,14 +608,14 @@ pub fn dumpEqSystemShort(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut heading:
     Ok(())
 }
 
-pub fn dumpEqSystems(mut inEqSystems: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>>, mut heading: ArcStr) -> Result<()> {
+pub(crate) fn dumpEqSystems(mut inEqSystems: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>>, mut heading: ArcStr) -> Result<()> {
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*heading.clone()); __mm_s.push_str(&*literal!(" (")); __mm_s.push_str(&*intString((inEqSystems.clone().len() as i32))); __mm_s.push_str(&*literal!(" partitions)\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
     List::map_0(inEqSystems.clone(), (std::sync::Arc::new(printEqSystem) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>) -> Result<()> + 'static>))?;
     metamodelica::print((literal!("\n")).clone());
     Ok(())
 }
 
-pub fn dumpBasePartitions(mut basePartitions: metamodelica::Array<BackendDAE::BasePartition>, mut heading: ArcStr) -> Result<()> {
+pub(crate) fn dumpBasePartitions(mut basePartitions: metamodelica::Array<BackendDAE::BasePartition>, mut heading: ArcStr) -> Result<()> {
     if metamodelica::arrayLength(basePartitions.clone()) > 0 {
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*heading.clone()); __mm_s.push_str(&*literal!(" (")); __mm_s.push_str(&*intString(metamodelica::arrayLength(basePartitions.clone()))); __mm_s.push_str(&*literal!(")\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         printBasePartitions(basePartitions.clone())?;
@@ -624,7 +624,7 @@ pub fn dumpBasePartitions(mut basePartitions: metamodelica::Array<BackendDAE::Ba
     Ok(())
 }
 
-pub fn dumpSubPartitions(mut subPartitions: metamodelica::Array<BackendDAE::SubPartition>, mut heading: ArcStr) -> Result<()> {
+pub(crate) fn dumpSubPartitions(mut subPartitions: metamodelica::Array<BackendDAE::SubPartition>, mut heading: ArcStr) -> Result<()> {
     if metamodelica::arrayLength(subPartitions.clone()) > 0 {
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*heading.clone()); __mm_s.push_str(&*literal!(" (")); __mm_s.push_str(&*intString(metamodelica::arrayLength(subPartitions.clone()))); __mm_s.push_str(&*literal!(")\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         printSubPartitions(subPartitions.clone())?;
@@ -633,7 +633,7 @@ pub fn dumpSubPartitions(mut subPartitions: metamodelica::Array<BackendDAE::SubP
     Ok(())
 }
 
-pub fn dumpVariables(mut inVars: BackendDAE::Variables, mut heading: ArcStr) -> Result<()> {
+pub(crate) fn dumpVariables(mut inVars: BackendDAE::Variables, mut heading: ArcStr) -> Result<()> {
     if BackendVariable::varsSize(inVars.clone()) > 0 {
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*heading.clone()); __mm_s.push_str(&*literal!(" (")); __mm_s.push_str(&*intString(BackendVariable::varsSize(inVars.clone()))); __mm_s.push_str(&*literal!(")\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         printVariables(inVars.clone())?;
@@ -642,14 +642,14 @@ pub fn dumpVariables(mut inVars: BackendDAE::Variables, mut heading: ArcStr) -> 
     Ok(())
 }
 
-pub fn dumpVarList(mut inVars: Arc<metamodelica::List<BackendDAE::Var>>, mut heading: ArcStr) -> Result<()> {
+pub(crate) fn dumpVarList(mut inVars: Arc<metamodelica::List<BackendDAE::Var>>, mut heading: ArcStr) -> Result<()> {
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*heading.clone()); __mm_s.push_str(&*literal!(" (")); __mm_s.push_str(&*intString((inVars.clone().len() as i32))); __mm_s.push_str(&*literal!(")\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     printVarList(inVars.clone())?;
     metamodelica::print((literal!("\n")).clone());
     Ok(())
 }
 
-pub fn dumpEquationArray(mut inEqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut heading: ArcStr) -> Result<()> {
+pub(crate) fn dumpEquationArray(mut inEqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut heading: ArcStr) -> Result<()> {
     if BackendEquation::getNumberOfEquations(inEqns.clone()) + BackendEquation::equationArraySize(inEqns.clone())? > 0 {
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*heading.clone()); __mm_s.push_str(&*literal!(" (")); __mm_s.push_str(&*intString(BackendEquation::getNumberOfEquations(inEqns.clone()))); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*intString(BackendEquation::equationArraySize(inEqns.clone())?)); __mm_s.push_str(&*literal!(")\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         printEquationArray(inEqns.clone())?;
@@ -658,7 +658,7 @@ pub fn dumpEquationArray(mut inEqns: Arc<ExpandableArray::ExpandableArray<Arc<Ba
     Ok(())
 }
 
-pub fn dumpEquationList(mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut heading: ArcStr) -> Result<()> {
+pub(crate) fn dumpEquationList(mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut heading: ArcStr) -> Result<()> {
     if !(inEqns.clone().is_empty()) {
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*heading.clone()); __mm_s.push_str(&*literal!(" (")); __mm_s.push_str(&*intString((inEqns.clone().len() as i32))); __mm_s.push_str(&*literal!(")\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         printEquationList(inEqns.clone())?;
@@ -676,7 +676,7 @@ fn dumpExternalObjectClasses(mut inEOC: Arc<metamodelica::List<BackendDAE::Exter
     Ok(())
 }
 
-pub fn dumpStateSets(mut stateSets: Arc<metamodelica::List<BackendDAE::StateSet>>, mut heading: ArcStr) -> Result<()> {
+pub(crate) fn dumpStateSets(mut stateSets: Arc<metamodelica::List<BackendDAE::StateSet>>, mut heading: ArcStr) -> Result<()> {
     if !(stateSets.clone().is_empty()) {
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*heading.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         printStateSets(stateSets.clone())?;
@@ -685,7 +685,7 @@ pub fn dumpStateSets(mut stateSets: Arc<metamodelica::List<BackendDAE::StateSet>
     Ok(())
 }
 
-pub fn dumpZeroCrossingList(mut inZeroCrossingList: Arc<metamodelica::List<BackendDAE::ZeroCrossing>>, mut heading: ArcStr) -> Result<()> {
+pub(crate) fn dumpZeroCrossingList(mut inZeroCrossingList: Arc<metamodelica::List<BackendDAE::ZeroCrossing>>, mut heading: ArcStr) -> Result<()> {
     let mut zeroCrossing: BackendDAE::ZeroCrossing = <BackendDAE::ZeroCrossing as ::std::default::Default>::default();
     if !(inZeroCrossingList.clone().is_empty()) {
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*heading.clone()); __mm_s.push_str(&*literal!(" (")); __mm_s.push_str(&*intString((inZeroCrossingList.clone().len() as i32))); __mm_s.push_str(&*literal!(")\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
@@ -698,7 +698,7 @@ pub fn dumpZeroCrossingList(mut inZeroCrossingList: Arc<metamodelica::List<Backe
     Ok(())
 }
 
-pub fn dumpTimeEvents(mut inTimeEvents: Arc<metamodelica::List<BackendDAE::TimeEvent>>, mut heading: ArcStr) -> Result<()> {
+pub(crate) fn dumpTimeEvents(mut inTimeEvents: Arc<metamodelica::List<BackendDAE::TimeEvent>>, mut heading: ArcStr) -> Result<()> {
     let mut timeEvent: BackendDAE::TimeEvent = BackendDAE::TimeEvent::SIMPLE_TIME_EVENT;
     if !(inTimeEvents.clone().is_empty()) {
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*heading.clone()); __mm_s.push_str(&*literal!(" (")); __mm_s.push_str(&*intString((inTimeEvents.clone().len() as i32))); __mm_s.push_str(&*literal!(")\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
@@ -720,7 +720,7 @@ fn dumpConstraintList(mut inConstraintArray: Arc<metamodelica::List<Arc<DAE::Con
     Ok(())
 }
 
-pub fn dumpHashSet(mut hashSet: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)), mut heading: ArcStr) -> Result<()> {
+pub(crate) fn dumpHashSet(mut hashSet: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)), mut heading: ArcStr) -> Result<()> {
     let mut size: i32;
     size = BaseHashSet::currentSize(hashSet.clone());
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*heading.clone()); __mm_s.push_str(&*literal!(" (")); __mm_s.push_str(&*intString(size.clone())); __mm_s.push_str(&*literal!(")\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
@@ -729,7 +729,7 @@ pub fn dumpHashSet(mut hashSet: (metamodelica::Array<Arc<metamodelica::List<(Arc
     Ok(())
 }
 
-pub fn dumpSparsityPattern(mut inPattern: (Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>), i32), mut heading: ArcStr) -> Result<()> {
+pub(crate) fn dumpSparsityPattern(mut inPattern: (Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>), i32), mut heading: ArcStr) -> Result<()> {
     let mut pattern: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>;
     let mut patternT: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>;
     let mut diffVars: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
@@ -753,7 +753,7 @@ pub fn dumpSparsityPattern(mut inPattern: (Arc<metamodelica::List<(Arc<DAE::Comp
     Ok(())
 }
 
-pub fn dumpSparseColoring(mut inColoring: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>>>, mut heading: ArcStr) -> Result<()> {
+pub(crate) fn dumpSparseColoring(mut inColoring: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>>>, mut heading: ArcStr) -> Result<()> {
     let mut i: i32 = 0;
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*heading.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Number of colors: ")); __mm_s.push_str(&*intString((inColoring.clone().len() as i32))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
@@ -766,7 +766,7 @@ pub fn dumpSparseColoring(mut inColoring: Arc<metamodelica::List<Arc<metamodelic
     Ok(())
 }
 
-pub fn dumpTearing(mut inResEqn: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut inTearVar: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>) -> Result<()> {
+pub(crate) fn dumpTearing(mut inResEqn: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut inTearVar: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>) -> Result<()> {
     let () = (::match_deref::match_deref! { match &((inResEqn.clone(), inTearVar.clone())) {
         (Deref @ metamodelica::List::Cons { head: residualeqns, tail: r }, Deref @ metamodelica::List::Cons { head: tearingvars, tail: t }) => {
             let mut str_r: Arc<metamodelica::List<ArcStr>>;
@@ -797,7 +797,7 @@ pub fn dumpTearing(mut inResEqn: Arc<metamodelica::List<Arc<metamodelica::List<i
     Ok(())
 }
 
-pub fn dumpBackendDAEEqnList(mut inBackendDAEEqnList: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut header: ArcStr, mut printExpTree: bool) -> Result<()> {
+pub(crate) fn dumpBackendDAEEqnList(mut inBackendDAEEqnList: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut header: ArcStr, mut printExpTree: bool) -> Result<()> {
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*header.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     dumpBackendDAEEqnList2(inBackendDAEEqnList.clone(), printExpTree.clone())?;
     metamodelica::print((literal!("===================\n")).clone());
@@ -961,14 +961,14 @@ fn dumpBackendDAEEqnList2(mut inBackendDAEEqnList: Arc<metamodelica::List<Arc<Ba
     Ok(())
 }
 
-pub fn dumpBackendDAEVarList(mut inBackendDAEVarList: Arc<metamodelica::List<BackendDAE::Var>>, mut header: ArcStr) -> Result<()> {
+pub(crate) fn dumpBackendDAEVarList(mut inBackendDAEVarList: Arc<metamodelica::List<BackendDAE::Var>>, mut header: ArcStr) -> Result<()> {
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*header.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     printVarList(inBackendDAEVarList.clone())?;
     metamodelica::print((literal!("===================\n")).clone());
     Ok(())
 }
 
-pub fn dumpEqnsSolved(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut heading: ArcStr) -> Result<()> {
+pub(crate) fn dumpEqnsSolved(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut heading: ArcStr) -> Result<()> {
     let mut eqs: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>>;
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*heading.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     let __pa0 = ::match_deref::match_deref! { match &(inBackendDAE.clone()) {
@@ -1230,7 +1230,7 @@ fn dumpEqnsSolved2(mut inComps: Arc<metamodelica::List<Arc<BackendDAE::StrongCom
     ()
 }
 
-pub fn dumpLoops(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
+pub(crate) fn dumpLoops(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut outDAE: Arc<BackendDAE::BackendDAE> = inDAE.clone();
     let mut comps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>;
     let mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>;
@@ -1266,7 +1266,7 @@ pub fn dumpLoops(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDA
     Ok(outDAE)
 }
 
-pub fn printComponentAdjacencyMatrixEnhanced(mut comp: Arc<BackendDAE::StrongComponent>, mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut vars: BackendDAE::Variables, mut shared: Arc<BackendDAE::Shared>) -> Result<()> {
+pub(crate) fn printComponentAdjacencyMatrixEnhanced(mut comp: Arc<BackendDAE::StrongComponent>, mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut vars: BackendDAE::Variables, mut shared: Arc<BackendDAE::Shared>) -> Result<()> {
     let mut compEqnLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
     let mut compVarLst: Arc<metamodelica::List<BackendDAE::Var>>;
     let mut compEqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>;
@@ -1288,7 +1288,7 @@ pub fn printComponentAdjacencyMatrixEnhanced(mut comp: Arc<BackendDAE::StrongCom
     Ok(())
 }
 
-pub fn dumpComponentsAdvanced(mut l: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut v2: metamodelica::Array<i32>, mut syst: Arc<BackendDAE::EqSystem>) -> Result<()> {
+pub(crate) fn dumpComponentsAdvanced(mut l: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut v2: metamodelica::Array<i32>, mut syst: Arc<BackendDAE::EqSystem>) -> Result<()> {
     let mut vars: BackendDAE::Variables;
     metamodelica::print((literal!("Blocks\n")).clone());
     metamodelica::print((literal!("=======\n")).clone());
@@ -1369,19 +1369,19 @@ fn dumpComponentsAdvanced3(mut inIntegerLst: Arc<metamodelica::List<i32>>, mut v
     Ok(())
 }
 
-pub fn dumpComponents(mut inComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, mut inSyst: Option<Arc<BackendDAE::EqSystem>>) -> Result<()> {
+pub(crate) fn dumpComponents(mut inComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, mut inSyst: Option<Arc<BackendDAE::EqSystem>>) -> Result<()> {
     metamodelica::print((literal!("StrongComponents\n")).clone());
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     List::map1(inComps.clone(), (std::sync::Arc::new(dumpComponent) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::StrongComponent>, Option<Arc<BackendDAE::EqSystem>>) -> Result<()> + 'static>), inSyst.clone())?;
     Ok(())
 }
 
-pub fn dumpComponent(mut inComp: Arc<BackendDAE::StrongComponent>, mut inSyst: Option<Arc<BackendDAE::EqSystem>>) -> Result<()> {
+pub(crate) fn dumpComponent(mut inComp: Arc<BackendDAE::StrongComponent>, mut inSyst: Option<Arc<BackendDAE::EqSystem>>) -> Result<()> {
     metamodelica::print((printComponent(inComp.clone(), inSyst.clone())?).clone());
     Ok(())
 }
 
-pub fn printComponent(mut inComp: Arc<BackendDAE::StrongComponent>, mut inSyst: Option<Arc<BackendDAE::EqSystem>>) -> Result<ArcStr> {
+pub(crate) fn printComponent(mut inComp: Arc<BackendDAE::StrongComponent>, mut inSyst: Option<Arc<BackendDAE::EqSystem>>) -> Result<ArcStr> {
     let mut oString: ArcStr;
     let mut tmpStr: ArcStr = arcstr::literal!("");
     let mut tmpStr2: ArcStr = arcstr::literal!("");
@@ -1531,7 +1531,7 @@ pub fn printComponent(mut inComp: Arc<BackendDAE::StrongComponent>, mut inSyst: 
     Ok(oString)
 }
 
-pub fn dumpListList(mut lstLst: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut heading: ArcStr) -> Result<()> {
+pub(crate) fn dumpListList(mut lstLst: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut heading: ArcStr) -> Result<()> {
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*heading.clone()); __mm_s.push_str(&*literal!(":\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*stringDelimitList(List::map(lstLst.clone(), (std::sync::Arc::new(intListStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>) -> Result<ArcStr> + 'static>))?, (literal!("\n")).clone())); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
     Ok(())
 }
@@ -1543,7 +1543,7 @@ pub fn dumpListList(mut lstLst: Arc<metamodelica::List<Arc<metamodelica::List<i3
 //   - equationString
 //   - strongComponentString
 // =============================================================================
-pub fn strongComponentString(mut inComp: Arc<BackendDAE::StrongComponent>) -> Result<ArcStr> {
+pub(crate) fn strongComponentString(mut inComp: Arc<BackendDAE::StrongComponent>) -> Result<ArcStr> {
     let mut outS: ArcStr;
     outS = ((::match_deref::match_deref! { match &(inComp.clone()) {
         Deref @ BackendDAE::StrongComponent::SINGLEEQUATION { eqn: i, var: v } => {
@@ -1649,7 +1649,7 @@ pub fn strongComponentString(mut inComp: Arc<BackendDAE::StrongComponent>) -> Re
     Ok(outS)
 }
 
-pub fn whenEquationString(mut inWhenEqn: Arc<BackendDAE::WhenEquation>, mut inStart: bool) -> Result<ArcStr> {
+pub(crate) fn whenEquationString(mut inWhenEqn: Arc<BackendDAE::WhenEquation>, mut inStart: bool) -> Result<ArcStr> {
     let mut outString: ArcStr;
     let mut conditionStr: ArcStr;
     let mut whenStmtStr: ArcStr;
@@ -1685,7 +1685,7 @@ pub fn whenEquationString(mut inWhenEqn: Arc<BackendDAE::WhenEquation>, mut inSt
     Ok(outString)
 }
 
-pub fn equationString(mut inEquation: Arc<BackendDAE::Equation>) -> Result<ArcStr> {
+pub(crate) fn equationString(mut inEquation: Arc<BackendDAE::Equation>) -> Result<ArcStr> {
     let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(inEquation.clone()) {
         Deref @ BackendDAE::Equation::EQUATION { exp: e1, scalar: e2, .. } => {
@@ -1833,7 +1833,7 @@ fn timeEventString(mut inTimeEvent: BackendDAE::TimeEvent) -> Result<ArcStr> {
     Ok(outString)
 }
 
-pub fn simIteratorString(mut iter: BackendDAE::SimIterator) -> Result<ArcStr> {
+pub(crate) fn simIteratorString(mut iter: BackendDAE::SimIterator) -> Result<ArcStr> {
     let mut r#str: ArcStr;
     r#str = ((match iter.clone() {
         BackendDAE::SimIterator::SIM_ITERATOR_RANGE { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(var_field!(iter.name, BackendDAE::SimIterator::SIM_ITERATOR_RANGE).clone())?); __mm_s.push_str(&*literal!(" in ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(var_field!(iter.start, BackendDAE::SimIterator::SIM_ITERATOR_RANGE).clone())?); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*ExpressionBasics::printExpStr(var_field!(iter.step, BackendDAE::SimIterator::SIM_ITERATOR_RANGE).clone())?); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*ExpressionBasics::printExpStr(var_field!(iter.stop, BackendDAE::SimIterator::SIM_ITERATOR_RANGE).clone())?); ArcStr::from(__mm_s) },
@@ -1847,109 +1847,109 @@ pub fn simIteratorString(mut iter: BackendDAE::SimIterator) -> Result<ArcStr> {
 //
 // description: ???
 // =============================================================================
-pub fn debugStrCrefLstStr(mut a: ArcStr, mut b: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut c: ArcStr, mut d: ArcStr) -> Result<()> {
+pub(crate) fn debugStrCrefLstStr(mut a: ArcStr, mut b: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut c: ArcStr, mut d: ArcStr) -> Result<()> {
     metamodelica::print((a.clone()).clone());
     debuglst(b.clone(), (std::sync::Arc::new(ComponentReferenceBasics::printComponentRefStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>), (c.clone()).clone(), (d.clone()).clone())?;
     Ok(())
 }
 
-pub fn debugCrefStr(mut a: Arc<DAE::ComponentRef>, mut b: ArcStr) -> Result<()> {
+pub(crate) fn debugCrefStr(mut a: Arc<DAE::ComponentRef>, mut b: ArcStr) -> Result<()> {
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(a.clone())?); __mm_s.push_str(&*b.clone()); ArcStr::from(__mm_s) }).clone());
     Ok(())
 }
 
-pub fn debugStrIntStr(mut a: ArcStr, mut b: i32, mut c: ArcStr) -> Result<()> {
+pub(crate) fn debugStrIntStr(mut a: ArcStr, mut b: i32, mut c: ArcStr) -> Result<()> {
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*a.clone()); __mm_s.push_str(&*intString(b.clone())); __mm_s.push_str(&*c.clone()); ArcStr::from(__mm_s) }).clone());
     Ok(())
 }
 
-pub fn debugStrIntStrIntStr(mut a: ArcStr, mut b: i32, mut c: ArcStr, mut d: i32, mut e: ArcStr) -> Result<()> {
+pub(crate) fn debugStrIntStrIntStr(mut a: ArcStr, mut b: i32, mut c: ArcStr, mut d: i32, mut e: ArcStr) -> Result<()> {
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*a.clone()); __mm_s.push_str(&*intString(b.clone())); __mm_s.push_str(&*c.clone()); __mm_s.push_str(&*intString(d.clone())); __mm_s.push_str(&*e.clone()); ArcStr::from(__mm_s) }).clone());
     Ok(())
 }
 
-pub fn debugCrefStrIntStr(mut a: Arc<DAE::ComponentRef>, mut b: ArcStr, mut c: i32, mut d: ArcStr) -> Result<()> {
+pub(crate) fn debugCrefStrIntStr(mut a: Arc<DAE::ComponentRef>, mut b: ArcStr, mut c: i32, mut d: ArcStr) -> Result<()> {
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(a.clone())?); __mm_s.push_str(&*b.clone()); __mm_s.push_str(&*intString(c.clone())); __mm_s.push_str(&*d.clone()); ArcStr::from(__mm_s) }).clone());
     Ok(())
 }
 
-pub fn debugStrCrefStr(mut a: ArcStr, mut b: Arc<DAE::ComponentRef>, mut c: ArcStr) -> Result<()> {
+pub(crate) fn debugStrCrefStr(mut a: ArcStr, mut b: Arc<DAE::ComponentRef>, mut c: ArcStr) -> Result<()> {
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*a.clone()); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(b.clone())?); __mm_s.push_str(&*c.clone()); ArcStr::from(__mm_s) }).clone());
     Ok(())
 }
 
-pub fn debugStrCrefStrIntStr(mut a: ArcStr, mut b: Arc<DAE::ComponentRef>, mut c: ArcStr, mut d: i32, mut e: ArcStr) -> Result<()> {
+pub(crate) fn debugStrCrefStrIntStr(mut a: ArcStr, mut b: Arc<DAE::ComponentRef>, mut c: ArcStr, mut d: i32, mut e: ArcStr) -> Result<()> {
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*a.clone()); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(b.clone())?); __mm_s.push_str(&*c.clone()); __mm_s.push_str(&*intString(d.clone())); __mm_s.push_str(&*e.clone()); ArcStr::from(__mm_s) }).clone());
     Ok(())
 }
 
-pub fn debugStrCrefStrRealStrRealStrRealStr(mut a: ArcStr, mut b: Arc<DAE::ComponentRef>, mut c: ArcStr, mut d: metamodelica::Real, mut e: ArcStr, mut f: metamodelica::Real, mut g: ArcStr, mut h: metamodelica::Real, mut i: ArcStr) -> Result<()> {
+pub(crate) fn debugStrCrefStrRealStrRealStrRealStr(mut a: ArcStr, mut b: Arc<DAE::ComponentRef>, mut c: ArcStr, mut d: metamodelica::Real, mut e: ArcStr, mut f: metamodelica::Real, mut g: ArcStr, mut h: metamodelica::Real, mut i: ArcStr) -> Result<()> {
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*a.clone()); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(b.clone())?); __mm_s.push_str(&*c.clone()); __mm_s.push_str(&*realString(d.clone())); __mm_s.push_str(&*e.clone()); __mm_s.push_str(&*realString(f.clone())); __mm_s.push_str(&*g.clone()); __mm_s.push_str(&*realString(h.clone())); __mm_s.push_str(&*i.clone()); ArcStr::from(__mm_s) }).clone());
     Ok(())
 }
 
-pub fn debugStrRealStrRealStrRealStrRealStr(mut a: ArcStr, mut b: metamodelica::Real, mut c: ArcStr, mut d: metamodelica::Real, mut e: ArcStr, mut f: metamodelica::Real, mut g: ArcStr, mut h: metamodelica::Real, mut i: ArcStr) -> Result<()> {
+pub(crate) fn debugStrRealStrRealStrRealStrRealStr(mut a: ArcStr, mut b: metamodelica::Real, mut c: ArcStr, mut d: metamodelica::Real, mut e: ArcStr, mut f: metamodelica::Real, mut g: ArcStr, mut h: metamodelica::Real, mut i: ArcStr) -> Result<()> {
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*a.clone()); __mm_s.push_str(&*realString(b.clone())); __mm_s.push_str(&*c.clone()); __mm_s.push_str(&*realString(d.clone())); __mm_s.push_str(&*e.clone()); __mm_s.push_str(&*realString(f.clone())); __mm_s.push_str(&*g.clone()); __mm_s.push_str(&*realString(h.clone())); __mm_s.push_str(&*i.clone()); ArcStr::from(__mm_s) }).clone());
     Ok(())
 }
 
-pub fn debugStrCrefStrExpStr(mut a: ArcStr, mut b: Arc<DAE::ComponentRef>, mut c: ArcStr, mut d: Arc<DAE::Exp>, mut e: ArcStr) -> Result<()> {
+pub(crate) fn debugStrCrefStrExpStr(mut a: ArcStr, mut b: Arc<DAE::ComponentRef>, mut c: ArcStr, mut d: Arc<DAE::Exp>, mut e: ArcStr) -> Result<()> {
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*a.clone()); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(b.clone())?); __mm_s.push_str(&*c.clone()); __mm_s.push_str(&*ExpressionBasics::printExpStr(d.clone())?); __mm_s.push_str(&*e.clone()); ArcStr::from(__mm_s) }).clone());
     Ok(())
 }
 
-pub fn debugStrCrefStrCrefStr(mut a: ArcStr, mut b: Arc<DAE::ComponentRef>, mut c: ArcStr, mut d: Arc<DAE::ComponentRef>, mut e: ArcStr) -> Result<()> {
+pub(crate) fn debugStrCrefStrCrefStr(mut a: ArcStr, mut b: Arc<DAE::ComponentRef>, mut c: ArcStr, mut d: Arc<DAE::ComponentRef>, mut e: ArcStr) -> Result<()> {
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*a.clone()); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(b.clone())?); __mm_s.push_str(&*c.clone()); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(d.clone())?); __mm_s.push_str(&*e.clone()); ArcStr::from(__mm_s) }).clone());
     Ok(())
 }
 
-pub fn debugExpStr(mut a: Arc<DAE::Exp>, mut b: ArcStr) -> Result<()> {
+pub(crate) fn debugExpStr(mut a: Arc<DAE::Exp>, mut b: ArcStr) -> Result<()> {
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*ExpressionBasics::printExpStr(a.clone())?); __mm_s.push_str(&*b.clone()); ArcStr::from(__mm_s) }).clone());
     Ok(())
 }
 
-pub fn debugStrExpStr(mut a: ArcStr, mut b: Arc<DAE::Exp>, mut c: ArcStr) -> Result<()> {
+pub(crate) fn debugStrExpStr(mut a: ArcStr, mut b: Arc<DAE::Exp>, mut c: ArcStr) -> Result<()> {
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*a.clone()); __mm_s.push_str(&*ExpressionBasics::printExpStr(b.clone())?); __mm_s.push_str(&*c.clone()); ArcStr::from(__mm_s) }).clone());
     Ok(())
 }
 
-pub fn debugStrExpLstStr(mut a: ArcStr, mut b: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut c: ArcStr, mut d: ArcStr) -> Result<()> {
+pub(crate) fn debugStrExpLstStr(mut a: ArcStr, mut b: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut c: ArcStr, mut d: ArcStr) -> Result<()> {
     metamodelica::print((a.clone()).clone());
     debuglst(b.clone(), (std::sync::Arc::new(ExpressionBasics::printExpStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>), (c.clone()).clone(), (d.clone()).clone())?;
     Ok(())
 }
 
-pub fn debugStrExpStrCrefStr(mut a: ArcStr, mut b: Arc<DAE::Exp>, mut c: ArcStr, mut d: Arc<DAE::ComponentRef>, mut e: ArcStr) -> Result<()> {
+pub(crate) fn debugStrExpStrCrefStr(mut a: ArcStr, mut b: Arc<DAE::Exp>, mut c: ArcStr, mut d: Arc<DAE::ComponentRef>, mut e: ArcStr) -> Result<()> {
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*a.clone()); __mm_s.push_str(&*ExpressionBasics::printExpStr(b.clone())?); __mm_s.push_str(&*c.clone()); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(d.clone())?); __mm_s.push_str(&*e.clone()); ArcStr::from(__mm_s) }).clone());
     Ok(())
 }
 
-pub fn debugStrExpStrExpStr(mut a: ArcStr, mut b: Arc<DAE::Exp>, mut c: ArcStr, mut d: Arc<DAE::Exp>, mut e: ArcStr) -> Result<()> {
+pub(crate) fn debugStrExpStrExpStr(mut a: ArcStr, mut b: Arc<DAE::Exp>, mut c: ArcStr, mut d: Arc<DAE::Exp>, mut e: ArcStr) -> Result<()> {
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*a.clone()); __mm_s.push_str(&*ExpressionBasics::printExpStr(b.clone())?); __mm_s.push_str(&*c.clone()); __mm_s.push_str(&*ExpressionBasics::printExpStr(d.clone())?); __mm_s.push_str(&*e.clone()); ArcStr::from(__mm_s) }).clone());
     Ok(())
 }
 
-pub fn debugExpStrExpStrExpStr(mut a: Arc<DAE::Exp>, mut b: ArcStr, mut c: Arc<DAE::Exp>, mut d: ArcStr, mut e: Arc<DAE::Exp>, mut f: ArcStr) -> Result<()> {
+pub(crate) fn debugExpStrExpStrExpStr(mut a: Arc<DAE::Exp>, mut b: ArcStr, mut c: Arc<DAE::Exp>, mut d: ArcStr, mut e: Arc<DAE::Exp>, mut f: ArcStr) -> Result<()> {
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*ExpressionBasics::printExpStr(a.clone())?); __mm_s.push_str(&*b.clone()); __mm_s.push_str(&*ExpressionBasics::printExpStr(c.clone())?); __mm_s.push_str(&*d.clone()); __mm_s.push_str(&*ExpressionBasics::printExpStr(e.clone())?); __mm_s.push_str(&*f.clone()); ArcStr::from(__mm_s) }).clone());
     Ok(())
 }
 
-pub fn debugStrExpStrExpStrExpStr(mut a: ArcStr, mut b: Arc<DAE::Exp>, mut c: ArcStr, mut d: Arc<DAE::Exp>, mut e: ArcStr, mut f: Arc<DAE::Exp>, mut g: ArcStr) -> Result<()> {
+pub(crate) fn debugStrExpStrExpStrExpStr(mut a: ArcStr, mut b: Arc<DAE::Exp>, mut c: ArcStr, mut d: Arc<DAE::Exp>, mut e: ArcStr, mut f: Arc<DAE::Exp>, mut g: ArcStr) -> Result<()> {
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*a.clone()); __mm_s.push_str(&*ExpressionBasics::printExpStr(b.clone())?); __mm_s.push_str(&*c.clone()); __mm_s.push_str(&*ExpressionBasics::printExpStr(d.clone())?); __mm_s.push_str(&*e.clone()); __mm_s.push_str(&*ExpressionBasics::printExpStr(f.clone())?); __mm_s.push_str(&*g.clone()); ArcStr::from(__mm_s) }).clone());
     Ok(())
 }
 
-pub fn debugStrEqnStr(mut a: ArcStr, mut b: Arc<BackendDAE::Equation>, mut c: ArcStr) -> Result<()> {
+pub(crate) fn debugStrEqnStr(mut a: ArcStr, mut b: Arc<BackendDAE::Equation>, mut c: ArcStr) -> Result<()> {
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*a.clone()); __mm_s.push_str(&*equationString(b.clone())?); __mm_s.push_str(&*c.clone()); ArcStr::from(__mm_s) }).clone());
     Ok(())
 }
 
-pub fn debugStrEqnStrEqnStr(mut a: ArcStr, mut b: Arc<BackendDAE::Equation>, mut c: ArcStr, mut d: Arc<BackendDAE::Equation>, mut e: ArcStr) -> Result<()> {
+pub(crate) fn debugStrEqnStrEqnStr(mut a: ArcStr, mut b: Arc<BackendDAE::Equation>, mut c: ArcStr, mut d: Arc<BackendDAE::Equation>, mut e: ArcStr) -> Result<()> {
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*a.clone()); __mm_s.push_str(&*equationString(b.clone())?); __mm_s.push_str(&*c.clone()); __mm_s.push_str(&*equationString(d.clone())?); __mm_s.push_str(&*e.clone()); ArcStr::from(__mm_s) }).clone());
     Ok(())
 }
 
-pub fn debuglst<Type_a: Clone + 'static + metamodelica::gc::MMTrace>(mut lst: Arc<metamodelica::List<Type_a>>, mut f: Arc<dyn ::std::ops::Fn(Type_a) -> Result<ArcStr> + 'static>, mut c: ArcStr, mut se: ArcStr) -> Result<()> {
+pub(crate) fn debuglst<Type_a: Clone + 'static + metamodelica::gc::MMTrace>(mut lst: Arc<metamodelica::List<Type_a>>, mut f: Arc<dyn ::std::ops::Fn(Type_a) -> Result<ArcStr> + 'static>, mut c: ArcStr, mut se: ArcStr) -> Result<()> {
     pub type FuncTypeType_aToStr<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Type_a) -> Result<ArcStr> + 'static>;
 
     let () = (::match_deref::match_deref! { match &(lst.clone()) {
@@ -1979,7 +1979,7 @@ pub fn debuglst<Type_a: Clone + 'static + metamodelica::gc::MMTrace>(mut lst: Ar
 // These section should be empty. Feel free to sort these functions into one of
 // the upper sections.
 // =============================================================================
-pub fn printCallFunction2StrDIVISION<Type_a: Clone + 'static + metamodelica::gc::MMTrace>(mut inExp: Arc<DAE::Exp>, mut stringDelimiter: ArcStr, mut opcreffunc: Option<(Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Type_a) -> Result<ArcStr> + 'static>, Type_a)>) -> Result<ArcStr> {
+pub(crate) fn printCallFunction2StrDIVISION<Type_a: Clone + 'static + metamodelica::gc::MMTrace>(mut inExp: Arc<DAE::Exp>, mut stringDelimiter: ArcStr, mut opcreffunc: Option<(Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Type_a) -> Result<ArcStr> + 'static>, Type_a)>) -> Result<ArcStr> {
     pub type strongComponentStringRefStrFunc<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Type_a) -> Result<ArcStr> + 'static>;
 
     let mut outString: ArcStr;
@@ -2075,7 +2075,7 @@ pub fn printCallFunction2StrDIVISION<Type_a: Clone + 'static + metamodelica::gc:
 //         ();
 //   end matchcontinue;
 // end printVarsStatistics;
-pub fn dumpWhenOperatorStr(mut inWhenOperator: BackendDAE::WhenOperator) -> Result<ArcStr> {
+pub(crate) fn dumpWhenOperatorStr(mut inWhenOperator: BackendDAE::WhenOperator) -> Result<ArcStr> {
     let mut outString: ArcStr;
     outString = ((match inWhenOperator.clone() {
         BackendDAE::WhenOperator::ASSIGN { left: ref e1, right: ref e, .. } => {
@@ -2119,7 +2119,7 @@ pub fn dumpWhenOperatorStr(mut inWhenOperator: BackendDAE::WhenOperator) -> Resu
     Ok(outString)
 }
 
-pub fn dumpOption<Type_A: Clone + 'static + metamodelica::gc::MMTrace>(mut inType: Option<Type_A>, mut infunc: Arc<dyn ::std::ops::Fn(Type_A) -> Result<()> + 'static>) -> Result<()> {
+pub(crate) fn dumpOption<Type_A: Clone + 'static + metamodelica::gc::MMTrace>(mut inType: Option<Type_A>, mut infunc: Arc<dyn ::std::ops::Fn(Type_A) -> Result<()> + 'static>) -> Result<()> {
     pub type printType_A<Type_A: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Type_A) -> Result<()> + 'static>;
 
     let () = (match inType.clone() {
@@ -2134,7 +2134,7 @@ pub fn dumpOption<Type_A: Clone + 'static + metamodelica::gc::MMTrace>(mut inTyp
     Ok(())
 }
 
-pub fn dumpAlgorithms(mut ialgs: Arc<metamodelica::List<Arc<DAE::Algorithm>>>, mut indx: i32) -> Result<()> {
+pub(crate) fn dumpAlgorithms(mut ialgs: Arc<metamodelica::List<Arc<DAE::Algorithm>>>, mut indx: i32) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(ialgs.clone()) {
         Deref @ metamodelica::List::Nil => {
             ()
@@ -2155,7 +2155,7 @@ pub fn dumpAlgorithms(mut ialgs: Arc<metamodelica::List<Arc<DAE::Algorithm>>>, m
     Ok(())
 }
 
-pub fn dumpConstraints(mut ionstrs: Arc<metamodelica::List<Arc<DAE::Constraint>>>, mut indx: i32) -> Result<()> {
+pub(crate) fn dumpConstraints(mut ionstrs: Arc<metamodelica::List<Arc<DAE::Constraint>>>, mut indx: i32) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(ionstrs.clone()) {
         Deref @ metamodelica::List::Nil => {
             ()
@@ -2176,21 +2176,21 @@ pub fn dumpConstraints(mut ionstrs: Arc<metamodelica::List<Arc<DAE::Constraint>>
     Ok(())
 }
 
-pub fn dumpSparsePatternArray(mut inSparsePatter: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<()> {
+pub(crate) fn dumpSparsePatternArray(mut inSparsePatter: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<()> {
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Print sparse pattern: ")); __mm_s.push_str(&*intString(metamodelica::arrayLength(inSparsePatter.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     dumpSparsePattern2(Arc::new(inSparsePatter.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>()), 1)?;
     metamodelica::print((literal!("\n")).clone());
     Ok(())
 }
 
-pub fn dumpSparsePattern(mut inSparsePatter: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>) -> Result<()> {
+pub(crate) fn dumpSparsePattern(mut inSparsePatter: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>) -> Result<()> {
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Print sparse pattern: ")); __mm_s.push_str(&*intString((inSparsePatter.clone().len() as i32))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     dumpSparsePattern2(inSparsePatter.clone(), 1)?;
     metamodelica::print((literal!("\n")).clone());
     Ok(())
 }
 
-pub fn dumpSparsePattern2(mut inSparsePatter: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut inInteger: i32) -> Result<()> {
+pub(crate) fn dumpSparsePattern2(mut inSparsePatter: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut inInteger: i32) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(inSparsePatter.clone()) {
         Deref @ metamodelica::List::Nil => {
             ()
@@ -2249,7 +2249,7 @@ fn dumpJacobianStr2(mut inTplIntegerIntegerEquationLst: Arc<metamodelica::List<(
     Ok(outStringLst)
 }
 
-pub fn jacobianTypeStr(mut inJacobianType: BackendDAE::JacobianType) -> Result<ArcStr> {
+pub(crate) fn jacobianTypeStr(mut inJacobianType: BackendDAE::JacobianType) -> Result<ArcStr> {
     let mut outString: ArcStr;
     outString = ((match inJacobianType.clone() {
         BackendDAE::JacobianType::JAC_CONSTANT { .. } => literal!("Jacobian Constant"),
@@ -2261,7 +2261,7 @@ pub fn jacobianTypeStr(mut inJacobianType: BackendDAE::JacobianType) -> Result<A
     Ok(outString)
 }
 
-pub fn dumpJacobianString(mut jacIn: Arc<BackendDAE::Jacobian>) -> Result<()> {
+pub(crate) fn dumpJacobianString(mut jacIn: Arc<BackendDAE::Jacobian>) -> Result<()> {
     let _ = (::match_deref::match_deref! { match &(jacIn.clone()) {
         Deref @ BackendDAE::Jacobian::FULL_JACOBIAN { jacobian: fJac } => {
             let mut s: ArcStr;
@@ -2291,7 +2291,7 @@ pub fn dumpJacobianString(mut jacIn: Arc<BackendDAE::Jacobian>) -> Result<()> {
     Ok(())
 }
 
-pub fn symJacString(mut jacIn: (Option<(Arc<BackendDAE::BackendDAE>, ArcStr, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>, (Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>), i32), Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>>>)) -> Result<ArcStr> {
+pub(crate) fn symJacString(mut jacIn: (Option<(Arc<BackendDAE::BackendDAE>, ArcStr, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>, (Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>), i32), Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>>>)) -> Result<ArcStr> {
     let mut sOut: ArcStr;
     sOut = ((::match_deref::match_deref! { match &(jacIn.clone()) {
         (Some(sJac), sparsePattern, _) => {
@@ -2314,7 +2314,7 @@ pub fn symJacString(mut jacIn: (Option<(Arc<BackendDAE::BackendDAE>, ArcStr, Arc
     Ok(sOut)
 }
 
-pub fn dumpEqnsStr(mut eqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) -> Result<ArcStr> {
+pub(crate) fn dumpEqnsStr(mut eqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) -> Result<ArcStr> {
     let mut r#str: ArcStr;
     r#str = stringDelimitList(dumpEqnsStr2(eqns.clone(), 1, metamodelica::nil())?, (literal!("\n")).clone());
     Ok(r#str)
@@ -2344,7 +2344,7 @@ fn dumpEqnsStr2(mut inEquationLst: Arc<metamodelica::List<Arc<BackendDAE::Equati
     }
 }
 
-pub fn ifequationString(mut conditions: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut eqnstrue: Arc<metamodelica::List<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>>, mut eqnsfalse: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut iString: ArcStr) -> Result<ArcStr> {
+pub(crate) fn ifequationString(mut conditions: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut eqnstrue: Arc<metamodelica::List<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>>, mut eqnsfalse: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut iString: ArcStr) -> Result<ArcStr> {
     '__tco: loop {
         ::match_deref::match_deref! { match &((conditions.clone(), eqnstrue.clone(), eqnsfalse.clone())) {
         (Deref @ metamodelica::List::Nil, _, Deref @ metamodelica::List::Nil) => {
@@ -2371,7 +2371,7 @@ pub fn ifequationString(mut conditions: Arc<metamodelica::List<Arc<DAE::Exp>>>, 
     }
 }
 
-pub fn varString(mut inVar: BackendDAE::Var) -> Result<ArcStr> {
+pub(crate) fn varString(mut inVar: BackendDAE::Var) -> Result<ArcStr> {
     let mut outStr: ArcStr;
     let mut paths: Arc<metamodelica::List<Arc<Absyn::Path>>>;
     let mut paths_lst: Arc<metamodelica::List<ArcStr>>;
@@ -2393,18 +2393,18 @@ pub fn varString(mut inVar: BackendDAE::Var) -> Result<ArcStr> {
     Ok(outStr)
 }
 
-pub fn varStringShort(mut inVar: BackendDAE::Var) -> Result<ArcStr> {
+pub(crate) fn varStringShort(mut inVar: BackendDAE::Var) -> Result<ArcStr> {
     let mut outStr: ArcStr;
     outStr = (ComponentReferenceBasics::printComponentRefStr(inVar.varName.clone())?).clone();
     Ok(outStr)
 }
 
-pub fn dumpKind(mut inVarKind: BackendDAE::VarKind) -> Result<()> {
+pub(crate) fn dumpKind(mut inVarKind: BackendDAE::VarKind) -> Result<()> {
     metamodelica::print((kindString(inVarKind.clone())?).clone());
     Ok(())
 }
 
-pub fn kindString(mut inVarKind: BackendDAE::VarKind) -> Result<ArcStr> {
+pub(crate) fn kindString(mut inVarKind: BackendDAE::VarKind) -> Result<ArcStr> {
     let mut kindStr: ArcStr;
     kindStr = ((::match_deref::match_deref! { match &(inVarKind.clone()) {
         BackendDAE::VarKind::VARIABLE { .. } => {
@@ -2490,12 +2490,12 @@ pub fn kindString(mut inVarKind: BackendDAE::VarKind) -> Result<ArcStr> {
     Ok(kindStr)
 }
 
-pub fn dumpConnectorType(mut inConnectorType: Arc<DAE::ConnectorType>) -> Result<()> {
+pub(crate) fn dumpConnectorType(mut inConnectorType: Arc<DAE::ConnectorType>) -> Result<()> {
     metamodelica::print((connectorTypeString(inConnectorType.clone())).clone());
     Ok(())
 }
 
-pub fn connectorTypeString(mut inConnectorType: Arc<DAE::ConnectorType>) -> ArcStr {
+pub(crate) fn connectorTypeString(mut inConnectorType: Arc<DAE::ConnectorType>) -> ArcStr {
     let mut connectorTypeStr: ArcStr;
     connectorTypeStr = ((::match_deref::match_deref! { match &(inConnectorType.clone()) {
         Deref @ DAE::ConnectorType::FLOW { .. } => literal!("flow=true "),
@@ -2506,7 +2506,7 @@ pub fn connectorTypeString(mut inConnectorType: Arc<DAE::ConnectorType>) -> ArcS
     connectorTypeStr
 }
 
-pub fn dumpAttributes(mut inAttr: Option<Arc<DAE::VariableAttributes>>) -> Result<()> {
+pub(crate) fn dumpAttributes(mut inAttr: Option<Arc<DAE::VariableAttributes>>) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(inAttr.clone()) {
         None => {
             ()
@@ -2649,7 +2649,7 @@ fn dumpOptBoolean(mut inExp: Option<bool>, mut inString: ArcStr) -> Result<()> {
     Ok(())
 }
 
-pub fn attributesString(mut inAttr: Option<Arc<DAE::VariableAttributes>>) -> Result<ArcStr> {
+pub(crate) fn attributesString(mut inAttr: Option<Arc<DAE::VariableAttributes>>) -> Result<ArcStr> {
     let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(inAttr.clone()) {
         None => {
@@ -2745,7 +2745,7 @@ fn optStateSelectionString(mut ss: Option<DAE::StateSelect>) -> ArcStr {
     outString
 }
 
-pub fn partitionKindString(mut inPartitionKind: BackendDAE::BaseClockPartitionKind) -> Result<ArcStr> {
+pub(crate) fn partitionKindString(mut inPartitionKind: BackendDAE::BaseClockPartitionKind) -> Result<ArcStr> {
     let mut outString: ArcStr;
     outString = ((match inPartitionKind.clone() {
         BackendDAE::BaseClockPartitionKind::CLOCKED_PARTITION { subPartIdx: mut idx } => {
@@ -2855,7 +2855,7 @@ fn optBooleanString(mut inExp: Option<bool>, mut inString: ArcStr) -> ArcStr {
     outString
 }
 
-pub fn dumpAdjacencyMatrix(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<()> {
+pub(crate) fn dumpAdjacencyMatrix(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<()> {
     let mut rowIndex: i32 = 0;
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nAdjacency Matrix (row: equation)\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("number of rows: ")); __mm_s.push_str(&*intString(metamodelica::arrayLength(m.clone()))); ArcStr::from(__mm_s) }).clone());
@@ -2872,7 +2872,7 @@ pub fn dumpAdjacencyMatrix(mut m: metamodelica::Array<Arc<metamodelica::List<i32
     Ok(())
 }
 
-pub fn dumpAdjacencyMatrixT(mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<()> {
+pub(crate) fn dumpAdjacencyMatrixT(mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<()> {
     let mut rowIndex: i32 = 0;
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nTransposed Adjacency Matrix (row: variable)\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("number of rows: ")); __mm_s.push_str(&*intString(metamodelica::arrayLength(mT.clone()))); ArcStr::from(__mm_s) }).clone());
@@ -2889,7 +2889,7 @@ pub fn dumpAdjacencyMatrixT(mut mT: metamodelica::Array<Arc<metamodelica::List<i
     Ok(())
 }
 
-pub fn dumpAdjacencyRow(mut inIntegerLst: Arc<metamodelica::List<i32>>) -> Result<()> {
+pub(crate) fn dumpAdjacencyRow(mut inIntegerLst: Arc<metamodelica::List<i32>>) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(inIntegerLst.clone()) {
         Deref @ metamodelica::List::Nil => {
             metamodelica::print((literal!("\n")).clone());
@@ -2908,7 +2908,7 @@ pub fn dumpAdjacencyRow(mut inIntegerLst: Arc<metamodelica::List<i32>>) -> Resul
     Ok(())
 }
 
-pub fn dumpAdjacencyMatrixEnhanced(mut m: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>) -> Result<()> {
+pub(crate) fn dumpAdjacencyMatrixEnhanced(mut m: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>) -> Result<()> {
     let mut mlen: i32;
     let mut mlen_str: ArcStr;
     let mut m_1: Arc<metamodelica::List<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>>;
@@ -2924,7 +2924,7 @@ pub fn dumpAdjacencyMatrixEnhanced(mut m: metamodelica::Array<Arc<metamodelica::
     Ok(())
 }
 
-pub fn dumpAdjacencyMatrixTEnhanced(mut m: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>) -> Result<()> {
+pub(crate) fn dumpAdjacencyMatrixTEnhanced(mut m: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>) -> Result<()> {
     let mut mlen: i32;
     let mut mlen_str: ArcStr;
     let mut m_1: Arc<metamodelica::List<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>>;
@@ -2957,7 +2957,7 @@ fn dumpAdjacencyMatrixEnhanced2(mut inRows: Arc<metamodelica::List<Arc<metamodel
     Ok(())
 }
 
-pub fn dumpAdjacencyRowEnhanced(mut inRow: Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>) -> Result<()> {
+pub(crate) fn dumpAdjacencyRowEnhanced(mut inRow: Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(inRow.clone()) {
         Deref @ metamodelica::List::Nil => {
             metamodelica::print((literal!("\n")).clone());
@@ -2990,7 +2990,7 @@ pub fn dumpAdjacencyRowEnhanced(mut inRow: Arc<metamodelica::List<(i32, BackendD
     Ok(())
 }
 
-pub fn dumpSolvability(mut solva: BackendDAE::Solvability) -> Result<ArcStr> {
+pub(crate) fn dumpSolvability(mut solva: BackendDAE::Solvability) -> Result<ArcStr> {
     let mut s: ArcStr;
     s = ((match solva.clone() {
         BackendDAE::Solvability::SOLVABILITY_SOLVED { .. } => {
@@ -3021,7 +3021,7 @@ pub fn dumpSolvability(mut solva: BackendDAE::Solvability) -> Result<ArcStr> {
     Ok(s)
 }
 
-pub fn dumpFullMatching(mut inMatch: Arc<BackendDAE::Matching>, mut inSyst: Option<Arc<BackendDAE::EqSystem>>) -> Result<()> {
+pub(crate) fn dumpFullMatching(mut inMatch: Arc<BackendDAE::Matching>, mut inSyst: Option<Arc<BackendDAE::EqSystem>>) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(inMatch.clone()) {
         Deref @ BackendDAE::Matching::NO_MATCHING { .. } => {
             metamodelica::print((literal!("no matching\n")).clone());
@@ -3038,7 +3038,7 @@ pub fn dumpFullMatching(mut inMatch: Arc<BackendDAE::Matching>, mut inSyst: Opti
     Ok(())
 }
 
-pub fn dumpMatching(mut v: metamodelica::Array<i32>) -> Result<()> {
+pub(crate) fn dumpMatching(mut v: metamodelica::Array<i32>) -> Result<()> {
     let mut len: i32;
     let mut len_str: ArcStr;
     metamodelica::print((literal!("Matching\n")).clone());
@@ -3076,7 +3076,7 @@ fn dumpMatching2(mut v: metamodelica::Array<i32>, mut i: i32, mut len: i32) -> (
     ()
 }
 
-pub fn dumpMatchingVars(mut ass1: metamodelica::Array<i32>) -> Result<()> {
+pub(crate) fn dumpMatchingVars(mut ass1: metamodelica::Array<i32>) -> Result<()> {
     let mut varIndex: i32 = 0;
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nMatching\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(metamodelica::arrayLength(ass1.clone()))); __mm_s.push_str(&*literal!(" variables\n")); ArcStr::from(__mm_s) }).clone());
@@ -3088,7 +3088,7 @@ pub fn dumpMatchingVars(mut ass1: metamodelica::Array<i32>) -> Result<()> {
     Ok(())
 }
 
-pub fn dumpMatchingEqns(mut ass2: metamodelica::Array<i32>) -> Result<()> {
+pub(crate) fn dumpMatchingEqns(mut ass2: metamodelica::Array<i32>) -> Result<()> {
     let mut eqnIndex: i32 = 0;
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nMatching\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(metamodelica::arrayLength(ass2.clone()))); __mm_s.push_str(&*literal!(" equations\n")); ArcStr::from(__mm_s) }).clone());
@@ -3100,7 +3100,7 @@ pub fn dumpMatchingEqns(mut ass2: metamodelica::Array<i32>) -> Result<()> {
     Ok(())
 }
 
-pub fn dumpMarkedEqns(mut syst: Arc<BackendDAE::EqSystem>, mut inIntegerLst: Arc<metamodelica::List<i32>>) -> Result<ArcStr> {
+pub(crate) fn dumpMarkedEqns(mut syst: Arc<BackendDAE::EqSystem>, mut inIntegerLst: Arc<metamodelica::List<i32>>) -> Result<ArcStr> {
     let mut outString: ArcStr;
     let mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>;
     let mut slst: Arc<metamodelica::List<ArcStr>>;
@@ -3122,7 +3122,7 @@ fn dumpMarkedEqns1(mut index: i32, mut eqns: Arc<ExpandableArray::ExpandableArra
     Ok(outS)
 }
 
-pub fn dumpMarkedVarsLsts(mut syst: Arc<BackendDAE::EqSystem>, mut inIntegerLstLst: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>) -> Result<ArcStr> {
+pub(crate) fn dumpMarkedVarsLsts(mut syst: Arc<BackendDAE::EqSystem>, mut inIntegerLstLst: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>) -> Result<ArcStr> {
     let mut outString: ArcStr = literal!("");
     for mut inIntegerLst in &*inIntegerLstLst.clone() {
         let mut inIntegerLst = inIntegerLst.clone();
@@ -3131,7 +3131,7 @@ pub fn dumpMarkedVarsLsts(mut syst: Arc<BackendDAE::EqSystem>, mut inIntegerLstL
     Ok(outString)
 }
 
-pub fn dumpMarkedVars(mut syst: Arc<BackendDAE::EqSystem>, mut inIntegerLst: Arc<metamodelica::List<i32>>) -> Result<ArcStr> {
+pub(crate) fn dumpMarkedVars(mut syst: Arc<BackendDAE::EqSystem>, mut inIntegerLst: Arc<metamodelica::List<i32>>) -> Result<ArcStr> {
     let mut outString: ArcStr;
     let mut vars: BackendDAE::Variables;
     let mut slst: Arc<metamodelica::List<ArcStr>>;
@@ -3153,7 +3153,7 @@ fn dumpMarkedVars1(mut index: i32, mut vars: BackendDAE::Variables) -> Result<Ar
     Ok(outS)
 }
 
-pub fn dumpMarkedVarList(mut varList: Arc<metamodelica::List<BackendDAE::Var>>, mut selList: Arc<metamodelica::List<i32>>) -> Result<ArcStr> {
+pub(crate) fn dumpMarkedVarList(mut varList: Arc<metamodelica::List<BackendDAE::Var>>, mut selList: Arc<metamodelica::List<i32>>) -> Result<ArcStr> {
     let mut outString: ArcStr = literal!("");
     let mut var: BackendDAE::Var;
     for mut sel in &*selList.clone() {
@@ -3170,7 +3170,7 @@ pub fn dumpMarkedVarList(mut varList: Arc<metamodelica::List<BackendDAE::Var>>, 
     Ok(outString)
 }
 
-pub fn dumpComponentsGraphStr(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
+pub(crate) fn dumpComponentsGraphStr(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut outDAE: Arc<BackendDAE::BackendDAE>;
     let mut n: i32;
     let mut lst: Arc<metamodelica::List<ArcStr>>;
@@ -3218,7 +3218,7 @@ fn dumpComponentsGraphStr2(mut i: i32, mut n: i32, mut m: metamodelica::Array<Ar
     Ok(lst)
 }
 
-pub fn dumpList(mut l: Arc<metamodelica::List<i32>>, mut r#str: ArcStr) -> Result<()> {
+pub(crate) fn dumpList(mut l: Arc<metamodelica::List<i32>>, mut r#str: ArcStr) -> Result<()> {
     let mut s: Arc<metamodelica::List<ArcStr>>;
     let mut sl: ArcStr;
     s = List::map(l.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?;
@@ -3229,7 +3229,7 @@ pub fn dumpList(mut l: Arc<metamodelica::List<i32>>, mut r#str: ArcStr) -> Resul
     Ok(())
 }
 
-pub fn dumpComponentsOLD(mut l: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>) -> Result<()> {
+pub(crate) fn dumpComponentsOLD(mut l: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>) -> Result<()> {
     metamodelica::print((literal!("Blocks\n")).clone());
     metamodelica::print((literal!("=======\n")).clone());
     dumpComponents2(l.clone(), 1)?;
@@ -3291,7 +3291,7 @@ fn intListStr(mut lst: Arc<metamodelica::List<i32>>) -> Result<ArcStr> {
 //     else inTpl;
 //   end matchcontinue;
 // end dumpAliasVariable;
-pub fn dumpStateVariables(mut inVars: BackendDAE::Variables) -> Result<()> {
+pub(crate) fn dumpStateVariables(mut inVars: BackendDAE::Variables) -> Result<()> {
     metamodelica::print((literal!("States Variables\n")).clone());
     metamodelica::print((literal!("=================\n")).clone());
     BackendVariable::traverseBackendDAEVars(inVars.clone(), (std::sync::Arc::new(fnptr!(dumpStateVariable, BackendDAE::Var, i32)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, i32) -> Result<(BackendDAE::Var, i32)> + 'static>), 1)?;
@@ -3326,7 +3326,7 @@ fn dumpStateVariable(mut inVar: BackendDAE::Var, mut inPos: i32) -> (BackendDAE:
     (v, pos)
 }
 
-pub fn bltdump(mut headerline: ArcStr, mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<()> {
+pub(crate) fn bltdump(mut headerline: ArcStr, mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<()> {
     let () = 'mc: {
         let __mc_input = inDAE.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -3361,7 +3361,7 @@ pub fn bltdump(mut headerline: ArcStr, mut inDAE: Arc<BackendDAE::BackendDAE>) -
     Ok(())
 }
 
-pub fn innerEquationString(mut innerEquation: BackendDAE::InnerEquation) -> Result<ArcStr> {
+pub(crate) fn innerEquationString(mut innerEquation: BackendDAE::InnerEquation) -> Result<ArcStr> {
     let mut s: ArcStr;
     let mut e: i32;
     let mut v: Arc<metamodelica::List<i32>>;
@@ -3377,7 +3377,7 @@ pub type DumpCompShortMixedTpl = (Arc<metamodelica::List<i32>>, Arc<metamodelica
 
 pub type DumpCompShortTornTpl = (Arc<metamodelica::List<(i32, i32, i32)>>, Arc<metamodelica::List<(i32, i32)>>);
 
-pub fn dumpCompShort(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<()> {
+pub(crate) fn dumpCompShort(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<()> {
     let mut sys: i32;
     let mut inp: i32;
     let mut st: i32;
@@ -3825,7 +3825,7 @@ fn dumpCompShort2(mut inComp: Arc<BackendDAE::StrongComponent>, mut inTpl: (i32,
     Ok(outTpl)
 }
 
-pub fn dumpNrOfEquations(mut inDAE: Arc<BackendDAE::BackendDAE>, mut preStr: ArcStr) -> Result<()> {
+pub(crate) fn dumpNrOfEquations(mut inDAE: Arc<BackendDAE::BackendDAE>, mut preStr: ArcStr) -> Result<()> {
     let mut nlst: Arc<metamodelica::List<i32>>;
     let mut n: i32;
     let mut systs: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>>;
@@ -3840,7 +3840,7 @@ pub fn dumpNrOfEquations(mut inDAE: Arc<BackendDAE::BackendDAE>, mut preStr: Arc
     Ok(())
 }
 
-pub fn dumpCompInfo(mut compInfo: Arc<BackendDAE::CompInfo>) -> Result<()> {
+pub(crate) fn dumpCompInfo(mut compInfo: Arc<BackendDAE::CompInfo>) -> Result<()> {
     metamodelica::print((printCompInfo(compInfo.clone())).clone());
     Ok(())
 }
@@ -3923,7 +3923,7 @@ fn printCompInfo(mut compInfo: Arc<BackendDAE::CompInfo>) -> ArcStr {
 // section for all html-dumping functions
 //
 // =============================================================================
-pub fn dumpEqSystemMatrixHTML(mut sys: Arc<BackendDAE::EqSystem>) -> Result<()> {
+pub(crate) fn dumpEqSystemMatrixHTML(mut sys: Arc<BackendDAE::EqSystem>) -> Result<()> {
     let mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>;
     if isSome(sys.m.clone()) {
         m = Util::getOption(sys.m.clone())?;
@@ -3935,7 +3935,7 @@ pub fn dumpEqSystemMatrixHTML(mut sys: Arc<BackendDAE::EqSystem>) -> Result<()> 
     Ok(())
 }
 
-pub fn dumpEqSystemBLTmatrixHTML(mut sys: Arc<BackendDAE::EqSystem>) -> Result<()> {
+pub(crate) fn dumpEqSystemBLTmatrixHTML(mut sys: Arc<BackendDAE::EqSystem>) -> Result<()> {
     let () = 'mc: {
         let __mc_input = sys.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -3972,7 +3972,7 @@ pub fn dumpEqSystemBLTmatrixHTML(mut sys: Arc<BackendDAE::EqSystem>) -> Result<(
     Ok(())
 }
 
-pub fn dumpMatrixHTML(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut rowNames: Arc<metamodelica::List<ArcStr>>, mut columNames: Arc<metamodelica::List<ArcStr>>, mut fileName: ArcStr) -> Result<()> {
+pub(crate) fn dumpMatrixHTML(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut rowNames: Arc<metamodelica::List<ArcStr>>, mut columNames: Arc<metamodelica::List<ArcStr>>, mut fileName: ArcStr) -> Result<()> {
     let mut size: i32;
     size = metamodelica::arrayLength(m.clone());
     if (rowNames.clone().len() as i32) == size.clone() && (columNames.clone().len() as i32) == size.clone() {
@@ -3987,7 +3987,7 @@ pub fn dumpMatrixHTML(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, 
 // section for all graphML dumping functions
 //
 // =============================================================================
-pub fn dumpBipartiteGraphDAE(mut dae: Arc<BackendDAE::BackendDAE>, mut fileName: ArcStr) -> Result<()> {
+pub(crate) fn dumpBipartiteGraphDAE(mut dae: Arc<BackendDAE::BackendDAE>, mut fileName: ArcStr) -> Result<()> {
     let mut vars: BackendDAE::Variables;
     let mut eqs: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>;
     let mut eqSysts: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>>;
@@ -4014,7 +4014,7 @@ pub fn dumpBipartiteGraphDAE(mut dae: Arc<BackendDAE::BackendDAE>, mut fileName:
     Ok(())
 }
 
-pub fn dumpBipartiteGraphEqSystem(mut syst: Arc<BackendDAE::EqSystem>, mut shared: Arc<BackendDAE::Shared>, mut fileName: ArcStr) -> Result<()> {
+pub(crate) fn dumpBipartiteGraphEqSystem(mut syst: Arc<BackendDAE::EqSystem>, mut shared: Arc<BackendDAE::Shared>, mut fileName: ArcStr) -> Result<()> {
     let mut vars: BackendDAE::Variables;
     let mut eqs: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>;
     let mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>;
@@ -4041,7 +4041,7 @@ pub fn dumpBipartiteGraphEqSystem(mut syst: Arc<BackendDAE::EqSystem>, mut share
     Ok(())
 }
 
-pub fn dumpBipartiteGraphStrongComponent(mut inComp: Arc<BackendDAE::StrongComponent>, mut eqSys: Arc<BackendDAE::EqSystem>, mut funcs: Option<Arc<AvlTreePathFunction::Tree>>, mut name: ArcStr) -> Result<()> {
+pub(crate) fn dumpBipartiteGraphStrongComponent(mut inComp: Arc<BackendDAE::StrongComponent>, mut eqSys: Arc<BackendDAE::EqSystem>, mut funcs: Option<Arc<AvlTreePathFunction::Tree>>, mut name: ArcStr) -> Result<()> {
     let mut eqs: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>;
     let mut vars: BackendDAE::Variables;
     let mut varLst: Arc<metamodelica::List<BackendDAE::Var>>;
@@ -4058,7 +4058,7 @@ pub fn dumpBipartiteGraphStrongComponent(mut inComp: Arc<BackendDAE::StrongCompo
     Ok(())
 }
 
-pub fn dumpBipartiteGraphStrongComponent1(mut inComp: Arc<BackendDAE::StrongComponent>, mut eqsIn: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut varsIn: Arc<metamodelica::List<BackendDAE::Var>>, mut funcs: Option<Arc<AvlTreePathFunction::Tree>>, mut graphName: ArcStr) -> Result<()> {
+pub(crate) fn dumpBipartiteGraphStrongComponent1(mut inComp: Arc<BackendDAE::StrongComponent>, mut eqsIn: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut varsIn: Arc<metamodelica::List<BackendDAE::Var>>, mut funcs: Option<Arc<AvlTreePathFunction::Tree>>, mut graphName: ArcStr) -> Result<()> {
     let () = 'mc: {
         let __mc_input = inComp.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -4148,7 +4148,7 @@ pub fn dumpBipartiteGraphStrongComponent1(mut inComp: Arc<BackendDAE::StrongComp
     Ok(())
 }
 
-pub fn dumpBipartiteGraphStrongComponent2(mut varsIn: BackendDAE::Variables, mut eqsIn: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut mIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut varAtts: Arc<metamodelica::List<(bool, ArcStr)>>, mut eqAtts: Arc<metamodelica::List<(bool, ArcStr)>>, mut name: ArcStr) -> Result<()> {
+pub(crate) fn dumpBipartiteGraphStrongComponent2(mut varsIn: BackendDAE::Variables, mut eqsIn: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut mIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut varAtts: Arc<metamodelica::List<(bool, ArcStr)>>, mut eqAtts: Arc<metamodelica::List<(bool, ArcStr)>>, mut name: ArcStr) -> Result<()> {
     let mut nameAttIdx: i32;
     let mut typeAttIdx: i32;
     let mut idxAttIdx: i32;
@@ -4240,7 +4240,7 @@ fn addEqNodesToGraph(mut eqs: Arc<ExpandableArray::ExpandableArray<Arc<BackendDA
     Ok(graphInfoOut)
 }
 
-pub fn dumpDAGStrongComponent(mut graphIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut metaIn: HpcOmTaskGraph::TaskGraphMeta, mut fileName: ArcStr) -> Result<()> {
+pub(crate) fn dumpDAGStrongComponent(mut graphIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut metaIn: HpcOmTaskGraph::TaskGraphMeta, mut fileName: ArcStr) -> Result<()> {
     let mut graphIdx: i32;
     let mut nameAttIdx: i32;
     let mut graphInfo: GraphML::GraphInfo;
@@ -4572,7 +4572,7 @@ fn isResidualEq(mut eqIdx: i32, mut comp: Arc<BackendDAE::StrongComponent>) -> R
     Ok(isRes)
 }
 
-pub fn SSSHandlerArgString(mut arg: Option<(BackendDAE::StateOrder, metamodelica::Array<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>, i32)>) -> Result<()> {
+pub(crate) fn SSSHandlerArgString(mut arg: Option<(BackendDAE::StateOrder, metamodelica::Array<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>, i32)>) -> Result<()> {
     let mut stateorder: BackendDAE::StateOrder;
     let mut constraints: metamodelica::Array<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>;
     let mut eqs2EqIdxs: metamodelica::Array<Arc<metamodelica::List<i32>>>;
@@ -4597,7 +4597,7 @@ pub fn SSSHandlerArgString(mut arg: Option<(BackendDAE::StateOrder, metamodelica
     Ok(())
 }
 
-pub fn constraintEquationString(mut constraints: metamodelica::Array<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>) -> Result<ArcStr> {
+pub(crate) fn constraintEquationString(mut constraints: metamodelica::Array<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>) -> Result<ArcStr> {
     let mut s: ArcStr = literal!("");
     let mut i: i32 = 0;
     let mut s1: ArcStr;
@@ -4611,7 +4611,7 @@ pub fn constraintEquationString(mut constraints: metamodelica::Array<Arc<metamod
     Ok(s)
 }
 
-pub fn dumpStateOrder(mut inStateOrder: BackendDAE::StateOrder) -> Result<()> {
+pub(crate) fn dumpStateOrder(mut inStateOrder: BackendDAE::StateOrder) -> Result<()> {
     let () = (match inStateOrder.clone() {
         BackendDAE::StateOrder::STATEORDER { hashTable: mut ht, invHashTable: _ } => {
             let mut r#str: ArcStr;
@@ -4643,7 +4643,7 @@ fn printStateOrderStr(mut tpl: (Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>))
     Ok(r#str)
 }
 
-pub fn dumpBackendDAEModeData(mut inDAEmodeData: BackendDAE::BackendDAEModeData) -> Result<()> {
+pub(crate) fn dumpBackendDAEModeData(mut inDAEmodeData: BackendDAE::BackendDAEModeData) -> Result<()> {
     let mut modelVars: BackendDAE::Variables;
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\nDAEMode\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     if isSome(inDAEmodeData.modelVars.clone()) {

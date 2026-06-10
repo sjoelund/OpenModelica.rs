@@ -78,7 +78,7 @@ pub fn saveFlags(mut inFlags: Flags::Flag) -> () {
     ()
 }
 
-pub fn createConfigFlags() -> metamodelica::Array<Flags::FlagData> {
+pub(crate) fn createConfigFlags() -> metamodelica::Array<Flags::FlagData> {
     let mut configFlags: metamodelica::Array<Flags::FlagData>;
     configFlags = metamodelica::arrayFromVec(({
         let mut __acc: Arc<metamodelica::List<Flags::FlagData>> = metamodelica::nil();
@@ -91,7 +91,7 @@ pub fn createConfigFlags() -> metamodelica::Array<Flags::FlagData> {
     configFlags
 }
 
-pub fn createDebugFlags() -> metamodelica::Array<bool> {
+pub(crate) fn createDebugFlags() -> metamodelica::Array<bool> {
     let mut debugFlags: metamodelica::Array<bool>;
     debugFlags = metamodelica::arrayFromVec(({
         let mut __acc: Arc<metamodelica::List<bool>> = metamodelica::nil();
@@ -814,7 +814,7 @@ fn applySideEffects(mut inFlag: Flags::ConfigFlag, mut inValue: Flags::FlagData)
     ()
 }
 
-pub fn setConfigValue(mut inFlag: Flags::ConfigFlag, mut inValue: Flags::FlagData) -> Result<()> {
+pub(crate) fn setConfigValue(mut inFlag: Flags::ConfigFlag, mut inValue: Flags::FlagData) -> Result<()> {
     let mut debug_flags: metamodelica::Array<bool>;
     let mut config_flags: metamodelica::Array<Flags::FlagData>;
     let mut flags: Flags::Flag;
@@ -837,7 +837,7 @@ pub fn setConfigInt(mut inFlag: Flags::ConfigFlag, mut inValue: i32) -> Result<(
     Ok(())
 }
 
-pub fn setConfigReal(mut inFlag: Flags::ConfigFlag, mut inValue: metamodelica::Real) -> Result<()> {
+pub(crate) fn setConfigReal(mut inFlag: Flags::ConfigFlag, mut inValue: metamodelica::Real) -> Result<()> {
     setConfigValue(inFlag.clone(), Flags::FlagData::REAL_FLAG { data: inValue.clone() })?;
     Ok(())
 }
@@ -1160,7 +1160,7 @@ pub fn printUsage() -> Result<ArcStr> {
     Ok(usage)
 }
 
-pub fn printUsageSphinxAll() -> Result<ArcStr> {
+pub(crate) fn printUsageSphinxAll() -> Result<ArcStr> {
     let mut usage: ArcStr;
     let mut s: ArcStr;
     Print::clearBuf();
@@ -1243,7 +1243,7 @@ pub fn printUsageSphinxAll() -> Result<ArcStr> {
     Ok(usage)
 }
 
-pub fn printAllConfigFlags() -> Result<ArcStr> {
+pub(crate) fn printAllConfigFlags() -> Result<ArcStr> {
     let mut outString: ArcStr;
     outString = stringAppendList(List::map(allConfigFlags.clone(), (std::sync::Arc::new(printConfigFlag) as std::sync::Arc<dyn ::std::ops::Fn(Flags::ConfigFlag) -> Result<ArcStr> + 'static>))?);
     Ok(outString)
@@ -1566,7 +1566,7 @@ fn getValidStringOptions(mut inOptions: Flags::ValidOptions) -> Result<Arc<metam
     Ok(validOptions)
 }
 
-pub fn flagDataEq(mut data1: Flags::FlagData, mut data2: Flags::FlagData) -> Result<bool> {
+pub(crate) fn flagDataEq(mut data1: Flags::FlagData, mut data2: Flags::FlagData) -> Result<bool> {
     let mut eq: bool;
     eq = (match (data1.clone(), data2.clone()) {
         (Flags::FlagData::EMPTY_FLAG { .. }, Flags::FlagData::EMPTY_FLAG { .. }) => true,
@@ -1582,7 +1582,7 @@ pub fn flagDataEq(mut data1: Flags::FlagData, mut data2: Flags::FlagData) -> Res
     Ok(eq)
 }
 
-pub fn flagDataString(mut flagData: Flags::FlagData) -> Result<ArcStr> {
+pub(crate) fn flagDataString(mut flagData: Flags::FlagData) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = ((match flagData.clone() {
         Flags::FlagData::BOOL_FLAG { .. } => {
@@ -1661,7 +1661,7 @@ pub fn unparseFlags() -> Result<Arc<metamodelica::List<ArcStr>>> {
     Ok(flagStrings)
 }
 
-pub fn splitCSV(mut value: ArcStr) -> Arc<metamodelica::List<ArcStr>> {
+pub(crate) fn splitCSV(mut value: ArcStr) -> Arc<metamodelica::List<ArcStr>> {
     let mut outValues: Arc<metamodelica::List<ArcStr>> = System::strtok((value.clone()).clone(), (literal!(",")).clone());
     outValues
 }

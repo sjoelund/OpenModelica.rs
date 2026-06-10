@@ -75,7 +75,7 @@ use openmodelica_util::Util;
 use openmodelica_util_datatypes_basic::Array;
 use openmodelica_util_datatypes_basic::List;
 
-pub fn elaborate(mut flatModel: Arc<FlatModel::NFFlatModel>, mut connections: Arc<Connections::NFConnections>) -> Result<(Arc<FlatModel::NFFlatModel>, Arc<Connections::NFConnections>)> {
+pub(crate) fn elaborate(mut flatModel: Arc<FlatModel::NFFlatModel>, mut connections: Arc<Connections::NFConnections>) -> Result<(Arc<FlatModel::NFFlatModel>, Arc<Connections::NFConnections>)> {
     let mut flatModel: Arc<FlatModel::NFFlatModel> = flatModel;
     let mut connections: Arc<Connections::NFConnections> = connections;
     let mut expandable_conns: Arc<metamodelica::List<Arc<Connection::NFConnection>>>;

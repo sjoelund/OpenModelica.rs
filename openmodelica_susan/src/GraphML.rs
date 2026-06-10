@@ -797,7 +797,7 @@ pub fn addGraphAttributeValue(mut iValue: (i32, ArcStr), mut iGraphIdx: i32, mut
 // -------------------------
 // Helper
 // -------------------------
-pub fn getMainGraph(mut iGraphInfo: GraphInfo) -> Result<Option<(i32, Graph)>> {
+pub(crate) fn getMainGraph(mut iGraphInfo: GraphInfo) -> Result<Option<(i32, Graph)>> {
     let mut oGraph: Option<(i32, Graph)>;
     let mut graphs: Arc<metamodelica::List<Graph>> = metamodelica::nil();
     let mut firstGraph: Graph = <Graph as ::std::default::Default>::default();
@@ -940,7 +940,7 @@ fn convertToGraphInfoArr(mut iGraphInfo: GraphInfo) -> Result<GraphInfo> {
 // -------------------------
 // debug prints
 // -------------------------
-pub fn printGraphInfo(mut iGraphInfo: GraphInfo) -> Result<()> {
+pub(crate) fn printGraphInfo(mut iGraphInfo: GraphInfo) -> Result<()> {
     let mut graphs: Arc<metamodelica::List<Graph>>;
     let mut graphCount: i32;
     let mut nodes: Arc<metamodelica::List<Node>>;

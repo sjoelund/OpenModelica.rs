@@ -94,12 +94,12 @@ pub type SLICE<T> = NBSlice<T>;
 
 pub type IntLst = Arc<metamodelica::List<i32>>;
 
-pub fn getT<T: Clone + 'static + metamodelica::gc::MMTrace>(mut slice: Arc<NBSlice<T>>) -> T {
+pub(crate) fn getT<T: Clone + 'static + metamodelica::gc::MMTrace>(mut slice: Arc<NBSlice<T>>) -> T {
     let mut t: T = slice.t.clone();
     t
 }
 
-pub fn hash<T: Clone + 'static + metamodelica::gc::MMTrace>(mut slice: Arc<NBSlice<T>>, mut func: Arc<dyn ::std::ops::Fn(T) -> Result<i32> + 'static>) -> Result<i32> {
+pub(crate) fn hash<T: Clone + 'static + metamodelica::gc::MMTrace>(mut slice: Arc<NBSlice<T>>, mut func: Arc<dyn ::std::ops::Fn(T) -> Result<i32> + 'static>) -> Result<i32> {
     let mut h: i32 = func(slice.t.clone())?;
     for mut i in &*List::firstOrEmpty(slice.indices.clone()) {
         let mut i = i.clone();
@@ -108,12 +108,12 @@ pub fn hash<T: Clone + 'static + metamodelica::gc::MMTrace>(mut slice: Arc<NBSli
     Ok(h)
 }
 
-pub fn isEqual<T: Clone + 'static + metamodelica::gc::MMTrace>(mut slice1: Arc<NBSlice<T>>, mut slice2: Arc<NBSlice<T>>, mut func: Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>) -> Result<bool> {
+pub(crate) fn isEqual<T: Clone + 'static + metamodelica::gc::MMTrace>(mut slice1: Arc<NBSlice<T>>, mut slice2: Arc<NBSlice<T>>, mut func: Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>) -> Result<bool> {
     let mut b: bool = func(slice1.t.clone(), slice2.t.clone())? && List::isEqualOnTrue(slice1.indices.clone(), slice2.indices.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
     Ok(b)
 }
 
-pub fn toString<T: Clone + 'static + metamodelica::gc::MMTrace>(mut slice: Arc<NBSlice<T>>, mut func: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>, mut maxLength: i32) -> Result<ArcStr> {
+pub(crate) fn toString<T: Clone + 'static + metamodelica::gc::MMTrace>(mut slice: Arc<NBSlice<T>>, mut func: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>, mut maxLength: i32) -> Result<ArcStr> {
     let mut r#str: ArcStr;
     r#str = (func(slice.t.clone())?).clone();
     if maxLength.clone() > 0 && !(slice.indices.clone().is_empty()) {
@@ -122,19 +122,19 @@ pub fn toString<T: Clone + 'static + metamodelica::gc::MMTrace>(mut slice: Arc<N
     Ok(r#str)
 }
 
-pub fn lstToString<T: Clone + 'static + metamodelica::gc::MMTrace>(mut lst: Arc<metamodelica::List<Arc<NBSlice<T>>>>, mut func: toStringT<T>, mut maxLength: i32) -> Result<ArcStr> {
+pub(crate) fn lstToString<T: Clone + 'static + metamodelica::gc::MMTrace>(mut lst: Arc<metamodelica::List<Arc<NBSlice<T>>>>, mut func: toStringT<T>, mut maxLength: i32) -> Result<ArcStr> {
     pub use toStringT as toStringT_;
 
     let mut r#str: ArcStr = List::toString(lst.clone(), (std::sync::Arc::new({ let __pe_b1 = func.clone(); let __pe_b2 = maxLength.clone(); move |__pe_a0| toString(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("\t")).clone(), (literal!(";\n\t")).clone(), (literal!(";")).clone(), false, 0)?;
     Ok(r#str)
 }
 
-pub fn isFull<T: Clone + 'static + metamodelica::gc::MMTrace>(mut slice: Arc<NBSlice<T>>) -> bool {
+pub(crate) fn isFull<T: Clone + 'static + metamodelica::gc::MMTrace>(mut slice: Arc<NBSlice<T>>) -> bool {
     let mut b: bool = slice.indices.clone().is_empty();
     b
 }
 
-pub fn size<T: Clone + 'static + metamodelica::gc::MMTrace>(mut slice: Arc<NBSlice<T>>, mut func: Arc<dyn ::std::ops::Fn(T) -> Result<i32> + 'static>) -> Result<i32> {
+pub(crate) fn size<T: Clone + 'static + metamodelica::gc::MMTrace>(mut slice: Arc<NBSlice<T>>, mut func: Arc<dyn ::std::ops::Fn(T) -> Result<i32> + 'static>) -> Result<i32> {
     let mut s: i32;
     if slice.indices.clone().is_empty() {
         s = func(slice.t.clone())?;
@@ -144,7 +144,7 @@ pub fn size<T: Clone + 'static + metamodelica::gc::MMTrace>(mut slice: Arc<NBSli
     Ok(s)
 }
 
-pub fn simplify<T: Clone + 'static + metamodelica::gc::MMTrace>(mut slice: Arc<NBSlice<T>>, mut func: Arc<dyn ::std::ops::Fn(T) -> Result<i32> + 'static>) -> Result<Arc<NBSlice<T>>> {
+pub(crate) fn simplify<T: Clone + 'static + metamodelica::gc::MMTrace>(mut slice: Arc<NBSlice<T>>, mut func: Arc<dyn ::std::ops::Fn(T) -> Result<i32> + 'static>) -> Result<Arc<NBSlice<T>>> {
     let mut slice: Arc<NBSlice<T>> = slice;
     if (slice.indices.clone().len() as i32) == func(slice.t.clone())? {
         assign_field!(slice.indices = metamodelica::nil());
@@ -154,12 +154,12 @@ pub fn simplify<T: Clone + 'static + metamodelica::gc::MMTrace>(mut slice: Arc<N
     Ok(slice)
 }
 
-pub fn addToSliceMap<T: Clone + 'static + metamodelica::gc::MMTrace>(mut t: T, mut i: i32, mut map: Arc<UnorderedMap::UnorderedMap<T, Arc<metamodelica::List<i32>>>>) -> Result<()> {
+pub(crate) fn addToSliceMap<T: Clone + 'static + metamodelica::gc::MMTrace>(mut t: T, mut i: i32, mut map: Arc<UnorderedMap::UnorderedMap<T, Arc<metamodelica::List<i32>>>>) -> Result<()> {
     UnorderedMap::add(t.clone(), metamodelica::cons(i.clone(), UnorderedMap::getOrDefault(t.clone(), map.clone(), metamodelica::nil())?), map.clone())?;
     Ok(())
 }
 
-pub fn fromTpl<T: Clone + 'static + metamodelica::gc::MMTrace>(mut tpl: (T, Arc<metamodelica::List<i32>>)) -> Arc<NBSlice<T>> {
+pub(crate) fn fromTpl<T: Clone + 'static + metamodelica::gc::MMTrace>(mut tpl: (T, Arc<metamodelica::List<i32>>)) -> Arc<NBSlice<T>> {
     let mut slice: Arc<NBSlice<T>>;
     let mut t: T;
     let mut lst: IntLst;
@@ -168,7 +168,7 @@ pub fn fromTpl<T: Clone + 'static + metamodelica::gc::MMTrace>(mut tpl: (T, Arc<
     slice
 }
 
-pub fn fromMap<T: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap::UnorderedMap<T, Arc<metamodelica::List<i32>>>>) -> Arc<metamodelica::List<Arc<NBSlice<T>>>> {
+pub(crate) fn fromMap<T: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap::UnorderedMap<T, Arc<metamodelica::List<i32>>>>) -> Arc<metamodelica::List<Arc<NBSlice<T>>>> {
     let mut slices: Arc<metamodelica::List<Arc<NBSlice<T>>>> = ({
         let mut __acc: Arc<metamodelica::List<_>> = metamodelica::nil();
         for mut tpl in (UnorderedMap::toList(map.clone())).into_iter().cloned() {
@@ -180,18 +180,18 @@ pub fn fromMap<T: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<Unor
     slices
 }
 
-pub fn apply<T: Clone + 'static + metamodelica::gc::MMTrace>(mut slice: Arc<NBSlice<T>>, mut func: Arc<dyn ::std::ops::Fn(T) -> Result<T> + 'static>) -> Result<Arc<NBSlice<T>>> {
+pub(crate) fn apply<T: Clone + 'static + metamodelica::gc::MMTrace>(mut slice: Arc<NBSlice<T>>, mut func: Arc<dyn ::std::ops::Fn(T) -> Result<T> + 'static>) -> Result<Arc<NBSlice<T>>> {
     let mut slice: Arc<NBSlice<T>> = slice;
     assign_field!(slice.t = func(slice.t.clone())?);
     Ok(slice)
 }
 
-pub fn applyMutable<T: Clone + 'static + metamodelica::gc::MMTrace>(mut slice: Arc<NBSlice<T>>, mut func: Arc<dyn ::std::ops::Fn(T) -> Result<()> + 'static>) -> Result<()> {
+pub(crate) fn applyMutable<T: Clone + 'static + metamodelica::gc::MMTrace>(mut slice: Arc<NBSlice<T>>, mut func: Arc<dyn ::std::ops::Fn(T) -> Result<()> + 'static>) -> Result<()> {
     func(slice.t.clone())?;
     Ok(())
 }
 
-pub fn check<T: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'static + metamodelica::gc::MMTrace>(mut slice: Arc<NBSlice<T>>, mut func: Arc<dyn ::std::ops::Fn(T) -> Result<T2> + 'static>) -> Result<T2> {
+pub(crate) fn check<T: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'static + metamodelica::gc::MMTrace>(mut slice: Arc<NBSlice<T>>, mut func: Arc<dyn ::std::ops::Fn(T) -> Result<T2> + 'static>) -> Result<T2> {
     let mut t2: T2 = func(slice.t.clone())?;
     Ok(t2)
 }
@@ -214,7 +214,7 @@ pub type filterCref = std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComp
 
 pub type getDependentCrefIndices = std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>, Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, Arc<Mapping::Mapping>, i32) -> Result<(metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<metamodelica::Array<i32>>)> + 'static>;
 
-pub fn filterExp(mut exp: Arc<Expression::NFExpression>, mut filter: Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<ComponentRef::NFComponentRef>> + 'static>, mut acc: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<Expression::NFExpression>> {
+pub(crate) fn filterExp(mut exp: Arc<Expression::NFExpression>, mut filter: Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<ComponentRef::NFComponentRef>> + 'static>, mut acc: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression> = exp;
     let () = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CREF { .. } => {
@@ -239,7 +239,7 @@ pub fn filterExp(mut exp: Arc<Expression::NFExpression>, mut filter: Arc<dyn ::s
     Ok(exp)
 }
 
-pub fn getContinuous(mut cref: Arc<ComponentRef::NFComponentRef>, mut acc: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut init: bool) -> Result<Arc<ComponentRef::NFComponentRef>> {
+pub(crate) fn getContinuous(mut cref: Arc<ComponentRef::NFComponentRef>, mut acc: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut init: bool) -> Result<Arc<ComponentRef::NFComponentRef>> {
     let mut cref: Arc<ComponentRef::NFComponentRef> = cref;
     if BVariable::checkCref(cref.clone(), (std::sync::Arc::new({ let __pe_b1 = init.clone(); move |__pe_a0| BVariable::isContinuous(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!("NBackEnd/Util/NBSlice.mo"))? {
         UnorderedSet::add(cref.clone(), acc.clone())?;
@@ -247,7 +247,7 @@ pub fn getContinuous(mut cref: Arc<ComponentRef::NFComponentRef>, mut acc: Arc<U
     Ok(cref)
 }
 
-pub fn getSliceCandidates(mut cref: Arc<ComponentRef::NFComponentRef>, mut acc: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut name: Arc<ComponentRef::NFComponentRef>) -> Result<Arc<ComponentRef::NFComponentRef>> {
+pub(crate) fn getSliceCandidates(mut cref: Arc<ComponentRef::NFComponentRef>, mut acc: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut name: Arc<ComponentRef::NFComponentRef>) -> Result<Arc<ComponentRef::NFComponentRef>> {
     let mut cref: Arc<ComponentRef::NFComponentRef> = cref;
     let mut checkCref: Arc<ComponentRef::NFComponentRef> = ComponentRef::stripSubscriptsAll(cref.clone());
     if ComponentRef::isEqual(name.clone(), checkCref.clone())? || ComponentRef::isEqual(name.clone(), cref.clone())? || ComponentRef::isEqualRecordChild(name.clone(), checkCref.clone())? {
@@ -256,7 +256,7 @@ pub fn getSliceCandidates(mut cref: Arc<ComponentRef::NFComponentRef>, mut acc: 
     Ok(cref)
 }
 
-pub fn getDependentCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut acc: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut pseudo: bool) -> Result<Arc<ComponentRef::NFComponentRef>> {
+pub(crate) fn getDependentCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut acc: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut pseudo: bool) -> Result<Arc<ComponentRef::NFComponentRef>> {
     let mut cref: Arc<ComponentRef::NFComponentRef> = cref;
     let mut checkCref: Arc<ComponentRef::NFComponentRef>;
     let mut childCref: Arc<ComponentRef::NFComponentRef>;
@@ -279,7 +279,7 @@ pub fn getDependentCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut acc: Ar
     Ok(cref)
 }
 
-pub fn getDependentCrefCausalized(mut cref: Arc<ComponentRef::NFComponentRef>, mut acc: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<ComponentRef::NFComponentRef>> {
+pub(crate) fn getDependentCrefCausalized(mut cref: Arc<ComponentRef::NFComponentRef>, mut acc: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<ComponentRef::NFComponentRef>> {
     let mut cref: Arc<ComponentRef::NFComponentRef> = cref;
     let mut checkCref: Arc<ComponentRef::NFComponentRef>;
     let mut childCref: Arc<ComponentRef::NFComponentRef>;
@@ -302,7 +302,7 @@ pub fn getDependentCrefCausalized(mut cref: Arc<ComponentRef::NFComponentRef>, m
     Ok(cref)
 }
 
-pub fn getUnsolvableExpCrefs(mut exp: Arc<Expression::NFExpression>, mut acc: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut pseudo: bool) -> Result<Arc<Expression::NFExpression>> {
+pub(crate) fn getUnsolvableExpCrefs(mut exp: Arc<Expression::NFExpression>, mut acc: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut pseudo: bool) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression> = exp;
     exp = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::RANGE { .. } => Expression::mapShallow(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = (std::sync::Arc::new({ let __pe_b2 = map.clone(); let __pe_b3 = pseudo.clone(); move |__pe_a0, __pe_a1| getDependentCref(__pe_a0, __pe_a1, __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<ComponentRef::NFComponentRef>> + 'static>); let __pe_b2 = acc.clone(); move |__pe_a0| filterExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?,
@@ -314,7 +314,7 @@ pub fn getUnsolvableExpCrefs(mut exp: Arc<Expression::NFExpression>, mut acc: Ar
     Ok(exp)
 }
 
-pub fn getDependentCrefIndicesPseudoScalar(mut dependencies: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut mapping: Arc<Mapping::Mapping>) -> Result<Arc<metamodelica::List<i32>>> {
+pub(crate) fn getDependentCrefIndicesPseudoScalar(mut dependencies: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut mapping: Arc<Mapping::Mapping>) -> Result<Arc<metamodelica::List<i32>>> {
     let mut indices: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut scalarized_dependencies: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = List::flatten(({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>> = metamodelica::nil();
@@ -353,7 +353,7 @@ pub fn getDependentCrefIndicesPseudoScalar(mut dependencies: Arc<metamodelica::L
     Ok(indices)
 }
 
-pub fn getDependentCrefIndicesPseudoFull(mut dependencies: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut mapping: Arc<Mapping::Mapping>, mut eqn_arr_idx: i32) -> Result<(metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<metamodelica::Array<i32>>)> {
+pub(crate) fn getDependentCrefIndicesPseudoFull(mut dependencies: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut mapping: Arc<Mapping::Mapping>, mut eqn_arr_idx: i32) -> Result<(metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<metamodelica::Array<i32>>)> {
     let mut indices: metamodelica::Array<Arc<metamodelica::List<i32>>>;
     let mut mode_to_var: metamodelica::Array<metamodelica::Array<i32>>;
     let mut scalarized_dependencies: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = List::flatten(({
@@ -425,7 +425,7 @@ pub fn getDependentCrefIndicesPseudoFull(mut dependencies: Arc<metamodelica::Lis
     Ok((indices, mode_to_var))
 }
 
-pub fn getDependentCrefIndicesPseudoFor(mut dependencies: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut mapping: Arc<Mapping::Mapping>, mut eqn_arr_idx: i32, mut iter: Arc<Iterator::Iterator>) -> Result<(metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<metamodelica::Array<i32>>)> {
+pub(crate) fn getDependentCrefIndicesPseudoFor(mut dependencies: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut mapping: Arc<Mapping::Mapping>, mut eqn_arr_idx: i32, mut iter: Arc<Iterator::Iterator>) -> Result<(metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<metamodelica::Array<i32>>)> {
     let mut indices: metamodelica::Array<Arc<metamodelica::List<i32>>>;
     let mut mode_to_var: metamodelica::Array<metamodelica::Array<i32>>;
     let mut names: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
@@ -471,7 +471,7 @@ pub fn getDependentCrefIndicesPseudoFor(mut dependencies: Arc<metamodelica::List
     Ok((indices, mode_to_var))
 }
 
-pub fn getDependentCrefsPseudoForCausalized(mut row_cref: Arc<ComponentRef::NFComponentRef>, mut dependencies: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>, mut var_rep: Arc<VariablePointers::VariablePointers>, mut eqn_rep: Arc<VariablePointers::VariablePointers>, mut var_rep_mapping: Arc<Mapping::Mapping>, mut eqn_rep_mapping: Arc<Mapping::Mapping>, mut iter: Arc<Iterator::Iterator>, mut eqn_size: i32, mut slice: Arc<metamodelica::List<i32>>, mut implicit: bool) -> Result<Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>)>>> {
+pub(crate) fn getDependentCrefsPseudoForCausalized(mut row_cref: Arc<ComponentRef::NFComponentRef>, mut dependencies: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>, mut var_rep: Arc<VariablePointers::VariablePointers>, mut eqn_rep: Arc<VariablePointers::VariablePointers>, mut var_rep_mapping: Arc<Mapping::Mapping>, mut eqn_rep_mapping: Arc<Mapping::Mapping>, mut iter: Arc<Iterator::Iterator>, mut eqn_size: i32, mut slice: Arc<metamodelica::List<i32>>, mut implicit: bool) -> Result<Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>)>>> {
     let mut tpl_lst: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>)>>;
     let mut names: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
     let mut ranges: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
@@ -534,7 +534,7 @@ pub fn getDependentCrefsPseudoForCausalized(mut row_cref: Arc<ComponentRef::NFCo
     Ok(tpl_lst)
 }
 
-pub fn fillDependencyArray(mut dep: Arc<ComponentRef::NFComponentRef>, mut body_size: i32, mut frames: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)>>, mut mapping: Arc<Mapping::Mapping>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut func: Arc<dyn ::std::ops::Fn(i32, i32, i32) -> Result<i32> + 'static>, mut var_arr_idx: i32, mut resize: bool) -> Result<()> {
+pub(crate) fn fillDependencyArray(mut dep: Arc<ComponentRef::NFComponentRef>, mut body_size: i32, mut frames: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)>>, mut mapping: Arc<Mapping::Mapping>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut func: Arc<dyn ::std::ops::Fn(i32, i32, i32) -> Result<i32> + 'static>, mut var_arr_idx: i32, mut resize: bool) -> Result<()> {
     let mut scal_cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
     let mut scal_length: i32;
     let mut body_repeat: i32;
@@ -580,14 +580,14 @@ pub fn fillDependencyArray(mut dep: Arc<ComponentRef::NFComponentRef>, mut body_
 
 pub type updateDependencies = std::sync::Arc<dyn ::std::ops::Fn(i32, i32, i32) -> Result<i32> + 'static>;
 
-pub fn updateDependenciesCref(mut eqn_idx: i32, mut var_idx: i32, mut var_arr_idx: i32, mut accum_dep_arr: metamodelica::Array<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>, mut vars: Arc<VariablePointers::VariablePointers>, mut mapping: Arc<Mapping::Mapping>, mut resize: bool) -> Result<i32> {
+pub(crate) fn updateDependenciesCref(mut eqn_idx: i32, mut var_idx: i32, mut var_arr_idx: i32, mut accum_dep_arr: metamodelica::Array<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>, mut vars: Arc<VariablePointers::VariablePointers>, mut mapping: Arc<Mapping::Mapping>, mut resize: bool) -> Result<i32> {
     let mut eqn_idx: i32 = eqn_idx;
     metamodelica::arrayUpdate(accum_dep_arr.clone(), eqn_idx.clone(), metamodelica::cons(BVariable::VariablePointers::varSlice(vars.clone(), var_idx.clone(), var_arr_idx.clone(), mapping.clone(), resize.clone())?, ({let __elt = accum_dep_arr.borrow()[(eqn_idx.clone()-1) as usize].clone(); __elt})))?;
     eqn_idx = eqn_idx.clone() + 1;
     Ok(eqn_idx)
 }
 
-pub fn updateDependenciesInteger(mut eqn_idx: i32, mut var_idx: i32, mut var_arr_idx: i32, mut mode: i32, mut mode_to_var: metamodelica::Array<metamodelica::Array<i32>>, mut indices: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<i32> {
+pub(crate) fn updateDependenciesInteger(mut eqn_idx: i32, mut var_idx: i32, mut var_arr_idx: i32, mut mode: i32, mut mode_to_var: metamodelica::Array<metamodelica::Array<i32>>, mut indices: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<i32> {
     let mut eqn_idx: i32 = eqn_idx;
     let mut mode_to_var_row: metamodelica::Array<i32>;
     mode_to_var_row = ({let __elt = mode_to_var.borrow()[(eqn_idx.clone()-1) as usize].clone(); __elt});
@@ -597,7 +597,7 @@ pub fn updateDependenciesInteger(mut eqn_idx: i32, mut var_idx: i32, mut var_arr
     Ok(eqn_idx)
 }
 
-pub fn getDependentCrefsPseudoArrayCausalized(mut row_cref: Arc<ComponentRef::NFComponentRef>, mut dependencies: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>, mut slice: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>)>>> {
+pub(crate) fn getDependentCrefsPseudoArrayCausalized(mut row_cref: Arc<ComponentRef::NFComponentRef>, mut dependencies: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>, mut slice: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>)>>> {
     fn fixSingleDep(mut row_size: i32, mut single_dep: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>, mut full_deps: Pointer::Pointer<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>) -> Result<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>> {
         let mut single_dep: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = single_dep;
         let mut dep_size: i32 = (single_dep.clone().len() as i32);
@@ -683,7 +683,7 @@ pub fn getDependentCrefsPseudoArrayCausalized(mut row_cref: Arc<ComponentRef::NF
     Ok(tpl_lst)
 }
 
-pub fn locationToIndex(mut sizes: Arc<metamodelica::List<i32>>, mut values: Arc<metamodelica::List<i32>>, mut index: i32) -> Result<i32> {
+pub(crate) fn locationToIndex(mut sizes: Arc<metamodelica::List<i32>>, mut values: Arc<metamodelica::List<i32>>, mut index: i32) -> Result<i32> {
     let mut index: i32 = index;
     let mut factor: i32 = 1;
     let mut val: i32;
@@ -713,7 +713,7 @@ pub fn locationToIndex(mut sizes: Arc<metamodelica::List<i32>>, mut values: Arc<
     Ok(index)
 }
 
-pub fn indexToLocation(mut index: i32, mut sizes: Arc<metamodelica::List<i32>>) -> Arc<metamodelica::List<i32>> {
+pub(crate) fn indexToLocation(mut index: i32, mut sizes: Arc<metamodelica::List<i32>>) -> Arc<metamodelica::List<i32>> {
     let mut vals: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut iterator: i32 = index.clone();
     let mut divisor: i32 = ({
@@ -733,7 +733,7 @@ pub fn indexToLocation(mut index: i32, mut sizes: Arc<metamodelica::List<i32>>) 
     vals
 }
 
-pub fn transposeLocations(mut locations: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut out_size: i32) -> Arc<metamodelica::List<metamodelica::Array<i32>>> {
+pub(crate) fn transposeLocations(mut locations: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut out_size: i32) -> Arc<metamodelica::List<metamodelica::Array<i32>>> {
     let mut locations_transposed: Arc<metamodelica::List<metamodelica::Array<i32>>>;
     let mut lT_tmp: metamodelica::Array<Arc<metamodelica::List<i32>>> = arrayCreate(out_size.clone(), metamodelica::nil());
     let mut lT_tmp2: metamodelica::Array<metamodelica::Array<i32>> = arrayCreate(out_size.clone(), arrayCreate(0, 0));
@@ -762,7 +762,7 @@ pub fn transposeLocations(mut locations: Arc<metamodelica::List<Arc<metamodelica
     locations_transposed
 }
 
-pub fn orderTransposedFrameLocations(mut frame_locations_transposed: Arc<metamodelica::List<(metamodelica::Array<i32>, (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>))>>) -> Result<(Arc<metamodelica::List<(metamodelica::Array<i32>, (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>))>>, Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>, FrameOrderingStatus)> {
+pub(crate) fn orderTransposedFrameLocations(mut frame_locations_transposed: Arc<metamodelica::List<(metamodelica::Array<i32>, (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>))>>) -> Result<(Arc<metamodelica::List<(metamodelica::Array<i32>, (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>))>>, Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>, FrameOrderingStatus)> {
     let mut frame_locations_transposed: Arc<metamodelica::List<(metamodelica::Array<i32>, (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>))>> = frame_locations_transposed;
     let mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
     let mut status: FrameOrderingStatus;
@@ -869,7 +869,7 @@ fn resolveEqualInertia(mut frame_inertia_lst: Arc<metamodelica::List<(i32, (meta
     Ok((resolved, status))
 }
 
-pub fn recollectRangesHeuristic(mut frame_locations_transposed: Arc<metamodelica::List<(metamodelica::Array<i32>, (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>))>>) -> Result<(Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)>>, Option<Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>>, RecollectStatus)> {
+pub(crate) fn recollectRangesHeuristic(mut frame_locations_transposed: Arc<metamodelica::List<(metamodelica::Array<i32>, (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>))>>) -> Result<(Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)>>, Option<Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>>, RecollectStatus)> {
     let mut frames: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)>> = metamodelica::nil();
     let mut removed_diagonal: Option<Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>> = None;
     let mut status: RecollectStatus;
@@ -997,7 +997,7 @@ pub fn recollectRangesHeuristic(mut frame_locations_transposed: Arc<metamodelica
     Ok((frames, removed_diagonal, status))
 }
 
-pub fn reconstructDiagonal(mut frame_locations_transposed: Arc<metamodelica::List<(metamodelica::Array<i32>, (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>))>>, mut starts: Arc<metamodelica::List<i32>>, mut steps: Arc<metamodelica::List<i32>>, mut stops: Arc<metamodelica::List<i32>>, mut shifts: Arc<metamodelica::List<i32>>, mut failed: Arc<metamodelica::List<bool>>) -> Result<Arc<metamodelica::List<(metamodelica::Array<i32>, (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>))>>> {
+pub(crate) fn reconstructDiagonal(mut frame_locations_transposed: Arc<metamodelica::List<(metamodelica::Array<i32>, (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>))>>, mut starts: Arc<metamodelica::List<i32>>, mut steps: Arc<metamodelica::List<i32>>, mut stops: Arc<metamodelica::List<i32>>, mut shifts: Arc<metamodelica::List<i32>>, mut failed: Arc<metamodelica::List<bool>>) -> Result<Arc<metamodelica::List<(metamodelica::Array<i32>, (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>))>>> {
     let mut diagonal: Arc<metamodelica::List<(metamodelica::Array<i32>, (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>))>> = metamodelica::nil();
     let mut start: i32;
     let mut step: i32;
@@ -1078,7 +1078,7 @@ pub fn reconstructDiagonal(mut frame_locations_transposed: Arc<metamodelica::Lis
     Ok(diagonal)
 }
 
-pub fn naiveSeparation(mut indices: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>> {
+pub(crate) fn naiveSeparation(mut indices: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>> {
     let mut index_clusters: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
     let mut i: i32;
     let mut rest: Arc<metamodelica::List<i32>>;
@@ -1106,7 +1106,7 @@ pub fn naiveSeparation(mut indices: Arc<metamodelica::List<i32>>) -> Result<Arc<
     Ok(index_clusters)
 }
 
-pub fn upgradeRowFull(mut dependencies: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut mapping: Arc<Mapping::Mapping>) -> Result<Arc<metamodelica::List<i32>>> {
+pub(crate) fn upgradeRowFull(mut dependencies: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut mapping: Arc<Mapping::Mapping>) -> Result<Arc<metamodelica::List<i32>>> {
     let mut indices: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut scalarized_dependencies: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = List::flatten(({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>> = metamodelica::nil();
@@ -1138,7 +1138,7 @@ pub fn upgradeRowFull(mut dependencies: Arc<metamodelica::List<Arc<ComponentRef:
     Ok(indices)
 }
 
-pub fn upgradeRow(mut eqn_name: Arc<ComponentRef::NFComponentRef>, mut eqn_arr_idx: i32, mut iter: Arc<Iterator::Iterator>, mut ty: Arc<Type::NFType>, mut dependencies: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>, mut dep: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Dependency::Dependency>>>, mut rep: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut fullmap: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mapping: Arc<Mapping::Mapping>, mut modes: Arc<UnorderedMap::UnorderedMap<(i32, i32), Arc<Mode::Mode>>>) -> Result<()> {
+pub(crate) fn upgradeRow(mut eqn_name: Arc<ComponentRef::NFComponentRef>, mut eqn_arr_idx: i32, mut iter: Arc<Iterator::Iterator>, mut ty: Arc<Type::NFType>, mut dependencies: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>, mut dep: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Dependency::Dependency>>>, mut rep: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut fullmap: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mapping: Arc<Mapping::Mapping>, mut modes: Arc<UnorderedMap::UnorderedMap<(i32, i32), Arc<Mode::Mode>>>) -> Result<()> {
     for mut cref in &*dependencies.clone() {
         let mut cref = cref.clone();
         resolveDependency(cref.clone(), eqn_name.clone(), eqn_arr_idx.clone(), iter.clone(), ty.clone(), dep.clone(), rep.clone(), map.clone(), fullmap.clone(), m.clone(), mapping.clone(), modes.clone())?;
@@ -1715,7 +1715,7 @@ fn getVarArrIdx(mut cref: Arc<ComponentRef::NFComponentRef>, mut mapping: Arc<Ma
     Ok((cref, var_arr_idx))
 }
 
-pub fn getCrefInFrameIndicesLocal(mut subscripted_cref: Arc<ComponentRef::NFComponentRef>, mut stripped_cref: Arc<ComponentRef::NFComponentRef>, mut frames: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)>>, mut var_start: i32, mut resize: bool) -> Result<Arc<metamodelica::List<i32>>> {
+pub(crate) fn getCrefInFrameIndicesLocal(mut subscripted_cref: Arc<ComponentRef::NFComponentRef>, mut stripped_cref: Arc<ComponentRef::NFComponentRef>, mut frames: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)>>, mut var_start: i32, mut resize: bool) -> Result<Arc<metamodelica::List<i32>>> {
     let mut scal_lst: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut sizes: Arc<metamodelica::List<i32>>;
     let mut subs: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;

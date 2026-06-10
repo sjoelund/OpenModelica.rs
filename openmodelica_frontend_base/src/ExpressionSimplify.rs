@@ -178,7 +178,7 @@ fn simplifyWithOptions(mut inExp: Arc<DAE::Exp>, mut options: ExpressionSimplify
     Ok((outExp, hasChanged))
 }
 
-pub fn simplifyTraverseHelper<A: Clone + 'static + metamodelica::gc::MMTrace>(mut inExp: Arc<DAE::Exp>, mut inA: A) -> Result<(Arc<DAE::Exp>, A)> {
+pub(crate) fn simplifyTraverseHelper<A: Clone + 'static + metamodelica::gc::MMTrace>(mut inExp: Arc<DAE::Exp>, mut inA: A) -> Result<(Arc<DAE::Exp>, A)> {
     let mut exp: Arc<DAE::Exp>;
     let mut a: A;
     a = inA.clone();
@@ -194,7 +194,7 @@ pub fn simplify1TraverseHelper<A: Clone + 'static + metamodelica::gc::MMTrace>(m
     Ok((outExp, a))
 }
 
-pub fn simplify1time(mut e: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
+pub(crate) fn simplify1time(mut e: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
     let mut outE: Arc<DAE::Exp>;
     let mut t1: metamodelica::Real;
     let mut t2: metamodelica::Real;
@@ -919,7 +919,7 @@ pub fn simplify1o(mut inExp: Option<Arc<DAE::Exp>>) -> Result<Option<Arc<DAE::Ex
     Ok(outExp)
 }
 
-pub fn simplify1WithOptions(mut inExp: Arc<DAE::Exp>, mut options: ExpressionSimplifyTypes::Evaluate) -> Result<(Arc<DAE::Exp>, bool)> {
+pub(crate) fn simplify1WithOptions(mut inExp: Arc<DAE::Exp>, mut options: ExpressionSimplifyTypes::Evaluate) -> Result<(Arc<DAE::Exp>, bool)> {
     let mut outExp: Arc<DAE::Exp>;
     let mut hasChanged: bool;
     (outExp, hasChanged) = simplify1FixP(inExp.clone(), options.clone(), 100, true, false)?;
@@ -3114,7 +3114,7 @@ fn simplifyBinaryArray(mut inExp1: Arc<DAE::Exp>, mut inOperator2: Operator, mut
     Ok(outExp)
 }
 
-pub fn simplifyScalarProduct(mut inVector1: Arc<DAE::Exp>, mut inVector2: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
+pub(crate) fn simplifyScalarProduct(mut inVector1: Arc<DAE::Exp>, mut inVector2: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
     let mut outProduct: Arc<DAE::Exp>;
     outProduct = (::match_deref::match_deref! { match &((inVector1.clone(), inVector2.clone())) {
         (Deref @ DAE::Exp::ARRAY { ty: tp, array: Deref @ metamodelica::List::Nil, .. }, Deref @ DAE::Exp::ARRAY { array: Deref @ metamodelica::List::Nil, .. }) => {
@@ -4727,7 +4727,7 @@ fn simplifyRelationConst(mut op: Operator, mut e1: Arc<DAE::Exp>, mut e2: Arc<DA
     Ok(b)
 }
 
-pub fn safeIntOp(mut val1: i32, mut val2: i32, mut op: ExpressionSimplifyTypes::IntOp) -> Result<Arc<DAE::Exp>> {
+pub(crate) fn safeIntOp(mut val1: i32, mut val2: i32, mut op: ExpressionSimplifyTypes::IntOp) -> Result<Arc<DAE::Exp>> {
     let mut outv: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     outv = (match op.clone() {
         ExpressionSimplifyTypes::IntOp::MULOP { .. } => {
@@ -6970,7 +6970,7 @@ pub fn simplifyList(mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<
     Ok(outExpl)
 }
 
-pub fn simplifyList1(mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<(Arc<metamodelica::List<Arc<DAE::Exp>>>, Arc<metamodelica::List<bool>>)> {
+pub(crate) fn simplifyList1(mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<(Arc<metamodelica::List<Arc<DAE::Exp>>>, Arc<metamodelica::List<bool>>)> {
     let mut outExpl: Arc<metamodelica::List<Arc<DAE::Exp>>>;
     let mut outBool: Arc<metamodelica::List<bool>> = metamodelica::nil();
     outExpl = ({
@@ -7078,7 +7078,7 @@ pub fn simplifyAddSymbolicOperation(mut exp: Arc<DAE::EquationExp>, mut source: 
     Ok((outExp, outSource))
 }
 
-pub fn condSimplifyAddSymbolicOperation(mut cond: bool, mut exp: Arc<DAE::EquationExp>, mut source: Arc<DAE::ElementSource>) -> Result<(Arc<DAE::EquationExp>, Arc<DAE::ElementSource>)> {
+pub(crate) fn condSimplifyAddSymbolicOperation(mut cond: bool, mut exp: Arc<DAE::EquationExp>, mut source: Arc<DAE::ElementSource>) -> Result<(Arc<DAE::EquationExp>, Arc<DAE::ElementSource>)> {
     let mut exp: Arc<DAE::EquationExp> = exp;
     let mut source: Arc<DAE::ElementSource> = source;
     if cond.clone() {
@@ -7218,7 +7218,7 @@ fn removeMinMaxFoldableValues(mut e: Arc<DAE::Exp>) -> bool {
     filter
 }
 
-pub fn simplifySkew(mut v1: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>>> {
+pub(crate) fn simplifySkew(mut v1: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>>> {
     let mut res: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>>;
     let mut x1: Arc<DAE::Exp>;
     let mut x2: Arc<DAE::Exp>;
@@ -7236,7 +7236,7 @@ pub fn simplifySkew(mut v1: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<Ar
     Ok(res)
 }
 
-pub fn simplifyCross(mut v1: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut v2: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> {
+pub(crate) fn simplifyCross(mut v1: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut v2: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> {
     let mut res: Arc<metamodelica::List<Arc<DAE::Exp>>>;
     let mut x1: Arc<DAE::Exp>;
     let mut x2: Arc<DAE::Exp>;

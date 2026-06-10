@@ -272,7 +272,7 @@ pub fn toString(mut bdae: Arc<NBackendDAE>, mut r#str: ArcStr) -> Result<ArcStr>
     Ok(r#str)
 }
 
-pub fn getVarData(mut bdae: Arc<NBackendDAE>) -> Result<Arc<VarData::VarData>> {
+pub(crate) fn getVarData(mut bdae: Arc<NBackendDAE>) -> Result<Arc<VarData::VarData>> {
     let mut varData: Arc<VarData::VarData>;
     varData = (::match_deref::match_deref! { match &(bdae.clone()) {
         Deref @ MAIN { .. } => var_field!((*bdae).varData, NBackendDAE::MAIN).clone(),
@@ -287,7 +287,7 @@ pub fn getVarData(mut bdae: Arc<NBackendDAE>) -> Result<Arc<VarData::VarData>> {
     Ok(varData)
 }
 
-pub fn setVarData(mut bdae: Arc<NBackendDAE>, mut varData: Arc<VarData::VarData>) -> Result<Arc<NBackendDAE>> {
+pub(crate) fn setVarData(mut bdae: Arc<NBackendDAE>, mut varData: Arc<VarData::VarData>) -> Result<Arc<NBackendDAE>> {
     let mut bdae: Arc<NBackendDAE> = bdae;
     bdae = (::match_deref::match_deref! { match &(bdae.clone()) {
         Deref @ MAIN { .. } => {
@@ -311,7 +311,7 @@ pub fn setVarData(mut bdae: Arc<NBackendDAE>, mut varData: Arc<VarData::VarData>
     Ok(bdae)
 }
 
-pub fn getIsAdjoint(mut bdae: Arc<NBackendDAE>) -> Result<bool> {
+pub(crate) fn getIsAdjoint(mut bdae: Arc<NBackendDAE>) -> Result<bool> {
     let mut isAdjoint: bool = false;
     isAdjoint = (::match_deref::match_deref! { match &(bdae.clone()) {
         Deref @ JACOBIAN { isAdjoint: __esc_isAdjoint, .. } => {
@@ -327,7 +327,7 @@ pub fn getIsAdjoint(mut bdae: Arc<NBackendDAE>) -> Result<bool> {
     Ok(isAdjoint)
 }
 
-pub fn getFunctionMap(mut bdae: Arc<NBackendDAE>) -> Result<Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>> {
+pub(crate) fn getFunctionMap(mut bdae: Arc<NBackendDAE>) -> Result<Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>> {
     let mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>;
     funcMap = (::match_deref::match_deref! { match &(bdae.clone()) {
         Deref @ MAIN { .. } => var_field!((*bdae).funcMap, NBackendDAE::MAIN).clone(),
@@ -340,7 +340,7 @@ pub fn getFunctionMap(mut bdae: Arc<NBackendDAE>) -> Result<Arc<UnorderedMap::Un
     Ok(funcMap)
 }
 
-pub fn sizes(mut bdae: Arc<NBackendDAE>) -> Result<((i32, i32), (i32, i32))> {
+pub(crate) fn sizes(mut bdae: Arc<NBackendDAE>) -> Result<((i32, i32), (i32, i32))> {
     let mut varSizes: (i32, i32);
     let mut eqnSizes: (i32, i32);
     (varSizes, eqnSizes) = (::match_deref::match_deref! { match &(bdae.clone()) {
@@ -433,7 +433,7 @@ pub fn main(mut bdae: Arc<NBackendDAE>) -> Result<Arc<NBackendDAE>> {
     Ok(bdae)
 }
 
-pub fn applyModules(mut bdae: Arc<NBackendDAE>, mut modules: Arc<metamodelica::List<(Arc<dyn ::std::ops::Fn(Arc<NBackendDAE>) -> Result<Arc<NBackendDAE>> + 'static>, ArcStr)>>, mut eq_filter_opt: Option<Arc<UnorderedSet::UnorderedSet<ArcStr>>>, mut clock_idx: i32) -> Result<(Arc<NBackendDAE>, Arc<metamodelica::List<(ArcStr, metamodelica::Real)>>)> {
+pub(crate) fn applyModules(mut bdae: Arc<NBackendDAE>, mut modules: Arc<metamodelica::List<(Arc<dyn ::std::ops::Fn(Arc<NBackendDAE>) -> Result<Arc<NBackendDAE>> + 'static>, ArcStr)>>, mut eq_filter_opt: Option<Arc<UnorderedSet::UnorderedSet<ArcStr>>>, mut clock_idx: i32) -> Result<(Arc<NBackendDAE>, Arc<metamodelica::List<(ArcStr, metamodelica::Real)>>)> {
     let mut bdae: Arc<NBackendDAE> = bdae;
     let mut module_clocks: Arc<metamodelica::List<(ArcStr, metamodelica::Real)>> = metamodelica::nil();
     let mut func: Module::wrapper;
@@ -490,7 +490,7 @@ pub fn applyModules(mut bdae: Arc<NBackendDAE>, mut modules: Arc<metamodelica::L
     Ok((bdae, module_clocks))
 }
 
-pub fn simplify(mut bdae: Arc<NBackendDAE>, mut init: bool) -> Result<Arc<NBackendDAE>> {
+pub(crate) fn simplify(mut bdae: Arc<NBackendDAE>, mut init: bool) -> Result<Arc<NBackendDAE>> {
     let mut bdae: Arc<NBackendDAE> = bdae;
     let mut acc_discrete_states: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>> = Pointer::create(metamodelica::nil());
     let mut acc_previous: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>> = Pointer::create(metamodelica::nil());
@@ -517,7 +517,7 @@ pub fn simplify(mut bdae: Arc<NBackendDAE>, mut init: bool) -> Result<Arc<NBacke
     Ok(bdae)
 }
 
-pub fn removeStream(mut bdae: Arc<NBackendDAE>) -> Result<Arc<NBackendDAE>> {
+pub(crate) fn removeStream(mut bdae: Arc<NBackendDAE>) -> Result<Arc<NBackendDAE>> {
     let mut bdae: Arc<NBackendDAE> = bdae;
     bdae = ({
         let mut acc_discrete_states: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>> = Pointer::create(metamodelica::nil());
@@ -541,7 +541,7 @@ pub fn removeStream(mut bdae: Arc<NBackendDAE>) -> Result<Arc<NBackendDAE>> {
     Ok(bdae)
 }
 
-pub fn updateDiscreteStates(mut varData: Arc<VarData::VarData>, mut acc_discrete_states: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>>, mut acc_previous: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>>) -> Result<Arc<VarData::VarData>> {
+pub(crate) fn updateDiscreteStates(mut varData: Arc<VarData::VarData>, mut acc_discrete_states: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>>, mut acc_previous: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>>) -> Result<Arc<VarData::VarData>> {
     let mut varData: Arc<VarData::VarData> = varData;
     varData = (::match_deref::match_deref! { match &(varData.clone()) {
         Deref @ BVariable::VarData::VAR_DATA_SIM { .. } => {
@@ -573,7 +573,7 @@ pub fn updateDiscreteStates(mut varData: Arc<VarData::VarData>, mut acc_discrete
     Ok(varData)
 }
 
-pub fn getLoopResiduals(mut bdae: Arc<NBackendDAE>) -> Result<Arc<VariablePointers::VariablePointers>> {
+pub(crate) fn getLoopResiduals(mut bdae: Arc<NBackendDAE>) -> Result<Arc<VariablePointers::VariablePointers>> {
     let mut residuals: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
     residuals = ({
         let mut var_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
@@ -958,7 +958,7 @@ fn collectVariableBindingIterators(mut var: Arc<Variable::NFVariable>, mut varia
     Ok(var)
 }
 
-pub fn lowerRecordChildren(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut variables: Arc<VariablePointers::VariablePointers>) -> Result<()> {
+pub(crate) fn lowerRecordChildren(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut variables: Arc<VariablePointers::VariablePointers>) -> Result<()> {
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     var = (::match_deref::match_deref! { match &(var.clone()) {
         Deref @ Variable::VARIABLE { backendinfo: binfo @ Deref @ BackendInfo::BACKEND_INFO { varKind: varKind @ Deref @ VariableKind::RECORD { .. }, .. }, .. } => {
@@ -1480,7 +1480,7 @@ fn lowerWhenBranchIf(mut branch: Arc<FEquation::Branch::Branch>, mut if_map: Arc
     Ok(())
 }
 
-pub fn lowerAlgorithm(mut alg: Arc<Algorithm::NFAlgorithm>, mut init: bool) -> Result<Pointer::Pointer<Arc<Equation::Equation>>> {
+pub(crate) fn lowerAlgorithm(mut alg: Arc<Algorithm::NFAlgorithm>, mut init: bool) -> Result<Pointer::Pointer<Arc<Equation::Equation>>> {
     let mut eq: Pointer::Pointer<Arc<Equation::Equation>>;
     let mut size: i32;
     let mut outputs: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
@@ -1504,7 +1504,7 @@ pub fn lowerAlgorithm(mut alg: Arc<Algorithm::NFAlgorithm>, mut init: bool) -> R
     Ok(eq)
 }
 
-pub fn lowerEquationAttributes(mut ty: Arc<Type::NFType>, mut init: bool) -> Result<Arc<EquationAttributes::EquationAttributes>> {
+pub(crate) fn lowerEquationAttributes(mut ty: Arc<Type::NFType>, mut init: bool) -> Result<Arc<EquationAttributes::EquationAttributes>> {
     let mut attr: Arc<EquationAttributes::EquationAttributes>;
     if Type::isClock(ty.clone())? {
         attr = BEquation::default(EquationKind::CLOCKED.clone(), init.clone(), Some(-1), None);
@@ -1522,7 +1522,7 @@ fn lowerComponentReferences(mut equations: Arc<EquationPointers::EquationPointer
     Ok(equations)
 }
 
-pub fn lowerComponentReferenceExp(mut exp: Arc<Expression::NFExpression>, mut variables: Arc<VariablePointers::VariablePointers>, mut complete: bool) -> Result<Arc<Expression::NFExpression>> {
+pub(crate) fn lowerComponentReferenceExp(mut exp: Arc<Expression::NFExpression>, mut variables: Arc<VariablePointers::VariablePointers>, mut complete: bool) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression> = exp;
     exp = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CREF { .. } if (!(ComponentRef::isNameNode(var_field!((*exp).cref, Expression::NFExpression::CREF).clone()))) => {
@@ -1563,7 +1563,7 @@ pub fn lowerComponentReferenceExp(mut exp: Arc<Expression::NFExpression>, mut va
     Ok(exp)
 }
 
-pub fn lowerComponentReference(mut cref: Arc<ComponentRef::NFComponentRef>, mut variables: Arc<VariablePointers::VariablePointers>, mut complete: bool) -> Result<Arc<ComponentRef::NFComponentRef>> {
+pub(crate) fn lowerComponentReference(mut cref: Arc<ComponentRef::NFComponentRef>, mut variables: Arc<VariablePointers::VariablePointers>, mut complete: bool) -> Result<Arc<ComponentRef::NFComponentRef>> {
     let mut cref: Arc<ComponentRef::NFComponentRef> = cref;
     let mut var: Pointer::Pointer<Arc<Variable::NFVariable>>;
     if '__try0: {
@@ -1651,7 +1651,7 @@ fn lowerInstNode(mut node: Arc<InstNode::InstNode>, mut variables: Arc<VariableP
     Ok(node)
 }
 
-pub fn lowerComponentReferenceInstNode(mut cref: Arc<ComponentRef::NFComponentRef>, mut var: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<Arc<ComponentRef::NFComponentRef>> {
+pub(crate) fn lowerComponentReferenceInstNode(mut cref: Arc<ComponentRef::NFComponentRef>, mut var: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<Arc<ComponentRef::NFComponentRef>> {
     let mut cref: Arc<ComponentRef::NFComponentRef> = cref;
     cref = (::match_deref::match_deref! { match &(cref.clone()) {
         qual @ Deref @ ComponentRef::CREF { .. } => {
@@ -1667,7 +1667,7 @@ pub fn lowerComponentReferenceInstNode(mut cref: Arc<ComponentRef::NFComponentRe
     Ok(cref)
 }
 
-pub fn lowerEquationIterators(mut eqn: Arc<Equation::Equation>, mut variables: Arc<VariablePointers::VariablePointers>, mut set: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>>) -> Result<Arc<Equation::Equation>> {
+pub(crate) fn lowerEquationIterators(mut eqn: Arc<Equation::Equation>, mut variables: Arc<VariablePointers::VariablePointers>, mut set: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>>) -> Result<Arc<Equation::Equation>> {
     let mut eqn: Arc<Equation::Equation> = eqn;
     let mut iter: Arc<Iterator::Iterator> = BEquation::Equation::getForIterator(eqn.clone());
     let mut iterators: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
@@ -1680,18 +1680,18 @@ pub fn lowerEquationIterators(mut eqn: Arc<Equation::Equation>, mut variables: A
     Ok(eqn)
 }
 
-pub fn lowerIterator(mut iterator: Arc<ComponentRef::NFComponentRef>) -> Result<Pointer::Pointer<Arc<Variable::NFVariable>>> {
+pub(crate) fn lowerIterator(mut iterator: Arc<ComponentRef::NFComponentRef>) -> Result<Pointer::Pointer<Arc<Variable::NFVariable>>> {
     let mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>> = lowerVariable(Variable::fromCref(iterator.clone())?)?;
     Ok(var_ptr)
 }
 
-pub fn lowerIteratorCref(mut iterator: Arc<ComponentRef::NFComponentRef>) -> Result<Arc<ComponentRef::NFComponentRef>> {
+pub(crate) fn lowerIteratorCref(mut iterator: Arc<ComponentRef::NFComponentRef>) -> Result<Arc<ComponentRef::NFComponentRef>> {
     let mut iterator: Arc<ComponentRef::NFComponentRef> = iterator;
     iterator = BVariable::getVarName(lowerIterator(iterator.clone())?);
     Ok(iterator)
 }
 
-pub fn lowerIteratorExp(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
+pub(crate) fn lowerIteratorExp(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression> = exp;
     exp = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CREF { .. } => {
@@ -1704,13 +1704,13 @@ pub fn lowerIteratorExp(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<Ex
     Ok(exp)
 }
 
-pub fn lowerFunctions(mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>) -> Result<Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>> {
+pub(crate) fn lowerFunctions(mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>) -> Result<Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>> {
     let mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>> = funcMap;
     UnorderedMap::apply(funcMap.clone(), (std::sync::Arc::new({ let __pe_b1 = funcMap.clone(); move |__pe_a0| Differentiate::resolvePartialDerivatives(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Function::Function>) -> Result<Arc<Function::Function>> + 'static>))?;
     Ok(funcMap)
 }
 
-pub fn backenddaeinfo(mut bdae: Arc<NBackendDAE>) -> Result<()> {
+pub(crate) fn backenddaeinfo(mut bdae: Arc<NBackendDAE>) -> Result<()> {
     if Flags::isSet(Flags::DUMP_BACKENDDAE_INFO.clone())? {
         let () = (::match_deref::match_deref! { match &(bdae.clone()) {
         Deref @ MAIN { varData: varData @ Deref @ BVariable::VarData::VAR_DATA_SIM { .. }, eqData: Deref @ BEquation::EqData::EQ_DATA_SIM { .. }, .. } => {
@@ -1776,7 +1776,7 @@ pub fn backenddaeinfo(mut bdae: Arc<NBackendDAE>) -> Result<()> {
     Ok(())
 }
 
-pub fn strongcomponentinfo(mut phase: ArcStr, mut systems: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Partition::Partition>>>>>) -> Result<()> {
+pub(crate) fn strongcomponentinfo(mut phase: ArcStr, mut systems: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Partition::Partition>>>>>) -> Result<()> {
     let mut c: CountCollector = CountCollector { single_scalar: 0, single_array: 0, single_record: 0, multi_algorithm: 0, multi_when: 0, multi_if: 0, multi_tpl: 0, resizable_for: 0, generic_for: 0, entwined_for: 0, loop_lin: 0, loop_nlin: 0 };
     let mut collector_ptr: Pointer::Pointer<CountCollector> = Pointer::create(c.clone());
     let mut single_sc: ArcStr;
@@ -1799,7 +1799,7 @@ pub fn strongcomponentinfo(mut phase: ArcStr, mut systems: Arc<metamodelica::Lis
     Ok(())
 }
 
-pub fn debugFollowEquations(mut bdae: Arc<NBackendDAE>, mut eq_filter_opt: Option<Arc<UnorderedSet::UnorderedSet<ArcStr>>>, mut r#str: ArcStr) -> Result<()> {
+pub(crate) fn debugFollowEquations(mut bdae: Arc<NBackendDAE>, mut eq_filter_opt: Option<Arc<UnorderedSet::UnorderedSet<ArcStr>>>, mut r#str: ArcStr) -> Result<()> {
     let () = ({
         let mut tmp: ArcStr = literal!("");
         (::match_deref::match_deref! { match &(bdae.clone()) {
@@ -1818,7 +1818,7 @@ pub fn debugFollowEquations(mut bdae: Arc<NBackendDAE>, mut eq_filter_opt: Optio
     Ok(())
 }
 
-pub fn debugLowering(mut bdae: Arc<NBackendDAE>) -> Result<()> {
+pub(crate) fn debugLowering(mut bdae: Arc<NBackendDAE>) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(bdae.clone()) {
         Deref @ MAIN { .. } => {
             BEquation::EqData::map(var_field!((*bdae).eqData, NBackendDAE::MAIN).clone(), (std::sync::Arc::new(checkLoweredCrefEqn) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::Equation>) -> Result<Arc<Equation::Equation>> + 'static>))?;
@@ -1831,7 +1831,7 @@ pub fn debugLowering(mut bdae: Arc<NBackendDAE>) -> Result<()> {
     Ok(())
 }
 
-pub fn checkLoweredCrefVar(mut var: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<()> {
+pub(crate) fn checkLoweredCrefVar(mut var: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<()> {
     let mut set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = UnorderedSet::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
     BVariable::mapExp(var.clone(), (std::sync::Arc::new({ let __pe_b1 = set.clone(); move |__pe_a0| checkLoweredCrefExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>), (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
     if !(UnorderedSet::isEmpty(set.clone())) {
@@ -1841,7 +1841,7 @@ pub fn checkLoweredCrefVar(mut var: Pointer::Pointer<Arc<Variable::NFVariable>>)
     Ok(())
 }
 
-pub fn checkLoweredCrefEqn(mut eqn: Arc<Equation::Equation>) -> Result<Arc<Equation::Equation>> {
+pub(crate) fn checkLoweredCrefEqn(mut eqn: Arc<Equation::Equation>) -> Result<Arc<Equation::Equation>> {
     let mut eqn: Arc<Equation::Equation> = eqn;
     let mut set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = UnorderedSet::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
     BEquation::Equation::map(eqn.clone(), (std::sync::Arc::new({ let __pe_b1 = set.clone(); move |__pe_a0| checkLoweredCrefExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>), Some((std::sync::Arc::new({ let __pe_b1 = set.clone(); move |__pe_a0| checkLoweredCref(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<Arc<ComponentRef::NFComponentRef>> + 'static>)), (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
@@ -1852,7 +1852,7 @@ pub fn checkLoweredCrefEqn(mut eqn: Arc<Equation::Equation>) -> Result<Arc<Equat
     Ok(eqn)
 }
 
-pub fn checkLoweredCrefExp(mut exp: Arc<Expression::NFExpression>, mut set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<Expression::NFExpression>> {
+pub(crate) fn checkLoweredCrefExp(mut exp: Arc<Expression::NFExpression>, mut set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression> = exp;
     let () = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CREF { .. } => {
@@ -1865,7 +1865,7 @@ pub fn checkLoweredCrefExp(mut exp: Arc<Expression::NFExpression>, mut set: Arc<
     Ok(exp)
 }
 
-pub fn checkLoweredCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<ComponentRef::NFComponentRef>> {
+pub(crate) fn checkLoweredCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<ComponentRef::NFComponentRef>> {
     let mut cref: Arc<ComponentRef::NFComponentRef> = cref;
     let () = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ ComponentRef::CREF { node: Deref @ InstNode::VAR_NODE { .. }, .. } => (),

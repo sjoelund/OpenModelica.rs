@@ -75,25 +75,25 @@ pub type FuncCrefStr = std::sync::Arc<dyn ::std::ops::Fn(Key) -> Result<ArcStr> 
 
 pub type FuncExpStr = std::sync::Arc<dyn ::std::ops::Fn(Value) -> Result<ArcStr> + 'static>;
 
-pub fn emptyHashTable() -> HashTable {
+pub(crate) fn emptyHashTable() -> HashTable {
     let mut hashTable: HashTable;
     hashTable = emptyHashTableSized(BaseHashTable::defaultBucketSize.clone());
     hashTable
 }
 
-pub fn emptyHashTableSized(mut size: i32) -> HashTable {
+pub(crate) fn emptyHashTableSized(mut size: i32) -> HashTable {
     let mut hashTable: HashTable;
     hashTable = BaseHashTable::emptyHashTableWork(size.clone(), ((std::sync::Arc::new(ComponentReferenceBasics::hashComponentRef) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentReferenceBasics::crefEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>), (std::sync::Arc::new(ComponentReferenceBasics::printComponentRefStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(printTupleComponentRefEqListStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)>>) -> Result<ArcStr> + 'static>)));
     hashTable
 }
 
-pub fn printTupleComponentRefEqListStr(mut cr_eq_lst: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)>>) -> Result<ArcStr> {
+pub(crate) fn printTupleComponentRefEqListStr(mut cr_eq_lst: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)>>) -> Result<ArcStr> {
     let mut res: ArcStr;
     res = stringDelimitList(List::map(cr_eq_lst.clone(), (std::sync::Arc::new(printTupleComponentRefEqStr) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone());
     Ok(res)
 }
 
-pub fn printTupleComponentRefEqStr(mut cr_eq: (Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)) -> Result<ArcStr> {
+pub(crate) fn printTupleComponentRefEqStr(mut cr_eq: (Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)) -> Result<ArcStr> {
     let mut res: ArcStr;
     let mut cr: Arc<DAE::ComponentRef>;
     let mut eq: Arc<BackendDAE::Equation>;

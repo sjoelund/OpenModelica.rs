@@ -107,7 +107,7 @@ pub mod Field {
         }
     }
     pub use self::Field::{INPUT,LOCAL};
-    pub fn isInput(mut field: Arc<Field>) -> bool {
+    pub(crate) fn isInput(mut field: Arc<Field>) -> bool {
         let mut isInput: bool;
         isInput = (::match_deref::match_deref! { match &(field.clone()) {
         Deref @ INPUT { .. } => true,
@@ -117,7 +117,7 @@ pub mod Field {
         isInput
     }
 
-    pub fn name(mut field: Arc<Field>) -> Result<ArcStr> {
+    pub(crate) fn name(mut field: Arc<Field>) -> Result<ArcStr> {
         let mut name: ArcStr;
         name = ((::match_deref::match_deref! { match &(field.clone()) {
         Deref @ INPUT { .. } => var_field!((*field).name, Field::INPUT).clone(),
@@ -129,7 +129,7 @@ pub mod Field {
 
 }
 
-pub fn instRecord(mut node: Arc<InstNode::InstNode>, mut context: i32) -> Result<Arc<InstNode::InstNode>> {
+pub(crate) fn instRecord(mut node: Arc<InstNode::InstNode>, mut context: i32) -> Result<Arc<InstNode::InstNode>> {
     let mut recordNode: Arc<InstNode::InstNode>;
     let mut next_context: i32;
     match '__try0: {
@@ -152,7 +152,7 @@ pub fn instRecord(mut node: Arc<InstNode::InstNode>, mut context: i32) -> Result
     Ok(recordNode)
 }
 
-pub fn instDefaultConstructor(mut path: Arc<Absyn::Path>, mut node: Arc<InstNode::InstNode>, mut context: i32, mut info: SourceInfo) -> Result<Arc<InstNode::InstNode>> {
+pub(crate) fn instDefaultConstructor(mut path: Arc<Absyn::Path>, mut node: Arc<InstNode::InstNode>, mut context: i32, mut info: SourceInfo) -> Result<Arc<InstNode::InstNode>> {
     let mut node: Arc<InstNode::InstNode> = node;
     let mut inputs: Arc<metamodelica::List<Arc<InstNode::InstNode>>>;
     let mut locals: Arc<metamodelica::List<Arc<InstNode::InstNode>>>;
@@ -176,7 +176,7 @@ pub fn instDefaultConstructor(mut path: Arc<Absyn::Path>, mut node: Arc<InstNode
     Ok(node)
 }
 
-pub fn checkLocalFieldOrder(mut locals: Arc<metamodelica::List<Arc<InstNode::InstNode>>>, mut recNode: Arc<InstNode::InstNode>, mut info: SourceInfo) -> Result<()> {
+pub(crate) fn checkLocalFieldOrder(mut locals: Arc<metamodelica::List<Arc<InstNode::InstNode>>>, mut recNode: Arc<InstNode::InstNode>, mut info: SourceInfo) -> Result<()> {
     let mut locals_set: Arc<UnorderedSet::UnorderedSet<Arc<InstNode::InstNode>>>;
     let mut locs: Arc<metamodelica::List<Arc<InstNode::InstNode>>>;
     let mut deps: Arc<metamodelica::List<Arc<InstNode::InstNode>>>;
@@ -203,7 +203,7 @@ pub fn checkLocalFieldOrder(mut locals: Arc<metamodelica::List<Arc<InstNode::Ins
     Ok(())
 }
 
-pub fn collectRecordParams(mut recNode: Arc<InstNode::InstNode>) -> Result<(Arc<metamodelica::List<Arc<InstNode::InstNode>>>, Arc<metamodelica::List<Arc<InstNode::InstNode>>>, Arc<metamodelica::List<Arc<InstNode::InstNode>>>)> {
+pub(crate) fn collectRecordParams(mut recNode: Arc<InstNode::InstNode>) -> Result<(Arc<metamodelica::List<Arc<InstNode::InstNode>>>, Arc<metamodelica::List<Arc<InstNode::InstNode>>>, Arc<metamodelica::List<Arc<InstNode::InstNode>>>)> {
     let mut inputs: Arc<metamodelica::List<Arc<InstNode::InstNode>>> = metamodelica::nil();
     let mut locals: Arc<metamodelica::List<Arc<InstNode::InstNode>>> = metamodelica::nil();
     let mut allParams: Arc<metamodelica::List<Arc<InstNode::InstNode>>> = metamodelica::nil();
@@ -240,7 +240,7 @@ pub fn collectRecordParams(mut recNode: Arc<InstNode::InstNode>) -> Result<(Arc<
     Ok((inputs, locals, allParams))
 }
 
-pub fn collectRecordParam(mut component: Arc<InstNode::InstNode>, mut inputs: Arc<metamodelica::List<Arc<InstNode::InstNode>>>, mut locals: Arc<metamodelica::List<Arc<InstNode::InstNode>>>) -> Result<(Arc<metamodelica::List<Arc<InstNode::InstNode>>>, Arc<metamodelica::List<Arc<InstNode::InstNode>>>)> {
+pub(crate) fn collectRecordParam(mut component: Arc<InstNode::InstNode>, mut inputs: Arc<metamodelica::List<Arc<InstNode::InstNode>>>, mut locals: Arc<metamodelica::List<Arc<InstNode::InstNode>>>) -> Result<(Arc<metamodelica::List<Arc<InstNode::InstNode>>>, Arc<metamodelica::List<Arc<InstNode::InstNode>>>)> {
     let mut inputs: Arc<metamodelica::List<Arc<InstNode::InstNode>>> = inputs;
     let mut locals: Arc<metamodelica::List<Arc<InstNode::InstNode>>> = locals;
     let mut comp: Arc<Component::NFComponent>;
@@ -261,12 +261,12 @@ pub fn collectRecordParam(mut component: Arc<InstNode::InstNode>, mut inputs: Ar
     Ok((inputs, locals))
 }
 
-pub fn setFieldDirection(mut field: Arc<InstNode::InstNode>, mut direction: Direction) -> Result<()> {
+pub(crate) fn setFieldDirection(mut field: Arc<InstNode::InstNode>, mut direction: Direction) -> Result<()> {
     InstNode::componentApply(field.clone(), (std::sync::Arc::new(fnptr!(Component::setDirection, Direction, Arc<Component::NFComponent>)) as std::sync::Arc<dyn ::std::ops::Fn(Direction, Arc<Component::NFComponent>) -> Result<Arc<Component::NFComponent>> + 'static>), direction.clone())?;
     Ok(())
 }
 
-pub fn collectRecordFields(mut recNode: Arc<InstNode::InstNode>) -> Result<(metamodelica::Array<Arc<Field::Field>>, Arc<UnorderedMap::UnorderedMap<ArcStr, i32>>)> {
+pub(crate) fn collectRecordFields(mut recNode: Arc<InstNode::InstNode>) -> Result<(metamodelica::Array<Arc<Field::Field>>, Arc<UnorderedMap::UnorderedMap<ArcStr, i32>>)> {
     let mut fields: metamodelica::Array<Arc<Field::Field>>;
     let mut indexMap: Arc<UnorderedMap::UnorderedMap<ArcStr, i32>>;
     let mut field_lst: Arc<metamodelica::List<Arc<Field::Field>>>;
@@ -279,7 +279,7 @@ pub fn collectRecordFields(mut recNode: Arc<InstNode::InstNode>) -> Result<(meta
     Ok((fields, indexMap))
 }
 
-pub fn collectRecordField(mut component: Arc<InstNode::InstNode>, mut fields: Arc<metamodelica::List<Arc<Field::Field>>>) -> Result<Arc<metamodelica::List<Arc<Field::Field>>>> {
+pub(crate) fn collectRecordField(mut component: Arc<InstNode::InstNode>, mut fields: Arc<metamodelica::List<Arc<Field::Field>>>) -> Result<Arc<metamodelica::List<Arc<Field::Field>>>> {
     let mut fields: Arc<metamodelica::List<Arc<Field::Field>>> = fields;
     let mut comp_node: Arc<InstNode::InstNode> = InstNode::resolveInner(component.clone());
     let mut comp: Arc<Component::NFComponent>;
@@ -296,7 +296,7 @@ pub fn collectRecordField(mut component: Arc<InstNode::InstNode>, mut fields: Ar
     Ok(fields)
 }
 
-pub fn fieldsToDAE(mut fields: Arc<metamodelica::List<Arc<Field::Field>>>) -> Arc<metamodelica::List<ArcStr>> {
+pub(crate) fn fieldsToDAE(mut fields: Arc<metamodelica::List<Arc<Field::Field>>>) -> Arc<metamodelica::List<ArcStr>> {
     let mut fieldNames: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     for mut field in &*fields.clone() {
         let mut field = field.clone();
@@ -312,7 +312,7 @@ pub fn fieldsToDAE(mut fields: Arc<metamodelica::List<Arc<Field::Field>>>) -> Ar
     fieldNames
 }
 
-pub fn foldInputFields<T: Clone + 'static + metamodelica::gc::MMTrace, ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut fields: Arc<metamodelica::List<Arc<Field::Field>>>, mut args: Arc<metamodelica::List<T>>, mut func: Arc<dyn ::std::ops::Fn(T, ArgT) -> Result<ArgT> + 'static>, mut foldArg: ArgT) -> Result<ArgT> {
+pub(crate) fn foldInputFields<T: Clone + 'static + metamodelica::gc::MMTrace, ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut fields: Arc<metamodelica::List<Arc<Field::Field>>>, mut args: Arc<metamodelica::List<T>>, mut func: Arc<dyn ::std::ops::Fn(T, ArgT) -> Result<ArgT> + 'static>, mut foldArg: ArgT) -> Result<ArgT> {
     pub type FuncT<T: Clone + 'static, ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T, ArgT) -> Result<ArgT> + 'static>;
 
     let mut foldArg: ArgT = foldArg;
@@ -333,7 +333,7 @@ pub fn foldInputFields<T: Clone + 'static + metamodelica::gc::MMTrace, ArgT: Clo
     Ok(foldArg)
 }
 
-pub fn toDeclarationStream(mut recordNode: Arc<InstNode::InstNode>, mut indent: ArcStr, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
+pub(crate) fn toDeclarationStream(mut recordNode: Arc<InstNode::InstNode>, mut indent: ArcStr, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut s: IOStream::IOStream = s;
     let mut node: Arc<InstNode::InstNode>;
     node = getDeclarationNode(recordNode.clone(), false)?;
@@ -342,7 +342,7 @@ pub fn toDeclarationStream(mut recordNode: Arc<InstNode::InstNode>, mut indent: 
     Ok(s)
 }
 
-pub fn toFlatDeclarationStream(mut recordNode: Arc<InstNode::InstNode>, mut format: BaseModelica::OutputFormat, mut indent: ArcStr, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
+pub(crate) fn toFlatDeclarationStream(mut recordNode: Arc<InstNode::InstNode>, mut format: BaseModelica::OutputFormat, mut indent: ArcStr, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut s: IOStream::IOStream = s;
     let mut node: Arc<InstNode::InstNode>;
     node = getDeclarationNode(recordNode.clone(), true)?;
@@ -350,7 +350,7 @@ pub fn toFlatDeclarationStream(mut recordNode: Arc<InstNode::InstNode>, mut form
     Ok(s)
 }
 
-pub fn getDeclarationNode(mut recordNode: Arc<InstNode::InstNode>, mut evaluate: bool) -> Result<Arc<InstNode::InstNode>> {
+pub(crate) fn getDeclarationNode(mut recordNode: Arc<InstNode::InstNode>, mut evaluate: bool) -> Result<Arc<InstNode::InstNode>> {
     let mut declNode: Arc<InstNode::InstNode>;
     let mut node_ty: Arc<InstNodeType>;
     node_ty = InstNode::nodeType(recordNode.clone())?;

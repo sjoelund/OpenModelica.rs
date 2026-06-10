@@ -239,7 +239,7 @@ fn fun_56(mut in_txt: Tpl::Text, mut in_a_makefileParams_platform: ArcStr, mut i
     Ok(out_txt)
 }
 
-pub fn simulationOMSUCPPMainRunScript(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_extraFuncs: Tpl::Text, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncsNamespace: Tpl::Text, mut in_a_preRunCommandLinux: ArcStr, mut in_a_preRunCommandWindows: ArcStr, mut in_a_execCommandLinux: ArcStr) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn simulationOMSUCPPMainRunScript(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_extraFuncs: Tpl::Text, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncsNamespace: Tpl::Text, mut in_a_preRunCommandLinux: ArcStr, mut in_a_preRunCommandWindows: ArcStr, mut in_a_execCommandLinux: ArcStr) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_extraFuncs: Tpl::Text;
     let mut out_a_extraFuncsDecl: Tpl::Text;

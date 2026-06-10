@@ -65,7 +65,7 @@ use openmodelica_util_datatypes_basic::List;
 
 pub const LABELNAME: &'static str = "label";
 
-pub fn buildLabels(mut inEquationLst: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut inModelInfo: SimCode::ModelInfo, mut reduceList: Arc<metamodelica::List<i32>>, mut inArgs: Arc<Absyn::FunctionArgs>) -> Result<(Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, SimCode::ModelInfo)> {
+pub(crate) fn buildLabels(mut inEquationLst: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut inModelInfo: SimCode::ModelInfo, mut reduceList: Arc<metamodelica::List<i32>>, mut inArgs: Arc<Absyn::FunctionArgs>) -> Result<(Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, SimCode::ModelInfo)> {
     let mut outEquationLst: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>;
     let mut outModelInfo: SimCode::ModelInfo;
     (outEquationLst, outModelInfo) = 'mc: {
@@ -137,7 +137,7 @@ pub fn buildLabels(mut inEquationLst: Arc<metamodelica::List<Arc<SimCode::SimEqS
     Ok((outEquationLst, outModelInfo))
 }
 
-pub fn reduceTerms(mut inEquationLst: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut inModelInfo: SimCode::ModelInfo, mut inArgs: Arc<Absyn::FunctionArgs>) -> Result<(Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, SimCode::ModelInfo)> {
+pub(crate) fn reduceTerms(mut inEquationLst: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut inModelInfo: SimCode::ModelInfo, mut inArgs: Arc<Absyn::FunctionArgs>) -> Result<(Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, SimCode::ModelInfo)> {
     let mut outEquationLst: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>;
     let mut outModelInfo: SimCode::ModelInfo;
     (outEquationLst, outModelInfo) = ({
@@ -2720,7 +2720,7 @@ fn StringDelimit2Int(mut inString: ArcStr, mut inDelim: ArcStr) -> Arc<metamodel
     outList
 }
 
-pub fn createBackendLabelVars(mut modelInfo: SimCode::ModelInfo) -> Result<Arc<metamodelica::List<BackendDAE::Var>>> {
+pub(crate) fn createBackendLabelVars(mut modelInfo: SimCode::ModelInfo) -> Result<Arc<metamodelica::List<BackendDAE::Var>>> {
     let mut labelList: Arc<metamodelica::List<BackendDAE::Var>>;
     labelList = (match modelInfo.clone() {
         SimCode::ModelInfo { varInfo: SimCode::VarInfo { numParams: mut numParams, .. }, labels: mut labels, .. } => {

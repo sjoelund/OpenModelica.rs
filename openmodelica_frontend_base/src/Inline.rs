@@ -687,7 +687,7 @@ fn inlineDAEElement(mut inElement: Arc<DAE::Element>, mut inFunctions: Functiont
     (outElement, inlined)
 }
 
-pub fn inlineAlgorithm(mut inAlgorithm: Arc<DAE::Algorithm>, mut inElementList: Functiontuple) -> Result<(Arc<DAE::Algorithm>, bool)> {
+pub(crate) fn inlineAlgorithm(mut inAlgorithm: Arc<DAE::Algorithm>, mut inElementList: Functiontuple) -> Result<(Arc<DAE::Algorithm>, bool)> {
     let mut outAlgorithm: Arc<DAE::Algorithm>;
     let mut inlined: bool = false;
     (outAlgorithm, inlined) = 'mc: {
@@ -1176,7 +1176,7 @@ fn inlineExpsWork(mut inExps: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut fns: F
     }
 }
 
-pub fn checkExpsTypeEquiv(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>) -> Result<bool> {
+pub(crate) fn checkExpsTypeEquiv(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>) -> Result<bool> {
     let mut bEquiv: bool;
     bEquiv = (::match_deref::match_deref! { match &(inExp2.clone()) {
         _ => {
@@ -1974,7 +1974,7 @@ pub fn getFunctionBody(mut p: Arc<Absyn::Path>, mut fns: Functiontuple) -> Resul
     Ok((outfn, oComment))
 }
 
-pub fn getFunction(mut p: Arc<Absyn::Path>, mut fns: Functiontuple) -> Result<DAE::Function> {
+pub(crate) fn getFunction(mut p: Arc<Absyn::Path>, mut fns: Functiontuple) -> Result<DAE::Function> {
     let mut func: DAE::Function = <DAE::Function as ::std::default::Default>::default();
     func = 'mc: {
         let __mc_input = fns.clone();
@@ -2273,7 +2273,7 @@ fn removeWilds(mut inComponentRef: Arc<DAE::ComponentRef>) -> bool {
     outBoolean
 }
 
-pub fn printInlineTypeStr(mut it: DAE::InlineType) -> Result<ArcStr> {
+pub(crate) fn printInlineTypeStr(mut it: DAE::InlineType) -> Result<ArcStr> {
     let mut r#str: ArcStr;
     r#str = ((match it.clone() {
         DAE::InlineType::NO_INLINE { .. } => literal!("No inline"),
@@ -2286,7 +2286,7 @@ pub fn printInlineTypeStr(mut it: DAE::InlineType) -> Result<ArcStr> {
     Ok(r#str)
 }
 
-pub fn simplifyAndInlineEquationExp(mut inExp: Arc<DAE::EquationExp>, mut fns: Functiontuple, mut inSource: Arc<DAE::ElementSource>) -> Result<(Arc<DAE::EquationExp>, Arc<DAE::ElementSource>)> {
+pub(crate) fn simplifyAndInlineEquationExp(mut inExp: Arc<DAE::EquationExp>, mut fns: Functiontuple, mut inSource: Arc<DAE::ElementSource>) -> Result<(Arc<DAE::EquationExp>, Arc<DAE::ElementSource>)> {
     let mut exp: Arc<DAE::EquationExp>;
     let mut source: Arc<DAE::ElementSource>;
     (exp, source) = ExpressionSimplify::simplifyAddSymbolicOperation(inExp.clone(), inSource.clone())?;
@@ -2302,7 +2302,7 @@ pub fn simplifyAndForceInlineEquationExp(mut inExp: Arc<DAE::EquationExp>, mut f
     Ok((exp, source))
 }
 
-pub fn inlineEquationExp(mut inExp: Arc<DAE::EquationExp>, mut r#fn: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Statement>>>) -> Result<(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Statement>>>)> + 'static>, mut inSource: Arc<DAE::ElementSource>) -> Result<(Arc<DAE::EquationExp>, Arc<DAE::ElementSource>)> {
+pub(crate) fn inlineEquationExp(mut inExp: Arc<DAE::EquationExp>, mut r#fn: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Statement>>>) -> Result<(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Statement>>>)> + 'static>, mut inSource: Arc<DAE::ElementSource>) -> Result<(Arc<DAE::EquationExp>, Arc<DAE::ElementSource>)> {
     pub type Func = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Statement>>>) -> Result<(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Statement>>>)> + 'static>;
 
     pub type Functiontuple = (Option<Arc<AvlTreePathFunction::Tree>>, Arc<metamodelica::List<DAE::InlineType>>);

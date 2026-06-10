@@ -118,7 +118,7 @@ pub fn emptyHashTable() -> HashTable {
     hashTable
 }
 
-pub fn emptyHashTableSized(mut size: i32) -> HashTable {
+pub(crate) fn emptyHashTableSized(mut size: i32) -> HashTable {
     let mut hashTable: HashTable;
     hashTable = BaseHashTable::emptyHashTableWork(size.clone(), ((std::sync::Arc::new(hashFunc) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::ComponentRef>, i32)) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(keyEqual, (Arc<DAE::ComponentRef>, i32), (Arc<DAE::ComponentRef>, i32))) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::ComponentRef>, i32), (Arc<DAE::ComponentRef>, i32)) -> Result<bool> + 'static>), (std::sync::Arc::new(printKey) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::ComponentRef>, i32)) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(ExpressionBasics::printExpStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>)));
     hashTable

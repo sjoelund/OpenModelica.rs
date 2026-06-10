@@ -217,13 +217,13 @@ pub static basicTypes: std::sync::LazyLock<Arc<metamodelica::List<Arc<SCode::Ele
 
 pub static basicTypesNF: std::sync::LazyLock<Arc<metamodelica::List<Arc<SCode::Element>>>> = std::sync::LazyLock::new(|| { list![rlType.clone(), intType.clone(), strType.clone(), boolType.clone(), enumType.clone(), realType.clone(), integerType.clone(), stringType.clone(), booleanType.clone()] });
 
-pub fn getBasicTypes() -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> {
+pub(crate) fn getBasicTypes() -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> {
     let mut tys: Arc<metamodelica::List<Arc<SCode::Element>>>;
     tys = if (Flags::isSet(Flags::SCODE_INST.clone())?) {basicTypesNF.clone()} else {basicTypes.clone()};
     Ok(tys)
 }
 
-pub fn variableIsBuiltin(mut cref: Arc<DAE::ComponentRef>, mut useOptimica: bool) -> bool {
+pub(crate) fn variableIsBuiltin(mut cref: Arc<DAE::ComponentRef>, mut useOptimica: bool) -> bool {
     let mut b: bool;
     b = (::match_deref::match_deref! { match &((cref.clone(), useOptimica.clone())) {
         (Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "time", .. }, _) => true,
@@ -238,7 +238,7 @@ pub fn variableIsBuiltin(mut cref: Arc<DAE::ComponentRef>, mut useOptimica: bool
     b
 }
 
-pub fn isDer(mut inPath: Arc<Absyn::Path>) -> Result<()> {
+pub(crate) fn isDer(mut inPath: Arc<Absyn::Path>) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(inPath.clone()) {
         Deref @ Absyn::Path::IDENT { name: Deref @ "der" } => {
             ()
@@ -466,7 +466,7 @@ pub fn getInitialFunctions() -> Result<(Absyn::Program, Arc<metamodelica::List<A
     Ok((initialProgram, initialSCodeProgram))
 }
 
-pub fn initialGraph(mut inCache: FCore::Cache) -> Result<(FCore::Cache, FCore::Graph)> {
+pub(crate) fn initialGraph(mut inCache: FCore::Cache) -> Result<(FCore::Cache, FCore::Graph)> {
     let mut outCache: FCore::Cache;
     let mut graph: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
     let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
@@ -556,7 +556,7 @@ pub type MakeTypeNode = std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List
 
 pub type MakeCompNode = std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, metamodelica::Array<FCore::Node>, FCore::Kind, FCore::Graph) -> Result<FCore::Graph> + 'static>;
 
-pub fn initialGraphModelica(mut graph: FCore::Graph, mut mkTypeNode: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<DAE::Type>>>, metamodelica::Array<FCore::Node>, ArcStr, FCore::Graph) -> Result<FCore::Graph> + 'static>, mut mkCompNode: Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, metamodelica::Array<FCore::Node>, FCore::Kind, FCore::Graph) -> Result<FCore::Graph> + 'static>) -> Result<FCore::Graph> {
+pub(crate) fn initialGraphModelica(mut graph: FCore::Graph, mut mkTypeNode: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<DAE::Type>>>, metamodelica::Array<FCore::Node>, ArcStr, FCore::Graph) -> Result<FCore::Graph> + 'static>, mut mkCompNode: Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, metamodelica::Array<FCore::Node>, FCore::Kind, FCore::Graph) -> Result<FCore::Graph> + 'static>) -> Result<FCore::Graph> {
     let mut graph: FCore::Graph = graph;
     let enumeration2int: Arc<DAE::Type> = Arc::new(DAE::Type::T_FUNCTION { funcArg: list![Arc::new(DAE::FuncArg { name: (literal!("x")).clone(), ty: Arc::new(DAE::Type::T_ENUMERATION { index: None, path: Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }), names: metamodelica::nil(), literalVarLst: metamodelica::nil(), attributeLst: metamodelica::nil() }), r#const: openmodelica_frontend_types::DAE::Const::C_VAR, par: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, defaultBinding: None })], funcResultType: DAE::T_INTEGER_DEFAULT().clone(), functionAttributes: DAE::FUNCTION_ATTRIBUTES_BUILTIN.clone(), path: Arc::new(Absyn::Path::IDENT { name: (literal!("Integer")).clone() }) });
     graph = mkCompNode(timeComp.clone(), FGraph::top(graph.clone())?, openmodelica_frontend_dump::FCore::Kind::BUILTIN, graph.clone())?;
@@ -570,7 +570,7 @@ pub fn initialGraphModelica(mut graph: FCore::Graph, mut mkTypeNode: Arc<dyn ::s
     Ok(graph)
 }
 
-pub fn initialGraphMetaModelica(mut graph: FCore::Graph, mut mkTypeNode: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<DAE::Type>>>, metamodelica::Array<FCore::Node>, ArcStr, FCore::Graph) -> Result<FCore::Graph> + 'static>) -> Result<FCore::Graph> {
+pub(crate) fn initialGraphMetaModelica(mut graph: FCore::Graph, mut mkTypeNode: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<DAE::Type>>>, metamodelica::Array<FCore::Node>, ArcStr, FCore::Graph) -> Result<FCore::Graph> + 'static>) -> Result<FCore::Graph> {
     let mut graph: FCore::Graph = graph;
     if !(Config::acceptMetaModelicaGrammar()?) {
         return Ok(graph.clone());
@@ -579,7 +579,7 @@ pub fn initialGraphMetaModelica(mut graph: FCore::Graph, mut mkTypeNode: Arc<dyn
     Ok(graph)
 }
 
-pub fn initialGraphOptimica(mut graph: FCore::Graph, mut mkCompNode: Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, metamodelica::Array<FCore::Node>, FCore::Kind, FCore::Graph) -> Result<FCore::Graph> + 'static>) -> Result<FCore::Graph> {
+pub(crate) fn initialGraphOptimica(mut graph: FCore::Graph, mut mkCompNode: Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, metamodelica::Array<FCore::Node>, FCore::Kind, FCore::Graph) -> Result<FCore::Graph> + 'static>) -> Result<FCore::Graph> {
     let mut graph: FCore::Graph = graph;
     if !(Config::acceptOptimicaGrammar()?) {
         return Ok(graph.clone());

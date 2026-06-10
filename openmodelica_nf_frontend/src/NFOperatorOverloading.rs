@@ -60,7 +60,7 @@ use openmodelica_frontend_dump::AbsynUtil;
 use openmodelica_frontend_dump::SCodeUtil;
 use openmodelica_util::Error;
 
-pub fn instConstructor(mut path: Arc<Absyn::Path>, mut recordNode: Arc<InstNode::InstNode>, mut context: i32, mut info: SourceInfo) -> Result<Arc<InstNode::InstNode>> {
+pub(crate) fn instConstructor(mut path: Arc<Absyn::Path>, mut recordNode: Arc<InstNode::InstNode>, mut context: i32, mut info: SourceInfo) -> Result<Arc<InstNode::InstNode>> {
     let mut recordNode: Arc<InstNode::InstNode> = recordNode;
     let mut ctor_ref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
     let mut ctor_path: Arc<Absyn::Path>;
@@ -91,7 +91,7 @@ pub fn instConstructor(mut path: Arc<Absyn::Path>, mut recordNode: Arc<InstNode:
     Ok(recordNode)
 }
 
-pub fn instOperatorFunctions(mut node: Arc<InstNode::InstNode>, mut context: i32, mut info: SourceInfo) -> Result<Arc<InstNode::InstNode>> {
+pub(crate) fn instOperatorFunctions(mut node: Arc<InstNode::InstNode>, mut context: i32, mut info: SourceInfo) -> Result<Arc<InstNode::InstNode>> {
     let mut node: Arc<InstNode::InstNode> = node;
     let mut tree: Arc<ClassTree::ClassTree>;
     let mut mclss: metamodelica::Array<Arc<InstNode::InstNode>> = Default::default();
@@ -123,7 +123,7 @@ pub fn instOperatorFunctions(mut node: Arc<InstNode::InstNode>, mut context: i32
     Ok(node)
 }
 
-pub fn checkOperatorRestrictions(mut operatorNode: Arc<InstNode::InstNode>) -> Result<()> {
+pub(crate) fn checkOperatorRestrictions(mut operatorNode: Arc<InstNode::InstNode>) -> Result<()> {
     if !(SCodeUtil::isElementEncapsulated(InstNode::definition(operatorNode.clone())?)) {
         Error::addSourceMessage(Error::OPERATOR_NOT_ENCAPSULATED.clone(), list![(AbsynUtil::pathString(InstNode::fullPath(operatorNode.clone(), false)?, (literal!(".")).clone(), true, false)?).clone()], InstNode::info(operatorNode.clone()))?;
         bail!("fail");
@@ -131,7 +131,7 @@ pub fn checkOperatorRestrictions(mut operatorNode: Arc<InstNode::InstNode>) -> R
     Ok(())
 }
 
-pub fn lookupOperatorFunctionsInType(mut operatorName: ArcStr, mut ty: Arc<Type::NFType>) -> Result<Arc<metamodelica::List<Arc<Function::Function>>>> {
+pub(crate) fn lookupOperatorFunctionsInType(mut operatorName: ArcStr, mut ty: Arc<Type::NFType>) -> Result<Arc<metamodelica::List<Arc<Function::Function>>>> {
     let mut functions: Arc<metamodelica::List<Arc<Function::Function>>> = metamodelica::nil();
     let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     let mut fn_ref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
@@ -165,7 +165,7 @@ pub fn lookupOperatorFunctionsInType(mut operatorName: ArcStr, mut ty: Arc<Type:
     Ok(functions)
 }
 
-pub fn patchOperatorRecordConstructorBinding(mut r#fn: Arc<Function::Function>) -> Result<Arc<Function::Function>> {
+pub(crate) fn patchOperatorRecordConstructorBinding(mut r#fn: Arc<Function::Function>) -> Result<Arc<Function::Function>> {
     let mut r#fn: Arc<Function::Function> = r#fn;
     let mut output_node: Arc<InstNode::InstNode>;
     let mut output_comp: Arc<Component::NFComponent>;

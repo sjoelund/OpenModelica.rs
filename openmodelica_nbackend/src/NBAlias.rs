@@ -128,7 +128,7 @@ use openmodelica_util_datatypes_basic::Pointer;
 // ==========================================================================
 pub const NOMINAL_THRESHOLD: metamodelica::Real = metamodelica::OrderedFloat(1000.0_f64);
 
-pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>, mut kind: Partition::Kind) -> Result<Arc<BackendDAE::NBackendDAE>> {
+pub(crate) fn main(mut bdae: Arc<BackendDAE::NBackendDAE>, mut kind: Partition::Kind) -> Result<Arc<BackendDAE::NBackendDAE>> {
     let mut bdae: Arc<BackendDAE::NBackendDAE> = bdae;
     let mut func: Module::aliasInterface;
     func = getModule()?;
@@ -163,7 +163,7 @@ pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>, mut kind: Partition::Kind) -
     Ok(bdae)
 }
 
-pub fn getModule() -> Result<Arc<dyn ::std::ops::Fn(Arc<VarData::VarData>, Arc<EqData::EqData>, Partition::Kind) -> Result<(Arc<VarData::VarData>, Arc<EqData::EqData>)> + 'static>> {
+pub(crate) fn getModule() -> Result<Arc<dyn ::std::ops::Fn(Arc<VarData::VarData>, Arc<EqData::EqData>, Partition::Kind) -> Result<(Arc<VarData::VarData>, Arc<EqData::EqData>)> + 'static>> {
     let mut func: Module::aliasInterface;
     let mut flag: ArcStr = literal!("default");
     func = (::match_deref::match_deref! { match &(flag.clone()) {
@@ -207,7 +207,7 @@ pub mod AliasSet {
 
     pub type ALIAS_SET = AliasSet;
 
-    pub fn toString(mut set: Arc<AliasSet>) -> Result<ArcStr> {
+    pub(crate) fn toString(mut set: Arc<AliasSet>) -> Result<ArcStr> {
         let mut r#str: ArcStr;
         if isSome(set.const_opt.clone()) {
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\tConstant/Parameter Binding: ")); __mm_s.push_str(&*BEquation::Equation::toString(Pointer::access(Util::getOption(set.const_opt.clone())?), (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
@@ -1422,7 +1422,7 @@ pub mod AttributeCollector {
 
     pub type ATTRIBUTE_COLLECTOR = AttributeCollector;
 
-    pub fn toString(mut attrcollector: Arc<AttributeCollector>, mut r#str: ArcStr) -> Result<ArcStr> {
+    pub(crate) fn toString(mut attrcollector: Arc<AttributeCollector>, mut r#str: ArcStr) -> Result<ArcStr> {
         let mut r#str: ArcStr = r#str;
         let mut array_maps: metamodelica::Array<Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>>;
         let mut array_names: metamodelica::Array<ArcStr>;
@@ -1442,7 +1442,7 @@ pub mod AttributeCollector {
         Ok(r#str)
     }
 
-    pub fn fixValues(mut attrcollector: Arc<AttributeCollector>, mut var_cref: Arc<ComponentRef::NFComponentRef>, mut solved_eq: Arc<Equation::Equation>) -> Result<Arc<AttributeCollector>> {
+    pub(crate) fn fixValues(mut attrcollector: Arc<AttributeCollector>, mut var_cref: Arc<ComponentRef::NFComponentRef>, mut solved_eq: Arc<Equation::Equation>) -> Result<Arc<AttributeCollector>> {
         let mut attrcollector: Arc<AttributeCollector> = attrcollector;
         let mut repl: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
         let mut rhs: Arc<Expression::NFExpression>;

@@ -63,7 +63,7 @@ use openmodelica_util_datatypes_basic::List;
 // dump GraphML stuff
 //
 // =============================================================================
-pub fn dumpSystem(mut inSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc<BackendDAE::Shared>, mut inids: Option<metamodelica::Array<i32>>, mut filename: ArcStr, mut numberMode: bool) -> Result<()> {
+pub(crate) fn dumpSystem(mut inSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc<BackendDAE::Shared>, mut inids: Option<metamodelica::Array<i32>>, mut filename: ArcStr, mut numberMode: bool) -> Result<()> {
     let () = (::match_deref::match_deref! { match &((inSystem.clone(), inids.clone())) {
         (Deref @ BackendDAE::EqSystem { matching: Deref @ BackendDAE::Matching::NO_MATCHING { .. }, .. }, None) => {
             let mut vars: BackendDAE::Variables;

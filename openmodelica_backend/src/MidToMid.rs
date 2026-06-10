@@ -71,7 +71,7 @@ But requires some data flow and side effect analysis.
 Some SSA variables and purity marked functions perhaps.
 
 */
-pub fn longJmpGoto(mut oldFunction: MidCode::Function) -> Result<MidCode::Function> {
+pub(crate) fn longJmpGoto(mut oldFunction: MidCode::Function) -> Result<MidCode::Function> {
     let mut newFunction: MidCode::Function;
     let mut newBody: Arc<metamodelica::List<MidCode::Block>>;
     let mut oldBody: Arc<metamodelica::List<MidCode::Block>>;
@@ -132,7 +132,7 @@ pub fn longJmpGoto(mut oldFunction: MidCode::Function) -> Result<MidCode::Functi
     Ok(newFunction)
 }
 
-pub fn lookupId(mut blocks: Arc<metamodelica::List<MidCode::Block>>, mut id: i32) -> Result<MidCode::Block> {
+pub(crate) fn lookupId(mut blocks: Arc<metamodelica::List<MidCode::Block>>, mut id: i32) -> Result<MidCode::Block> {
     '__tco: loop {
         let mut blocks_local: Arc<metamodelica::List<MidCode::Block>> = metamodelica::nil();
         let mut block_local: MidCode::Block = <MidCode::Block as ::std::default::Default>::default();

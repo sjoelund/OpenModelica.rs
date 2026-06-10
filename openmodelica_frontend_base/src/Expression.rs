@@ -92,7 +92,7 @@ pub fn intSubscript(mut inInteger: i32) -> Arc<DAE::Subscript> {
     outSubscript
 }
 
-pub fn intSubscripts(mut inIntegers: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<Arc<DAE::Subscript>>>> {
+pub(crate) fn intSubscripts(mut inIntegers: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<Arc<DAE::Subscript>>>> {
     let mut outSubscripts: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
     outSubscripts = List::map(inIntegers.clone(), (std::sync::Arc::new(fnptr!(intSubscript, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<Arc<DAE::Subscript>> + 'static>))?;
     Ok(outSubscripts)
@@ -538,13 +538,13 @@ fn unelabOperator(mut op: DAE::Operator) -> Result<Absyn::Operator> {
     Ok(aop)
 }
 
-pub fn stringifyCrefs(mut inExp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
+pub(crate) fn stringifyCrefs(mut inExp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
     let mut outExp: Arc<DAE::Exp>;
     outExp = traverseExpDummy(inExp.clone(), (std::sync::Arc::new(traversingstringifyCrefFinder) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> + 'static>))?;
     Ok(outExp)
 }
 
-pub fn traversingstringifyCrefFinder(mut inExp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
+pub(crate) fn traversingstringifyCrefFinder(mut inExp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
     let mut outExp: Arc<DAE::Exp>;
     outExp = (::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ DAE::Exp::CREF { ty: Deref @ DAE::Type::T_FUNCTION_REFERENCE_VAR { .. }, .. } => {
@@ -566,7 +566,7 @@ pub fn traversingstringifyCrefFinder(mut inExp: Arc<DAE::Exp>) -> Result<Arc<DAE
     Ok(outExp)
 }
 
-pub fn realToIntIfPossible(mut inVal: metamodelica::Real) -> Arc<DAE::Exp> {
+pub(crate) fn realToIntIfPossible(mut inVal: metamodelica::Real) -> Arc<DAE::Exp> {
     let mut outVal: Arc<DAE::Exp>;
     match '__try0: {
         outVal = Arc::new(DAE::Exp::ICONST { integer: ((inVal.clone()).0.floor() as i32) });
@@ -582,7 +582,7 @@ pub fn realToIntIfPossible(mut inVal: metamodelica::Real) -> Arc<DAE::Exp> {
     outVal
 }
 
-pub fn liftArrayR(mut tp: Arc<DAE::Type>, mut n: Arc<DAE::Dimension>) -> Arc<DAE::Type> {
+pub(crate) fn liftArrayR(mut tp: Arc<DAE::Type>, mut n: Arc<DAE::Dimension>) -> Arc<DAE::Type> {
     let mut outTp: Arc<DAE::Type>;
     outTp = (::match_deref::match_deref! { match &(tp.clone()) {
         Deref @ DAE::Type::T_ARRAY { ty: elt_tp, dims } => {
@@ -767,7 +767,7 @@ pub fn expDer(mut inExp: Arc<DAE::Exp>) -> Arc<DAE::Exp> {
     outExp
 }
 
-pub fn expAbs(mut inExp: Arc<DAE::Exp>) -> Arc<DAE::Exp> {
+pub(crate) fn expAbs(mut inExp: Arc<DAE::Exp>) -> Arc<DAE::Exp> {
     '__tco: loop {
         ::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ DAE::Exp::ICONST { integer: i } => {
@@ -799,7 +799,7 @@ pub fn expAbs(mut inExp: Arc<DAE::Exp>) -> Arc<DAE::Exp> {
     }
 }
 
-pub fn stripNoEvent(mut e: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
+pub(crate) fn stripNoEvent(mut e: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
     let mut outE: Arc<DAE::Exp>;
     outE = traverseExpDummy(e.clone(), (std::sync::Arc::new(fnptr!(stripNoEventExp, Arc<DAE::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> + 'static>))?;
     Ok(outE)
@@ -901,7 +901,7 @@ pub fn expStripLastSubs(mut inExp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
     Ok(outExp)
 }
 
-pub fn expStripLastIdent(mut inExp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
+pub(crate) fn expStripLastIdent(mut inExp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
     let mut outExp: Arc<DAE::Exp>;
     outExp = (::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ DAE::Exp::CREF { componentRef: cr, .. } => {
@@ -929,7 +929,7 @@ pub fn expStripLastIdent(mut inExp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
     Ok(outExp)
 }
 
-pub fn prependSubscriptExp(mut exp: Arc<DAE::Exp>, mut subscr: Arc<DAE::Subscript>) -> Result<Arc<DAE::Exp>> {
+pub(crate) fn prependSubscriptExp(mut exp: Arc<DAE::Exp>, mut subscr: Arc<DAE::Subscript>) -> Result<Arc<DAE::Exp>> {
     let mut outExp: Arc<DAE::Exp>;
     outExp = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ DAE::Exp::CREF { componentRef: cr, ty: t } => {
@@ -979,7 +979,7 @@ pub fn applyExpSubscriptsFoldCheckSimplify(mut exp: Arc<DAE::Exp>, mut inSubs: A
     (exp, checkSimplify)
 }
 
-pub fn applyExpSubscripts2(mut inExp: Arc<DAE::Exp>, mut inSubs: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Arc<DAE::Exp> {
+pub(crate) fn applyExpSubscripts2(mut inExp: Arc<DAE::Exp>, mut inSubs: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Arc<DAE::Exp> {
     let mut outArg: Arc<DAE::Exp>;
     outArg = (::match_deref::match_deref! { match &((inExp.clone(), inSubs.clone())) {
         (_, Deref @ metamodelica::List::Nil) => {
@@ -1037,7 +1037,7 @@ pub fn unliftArray(mut inType: Arc<DAE::Type>) -> Result<Arc<DAE::Type>> {
     Ok(outType)
 }
 
-pub fn unliftArrayIgnoreFirst<A: Clone + 'static + metamodelica::gc::MMTrace>(mut a: A, mut inType: Arc<DAE::Type>) -> Result<Arc<DAE::Type>> {
+pub(crate) fn unliftArrayIgnoreFirst<A: Clone + 'static + metamodelica::gc::MMTrace>(mut a: A, mut inType: Arc<DAE::Type>) -> Result<Arc<DAE::Type>> {
     let mut outType: Arc<DAE::Type>;
     outType = unliftArray(inType.clone())?;
     Ok(outType)
@@ -1071,7 +1071,7 @@ pub fn unliftExp(mut inExp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
     Ok(outExp)
 }
 
-pub fn liftExp(mut inExp: Arc<DAE::Exp>, mut inDimension: Arc<DAE::Dimension>) -> Result<Arc<DAE::Exp>> {
+pub(crate) fn liftExp(mut inExp: Arc<DAE::Exp>, mut inDimension: Arc<DAE::Dimension>) -> Result<Arc<DAE::Exp>> {
     let mut outExp: Arc<DAE::Exp>;
     outExp = Arc::new(DAE::Exp::ARRAY { ty: Types::liftArray(r#typeof(inExp.clone())?, inDimension.clone()), scalar: false, array: List::fill(inExp.clone(), dimensionSize(inDimension.clone())?) });
     Ok(outExp)
@@ -1179,7 +1179,7 @@ pub fn setOpType(mut inOp: DAE::Operator, mut inType: Arc<DAE::Type>) -> Result<
     Ok(outOp)
 }
 
-pub fn unliftOperator(mut inOperator: DAE::Operator) -> Result<DAE::Operator> {
+pub(crate) fn unliftOperator(mut inOperator: DAE::Operator) -> Result<DAE::Operator> {
     let mut outOperator: DAE::Operator;
     let mut ty: Type;
     ty = typeofOp(inOperator.clone())?;
@@ -1188,7 +1188,7 @@ pub fn unliftOperator(mut inOperator: DAE::Operator) -> Result<DAE::Operator> {
     Ok(outOperator)
 }
 
-pub fn unliftOperatorX(mut inOperator: DAE::Operator, mut inX: i32) -> Result<DAE::Operator> {
+pub(crate) fn unliftOperatorX(mut inOperator: DAE::Operator, mut inX: i32) -> Result<DAE::Operator> {
     let mut outOperator: DAE::Operator;
     let mut ty: Type;
     ty = typeofOp(inOperator.clone())?;
@@ -1227,7 +1227,7 @@ fn makeScalarOpFromArrayOp(mut inOperator: DAE::Operator, mut inType: Arc<DAE::T
     outOperator
 }
 
-pub fn isScalarArrayOp(mut inOperator: DAE::Operator) -> bool {
+pub(crate) fn isScalarArrayOp(mut inOperator: DAE::Operator) -> bool {
     let mut outIsScalarArrayOp: bool;
     outIsScalarArrayOp = (match inOperator.clone() {
         DAE::Operator::SUB_SCALAR_ARRAY { .. } => true,
@@ -1238,7 +1238,7 @@ pub fn isScalarArrayOp(mut inOperator: DAE::Operator) -> bool {
     outIsScalarArrayOp
 }
 
-pub fn isArrayScalarOp(mut inOperator: DAE::Operator) -> bool {
+pub(crate) fn isArrayScalarOp(mut inOperator: DAE::Operator) -> bool {
     let mut outIsArrayScalarOp: bool;
     outIsArrayScalarOp = (match inOperator.clone() {
         DAE::Operator::MUL_ARRAY_SCALAR { .. } => true,
@@ -1250,7 +1250,7 @@ pub fn isArrayScalarOp(mut inOperator: DAE::Operator) -> bool {
     outIsArrayScalarOp
 }
 
-pub fn subscriptsAppend(mut inSubscriptLst: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut inSubscript: Arc<DAE::Exp>) -> Result<Arc<metamodelica::List<Arc<DAE::Subscript>>>> {
+pub(crate) fn subscriptsAppend(mut inSubscriptLst: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut inSubscript: Arc<DAE::Exp>) -> Result<Arc<metamodelica::List<Arc<DAE::Subscript>>>> {
     let mut outSubscriptLst: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
     outSubscriptLst = (::match_deref::match_deref! { match &(inSubscriptLst.clone()) {
         Deref @ metamodelica::List::Nil => {
@@ -1277,7 +1277,7 @@ pub fn subscriptsAppend(mut inSubscriptLst: Arc<metamodelica::List<Arc<DAE::Subs
     Ok(outSubscriptLst)
 }
 
-pub fn subscriptsReplaceSlice(mut inSubscripts: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut inSubscript: Arc<DAE::Subscript>) -> Result<Arc<metamodelica::List<Arc<DAE::Subscript>>>> {
+pub(crate) fn subscriptsReplaceSlice(mut inSubscripts: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut inSubscript: Arc<DAE::Subscript>) -> Result<Arc<metamodelica::List<Arc<DAE::Subscript>>>> {
     let mut outSubscripts: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
     outSubscripts = (::match_deref::match_deref! { match &(inSubscripts.clone()) {
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::WHOLEDIM { .. }, tail: rest_subs } => {
@@ -1347,7 +1347,7 @@ pub fn arrayAppend(mut head: Arc<DAE::Exp>, mut rest: Arc<DAE::Exp>) -> Result<A
     Ok(array)
 }
 
-pub fn arrayDimensionSetFirst(mut inArrayType: Arc<DAE::Type>, mut dimension: Arc<DAE::Dimension>) -> Result<Arc<DAE::Type>> {
+pub(crate) fn arrayDimensionSetFirst(mut inArrayType: Arc<DAE::Type>, mut dimension: Arc<DAE::Dimension>) -> Result<Arc<DAE::Type>> {
     let mut outArrayType: Arc<DAE::Type>;
     outArrayType = (::match_deref::match_deref! { match &(inArrayType.clone()) {
         Deref @ DAE::Type::T_ARRAY { ty, dims: Deref @ metamodelica::List::Cons { head: _, tail: rest_dims } } => {
@@ -1463,7 +1463,7 @@ pub fn varName(mut v: Arc<DAE::Var>) -> Result<ArcStr> {
     Ok(name)
 }
 
-pub fn varType(mut v: Arc<DAE::Var>) -> Result<Arc<DAE::Type>> {
+pub(crate) fn varType(mut v: Arc<DAE::Var>) -> Result<Arc<DAE::Type>> {
     let mut tp: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     tp = (::match_deref::match_deref! { match &(v.clone()) {
         Deref @ DAE::Var { ty: __esc_tp, .. } => {
@@ -1518,7 +1518,7 @@ pub fn expCrefNegCref(mut inExp: Arc<DAE::Exp>) -> Result<Arc<DAE::ComponentRef>
     Ok(outComponentRef)
 }
 
-pub fn expCrefTuple(mut inTuple: (Arc<DAE::Exp>, bool)) -> Result<Arc<DAE::ComponentRef>> {
+pub(crate) fn expCrefTuple(mut inTuple: (Arc<DAE::Exp>, bool)) -> Result<Arc<DAE::ComponentRef>> {
     let mut outComponentRef: Arc<DAE::ComponentRef>;
     outComponentRef = (::match_deref::match_deref! { match &(inTuple.clone()) {
         (Deref @ DAE::Exp::CREF { componentRef: cr, .. }, _) => {
@@ -1529,7 +1529,7 @@ pub fn expCrefTuple(mut inTuple: (Arc<DAE::Exp>, bool)) -> Result<Arc<DAE::Compo
     Ok(outComponentRef)
 }
 
-pub fn expCrefInclIfExpFactors(mut inExp: Arc<DAE::Exp>) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> {
+pub(crate) fn expCrefInclIfExpFactors(mut inExp: Arc<DAE::Exp>) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> {
     let mut outComponentRefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
     outComponentRefs = (::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ DAE::Exp::CREF { componentRef: cr, .. } => {
@@ -1547,7 +1547,7 @@ pub fn expCrefInclIfExpFactors(mut inExp: Arc<DAE::Exp>) -> Result<Arc<metamodel
     Ok(outComponentRefs)
 }
 
-pub fn getArrayContents(mut e: Arc<DAE::Exp>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> {
+pub(crate) fn getArrayContents(mut e: Arc<DAE::Exp>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> {
     let mut es: Arc<metamodelica::List<Arc<DAE::Exp>>>;
     let __pa0 = ::match_deref::match_deref! { match &(e.clone()) {
         Deref @ DAE::Exp::ARRAY { array: __pa0, .. } => __pa0.clone(),
@@ -1789,7 +1789,7 @@ pub fn getArrayOrRangeContents(mut e: Arc<DAE::Exp>) -> Result<Arc<metamodelica:
     Ok(es)
 }
 
-pub fn get2dArrayOrMatrixContent(mut e: Arc<DAE::Exp>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>>> {
+pub(crate) fn get2dArrayOrMatrixContent(mut e: Arc<DAE::Exp>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>>> {
     let mut outExps: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>>;
     outExps = (::match_deref::match_deref! { match &(e.clone()) {
         Deref @ DAE::Exp::ARRAY { array: es, .. } => {
@@ -1804,7 +1804,7 @@ pub fn get2dArrayOrMatrixContent(mut e: Arc<DAE::Exp>) -> Result<Arc<metamodelic
 }
 
 // stefan
-pub fn unboxExpType(mut inType: Arc<DAE::Type>) -> Arc<DAE::Type> {
+pub(crate) fn unboxExpType(mut inType: Arc<DAE::Type>) -> Arc<DAE::Type> {
     let mut outType: Arc<DAE::Type>;
     outType = (::match_deref::match_deref! { match &(inType.clone()) {
         Deref @ DAE::Type::T_METABOXED { ty } => {
@@ -1832,7 +1832,7 @@ pub fn unboxExp(mut ie: Arc<DAE::Exp>) -> Arc<DAE::Exp> {
     }
 }
 
-pub fn boxExp(mut e: Arc<DAE::Exp>) -> Arc<DAE::Exp> {
+pub(crate) fn boxExp(mut e: Arc<DAE::Exp>) -> Arc<DAE::Exp> {
     let mut outExp: Arc<DAE::Exp>;
     outExp = (::match_deref::match_deref! { match &(e.clone()) {
         Deref @ DAE::Exp::BOX { exp: _ } => e.clone(),
@@ -1859,7 +1859,7 @@ pub fn getSubscriptExp(mut inSubscript: Arc<DAE::Subscript>) -> Result<Arc<DAE::
     Ok(outExp)
 }
 
-pub fn subscriptNonExpandedExp(mut inSubscript: Arc<DAE::Subscript>) -> Result<Arc<DAE::Exp>> {
+pub(crate) fn subscriptNonExpandedExp(mut inSubscript: Arc<DAE::Subscript>) -> Result<Arc<DAE::Exp>> {
     let mut outExp: Arc<DAE::Exp>;
     outExp = (::match_deref::match_deref! { match &(inSubscript.clone()) {
         Deref @ DAE::Subscript::WHOLE_NONEXP { exp: e } => {
@@ -1870,7 +1870,7 @@ pub fn subscriptNonExpandedExp(mut inSubscript: Arc<DAE::Subscript>) -> Result<A
     Ok(outExp)
 }
 
-pub fn subscriptIsFirst(mut inSubscript: Arc<DAE::Subscript>) -> Result<bool> {
+pub(crate) fn subscriptIsFirst(mut inSubscript: Arc<DAE::Subscript>) -> Result<bool> {
     let mut outIsFirst: bool;
     outIsFirst = (::match_deref::match_deref! { match &(inSubscript.clone()) {
         Deref @ DAE::Subscript::INDEX { exp: Deref @ DAE::Exp::ICONST { integer: 1 } } => true,
@@ -1923,7 +1923,7 @@ pub fn nthArrayExp(mut inExp: Arc<DAE::Exp>, mut inInteger: i32) -> Arc<DAE::Exp
     outExp
 }
 
-pub fn expLastSubs(mut inExp: Arc<DAE::Exp>) -> Result<Arc<metamodelica::List<Arc<DAE::Subscript>>>> {
+pub(crate) fn expLastSubs(mut inExp: Arc<DAE::Exp>) -> Result<Arc<metamodelica::List<Arc<DAE::Subscript>>>> {
     '__tco: loop {
         ::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ DAE::Exp::CREF { componentRef: cr, .. } => {
@@ -1975,7 +1975,7 @@ pub fn arrayDimension(mut tp: Arc<DAE::Type>) -> Arc<metamodelica::List<Arc<DAE:
     dims
 }
 
-pub fn arrayTypeDimensions(mut tp: Arc<DAE::Type>) -> Result<Arc<metamodelica::List<Arc<DAE::Dimension>>>> {
+pub(crate) fn arrayTypeDimensions(mut tp: Arc<DAE::Type>) -> Result<Arc<metamodelica::List<Arc<DAE::Dimension>>>> {
     let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
     dims = (::match_deref::match_deref! { match &(tp.clone()) {
         Deref @ DAE::Type::T_ARRAY { dims: __esc_dims, .. } => {
@@ -1993,7 +1993,7 @@ pub fn subscriptDimensions(mut inSubscripts: Arc<metamodelica::List<Arc<DAE::Sub
     Ok(outDimensions)
 }
 
-pub fn subscriptDimension(mut inSubscript: Arc<DAE::Subscript>) -> Result<Arc<DAE::Dimension>> {
+pub(crate) fn subscriptDimension(mut inSubscript: Arc<DAE::Subscript>) -> Result<Arc<DAE::Dimension>> {
     let mut outDimension: Arc<DAE::Dimension>;
     outDimension = (::match_deref::match_deref! { match &(inSubscript.clone()) {
         Deref @ DAE::Subscript::INDEX { exp: Deref @ DAE::Exp::ICONST { integer: x } } => {
@@ -2154,7 +2154,7 @@ pub fn dimensionSize(mut dim: Arc<DAE::Dimension>) -> Result<i32> {
     Ok(value)
 }
 
-pub fn addDimensions(mut dim1: Arc<DAE::Dimension>, mut dim2: Arc<DAE::Dimension>) -> Arc<DAE::Dimension> {
+pub(crate) fn addDimensions(mut dim1: Arc<DAE::Dimension>, mut dim2: Arc<DAE::Dimension>) -> Arc<DAE::Dimension> {
     let mut dim: Arc<DAE::Dimension>;
     dim = 'mc: {
         let __mc_input = dim2.clone();
@@ -2181,7 +2181,7 @@ pub fn addDimensions(mut dim1: Arc<DAE::Dimension>, mut dim2: Arc<DAE::Dimension
     dim
 }
 
-pub fn dimensionSizeAll(mut dim: Arc<DAE::Dimension>) -> Result<i32> {
+pub(crate) fn dimensionSizeAll(mut dim: Arc<DAE::Dimension>) -> Result<i32> {
     let mut value: i32;
     value = 'mc: {
         let __mc_input = dim.clone();
@@ -2643,7 +2643,7 @@ fn typeofRelation(mut inType: Arc<DAE::Type>) -> Arc<DAE::Type> {
     outType
 }
 
-pub fn typeofOp(mut inOperator: DAE::Operator) -> Result<Arc<DAE::Type>> {
+pub(crate) fn typeofOp(mut inOperator: DAE::Operator) -> Result<Arc<DAE::Type>> {
     let mut outType: Arc<DAE::Type>;
     outType = (match inOperator.clone() {
         DAE::Operator::ADD { ty: ref t } => {
@@ -2746,7 +2746,7 @@ pub fn typeofOp(mut inOperator: DAE::Operator) -> Result<Arc<DAE::Type>> {
     Ok(outType)
 }
 
-pub fn getRelations(mut inExp: Arc<DAE::Exp>) -> Arc<metamodelica::List<Arc<DAE::Exp>>> {
+pub(crate) fn getRelations(mut inExp: Arc<DAE::Exp>) -> Arc<metamodelica::List<Arc<DAE::Exp>>> {
     '__tco: loop {
         ::match_deref::match_deref! { match &(inExp.clone()) {
         e @ Deref @ DAE::Exp::RELATION { .. } => {
@@ -3351,7 +3351,7 @@ pub fn allTermsForCref(mut inExp: Arc<DAE::Exp>, mut cr: Arc<DAE::ComponentRef>,
     Ok((outExpLstWithX, outExpLstWithoutX))
 }
 
-pub fn termsExpandUnary(mut inExp: Arc<DAE::Exp>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> {
+pub(crate) fn termsExpandUnary(mut inExp: Arc<DAE::Exp>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> {
     let mut outExpLst: Arc<metamodelica::List<Arc<DAE::Exp>>>;
     outExpLst = (::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ DAE::Exp::UNARY { operator: DAE::Operator::UMINUS { .. }, exp: e } => {
@@ -3397,7 +3397,7 @@ fn terms2(mut inExp: Arc<DAE::Exp>, mut inAcc: Arc<metamodelica::List<Arc<DAE::E
     }
 }
 
-pub fn quotient(mut inExp: Arc<DAE::Exp>) -> Result<(Arc<DAE::Exp>, Arc<DAE::Exp>)> {
+pub(crate) fn quotient(mut inExp: Arc<DAE::Exp>) -> Result<(Arc<DAE::Exp>, Arc<DAE::Exp>)> {
     let mut num: Arc<DAE::Exp>;
     let mut denom: Arc<DAE::Exp>;
     (num, denom) = 'mc: {
@@ -3674,7 +3674,7 @@ fn expandFactorsWork2(mut inAcc: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut doI
     Ok(outExpLst)
 }
 
-pub fn getTermsContainingX(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>) -> Result<(Arc<DAE::Exp>, Arc<DAE::Exp>)> {
+pub(crate) fn getTermsContainingX(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>) -> Result<(Arc<DAE::Exp>, Arc<DAE::Exp>)> {
     let mut outExp1: Arc<DAE::Exp>;
     let mut outExp2: Arc<DAE::Exp>;
     (outExp1, outExp2) = 'mc: {
@@ -3996,7 +3996,7 @@ pub fn makeASUB(mut inExp: Arc<DAE::Exp>, mut inSubs: Arc<metamodelica::List<Arc
     Ok(outExp)
 }
 
-pub fn makeASUBSingleSub(mut exp: Arc<DAE::Exp>, mut sub: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
+pub(crate) fn makeASUBSingleSub(mut exp: Arc<DAE::Exp>, mut sub: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
     let mut outExp: Arc<DAE::Exp>;
     outExp = makeASUB(exp.clone(), list![sub.clone()])?;
     Ok(outExp)
@@ -4023,7 +4023,7 @@ pub fn generateCrefsExpFromExpVar(mut inVar: Arc<DAE::Var>, mut inCrefPrefix: Ar
     Ok(outCrefExp)
 }
 
-pub fn generateCrefsFromExpVar(mut inVar: Arc<DAE::Var>, mut inCrefPrefix: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> {
+pub(crate) fn generateCrefsFromExpVar(mut inVar: Arc<DAE::Var>, mut inCrefPrefix: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> {
     let mut outCref: Arc<DAE::ComponentRef>;
     outCref = (::match_deref::match_deref! { match &(inVar.clone()) {
         Deref @ DAE::Var { name, ty, .. } => {
@@ -4133,7 +4133,7 @@ pub fn makeArray(mut inElements: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inT
     outArray
 }
 
-pub fn makeArrayFromList(mut inElements: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<Arc<DAE::Exp>> {
+pub(crate) fn makeArrayFromList(mut inElements: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<Arc<DAE::Exp>> {
     let mut outArray: Arc<DAE::Exp>;
     let mut ty: Arc<DAE::Type>;
     ty = r#typeof(listHead(inElements.clone())?)?;
@@ -4149,7 +4149,7 @@ pub fn makeScalarArray(mut inExpLst: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut
     outExp
 }
 
-pub fn makeRealArray(mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Arc<DAE::Exp> {
+pub(crate) fn makeRealArray(mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Arc<DAE::Exp> {
     let mut outExp: Arc<DAE::Exp>;
     outExp = makeScalarArray(expl.clone(), DAE::T_REAL_DEFAULT().clone());
     outExp
@@ -4289,7 +4289,7 @@ pub fn expSub(mut e1: Arc<DAE::Exp>, mut e2: Arc<DAE::Exp>) -> Result<Arc<DAE::E
     Ok(outExp)
 }
 
-pub fn makeLBinary(mut inExpLst: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut op: DAE::Operator) -> Result<Arc<DAE::Exp>> {
+pub(crate) fn makeLBinary(mut inExpLst: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut op: DAE::Operator) -> Result<Arc<DAE::Exp>> {
     let mut outExp: Arc<DAE::Exp>;
     outExp = (::match_deref::match_deref! { match &((inExpLst.clone(), op.clone())) {
         (Deref @ metamodelica::List::Nil, DAE::Operator::AND { ty: _ }) => {
@@ -4637,7 +4637,7 @@ pub fn expPow(mut e1: Arc<DAE::Exp>, mut e2: Arc<DAE::Exp>) -> Result<Arc<DAE::E
     }
 }
 
-pub fn expPowLst(mut expLst: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut n: Arc<DAE::Exp>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> {
+pub(crate) fn expPowLst(mut expLst: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut n: Arc<DAE::Exp>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> {
     let mut outExp: Arc<metamodelica::List<Arc<DAE::Exp>>> = List::map1(expLst.clone(), (std::sync::Arc::new(expPow) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> + 'static>), n.clone())?;
     Ok(outExp)
 }
@@ -4692,7 +4692,7 @@ pub fn expOptMinScalar(mut e1: Option<Arc<DAE::Exp>>, mut e2: Option<Arc<DAE::Ex
     Ok(outExp)
 }
 
-pub fn makeProductVector(mut e1: Arc<DAE::Exp>, mut v: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> {
+pub(crate) fn makeProductVector(mut e1: Arc<DAE::Exp>, mut v: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> {
     let mut res: Arc<metamodelica::List<Arc<DAE::Exp>>>;
     res = List::map1(v.clone(), (std::sync::Arc::new(makeProduct) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> + 'static>), e1.clone())?;
     Ok(res)
@@ -4739,7 +4739,7 @@ pub fn subVec(mut v: metamodelica::Array<Arc<DAE::Exp>>, mut w: metamodelica::Ar
     Ok(y)
 }
 
-pub fn makeProduct(mut e1: Arc<DAE::Exp>, mut e2: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
+pub(crate) fn makeProduct(mut e1: Arc<DAE::Exp>, mut e2: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
     let mut product: Arc<DAE::Exp>;
     product = makeProductLst(list![e1.clone(), e2.clone()])?;
     Ok(product)
@@ -4942,7 +4942,7 @@ pub fn makeDiv(mut e1: Arc<DAE::Exp>, mut e2: Arc<DAE::Exp>) -> Result<Arc<DAE::
     Ok(res)
 }
 
-pub fn makeDivVector(mut v: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut e1: Arc<DAE::Exp>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> {
+pub(crate) fn makeDivVector(mut v: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut e1: Arc<DAE::Exp>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> {
     let mut res: Arc<metamodelica::List<Arc<DAE::Exp>>>;
     res = List::map1(v.clone(), (std::sync::Arc::new(makeDiv) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> + 'static>), e1.clone())?;
     Ok(res)
@@ -4961,7 +4961,7 @@ pub fn makeAsubAddIndex(mut e: Arc<DAE::Exp>, mut indx: i32) -> Result<Arc<DAE::
     Ok(outExp)
 }
 
-pub fn makeIntegerExp(mut i: i32) -> Arc<DAE::Exp> {
+pub(crate) fn makeIntegerExp(mut i: i32) -> Arc<DAE::Exp> {
     let mut e: Arc<DAE::Exp>;
     e = Arc::new(DAE::Exp::ICONST { integer: i.clone() });
     e
@@ -4973,7 +4973,7 @@ pub fn makeRealExp(mut r: metamodelica::Real) -> Arc<DAE::Exp> {
     e
 }
 
-pub fn makeBoolExp(mut b: bool) -> Arc<DAE::Exp> {
+pub(crate) fn makeBoolExp(mut b: bool) -> Arc<DAE::Exp> {
     let mut e: Arc<DAE::Exp>;
     e = Arc::new(DAE::Exp::BCONST { bool: b.clone() });
     e
@@ -5001,7 +5001,7 @@ pub fn makeConstZero(mut inType: Arc<DAE::Type>) -> Arc<DAE::Exp> {
     r#const
 }
 
-pub fn makeConstNumber(mut ty: Arc<DAE::Type>, mut n: i32) -> Arc<DAE::Exp> {
+pub(crate) fn makeConstNumber(mut ty: Arc<DAE::Type>, mut n: i32) -> Arc<DAE::Exp> {
     let mut exp: Arc<DAE::Exp>;
     exp = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ DAE::Type::T_INTEGER { .. } => Arc::new(DAE::Exp::ICONST { integer: n.clone() }),
@@ -5018,7 +5018,7 @@ pub fn makeConstZeroE(mut iExp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
     Ok(r#const)
 }
 
-pub fn makeListOfZeros(mut inDimension: i32) -> Arc<metamodelica::List<Arc<DAE::Exp>>> {
+pub(crate) fn makeListOfZeros(mut inDimension: i32) -> Arc<metamodelica::List<Arc<DAE::Exp>>> {
     let mut outList: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
     if inDimension.clone() > 0 {
         for mut i in 1..=inDimension.clone() {
@@ -5350,7 +5350,7 @@ fn replaceExpWork(mut inExp: Arc<DAE::Exp>, mut inTpl: (Arc<DAE::Exp>, Arc<DAE::
     Ok((outExp, cont, otpl))
 }
 
-pub fn expressionCollector(mut exp: Arc<DAE::Exp>, mut acc: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> (Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Exp>>>) {
+pub(crate) fn expressionCollector(mut exp: Arc<DAE::Exp>, mut acc: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> (Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Exp>>>) {
     let mut outExp: Arc<DAE::Exp>;
     let mut outExps: Arc<metamodelica::List<Arc<DAE::Exp>>>;
     outExp = exp.clone();
@@ -5798,7 +5798,7 @@ pub fn traverseExpDummy(mut inExp: Arc<DAE::Exp>, mut func: Arc<dyn ::std::ops::
     Ok(outExp)
 }
 
-pub fn traverseExpDummyHelper(mut inExp: Arc<DAE::Exp>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> + 'static>) -> Result<(Arc<DAE::Exp>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> + 'static>)> {
+pub(crate) fn traverseExpDummyHelper(mut inExp: Arc<DAE::Exp>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> + 'static>) -> Result<(Arc<DAE::Exp>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> + 'static>)> {
     pub type FuncExpType = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> + 'static>;
 
     let mut outExp: Arc<DAE::Exp>;
@@ -5840,7 +5840,7 @@ pub fn traverseSubexpressionsDummyHelper(mut inExp: Arc<DAE::Exp>, mut inFunc: A
     Ok((outExp, outFunc))
 }
 
-pub fn traverseSubexpressionsTopDownHelper<Type_a: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut inExp: Arc<DAE::Exp>, mut itpl: (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, bool, Type_a)> + 'static>, Type_a)) -> Result<(Arc<DAE::Exp>, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, bool, Type_a)> + 'static>, Type_a))> {
+pub(crate) fn traverseSubexpressionsTopDownHelper<Type_a: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut inExp: Arc<DAE::Exp>, mut itpl: (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, bool, Type_a)> + 'static>, Type_a)) -> Result<(Arc<DAE::Exp>, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, bool, Type_a)> + 'static>, Type_a))> {
     pub type FuncExpType2<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, bool, Type_a)> + 'static>;
 
     let mut outExp: Arc<DAE::Exp>;
@@ -6373,7 +6373,7 @@ pub fn traverseExpOpt<Type_a: Clone + 'static + metamodelica::gc::MMTrace + meta
     Ok((outExp, outTypeA))
 }
 
-pub fn traverseExpOptTopDown<Type_a: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut inExp: Option<Arc<DAE::Exp>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, bool, Type_a)> + 'static>, mut inTypeA: Type_a) -> Result<(Option<Arc<DAE::Exp>>, Type_a)> {
+pub(crate) fn traverseExpOptTopDown<Type_a: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut inExp: Option<Arc<DAE::Exp>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, bool, Type_a)> + 'static>, mut inTypeA: Type_a) -> Result<(Option<Arc<DAE::Exp>>, Type_a)> {
     pub type FuncExpType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, bool, Type_a)> + 'static>;
 
     let mut outExp: Option<Arc<DAE::Exp>>;
@@ -6425,7 +6425,7 @@ pub fn traverseExpCrefDims<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mu
     Ok((outCref, outArg))
 }
 
-pub fn traverseExpTypeDims<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inType: Arc<DAE::Type>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> Result<(Arc<DAE::Type>, ArgT)> {
+pub(crate) fn traverseExpTypeDims<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inType: Arc<DAE::Type>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> Result<(Arc<DAE::Type>, ArgT)> {
     pub type FuncType<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>;
 
     let mut outType: Arc<DAE::Type>;
@@ -6483,7 +6483,7 @@ fn traverseExpTypeDims2<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut i
     Ok((outDims, outArg, outChanged))
 }
 
-pub fn extractUniqueCrefsFromExp(mut inExp: Arc<DAE::Exp>, mut expand: bool) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> {
+pub(crate) fn extractUniqueCrefsFromExp(mut inExp: Arc<DAE::Exp>, mut expand: bool) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> {
     let mut ocrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
     ocrefs = ComponentReference::uniqueList(extractCrefsFromExp(inExp.clone())?)?;
     if expand.clone() {
@@ -6530,7 +6530,7 @@ pub fn extractCrefsFromExpDerPreStart(mut inExp: Arc<DAE::Exp>, mut expand: bool
     Ok(ocrefs)
 }
 
-pub fn traversingComponentRefFinderDerPreStart(mut inExp: Arc<DAE::Exp>, mut inCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<(Arc<DAE::Exp>, bool, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)> {
+pub(crate) fn traversingComponentRefFinderDerPreStart(mut inExp: Arc<DAE::Exp>, mut inCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<(Arc<DAE::Exp>, bool, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)> {
     let mut e: Arc<DAE::Exp>;
     let mut cont: bool;
     let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
@@ -6684,7 +6684,7 @@ pub fn expHasInitial(mut exp: Arc<DAE::Exp>) -> Result<bool> {
     Ok(found)
 }
 
-pub fn traversingexpHasInitial(mut exp: Arc<DAE::Exp>, mut found: bool) -> (Arc<DAE::Exp>, bool, bool) {
+pub(crate) fn traversingexpHasInitial(mut exp: Arc<DAE::Exp>, mut found: bool) -> (Arc<DAE::Exp>, bool, bool) {
     let mut exp: Arc<DAE::Exp> = exp;
     let mut cont: bool;
     let mut found: bool = found;
@@ -6760,7 +6760,7 @@ pub fn expHasCref(mut inExp: Arc<DAE::Exp>, mut inCr: Arc<DAE::ComponentRef>) ->
     Ok(hasCref)
 }
 
-pub fn traversingexpHasCref(mut inExp: Arc<DAE::Exp>, mut inTpl: (Arc<DAE::ComponentRef>, bool)) -> (Arc<DAE::Exp>, bool, (Arc<DAE::ComponentRef>, bool)) {
+pub(crate) fn traversingexpHasCref(mut inExp: Arc<DAE::Exp>, mut inTpl: (Arc<DAE::ComponentRef>, bool)) -> (Arc<DAE::Exp>, bool, (Arc<DAE::ComponentRef>, bool)) {
     let mut outExp: Arc<DAE::Exp>;
     let mut cont: bool;
     let mut outTpl: (Arc<DAE::ComponentRef>, bool);
@@ -6797,7 +6797,7 @@ pub fn traversingexpHasCref(mut inExp: Arc<DAE::Exp>, mut inTpl: (Arc<DAE::Compo
     (outExp, cont, outTpl)
 }
 
-pub fn expHasCrefName(mut inExp: Arc<DAE::Exp>, mut name: ArcStr) -> Result<bool> {
+pub(crate) fn expHasCrefName(mut inExp: Arc<DAE::Exp>, mut name: ArcStr) -> Result<bool> {
     let mut hasCref: bool;
     let (_, (_, __pa0)) = traverseExpTopDown(inExp.clone(), (std::sync::Arc::new(traversingexpHasName) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (ArcStr, bool)) -> Result<(Arc<DAE::Exp>, bool, (ArcStr, bool))> + 'static>), (name.clone(), false))?;
     hasCref = __pa0.clone();
@@ -6810,7 +6810,7 @@ pub fn anyExpHasCrefName(mut inExps: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut
     Ok(hasCref)
 }
 
-pub fn traversingexpHasName(mut inExp: Arc<DAE::Exp>, mut inTpl: (ArcStr, bool)) -> Result<(Arc<DAE::Exp>, bool, (ArcStr, bool))> {
+pub(crate) fn traversingexpHasName(mut inExp: Arc<DAE::Exp>, mut inTpl: (ArcStr, bool)) -> Result<(Arc<DAE::Exp>, bool, (ArcStr, bool))> {
     let mut outExp: Arc<DAE::Exp>;
     let mut cont: bool;
     let mut outTpl: (ArcStr, bool);
@@ -6835,7 +6835,7 @@ pub fn expHasDerCref(mut inExp: Arc<DAE::Exp>, mut inCr: Arc<DAE::ComponentRef>)
     Ok(hasCref)
 }
 
-pub fn traversingexpHasDerCref(mut inExp: Arc<DAE::Exp>, mut inTpl: (Arc<DAE::ComponentRef>, bool)) -> (Arc<DAE::Exp>, bool, (Arc<DAE::ComponentRef>, bool)) {
+pub(crate) fn traversingexpHasDerCref(mut inExp: Arc<DAE::Exp>, mut inTpl: (Arc<DAE::ComponentRef>, bool)) -> (Arc<DAE::Exp>, bool, (Arc<DAE::ComponentRef>, bool)) {
     let mut outExp: Arc<DAE::Exp>;
     let mut cont: bool;
     let mut outTpl: (Arc<DAE::ComponentRef>, bool);
@@ -6880,7 +6880,7 @@ pub fn expHasDer(mut inExp: Arc<DAE::Exp>) -> Result<bool> {
     Ok(hasCref)
 }
 
-pub fn traversingexpHasDer(mut inExp: Arc<DAE::Exp>, mut inTpl: bool) -> Result<(Arc<DAE::Exp>, bool, bool)> {
+pub(crate) fn traversingexpHasDer(mut inExp: Arc<DAE::Exp>, mut inTpl: bool) -> Result<(Arc<DAE::Exp>, bool, bool)> {
     let mut outExp: Arc<DAE::Exp>;
     let mut cont: bool;
     let mut outTpl: bool;
@@ -6950,7 +6950,7 @@ pub fn expHasCrefNoPreorDer(mut inExp: Arc<DAE::Exp>, mut inCr: Arc<DAE::Compone
     Ok(hasCref)
 }
 
-pub fn traversingexpHasCrefNoPreorDer(mut inExp: Arc<DAE::Exp>, mut inTpl: (Arc<DAE::ComponentRef>, bool)) -> Result<(Arc<DAE::Exp>, bool, (Arc<DAE::ComponentRef>, bool))> {
+pub(crate) fn traversingexpHasCrefNoPreorDer(mut inExp: Arc<DAE::Exp>, mut inTpl: (Arc<DAE::ComponentRef>, bool)) -> Result<(Arc<DAE::Exp>, bool, (Arc<DAE::ComponentRef>, bool))> {
     let mut outExp: Arc<DAE::Exp>;
     let mut cont: bool;
     let mut outTpl: (Arc<DAE::ComponentRef>, bool);
@@ -7037,7 +7037,7 @@ pub fn expHasCrefInIf(mut inExp: Arc<DAE::Exp>, mut inCr: Arc<DAE::ComponentRef>
     Ok(hasCref)
 }
 
-pub fn expHasCrefInIfWork(mut inExp: Arc<DAE::Exp>, mut inTpl: (Arc<DAE::ComponentRef>, bool)) -> Result<(Arc<DAE::Exp>, bool, (Arc<DAE::ComponentRef>, bool))> {
+pub(crate) fn expHasCrefInIfWork(mut inExp: Arc<DAE::Exp>, mut inTpl: (Arc<DAE::ComponentRef>, bool)) -> Result<(Arc<DAE::Exp>, bool, (Arc<DAE::ComponentRef>, bool))> {
     let mut outExp: Arc<DAE::Exp>;
     let mut cont: bool;
     let mut outTpl: (Arc<DAE::ComponentRef>, bool);
@@ -7134,7 +7134,7 @@ fn traversingCrefFinder<Type_a: Clone + 'static + metamodelica::gc::MMTrace + me
     (outExp, outTpl)
 }
 
-pub fn extractDivExpFromExp(mut inExp: Arc<DAE::Exp>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> {
+pub(crate) fn extractDivExpFromExp(mut inExp: Arc<DAE::Exp>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> {
     let mut outExps: Arc<metamodelica::List<Arc<DAE::Exp>>>;
     (_, outExps) = traverseExpBottomUp(inExp.clone(), (std::sync::Arc::new(fnptr!(traversingDivExpFinder, Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Exp>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Exp>>>)> + 'static>), metamodelica::nil())?;
     Ok(outExps)
@@ -7164,7 +7164,7 @@ fn traversingDivExpFinder(mut e: Arc<DAE::Exp>, mut exps: Arc<metamodelica::List
     (outExp, acc)
 }
 
-pub fn traverseExpListBidir<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inExpl: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inEnterFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>, mut inExitFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> Result<(Arc<metamodelica::List<Arc<DAE::Exp>>>, ArgT)> {
+pub(crate) fn traverseExpListBidir<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inExpl: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inEnterFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>, mut inExitFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> Result<(Arc<metamodelica::List<Arc<DAE::Exp>>>, ArgT)> {
     pub type FuncType<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>;
 
     let mut outExpl: Arc<metamodelica::List<Arc<DAE::Exp>>>;
@@ -7209,7 +7209,7 @@ pub fn traverseExpBidir<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut i
     Ok((outExp, outArg))
 }
 
-pub fn traverseExpOptBidir<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inExp: Option<Arc<DAE::Exp>>, mut inEnterFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>, mut inExitFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> Result<(Option<Arc<DAE::Exp>>, ArgT)> {
+pub(crate) fn traverseExpOptBidir<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inExp: Option<Arc<DAE::Exp>>, mut inEnterFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>, mut inExitFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> Result<(Option<Arc<DAE::Exp>>, ArgT)> {
     pub type FuncType<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Exp, ArgT) -> Result<Exp> + 'static>;
 
     let mut outExp: Option<Arc<DAE::Exp>>;
@@ -7481,7 +7481,7 @@ fn traverseExpBidirSubExps<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mu
     Ok((outExp, outArg))
 }
 
-pub fn traverseExpBidirCref<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inCref: Arc<DAE::ComponentRef>, mut inEnterFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>, mut inExitFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> Result<(Arc<DAE::ComponentRef>, ArgT)> {
+pub(crate) fn traverseExpBidirCref<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut inCref: Arc<DAE::ComponentRef>, mut inEnterFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>, mut inExitFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> Result<(Arc<DAE::ComponentRef>, ArgT)> {
     pub type FuncType<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<(Arc<DAE::Exp>, ArgT)> + 'static>;
 
     let mut outCref: Arc<DAE::ComponentRef>;
@@ -7509,7 +7509,7 @@ pub fn traverseExpBidirCref<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(m
     Ok((outCref, outArg))
 }
 
-pub fn traverseExpCref<Type_a: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut inCref: Arc<DAE::ComponentRef>, mut rel: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut iarg: Type_a) -> Result<(Arc<DAE::ComponentRef>, Type_a)> {
+pub(crate) fn traverseExpCref<Type_a: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut inCref: Arc<DAE::ComponentRef>, mut rel: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut iarg: Type_a) -> Result<(Arc<DAE::ComponentRef>, Type_a)> {
     pub type FuncType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>;
 
     let mut outCref: Arc<DAE::ComponentRef>;
@@ -7962,7 +7962,7 @@ pub fn isNegativeOrZero(mut inExp: Arc<DAE::Exp>) -> Result<bool> {
     }
 }
 
-pub fn isPositive(mut inExp: Arc<DAE::Exp>) -> Result<bool> {
+pub(crate) fn isPositive(mut inExp: Arc<DAE::Exp>) -> Result<bool> {
     '__tco: loop {
         ::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ DAE::Exp::ICONST { integer: i } => {
@@ -8018,7 +8018,7 @@ pub fn isPositive(mut inExp: Arc<DAE::Exp>) -> Result<bool> {
     }
 }
 
-pub fn isNegative(mut inExp: Arc<DAE::Exp>) -> Result<bool> {
+pub(crate) fn isNegative(mut inExp: Arc<DAE::Exp>) -> Result<bool> {
     '__tco: loop {
         ::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ DAE::Exp::ICONST { integer: i } => {
@@ -8508,7 +8508,7 @@ pub fn isRelation(mut inExp: Arc<DAE::Exp>) -> bool {
     outBoolean
 }
 
-pub fn isEventTriggeringFunctionExp(mut inExp: Arc<DAE::Exp>) -> bool {
+pub(crate) fn isEventTriggeringFunctionExp(mut inExp: Arc<DAE::Exp>) -> bool {
     let mut outB: bool;
     outB = (::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "div" }, .. } => true,
@@ -8539,7 +8539,7 @@ pub fn isAdd(mut op: DAE::Operator) -> bool {
     res
 }
 
-pub fn isSub(mut op: DAE::Operator) -> bool {
+pub(crate) fn isSub(mut op: DAE::Operator) -> bool {
     let mut res: bool;
     res = (match op.clone() {
         DAE::Operator::SUB { .. } => true,
@@ -8549,7 +8549,7 @@ pub fn isSub(mut op: DAE::Operator) -> bool {
     res
 }
 
-pub fn isAddOrSubBinary(mut iExp: Arc<DAE::Exp>) -> bool {
+pub(crate) fn isAddOrSubBinary(mut iExp: Arc<DAE::Exp>) -> bool {
     let mut res: bool;
     let mut op: DAE::Operator = <DAE::Operator as ::std::default::Default>::default();
     res = (::match_deref::match_deref! { match &(iExp.clone()) {
@@ -8568,7 +8568,7 @@ pub fn isMulOrDiv(mut op: DAE::Operator) -> bool {
     res
 }
 
-pub fn isMul(mut op: DAE::Operator) -> bool {
+pub(crate) fn isMul(mut op: DAE::Operator) -> bool {
     let mut res: bool;
     res = (match op.clone() {
         DAE::Operator::MUL { .. } => true,
@@ -8602,7 +8602,7 @@ pub fn isDivBinary(mut iExp: Arc<DAE::Exp>) -> bool {
     res
 }
 
-pub fn isMulorDivBinary(mut iExp: Arc<DAE::Exp>) -> bool {
+pub(crate) fn isMulorDivBinary(mut iExp: Arc<DAE::Exp>) -> bool {
     let mut res: bool;
     let mut op: DAE::Operator = <DAE::Operator as ::std::default::Default>::default();
     res = (::match_deref::match_deref! { match &(iExp.clone()) {
@@ -8625,7 +8625,7 @@ pub fn isPow(mut op: DAE::Operator) -> bool {
     res
 }
 
-pub fn isFunCall(mut iExp: Arc<DAE::Exp>, mut name: ArcStr) -> bool {
+pub(crate) fn isFunCall(mut iExp: Arc<DAE::Exp>, mut name: ArcStr) -> bool {
     let mut res: bool;
     res = (::match_deref::match_deref! { match &(iExp.clone()) {
         Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: name_ }, .. } => {
@@ -8767,7 +8767,7 @@ pub fn typeBuiltin(mut inType: Arc<DAE::Type>) -> bool {
     outBoolean
 }
 
-pub fn isWholeDim(mut s: Arc<DAE::Subscript>) -> bool {
+pub(crate) fn isWholeDim(mut s: Arc<DAE::Subscript>) -> bool {
     let mut b: bool;
     b = (::match_deref::match_deref! { match &(s.clone()) {
         Deref @ DAE::Subscript::WHOLEDIM { .. } => true,
@@ -8777,7 +8777,7 @@ pub fn isWholeDim(mut s: Arc<DAE::Subscript>) -> bool {
     b
 }
 
-pub fn isInt(mut it: Arc<DAE::Type>) -> bool {
+pub(crate) fn isInt(mut it: Arc<DAE::Type>) -> bool {
     '__tco: loop {
         ::match_deref::match_deref! { match &(it.clone()) {
         Deref @ DAE::Type::T_INTEGER { .. } => {
@@ -8794,7 +8794,7 @@ pub fn isInt(mut it: Arc<DAE::Type>) -> bool {
     }
 }
 
-pub fn isReal(mut it: Arc<DAE::Type>) -> bool {
+pub(crate) fn isReal(mut it: Arc<DAE::Type>) -> bool {
     '__tco: loop {
         ::match_deref::match_deref! { match &(it.clone()) {
         Deref @ DAE::Type::T_REAL { .. } => {
@@ -8811,13 +8811,13 @@ pub fn isReal(mut it: Arc<DAE::Type>) -> bool {
     }
 }
 
-pub fn isExpReal(mut e: Arc<DAE::Exp>) -> Result<bool> {
+pub(crate) fn isExpReal(mut e: Arc<DAE::Exp>) -> Result<bool> {
     let mut re: bool;
     re = isReal(r#typeof(e.clone())?);
     Ok(re)
 }
 
-pub fn isConstZeroLength(mut inExp: Arc<DAE::Exp>) -> bool {
+pub(crate) fn isConstZeroLength(mut inExp: Arc<DAE::Exp>) -> bool {
     let mut outBoolean: bool;
     outBoolean = (::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ DAE::Exp::ARRAY { array: Deref @ metamodelica::List::Nil, .. } => true,
@@ -8882,7 +8882,7 @@ pub fn isConstMinusOne(mut inExp: Arc<DAE::Exp>) -> bool {
     outBoolean
 }
 
-pub fn isGreatereqOrLesseq(mut op: DAE::Operator) -> bool {
+pub(crate) fn isGreatereqOrLesseq(mut op: DAE::Operator) -> bool {
     let mut b: bool;
     b = (match op.clone() {
         DAE::Operator::GREATEREQ { .. } => true,
@@ -8892,7 +8892,7 @@ pub fn isGreatereqOrLesseq(mut op: DAE::Operator) -> bool {
     b
 }
 
-pub fn isLesseqOrLess(mut op: DAE::Operator) -> bool {
+pub(crate) fn isLesseqOrLess(mut op: DAE::Operator) -> bool {
     let mut b: bool;
     b = (match op.clone() {
         DAE::Operator::LESS { .. } => true,
@@ -9093,7 +9093,7 @@ pub fn containFunctioncall(mut inExp: Arc<DAE::Exp>) -> Result<bool> {
     }
 }
 
-pub fn expIntOrder(mut expectedValue: i32, mut integers: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> bool {
+pub(crate) fn expIntOrder(mut expectedValue: i32, mut integers: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> bool {
     '__tco: loop {
         ::match_deref::match_deref! { match &((expectedValue.clone(), integers.clone())) {
         (_, Deref @ metamodelica::List::Nil) => {
@@ -9138,7 +9138,7 @@ pub fn isMatrix(mut inExp: Arc<DAE::Exp>) -> bool {
     outB
 }
 
-pub fn isVector(mut inExp: Arc<DAE::Exp>) -> bool {
+pub(crate) fn isVector(mut inExp: Arc<DAE::Exp>) -> bool {
     let mut outIsVector: bool;
     outIsVector = (::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ DAE::Exp::ARRAY { ty: Deref @ DAE::Type::T_ARRAY { ty: Deref @ DAE::Type::T_ARRAY { .. }, .. }, .. } => false,
@@ -9149,7 +9149,7 @@ pub fn isVector(mut inExp: Arc<DAE::Exp>) -> bool {
     outIsVector
 }
 
-pub fn isUnary(mut inExp: Arc<DAE::Exp>) -> bool {
+pub(crate) fn isUnary(mut inExp: Arc<DAE::Exp>) -> bool {
     let mut outB: bool;
     outB = (::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ DAE::Exp::UNARY { .. } => true,
@@ -9219,7 +9219,7 @@ pub fn isTSUB(mut inExp: Arc<DAE::Exp>) -> bool {
     outIsCall
 }
 
-pub fn isPureCall(mut inExp: Arc<DAE::Exp>) -> Result<bool> {
+pub(crate) fn isPureCall(mut inExp: Arc<DAE::Exp>) -> Result<bool> {
     let mut outIsPureCall: bool;
     outIsPureCall = isCall(inExp.clone()) && !(isImpure(inExp.clone())?);
     Ok(outIsPureCall)
@@ -9251,7 +9251,7 @@ pub fn isRecordCall(mut inExp: Arc<DAE::Exp>, mut funcsIn: Arc<AvlTreePathFuncti
     Ok(outIsCall)
 }
 
-pub fn isNotCref(mut inExp: Arc<DAE::Exp>) -> bool {
+pub(crate) fn isNotCref(mut inExp: Arc<DAE::Exp>) -> bool {
     let mut outIsCref: bool;
     outIsCref = (::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ DAE::Exp::CREF { .. } => false,
@@ -9261,7 +9261,7 @@ pub fn isNotCref(mut inExp: Arc<DAE::Exp>) -> bool {
     outIsCref
 }
 
-pub fn isCrefArray(mut inExp: Arc<DAE::Exp>) -> bool {
+pub(crate) fn isCrefArray(mut inExp: Arc<DAE::Exp>) -> bool {
     let mut outIsArray: bool;
     outIsArray = (::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ DAE::Exp::CREF { ty: Deref @ DAE::Type::T_ARRAY { .. }, .. } => true,
@@ -9271,7 +9271,7 @@ pub fn isCrefArray(mut inExp: Arc<DAE::Exp>) -> bool {
     outIsArray
 }
 
-pub fn isCrefScalar(mut inExp: Arc<DAE::Exp>) -> bool {
+pub(crate) fn isCrefScalar(mut inExp: Arc<DAE::Exp>) -> bool {
     let mut isScalar: bool;
     isScalar = 'mc: {
         let __mc_input = inExp.clone();
@@ -9342,7 +9342,7 @@ pub fn isScalarConst(mut inExp: Arc<DAE::Exp>) -> bool {
     outIsScalar
 }
 
-pub fn isEven(mut e: Arc<DAE::Exp>) -> bool {
+pub(crate) fn isEven(mut e: Arc<DAE::Exp>) -> bool {
     '__tco: loop {
         ::match_deref::match_deref! { match &(e.clone()) {
         Deref @ DAE::Exp::ICONST { integer: i } => {
@@ -9362,7 +9362,7 @@ pub fn isEven(mut e: Arc<DAE::Exp>) -> bool {
     }
 }
 
-pub fn isOdd(mut e: Arc<DAE::Exp>) -> bool {
+pub(crate) fn isOdd(mut e: Arc<DAE::Exp>) -> bool {
     '__tco: loop {
         ::match_deref::match_deref! { match &(e.clone()) {
         Deref @ DAE::Exp::ICONST { integer: i } => {
@@ -9382,7 +9382,7 @@ pub fn isOdd(mut e: Arc<DAE::Exp>) -> bool {
     }
 }
 
-pub fn isIntegerOrReal(mut tp: Arc<DAE::Type>) -> bool {
+pub(crate) fn isIntegerOrReal(mut tp: Arc<DAE::Type>) -> bool {
     let mut res: bool;
     res = (::match_deref::match_deref! { match &(tp.clone()) {
         Deref @ DAE::Type::T_REAL { .. } => true,
@@ -9393,7 +9393,7 @@ pub fn isIntegerOrReal(mut tp: Arc<DAE::Type>) -> bool {
     res
 }
 
-pub fn expStructuralEqual(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>) -> Result<bool> {
+pub(crate) fn expStructuralEqual(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>) -> Result<bool> {
     '__tco: loop {
         ::match_deref::match_deref! { match &((inExp1.clone(), inExp2.clone())) {
         (Deref @ DAE::Exp::ICONST { integer: i1 }, Deref @ DAE::Exp::ICONST { integer: i2 }) => {
@@ -9591,7 +9591,7 @@ pub fn expStructuralEqual(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>) 
     }
 }
 
-pub fn expStructuralEqualList(mut inExp1: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inExp2: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<bool> {
+pub(crate) fn expStructuralEqualList(mut inExp1: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inExp2: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<bool> {
     '__tco: loop {
         ::match_deref::match_deref! { match &((inExp1.clone(), inExp2.clone())) {
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => {
@@ -9625,7 +9625,7 @@ fn expStructuralEqualListLst(mut inExp1: Arc<metamodelica::List<Arc<metamodelica
     }
 }
 
-pub fn expContainsList(mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut exp: Arc<DAE::Exp>) -> Result<bool> {
+pub(crate) fn expContainsList(mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut exp: Arc<DAE::Exp>) -> Result<bool> {
     let mut contains: bool = List::any(expl.clone(), (std::sync::Arc::new({ let __pe_b1 = exp.clone(); move |__pe_a0| expContains(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>))?;
     Ok(contains)
 }
@@ -9912,7 +9912,7 @@ pub fn expContains(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>) -> Resu
     Ok(outBoolean)
 }
 
-pub fn containsExp(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>) -> Result<bool> {
+pub(crate) fn containsExp(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>) -> Result<bool> {
     let mut outBoolean: bool;
     outBoolean = expContains(inExp2.clone(), inExp1.clone())?;
     Ok(outBoolean)
@@ -9928,7 +9928,7 @@ pub fn isExpCref(mut e: Arc<DAE::Exp>) -> bool {
     res
 }
 
-pub fn isExpCrefOrIfExp(mut e: Arc<DAE::Exp>) -> bool {
+pub(crate) fn isExpCrefOrIfExp(mut e: Arc<DAE::Exp>) -> bool {
     let mut res: bool;
     res = (::match_deref::match_deref! { match &(e.clone()) {
         Deref @ DAE::Exp::CREF { componentRef: _, ty: _ } => true,
@@ -9939,7 +9939,7 @@ pub fn isExpCrefOrIfExp(mut e: Arc<DAE::Exp>) -> bool {
     res
 }
 
-pub fn isExpIfExp(mut e: Arc<DAE::Exp>) -> bool {
+pub(crate) fn isExpIfExp(mut e: Arc<DAE::Exp>) -> bool {
     let mut res: bool;
     res = (::match_deref::match_deref! { match &(e.clone()) {
         Deref @ DAE::Exp::IFEXP { .. } => true,
@@ -10009,7 +10009,7 @@ pub fn isRecordType(mut inType: Arc<DAE::Type>) -> bool {
     b
 }
 
-pub fn isNotComplex(mut e: Arc<DAE::Exp>) -> bool {
+pub(crate) fn isNotComplex(mut e: Arc<DAE::Exp>) -> bool {
     '__tco: loop {
         ::match_deref::match_deref! { match &(e.clone()) {
         Deref @ DAE::Exp::CALL { .. } => {
@@ -10085,7 +10085,7 @@ pub fn dimsEqual(mut dims1: Arc<metamodelica::List<Arc<DAE::Dimension>>>, mut di
     }
 }
 
-pub fn dimsEqualAllowZero(mut dims1: Arc<metamodelica::List<Arc<DAE::Dimension>>>, mut dims2: Arc<metamodelica::List<Arc<DAE::Dimension>>>) -> Result<bool> {
+pub(crate) fn dimsEqualAllowZero(mut dims1: Arc<metamodelica::List<Arc<DAE::Dimension>>>, mut dims2: Arc<metamodelica::List<Arc<DAE::Dimension>>>) -> Result<bool> {
     '__tco: loop {
         ::match_deref::match_deref! { match &((dims1.clone(), dims2.clone())) {
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => {
@@ -10102,7 +10102,7 @@ pub fn dimsEqualAllowZero(mut dims1: Arc<metamodelica::List<Arc<DAE::Dimension>>
     }
 }
 
-pub fn dimensionsEqualAllowZero(mut dim1: Arc<DAE::Dimension>, mut dim2: Arc<DAE::Dimension>) -> Result<bool> {
+pub(crate) fn dimensionsEqualAllowZero(mut dim1: Arc<DAE::Dimension>, mut dim2: Arc<DAE::Dimension>) -> Result<bool> {
     let mut res: bool;
     res = (::match_deref::match_deref! { match &((dim1.clone(), dim2.clone())) {
         (Deref @ DAE::Dimension::DIM_UNKNOWN { .. }, _) => {
@@ -10156,7 +10156,7 @@ pub fn dimensionKnown(mut dim: Arc<DAE::Dimension>) -> bool {
     known
 }
 
-pub fn dimensionKnownAndNonZero(mut dim: Arc<DAE::Dimension>) -> bool {
+pub(crate) fn dimensionKnownAndNonZero(mut dim: Arc<DAE::Dimension>) -> bool {
     let mut known: bool;
     known = (::match_deref::match_deref! { match &(dim.clone()) {
         Deref @ DAE::Dimension::DIM_EXP { exp: Deref @ DAE::Exp::ICONST { integer: 0 } } => false,
@@ -10184,7 +10184,7 @@ pub fn dimensionUnknownOrExp(mut dim: Arc<DAE::Dimension>) -> bool {
     known
 }
 
-pub fn dimensionUnknown(mut inDimension: Arc<DAE::Dimension>) -> bool {
+pub(crate) fn dimensionUnknown(mut inDimension: Arc<DAE::Dimension>) -> bool {
     let mut outUnknown: bool;
     outUnknown = (::match_deref::match_deref! { match &(inDimension.clone()) {
         Deref @ DAE::Dimension::DIM_UNKNOWN { .. } => true,
@@ -10200,7 +10200,7 @@ pub fn hasUnknownDims(mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>) ->
     Ok(hasUnkown)
 }
 
-pub fn subscriptConstant(mut sub: Arc<DAE::Subscript>) -> bool {
+pub(crate) fn subscriptConstant(mut sub: Arc<DAE::Subscript>) -> bool {
     let mut b: bool;
     b = (::match_deref::match_deref! { match &(sub.clone()) {
         Deref @ DAE::Subscript::INDEX { exp: Deref @ DAE::Exp::ICONST { .. } } => true,
@@ -10212,7 +10212,7 @@ pub fn subscriptConstant(mut sub: Arc<DAE::Subscript>) -> bool {
     b
 }
 
-pub fn subscriptConstants(mut inSubs: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> bool {
+pub(crate) fn subscriptConstants(mut inSubs: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> bool {
     let mut areConstant: bool = true;
     for mut sub in &*inSubs.clone() {
         let mut sub = sub.clone();
@@ -10236,7 +10236,7 @@ pub fn isValidSubscript(mut inSub: Arc<DAE::Exp>) -> bool {
     isValid
 }
 
-pub fn subscriptContain(mut issl1: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut issl2: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<bool> {
+pub(crate) fn subscriptContain(mut issl1: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut issl2: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<bool> {
     '__tco: loop {
         ::match_deref::match_deref! { match &((issl1.clone(), issl2.clone())) {
         (Deref @ metamodelica::List::Nil, _) => {
@@ -10303,7 +10303,7 @@ pub fn hasNoSideEffects(mut inExp: Arc<DAE::Exp>, mut ib: bool) -> (Arc<DAE::Exp
     (outExp, ob)
 }
 
-pub fn isBuiltinFunctionReference(mut exp: Arc<DAE::Exp>) -> bool {
+pub(crate) fn isBuiltinFunctionReference(mut exp: Arc<DAE::Exp>) -> bool {
     let mut b: bool;
     b = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ DAE::Exp::CREF { ty: Deref @ DAE::Type::T_FUNCTION_REFERENCE_FUNC { builtin: true, .. }, .. } => true,
@@ -10313,7 +10313,7 @@ pub fn isBuiltinFunctionReference(mut exp: Arc<DAE::Exp>) -> bool {
     b
 }
 
-pub fn makeCons(mut car: Arc<DAE::Exp>, mut cdr: Arc<DAE::Exp>) -> Arc<DAE::Exp> {
+pub(crate) fn makeCons(mut car: Arc<DAE::Exp>, mut cdr: Arc<DAE::Exp>) -> Arc<DAE::Exp> {
     let mut exp: Arc<DAE::Exp>;
     exp = Arc::new(DAE::Exp::CONS { car: car.clone(), cdr: cdr.clone() });
     exp
@@ -10490,7 +10490,7 @@ pub const complexityVeryBig: i32 = 500000;
 
 pub const complexityDimLarge: i32 = 1000;
 
-pub fn complexity(mut exp: Arc<DAE::Exp>) -> Result<i32> {
+pub(crate) fn complexity(mut exp: Arc<DAE::Exp>) -> Result<i32> {
     let mut i: i32;
     i = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ DAE::Exp::ICONST { .. } => {
@@ -10731,7 +10731,7 @@ fn tpComplexity(mut tp: Arc<DAE::Type>) -> Result<i32> {
     Ok(i)
 }
 
-pub fn dimComplexity(mut dim: Arc<DAE::Dimension>) -> i32 {
+pub(crate) fn dimComplexity(mut dim: Arc<DAE::Dimension>) -> i32 {
     let mut i: i32 = 0;
     i = (::match_deref::match_deref! { match &(dim.clone()) {
         Deref @ DAE::Dimension::DIM_INTEGER { integer: __esc_i } => {
@@ -10954,7 +10954,7 @@ fn splitRecord2(mut var: Arc<DAE::Var>, mut cr: Arc<DAE::ComponentRef>) -> Resul
     Ok(exp)
 }
 
-pub fn splitArray(mut inExp: Arc<DAE::Exp>) -> Result<(Arc<metamodelica::List<Arc<DAE::Exp>>>, bool)> {
+pub(crate) fn splitArray(mut inExp: Arc<DAE::Exp>) -> Result<(Arc<metamodelica::List<Arc<DAE::Exp>>>, bool)> {
     let mut outExp: Arc<metamodelica::List<Arc<DAE::Exp>>>;
     let mut didSplit: bool;
     (outExp, didSplit) = (::match_deref::match_deref! { match &(inExp.clone()) {
@@ -10990,7 +10990,7 @@ pub fn splitArray(mut inExp: Arc<DAE::Exp>) -> Result<(Arc<metamodelica::List<Ar
     Ok((outExp, didSplit))
 }
 
-pub fn equationExpEqual(mut exp1: Arc<DAE::EquationExp>, mut exp2: Arc<DAE::EquationExp>) -> Result<bool> {
+pub(crate) fn equationExpEqual(mut exp1: Arc<DAE::EquationExp>, mut exp2: Arc<DAE::EquationExp>) -> Result<bool> {
     let mut b: bool;
     b = (::match_deref::match_deref! { match &((exp1.clone(), exp2.clone())) {
         (Deref @ DAE::EquationExp::PARTIAL_EQUATION { exp: e1 }, Deref @ DAE::EquationExp::PARTIAL_EQUATION { exp: e2 }) => {
@@ -11121,7 +11121,7 @@ pub fn matrixToArray(mut inMatrix: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
     Ok(outArray)
 }
 
-pub fn transposeArray(mut inArray: Arc<DAE::Exp>) -> Result<(Arc<DAE::Exp>, bool)> {
+pub(crate) fn transposeArray(mut inArray: Arc<DAE::Exp>) -> Result<(Arc<DAE::Exp>, bool)> {
     let mut outArray: Arc<DAE::Exp>;
     let mut outWasTransposed: bool;
     (outArray, outWasTransposed) = (::match_deref::match_deref! { match &(inArray.clone()) {
@@ -11362,7 +11362,7 @@ pub fn fromAbsynExp(mut inAExp: Arc<Absyn::Exp>) -> Result<Arc<DAE::Exp>> {
     Ok(outDExp)
 }
 
-pub fn fargsToExps(mut inFargs: Arc<Absyn::FunctionArgs>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> {
+pub(crate) fn fargsToExps(mut inFargs: Arc<Absyn::FunctionArgs>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> {
     let mut outExps: Arc<metamodelica::List<Arc<DAE::Exp>>>;
     outExps = 'mc: {
         let __mc_input = inFargs.clone();
@@ -11445,7 +11445,7 @@ pub fn replaceDerOpInExpCond(mut e: Arc<DAE::Exp>, mut cr: Option<Arc<DAE::Compo
     Ok((outExp, outCr))
 }
 
-pub fn replaceDerOpInExpTraverser(mut e: Arc<DAE::Exp>, mut optCr: Option<Arc<DAE::ComponentRef>>) -> (Arc<DAE::Exp>, Option<Arc<DAE::ComponentRef>>) {
+pub(crate) fn replaceDerOpInExpTraverser(mut e: Arc<DAE::Exp>, mut optCr: Option<Arc<DAE::ComponentRef>>) -> (Arc<DAE::Exp>, Option<Arc<DAE::ComponentRef>>) {
     let mut outExp: Arc<DAE::Exp>;
     let mut outCr: Option<Arc<DAE::ComponentRef>>;
     (outExp, outCr) = 'mc: {
@@ -11494,7 +11494,7 @@ pub fn makeBinaryExp(mut inLhs: Arc<DAE::Exp>, mut inOp: DAE::Operator, mut inRh
     outExp
 }
 
-pub fn checkExpDimensionSizes(mut dim: Arc<DAE::Exp>) -> bool {
+pub(crate) fn checkExpDimensionSizes(mut dim: Arc<DAE::Exp>) -> bool {
     let mut value: bool;
     value = (::match_deref::match_deref! { match &(dim.clone()) {
         Deref @ DAE::Exp::ICONST { .. } => var_field!((*dim).integer, DAE::Exp::ICONST).clone() > 0,
@@ -11504,7 +11504,7 @@ pub fn checkExpDimensionSizes(mut dim: Arc<DAE::Exp>) -> bool {
     value
 }
 
-pub fn checkDimensionSizes(mut dim: Arc<DAE::Dimension>) -> Result<bool> {
+pub(crate) fn checkDimensionSizes(mut dim: Arc<DAE::Dimension>) -> Result<bool> {
     let mut value: bool;
     value = (::match_deref::match_deref! { match &(dim.clone()) {
         Deref @ DAE::Dimension::DIM_INTEGER { .. } => true,
@@ -11637,7 +11637,7 @@ pub fn isCrefListWithEqualIdents(mut iExpressions: Arc<metamodelica::List<Arc<DA
     oCrefWithEqualIdents
 }
 
-pub fn renameExpCrefIdent(mut inExp: Arc<DAE::Exp>, mut inTpl: (ArcStr, ArcStr)) -> (Arc<DAE::Exp>, (ArcStr, ArcStr)) {
+pub(crate) fn renameExpCrefIdent(mut inExp: Arc<DAE::Exp>, mut inTpl: (ArcStr, ArcStr)) -> (Arc<DAE::Exp>, (ArcStr, ArcStr)) {
     let mut outExp: Arc<DAE::Exp>;
     let mut outTpl: (ArcStr, ArcStr);
     (outExp, outTpl) = (::match_deref::match_deref! { match &((inExp.clone(), inTpl.clone())) {
@@ -11662,7 +11662,7 @@ pub fn emptyToWild(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
     Ok(outExp)
 }
 
-pub fn makeVectorCall(mut exp: Arc<DAE::Exp>, mut tp: Arc<DAE::Type>) -> Arc<DAE::Exp> {
+pub(crate) fn makeVectorCall(mut exp: Arc<DAE::Exp>, mut tp: Arc<DAE::Type>) -> Arc<DAE::Exp> {
     let mut outExp: Arc<DAE::Exp>;
     outExp = makePureBuiltinCall((literal!("vector")).clone(), list![exp.clone()], tp.clone());
     outExp
@@ -11862,7 +11862,7 @@ pub fn rangesToSubscripts(mut inRangelist: Arc<metamodelica::List<Arc<metamodeli
     Ok(outSubslst)
 }
 
-pub fn expandSubscript(mut inSubscript: Arc<DAE::Subscript>, mut inDimension: Arc<DAE::Dimension>) -> Result<Arc<metamodelica::List<Arc<DAE::Subscript>>>> {
+pub(crate) fn expandSubscript(mut inSubscript: Arc<DAE::Subscript>, mut inDimension: Arc<DAE::Dimension>) -> Result<Arc<metamodelica::List<Arc<DAE::Subscript>>>> {
     let mut outSubscripts: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
     outSubscripts = (::match_deref::match_deref! { match &(inSubscript.clone()) {
         Deref @ DAE::Subscript::INDEX { exp: Deref @ DAE::Exp::RANGE { .. } } => {
@@ -11892,7 +11892,7 @@ pub fn expandSubscript(mut inSubscript: Arc<DAE::Subscript>, mut inDimension: Ar
     Ok(outSubscripts)
 }
 
-pub fn expandDimension(mut inDimension: Arc<DAE::Dimension>) -> Result<Arc<metamodelica::List<Arc<DAE::Subscript>>>> {
+pub(crate) fn expandDimension(mut inDimension: Arc<DAE::Dimension>) -> Result<Arc<metamodelica::List<Arc<DAE::Subscript>>>> {
     let mut outSubscript: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
     outSubscript = (::match_deref::match_deref! { match &(inDimension.clone()) {
         Deref @ DAE::Dimension::DIM_INTEGER { integer: dim_int } => {
@@ -11914,7 +11914,7 @@ pub fn expandDimension(mut inDimension: Arc<DAE::Dimension>) -> Result<Arc<metam
     Ok(outSubscript)
 }
 
-pub fn expandSliceExp(mut inSliceExp: Arc<DAE::Exp>) -> Result<Arc<metamodelica::List<Arc<DAE::Subscript>>>> {
+pub(crate) fn expandSliceExp(mut inSliceExp: Arc<DAE::Exp>) -> Result<Arc<metamodelica::List<Arc<DAE::Subscript>>>> {
     let mut outSubscripts: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
     outSubscripts = (::match_deref::match_deref! { match &(inSliceExp.clone()) {
         Deref @ DAE::Exp::ARRAY { array: expl, .. } => {
@@ -12408,14 +12408,14 @@ pub fn isAsubExp(mut expIn: Arc<DAE::Exp>) -> bool {
     isAsub
 }
 
-pub fn typeCast(mut inExp: Arc<DAE::Exp>, mut inType: Arc<DAE::Type>) -> Result<Arc<DAE::Exp>> {
+pub(crate) fn typeCast(mut inExp: Arc<DAE::Exp>, mut inType: Arc<DAE::Type>) -> Result<Arc<DAE::Exp>> {
     let mut outExp: Arc<DAE::Exp>;
     outExp = Arc::new(DAE::Exp::CAST { ty: inType.clone(), exp: inExp.clone() });
     (outExp, _) = ExpressionSimplify::simplify1(outExp.clone())?;
     Ok(outExp)
 }
 
-pub fn typeCastElements(mut inExp: Arc<DAE::Exp>, mut inType: Arc<DAE::Type>) -> Result<Arc<DAE::Exp>> {
+pub(crate) fn typeCastElements(mut inExp: Arc<DAE::Exp>, mut inType: Arc<DAE::Type>) -> Result<Arc<DAE::Exp>> {
     let mut outExp: Arc<DAE::Exp>;
     let mut ty: Arc<DAE::Type>;
     ty = r#typeof(inExp.clone())?;
@@ -12503,7 +12503,7 @@ pub fn expandRange(mut inRange: Arc<DAE::Exp>) -> Result<Arc<metamodelica::List<
     Ok(outValues)
 }
 
-pub fn isScalarSubscript(mut sub: Arc<DAE::Subscript>) -> Result<bool> {
+pub(crate) fn isScalarSubscript(mut sub: Arc<DAE::Subscript>) -> Result<bool> {
     let mut b: bool;
     b = (::match_deref::match_deref! { match &(sub.clone()) {
         Deref @ DAE::Subscript::SLICE { .. } => isScalar(var_field!((*sub).exp, DAE::Subscript::SLICE).clone())?,
@@ -12557,7 +12557,7 @@ fn containsAnyCall_traverser(mut inExp: Arc<DAE::Exp>, mut inContainsCall: bool)
     (outExp, outContinue, outContainsCall)
 }
 
-pub fn containsCallTo(mut inExp: Arc<DAE::Exp>, mut path: Arc<Absyn::Path>) -> Result<bool> {
+pub(crate) fn containsCallTo(mut inExp: Arc<DAE::Exp>, mut path: Arc<Absyn::Path>) -> Result<bool> {
     let mut outContainsCall: bool;
     let (_, (_, __pa0)) = traverseExpTopDown(inExp.clone(), (std::sync::Arc::new(fnptr!(containsCallTo_traverser, Arc<DAE::Exp>, (Arc<Absyn::Path>, bool))) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<Absyn::Path>, bool)) -> Result<(Arc<DAE::Exp>, bool, (Arc<Absyn::Path>, bool))> + 'static>), (path.clone(), false))?;
     outContainsCall = __pa0.clone();
@@ -12757,7 +12757,7 @@ pub fn traverseCases<A: Clone + 'static + metamodelica::gc::MMTrace + metamodeli
     Ok((outCases, oa))
 }
 
-pub fn traverseCasesTopDown<A: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut inCases: Arc<metamodelica::List<Arc<DAE::MatchCase>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, A) -> Result<(Arc<DAE::Exp>, bool, A)> + 'static>, mut inA: A) -> Result<(Arc<metamodelica::List<Arc<DAE::MatchCase>>>, A)> {
+pub(crate) fn traverseCasesTopDown<A: Clone + 'static + metamodelica::gc::MMTrace + metamodelica::ReferenceEq>(mut inCases: Arc<metamodelica::List<Arc<DAE::MatchCase>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, A) -> Result<(Arc<DAE::Exp>, bool, A)> + 'static>, mut inA: A) -> Result<(Arc<metamodelica::List<Arc<DAE::MatchCase>>>, A)> {
     pub type FuncExpType<A: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, A) -> Result<(Arc<DAE::Exp>, bool, A)> + 'static>;
 
     let mut cases: Arc<metamodelica::List<Arc<DAE::MatchCase>>> = metamodelica::nil();

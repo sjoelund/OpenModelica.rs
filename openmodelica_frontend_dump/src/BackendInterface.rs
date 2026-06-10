@@ -147,7 +147,7 @@ pub fn appendLibrary(mut modelName: Arc<Absyn::Path>, mut modelicaPath: ArcStr) 
     Ok((program, success))
 }
 
-pub fn initInstHashTable() -> Result<()> {
+pub(crate) fn initInstHashTable() -> Result<()> {
     let mut functions: BackendInterfaceFunctions;
     let mut func: partialInitInstHashTable;
     functions = crate::Globals::backendInterface.with(|__root| __root.borrow().clone());

@@ -71,13 +71,13 @@ pub type FuncCrefStr = std::sync::Arc<dyn ::std::ops::Fn(Key) -> Result<ArcStr> 
 
 pub type FuncExpStr = std::sync::Arc<dyn ::std::ops::Fn(Value) -> Result<ArcStr> + 'static>;
 
-pub fn emptyHashTable() -> HashTable {
+pub(crate) fn emptyHashTable() -> HashTable {
     let mut hashTable: HashTable;
     hashTable = emptyHashTableSized(BaseHashTable::defaultBucketSize.clone());
     hashTable
 }
 
-pub fn emptyHashTableSized(mut size: i32) -> HashTable {
+pub(crate) fn emptyHashTableSized(mut size: i32) -> HashTable {
     let mut hashTable: HashTable;
     hashTable = BaseHashTable::emptyHashTableWork(size.clone(), ((std::sync::Arc::new(SimCodeUtil::hashEqSystem) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SimCode::SimEqSystem>) -> Result<i32> + 'static>), (std::sync::Arc::new(SimCodeUtil::compareEqSystemsEquality) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SimCode::SimEqSystem>, Arc<SimCode::SimEqSystem>) -> Result<bool> + 'static>), (std::sync::Arc::new(fnptr!(SimCodeUtil::simEqSystemString, Arc<SimCode::SimEqSystem>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SimCode::SimEqSystem>) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)));
     hashTable

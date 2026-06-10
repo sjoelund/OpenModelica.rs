@@ -147,7 +147,7 @@ pub type SLOT = Slot;
 thread_local! { static __BUILTIN_TIME_TLS: Option<(Arc<DAE::Exp>, DAE::Properties, Arc<DAE::Attributes>)> = Some((Arc::new(DAE::Exp::CREF { componentRef: Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (literal!("time")).clone(), identType: DAE::T_REAL_DEFAULT().clone(), subscriptLst: metamodelica::nil() }), ty: DAE::T_REAL_DEFAULT().clone() }), DAE::Properties::PROP { type_: DAE::T_REAL_DEFAULT().clone(), constFlag: openmodelica_frontend_types::DAE::Const::C_VAR }, DAE::dummyAttrInput().clone())); }
 pub fn BUILTIN_TIME() -> Option<(Arc<DAE::Exp>, DAE::Properties, Arc<DAE::Attributes>)> { __BUILTIN_TIME_TLS.with(|__t| __t.clone()) }
 
-pub fn elabExpList(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExpl: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inImplicit: bool, mut inDoVect: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo, mut inLastType: Arc<DAE::Type>) -> Result<(FCore::Cache, Arc<metamodelica::List<Arc<DAE::Exp>>>, Arc<metamodelica::List<DAE::Properties>>)> {
+pub(crate) fn elabExpList(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExpl: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inImplicit: bool, mut inDoVect: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo, mut inLastType: Arc<DAE::Type>) -> Result<(FCore::Cache, Arc<metamodelica::List<Arc<DAE::Exp>>>, Arc<metamodelica::List<DAE::Properties>>)> {
     let mut outCache: FCore::Cache = inCache.clone();
     let mut outExpl: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
     let mut outProperties: Arc<metamodelica::List<DAE::Properties>> = metamodelica::nil();
@@ -241,7 +241,7 @@ fn elabExpList_enum(mut inExp: Arc<Absyn::Exp>, mut inLastType: Arc<DAE::Type>) 
     outIndex
 }
 
-pub fn elabExpListList(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExpl: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Absyn::Exp>>>>>, mut inImplicit: bool, mut inDoVect: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo, mut inLastType: Arc<DAE::Type>) -> Result<(FCore::Cache, Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<DAE::Properties>>>>)> {
+pub(crate) fn elabExpListList(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExpl: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Absyn::Exp>>>>>, mut inImplicit: bool, mut inDoVect: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo, mut inLastType: Arc<DAE::Type>) -> Result<(FCore::Cache, Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<DAE::Properties>>>>)> {
     let mut outCache: FCore::Cache = inCache.clone();
     let mut outExpl: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>> = metamodelica::nil();
     let mut outProperties: Arc<metamodelica::List<Arc<metamodelica::List<DAE::Properties>>>> = metamodelica::nil();
@@ -708,7 +708,7 @@ fn elabExp_Tuple_LHS_RHS(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut
     Ok((outCache, outExp, outProperties))
 }
 
-pub fn elabExpLHS(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<Absyn::Exp>, mut inImplicit: bool, mut inDoVect: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
+pub(crate) fn elabExpLHS(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<Absyn::Exp>, mut inImplicit: bool, mut inDoVect: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = inCache.clone();
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
@@ -1074,7 +1074,7 @@ fn elabExp_List(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: A
     Ok((outCache, outExp, outProperties))
 }
 
-pub fn elabExpInExpression(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<Absyn::Exp>, mut inImplicit: bool, mut performVectorization: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
+pub(crate) fn elabExpInExpression(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<Absyn::Exp>, mut inImplicit: bool, mut performVectorization: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache;
     let mut outExp: Arc<DAE::Exp>;
     let mut outProperties: DAE::Properties;
@@ -1098,7 +1098,7 @@ fn elabExpInExpression2(mut inExp: Arc<DAE::Exp>, mut inProperties: DAE::Propert
     (outExp, outProperties)
 }
 
-pub fn checkAssignmentToInput(mut inExp: Arc<Absyn::Exp>, mut inAttributes: Arc<DAE::Attributes>, mut inEnv: FCore::Graph, mut inAllowTopLevelInputs: bool, mut inInfo: SourceInfo) -> Result<()> {
+pub(crate) fn checkAssignmentToInput(mut inExp: Arc<Absyn::Exp>, mut inAttributes: Arc<DAE::Attributes>, mut inEnv: FCore::Graph, mut inAllowTopLevelInputs: bool, mut inInfo: SourceInfo) -> Result<()> {
     if !(inAllowTopLevelInputs.clone()) && FGraph::inFunctionScope(inEnv.clone()) && !(Config::acceptParModelicaGrammar()?) {
         checkAssignmentToInput2(inExp.clone(), inAttributes.clone(), inInfo.clone())?;
     }
@@ -1121,14 +1121,14 @@ fn checkAssignmentToInput2(mut inExp: Arc<Absyn::Exp>, mut inAttributes: Arc<DAE
     Ok(())
 }
 
-pub fn checkAssignmentToInputs(mut inExpCrefs: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inAttributes: Arc<metamodelica::List<Arc<DAE::Attributes>>>, mut inEnv: FCore::Graph, mut inInfo: SourceInfo) -> Result<()> {
+pub(crate) fn checkAssignmentToInputs(mut inExpCrefs: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inAttributes: Arc<metamodelica::List<Arc<DAE::Attributes>>>, mut inEnv: FCore::Graph, mut inInfo: SourceInfo) -> Result<()> {
     if FGraph::inFunctionScope(inEnv.clone()) {
         List::threadMap1_0(inExpCrefs.clone(), inAttributes.clone(), (std::sync::Arc::new(checkAssignmentToInput2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arc<DAE::Attributes>, SourceInfo) -> Result<()> + 'static>), inInfo.clone())?;
     }
     Ok(())
 }
 
-pub fn elabExpCrefNoEvalList(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExpl: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inImplicit: bool, mut inDoVect: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<metamodelica::List<Arc<DAE::Exp>>>, Arc<metamodelica::List<DAE::Properties>>, Arc<metamodelica::List<Arc<DAE::Attributes>>>)> {
+pub(crate) fn elabExpCrefNoEvalList(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExpl: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inImplicit: bool, mut inDoVect: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<metamodelica::List<Arc<DAE::Exp>>>, Arc<metamodelica::List<DAE::Properties>>, Arc<metamodelica::List<Arc<DAE::Attributes>>>)> {
     let mut outCache: FCore::Cache = inCache.clone();
     let mut outExpl: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
     let mut outProperties: Arc<metamodelica::List<DAE::Properties>> = metamodelica::nil();
@@ -1177,7 +1177,7 @@ pub fn elabExpCrefNoEvalList(mut inCache: FCore::Cache, mut inEnv: FCore::Graph,
 }
 
 // Part of MetaModelica extension
-pub fn elabListExp(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExpList: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inProp: DAE::Properties, mut inImplicit: bool, mut inDoVect: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
+pub(crate) fn elabListExp(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExpList: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inProp: DAE::Properties, mut inImplicit: bool, mut inDoVect: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp>;
     let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
@@ -1640,7 +1640,7 @@ fn elabCallReductionIterators(mut inCache: FCore::Cache, mut inEnv: FCore::Graph
     Ok((outCache, outIteratorsEnv, outIterators, outDims, outConst, outHasGuard))
 }
 
-pub fn deduceIterationRange(mut inIterator: ArcStr, mut inCrefs: Arc<metamodelica::List<(Arc<Absyn::ComponentRef>, i32)>>, mut inEnv: FCore::Graph, mut inCache: FCore::Cache, mut inInfo: SourceInfo) -> Result<(Arc<DAE::Exp>, DAE::Properties, FCore::Cache)> {
+pub(crate) fn deduceIterationRange(mut inIterator: ArcStr, mut inCrefs: Arc<metamodelica::List<(Arc<Absyn::ComponentRef>, i32)>>, mut inEnv: FCore::Graph, mut inCache: FCore::Cache, mut inInfo: SourceInfo) -> Result<(Arc<DAE::Exp>, DAE::Properties, FCore::Cache)> {
     let mut outRange: Arc<DAE::Exp> = Arc::new(DAE::Exp::ICONST { integer: 0 });
     let mut outProperties: DAE::Properties = DAE::Properties::PROP { type_: DAE::T_UNKNOWN_DEFAULT().clone(), constFlag: openmodelica_frontend_types::DAE::Const::C_UNKNOWN };
     let mut outCache: FCore::Cache = inCache.clone();
@@ -6363,7 +6363,7 @@ fn flattenArray(mut arr: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Arc<metamode
     flattenedExpl
 }
 
-pub fn elabBuiltinMatrix(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPosArgs: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inNamedArgs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inImpl: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
+pub(crate) fn elabBuiltinMatrix(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPosArgs: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inNamedArgs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inImpl: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache;
     let mut outExp: Arc<DAE::Exp>;
     let mut outProperties: DAE::Properties;
@@ -6484,7 +6484,7 @@ fn arrayScalar(mut inExp: Arc<DAE::Exp>, mut inDim: i32, mut inOperator: ArcStr,
     }
 }
 
-pub fn elabBuiltinHandler(mut inIdent: ArcStr) -> Result<Arc<dyn ::std::ops::Fn(FCore::Cache, FCore::Graph, Arc<metamodelica::List<Arc<Absyn::Exp>>>, Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, bool, DAE::Prefix, SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> + 'static>> {
+pub(crate) fn elabBuiltinHandler(mut inIdent: ArcStr) -> Result<Arc<dyn ::std::ops::Fn(FCore::Cache, FCore::Graph, Arc<metamodelica::List<Arc<Absyn::Exp>>>, Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, bool, DAE::Prefix, SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> + 'static>> {
     pub type HandlerFunc = std::sync::Arc<dyn ::std::ops::Fn(FCore::Cache, FCore::Graph, Arc<metamodelica::List<Arc<Absyn::Exp>>>, Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, bool, DAE::Prefix, SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> + 'static>;
 
     let mut outHandler: Arc<dyn ::std::ops::Fn(FCore::Cache, FCore::Graph, Arc<metamodelica::List<Arc<Absyn::Exp>>>, Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, bool, DAE::Prefix, SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> + 'static>;
@@ -6588,7 +6588,7 @@ pub fn elabBuiltinHandler(mut inIdent: ArcStr) -> Result<Arc<dyn ::std::ops::Fn(
     Ok(outHandler)
 }
 
-pub fn isBuiltinFunc(mut inPath: Arc<Absyn::Path>, mut ty: Arc<DAE::Type>) -> (DAE::FunctionBuiltin, bool, Arc<Absyn::Path>) {
+pub(crate) fn isBuiltinFunc(mut inPath: Arc<Absyn::Path>, mut ty: Arc<DAE::Type>) -> (DAE::FunctionBuiltin, bool, Arc<Absyn::Path>) {
     let mut isBuiltin: DAE::FunctionBuiltin = DAE::FunctionBuiltin::FUNCTION_BUILTIN_PTR;
     let mut b: bool;
     let mut outPath: Arc<Absyn::Path>;
@@ -6828,7 +6828,7 @@ fn isValidDerVariableName(mut exp: Arc<Absyn::Exp>, mut nested: bool) -> bool {
     }
 }
 
-pub fn elabVariablenames(mut inExpl: Arc<metamodelica::List<Arc<Absyn::Exp>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> {
+pub(crate) fn elabVariablenames(mut inExpl: Arc<metamodelica::List<Arc<Absyn::Exp>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> {
     let mut outExpl: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
     outExpl = ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
@@ -6962,7 +6962,7 @@ pub fn elabUntypedCref(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut i
     Ok((outCache, outCref))
 }
 
-pub fn needToRebuild(mut newFile: ArcStr, mut oldFile: ArcStr, mut buildTime: metamodelica::Real) -> bool {
+pub(crate) fn needToRebuild(mut newFile: ArcStr, mut oldFile: ArcStr, mut buildTime: metamodelica::Real) -> bool {
     let mut buildNeeded: bool;
     buildNeeded = 'mc: {
         let __mc_input = (newFile.clone(), oldFile.clone());
@@ -7009,7 +7009,7 @@ fn createDummyFarg(mut name: ArcStr) -> Arc<DAE::FuncArg> {
     farg
 }
 
-pub fn elabCallArgs(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPath: Arc<Absyn::Path>, mut inAbsynExpLst: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inAbsynNamedArgLst: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut typeVars: Arc<metamodelica::List<Arc<Absyn::Path>>>, mut inBoolean: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
+pub(crate) fn elabCallArgs(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPath: Arc<Absyn::Path>, mut inAbsynExpLst: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inAbsynNamedArgLst: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut typeVars: Arc<metamodelica::List<Arc<Absyn::Path>>>, mut inBoolean: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache;
     let mut outExp: Arc<DAE::Exp>;
     let mut outProperties: DAE::Properties;
@@ -7490,7 +7490,7 @@ fn elabCallArgs2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPath:
     Ok((outCache, expProps))
 }
 
-pub fn elabCallArgs3(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut typelist: Arc<metamodelica::List<Arc<DAE::Type>>>, mut r#fn: Arc<Absyn::Path>, mut args: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut nargs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut typeVars: Arc<metamodelica::List<Arc<Absyn::Path>>>, mut r#impl: bool, mut pre: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Option<(Arc<DAE::Exp>, DAE::Properties)>)> {
+pub(crate) fn elabCallArgs3(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut typelist: Arc<metamodelica::List<Arc<DAE::Type>>>, mut r#fn: Arc<Absyn::Path>, mut args: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut nargs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut typeVars: Arc<metamodelica::List<Arc<Absyn::Path>>>, mut r#impl: bool, mut pre: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Option<(Arc<DAE::Exp>, DAE::Properties)>)> {
     let mut outCache: FCore::Cache;
     let mut expProps: Option<(Arc<DAE::Exp>, DAE::Properties)>;
     let mut callExp: Arc<DAE::Exp>;
@@ -7569,7 +7569,7 @@ pub fn elabCallArgs3(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut typ
     Ok((outCache, expProps))
 }
 
-pub fn inlineBuiltin(mut isBuiltin: DAE::FunctionBuiltin, mut inlineType: DAE::InlineType) -> DAE::InlineType {
+pub(crate) fn inlineBuiltin(mut isBuiltin: DAE::FunctionBuiltin, mut inlineType: DAE::InlineType) -> DAE::InlineType {
     let mut outInlineType: DAE::InlineType;
     outInlineType = (match isBuiltin.clone() {
         DAE::FunctionBuiltin::FUNCTION_BUILTIN_PTR { .. } => openmodelica_frontend_types::DAE::InlineType::BUILTIN_EARLY_INLINE,
@@ -7944,7 +7944,7 @@ pub fn instantiateDaeFunction(mut inCache: FCore::Cache, mut env: FCore::Graph, 
     (outCache, status)
 }
 
-pub fn instantiateDaeFunctionFromTypes(mut inCache: FCore::Cache, mut env: FCore::Graph, mut tys: Arc<metamodelica::List<Arc<DAE::Type>>>, mut builtin: bool, mut clOpt: Option<Arc<SCode::Element>>, mut printErrorMsg: bool, mut acc: Util::Status) -> (FCore::Cache, Util::Status) {
+pub(crate) fn instantiateDaeFunctionFromTypes(mut inCache: FCore::Cache, mut env: FCore::Graph, mut tys: Arc<metamodelica::List<Arc<DAE::Type>>>, mut builtin: bool, mut clOpt: Option<Arc<SCode::Element>>, mut printErrorMsg: bool, mut acc: Util::Status) -> (FCore::Cache, Util::Status) {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut status: Util::Status = Util::Status::FAILURE;
     (outCache, status) = (::match_deref::match_deref! { match &((tys.clone(), acc.clone())) {
@@ -10092,14 +10092,14 @@ fn fillSlot(mut inFuncArg: Arc<DAE::FuncArg>, mut inExp: Arc<DAE::Exp>, mut inDi
     Ok(outSlotLst)
 }
 
-pub fn elabCref(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inComponentRef: Arc<Absyn::ComponentRef>, mut inImplicit: bool, mut performVectorization: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Option<(Arc<DAE::Exp>, DAE::Properties, Arc<DAE::Attributes>)>)> {
+pub(crate) fn elabCref(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inComponentRef: Arc<Absyn::ComponentRef>, mut inImplicit: bool, mut performVectorization: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Option<(Arc<DAE::Exp>, DAE::Properties, Arc<DAE::Attributes>)>)> {
     let mut outCache: FCore::Cache;
     let mut res: Option<(Arc<DAE::Exp>, DAE::Properties, Arc<DAE::Attributes>)>;
     (outCache, res) = elabCref1(inCache.clone(), inEnv.clone(), inComponentRef.clone(), inImplicit.clone(), performVectorization.clone(), inPrefix.clone(), true, info.clone())?;
     Ok((outCache, res))
 }
 
-pub fn elabCrefNoEval(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inComponentRef: Arc<Absyn::ComponentRef>, mut inImplicit: bool, mut performVectorization: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties, Arc<DAE::Attributes>)> {
+pub(crate) fn elabCrefNoEval(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inComponentRef: Arc<Absyn::ComponentRef>, mut inImplicit: bool, mut performVectorization: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties, Arc<DAE::Attributes>)> {
     let mut outCache: FCore::Cache;
     let mut outExp: Arc<DAE::Exp>;
     let mut outProperties: DAE::Properties;
@@ -10505,7 +10505,7 @@ fn evaluateEmptyVariable(mut hasZeroSizeDim: bool, mut inExp: Arc<DAE::Exp>, mut
     (oexp, oc)
 }
 
-pub fn fixEnumerationType(mut inType: Arc<DAE::Type>) -> Arc<DAE::Type> {
+pub(crate) fn fixEnumerationType(mut inType: Arc<DAE::Type>) -> Arc<DAE::Type> {
     let mut outType: Arc<DAE::Type>;
     outType = 'mc: {
         let __mc_input = inType.clone();
@@ -10530,7 +10530,7 @@ pub fn fixEnumerationType(mut inType: Arc<DAE::Type>) -> Arc<DAE::Type> {
     outType
 }
 
-pub fn applySubscriptsVariability(mut inVariability: SCode::Variability, mut inSubsConst: DAE::Const) -> SCode::Variability {
+pub(crate) fn applySubscriptsVariability(mut inVariability: SCode::Variability, mut inSubsConst: DAE::Const) -> SCode::Variability {
     let mut outVariability: SCode::Variability;
     outVariability = (match (inVariability.clone(), inSubsConst.clone()) {
         (SCode::Variability::PARAM { .. }, DAE::Const::C_VAR { .. }) => openmodelica_frontend_types::SCode::Variability::VAR,
@@ -10541,7 +10541,7 @@ pub fn applySubscriptsVariability(mut inVariability: SCode::Variability, mut inS
     outVariability
 }
 
-pub fn makeEnumerationArray(mut enumTypeName: Arc<Absyn::Path>, mut enumLiterals: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<DAE::Exp>, Arc<DAE::Type>)> {
+pub(crate) fn makeEnumerationArray(mut enumTypeName: Arc<Absyn::Path>, mut enumLiterals: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<DAE::Exp>, Arc<DAE::Type>)> {
     let mut enumArray: Arc<DAE::Exp>;
     let mut enumArrayType: Arc<DAE::Type>;
     let mut enum_lit_expl: Arc<metamodelica::List<Arc<DAE::Exp>>>;
@@ -11149,7 +11149,7 @@ fn flattenSubscript(mut inSubs: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mu
 }
 
 // BZ(2010-01-29): Changed to public to be able to vectorize crefs from other places
-pub fn flattenSubscript2(mut inSubs: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut name: ArcStr, mut inType: Arc<DAE::Type>) -> Result<Arc<DAE::Exp>> {
+pub(crate) fn flattenSubscript2(mut inSubs: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut name: ArcStr, mut inType: Arc<DAE::Type>) -> Result<Arc<DAE::Exp>> {
     let mut outExp: Arc<DAE::Exp>;
     outExp = 'mc: {
         let __mc_input = (inSubs.clone(), name.clone(), inType.clone());
@@ -11561,7 +11561,7 @@ fn createCrefArray2d(mut inCref: Arc<DAE::ComponentRef>, mut inIndex: i32, mut i
     Ok(outExp)
 }
 
-pub fn absynCrefToComponentReference(mut inComponentRef: Arc<Absyn::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> {
+pub(crate) fn absynCrefToComponentReference(mut inComponentRef: Arc<Absyn::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> {
     '__tco: loop {
         ::match_deref::match_deref! { match &(inComponentRef.clone()) {
         Deref @ Absyn::ComponentRef::CREF_IDENT { name: i, subscripts: Deref @ metamodelica::List::Nil } => {
@@ -12219,7 +12219,7 @@ fn canonCref2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inComponen
     Ok((outCache, outComponentRef))
 }
 
-pub fn canonCref(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inComponentRef: Arc<DAE::ComponentRef>, mut inBoolean: bool) -> Result<(FCore::Cache, Arc<DAE::ComponentRef>)> {
+pub(crate) fn canonCref(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inComponentRef: Arc<DAE::ComponentRef>, mut inBoolean: bool) -> Result<(FCore::Cache, Arc<DAE::ComponentRef>)> {
     let mut outCache: FCore::Cache;
     let mut outComponentRef: Arc<DAE::ComponentRef>;
     (outCache, outComponentRef) = 'mc: {
@@ -12427,7 +12427,7 @@ pub fn elabCodeExp(mut exp: Arc<Absyn::Exp>, mut cache: FCore::Cache, mut env: F
     Ok(outExp)
 }
 
-pub fn elabCodeExp_dispatch(mut exp: Arc<Absyn::Exp>, mut cache: FCore::Cache, mut env: FCore::Graph, mut ct: DAE::CodeType, mut info: SourceInfo) -> Result<Arc<DAE::Exp>> {
+pub(crate) fn elabCodeExp_dispatch(mut exp: Arc<Absyn::Exp>, mut cache: FCore::Cache, mut env: FCore::Graph, mut ct: DAE::CodeType, mut info: SourceInfo) -> Result<Arc<DAE::Exp>> {
     let mut outExp: Arc<DAE::Exp>;
     outExp = 'mc: {
         let __mc_input = exp.clone();
@@ -12514,7 +12514,7 @@ pub fn elabCodeExp_dispatch(mut exp: Arc<Absyn::Exp>, mut cache: FCore::Cache, m
     Ok(outExp)
 }
 
-pub fn elabArrayDims(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inComponentRef: Arc<Absyn::ComponentRef>, mut inDimensions: Arc<metamodelica::List<Arc<Absyn::Subscript>>>, mut inImplicit: bool, mut inDoVect: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<metamodelica::List<Arc<DAE::Dimension>>>)> {
+pub(crate) fn elabArrayDims(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inComponentRef: Arc<Absyn::ComponentRef>, mut inDimensions: Arc<metamodelica::List<Arc<Absyn::Subscript>>>, mut inImplicit: bool, mut inDoVect: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<metamodelica::List<Arc<DAE::Dimension>>>)> {
     let mut outCache: FCore::Cache;
     let mut outDimensions: Arc<metamodelica::List<Arc<DAE::Dimension>>>;
     (outCache, outDimensions) = elabArrayDims2(inCache.clone(), inEnv.clone(), inComponentRef.clone(), inDimensions.clone(), inImplicit.clone(), inDoVect.clone(), inPrefix.clone(), inInfo.clone(), metamodelica::nil())?;

@@ -213,19 +213,19 @@ pub fn defaultSimulationOptions() -> InteractiveTypes::SimulationOptions { __def
 
 pub static simulationOptionsNames: std::sync::LazyLock<Arc<metamodelica::List<ArcStr>>> = std::sync::LazyLock::new(|| { list![(literal!("startTime")).clone(), (literal!("stopTime")).clone(), (literal!("numberOfIntervals")).clone(), (literal!("tolerance")).clone(), (literal!("method")).clone(), (literal!("fileNamePrefix")).clone(), (literal!("options")).clone(), (literal!("outputFormat")).clone(), (literal!("variableFilter")).clone(), (literal!("cflags")).clone(), (literal!("simflags")).clone()] });
 
-pub fn getSimulationResultType() -> Result<Arc<DAE::Type>> {
+pub(crate) fn getSimulationResultType() -> Result<Arc<DAE::Type>> {
     let mut t: Arc<DAE::Type>;
     t = if (Testsuite::isRunning()?) {simulationResultType_rtest().clone()} else {simulationResultType_full().clone()};
     Ok(t)
 }
 
-pub fn getDrModelicaSimulationResultType() -> Result<Arc<DAE::Type>> {
+pub(crate) fn getDrModelicaSimulationResultType() -> Result<Arc<DAE::Type>> {
     let mut t: Arc<DAE::Type>;
     t = if (Testsuite::isRunning()?) {simulationResultType_rtest().clone()} else {simulationResultType_drModelica().clone()};
     Ok(t)
 }
 
-pub fn createSimulationResult(mut resultFile: ArcStr, mut options: ArcStr, mut message: ArcStr, mut inAddResultValues: Arc<metamodelica::List<(ArcStr, Arc<Values::Value>)>>) -> Result<Arc<Values::Value>> {
+pub(crate) fn createSimulationResult(mut resultFile: ArcStr, mut options: ArcStr, mut message: ArcStr, mut inAddResultValues: Arc<metamodelica::List<(ArcStr, Arc<Values::Value>)>>) -> Result<Arc<Values::Value>> {
     let mut res: Arc<Values::Value>;
     let mut resultValues: Arc<metamodelica::List<(ArcStr, Arc<Values::Value>)>>;
     let mut vals: Arc<metamodelica::List<Arc<Values::Value>>>;
@@ -239,7 +239,7 @@ pub fn createSimulationResult(mut resultFile: ArcStr, mut options: ArcStr, mut m
     Ok(res)
 }
 
-pub fn createSimulationResultFailure(mut message: ArcStr, mut options: ArcStr) -> Result<Arc<Values::Value>> {
+pub(crate) fn createSimulationResultFailure(mut message: ArcStr, mut options: ArcStr) -> Result<Arc<Values::Value>> {
     let mut res: Arc<Values::Value>;
     res = createSimulationResult((literal!("")).clone(), (options.clone()).clone(), (message.clone()).clone(), zeroAdditionalSimulationResultValues.clone())?;
     Ok(res)
@@ -275,7 +275,7 @@ fn cevalCurrentSimulationResultExp(mut inCache: FCore::Cache, mut env: FCore::Gr
     Ok((outCache, filename))
 }
 
-pub fn convertSimulationOptionsToSimCode(mut opts: InteractiveTypes::SimulationOptions) -> Result<SimCode::SimulationSettings> {
+pub(crate) fn convertSimulationOptionsToSimCode(mut opts: InteractiveTypes::SimulationOptions) -> Result<SimCode::SimulationSettings> {
     let mut settings: SimCode::SimulationSettings;
     settings = (::match_deref::match_deref! { match &(opts.clone()) {
         InteractiveTypes::SimulationOptions { startTime: Deref @ DAE::Exp::RCONST { real: startTime }, stopTime: Deref @ DAE::Exp::RCONST { real: stopTime }, numberOfIntervals: Deref @ DAE::Exp::ICONST { integer: nIntervals }, stepSize: Deref @ DAE::Exp::RCONST { real: stepSize }, tolerance: Deref @ DAE::Exp::RCONST { real: tolerance }, method: Deref @ DAE::Exp::SCONST { string: method }, fileNamePrefix: _, options: _, outputFormat: Deref @ DAE::Exp::SCONST { string: format }, variableFilter: Deref @ DAE::Exp::SCONST { string: varFilter }, cflags: Deref @ DAE::Exp::SCONST { string: cflags }, simflags: Deref @ DAE::Exp::SCONST { string: simflags } } => {
@@ -288,13 +288,13 @@ pub fn convertSimulationOptionsToSimCode(mut opts: InteractiveTypes::SimulationO
     Ok(settings)
 }
 
-pub fn buildSimulationOptions(mut startTime: Arc<DAE::Exp>, mut stopTime: Arc<DAE::Exp>, mut numberOfIntervals: Arc<DAE::Exp>, mut stepSize: Arc<DAE::Exp>, mut tolerance: Arc<DAE::Exp>, mut method: Arc<DAE::Exp>, mut fileNamePrefix: Arc<DAE::Exp>, mut options: Arc<DAE::Exp>, mut outputFormat: Arc<DAE::Exp>, mut variableFilter: Arc<DAE::Exp>, mut cflags: Arc<DAE::Exp>, mut simflags: Arc<DAE::Exp>) -> InteractiveTypes::SimulationOptions {
+pub(crate) fn buildSimulationOptions(mut startTime: Arc<DAE::Exp>, mut stopTime: Arc<DAE::Exp>, mut numberOfIntervals: Arc<DAE::Exp>, mut stepSize: Arc<DAE::Exp>, mut tolerance: Arc<DAE::Exp>, mut method: Arc<DAE::Exp>, mut fileNamePrefix: Arc<DAE::Exp>, mut options: Arc<DAE::Exp>, mut outputFormat: Arc<DAE::Exp>, mut variableFilter: Arc<DAE::Exp>, mut cflags: Arc<DAE::Exp>, mut simflags: Arc<DAE::Exp>) -> InteractiveTypes::SimulationOptions {
     let mut outSimulationOptions: InteractiveTypes::SimulationOptions;
     outSimulationOptions = InteractiveTypes::SimulationOptions { startTime: startTime.clone(), stopTime: stopTime.clone(), numberOfIntervals: numberOfIntervals.clone(), stepSize: stepSize.clone(), tolerance: tolerance.clone(), method: method.clone(), fileNamePrefix: fileNamePrefix.clone(), options: options.clone(), outputFormat: outputFormat.clone(), variableFilter: variableFilter.clone(), cflags: cflags.clone(), simflags: simflags.clone() };
     outSimulationOptions
 }
 
-pub fn getSimulationOption(mut inSimOpt: InteractiveTypes::SimulationOptions, mut optionName: ArcStr) -> Result<Arc<DAE::Exp>> {
+pub(crate) fn getSimulationOption(mut inSimOpt: InteractiveTypes::SimulationOptions, mut optionName: ArcStr) -> Result<Arc<DAE::Exp>> {
     let mut outOptionValue: Arc<DAE::Exp>;
     outOptionValue = (::match_deref::match_deref! { match &((inSimOpt.clone(), optionName.clone())) {
         (InteractiveTypes::SimulationOptions { startTime: e, .. }, Deref @ "startTime") => {
@@ -344,7 +344,7 @@ pub fn getSimulationOption(mut inSimOpt: InteractiveTypes::SimulationOptions, mu
     Ok(outOptionValue)
 }
 
-pub fn buildSimulationOptionsFromModelExperimentAnnotation(mut inModelPath: Arc<Absyn::Path>, mut inFileNamePrefix: ArcStr, mut defaultOption: Option<InteractiveTypes::SimulationOptions>) -> Result<InteractiveTypes::SimulationOptions> {
+pub(crate) fn buildSimulationOptionsFromModelExperimentAnnotation(mut inModelPath: Arc<Absyn::Path>, mut inFileNamePrefix: ArcStr, mut defaultOption: Option<InteractiveTypes::SimulationOptions>) -> Result<InteractiveTypes::SimulationOptions> {
     let mut outSimOpt: InteractiveTypes::SimulationOptions;
     outSimOpt = 'mc: {
         let __mc_input = defaultOption.clone();
@@ -659,7 +659,7 @@ fn diffSanityCheckCommentStr(mut t: LexerModelicaDiff::Token) -> Result<ArcStr> 
     Ok(s)
 }
 
-pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inFunctionName: ArcStr, mut inVals: Arc<metamodelica::List<Arc<Values::Value>>>, mut msg: Absyn::Msg) -> Result<(FCore::Cache, Arc<Values::Value>)> {
+pub(crate) fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inFunctionName: ArcStr, mut inVals: Arc<metamodelica::List<Arc<Values::Value>>>, mut msg: Absyn::Msg) -> Result<(FCore::Cache, Arc<Values::Value>)> {
     use openmodelica_util::DiffAlgorithm::Diff;
     use openmodelica_util::DiffAlgorithm::diff;
     use openmodelica_util::DiffAlgorithm::printActual;
@@ -2453,7 +2453,7 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
     Ok((outCache, outValue))
 }
 
-pub fn cevalInteractiveFunctions4(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inFunctionName: ArcStr, mut inVals: Arc<metamodelica::List<Arc<Values::Value>>>, mut msg: Absyn::Msg) -> Result<(FCore::Cache, Arc<Values::Value>)> {
+pub(crate) fn cevalInteractiveFunctions4(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inFunctionName: ArcStr, mut inVals: Arc<metamodelica::List<Arc<Values::Value>>>, mut msg: Absyn::Msg) -> Result<(FCore::Cache, Arc<Values::Value>)> {
     use openmodelica_util::DiffAlgorithm::Diff;
     use openmodelica_util::DiffAlgorithm::diff;
     use openmodelica_util::DiffAlgorithm::printActual;
@@ -5424,7 +5424,7 @@ fn getSimulationExtension(mut inString: ArcStr, mut inString2: ArcStr) -> ArcStr
     outString
 }
 
-pub fn getAdjacencyMatrix(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut className: Arc<Absyn::Path>, mut inMsg: Absyn::Msg, mut filenameprefix: ArcStr) -> Result<(FCore::Cache, Arc<Values::Value>, ArcStr)> {
+pub(crate) fn getAdjacencyMatrix(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut className: Arc<Absyn::Path>, mut inMsg: Absyn::Msg, mut filenameprefix: ArcStr) -> Result<(FCore::Cache, Arc<Values::Value>, ArcStr)> {
     let mut outCache: FCore::Cache;
     let mut outValue: Arc<Values::Value>;
     let mut outString: ArcStr;
@@ -5466,7 +5466,7 @@ pub fn getAdjacencyMatrix(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
 /* -------------------------------------------------------------------
                          RUN FRONTEND
    ------------------------------------------------------------------- */
-pub fn runFrontEnd(mut cache: FCore::Cache, mut env: FCore::Graph, mut className: Arc<Absyn::Path>, mut relaxedFrontEnd: bool, mut dumpFlat: bool, mut transform: bool) -> Result<(FCore::Cache, FCore::Graph, Option<DAE::DAElist>, ArcStr)> {
+pub(crate) fn runFrontEnd(mut cache: FCore::Cache, mut env: FCore::Graph, mut className: Arc<Absyn::Path>, mut relaxedFrontEnd: bool, mut dumpFlat: bool, mut transform: bool) -> Result<(FCore::Cache, FCore::Graph, Option<DAE::DAElist>, ArcStr)> {
     let mut cache: FCore::Cache = cache;
     let mut env: FCore::Graph = env;
     let mut odae: Option<DAE::DAElist> = None;
@@ -5497,7 +5497,7 @@ pub fn runFrontEnd(mut cache: FCore::Cache, mut env: FCore::Graph, mut className
     Ok((cache, env, odae, flatString))
 }
 
-pub fn runFrontEndNF(mut className: Arc<Absyn::Path>, mut relaxedFrontEnd: bool, mut dumpFlat: bool) -> Result<(Arc<NFFlatModel::NFFlatModel>, Arc<NFFlatten::FunctionTreeImpl::Tree>, ArcStr)> {
+pub(crate) fn runFrontEndNF(mut className: Arc<Absyn::Path>, mut relaxedFrontEnd: bool, mut dumpFlat: bool) -> Result<(Arc<NFFlatModel::NFFlatModel>, Arc<NFFlatten::FunctionTreeImpl::Tree>, ArcStr)> {
     let mut flatModel: Arc<NFFlatModel::NFFlatModel>;
     let mut functions: Arc<NFFlatten::FunctionTreeImpl::Tree>;
     let mut flatString: ArcStr;
@@ -5599,7 +5599,7 @@ fn runFrontEndWork(mut cache: FCore::Cache, mut env: FCore::Graph, mut className
     Ok((cache, env, dae, flatString))
 }
 
-pub fn runFrontEndWorkNF(mut className: Arc<Absyn::Path>, mut relaxedFrontend: bool, mut dumpFlat: bool) -> Result<(Arc<NFFlatModel::NFFlatModel>, Arc<NFFlatten::FunctionTreeImpl::Tree>, ArcStr)> {
+pub(crate) fn runFrontEndWorkNF(mut className: Arc<Absyn::Path>, mut relaxedFrontend: bool, mut dumpFlat: bool) -> Result<(Arc<NFFlatModel::NFFlatModel>, Arc<NFFlatten::FunctionTreeImpl::Tree>, ArcStr)> {
     let mut flatModel: Arc<NFFlatModel::NFFlatModel> = Arc::new(<NFFlatModel::NFFlatModel as ::std::default::Default>::default());
     let mut functions: Arc<NFFlatten::FunctionTreeImpl::Tree> = Arc::new(NFFlatten::FunctionTreeImpl::Tree::EMPTY);
     let mut flatString: ArcStr = arcstr::literal!("");
@@ -5639,7 +5639,7 @@ pub fn runFrontEndWorkNF(mut className: Arc<Absyn::Path>, mut relaxedFrontend: b
     Ok((flatModel, functions, flatString))
 }
 
-pub fn translateModel(mut cache: FCore::Cache, mut env: FCore::Graph, mut className: Arc<Absyn::Path>, mut fileNamePrefix: ArcStr, mut runBackend: bool, mut runSilent: bool, mut simSettingsOpt: Option<SimCode::SimulationSettings>) -> Result<(bool, FCore::Cache, Arc<metamodelica::List<ArcStr>>, ArcStr, Arc<metamodelica::List<(ArcStr, Arc<Values::Value>)>>)> {
+pub(crate) fn translateModel(mut cache: FCore::Cache, mut env: FCore::Graph, mut className: Arc<Absyn::Path>, mut fileNamePrefix: ArcStr, mut runBackend: bool, mut runSilent: bool, mut simSettingsOpt: Option<SimCode::SimulationSettings>) -> Result<(bool, FCore::Cache, Arc<metamodelica::List<ArcStr>>, ArcStr, Arc<metamodelica::List<(ArcStr, Arc<Values::Value>)>>)> {
     let mut success: bool;
     let mut outCache: FCore::Cache;
     let mut outLibs: Arc<metamodelica::List<ArcStr>>;
@@ -6379,7 +6379,7 @@ fn translateModelXML(mut cache: FCore::Cache, mut env: FCore::Graph, mut classNa
     Ok((cache, outValue))
 }
 
-pub fn translateGraphics(mut className: Arc<Absyn::Path>, mut inMsg: Absyn::Msg) -> Arc<Values::Value> {
+pub(crate) fn translateGraphics(mut className: Arc<Absyn::Path>, mut inMsg: Absyn::Msg) -> Arc<Values::Value> {
     let mut outValue: Arc<Values::Value>;
     outValue = 'mc: {
         let __mc_input = inMsg.clone();
@@ -7792,7 +7792,7 @@ fn createSimulationResultFromcallModelExecutable(mut buildSuccess: bool, mut cal
     Ok((outCache, outValue))
 }
 
-pub fn checkModel(mut cache: FCore::Cache, mut env: FCore::Graph, mut className: Arc<Absyn::Path>, mut inMsg: Absyn::Msg) -> Result<(FCore::Cache, Arc<Values::Value>)> {
+pub(crate) fn checkModel(mut cache: FCore::Cache, mut env: FCore::Graph, mut className: Arc<Absyn::Path>, mut inMsg: Absyn::Msg) -> Result<(FCore::Cache, Arc<Values::Value>)> {
     let mut cache: FCore::Cache = cache;
     let mut outValue: Arc<Values::Value>;
     outValue = 'mc: {
@@ -8180,7 +8180,7 @@ fn getAllClassPathsRecursive(mut inPath: Arc<Absyn::Path>, mut inCheckProtected:
     Ok(outPaths)
 }
 
-pub fn checkAllModelsRecursive(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut className: Arc<Absyn::Path>, mut inCheckProtected: bool, mut inMsg: Absyn::Msg) -> Result<(FCore::Cache, Arc<Values::Value>)> {
+pub(crate) fn checkAllModelsRecursive(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut className: Arc<Absyn::Path>, mut inCheckProtected: bool, mut inMsg: Absyn::Msg) -> Result<(FCore::Cache, Arc<Values::Value>)> {
     let mut outCache: FCore::Cache;
     let mut outValue: Arc<Values::Value>;
     (outCache, outValue) = 'mc: {
@@ -8207,7 +8207,7 @@ pub fn checkAllModelsRecursive(mut inCache: FCore::Cache, mut inEnv: FCore::Grap
     Ok((outCache, outValue))
 }
 
-pub fn failOrSuccess(mut inStr: ArcStr) -> (ArcStr, bool) {
+pub(crate) fn failOrSuccess(mut inStr: ArcStr) -> (ArcStr, bool) {
     let mut outStr: ArcStr;
     let mut failed: bool = false;
     outStr = ('mc: {
@@ -8232,7 +8232,7 @@ pub fn failOrSuccess(mut inStr: ArcStr) -> (ArcStr, bool) {
     (outStr, failed)
 }
 
-pub fn checkAll(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut allClasses: Arc<metamodelica::List<Arc<Absyn::Path>>>, mut inMsg: Absyn::Msg, mut reportTimes: bool, mut failed: i32) -> Result<i32> {
+pub(crate) fn checkAll(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut allClasses: Arc<metamodelica::List<Arc<Absyn::Path>>>, mut inMsg: Absyn::Msg, mut reportTimes: bool, mut failed: i32) -> Result<i32> {
     let mut failed: i32 = failed;
     let mut p: Absyn::Program;
     let mut rest: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
@@ -9406,7 +9406,7 @@ fn unparseGroupImport(mut inAbsynGroupImportLst: Arc<metamodelica::List<Absyn::G
     outList
 }
 
-pub fn isShortDefinition(mut inPath: Arc<Absyn::Path>, mut inProgram: Absyn::Program) -> bool {
+pub(crate) fn isShortDefinition(mut inPath: Arc<Absyn::Path>, mut inProgram: Absyn::Program) -> bool {
     let mut outBoolean: bool;
     match '__try0: {
         ::match_deref::match_deref! { match &(unwrap_break_err!(ProgramUtil::getPathedClassInProgram(inPath.clone(), inProgram.clone(), false, false), '__try0)) {
@@ -10748,7 +10748,7 @@ fn findConversionPath(mut conversion: (ArcStr, Option<ArcStr>, Option<ArcStr>), 
     Ok(scripts)
 }
 
-pub fn loadCommandLineOptionsFromModel(mut className: Arc<Absyn::Path>) -> Result<Flags::Flag> {
+pub(crate) fn loadCommandLineOptionsFromModel(mut className: Arc<Absyn::Path>) -> Result<Flags::Flag> {
     let mut oldFlags: Flags::Flag;
     let mut opts: ArcStr;
     let mut args: Arc<metamodelica::List<ArcStr>>;
@@ -10772,7 +10772,7 @@ pub fn loadCommandLineOptionsFromModel(mut className: Arc<Absyn::Path>) -> Resul
     Ok(oldFlags)
 }
 
-pub fn isProtectedContentAccess(mut className: Arc<Absyn::Path>) -> Result<bool> {
+pub(crate) fn isProtectedContentAccess(mut className: Arc<Absyn::Path>) -> Result<bool> {
     let mut restricted: bool;
     loadProgram(className.clone())?;
     restricted = Interactive::astContainsEncryptedClass(SymbolTable::getAbsyn())?;

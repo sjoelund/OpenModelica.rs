@@ -185,19 +185,19 @@ pub type CrefRootsTable = Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFCom
 
 pub mod CrefSets {
     use super::*;
-    pub fn EntryHash(mut entry: Entry) -> Result<i32> {
+    pub(crate) fn EntryHash(mut entry: Entry) -> Result<i32> {
         let mut hash: i32;
         hash = ComponentRef::hash(entry.clone())?;
         Ok(hash)
     }
 
-    pub fn EntryEqual(mut entry1: Entry, mut entry2: Entry) -> Result<bool> {
+    pub(crate) fn EntryEqual(mut entry1: Entry, mut entry2: Entry) -> Result<bool> {
         let mut isEqual: bool;
         isEqual = ComponentRef::isEqual(entry1.clone(), entry2.clone())?;
         Ok(isEqual)
     }
 
-    pub fn EntryString(mut entry: Entry) -> Result<ArcStr> {
+    pub(crate) fn EntryString(mut entry: Entry) -> Result<ArcStr> {
         let mut r#str: ArcStr;
         r#str = (ComponentRef::toString(entry.clone())?).clone();
         Ok(r#str)
@@ -243,7 +243,7 @@ pub mod CrefSets {
     pub type DISJOINT_SETS = Sets;
 
 
-    pub fn add(mut entry: Entry, mut sets: Sets) -> Result<(Sets, i32)> {
+    pub(crate) fn add(mut entry: Entry, mut sets: Sets) -> Result<(Sets, i32)> {
         let mut sets: Sets = sets;
         let mut index: i32;
         let mut nodes: metamodelica::Array<i32>;
@@ -262,7 +262,7 @@ pub mod CrefSets {
         Ok((sets, index))
     }
 
-    pub fn addList(mut entries: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>, mut sets: Sets) -> Result<Sets> {
+    pub(crate) fn addList(mut entries: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>, mut sets: Sets) -> Result<Sets> {
         let mut sets: Sets = sets;
         let mut nodes: metamodelica::Array<i32>;
         let mut elements: IndexTable;
@@ -288,13 +288,13 @@ pub mod CrefSets {
         Ok(sets)
     }
 
-    pub fn contains(mut entry: Entry, mut sets: Sets) -> Result<bool> {
+    pub(crate) fn contains(mut entry: Entry, mut sets: Sets) -> Result<bool> {
         let mut found: bool;
         found = isSome(UnorderedMap::get(entry.clone(), sets.elements.clone())?);
         Ok(found)
     }
 
-    pub fn emptySets(mut setCount: i32) -> Sets {
+    pub(crate) fn emptySets(mut setCount: i32) -> Sets {
         let mut sets: Sets;
         let mut nodes: metamodelica::Array<i32>;
         let mut elements: IndexTable;
@@ -306,7 +306,7 @@ pub mod CrefSets {
         sets
     }
 
-    pub fn extractSets(mut sets: Sets) -> (metamodelica::Array<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>, Sets) {
+    pub(crate) fn extractSets(mut sets: Sets) -> (metamodelica::Array<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>, Sets) {
         let mut setsArray: metamodelica::Array<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>;
         let mut assignedSets: Sets;
         let mut nodes: metamodelica::Array<i32>;
@@ -344,7 +344,7 @@ pub mod CrefSets {
         (setsArray, assignedSets)
     }
 
-    pub fn find(mut entry: Entry, mut sets: Sets) -> Result<(Sets, i32)> {
+    pub(crate) fn find(mut entry: Entry, mut sets: Sets) -> Result<(Sets, i32)> {
         let mut sets: Sets = sets;
         let mut index: i32;
         let mut oindex: Option<i32>;
@@ -361,7 +361,7 @@ pub mod CrefSets {
         Ok((sets, index))
     }
 
-    pub fn findRoot(mut nodeIndex: i32, mut nodes: metamodelica::Array<i32>) -> Result<i32> {
+    pub(crate) fn findRoot(mut nodeIndex: i32, mut nodes: metamodelica::Array<i32>) -> Result<i32> {
         let mut rootIndex: i32 = nodeIndex.clone();
         let mut parent: i32 = ({let __elt = nodes.borrow()[(nodeIndex.clone()-1) as usize].clone(); __elt});
         let mut idx: i32 = nodeIndex.clone();
@@ -378,7 +378,7 @@ pub mod CrefSets {
         Ok(rootIndex)
     }
 
-    pub fn findSet(mut entry: Entry, mut sets: Sets) -> Result<(i32, Sets)> {
+    pub(crate) fn findSet(mut entry: Entry, mut sets: Sets) -> Result<(i32, Sets)> {
         let mut set: i32;
         let mut updatedSets: Sets;
         let mut index: i32;
@@ -387,7 +387,7 @@ pub mod CrefSets {
         Ok((set, updatedSets))
     }
 
-    pub fn findSetArrayIndex(mut entry: Entry, mut sets: Sets) -> Result<i32> {
+    pub(crate) fn findSetArrayIndex(mut entry: Entry, mut sets: Sets) -> Result<i32> {
         let mut set: i32;
         set = UnorderedMap::getOrFail(entry.clone(), sets.elements.clone())?;
         while set.clone() > 0 {
@@ -397,18 +397,18 @@ pub mod CrefSets {
         Ok(set)
     }
 
-    pub fn getEntry(mut entry: Entry, mut sets: Sets) -> Result<Option<Arc<ComponentRef::NFComponentRef>>> {
+    pub(crate) fn getEntry(mut entry: Entry, mut sets: Sets) -> Result<Option<Arc<ComponentRef::NFComponentRef>>> {
         let mut outEntry: Option<Arc<ComponentRef::NFComponentRef>>;
         outEntry = UnorderedMap::getKey(entry.clone(), sets.elements.clone())?;
         Ok(outEntry)
     }
 
-    pub fn getNodeCount(mut sets: Sets) -> i32 {
+    pub(crate) fn getNodeCount(mut sets: Sets) -> i32 {
         let mut nodeCount: i32 = sets.nodeCount.clone();
         nodeCount
     }
 
-    pub fn merge(mut entry1: Entry, mut entry2: Entry, mut sets: Sets) -> Result<Sets> {
+    pub(crate) fn merge(mut entry1: Entry, mut entry2: Entry, mut sets: Sets) -> Result<Sets> {
         let mut sets: Sets = sets;
         let mut set1: i32;
         let mut set2: i32;
@@ -418,7 +418,7 @@ pub mod CrefSets {
         Ok(sets)
     }
 
-    pub fn printSets(mut sets: Sets) -> Result<()> {
+    pub(crate) fn printSets(mut sets: Sets) -> Result<()> {
         let mut nodes: metamodelica::Array<i32>;
         let mut entries: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, i32)>>;
         let mut e: Entry;
@@ -440,7 +440,7 @@ pub mod CrefSets {
         Ok(())
     }
 
-    pub fn union(mut set1: i32, mut set2: i32, mut sets: Sets) -> Result<Sets> {
+    pub(crate) fn union(mut set1: i32, mut set2: i32, mut sets: Sets) -> Result<Sets> {
         let mut sets: Sets = sets;
         let mut rank1: i32;
         let mut rank2: i32;
@@ -463,7 +463,7 @@ pub mod CrefSets {
 
 pub type IsDeletedFn = std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>;
 
-pub fn handleOverconstrainedConnections(mut flatModel: Arc<FlatModel::NFFlatModel>, mut conns: Arc<NFConnections::NFConnections>, mut isDeleted: Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>) -> Result<(Arc<FlatModel::NFFlatModel>, FlatEdges)> {
+pub(crate) fn handleOverconstrainedConnections(mut flatModel: Arc<FlatModel::NFFlatModel>, mut conns: Arc<NFConnections::NFConnections>, mut isDeleted: Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>) -> Result<(Arc<FlatModel::NFFlatModel>, FlatEdges)> {
     let mut flatModel: Arc<FlatModel::NFFlatModel> = flatModel;
     let mut broken: FlatEdges;
     let mut graph: NFOCConnectionGraph = EMPTY().clone();
@@ -1181,7 +1181,7 @@ fn addConnectionsRooted(mut connection: FlatEdge, mut table: CrefRootsTable) -> 
 }
 
 fn addConnectionRooted(mut cref1: Arc<ComponentRef::NFComponentRef>, mut cref2: Arc<ComponentRef::NFComponentRef>, mut table: CrefRootsTable) -> Result<()> {
-    pub fn updateRooted(mut roots: Option<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>, mut newRoot: Arc<ComponentRef::NFComponentRef>) -> DefiniteRoots {
+    pub(crate) fn updateRooted(mut roots: Option<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>, mut newRoot: Arc<ComponentRef::NFComponentRef>) -> DefiniteRoots {
         let mut outRoots: DefiniteRoots = metamodelica::nil();
         outRoots = (::match_deref::match_deref! { match &(roots.clone()) {
         Some(__esc_outRoots) => {

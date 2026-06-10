@@ -88,7 +88,7 @@ impl Default for NFFunctionInverse {
 
 pub type FUNCTION_INV = NFFunctionInverse;
 
-pub fn instInverses(mut fnNode: Arc<InstNode::InstNode>, mut r#fn: Arc<Function::Function>) -> Result<metamodelica::Array<Arc<NFFunctionInverse>>> {
+pub(crate) fn instInverses(mut fnNode: Arc<InstNode::InstNode>, mut r#fn: Arc<Function::Function>) -> Result<metamodelica::Array<Arc<NFFunctionInverse>>> {
     let mut inverses: metamodelica::Array<Arc<NFFunctionInverse>>;
     let mut inv_mods: Arc<metamodelica::List<Arc<SCode::Mod>>>;
     let mut invs: Arc<metamodelica::List<Arc<NFFunctionInverse>>> = metamodelica::nil();
@@ -105,7 +105,7 @@ pub fn instInverses(mut fnNode: Arc<InstNode::InstNode>, mut r#fn: Arc<Function:
     Ok(inverses)
 }
 
-pub fn typeInverse(mut fnInv: Arc<NFFunctionInverse>) -> Result<Arc<NFFunctionInverse>> {
+pub(crate) fn typeInverse(mut fnInv: Arc<NFFunctionInverse>) -> Result<Arc<NFFunctionInverse>> {
     let mut fnInv: Arc<NFFunctionInverse> = fnInv;
     assign_field!(
         fnInv.inputParam = Typing::typeCref(fnInv.inputParam.clone(), NFInstContext::RELAXED.clone(), fnInv.info.clone())?.0,
@@ -114,13 +114,13 @@ pub fn typeInverse(mut fnInv: Arc<NFFunctionInverse>) -> Result<Arc<NFFunctionIn
     Ok(fnInv)
 }
 
-pub fn toDAE(mut fnInv: Arc<NFFunctionInverse>) -> Result<DAE::FunctionDefinition> {
+pub(crate) fn toDAE(mut fnInv: Arc<NFFunctionInverse>) -> Result<DAE::FunctionDefinition> {
     let mut invDef: DAE::FunctionDefinition;
     invDef = DAE::FunctionDefinition::FUNCTION_INVERSE { inputParam: ComponentRef::toDAE(fnInv.inputParam.clone())?, inverseCall: Expression::toDAE(fnInv.inverseCall.clone(), false)? };
     Ok(invDef)
 }
 
-pub fn toSubMod(mut fnInv: Arc<NFFunctionInverse>) -> Result<Arc<SCode::SubMod>> {
+pub(crate) fn toSubMod(mut fnInv: Arc<NFFunctionInverse>) -> Result<Arc<SCode::SubMod>> {
     let mut subMod: Arc<SCode::SubMod>;
     let mut inv_mod: Arc<SCode::SubMod>;
     let mut call_exp: Arc<Absyn::Exp>;
@@ -130,7 +130,7 @@ pub fn toSubMod(mut fnInv: Arc<NFFunctionInverse>) -> Result<Arc<SCode::SubMod>>
     Ok(subMod)
 }
 
-pub fn getFunction(mut fnInv: Arc<NFFunctionInverse>) -> Result<Arc<Function::Function>> {
+pub(crate) fn getFunction(mut fnInv: Arc<NFFunctionInverse>) -> Result<Arc<Function::Function>> {
     let mut r#fn: Arc<Function::Function>;
     let mut call: Arc<Call::NFCall>;
     let __pa0 = ::match_deref::match_deref! { match &(fnInv.inverseCall.clone()) {

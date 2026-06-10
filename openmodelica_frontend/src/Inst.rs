@@ -259,7 +259,7 @@ pub fn instantiateClass(mut inCache: FCore::Cache, mut inIH: Arc<metamodelica::L
     Ok((outCache, outEnv, outIH, outDAElist))
 }
 
-pub fn instantiatePartialClass(mut inCache: FCore::Cache, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inProgram: Arc<metamodelica::List<Arc<SCode::Element>>>, mut inPath: Arc<Absyn::Path>) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::DAElist)> {
+pub(crate) fn instantiatePartialClass(mut inCache: FCore::Cache, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inProgram: Arc<metamodelica::List<Arc<SCode::Element>>>, mut inPath: Arc<Absyn::Path>) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::DAElist)> {
     let mut outCache: FCore::Cache;
     let mut outEnv: FCore::Graph;
     let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>>;
@@ -720,7 +720,7 @@ pub fn instClassIn(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH:
     Ok((outCache, outEnv, outIH, outStore, outDae, outSets, outState, outVars, outType, optDerAttr, outEqualityConstraint, outGraph))
 }
 
-pub fn instClassIn2(mut cache: FCore::Cache, mut env: FCore::Graph, mut ih: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut store: UnitAbsyn::InstStore, mut r#mod: Arc<DAE::Mod>, mut prefix: DAE::Prefix, mut state: ClassInf::State, mut cls: Arc<SCode::Element>, mut visibility: SCode::Visibility, mut instDims: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Dimension>>>>>, mut implicitInst: bool, mut callingScope: InstTypes::CallingScope, mut graph: ConnectionGraph::ConnectionGraph, mut sets: DAE::Connect::Sets, mut instSingleCref: Option<Arc<DAE::ComponentRef>>) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, UnitAbsyn::InstStore, ClassInf::State, ConnectionGraph::ConnectionGraph, DAE::Connect::Sets, DAE::DAElist, Arc<metamodelica::List<Arc<DAE::Var>>>, Option<Arc<DAE::Type>>, Option<SCode::Attributes>, Option<(Arc<Absyn::Path>, i32, DAE::InlineType)>)> {
+pub(crate) fn instClassIn2(mut cache: FCore::Cache, mut env: FCore::Graph, mut ih: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut store: UnitAbsyn::InstStore, mut r#mod: Arc<DAE::Mod>, mut prefix: DAE::Prefix, mut state: ClassInf::State, mut cls: Arc<SCode::Element>, mut visibility: SCode::Visibility, mut instDims: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Dimension>>>>>, mut implicitInst: bool, mut callingScope: InstTypes::CallingScope, mut graph: ConnectionGraph::ConnectionGraph, mut sets: DAE::Connect::Sets, mut instSingleCref: Option<Arc<DAE::ComponentRef>>) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, UnitAbsyn::InstStore, ClassInf::State, ConnectionGraph::ConnectionGraph, DAE::Connect::Sets, DAE::DAElist, Arc<metamodelica::List<Arc<DAE::Var>>>, Option<Arc<DAE::Type>>, Option<SCode::Attributes>, Option<(Arc<Absyn::Path>, i32, DAE::InlineType)>)> {
     let mut cache: FCore::Cache = cache;
     let mut env: FCore::Graph = env;
     let mut ih: Arc<metamodelica::List<InnerOuter::TopInstance>> = ih;
@@ -966,7 +966,7 @@ fn callingScopeCacheEq(mut inCallingScope1: InstTypes::CallingScope, mut inCalli
     outIsEq
 }
 
-pub fn instClassIn_dispatch(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inStore: UnitAbsyn::InstStore, mut inMod: Arc<DAE::Mod>, mut inPrefix: DAE::Prefix, mut inState: ClassInf::State, mut inClass: Arc<SCode::Element>, mut inVisibility: SCode::Visibility, mut inInstDims: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Dimension>>>>>, mut implicitInstantiation: bool, mut inCallingScope: InstTypes::CallingScope, mut inGraph: ConnectionGraph::ConnectionGraph, mut inSets: DAE::Connect::Sets, mut instSingleCref: Option<Arc<DAE::ComponentRef>>) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, UnitAbsyn::InstStore, DAE::DAElist, DAE::Connect::Sets, ClassInf::State, Arc<metamodelica::List<Arc<DAE::Var>>>, Option<Arc<DAE::Type>>, Option<SCode::Attributes>, Option<(Arc<Absyn::Path>, i32, DAE::InlineType)>, ConnectionGraph::ConnectionGraph)> {
+pub(crate) fn instClassIn_dispatch(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inStore: UnitAbsyn::InstStore, mut inMod: Arc<DAE::Mod>, mut inPrefix: DAE::Prefix, mut inState: ClassInf::State, mut inClass: Arc<SCode::Element>, mut inVisibility: SCode::Visibility, mut inInstDims: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Dimension>>>>>, mut implicitInstantiation: bool, mut inCallingScope: InstTypes::CallingScope, mut inGraph: ConnectionGraph::ConnectionGraph, mut inSets: DAE::Connect::Sets, mut instSingleCref: Option<Arc<DAE::ComponentRef>>) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, UnitAbsyn::InstStore, DAE::DAElist, DAE::Connect::Sets, ClassInf::State, Arc<metamodelica::List<Arc<DAE::Var>>>, Option<Arc<DAE::Type>>, Option<SCode::Attributes>, Option<(Arc<Absyn::Path>, i32, DAE::InlineType)>, ConnectionGraph::ConnectionGraph)> {
     let mut outCache: FCore::Cache;
     let mut outEnv: FCore::Graph;
     let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>>;
@@ -1594,7 +1594,7 @@ fn partialInstClassIn_dispatch(mut inCache: FCore::Cache, mut inEnv: FCore::Grap
     Ok((outCache, outEnv, outIH, outState, outVars))
 }
 
-pub fn instClassdef(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut store: UnitAbsyn::InstStore, mut inMod2: Arc<DAE::Mod>, mut inPrefix3: DAE::Prefix, mut inState5: ClassInf::State, mut className: ArcStr, mut inClassDef6: Arc<SCode::ClassDef>, mut inRestriction7: SCode::Restriction, mut inVisibility: SCode::Visibility, mut inPartialPrefix: SCode::Partial, mut inEncapsulatedPrefix: SCode::Encapsulated, mut inInstDims9: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Dimension>>>>>, mut inImplicit: bool, mut inCallingScope: InstTypes::CallingScope, mut inGraph: ConnectionGraph::ConnectionGraph, mut inSets: DAE::Connect::Sets, mut instSingleCref: Option<Arc<DAE::ComponentRef>>, mut comment: Arc<SCode::Comment>, mut info: SourceInfo) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, UnitAbsyn::InstStore, DAE::DAElist, DAE::Connect::Sets, ClassInf::State, Arc<metamodelica::List<Arc<DAE::Var>>>, Option<Arc<DAE::Type>>, Option<SCode::Attributes>, Option<(Arc<Absyn::Path>, i32, DAE::InlineType)>, ConnectionGraph::ConnectionGraph)> {
+pub(crate) fn instClassdef(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut store: UnitAbsyn::InstStore, mut inMod2: Arc<DAE::Mod>, mut inPrefix3: DAE::Prefix, mut inState5: ClassInf::State, mut className: ArcStr, mut inClassDef6: Arc<SCode::ClassDef>, mut inRestriction7: SCode::Restriction, mut inVisibility: SCode::Visibility, mut inPartialPrefix: SCode::Partial, mut inEncapsulatedPrefix: SCode::Encapsulated, mut inInstDims9: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Dimension>>>>>, mut inImplicit: bool, mut inCallingScope: InstTypes::CallingScope, mut inGraph: ConnectionGraph::ConnectionGraph, mut inSets: DAE::Connect::Sets, mut instSingleCref: Option<Arc<DAE::ComponentRef>>, mut comment: Arc<SCode::Comment>, mut info: SourceInfo) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, UnitAbsyn::InstStore, DAE::DAElist, DAE::Connect::Sets, ClassInf::State, Arc<metamodelica::List<Arc<DAE::Var>>>, Option<Arc<DAE::Type>>, Option<SCode::Attributes>, Option<(Arc<Absyn::Path>, i32, DAE::InlineType)>, ConnectionGraph::ConnectionGraph)> {
     let mut outCache: FCore::Cache;
     let mut outEnv: FCore::Graph;
     let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>>;
@@ -2801,7 +2801,7 @@ fn partialInstClassdef(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut i
     Ok((outCache, outEnv, outIH, outState, outVars))
 }
 
-pub fn instElementList(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inStore: UnitAbsyn::InstStore, mut inMod: Arc<DAE::Mod>, mut inPrefix: DAE::Prefix, mut inState: ClassInf::State, mut inElements: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>, mut inInstDims: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Dimension>>>>>, mut inImplInst: bool, mut inCallingScope: InstTypes::CallingScope, mut inGraph: ConnectionGraph::ConnectionGraph, mut inSets: DAE::Connect::Sets, mut inStopOnError: bool) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, UnitAbsyn::InstStore, DAE::DAElist, DAE::Connect::Sets, ClassInf::State, Arc<metamodelica::List<Arc<DAE::Var>>>, ConnectionGraph::ConnectionGraph, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>)>>)> {
+pub(crate) fn instElementList(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inStore: UnitAbsyn::InstStore, mut inMod: Arc<DAE::Mod>, mut inPrefix: DAE::Prefix, mut inState: ClassInf::State, mut inElements: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>, mut inInstDims: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Dimension>>>>>, mut inImplInst: bool, mut inCallingScope: InstTypes::CallingScope, mut inGraph: ConnectionGraph::ConnectionGraph, mut inSets: DAE::Connect::Sets, mut inStopOnError: bool) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, UnitAbsyn::InstStore, DAE::DAElist, DAE::Connect::Sets, ClassInf::State, Arc<metamodelica::List<Arc<DAE::Var>>>, ConnectionGraph::ConnectionGraph, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>)>>)> {
     let mut outCache: FCore::Cache = inCache.clone();
     let mut outEnv: FCore::Graph = inEnv.clone();
     let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>> = inIH.clone();
@@ -2912,7 +2912,7 @@ fn getSortedElementOrdering_comp(mut inElement1: Arc<SCode::Element>, mut inElem
     outEqual
 }
 
-pub fn instElement2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inStore: UnitAbsyn::InstStore, mut inMod: Arc<DAE::Mod>, mut inPrefix: DAE::Prefix, mut inState: ClassInf::State, mut inElement: (Arc<SCode::Element>, Arc<DAE::Mod>), mut inInstDims: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Dimension>>>>>, mut inImplicit: bool, mut inCallingScope: InstTypes::CallingScope, mut inGraph: ConnectionGraph::ConnectionGraph, mut inSets: DAE::Connect::Sets, mut inStopOnError: bool) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, UnitAbsyn::InstStore, Arc<metamodelica::List<Arc<DAE::Element>>>, DAE::Connect::Sets, ClassInf::State, Arc<metamodelica::List<Arc<DAE::Var>>>, ConnectionGraph::ConnectionGraph, Option<(Arc<Absyn::ComponentRef>, Arc<DAE::ComponentRef>)>)> {
+pub(crate) fn instElement2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inStore: UnitAbsyn::InstStore, mut inMod: Arc<DAE::Mod>, mut inPrefix: DAE::Prefix, mut inState: ClassInf::State, mut inElement: (Arc<SCode::Element>, Arc<DAE::Mod>), mut inInstDims: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Dimension>>>>>, mut inImplicit: bool, mut inCallingScope: InstTypes::CallingScope, mut inGraph: ConnectionGraph::ConnectionGraph, mut inSets: DAE::Connect::Sets, mut inStopOnError: bool) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, UnitAbsyn::InstStore, Arc<metamodelica::List<Arc<DAE::Element>>>, DAE::Connect::Sets, ClassInf::State, Arc<metamodelica::List<Arc<DAE::Var>>>, ConnectionGraph::ConnectionGraph, Option<(Arc<Absyn::ComponentRef>, Arc<DAE::ComponentRef>)>)> {
     let mut outCache: FCore::Cache;
     let mut outEnv: FCore::Graph;
     let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>> = inIH.clone();
@@ -3028,7 +3028,7 @@ fn isDeletedComponent(mut element: (Arc<SCode::Element>, Arc<DAE::Mod>), mut pre
     Ok((isDeleted, env, cache))
 }
 
-pub fn instElement(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inUnitStore: UnitAbsyn::InstStore, mut inMod: Arc<DAE::Mod>, mut inPrefix: DAE::Prefix, mut inState: ClassInf::State, mut inElement: (Arc<SCode::Element>, Arc<DAE::Mod>), mut inInstDims: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Dimension>>>>>, mut inImplicit: bool, mut inCallingScope: InstTypes::CallingScope, mut inGraph: ConnectionGraph::ConnectionGraph, mut inSets: DAE::Connect::Sets) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, UnitAbsyn::InstStore, DAE::DAElist, DAE::Connect::Sets, ClassInf::State, Arc<metamodelica::List<Arc<DAE::Var>>>, ConnectionGraph::ConnectionGraph, Option<(Arc<Absyn::ComponentRef>, Arc<DAE::ComponentRef>)>)> {
+pub(crate) fn instElement(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inUnitStore: UnitAbsyn::InstStore, mut inMod: Arc<DAE::Mod>, mut inPrefix: DAE::Prefix, mut inState: ClassInf::State, mut inElement: (Arc<SCode::Element>, Arc<DAE::Mod>), mut inInstDims: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Dimension>>>>>, mut inImplicit: bool, mut inCallingScope: InstTypes::CallingScope, mut inGraph: ConnectionGraph::ConnectionGraph, mut inSets: DAE::Connect::Sets) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, UnitAbsyn::InstStore, DAE::DAElist, DAE::Connect::Sets, ClassInf::State, Arc<metamodelica::List<Arc<DAE::Var>>>, ConnectionGraph::ConnectionGraph, Option<(Arc<Absyn::ComponentRef>, Arc<DAE::ComponentRef>)>)> {
     let mut outCache: FCore::Cache;
     let mut outEnv: FCore::Graph;
     let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>>;
@@ -3517,7 +3517,7 @@ fn updateCompeltsMods_dispatch(mut inCache: FCore::Cache, mut inEnv: FCore::Grap
     Ok((outCache, outEnv, outIH, outComponents))
 }
 
-pub fn redeclareType(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inMod: Arc<DAE::Mod>, mut inElement: Arc<SCode::Element>, mut inPrefix: DAE::Prefix, mut inState: ClassInf::State, mut inImpl: bool, mut inCmod: Arc<DAE::Mod>) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, Arc<SCode::Element>, Arc<DAE::Mod>)> {
+pub(crate) fn redeclareType(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inMod: Arc<DAE::Mod>, mut inElement: Arc<SCode::Element>, mut inPrefix: DAE::Prefix, mut inState: ClassInf::State, mut inImpl: bool, mut inCmod: Arc<DAE::Mod>) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, Arc<SCode::Element>, Arc<DAE::Mod>)> {
     let mut outCache: FCore::Cache = inCache.clone();
     let mut outEnv: FCore::Graph = inEnv.clone();
     let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>> = inIH.clone();
@@ -4113,7 +4113,7 @@ fn makeFullyQualifiedFromQual(mut cache: FCore::Cache, mut inEnv: FCore::Graph, 
     (cache, path)
 }
 
-pub fn makeFullyQualifiedIdent(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut ident: ArcStr, mut inPath: Arc<Absyn::Path>) -> Result<(FCore::Cache, Arc<Absyn::Path>)> {
+pub(crate) fn makeFullyQualifiedIdent(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut ident: ArcStr, mut inPath: Arc<Absyn::Path>) -> Result<(FCore::Cache, Arc<Absyn::Path>)> {
     let mut outCache: FCore::Cache;
     let mut outPath: Arc<Absyn::Path>;
     let mut isKnownBuiltin: bool;
@@ -4233,7 +4233,7 @@ fn makeFullyQualifiedIdentCheckBuiltin(mut ident: ArcStr) -> Result<(Arc<Absyn::
     Ok((path, isKnownBuiltin))
 }
 
-pub fn instList<Type_a: Clone + 'static + metamodelica::gc::MMTrace>(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inPrefix: DAE::Prefix, mut inSets: DAE::Connect::Sets, mut inState: ClassInf::State, mut instFunc: Arc<dyn ::std::ops::Fn(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::Prefix, DAE::Connect::Sets, ClassInf::State, Type_a, bool, bool, ConnectionGraph::ConnectionGraph) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::DAElist, DAE::Connect::Sets, ClassInf::State, ConnectionGraph::ConnectionGraph)> + 'static>, mut inTypeALst: Arc<metamodelica::List<Type_a>>, mut inImplicit: bool, mut unrollForLoops: bool, mut inGraph: ConnectionGraph::ConnectionGraph) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::DAElist, DAE::Connect::Sets, ClassInf::State, ConnectionGraph::ConnectionGraph)> {
+pub(crate) fn instList<Type_a: Clone + 'static + metamodelica::gc::MMTrace>(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inPrefix: DAE::Prefix, mut inSets: DAE::Connect::Sets, mut inState: ClassInf::State, mut instFunc: Arc<dyn ::std::ops::Fn(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::Prefix, DAE::Connect::Sets, ClassInf::State, Type_a, bool, bool, ConnectionGraph::ConnectionGraph) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::DAElist, DAE::Connect::Sets, ClassInf::State, ConnectionGraph::ConnectionGraph)> + 'static>, mut inTypeALst: Arc<metamodelica::List<Type_a>>, mut inImplicit: bool, mut unrollForLoops: bool, mut inGraph: ConnectionGraph::ConnectionGraph) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::DAElist, DAE::Connect::Sets, ClassInf::State, ConnectionGraph::ConnectionGraph)> {
     pub type InstFunc<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::Prefix, DAE::Connect::Sets, ClassInf::State, Type_a, bool, bool, ConnectionGraph::ConnectionGraph) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::DAElist, DAE::Connect::Sets, ClassInf::State, ConnectionGraph::ConnectionGraph)> + 'static>;
 
     let mut outCache: FCore::Cache;
@@ -4434,7 +4434,7 @@ fn insertClassAttribute(mut inAttrs: DAE::DAElist, mut attrName: ArcStr, mut inA
     Ok(outAttrs)
 }
 
-pub fn instantiateBoschClass(mut inCache: FCore::Cache, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inProgram: Arc<metamodelica::List<Arc<SCode::Element>>>, mut inPath: Arc<Absyn::Path>) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::DAElist)> {
+pub(crate) fn instantiateBoschClass(mut inCache: FCore::Cache, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inProgram: Arc<metamodelica::List<Arc<SCode::Element>>>, mut inPath: Arc<Absyn::Path>) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::DAElist)> {
     let mut outCache: FCore::Cache;
     let mut outEnv: FCore::Graph;
     let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>>;
@@ -4928,7 +4928,7 @@ fn makeFullyQualified2Builtin(mut ident: ArcStr, mut cachedPath: Arc<Absyn::Path
     path
 }
 
-pub fn getCachedInstance(mut cache: FCore::Cache, mut env: FCore::Graph, mut name: ArcStr, mut r#ref: metamodelica::Array<FCore::Node>) -> Result<(FCore::Cache, FCore::Graph)> {
+pub(crate) fn getCachedInstance(mut cache: FCore::Cache, mut env: FCore::Graph, mut name: ArcStr, mut r#ref: metamodelica::Array<FCore::Node>) -> Result<(FCore::Cache, FCore::Graph)> {
     let mut cache: FCore::Cache = cache;
     let mut env: FCore::Graph = env;
     let mut cache_path: Arc<Absyn::Path>;
@@ -4979,7 +4979,7 @@ fn generateCachePath(mut env: FCore::Graph, mut cls: Arc<SCode::Element>, mut pr
     Ok(cachePath)
 }
 
-pub fn generatePrefixStr(mut inPrefix: DAE::Prefix) -> ArcStr {
+pub(crate) fn generatePrefixStr(mut inPrefix: DAE::Prefix) -> ArcStr {
     let mut r#str: ArcStr;
     match '__try0: {
         r#str = (unwrap_break_err!(AbsynUtil::pathString(unwrap_break_err!(PrefixUtil::prefixToPath(inPrefix.clone()), '__try0), (literal!("$")).clone(), false, true), '__try0)).clone();
@@ -5032,7 +5032,7 @@ fn instFunctionAnnotations(mut comments: Arc<metamodelica::List<Arc<SCode::Comme
     dae
 }
 
-pub fn instClassType(mut cache: FCore::Cache, mut env: FCore::Graph, mut classElem: Arc<SCode::Element>) -> Result<(FCore::Cache, FCore::Graph, Arc<DAE::Type>)> {
+pub(crate) fn instClassType(mut cache: FCore::Cache, mut env: FCore::Graph, mut classElem: Arc<SCode::Element>) -> Result<(FCore::Cache, FCore::Graph, Arc<DAE::Type>)> {
     let mut cache: FCore::Cache = cache;
     let mut env: FCore::Graph = env;
     let mut ty: Arc<DAE::Type>;

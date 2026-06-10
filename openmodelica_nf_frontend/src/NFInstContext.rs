@@ -157,191 +157,191 @@ pub fn unset(mut context: Type, mut flag: Type) -> Type {
     newOrigin
 }
 
-pub fn isSet(mut context: Type, mut flag: Type) -> bool {
+pub(crate) fn isSet(mut context: Type, mut flag: Type) -> bool {
     let mut set: bool;
     set = intBitAnd(context.clone(), flag.clone()) > 0;
     set
 }
 
-pub fn isNotSet(mut context: Type, mut flag: Type) -> bool {
+pub(crate) fn isNotSet(mut context: Type, mut flag: Type) -> bool {
     let mut notSet: bool;
     notSet = intBitAnd(context.clone(), flag.clone()) == 0;
     notSet
 }
 
-pub fn clearScopeFlags(mut context: Type) -> Type {
+pub(crate) fn clearScopeFlags(mut context: Type) -> Type {
     let mut outContext: Type;
     outContext = intBitAnd(context.clone(), GLOBAL_FLAGS.clone());
     outContext
 }
 
-pub fn clearExpFlags(mut context: Type) -> Type {
+pub(crate) fn clearExpFlags(mut context: Type) -> Type {
     let mut outContext: Type;
     outContext = intBitAnd(context.clone(), NON_EXP_FLAGS.clone());
     outContext
 }
 
-pub fn inRelaxed(mut context: Type) -> bool {
+pub(crate) fn inRelaxed(mut context: Type) -> bool {
     let mut res: bool = intBitAnd(context.clone(), RELAXED.clone()) > 0;
     res
 }
 
-pub fn inInstanceAPI(mut context: Type) -> bool {
+pub(crate) fn inInstanceAPI(mut context: Type) -> bool {
     let mut res: bool = intBitAnd(context.clone(), INSTANCE_API.clone()) > 0;
     res
 }
 
-pub fn inFastLookup(mut context: Type) -> bool {
+pub(crate) fn inFastLookup(mut context: Type) -> bool {
     let mut res: bool = intBitAnd(context.clone(), FAST_LOOKUP.clone()) > 0;
     res
 }
 
-pub fn inClass(mut context: Type) -> bool {
+pub(crate) fn inClass(mut context: Type) -> bool {
     let mut res: bool = intBitAnd(context.clone(), CLASS.clone()) > 0;
     res
 }
 
-pub fn inFunction(mut context: Type) -> bool {
+pub(crate) fn inFunction(mut context: Type) -> bool {
     let mut res: bool = intBitAnd(context.clone(), FUNCTION.clone()) > 0;
     res
 }
 
-pub fn inRedeclared(mut context: Type) -> bool {
+pub(crate) fn inRedeclared(mut context: Type) -> bool {
     let mut res: bool = intBitAnd(context.clone(), REDECLARED.clone()) > 0;
     res
 }
 
-pub fn inAlgorithm(mut context: Type) -> bool {
+pub(crate) fn inAlgorithm(mut context: Type) -> bool {
     let mut res: bool = intBitAnd(context.clone(), ALGORITHM.clone()) > 0;
     res
 }
 
-pub fn inEquation(mut context: Type) -> bool {
+pub(crate) fn inEquation(mut context: Type) -> bool {
     let mut res: bool = intBitAnd(context.clone(), EQUATION.clone()) > 0;
     res
 }
 
-pub fn inInitial(mut context: Type) -> bool {
+pub(crate) fn inInitial(mut context: Type) -> bool {
     let mut res: bool = intBitAnd(context.clone(), INITIAL.clone()) > 0;
     res
 }
 
-pub fn onLHS(mut context: Type) -> bool {
+pub(crate) fn onLHS(mut context: Type) -> bool {
     let mut res: bool = intBitAnd(context.clone(), LHS.clone()) > 0;
     res
 }
 
-pub fn onRHS(mut context: Type) -> bool {
+pub(crate) fn onRHS(mut context: Type) -> bool {
     let mut res: bool = intBitAnd(context.clone(), RHS.clone()) > 0;
     res
 }
 
-pub fn inWhen(mut context: Type) -> bool {
+pub(crate) fn inWhen(mut context: Type) -> bool {
     let mut res: bool = intBitAnd(context.clone(), WHEN.clone()) > 0;
     res
 }
 
-pub fn inClocked(mut context: Type) -> bool {
+pub(crate) fn inClocked(mut context: Type) -> bool {
     let mut res: bool = intBitAnd(context.clone(), CLOCKED.clone()) > 0;
     res
 }
 
-pub fn inFor(mut context: Type) -> bool {
+pub(crate) fn inFor(mut context: Type) -> bool {
     let mut res: bool = intBitAnd(context.clone(), FOR.clone()) > 0;
     res
 }
 
-pub fn inIf(mut context: Type) -> bool {
+pub(crate) fn inIf(mut context: Type) -> bool {
     let mut res: bool = intBitAnd(context.clone(), IF.clone()) > 0;
     res
 }
 
-pub fn inWhile(mut context: Type) -> bool {
+pub(crate) fn inWhile(mut context: Type) -> bool {
     let mut res: bool = intBitAnd(context.clone(), WHILE.clone()) > 0;
     res
 }
 
-pub fn inNonexpandable(mut context: Type) -> bool {
+pub(crate) fn inNonexpandable(mut context: Type) -> bool {
     let mut res: bool = intBitAnd(context.clone(), NONEXPANDABLE.clone()) > 0;
     res
 }
 
-pub fn inIterationRange(mut context: Type) -> bool {
+pub(crate) fn inIterationRange(mut context: Type) -> bool {
     let mut res: bool = intBitAnd(context.clone(), ITERATION_RANGE.clone()) > 0;
     res
 }
 
-pub fn inDimension(mut context: Type) -> bool {
+pub(crate) fn inDimension(mut context: Type) -> bool {
     let mut res: bool = intBitAnd(context.clone(), DIMENSION.clone()) > 0;
     res
 }
 
-pub fn inBinding(mut context: Type) -> bool {
+pub(crate) fn inBinding(mut context: Type) -> bool {
     let mut res: bool = intBitAnd(context.clone(), BINDING.clone()) > 0;
     res
 }
 
-pub fn inCondition(mut context: Type) -> bool {
+pub(crate) fn inCondition(mut context: Type) -> bool {
     let mut res: bool = intBitAnd(context.clone(), CONDITION.clone()) > 0;
     res
 }
 
-pub fn inSubscript(mut context: Type) -> bool {
+pub(crate) fn inSubscript(mut context: Type) -> bool {
     let mut res: bool = intBitAnd(context.clone(), SUBSCRIPT.clone()) > 0;
     res
 }
 
-pub fn inSubexpression(mut context: Type) -> bool {
+pub(crate) fn inSubexpression(mut context: Type) -> bool {
     let mut res: bool = intBitAnd(context.clone(), SUBEXPRESSION.clone()) > 0;
     res
 }
 
-pub fn inConnect(mut context: Type) -> bool {
+pub(crate) fn inConnect(mut context: Type) -> bool {
     let mut res: bool = intBitAnd(context.clone(), CONNECT.clone()) > 0;
     res
 }
 
-pub fn inNoEvent(mut context: Type) -> bool {
+pub(crate) fn inNoEvent(mut context: Type) -> bool {
     let mut res: bool = intBitAnd(context.clone(), NOEVENT.clone()) > 0;
     res
 }
 
-pub fn inAssert(mut context: Type) -> bool {
+pub(crate) fn inAssert(mut context: Type) -> bool {
     let mut res: bool = intBitAnd(context.clone(), ASSERT.clone()) > 0;
     res
 }
 
-pub fn inAnnotation(mut context: Type) -> bool {
+pub(crate) fn inAnnotation(mut context: Type) -> bool {
     let mut res: bool = intBitAnd(context.clone(), ANNOTATION.clone()) > 0;
     res
 }
 
-pub fn inValidTypenameScope(mut context: Type) -> bool {
+pub(crate) fn inValidTypenameScope(mut context: Type) -> bool {
     let mut res: bool = intBitAnd(context.clone(), intBitOr(ITERATION_RANGE.clone(), DIMENSION.clone())) > 0;
     res
 }
 
-pub fn inDiscreteScope(mut context: Type) -> bool {
+pub(crate) fn inDiscreteScope(mut context: Type) -> bool {
     let mut res: bool = intBitAnd(context.clone(), intBitOr(WHEN.clone(), intBitOr(INITIAL.clone(), FUNCTION.clone()))) > 0;
     res
 }
 
-pub fn inLoop(mut context: Type) -> bool {
+pub(crate) fn inLoop(mut context: Type) -> bool {
     let mut res: bool = intBitAnd(context.clone(), intBitOr(FOR.clone(), WHILE.clone())) > 0;
     res
 }
 
-pub fn inValidWhenScope(mut context: Type) -> bool {
+pub(crate) fn inValidWhenScope(mut context: Type) -> bool {
     let mut res: bool = intBitAnd(context.clone(), intBitOr(intBitOr(FUNCTION.clone(), WHILE.clone()), intBitOr(IF.clone(), intBitOr(FOR.clone(), WHEN.clone())))) == 0;
     res
 }
 
-pub fn isSingleExpression(mut context: Type) -> bool {
+pub(crate) fn isSingleExpression(mut context: Type) -> bool {
     let mut isSingle: bool = context.clone() < ITERATION_RANGE.clone() - 1;
     isSingle
 }
 
-pub fn nodeContext(mut node: Arc<InstNode::InstNode>, mut currentContext: Type) -> Type {
+pub(crate) fn nodeContext(mut node: Arc<InstNode::InstNode>, mut currentContext: Type) -> Type {
     let mut nodeContext: Type;
     let mut parent: Arc<InstNode::InstNode>;
     let mut parent_res: Arc<Restriction::NFRestriction>;

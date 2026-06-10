@@ -111,42 +111,42 @@ impl metamodelica::gc::MMTrace for MatchKind {
     fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 
-pub fn isCompatibleMatch(mut kind: MatchKind) -> bool {
+pub(crate) fn isCompatibleMatch(mut kind: MatchKind) -> bool {
     let mut isCompatible: bool = kind.clone() != MatchKind::NOT_COMPATIBLE.clone();
     isCompatible
 }
 
-pub fn isIncompatibleMatch(mut kind: MatchKind) -> bool {
+pub(crate) fn isIncompatibleMatch(mut kind: MatchKind) -> bool {
     let mut isIncompatible: bool = kind.clone() == MatchKind::NOT_COMPATIBLE.clone();
     isIncompatible
 }
 
-pub fn isExactMatch(mut kind: MatchKind) -> bool {
+pub(crate) fn isExactMatch(mut kind: MatchKind) -> bool {
     let mut isCompatible: bool = kind.clone() == MatchKind::EXACT.clone();
     isCompatible
 }
 
-pub fn isCastMatch(mut kind: MatchKind) -> bool {
+pub(crate) fn isCastMatch(mut kind: MatchKind) -> bool {
     let mut isCast: bool = kind.clone() == MatchKind::CAST.clone();
     isCast
 }
 
-pub fn isGenericMatch(mut kind: MatchKind) -> bool {
+pub(crate) fn isGenericMatch(mut kind: MatchKind) -> bool {
     let mut isCast: bool = kind.clone() == MatchKind::GENERIC.clone();
     isCast
 }
 
-pub fn isValidAssignmentMatch(mut kind: MatchKind) -> bool {
+pub(crate) fn isValidAssignmentMatch(mut kind: MatchKind) -> bool {
     let mut v: bool = kind.clone() == MatchKind::EXACT.clone() || kind.clone() == MatchKind::CAST.clone() || kind.clone() == MatchKind::PLUG_COMPATIBLE.clone();
     v
 }
 
-pub fn isValidArgumentMatch(mut kind: MatchKind) -> bool {
+pub(crate) fn isValidArgumentMatch(mut kind: MatchKind) -> bool {
     let mut v: bool = kind.clone() == MatchKind::EXACT.clone() || kind.clone() == MatchKind::CAST.clone() || kind.clone() == MatchKind::GENERIC.clone() || kind.clone() == MatchKind::PLUG_COMPATIBLE.clone();
     v
 }
 
-pub fn isValidPlugCompatibleMatch(mut kind: MatchKind) -> bool {
+pub(crate) fn isValidPlugCompatibleMatch(mut kind: MatchKind) -> bool {
     let mut v: bool = kind.clone() == MatchKind::EXACT.clone() || kind.clone() == MatchKind::PLUG_COMPATIBLE.clone();
     v
 }
@@ -161,17 +161,17 @@ pub const IGNORE_DIMENSIONS: i32 = intBitLShift(1, 1);
 
 pub const IGNORE_DIMENSIONS_IN_RECORDS: i32 = intBitLShift(1, 2);
 
-pub fn setOption(mut currentOptions: MatchOptions, mut newOption: MatchOptions) -> MatchOptions {
+pub(crate) fn setOption(mut currentOptions: MatchOptions, mut newOption: MatchOptions) -> MatchOptions {
     let mut newOptions: MatchOptions = intBitOr(currentOptions.clone(), newOption.clone());
     newOptions
 }
 
-pub fn getOption(mut options: MatchOptions, mut option: MatchOptions) -> bool {
+pub(crate) fn getOption(mut options: MatchOptions, mut option: MatchOptions) -> bool {
     let mut isSet: bool = intBitAnd(options.clone(), option.clone()) > 0;
     isSet
 }
 
-pub fn checkBinaryOperation(mut exp1: Arc<Expression::NFExpression>, mut type1: Arc<Type::NFType>, mut var1: Variability, mut operator: Arc<Operator::NFOperator>, mut exp2: Arc<Expression::NFExpression>, mut type2: Arc<Type::NFType>, mut var2: Variability, mut context: i32, mut info: SourceInfo, mut retype: bool) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>)> {
+pub(crate) fn checkBinaryOperation(mut exp1: Arc<Expression::NFExpression>, mut type1: Arc<Type::NFType>, mut var1: Variability, mut operator: Arc<Operator::NFOperator>, mut exp2: Arc<Expression::NFExpression>, mut type2: Arc<Type::NFType>, mut var2: Variability, mut context: i32, mut info: SourceInfo, mut retype: bool) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>)> {
     let mut binaryExp: Arc<Expression::NFExpression>;
     let mut resultType: Arc<Type::NFType>;
     if Type::isConditionalArray(type1.clone()) || Type::isConditionalArray(type2.clone()) {
@@ -213,7 +213,7 @@ pub fn checkBinaryOperation(mut exp1: Arc<Expression::NFExpression>, mut type1: 
     Ok((binaryExp, resultType))
 }
 
-pub fn checkOverloadedBinaryOperator(mut exp1: Arc<Expression::NFExpression>, mut type1: Arc<Type::NFType>, mut var1: Variability, mut op: Arc<Operator::NFOperator>, mut exp2: Arc<Expression::NFExpression>, mut type2: Arc<Type::NFType>, mut var2: Variability, mut context: i32, mut info: SourceInfo) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>)> {
+pub(crate) fn checkOverloadedBinaryOperator(mut exp1: Arc<Expression::NFExpression>, mut type1: Arc<Type::NFType>, mut var1: Variability, mut op: Arc<Operator::NFOperator>, mut exp2: Arc<Expression::NFExpression>, mut type2: Arc<Type::NFType>, mut var2: Variability, mut context: i32, mut info: SourceInfo) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>)> {
     let mut outExp: Arc<Expression::NFExpression>;
     let mut outType: Arc<Type::NFType>;
     let mut op_str: ArcStr;
@@ -239,7 +239,7 @@ pub fn checkOverloadedBinaryOperator(mut exp1: Arc<Expression::NFExpression>, mu
     Ok((outExp, outType))
 }
 
-pub fn matchOverloadedBinaryOperator(mut exp1: Arc<Expression::NFExpression>, mut type1: Arc<Type::NFType>, mut var1: Variability, mut op: Arc<Operator::NFOperator>, mut exp2: Arc<Expression::NFExpression>, mut type2: Arc<Type::NFType>, mut var2: Variability, mut candidates: Arc<metamodelica::List<Arc<Function::Function>>>, mut context: i32, mut info: SourceInfo, mut showErrors: bool) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>)> {
+pub(crate) fn matchOverloadedBinaryOperator(mut exp1: Arc<Expression::NFExpression>, mut type1: Arc<Type::NFType>, mut var1: Variability, mut op: Arc<Operator::NFOperator>, mut exp2: Arc<Expression::NFExpression>, mut type2: Arc<Type::NFType>, mut var2: Variability, mut candidates: Arc<metamodelica::List<Arc<Function::Function>>>, mut context: i32, mut info: SourceInfo, mut showErrors: bool) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>)> {
     let mut outExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut outType: Arc<Type::NFType> = Arc::new(Type::ANY);
     let mut args: Arc<metamodelica::List<Arc<TypedArg>>>;
@@ -309,7 +309,7 @@ pub fn matchOverloadedBinaryOperator(mut exp1: Arc<Expression::NFExpression>, mu
     Ok((outExp, outType))
 }
 
-pub fn checkBinaryOperationBoxed(mut exp1: Arc<Expression::NFExpression>, mut type1: Arc<Type::NFType>, mut var1: Variability, mut op: Arc<Operator::NFOperator>, mut exp2: Arc<Expression::NFExpression>, mut type2: Arc<Type::NFType>, mut var2: Variability, mut context: i32, mut info: SourceInfo, mut retype: bool) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>)> {
+pub(crate) fn checkBinaryOperationBoxed(mut exp1: Arc<Expression::NFExpression>, mut type1: Arc<Type::NFType>, mut var1: Variability, mut op: Arc<Operator::NFOperator>, mut exp2: Arc<Expression::NFExpression>, mut type2: Arc<Type::NFType>, mut var2: Variability, mut context: i32, mut info: SourceInfo, mut retype: bool) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>)> {
     let mut outExp: Arc<Expression::NFExpression>;
     let mut outType: Arc<Type::NFType>;
     let mut e1: Arc<Expression::NFExpression>;
@@ -1023,7 +1023,7 @@ fn checkBinaryOperationEW(mut exp1: Arc<Expression::NFExpression>, mut type1: Ar
     Ok((binaryExp, resultType))
 }
 
-pub fn checkUnaryOperation(mut exp1: Arc<Expression::NFExpression>, mut type1: Arc<Type::NFType>, mut var1: Variability, mut operator: Arc<Operator::NFOperator>, mut context: i32, mut info: SourceInfo) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>)> {
+pub(crate) fn checkUnaryOperation(mut exp1: Arc<Expression::NFExpression>, mut type1: Arc<Type::NFType>, mut var1: Variability, mut operator: Arc<Operator::NFOperator>, mut context: i32, mut info: SourceInfo) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>)> {
     let mut unaryExp: Arc<Expression::NFExpression>;
     let mut unaryType: Arc<Type::NFType>;
     let mut op: Arc<Operator::NFOperator>;
@@ -1043,7 +1043,7 @@ pub fn checkUnaryOperation(mut exp1: Arc<Expression::NFExpression>, mut type1: A
     Ok((unaryExp, unaryType))
 }
 
-pub fn checkOverloadedUnaryOperator(mut inExp1: Arc<Expression::NFExpression>, mut inType1: Arc<Type::NFType>, mut var: Variability, mut inOp: Arc<Operator::NFOperator>, mut context: i32, mut info: SourceInfo) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>)> {
+pub(crate) fn checkOverloadedUnaryOperator(mut inExp1: Arc<Expression::NFExpression>, mut inType1: Arc<Type::NFType>, mut var: Variability, mut inOp: Arc<Operator::NFOperator>, mut context: i32, mut info: SourceInfo) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>)> {
     let mut outExp: Arc<Expression::NFExpression>;
     let mut outType: Arc<Type::NFType>;
     let mut opstr: ArcStr;
@@ -1091,7 +1091,7 @@ pub fn checkOverloadedUnaryOperator(mut inExp1: Arc<Expression::NFExpression>, m
     Ok((outExp, outType))
 }
 
-pub fn checkLogicalBinaryOperation(mut exp1: Arc<Expression::NFExpression>, mut type1: Arc<Type::NFType>, mut var1: Variability, mut operator: Arc<Operator::NFOperator>, mut exp2: Arc<Expression::NFExpression>, mut type2: Arc<Type::NFType>, mut var2: Variability, mut context: i32, mut info: SourceInfo) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>)> {
+pub(crate) fn checkLogicalBinaryOperation(mut exp1: Arc<Expression::NFExpression>, mut type1: Arc<Type::NFType>, mut var1: Variability, mut operator: Arc<Operator::NFOperator>, mut exp2: Arc<Expression::NFExpression>, mut type2: Arc<Type::NFType>, mut var2: Variability, mut context: i32, mut info: SourceInfo) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>)> {
     let mut outExp: Arc<Expression::NFExpression>;
     let mut resultType: Arc<Type::NFType>;
     let mut e1: Arc<Expression::NFExpression>;
@@ -1109,7 +1109,7 @@ pub fn checkLogicalBinaryOperation(mut exp1: Arc<Expression::NFExpression>, mut 
     Ok((outExp, resultType))
 }
 
-pub fn checkLogicalUnaryOperation(mut exp1: Arc<Expression::NFExpression>, mut type1: Arc<Type::NFType>, mut var1: Variability, mut operator: Arc<Operator::NFOperator>, mut context: i32, mut info: SourceInfo) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>)> {
+pub(crate) fn checkLogicalUnaryOperation(mut exp1: Arc<Expression::NFExpression>, mut type1: Arc<Type::NFType>, mut var1: Variability, mut operator: Arc<Operator::NFOperator>, mut context: i32, mut info: SourceInfo) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>)> {
     let mut outExp: Arc<Expression::NFExpression>;
     let mut resultType: Arc<Type::NFType> = type1.clone();
     if Type::isComplex(Type::arrayElementType(type1.clone())) {
@@ -1123,7 +1123,7 @@ pub fn checkLogicalUnaryOperation(mut exp1: Arc<Expression::NFExpression>, mut t
     Ok((outExp, resultType))
 }
 
-pub fn checkRelationOperation(mut exp1: Arc<Expression::NFExpression>, mut type1: Arc<Type::NFType>, mut var1: Variability, mut operator: Arc<Operator::NFOperator>, mut exp2: Arc<Expression::NFExpression>, mut type2: Arc<Type::NFType>, mut var2: Variability, mut index: i32, mut context: i32, mut info: SourceInfo) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>)> {
+pub(crate) fn checkRelationOperation(mut exp1: Arc<Expression::NFExpression>, mut type1: Arc<Type::NFType>, mut var1: Variability, mut operator: Arc<Operator::NFOperator>, mut exp2: Arc<Expression::NFExpression>, mut type2: Arc<Type::NFType>, mut var2: Variability, mut index: i32, mut context: i32, mut info: SourceInfo) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>)> {
     let mut outExp: Arc<Expression::NFExpression>;
     let mut resultType: Arc<Type::NFType>;
     let mut e1: Arc<Expression::NFExpression>;
@@ -1161,7 +1161,7 @@ pub fn checkRelationOperation(mut exp1: Arc<Expression::NFExpression>, mut type1
     Ok((outExp, resultType))
 }
 
-pub fn printUnresolvableTypeError(mut exp: Arc<Expression::NFExpression>, mut types: Arc<metamodelica::List<Arc<Type::NFType>>>, mut info: SourceInfo, mut printError: bool) -> Result<()> {
+pub(crate) fn printUnresolvableTypeError(mut exp: Arc<Expression::NFExpression>, mut types: Arc<metamodelica::List<Arc<Type::NFType>>>, mut info: SourceInfo, mut printError: bool) -> Result<()> {
     let mut exp_str: ArcStr;
     let mut ty_str: ArcStr;
     if printError.clone() {
@@ -1173,7 +1173,7 @@ pub fn printUnresolvableTypeError(mut exp: Arc<Expression::NFExpression>, mut ty
     Ok(())
 }
 
-pub fn matchExpressions(mut exp1: Arc<Expression::NFExpression>, mut type1: Arc<Type::NFType>, mut exp2: Arc<Expression::NFExpression>, mut type2: Arc<Type::NFType>, mut options: MatchOptions) -> Result<(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>, Arc<Type::NFType>, MatchKind)> {
+pub(crate) fn matchExpressions(mut exp1: Arc<Expression::NFExpression>, mut type1: Arc<Type::NFType>, mut exp2: Arc<Expression::NFExpression>, mut type2: Arc<Type::NFType>, mut options: MatchOptions) -> Result<(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>, Arc<Type::NFType>, MatchKind)> {
     let mut exp1: Arc<Expression::NFExpression> = exp1;
     let mut exp2: Arc<Expression::NFExpression> = exp2;
     let mut compatibleType: Arc<Type::NFType> = Arc::new(Type::ANY);
@@ -1294,7 +1294,7 @@ pub fn matchTypes(mut actualType: Arc<Type::NFType>, mut expectedType: Arc<Type:
     Ok((expression, compatibleType, matchKind))
 }
 
-pub fn matchExpressions_cast(mut exp1: Arc<Expression::NFExpression>, mut type1: Arc<Type::NFType>, mut exp2: Arc<Expression::NFExpression>, mut type2: Arc<Type::NFType>, mut options: MatchOptions) -> Result<(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>, Arc<Type::NFType>, MatchKind)> {
+pub(crate) fn matchExpressions_cast(mut exp1: Arc<Expression::NFExpression>, mut type1: Arc<Type::NFType>, mut exp2: Arc<Expression::NFExpression>, mut type2: Arc<Type::NFType>, mut options: MatchOptions) -> Result<(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>, Arc<Type::NFType>, MatchKind)> {
     let mut exp1: Arc<Expression::NFExpression> = exp1;
     let mut exp2: Arc<Expression::NFExpression> = exp2;
     let mut compatibleType: Arc<Type::NFType> = Arc::new(Type::ANY);
@@ -1370,7 +1370,7 @@ pub fn matchExpressions_cast(mut exp1: Arc<Expression::NFExpression>, mut type1:
     Ok((exp1, exp2, compatibleType, matchKind))
 }
 
-pub fn matchComplexTypes(mut actualType: Arc<Type::NFType>, mut expectedType: Arc<Type::NFType>, mut expression: Arc<Expression::NFExpression>, mut options: MatchOptions) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>, MatchKind)> {
+pub(crate) fn matchComplexTypes(mut actualType: Arc<Type::NFType>, mut expectedType: Arc<Type::NFType>, mut expression: Arc<Expression::NFExpression>, mut options: MatchOptions) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>, MatchKind)> {
     let mut expression: Arc<Expression::NFExpression> = expression;
     let mut compatibleType: Arc<Type::NFType> = actualType.clone();
     let mut matchKind: MatchKind = MatchKind::NOT_COMPATIBLE.clone();
@@ -1465,7 +1465,7 @@ pub fn matchComplexTypes(mut actualType: Arc<Type::NFType>, mut expectedType: Ar
     Ok((expression, compatibleType, matchKind))
 }
 
-pub fn matchComplexComponents(mut actualComponents: metamodelica::Array<Arc<InstNode::InstNode>>, mut expectedComponents: metamodelica::Array<Arc<InstNode::InstNode>>, mut expressions: metamodelica::Array<Arc<Expression::NFExpression>>, mut classTree: Arc<ClassTree::ClassTree>, mut options: MatchOptions) -> Result<(Arc<metamodelica::List<Arc<Expression::NFExpression>>>, MatchKind)> {
+pub(crate) fn matchComplexComponents(mut actualComponents: metamodelica::Array<Arc<InstNode::InstNode>>, mut expectedComponents: metamodelica::Array<Arc<InstNode::InstNode>>, mut expressions: metamodelica::Array<Arc<Expression::NFExpression>>, mut classTree: Arc<ClassTree::ClassTree>, mut options: MatchOptions) -> Result<(Arc<metamodelica::List<Arc<Expression::NFExpression>>>, MatchKind)> {
     let mut matchedExpressions: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
     let mut matchKind: MatchKind = MatchKind::PLUG_COMPATIBLE.clone();
     let mut anode: Arc<InstNode::InstNode>;
@@ -1512,7 +1512,7 @@ pub fn matchComplexComponents(mut actualComponents: metamodelica::Array<Arc<Inst
     Ok((matchedExpressions, matchKind))
 }
 
-pub fn typeCastRecord(mut expressions: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut node: Arc<InstNode::InstNode>, mut expectedType: Arc<Type::NFType>, mut expression: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
+pub(crate) fn typeCastRecord(mut expressions: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut node: Arc<InstNode::InstNode>, mut expectedType: Arc<Type::NFType>, mut expression: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
     let mut expression: Arc<Expression::NFExpression> = expression;
     let mut ty: Arc<Type::NFType>;
     let mut dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>>;
@@ -1574,7 +1574,7 @@ pub fn typeCastRecord(mut expressions: Arc<metamodelica::List<Arc<Expression::NF
     Ok(expression)
 }
 
-pub fn matchComponentList(mut comps1: Arc<metamodelica::List<Arc<InstNode::InstNode>>>, mut comps2: Arc<metamodelica::List<Arc<InstNode::InstNode>>>, mut options: MatchOptions) -> Result<MatchKind> {
+pub(crate) fn matchComponentList(mut comps1: Arc<metamodelica::List<Arc<InstNode::InstNode>>>, mut comps2: Arc<metamodelica::List<Arc<InstNode::InstNode>>>, mut options: MatchOptions) -> Result<MatchKind> {
     let mut matchKind: MatchKind;
     let mut c2: Arc<InstNode::InstNode>;
     let mut rest_c2: Arc<metamodelica::List<Arc<InstNode::InstNode>>> = comps2.clone();
@@ -1604,7 +1604,7 @@ pub fn matchComponentList(mut comps1: Arc<metamodelica::List<Arc<InstNode::InstN
     Ok(matchKind)
 }
 
-pub fn matchFunctionTypes(mut actualType: Arc<Type::NFType>, mut expectedType: Arc<Type::NFType>, mut expression: Arc<Expression::NFExpression>, mut options: MatchOptions) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>, MatchKind)> {
+pub(crate) fn matchFunctionTypes(mut actualType: Arc<Type::NFType>, mut expectedType: Arc<Type::NFType>, mut expression: Arc<Expression::NFExpression>, mut options: MatchOptions) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>, MatchKind)> {
     let mut expression: Arc<Expression::NFExpression> = expression;
     let mut compatibleType: Arc<Type::NFType> = actualType.clone();
     let mut matchKind: MatchKind = MatchKind::EXACT.clone();
@@ -1671,7 +1671,7 @@ pub fn matchFunctionTypes(mut actualType: Arc<Type::NFType>, mut expectedType: A
     Ok((expression, compatibleType, matchKind))
 }
 
-pub fn matchFunctionParameters(mut params1: Arc<metamodelica::List<Arc<InstNode::InstNode>>>, mut params2: Arc<metamodelica::List<Arc<InstNode::InstNode>>>, mut options: MatchOptions) -> Result<bool> {
+pub(crate) fn matchFunctionParameters(mut params1: Arc<metamodelica::List<Arc<InstNode::InstNode>>>, mut params2: Arc<metamodelica::List<Arc<InstNode::InstNode>>>, mut options: MatchOptions) -> Result<bool> {
     let mut matching: bool = true;
     let mut pl1: Arc<metamodelica::List<Arc<InstNode::InstNode>>> = params1.clone();
     let mut pl2: Arc<metamodelica::List<Arc<InstNode::InstNode>>> = params2.clone();
@@ -1703,7 +1703,7 @@ pub fn matchFunctionParameters(mut params1: Arc<metamodelica::List<Arc<InstNode:
     Ok(matching)
 }
 
-pub fn matchEnumerationTypes(mut type1: Arc<Type::NFType>, mut type2: Arc<Type::NFType>) -> Result<MatchKind> {
+pub(crate) fn matchEnumerationTypes(mut type1: Arc<Type::NFType>, mut type2: Arc<Type::NFType>) -> Result<MatchKind> {
     let mut matchKind: MatchKind;
     let mut lits1: Arc<metamodelica::List<ArcStr>>;
     let mut lits2: Arc<metamodelica::List<ArcStr>>;
@@ -1721,7 +1721,7 @@ pub fn matchEnumerationTypes(mut type1: Arc<Type::NFType>, mut type2: Arc<Type::
     Ok(matchKind)
 }
 
-pub fn matchArrayExpressions(mut exp1: Arc<Expression::NFExpression>, mut type1: Arc<Type::NFType>, mut exp2: Arc<Expression::NFExpression>, mut type2: Arc<Type::NFType>, mut options: MatchOptions) -> Result<(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>, Arc<Type::NFType>, MatchKind)> {
+pub(crate) fn matchArrayExpressions(mut exp1: Arc<Expression::NFExpression>, mut type1: Arc<Type::NFType>, mut exp2: Arc<Expression::NFExpression>, mut type2: Arc<Type::NFType>, mut options: MatchOptions) -> Result<(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>, Arc<Type::NFType>, MatchKind)> {
     let mut exp1: Arc<Expression::NFExpression> = exp1;
     let mut exp2: Arc<Expression::NFExpression> = exp2;
     let mut compatibleType: Arc<Type::NFType>;
@@ -1747,7 +1747,7 @@ pub fn matchArrayExpressions(mut exp1: Arc<Expression::NFExpression>, mut type1:
     Ok((exp1, exp2, compatibleType, matchKind))
 }
 
-pub fn matchArrayTypes(mut arrayType1: Arc<Type::NFType>, mut arrayType2: Arc<Type::NFType>, mut expression: Arc<Expression::NFExpression>, mut options: MatchOptions) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>, MatchKind)> {
+pub(crate) fn matchArrayTypes(mut arrayType1: Arc<Type::NFType>, mut arrayType2: Arc<Type::NFType>, mut expression: Arc<Expression::NFExpression>, mut options: MatchOptions) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>, MatchKind)> {
     let mut expression: Arc<Expression::NFExpression> = expression;
     let mut compatibleType: Arc<Type::NFType>;
     let mut matchKind: MatchKind;
@@ -1772,7 +1772,7 @@ pub fn matchArrayTypes(mut arrayType1: Arc<Type::NFType>, mut arrayType2: Arc<Ty
     Ok((expression, compatibleType, matchKind))
 }
 
-pub fn matchArrayDims(mut dims1: Arc<metamodelica::List<Arc<Dimension::NFDimension>>>, mut dims2: Arc<metamodelica::List<Arc<Dimension::NFDimension>>>, mut ty: Arc<Type::NFType>, mut matchKind: MatchKind, mut options: MatchOptions) -> Result<(Arc<Type::NFType>, MatchKind)> {
+pub(crate) fn matchArrayDims(mut dims1: Arc<metamodelica::List<Arc<Dimension::NFDimension>>>, mut dims2: Arc<metamodelica::List<Arc<Dimension::NFDimension>>>, mut ty: Arc<Type::NFType>, mut matchKind: MatchKind, mut options: MatchOptions) -> Result<(Arc<Type::NFType>, MatchKind)> {
     let mut ty: Arc<Type::NFType> = ty;
     let mut matchKind: MatchKind = matchKind;
     let mut rest_dims2: Arc<metamodelica::List<Arc<Dimension::NFDimension>>> = dims2.clone();
@@ -1805,7 +1805,7 @@ pub fn matchArrayDims(mut dims1: Arc<metamodelica::List<Arc<Dimension::NFDimensi
     Ok((ty, matchKind))
 }
 
-pub fn matchDimensions(mut dim1: Arc<Dimension::NFDimension>, mut dim2: Arc<Dimension::NFDimension>) -> Result<(Arc<Dimension::NFDimension>, bool)> {
+pub(crate) fn matchDimensions(mut dim1: Arc<Dimension::NFDimension>, mut dim2: Arc<Dimension::NFDimension>) -> Result<(Arc<Dimension::NFDimension>, bool)> {
     let mut compatibleDim: Arc<Dimension::NFDimension>;
     let mut compatible: bool;
     if Dimension::isEqualKnown(dim1.clone(), dim2.clone())? {
@@ -1829,7 +1829,7 @@ pub fn matchDimensions(mut dim1: Arc<Dimension::NFDimension>, mut dim2: Arc<Dime
     Ok((compatibleDim, compatible))
 }
 
-pub fn matchTupleTypes(mut tupleType1: Arc<Type::NFType>, mut tupleType2: Arc<Type::NFType>, mut expression: Arc<Expression::NFExpression>, mut options: MatchOptions) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>, MatchKind)> {
+pub(crate) fn matchTupleTypes(mut tupleType1: Arc<Type::NFType>, mut tupleType2: Arc<Type::NFType>, mut expression: Arc<Expression::NFExpression>, mut options: MatchOptions) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>, MatchKind)> {
     let mut expression: Arc<Expression::NFExpression> = expression;
     let mut compatibleType: Arc<Type::NFType> = tupleType1.clone();
     let mut matchKind: MatchKind = MatchKind::EXACT.clone();
@@ -1869,7 +1869,7 @@ pub fn matchTupleTypes(mut tupleType1: Arc<Type::NFType>, mut tupleType2: Arc<Ty
     Ok((expression, compatibleType, matchKind))
 }
 
-pub fn matchBoxedExpressions(mut exp1: Arc<Expression::NFExpression>, mut type1: Arc<Type::NFType>, mut exp2: Arc<Expression::NFExpression>, mut type2: Arc<Type::NFType>, mut options: MatchOptions) -> Result<(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>, Arc<Type::NFType>, MatchKind)> {
+pub(crate) fn matchBoxedExpressions(mut exp1: Arc<Expression::NFExpression>, mut type1: Arc<Type::NFType>, mut exp2: Arc<Expression::NFExpression>, mut type2: Arc<Type::NFType>, mut options: MatchOptions) -> Result<(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>, Arc<Type::NFType>, MatchKind)> {
     let mut exp1: Arc<Expression::NFExpression> = exp1;
     let mut exp2: Arc<Expression::NFExpression> = exp2;
     let mut compatibleType: Arc<Type::NFType>;
@@ -1887,7 +1887,7 @@ pub fn matchBoxedExpressions(mut exp1: Arc<Expression::NFExpression>, mut type1:
     Ok((exp1, exp2, compatibleType, matchKind))
 }
 
-pub fn matchConditionalArrayExp(mut condExp: Arc<Expression::NFExpression>, mut condType: Arc<Type::NFType>, mut otherExp: Arc<Expression::NFExpression>, mut otherType: Arc<Type::NFType>, mut options: MatchOptions) -> Result<(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>, Arc<Type::NFType>, MatchKind)> {
+pub(crate) fn matchConditionalArrayExp(mut condExp: Arc<Expression::NFExpression>, mut condType: Arc<Type::NFType>, mut otherExp: Arc<Expression::NFExpression>, mut otherType: Arc<Type::NFType>, mut options: MatchOptions) -> Result<(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>, Arc<Type::NFType>, MatchKind)> {
     let mut condExp: Arc<Expression::NFExpression> = condExp;
     let mut otherExp: Arc<Expression::NFExpression> = otherExp;
     let mut compatibleType: Arc<Type::NFType>;
@@ -1951,7 +1951,7 @@ pub fn matchConditionalArrayExp(mut condExp: Arc<Expression::NFExpression>, mut 
     Ok((condExp, otherExp, compatibleType, matchKind))
 }
 
-pub fn matchConditionalArrayTypes(mut actualType: Arc<Type::NFType>, mut expectedType: Arc<Type::NFType>, mut exp: Arc<Expression::NFExpression>, mut options: MatchOptions) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>, MatchKind)> {
+pub(crate) fn matchConditionalArrayTypes(mut actualType: Arc<Type::NFType>, mut expectedType: Arc<Type::NFType>, mut exp: Arc<Expression::NFExpression>, mut options: MatchOptions) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>, MatchKind)> {
     let mut exp: Arc<Expression::NFExpression> = exp;
     let mut compatibleType: Arc<Type::NFType> = Arc::new(Type::ANY);
     let mut matchKind: MatchKind = MatchKind::EXACT;
@@ -1996,7 +1996,7 @@ pub fn matchConditionalArrayTypes(mut actualType: Arc<Type::NFType>, mut expecte
     Ok((exp, compatibleType, matchKind))
 }
 
-pub fn matchConditionalArrayTypes_cast(mut condType: Arc<Type::NFType>, mut expectedType: Arc<Type::NFType>, mut exp: Arc<Expression::NFExpression>, mut options: MatchOptions) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>, MatchKind)> {
+pub(crate) fn matchConditionalArrayTypes_cast(mut condType: Arc<Type::NFType>, mut expectedType: Arc<Type::NFType>, mut exp: Arc<Expression::NFExpression>, mut options: MatchOptions) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>, MatchKind)> {
     let mut exp: Arc<Expression::NFExpression> = exp;
     let mut compatibleType: Arc<Type::NFType>;
     let mut matchKind: MatchKind;
@@ -2053,7 +2053,7 @@ pub fn matchConditionalArrayTypes_cast(mut condType: Arc<Type::NFType>, mut expe
     Ok((exp, compatibleType, matchKind))
 }
 
-pub fn matchTypes_cast(mut actualType: Arc<Type::NFType>, mut expectedType: Arc<Type::NFType>, mut expression: Arc<Expression::NFExpression>, mut options: MatchOptions) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>, MatchKind)> {
+pub(crate) fn matchTypes_cast(mut actualType: Arc<Type::NFType>, mut expectedType: Arc<Type::NFType>, mut expression: Arc<Expression::NFExpression>, mut options: MatchOptions) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>, MatchKind)> {
     let mut expression: Arc<Expression::NFExpression> = expression;
     let mut compatibleType: Arc<Type::NFType> = Arc::new(Type::ANY);
     let mut matchKind: MatchKind = MatchKind::EXACT;
@@ -2114,7 +2114,7 @@ pub fn matchTypes_cast(mut actualType: Arc<Type::NFType>, mut expectedType: Arc<
     Ok((expression, compatibleType, matchKind))
 }
 
-pub fn matchPolymorphic(mut polymorphicName: ArcStr, mut actualType: Arc<Type::NFType>, mut exp: Arc<Expression::NFExpression>) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>, MatchKind)> {
+pub(crate) fn matchPolymorphic(mut polymorphicName: ArcStr, mut actualType: Arc<Type::NFType>, mut exp: Arc<Expression::NFExpression>) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>, MatchKind)> {
     let mut exp: Arc<Expression::NFExpression> = exp;
     let mut compatibleType: Arc<Type::NFType>;
     let mut matchKind: MatchKind = MatchKind::EXACT;
@@ -2149,7 +2149,7 @@ pub fn matchPolymorphic(mut polymorphicName: ArcStr, mut actualType: Arc<Type::N
     Ok((exp, compatibleType, matchKind))
 }
 
-pub fn getRangeType(mut startExp: Arc<Expression::NFExpression>, mut stepExp: Option<Arc<Expression::NFExpression>>, mut stopExp: Arc<Expression::NFExpression>, mut rangeElemType: Arc<Type::NFType>, mut info: SourceInfo) -> Result<Arc<Type::NFType>> {
+pub(crate) fn getRangeType(mut startExp: Arc<Expression::NFExpression>, mut stepExp: Option<Arc<Expression::NFExpression>>, mut stopExp: Arc<Expression::NFExpression>, mut rangeElemType: Arc<Type::NFType>, mut info: SourceInfo) -> Result<Arc<Type::NFType>> {
     let mut rangeType: Arc<Type::NFType>;
     let mut dim: Arc<Dimension::NFDimension>;
     dim = (::match_deref::match_deref! { match &(rangeElemType.clone()) {
@@ -2179,7 +2179,7 @@ pub fn getRangeType(mut startExp: Arc<Expression::NFExpression>, mut stepExp: Op
     Ok(rangeType)
 }
 
-pub fn getRangeTypeInt(mut startExp: Arc<Expression::NFExpression>, mut stepExp: Option<Arc<Expression::NFExpression>>, mut stopExp: Arc<Expression::NFExpression>, mut info: SourceInfo) -> Result<Arc<Dimension::NFDimension>> {
+pub(crate) fn getRangeTypeInt(mut startExp: Arc<Expression::NFExpression>, mut stepExp: Option<Arc<Expression::NFExpression>>, mut stopExp: Arc<Expression::NFExpression>, mut info: SourceInfo) -> Result<Arc<Dimension::NFDimension>> {
     let mut dim: Arc<Dimension::NFDimension>;
     dim = (::match_deref::match_deref! { match &((startExp.clone(), stepExp.clone(), stopExp.clone())) {
         (Deref @ Expression::INTEGER { .. }, None, Deref @ Expression::INTEGER { .. }) => {
@@ -2228,7 +2228,7 @@ pub fn getRangeTypeInt(mut startExp: Arc<Expression::NFExpression>, mut stepExp:
     Ok(dim)
 }
 
-pub fn getRangeTypeReal(mut startExp: Arc<Expression::NFExpression>, mut stepExp: Option<Arc<Expression::NFExpression>>, mut stopExp: Arc<Expression::NFExpression>, mut info: SourceInfo) -> Result<Arc<Dimension::NFDimension>> {
+pub(crate) fn getRangeTypeReal(mut startExp: Arc<Expression::NFExpression>, mut stepExp: Option<Arc<Expression::NFExpression>>, mut stopExp: Arc<Expression::NFExpression>, mut info: SourceInfo) -> Result<Arc<Dimension::NFDimension>> {
     let mut dim: Arc<Dimension::NFDimension>;
     dim = (::match_deref::match_deref! { match &((startExp.clone(), stepExp.clone(), stopExp.clone())) {
         (Deref @ Expression::REAL { .. }, None, Deref @ Expression::REAL { .. }) => {
@@ -2274,7 +2274,7 @@ pub fn getRangeTypeReal(mut startExp: Arc<Expression::NFExpression>, mut stepExp
     Ok(dim)
 }
 
-pub fn getRangeTypeBool(mut startExp: Arc<Expression::NFExpression>, mut stopExp: Arc<Expression::NFExpression>) -> Result<Arc<Dimension::NFDimension>> {
+pub(crate) fn getRangeTypeBool(mut startExp: Arc<Expression::NFExpression>, mut stopExp: Arc<Expression::NFExpression>) -> Result<Arc<Dimension::NFDimension>> {
     let mut dim: Arc<Dimension::NFDimension> = Arc::new(Dimension::BOOLEAN);
     dim = (::match_deref::match_deref! { match &((startExp.clone(), stopExp.clone())) {
         (Deref @ Expression::BOOLEAN { .. }, Deref @ Expression::BOOLEAN { .. }) => {
@@ -2300,7 +2300,7 @@ pub fn getRangeTypeBool(mut startExp: Arc<Expression::NFExpression>, mut stopExp
     Ok(dim)
 }
 
-pub fn getRangeTypeEnum(mut startExp: Arc<Expression::NFExpression>, mut stopExp: Arc<Expression::NFExpression>) -> Result<Arc<Dimension::NFDimension>> {
+pub(crate) fn getRangeTypeEnum(mut startExp: Arc<Expression::NFExpression>, mut stopExp: Arc<Expression::NFExpression>) -> Result<Arc<Dimension::NFDimension>> {
     let mut dim: Arc<Dimension::NFDimension> = Arc::new(Dimension::BOOLEAN);
     dim = (::match_deref::match_deref! { match &((startExp.clone(), stopExp.clone())) {
         (Deref @ Expression::ENUM_LITERAL { .. }, Deref @ Expression::ENUM_LITERAL { .. }) => {
@@ -2328,7 +2328,7 @@ pub fn getRangeTypeEnum(mut startExp: Arc<Expression::NFExpression>, mut stopExp
     Ok(dim)
 }
 
-pub fn matchBinding(mut binding: Arc<Binding::NFBinding>, mut componentType: Arc<Type::NFType>, mut name: ArcStr, mut component: Arc<InstNode::InstNode>, mut context: i32) -> Result<Arc<Binding::NFBinding>> {
+pub(crate) fn matchBinding(mut binding: Arc<Binding::NFBinding>, mut componentType: Arc<Type::NFType>, mut name: ArcStr, mut component: Arc<InstNode::InstNode>, mut context: i32) -> Result<Arc<Binding::NFBinding>> {
     let mut binding: Arc<Binding::NFBinding> = binding;
     let () = (::match_deref::match_deref! { match &(binding.clone()) {
         Deref @ Binding::TYPED_BINDING { bindingExp: exp, .. } => {
@@ -2362,7 +2362,7 @@ pub fn matchBinding(mut binding: Arc<Binding::NFBinding>, mut componentType: Arc
     Ok(binding)
 }
 
-pub fn elaborateBindingType(mut bindingExp: Arc<Expression::NFExpression>, mut component: Arc<InstNode::InstNode>, mut bindingType: Arc<Type::NFType>, mut componentType: Arc<Type::NFType>) -> Result<(Arc<Type::NFType>, Arc<Type::NFType>)> {
+pub(crate) fn elaborateBindingType(mut bindingExp: Arc<Expression::NFExpression>, mut component: Arc<InstNode::InstNode>, mut bindingType: Arc<Type::NFType>, mut componentType: Arc<Type::NFType>) -> Result<(Arc<Type::NFType>, Arc<Type::NFType>)> {
     fn isParent(mut parent: Arc<InstNode::InstNode>, mut node: Arc<InstNode::InstNode>) -> bool {
         let mut res: bool;
         let mut n: Arc<InstNode::InstNode> = InstNode::getDerivedNode(node.clone(), true);
@@ -2429,7 +2429,7 @@ pub fn elaborateBindingType(mut bindingExp: Arc<Expression::NFExpression>, mut c
     Ok((bindingType, componentType))
 }
 
-pub fn printBindingTypeError(mut name: ArcStr, mut binding: Arc<Binding::NFBinding>, mut componentType: Arc<Type::NFType>, mut bindingType: Arc<Type::NFType>, mut component: Arc<InstNode::InstNode>, mut context: i32) -> Result<()> {
+pub(crate) fn printBindingTypeError(mut name: ArcStr, mut binding: Arc<Binding::NFBinding>, mut componentType: Arc<Type::NFType>, mut bindingType: Arc<Type::NFType>, mut component: Arc<InstNode::InstNode>, mut context: i32) -> Result<()> {
     let mut binding_info: SourceInfo;
     let mut comp_info: SourceInfo;
     let mut mk: MatchKind;
@@ -2450,7 +2450,7 @@ pub fn printBindingTypeError(mut name: ArcStr, mut binding: Arc<Binding::NFBindi
     Ok(())
 }
 
-pub fn checkDimensionType(mut exp: Arc<Expression::NFExpression>, mut ty: Arc<Type::NFType>, mut info: SourceInfo) -> Result<()> {
+pub(crate) fn checkDimensionType(mut exp: Arc<Expression::NFExpression>, mut ty: Arc<Type::NFType>, mut info: SourceInfo) -> Result<()> {
     if !(Type::isInteger(ty.clone())?) {
         let () = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::TYPENAME { ty: Deref @ Type::ARRAY { elementType: Deref @ Type::BOOLEAN, .. } } => (),
@@ -2465,7 +2465,7 @@ pub fn checkDimensionType(mut exp: Arc<Expression::NFExpression>, mut ty: Arc<Ty
     Ok(())
 }
 
-pub fn checkReductionType(mut ty: Arc<Type::NFType>, mut name: Arc<Absyn::Path>, mut exp: Arc<Expression::NFExpression>, mut info: SourceInfo) -> Result<()> {
+pub(crate) fn checkReductionType(mut ty: Arc<Type::NFType>, mut name: Arc<Absyn::Path>, mut exp: Arc<Expression::NFExpression>, mut info: SourceInfo) -> Result<()> {
     let mut err: ArcStr;
     err = ((::match_deref::match_deref! { match &(name.clone()) {
         Deref @ Absyn::Path::IDENT { name: Deref @ "sum" } => (::match_deref::match_deref! { match &(Type::arrayElementType(ty.clone())) {
@@ -2507,7 +2507,7 @@ pub fn checkReductionType(mut ty: Arc<Type::NFType>, mut name: Arc<Absyn::Path>,
     Ok(())
 }
 
-pub fn checkSumComplexType(mut ty: Arc<Type::NFType>, mut exp: Arc<Expression::NFExpression>, mut info: SourceInfo) -> Result<bool> {
+pub(crate) fn checkSumComplexType(mut ty: Arc<Type::NFType>, mut exp: Arc<Expression::NFExpression>, mut info: SourceInfo) -> Result<bool> {
     let mut valid: bool = true;
     let mut cls_node: Arc<InstNode::InstNode>;
     let mut cls: Arc<Class::NFClass>;
@@ -2527,7 +2527,7 @@ pub fn checkSumComplexType(mut ty: Arc<Type::NFType>, mut exp: Arc<Expression::N
     Ok(valid)
 }
 
-pub fn matchIfBranches(mut trueBranch: Arc<Expression::NFExpression>, mut trueType: Arc<Type::NFType>, mut falseBranch: Arc<Expression::NFExpression>, mut falseType: Arc<Type::NFType>, mut options: MatchOptions) -> Result<(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>, Arc<Type::NFType>, MatchKind)> {
+pub(crate) fn matchIfBranches(mut trueBranch: Arc<Expression::NFExpression>, mut trueType: Arc<Type::NFType>, mut falseBranch: Arc<Expression::NFExpression>, mut falseType: Arc<Type::NFType>, mut options: MatchOptions) -> Result<(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>, Arc<Type::NFType>, MatchKind)> {
     let mut trueBranch: Arc<Expression::NFExpression> = trueBranch;
     let mut falseBranch: Arc<Expression::NFExpression> = falseBranch;
     let mut compatibleType: Arc<Type::NFType> = Arc::new(Type::ANY);

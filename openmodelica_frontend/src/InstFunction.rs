@@ -85,7 +85,7 @@ pub type InstanceHierarchy = Arc<metamodelica::List<InnerOuter::TopInstance>>;
 
 pub type InstDims = Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Dimension>>>>>;
 
-pub fn instantiateExternalObject(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut els: Arc<metamodelica::List<Arc<SCode::Element>>>, mut inMod: Arc<DAE::Mod>, mut r#impl: bool, mut comment: Arc<SCode::Comment>, mut info: SourceInfo) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::DAElist, ClassInf::State)> {
+pub(crate) fn instantiateExternalObject(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut els: Arc<metamodelica::List<Arc<SCode::Element>>>, mut inMod: Arc<DAE::Mod>, mut r#impl: bool, mut comment: Arc<SCode::Comment>, mut info: SourceInfo) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::DAElist, ClassInf::State)> {
     let mut outCache: FCore::Cache;
     let mut outEnv: FCore::Graph;
     let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>>;
@@ -527,7 +527,7 @@ fn instantiateDerivativeFuncs2(mut inCache: FCore::Cache, mut inEnv: FCore::Grap
     Ok(outCache)
 }
 
-pub fn implicitFunctionTypeInstantiation(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inClass: Arc<SCode::Element>) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>)> {
+pub(crate) fn implicitFunctionTypeInstantiation(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inClass: Arc<SCode::Element>) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>)> {
     let mut outCache: FCore::Cache;
     let mut outEnv: FCore::Graph;
     let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>>;
@@ -752,7 +752,7 @@ fn addExtVarToCall(mut cr: Arc<DAE::ComponentRef>, mut dir: Absyn::Direction, mu
     Ok(fargs)
 }
 
-pub fn getRecordConstructorFunction(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPath: Arc<Absyn::Path>) -> Result<(FCore::Cache, DAE::Function)> {
+pub(crate) fn getRecordConstructorFunction(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPath: Arc<Absyn::Path>) -> Result<(FCore::Cache, DAE::Function)> {
     let mut outCache: FCore::Cache;
     let mut outFunc: DAE::Function;
     (outCache, outFunc) = 'mc: {
@@ -839,7 +839,7 @@ pub fn getRecordConstructorFunction(mut inCache: FCore::Cache, mut inEnv: FCore:
     Ok((outCache, outFunc))
 }
 
-pub fn addRecordConstructorFunction(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inType: Arc<DAE::Type>, mut inInfo: SourceInfo) -> FCore::Cache {
+pub(crate) fn addRecordConstructorFunction(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inType: Arc<DAE::Type>, mut inInfo: SourceInfo) -> FCore::Cache {
     let mut outCache: FCore::Cache;
     outCache = 'mc: {
         let __mc_input = (inCache.clone(), inType.clone());

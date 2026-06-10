@@ -160,7 +160,7 @@ pub mod Association {
         }
     }
     pub use self::Association::{CONTINUOUS,CLOCKED};
-    pub fn toStringShort(mut association: Arc<Association>) -> Result<ArcStr> {
+    pub(crate) fn toStringShort(mut association: Arc<Association>) -> Result<ArcStr> {
         let mut r#str: ArcStr;
         r#str = ((::match_deref::match_deref! { match &(association.clone()) {
         Deref @ CONTINUOUS { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Continuous ")); __mm_s.push_str(&*Partition::kindToString(var_field!((*association).kind, Association::CONTINUOUS).clone())?); ArcStr::from(__mm_s) },
@@ -171,7 +171,7 @@ pub mod Association {
         Ok(r#str)
     }
 
-    pub fn toString(mut association: Arc<Association>) -> Result<ArcStr> {
+    pub(crate) fn toString(mut association: Arc<Association>) -> Result<ArcStr> {
         let mut r#str: ArcStr = arcstr::literal!("");
         r#str = ((::match_deref::match_deref! { match &(association.clone()) {
         Deref @ CONTINUOUS { .. } => {
@@ -208,7 +208,7 @@ pub mod Association {
         Ok(r#str)
     }
 
-    pub fn create(mut equations: Arc<EquationPointers::EquationPointers>, mut kind: Kind, mut info: Arc<ClockedInfo::ClockedInfo>, mut infer_del: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<Association>> {
+    pub(crate) fn create(mut equations: Arc<EquationPointers::EquationPointers>, mut kind: Kind, mut info: Arc<ClockedInfo::ClockedInfo>, mut infer_del: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<Association>> {
         let mut association: Arc<Association>;
         let mut clock_ptr: Pointer::Pointer<Option<(Arc<ComponentRef::NFComponentRef>, Arc<BClock::BClock>)>> = Pointer::create(None);
         let mut infer_ptr: Pointer::Pointer<Option<Arc<ComponentRef::NFComponentRef>>> = Pointer::create(None);
@@ -253,7 +253,7 @@ pub mod Association {
         Ok(association)
     }
 
-    pub fn merge(mut ass1: Arc<Association>, mut ass2: Arc<Association>, mut strict: bool) -> Result<Arc<Association>> {
+    pub(crate) fn merge(mut ass1: Arc<Association>, mut ass2: Arc<Association>, mut strict: bool) -> Result<Arc<Association>> {
         let mut ass1: Arc<Association> = ass1;
         ass1 = (::match_deref::match_deref! { match &((ass1.clone(), ass2.clone())) {
         (Deref @ CONTINUOUS { jacobian: Some(jac1 @ Deref @ Jacobian::JACOBIAN { .. }), .. }, Deref @ CONTINUOUS { jacobian: Some(jac2), .. }) if (var_field!((*ass1).kind, Association::CONTINUOUS).clone() == var_field!((*ass2).kind, Association::CONTINUOUS).clone() || !(strict.clone())) => {
@@ -279,7 +279,7 @@ pub mod Association {
         Ok(ass1)
     }
 
-    pub fn isClocked(mut association: Arc<Association>) -> bool {
+    pub(crate) fn isClocked(mut association: Arc<Association>) -> bool {
         let mut b: bool;
         b = (::match_deref::match_deref! { match &(association.clone()) {
         Deref @ CLOCKED { .. } => true,
@@ -291,19 +291,19 @@ pub mod Association {
 
     pub type ClockTpl = (Arc<ComponentRef::NFComponentRef>, Arc<BClock::BClock>);
 
-    pub fn clockTplString(mut tpl: ClockTpl) -> Result<ArcStr> {
+    pub(crate) fn clockTplString(mut tpl: ClockTpl) -> Result<ArcStr> {
         let mut r#str: ArcStr = { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*ComponentRef::toString(Util::tuple21(tpl.clone()))?); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*BClock::toString(Util::tuple22(tpl.clone()))?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) };
         Ok(r#str)
     }
 
-    pub fn hashClockTpl(mut tpl: ClockTpl) -> Result<i32> {
+    pub(crate) fn hashClockTpl(mut tpl: ClockTpl) -> Result<i32> {
         let mut hash: i32;
         hash = ComponentRef::hash(Util::tuple21(tpl.clone()))?;
         hash = stringHashDjb2Continue((BClock::toString(Util::tuple22(tpl.clone()))?).clone(), hash.clone());
         Ok(hash)
     }
 
-    pub fn isEqualClockTpl(mut tpl1: ClockTpl, mut tpl2: ClockTpl) -> Result<bool> {
+    pub(crate) fn isEqualClockTpl(mut tpl1: ClockTpl, mut tpl2: ClockTpl) -> Result<bool> {
         let mut b: bool = ComponentRef::isEqual(Util::tuple21(tpl1.clone()), Util::tuple21(tpl2.clone()))? && BClock::isEqual(Util::tuple22(tpl1.clone()), Util::tuple22(tpl2.clone()))?;
         Ok(b)
     }
@@ -441,7 +441,7 @@ pub mod Partition {
 
     pub type PARTITION = Partition;
 
-    pub fn toString(mut partition: Arc<Partition>, mut level: i32) -> Result<ArcStr> {
+    pub(crate) fn toString(mut partition: Arc<Partition>, mut level: i32) -> Result<ArcStr> {
         let mut r#str: ArcStr;
         r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_2(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*intString(partition.index.clone())); __mm_s.push_str(&*literal!(") ")); __mm_s.push_str(&*Association::toStringShort(partition.association.clone())?); __mm_s.push_str(&*literal!(" Partition")); ArcStr::from(__mm_s) }).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
         r#str = ((match partition.strongComponents.clone() {
@@ -470,7 +470,7 @@ pub mod Partition {
         Ok(r#str)
     }
 
-    pub fn toStringList(mut partitions: Arc<metamodelica::List<Arc<Partition>>>, mut header: ArcStr) -> Result<ArcStr> {
+    pub(crate) fn toStringList(mut partitions: Arc<metamodelica::List<Arc<Partition>>>, mut header: ArcStr) -> Result<ArcStr> {
         let mut r#str: ArcStr = literal!("");
         if !(partitions.clone().is_empty()) {
             if header.clone() != literal!("") {
@@ -484,7 +484,7 @@ pub mod Partition {
         Ok(r#str)
     }
 
-    pub fn sort(mut partition: Arc<Partition>) -> Result<Arc<Partition>> {
+    pub(crate) fn sort(mut partition: Arc<Partition>) -> Result<Arc<Partition>> {
         let mut partition: Arc<Partition> = partition;
         assign_field!(
             partition.unknowns = BVariable::VariablePointers::sort(partition.unknowns.clone())?,
@@ -493,14 +493,14 @@ pub mod Partition {
         Ok(partition)
     }
 
-    pub fn isEmpty(mut partition: Arc<Partition>) -> Result<bool> {
+    pub(crate) fn isEmpty(mut partition: Arc<Partition>) -> Result<bool> {
         use arrayEmpty as isEmptyArr;
 
         let mut b: bool = BEquation::EquationPointers::size(partition.equations.clone()) == 0 || Util::applyOptionOrDefault(partition.strongComponents.clone(), Arc::new(fnptr!(isEmptyArr, metamodelica::Array<Arc<StrongComponent::NBStrongComponent>>)), false)?;
         Ok(b)
     }
 
-    pub fn isODEorDAE(mut part: Arc<Partition>) -> bool {
+    pub(crate) fn isODEorDAE(mut part: Arc<Partition>) -> bool {
         let mut b: bool;
         b = (::match_deref::match_deref! { match &(part.association.clone()) {
         Deref @ Association::CONTINUOUS { kind, .. } => {
@@ -514,7 +514,7 @@ pub mod Partition {
         b
     }
 
-    pub fn isClocked(mut part: Arc<Partition>) -> bool {
+    pub(crate) fn isClocked(mut part: Arc<Partition>) -> bool {
         let mut b: bool;
         b = (::match_deref::match_deref! { match &(part.association.clone()) {
         Deref @ Association::CLOCKED { .. } => true,
@@ -524,7 +524,7 @@ pub mod Partition {
         b
     }
 
-    pub fn categorize(mut partition: Arc<Partition>, mut ode: DoubleEnded::MutableList<Arc<Partition>>, mut alg: DoubleEnded::MutableList<Arc<Partition>>, mut ode_evt: DoubleEnded::MutableList<Arc<Partition>>, mut alg_evt: DoubleEnded::MutableList<Arc<Partition>>, mut clocked: DoubleEnded::MutableList<Arc<Partition>>) -> Result<()> {
+    pub(crate) fn categorize(mut partition: Arc<Partition>, mut ode: DoubleEnded::MutableList<Arc<Partition>>, mut alg: DoubleEnded::MutableList<Arc<Partition>>, mut ode_evt: DoubleEnded::MutableList<Arc<Partition>>, mut alg_evt: DoubleEnded::MutableList<Arc<Partition>>, mut clocked: DoubleEnded::MutableList<Arc<Partition>>) -> Result<()> {
         fn isAlgebraicContinuous(mut part: Arc<Partition>) -> (bool, bool) {
             let mut alg: bool = true;
             let mut con: bool = true;
@@ -590,7 +590,7 @@ pub mod Partition {
         Ok(())
     }
 
-    pub fn setIndex(mut part: Arc<Partition>, mut index: Pointer::Pointer<i32>) -> Result<Arc<Partition>> {
+    pub(crate) fn setIndex(mut part: Arc<Partition>, mut index: Pointer::Pointer<i32>) -> Result<Arc<Partition>> {
         let mut part: Arc<Partition> = part;
         let mut clock_idx: i32 = Pointer::access(index.clone());
         assign_field!(part.index = clock_idx.clone());
@@ -601,7 +601,7 @@ pub mod Partition {
         Ok(part)
     }
 
-    pub fn setKind(mut part: Arc<Partition>, mut kind: Kind) -> Result<Arc<Partition>> {
+    pub(crate) fn setKind(mut part: Arc<Partition>, mut kind: Kind) -> Result<Arc<Partition>> {
         let mut part: Arc<Partition> = part;
         assign_field!(part.association = (::match_deref::match_deref! { match &(part.association.clone()) {
         ass @ Deref @ Association::CONTINUOUS { .. } => {
@@ -618,7 +618,7 @@ pub mod Partition {
         Ok(part)
     }
 
-    pub fn getJacobian(mut part: Arc<Partition>) -> Option<Arc<Jacobian::NBackendDAE>> {
+    pub(crate) fn getJacobian(mut part: Arc<Partition>) -> Option<Arc<Jacobian::NBackendDAE>> {
         let mut jac: Option<Arc<Jacobian::NBackendDAE>> = None;
         jac = (::match_deref::match_deref! { match &(part.association.clone()) {
         Deref @ Association::CONTINUOUS { jacobian: __esc_jac, .. } => {
@@ -631,7 +631,7 @@ pub mod Partition {
         jac
     }
 
-    pub fn getJacobianAdjoint(mut part: Arc<Partition>) -> Option<Arc<Jacobian::NBackendDAE>> {
+    pub(crate) fn getJacobianAdjoint(mut part: Arc<Partition>) -> Option<Arc<Jacobian::NBackendDAE>> {
         let mut jac: Option<Arc<Jacobian::NBackendDAE>> = None;
         jac = (::match_deref::match_deref! { match &(part.association.clone()) {
         Deref @ Association::CONTINUOUS { jacobianAdjoint: __esc_jac, .. } => {
@@ -644,7 +644,7 @@ pub mod Partition {
         jac
     }
 
-    pub fn getJacobianLfg(mut part: Arc<Partition>) -> Option<Arc<Jacobian::NBackendDAE>> {
+    pub(crate) fn getJacobianLfg(mut part: Arc<Partition>) -> Option<Arc<Jacobian::NBackendDAE>> {
         let mut jac: Option<Arc<Jacobian::NBackendDAE>> = None;
         jac = (::match_deref::match_deref! { match &(part.association.clone()) {
         Deref @ Association::CONTINUOUS { LFG_jacobian: __esc_jac, .. } => {
@@ -657,7 +657,7 @@ pub mod Partition {
         jac
     }
 
-    pub fn getJacobianMrf(mut part: Arc<Partition>) -> Option<Arc<Jacobian::NBackendDAE>> {
+    pub(crate) fn getJacobianMrf(mut part: Arc<Partition>) -> Option<Arc<Jacobian::NBackendDAE>> {
         let mut jac: Option<Arc<Jacobian::NBackendDAE>> = None;
         jac = (::match_deref::match_deref! { match &(part.association.clone()) {
         Deref @ Association::CONTINUOUS { MRF_jacobian: __esc_jac, .. } => {
@@ -670,7 +670,7 @@ pub mod Partition {
         jac
     }
 
-    pub fn getJacobianR0(mut part: Arc<Partition>) -> Option<Arc<Jacobian::NBackendDAE>> {
+    pub(crate) fn getJacobianR0(mut part: Arc<Partition>) -> Option<Arc<Jacobian::NBackendDAE>> {
         let mut jac: Option<Arc<Jacobian::NBackendDAE>> = None;
         jac = (::match_deref::match_deref! { match &(part.association.clone()) {
         Deref @ Association::CONTINUOUS { R0_jacobian: __esc_jac, .. } => {
@@ -683,7 +683,7 @@ pub mod Partition {
         jac
     }
 
-    pub fn getKind(mut part: Arc<Partition>) -> Kind {
+    pub(crate) fn getKind(mut part: Arc<Partition>) -> Kind {
         let mut kind: Kind = Kind::ODE;
         kind = (::match_deref::match_deref! { match &(part.association.clone()) {
         Deref @ Association::CONTINUOUS { kind: __esc_kind, .. } => {
@@ -696,7 +696,7 @@ pub mod Partition {
         kind
     }
 
-    pub fn getClocks(mut part: Arc<Partition>) -> Result<(Arc<BClock::BClock>, Option<Arc<BClock::BClock>>, bool)> {
+    pub(crate) fn getClocks(mut part: Arc<Partition>) -> Result<(Arc<BClock::BClock>, Option<Arc<BClock::BClock>>, bool)> {
         let mut clock: Arc<BClock::BClock> = Arc::new(<BClock::BClock as ::std::default::Default>::default());
         let mut baseClock: Option<Arc<BClock::BClock>> = None;
         let mut holdEvents: bool = false;
@@ -716,7 +716,7 @@ pub mod Partition {
         Ok((clock, baseClock, holdEvents))
     }
 
-    pub fn setClocks(mut part: Arc<Partition>, mut clock: Arc<BClock::BClock>, mut baseClock: Option<Arc<BClock::BClock>>) -> Result<Arc<Partition>> {
+    pub(crate) fn setClocks(mut part: Arc<Partition>, mut clock: Arc<BClock::BClock>, mut baseClock: Option<Arc<BClock::BClock>>) -> Result<Arc<Partition>> {
         let mut part: Arc<Partition> = part;
         part = (::match_deref::match_deref! { match &(part.association.clone()) {
         association @ Deref @ Association::CLOCKED { .. } => {
@@ -737,7 +737,7 @@ pub mod Partition {
         Ok(part)
     }
 
-    pub fn getClockDependencies(mut part: Arc<Partition>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<BClock::BClock>>>> {
+    pub(crate) fn getClockDependencies(mut part: Arc<Partition>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<BClock::BClock>>>> {
         let mut clock_deps: Arc<UnorderedSet::UnorderedSet<Arc<BClock::BClock>>> = <Arc<UnorderedSet::UnorderedSet<Arc<BClock::BClock>>> as ::std::default::Default>::default();
         clock_deps = (::match_deref::match_deref! { match &(part.association.clone()) {
         Deref @ Association::CLOCKED { clock_deps: __esc_clock_deps, .. } => {
@@ -753,7 +753,7 @@ pub mod Partition {
         Ok(clock_deps)
     }
 
-    pub fn getLoopResiduals(mut part: Arc<Partition>) -> Result<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>> {
+    pub(crate) fn getLoopResiduals(mut part: Arc<Partition>) -> Result<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>> {
         let mut residuals: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
         if isSome(part.strongComponents.clone()) {
             let __range0 = Util::getOption(part.strongComponents.clone())?.borrow().iter().cloned().collect::<Vec<_>>();
@@ -764,7 +764,7 @@ pub mod Partition {
         Ok(residuals)
     }
 
-    pub fn mapEqn(mut partition: Arc<Partition>, mut func: Arc<dyn ::std::ops::Fn(Arc<Equation::Equation>) -> Result<Arc<Equation::Equation>> + 'static>) -> Result<Arc<Partition>> {
+    pub(crate) fn mapEqn(mut partition: Arc<Partition>, mut func: Arc<dyn ::std::ops::Fn(Arc<Equation::Equation>) -> Result<Arc<Equation::Equation>> + 'static>) -> Result<Arc<Partition>> {
         pub type MapFunc = std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::Equation>) -> Result<Arc<Equation::Equation>> + 'static>;
 
         let mut partition: Arc<Partition> = partition;
@@ -772,7 +772,7 @@ pub mod Partition {
         Ok(partition)
     }
 
-    pub fn mapExp(mut partition: Arc<Partition>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Partition>> {
+    pub(crate) fn mapExp(mut partition: Arc<Partition>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Partition>> {
         pub type MapFunc = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>;
 
         let mut partition: Arc<Partition> = partition;
@@ -780,7 +780,7 @@ pub mod Partition {
         Ok(partition)
     }
 
-    pub fn mapStrongComponents(mut partition: Arc<Partition>, mut func: Arc<dyn ::std::ops::Fn(Arc<StrongComponent::NBStrongComponent>) -> Result<Arc<StrongComponent::NBStrongComponent>> + 'static>) -> Result<Arc<Partition>> {
+    pub(crate) fn mapStrongComponents(mut partition: Arc<Partition>, mut func: Arc<dyn ::std::ops::Fn(Arc<StrongComponent::NBStrongComponent>) -> Result<Arc<StrongComponent::NBStrongComponent>> + 'static>) -> Result<Arc<Partition>> {
         pub type MapFunc = std::sync::Arc<dyn ::std::ops::Fn(Arc<StrongComponent::NBStrongComponent>) -> Result<Arc<StrongComponent::NBStrongComponent>> + 'static>;
 
         let mut partition: Arc<Partition> = partition;
@@ -803,7 +803,7 @@ pub mod Partition {
         Ok(partition)
     }
 
-    pub fn kindToString(mut kind: Kind) -> Result<ArcStr> {
+    pub(crate) fn kindToString(mut kind: Kind) -> Result<ArcStr> {
         let mut r#str: ArcStr = literal!("");
         r#str = ((match kind.clone() {
         Kind::ODE => literal!("ODE"),
@@ -823,7 +823,7 @@ pub mod Partition {
         Ok(r#str)
     }
 
-    pub fn kindToInteger(mut kind: Kind) -> Result<i32> {
+    pub(crate) fn kindToInteger(mut kind: Kind) -> Result<i32> {
         let mut i: i32;
         i = (match kind.clone() {
         Kind::ODE => 0,
@@ -843,7 +843,7 @@ pub mod Partition {
         Ok(i)
     }
 
-    pub fn clone(mut par: Arc<Partition>, mut shallow: bool) -> Result<Arc<Partition>> {
+    pub(crate) fn clone(mut par: Arc<Partition>, mut shallow: bool) -> Result<Arc<Partition>> {
         let mut par: Arc<Partition> = par;
         assign_field!(par.equations = BEquation::EquationPointers::clone(par.equations.clone(), shallow.clone())?);
         if !(shallow.clone()) {
@@ -867,7 +867,7 @@ pub mod Partition {
         Ok(par)
     }
 
-    pub fn removeAlias(mut par: Arc<Partition>) -> Result<Arc<Partition>> {
+    pub(crate) fn removeAlias(mut par: Arc<Partition>) -> Result<Arc<Partition>> {
         let mut par: Arc<Partition> = par;
         let mut comps: metamodelica::Array<Arc<StrongComponent::NBStrongComponent>>;
         if isSome(par.strongComponents.clone()) {
@@ -883,7 +883,7 @@ pub mod Partition {
         Ok(par)
     }
 
-    pub fn updateHeldVars(mut par: Arc<Partition>, mut held_crefs: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<Partition>> {
+    pub(crate) fn updateHeldVars(mut par: Arc<Partition>, mut held_crefs: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<Partition>> {
         let mut par: Arc<Partition> = par;
         assign_field!(par.association = (::match_deref::match_deref! { match &(par.association.clone()) {
         association @ Deref @ Association::CLOCKED { .. } => {
@@ -899,7 +899,7 @@ pub mod Partition {
         Ok(par)
     }
 
-    pub fn merge(mut part1: Arc<Partition>, mut part2: Arc<Partition>, mut strict: bool) -> Result<Arc<Partition>> {
+    pub(crate) fn merge(mut part1: Arc<Partition>, mut part2: Arc<Partition>, mut strict: bool) -> Result<Arc<Partition>> {
         let mut part1: Arc<Partition> = part1;
         if isSome(part1.daeUnknowns.clone()) || isSome(part2.daeUnknowns.clone()) {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBPartition.Partition.merge")); __mm_s.push_str(&*literal!(" failed. Cannot merge DAE-Mode partitions.")); ArcStr::from(__mm_s) }).clone()])?;
@@ -924,7 +924,7 @@ pub mod Partition {
 
 }
 
-pub fn kindIsInitial(mut kind: Kind) -> bool {
+pub(crate) fn kindIsInitial(mut kind: Kind) -> bool {
     let mut b: bool = kind.clone() == Kind::INI.clone() || kind.clone() == Kind::INI_0.clone();
     b
 }

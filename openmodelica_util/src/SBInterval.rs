@@ -149,7 +149,7 @@ pub fn upperBound(mut int: Arc<SBInterval>) -> i32 {
     hi
 }
 
-pub fn crop(mut int: Arc<SBInterval>) -> Arc<SBInterval> {
+pub(crate) fn crop(mut int: Arc<SBInterval>) -> Arc<SBInterval> {
     let mut int: Arc<SBInterval> = int;
     if int.hi.clone() < System::intMaxLit() {
         assign_field!(int.hi = int.hi.clone() - intMod(int.hi.clone() - int.lo.clone(), int.step.clone()));
@@ -190,7 +190,7 @@ pub fn intersection(mut int1: Arc<SBInterval>, mut int2: Arc<SBInterval>) -> Arc
     int
 }
 
-pub fn complement(mut int1: Arc<SBInterval>, mut int2: Arc<SBInterval>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<SBInterval>>>> {
+pub(crate) fn complement(mut int1: Arc<SBInterval>, mut int2: Arc<SBInterval>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<SBInterval>>>> {
     let mut ints: Arc<UnorderedSet::UnorderedSet<Arc<SBInterval>>>;
     let mut i2: Arc<SBInterval>;
     let mut count_r: i32;
@@ -227,7 +227,7 @@ pub fn complement(mut int1: Arc<SBInterval>, mut int2: Arc<SBInterval>) -> Resul
     Ok(ints)
 }
 
-pub fn affine(mut int: Arc<SBInterval>, mut gain: metamodelica::Real, mut offset: i32) -> Result<Arc<SBInterval>> {
+pub(crate) fn affine(mut int: Arc<SBInterval>, mut gain: metamodelica::Real, mut offset: i32) -> Result<Arc<SBInterval>> {
     let mut res: Arc<SBInterval>;
     let mut lo: metamodelica::Real;
     let mut step: metamodelica::Real;
@@ -299,7 +299,7 @@ pub fn isEqual(mut int1: Arc<SBInterval>, mut int2: Arc<SBInterval>) -> bool {
     equal
 }
 
-pub fn hash(mut int: Arc<SBInterval>) -> i32 {
+pub(crate) fn hash(mut int: Arc<SBInterval>) -> i32 {
     let mut hash: i32 = int.lo.clone();
     hash
 }

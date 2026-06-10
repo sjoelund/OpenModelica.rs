@@ -71,7 +71,7 @@ impl Default for NFConnection {
 
 pub type CONNECTION = NFConnection;
 
-pub fn split(mut conn: Arc<NFConnection>) -> Result<Arc<metamodelica::List<Arc<NFConnection>>>> {
+pub(crate) fn split(mut conn: Arc<NFConnection>) -> Result<Arc<metamodelica::List<Arc<NFConnection>>>> {
     let mut conns: Arc<metamodelica::List<Arc<NFConnection>>> = metamodelica::nil();
     let mut cls: Arc<metamodelica::List<Arc<Connector::NFConnector>>>;
     let mut crs: Arc<metamodelica::List<Arc<Connector::NFConnector>>>;
@@ -95,7 +95,7 @@ pub fn split(mut conn: Arc<NFConnection>) -> Result<Arc<metamodelica::List<Arc<N
     Ok(conns)
 }
 
-pub fn scalarize(mut conn: Arc<NFConnection>) -> Result<Arc<metamodelica::List<Arc<NFConnection>>>> {
+pub(crate) fn scalarize(mut conn: Arc<NFConnection>) -> Result<Arc<metamodelica::List<Arc<NFConnection>>>> {
     let mut conns: Arc<metamodelica::List<Arc<NFConnection>>> = metamodelica::nil();
     let mut cls: Arc<metamodelica::List<Arc<Connector::NFConnector>>>;
     let mut crs: Arc<metamodelica::List<Arc<Connector::NFConnector>>>;
@@ -121,7 +121,7 @@ pub fn scalarize(mut conn: Arc<NFConnection>) -> Result<Arc<metamodelica::List<A
     Ok(conns)
 }
 
-pub fn scalarizePrefix(mut conn: Arc<NFConnection>) -> Result<Arc<metamodelica::List<Arc<NFConnection>>>> {
+pub(crate) fn scalarizePrefix(mut conn: Arc<NFConnection>) -> Result<Arc<metamodelica::List<Arc<NFConnection>>>> {
     let mut conns: Arc<metamodelica::List<Arc<NFConnection>>> = metamodelica::nil();
     let mut cls: Arc<metamodelica::List<Arc<Connector::NFConnector>>>;
     let mut crs: Arc<metamodelica::List<Arc<Connector::NFConnector>>>;
@@ -147,7 +147,7 @@ pub fn scalarizePrefix(mut conn: Arc<NFConnection>) -> Result<Arc<metamodelica::
     Ok(conns)
 }
 
-pub fn toString(mut conn: Arc<NFConnection>) -> Result<ArcStr> {
+pub(crate) fn toString(mut conn: Arc<NFConnection>) -> Result<ArcStr> {
     let mut r#str: ArcStr;
     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("connect(")); __mm_s.push_str(&*Connector::toString(conn.lhs.clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*Connector::toString(conn.rhs.clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
     Ok(r#str)

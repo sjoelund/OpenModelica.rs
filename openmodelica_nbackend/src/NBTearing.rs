@@ -127,7 +127,7 @@ impl Default for NBTearing {
 
 pub type TEARING_SET = NBTearing;
 
-pub fn hash(mut set: Arc<NBTearing>) -> Result<i32> {
+pub(crate) fn hash(mut set: Arc<NBTearing>) -> Result<i32> {
     let mut h: i32 = ({
         let mut __acc: i32 = 0;
         for mut var in (set.iteration_vars.clone()).into_iter().cloned() {
@@ -139,7 +139,7 @@ pub fn hash(mut set: Arc<NBTearing>) -> Result<i32> {
     Ok(h)
 }
 
-pub fn isEqual(mut set1: Arc<NBTearing>, mut set2: Arc<NBTearing>) -> Result<bool> {
+pub(crate) fn isEqual(mut set1: Arc<NBTearing>, mut set2: Arc<NBTearing>) -> Result<bool> {
     let mut b: bool;
     b = UnorderedSet::equal_list(set1.residual_eqns.clone(), set2.residual_eqns.clone(), (std::sync::Arc::new({ let __pe_b1 = (std::sync::Arc::new(BEquation::Equation::hash) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<i32> + 'static>); move |__pe_a0| Slice::hash(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<i32> + 'static>), (std::sync::Arc::new({ let __pe_b2 = (std::sync::Arc::new(BEquation::Equation::isEqualPtr) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>, Pointer::Pointer<Arc<Equation::Equation>>) -> Result<bool> + 'static>); move |__pe_a0, __pe_a1| Slice::isEqual(__pe_a0, __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(_, _) -> Result<bool> + 'static>))?;
     b = if (b.clone()) {Array::isEqualOnTrue(set1.innerEquations.clone(), set2.innerEquations.clone(), (std::sync::Arc::new(StrongComponent::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<StrongComponent::NBStrongComponent>, Arc<StrongComponent::NBStrongComponent>) -> Result<bool> + 'static>))?} else {b.clone()};
@@ -147,7 +147,7 @@ pub fn isEqual(mut set1: Arc<NBTearing>, mut set2: Arc<NBTearing>) -> Result<boo
     Ok(b)
 }
 
-pub fn size(mut set: Arc<NBTearing>, mut resize: bool) -> Result<i32> {
+pub(crate) fn size(mut set: Arc<NBTearing>, mut resize: bool) -> Result<i32> {
     let mut s: i32;
     s = ({
         let mut __acc: i32 = 0;
@@ -168,7 +168,7 @@ pub fn size(mut set: Arc<NBTearing>, mut resize: bool) -> Result<i32> {
     Ok(s)
 }
 
-pub fn toString(mut set: Arc<NBTearing>, mut r#str: ArcStr) -> Result<ArcStr> {
+pub(crate) fn toString(mut set: Arc<NBTearing>, mut r#str: ArcStr) -> Result<ArcStr> {
     let mut r#str: ArcStr = r#str;
     r#str = (StringUtil::headline_4((r#str.clone()).clone())).clone();
     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("### Iteration Variables:\n")); __mm_s.push_str(&*Slice::lstToString(set.iteration_vars.clone(), (std::sync::Arc::new(BVariable::pointerToString) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<ArcStr> + 'static>), 10)?); ArcStr::from(__mm_s) }).clone();
@@ -180,7 +180,7 @@ pub fn toString(mut set: Arc<NBTearing>, mut r#str: ArcStr) -> Result<ArcStr> {
     Ok(r#str)
 }
 
-pub fn main(mut bdae: Arc<Jacobian::NBackendDAE>, mut kind: Partition::Kind) -> Result<Arc<Jacobian::NBackendDAE>> {
+pub(crate) fn main(mut bdae: Arc<Jacobian::NBackendDAE>, mut kind: Partition::Kind) -> Result<Arc<Jacobian::NBackendDAE>> {
     let mut bdae: Arc<Jacobian::NBackendDAE> = bdae;
     let funcs: Arc<metamodelica::List<Module::tearingInterface>> = getModule()?;
     if Flags::isSet(Flags::TEARING_DUMP.clone())? {
@@ -207,7 +207,7 @@ pub fn main(mut bdae: Arc<Jacobian::NBackendDAE>, mut kind: Partition::Kind) -> 
     Ok(bdae)
 }
 
-pub fn implicit(mut comp: Arc<StrongComponent::NBStrongComponent>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, mut index: i32, mut kind: Partition::Kind) -> Result<(Arc<StrongComponent::NBStrongComponent>, i32)> {
+pub(crate) fn implicit(mut comp: Arc<StrongComponent::NBStrongComponent>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, mut index: i32, mut kind: Partition::Kind) -> Result<(Arc<StrongComponent::NBStrongComponent>, i32)> {
     let mut comp: Arc<StrongComponent::NBStrongComponent> = comp;
     let mut index: i32 = index;
     let mut dummy: Arc<Adjacency::Matrix::Matrix> = Arc::new(Adjacency::Matrix::Matrix::EMPTY { st: Adjacency::MatrixStrictness::FULL.clone() });
@@ -235,12 +235,12 @@ pub fn implicit(mut comp: Arc<StrongComponent::NBStrongComponent>, mut funcMap: 
     Ok((comp, index))
 }
 
-pub fn singleImplicit(mut var: Pointer::Pointer<Arc<Variable::NFVariable>>, mut eqn: Pointer::Pointer<Arc<Equation::Equation>>) -> Arc<NBTearing> {
+pub(crate) fn singleImplicit(mut var: Pointer::Pointer<Arc<Variable::NFVariable>>, mut eqn: Pointer::Pointer<Arc<Equation::Equation>>) -> Arc<NBTearing> {
     let mut tearingSet: Arc<NBTearing> = Arc::new(NBTearing { iteration_vars: list![Arc::new(Slice::NBSlice { t: var.clone(), indices: metamodelica::nil() })], residual_eqns: list![Arc::new(Slice::NBSlice { t: eqn.clone(), indices: metamodelica::nil() })], innerEquations: metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect()), jac: None });
     tearingSet
 }
 
-pub fn getModule() -> Result<Arc<metamodelica::List<Arc<dyn ::std::ops::Fn(Arc<StrongComponent::NBStrongComponent>, Arc<Adjacency::Matrix::Matrix>, Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, i32, Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>, Pointer::Pointer<i32>, Partition::Kind) -> Result<(Arc<StrongComponent::NBStrongComponent>, Arc<Adjacency::Matrix::Matrix>, i32)> + 'static>>>> {
+pub(crate) fn getModule() -> Result<Arc<metamodelica::List<Arc<dyn ::std::ops::Fn(Arc<StrongComponent::NBStrongComponent>, Arc<Adjacency::Matrix::Matrix>, Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, i32, Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>, Pointer::Pointer<i32>, Partition::Kind) -> Result<(Arc<StrongComponent::NBStrongComponent>, Arc<Adjacency::Matrix::Matrix>, i32)> + 'static>>>> {
     fn isNotGuruVar(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut init: bool) -> Result<bool> {
         let mut b: bool;
         let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
@@ -261,7 +261,7 @@ pub fn getModule() -> Result<Arc<metamodelica::List<Arc<dyn ::std::ops::Fn(Arc<S
     Ok(funcs)
 }
 
-pub fn getVariables(mut tearing: Arc<NBTearing>) -> Result<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>> {
+pub(crate) fn getVariables(mut tearing: Arc<NBTearing>) -> Result<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>> {
     let mut variables: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>;
     variables = ({
         let mut __acc: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
@@ -288,7 +288,7 @@ pub fn getVariables(mut tearing: Arc<NBTearing>) -> Result<Arc<metamodelica::Lis
     Ok(variables)
 }
 
-pub fn getResidualVars(mut tearing: Arc<NBTearing>) -> Result<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>> {
+pub(crate) fn getResidualVars(mut tearing: Arc<NBTearing>) -> Result<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>> {
     let mut residuals: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = ({
         let mut __acc: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
         for mut eqn in (tearing.residual_eqns.clone()).into_iter().cloned() {
@@ -300,7 +300,7 @@ pub fn getResidualVars(mut tearing: Arc<NBTearing>) -> Result<Arc<metamodelica::
     Ok(residuals)
 }
 
-pub fn getIterationVars(mut tearing: Arc<NBTearing>) -> Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> {
+pub(crate) fn getIterationVars(mut tearing: Arc<NBTearing>) -> Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> {
     let mut iterationVars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = ({
         let mut __acc: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
         for mut var in (tearing.iteration_vars.clone()).into_iter().cloned() {
@@ -312,7 +312,7 @@ pub fn getIterationVars(mut tearing: Arc<NBTearing>) -> Arc<metamodelica::List<P
     iterationVars
 }
 
-pub fn getResidualEqns(mut tearing: Arc<NBTearing>) -> Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> {
+pub(crate) fn getResidualEqns(mut tearing: Arc<NBTearing>) -> Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> {
     let mut residuals: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = ({
         let mut __acc: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
         for mut eqn in (tearing.residual_eqns.clone()).into_iter().cloned() {
@@ -324,7 +324,7 @@ pub fn getResidualEqns(mut tearing: Arc<NBTearing>) -> Arc<metamodelica::List<Po
     residuals
 }
 
-pub fn setResidualEqns(mut tearing: Arc<NBTearing>, mut residuals: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>>) -> Arc<NBTearing> {
+pub(crate) fn setResidualEqns(mut tearing: Arc<NBTearing>, mut residuals: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>>) -> Arc<NBTearing> {
     let mut tearing: Arc<NBTearing> = tearing;
     assign_field!(tearing.residual_eqns = residuals.clone());
     tearing

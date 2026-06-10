@@ -1252,7 +1252,7 @@ fn convertExternalDeclOutput(mut cref: Arc<ComponentRef::NFComponentRef>) -> Res
     Ok(arg)
 }
 
-pub fn makeTypeVars(mut complexCls: Arc<InstNode::InstNode>) -> Result<Arc<metamodelica::List<Arc<DAE::Var>>>> {
+pub(crate) fn makeTypeVars(mut complexCls: Arc<InstNode::InstNode>) -> Result<Arc<metamodelica::List<Arc<DAE::Var>>>> {
     let mut typeVars: Arc<metamodelica::List<Arc<DAE::Var>>>;
     typeVars = { let mut cls = InstNode::getClass(complexCls.clone())?; (::match_deref::match_deref! { match &(cls) {
         Deref @ Class::INSTANCED_CLASS { restriction: Deref @ Restriction::RECORD { .. }, .. } => ({
@@ -1287,7 +1287,7 @@ pub fn makeTypeVars(mut complexCls: Arc<InstNode::InstNode>) -> Result<Arc<metam
     Ok(typeVars)
 }
 
-pub fn makeTypeVar(mut component: Arc<InstNode::InstNode>) -> Result<Arc<DAE::Var>> {
+pub(crate) fn makeTypeVar(mut component: Arc<InstNode::InstNode>) -> Result<Arc<DAE::Var>> {
     let mut typeVar: Arc<DAE::Var>;
     let mut comp: Arc<Component::NFComponent>;
     let mut attr: Arc<Attributes::NFAttributes>;
@@ -1297,7 +1297,7 @@ pub fn makeTypeVar(mut component: Arc<InstNode::InstNode>) -> Result<Arc<DAE::Va
     Ok(typeVar)
 }
 
-pub fn makeTypeRecordVar(mut component: Arc<InstNode::InstNode>) -> Result<Arc<DAE::Var>> {
+pub(crate) fn makeTypeRecordVar(mut component: Arc<InstNode::InstNode>) -> Result<Arc<DAE::Var>> {
     let mut typeVar: Arc<DAE::Var>;
     let mut comp: Arc<Component::NFComponent>;
     let mut attr: Arc<Attributes::NFAttributes>;

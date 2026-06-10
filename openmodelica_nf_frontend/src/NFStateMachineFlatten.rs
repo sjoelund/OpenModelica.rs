@@ -181,7 +181,7 @@ pub const SMS_PRE: &'static str = "smOf";
 // ============================================================
 // Public entry point
 // ============================================================
-pub fn flatten(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<Arc<FlatModel::NFFlatModel>> {
+pub(crate) fn flatten(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<Arc<FlatModel::NFFlatModel>> {
     pub type OuterVarList = Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>)>>;
 
     let mut flatModel: Arc<FlatModel::NFFlatModel> = flatModel;

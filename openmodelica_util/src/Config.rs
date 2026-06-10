@@ -173,7 +173,7 @@ pub fn acceptOptimicaGrammar() -> Result<bool> {
     Ok(outBoolean)
 }
 
-pub fn acceptPDEModelicaGrammar() -> Result<bool> {
+pub(crate) fn acceptPDEModelicaGrammar() -> Result<bool> {
     let mut outBoolean: bool;
     outBoolean = intEq(Flags::getConfigEnum(Flags::GRAMMAR.clone())?, Flags::PDEMODELICA.clone());
     Ok(outBoolean)
@@ -185,7 +185,7 @@ pub fn getAnnotationVersion() -> Result<ArcStr> {
     Ok(annotationVersion)
 }
 
-pub fn setAnnotationVersion(mut annotationVersion: ArcStr) -> Result<()> {
+pub(crate) fn setAnnotationVersion(mut annotationVersion: ArcStr) -> Result<()> {
     FlagsUtil::setConfigString(Flags::ANNOTATION_VERSION.clone(), (annotationVersion.clone()).clone())?;
     Ok(())
 }
@@ -207,7 +207,7 @@ pub fn vectorizationLimit() -> Result<i32> {
     Ok(limit)
 }
 
-pub fn setVectorizationLimit(mut limit: i32) -> Result<()> {
+pub(crate) fn setVectorizationLimit(mut limit: i32) -> Result<()> {
     FlagsUtil::setConfigInt(Flags::VECTORIZATION_LIMIT.clone(), limit.clone())?;
     Ok(())
 }
@@ -218,7 +218,7 @@ pub fn getDefaultOpenCLDevice() -> Result<i32> {
     Ok(defdevid)
 }
 
-pub fn setDefaultOpenCLDevice(mut defdevid: i32) -> Result<()> {
+pub(crate) fn setDefaultOpenCLDevice(mut defdevid: i32) -> Result<()> {
     FlagsUtil::setConfigInt(Flags::DEFAULT_OPENCL_DEVICE.clone(), defdevid.clone())?;
     Ok(())
 }
@@ -274,7 +274,7 @@ pub fn orderConnections() -> Result<bool> {
     Ok(show)
 }
 
-pub fn setOrderConnections(mut show: bool) -> Result<()> {
+pub(crate) fn setOrderConnections(mut show: bool) -> Result<()> {
     FlagsUtil::setConfigBool(Flags::ORDER_CONNECTIONS.clone(), show.clone())?;
     Ok(())
 }
@@ -303,12 +303,12 @@ pub fn getInitOptModules() -> Result<Arc<metamodelica::List<ArcStr>>> {
     Ok(outStringLst)
 }
 
-pub fn setPreOptModules(mut inStringLst: Arc<metamodelica::List<ArcStr>>) -> Result<()> {
+pub(crate) fn setPreOptModules(mut inStringLst: Arc<metamodelica::List<ArcStr>>) -> Result<()> {
     FlagsUtil::setConfigStringList(Flags::PRE_OPT_MODULES.clone(), inStringLst.clone())?;
     Ok(())
 }
 
-pub fn setPostOptModules(mut inStringLst: Arc<metamodelica::List<ArcStr>>) -> Result<()> {
+pub(crate) fn setPostOptModules(mut inStringLst: Arc<metamodelica::List<ArcStr>>) -> Result<()> {
     FlagsUtil::setConfigStringList(Flags::POST_OPT_MODULES.clone(), inStringLst.clone())?;
     Ok(())
 }
@@ -319,7 +319,7 @@ pub fn getIndexReductionMethod() -> Result<ArcStr> {
     Ok(outString)
 }
 
-pub fn setIndexReductionMethod(mut inString: ArcStr) -> Result<()> {
+pub(crate) fn setIndexReductionMethod(mut inString: ArcStr) -> Result<()> {
     FlagsUtil::setConfigString(Flags::INDEX_REDUCTION_METHOD.clone(), (inString.clone()).clone())?;
     Ok(())
 }
@@ -330,7 +330,7 @@ pub fn getCheapMatchingAlgorithm() -> Result<i32> {
     Ok(outInteger)
 }
 
-pub fn setCheapMatchingAlgorithm(mut inInteger: i32) -> Result<()> {
+pub(crate) fn setCheapMatchingAlgorithm(mut inInteger: i32) -> Result<()> {
     FlagsUtil::setConfigInt(Flags::CHEAPMATCHING_ALGORITHM.clone(), inInteger.clone())?;
     Ok(())
 }
@@ -341,7 +341,7 @@ pub fn getMatchingAlgorithm() -> Result<ArcStr> {
     Ok(outString)
 }
 
-pub fn setMatchingAlgorithm(mut inString: ArcStr) -> Result<()> {
+pub(crate) fn setMatchingAlgorithm(mut inString: ArcStr) -> Result<()> {
     FlagsUtil::setConfigString(Flags::MATCHING_ALGORITHM.clone(), (inString.clone()).clone())?;
     Ok(())
 }
@@ -352,7 +352,7 @@ pub fn getTearingMethod() -> Result<ArcStr> {
     Ok(outString)
 }
 
-pub fn setTearingMethod(mut inString: ArcStr) -> Result<()> {
+pub(crate) fn setTearingMethod(mut inString: ArcStr) -> Result<()> {
     FlagsUtil::setConfigString(Flags::TEARING_METHOD.clone(), (inString.clone()).clone())?;
     Ok(())
 }
@@ -363,7 +363,7 @@ pub fn getTearingHeuristic() -> Result<ArcStr> {
     Ok(outString)
 }
 
-pub fn setTearingHeuristic(mut inString: ArcStr) -> Result<()> {
+pub(crate) fn setTearingHeuristic(mut inString: ArcStr) -> Result<()> {
     FlagsUtil::setConfigString(Flags::TEARING_HEURISTIC.clone(), (inString.clone()).clone())?;
     Ok(())
 }
@@ -374,7 +374,7 @@ pub fn simCodeTarget() -> Result<ArcStr> {
     Ok(target)
 }
 
-pub fn setsimCodeTarget(mut inString: ArcStr) -> Result<()> {
+pub(crate) fn setsimCodeTarget(mut inString: ArcStr) -> Result<()> {
     FlagsUtil::setConfigString(Flags::SIMCODE_TARGET.clone(), (inString.clone()).clone())?;
     Ok(())
 }
@@ -504,7 +504,7 @@ fn versionStringToStd2(mut inVersion: Arc<metamodelica::List<ArcStr>>) -> Langua
     outStandard
 }
 
-pub fn showErrorMessages() -> Result<bool> {
+pub(crate) fn showErrorMessages() -> Result<bool> {
     let mut outShowErrorMessages: bool;
     outShowErrorMessages = Flags::getConfigBool(Flags::SHOW_ERROR_MESSAGES.clone())?;
     Ok(outShowErrorMessages)

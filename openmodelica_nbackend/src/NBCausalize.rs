@@ -90,7 +90,7 @@ use openmodelica_util_datatypes_basic::Pointer;
 // ############################################################
 //                      Main Functions
 // ############################################################
-pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>, mut kind: BPartition::Kind) -> Result<Arc<BackendDAE::NBackendDAE>> {
+pub(crate) fn main(mut bdae: Arc<BackendDAE::NBackendDAE>, mut kind: BPartition::Kind) -> Result<Arc<BackendDAE::NBackendDAE>> {
     let mut bdae: Arc<BackendDAE::NBackendDAE> = bdae;
     let mut func: Module::causalizeInterface = getModule()?;
     bdae = (::match_deref::match_deref! { match &((kind.clone(), bdae.clone())) {
@@ -149,7 +149,7 @@ pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>, mut kind: BPartition::Kind) 
     Ok(bdae)
 }
 
-pub fn applyModule(mut partitions: Arc<metamodelica::List<Arc<Partition::Partition>>>, mut kind: BPartition::Kind, mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqData::EqData>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<Partition::Partition>, Arc<VarData::VarData>, Arc<EqData::EqData>, Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>) -> Result<(Arc<Partition::Partition>, Arc<VarData::VarData>, Arc<EqData::EqData>)> + 'static>) -> Result<(Arc<metamodelica::List<Arc<Partition::Partition>>>, Arc<VarData::VarData>, Arc<EqData::EqData>)> {
+pub(crate) fn applyModule(mut partitions: Arc<metamodelica::List<Arc<Partition::Partition>>>, mut kind: BPartition::Kind, mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqData::EqData>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<Partition::Partition>, Arc<VarData::VarData>, Arc<EqData::EqData>, Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>) -> Result<(Arc<Partition::Partition>, Arc<VarData::VarData>, Arc<EqData::EqData>)> + 'static>) -> Result<(Arc<metamodelica::List<Arc<Partition::Partition>>>, Arc<VarData::VarData>, Arc<EqData::EqData>)> {
     let mut new_partitions: Arc<metamodelica::List<Arc<Partition::Partition>>> = metamodelica::nil();
     let mut varData: Arc<VarData::VarData> = varData;
     let mut eqData: Arc<EqData::EqData> = eqData;
@@ -173,7 +173,7 @@ pub fn applyModule(mut partitions: Arc<metamodelica::List<Arc<Partition::Partiti
     Ok((new_partitions, varData, eqData))
 }
 
-pub fn checkSystemVariabilities(mut partition: Arc<Partition::Partition>) -> Result<bool> {
+pub(crate) fn checkSystemVariabilities(mut partition: Arc<Partition::Partition>) -> Result<bool> {
     let mut violated: bool = false;
     let mut err: ArcStr = arcstr::literal!("");
     if isSome(partition.strongComponents.clone()) {
@@ -207,7 +207,7 @@ pub fn checkSystemVariabilities(mut partition: Arc<Partition::Partition>) -> Res
     Ok(violated)
 }
 
-pub fn simple(mut vars: Arc<VariablePointers::VariablePointers>, mut eqns: Arc<EquationPointers::EquationPointers>, mut kind: BPartition::Kind, mut st: Adjacency::MatrixStrictness, mut iter: Arc<Iterator::Iterator>) -> Result<(Arc<Matching::NBMatching>, Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>>)> {
+pub(crate) fn simple(mut vars: Arc<VariablePointers::VariablePointers>, mut eqns: Arc<EquationPointers::EquationPointers>, mut kind: BPartition::Kind, mut st: Adjacency::MatrixStrictness, mut iter: Arc<Iterator::Iterator>) -> Result<(Arc<Matching::NBMatching>, Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>>)> {
     let mut matching: Arc<Matching::NBMatching>;
     let mut comps: Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>>;
     let mut full: Arc<Adjacency::Matrix::Matrix>;
@@ -220,7 +220,7 @@ pub fn simple(mut vars: Arc<VariablePointers::VariablePointers>, mut eqns: Arc<E
     Ok((matching, comps))
 }
 
-pub fn getModule() -> Result<Arc<dyn ::std::ops::Fn(Arc<Partition::Partition>, Arc<VarData::VarData>, Arc<EqData::EqData>, Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>) -> Result<(Arc<Partition::Partition>, Arc<VarData::VarData>, Arc<EqData::EqData>)> + 'static>> {
+pub(crate) fn getModule() -> Result<Arc<dyn ::std::ops::Fn(Arc<Partition::Partition>, Arc<VarData::VarData>, Arc<EqData::EqData>, Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>) -> Result<(Arc<Partition::Partition>, Arc<VarData::VarData>, Arc<EqData::EqData>)> + 'static>> {
     let mut func: Module::causalizeInterface;
     let mut flag: ArcStr = Flags::getConfigString(Flags::MATCHING_ALGORITHM.clone())?;
     func = (::match_deref::match_deref! { match &(flag.clone()) {

@@ -105,7 +105,7 @@ impl metamodelica::gc::MMTrace for EvalOrder {
     fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 
-pub fn resize(mut equations: Arc<EquationPointers::EquationPointers>, mut varData: Arc<VarData::VarData>) -> Result<(Arc<EquationPointers::EquationPointers>, Arc<VarData::VarData>)> {
+pub(crate) fn resize(mut equations: Arc<EquationPointers::EquationPointers>, mut varData: Arc<VarData::VarData>) -> Result<(Arc<EquationPointers::EquationPointers>, Arc<VarData::VarData>)> {
     type applyFunc = std::sync::Arc<dyn ::std::ops::Fn(Arc<Type::NFType>) -> Result<Arc<Type::NFType>> + 'static>;
 
     let mut equations: Arc<EquationPointers::EquationPointers> = equations;
@@ -168,7 +168,7 @@ pub fn resize(mut equations: Arc<EquationPointers::EquationPointers>, mut varDat
     Ok((equations, varData))
 }
 
-pub fn detect(mut eqn: Arc<Equation::Equation>, mut cref_to_solve: Arc<ComponentRef::NFComponentRef>) -> Result<Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, EvalOrder>>> {
+pub(crate) fn detect(mut eqn: Arc<Equation::Equation>, mut cref_to_solve: Arc<ComponentRef::NFComponentRef>) -> Result<Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, EvalOrder>>> {
     let mut order: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, EvalOrder>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, EvalOrder>> as ::std::default::Default>::default();
     let mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>> = BVariable::getVarPointer(cref_to_solve.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBResizable.mo"))?;
     let mut var_occurences: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = UnorderedSet::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
@@ -296,12 +296,12 @@ pub fn detect(mut eqn: Arc<Equation::Equation>, mut cref_to_solve: Arc<Component
     Ok(order)
 }
 
-pub fn orderFailed(mut eo: EvalOrder) -> bool {
+pub(crate) fn orderFailed(mut eo: EvalOrder) -> bool {
     let mut b: bool = eo.clone() == EvalOrder::FAILED.clone();
     b
 }
 
-pub fn orderString(mut eo: EvalOrder) -> ArcStr {
+pub(crate) fn orderString(mut eo: EvalOrder) -> ArcStr {
     let mut r#str: ArcStr;
     r#str = ((match eo.clone() {
         EvalOrder::INDEPENDENT => literal!("INDEPENDENT"),

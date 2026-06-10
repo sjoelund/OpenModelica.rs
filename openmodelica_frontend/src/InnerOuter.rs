@@ -250,7 +250,7 @@ pub type InstHierarchy = Arc<metamodelica::List<TopInstance>>;
 thread_local! { static __emptyInstHierarchy_TLS: Arc<metamodelica::List<TopInstance>> = metamodelica::nil(); }
 pub fn emptyInstHierarchy() -> Arc<metamodelica::List<TopInstance>> { __emptyInstHierarchy_TLS.with(|__t| __t.clone()) }
 
-pub fn handleInnerOuterEquations(mut io: Absyn::InnerOuter, mut inDae: DAE::DAElist, mut inIH: InstHierarchy, mut inGraphNew: ConnectionGraph::ConnectionGraph, mut inGraph: ConnectionGraph::ConnectionGraph) -> Result<(DAE::DAElist, InstHierarchy, ConnectionGraph::ConnectionGraph)> {
+pub(crate) fn handleInnerOuterEquations(mut io: Absyn::InnerOuter, mut inDae: DAE::DAElist, mut inIH: InstHierarchy, mut inGraphNew: ConnectionGraph::ConnectionGraph, mut inGraph: ConnectionGraph::ConnectionGraph) -> Result<(DAE::DAElist, InstHierarchy, ConnectionGraph::ConnectionGraph)> {
     let mut odae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
     let mut outIH: InstHierarchy;
     let mut outGraph: ConnectionGraph::ConnectionGraph;
@@ -310,7 +310,7 @@ pub fn handleInnerOuterEquations(mut io: Absyn::InnerOuter, mut inDae: DAE::DAEl
     Ok((odae, outIH, outGraph))
 }
 
-pub fn changeInnerOuterInOuterConnect(mut sets: DAE::Connect::Sets) -> Result<DAE::Connect::Sets> {
+pub(crate) fn changeInnerOuterInOuterConnect(mut sets: DAE::Connect::Sets) -> Result<DAE::Connect::Sets> {
     let mut sets: DAE::Connect::Sets = sets;
     sets.outerConnects = List::map(sets.outerConnects.clone(), (std::sync::Arc::new(fnptr!(changeInnerOuterInOuterConnect2, DAE::Connect::OuterConnect)) as std::sync::Arc<dyn ::std::ops::Fn(DAE::Connect::OuterConnect) -> Result<DAE::Connect::OuterConnect> + 'static>))?;
     Ok(sets)
@@ -345,7 +345,7 @@ fn changeInnerOuterInOuterConnect2(mut inOC: DAE::Connect::OuterConnect) -> DAE:
     outOC
 }
 
-pub fn retrieveOuterConnections(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: InstHierarchy, mut inPrefix: DAE::Prefix, mut inSets: DAE::Connect::Sets, mut inTopCall: bool, mut inCGraph: ConnectionGraph::ConnectionGraph) -> Result<(DAE::Connect::Sets, Arc<metamodelica::List<DAE::Connect::OuterConnect>>, ConnectionGraph::ConnectionGraph)> {
+pub(crate) fn retrieveOuterConnections(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: InstHierarchy, mut inPrefix: DAE::Prefix, mut inSets: DAE::Connect::Sets, mut inTopCall: bool, mut inCGraph: ConnectionGraph::ConnectionGraph) -> Result<(DAE::Connect::Sets, Arc<metamodelica::List<DAE::Connect::OuterConnect>>, ConnectionGraph::ConnectionGraph)> {
     let mut outSets: DAE::Connect::Sets;
     let mut outInnerOuterConnects: Arc<metamodelica::List<DAE::Connect::OuterConnect>>;
     let mut outCGraph: ConnectionGraph::ConnectionGraph;
@@ -648,7 +648,7 @@ fn innerOuterBooleans(mut io: Absyn::InnerOuter) -> Result<(bool, bool)> {
     Ok((inner1, outer1))
 }
 
-pub fn outerConnection(mut io1: Absyn::InnerOuter, mut io2: Absyn::InnerOuter) -> bool {
+pub(crate) fn outerConnection(mut io1: Absyn::InnerOuter, mut io2: Absyn::InnerOuter) -> bool {
     let mut isOuter: bool;
     isOuter = (match (io1.clone(), io2.clone()) {
         (Absyn::InnerOuter::OUTER { .. }, _) => true,
@@ -725,7 +725,7 @@ fn lookupInnerInIH(mut inTIH: TopInstance, mut inPrefix: DAE::Prefix, mut inComp
     Ok(outInstInner)
 }
 
-pub fn modificationOnOuter(mut cache: FCore::Cache, mut env: FCore::Graph, mut ih: InstHierarchy, mut prefix: DAE::Prefix, mut componentName: ArcStr, mut cr: Arc<DAE::ComponentRef>, mut inMod: Arc<DAE::Mod>, mut io: Absyn::InnerOuter, mut r#impl: bool, mut inInfo: SourceInfo) -> bool {
+pub(crate) fn modificationOnOuter(mut cache: FCore::Cache, mut env: FCore::Graph, mut ih: InstHierarchy, mut prefix: DAE::Prefix, mut componentName: ArcStr, mut cr: Arc<DAE::ComponentRef>, mut inMod: Arc<DAE::Mod>, mut io: Absyn::InnerOuter, mut r#impl: bool, mut inInfo: SourceInfo) -> bool {
     let mut modd: bool;
     modd = 'mc: {
         let __mc_input = (inMod.clone(), io.clone());
@@ -757,7 +757,7 @@ pub fn modificationOnOuter(mut cache: FCore::Cache, mut env: FCore::Graph, mut i
     modd
 }
 
-pub fn switchInnerToOuterInGraph(mut inEnv: FCore::Graph, mut inCr: Arc<DAE::ComponentRef>) -> Result<FCore::Graph> {
+pub(crate) fn switchInnerToOuterInGraph(mut inEnv: FCore::Graph, mut inCr: Arc<DAE::ComponentRef>) -> Result<FCore::Graph> {
     let mut outEnv: FCore::Graph;
     outEnv = (::match_deref::match_deref! { match &((inEnv.clone(), inCr.clone())) {
         (FCore::Graph::EG { name: _ }, _) => {
@@ -900,7 +900,7 @@ fn emptyInstInner(mut innerPrefix: DAE::Prefix, mut name: ArcStr) -> InstInner {
     outInstInner
 }
 
-pub fn lookupInnerVar(mut inCache: Cache, mut inEnv: FCore::Graph, mut inIH: InstHierarchy, mut inPrefix: DAE::Prefix, mut inIdent: ArcStr, mut io: Absyn::InnerOuter) -> Result<InstInner> {
+pub(crate) fn lookupInnerVar(mut inCache: Cache, mut inEnv: FCore::Graph, mut inIH: InstHierarchy, mut inPrefix: DAE::Prefix, mut inIdent: ArcStr, mut io: Absyn::InnerOuter) -> Result<InstInner> {
     let mut outInstInner: InstInner;
     outInstInner = 'mc: {
         let __mc_input = (inIH.clone(), inPrefix.clone(), inIdent.clone());
@@ -929,7 +929,7 @@ pub fn lookupInnerVar(mut inCache: Cache, mut inEnv: FCore::Graph, mut inIH: Ins
     Ok(outInstInner)
 }
 
-pub fn updateInstHierarchy(mut inIH: InstHierarchy, mut inPrefix: DAE::Prefix, mut inInnerOuter: Absyn::InnerOuter, mut inInstInner: InstInner) -> Result<InstHierarchy> {
+pub(crate) fn updateInstHierarchy(mut inIH: InstHierarchy, mut inPrefix: DAE::Prefix, mut inInnerOuter: Absyn::InnerOuter, mut inInstInner: InstInner) -> Result<InstHierarchy> {
     '__tco: loop {
         ::match_deref::match_deref! { match &((inIH.clone(), inInstInner.clone())) {
         (Deref @ metamodelica::List::Nil, InstInner { .. }) => {
@@ -959,7 +959,7 @@ pub fn updateInstHierarchy(mut inIH: InstHierarchy, mut inPrefix: DAE::Prefix, m
     }
 }
 
-pub fn updateSMHierarchy(mut smState: Arc<DAE::ComponentRef>, mut inIH: InstHierarchy) -> Result<InstHierarchy> {
+pub(crate) fn updateSMHierarchy(mut smState: Arc<DAE::ComponentRef>, mut inIH: InstHierarchy) -> Result<InstHierarchy> {
     let mut outIH: InstHierarchy;
     outIH = (::match_deref::match_deref! { match &((smState.clone(), inIH.clone())) {
         (_, Deref @ metamodelica::List::Nil) => {
@@ -990,7 +990,7 @@ pub fn updateSMHierarchy(mut smState: Arc<DAE::ComponentRef>, mut inIH: InstHier
     Ok(outIH)
 }
 
-pub fn addClassIfInner(mut inClass: Arc<SCode::Element>, mut inPrefix: DAE::Prefix, mut inScope: FCore::Graph, mut inIH: InstHierarchy) -> InstHierarchy {
+pub(crate) fn addClassIfInner(mut inClass: Arc<SCode::Element>, mut inPrefix: DAE::Prefix, mut inScope: FCore::Graph, mut inIH: InstHierarchy) -> InstHierarchy {
     let mut outIH: InstHierarchy = metamodelica::nil();
     outIH = 'mc: {
         let __mc_input = inClass.clone();
@@ -1020,7 +1020,7 @@ pub fn addClassIfInner(mut inClass: Arc<SCode::Element>, mut inPrefix: DAE::Pref
     outIH
 }
 
-pub fn addOuterPrefixToIH(mut inIH: InstHierarchy, mut inOuterComponentRef: Arc<DAE::ComponentRef>, mut inInnerComponentRef: Arc<DAE::ComponentRef>) -> Result<InstHierarchy> {
+pub(crate) fn addOuterPrefixToIH(mut inIH: InstHierarchy, mut inOuterComponentRef: Arc<DAE::ComponentRef>, mut inInnerComponentRef: Arc<DAE::ComponentRef>) -> Result<InstHierarchy> {
     let mut outIH: InstHierarchy;
     outIH = 'mc: {
         let __mc_input = inIH.clone();
@@ -1065,7 +1065,7 @@ pub fn addOuterPrefixToIH(mut inIH: InstHierarchy, mut inOuterComponentRef: Arc<
     Ok(outIH)
 }
 
-pub fn prefixOuterCrefWithTheInnerPrefix(mut inIH: InstHierarchy, mut inOuterComponentRef: Arc<DAE::ComponentRef>, mut inPrefix: DAE::Prefix) -> Result<Arc<DAE::ComponentRef>> {
+pub(crate) fn prefixOuterCrefWithTheInnerPrefix(mut inIH: InstHierarchy, mut inOuterComponentRef: Arc<DAE::ComponentRef>, mut inPrefix: DAE::Prefix) -> Result<Arc<DAE::ComponentRef>> {
     let mut outInnerComponentRef: Arc<DAE::ComponentRef>;
     outInnerComponentRef = (::match_deref::match_deref! { match &(inIH.clone()) {
         Deref @ metamodelica::List::Nil => {
@@ -1157,7 +1157,7 @@ fn printInnerDefStr(mut inInstInner: InstInner) -> Result<ArcStr> {
     Ok(outStr)
 }
 
-pub fn getExistingInnerDeclarations(mut inIH: InstHierarchy, mut inEnv: FCore::Graph) -> Result<ArcStr> {
+pub(crate) fn getExistingInnerDeclarations(mut inIH: InstHierarchy, mut inEnv: FCore::Graph) -> Result<ArcStr> {
     let mut innerDeclarations: ArcStr;
     innerDeclarations = ((::match_deref::match_deref! { match &(inIH.clone()) {
         Deref @ metamodelica::List::Nil => {
@@ -1359,7 +1359,7 @@ fn add(mut entry: (Arc<DAE::ComponentRef>, InstInner), mut hashTable: InstHierar
     Ok(outHashTable)
 }
 
-pub fn get(mut key: Key, mut hashTable: InstHierarchyHashTable) -> Result<Value> {
+pub(crate) fn get(mut key: Key, mut hashTable: InstHierarchyHashTable) -> Result<Value> {
     let mut value: Value;
     (value, _) = get1(key.clone(), hashTable.clone())?;
     Ok(value)

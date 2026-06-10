@@ -90,7 +90,7 @@ pub fn release() -> Result<()> {
     Ok(())
 }
 
-pub fn get(mut k: Key) -> Result<Value> {
+pub(crate) fn get(mut k: Key) -> Result<Value> {
     let mut v: Value;
     let mut ht: HashTable;
     ht = crate::Globals::instHashIndex.with(|__root| __root.borrow().clone());
@@ -127,7 +127,7 @@ impl metamodelica::gc::MMTrace for CachedInstItem {
 }
 pub use self::CachedInstItem::{FUNC_instClassIn,FUNC_partialInstClassIn};
 
-pub fn addToInstCache(mut fullEnvPathPlusClass: Arc<Absyn::Path>, mut fullInstOpt: Option<CachedInstItem>, mut partialInstOpt: Option<CachedInstItem>) -> () {
+pub(crate) fn addToInstCache(mut fullEnvPathPlusClass: Arc<Absyn::Path>, mut fullInstOpt: Option<CachedInstItem>, mut partialInstOpt: Option<CachedInstItem>) -> () {
     let () = 'mc: {
         let __mc_input = (fullInstOpt.clone(), partialInstOpt.clone());
         if let Ok(__v) = (|| -> Result<_> {

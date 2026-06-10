@@ -124,7 +124,7 @@ pub fn stringEq(mut r#str: ArcStr, mut filename: ArcStr) -> Result<Arc<Absyn::Eq
     Ok(eq)
 }
 
-pub fn parallelParseFiles(mut filenames: Arc<metamodelica::List<ArcStr>>, mut encoding: ArcStr, mut numThreads: i32, mut libraryPath: ArcStr, mut lveInstance: Option<i32>) -> Result<(metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Absyn::Program)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Absyn::Program) -> Result<ArcStr> + 'static>))> {
+pub(crate) fn parallelParseFiles(mut filenames: Arc<metamodelica::List<ArcStr>>, mut encoding: ArcStr, mut numThreads: i32, mut libraryPath: ArcStr, mut lveInstance: Option<i32>) -> Result<(metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Absyn::Program)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Absyn::Program) -> Result<ArcStr> + 'static>))> {
     let mut ht: (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Absyn::Program)>>), i32, (HashTableStringToProgram::FuncHashCref, HashTableStringToProgram::FuncCrefEqual, HashTableStringToProgram::FuncCrefStr, HashTableStringToProgram::FuncExpStr));
     let mut partialResults: Arc<metamodelica::List<ParserResult>>;
     partialResults = parallelParseFilesWork(filenames.clone(), (encoding.clone()).clone(), numThreads.clone(), (libraryPath.clone()).clone(), lveInstance.clone())?;
@@ -163,13 +163,13 @@ pub fn startLibraryVendorExecutable(mut lvePath: ArcStr) -> (bool, Option<i32>) 
     (success, lveInstance)
 }
 
-pub fn checkLVEToolLicense(mut lveInstance: Option<i32>, mut packageName: ArcStr) -> bool {
+pub(crate) fn checkLVEToolLicense(mut lveInstance: Option<i32>, mut packageName: ArcStr) -> bool {
     let mut status: bool;
     status = ParserExt::checkLVEToolLicense(lveInstance.clone(), (packageName.clone()).clone());
     status
 }
 
-pub fn checkLVEToolFeature(mut lveInstance: Option<i32>, mut feature: ArcStr) -> bool {
+pub(crate) fn checkLVEToolFeature(mut lveInstance: Option<i32>, mut feature: ArcStr) -> bool {
     let mut status: bool;
     status = ParserExt::checkLVEToolFeature(lveInstance.clone(), (feature.clone()).clone());
     status
@@ -250,7 +250,7 @@ fn loadFileThread(mut inFileEncoding: (ArcStr, ArcStr, ArcStr, Option<i32>)) -> 
     result
 }
 
-pub fn checkLicenseAndFeatures(mut c1: Arc<Absyn::Class>, mut lveInstance: Option<i32>) -> Result<bool> {
+pub(crate) fn checkLicenseAndFeatures(mut c1: Arc<Absyn::Class>, mut lveInstance: Option<i32>) -> Result<bool> {
     let mut result: bool;
     let mut orFeatures: Arc<metamodelica::List<ArcStr>>;
     let mut andFeatures: Arc<metamodelica::List<ArcStr>>;

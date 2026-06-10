@@ -180,17 +180,17 @@ pub mod DifferentiationArguments {
 
     pub type DIFFERENTIATION_ARGUMENTS = DifferentiationArguments;
 
-    pub fn default(mut ty: DifferentiationType, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>) -> Arc<DifferentiationArguments> {
+    pub(crate) fn default(mut ty: DifferentiationType, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>) -> Arc<DifferentiationArguments> {
         let mut diffArgs: Arc<DifferentiationArguments> = Arc::new(DifferentiationArguments { diffCref: openmodelica_nf_frontend::NFComponentRef::interned_EMPTY(), new_vars: metamodelica::nil(), diff_map: None, diffType: ty.clone(), funcMap: funcMap.clone(), scalarized: false, adjoint_map: None, current_grad: Arc::new(Expression::NFExpression::EMPTY { ty: openmodelica_nf_frontend::NFType::interned_REAL() }), collectAdjoints: false });
         diffArgs
     }
 
-    pub fn simpleCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>) -> Arc<DifferentiationArguments> {
+    pub(crate) fn simpleCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>) -> Arc<DifferentiationArguments> {
         let mut diffArgs: Arc<DifferentiationArguments> = Arc::new(DifferentiationArguments { diffCref: cref.clone(), new_vars: metamodelica::nil(), diff_map: None, diffType: DifferentiationType::SIMPLE.clone(), funcMap: funcMap.clone(), scalarized: false, adjoint_map: None, current_grad: Arc::new(Expression::NFExpression::EMPTY { ty: openmodelica_nf_frontend::NFType::interned_REAL() }), collectAdjoints: false });
         diffArgs
     }
 
-    pub fn toString(mut diffArgs: Arc<DifferentiationArguments>) -> Result<ArcStr> {
+    pub(crate) fn toString(mut diffArgs: Arc<DifferentiationArguments>) -> Result<ArcStr> {
         let mut r#str: ArcStr = { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*diffTypeStr(diffArgs.diffType.clone())); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) };
         if diffArgs.diffType.clone() == DifferentiationType::SIMPLE.clone() {
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*ComponentRef::toString(diffArgs.diffCref.clone())?); ArcStr::from(__mm_s) }).clone();
@@ -198,7 +198,7 @@ pub mod DifferentiationArguments {
         Ok(r#str)
     }
 
-    pub fn diffTypeStr(mut diffType: DifferentiationType) -> ArcStr {
+    pub(crate) fn diffTypeStr(mut diffType: DifferentiationType) -> ArcStr {
         let mut r#str: ArcStr;
         r#str = ((match diffType.clone() {
         DifferentiationType::TIME => literal!("TIME"),
@@ -215,7 +215,7 @@ pub mod DifferentiationArguments {
 // ================================
 //             FUNCTIONS
 // ================================
-pub fn differentiateStrongComponentList(mut comps: Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>>, mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments>, mut idx: Pointer::Pointer<i32>, mut context: ArcStr, mut name: ArcStr) -> Result<(Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>>, Arc<DifferentiationArguments::DifferentiationArguments>)> {
+pub(crate) fn differentiateStrongComponentList(mut comps: Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>>, mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments>, mut idx: Pointer::Pointer<i32>, mut context: ArcStr, mut name: ArcStr) -> Result<(Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>>, Arc<DifferentiationArguments::DifferentiationArguments>)> {
     let mut comps: Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>> = comps;
     let mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments> = diffArguments;
     let mut diffArguments_ptr: Pointer::Pointer<Arc<DifferentiationArguments::DifferentiationArguments>> = Pointer::create(diffArguments.clone());
@@ -224,7 +224,7 @@ pub fn differentiateStrongComponentList(mut comps: Arc<metamodelica::List<Arc<St
     Ok((comps, diffArguments))
 }
 
-pub fn differentiateStrongComponentListAdjoint(mut comps: Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>>, mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments>, mut idx: Pointer::Pointer<i32>, mut context: ArcStr, mut name: ArcStr) -> Result<(Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>>, Arc<DifferentiationArguments::DifferentiationArguments>)> {
+pub(crate) fn differentiateStrongComponentListAdjoint(mut comps: Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>>, mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments>, mut idx: Pointer::Pointer<i32>, mut context: ArcStr, mut name: ArcStr) -> Result<(Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>>, Arc<DifferentiationArguments::DifferentiationArguments>)> {
     let mut comps: Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>> = comps;
     let mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments> = diffArguments;
     let mut diffArguments_ptr: Pointer::Pointer<Arc<DifferentiationArguments::DifferentiationArguments>> = Pointer::create(diffArguments.clone());
@@ -267,7 +267,7 @@ pub fn differentiateStrongComponentListAdjoint(mut comps: Arc<metamodelica::List
     Ok((comps, diffArguments))
 }
 
-pub fn differentiateStrongComponent(mut comp: Arc<StrongComponent::NBStrongComponent>, mut diffArguments_ptr: Pointer::Pointer<Arc<DifferentiationArguments::DifferentiationArguments>>, mut idx: Pointer::Pointer<i32>, mut context: ArcStr, mut name: ArcStr) -> Result<Arc<StrongComponent::NBStrongComponent>> {
+pub(crate) fn differentiateStrongComponent(mut comp: Arc<StrongComponent::NBStrongComponent>, mut diffArguments_ptr: Pointer::Pointer<Arc<DifferentiationArguments::DifferentiationArguments>>, mut idx: Pointer::Pointer<i32>, mut context: ArcStr, mut name: ArcStr) -> Result<Arc<StrongComponent::NBStrongComponent>> {
     let mut comp: Arc<StrongComponent::NBStrongComponent> = comp;
     comp = (::match_deref::match_deref! { match &(comp.clone()) {
         Deref @ StrongComponent::SINGLE_COMPONENT { .. } => {
@@ -373,7 +373,7 @@ pub fn differentiateStrongComponent(mut comp: Arc<StrongComponent::NBStrongCompo
     Ok(comp)
 }
 
-pub fn differentiateTearing(mut tearing: Arc<Tearing::NBTearing>, mut diffArguments_ptr: Pointer::Pointer<Arc<DifferentiationArguments::DifferentiationArguments>>, mut idx: Pointer::Pointer<i32>, mut context: ArcStr, mut name: ArcStr) -> Result<Arc<Tearing::NBTearing>> {
+pub(crate) fn differentiateTearing(mut tearing: Arc<Tearing::NBTearing>, mut diffArguments_ptr: Pointer::Pointer<Arc<DifferentiationArguments::DifferentiationArguments>>, mut idx: Pointer::Pointer<i32>, mut context: ArcStr, mut name: ArcStr) -> Result<Arc<Tearing::NBTearing>> {
     let mut diff_tearing: Arc<Tearing::NBTearing>;
     let mut ite_vars: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Variable::NFVariable>>>>>>;
     let mut res_eqns: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>>;
@@ -406,7 +406,7 @@ pub fn differentiateTearing(mut tearing: Arc<Tearing::NBTearing>, mut diffArgume
     Ok(diff_tearing)
 }
 
-pub fn differentiateEquationPointerList(mut equations: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>, mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments>, mut idx: Pointer::Pointer<i32>, mut context: ArcStr, mut name: ArcStr) -> Result<(Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>, Arc<DifferentiationArguments::DifferentiationArguments>)> {
+pub(crate) fn differentiateEquationPointerList(mut equations: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>, mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments>, mut idx: Pointer::Pointer<i32>, mut context: ArcStr, mut name: ArcStr) -> Result<(Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>, Arc<DifferentiationArguments::DifferentiationArguments>)> {
     let mut equations: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = equations;
     let mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments> = diffArguments;
     let mut diffArguments_ptr: Pointer::Pointer<Arc<DifferentiationArguments::DifferentiationArguments>> = Pointer::create(diffArguments.clone());
@@ -419,7 +419,7 @@ pub fn differentiateEquationPointerList(mut equations: Arc<metamodelica::List<Po
     Ok((equations, diffArguments))
 }
 
-pub fn differentiateEquationPointer(mut eq_ptr: Pointer::Pointer<Arc<Equation::Equation>>, mut diffArguments_ptr: Pointer::Pointer<Arc<DifferentiationArguments::DifferentiationArguments>>, mut name: ArcStr) -> Result<Pointer::Pointer<Arc<Equation::Equation>>> {
+pub(crate) fn differentiateEquationPointer(mut eq_ptr: Pointer::Pointer<Arc<Equation::Equation>>, mut diffArguments_ptr: Pointer::Pointer<Arc<DifferentiationArguments::DifferentiationArguments>>, mut name: ArcStr) -> Result<Pointer::Pointer<Arc<Equation::Equation>>> {
     let mut derivative_ptr: Pointer::Pointer<Arc<Equation::Equation>>;
     let mut eq: Arc<Equation::Equation>;
     let mut diffedEq: Arc<Equation::Equation> = Arc::new(Equation::DUMMY_EQUATION);
@@ -448,7 +448,7 @@ pub fn differentiateEquationPointer(mut eq_ptr: Pointer::Pointer<Arc<Equation::E
     Ok(derivative_ptr)
 }
 
-pub fn differentiateEquation(mut eq: Arc<Equation::Equation>, mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments>, mut name: ArcStr) -> Result<(Arc<Equation::Equation>, Arc<DifferentiationArguments::DifferentiationArguments>)> {
+pub(crate) fn differentiateEquation(mut eq: Arc<Equation::Equation>, mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments>, mut name: ArcStr) -> Result<(Arc<Equation::Equation>, Arc<DifferentiationArguments::DifferentiationArguments>)> {
     let mut eq: Arc<Equation::Equation> = eq;
     let mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments> = diffArguments;
     if Flags::isSet(Flags::DEBUG_DIFFERENTIATION.clone())? && !(stringEqual((name.clone()).clone(), (literal!("")).clone())) {
@@ -577,7 +577,7 @@ pub fn differentiateEquation(mut eq: Arc<Equation::Equation>, mut diffArguments:
     Ok((eq, diffArguments))
 }
 
-pub fn differentiateIfEquationBody(mut body: Arc<IfEquationBody::IfEquationBody>, mut diffArguments_ptr: Pointer::Pointer<Arc<DifferentiationArguments::DifferentiationArguments>>) -> Result<(Arc<IfEquationBody::IfEquationBody>, Pointer::Pointer<Arc<DifferentiationArguments::DifferentiationArguments>>)> {
+pub(crate) fn differentiateIfEquationBody(mut body: Arc<IfEquationBody::IfEquationBody>, mut diffArguments_ptr: Pointer::Pointer<Arc<DifferentiationArguments::DifferentiationArguments>>) -> Result<(Arc<IfEquationBody::IfEquationBody>, Pointer::Pointer<Arc<DifferentiationArguments::DifferentiationArguments>>)> {
     let mut body: Arc<IfEquationBody::IfEquationBody> = body;
     let mut diffArguments_ptr: Pointer::Pointer<Arc<DifferentiationArguments::DifferentiationArguments>> = diffArguments_ptr;
     let mut then_eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>;
@@ -592,7 +592,7 @@ pub fn differentiateIfEquationBody(mut body: Arc<IfEquationBody::IfEquationBody>
     Ok((body, diffArguments_ptr))
 }
 
-pub fn differentiateWhenEquationBody(mut body: Arc<WhenEquationBody::WhenEquationBody>, mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments>) -> Result<(Arc<WhenEquationBody::WhenEquationBody>, Arc<DifferentiationArguments::DifferentiationArguments>)> {
+pub(crate) fn differentiateWhenEquationBody(mut body: Arc<WhenEquationBody::WhenEquationBody>, mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments>) -> Result<(Arc<WhenEquationBody::WhenEquationBody>, Arc<DifferentiationArguments::DifferentiationArguments>)> {
     let mut body: Arc<WhenEquationBody::WhenEquationBody> = body;
     let mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments> = diffArguments;
     let mut when_stmts: Arc<metamodelica::List<Arc<WhenStatement::WhenStatement>>>;
@@ -607,7 +607,7 @@ pub fn differentiateWhenEquationBody(mut body: Arc<WhenEquationBody::WhenEquatio
     Ok((body, diffArguments))
 }
 
-pub fn differentiateWhenStatement(mut stmt: Arc<WhenStatement::WhenStatement>, mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments>) -> Result<(Arc<WhenStatement::WhenStatement>, Arc<DifferentiationArguments::DifferentiationArguments>)> {
+pub(crate) fn differentiateWhenStatement(mut stmt: Arc<WhenStatement::WhenStatement>, mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments>) -> Result<(Arc<WhenStatement::WhenStatement>, Arc<DifferentiationArguments::DifferentiationArguments>)> {
     let mut stmt: Arc<WhenStatement::WhenStatement> = stmt;
     let mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments> = diffArguments;
     (stmt, diffArguments) = (::match_deref::match_deref! { match &(stmt.clone()) {
@@ -626,7 +626,7 @@ pub fn differentiateWhenStatement(mut stmt: Arc<WhenStatement::WhenStatement>, m
     Ok((stmt, diffArguments))
 }
 
-pub fn differentiateExpressionDump(mut exp: Arc<Expression::NFExpression>, mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments>, mut name: ArcStr, mut indent: ArcStr) -> Result<(Arc<Expression::NFExpression>, Arc<DifferentiationArguments::DifferentiationArguments>)> {
+pub(crate) fn differentiateExpressionDump(mut exp: Arc<Expression::NFExpression>, mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments>, mut name: ArcStr, mut indent: ArcStr) -> Result<(Arc<Expression::NFExpression>, Arc<DifferentiationArguments::DifferentiationArguments>)> {
     let mut exp: Arc<Expression::NFExpression> = exp;
     let mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments> = diffArguments;
     if Flags::isSet(Flags::DEBUG_DIFFERENTIATION.clone())? {
@@ -640,7 +640,7 @@ pub fn differentiateExpressionDump(mut exp: Arc<Expression::NFExpression>, mut d
     Ok((exp, diffArguments))
 }
 
-pub fn differentiateExpression(mut exp: Arc<Expression::NFExpression>, mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments>) -> Result<(Arc<Expression::NFExpression>, Arc<DifferentiationArguments::DifferentiationArguments>)> {
+pub(crate) fn differentiateExpression(mut exp: Arc<Expression::NFExpression>, mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments>) -> Result<(Arc<Expression::NFExpression>, Arc<DifferentiationArguments::DifferentiationArguments>)> {
     let mut exp: Arc<Expression::NFExpression> = exp;
     let mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments> = diffArguments;
     (exp, diffArguments) = ({
@@ -830,7 +830,7 @@ pub fn differentiateExpression(mut exp: Arc<Expression::NFExpression>, mut diffA
     Ok((exp, diffArguments))
 }
 
-pub fn differentiateExpressionNoCollect(mut expr: Arc<Expression::NFExpression>, mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments>) -> Result<(Arc<Expression::NFExpression>, Arc<DifferentiationArguments::DifferentiationArguments>)> {
+pub(crate) fn differentiateExpressionNoCollect(mut expr: Arc<Expression::NFExpression>, mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments>) -> Result<(Arc<Expression::NFExpression>, Arc<DifferentiationArguments::DifferentiationArguments>)> {
     let mut expr: Arc<Expression::NFExpression> = expr;
     let mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments> = diffArguments;
     let mut oldCollect: bool;
@@ -845,7 +845,7 @@ pub fn differentiateExpressionNoCollect(mut expr: Arc<Expression::NFExpression>,
     Ok((expr, diffArguments))
 }
 
-pub fn differentiateComponentRef(mut exp: Arc<Expression::NFExpression>, mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments>) -> Result<(Arc<Expression::NFExpression>, Arc<DifferentiationArguments::DifferentiationArguments>)> {
+pub(crate) fn differentiateComponentRef(mut exp: Arc<Expression::NFExpression>, mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments>) -> Result<(Arc<Expression::NFExpression>, Arc<DifferentiationArguments::DifferentiationArguments>)> {
     let mut exp: Arc<Expression::NFExpression> = exp;
     let mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments> = diffArguments;
     let mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>;
@@ -991,7 +991,7 @@ pub fn differentiateComponentRef(mut exp: Arc<Expression::NFExpression>, mut dif
     Ok((exp, diffArguments))
 }
 
-pub fn differentiateComponentRefNoCollect(mut exp: Arc<Expression::NFExpression>, mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments>) -> Result<(Arc<Expression::NFExpression>, Arc<DifferentiationArguments::DifferentiationArguments>)> {
+pub(crate) fn differentiateComponentRefNoCollect(mut exp: Arc<Expression::NFExpression>, mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments>) -> Result<(Arc<Expression::NFExpression>, Arc<DifferentiationArguments::DifferentiationArguments>)> {
     let mut exp: Arc<Expression::NFExpression> = exp;
     let mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments> = diffArguments;
     let mut oldCollect: bool;
@@ -1006,7 +1006,7 @@ pub fn differentiateComponentRefNoCollect(mut exp: Arc<Expression::NFExpression>
     Ok((exp, diffArguments))
 }
 
-pub fn differentiateVariablePointer(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut diffArguments_ptr: Pointer::Pointer<Arc<DifferentiationArguments::DifferentiationArguments>>) -> Result<Pointer::Pointer<Arc<Variable::NFVariable>>> {
+pub(crate) fn differentiateVariablePointer(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut diffArguments_ptr: Pointer::Pointer<Arc<DifferentiationArguments::DifferentiationArguments>>) -> Result<Pointer::Pointer<Arc<Variable::NFVariable>>> {
     let mut diff_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>;
     let mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments> = Pointer::access(diffArguments_ptr.clone());
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
@@ -1026,7 +1026,7 @@ pub fn differentiateVariablePointer(mut var_ptr: Pointer::Pointer<Arc<Variable::
     Ok(diff_ptr)
 }
 
-pub fn differentiateCall(mut exp: Arc<Expression::NFExpression>, mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments>) -> Result<(Arc<Expression::NFExpression>, Arc<DifferentiationArguments::DifferentiationArguments>)> {
+pub(crate) fn differentiateCall(mut exp: Arc<Expression::NFExpression>, mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments>) -> Result<(Arc<Expression::NFExpression>, Arc<DifferentiationArguments::DifferentiationArguments>)> {
     let mut exp: Arc<Expression::NFExpression> = exp;
     let mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments> = diffArguments;
     let debug: bool = false;
@@ -1130,7 +1130,7 @@ pub fn differentiateCall(mut exp: Arc<Expression::NFExpression>, mut diffArgumen
     Ok((exp, diffArguments))
 }
 
-pub fn differentiateReduction(mut name: ArcStr, mut exp: Arc<Expression::NFExpression>, mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments>) -> Result<(Arc<Expression::NFExpression>, Arc<DifferentiationArguments::DifferentiationArguments>)> {
+pub(crate) fn differentiateReduction(mut name: ArcStr, mut exp: Arc<Expression::NFExpression>, mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments>) -> Result<(Arc<Expression::NFExpression>, Arc<DifferentiationArguments::DifferentiationArguments>)> {
     let mut exp: Arc<Expression::NFExpression> = exp;
     let mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments> = diffArguments;
     exp = (::match_deref::match_deref! { match &(exp.clone()) {
@@ -1151,7 +1151,7 @@ pub fn differentiateReduction(mut name: ArcStr, mut exp: Arc<Expression::NFExpre
     Ok((exp, diffArguments))
 }
 
-pub fn differentiateBuiltinCall(mut name: ArcStr, mut exp: Arc<Expression::NFExpression>, mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments>) -> Result<(Arc<Expression::NFExpression>, Arc<DifferentiationArguments::DifferentiationArguments>)> {
+pub(crate) fn differentiateBuiltinCall(mut name: ArcStr, mut exp: Arc<Expression::NFExpression>, mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments>) -> Result<(Arc<Expression::NFExpression>, Arc<DifferentiationArguments::DifferentiationArguments>)> {
     let mut exp: Arc<Expression::NFExpression> = exp;
     let mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments> = diffArguments;
     let mut sizeClass: Operator::SizeClassification = Operator::SizeClassification::SCALAR.clone();
@@ -1708,7 +1708,7 @@ pub fn differentiateBuiltinCall(mut name: ArcStr, mut exp: Arc<Expression::NFExp
     Ok((exp, diffArguments))
 }
 
-pub fn differentiateBuiltinCall1Arg(mut name: ArcStr, mut arg: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
+pub(crate) fn differentiateBuiltinCall1Arg(mut name: ArcStr, mut arg: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
     let mut derFuncCall: Arc<Expression::NFExpression>;
     let mut sizeClass: Operator::SizeClassification = Operator::SizeClassification::SCALAR.clone();
     let mut powOp: Arc<Operator::NFOperator> = Operator::fromClassification((Operator::MathClassification::POWER.clone(), sizeClass.clone()), openmodelica_nf_frontend::NFType::interned_REAL())?;
@@ -1829,7 +1829,7 @@ pub fn differentiateBuiltinCall1Arg(mut name: ArcStr, mut arg: Arc<Expression::N
     Ok(derFuncCall)
 }
 
-pub fn differentiateBuiltinCall2Arg(mut name: ArcStr, mut arg1: Arc<Expression::NFExpression>, mut arg2: Arc<Expression::NFExpression>) -> Result<(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>)> {
+pub(crate) fn differentiateBuiltinCall2Arg(mut name: ArcStr, mut arg1: Arc<Expression::NFExpression>, mut arg2: Arc<Expression::NFExpression>) -> Result<(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>)> {
     let mut derFuncCall1: Arc<Expression::NFExpression>;
     let mut derFuncCall2: Arc<Expression::NFExpression>;
     let mut sizeClass: Operator::SizeClassification = Operator::SizeClassification::SCALAR.clone();
@@ -1875,7 +1875,7 @@ pub fn differentiateBuiltinCall2Arg(mut name: ArcStr, mut arg1: Arc<Expression::
     Ok((derFuncCall1, derFuncCall2))
 }
 
-pub fn addDiffInfo(mut func: Arc<Function::Function>, mut der_func: Arc<Function::Function>, mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments>) -> Result<(Arc<Function::Function>, Arc<DifferentiationArguments::DifferentiationArguments>)> {
+pub(crate) fn addDiffInfo(mut func: Arc<Function::Function>, mut der_func: Arc<Function::Function>, mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments>) -> Result<(Arc<Function::Function>, Arc<DifferentiationArguments::DifferentiationArguments>)> {
     let mut der_func: Arc<Function::Function> = der_func;
     let mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments> = diffArguments;
     let mut diffInfo: Arc<UnorderedSet::UnorderedSet<Arc<InstNode::InstNode>>> = <Arc<UnorderedSet::UnorderedSet<Arc<InstNode::InstNode>>> as ::std::default::Default>::default();
@@ -1896,7 +1896,7 @@ pub fn addDiffInfo(mut func: Arc<Function::Function>, mut der_func: Arc<Function
     Ok((der_func, diffArguments))
 }
 
-pub fn differentiateFunction(mut func: Arc<Function::Function>, mut interface_map: Arc<UnorderedMap::UnorderedMap<ArcStr, bool>>, mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments>) -> Result<(Arc<Function::Function>, Arc<DifferentiationArguments::DifferentiationArguments>)> {
+pub(crate) fn differentiateFunction(mut func: Arc<Function::Function>, mut interface_map: Arc<UnorderedMap::UnorderedMap<ArcStr, bool>>, mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments>) -> Result<(Arc<Function::Function>, Arc<DifferentiationArguments::DifferentiationArguments>)> {
     let mut der_func: Arc<Function::Function> = Arc::new(<Function::Function as ::std::default::Default>::default());
     let mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments> = diffArguments;
     der_func = ({
@@ -2031,7 +2031,7 @@ pub fn differentiateFunction(mut func: Arc<Function::Function>, mut interface_ma
     Ok((der_func, diffArguments))
 }
 
-pub fn differentiateFunctionInterfaceNodes(mut interface_nodes: Arc<metamodelica::List<Arc<InstNode::InstNode>>>, mut interface_map: Arc<UnorderedMap::UnorderedMap<ArcStr, bool>>, mut diff_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>>>, mut diffArgs: Arc<DifferentiationArguments::DifferentiationArguments>, mut diffInfo: Arc<UnorderedSet::UnorderedSet<Arc<InstNode::InstNode>>>, mut keepOld: bool) -> Result<(Arc<metamodelica::List<Arc<InstNode::InstNode>>>, Arc<DifferentiationArguments::DifferentiationArguments>)> {
+pub(crate) fn differentiateFunctionInterfaceNodes(mut interface_nodes: Arc<metamodelica::List<Arc<InstNode::InstNode>>>, mut interface_map: Arc<UnorderedMap::UnorderedMap<ArcStr, bool>>, mut diff_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>>>, mut diffArgs: Arc<DifferentiationArguments::DifferentiationArguments>, mut diffInfo: Arc<UnorderedSet::UnorderedSet<Arc<InstNode::InstNode>>>, mut keepOld: bool) -> Result<(Arc<metamodelica::List<Arc<InstNode::InstNode>>>, Arc<DifferentiationArguments::DifferentiationArguments>)> {
     let mut interface_nodes: Arc<metamodelica::List<Arc<InstNode::InstNode>>> = interface_nodes;
     let mut diffArgs: Arc<DifferentiationArguments::DifferentiationArguments> = diffArgs;
     let mut new_nodes: Arc<metamodelica::List<Arc<InstNode::InstNode>>>;
@@ -2051,7 +2051,7 @@ pub fn differentiateFunctionInterfaceNodes(mut interface_nodes: Arc<metamodelica
     Ok((interface_nodes, diffArgs))
 }
 
-pub fn differentiateFunctionInterfaceNode(mut node: Arc<InstNode::InstNode>, mut diff_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>>>, mut diffArgs: Arc<DifferentiationArguments::DifferentiationArguments>) -> Result<(Arc<InstNode::InstNode>, Arc<DifferentiationArguments::DifferentiationArguments>)> {
+pub(crate) fn differentiateFunctionInterfaceNode(mut node: Arc<InstNode::InstNode>, mut diff_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>>>, mut diffArgs: Arc<DifferentiationArguments::DifferentiationArguments>) -> Result<(Arc<InstNode::InstNode>, Arc<DifferentiationArguments::DifferentiationArguments>)> {
     let mut d_node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     let mut diffArgs: Arc<DifferentiationArguments::DifferentiationArguments> = diffArgs;
     let mut cref: Arc<ComponentRef::NFComponentRef>;
@@ -2091,7 +2091,7 @@ pub fn differentiateFunctionInterfaceNode(mut node: Arc<InstNode::InstNode>, mut
     Ok((d_node, diffArgs))
 }
 
-pub fn createInterfaceDerivatives(mut interface_nodes: Arc<metamodelica::List<Arc<InstNode::InstNode>>>, mut interface_map: Arc<UnorderedMap::UnorderedMap<ArcStr, bool>>, mut diff_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>>>) -> Result<()> {
+pub(crate) fn createInterfaceDerivatives(mut interface_nodes: Arc<metamodelica::List<Arc<InstNode::InstNode>>>, mut interface_map: Arc<UnorderedMap::UnorderedMap<ArcStr, bool>>, mut diff_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>>>) -> Result<()> {
     fn addCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut diff_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>>>) -> Result<()> {
         let mut diff_cref: Arc<ComponentRef::NFComponentRef>;
         let mut children: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
@@ -2116,7 +2116,7 @@ pub fn createInterfaceDerivatives(mut interface_nodes: Arc<metamodelica::List<Ar
     Ok(())
 }
 
-pub fn createSlotDerivatives(mut slots: Arc<metamodelica::List<Arc<Slot::Slot>>>, mut interface_map: Arc<UnorderedMap::UnorderedMap<ArcStr, bool>>, mut diff_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>>>, mut diffArgs: Arc<DifferentiationArguments::DifferentiationArguments>) -> Result<(Arc<metamodelica::List<Arc<Slot::Slot>>>, Arc<DifferentiationArguments::DifferentiationArguments>)> {
+pub(crate) fn createSlotDerivatives(mut slots: Arc<metamodelica::List<Arc<Slot::Slot>>>, mut interface_map: Arc<UnorderedMap::UnorderedMap<ArcStr, bool>>, mut diff_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>>>, mut diffArgs: Arc<DifferentiationArguments::DifferentiationArguments>) -> Result<(Arc<metamodelica::List<Arc<Slot::Slot>>>, Arc<DifferentiationArguments::DifferentiationArguments>)> {
     let mut new_slots: Arc<metamodelica::List<Arc<Slot::Slot>>> = metamodelica::nil();
     let mut diffArgs: Arc<DifferentiationArguments::DifferentiationArguments> = diffArgs;
     let mut d_node: Arc<InstNode::InstNode>;
@@ -2137,7 +2137,7 @@ pub fn createSlotDerivatives(mut slots: Arc<metamodelica::List<Arc<Slot::Slot>>>
     Ok((new_slots, diffArgs))
 }
 
-pub fn resolvePartialDerivatives(mut func: Arc<Function::Function>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>) -> Result<Arc<Function::Function>> {
+pub(crate) fn resolvePartialDerivatives(mut func: Arc<Function::Function>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>) -> Result<Arc<Function::Function>> {
     let mut func: Arc<Function::Function> = func;
     let mut der_func: Arc<Function::Function> = Arc::new(<Function::Function as ::std::default::Default>::default());
     let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
@@ -2267,7 +2267,7 @@ pub fn resolvePartialDerivatives(mut func: Arc<Function::Function>, mut funcMap:
     Ok(func)
 }
 
-pub fn differentiateAlgorithm(mut alg: Arc<Algorithm::NFAlgorithm>, mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments>) -> Result<(Arc<Algorithm::NFAlgorithm>, Arc<DifferentiationArguments::DifferentiationArguments>)> {
+pub(crate) fn differentiateAlgorithm(mut alg: Arc<Algorithm::NFAlgorithm>, mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments>) -> Result<(Arc<Algorithm::NFAlgorithm>, Arc<DifferentiationArguments::DifferentiationArguments>)> {
     let mut alg: Arc<Algorithm::NFAlgorithm> = alg;
     let mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments> = diffArguments;
     let mut statements: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Statement::NFStatement>>>>>;
@@ -2294,7 +2294,7 @@ pub fn differentiateAlgorithm(mut alg: Arc<Algorithm::NFAlgorithm>, mut diffArgu
     Ok((alg, diffArguments))
 }
 
-pub fn differentiateStatement(mut stmt: Arc<Statement::NFStatement>, mut diffInfo: Arc<UnorderedSet::UnorderedSet<Arc<Statement::NFStatement>>>, mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments>) -> Result<(Arc<metamodelica::List<Arc<Statement::NFStatement>>>, Arc<DifferentiationArguments::DifferentiationArguments>)> {
+pub(crate) fn differentiateStatement(mut stmt: Arc<Statement::NFStatement>, mut diffInfo: Arc<UnorderedSet::UnorderedSet<Arc<Statement::NFStatement>>>, mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments>) -> Result<(Arc<metamodelica::List<Arc<Statement::NFStatement>>>, Arc<DifferentiationArguments::DifferentiationArguments>)> {
     let mut diff_stmts: Arc<metamodelica::List<Arc<Statement::NFStatement>>>;
     let mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments> = diffArguments;
     diff_stmts = ({
@@ -2395,7 +2395,7 @@ pub fn differentiateStatement(mut stmt: Arc<Statement::NFStatement>, mut diffInf
     Ok((diff_stmts, diffArguments))
 }
 
-pub fn differentiateBinary(mut exp: Arc<Expression::NFExpression>, mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments>) -> Result<(Arc<Expression::NFExpression>, Arc<DifferentiationArguments::DifferentiationArguments>)> {
+pub(crate) fn differentiateBinary(mut exp: Arc<Expression::NFExpression>, mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments>) -> Result<(Arc<Expression::NFExpression>, Arc<DifferentiationArguments::DifferentiationArguments>)> {
     let mut exp: Arc<Expression::NFExpression> = exp;
     let mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments> = diffArguments;
     if Flags::isSet(Flags::DEBUG_ADJOINT.clone())? {
@@ -2574,7 +2574,7 @@ pub fn differentiateBinary(mut exp: Arc<Expression::NFExpression>, mut diffArgum
     Ok((exp, diffArguments))
 }
 
-pub fn differentiateMultary(mut exp: Arc<Expression::NFExpression>, mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments>) -> Result<(Arc<Expression::NFExpression>, Arc<DifferentiationArguments::DifferentiationArguments>)> {
+pub(crate) fn differentiateMultary(mut exp: Arc<Expression::NFExpression>, mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments>) -> Result<(Arc<Expression::NFExpression>, Arc<DifferentiationArguments::DifferentiationArguments>)> {
     let mut exp: Arc<Expression::NFExpression> = exp;
     let mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments> = diffArguments;
     let mut isReverse: bool = isSome(diffArguments.adjoint_map.clone());
@@ -2735,7 +2735,7 @@ pub fn differentiateMultary(mut exp: Arc<Expression::NFExpression>, mut diffArgu
     Ok((exp, diffArguments))
 }
 
-pub fn differentiateMultaryMultiplicationArgs(mut arguments: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments>, mut operator: Arc<Operator::NFOperator>) -> Result<(Arc<metamodelica::List<Arc<Expression::NFExpression>>>, Arc<DifferentiationArguments::DifferentiationArguments>)> {
+pub(crate) fn differentiateMultaryMultiplicationArgs(mut arguments: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments>, mut operator: Arc<Operator::NFOperator>) -> Result<(Arc<metamodelica::List<Arc<Expression::NFExpression>>>, Arc<DifferentiationArguments::DifferentiationArguments>)> {
     let mut new_arguments: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
     let mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments> = diffArguments;
     let mut diff_arg: Arc<Expression::NFExpression>;
@@ -2795,7 +2795,7 @@ pub fn differentiateMultaryMultiplicationArgs(mut arguments: Arc<metamodelica::L
     Ok((new_arguments, diffArguments))
 }
 
-pub fn differentiateEquationAttributes(mut attr: Arc<EquationAttributes::EquationAttributes>, mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments>) -> Result<Arc<EquationAttributes::EquationAttributes>> {
+pub(crate) fn differentiateEquationAttributes(mut attr: Arc<EquationAttributes::EquationAttributes>, mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments>) -> Result<Arc<EquationAttributes::EquationAttributes>> {
     let mut attr: Arc<EquationAttributes::EquationAttributes> = attr;
     attr = (::match_deref::match_deref! { match &((attr.clone(), diffArguments.clone())) {
         (Deref @ EquationAttributes::EQUATION_ATTRIBUTES { residualVar: Some(residualVar), .. }, Deref @ DifferentiationArguments::DIFFERENTIATION_ARGUMENTS { diff_map: Some(diff_map), diffType: DifferentiationType::JACOBIAN, .. }) if (UnorderedMap::contains(BVariable::getVarName(residualVar.clone()), diff_map.clone())?) => {
@@ -2812,7 +2812,7 @@ pub fn differentiateEquationAttributes(mut attr: Arc<EquationAttributes::Equatio
     Ok(attr)
 }
 
-pub fn differentiateBinding(mut binding: Arc<Binding::NFBinding>, mut diffArgs: Arc<DifferentiationArguments::DifferentiationArguments>) -> Result<(Arc<Binding::NFBinding>, Arc<DifferentiationArguments::DifferentiationArguments>)> {
+pub(crate) fn differentiateBinding(mut binding: Arc<Binding::NFBinding>, mut diffArgs: Arc<DifferentiationArguments::DifferentiationArguments>) -> Result<(Arc<Binding::NFBinding>, Arc<DifferentiationArguments::DifferentiationArguments>)> {
     let mut binding: Arc<Binding::NFBinding> = binding;
     let mut diffArgs: Arc<DifferentiationArguments::DifferentiationArguments> = diffArgs;
     let mut opt_exp: Option<Arc<Expression::NFExpression>>;

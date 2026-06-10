@@ -166,7 +166,7 @@ pub fn fromPair(mut key: ArcStr, mut value: Arc<JSON>) -> Result<Arc<JSON>> {
     Ok(obj)
 }
 
-pub fn listObjectFromPair(mut key: ArcStr, mut value: Arc<JSON>) -> Arc<JSON> {
+pub(crate) fn listObjectFromPair(mut key: ArcStr, mut value: Arc<JSON>) -> Arc<JSON> {
     let mut obj: Arc<JSON> = Arc::new(JSON::LIST_OBJECT { values: list![(key.clone(), value.clone())] });
     obj
 }
@@ -322,7 +322,7 @@ pub fn toString(mut value: Arc<JSON>, mut prettyPrint: bool) -> Result<ArcStr> {
     Ok(r#str)
 }
 
-pub fn toString_work(mut value: Arc<JSON>) -> Result<()> {
+pub(crate) fn toString_work(mut value: Arc<JSON>) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(value.clone()) {
         Deref @ STRING { .. } => {
             Print::printBuf((literal!("\"")).clone())?;
@@ -372,7 +372,7 @@ pub fn toString_work(mut value: Arc<JSON>) -> Result<()> {
     Ok(())
 }
 
-pub fn toString_array(mut values: Arc<Vector::Vector<Arc<JSON>>>) -> Result<()> {
+pub(crate) fn toString_array(mut values: Arc<Vector::Vector<Arc<JSON>>>) -> Result<()> {
     Print::printBuf((literal!("[")).clone())?;
     for mut i in 1..=Vector::size(values.clone()) {
         if i.clone() != 1 {
@@ -384,7 +384,7 @@ pub fn toString_array(mut values: Arc<Vector::Vector<Arc<JSON>>>) -> Result<()> 
     Ok(())
 }
 
-pub fn toString_list(mut values: Arc<metamodelica::List<Arc<JSON>>>) -> Result<()> {
+pub(crate) fn toString_list(mut values: Arc<metamodelica::List<Arc<JSON>>>) -> Result<()> {
     let mut first: bool = true;
     Print::printBuf((literal!("[")).clone())?;
     for mut v in &*values.clone() {
@@ -400,7 +400,7 @@ pub fn toString_list(mut values: Arc<metamodelica::List<Arc<JSON>>>) -> Result<(
     Ok(())
 }
 
-pub fn toString_object(mut map: Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<JSON>>>) -> Result<()> {
+pub(crate) fn toString_object(mut map: Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<JSON>>>) -> Result<()> {
     Print::printBuf((literal!("{")).clone())?;
     for mut i in 1..=UnorderedMap::size(map.clone()) {
         if i.clone() != 1 {
@@ -415,7 +415,7 @@ pub fn toString_object(mut map: Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<JSON>
     Ok(())
 }
 
-pub fn toString_listObject(mut object: Arc<metamodelica::List<(ArcStr, Arc<JSON>)>>) -> Result<()> {
+pub(crate) fn toString_listObject(mut object: Arc<metamodelica::List<(ArcStr, Arc<JSON>)>>) -> Result<()> {
     let mut first: bool = true;
     let mut key: ArcStr;
     let mut value: Arc<JSON>;
@@ -437,7 +437,7 @@ pub fn toString_listObject(mut object: Arc<metamodelica::List<(ArcStr, Arc<JSON>
     Ok(())
 }
 
-pub fn toStringPP_work(mut value: Arc<JSON>, mut indent: ArcStr) -> Result<()> {
+pub(crate) fn toStringPP_work(mut value: Arc<JSON>, mut indent: ArcStr) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(value.clone()) {
         Deref @ STRING { .. } => {
             Print::printBuf((literal!("\"")).clone())?;
@@ -487,7 +487,7 @@ pub fn toStringPP_work(mut value: Arc<JSON>, mut indent: ArcStr) -> Result<()> {
     Ok(())
 }
 
-pub fn toStringPP_array(mut values: Arc<Vector::Vector<Arc<JSON>>>, mut indent: ArcStr) -> Result<()> {
+pub(crate) fn toStringPP_array(mut values: Arc<Vector::Vector<Arc<JSON>>>, mut indent: ArcStr) -> Result<()> {
     let mut next_indent: ArcStr = { let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) };
     Print::printBuf((literal!("[\n")).clone())?;
     for mut i in 1..=Vector::size(values.clone()) {
@@ -503,7 +503,7 @@ pub fn toStringPP_array(mut values: Arc<Vector::Vector<Arc<JSON>>>, mut indent: 
     Ok(())
 }
 
-pub fn toStringPP_list(mut values: Arc<metamodelica::List<Arc<JSON>>>, mut indent: ArcStr) -> Result<()> {
+pub(crate) fn toStringPP_list(mut values: Arc<metamodelica::List<Arc<JSON>>>, mut indent: ArcStr) -> Result<()> {
     let mut next_indent: ArcStr = { let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) };
     let mut first: bool = true;
     Print::printBuf((literal!("[\n")).clone())?;
@@ -523,7 +523,7 @@ pub fn toStringPP_list(mut values: Arc<metamodelica::List<Arc<JSON>>>, mut inden
     Ok(())
 }
 
-pub fn toStringPP_object(mut map: Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<JSON>>>, mut indent: ArcStr) -> Result<()> {
+pub(crate) fn toStringPP_object(mut map: Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<JSON>>>, mut indent: ArcStr) -> Result<()> {
     let mut next_indent: ArcStr = { let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) };
     Print::printBuf((literal!("{")).clone())?;
     for mut i in 1..=UnorderedMap::size(map.clone()) {
@@ -540,7 +540,7 @@ pub fn toStringPP_object(mut map: Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<JSO
     Ok(())
 }
 
-pub fn toStringPP_listObject(mut object: Arc<metamodelica::List<(ArcStr, Arc<JSON>)>>, mut indent: ArcStr) -> Result<()> {
+pub(crate) fn toStringPP_listObject(mut object: Arc<metamodelica::List<(ArcStr, Arc<JSON>)>>, mut indent: ArcStr) -> Result<()> {
     let mut first: bool = true;
     let mut key: ArcStr;
     let mut value: Arc<JSON>;
@@ -728,7 +728,7 @@ pub fn size(mut obj: Arc<JSON>) -> i32 {
     sz
 }
 
-pub fn parse(mut content: ArcStr, mut fileName: ArcStr) -> Result<Arc<JSON>> {
+pub(crate) fn parse(mut content: ArcStr, mut fileName: ArcStr) -> Result<Arc<JSON>> {
     let mut value: Arc<JSON>;
     let mut tokens: Arc<metamodelica::List<Token>>;
     let mut errTokens: Arc<metamodelica::List<Token>>;
@@ -738,7 +738,7 @@ pub fn parse(mut content: ArcStr, mut fileName: ArcStr) -> Result<Arc<JSON>> {
     Ok(value)
 }
 
-pub fn parse_value_check_empty(mut inTokens: Arc<metamodelica::List<Token>>) -> Result<Arc<JSON>> {
+pub(crate) fn parse_value_check_empty(mut inTokens: Arc<metamodelica::List<Token>>) -> Result<Arc<JSON>> {
     let mut value: Arc<JSON>;
     let mut tokens: Arc<metamodelica::List<Token>>;
     (value, tokens) = parse_value(inTokens.clone())?;
@@ -746,7 +746,7 @@ pub fn parse_value_check_empty(mut inTokens: Arc<metamodelica::List<Token>>) -> 
     Ok(value)
 }
 
-pub fn parse_value(mut inTokens: Arc<metamodelica::List<Token>>) -> Result<(Arc<JSON>, Arc<metamodelica::List<Token>>)> {
+pub(crate) fn parse_value(mut inTokens: Arc<metamodelica::List<Token>>) -> Result<(Arc<JSON>, Arc<metamodelica::List<Token>>)> {
     let mut value: Arc<JSON> = Arc::new(JSON::FALSE);
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
     let mut tok: Token;
@@ -789,7 +789,7 @@ pub fn parse_value(mut inTokens: Arc<metamodelica::List<Token>>) -> Result<(Arc<
     Ok((value, tokens))
 }
 
-pub fn parse_string(mut inTokens: Arc<metamodelica::List<Token>>) -> Result<(Arc<JSON>, Arc<metamodelica::List<Token>>)> {
+pub(crate) fn parse_string(mut inTokens: Arc<metamodelica::List<Token>>) -> Result<(Arc<JSON>, Arc<metamodelica::List<Token>>)> {
     let mut value: Arc<JSON>;
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
     let mut tok: Token;
@@ -814,7 +814,7 @@ pub fn parse_string(mut inTokens: Arc<metamodelica::List<Token>>) -> Result<(Arc
     Ok((value, tokens))
 }
 
-pub fn parse_integer(mut inTokens: Arc<metamodelica::List<Token>>) -> Result<(Arc<JSON>, Arc<metamodelica::List<Token>>)> {
+pub(crate) fn parse_integer(mut inTokens: Arc<metamodelica::List<Token>>) -> Result<(Arc<JSON>, Arc<metamodelica::List<Token>>)> {
     let mut value: Arc<JSON>;
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
     let mut tok: Token;
@@ -834,7 +834,7 @@ pub fn parse_integer(mut inTokens: Arc<metamodelica::List<Token>>) -> Result<(Ar
     Ok((value, tokens))
 }
 
-pub fn parse_number(mut inTokens: Arc<metamodelica::List<Token>>) -> Result<(Arc<JSON>, Arc<metamodelica::List<Token>>)> {
+pub(crate) fn parse_number(mut inTokens: Arc<metamodelica::List<Token>>) -> Result<(Arc<JSON>, Arc<metamodelica::List<Token>>)> {
     let mut value: Arc<JSON>;
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
     let mut tok: Token;
@@ -854,7 +854,7 @@ pub fn parse_number(mut inTokens: Arc<metamodelica::List<Token>>) -> Result<(Arc
     Ok((value, tokens))
 }
 
-pub fn parse_array(mut inTokens: Arc<metamodelica::List<Token>>) -> Result<(Arc<JSON>, Arc<metamodelica::List<Token>>)> {
+pub(crate) fn parse_array(mut inTokens: Arc<metamodelica::List<Token>>) -> Result<(Arc<JSON>, Arc<metamodelica::List<Token>>)> {
     let mut value: Arc<JSON>;
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
     let mut tok: Token;
@@ -873,7 +873,7 @@ pub fn parse_array(mut inTokens: Arc<metamodelica::List<Token>>) -> Result<(Arc<
     Ok((value, tokens))
 }
 
-pub fn parse_object(mut inTokens: Arc<metamodelica::List<Token>>) -> Result<(Arc<JSON>, Arc<metamodelica::List<Token>>)> {
+pub(crate) fn parse_object(mut inTokens: Arc<metamodelica::List<Token>>) -> Result<(Arc<JSON>, Arc<metamodelica::List<Token>>)> {
     let mut value: Arc<JSON>;
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
     let mut tok: Token;

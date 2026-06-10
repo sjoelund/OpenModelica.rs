@@ -73,7 +73,7 @@ use openmodelica_util_datatypes_basic::List;
 // clock partitioning
 //
 // =============================================================================
-pub fn clockPartitioning(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
+pub(crate) fn clockPartitioning(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut outDAE: Arc<BackendDAE::BackendDAE>;
     outDAE = (::match_deref::match_deref! { match &(inDAE.clone()) {
         Deref @ BackendDAE::BackendDAE { eqs: Deref @ metamodelica::List::Cons { head: syst, tail: Deref @ metamodelica::List::Nil }, shared } => {
@@ -95,7 +95,7 @@ pub fn clockPartitioning(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<B
     Ok(outDAE)
 }
 
-pub fn synchronousFeatures(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
+pub(crate) fn synchronousFeatures(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut outDAE: Arc<BackendDAE::BackendDAE>;
     let mut systs: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>>;
     let mut contSysts: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>>;
@@ -119,7 +119,7 @@ pub fn synchronousFeatures(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc
     Ok(outDAE)
 }
 
-pub fn contPartitioning(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
+pub(crate) fn contPartitioning(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut outDAE: Arc<BackendDAE::BackendDAE>;
     let mut systs: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>>;
     let mut clockedSysts: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>>;
@@ -196,7 +196,7 @@ fn createBoolClockWhenClauses(mut inShared: Arc<BackendDAE::Shared>, mut inRemov
     outRemovedEqs
 }
 
-pub fn getBoolClockWhenClauses(mut eq: Arc<BackendDAE::Equation>, mut eqLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) -> (Arc<BackendDAE::Equation>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) {
+pub(crate) fn getBoolClockWhenClauses(mut eq: Arc<BackendDAE::Equation>, mut eqLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) -> (Arc<BackendDAE::Equation>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) {
     let mut eq: Arc<BackendDAE::Equation> = eq;
     let mut eqLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = eqLst;
     if hasBoolClockWhenClause(eq.clone()) {
@@ -2536,7 +2536,7 @@ fn setClockedPartition(mut inNewPartitionType: Option<bool>, mut inOldPartitionT
     Ok(outPartitionType)
 }
 
-pub fn partitionIndependentBlocks0(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut rm: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut rmT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut eqPartMap: metamodelica::Array<i32>, mut varPartMap: metamodelica::Array<i32>, mut rixs: metamodelica::Array<i32>, mut vars: metamodelica::Array<bool>, mut rvars: metamodelica::Array<bool>) -> Result<i32> {
+pub(crate) fn partitionIndependentBlocks0(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut rm: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut rmT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut eqPartMap: metamodelica::Array<i32>, mut varPartMap: metamodelica::Array<i32>, mut rixs: metamodelica::Array<i32>, mut vars: metamodelica::Array<bool>, mut rvars: metamodelica::Array<bool>) -> Result<i32> {
     let mut on: i32 = 0;
     for mut i in ({let __s=metamodelica::arrayLength(m.clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
         on = if (partitionIndependentBlocksWork(i.clone(), false, on.clone() + 1, m.clone(), mT.clone(), rm.clone(), rmT.clone(), eqPartMap.clone(), varPartMap.clone(), rixs.clone(), vars.clone(), rvars.clone())?) {on.clone() + 1} else {on.clone()};
@@ -2679,7 +2679,7 @@ fn partitionIndependentBlocksWork(mut idx: i32, mut isRemovedIdx: bool, mut part
     Ok(ochange)
 }
 
-pub fn partitionIndependentBlocksSplitBlocks(mut n: i32, mut inSyst: Arc<BackendDAE::EqSystem>, mut ixs: metamodelica::Array<i32>, mut rixs: metamodelica::Array<i32>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut rmT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut throwNoError: bool, mut funcs: Arc<AvlTreePathFunction::Tree>, mut isInitial: bool) -> Result<(Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, metamodelica::Array<i32>)> {
+pub(crate) fn partitionIndependentBlocksSplitBlocks(mut n: i32, mut inSyst: Arc<BackendDAE::EqSystem>, mut ixs: metamodelica::Array<i32>, mut rixs: metamodelica::Array<i32>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut rmT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut throwNoError: bool, mut funcs: Arc<AvlTreePathFunction::Tree>, mut isInitial: bool) -> Result<(Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, metamodelica::Array<i32>)> {
     let mut systs: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>> = metamodelica::nil();
     let mut unpartRemovedEqs: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
     let mut varPartMap: metamodelica::Array<i32>;

@@ -132,7 +132,7 @@ pub fn obfuscateProgram(mut program: Arc<metamodelica::List<Arc<SCode::Element>>
     Ok((program, classPath, classComment, mapStr, mapping))
 }
 
-pub fn makeBuiltins() -> Result<Builtins> {
+pub(crate) fn makeBuiltins() -> Result<Builtins> {
     let mut builtins: Builtins;
     let mut builtin_scode: Arc<metamodelica::List<Arc<SCode::Element>>>;
     let mut etype: ElementType;
@@ -167,7 +167,7 @@ pub fn makeBuiltins() -> Result<Builtins> {
     Ok(builtins)
 }
 
-pub fn obfuscateElement(mut element: Arc<SCode::Element>, mut env: Env) -> Result<Arc<SCode::Element>> {
+pub(crate) fn obfuscateElement(mut element: Arc<SCode::Element>, mut env: Env) -> Result<Arc<SCode::Element>> {
     let mut element: Arc<SCode::Element> = element;
     let () = (::match_deref::match_deref! { match &(element.clone()) {
         Deref @ SCode::Element::IMPORT { .. } => {
@@ -209,7 +209,7 @@ pub fn obfuscateElement(mut element: Arc<SCode::Element>, mut env: Env) -> Resul
     Ok(element)
 }
 
-pub fn obfuscateImport(mut imp: Absyn::Import, mut env: Env) -> Result<Absyn::Import> {
+pub(crate) fn obfuscateImport(mut imp: Absyn::Import, mut env: Env) -> Result<Absyn::Import> {
     let mut imp: Absyn::Import = imp;
     let () = (match imp.clone() {
         Absyn::Import::NAMED_IMPORT { .. } => {
@@ -255,7 +255,7 @@ pub fn obfuscateImport(mut imp: Absyn::Import, mut env: Env) -> Result<Absyn::Im
     Ok(imp)
 }
 
-pub fn obfuscateGroupImport(mut imp: Absyn::GroupImport, mut env: Env) -> Result<Absyn::GroupImport> {
+pub(crate) fn obfuscateGroupImport(mut imp: Absyn::GroupImport, mut env: Env) -> Result<Absyn::GroupImport> {
     let mut imp: Absyn::GroupImport = imp;
     let () = (match imp.clone() {
         Absyn::GroupImport::GROUP_IMPORT_NAME { .. } => {
@@ -278,7 +278,7 @@ pub fn obfuscateGroupImport(mut imp: Absyn::GroupImport, mut env: Env) -> Result
     Ok(imp)
 }
 
-pub fn obfuscateClassDef(mut cdef: Arc<SCode::ClassDef>, mut env: Env) -> Result<Arc<SCode::ClassDef>> {
+pub(crate) fn obfuscateClassDef(mut cdef: Arc<SCode::ClassDef>, mut env: Env) -> Result<Arc<SCode::ClassDef>> {
     let mut cdef: Arc<SCode::ClassDef> = cdef;
     let () = (::match_deref::match_deref! { match &(cdef.clone()) {
         Deref @ SCode::ClassDef::PARTS { .. } => {
@@ -383,7 +383,7 @@ pub fn obfuscateClassDef(mut cdef: Arc<SCode::ClassDef>, mut env: Env) -> Result
     Ok(cdef)
 }
 
-pub fn obfuscateTypeSpec(mut ty: Arc<Absyn::TypeSpec>, mut env: Env) -> Result<Arc<Absyn::TypeSpec>> {
+pub(crate) fn obfuscateTypeSpec(mut ty: Arc<Absyn::TypeSpec>, mut env: Env) -> Result<Arc<Absyn::TypeSpec>> {
     let mut ty: Arc<Absyn::TypeSpec> = ty;
     let () = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ Absyn::TypeSpec::TPATH { .. } => {
@@ -413,7 +413,7 @@ pub fn obfuscateTypeSpec(mut ty: Arc<Absyn::TypeSpec>, mut env: Env) -> Result<A
     Ok(ty)
 }
 
-pub fn obfuscateEnum(mut r#enum: Arc<SCode::Enum>, mut env: Env) -> Result<Arc<SCode::Enum>> {
+pub(crate) fn obfuscateEnum(mut r#enum: Arc<SCode::Enum>, mut env: Env) -> Result<Arc<SCode::Enum>> {
     let mut r#enum: Arc<SCode::Enum> = r#enum;
     assign_field!(
         r#enum.literal = obfuscateIdentifier((r#enum.literal.clone()).clone(), env.clone(), ElementType::OTHER.clone())?.0,
@@ -422,13 +422,13 @@ pub fn obfuscateEnum(mut r#enum: Arc<SCode::Enum>, mut env: Env) -> Result<Arc<S
     Ok(r#enum)
 }
 
-pub fn obfuscatePrefixes(mut prefixes: Arc<SCode::Prefixes>, mut env: Env) -> Result<Arc<SCode::Prefixes>> {
+pub(crate) fn obfuscatePrefixes(mut prefixes: Arc<SCode::Prefixes>, mut env: Env) -> Result<Arc<SCode::Prefixes>> {
     let mut prefixes: Arc<SCode::Prefixes> = prefixes;
     assign_field!(prefixes.replaceablePrefix = obfuscateReplaceable(prefixes.replaceablePrefix.clone(), env.clone())?);
     Ok(prefixes)
 }
 
-pub fn obfuscateReplaceable(mut repl: Arc<SCode::Replaceable>, mut env: Env) -> Result<Arc<SCode::Replaceable>> {
+pub(crate) fn obfuscateReplaceable(mut repl: Arc<SCode::Replaceable>, mut env: Env) -> Result<Arc<SCode::Replaceable>> {
     let mut repl: Arc<SCode::Replaceable> = repl;
     let mut cc: Arc<SCode::ConstrainClass> = Arc::new(<SCode::ConstrainClass as ::std::default::Default>::default());
     let () = (::match_deref::match_deref! { match &(repl.clone()) {
@@ -448,13 +448,13 @@ pub fn obfuscateReplaceable(mut repl: Arc<SCode::Replaceable>, mut env: Env) -> 
     Ok(repl)
 }
 
-pub fn obfuscateAttributes(mut attributes: SCode::Attributes, mut env: Env) -> Result<SCode::Attributes> {
+pub(crate) fn obfuscateAttributes(mut attributes: SCode::Attributes, mut env: Env) -> Result<SCode::Attributes> {
     let mut attributes: SCode::Attributes = attributes;
     attributes.arrayDims = obfuscateArrayDims(attributes.arrayDims.clone(), env.clone())?;
     Ok(attributes)
 }
 
-pub fn obfuscateMod(mut r#mod: Arc<SCode::Mod>, mut env: Env) -> Result<Arc<SCode::Mod>> {
+pub(crate) fn obfuscateMod(mut r#mod: Arc<SCode::Mod>, mut env: Env) -> Result<Arc<SCode::Mod>> {
     let mut r#mod: Arc<SCode::Mod> = r#mod;
     let () = (::match_deref::match_deref! { match &(r#mod.clone()) {
         Deref @ SCode::Mod::MOD { .. } => {
@@ -481,7 +481,7 @@ pub fn obfuscateMod(mut r#mod: Arc<SCode::Mod>, mut env: Env) -> Result<Arc<SCod
     Ok(r#mod)
 }
 
-pub fn obfuscateSubMod(mut r#mod: Arc<SCode::SubMod>, mut env: Env) -> Result<Arc<SCode::SubMod>> {
+pub(crate) fn obfuscateSubMod(mut r#mod: Arc<SCode::SubMod>, mut env: Env) -> Result<Arc<SCode::SubMod>> {
     let mut r#mod: Arc<SCode::SubMod> = r#mod;
     assign_field!(
         r#mod.ident = obfuscateIdentifier((r#mod.ident.clone()).clone(), env.clone(), ElementType::OTHER.clone())?.0,
@@ -490,7 +490,7 @@ pub fn obfuscateSubMod(mut r#mod: Arc<SCode::SubMod>, mut env: Env) -> Result<Ar
     Ok(r#mod)
 }
 
-pub fn obfuscatePath(mut path: Arc<Absyn::Path>, mut env: Env, mut etype: ElementType) -> Result<Arc<Absyn::Path>> {
+pub(crate) fn obfuscatePath(mut path: Arc<Absyn::Path>, mut env: Env, mut etype: ElementType) -> Result<Arc<Absyn::Path>> {
     let mut path: Arc<Absyn::Path> = path;
     let mut name: ArcStr = arcstr::literal!("");
     let () = (::match_deref::match_deref! { match &(path.clone()) {
@@ -522,7 +522,7 @@ pub fn obfuscatePath(mut path: Arc<Absyn::Path>, mut env: Env, mut etype: Elemen
     Ok(path)
 }
 
-pub fn obfuscateIdentifier(mut id: ArcStr, mut env: Env, mut etype: ElementType) -> Result<(ArcStr, ElementType)> {
+pub(crate) fn obfuscateIdentifier(mut id: ArcStr, mut env: Env, mut etype: ElementType) -> Result<(ArcStr, ElementType)> {
     let mut outId: ArcStr;
     let mut foundType: ElementType;
     let mut builtins: Builtins = env.builtins.clone();
@@ -546,7 +546,7 @@ pub fn obfuscateIdentifier(mut id: ArcStr, mut env: Env, mut etype: ElementType)
     Ok((outId, foundType))
 }
 
-pub fn isBuiltinInContext(mut expectedType: ElementType, mut actualType: ElementType) -> bool {
+pub(crate) fn isBuiltinInContext(mut expectedType: ElementType, mut actualType: ElementType) -> bool {
     let mut res: bool;
     res = (match (expectedType.clone(), actualType.clone()) {
         (ElementType::TYPE { .. }, ElementType::TYPE { .. }) => true,
@@ -563,7 +563,7 @@ pub fn isBuiltinInContext(mut expectedType: ElementType, mut actualType: Element
     res
 }
 
-pub fn makeId(mut oldId: Option<ArcStr>, mut index: i32) -> Result<ArcStr> {
+pub(crate) fn makeId(mut oldId: Option<ArcStr>, mut index: i32) -> Result<ArcStr> {
     let mut id: ArcStr;
     if isSome(oldId.clone()) {
         let __pa0 = ::match_deref::match_deref! { match &(oldId.clone()) {
@@ -577,7 +577,7 @@ pub fn makeId(mut oldId: Option<ArcStr>, mut index: i32) -> Result<ArcStr> {
     Ok(id)
 }
 
-pub fn obfuscateComment(mut comment: Arc<SCode::Comment>, mut env: Env) -> Result<Arc<SCode::Comment>> {
+pub(crate) fn obfuscateComment(mut comment: Arc<SCode::Comment>, mut env: Env) -> Result<Arc<SCode::Comment>> {
     let mut comment: Arc<SCode::Comment> = comment;
     assign_field!(
         comment.annotation_ = obfuscateAnnotationOpt(comment.annotation_.clone(), env.clone())?,
@@ -586,19 +586,19 @@ pub fn obfuscateComment(mut comment: Arc<SCode::Comment>, mut env: Env) -> Resul
     Ok(comment)
 }
 
-pub fn obfuscateAnnotationOpt(mut ann: Option<Arc<SCode::Annotation>>, mut env: Env) -> Result<Option<Arc<SCode::Annotation>>> {
+pub(crate) fn obfuscateAnnotationOpt(mut ann: Option<Arc<SCode::Annotation>>, mut env: Env) -> Result<Option<Arc<SCode::Annotation>>> {
     let mut ann: Option<Arc<SCode::Annotation>> = ann;
     ann = Util::applyOption(ann.clone(), (std::sync::Arc::new({ let __pe_b1 = env.clone(); move |__pe_a0| obfuscateAnnotation(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Annotation>) -> Result<Arc<SCode::Annotation>> + 'static>))?;
     Ok(ann)
 }
 
-pub fn obfuscateAnnotation(mut ann: Arc<SCode::Annotation>, mut env: Env) -> Result<Arc<SCode::Annotation>> {
+pub(crate) fn obfuscateAnnotation(mut ann: Arc<SCode::Annotation>, mut env: Env) -> Result<Arc<SCode::Annotation>> {
     let mut ann: Arc<SCode::Annotation> = ann;
     assign_field!(ann.modification = obfuscateAnnotationMod(ann.modification.clone(), env.clone(), false, true)?);
     Ok(ann)
 }
 
-pub fn obfuscateAnnotationMod(mut r#mod: Arc<SCode::Mod>, mut env: Env, mut obfuscateName: bool, mut obfuscateBinding: bool) -> Result<Arc<SCode::Mod>> {
+pub(crate) fn obfuscateAnnotationMod(mut r#mod: Arc<SCode::Mod>, mut env: Env, mut obfuscateName: bool, mut obfuscateBinding: bool) -> Result<Arc<SCode::Mod>> {
     let mut r#mod: Arc<SCode::Mod> = r#mod;
     let () = (::match_deref::match_deref! { match &(r#mod.clone()) {
         Deref @ SCode::Mod::MOD { .. } => {
@@ -622,7 +622,7 @@ pub fn obfuscateAnnotationMod(mut r#mod: Arc<SCode::Mod>, mut env: Env, mut obfu
     Ok(r#mod)
 }
 
-pub fn isAllowedAnnotation(mut r#mod: Arc<SCode::SubMod>) -> bool {
+pub(crate) fn isAllowedAnnotation(mut r#mod: Arc<SCode::SubMod>) -> bool {
     let mut allowed: bool;
     allowed = (::match_deref::match_deref! { match &(r#mod.ident.clone()) {
         Deref @ "Icon" => false,
@@ -646,7 +646,7 @@ pub fn isAllowedAnnotation(mut r#mod: Arc<SCode::SubMod>) -> bool {
     allowed
 }
 
-pub fn obfuscateAnnotationSubMod(mut r#mod: Arc<SCode::SubMod>, mut env: Env, mut obfuscateName: bool) -> Result<Arc<SCode::SubMod>> {
+pub(crate) fn obfuscateAnnotationSubMod(mut r#mod: Arc<SCode::SubMod>, mut env: Env, mut obfuscateName: bool) -> Result<Arc<SCode::SubMod>> {
     let mut r#mod: Arc<SCode::SubMod> = r#mod;
     let mut obfuscate_name: bool;
     let mut obfuscate_binding: bool;
@@ -667,19 +667,19 @@ pub fn obfuscateAnnotationSubMod(mut r#mod: Arc<SCode::SubMod>, mut env: Env, mu
     Ok(r#mod)
 }
 
-pub fn obfuscateExpOpt(mut exp: Option<Arc<Absyn::Exp>>, mut env: Env) -> Result<Option<Arc<Absyn::Exp>>> {
+pub(crate) fn obfuscateExpOpt(mut exp: Option<Arc<Absyn::Exp>>, mut env: Env) -> Result<Option<Arc<Absyn::Exp>>> {
     let mut exp: Option<Arc<Absyn::Exp>> = exp;
     exp = Util::applyOption(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = env.clone(); move |__pe_a0| obfuscateExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<Arc<Absyn::Exp>> + 'static>))?;
     Ok(exp)
 }
 
-pub fn obfuscateExp(mut exp: Arc<Absyn::Exp>, mut env: Env) -> Result<Arc<Absyn::Exp>> {
+pub(crate) fn obfuscateExp(mut exp: Arc<Absyn::Exp>, mut env: Env) -> Result<Arc<Absyn::Exp>> {
     let mut exp: Arc<Absyn::Exp> = exp;
     (exp, _) = AbsynUtil::traverseExp(exp.clone(), (std::sync::Arc::new(obfuscateExpTraverse) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Env) -> Result<(Arc<Absyn::Exp>, Env)> + 'static>), env.clone())?;
     Ok(exp)
 }
 
-pub fn obfuscateExpTraverse(mut exp: Arc<Absyn::Exp>, mut env: Env) -> Result<(Arc<Absyn::Exp>, Env)> {
+pub(crate) fn obfuscateExpTraverse(mut exp: Arc<Absyn::Exp>, mut env: Env) -> Result<(Arc<Absyn::Exp>, Env)> {
     let mut exp: Arc<Absyn::Exp> = exp;
     let mut env: Env = env;
     let () = (::match_deref::match_deref! { match &(exp.clone()) {
@@ -707,7 +707,7 @@ pub fn obfuscateExpTraverse(mut exp: Arc<Absyn::Exp>, mut env: Env) -> Result<(A
     Ok((exp, env))
 }
 
-pub fn obfuscateCref(mut cref: Arc<Absyn::ComponentRef>, mut env: Env, mut etype: ElementType, mut obfuscateSubs: bool) -> Result<Arc<Absyn::ComponentRef>> {
+pub(crate) fn obfuscateCref(mut cref: Arc<Absyn::ComponentRef>, mut env: Env, mut etype: ElementType, mut obfuscateSubs: bool) -> Result<Arc<Absyn::ComponentRef>> {
     let mut cref: Arc<Absyn::ComponentRef> = cref;
     let mut name: ArcStr = arcstr::literal!("");
     let mut ety: ElementType = ElementType::TYPE;
@@ -759,7 +759,7 @@ pub fn obfuscateSubscripts(mut subs: Arc<metamodelica::List<Arc<Absyn::Subscript
     Ok(subs)
 }
 
-pub fn obfuscateSubscript(mut sub: Arc<Absyn::Subscript>, mut env: Env) -> Result<Arc<Absyn::Subscript>> {
+pub(crate) fn obfuscateSubscript(mut sub: Arc<Absyn::Subscript>, mut env: Env) -> Result<Arc<Absyn::Subscript>> {
     let mut sub: Arc<Absyn::Subscript> = sub;
     let () = (::match_deref::match_deref! { match &(sub.clone()) {
         Deref @ Absyn::Subscript::SUBSCRIPT { .. } => {
@@ -772,7 +772,7 @@ pub fn obfuscateSubscript(mut sub: Arc<Absyn::Subscript>, mut env: Env) -> Resul
     Ok(sub)
 }
 
-pub fn obfuscateFunctionArgs(mut args: Arc<Absyn::FunctionArgs>, mut fnName: Arc<Absyn::ComponentRef>, mut env: Env) -> Result<Arc<Absyn::FunctionArgs>> {
+pub(crate) fn obfuscateFunctionArgs(mut args: Arc<Absyn::FunctionArgs>, mut fnName: Arc<Absyn::ComponentRef>, mut env: Env) -> Result<Arc<Absyn::FunctionArgs>> {
     let mut args: Arc<Absyn::FunctionArgs> = args;
     let () = (::match_deref::match_deref! { match &(args.clone()) {
         Deref @ Absyn::FunctionArgs::FUNCTIONARGS { .. } if (!(var_field!((*args).argNames, Absyn::FunctionArgs::FUNCTIONARGS).clone().is_empty()) && !(isBuiltinCall(fnName.clone(), env.clone())?)) => {
@@ -803,19 +803,19 @@ pub fn obfuscateFunctionArgs(mut args: Arc<Absyn::FunctionArgs>, mut fnName: Arc
     Ok(args)
 }
 
-pub fn obfuscateNamedArg(mut arg: Arc<Absyn::NamedArg>, mut env: Env) -> Result<Arc<Absyn::NamedArg>> {
+pub(crate) fn obfuscateNamedArg(mut arg: Arc<Absyn::NamedArg>, mut env: Env) -> Result<Arc<Absyn::NamedArg>> {
     let mut arg: Arc<Absyn::NamedArg> = arg;
     assign_field!(arg.argName = obfuscateIdentifier((arg.argName.clone()).clone(), env.clone(), ElementType::OTHER.clone())?.0);
     Ok(arg)
 }
 
-pub fn obfuscateForIterator(mut iterator: Arc<Absyn::ForIterator>, mut env: Env) -> Result<Arc<Absyn::ForIterator>> {
+pub(crate) fn obfuscateForIterator(mut iterator: Arc<Absyn::ForIterator>, mut env: Env) -> Result<Arc<Absyn::ForIterator>> {
     let mut iterator: Arc<Absyn::ForIterator> = iterator;
     assign_field!(iterator.name = obfuscateIdentifier((iterator.name.clone()).clone(), env.clone(), ElementType::OTHER.clone())?.0);
     Ok(iterator)
 }
 
-pub fn obfuscateArrayDimsOpt(mut dims: Option<Arc<metamodelica::List<Arc<Absyn::Subscript>>>>, mut env: Env) -> Result<Option<Arc<metamodelica::List<Arc<Absyn::Subscript>>>>> {
+pub(crate) fn obfuscateArrayDimsOpt(mut dims: Option<Arc<metamodelica::List<Arc<Absyn::Subscript>>>>, mut env: Env) -> Result<Option<Arc<metamodelica::List<Arc<Absyn::Subscript>>>>> {
     let mut dims: Option<Arc<metamodelica::List<Arc<Absyn::Subscript>>>> = dims;
     dims = Util::applyOption(dims.clone(), (std::sync::Arc::new({ let __pe_b1 = env.clone(); move |__pe_a0| obfuscateArrayDims(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Absyn::Subscript>>>) -> Result<Arc<metamodelica::List<Arc<Absyn::Subscript>>>> + 'static>))?;
     Ok(dims)
@@ -823,7 +823,7 @@ pub fn obfuscateArrayDimsOpt(mut dims: Option<Arc<metamodelica::List<Arc<Absyn::
 
 pub use obfuscateSubscripts as obfuscateArrayDims;
 
-pub fn obfuscateExternalDecl(mut extDecl: Arc<SCode::ExternalDecl>, mut env: Env) -> Result<Arc<SCode::ExternalDecl>> {
+pub(crate) fn obfuscateExternalDecl(mut extDecl: Arc<SCode::ExternalDecl>, mut env: Env) -> Result<Arc<SCode::ExternalDecl>> {
     let mut extDecl: Arc<SCode::ExternalDecl> = extDecl;
     assign_field!(
         extDecl.args = ({
@@ -840,7 +840,7 @@ pub fn obfuscateExternalDecl(mut extDecl: Arc<SCode::ExternalDecl>, mut env: Env
     Ok(extDecl)
 }
 
-pub fn obfuscateEquations(mut eql: Arc<metamodelica::List<Arc<SCode::Equation>>>, mut env: Env) -> Result<Arc<metamodelica::List<Arc<SCode::Equation>>>> {
+pub(crate) fn obfuscateEquations(mut eql: Arc<metamodelica::List<Arc<SCode::Equation>>>, mut env: Env) -> Result<Arc<metamodelica::List<Arc<SCode::Equation>>>> {
     let mut eql: Arc<metamodelica::List<Arc<SCode::Equation>>> = eql;
     eql = ({
         let mut __acc: Arc<metamodelica::List<Arc<SCode::Equation>>> = metamodelica::nil();
@@ -853,7 +853,7 @@ pub fn obfuscateEquations(mut eql: Arc<metamodelica::List<Arc<SCode::Equation>>>
     Ok(eql)
 }
 
-pub fn obfuscateEquation(mut eq: Arc<SCode::Equation>, mut env: Env) -> Result<Arc<SCode::Equation>> {
+pub(crate) fn obfuscateEquation(mut eq: Arc<SCode::Equation>, mut env: Env) -> Result<Arc<SCode::Equation>> {
     let mut eq: Arc<SCode::Equation> = eq;
     let () = (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ SCode::Equation::EQ_IF { .. } => {
@@ -964,7 +964,7 @@ pub fn obfuscateEquation(mut eq: Arc<SCode::Equation>, mut env: Env) -> Result<A
     Ok(eq)
 }
 
-pub fn obfuscateMessage(mut message: Arc<Absyn::Exp>, mut fnName: ArcStr) -> Result<Arc<Absyn::Exp>> {
+pub(crate) fn obfuscateMessage(mut message: Arc<Absyn::Exp>, mut fnName: ArcStr) -> Result<Arc<Absyn::Exp>> {
     let mut message: Arc<Absyn::Exp> = message;
     let mut msg_str: ArcStr;
     msg_str = ((::match_deref::match_deref! { match &(message.clone()) {
@@ -978,13 +978,13 @@ pub fn obfuscateMessage(mut message: Arc<Absyn::Exp>, mut fnName: ArcStr) -> Res
     Ok(message)
 }
 
-pub fn obfuscateAlgorithm(mut alg: Arc<SCode::AlgorithmSection>, mut env: Env) -> Result<Arc<SCode::AlgorithmSection>> {
+pub(crate) fn obfuscateAlgorithm(mut alg: Arc<SCode::AlgorithmSection>, mut env: Env) -> Result<Arc<SCode::AlgorithmSection>> {
     let mut alg: Arc<SCode::AlgorithmSection> = alg;
     assign_field!(alg.statements = obfuscateStatements(alg.statements.clone(), env.clone())?);
     Ok(alg)
 }
 
-pub fn obfuscateStatements(mut stmts: Arc<metamodelica::List<Arc<SCode::Statement>>>, mut env: Env) -> Result<Arc<metamodelica::List<Arc<SCode::Statement>>>> {
+pub(crate) fn obfuscateStatements(mut stmts: Arc<metamodelica::List<Arc<SCode::Statement>>>, mut env: Env) -> Result<Arc<metamodelica::List<Arc<SCode::Statement>>>> {
     let mut stmts: Arc<metamodelica::List<Arc<SCode::Statement>>> = stmts;
     stmts = ({
         let mut __acc: Arc<metamodelica::List<Arc<SCode::Statement>>> = metamodelica::nil();
@@ -997,7 +997,7 @@ pub fn obfuscateStatements(mut stmts: Arc<metamodelica::List<Arc<SCode::Statemen
     Ok(stmts)
 }
 
-pub fn obfuscateStatement(mut stmt: Arc<SCode::Statement>, mut env: Env) -> Result<Arc<SCode::Statement>> {
+pub(crate) fn obfuscateStatement(mut stmt: Arc<SCode::Statement>, mut env: Env) -> Result<Arc<SCode::Statement>> {
     let mut stmt: Arc<SCode::Statement> = stmt;
     let () = (::match_deref::match_deref! { match &(stmt.clone()) {
         Deref @ SCode::Statement::ALG_ASSIGN { .. } => {
@@ -1110,7 +1110,7 @@ pub fn obfuscateStatement(mut stmt: Arc<SCode::Statement>, mut env: Env) -> Resu
     Ok(stmt)
 }
 
-pub fn isBuiltinCall(mut callName: Arc<Absyn::ComponentRef>, mut env: Env) -> Result<bool> {
+pub(crate) fn isBuiltinCall(mut callName: Arc<Absyn::ComponentRef>, mut env: Env) -> Result<bool> {
     let mut res: bool;
     let mut name: ArcStr;
     let mut ety: ElementType;

@@ -194,7 +194,7 @@ pub fn EMPTYVARSETATTRIBUTES() -> (bool, (i32, Arc<metamodelica::List<(Option<Ar
 // Starting point for preOpt and postOpt removeSimpleEquations module
 //
 // =============================================================================
-pub fn removeSimpleEquations(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
+pub(crate) fn removeSimpleEquations(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut outDAE: Arc<BackendDAE::BackendDAE>;
     if BackendDAEUtil::hasDAEMatching(inDAE.clone())? {
         outDAE = (::match_deref::match_deref! { match &(Flags::getConfigString(Flags::REMOVE_SIMPLE_EQUATIONS.clone())?) {
@@ -223,7 +223,7 @@ pub fn removeSimpleEquations(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<A
     Ok(outDAE)
 }
 
-pub fn removeVerySimpleEquations(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
+pub(crate) fn removeVerySimpleEquations(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut outDAE: Arc<BackendDAE::BackendDAE>;
     if BackendDAEUtil::hasDAEMatching(inDAE.clone())? {
         Error::addInternalError((literal!("Cannot run removeVerySimpleEquations on a matched system (continuing anyway)")).clone(), metamodelica::sourceInfo!("BackEnd/RemoveSimpleEquations.mo"))?;
@@ -234,7 +234,7 @@ pub fn removeVerySimpleEquations(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Resu
     Ok(outDAE)
 }
 
-pub fn fixAliasVarsVariablity(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
+pub(crate) fn fixAliasVarsVariablity(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut outDAE: Arc<BackendDAE::BackendDAE>;
     let mut aliasVars: BackendDAE::Variables;
     let mut systvars: BackendDAE::Variables;
@@ -523,7 +523,7 @@ fn fixKnownVarsCausal2(mut inVar: BackendDAE::Var, mut inDAE: Arc<BackendDAE::Ba
 // section for fastAcausal
 //
 // =============================================================================
-pub fn fastAcausal(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
+pub(crate) fn fastAcausal(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut outDAE: Arc<BackendDAE::BackendDAE>;
     let mut repl: BackendVarTransform::VariableReplacements;
     let mut b: bool;
@@ -685,7 +685,7 @@ fn causalFinder1(mut finished: bool, mut b: bool, mut iEqnslst: Arc<metamodelica
 // section for allAcausal
 //
 // =============================================================================
-pub fn allAcausal(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
+pub(crate) fn allAcausal(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut outDAE: Arc<BackendDAE::BackendDAE>;
     let mut repl: BackendVarTransform::VariableReplacements;
     let mut b: bool;
@@ -752,7 +752,7 @@ fn allAcausal1(mut inSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc<Backen
 // section for causal
 //
 // =============================================================================
-pub fn causal(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
+pub(crate) fn causal(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut outDAE: Arc<BackendDAE::BackendDAE>;
     let mut repl: BackendVarTransform::VariableReplacements;
     let mut b: bool;

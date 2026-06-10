@@ -79,7 +79,7 @@ pub fn printIstmtStr(mut inStatement: GlobalScript::Statement) -> Result<ArcStr>
     Ok(outString)
 }
 
-pub fn printAST(mut pr: Absyn::Program) -> Result<()> {
+pub(crate) fn printAST(mut pr: Absyn::Program) -> Result<()> {
     let mut s: ArcStr = literal!("");
     let mut class_: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
     let mut classes: Arc<metamodelica::List<Arc<Absyn::Class>>>;
@@ -95,7 +95,7 @@ pub fn printAST(mut pr: Absyn::Program) -> Result<()> {
     Ok(())
 }
 
-pub fn printGlobalScript(mut st: Arc<SymbolTable::SymbolTable>) -> Result<()> {
+pub(crate) fn printGlobalScript(mut st: Arc<SymbolTable::SymbolTable>) -> Result<()> {
     metamodelica::print((literal!("AST\n")).clone());
     printAST(st.ast.clone())?;
     Ok(())

@@ -171,7 +171,7 @@ pub mod SimJacobian {
 
     pub type SIM_JAC = SimJacobian;
 
-    pub fn toString(mut simJac: Arc<SimJacobian>) -> Result<ArcStr> {
+    pub(crate) fn toString(mut simJac: Arc<SimJacobian>) -> Result<ArcStr> {
         let mut r#str: ArcStr = literal!("");
         let mut idx: i32 = 0;
         let mut dependencies: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -251,7 +251,7 @@ pub mod SimJacobian {
         Ok(r#str)
     }
 
-    pub fn isEmpty(mut simJac: Arc<SimJacobian>) -> bool {
+    pub(crate) fn isEmpty(mut simJac: Arc<SimJacobian>) -> bool {
         let mut b: bool;
         b = (::match_deref::match_deref! { match &(simJac.clone()) {
         Deref @ SimJacobian { .. } => simJac.numberOfResultVars.clone() == 0,
@@ -261,7 +261,7 @@ pub mod SimJacobian {
         b
     }
 
-    pub fn create(mut jacobian: Arc<BackendDAE::NBackendDAE>, mut indices: SimCode::SimCodeIndices, mut simcode_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<SimVar::SimVar>>>) -> Result<(Option<Arc<SimJacobian>>, SimCode::SimCodeIndices)> {
+    pub(crate) fn create(mut jacobian: Arc<BackendDAE::NBackendDAE>, mut indices: SimCode::SimCodeIndices, mut simcode_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<SimVar::SimVar>>>) -> Result<(Option<Arc<SimJacobian>>, SimCode::SimCodeIndices)> {
         let mut simJacobian: Option<Arc<SimJacobian>> = None;
         let mut indices: SimCode::SimCodeIndices = indices;
         simJacobian = ({
@@ -368,7 +368,7 @@ pub mod SimJacobian {
         Ok((simJacobian, indices))
     }
 
-    pub fn createSimulationJacobian(mut partitions: Arc<metamodelica::List<Arc<Partition::Partition::Partition>>>, mut simCodeIndices: SimCode::SimCodeIndices, mut simcode_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<SimVar::SimVar>>>) -> Result<(Arc<SimJacobian>, Arc<SimJacobian>, SimCode::SimCodeIndices)> {
+    pub(crate) fn createSimulationJacobian(mut partitions: Arc<metamodelica::List<Arc<Partition::Partition::Partition>>>, mut simCodeIndices: SimCode::SimCodeIndices, mut simcode_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<SimVar::SimVar>>>) -> Result<(Arc<SimJacobian>, Arc<SimJacobian>, SimCode::SimCodeIndices)> {
         let mut simJac: Arc<SimJacobian>;
         let mut simJacAdjoint: Arc<SimJacobian>;
         let mut simCodeIndices: SimCode::SimCodeIndices = simCodeIndices;
@@ -416,7 +416,7 @@ pub mod SimJacobian {
         Ok((simJac, simJacAdjoint, simCodeIndices))
     }
 
-    pub fn createOptimizationJacobian(mut partitions: Arc<metamodelica::List<Arc<Partition::Partition::Partition>>>, mut simCodeIndices: SimCode::SimCodeIndices, mut simcode_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<SimVar::SimVar>>>) -> Result<(Arc<SimJacobian>, Arc<SimJacobian>, Arc<SimJacobian>, SimCode::SimCodeIndices)> {
+    pub(crate) fn createOptimizationJacobian(mut partitions: Arc<metamodelica::List<Arc<Partition::Partition::Partition>>>, mut simCodeIndices: SimCode::SimCodeIndices, mut simcode_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<SimVar::SimVar>>>) -> Result<(Arc<SimJacobian>, Arc<SimJacobian>, Arc<SimJacobian>, SimCode::SimCodeIndices)> {
         let mut simJacLfg: Arc<SimJacobian>;
         let mut simJacMrf: Arc<SimJacobian>;
         let mut simJacR0: Arc<SimJacobian>;
@@ -484,7 +484,7 @@ pub mod SimJacobian {
         Ok((simJacLfg, simJacMrf, simJacR0, simCodeIndices))
     }
 
-    pub fn createSparsity(mut jacobian: Arc<BackendDAE::NBackendDAE>, mut local_idx_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>) -> Result<(Arc<metamodelica::List<(i32, Arc<metamodelica::List<i32>>)>>, Arc<metamodelica::List<(i32, Arc<metamodelica::List<i32>>)>>, Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>)> {
+    pub(crate) fn createSparsity(mut jacobian: Arc<BackendDAE::NBackendDAE>, mut local_idx_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>) -> Result<(Arc<metamodelica::List<(i32, Arc<metamodelica::List<i32>>)>>, Arc<metamodelica::List<(i32, Arc<metamodelica::List<i32>>)>>, Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>)> {
         let mut sparsity: Arc<metamodelica::List<(i32, Arc<metamodelica::List<i32>>)>> = metamodelica::nil();
         let mut sparsityT: Arc<metamodelica::List<(i32, Arc<metamodelica::List<i32>>)>> = metamodelica::nil();
         let mut coloring: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
@@ -505,7 +505,7 @@ pub mod SimJacobian {
         Ok((sparsity, sparsityT, coloring, rowColoring))
     }
 
-    pub fn createSparsityPattern(mut cols: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>)>>, mut local_idx_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>) -> Result<Arc<metamodelica::List<(i32, Arc<metamodelica::List<i32>>)>>> {
+    pub(crate) fn createSparsityPattern(mut cols: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>)>>, mut local_idx_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>) -> Result<Arc<metamodelica::List<(i32, Arc<metamodelica::List<i32>>)>>> {
         let mut simPattern: Arc<metamodelica::List<(i32, Arc<metamodelica::List<i32>>)>> = metamodelica::nil();
         let mut cref: Arc<ComponentRef::NFComponentRef>;
         let mut dependencies: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
@@ -532,7 +532,7 @@ pub mod SimJacobian {
         Ok(simPattern)
     }
 
-    pub fn createSparsityColoring(mut coloring: Arc<Jacobian::SparsityColoring::SparsityColoring>, mut idx_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>) -> Result<(Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>)> {
+    pub(crate) fn createSparsityColoring(mut coloring: Arc<Jacobian::SparsityColoring::SparsityColoring>, mut idx_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>) -> Result<(Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>)> {
         let mut simColoringCols: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>;
         let mut simColoringRows: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>;
         simColoringCols = ({
@@ -554,7 +554,7 @@ pub mod SimJacobian {
         Ok((simColoringCols, simColoringRows))
     }
 
-    pub fn empty(mut name: ArcStr, mut indices: SimCode::SimCodeIndices) -> Result<(Arc<SimJacobian>, SimCode::SimCodeIndices)> {
+    pub(crate) fn empty(mut name: ArcStr, mut indices: SimCode::SimCodeIndices) -> Result<(Arc<SimJacobian>, SimCode::SimCodeIndices)> {
         let mut emptyJac: Arc<SimJacobian> = EMPTY_SIM_JAC().clone();
         let mut indices: SimCode::SimCodeIndices = indices;
         emptyJac = (::match_deref::match_deref! { match &(emptyJac.clone()) {
@@ -575,7 +575,7 @@ pub mod SimJacobian {
         Ok((emptyJac, indices))
     }
 
-    pub fn getJacobianBlocks(mut jacobian: Arc<SimJacobian>) -> Result<Arc<metamodelica::List<Arc<SimStrongComponent::Block::Block>>>> {
+    pub(crate) fn getJacobianBlocks(mut jacobian: Arc<SimJacobian>) -> Result<Arc<metamodelica::List<Arc<SimStrongComponent::Block::Block>>>> {
         let mut blcks: Arc<metamodelica::List<Arc<SimStrongComponent::Block::Block>>>;
         blcks = (::match_deref::match_deref! { match &(jacobian.clone()) {
         Deref @ SimJacobian { .. } => listAppend(jacobian.constantEqns.clone(), jacobian.columnEqns.clone()),
@@ -588,7 +588,7 @@ pub mod SimJacobian {
         Ok(blcks)
     }
 
-    pub fn getJacobiansBlocks(mut jacobians: Arc<metamodelica::List<Arc<SimJacobian>>>) -> Result<Arc<metamodelica::List<Arc<SimStrongComponent::Block::Block>>>> {
+    pub(crate) fn getJacobiansBlocks(mut jacobians: Arc<metamodelica::List<Arc<SimJacobian>>>) -> Result<Arc<metamodelica::List<Arc<SimStrongComponent::Block::Block>>>> {
         let mut blcks: Arc<metamodelica::List<Arc<SimStrongComponent::Block::Block>>> = metamodelica::nil();
         for mut jacobian in &*jacobians.clone() {
             let mut jacobian = jacobian.clone();
@@ -597,7 +597,7 @@ pub mod SimJacobian {
         Ok(blcks)
     }
 
-    pub fn getJacobianHT(mut jacobian: Arc<SimJacobian>) -> Result<Option<Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<SimVar::SimVar>>>>> {
+    pub(crate) fn getJacobianHT(mut jacobian: Arc<SimJacobian>) -> Result<Option<Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<SimVar::SimVar>>>>> {
         let mut jac_map: Option<Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<SimVar::SimVar>>>>;
         jac_map = (::match_deref::match_deref! { match &(jacobian.clone()) {
         Deref @ SimJacobian { .. } => jacobian.jac_map.clone(),
@@ -610,7 +610,7 @@ pub mod SimJacobian {
         Ok(jac_map)
     }
 
-    pub fn convert(mut simJac: Arc<SimJacobian>) -> Result<Arc<OldSimCode::JacobianMatrix>> {
+    pub(crate) fn convert(mut simJac: Arc<SimJacobian>) -> Result<Arc<OldSimCode::JacobianMatrix>> {
         let mut oldJac: Arc<OldSimCode::JacobianMatrix> = Arc::new(<OldSimCode::JacobianMatrix as ::std::default::Default>::default());
         let mut oldJacCol: Arc<OldSimCode::JacobianColumn> = Arc::new(<OldSimCode::JacobianColumn as ::std::default::Default>::default());
         oldJac = (::match_deref::match_deref! { match &(simJac.clone()) {

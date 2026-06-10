@@ -81,7 +81,7 @@ pub const commaStr: &'static str = "$c";
 
 pub const appostrophStr: &'static str = "$a";
 
-pub fn modelicaStringToCStr(mut r#str: ArcStr, mut changeDerCall: bool) -> Result<ArcStr> {
+pub(crate) fn modelicaStringToCStr(mut r#str: ArcStr, mut changeDerCall: bool) -> Result<ArcStr> {
     let mut res_str: ArcStr = arcstr::literal!("");
     res_str = ((match (r#str.clone(), changeDerCall.clone()) {
         (_, false) => {

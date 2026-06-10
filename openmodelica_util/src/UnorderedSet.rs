@@ -429,12 +429,12 @@ pub fn isEmpty<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set: Arc<Unor
     empty
 }
 
-pub fn bucketCount<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set: Arc<UnorderedSet<T>>) -> i32 {
+pub(crate) fn bucketCount<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set: Arc<UnorderedSet<T>>) -> i32 {
     let mut count: i32 = metamodelica::arrayLength(Mutable::access(set.buckets.clone()));
     count
 }
 
-pub fn loadFactor<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set: Arc<UnorderedSet<T>>) -> metamodelica::Real {
+pub(crate) fn loadFactor<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set: Arc<UnorderedSet<T>>) -> metamodelica::Real {
     let mut load: metamodelica::Real = intReal(Mutable::access(set.size.clone())) / metamodelica::OrderedFloat((bucketCount(set.clone())) as f64);
     load
 }
@@ -474,7 +474,7 @@ pub fn toString<T: Clone + 'static + metamodelica::gc::MMTrace + Default>(mut se
     Ok(r#str)
 }
 
-pub fn dump<T: Clone + 'static + metamodelica::gc::MMTrace + Default>(mut set: Arc<UnorderedSet<T>>, mut stringFn: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>) -> Result<()> {
+pub(crate) fn dump<T: Clone + 'static + metamodelica::gc::MMTrace + Default>(mut set: Arc<UnorderedSet<T>>, mut stringFn: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>) -> Result<()> {
     pub type StringFn<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>;
 
     metamodelica::print((toString(set.clone(), stringFn.clone(), (literal!("\n")).clone())?).clone());
@@ -534,7 +534,7 @@ pub fn merge<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set1: Arc<Unord
     Ok(set1)
 }
 
-pub fn intersection<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set1: Arc<UnorderedSet<T>>, mut set2: Arc<UnorderedSet<T>>) -> Result<Arc<UnorderedSet<T>>> {
+pub(crate) fn intersection<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set1: Arc<UnorderedSet<T>>, mut set2: Arc<UnorderedSet<T>>) -> Result<Arc<UnorderedSet<T>>> {
     let mut set: Arc<UnorderedSet<T>>;
     let mut set_small: Arc<UnorderedSet<T>>;
     let mut set_big: Arc<UnorderedSet<T>>;
@@ -559,7 +559,7 @@ pub fn intersection<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set1: Ar
     Ok(set)
 }
 
-pub fn intersection_list<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set_lst: Arc<metamodelica::List<Arc<UnorderedSet<T>>>>, mut hashFunc: Arc<dyn ::std::ops::Fn(T) -> Result<i32> + 'static>, mut keyEqFunc: Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>) -> Result<Arc<UnorderedSet<T>>> {
+pub(crate) fn intersection_list<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set_lst: Arc<metamodelica::List<Arc<UnorderedSet<T>>>>, mut hashFunc: Arc<dyn ::std::ops::Fn(T) -> Result<i32> + 'static>, mut keyEqFunc: Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>) -> Result<Arc<UnorderedSet<T>>> {
     let mut set: Arc<UnorderedSet<T>>;
     let mut set_small: Arc<UnorderedSet<T>>;
     let mut rest: Arc<metamodelica::List<Arc<UnorderedSet<T>>>>;

@@ -85,7 +85,7 @@ pub fn writeAdjacencyMatrix(mut dlow: Arc<BackendDAE::BackendDAE>, mut fileNameP
     Ok(fileName)
 }
 
-pub fn getEquations(mut inBackendDAE: Arc<BackendDAE::BackendDAE>) -> Result<ArcStr> {
+pub(crate) fn getEquations(mut inBackendDAE: Arc<BackendDAE::BackendDAE>) -> Result<ArcStr> {
     let mut strEqs: ArcStr;
     let mut syst: Arc<BackendDAE::EqSystem>;
     let mut ls1: Arc<metamodelica::List<ArcStr>>;
@@ -99,7 +99,7 @@ pub fn getEquations(mut inBackendDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc
     Ok(strEqs)
 }
 
-pub fn equationStr(mut inEquation: Arc<BackendDAE::Equation>) -> Result<ArcStr> {
+pub(crate) fn equationStr(mut inEquation: Arc<BackendDAE::Equation>) -> Result<ArcStr> {
     let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(inEquation.clone()) {
         Deref @ BackendDAE::Equation::EQUATION { exp: e1, scalar: e2, .. } => {
@@ -228,7 +228,7 @@ fn getAdjacencyRow(mut inStringLst: Arc<metamodelica::List<ArcStr>>) -> ArcStr {
     strRow
 }
 
-pub fn getVariables(mut inBackendDAE: Arc<BackendDAE::BackendDAE>) -> Result<ArcStr> {
+pub(crate) fn getVariables(mut inBackendDAE: Arc<BackendDAE::BackendDAE>) -> Result<ArcStr> {
     let mut strVars: ArcStr;
     strVars = ((::match_deref::match_deref! { match &(inBackendDAE.clone()) {
         Deref @ BackendDAE::BackendDAE { eqs: Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::EqSystem { orderedVars: vars1, .. }, tail: Deref @ metamodelica::List::Nil }, .. } => {
@@ -244,7 +244,7 @@ pub fn getVariables(mut inBackendDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc
     Ok(strVars)
 }
 
-pub fn dumpVars(mut vars: Arc<metamodelica::List<BackendDAE::Var>>) -> Result<ArcStr> {
+pub(crate) fn dumpVars(mut vars: Arc<metamodelica::List<BackendDAE::Var>>) -> Result<ArcStr> {
     let mut strVars: ArcStr;
     strVars = (dumpVars2(vars.clone(), 1)?).clone();
     Ok(strVars)
@@ -295,7 +295,7 @@ fn dumpVars2(mut inVarLst: Arc<metamodelica::List<BackendDAE::Var>>, mut inInteg
     Ok(strVars)
 }
 
-pub fn adjacencyMatrix(mut inBackendDAE: Arc<BackendDAE::BackendDAE>) -> Result<metamodelica::Array<Arc<metamodelica::List<ArcStr>>>> {
+pub(crate) fn adjacencyMatrix(mut inBackendDAE: Arc<BackendDAE::BackendDAE>) -> Result<metamodelica::Array<Arc<metamodelica::List<ArcStr>>>> {
     let mut outAdjacencyMatrix: metamodelica::Array<Arc<metamodelica::List<ArcStr>>>;
     outAdjacencyMatrix = 'mc: {
         let __mc_input = inBackendDAE.clone();

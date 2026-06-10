@@ -46,7 +46,7 @@ use arcstr::{ArcStr, literal, format};
 use crate::NBEquation::EquationPointers;
 use crate::NBVariable::VariablePointers;
 
-pub fn main(mut eqns: Arc<EquationPointers::EquationPointers>, mut vars: Arc<VariablePointers::VariablePointers>) -> () {
+pub(crate) fn main(mut eqns: Arc<EquationPointers::EquationPointers>, mut vars: Arc<VariablePointers::VariablePointers>) -> () {
     let mut indices: metamodelica::Array<Arc<metamodelica::List<i32>>>;
     let mut values: metamodelica::Array<Arc<metamodelica::List<i32>>>;
     indices = arrayCreate(3, metamodelica::nil());
@@ -86,17 +86,17 @@ pub fn main(mut eqns: Arc<EquationPointers::EquationPointers>, mut vars: Arc<Var
     ()
 }
 
-pub fn setMatrix(mut nv: i32, mut ne: i32, mut nz: i32, mut adj: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut val: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> () {
+pub(crate) fn setMatrix(mut nv: i32, mut ne: i32, mut nz: i32, mut adj: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut val: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> () {
     metamodelica::ext::ASSC_setMatrix(nv.clone(), ne.clone(), nz.clone(), adj.clone(), val.clone());
     ()
 }
 
-pub fn freeMatrix() -> () {
+pub(crate) fn freeMatrix() -> () {
     metamodelica::ext::ASSC_freeMatrix();
     ()
 }
 
-pub fn printMatrix() -> () {
+pub(crate) fn printMatrix() -> () {
     metamodelica::ext::ASSC_printMatrix();
     ()
 }

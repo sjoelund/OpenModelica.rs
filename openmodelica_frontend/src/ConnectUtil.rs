@@ -90,7 +90,7 @@ use openmodelica_util_datatypes_basic::List;
 // Set graph represented as an adjacency list.
 pub type SetGraph = metamodelica::Array<Arc<metamodelica::List<i32>>>;
 
-pub fn newSet(mut prefix: DAE::Prefix, mut sets: Sets) -> Result<Sets> {
+pub(crate) fn newSet(mut prefix: DAE::Prefix, mut sets: Sets) -> Result<Sets> {
     let mut sets: Sets = sets;
     let mut pstr: ArcStr;
     let mut sc: i32;
@@ -115,7 +115,7 @@ pub fn newSet(mut prefix: DAE::Prefix, mut sets: Sets) -> Result<Sets> {
     Ok(sets)
 }
 
-pub fn addSet(mut parentSets: Sets, mut childSets: Sets) -> Result<Sets> {
+pub(crate) fn addSet(mut parentSets: Sets, mut childSets: Sets) -> Result<Sets> {
     let mut sets: Sets;
     sets = 'mc: {
         let __mc_input = (parentSets.clone(), childSets.clone());
@@ -174,7 +174,7 @@ fn isEmptySet(mut sets: Sets) -> bool {
     isEmpty
 }
 
-pub fn addConnection(mut sets: Sets, mut cref1: Arc<DAE::ComponentRef>, mut face1: Face, mut cref2: Arc<DAE::ComponentRef>, mut face2: Face, mut connectorType: Arc<DAE::ConnectorType>, mut source: Arc<DAE::ElementSource>) -> Result<Sets> {
+pub(crate) fn addConnection(mut sets: Sets, mut cref1: Arc<DAE::ComponentRef>, mut face1: Face, mut cref2: Arc<DAE::ComponentRef>, mut face2: Face, mut connectorType: Arc<DAE::ConnectorType>, mut source: Arc<DAE::ElementSource>) -> Result<Sets> {
     let mut sets: Sets = sets;
     let mut e1: ConnectorElement;
     let mut e2: ConnectorElement;
@@ -208,7 +208,7 @@ fn getConnectCount(mut cref: Arc<DAE::ComponentRef>, mut trie: Arc<SetTrieNode>)
     count
 }
 
-pub fn addArrayConnection(mut sets: Sets, mut cref1: Arc<DAE::ComponentRef>, mut face1: Face, mut cref2: Arc<DAE::ComponentRef>, mut face2: Face, mut source: Arc<DAE::ElementSource>, mut connectorType: Arc<DAE::ConnectorType>) -> Result<Sets> {
+pub(crate) fn addArrayConnection(mut sets: Sets, mut cref1: Arc<DAE::ComponentRef>, mut face1: Face, mut cref2: Arc<DAE::ComponentRef>, mut face2: Face, mut source: Arc<DAE::ElementSource>, mut connectorType: Arc<DAE::ConnectorType>) -> Result<Sets> {
     let mut sets: Sets = sets;
     let mut crefs1: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
     let mut crefs2: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
@@ -248,7 +248,7 @@ fn makeConnectorType(mut connectorType: Arc<DAE::ConnectorType>) -> Result<Conne
     Ok(ty)
 }
 
-pub fn addConnectorVariablesFromDAE(mut ignore: bool, mut classState: ClassInf::State, mut prefix: DAE::Prefix, mut vars: Arc<metamodelica::List<Arc<DAE::Var>>>, mut info: SourceInfo, mut elementSource: Arc<DAE::ElementSource>, mut sets: Sets) -> Result<Sets> {
+pub(crate) fn addConnectorVariablesFromDAE(mut ignore: bool, mut classState: ClassInf::State, mut prefix: DAE::Prefix, mut vars: Arc<metamodelica::List<Arc<DAE::Var>>>, mut info: SourceInfo, mut elementSource: Arc<DAE::ElementSource>, mut sets: Sets) -> Result<Sets> {
     let mut sets: Sets = sets;
     sets = (match classState.clone() {
         ClassInf::State::CONNECTOR { path: ref class_path, isExpandable: false } if (!(ignore.clone())) => {
@@ -280,7 +280,7 @@ fn addFlowVariableFromDAE(mut variable: Arc<DAE::Var>, mut elementSource: Arc<DA
     Ok(sets)
 }
 
-pub fn isExpandable(mut name: Arc<DAE::ComponentRef>) -> bool {
+pub(crate) fn isExpandable(mut name: Arc<DAE::ComponentRef>) -> bool {
     let mut expandableConnector: bool;
     expandableConnector = (::match_deref::match_deref! { match &(name.clone()) {
         Deref @ DAE::ComponentRef::CREF_IDENT { .. } => Types::isExpandableConnector(var_field!((*name).identType, DAE::ComponentRef::CREF_IDENT).clone()),
@@ -557,7 +557,7 @@ fn getStreamFlowAssociation(mut streamCref: Arc<DAE::ComponentRef>, mut sets: Se
     Ok(flowCref)
 }
 
-pub fn addOuterConnection(mut scope: DAE::Prefix, mut sets: Sets, mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::ComponentRef>, mut io1: Absyn::InnerOuter, mut io2: Absyn::InnerOuter, mut f1: Face, mut f2: Face, mut source: Arc<DAE::ElementSource>) -> Result<Sets> {
+pub(crate) fn addOuterConnection(mut scope: DAE::Prefix, mut sets: Sets, mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::ComponentRef>, mut io1: Absyn::InnerOuter, mut io2: Absyn::InnerOuter, mut f1: Face, mut f2: Face, mut source: Arc<DAE::ElementSource>) -> Result<Sets> {
     let mut sets: Sets = sets;
     let mut new_oc: OuterConnect;
     if !(List::any(sets.outerConnects.clone(), (std::sync::Arc::new({ let __pe_b1 = cr1.clone(); let __pe_b2 = cr2.clone(); move |__pe_a0| outerConnectionMatches(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(OuterConnect) -> Result<bool> + 'static>))?) {
@@ -575,7 +575,7 @@ fn outerConnectionMatches(mut oc: OuterConnect, mut cr1: Arc<DAE::ComponentRef>,
     Ok(matches)
 }
 
-pub fn addOuterConnectToSets(mut cref1: Arc<DAE::ComponentRef>, mut cref2: Arc<DAE::ComponentRef>, mut io1: Absyn::InnerOuter, mut io2: Absyn::InnerOuter, mut face1: Face, mut face2: Face, mut sets: Sets, mut inInfo: SourceInfo) -> Result<(Sets, bool)> {
+pub(crate) fn addOuterConnectToSets(mut cref1: Arc<DAE::ComponentRef>, mut cref2: Arc<DAE::ComponentRef>, mut io1: Absyn::InnerOuter, mut io2: Absyn::InnerOuter, mut face1: Face, mut face2: Face, mut sets: Sets, mut inInfo: SourceInfo) -> Result<(Sets, bool)> {
     let mut sets: Sets = sets;
     let mut added: bool = false;
     let mut is_outer1: bool;
@@ -1008,7 +1008,7 @@ fn setTrieUpdateLeaf<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut id: A
     Ok(nodes)
 }
 
-pub fn traverseSets<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut sets: Sets, mut arg: Arg, mut updateFunc: Arc<dyn ::std::ops::Fn(Arc<SetTrieNode>, Arg) -> Result<(Arc<SetTrieNode>, Arg)> + 'static>) -> Result<(Sets, Arg)> {
+pub(crate) fn traverseSets<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut sets: Sets, mut arg: Arg, mut updateFunc: Arc<dyn ::std::ops::Fn(Arc<SetTrieNode>, Arg) -> Result<(Arc<SetTrieNode>, Arg)> + 'static>) -> Result<(Sets, Arg)> {
     pub type UpdateFunc<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<SetTrieNode>, Arg) -> Result<(Arc<SetTrieNode>, Arg)> + 'static>;
 
     let mut sets: Sets = sets;
@@ -1119,7 +1119,7 @@ fn setTrieIsNode(mut node: Arc<SetTrieNode>) -> bool {
     isNode
 }
 
-pub fn equations(mut topScope: bool, mut sets: Sets, mut DAE: DAE::DAElist, mut connectionGraph: ConnectionGraph::ConnectionGraph, mut modelNameQualified: ArcStr) -> Result<DAE::DAElist> {
+pub(crate) fn equations(mut topScope: bool, mut sets: Sets, mut DAE: DAE::DAElist, mut connectionGraph: ConnectionGraph::ConnectionGraph, mut modelNameQualified: ArcStr) -> Result<DAE::DAElist> {
     let mut DAE: DAE::DAElist = DAE;
     let mut set_list: Arc<metamodelica::List<Set>>;
     let mut set_array: metamodelica::Array<Set>;
@@ -1234,7 +1234,7 @@ fn getOnlyExpandableConnectedCrefs(mut sets: Arc<metamodelica::List<Arc<metamode
     usefulConnectedExpandable
 }
 
-pub fn allCrefsAreExpandable(mut connects: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> bool {
+pub(crate) fn allCrefsAreExpandable(mut connects: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> bool {
     let mut allAreExpandable: bool;
     for mut cr in &*connects.clone() {
         let mut cr = cr.clone();
@@ -1547,7 +1547,7 @@ fn makeFlowExp(mut element: ConnectorElement) -> Result<Arc<DAE::Exp>> {
     Ok(exp)
 }
 
-pub fn increaseConnectRefCount(mut lhsCref: Arc<DAE::ComponentRef>, mut rhsCref: Arc<DAE::ComponentRef>, mut sets: Sets) -> Result<Sets> {
+pub(crate) fn increaseConnectRefCount(mut lhsCref: Arc<DAE::ComponentRef>, mut rhsCref: Arc<DAE::ComponentRef>, mut sets: Sets) -> Result<Sets> {
     let mut sets: Sets = sets;
     let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
     if System::getUsesCardinality() {
@@ -1559,7 +1559,7 @@ pub fn increaseConnectRefCount(mut lhsCref: Arc<DAE::ComponentRef>, mut rhsCref:
     Ok(sets)
 }
 
-pub fn increaseConnectRefCount2(mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut sets: Arc<SetTrieNode>) -> Result<Arc<SetTrieNode>> {
+pub(crate) fn increaseConnectRefCount2(mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut sets: Arc<SetTrieNode>) -> Result<Arc<SetTrieNode>> {
     let mut sets: Arc<SetTrieNode> = sets;
     for mut cr in &*crefs.clone() {
         let mut cr = cr.clone();
@@ -1804,7 +1804,7 @@ fn sumInside2(mut element: ConnectorElement, mut flowThreshold: metamodelica::Re
     Ok(exp)
 }
 
-pub fn faceEqual(mut face1: Face, mut face2: Face) -> bool {
+pub(crate) fn faceEqual(mut face1: Face, mut face2: Face) -> bool {
     let mut sameFaces: bool = metamodelica::valueConstructor((&face1.clone())).unwrap() == metamodelica::valueConstructor((&face2.clone())).unwrap();
     sameFaces
 }
@@ -2118,7 +2118,7 @@ fn compareCrefStreamSet(mut cref: Arc<DAE::ComponentRef>, mut element: Connector
     Ok(matches)
 }
 
-pub fn componentFace(mut env: FCore::Graph, mut componentRef: Arc<DAE::ComponentRef>) -> Result<Face> {
+pub(crate) fn componentFace(mut env: FCore::Graph, mut componentRef: Arc<DAE::ComponentRef>) -> Result<Face> {
     let mut face: Face;
     face = 'mc: {
         let __mc_input = componentRef.clone();
@@ -2155,7 +2155,7 @@ pub fn componentFace(mut env: FCore::Graph, mut componentRef: Arc<DAE::Component
     Ok(face)
 }
 
-pub fn componentFaceType(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<Face> {
+pub(crate) fn componentFaceType(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<Face> {
     let mut outFace: Face;
     outFace = (::match_deref::match_deref! { match &(inComponentRef.clone()) {
         Deref @ DAE::ComponentRef::CREF_IDENT { .. } => openmodelica_frontend_types::DAE::Connect::Face::OUTSIDE,
@@ -2167,7 +2167,7 @@ pub fn componentFaceType(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<F
     Ok(outFace)
 }
 
-pub fn checkConnectorBalance(mut vars: Arc<metamodelica::List<Arc<DAE::Var>>>, mut path: Arc<Absyn::Path>, mut info: SourceInfo) -> Result<()> {
+pub(crate) fn checkConnectorBalance(mut vars: Arc<metamodelica::List<Arc<DAE::Var>>>, mut path: Arc<Absyn::Path>, mut info: SourceInfo) -> Result<()> {
     let mut potentials: i32;
     let mut flows: i32;
     let mut streams: i32;
@@ -2316,7 +2316,7 @@ fn sizeOfType(mut ty: Arc<DAE::Type>) -> Result<i32> {
     }
 }
 
-pub fn checkShortConnectorDef(mut state: ClassInf::State, mut attributes: SCode::Attributes, mut info: SourceInfo) -> Result<bool> {
+pub(crate) fn checkShortConnectorDef(mut state: ClassInf::State, mut attributes: SCode::Attributes, mut info: SourceInfo) -> Result<bool> {
     let mut isValid: bool;
     isValid = ({
         let mut pv: i32 = 0;
@@ -2341,7 +2341,7 @@ pub fn checkShortConnectorDef(mut state: ClassInf::State, mut attributes: SCode:
     Ok(isValid)
 }
 
-pub fn isReferenceInConnects(mut connects: Arc<metamodelica::List<ConnectorElement>>, mut cref: Arc<DAE::ComponentRef>) -> Result<bool> {
+pub(crate) fn isReferenceInConnects(mut connects: Arc<metamodelica::List<ConnectorElement>>, mut cref: Arc<DAE::ComponentRef>) -> Result<bool> {
     let mut isThere: bool = false;
     for mut ce in &*connects.clone() {
         let mut ce = ce.clone();
@@ -2353,7 +2353,7 @@ pub fn isReferenceInConnects(mut connects: Arc<metamodelica::List<ConnectorEleme
     Ok(isThere)
 }
 
-pub fn removeReferenceFromConnects(mut connects: Arc<metamodelica::List<ConnectorElement>>, mut cref: Arc<DAE::ComponentRef>) -> Result<(Arc<metamodelica::List<ConnectorElement>>, bool)> {
+pub(crate) fn removeReferenceFromConnects(mut connects: Arc<metamodelica::List<ConnectorElement>>, mut cref: Arc<DAE::ComponentRef>) -> Result<(Arc<metamodelica::List<ConnectorElement>>, bool)> {
     let mut connects: Arc<metamodelica::List<ConnectorElement>> = connects;
     let mut wasRemoved: bool;
     let mut oe: Option<ConnectorElement>;
@@ -2368,7 +2368,7 @@ fn removeReferenceFromConnects2(mut cref: Arc<DAE::ComponentRef>, mut element: C
     Ok(matches)
 }
 
-pub fn printSetsStr(mut sets: Sets) -> Result<ArcStr> {
+pub(crate) fn printSetsStr(mut sets: Sets) -> Result<ArcStr> {
     let mut string: ArcStr;
     string = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", sets.setCount.clone()))); __mm_s.push_str(&*literal!(" sets:\n")); ArcStr::from(__mm_s) }).clone();
     string = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*string.clone()); __mm_s.push_str(&*printSetTrieStr(sets.sets.clone(), (literal!("\t")).clone())?); ArcStr::from(__mm_s) }).clone();
@@ -2419,7 +2419,7 @@ fn printLeafElementStr(mut element: Option<ConnectorElement>) -> Result<ArcStr> 
     Ok(string)
 }
 
-pub fn printElementStr(mut element: ConnectorElement) -> Result<ArcStr> {
+pub(crate) fn printElementStr(mut element: ConnectorElement) -> Result<ArcStr> {
     let mut string: ArcStr;
     string = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(element.name.clone())?); __mm_s.push_str(&*literal!(" ")); ArcStr::from(__mm_s) }).clone();
     string = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*string.clone()); __mm_s.push_str(&*printFaceStr(element.face.clone())?); __mm_s.push_str(&*literal!(" ")); ArcStr::from(__mm_s) }).clone();
@@ -2427,7 +2427,7 @@ pub fn printElementStr(mut element: ConnectorElement) -> Result<ArcStr> {
     Ok(string)
 }
 
-pub fn printFaceStr(mut face: Face) -> Result<ArcStr> {
+pub(crate) fn printFaceStr(mut face: Face) -> Result<ArcStr> {
     let mut string: ArcStr;
     string = ((match face.clone() {
         DAE::Connect::Face::INSIDE => literal!("inside"),
@@ -2568,7 +2568,7 @@ fn topLevelConnectorType(mut inConnectorType: Arc<DAE::ConnectorType>) -> bool {
     isTopLevel
 }
 
-pub fn getAllExpandableCrefsFromDAE(mut inDAE: DAE::DAElist) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> {
+pub(crate) fn getAllExpandableCrefsFromDAE(mut inDAE: DAE::DAElist) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> {
     let mut outCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
     let mut elts: Arc<metamodelica::List<Arc<DAE::Element>>>;
     let DAE::DAE { elementLst: __pa0 } = (inDAE.clone()) else { bail!("pattern mismatch") };

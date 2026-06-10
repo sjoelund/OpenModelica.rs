@@ -82,7 +82,7 @@ pub type ForArgType = (Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Exp>>>, Ar
 // $whenConditionsN and generates to each of these variables an equation
 // $whenConditions = whenConditions
 // =============================================================================
-pub fn encapsulateWhenConditions(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
+pub(crate) fn encapsulateWhenConditions(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut outDAE: Arc<BackendDAE::BackendDAE>;
     let mut systs: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>>;
     let mut syst: Arc<BackendDAE::EqSystem>;

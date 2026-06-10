@@ -68,7 +68,7 @@ pub fn traverseExpTopDown<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut 
     Ok((outExp, outArg))
 }
 
-pub fn traverseExpList<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut inExpList: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut inArg: Arg) -> Result<(Arc<metamodelica::List<Arc<Absyn::Exp>>>, Arg)> {
+pub(crate) fn traverseExpList<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut inExpList: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut inArg: Arg) -> Result<(Arc<metamodelica::List<Arc<Absyn::Exp>>>, Arg)> {
     pub type FuncType<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>;
 
     let mut outExpList: Arc<metamodelica::List<Arc<Absyn::Exp>>>;
@@ -77,7 +77,7 @@ pub fn traverseExpList<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut inE
     Ok((outExpList, outArg))
 }
 
-pub fn traverseExpListBidir<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut inExpl: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut inArg: Arg) -> Result<(Arc<metamodelica::List<Arc<Absyn::Exp>>>, Arg)> {
+pub(crate) fn traverseExpListBidir<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut inExpl: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut inArg: Arg) -> Result<(Arc<metamodelica::List<Arc<Absyn::Exp>>>, Arg)> {
     pub type FuncType<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>;
 
     let mut outExpl: Arc<metamodelica::List<Arc<Absyn::Exp>>>;
@@ -97,7 +97,7 @@ pub fn traverseExpBidir<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut in
     Ok((e, arg))
 }
 
-pub fn traverseExpOptBidir<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut inExp: Option<Arc<Absyn::Exp>>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut inArg: Arg) -> Result<(Option<Arc<Absyn::Exp>>, Arg)> {
+pub(crate) fn traverseExpOptBidir<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut inExp: Option<Arc<Absyn::Exp>>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut inArg: Arg) -> Result<(Option<Arc<Absyn::Exp>>, Arg)> {
     pub type FuncType<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>;
 
     let mut outExp: Option<Arc<Absyn::Exp>>;
@@ -283,7 +283,7 @@ fn traverseExpBidirSubExps<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut
     Ok((exp, arg))
 }
 
-pub fn traverseExpBidirCref<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut cref: Arc<Absyn::ComponentRef>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut arg: Arg) -> Result<(Arc<Absyn::ComponentRef>, Arg)> {
+pub(crate) fn traverseExpBidirCref<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut cref: Arc<Absyn::ComponentRef>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut arg: Arg) -> Result<(Arc<Absyn::ComponentRef>, Arg)> {
     pub type FuncType<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>;
 
     let mut cref: Arc<Absyn::ComponentRef> = cref;
@@ -317,7 +317,7 @@ pub fn traverseExpBidirCref<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mu
     Ok((cref, arg))
 }
 
-pub fn traverseExpBidirSubs<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut subscripts: Arc<metamodelica::List<Arc<Absyn::Subscript>>>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut arg: Arg) -> Result<(Arc<metamodelica::List<Arc<Absyn::Subscript>>>, Arg)> {
+pub(crate) fn traverseExpBidirSubs<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut subscripts: Arc<metamodelica::List<Arc<Absyn::Subscript>>>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut arg: Arg) -> Result<(Arc<metamodelica::List<Arc<Absyn::Subscript>>>, Arg)> {
     pub type FuncType<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>;
 
     let mut subscripts: Arc<metamodelica::List<Arc<Absyn::Subscript>>> = subscripts;
@@ -326,7 +326,7 @@ pub fn traverseExpBidirSubs<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mu
     Ok((subscripts, arg))
 }
 
-pub fn traverseExpBidirSub<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut subscript: Arc<Absyn::Subscript>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut arg: Arg) -> Result<(Arc<Absyn::Subscript>, Arg)> {
+pub(crate) fn traverseExpBidirSub<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut subscript: Arc<Absyn::Subscript>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut arg: Arg) -> Result<(Arc<Absyn::Subscript>, Arg)> {
     pub type FuncType<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>;
 
     let mut subscript: Arc<Absyn::Subscript> = subscript;
@@ -345,7 +345,7 @@ pub fn traverseExpBidirSub<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut
     Ok((subscript, arg))
 }
 
-pub fn traverseExpBidirElseIf<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut inElseIf: (Arc<Absyn::Exp>, Arc<Absyn::Exp>), mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut inArg: Arg) -> Result<((Arc<Absyn::Exp>, Arc<Absyn::Exp>), Arg)> {
+pub(crate) fn traverseExpBidirElseIf<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut inElseIf: (Arc<Absyn::Exp>, Arc<Absyn::Exp>), mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut inArg: Arg) -> Result<((Arc<Absyn::Exp>, Arc<Absyn::Exp>), Arg)> {
     pub type FuncType<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>;
 
     let mut outElseIf: (Arc<Absyn::Exp>, Arc<Absyn::Exp>);
@@ -384,7 +384,7 @@ pub fn traverseExpBidirFunctionArgs<Arg: Clone + 'static + metamodelica::gc::MMT
     Ok((args, arg))
 }
 
-pub fn traverseExpBidirNamedArg<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut inArg: Arc<Absyn::NamedArg>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut inExtra: Arg) -> Result<(Arc<Absyn::NamedArg>, Arg)> {
+pub(crate) fn traverseExpBidirNamedArg<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut inArg: Arc<Absyn::NamedArg>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut inExtra: Arg) -> Result<(Arc<Absyn::NamedArg>, Arg)> {
     pub type FuncType<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>;
 
     let mut outArg: Arc<Absyn::NamedArg>;
@@ -403,7 +403,7 @@ pub fn traverseExpBidirNamedArg<Arg: Clone + 'static + metamodelica::gc::MMTrace
     Ok((outArg, outExtra))
 }
 
-pub fn traverseExpBidirIterator<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut inIterator: Arc<Absyn::ForIterator>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut inArg: Arg) -> Result<(Arc<Absyn::ForIterator>, Arg)> {
+pub(crate) fn traverseExpBidirIterator<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut inIterator: Arc<Absyn::ForIterator>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut inArg: Arg) -> Result<(Arc<Absyn::ForIterator>, Arg)> {
     pub type FuncType<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>;
 
     let mut outIterator: Arc<Absyn::ForIterator>;
@@ -426,7 +426,7 @@ pub fn traverseExpBidirIterator<Arg: Clone + 'static + metamodelica::gc::MMTrace
     Ok((outIterator, outArg))
 }
 
-pub fn traverseMatchCase<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut matchCase: Arc<Absyn::Case>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut arg: Arg) -> Result<(Arc<Absyn::Case>, Arg)> {
+pub(crate) fn traverseMatchCase<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut matchCase: Arc<Absyn::Case>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut arg: Arg) -> Result<(Arc<Absyn::Case>, Arg)> {
     pub type FuncType<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>;
 
     let mut matchCase: Arc<Absyn::Case> = matchCase;
@@ -534,7 +534,7 @@ fn traverseEquationItemBidir<Arg: Clone + 'static + metamodelica::gc::MMTrace>(m
     Ok((equationItem, arg))
 }
 
-pub fn traverseEquationBidir<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut eq: Arc<Absyn::Equation>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut arg: Arg) -> Result<(Arc<Absyn::Equation>, Arg)> {
+pub(crate) fn traverseEquationBidir<Arg: Clone + 'static + metamodelica::gc::MMTrace>(mut eq: Arc<Absyn::Equation>, mut enterFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut exitFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>, mut arg: Arg) -> Result<(Arc<Absyn::Equation>, Arg)> {
     pub type FuncType<Arg: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arg) -> Result<(Arc<Absyn::Exp>, Arg)> + 'static>;
 
     let mut eq: Arc<Absyn::Equation> = eq;
@@ -728,7 +728,7 @@ pub fn makeIdentPathFromString(mut s: ArcStr) -> Arc<Absyn::Path> {
     p
 }
 
-pub fn makeQualifiedPathFromStrings(mut s1: ArcStr, mut s2: ArcStr) -> Arc<Absyn::Path> {
+pub(crate) fn makeQualifiedPathFromStrings(mut s1: ArcStr, mut s2: ArcStr) -> Arc<Absyn::Path> {
     let mut p: Arc<Absyn::Path>;
     p = Arc::new(Absyn::Path::QUALIFIED { name: (s1.clone()).clone(), path: Arc::new(Absyn::Path::IDENT { name: (s2.clone()).clone() }) });
     p
@@ -759,7 +759,7 @@ pub fn isComponentItemNamed(mut name: ArcStr, mut component: Arc<Absyn::Componen
     res
 }
 
-pub fn isComponentNamed(mut name: ArcStr, mut component: Absyn::Component) -> bool {
+pub(crate) fn isComponentNamed(mut name: ArcStr, mut component: Absyn::Component) -> bool {
     let mut res: bool = name.clone() == component.name.clone();
     res
 }
@@ -788,7 +788,7 @@ pub fn elementItemNames(mut item: Arc<Absyn::ElementItem>) -> Result<Arc<metamod
     Ok(names)
 }
 
-pub fn elementNames(mut element: Arc<Absyn::Element>) -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub(crate) fn elementNames(mut element: Arc<Absyn::Element>) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut names: Arc<metamodelica::List<ArcStr>>;
     names = (::match_deref::match_deref! { match &(element.clone()) {
         Deref @ Absyn::Element::ELEMENT { .. } => elementSpecNames(var_field!((*element).specification, Absyn::Element::ELEMENT).clone())?,
@@ -798,7 +798,7 @@ pub fn elementNames(mut element: Arc<Absyn::Element>) -> Result<Arc<metamodelica
     Ok(names)
 }
 
-pub fn elementSpecNames(mut spec: Arc<Absyn::ElementSpec>) -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub(crate) fn elementSpecNames(mut spec: Arc<Absyn::ElementSpec>) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut names: Arc<metamodelica::List<ArcStr>>;
     names = (::match_deref::match_deref! { match &(spec.clone()) {
         Deref @ Absyn::ElementSpec::CLASSDEF { .. } => list![(className(var_field!((*spec).class_, Absyn::ElementSpec::CLASSDEF).clone())?).clone()],
@@ -876,7 +876,7 @@ pub fn pathEqual(mut path1: Arc<Absyn::Path>, mut path2: Arc<Absyn::Path>) -> bo
     }
 }
 
-pub fn pathEqualCaseInsensitive(mut path1: Arc<Absyn::Path>, mut path2: Arc<Absyn::Path>) -> bool {
+pub(crate) fn pathEqualCaseInsensitive(mut path1: Arc<Absyn::Path>, mut path2: Arc<Absyn::Path>) -> bool {
     '__tco: loop {
         ::match_deref::match_deref! { match &((path1.clone(), path2.clone())) {
         (Deref @ Absyn::Path::FULLYQUALIFIED { .. }, _) => { (path1, path2) = (var_field!((*path1).path, Absyn::Path::FULLYQUALIFIED).clone(), path2.clone()); continue '__tco; },
@@ -900,7 +900,7 @@ pub fn typeSpecEqual(mut a: Arc<Absyn::TypeSpec>, mut b: Arc<Absyn::TypeSpec>) -
     Ok(ob)
 }
 
-pub fn optArrayDimEqual(mut oad1: Option<Arc<metamodelica::List<Arc<Absyn::Subscript>>>>, mut oad2: Option<Arc<metamodelica::List<Arc<Absyn::Subscript>>>>) -> Result<bool> {
+pub(crate) fn optArrayDimEqual(mut oad1: Option<Arc<metamodelica::List<Arc<Absyn::Subscript>>>>, mut oad2: Option<Arc<metamodelica::List<Arc<Absyn::Subscript>>>>) -> Result<bool> {
     let mut b: bool;
     b = (::match_deref::match_deref! { match &((oad1.clone(), oad2.clone())) {
         (Some(ad1), Some(ad2)) => {
@@ -1018,7 +1018,7 @@ pub fn pathStringDefault(mut path: Arc<Absyn::Path>) -> Result<ArcStr> {
     Ok(s)
 }
 
-pub fn classNameCompare(mut c1: Arc<Absyn::Class>, mut c2: Arc<Absyn::Class>) -> i32 {
+pub(crate) fn classNameCompare(mut c1: Arc<Absyn::Class>, mut c2: Arc<Absyn::Class>) -> i32 {
     let mut o: i32;
     o = stringCompare((c1.name.clone()).clone(), (c2.name.clone()).clone());
     o
@@ -1117,7 +1117,7 @@ pub fn pathHashContinue(mut path: Arc<Absyn::Path>, mut hash: i32) -> Result<i32
     Ok(hash)
 }
 
-pub fn optPathString(mut inPathOption: Option<Arc<Absyn::Path>>) -> Result<ArcStr> {
+pub(crate) fn optPathString(mut inPathOption: Option<Arc<Absyn::Path>>) -> Result<ArcStr> {
     let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(inPathOption.clone()) {
         None => {
@@ -1218,7 +1218,7 @@ pub fn pathFirstIdent(mut path: Arc<Absyn::Path>) -> Result<ArcStr> {
     }
 }
 
-pub fn pathSetFirstIdent(mut path: Arc<Absyn::Path>, mut ident: ArcStr) -> Result<Arc<Absyn::Path>> {
+pub(crate) fn pathSetFirstIdent(mut path: Arc<Absyn::Path>, mut ident: ArcStr) -> Result<Arc<Absyn::Path>> {
     let mut outPath: Arc<Absyn::Path>;
     outPath = (::match_deref::match_deref! { match &(path.clone()) {
         Deref @ Absyn::Path::IDENT { .. } => Arc::new(Absyn::Path::IDENT { name: (ident.clone()).clone() }),
@@ -1423,7 +1423,7 @@ pub fn pathToStringListReverse(mut path: Arc<Absyn::Path>, mut acc: Arc<metamode
     }
 }
 
-pub fn addSubscriptsLast(mut icr: Arc<Absyn::ComponentRef>, mut i: Arc<metamodelica::List<Arc<Absyn::Subscript>>>) -> Result<Arc<Absyn::ComponentRef>> {
+pub(crate) fn addSubscriptsLast(mut icr: Arc<Absyn::ComponentRef>, mut i: Arc<metamodelica::List<Arc<Absyn::Subscript>>>) -> Result<Arc<Absyn::ComponentRef>> {
     let mut ocr: Arc<Absyn::ComponentRef>;
     ocr = (::match_deref::match_deref! { match &(icr.clone()) {
         Deref @ Absyn::ComponentRef::CREF_IDENT { name: id, subscripts: subs } => {
@@ -1762,7 +1762,7 @@ pub fn getCrefFromExp(mut inExp: Arc<Absyn::Exp>, mut includeSubs: bool, mut inc
     }
 }
 
-pub fn getCrefFromFarg(mut inFunctionArgs: Arc<Absyn::FunctionArgs>, mut includeSubs: bool, mut includeFunctions: bool) -> Result<Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>> {
+pub(crate) fn getCrefFromFarg(mut inFunctionArgs: Arc<Absyn::FunctionArgs>, mut includeSubs: bool, mut includeFunctions: bool) -> Result<Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>> {
     let mut outComponentRefLst: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>;
     outComponentRefLst = (::match_deref::match_deref! { match &(inFunctionArgs.clone()) {
         Deref @ Absyn::FunctionArgs::FUNCTIONARGS { args: expl, argNames: nargl } => {
@@ -1808,7 +1808,7 @@ pub fn iteratorName(mut iterator: Arc<Absyn::ForIterator>) -> Result<ArcStr> {
     Ok(name)
 }
 
-pub fn iteratorRange(mut iterator: Arc<Absyn::ForIterator>) -> Result<Option<Arc<Absyn::Exp>>> {
+pub(crate) fn iteratorRange(mut iterator: Arc<Absyn::ForIterator>) -> Result<Option<Arc<Absyn::Exp>>> {
     let mut range: Option<Arc<Absyn::Exp>>;
     let __pa0 = ::match_deref::match_deref! { match &(iterator.clone()) {
         Deref @ Absyn::ForIterator { range: __pa0, .. } => __pa0.clone(),
@@ -1818,7 +1818,7 @@ pub fn iteratorRange(mut iterator: Arc<Absyn::ForIterator>) -> Result<Option<Arc
     Ok(range)
 }
 
-pub fn iteratorGuard(mut iterator: Arc<Absyn::ForIterator>) -> Result<Option<Arc<Absyn::Exp>>> {
+pub(crate) fn iteratorGuard(mut iterator: Arc<Absyn::ForIterator>) -> Result<Option<Arc<Absyn::Exp>>> {
     let mut guardExp: Option<Arc<Absyn::Exp>>;
     let __pa0 = ::match_deref::match_deref! { match &(iterator.clone()) {
         Deref @ Absyn::ForIterator { guardExp: __pa0, .. } => __pa0.clone(),
@@ -1868,7 +1868,7 @@ pub fn joinPaths(mut inPath1: Arc<Absyn::Path>, mut inPath2: Arc<Absyn::Path>) -
     }
 }
 
-pub fn joinPathsOpt(mut inPath1: Option<Arc<Absyn::Path>>, mut inPath2: Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> {
+pub(crate) fn joinPathsOpt(mut inPath1: Option<Arc<Absyn::Path>>, mut inPath2: Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> {
     let mut outPath: Arc<Absyn::Path>;
     outPath = (::match_deref::match_deref! { match &(inPath1.clone()) {
         None => {
@@ -2067,7 +2067,7 @@ pub fn pathToCrefWithSubs(mut inPath: Arc<Absyn::Path>, mut inSubs: Arc<metamode
     Ok(outComponentRef)
 }
 
-pub fn crefLastIdent(mut cref: Arc<Absyn::ComponentRef>) -> Result<ArcStr> {
+pub(crate) fn crefLastIdent(mut cref: Arc<Absyn::ComponentRef>) -> Result<ArcStr> {
     '__tco: loop {
         ::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ Absyn::ComponentRef::CREF_IDENT { .. } => return Ok(var_field!((*cref).name, Absyn::ComponentRef::CREF_IDENT).clone()),
@@ -2078,7 +2078,7 @@ pub fn crefLastIdent(mut cref: Arc<Absyn::ComponentRef>) -> Result<ArcStr> {
     }
 }
 
-pub fn crefFirstIdentNoSubs(mut cref: Arc<Absyn::ComponentRef>) -> Result<ArcStr> {
+pub(crate) fn crefFirstIdentNoSubs(mut cref: Arc<Absyn::ComponentRef>) -> Result<ArcStr> {
     '__tco: loop {
         ::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ Absyn::ComponentRef::CREF_IDENT { subscripts: Deref @ metamodelica::List::Nil, .. } => return Ok(var_field!((*cref).name, Absyn::ComponentRef::CREF_IDENT).clone()),
@@ -2132,7 +2132,7 @@ pub fn crefLastSubs(mut cref: Arc<Absyn::ComponentRef>) -> Result<Arc<metamodeli
     }
 }
 
-pub fn crefSetFirstSubs(mut cref: Arc<Absyn::ComponentRef>, mut subscripts: Arc<metamodelica::List<Arc<Absyn::Subscript>>>) -> Result<Arc<Absyn::ComponentRef>> {
+pub(crate) fn crefSetFirstSubs(mut cref: Arc<Absyn::ComponentRef>, mut subscripts: Arc<metamodelica::List<Arc<Absyn::Subscript>>>) -> Result<Arc<Absyn::ComponentRef>> {
     let mut cref: Arc<Absyn::ComponentRef> = cref;
     let () = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ Absyn::ComponentRef::CREF_IDENT { .. } => {
@@ -2501,7 +2501,7 @@ pub fn crefEqual(mut cref1: Arc<Absyn::ComponentRef>, mut cref2: Arc<Absyn::Comp
     }
 }
 
-pub fn crefFirstEqual(mut iCr1: Arc<Absyn::ComponentRef>, mut iCr2: Arc<Absyn::ComponentRef>) -> Result<bool> {
+pub(crate) fn crefFirstEqual(mut iCr1: Arc<Absyn::ComponentRef>, mut iCr2: Arc<Absyn::ComponentRef>) -> Result<bool> {
     let mut outBoolean: bool;
     outBoolean = stringEq((crefFirstIdent(iCr1.clone())?).clone(), (crefFirstIdent(iCr2.clone())?).clone());
     Ok(outBoolean)
@@ -2524,7 +2524,7 @@ pub fn subscriptEqual(mut inSubscript1: Arc<Absyn::Subscript>, mut inSubscript2:
     Ok(outIsEqual)
 }
 
-pub fn subscriptsEqual(mut inSubList1: Arc<metamodelica::List<Arc<Absyn::Subscript>>>, mut inSubList2: Arc<metamodelica::List<Arc<Absyn::Subscript>>>) -> Result<bool> {
+pub(crate) fn subscriptsEqual(mut inSubList1: Arc<metamodelica::List<Arc<Absyn::Subscript>>>, mut inSubList2: Arc<metamodelica::List<Arc<Absyn::Subscript>>>) -> Result<bool> {
     let mut outIsEqual: bool;
     outIsEqual = List::isEqualOnTrue(inSubList1.clone(), inSubList2.clone(), (std::sync::Arc::new(subscriptEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Subscript>, Arc<Absyn::Subscript>) -> Result<bool> + 'static>))?;
     Ok(outIsEqual)
@@ -2594,7 +2594,7 @@ pub fn crefCompare(mut cr1: Arc<Absyn::ComponentRef>, mut cr2: Arc<Absyn::Compon
     Ok(comp)
 }
 
-pub fn subscriptCompare(mut sub1: Arc<Absyn::Subscript>, mut sub2: Arc<Absyn::Subscript>) -> Result<i32> {
+pub(crate) fn subscriptCompare(mut sub1: Arc<Absyn::Subscript>, mut sub2: Arc<Absyn::Subscript>) -> Result<i32> {
     let mut comp: i32;
     let mut exp: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     if referenceEq(&*(sub1.clone()),&*(sub2.clone())) {
@@ -2628,7 +2628,7 @@ pub fn isPackageRestriction(mut inRestriction: Absyn::Restriction) -> bool {
     outIsPackage
 }
 
-pub fn isFunctionRestriction(mut inRestriction: Absyn::Restriction) -> bool {
+pub(crate) fn isFunctionRestriction(mut inRestriction: Absyn::Restriction) -> bool {
     let mut outIsFunction: bool;
     outIsFunction = (match inRestriction.clone() {
         Absyn::Restriction::R_FUNCTION { .. } => true,
@@ -2745,7 +2745,7 @@ fn getIteratorIndexedCrefs(mut inCref: Arc<Absyn::ComponentRef>, mut inIterator:
     outCrefs
 }
 
-pub fn getFileNameFromInfo(mut inInfo: SourceInfo) -> Result<ArcStr> {
+pub(crate) fn getFileNameFromInfo(mut inInfo: SourceInfo) -> Result<ArcStr> {
     let mut inFileName: ArcStr;
     let SourceInfo { fileName: __pa0, .. } = (inInfo.clone()) else { bail!("pattern mismatch") };
     inFileName = __pa0.clone();
@@ -2808,7 +2808,7 @@ pub fn isNotInnerOuter(mut inIO: Absyn::InnerOuter) -> bool {
     outIsNotInnerOuter
 }
 
-pub fn innerOuterEqual(mut io1: Absyn::InnerOuter, mut io2: Absyn::InnerOuter) -> bool {
+pub(crate) fn innerOuterEqual(mut io1: Absyn::InnerOuter, mut io2: Absyn::InnerOuter) -> bool {
     let mut res: bool;
     res = (match (io1.clone(), io2.clone()) {
         (Absyn::InnerOuter::INNER { .. }, Absyn::InnerOuter::INNER { .. }) => true,
@@ -2844,7 +2844,7 @@ pub fn makeNotFullyQualified(mut inPath: Arc<Absyn::Path>) -> Arc<Absyn::Path> {
     outPath
 }
 
-pub fn importEqual(mut im1: Absyn::Import, mut im2: Absyn::Import) -> bool {
+pub(crate) fn importEqual(mut im1: Absyn::Import, mut im2: Absyn::Import) -> bool {
     let mut outBoolean: bool;
     outBoolean = (match (im1.clone(), im2.clone()) {
         (Absyn::Import::NAMED_IMPORT { .. }, Absyn::Import::NAMED_IMPORT { .. }) => stringEq((var_field!(im1.name, Absyn::Import::NAMED_IMPORT).clone()).clone(), (var_field!(im2.name, Absyn::Import::NAMED_IMPORT).clone()).clone()) && pathEqual(var_field!(im1.path, Absyn::Import::NAMED_IMPORT).clone(), var_field!(im2.path, Absyn::Import::NAMED_IMPORT).clone()),
@@ -2930,7 +2930,7 @@ pub fn onlyLiteralsInEqMod(mut eqMod: Arc<Absyn::EqMod>) -> Result<bool> {
     Ok(onlyLiterals)
 }
 
-pub fn onlyLiteralsInExp(mut exp: Arc<Absyn::Exp>) -> Result<bool> {
+pub(crate) fn onlyLiteralsInExp(mut exp: Arc<Absyn::Exp>) -> Result<bool> {
     let mut onlyLiterals: bool;
     let mut lst: Arc<metamodelica::List<Arc<Absyn::Exp>>>;
     let __pa0 = ::match_deref::match_deref! { match &(traverseExpBidir(exp.clone(), (std::sync::Arc::new(fnptr!(onlyLiteralsInExpEnter, Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<Absyn::Exp>>>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<Absyn::Exp>>>>>) -> Result<(Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<Absyn::Exp>>>>>)> + 'static>), (std::sync::Arc::new(fnptr!(onlyLiteralsInExpExit, Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<Absyn::Exp>>>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<Absyn::Exp>>>>>) -> Result<(Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<Absyn::Exp>>>>>)> + 'static>), metamodelica::cons(metamodelica::nil(), metamodelica::nil()))?) {
@@ -3090,7 +3090,7 @@ pub fn innerOuterStr(mut io: Absyn::InnerOuter) -> Result<ArcStr> {
     Ok(r#str)
 }
 
-pub fn subscriptExpOpt(mut inSub: Arc<Absyn::Subscript>) -> Result<Option<Arc<Absyn::Exp>>> {
+pub(crate) fn subscriptExpOpt(mut inSub: Arc<Absyn::Subscript>) -> Result<Option<Arc<Absyn::Exp>>> {
     let mut outExpOpt: Option<Arc<Absyn::Exp>>;
     outExpOpt = (::match_deref::match_deref! { match &(inSub.clone()) {
         Deref @ Absyn::Subscript::SUBSCRIPT { .. } => Some(var_field!((*inSub).subscript, Absyn::Subscript::SUBSCRIPT).clone()),
@@ -3128,7 +3128,7 @@ pub fn crefInsertSubscriptLstLst(mut inExp: Arc<Absyn::Exp>, mut inLst: Arc<meta
     (outExp, outLst)
 }
 
-pub fn crefInsertSubscriptLstLst2(mut inCref: Arc<Absyn::ComponentRef>, mut inSubs: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Absyn::Subscript>>>>>) -> Result<Arc<Absyn::ComponentRef>> {
+pub(crate) fn crefInsertSubscriptLstLst2(mut inCref: Arc<Absyn::ComponentRef>, mut inSubs: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Absyn::Subscript>>>>>) -> Result<Arc<Absyn::ComponentRef>> {
     let mut outCref: Arc<Absyn::ComponentRef>;
     outCref = 'mc: {
         let __mc_input = (inCref.clone(), inSubs.clone());
@@ -3193,7 +3193,7 @@ pub fn isTuple(mut exp: Arc<Absyn::Exp>) -> bool {
     b
 }
 
-pub fn allFieldsAreCrefs(mut expLst: Arc<metamodelica::List<Arc<Absyn::Exp>>>) -> Result<bool> {
+pub(crate) fn allFieldsAreCrefs(mut expLst: Arc<metamodelica::List<Arc<Absyn::Exp>>>) -> Result<bool> {
     let mut b: bool;
     b = List::all(expLst.clone(), (std::sync::Arc::new(complexIsCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<bool> + 'static>))?;
     Ok(b)
@@ -3210,7 +3210,7 @@ pub fn complexIsCref(mut inExp: Arc<Absyn::Exp>) -> Result<bool> {
     Ok(b)
 }
 
-pub fn isDerCref(mut exp: Arc<Absyn::Exp>) -> bool {
+pub(crate) fn isDerCref(mut exp: Arc<Absyn::Exp>) -> bool {
     let mut b: bool;
     b = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Absyn::Exp::CALL { function_: Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "der", subscripts: Deref @ metamodelica::List::Nil }, functionArgs: Deref @ Absyn::FunctionArgs::FUNCTIONARGS { args: Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::CREF { .. }, tail: Deref @ metamodelica::List::Nil }, argNames: Deref @ metamodelica::List::Nil }, .. } => true,
@@ -3220,7 +3220,7 @@ pub fn isDerCref(mut exp: Arc<Absyn::Exp>) -> bool {
     b
 }
 
-pub fn isDerCrefFail(mut exp: Arc<Absyn::Exp>) -> Result<()> {
+pub(crate) fn isDerCrefFail(mut exp: Arc<Absyn::Exp>) -> Result<()> {
     ::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Absyn::Exp::CALL { function_: Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "der", subscripts: Deref @ metamodelica::List::Nil }, functionArgs: Deref @ Absyn::FunctionArgs::FUNCTIONARGS { args: Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::CREF { .. }, tail: Deref @ metamodelica::List::Nil }, argNames: Deref @ metamodelica::List::Nil }, .. } => (),
         _ => bail!("pattern mismatch"),
@@ -3250,7 +3250,7 @@ pub fn getExpsFromArrayDimOpt(mut inAdO: Option<Arc<metamodelica::List<Arc<Absyn
     Ok((hasUnknownDimensions, outExps))
 }
 
-pub fn getExpsFromArrayDim_tail(mut inAd: Arc<metamodelica::List<Arc<Absyn::Subscript>>>, mut inAccumulator: Arc<metamodelica::List<Arc<Absyn::Exp>>>) -> Result<(bool, Arc<metamodelica::List<Arc<Absyn::Exp>>>)> {
+pub(crate) fn getExpsFromArrayDim_tail(mut inAd: Arc<metamodelica::List<Arc<Absyn::Subscript>>>, mut inAccumulator: Arc<metamodelica::List<Arc<Absyn::Exp>>>) -> Result<(bool, Arc<metamodelica::List<Arc<Absyn::Exp>>>)> {
     '__tco: loop {
         ::match_deref::match_deref! { match &((inAd.clone(), inAccumulator.clone())) {
         (Deref @ metamodelica::List::Nil, acc) => {
@@ -3314,7 +3314,7 @@ pub fn directionEqual(mut inDirection1: Absyn::Direction, mut inDirection2: Absy
     outEqual
 }
 
-pub fn isFieldEqual(mut isField1: Absyn::IsField, mut isField2: Absyn::IsField) -> bool {
+pub(crate) fn isFieldEqual(mut isField1: Absyn::IsField, mut isField2: Absyn::IsField) -> bool {
     let mut outEqual: bool;
     outEqual = (match (isField1.clone(), isField2.clone()) {
         (Absyn::IsField::NONFIELD { .. }, Absyn::IsField::NONFIELD { .. }) => true,
@@ -3324,7 +3324,7 @@ pub fn isFieldEqual(mut isField1: Absyn::IsField, mut isField2: Absyn::IsField) 
     outEqual
 }
 
-pub fn pathLt(mut path1: Arc<Absyn::Path>, mut path2: Arc<Absyn::Path>) -> Result<bool> {
+pub(crate) fn pathLt(mut path1: Arc<Absyn::Path>, mut path2: Arc<Absyn::Path>) -> Result<bool> {
     let mut lt: bool;
     lt = stringCompare((pathString(path1.clone(), (literal!(".")).clone(), true, false)?).clone(), (pathString(path2.clone(), (literal!(".")).clone(), true, false)?).clone()) < 0;
     Ok(lt)
@@ -3753,7 +3753,7 @@ pub fn mergeModifiers(mut outerMod: Arc<Absyn::Modification>, mut innerMod: Arc<
     Ok(outMod)
 }
 
-pub fn mergeEqMods(mut outerEqMod: Arc<Absyn::EqMod>, mut innerEqMod: Arc<Absyn::EqMod>) -> Arc<Absyn::EqMod> {
+pub(crate) fn mergeEqMods(mut outerEqMod: Arc<Absyn::EqMod>, mut innerEqMod: Arc<Absyn::EqMod>) -> Arc<Absyn::EqMod> {
     let mut outEqMod: Arc<Absyn::EqMod>;
     outEqMod = (::match_deref::match_deref! { match &(outerEqMod.clone()) {
         Deref @ Absyn::EqMod::EQMOD { .. } => outerEqMod.clone(),
@@ -3763,7 +3763,7 @@ pub fn mergeEqMods(mut outerEqMod: Arc<Absyn::EqMod>, mut innerEqMod: Arc<Absyn:
     outEqMod
 }
 
-pub fn isModificationOfPath(mut r#mod: Arc<Absyn::ElementArg>, mut path: Arc<Absyn::Path>) -> bool {
+pub(crate) fn isModificationOfPath(mut r#mod: Arc<Absyn::ElementArg>, mut path: Arc<Absyn::Path>) -> bool {
     let mut yes: bool;
     yes = (::match_deref::match_deref! { match &((r#mod.clone(), path.clone())) {
         (Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: id1 }, .. }, Deref @ Absyn::Path::IDENT { name: id2 }) => {
@@ -3777,7 +3777,7 @@ pub fn isModificationOfPath(mut r#mod: Arc<Absyn::ElementArg>, mut path: Arc<Abs
     yes
 }
 
-pub fn subModsInSameOrder(mut oldmod: Arc<Absyn::ElementArg>, mut newmod: Arc<Absyn::ElementArg>) -> Result<Arc<Absyn::ElementArg>> {
+pub(crate) fn subModsInSameOrder(mut oldmod: Arc<Absyn::ElementArg>, mut newmod: Arc<Absyn::ElementArg>) -> Result<Arc<Absyn::ElementArg>> {
     let mut r#mod: Arc<Absyn::ElementArg>;
     r#mod = (::match_deref::match_deref! { match &((oldmod.clone(), newmod.clone())) {
         (_, Deref @ Absyn::ElementArg::MODIFICATION { modification: None, .. }) => {
@@ -3822,13 +3822,13 @@ pub fn annotationToElementArgs(mut ann: Arc<Absyn::Annotation>) -> Result<Arc<me
     Ok(args)
 }
 
-pub fn pathToTypeSpec(mut inPath: Arc<Absyn::Path>) -> Arc<Absyn::TypeSpec> {
+pub(crate) fn pathToTypeSpec(mut inPath: Arc<Absyn::Path>) -> Arc<Absyn::TypeSpec> {
     let mut outTypeSpec: Arc<Absyn::TypeSpec>;
     outTypeSpec = Arc::new(Absyn::TypeSpec::TPATH { path: inPath.clone(), arrayDim: None });
     outTypeSpec
 }
 
-pub fn typeSpecString(mut inTs: Arc<Absyn::TypeSpec>) -> Result<ArcStr> {
+pub(crate) fn typeSpecString(mut inTs: Arc<Absyn::TypeSpec>) -> Result<ArcStr> {
     let mut outStr: ArcStr;
     outStr = (Dump::unparseTypeSpec(inTs.clone())?).clone();
     Ok(outStr)
@@ -3840,7 +3840,7 @@ pub fn crefString(mut inCr: Arc<Absyn::ComponentRef>) -> Result<ArcStr> {
     Ok(outStr)
 }
 
-pub fn typeSpecStringNoQualNoDims(mut inTs: Arc<Absyn::TypeSpec>) -> Result<ArcStr> {
+pub(crate) fn typeSpecStringNoQualNoDims(mut inTs: Arc<Absyn::TypeSpec>) -> Result<ArcStr> {
     let mut outStr: ArcStr;
     outStr = ((::match_deref::match_deref! { match &(inTs.clone()) {
         Deref @ Absyn::TypeSpec::TPATH { path, .. } => {
@@ -3858,13 +3858,13 @@ pub fn typeSpecStringNoQualNoDims(mut inTs: Arc<Absyn::TypeSpec>) -> Result<ArcS
     Ok(outStr)
 }
 
-pub fn typeSpecStringNoQualNoDimsLst(mut inTypeSpecLst: Arc<metamodelica::List<Arc<Absyn::TypeSpec>>>) -> Result<ArcStr> {
+pub(crate) fn typeSpecStringNoQualNoDimsLst(mut inTypeSpecLst: Arc<metamodelica::List<Arc<Absyn::TypeSpec>>>) -> Result<ArcStr> {
     let mut outString: ArcStr;
     outString = (List::toString(inTypeSpecLst.clone(), (std::sync::Arc::new(typeSpecStringNoQualNoDims) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::TypeSpec>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("")).clone(), (literal!(", ")).clone(), (literal!("")).clone(), false, 0)?).clone();
     Ok(outString)
 }
 
-pub fn crefStringIgnoreSubs(mut inCr: Arc<Absyn::ComponentRef>) -> Result<ArcStr> {
+pub(crate) fn crefStringIgnoreSubs(mut inCr: Arc<Absyn::ComponentRef>) -> Result<ArcStr> {
     let mut outStr: ArcStr;
     let mut p: Arc<Absyn::Path>;
     p = crefToPathIgnoreSubs(inCr.clone())?;
@@ -3872,13 +3872,13 @@ pub fn crefStringIgnoreSubs(mut inCr: Arc<Absyn::ComponentRef>) -> Result<ArcStr
     Ok(outStr)
 }
 
-pub fn importString(mut inImp: Absyn::Import) -> Result<ArcStr> {
+pub(crate) fn importString(mut inImp: Absyn::Import) -> Result<ArcStr> {
     let mut outStr: ArcStr;
     outStr = (Dump::unparseImportStr(inImp.clone())?).clone();
     Ok(outStr)
 }
 
-pub fn refString(mut inRef: Absyn::Ref) -> Result<ArcStr> {
+pub(crate) fn refString(mut inRef: Absyn::Ref) -> Result<ArcStr> {
     let mut outStr: ArcStr;
     outStr = ((match inRef.clone() {
         Absyn::Ref::RCR { .. } => crefString(var_field!(inRef.cr, Absyn::Ref::RCR).clone())?,
@@ -3888,7 +3888,7 @@ pub fn refString(mut inRef: Absyn::Ref) -> Result<ArcStr> {
     Ok(outStr)
 }
 
-pub fn refStringBrief(mut inRef: Absyn::Ref) -> Result<ArcStr> {
+pub(crate) fn refStringBrief(mut inRef: Absyn::Ref) -> Result<ArcStr> {
     let mut outStr: ArcStr;
     outStr = ((match inRef.clone() {
         Absyn::Ref::RCR { .. } => crefStringIgnoreSubs(var_field!(inRef.cr, Absyn::Ref::RCR).clone())?,
@@ -3898,7 +3898,7 @@ pub fn refStringBrief(mut inRef: Absyn::Ref) -> Result<ArcStr> {
     Ok(outStr)
 }
 
-pub fn getArrayDimOptAsList(mut inArrayDim: Option<Arc<metamodelica::List<Arc<Absyn::Subscript>>>>) -> Arc<metamodelica::List<Arc<Absyn::Subscript>>> {
+pub(crate) fn getArrayDimOptAsList(mut inArrayDim: Option<Arc<metamodelica::List<Arc<Absyn::Subscript>>>>) -> Arc<metamodelica::List<Arc<Absyn::Subscript>>> {
     let mut outArrayDim: Arc<metamodelica::List<Arc<Absyn::Subscript>>>;
     outArrayDim = (::match_deref::match_deref! { match &(inArrayDim.clone()) {
         Some(ad) => {
@@ -3987,7 +3987,7 @@ pub fn lookupClassAnnotation(mut cls: Arc<Absyn::Class>, mut name: ArcStr) -> Re
     Ok(outMod)
 }
 
-pub fn lookupClassDefAnnotation(mut cdef: Arc<Absyn::ClassDef>, mut name: ArcStr) -> Result<Option<Arc<Absyn::Modification>>> {
+pub(crate) fn lookupClassDefAnnotation(mut cdef: Arc<Absyn::ClassDef>, mut name: ArcStr) -> Result<Option<Arc<Absyn::Modification>>> {
     let mut outMod: Option<Arc<Absyn::Modification>> = None;
     let mut ann: Arc<Absyn::Annotation>;
     outMod = (::match_deref::match_deref! { match &(cdef.clone()) {
@@ -4003,7 +4003,7 @@ pub fn lookupClassDefAnnotation(mut cdef: Arc<Absyn::ClassDef>, mut name: ArcStr
     Ok(outMod)
 }
 
-pub fn lookupCommentOptAnnotation(mut cmt: Option<Arc<Absyn::Comment>>, mut name: ArcStr) -> Result<Option<Arc<Absyn::Modification>>> {
+pub(crate) fn lookupCommentOptAnnotation(mut cmt: Option<Arc<Absyn::Comment>>, mut name: ArcStr) -> Result<Option<Arc<Absyn::Modification>>> {
     let mut outMod: Option<Arc<Absyn::Modification>>;
     let mut ann: Arc<Absyn::Annotation> = Arc::new(<Absyn::Annotation as ::std::default::Default>::default());
     outMod = (::match_deref::match_deref! { match &(cmt.clone()) {
@@ -4017,7 +4017,7 @@ pub fn lookupCommentOptAnnotation(mut cmt: Option<Arc<Absyn::Comment>>, mut name
     Ok(outMod)
 }
 
-pub fn lookupAnnotation(mut ann: Arc<Absyn::Annotation>, mut name: ArcStr) -> Result<Option<Arc<Absyn::Modification>>> {
+pub(crate) fn lookupAnnotation(mut ann: Arc<Absyn::Annotation>, mut name: ArcStr) -> Result<Option<Arc<Absyn::Modification>>> {
     let mut outMod: Option<Arc<Absyn::Modification>> = None;
     for mut m in &*ann.elementArgs.clone() {
         let mut m = m.clone();
@@ -4207,7 +4207,7 @@ pub fn transformAnnotationInArgs(mut args: Arc<metamodelica::List<Arc<Absyn::Ele
     Ok(args)
 }
 
-pub fn mapCrefParts(mut inCref: Arc<Absyn::ComponentRef>, mut inMapFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>) -> Result<Arc<Absyn::ComponentRef>> + 'static>) -> Result<Arc<Absyn::ComponentRef>> {
+pub(crate) fn mapCrefParts(mut inCref: Arc<Absyn::ComponentRef>, mut inMapFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>) -> Result<Arc<Absyn::ComponentRef>> + 'static>) -> Result<Arc<Absyn::ComponentRef>> {
     pub type MapFunc = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>) -> Result<Arc<Absyn::ComponentRef>> + 'static>;
 
     let mut outCref: Arc<Absyn::ComponentRef>;
@@ -4559,7 +4559,7 @@ pub fn isEmptySubMod(mut inSubMod: Arc<Absyn::ElementArg>) -> bool {
     outIsEmpty
 }
 
-pub fn isEmptyEqMod(mut eqMod: Arc<Absyn::EqMod>) -> bool {
+pub(crate) fn isEmptyEqMod(mut eqMod: Arc<Absyn::EqMod>) -> bool {
     let mut isEmpty: bool;
     isEmpty = (::match_deref::match_deref! { match &(eqMod.clone()) {
         Deref @ Absyn::EqMod::NOMOD { .. } => true,
@@ -4832,7 +4832,7 @@ fn traverseExpShallowIterator<ArgT: Clone + 'static + metamodelica::gc::MMTrace>
     Ok(outIterator)
 }
 
-pub fn traverseExpShallowSub<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut sub: Arc<Absyn::Subscript>, mut inArg: ArgT, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<Arc<Absyn::Exp>> + 'static>) -> Result<Arc<Absyn::Subscript>> {
+pub(crate) fn traverseExpShallowSub<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut sub: Arc<Absyn::Subscript>, mut inArg: ArgT, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<Arc<Absyn::Exp>> + 'static>) -> Result<Arc<Absyn::Subscript>> {
     pub type FuncT<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<Arc<Absyn::Exp>> + 'static>;
 
     let mut sub: Arc<Absyn::Subscript> = sub;
@@ -4867,7 +4867,7 @@ pub fn isElementItemExtends(mut item: Arc<Absyn::ElementItem>) -> bool {
     isExtends
 }
 
-pub fn isElementItem(mut inElement: Arc<Absyn::ElementItem>) -> bool {
+pub(crate) fn isElementItem(mut inElement: Arc<Absyn::ElementItem>) -> bool {
     let mut outIsClass: bool;
     outIsClass = (::match_deref::match_deref! { match &(inElement.clone()) {
         Deref @ Absyn::ElementItem::ELEMENTITEM { .. } => true,
@@ -4877,7 +4877,7 @@ pub fn isElementItem(mut inElement: Arc<Absyn::ElementItem>) -> bool {
     outIsClass
 }
 
-pub fn isAlgorithmItem(mut inAlg: Arc<Absyn::AlgorithmItem>) -> bool {
+pub(crate) fn isAlgorithmItem(mut inAlg: Arc<Absyn::AlgorithmItem>) -> bool {
     let mut outIsClass: bool;
     outIsClass = (::match_deref::match_deref! { match &(inAlg.clone()) {
         Deref @ Absyn::AlgorithmItem::ALGORITHMITEM { .. } => true,
@@ -4921,7 +4921,7 @@ pub fn isElementNamed(mut name: ArcStr, mut element: Arc<Absyn::Element>) -> Res
     Ok(res)
 }
 
-pub fn isElementSpecNamed(mut name: ArcStr, mut elementSpec: Arc<Absyn::ElementSpec>) -> Result<bool> {
+pub(crate) fn isElementSpecNamed(mut name: ArcStr, mut elementSpec: Arc<Absyn::ElementSpec>) -> Result<bool> {
     let mut res: bool;
     res = (::match_deref::match_deref! { match &(elementSpec.clone()) {
         Deref @ Absyn::ElementSpec::CLASSDEF { .. } => isClassNamed((name.clone()).clone(), var_field!((*elementSpec).class_, Absyn::ElementSpec::CLASSDEF).clone()),
@@ -5502,7 +5502,7 @@ pub fn getTypeSpecFromElementItemOpt(mut inElementItem: Arc<Absyn::ElementItem>)
     outTypeSpec
 }
 
-pub fn getElementSpecificationFromElementItemOpt(mut inElementItem: Arc<Absyn::ElementItem>) -> Option<Arc<Absyn::ElementSpec>> {
+pub(crate) fn getElementSpecificationFromElementItemOpt(mut inElementItem: Arc<Absyn::ElementItem>) -> Option<Arc<Absyn::ElementSpec>> {
     let mut outSpec: Option<Arc<Absyn::ElementSpec>>;
     outSpec = (::match_deref::match_deref! { match &(inElementItem.clone()) {
         Deref @ Absyn::ElementItem::ELEMENTITEM { element: Deref @ Absyn::Element::ELEMENT { specification: spec, .. } } => {
@@ -5529,7 +5529,7 @@ pub fn getComponentItemsFromElement(mut element: Arc<Absyn::Element>) -> Arc<met
     items
 }
 
-pub fn getComponentItemsFromElementSpec(mut elemSpec: Arc<Absyn::ElementSpec>) -> Arc<metamodelica::List<Arc<Absyn::ComponentItem>>> {
+pub(crate) fn getComponentItemsFromElementSpec(mut elemSpec: Arc<Absyn::ElementSpec>) -> Arc<metamodelica::List<Arc<Absyn::ComponentItem>>> {
     let mut componentItems: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>;
     componentItems = (::match_deref::match_deref! { match &(elemSpec.clone()) {
         Deref @ Absyn::ElementSpec::COMPONENTS { .. } => var_field!((*elemSpec).components, Absyn::ElementSpec::COMPONENTS).clone(),
@@ -5576,7 +5576,7 @@ pub fn isNamedPathIdent(mut path: Arc<Absyn::Path>, mut name: ArcStr) -> bool {
     res
 }
 
-pub fn isUniontype(mut cls: Arc<Absyn::Class>) -> bool {
+pub(crate) fn isUniontype(mut cls: Arc<Absyn::Class>) -> bool {
     let mut b: bool;
     b = (match cls.restriction.clone() {
         Absyn::Restriction::R_UNIONTYPE => true,
@@ -5598,7 +5598,7 @@ pub fn traverseClassElements<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(
     Ok((cls, arg))
 }
 
-pub fn traverseClassDefElements<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut classDef: Arc<Absyn::ClassDef>, mut func: Arc<dyn ::std::ops::Fn(Arc<Absyn::Element>, ArgT) -> Result<(Arc<Absyn::Element>, ArgT, bool)> + 'static>, mut arg: ArgT) -> Result<(Arc<Absyn::ClassDef>, ArgT)> {
+pub(crate) fn traverseClassDefElements<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut classDef: Arc<Absyn::ClassDef>, mut func: Arc<dyn ::std::ops::Fn(Arc<Absyn::Element>, ArgT) -> Result<(Arc<Absyn::Element>, ArgT, bool)> + 'static>, mut arg: ArgT) -> Result<(Arc<Absyn::ClassDef>, ArgT)> {
     pub type FuncType<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Element>, ArgT) -> Result<(Arc<Absyn::Element>, ArgT, bool)> + 'static>;
 
     let mut classDef: Arc<Absyn::ClassDef> = classDef;
@@ -5665,7 +5665,7 @@ pub fn elementSpec(mut el: Arc<Absyn::Element>) -> Result<Arc<Absyn::ElementSpec
     Ok(elSpec)
 }
 
-pub fn isClassOrComponentElementSpec(mut inElementSpec: Arc<Absyn::ElementSpec>) -> bool {
+pub(crate) fn isClassOrComponentElementSpec(mut inElementSpec: Arc<Absyn::ElementSpec>) -> bool {
     let mut yes: bool = false;
     yes = (::match_deref::match_deref! { match &(inElementSpec.clone()) {
         Deref @ Absyn::ElementSpec::CLASSDEF { class_: Deref @ Absyn::Class { .. }, .. } => true,
@@ -5709,7 +5709,7 @@ pub fn makeCall(mut name: Arc<Absyn::ComponentRef>, mut posArgs: Arc<metamodelic
     callExp
 }
 
-pub fn setClassCommentsAfterEnd(mut cl: Arc<Absyn::Class>, mut comments: Arc<metamodelica::List<ArcStr>>) -> Arc<Absyn::Class> {
+pub(crate) fn setClassCommentsAfterEnd(mut cl: Arc<Absyn::Class>, mut comments: Arc<metamodelica::List<ArcStr>>) -> Arc<Absyn::Class> {
     let mut cl: Arc<Absyn::Class> = cl;
     assign_field!(cl.commentsAfterEnd = comments.clone());
     cl
@@ -5743,7 +5743,7 @@ pub fn getClassAnnotation(mut cls: Arc<Absyn::Class>) -> Result<Option<Arc<Absyn
     Ok(outAnnotation)
 }
 
-pub fn getClassDefAnnotation(mut def: Arc<Absyn::ClassDef>) -> Result<Option<Arc<Absyn::Annotation>>> {
+pub(crate) fn getClassDefAnnotation(mut def: Arc<Absyn::ClassDef>) -> Result<Option<Arc<Absyn::Annotation>>> {
     let mut outAnnotation: Option<Arc<Absyn::Annotation>>;
     outAnnotation = (::match_deref::match_deref! { match &(def.clone()) {
         Deref @ Absyn::ClassDef::PARTS { .. } if (!(var_field!((*def).ann, Absyn::ClassDef::PARTS).clone().is_empty())) => Some(listHead(var_field!((*def).ann, Absyn::ClassDef::PARTS).clone())?),
@@ -5764,7 +5764,7 @@ pub fn setClassAnnotation(mut cls: Arc<Absyn::Class>, mut ann: Option<Arc<Absyn:
     Ok(cls)
 }
 
-pub fn setClassDefAnnotation(mut cdef: Arc<Absyn::ClassDef>, mut ann: Option<Arc<Absyn::Annotation>>) -> Result<Arc<Absyn::ClassDef>> {
+pub(crate) fn setClassDefAnnotation(mut cdef: Arc<Absyn::ClassDef>, mut ann: Option<Arc<Absyn::Annotation>>) -> Result<Arc<Absyn::ClassDef>> {
     let mut cdef: Arc<Absyn::ClassDef> = cdef;
     let () = (::match_deref::match_deref! { match &(cdef.clone()) {
         Deref @ Absyn::ClassDef::PARTS { .. } => {
@@ -5825,7 +5825,7 @@ pub fn setCommentString(mut comment: Option<Arc<Absyn::Comment>>, mut commentStr
     Ok(comment)
 }
 
-pub fn setCommentAnnotation(mut comment: Option<Arc<Absyn::Comment>>, mut ann: Option<Arc<Absyn::Annotation>>) -> Result<Option<Arc<Absyn::Comment>>> {
+pub(crate) fn setCommentAnnotation(mut comment: Option<Arc<Absyn::Comment>>, mut ann: Option<Arc<Absyn::Annotation>>) -> Result<Option<Arc<Absyn::Comment>>> {
     let mut comment: Option<Arc<Absyn::Comment>> = comment;
     let mut old_ann: Option<Arc<Absyn::Annotation>>;
     let mut r#str: Option<ArcStr>;
@@ -5854,7 +5854,7 @@ pub fn mapAnnotationBinding(mut ann: Arc<Absyn::Annotation>, mut path: Arc<Absyn
     Ok((ann, found))
 }
 
-pub fn mapAnnotationBindingInArg(mut arg: Arc<Absyn::ElementArg>, mut path: Arc<Absyn::Path>, mut func: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<Arc<Absyn::Exp>> + 'static>) -> Result<(Arc<Absyn::ElementArg>, bool)> {
+pub(crate) fn mapAnnotationBindingInArg(mut arg: Arc<Absyn::ElementArg>, mut path: Arc<Absyn::Path>, mut func: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<Arc<Absyn::Exp>> + 'static>) -> Result<(Arc<Absyn::ElementArg>, bool)> {
     pub type MapFunc = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<Arc<Absyn::Exp>> + 'static>;
 
     let mut arg: Arc<Absyn::ElementArg> = arg;
@@ -5890,7 +5890,7 @@ pub fn mapAnnotationBindingInArg(mut arg: Arc<Absyn::ElementArg>, mut path: Arc<
     Ok((arg, found))
 }
 
-pub fn mapAnnotationBindingInEqMod(mut eqMod: Arc<Absyn::EqMod>, mut func: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<Arc<Absyn::Exp>> + 'static>) -> Result<Arc<Absyn::EqMod>> {
+pub(crate) fn mapAnnotationBindingInEqMod(mut eqMod: Arc<Absyn::EqMod>, mut func: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<Arc<Absyn::Exp>> + 'static>) -> Result<Arc<Absyn::EqMod>> {
     pub type MapFunc = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<Arc<Absyn::Exp>> + 'static>;
 
     let mut eqMod: Arc<Absyn::EqMod> = eqMod;
@@ -5979,7 +5979,7 @@ pub fn createChoiceArray(mut inChoices: Arc<Absyn::ElementArg>) -> Result<Arc<Ab
     Ok(outChoices)
 }
 
-pub fn mapCrefExps(mut cref: Arc<Absyn::ComponentRef>, mut func: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<Arc<Absyn::Exp>> + 'static>) -> Result<Arc<Absyn::ComponentRef>> {
+pub(crate) fn mapCrefExps(mut cref: Arc<Absyn::ComponentRef>, mut func: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<Arc<Absyn::Exp>> + 'static>) -> Result<Arc<Absyn::ComponentRef>> {
     pub type Func = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<Arc<Absyn::Exp>> + 'static>;
 
     let mut cref: Arc<Absyn::ComponentRef> = cref;
@@ -6016,7 +6016,7 @@ pub fn mapCrefExps(mut cref: Arc<Absyn::ComponentRef>, mut func: Arc<dyn ::std::
     Ok(cref)
 }
 
-pub fn mapSubscriptExp(mut sub: Arc<Absyn::Subscript>, mut func: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<Arc<Absyn::Exp>> + 'static>) -> Result<Arc<Absyn::Subscript>> {
+pub(crate) fn mapSubscriptExp(mut sub: Arc<Absyn::Subscript>, mut func: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<Arc<Absyn::Exp>> + 'static>) -> Result<Arc<Absyn::Subscript>> {
     pub type Func = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<Arc<Absyn::Exp>> + 'static>;
 
     let mut sub: Arc<Absyn::Subscript> = sub;
@@ -6116,7 +6116,7 @@ pub fn isExpandableConnector(mut cls: Arc<Absyn::Class>) -> bool {
     res
 }
 
-pub fn eachBool(mut eachPrefix: Absyn::Each) -> bool {
+pub(crate) fn eachBool(mut eachPrefix: Absyn::Each) -> bool {
     let mut res: bool;
     res = (match eachPrefix.clone() {
         Absyn::Each::EACH { .. } => true,
@@ -6135,7 +6135,7 @@ pub fn getElementAnnotation(mut element: Arc<Absyn::Element>, mut name: ArcStr) 
     Ok(outAnnotation)
 }
 
-pub fn getElementSpecAnnotation(mut spec: Arc<Absyn::ElementSpec>, mut name: ArcStr) -> Result<Option<Arc<Absyn::Annotation>>> {
+pub(crate) fn getElementSpecAnnotation(mut spec: Arc<Absyn::ElementSpec>, mut name: ArcStr) -> Result<Option<Arc<Absyn::Annotation>>> {
     let mut outAnnotation: Option<Arc<Absyn::Annotation>>;
     outAnnotation = (::match_deref::match_deref! { match &(spec.clone()) {
         Deref @ Absyn::ElementSpec::CLASSDEF { .. } => getClassAnnotation(var_field!((*spec).class_, Absyn::ElementSpec::CLASSDEF).clone())?,
@@ -6148,7 +6148,7 @@ pub fn getElementSpecAnnotation(mut spec: Arc<Absyn::ElementSpec>, mut name: Arc
     Ok(outAnnotation)
 }
 
-pub fn getComponentItemsAnnotation(mut items: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, mut name: ArcStr) -> Result<Option<Arc<Absyn::Annotation>>> {
+pub(crate) fn getComponentItemsAnnotation(mut items: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, mut name: ArcStr) -> Result<Option<Arc<Absyn::Annotation>>> {
     let mut outAnnotation: Option<Arc<Absyn::Annotation>>;
     let mut oi: Option<Arc<Absyn::ComponentItem>>;
     let mut i: Arc<Absyn::ComponentItem>;
@@ -6207,7 +6207,7 @@ pub fn setElementAnnotation(mut element: Arc<Absyn::Element>, mut name: ArcStr, 
     Ok(element)
 }
 
-pub fn setElementSpecAnnotation(mut spec: Arc<Absyn::ElementSpec>, mut name: ArcStr, mut inAnnotation: Option<Arc<Absyn::Annotation>>) -> Result<Arc<Absyn::ElementSpec>> {
+pub(crate) fn setElementSpecAnnotation(mut spec: Arc<Absyn::ElementSpec>, mut name: ArcStr, mut inAnnotation: Option<Arc<Absyn::Annotation>>) -> Result<Arc<Absyn::ElementSpec>> {
     let mut spec: Arc<Absyn::ElementSpec> = spec;
     let () = (::match_deref::match_deref! { match &(spec.clone()) {
         Deref @ Absyn::ElementSpec::CLASSDEF { .. } => {
@@ -6248,7 +6248,7 @@ pub fn isImpure(mut purity: Absyn::FunctionPurity, mut defaultImpure: bool) -> b
     isImpure
 }
 
-pub fn purityEqual(mut purity1: Absyn::FunctionPurity, mut purity2: Absyn::FunctionPurity, mut defaultImpure: bool) -> bool {
+pub(crate) fn purityEqual(mut purity1: Absyn::FunctionPurity, mut purity2: Absyn::FunctionPurity, mut defaultImpure: bool) -> bool {
     let mut isEqual: bool;
     if metamodelica::valueConstructor((&purity1.clone())).unwrap() == metamodelica::valueConstructor((&purity2.clone())).unwrap() {
         isEqual = true;
@@ -6341,7 +6341,7 @@ pub fn setElementType(mut element: Arc<Absyn::Element>, mut typeSpec: Arc<Absyn:
     Ok(element)
 }
 
-pub fn setElementSpecType(mut spec: Arc<Absyn::ElementSpec>, mut typeSpec: Arc<Absyn::TypeSpec>, mut allowMultipleComponents: bool) -> Result<Arc<Absyn::ElementSpec>> {
+pub(crate) fn setElementSpecType(mut spec: Arc<Absyn::ElementSpec>, mut typeSpec: Arc<Absyn::TypeSpec>, mut allowMultipleComponents: bool) -> Result<Arc<Absyn::ElementSpec>> {
     let mut spec: Arc<Absyn::ElementSpec> = spec;
     let () = (::match_deref::match_deref! { match &(spec.clone()) {
         Deref @ Absyn::ElementSpec::CLASSDEF { .. } => {
@@ -6357,13 +6357,13 @@ pub fn setElementSpecType(mut spec: Arc<Absyn::ElementSpec>, mut typeSpec: Arc<A
     Ok(spec)
 }
 
-pub fn setClassType(mut cls: Arc<Absyn::Class>, mut typeSpec: Arc<Absyn::TypeSpec>) -> Result<Arc<Absyn::Class>> {
+pub(crate) fn setClassType(mut cls: Arc<Absyn::Class>, mut typeSpec: Arc<Absyn::TypeSpec>) -> Result<Arc<Absyn::Class>> {
     let mut cls: Arc<Absyn::Class> = cls;
     assign_field!(cls.body = setClassDefType(cls.body.clone(), typeSpec.clone())?);
     Ok(cls)
 }
 
-pub fn setClassDefType(mut cdef: Arc<Absyn::ClassDef>, mut typeSpec: Arc<Absyn::TypeSpec>) -> Result<Arc<Absyn::ClassDef>> {
+pub(crate) fn setClassDefType(mut cdef: Arc<Absyn::ClassDef>, mut typeSpec: Arc<Absyn::TypeSpec>) -> Result<Arc<Absyn::ClassDef>> {
     let mut cdef: Arc<Absyn::ClassDef> = cdef;
     let () = (::match_deref::match_deref! { match &(cdef.clone()) {
         Deref @ Absyn::ClassDef::DERIVED { .. } => {
@@ -6480,12 +6480,12 @@ pub fn appendEquation(mut eq: Arc<Absyn::EquationItem>, mut isInitial: bool, mut
     Ok(cls)
 }
 
-pub fn forIteratorEqual(mut iter1: Arc<Absyn::ForIterator>, mut iter2: Arc<Absyn::ForIterator>) -> Result<bool> {
+pub(crate) fn forIteratorEqual(mut iter1: Arc<Absyn::ForIterator>, mut iter2: Arc<Absyn::ForIterator>) -> Result<bool> {
     let mut equal: bool = iter1.name.clone() == iter2.name.clone() && Util::optionEqual(iter1.guardExp.clone(), iter2.guardExp.clone(), (std::sync::Arc::new(expEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arc<Absyn::Exp>) -> Result<bool> + 'static>))? && Util::optionEqual(iter1.range.clone(), iter2.range.clone(), (std::sync::Arc::new(expEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arc<Absyn::Exp>) -> Result<bool> + 'static>))?;
     Ok(equal)
 }
 
-pub fn functionArgsEqual(mut args1: Arc<Absyn::FunctionArgs>, mut args2: Arc<Absyn::FunctionArgs>) -> Result<bool> {
+pub(crate) fn functionArgsEqual(mut args1: Arc<Absyn::FunctionArgs>, mut args2: Arc<Absyn::FunctionArgs>) -> Result<bool> {
     fn named_arg_equal(mut arg1: Arc<Absyn::NamedArg>, mut arg2: Arc<Absyn::NamedArg>) -> Result<bool> {
         let mut equal: bool = arg1.argName.clone() == arg2.argName.clone() && expEqual(arg1.argValue.clone(), arg2.argValue.clone())?;
         Ok(equal)
@@ -6501,17 +6501,17 @@ pub fn functionArgsEqual(mut args1: Arc<Absyn::FunctionArgs>, mut args2: Arc<Abs
     Ok(equal)
 }
 
-pub fn commentEqual(mut cmt1: Arc<Absyn::Comment>, mut cmt2: Arc<Absyn::Comment>) -> Result<bool> {
+pub(crate) fn commentEqual(mut cmt1: Arc<Absyn::Comment>, mut cmt2: Arc<Absyn::Comment>) -> Result<bool> {
     let mut equal: bool = Util::optionEqual(cmt1.comment.clone(), cmt2.comment.clone(), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>))? && Util::optionEqual(cmt1.annotation_.clone(), cmt2.annotation_.clone(), (std::sync::Arc::new(annotationEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Annotation>, Arc<Absyn::Annotation>) -> Result<bool> + 'static>))?;
     Ok(equal)
 }
 
-pub fn annotationEqual(mut ann1: Arc<Absyn::Annotation>, mut ann2: Arc<Absyn::Annotation>) -> Result<bool> {
+pub(crate) fn annotationEqual(mut ann1: Arc<Absyn::Annotation>, mut ann2: Arc<Absyn::Annotation>) -> Result<bool> {
     let mut equal: bool = List::isEqualOnTrue(ann1.elementArgs.clone(), ann2.elementArgs.clone(), (std::sync::Arc::new(elementArgEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::ElementArg>, Arc<Absyn::ElementArg>) -> Result<bool> + 'static>))?;
     Ok(equal)
 }
 
-pub fn elementArgEqual(mut arg1: Arc<Absyn::ElementArg>, mut arg2: Arc<Absyn::ElementArg>) -> Result<bool> {
+pub(crate) fn elementArgEqual(mut arg1: Arc<Absyn::ElementArg>, mut arg2: Arc<Absyn::ElementArg>) -> Result<bool> {
     let mut equal: bool;
     equal = (::match_deref::match_deref! { match &((arg1.clone(), arg2.clone())) {
         (Deref @ Absyn::ElementArg::MODIFICATION { .. }, Deref @ Absyn::ElementArg::MODIFICATION { .. }) => var_field!((*arg1).finalPrefix, Absyn::ElementArg::MODIFICATION).clone() == var_field!((*arg2).finalPrefix, Absyn::ElementArg::MODIFICATION).clone() && var_field!((*arg1).eachPrefix, Absyn::ElementArg::MODIFICATION).clone() == var_field!((*arg2).eachPrefix, Absyn::ElementArg::MODIFICATION).clone() && pathEqual(var_field!((*arg1).path, Absyn::ElementArg::MODIFICATION).clone(), var_field!((*arg2).path, Absyn::ElementArg::MODIFICATION).clone()) && Util::optionEqual(var_field!((*arg1).modification, Absyn::ElementArg::MODIFICATION).clone(), var_field!((*arg2).modification, Absyn::ElementArg::MODIFICATION).clone(), (std::sync::Arc::new(modEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Modification>, Arc<Absyn::Modification>) -> Result<bool> + 'static>))? && Util::optionEqual(var_field!((*arg1).comment, Absyn::ElementArg::MODIFICATION).clone(), var_field!((*arg2).comment, Absyn::ElementArg::MODIFICATION).clone(), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>))?,
@@ -6526,12 +6526,12 @@ pub fn elementArgEqual(mut arg1: Arc<Absyn::ElementArg>, mut arg2: Arc<Absyn::El
     Ok(equal)
 }
 
-pub fn modEqual(mut mod1: Arc<Absyn::Modification>, mut mod2: Arc<Absyn::Modification>) -> Result<bool> {
+pub(crate) fn modEqual(mut mod1: Arc<Absyn::Modification>, mut mod2: Arc<Absyn::Modification>) -> Result<bool> {
     let mut equal: bool = eqModEqual(mod1.eqMod.clone(), mod2.eqMod.clone())? && List::isEqualOnTrue(mod1.elementArgLst.clone(), mod2.elementArgLst.clone(), (std::sync::Arc::new(elementArgEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::ElementArg>, Arc<Absyn::ElementArg>) -> Result<bool> + 'static>))?;
     Ok(equal)
 }
 
-pub fn eqModEqual(mut eqMod1: Arc<Absyn::EqMod>, mut eqMod2: Arc<Absyn::EqMod>) -> Result<bool> {
+pub(crate) fn eqModEqual(mut eqMod1: Arc<Absyn::EqMod>, mut eqMod2: Arc<Absyn::EqMod>) -> Result<bool> {
     let mut equal: bool;
     equal = (::match_deref::match_deref! { match &((eqMod1.clone(), eqMod2.clone())) {
         (Deref @ Absyn::EqMod::NOMOD { .. }, Deref @ Absyn::EqMod::NOMOD { .. }) => true,
@@ -6553,12 +6553,12 @@ pub fn equationItemEqual(mut eq1: Arc<Absyn::EquationItem>, mut eq2: Arc<Absyn::
     Ok(equal)
 }
 
-pub fn equationItemsEqual(mut eql1: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, mut eql2: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, mut shallow: bool, mut ignoreComment: bool) -> Result<bool> {
+pub(crate) fn equationItemsEqual(mut eql1: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, mut eql2: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, mut shallow: bool, mut ignoreComment: bool) -> Result<bool> {
     let mut equal: bool = List::isEqualOnTrue(eql1.clone(), eql2.clone(), (std::sync::Arc::new({ let __pe_b2 = shallow.clone(); let __pe_b3 = ignoreComment.clone(); move |__pe_a0, __pe_a1| equationItemEqual(__pe_a0, __pe_a1, __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::EquationItem>, Arc<Absyn::EquationItem>) -> Result<bool> + 'static>))?;
     Ok(equal)
 }
 
-pub fn equationEqual(mut eq1: Arc<Absyn::Equation>, mut eq2: Arc<Absyn::Equation>, mut shallow: bool, mut ignoreComment: bool) -> Result<bool> {
+pub(crate) fn equationEqual(mut eq1: Arc<Absyn::Equation>, mut eq2: Arc<Absyn::Equation>, mut shallow: bool, mut ignoreComment: bool) -> Result<bool> {
     fn branch_eq(mut branch1: (Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<Absyn::EquationItem>>>), mut branch2: (Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<Absyn::EquationItem>>>), mut shallow: bool, mut ignoreComment: bool) -> Result<bool> {
         let mut equal: bool = expEqual(Util::tuple21(branch1.clone()), Util::tuple21(branch2.clone()))? && (shallow.clone() || equationItemsEqual(Util::tuple22(branch1.clone()), Util::tuple22(branch2.clone()), false, ignoreComment.clone())?);
         Ok(equal)

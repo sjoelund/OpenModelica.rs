@@ -90,7 +90,7 @@ pub type Graph = FCore::Graph;
 
 pub type Msg = Option<SourceInfo>;
 
-pub fn ext(mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
+pub(crate) fn ext(mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
     let mut og: Graph;
     og = (match ig.clone() {
         mut g => {
@@ -101,7 +101,7 @@ pub fn ext(mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
     Ok(og)
 }
 
-pub fn ext_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Graph {
+pub(crate) fn ext_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Graph {
     let mut og: Graph;
     og = 'mc: {
         let __mc_input = (inRef.clone(), ig.clone());
@@ -152,7 +152,7 @@ pub fn ext_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Graph {
     og
 }
 
-pub fn derived(mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
+pub(crate) fn derived(mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
     let mut og: Graph;
     og = (match ig.clone() {
         mut g => {
@@ -163,7 +163,7 @@ pub fn derived(mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
     Ok(og)
 }
 
-pub fn derived_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Graph {
+pub(crate) fn derived_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Graph {
     let mut og: Graph;
     og = 'mc: {
         let __mc_input = (inRef.clone(), ig.clone());
@@ -213,7 +213,7 @@ pub fn derived_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Graph {
     og
 }
 
-pub fn ty(mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
+pub(crate) fn ty(mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
     let mut og: Graph;
     og = (match ig.clone() {
         mut g => {
@@ -224,7 +224,7 @@ pub fn ty(mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
     Ok(og)
 }
 
-pub fn ty_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Graph {
+pub(crate) fn ty_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Graph {
     let mut og: Graph;
     og = 'mc: {
         let __mc_input = (inRef.clone(), ig.clone());
@@ -272,7 +272,7 @@ pub fn ty_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Graph {
     og
 }
 
-pub fn cc(mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
+pub(crate) fn cc(mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
     let mut og: Graph;
     og = (match ig.clone() {
         mut g => {
@@ -283,7 +283,7 @@ pub fn cc(mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
     Ok(og)
 }
 
-pub fn cc_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Graph {
+pub(crate) fn cc_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Graph {
     let mut og: Graph;
     og = 'mc: {
         let __mc_input = (inRef.clone(), ig.clone());
@@ -333,7 +333,7 @@ pub fn cc_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Graph {
     og
 }
 
-pub fn clsext(mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
+pub(crate) fn clsext(mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
     let mut og: Graph;
     og = (match ig.clone() {
         mut g => {
@@ -344,7 +344,7 @@ pub fn clsext(mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
     Ok(og)
 }
 
-pub fn clsext_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Graph {
+pub(crate) fn clsext_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Graph {
     let mut og: Graph;
     og = 'mc: {
         let __mc_input = (inRef.clone(), ig.clone());
@@ -407,7 +407,7 @@ pub fn clsext_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Graph {
     og
 }
 
-pub fn cr(mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
+pub(crate) fn cr(mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
     let mut og: Graph;
     og = (match ig.clone() {
         mut g => {
@@ -418,7 +418,7 @@ pub fn cr(mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
     Ok(og)
 }
 
-pub fn cr_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Graph {
+pub(crate) fn cr_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Graph {
     let mut og: Graph;
     og = 'mc: {
         let __mc_input = (inRef.clone(), ig.clone());
@@ -462,7 +462,7 @@ pub fn cr_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Graph {
     og
 }
 
-pub fn r#mod(mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
+pub(crate) fn r#mod(mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
     let mut og: Graph;
     og = (match ig.clone() {
         mut g => {
@@ -473,7 +473,7 @@ pub fn r#mod(mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
     Ok(og)
 }
 
-pub fn mod_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Graph {
+pub(crate) fn mod_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Graph {
     let mut og: Graph;
     og = 'mc: {
         let __mc_input = (inRef.clone(), ig.clone());
@@ -515,7 +515,7 @@ pub fn mod_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Graph {
     og
 }
 
-pub fn elred(mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
+pub(crate) fn elred(mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
     let mut og: Graph;
     og = (match ig.clone() {
         mut g => {
@@ -526,7 +526,7 @@ pub fn elred(mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
     Ok(og)
 }
 
-pub fn elred_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Graph {
+pub(crate) fn elred_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Graph {
     let mut og: Graph;
     og = 'mc: {
         let __mc_input = (inRef.clone(), ig.clone());

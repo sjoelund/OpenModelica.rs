@@ -183,7 +183,7 @@ pub fn getKnownUnitsInverse() -> Result<(metamodelica::Array<Arc<metamodelica::L
     Ok(outKnownUnitsInverse)
 }
 
-pub fn isUnit(mut inUnit: Unit) -> bool {
+pub(crate) fn isUnit(mut inUnit: Unit) -> bool {
     let mut b: bool;
     b = (match inUnit.clone() {
         Unit::UNIT { .. } => true,
@@ -192,7 +192,7 @@ pub fn isUnit(mut inUnit: Unit) -> bool {
     b
 }
 
-pub fn hashUnit(mut inKey: Unit) -> Result<i32> {
+pub(crate) fn hashUnit(mut inKey: Unit) -> Result<i32> {
     let mut outHash: i32;
     let mut r#str: ArcStr;
     r#str = (unit2string(inKey.clone())?).clone();
@@ -200,7 +200,7 @@ pub fn hashUnit(mut inKey: Unit) -> Result<i32> {
     Ok(outHash)
 }
 
-pub fn unitEqual(mut inKey: Unit, mut inKey2: Unit) -> bool {
+pub(crate) fn unitEqual(mut inKey: Unit, mut inKey2: Unit) -> bool {
     let mut res: bool;
     res = 'mc: {
         let __mc_input = (inKey.clone(), inKey2.clone());
@@ -248,7 +248,7 @@ pub fn unitEqual(mut inKey: Unit, mut inKey2: Unit) -> bool {
     res
 }
 
-pub fn unit2string(mut inUnit: Unit) -> Result<ArcStr> {
+pub(crate) fn unit2string(mut inUnit: Unit) -> Result<ArcStr> {
     let mut outString: ArcStr;
     outString = ((match inUnit.clone() {
         Unit::UNIT { factor: mut factor1, mol: mut i1, cd: mut i2, m: mut i3, s: mut i4, A: mut i5, K: mut i6, g: mut i7 } => {
@@ -317,7 +317,7 @@ pub fn unit2string(mut inUnit: Unit) -> Result<ArcStr> {
     Ok(outString)
 }
 
-pub fn printListCr(mut inlCr: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<ArcStr> {
+pub(crate) fn printListCr(mut inlCr: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<ArcStr> {
     let mut outS: ArcStr;
     outS = ((::match_deref::match_deref! { match &(inlCr.clone()) {
         Deref @ metamodelica::List::Nil => {
@@ -339,7 +339,7 @@ pub fn printListCr(mut inlCr: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -
     Ok(outS)
 }
 
-pub fn unitMul(mut inUnit1: Unit, mut inUnit2: Unit) -> Result<Unit> {
+pub(crate) fn unitMul(mut inUnit1: Unit, mut inUnit2: Unit) -> Result<Unit> {
     let mut outUnit: Unit;
     let mut factor1: metamodelica::Real;
     let mut factor2: metamodelica::Real;
@@ -387,7 +387,7 @@ pub fn unitMul(mut inUnit1: Unit, mut inUnit2: Unit) -> Result<Unit> {
     Ok(outUnit)
 }
 
-pub fn unitDiv(mut inUnit1: Unit, mut inUnit2: Unit) -> Result<Unit> {
+pub(crate) fn unitDiv(mut inUnit1: Unit, mut inUnit2: Unit) -> Result<Unit> {
     let mut outUnit: Unit;
     let mut factor1: metamodelica::Real;
     let mut factor2: metamodelica::Real;
@@ -435,7 +435,7 @@ pub fn unitDiv(mut inUnit1: Unit, mut inUnit2: Unit) -> Result<Unit> {
     Ok(outUnit)
 }
 
-pub fn unitPow(mut inUnit: Unit, mut inExp: i32) -> Result<Unit> {
+pub(crate) fn unitPow(mut inUnit: Unit, mut inExp: i32) -> Result<Unit> {
     let mut outUnit: Unit;
     let mut factor: metamodelica::Real;
     let mut i1: i32;
@@ -466,7 +466,7 @@ pub fn unitPow(mut inUnit: Unit, mut inExp: i32) -> Result<Unit> {
     Ok(outUnit)
 }
 
-pub fn unitMulReal(mut inUnit: Unit, mut inFactor: metamodelica::Real) -> Result<Unit> {
+pub(crate) fn unitMulReal(mut inUnit: Unit, mut inFactor: metamodelica::Real) -> Result<Unit> {
     let mut outUnit: Unit;
     outUnit = (match inUnit.clone() {
         mut unit @ Unit::UNIT { .. } => {
@@ -483,7 +483,7 @@ pub fn unitMulReal(mut inUnit: Unit, mut inFactor: metamodelica::Real) -> Result
     Ok(outUnit)
 }
 
-pub fn unitRoot(mut inUnit: Unit, mut inExponent: metamodelica::Real) -> Result<Unit> {
+pub(crate) fn unitRoot(mut inUnit: Unit, mut inExponent: metamodelica::Real) -> Result<Unit> {
     let mut outUnit: Unit;
     let mut r: metamodelica::Real;
     let mut factor: metamodelica::Real;
@@ -532,7 +532,7 @@ pub fn unitRoot(mut inUnit: Unit, mut inExponent: metamodelica::Real) -> Result<
     Ok(outUnit)
 }
 
-pub fn unitString(mut inUnit: Unit, mut inHtU2S: (metamodelica::Array<Arc<metamodelica::List<(Unit, i32)>>>, (i32, i32, metamodelica::Array<Option<(Unit, ArcStr)>>), i32, (Arc<dyn ::std::ops::Fn(Unit) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Unit, Unit) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Unit) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>))) -> Result<ArcStr> {
+pub(crate) fn unitString(mut inUnit: Unit, mut inHtU2S: (metamodelica::Array<Arc<metamodelica::List<(Unit, i32)>>>, (i32, i32, metamodelica::Array<Option<(Unit, ArcStr)>>), i32, (Arc<dyn ::std::ops::Fn(Unit) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Unit, Unit) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Unit) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>))) -> Result<ArcStr> {
     let mut outString: ArcStr;
     outString = ((match inUnit.clone() {
         _ if (BaseHashTable::hasKey(inUnit.clone(), inHtU2S.clone())?) => {
@@ -626,7 +626,7 @@ fn prefix2String(mut inReal: metamodelica::Real) -> ArcStr {
     outPrefix
 }
 
-pub fn parseUnitString(mut inUnitString: ArcStr, mut inKnownUnits: (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Unit)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit) -> Result<ArcStr> + 'static>))) -> Result<Unit> {
+pub(crate) fn parseUnitString(mut inUnitString: ArcStr, mut inKnownUnits: (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Unit)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit) -> Result<ArcStr> + 'static>))) -> Result<Unit> {
     let mut outUnit: Unit;
     let mut charList: Arc<metamodelica::List<ArcStr>>;
     let mut tokenList: Arc<metamodelica::List<Token>>;

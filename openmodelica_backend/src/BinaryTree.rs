@@ -144,7 +144,7 @@ fn keyCompareNinjaSecretHashTricks(mut lstr: ArcStr, mut lhash: i32, mut rstr: A
     cmp
 }
 
-pub fn treeGet(mut bt: Arc<BinTree>, mut key: Key) -> Result<Value> {
+pub(crate) fn treeGet(mut bt: Arc<BinTree>, mut key: Key) -> Result<Value> {
     let mut v: Value;
     let mut keystr: ArcStr;
     let mut keyhash: i32;
@@ -186,7 +186,7 @@ fn treeGet3(mut inBinTree: Arc<BinTree>, mut keystr: ArcStr, mut keyhash: i32, m
     }
 }
 
-pub fn treeAddList(mut inBinTree: Arc<BinTree>, mut inKeyLst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<Arc<BinTree>> {
+pub(crate) fn treeAddList(mut inBinTree: Arc<BinTree>, mut inKeyLst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<Arc<BinTree>> {
     '__tco: loop {
         ::match_deref::match_deref! { match &((inBinTree.clone(), inKeyLst.clone())) {
         (bt, Deref @ metamodelica::List::Nil) => {
@@ -203,7 +203,7 @@ pub fn treeAddList(mut inBinTree: Arc<BinTree>, mut inKeyLst: Arc<metamodelica::
     }
 }
 
-pub fn treeAdd(mut inBinTree: Arc<BinTree>, mut inKey: Key, mut inValue: Value) -> Result<Arc<BinTree>> {
+pub(crate) fn treeAdd(mut inBinTree: Arc<BinTree>, mut inKey: Key, mut inValue: Value) -> Result<Arc<BinTree>> {
     let mut outBinTree: Arc<BinTree>;
     let mut r#str: ArcStr;
     r#str = (ComponentReferenceBasics::printComponentRefStr(inKey.clone())?).clone();
@@ -448,7 +448,7 @@ fn treeAdd2(mut inBinTree: Arc<BinTree>, mut inKey: Key, mut keyhash: i32, mut k
 //         rd;
 //   end matchcontinue;
 // end bintreeDepth;
-pub fn bintreeToList(mut inBinTree: Arc<BinTree>) -> Result<(Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<i32>>)> {
+pub(crate) fn bintreeToList(mut inBinTree: Arc<BinTree>) -> Result<(Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<i32>>)> {
     let mut outKeyLst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
     let mut outValueLst: Arc<metamodelica::List<i32>>;
     (outKeyLst, outValueLst) = 'mc: {
@@ -538,7 +538,7 @@ fn bintreeToListOpt(mut inBinTreeOption: Option<Arc<BinTree>>, mut inKeyLst: Arc
     Ok((outKeyLst, outValueLst))
 }
 
-pub fn binTreeintersection(mut bt1: Arc<BinTree>, mut bt2: Arc<BinTree>, mut iBt: Arc<BinTree>) -> Result<Arc<BinTree>> {
+pub(crate) fn binTreeintersection(mut bt1: Arc<BinTree>, mut bt2: Arc<BinTree>, mut iBt: Arc<BinTree>) -> Result<Arc<BinTree>> {
     let mut oBt: Arc<BinTree>;
     let mut keys: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
     (keys, _) = bintreeToList(bt1.clone())?;

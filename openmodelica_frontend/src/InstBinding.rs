@@ -218,7 +218,7 @@ fn instBinding2(mut inMod: Arc<DAE::Mod>, mut inType: Arc<DAE::Type>, mut inInte
     Ok(outExpExpOption)
 }
 
-pub fn instStartBindingExp(mut inMod: Arc<DAE::Mod>, mut inExpectedType: Arc<DAE::Type>, mut inVariability: SCode::Variability) -> Result<Option<Arc<DAE::Exp>>> {
+pub(crate) fn instStartBindingExp(mut inMod: Arc<DAE::Mod>, mut inExpectedType: Arc<DAE::Type>, mut inVariability: SCode::Variability) -> Result<Option<Arc<DAE::Exp>>> {
     let mut outStartValue: Option<Arc<DAE::Exp>>;
     if SCodeUtil::isConstant(inVariability.clone()) {
         outStartValue = None;
@@ -276,7 +276,7 @@ fn instStartOrigin(mut inMod: Arc<DAE::Mod>, mut inVarLst: Arc<metamodelica::Lis
     Ok(outExpExpOption)
 }
 
-pub fn instDaeVariableAttributes(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inMod: Arc<DAE::Mod>, mut inType: Arc<DAE::Type>, mut inIntegerLst: Arc<metamodelica::List<i32>>) -> Result<(FCore::Cache, Option<Arc<DAE::VariableAttributes>>)> {
+pub(crate) fn instDaeVariableAttributes(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inMod: Arc<DAE::Mod>, mut inType: Arc<DAE::Type>, mut inIntegerLst: Arc<metamodelica::List<i32>>) -> Result<(FCore::Cache, Option<Arc<DAE::VariableAttributes>>)> {
     let mut outCache: FCore::Cache;
     let mut outDAEVariableAttributesOption: Option<Arc<DAE::VariableAttributes>>;
     (outCache, outDAEVariableAttributesOption) = 'mc: {
@@ -532,7 +532,7 @@ fn getUncertainFromExpOption(mut expOption: Option<Arc<DAE::Exp>>) -> Option<DAE
     out
 }
 
-pub fn instModEquation(mut inComponentRef: Arc<DAE::ComponentRef>, mut inType: Arc<DAE::Type>, mut inMod: Arc<DAE::Mod>, mut inSource: Arc<DAE::ElementSource>, mut inImpl: bool) -> Result<DAE::DAElist> {
+pub(crate) fn instModEquation(mut inComponentRef: Arc<DAE::ComponentRef>, mut inType: Arc<DAE::Type>, mut inMod: Arc<DAE::Mod>, mut inSource: Arc<DAE::ElementSource>, mut inImpl: bool) -> Result<DAE::DAElist> {
     let mut outDae: DAE::DAElist;
     outDae = 'mc: {
         let __mc_input = (inType.clone(), inMod.clone());
@@ -622,7 +622,7 @@ pub fn instModEquation(mut inComponentRef: Arc<DAE::ComponentRef>, mut inType: A
     Ok(outDae)
 }
 
-pub fn makeBinding(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inAttributes: SCode::Attributes, mut inMod: Arc<DAE::Mod>, mut inType: Arc<DAE::Type>, mut inPrefix: DAE::Prefix, mut componentName: ArcStr, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Binding>)> {
+pub(crate) fn makeBinding(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inAttributes: SCode::Attributes, mut inMod: Arc<DAE::Mod>, mut inType: Arc<DAE::Type>, mut inPrefix: DAE::Prefix, mut componentName: ArcStr, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Binding>)> {
     let mut outCache: FCore::Cache;
     let mut outBinding: Arc<DAE::Binding>;
     (outCache, outBinding) = 'mc: {
@@ -784,7 +784,7 @@ pub fn makeBinding(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inAtt
     Ok((outCache, outBinding))
 }
 
-pub fn makeRecordBinding(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inRecordName: Arc<Absyn::Path>, mut inRecordType: Arc<DAE::Type>, mut inRecordVars: Arc<metamodelica::List<Arc<DAE::Var>>>, mut inMods: Arc<metamodelica::List<Arc<DAE::SubMod>>>, mut inInfo: SourceInfo) -> Result<Arc<DAE::Binding>> {
+pub(crate) fn makeRecordBinding(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inRecordName: Arc<Absyn::Path>, mut inRecordType: Arc<DAE::Type>, mut inRecordVars: Arc<metamodelica::List<Arc<DAE::Var>>>, mut inMods: Arc<metamodelica::List<Arc<DAE::SubMod>>>, mut inInfo: SourceInfo) -> Result<Arc<DAE::Binding>> {
     let mut outBinding: Arc<DAE::Binding>;
     let mut accum_exps: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
     let mut accum_vals: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
@@ -913,7 +913,7 @@ fn makeRecordBinding3(mut inSubMod: Option<Arc<DAE::SubMod>>, mut inType: Arc<DA
     Ok((outExp, outValue))
 }
 
-pub fn makeVariableBinding(mut inType: Arc<DAE::Type>, mut inMod: Arc<DAE::Mod>, mut inConst: DAE::Const, mut inPrefix: DAE::Prefix, mut inName: ArcStr) -> Result<Option<Arc<DAE::Exp>>> {
+pub(crate) fn makeVariableBinding(mut inType: Arc<DAE::Type>, mut inMod: Arc<DAE::Mod>, mut inConst: DAE::Const, mut inPrefix: DAE::Prefix, mut inName: ArcStr) -> Result<Option<Arc<DAE::Exp>>> {
     let mut outBinding: Option<Arc<DAE::Exp>>;
     let mut oeq_mod: Option<DAE::EqMod> = Mod::modEquation(inMod.clone())?;
     let mut e: Arc<DAE::Exp>;

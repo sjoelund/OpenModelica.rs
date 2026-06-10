@@ -117,7 +117,7 @@ pub type OUTPUT_FORMAT = OutputFormat;
 
 pub static defaultFormat: std::sync::LazyLock<OutputFormat> = std::sync::LazyLock::new(|| { OutputFormat { scalarizeMode: ScalarizeMode::PARTIALLY_SCALARIZED.clone(), recordMode: RecordMode::WITH_RECORDS.clone(), moveBindings: false, showConfidence: false } });
 
-pub fn formatFromFlags() -> Result<OutputFormat> {
+pub(crate) fn formatFromFlags() -> Result<OutputFormat> {
     let mut format: OutputFormat = defaultFormat.clone();
     if !(Flags::isSet(Flags::NF_SCALARIZE.clone())?) {
         format.scalarizeMode = ScalarizeMode::NOT_SCALARIZED.clone();
@@ -160,7 +160,7 @@ pub fn formatFromFlags() -> Result<OutputFormat> {
     Ok(format)
 }
 
-pub fn inlineFunctions() -> Result<bool> {
+pub(crate) fn inlineFunctions() -> Result<bool> {
     let mut enabled: bool = Flags::isConfigFlagSet(Flags::BASE_MODELICA_OPTIONS.clone(), (literal!("inlineFunctions")).clone())?;
     Ok(enabled)
 }

@@ -67,7 +67,7 @@ use openmodelica_util_datatypes_basic::Array;
 use openmodelica_util_datatypes_basic::Mutable;
 
 pub struct NFExpandExp;
-pub fn expand(mut exp: Arc<Expression::NFExpression>, mut backend: bool, mut resize: bool) -> Result<(Arc<Expression::NFExpression>, bool)> {
+pub(crate) fn expand(mut exp: Arc<Expression::NFExpression>, mut backend: bool, mut resize: bool) -> Result<(Arc<Expression::NFExpression>, bool)> {
     let mut exp: Arc<Expression::NFExpression> = exp;
     let mut expanded: bool = false;
     (exp, expanded) = (::match_deref::match_deref! { match &(exp.clone()) {
@@ -142,7 +142,7 @@ pub fn expand(mut exp: Arc<Expression::NFExpression>, mut backend: bool, mut res
     Ok((exp, expanded))
 }
 
-pub fn expandArray(mut arr: metamodelica::Array<Arc<Expression::NFExpression>>) -> Result<(metamodelica::Array<Arc<Expression::NFExpression>>, bool)> {
+pub(crate) fn expandArray(mut arr: metamodelica::Array<Arc<Expression::NFExpression>>) -> Result<(metamodelica::Array<Arc<Expression::NFExpression>>, bool)> {
     let mut outArray: metamodelica::Array<Arc<Expression::NFExpression>>;
     let mut expanded: bool = true;
     let mut res: bool;
@@ -159,7 +159,7 @@ pub fn expandArray(mut arr: metamodelica::Array<Arc<Expression::NFExpression>>) 
     Ok((outArray, expanded))
 }
 
-pub fn expandList(mut expl: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut abortOnFailure: bool) -> Result<(Arc<metamodelica::List<Arc<Expression::NFExpression>>>, bool)> {
+pub(crate) fn expandList(mut expl: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut abortOnFailure: bool) -> Result<(Arc<metamodelica::List<Arc<Expression::NFExpression>>>, bool)> {
     let mut outExpl: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
     let mut expanded: bool = true;
     let mut res: bool;
@@ -177,7 +177,7 @@ pub fn expandList(mut expl: Arc<metamodelica::List<Arc<Expression::NFExpression>
     Ok((outExpl, expanded))
 }
 
-pub fn expandCref(mut crefExp: Arc<Expression::NFExpression>, mut backend: bool, mut resize: bool) -> Result<(Arc<Expression::NFExpression>, bool)> {
+pub(crate) fn expandCref(mut crefExp: Arc<Expression::NFExpression>, mut backend: bool, mut resize: bool) -> Result<(Arc<Expression::NFExpression>, bool)> {
     let mut arrayExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut expanded: bool = false;
     let mut subs: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>> = metamodelica::nil();
@@ -202,7 +202,7 @@ pub fn expandCref(mut crefExp: Arc<Expression::NFExpression>, mut backend: bool,
     Ok((arrayExp, expanded))
 }
 
-pub fn expandCref2(mut cref: Arc<ComponentRef::NFComponentRef>, mut backend: bool, mut resize: bool, mut subs: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>>> {
+pub(crate) fn expandCref2(mut cref: Arc<ComponentRef::NFComponentRef>, mut backend: bool, mut resize: bool, mut subs: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>>> {
     use crate::NFComponentRef::Origin;
     let mut subs: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>> = subs;
     let mut cr_subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
@@ -219,7 +219,7 @@ pub fn expandCref2(mut cref: Arc<ComponentRef::NFComponentRef>, mut backend: boo
     Ok(subs)
 }
 
-pub fn expandCref3(mut subs: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>>, mut cref: Arc<ComponentRef::NFComponentRef>, mut crefType: Arc<Type::NFType>, mut accum: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>>) -> Result<Arc<Expression::NFExpression>> {
+pub(crate) fn expandCref3(mut subs: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>>, mut cref: Arc<ComponentRef::NFComponentRef>, mut crefType: Arc<Type::NFType>, mut accum: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>>) -> Result<Arc<Expression::NFExpression>> {
     let mut arrayExp: Arc<Expression::NFExpression>;
     arrayExp = (::match_deref::match_deref! { match &(subs.clone()) {
         Deref @ metamodelica::List::Nil => Arc::new(Expression::NFExpression::CREF { ty: crefType.clone(), cref: ComponentRef::setSubscriptsList(accum.clone(), cref.clone())? }),
@@ -229,7 +229,7 @@ pub fn expandCref3(mut subs: Arc<metamodelica::List<Arc<metamodelica::List<Arc<S
     Ok(arrayExp)
 }
 
-pub fn expandCref4(mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>, mut comb: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>, mut accum: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>>, mut restSubs: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>>, mut cref: Arc<ComponentRef::NFComponentRef>, mut crefType: Arc<Type::NFType>) -> Result<Arc<Expression::NFExpression>> {
+pub(crate) fn expandCref4(mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>, mut comb: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>, mut accum: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>>, mut restSubs: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>>, mut cref: Arc<ComponentRef::NFComponentRef>, mut crefType: Arc<Type::NFType>) -> Result<Arc<Expression::NFExpression>> {
     '__tco: loop {
         let mut expl: metamodelica::Array<Arc<Expression::NFExpression>> = Default::default();
         let mut arr_ty: Arc<Type::NFType> = Arc::new(Type::ANY);
@@ -257,7 +257,7 @@ pub fn expandCref4(mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>
     }
 }
 
-pub fn expandTypename(mut ty: Arc<Type::NFType>) -> Result<Arc<Expression::NFExpression>> {
+pub(crate) fn expandTypename(mut ty: Arc<Type::NFType>) -> Result<Arc<Expression::NFExpression>> {
     let mut outExp: Arc<Expression::NFExpression>;
     outExp = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ Type::ARRAY { elementType: Deref @ Type::BOOLEAN, .. } => {
@@ -277,7 +277,7 @@ pub fn expandTypename(mut ty: Arc<Type::NFType>) -> Result<Arc<Expression::NFExp
     Ok(outExp)
 }
 
-pub fn expandRange(mut exp: Arc<Expression::NFExpression>) -> Result<(Arc<Expression::NFExpression>, bool)> {
+pub(crate) fn expandRange(mut exp: Arc<Expression::NFExpression>) -> Result<(Arc<Expression::NFExpression>, bool)> {
     let mut outExp: Arc<Expression::NFExpression>;
     let mut expanded: bool;
     let mut ty: Arc<Type::NFType>;
@@ -295,7 +295,7 @@ pub fn expandRange(mut exp: Arc<Expression::NFExpression>) -> Result<(Arc<Expres
     Ok((outExp, expanded))
 }
 
-pub fn expandCall(mut call: Arc<Call::NFCall>, mut exp: Arc<Expression::NFExpression>, mut resize: bool) -> Result<(Arc<Expression::NFExpression>, bool)> {
+pub(crate) fn expandCall(mut call: Arc<Call::NFCall>, mut exp: Arc<Expression::NFExpression>, mut resize: bool) -> Result<(Arc<Expression::NFExpression>, bool)> {
     let mut outExp: Arc<Expression::NFExpression>;
     let mut expanded: bool;
     (outExp, expanded) = 'mc: {
@@ -330,7 +330,7 @@ pub fn expandCall(mut call: Arc<Call::NFCall>, mut exp: Arc<Expression::NFExpres
     Ok((outExp, expanded))
 }
 
-pub fn expandBuiltinCall(mut r#fn: Arc<Function::Function>, mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut call: Arc<Call::NFCall>, mut resize: bool) -> Result<(Arc<Expression::NFExpression>, bool)> {
+pub(crate) fn expandBuiltinCall(mut r#fn: Arc<Function::Function>, mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut call: Arc<Call::NFCall>, mut resize: bool) -> Result<(Arc<Expression::NFExpression>, bool)> {
     let mut outExp: Arc<Expression::NFExpression>;
     let mut expanded: bool;
     let mut fn_path: Arc<Absyn::Path> = Function::nameConsiderBuiltin(r#fn.clone())?;
@@ -348,7 +348,7 @@ pub fn expandBuiltinCall(mut r#fn: Arc<Function::Function>, mut args: Arc<metamo
     Ok((outExp, expanded))
 }
 
-pub fn expandBuiltinCat(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut call: Arc<Call::NFCall>, mut resize: bool) -> Result<(Arc<Expression::NFExpression>, bool)> {
+pub(crate) fn expandBuiltinCat(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut call: Arc<Call::NFCall>, mut resize: bool) -> Result<(Arc<Expression::NFExpression>, bool)> {
     let mut exp: Arc<Expression::NFExpression>;
     let mut expanded: bool;
     let mut expl: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
@@ -361,7 +361,7 @@ pub fn expandBuiltinCat(mut args: Arc<metamodelica::List<Arc<Expression::NFExpre
     Ok((exp, expanded))
 }
 
-pub fn expandBuiltinPromote(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<(Arc<Expression::NFExpression>, bool)> {
+pub(crate) fn expandBuiltinPromote(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<(Arc<Expression::NFExpression>, bool)> {
     let mut exp: Arc<Expression::NFExpression>;
     let mut expanded: bool;
     let mut n: i32;
@@ -383,7 +383,7 @@ pub fn expandBuiltinPromote(mut args: Arc<metamodelica::List<Arc<Expression::NFE
     Ok((exp, expanded))
 }
 
-pub fn expandBuiltinDiagonal(mut arg: Arc<Expression::NFExpression>) -> Result<(Arc<Expression::NFExpression>, bool)> {
+pub(crate) fn expandBuiltinDiagonal(mut arg: Arc<Expression::NFExpression>) -> Result<(Arc<Expression::NFExpression>, bool)> {
     let mut outExp: Arc<Expression::NFExpression>;
     let mut expanded: bool;
     (outExp, expanded) = expand(arg.clone(), false, false)?;
@@ -393,14 +393,14 @@ pub fn expandBuiltinDiagonal(mut arg: Arc<Expression::NFExpression>) -> Result<(
     Ok((outExp, expanded))
 }
 
-pub fn expandBuiltinFill(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<(Arc<Expression::NFExpression>, bool)> {
+pub(crate) fn expandBuiltinFill(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<(Arc<Expression::NFExpression>, bool)> {
     let mut outExp: Arc<Expression::NFExpression>;
     let mut expanded: bool = true;
     outExp = Expression::fillArgs(listHead(args.clone())?, listRest(args.clone())?)?;
     Ok((outExp, expanded))
 }
 
-pub fn expandBuiltinTranspose(mut arg: Arc<Expression::NFExpression>) -> Result<(Arc<Expression::NFExpression>, bool)> {
+pub(crate) fn expandBuiltinTranspose(mut arg: Arc<Expression::NFExpression>) -> Result<(Arc<Expression::NFExpression>, bool)> {
     let mut outExp: Arc<Expression::NFExpression>;
     let mut expanded: bool;
     (outExp, expanded) = expand(arg.clone(), false, false)?;
@@ -410,7 +410,7 @@ pub fn expandBuiltinTranspose(mut arg: Arc<Expression::NFExpression>) -> Result<
     Ok((outExp, expanded))
 }
 
-pub fn expandBuiltinGeneric(mut call: Arc<Call::NFCall>) -> Result<(Arc<Expression::NFExpression>, bool)> {
+pub(crate) fn expandBuiltinGeneric(mut call: Arc<Call::NFCall>) -> Result<(Arc<Expression::NFExpression>, bool)> {
     let mut outExp: Arc<Expression::NFExpression>;
     let mut expanded: bool = true;
     let mut r#fn: Arc<Function::Function>;
@@ -439,7 +439,7 @@ pub fn expandBuiltinGeneric(mut call: Arc<Call::NFCall>) -> Result<(Arc<Expressi
     Ok((outExp, expanded))
 }
 
-pub fn expandBuiltinGeneric2(mut exp: Arc<Expression::NFExpression>, mut r#fn: Arc<Function::Function>, mut ty: Arc<Type::NFType>, mut var: Variability, mut pur: Purity, mut attr: Arc<NFCallAttributes::NFCallAttributes>) -> Result<Arc<Expression::NFExpression>> {
+pub(crate) fn expandBuiltinGeneric2(mut exp: Arc<Expression::NFExpression>, mut r#fn: Arc<Function::Function>, mut ty: Arc<Type::NFType>, mut var: Variability, mut pur: Purity, mut attr: Arc<NFCallAttributes::NFCallAttributes>) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression> = exp;
     exp = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::ARRAY { literal: true, .. } => {
@@ -458,7 +458,7 @@ pub fn expandBuiltinGeneric2(mut exp: Arc<Expression::NFExpression>, mut r#fn: A
     Ok(exp)
 }
 
-pub fn expandArrayConstructor(mut exp: Arc<Expression::NFExpression>, mut ty: Arc<Type::NFType>, mut iterators: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>>) -> Result<(Arc<Expression::NFExpression>, bool)> {
+pub(crate) fn expandArrayConstructor(mut exp: Arc<Expression::NFExpression>, mut ty: Arc<Type::NFType>, mut iterators: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>>) -> Result<(Arc<Expression::NFExpression>, bool)> {
     let mut result: Arc<Expression::NFExpression>;
     let mut expanded: bool = true;
     let mut e: Arc<Expression::NFExpression> = exp.clone();
@@ -484,7 +484,7 @@ pub fn expandArrayConstructor(mut exp: Arc<Expression::NFExpression>, mut ty: Ar
     Ok((result, expanded))
 }
 
-pub fn expandArrayConstructor2(mut exp: Arc<Expression::NFExpression>, mut ty: Arc<Type::NFType>, mut ranges: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut iterators: Arc<metamodelica::List<Mutable::Mutable<Arc<Expression::NFExpression>>>>) -> Result<Arc<Expression::NFExpression>> {
+pub(crate) fn expandArrayConstructor2(mut exp: Arc<Expression::NFExpression>, mut ty: Arc<Type::NFType>, mut ranges: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut iterators: Arc<metamodelica::List<Mutable::Mutable<Arc<Expression::NFExpression>>>>) -> Result<Arc<Expression::NFExpression>> {
     let mut result: Arc<Expression::NFExpression>;
     let mut range: Arc<Expression::NFExpression>;
     let mut ranges_rest: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
@@ -521,7 +521,7 @@ pub fn expandArrayConstructor2(mut exp: Arc<Expression::NFExpression>, mut ty: A
     Ok(result)
 }
 
-pub fn expandSize(mut exp: Arc<Expression::NFExpression>) -> (Arc<Expression::NFExpression>, bool) {
+pub(crate) fn expandSize(mut exp: Arc<Expression::NFExpression>) -> (Arc<Expression::NFExpression>, bool) {
     let mut outExp: Arc<Expression::NFExpression>;
     let mut expanded: bool = true;
     outExp = (::match_deref::match_deref! { match &(exp.clone()) {
@@ -549,7 +549,7 @@ pub fn expandSize(mut exp: Arc<Expression::NFExpression>) -> (Arc<Expression::NF
     (outExp, expanded)
 }
 
-pub fn expandBinary(mut exp: Arc<Expression::NFExpression>, mut op: Arc<Operator::NFOperator>, mut resize: bool) -> Result<(Arc<Expression::NFExpression>, bool)> {
+pub(crate) fn expandBinary(mut exp: Arc<Expression::NFExpression>, mut op: Arc<Operator::NFOperator>, mut resize: bool) -> Result<(Arc<Expression::NFExpression>, bool)> {
     use crate::NFOperator::Op;
     let mut outExp: Arc<Expression::NFExpression>;
     let mut expanded: bool;
@@ -577,7 +577,7 @@ pub fn expandBinary(mut exp: Arc<Expression::NFExpression>, mut op: Arc<Operator
     Ok((outExp, expanded))
 }
 
-pub fn expandBinaryElementWise(mut exp: Arc<Expression::NFExpression>) -> Result<(Arc<Expression::NFExpression>, bool)> {
+pub(crate) fn expandBinaryElementWise(mut exp: Arc<Expression::NFExpression>) -> Result<(Arc<Expression::NFExpression>, bool)> {
     let mut outExp: Arc<Expression::NFExpression>;
     let mut expanded: bool;
     let mut exp1: Arc<Expression::NFExpression>;
@@ -607,7 +607,7 @@ pub fn expandBinaryElementWise(mut exp: Arc<Expression::NFExpression>) -> Result
     Ok((outExp, expanded))
 }
 
-pub fn expandBinaryElementWise2(mut exp1: Arc<Expression::NFExpression>, mut op: Arc<Operator::NFOperator>, mut exp2: Arc<Expression::NFExpression>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Operator::NFOperator>, Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> {
+pub(crate) fn expandBinaryElementWise2(mut exp1: Arc<Expression::NFExpression>, mut op: Arc<Operator::NFOperator>, mut exp2: Arc<Expression::NFExpression>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Operator::NFOperator>, Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> {
     pub type MakeFn = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Operator::NFOperator>, Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>;
 
     let mut exp: Arc<Expression::NFExpression>;
@@ -629,7 +629,7 @@ pub fn expandBinaryElementWise2(mut exp1: Arc<Expression::NFExpression>, mut op:
     Ok(exp)
 }
 
-pub fn expandBinaryScalarArray(mut exp: Arc<Expression::NFExpression>, mut scalarOp: Operator::Op) -> Result<(Arc<Expression::NFExpression>, bool)> {
+pub(crate) fn expandBinaryScalarArray(mut exp: Arc<Expression::NFExpression>, mut scalarOp: Operator::Op) -> Result<(Arc<Expression::NFExpression>, bool)> {
     let mut outExp: Arc<Expression::NFExpression>;
     let mut expanded: bool;
     let mut exp1: Arc<Expression::NFExpression>;
@@ -652,7 +652,7 @@ pub fn expandBinaryScalarArray(mut exp: Arc<Expression::NFExpression>, mut scala
     Ok((outExp, expanded))
 }
 
-pub fn makeScalarArrayBinary_traverser(mut exp1: Arc<Expression::NFExpression>, mut op: Arc<Operator::NFOperator>, mut exp2: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
+pub(crate) fn makeScalarArrayBinary_traverser(mut exp1: Arc<Expression::NFExpression>, mut op: Arc<Operator::NFOperator>, mut exp2: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression>;
     exp = (::match_deref::match_deref! { match &(exp2.clone()) {
         Deref @ Expression::ARRAY { .. } => exp2.clone(),
@@ -662,7 +662,7 @@ pub fn makeScalarArrayBinary_traverser(mut exp1: Arc<Expression::NFExpression>, 
     Ok(exp)
 }
 
-pub fn expandBinaryArrayScalar(mut exp: Arc<Expression::NFExpression>, mut scalarOp: Operator::Op) -> Result<(Arc<Expression::NFExpression>, bool)> {
+pub(crate) fn expandBinaryArrayScalar(mut exp: Arc<Expression::NFExpression>, mut scalarOp: Operator::Op) -> Result<(Arc<Expression::NFExpression>, bool)> {
     let mut outExp: Arc<Expression::NFExpression>;
     let mut expanded: bool;
     let mut exp1: Arc<Expression::NFExpression>;
@@ -685,7 +685,7 @@ pub fn expandBinaryArrayScalar(mut exp: Arc<Expression::NFExpression>, mut scala
     Ok((outExp, expanded))
 }
 
-pub fn expandBinaryVectorMatrix(mut exp: Arc<Expression::NFExpression>) -> Result<(Arc<Expression::NFExpression>, bool)> {
+pub(crate) fn expandBinaryVectorMatrix(mut exp: Arc<Expression::NFExpression>) -> Result<(Arc<Expression::NFExpression>, bool)> {
     let mut outExp: Arc<Expression::NFExpression>;
     let mut expanded: bool;
     let mut exp1: Arc<Expression::NFExpression>;
@@ -726,7 +726,7 @@ pub fn expandBinaryVectorMatrix(mut exp: Arc<Expression::NFExpression>) -> Resul
     Ok((outExp, expanded))
 }
 
-pub fn expandBinaryMatrixVector(mut exp: Arc<Expression::NFExpression>) -> Result<(Arc<Expression::NFExpression>, bool)> {
+pub(crate) fn expandBinaryMatrixVector(mut exp: Arc<Expression::NFExpression>) -> Result<(Arc<Expression::NFExpression>, bool)> {
     let mut outExp: Arc<Expression::NFExpression>;
     let mut expanded: bool;
     let mut exp1: Arc<Expression::NFExpression>;
@@ -767,7 +767,7 @@ pub fn expandBinaryMatrixVector(mut exp: Arc<Expression::NFExpression>) -> Resul
     Ok((outExp, expanded))
 }
 
-pub fn expandBinaryDotProduct(mut exp: Arc<Expression::NFExpression>) -> Result<(Arc<Expression::NFExpression>, bool)> {
+pub(crate) fn expandBinaryDotProduct(mut exp: Arc<Expression::NFExpression>) -> Result<(Arc<Expression::NFExpression>, bool)> {
     let mut outExp: Arc<Expression::NFExpression>;
     let mut expanded: bool;
     let mut exp1: Arc<Expression::NFExpression>;
@@ -790,7 +790,7 @@ pub fn expandBinaryDotProduct(mut exp: Arc<Expression::NFExpression>) -> Result<
     Ok((outExp, expanded))
 }
 
-pub fn makeScalarProduct(mut exp1: Arc<Expression::NFExpression>, mut exp2: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
+pub(crate) fn makeScalarProduct(mut exp1: Arc<Expression::NFExpression>, mut exp2: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression>;
     let mut arr1: metamodelica::Array<Arc<Expression::NFExpression>>;
     let mut arr2: metamodelica::Array<Arc<Expression::NFExpression>>;
@@ -821,7 +821,7 @@ pub fn makeScalarProduct(mut exp1: Arc<Expression::NFExpression>, mut exp2: Arc<
     Ok(exp)
 }
 
-pub fn expandBinaryMatrixProduct(mut exp: Arc<Expression::NFExpression>) -> Result<(Arc<Expression::NFExpression>, bool)> {
+pub(crate) fn expandBinaryMatrixProduct(mut exp: Arc<Expression::NFExpression>) -> Result<(Arc<Expression::NFExpression>, bool)> {
     let mut outExp: Arc<Expression::NFExpression>;
     let mut expanded: bool;
     let mut exp1: Arc<Expression::NFExpression>;
@@ -844,7 +844,7 @@ pub fn expandBinaryMatrixProduct(mut exp: Arc<Expression::NFExpression>) -> Resu
     Ok((outExp, expanded))
 }
 
-pub fn makeBinaryMatrixProduct(mut exp1: Arc<Expression::NFExpression>, mut exp2: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
+pub(crate) fn makeBinaryMatrixProduct(mut exp1: Arc<Expression::NFExpression>, mut exp2: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression>;
     let mut arr1: metamodelica::Array<Arc<Expression::NFExpression>>;
     let mut arr2: metamodelica::Array<Arc<Expression::NFExpression>>;
@@ -885,13 +885,13 @@ pub fn makeBinaryMatrixProduct(mut exp1: Arc<Expression::NFExpression>, mut exp2
     Ok(exp)
 }
 
-pub fn makeBinaryMatrixProduct2(mut row: Arc<Expression::NFExpression>, mut matrix: metamodelica::Array<Arc<Expression::NFExpression>>) -> Result<metamodelica::Array<Arc<Expression::NFExpression>>> {
+pub(crate) fn makeBinaryMatrixProduct2(mut row: Arc<Expression::NFExpression>, mut matrix: metamodelica::Array<Arc<Expression::NFExpression>>) -> Result<metamodelica::Array<Arc<Expression::NFExpression>>> {
     let mut outRow: metamodelica::Array<Arc<Expression::NFExpression>>;
     outRow = Array::map(matrix.clone(), (std::sync::Arc::new({ let __pe_b0 = row.clone(); move |__pe_a1| makeScalarProduct(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
     Ok(outRow)
 }
 
-pub fn expandBinaryPowMatrix(mut exp: Arc<Expression::NFExpression>, mut resize: bool) -> Result<(Arc<Expression::NFExpression>, bool)> {
+pub(crate) fn expandBinaryPowMatrix(mut exp: Arc<Expression::NFExpression>, mut resize: bool) -> Result<(Arc<Expression::NFExpression>, bool)> {
     let mut outExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut expanded: bool = false;
     let mut exp1: Arc<Expression::NFExpression>;
@@ -923,7 +923,7 @@ pub fn expandBinaryPowMatrix(mut exp: Arc<Expression::NFExpression>, mut resize:
     Ok((outExp, expanded))
 }
 
-pub fn expandBinaryPowMatrix2(mut matrix: Arc<Expression::NFExpression>, mut n: i32) -> Result<Arc<Expression::NFExpression>> {
+pub(crate) fn expandBinaryPowMatrix2(mut matrix: Arc<Expression::NFExpression>, mut n: i32) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     exp = (match n.clone() {
         1 => matrix.clone(),
@@ -940,7 +940,7 @@ pub fn expandBinaryPowMatrix2(mut matrix: Arc<Expression::NFExpression>, mut n: 
     Ok(exp)
 }
 
-pub fn expandUnary(mut exp: Arc<Expression::NFExpression>) -> Result<(Arc<Expression::NFExpression>, bool)> {
+pub(crate) fn expandUnary(mut exp: Arc<Expression::NFExpression>) -> Result<(Arc<Expression::NFExpression>, bool)> {
     let mut outExp: Arc<Expression::NFExpression>;
     let mut expanded: bool;
     let mut operand: Arc<Expression::NFExpression>;
@@ -962,7 +962,7 @@ pub fn expandUnary(mut exp: Arc<Expression::NFExpression>) -> Result<(Arc<Expres
     Ok((outExp, expanded))
 }
 
-pub fn expandLogicalBinary(mut exp: Arc<Expression::NFExpression>) -> Result<(Arc<Expression::NFExpression>, bool)> {
+pub(crate) fn expandLogicalBinary(mut exp: Arc<Expression::NFExpression>) -> Result<(Arc<Expression::NFExpression>, bool)> {
     let mut outExp: Arc<Expression::NFExpression>;
     let mut expanded: bool;
     let mut exp1: Arc<Expression::NFExpression>;
@@ -992,7 +992,7 @@ pub fn expandLogicalBinary(mut exp: Arc<Expression::NFExpression>) -> Result<(Ar
     Ok((outExp, expanded))
 }
 
-pub fn makeLBinaryOp(mut exp1: Arc<Expression::NFExpression>, mut op: Arc<Operator::NFOperator>, mut exp2: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
+pub(crate) fn makeLBinaryOp(mut exp1: Arc<Expression::NFExpression>, mut op: Arc<Operator::NFOperator>, mut exp2: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression>;
     if Expression::isScalarLiteral(exp1.clone()) && Expression::isScalarLiteral(exp2.clone()) {
         exp = Ceval::evalLogicBinaryOp(exp1.clone(), op.clone(), exp2.clone(), Ceval::noTarget().clone())?;
@@ -1002,7 +1002,7 @@ pub fn makeLBinaryOp(mut exp1: Arc<Expression::NFExpression>, mut op: Arc<Operat
     Ok(exp)
 }
 
-pub fn expandLogicalUnary(mut exp: Arc<Expression::NFExpression>) -> Result<(Arc<Expression::NFExpression>, bool)> {
+pub(crate) fn expandLogicalUnary(mut exp: Arc<Expression::NFExpression>) -> Result<(Arc<Expression::NFExpression>, bool)> {
     let mut outExp: Arc<Expression::NFExpression>;
     let mut expanded: bool;
     let mut operand: Arc<Expression::NFExpression>;
@@ -1024,12 +1024,12 @@ pub fn expandLogicalUnary(mut exp: Arc<Expression::NFExpression>) -> Result<(Arc
     Ok((outExp, expanded))
 }
 
-pub fn makeLogicalUnaryOp(mut exp1: Arc<Expression::NFExpression>, mut op: Arc<Operator::NFOperator>) -> Arc<Expression::NFExpression> {
+pub(crate) fn makeLogicalUnaryOp(mut exp1: Arc<Expression::NFExpression>, mut op: Arc<Operator::NFOperator>) -> Arc<Expression::NFExpression> {
     let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::NFExpression::LUNARY { operator: op.clone(), exp: exp1.clone() });
     exp
 }
 
-pub fn expandCast(mut castExp: Arc<Expression::NFExpression>) -> Result<(Arc<Expression::NFExpression>, bool)> {
+pub(crate) fn expandCast(mut castExp: Arc<Expression::NFExpression>) -> Result<(Arc<Expression::NFExpression>, bool)> {
     let mut outExp: Arc<Expression::NFExpression>;
     let mut expanded: bool;
     let mut exp: Arc<Expression::NFExpression>;
@@ -1049,7 +1049,7 @@ pub fn expandCast(mut castExp: Arc<Expression::NFExpression>) -> Result<(Arc<Exp
     Ok((outExp, expanded))
 }
 
-pub fn expandGeneric(mut exp: Arc<Expression::NFExpression>, mut resize: bool) -> Result<(Arc<Expression::NFExpression>, bool)> {
+pub(crate) fn expandGeneric(mut exp: Arc<Expression::NFExpression>, mut resize: bool) -> Result<(Arc<Expression::NFExpression>, bool)> {
     let mut outExp: Arc<Expression::NFExpression>;
     let mut expanded: bool;
     let mut ty: Arc<Type::NFType>;
@@ -1086,7 +1086,7 @@ pub fn expandGeneric(mut exp: Arc<Expression::NFExpression>, mut resize: bool) -
     Ok((outExp, expanded))
 }
 
-pub fn expandGeneric2(mut subs: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>>, mut exp: Arc<Expression::NFExpression>, mut ty: Arc<Type::NFType>, mut accum: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>) -> Result<Arc<Expression::NFExpression>> {
+pub(crate) fn expandGeneric2(mut subs: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>>, mut exp: Arc<Expression::NFExpression>, mut ty: Arc<Type::NFType>, mut accum: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>) -> Result<Arc<Expression::NFExpression>> {
     let mut outExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut t: Arc<Type::NFType> = Arc::new(Type::ANY);
     let mut sub: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
@@ -1120,7 +1120,7 @@ pub fn expandGeneric2(mut subs: Arc<metamodelica::List<Arc<metamodelica::List<Ar
     Ok(outExp)
 }
 
-pub fn expandCallArgs(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
+pub(crate) fn expandCallArgs(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression> = exp;
     let mut call: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
     let () = (::match_deref::match_deref! { match &(exp.clone()) {

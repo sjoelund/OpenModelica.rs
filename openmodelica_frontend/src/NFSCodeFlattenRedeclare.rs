@@ -115,7 +115,7 @@ pub type Replacements = Arc<metamodelica::List<Replacement>>;
 
 pub static emptyReplacements: std::sync::LazyLock<Arc<metamodelica::List<Replacement>>> = std::sync::LazyLock::new(|| { metamodelica::nil() });
 
-pub fn addElementRedeclarationsToEnv(mut inRedeclares: Arc<metamodelica::List<Arc<SCode::Element>>>, mut inEnv: Env) -> Result<Env> {
+pub(crate) fn addElementRedeclarationsToEnv(mut inRedeclares: Arc<metamodelica::List<Arc<SCode::Element>>>, mut inEnv: Env) -> Result<Env> {
     let mut outEnv: Env;
     outEnv = List::fold(inRedeclares.clone(), (std::sync::Arc::new(addElementRedeclarationsToEnv2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>) -> Result<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>> + 'static>), inEnv.clone())?;
     Ok(outEnv)
@@ -240,7 +240,7 @@ fn addRedeclareToEnvExtendsTable2(mut inRedeclaredElement: Item, mut inBaseClass
     Ok(outExtends)
 }
 
-pub fn processRedeclare(mut inRedeclare: Arc<NFSCodeEnv::Redeclaration>, mut inEnv: Env, mut inPrefix: Arc<NFInstPrefix::Prefix>) -> Result<Arc<NFSCodeEnv::Redeclaration>> {
+pub(crate) fn processRedeclare(mut inRedeclare: Arc<NFSCodeEnv::Redeclaration>, mut inEnv: Env, mut inPrefix: Arc<NFInstPrefix::Prefix>) -> Result<Arc<NFSCodeEnv::Redeclaration>> {
     let mut outRedeclare: Arc<NFSCodeEnv::Redeclaration>;
     outRedeclare = 'mc: {
         let __mc_input = inRedeclare.clone();
@@ -293,7 +293,7 @@ pub fn processRedeclare(mut inRedeclare: Arc<NFSCodeEnv::Redeclaration>, mut inE
     Ok(outRedeclare)
 }
 
-pub fn replaceRedeclares(mut inRedeclares: Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>>, mut inClassItem: Item, mut inClassEnv: Env, mut inElementEnv: Env, mut inReplaceRedeclares: NFSCodeLookup::RedeclareReplaceStrategy) -> (Option<Arc<NFSCodeEnv::Item>>, Option<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>>) {
+pub(crate) fn replaceRedeclares(mut inRedeclares: Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>>, mut inClassItem: Item, mut inClassEnv: Env, mut inElementEnv: Env, mut inReplaceRedeclares: NFSCodeLookup::RedeclareReplaceStrategy) -> (Option<Arc<NFSCodeEnv::Item>>, Option<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>>) {
     let mut outItem: Option<Arc<NFSCodeEnv::Item>>;
     let mut outEnv: Option<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>>;
     (outItem, outEnv) = 'mc: {
@@ -318,7 +318,7 @@ pub fn replaceRedeclares(mut inRedeclares: Arc<metamodelica::List<Arc<NFSCodeEnv
     (outItem, outEnv)
 }
 
-pub fn replaceRedeclaredElementsInEnv(mut inRedeclares: Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>>, mut inItem: Item, mut inTypeEnv: Env, mut inElementEnv: Env, mut inPrefix: Arc<NFInstPrefix::Prefix>) -> Result<(Item, Env, Replacements)> {
+pub(crate) fn replaceRedeclaredElementsInEnv(mut inRedeclares: Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>>, mut inItem: Item, mut inTypeEnv: Env, mut inElementEnv: Env, mut inPrefix: Arc<NFInstPrefix::Prefix>) -> Result<(Item, Env, Replacements)> {
     let mut outItem: Item;
     let mut outEnv: Env;
     let mut outReplacements: Replacements;
@@ -369,7 +369,7 @@ pub fn replaceRedeclaredElementsInEnv(mut inRedeclares: Arc<metamodelica::List<A
     Ok((outItem, outEnv, outReplacements))
 }
 
-pub fn extractRedeclaresFromModifier(mut inMod: Arc<SCode::Mod>) -> Result<Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>>> {
+pub(crate) fn extractRedeclaresFromModifier(mut inMod: Arc<SCode::Mod>) -> Result<Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>>> {
     let mut outRedeclares: Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>>;
     outRedeclares = (::match_deref::match_deref! { match &(inMod.clone()) {
         Deref @ SCode::Mod::MOD { subModLst: sub_mods, .. } => {
@@ -562,7 +562,7 @@ fn pushRedeclareIntoExtends3(mut inRedeclare: Item, mut inName: ArcStr, mut inRe
     }
 }
 
-pub fn replaceElementInScope(mut inElementName: ArcStr, mut inElement: Item, mut inEnv: (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, Arc<metamodelica::List<Replacement>>)) -> Result<(Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, Arc<metamodelica::List<Replacement>>)> {
+pub(crate) fn replaceElementInScope(mut inElementName: ArcStr, mut inElement: Item, mut inEnv: (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, Arc<metamodelica::List<Replacement>>)) -> Result<(Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, Arc<metamodelica::List<Replacement>>)> {
     let mut outEnv: (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, Arc<metamodelica::List<Replacement>>);
     outEnv = (::match_deref::match_deref! { match &(inEnv.clone()) {
         (env @ Deref @ metamodelica::List::Cons { head: Deref @ NFSCodeEnv::Frame { clsAndVars: tree, .. }, tail: _ }, repl) => {
@@ -620,7 +620,7 @@ fn propagateItemPrefixes(mut inOriginalItem: Item, mut inNewItem: Item) -> Resul
     }
 }
 
-pub fn propagateAttributesVar(mut inOriginalVar: Arc<SCode::Element>, mut inNewVar: Arc<SCode::Element>) -> Result<Arc<SCode::Element>> {
+pub(crate) fn propagateAttributesVar(mut inOriginalVar: Arc<SCode::Element>, mut inNewVar: Arc<SCode::Element>) -> Result<Arc<SCode::Element>> {
     let mut outNewVar: Arc<SCode::Element>;
     let mut name: ArcStr;
     let mut pref1: Arc<SCode::Prefixes>;
@@ -656,7 +656,7 @@ pub fn propagateAttributesVar(mut inOriginalVar: Arc<SCode::Element>, mut inNewV
     Ok(outNewVar)
 }
 
-pub fn propagateAttributesClass(mut inOriginalClass: Arc<SCode::Element>, mut inNewClass: Arc<SCode::Element>) -> Result<Arc<SCode::Element>> {
+pub(crate) fn propagateAttributesClass(mut inOriginalClass: Arc<SCode::Element>, mut inNewClass: Arc<SCode::Element>) -> Result<Arc<SCode::Element>> {
     let mut outNewClass: Arc<SCode::Element>;
     let mut name: ArcStr;
     let mut pref1: Arc<SCode::Prefixes>;

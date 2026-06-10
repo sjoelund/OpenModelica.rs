@@ -201,7 +201,7 @@ pub mod SimVar {
 
     pub type SIMVAR = SimVar;
 
-    pub fn toString(mut var: Arc<SimVar>, mut r#str: ArcStr) -> Result<ArcStr> {
+    pub(crate) fn toString(mut var: Arc<SimVar>, mut r#str: ArcStr) -> Result<ArcStr> {
         let mut r#str: ArcStr = r#str;
         r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*intString(var.index.clone())); __mm_s.push_str(&*literal!(")")); __mm_s.push_str(&*VariableKind::toString(var.varKind.clone())); __mm_s.push_str(&*literal!(" (")); __mm_s.push_str(&*intString(size(var.clone())?)); __mm_s.push_str(&*literal!(") ")); __mm_s.push_str(&*Type::toString(var.type_.clone())?); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*ComponentRef::toString(var.name.clone())?); ArcStr::from(__mm_s) }).clone();
         if isSome(var.start.clone()) {
@@ -210,7 +210,7 @@ pub mod SimVar {
         Ok(r#str)
     }
 
-    pub fn listToString(mut var_lst: Arc<metamodelica::List<Arc<SimVar>>>, mut r#str: ArcStr, mut printAlias: bool) -> Result<ArcStr> {
+    pub(crate) fn listToString(mut var_lst: Arc<metamodelica::List<Arc<SimVar>>>, mut r#str: ArcStr, mut printAlias: bool) -> Result<ArcStr> {
         let mut r#str: ArcStr = r#str;
         if !(var_lst.clone().is_empty()) {
             r#str = (StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!(" (")); __mm_s.push_str(&*intString((var_lst.clone().len() as i32))); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())).clone();
@@ -226,7 +226,7 @@ pub mod SimVar {
         Ok(r#str)
     }
 
-    pub fn create(mut var: Arc<Variable::NFVariable>, mut uniqueIndex: i32, mut typeIndex: i32, mut alias: Arc<Alias::Alias>) -> Result<Arc<SimVar>> {
+    pub(crate) fn create(mut var: Arc<Variable::NFVariable>, mut uniqueIndex: i32, mut typeIndex: i32, mut alias: Arc<Alias::Alias>) -> Result<Arc<SimVar>> {
         let mut simVar: Arc<SimVar>;
         simVar = (::match_deref::match_deref! { match &(var.clone()) {
         Deref @ Variable::VARIABLE { .. } => {
@@ -259,7 +259,7 @@ pub mod SimVar {
         Ok(simVar)
     }
 
-    pub fn traverseCreate(mut var: Arc<Variable::NFVariable>, mut acc: Pointer::Pointer<Arc<metamodelica::List<Arc<SimVar>>>>, mut indices_ptr: Pointer::Pointer<SimCodeIndices>, mut varType: VarType) -> Result<Arc<Variable::NFVariable>> {
+    pub(crate) fn traverseCreate(mut var: Arc<Variable::NFVariable>, mut acc: Pointer::Pointer<Arc<metamodelica::List<Arc<SimVar>>>>, mut indices_ptr: Pointer::Pointer<SimCodeIndices>, mut varType: VarType) -> Result<Arc<Variable::NFVariable>> {
         let mut var: Arc<Variable::NFVariable> = var;
         let mut simCodeIndices: SimCodeIndices = Pointer::access(indices_ptr.clone());
         let () = (match varType.clone() {
@@ -302,7 +302,7 @@ pub mod SimVar {
         Ok(var)
     }
 
-    pub fn createFromResidualComponent(mut comp: Arc<StrongComponent::NBStrongComponent>, mut acc: Pointer::Pointer<Arc<metamodelica::List<Arc<SimVar>>>>, mut indices_ptr: Pointer::Pointer<SimCodeIndices>, mut varType: VarType) -> Result<Arc<StrongComponent::NBStrongComponent>> {
+    pub(crate) fn createFromResidualComponent(mut comp: Arc<StrongComponent::NBStrongComponent>, mut acc: Pointer::Pointer<Arc<metamodelica::List<Arc<SimVar>>>>, mut indices_ptr: Pointer::Pointer<SimCodeIndices>, mut varType: VarType) -> Result<Arc<StrongComponent::NBStrongComponent>> {
         let mut comp: Arc<StrongComponent::NBStrongComponent> = comp;
         let () = (::match_deref::match_deref! { match &(comp.clone()) {
         Deref @ StrongComponent::SINGLE_COMPONENT { .. } if (Equation::isResidual(var_field!((*comp).eqn, StrongComponent::NBStrongComponent::SINGLE_COMPONENT).clone())) => {
@@ -315,17 +315,17 @@ pub mod SimVar {
         Ok(comp)
     }
 
-    pub fn size(mut var: Arc<SimVar>) -> Result<i32> {
+    pub(crate) fn size(mut var: Arc<SimVar>) -> Result<i32> {
         let mut s: i32 = Type::sizeOf(var.type_.clone(), false)?;
         Ok(s)
     }
 
-    pub fn getName(mut var: Arc<SimVar>) -> Arc<ComponentRef::NFComponentRef> {
+    pub(crate) fn getName(mut var: Arc<SimVar>) -> Arc<ComponentRef::NFComponentRef> {
         let mut name: Arc<ComponentRef::NFComponentRef> = var.name.clone();
         name
     }
 
-    pub fn getIndex(mut cref: Arc<ComponentRef::NFComponentRef>, mut sim_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<SimVar>>>) -> Result<i32> {
+    pub(crate) fn getIndex(mut cref: Arc<ComponentRef::NFComponentRef>, mut sim_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<SimVar>>>) -> Result<i32> {
         let mut index: i32;
         let mut var: Arc<SimVar>;
         match '__try0: {
@@ -345,7 +345,7 @@ pub mod SimVar {
         Ok(index)
     }
 
-    pub fn shiftIndex(mut var: Arc<SimVar>, mut shift: i32) -> Result<Arc<SimVar>> {
+    pub(crate) fn shiftIndex(mut var: Arc<SimVar>, mut shift: i32) -> Result<Arc<SimVar>> {
         let mut var: Arc<SimVar> = var;
         assign_field!(var.index = var.index.clone() + shift.clone());
         if isSome(var.fmi_index.clone()) {
@@ -354,13 +354,13 @@ pub mod SimVar {
         Ok(var)
     }
 
-    pub fn convert(mut simVar: Arc<SimVar>) -> Result<OldSimCodeVar::SimVar> {
+    pub(crate) fn convert(mut simVar: Arc<SimVar>) -> Result<OldSimCodeVar::SimVar> {
         let mut oldSimVar: OldSimCodeVar::SimVar;
         oldSimVar = OldSimCodeVar::SimVar { name: ComponentRef::toDAE(simVar.name.clone())?, varKind: convertVarKind(simVar.varKind.clone())?, comment: (simVar.comment.clone()).clone(), unit: (simVar.unit.clone()).clone(), displayUnit: (simVar.displayUnit.clone()).clone(), index: simVar.index.clone(), minValue: Util::applyOption(simVar.min.clone(), (std::sync::Arc::new({ let __pe_b1 = false; move |__pe_a0| Expression::toDAE(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<DAE::Exp>> + 'static>))?, maxValue: Util::applyOption(simVar.max.clone(), (std::sync::Arc::new({ let __pe_b1 = false; move |__pe_a0| Expression::toDAE(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<DAE::Exp>> + 'static>))?, initialValue: Util::applyOption(simVar.start.clone(), (std::sync::Arc::new({ let __pe_b1 = false; move |__pe_a0| Expression::toDAE(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<DAE::Exp>> + 'static>))?, nominalValue: Util::applyOption(simVar.nominal.clone(), (std::sync::Arc::new({ let __pe_b1 = false; move |__pe_a0| Expression::toDAE(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<DAE::Exp>> + 'static>))?, isFixed: simVar.isFixed.clone(), type_: Type::toDAE(simVar.type_.clone(), true)?, isDiscrete: simVar.isDiscrete.clone(), arrayCref: Util::applyOption(simVar.arrayCref.clone(), (std::sync::Arc::new(ComponentRef::toDAE) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<Arc<DAE::ComponentRef>> + 'static>))?, aliasvar: Alias::convert(simVar.aliasvar.clone())?, source: DAE::emptyElementSource().clone(), causality: None, variable_index: simVar.variable_index.clone(), fmi_index: simVar.fmi_index.clone(), numArrayElement: simVar.numArrayElement.clone(), isValueChangeable: simVar.isValueChangeable.clone(), isProtected: simVar.isProtected.clone(), hideResult: Some(simVar.hideResult.clone()), isEncrypted: simVar.isEncrypted.clone(), inputIndex: simVar.inputIndex.clone(), initNonlinear: false, matrixName: simVar.matrixName.clone(), variability: None, initial_: None, exportVar: Util::applyOption(simVar.exportVar.clone(), (std::sync::Arc::new(ComponentRef::toDAE) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<Arc<DAE::ComponentRef>> + 'static>))?, relativeQuantity: false };
         Ok(oldSimVar)
     }
 
-    pub fn convertList(mut simVar_lst: Arc<metamodelica::List<Arc<SimVar>>>) -> Result<Arc<metamodelica::List<OldSimCodeVar::SimVar>>> {
+    pub(crate) fn convertList(mut simVar_lst: Arc<metamodelica::List<Arc<SimVar>>>) -> Result<Arc<metamodelica::List<OldSimCodeVar::SimVar>>> {
         let mut oldSimVar_lst: Arc<metamodelica::List<OldSimCodeVar::SimVar>> = ({
         let mut __acc: Arc<metamodelica::List<OldSimCodeVar::SimVar>> = metamodelica::nil();
         for mut simVar in (simVar_lst.clone()).into_iter().cloned() {
@@ -372,7 +372,7 @@ pub mod SimVar {
         Ok(oldSimVar_lst)
     }
 
-    pub fn convertTpl(mut tpl: (Arc<SimVar>, bool)) -> Result<(OldSimCodeVar::SimVar, bool)> {
+    pub(crate) fn convertTpl(mut tpl: (Arc<SimVar>, bool)) -> Result<(OldSimCodeVar::SimVar, bool)> {
         let mut oldTpl: (OldSimCodeVar::SimVar, bool);
         let mut var: Arc<SimVar>;
         let mut b: bool;
@@ -653,7 +653,7 @@ pub mod Alias {
         fn default() -> Self { Self::NO_ALIAS }
     }
     pub use self::Alias::{NO_ALIAS,ALIAS};
-    pub fn fromBinding(mut binding: Arc<Binding::NFBinding>) -> Result<Arc<Alias>> {
+    pub(crate) fn fromBinding(mut binding: Arc<Binding::NFBinding>) -> Result<Arc<Alias>> {
         let mut alias: Arc<Alias>;
         alias = (::match_deref::match_deref! { match &(binding.clone()) {
         Deref @ Binding::TYPED_BINDING { .. } => getAlias(var_field!((*binding).bindingExp, Binding::NFBinding::TYPED_BINDING).clone())?,
@@ -664,7 +664,7 @@ pub mod Alias {
         Ok(alias)
     }
 
-    pub fn toString(mut alias: Arc<Alias>) -> Result<ArcStr> {
+    pub(crate) fn toString(mut alias: Arc<Alias>) -> Result<ArcStr> {
         let mut r#str: ArcStr;
         r#str = ((::match_deref::match_deref! { match &(alias.clone()) {
         Deref @ NO_ALIAS { .. } => {
@@ -682,7 +682,7 @@ pub mod Alias {
         Ok(r#str)
     }
 
-    pub fn convert(mut alias: Arc<Alias>) -> Result<OldSimCodeVar::AliasVariable> {
+    pub(crate) fn convert(mut alias: Arc<Alias>) -> Result<OldSimCodeVar::AliasVariable> {
         let mut oldAlias: OldSimCodeVar::AliasVariable;
         oldAlias = (::match_deref::match_deref! { match &(alias.clone()) {
         Deref @ NO_ALIAS { .. } => openmodelica_simcode_types::SimCodeVar::AliasVariable::NOALIAS,
@@ -958,7 +958,7 @@ pub mod SimVars {
 
     pub type SIMVARS = SimVars;
 
-    pub fn toString(mut vars: Arc<SimVars>, mut r#str: ArcStr) -> Result<ArcStr> {
+    pub(crate) fn toString(mut vars: Arc<SimVars>, mut r#str: ArcStr) -> Result<ArcStr> {
         let mut r#str: ArcStr = r#str;
         r#str = (StringUtil::headline_2(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SimVars ")); __mm_s.push_str(&*r#str.clone()); ArcStr::from(__mm_s) }).clone())).clone();
         r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*SimVar::listToString(vars.stateVars.clone(), (literal!("States")).clone(), false)?); ArcStr::from(__mm_s) }).clone();
@@ -975,7 +975,7 @@ pub mod SimVars {
         Ok(r#str)
     }
 
-    pub fn create(mut varData: Arc<BVariable::VarData::VarData>, mut residual_vars: Arc<VariablePointers::VariablePointers>, mut simCodeIndices: SimCodeIndices) -> Result<(Arc<SimVars>, SimCodeIndices)> {
+    pub(crate) fn create(mut varData: Arc<BVariable::VarData::VarData>, mut residual_vars: Arc<VariablePointers::VariablePointers>, mut simCodeIndices: SimCodeIndices) -> Result<(Arc<SimVars>, SimCodeIndices)> {
         let mut simVars: Arc<SimVars>;
         let mut simCodeIndices: SimCodeIndices = simCodeIndices;
         let mut stateVars: Arc<metamodelica::List<Arc<SimVar::SimVar>>> = metamodelica::nil();
@@ -1185,7 +1185,7 @@ pub mod SimVars {
         Ok((simVars, simCodeIndices))
     }
 
-    pub fn addSeedAndJacobianVars(mut vars: Arc<SimVars>, mut hash_tpl: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<SimVar::SimVar>)>>) -> Result<Arc<SimVars>> {
+    pub(crate) fn addSeedAndJacobianVars(mut vars: Arc<SimVars>, mut hash_tpl: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<SimVar::SimVar>)>>) -> Result<Arc<SimVars>> {
         let mut vars: Arc<SimVars> = vars;
         let mut cref: Arc<ComponentRef::NFComponentRef>;
         let mut var: Arc<SimVar::SimVar>;
@@ -1207,18 +1207,18 @@ pub mod SimVars {
         Ok(vars)
     }
 
-    pub fn size(mut simVars: Arc<SimVars>) -> i32 {
+    pub(crate) fn size(mut simVars: Arc<SimVars>) -> i32 {
         let mut size: i32 = (simVars.stateVars.clone().len() as i32) + (simVars.derivativeVars.clone().len() as i32) + (simVars.algVars.clone().len() as i32) + (simVars.discreteAlgVars.clone().len() as i32) + (simVars.intAlgVars.clone().len() as i32) + (simVars.boolAlgVars.clone().len() as i32) + (simVars.inputVars.clone().len() as i32) + (simVars.outputVars.clone().len() as i32) + (simVars.aliasVars.clone().len() as i32) + (simVars.intAliasVars.clone().len() as i32) + (simVars.boolAliasVars.clone().len() as i32) + (simVars.paramVars.clone().len() as i32) + (simVars.intParamVars.clone().len() as i32) + (simVars.boolParamVars.clone().len() as i32) + (simVars.stringAlgVars.clone().len() as i32) + (simVars.stringParamVars.clone().len() as i32) + (simVars.stringAliasVars.clone().len() as i32) + (simVars.extObjVars.clone().len() as i32) + (simVars.constVars.clone().len() as i32) + (simVars.intConstVars.clone().len() as i32) + (simVars.boolConstVars.clone().len() as i32) + (simVars.stringConstVars.clone().len() as i32) + (simVars.stringAlgVars.clone().len() as i32) + (simVars.jacobianVars.clone().len() as i32) + (simVars.seedVars.clone().len() as i32) + (simVars.realOptimizeConstraintsVars.clone().len() as i32) + (simVars.realOptimizeFinalConstraintsVars.clone().len() as i32) + (simVars.sensitivityVars.clone().len() as i32) + (simVars.dataReconSetcVars.clone().len() as i32) + (simVars.dataReconinputVars.clone().len() as i32) + (simVars.dataReconSetBVars.clone().len() as i32);
         size
     }
 
-    pub fn convert(mut simVars: Arc<SimVars>) -> Result<OldSimCodeVar::SimVars> {
+    pub(crate) fn convert(mut simVars: Arc<SimVars>) -> Result<OldSimCodeVar::SimVars> {
         let mut oldSimVars: OldSimCodeVar::SimVars;
         oldSimVars = OldSimCodeVar::SimVars { stateVars: SimVar::convertList(simVars.stateVars.clone())?, derivativeVars: SimVar::convertList(simVars.derivativeVars.clone())?, algVars: SimVar::convertList(simVars.algVars.clone())?, discreteAlgVars: SimVar::convertList(simVars.discreteAlgVars.clone())?, intAlgVars: SimVar::convertList(simVars.intAlgVars.clone())?, boolAlgVars: SimVar::convertList(simVars.boolAlgVars.clone())?, inputVars: SimVar::convertList(simVars.inputVars.clone())?, outputVars: SimVar::convertList(simVars.outputVars.clone())?, aliasVars: SimVar::convertList(simVars.aliasVars.clone())?, intAliasVars: SimVar::convertList(simVars.intAliasVars.clone())?, boolAliasVars: SimVar::convertList(simVars.boolAliasVars.clone())?, paramVars: SimVar::convertList(simVars.paramVars.clone())?, intParamVars: SimVar::convertList(simVars.intParamVars.clone())?, boolParamVars: SimVar::convertList(simVars.boolParamVars.clone())?, stringAlgVars: SimVar::convertList(simVars.stringAlgVars.clone())?, stringParamVars: SimVar::convertList(simVars.stringParamVars.clone())?, stringAliasVars: SimVar::convertList(simVars.stringAliasVars.clone())?, extObjVars: SimVar::convertList(simVars.extObjVars.clone())?, constVars: SimVar::convertList(simVars.constVars.clone())?, intConstVars: SimVar::convertList(simVars.intConstVars.clone())?, boolConstVars: SimVar::convertList(simVars.boolConstVars.clone())?, stringConstVars: SimVar::convertList(simVars.stringConstVars.clone())?, jacobianVars: SimVar::convertList(simVars.jacobianVars.clone())?, seedVars: SimVar::convertList(simVars.seedVars.clone())?, realOptimizeConstraintsVars: SimVar::convertList(simVars.realOptimizeConstraintsVars.clone())?, realOptimizeFinalConstraintsVars: SimVar::convertList(simVars.realOptimizeFinalConstraintsVars.clone())?, sensitivityVars: SimVar::convertList(simVars.sensitivityVars.clone())?, dataReconSetcVars: SimVar::convertList(simVars.dataReconSetcVars.clone())?, dataReconinputVars: SimVar::convertList(simVars.dataReconinputVars.clone())?, dataReconSetBVars: SimVar::convertList(simVars.dataReconSetBVars.clone())? };
         Ok(oldSimVars)
     }
 
-    pub fn createSimVarLists(mut vars: Arc<VariablePointers::VariablePointers>, mut simCodeIndices: SimCodeIndices, mut splitType: SplitType, mut varType: VarType) -> Result<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<SimVar::SimVar>>>>>, SimCodeIndices)> {
+    pub(crate) fn createSimVarLists(mut vars: Arc<VariablePointers::VariablePointers>, mut simCodeIndices: SimCodeIndices, mut splitType: SplitType, mut varType: VarType) -> Result<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<SimVar::SimVar>>>>>, SimCodeIndices)> {
         let mut simVars: Arc<metamodelica::List<Arc<metamodelica::List<Arc<SimVar::SimVar>>>>> = metamodelica::nil();
         let mut simCodeIndices: SimCodeIndices = simCodeIndices;
         let mut sim_vars: Arc<VariablePointers::VariablePointers> = if (Flags::getConfigBool(Flags::SIM_CODE_SCALARIZE.clone())?) {BVariable::VariablePointers::scalarize(vars.clone())?} else {vars.clone()};
@@ -1243,7 +1243,7 @@ pub mod SimVars {
         Ok((simVars, simCodeIndices))
     }
 
-    pub fn splitByType(mut var: Arc<Variable::NFVariable>, mut real_lst: Pointer::Pointer<Arc<metamodelica::List<Arc<SimVar::SimVar>>>>, mut int_lst: Pointer::Pointer<Arc<metamodelica::List<Arc<SimVar::SimVar>>>>, mut bool_lst: Pointer::Pointer<Arc<metamodelica::List<Arc<SimVar::SimVar>>>>, mut string_lst: Pointer::Pointer<Arc<metamodelica::List<Arc<SimVar::SimVar>>>>, mut enum_lst: Pointer::Pointer<Arc<metamodelica::List<Arc<SimVar::SimVar>>>>, mut indices_ptr: Pointer::Pointer<SimCodeIndices>, mut varType: VarType) -> Result<Arc<Variable::NFVariable>> {
+    pub(crate) fn splitByType(mut var: Arc<Variable::NFVariable>, mut real_lst: Pointer::Pointer<Arc<metamodelica::List<Arc<SimVar::SimVar>>>>, mut int_lst: Pointer::Pointer<Arc<metamodelica::List<Arc<SimVar::SimVar>>>>, mut bool_lst: Pointer::Pointer<Arc<metamodelica::List<Arc<SimVar::SimVar>>>>, mut string_lst: Pointer::Pointer<Arc<metamodelica::List<Arc<SimVar::SimVar>>>>, mut enum_lst: Pointer::Pointer<Arc<metamodelica::List<Arc<SimVar::SimVar>>>>, mut indices_ptr: Pointer::Pointer<SimCodeIndices>, mut varType: VarType) -> Result<Arc<Variable::NFVariable>> {
         let mut var: Arc<Variable::NFVariable> = var;
         let mut simCodeIndices: SimCodeIndices = Pointer::access(indices_ptr.clone());
         let () = (::match_deref::match_deref! { match &((Type::arrayElementType(var.ty.clone()), varType.clone())) {
@@ -1362,7 +1362,7 @@ pub mod SimVars {
         Ok(var)
     }
 
-    pub fn getPartitionVars(mut partition: Arc<Partition::Partition>, mut simcode_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<SimVar::SimVar>>>) -> Result<Arc<metamodelica::List<Arc<SimVar::SimVar>>>> {
+    pub(crate) fn getPartitionVars(mut partition: Arc<Partition::Partition>, mut simcode_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<SimVar::SimVar>>>) -> Result<Arc<metamodelica::List<Arc<SimVar::SimVar>>>> {
         let mut part_vars: Arc<metamodelica::List<Arc<SimVar::SimVar>>>;
         part_vars = ({
         let mut result: Arc<metamodelica::List<Arc<metamodelica::List<Arc<SimVar::SimVar>>>>> = metamodelica::nil();
@@ -1382,7 +1382,7 @@ pub mod SimVars {
         Ok(part_vars)
     }
 
-    pub fn getStrongComponentVars(mut comp: Arc<StrongComponent::NBStrongComponent>, mut simcode_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<SimVar::SimVar>>>) -> Result<Arc<metamodelica::List<Arc<SimVar::SimVar>>>> {
+    pub(crate) fn getStrongComponentVars(mut comp: Arc<StrongComponent::NBStrongComponent>, mut simcode_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<SimVar::SimVar>>>) -> Result<Arc<metamodelica::List<Arc<SimVar::SimVar>>>> {
         '__tco: loop {
             ::match_deref::match_deref! { match &(comp.clone()) {
         Deref @ StrongComponent::SINGLE_COMPONENT { .. } => return Ok(getVars(var_field!((*comp).var, StrongComponent::NBStrongComponent::SINGLE_COMPONENT).clone(), simcode_map.clone())?),
@@ -1606,7 +1606,7 @@ pub mod VarInfo {
 
     pub type VAR_INFO = VarInfo;
 
-    pub fn create(mut vars: Arc<SimVars::SimVars>, mut eventInfo: Arc<EventInfo::EventInfo>, mut simCodeIndices: SimCodeIndices) -> Result<Arc<VarInfo>> {
+    pub(crate) fn create(mut vars: Arc<SimVars::SimVars>, mut eventInfo: Arc<EventInfo::EventInfo>, mut simCodeIndices: SimCodeIndices) -> Result<Arc<VarInfo>> {
         let mut varInfo: Arc<VarInfo>;
         varInfo = Arc::new(VarInfo { numZeroCrossings: ({
         let mut __acc: i32 = 0;
@@ -1626,7 +1626,7 @@ pub mod VarInfo {
         Ok(varInfo)
     }
 
-    pub fn convert(mut varInfo: Arc<VarInfo>) -> OldSimCode::VarInfo {
+    pub(crate) fn convert(mut varInfo: Arc<VarInfo>) -> OldSimCode::VarInfo {
         let mut oldVarInfo: OldSimCode::VarInfo;
         oldVarInfo = OldSimCode::VarInfo { numZeroCrossings: varInfo.numZeroCrossings.clone(), numTimeEvents: varInfo.numTimeEvents.clone(), numRelations: varInfo.numRelations.clone(), numMathEventFunctions: varInfo.numMathEventFunctions.clone(), numStateVars: varInfo.numStateVars.clone(), numAlgVars: varInfo.numAlgVars.clone(), numDiscreteReal: varInfo.numDiscreteReal.clone(), numIntAlgVars: varInfo.numIntAlgVars.clone(), numBoolAlgVars: varInfo.numBoolAlgVars.clone(), numAlgAliasVars: varInfo.numAlgAliasVars.clone(), numIntAliasVars: varInfo.numIntAliasVars.clone(), numBoolAliasVars: varInfo.numBoolAliasVars.clone(), numParams: varInfo.numParams.clone(), numIntParams: varInfo.numIntParams.clone(), numBoolParams: varInfo.numBoolParams.clone(), numOutVars: varInfo.numOutVars.clone(), numInVars: varInfo.numInVars.clone(), numExternalObjects: varInfo.numExternalObjects.clone(), numStringAlgVars: varInfo.numStringAlgVars.clone(), numStringParamVars: varInfo.numStringParamVars.clone(), numStringAliasVars: varInfo.numStringAliasVars.clone(), numEquations: varInfo.numEquations.clone(), numLinearSystems: varInfo.numLinearSystems.clone(), numNonLinearSystems: varInfo.numNonLinearSystems.clone(), numMixedSystems: varInfo.numMixedSystems.clone(), numStateSets: varInfo.numStateSets.clone(), numJacobians: varInfo.numJacobians.clone(), numOptimizeConstraints: varInfo.numOptimizeConstraints.clone(), numOptimizeFinalConstraints: varInfo.numOptimizeFinalConstraints.clone(), numSensitivityParameters: varInfo.numSensitivityParameters.clone(), numSetcVars: varInfo.numSetcVars.clone(), numDataReconVars: varInfo.numDataReconVars.clone(), numRealInputVars: varInfo.numRealIntputVars.clone(), numSetbVars: varInfo.numSetbVars.clone(), numRelatedBoundaryConditions: varInfo.numRelatedBoundaryConditions.clone() };
         oldVarInfo
@@ -1660,12 +1660,12 @@ pub mod ExtObjInfo {
 
     pub type EXT_OBJ_INFO = ExtObjInfo;
 
-    pub fn toString(mut info: Arc<ExtObjInfo>) -> Result<ArcStr> {
+    pub(crate) fn toString(mut info: Arc<ExtObjInfo>) -> Result<ArcStr> {
         let mut r#str: ArcStr = SimVar::listToString(info.objects.clone(), (literal!("External Objects")).clone(), false)?;
         Ok(r#str)
     }
 
-    pub fn create(mut external_objects: Arc<VariablePointers::VariablePointers>, mut vars: Arc<SimVars::SimVars>, mut simCodeIndices: SimCodeIndices) -> Result<(Arc<ExtObjInfo>, Arc<SimVars::SimVars>, SimCodeIndices)> {
+    pub(crate) fn create(mut external_objects: Arc<VariablePointers::VariablePointers>, mut vars: Arc<SimVars::SimVars>, mut simCodeIndices: SimCodeIndices) -> Result<(Arc<ExtObjInfo>, Arc<SimVars::SimVars>, SimCodeIndices)> {
         let mut info: Arc<ExtObjInfo>;
         let mut vars: Arc<SimVars::SimVars> = vars;
         let mut simCodeIndices: SimCodeIndices = simCodeIndices;
@@ -1681,7 +1681,7 @@ pub mod ExtObjInfo {
         Ok((info, vars, simCodeIndices))
     }
 
-    pub fn convert(mut info: Arc<ExtObjInfo>) -> Result<OldSimCode::ExtObjInfo> {
+    pub(crate) fn convert(mut info: Arc<ExtObjInfo>) -> Result<OldSimCode::ExtObjInfo> {
         let mut oldInfo: OldSimCode::ExtObjInfo;
         oldInfo = OldSimCode::ExtObjInfo { vars: SimVar::convertList(info.objects.clone())?, aliases: metamodelica::nil() };
         Ok(oldInfo)

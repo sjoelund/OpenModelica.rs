@@ -199,7 +199,7 @@ pub const SMS_PRE: &'static str = "smOf";
 
 pub const DEBUG_SMDUMP: bool = false;
 
-pub fn createSMNodeToFlatSMGroupTable(mut inDae: DAE::DAElist) -> Result<SMNodeToFlatSMGroupTable> {
+pub(crate) fn createSMNodeToFlatSMGroupTable(mut inDae: DAE::DAElist) -> Result<SMNodeToFlatSMGroupTable> {
     let mut smNodeToFlatSMGroup: SMNodeToFlatSMGroupTable;
     let mut elementLst: Arc<metamodelica::List<Arc<DAE::Element>>>;
     let mut smNodeTable: SMNodeTable;
@@ -271,7 +271,7 @@ pub fn createSMNodeToFlatSMGroupTable(mut inDae: DAE::DAElist) -> Result<SMNodeT
     Ok(smNodeToFlatSMGroup)
 }
 
-pub fn wrapSMCompsInFlatSMs(mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inDae1: DAE::DAElist, mut inDae2: DAE::DAElist, mut smNodeToFlatSMGroup: SMNodeToFlatSMGroupTable, mut smInitialCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<(DAE::DAElist, DAE::DAElist)> {
+pub(crate) fn wrapSMCompsInFlatSMs(mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inDae1: DAE::DAElist, mut inDae2: DAE::DAElist, mut smNodeToFlatSMGroup: SMNodeToFlatSMGroupTable, mut smInitialCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<(DAE::DAElist, DAE::DAElist)> {
     let mut outDae1: DAE::DAElist;
     let mut outDae2: DAE::DAElist;
     let mut elementLst1: Arc<metamodelica::List<Arc<DAE::Element>>>;
@@ -728,7 +728,7 @@ fn extractFlatSMGroup(mut initialStates: Arc<metamodelica::List<Arc<DAE::Compone
     Ok(flatSMGroup)
 }
 
-pub fn dumpFlatSMGroupStr(mut flatA: FlatSMGroup) -> Result<ArcStr> {
+pub(crate) fn dumpFlatSMGroupStr(mut flatA: FlatSMGroup) -> Result<ArcStr> {
     let mut flatStr: ArcStr;
     let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
     let mut initialStateStr: ArcStr;
@@ -892,7 +892,7 @@ fn crefIndexCmp(mut inElement1: (Arc<DAE::ComponentRef>, i32), mut inElement2: (
     inRes
 }
 
-pub fn getSMNodeTable(mut elementLst: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<SMNodeTable> {
+pub(crate) fn getSMNodeTable(mut elementLst: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<SMNodeTable> {
     let mut smNodeTable: SMNodeTable;
     let mut elementLst2: Arc<metamodelica::List<Arc<DAE::Element>>>;
     elementLst2 = ({
@@ -984,7 +984,7 @@ fn extractSMStates2(mut inElement: Arc<DAE::Element>, mut inTable: SMNodeTable) 
     Ok(outTable)
 }
 
-pub fn getSMStatesInContext(mut eqns: Arc<metamodelica::List<Arc<SCode::Equation>>>, mut inPrefix: DAE::Prefix) -> Result<(Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)> {
+pub(crate) fn getSMStatesInContext(mut eqns: Arc<metamodelica::List<Arc<SCode::Equation>>>, mut inPrefix: DAE::Prefix) -> Result<(Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)> {
     let mut states: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
     let mut initialStates: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
     let mut eqns1: Arc<metamodelica::List<Arc<SCode::Equation>>>;

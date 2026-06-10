@@ -66,12 +66,12 @@ use openmodelica_util_datatypes_basic::Pointer;
 // backend imports
 // Util imports
 // old imports
-pub fn convertRational(mut r: Arc<Rational::Rational>) -> MMath::Rational {
+pub(crate) fn convertRational(mut r: Arc<Rational::Rational>) -> MMath::Rational {
     let mut oldR: MMath::Rational = MMath::Rational { nom: r.n.clone(), denom: r.d.clone() };
     oldR
 }
 
-pub fn findTrueIndices(mut arr: metamodelica::Array<bool>) -> Arc<metamodelica::List<i32>> {
+pub(crate) fn findTrueIndices(mut arr: metamodelica::Array<bool>) -> Arc<metamodelica::List<i32>> {
     let mut indices: Arc<metamodelica::List<i32>> = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut i in (({let __s=metamodelica::arrayLength(arr.clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)})).into_iter() {
@@ -84,7 +84,7 @@ pub fn findTrueIndices(mut arr: metamodelica::Array<bool>) -> Arc<metamodelica::
     indices
 }
 
-pub fn countElem(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> i32 {
+pub(crate) fn countElem(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> i32 {
     let mut count: i32 = ({
         let mut __acc: i32 = 0;
         for mut lst in (m.clone()).borrow().iter() {
@@ -96,7 +96,7 @@ pub fn countElem(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> i3
     count
 }
 
-pub fn indexTplGt<T: Clone + 'static + metamodelica::gc::MMTrace>(mut tpl1: (i32, T), mut tpl2: (i32, T)) -> bool {
+pub(crate) fn indexTplGt<T: Clone + 'static + metamodelica::gc::MMTrace>(mut tpl1: (i32, T), mut tpl2: (i32, T)) -> bool {
     let mut gt: bool;
     let mut i1: i32;
     let mut i2: i32;
@@ -106,13 +106,13 @@ pub fn indexTplGt<T: Clone + 'static + metamodelica::gc::MMTrace>(mut tpl1: (i32
     gt
 }
 
-pub fn noNameHashEq(mut eq: Arc<Equation::Equation>, mut r#mod: i32) -> Result<i32> {
+pub(crate) fn noNameHashEq(mut eq: Arc<Equation::Equation>, mut r#mod: i32) -> Result<i32> {
     let mut hash: i32;
     hash = noNameHashExp(BEquation::Equation::getResidualExp(eq.clone(), true)?, r#mod.clone())?;
     Ok(hash)
 }
 
-pub fn noNameHashExp(mut exp: Arc<Expression::NFExpression>, mut r#mod: i32) -> Result<i32> {
+pub(crate) fn noNameHashExp(mut exp: Arc<Expression::NFExpression>, mut r#mod: i32) -> Result<i32> {
     let mut hash: i32 = 0;
     hash = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::INTEGER { .. } => {
@@ -285,13 +285,13 @@ pub fn noNameHashExp(mut exp: Arc<Expression::NFExpression>, mut r#mod: i32) -> 
     Ok(hash)
 }
 
-pub fn isOnlyTimeDependent(mut exp: Arc<Expression::NFExpression>) -> Result<bool> {
+pub(crate) fn isOnlyTimeDependent(mut exp: Arc<Expression::NFExpression>) -> Result<bool> {
     let mut b: bool;
     b = Expression::fold(exp.clone(), (std::sync::Arc::new(isOnlyTimeDependentFold) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, bool) -> Result<bool> + 'static>), true)?;
     Ok(b)
 }
 
-pub fn isOnlyTimeDependentFold(mut exp: Arc<Expression::NFExpression>, mut b: bool) -> Result<bool> {
+pub(crate) fn isOnlyTimeDependentFold(mut exp: Arc<Expression::NFExpression>, mut b: bool) -> Result<bool> {
     let mut b: bool = b;
     if b.clone() {
         b = (::match_deref::match_deref! { match &(exp.clone()) {
@@ -303,13 +303,13 @@ pub fn isOnlyTimeDependentFold(mut exp: Arc<Expression::NFExpression>, mut b: bo
     Ok(b)
 }
 
-pub fn isContinuous(mut exp: Arc<Expression::NFExpression>, mut staticAsContinuous: bool) -> Result<bool> {
+pub(crate) fn isContinuous(mut exp: Arc<Expression::NFExpression>, mut staticAsContinuous: bool) -> Result<bool> {
     let mut b: bool;
     b = Expression::fold(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = staticAsContinuous.clone(); move |__pe_a0, __pe_a2| isContinuousFold(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, bool) -> Result<bool> + 'static>), true)?;
     Ok(b)
 }
 
-pub fn isContinuousFold(mut exp: Arc<Expression::NFExpression>, mut staticAsContinuous: bool, mut b: bool) -> Result<bool> {
+pub(crate) fn isContinuousFold(mut exp: Arc<Expression::NFExpression>, mut staticAsContinuous: bool, mut b: bool) -> Result<bool> {
     let mut b: bool = b;
     if b.clone() {
         b = (::match_deref::match_deref! { match &(exp.clone()) {
@@ -321,7 +321,7 @@ pub fn isContinuousFold(mut exp: Arc<Expression::NFExpression>, mut staticAsCont
     Ok(b)
 }
 
-pub fn getLocalSystem(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut matching: Arc<Matching::NBMatching>, mut eqn_indices: Arc<metamodelica::List<i32>>) -> Result<(metamodelica::Array<Arc<metamodelica::List<i32>>>, Arc<Matching::NBMatching>, metamodelica::Array<i32>)> {
+pub(crate) fn getLocalSystem(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut matching: Arc<Matching::NBMatching>, mut eqn_indices: Arc<metamodelica::List<i32>>) -> Result<(metamodelica::Array<Arc<metamodelica::List<i32>>>, Arc<Matching::NBMatching>, metamodelica::Array<i32>)> {
     let mut m_loc: metamodelica::Array<Arc<metamodelica::List<i32>>>;
     let mut matching_loc: Arc<Matching::NBMatching>;
     let mut map_back: metamodelica::Array<i32>;
@@ -363,7 +363,7 @@ pub fn getLocalSystem(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, 
     Ok((m_loc, matching_loc, map_back))
 }
 
-pub fn makeFDerString(mut r#str: ArcStr, mut i_opt: Option<i32>) -> Result<ArcStr> {
+pub(crate) fn makeFDerString(mut r#str: ArcStr, mut i_opt: Option<i32>) -> Result<ArcStr> {
     let mut r#str: ArcStr = r#str;
     let mut i: ArcStr = if (isSome(i_opt.clone())) {intString(Util::getOption(i_opt.clone())?)} else {literal!("")};
     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*arcstr::literal!(BVariable::FUNCTION_DERIVATIVE_STR)); __mm_s.push_str(&*i.clone()); __mm_s.push_str(&*literal!("_")); __mm_s.push_str(&*r#str.clone()); ArcStr::from(__mm_s) }).clone();

@@ -81,7 +81,7 @@ pub const UNDERLINE: &'static str = "===========================================
 
 type selectParameterFunc = std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>;
 
-pub fn evaluateParameters(mut DAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
+pub(crate) fn evaluateParameters(mut DAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut DAE: Arc<BackendDAE::BackendDAE> = DAE;
     let mut selectParameterfunc: selectParameterFunc;
     let mut globalKnownVars: BackendDAE::Variables;

@@ -89,7 +89,7 @@ pub type Import = Absyn::Import;
 
 pub type ModScope = FCore::ModScope;
 
-pub fn merge(mut inParentRef: Ref, mut inOuterModRef: Ref, mut inInnerModRef: Ref, mut inGraph: Graph) -> (Graph, Ref) {
+pub(crate) fn merge(mut inParentRef: Ref, mut inOuterModRef: Ref, mut inInnerModRef: Ref, mut inGraph: Graph) -> (Graph, Ref) {
     let mut outGraph: Graph;
     let mut outMergedModRef: Ref;
     (outGraph, outMergedModRef) = (match (inParentRef.clone(), inGraph.clone()) {
@@ -100,7 +100,7 @@ pub fn merge(mut inParentRef: Ref, mut inOuterModRef: Ref, mut inInnerModRef: Re
     (outGraph, outMergedModRef)
 }
 
-pub fn apply(mut inTargetRef: Ref, mut inModRef: Ref, mut inGraph: Graph) -> (Graph, Ref) {
+pub(crate) fn apply(mut inTargetRef: Ref, mut inModRef: Ref, mut inGraph: Graph) -> (Graph, Ref) {
     let mut outGraph: Graph;
     let mut outNodeRef: Ref;
     (outGraph, outNodeRef) = (match (inTargetRef.clone(), inGraph.clone()) {
@@ -111,7 +111,7 @@ pub fn apply(mut inTargetRef: Ref, mut inModRef: Ref, mut inGraph: Graph) -> (Gr
     (outGraph, outNodeRef)
 }
 
-pub fn compactSubMods(mut inSubMods: Arc<metamodelica::List<Arc<SCode::SubMod>>>, mut inModScope: ModScope) -> Result<Arc<metamodelica::List<Arc<SCode::SubMod>>>> {
+pub(crate) fn compactSubMods(mut inSubMods: Arc<metamodelica::List<Arc<SCode::SubMod>>>, mut inModScope: ModScope) -> Result<Arc<metamodelica::List<Arc<SCode::SubMod>>>> {
     let mut outSubMods: Arc<metamodelica::List<Arc<SCode::SubMod>>>;
     let mut submods: Arc<metamodelica::List<Arc<SCode::SubMod>>>;
     submods = List::fold2(inSubMods.clone(), (std::sync::Arc::new(compactSubMod) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>, FCore::ModScope, Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<Arc<SCode::SubMod>>>) -> Result<Arc<metamodelica::List<Arc<SCode::SubMod>>>> + 'static>), inModScope.clone(), metamodelica::nil(), metamodelica::nil())?;

@@ -148,7 +148,7 @@ pub fn isAlpha(mut inChar: i32) -> bool {
     outIsAlpha
 }
 
-pub fn wordWrap(mut inString: ArcStr, mut inWrapLength: i32, mut inDelimiter: ArcStr, mut inRaggedness: metamodelica::Real) -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub(crate) fn wordWrap(mut inString: ArcStr, mut inWrapLength: i32, mut inDelimiter: ArcStr, mut inRaggedness: metamodelica::Real) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut outStrings: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     let mut start_pos: i32 = 1;
     let mut end_pos: i32 = inWrapLength.clone();

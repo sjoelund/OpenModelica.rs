@@ -51,7 +51,7 @@ pub mod LexTable {
 
 }
 
-pub fn scan(mut fileName: ArcStr) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Token>>)> {
+pub(crate) fn scan(mut fileName: ArcStr) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Token>>)> {
     let mut tokens: Arc<metamodelica::List<Token>>;
     let mut errorTokens: Arc<metamodelica::List<Token>>;
     let mut contents: ArcStr;
@@ -60,7 +60,7 @@ pub fn scan(mut fileName: ArcStr) -> Result<(Arc<metamodelica::List<Token>>, Arc
     Ok((tokens, errorTokens))
 }
 
-pub fn scanString(mut fileSource: ArcStr, mut fileName: ArcStr) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Token>>)> {
+pub(crate) fn scanString(mut fileSource: ArcStr, mut fileName: ArcStr) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Token>>)> {
     let mut tokens: Arc<metamodelica::List<Token>>;
     let mut errorTokens: Arc<metamodelica::List<Token>>;
     (tokens, errorTokens) = lex((fileName.clone()).clone(), (fileSource.clone()).clone())?;
@@ -68,7 +68,7 @@ pub fn scanString(mut fileSource: ArcStr, mut fileName: ArcStr) -> Result<(Arc<m
 }
 
 /* grammar according to json.org */
-pub fn action(mut act: i32, mut startSt: i32, mut mm_currSt: i32, mut mm_pos: i32, mut mm_sPos: i32, mut mm_ePos: i32, mut mm_linenr: i32, mut lineNrStart: i32, mut buffer: i32, mut fileNm: ArcStr, mut fileContents: ArcStr, mut inErrorTokens: Arc<metamodelica::List<Token>>) -> Result<(Token, i32, i32, Arc<metamodelica::List<Token>>)> {
+pub(crate) fn action(mut act: i32, mut startSt: i32, mut mm_currSt: i32, mut mm_pos: i32, mut mm_sPos: i32, mut mm_ePos: i32, mut mm_linenr: i32, mut lineNrStart: i32, mut buffer: i32, mut fileNm: ArcStr, mut fileContents: ArcStr, mut inErrorTokens: Arc<metamodelica::List<Token>>) -> Result<(Token, i32, i32, Arc<metamodelica::List<Token>>)> {
     let mut token: Token;
     let mut mm_startSt: i32;
     let mut bufferRet: i32;
@@ -244,7 +244,7 @@ pub type TOKEN = Token;
 
 pub static noToken: std::sync::LazyLock<Token> = std::sync::LazyLock::new(|| { Token { fileName: (literal!("<NoFile>")).clone(), id: TokenId::_NO_TOKEN.clone(), fileContents: (literal!("")).clone(), byteOffset: 0, length: 0, lineNumberStart: 0, columnNumberStart: 0, lineNumberEnd: 0, columnNumberEnd: 0 } });
 
-pub fn printToken(mut token: Token) -> Result<ArcStr> {
+pub(crate) fn printToken(mut token: Token) -> Result<ArcStr> {
     let mut strTk: ArcStr;
     let mut id: TokenId;
     let mut contents: ArcStr;
@@ -260,7 +260,7 @@ pub fn printToken(mut token: Token) -> Result<ArcStr> {
     Ok(strTk)
 }
 
-pub fn tokenContent(mut token: Token) -> Result<ArcStr> {
+pub(crate) fn tokenContent(mut token: Token) -> Result<ArcStr> {
     let mut contents: ArcStr;
     let mut byteOffset: i32;
     let mut length: i32;
@@ -272,7 +272,7 @@ pub fn tokenContent(mut token: Token) -> Result<ArcStr> {
     Ok(contents)
 }
 
-pub fn tokenContentEq(mut token1: Token, mut token2: Token) -> Result<bool> {
+pub(crate) fn tokenContentEq(mut token1: Token, mut token2: Token) -> Result<bool> {
     let mut b: bool;
     let mut contents1: ArcStr;
     let mut contents2: ArcStr;
@@ -292,7 +292,7 @@ pub fn tokenContentEq(mut token1: Token, mut token2: Token) -> Result<bool> {
     Ok(b)
 }
 
-pub fn tokenSourceInfo(mut token: Token) -> Result<SourceInfo> {
+pub(crate) fn tokenSourceInfo(mut token: Token) -> Result<SourceInfo> {
     let mut info: SourceInfo;
     info = { let mut t = token.clone(); (match t.clone() {
         Token { .. } => SourceInfo { fileName: (t.fileName.clone()).clone(), isReadOnly: false, lineNumberStart: t.lineNumberStart.clone(), columnNumberStart: t.columnNumberStart.clone(), lineNumberEnd: t.lineNumberEnd.clone(), columnNumberEnd: t.columnNumberEnd.clone(), lastModification: metamodelica::OrderedFloat(0.0_f64) },

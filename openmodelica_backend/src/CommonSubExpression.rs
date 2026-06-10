@@ -139,7 +139,7 @@ fn printCSEEquation(mut cseEquation: CSE_Equation) -> Result<ArcStr> {
     Ok(r#str)
 }
 
-pub fn wrapFunctionCalls(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
+pub(crate) fn wrapFunctionCalls(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut outDAE: Arc<BackendDAE::BackendDAE>;
     let mut size: i32;
     let mut HT: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (HashTableExpToIndex::FuncHashCref, HashTableExpToIndex::FuncCrefEqual, HashTableExpToIndex::FuncCrefStr, HashTableExpToIndex::FuncExpStr));
@@ -1716,7 +1716,7 @@ fn createVarsForExp(mut inExp: Arc<DAE::Exp>, mut inAccumVarLst: Arc<metamodelic
     Ok(outVarLst)
 }
 
-pub fn isCSECref(mut cr: Arc<DAE::ComponentRef>) -> bool {
+pub(crate) fn isCSECref(mut cr: Arc<DAE::ComponentRef>) -> bool {
     let mut b: bool;
     b = (::match_deref::match_deref! { match &(cr.clone()) {
         Deref @ DAE::ComponentRef::CREF_IDENT { ident: s, .. } => {
@@ -1733,7 +1733,7 @@ pub fn isCSECref(mut cr: Arc<DAE::ComponentRef>) -> bool {
     b
 }
 
-pub fn isCSEExp(mut inExp: Arc<DAE::Exp>) -> bool {
+pub(crate) fn isCSEExp(mut inExp: Arc<DAE::Exp>) -> bool {
     let mut b: bool;
     b = (::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ DAE::Exp::CREF { .. } => isCSECref(var_field!((*inExp).componentRef, DAE::Exp::CREF).clone()),
@@ -1743,7 +1743,7 @@ pub fn isCSEExp(mut inExp: Arc<DAE::Exp>) -> bool {
     b
 }
 
-pub fn cseBinary(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
+pub(crate) fn cseBinary(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut outDAE: Arc<BackendDAE::BackendDAE>;
     (outDAE, _) = BackendDAEUtil::mapEqSystemAndFold(inDAE.clone(), (std::sync::Arc::new(fnptr!(CSE1, Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, i32)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, i32) -> Result<(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, i32)> + 'static>), 1)?;
     Ok(outDAE)
@@ -2089,7 +2089,7 @@ impl metamodelica::gc::MMTrace for CommonSubExp {
 }
 pub use self::CommonSubExp::{ASSIGNMENT_CSE,SHORTCUT_CSE};
 
-pub fn commonSubExpressionReplacement(mut daeIn: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
+pub(crate) fn commonSubExpressionReplacement(mut daeIn: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut daeOut: Arc<BackendDAE::BackendDAE>;
     daeOut = BackendDAEUtil::mapEqSystem(daeIn.clone(), (std::sync::Arc::new(fnptr!(commonSubExpression, Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>) -> Result<(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>)> + 'static>))?;
     Ok(daeOut)

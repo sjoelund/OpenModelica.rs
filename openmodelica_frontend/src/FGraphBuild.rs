@@ -93,7 +93,7 @@ pub type Graph = FCore::Graph;
 
 pub type Scope = Arc<metamodelica::List<metamodelica::Array<FCore::Node>>>;
 
-pub fn mkProgramGraph(mut inProgram: Arc<metamodelica::List<Arc<SCode::Element>>>, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
+pub(crate) fn mkProgramGraph(mut inProgram: Arc<metamodelica::List<Arc<SCode::Element>>>, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
     let mut outGraph: Graph;
     let mut topRef: Ref;
     topRef = FGraph::top(inGraph.clone())?;
@@ -114,7 +114,7 @@ fn mkClassGraph(mut inClass: Arc<SCode::Element>, mut inParentRef: Ref, mut inKi
     Ok(outGraph)
 }
 
-pub fn mkClassNode(mut inClass: Arc<SCode::Element>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
+pub(crate) fn mkClassNode(mut inClass: Arc<SCode::Element>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
     let mut outGraph: Graph;
     outGraph = (match inGraph.clone() {
         mut g => {
@@ -141,7 +141,7 @@ pub fn mkClassNode(mut inClass: Arc<SCode::Element>, mut inParentRef: Ref, mut i
     Ok(outGraph)
 }
 
-pub fn mkConstrainClass(mut inElement: Arc<SCode::Element>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Graph {
+pub(crate) fn mkConstrainClass(mut inElement: Arc<SCode::Element>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Graph {
     let mut outGraph: Graph;
     outGraph = 'mc: {
         let __mc_input = (inElement.clone(), inGraph.clone());
@@ -188,7 +188,7 @@ pub fn mkConstrainClass(mut inElement: Arc<SCode::Element>, mut inParentRef: Ref
     outGraph
 }
 
-pub fn mkModNode(mut inName: Name, mut inMod: Arc<SCode::Mod>, mut inModScope: FCore::ModScope, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
+pub(crate) fn mkModNode(mut inName: Name, mut inMod: Arc<SCode::Mod>, mut inModScope: FCore::ModScope, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
     let mut outGraph: Graph;
     outGraph = 'mc: {
         let __mc_input = (inName.clone(), inMod.clone(), inGraph.clone());
@@ -270,7 +270,7 @@ pub fn mkModNode(mut inName: Name, mut inMod: Arc<SCode::Mod>, mut inModScope: F
     Ok(outGraph)
 }
 
-pub fn mkSubMods(mut inSubMod: Arc<metamodelica::List<Arc<SCode::SubMod>>>, mut inModScope: FCore::ModScope, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
+pub(crate) fn mkSubMods(mut inSubMod: Arc<metamodelica::List<Arc<SCode::SubMod>>>, mut inModScope: FCore::ModScope, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
     '__tco: loop {
         ::match_deref::match_deref! { match &((inSubMod.clone(), inGraph.clone())) {
         (Deref @ metamodelica::List::Nil, g) => {
@@ -286,7 +286,7 @@ pub fn mkSubMods(mut inSubMod: Arc<metamodelica::List<Arc<SCode::SubMod>>>, mut 
     }
 }
 
-pub fn mkBindingNode(mut inBinding: Option<Arc<Absyn::Exp>>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
+pub(crate) fn mkBindingNode(mut inBinding: Option<Arc<Absyn::Exp>>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
     let mut outGraph: Graph;
     outGraph = (::match_deref::match_deref! { match &((inBinding.clone(), inGraph.clone())) {
         (None, g) => {
@@ -379,7 +379,7 @@ fn mkClassChildren(mut name: ArcStr, mut inClassDef: Arc<SCode::ClassDef>, mut i
     outGraph
 }
 
-pub fn mkElementNode(mut inElement: Arc<SCode::Element>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
+pub(crate) fn mkElementNode(mut inElement: Arc<SCode::Element>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
     let mut outGraph: Graph;
     outGraph = (::match_deref::match_deref! { match &((inElement.clone(), inGraph.clone())) {
         (Deref @ SCode::Element::COMPONENT { .. }, g) => {
@@ -419,7 +419,7 @@ pub fn mkElementNode(mut inElement: Arc<SCode::Element>, mut inParentRef: Ref, m
     Ok(outGraph)
 }
 
-pub fn mkUnitsNode(mut inElement: Arc<SCode::Element>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
+pub(crate) fn mkUnitsNode(mut inElement: Arc<SCode::Element>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
     let mut outGraph: Graph;
     outGraph = 'mc: {
         let __mc_input = inGraph.clone();
@@ -444,7 +444,7 @@ pub fn mkUnitsNode(mut inElement: Arc<SCode::Element>, mut inParentRef: Ref, mut
     Ok(outGraph)
 }
 
-pub fn mkImportNode(mut inElement: Arc<SCode::Element>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
+pub(crate) fn mkImportNode(mut inElement: Arc<SCode::Element>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
     let mut outGraph: Graph;
     outGraph = 'mc: {
         let __mc_input = inGraph.clone();
@@ -470,7 +470,7 @@ pub fn mkImportNode(mut inElement: Arc<SCode::Element>, mut inParentRef: Ref, mu
     Ok(outGraph)
 }
 
-pub fn mkDimsNode(mut inName: Name, mut inArrayDims: Option<Arc<metamodelica::List<Arc<Absyn::Subscript>>>>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
+pub(crate) fn mkDimsNode(mut inName: Name, mut inArrayDims: Option<Arc<metamodelica::List<Arc<Absyn::Subscript>>>>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
     let mut outGraph: Graph;
     outGraph = (::match_deref::match_deref! { match &((inArrayDims.clone(), inGraph.clone())) {
         (None, g) => {
@@ -494,7 +494,7 @@ pub fn mkDimsNode(mut inName: Name, mut inArrayDims: Option<Arc<metamodelica::Li
     Ok(outGraph)
 }
 
-pub fn mkDimsNode_helper(mut inStartWith: i32, mut inArrayDims: Arc<metamodelica::List<Arc<Absyn::Subscript>>>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
+pub(crate) fn mkDimsNode_helper(mut inStartWith: i32, mut inArrayDims: Arc<metamodelica::List<Arc<Absyn::Subscript>>>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
     '__tco: loop {
         ::match_deref::match_deref! { match &((inStartWith.clone(), inArrayDims.clone(), inGraph.clone())) {
         (_, Deref @ metamodelica::List::Nil, g) => {
@@ -519,7 +519,7 @@ pub fn mkDimsNode_helper(mut inStartWith: i32, mut inArrayDims: Arc<metamodelica
     }
 }
 
-pub fn mkCompNode(mut inComp: Arc<SCode::Element>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
+pub(crate) fn mkCompNode(mut inComp: Arc<SCode::Element>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
     let mut outGraph: Graph;
     let mut name: ArcStr;
     let mut g: Graph;
@@ -557,7 +557,7 @@ pub fn mkCompNode(mut inComp: Arc<SCode::Element>, mut inParentRef: Ref, mut inK
     Ok(outGraph)
 }
 
-pub fn mkInstNode(mut inVar: Arc<DAE::Var>, mut inParentRef: Ref, mut inGraph: Graph) -> Result<Graph> {
+pub(crate) fn mkInstNode(mut inVar: Arc<DAE::Var>, mut inParentRef: Ref, mut inGraph: Graph) -> Result<Graph> {
     let mut outGraph: Graph;
     let mut nr: Ref;
     let mut n: Node;
@@ -569,7 +569,7 @@ pub fn mkInstNode(mut inVar: Arc<DAE::Var>, mut inParentRef: Ref, mut inGraph: G
     Ok(outGraph)
 }
 
-pub fn mkConditionNode(mut inCondition: Option<Arc<Absyn::Exp>>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
+pub(crate) fn mkConditionNode(mut inCondition: Option<Arc<Absyn::Exp>>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
     let mut outGraph: Graph;
     outGraph = (::match_deref::match_deref! { match &((inCondition.clone(), inGraph.clone())) {
         (None, g) => {
@@ -585,7 +585,7 @@ pub fn mkConditionNode(mut inCondition: Option<Arc<Absyn::Exp>>, mut inParentRef
     Ok(outGraph)
 }
 
-pub fn mkExpressionNode(mut inName: Name, mut inExp: Arc<Absyn::Exp>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
+pub(crate) fn mkExpressionNode(mut inName: Name, mut inExp: Arc<Absyn::Exp>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
     let mut outGraph: Graph;
     outGraph = (::match_deref::match_deref! { match &((inExp.clone(), inGraph.clone())) {
         (e, g) => {
@@ -603,7 +603,7 @@ pub fn mkExpressionNode(mut inName: Name, mut inExp: Arc<Absyn::Exp>, mut inPare
     Ok(outGraph)
 }
 
-pub fn mkCrefsNodes(mut inCrefs: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
+pub(crate) fn mkCrefsNodes(mut inCrefs: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
     '__tco: loop {
         ::match_deref::match_deref! { match &((inCrefs.clone(), inGraph.clone())) {
         (Deref @ metamodelica::List::Nil, g) => {
@@ -619,7 +619,7 @@ pub fn mkCrefsNodes(mut inCrefs: Arc<metamodelica::List<Arc<Absyn::ComponentRef>
     }
 }
 
-pub fn mkCrefNode(mut inCref: Arc<Absyn::ComponentRef>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
+pub(crate) fn mkCrefNode(mut inCref: Arc<Absyn::ComponentRef>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
     let mut outGraph: Graph;
     outGraph = (match inGraph.clone() {
         mut g => {
@@ -637,7 +637,7 @@ pub fn mkCrefNode(mut inCref: Arc<Absyn::ComponentRef>, mut inParentRef: Ref, mu
     Ok(outGraph)
 }
 
-pub fn mkTypeNode(mut inTypes: Arc<metamodelica::List<Arc<DAE::Type>>>, mut inParentRef: Ref, mut inName: Name, mut inGraph: Graph) -> Result<Graph> {
+pub(crate) fn mkTypeNode(mut inTypes: Arc<metamodelica::List<Arc<DAE::Type>>>, mut inParentRef: Ref, mut inName: Name, mut inGraph: Graph) -> Result<Graph> {
     let mut outGraph: Graph;
     outGraph = 'mc: {
         let __mc_input = inGraph.clone();
@@ -694,7 +694,7 @@ pub fn mkTypeNode(mut inTypes: Arc<metamodelica::List<Arc<DAE::Type>>>, mut inPa
     Ok(outGraph)
 }
 
-pub fn mkEqNode(mut inName: Name, mut inEqs: Arc<metamodelica::List<Arc<SCode::Equation>>>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
+pub(crate) fn mkEqNode(mut inName: Name, mut inEqs: Arc<metamodelica::List<Arc<SCode::Equation>>>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
     let mut outGraph: Graph;
     outGraph = (::match_deref::match_deref! { match &((inEqs.clone(), inGraph.clone())) {
         (Deref @ metamodelica::List::Nil, g) => {
@@ -715,7 +715,7 @@ pub fn mkEqNode(mut inName: Name, mut inEqs: Arc<metamodelica::List<Arc<SCode::E
     Ok(outGraph)
 }
 
-pub fn mkAlNode(mut inName: Name, mut inAlgs: Arc<metamodelica::List<Arc<SCode::AlgorithmSection>>>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
+pub(crate) fn mkAlNode(mut inName: Name, mut inAlgs: Arc<metamodelica::List<Arc<SCode::AlgorithmSection>>>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
     let mut outGraph: Graph;
     outGraph = (::match_deref::match_deref! { match &((inAlgs.clone(), inGraph.clone())) {
         (Deref @ metamodelica::List::Nil, g) => {
@@ -736,7 +736,7 @@ pub fn mkAlNode(mut inName: Name, mut inAlgs: Arc<metamodelica::List<Arc<SCode::
     Ok(outGraph)
 }
 
-pub fn mkOptNode(mut inName: Name, mut inConstraintLst: Arc<metamodelica::List<SCode::ConstraintSection>>, mut inClsAttrs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
+pub(crate) fn mkOptNode(mut inName: Name, mut inConstraintLst: Arc<metamodelica::List<SCode::ConstraintSection>>, mut inClsAttrs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
     let mut outGraph: Graph;
     outGraph = (::match_deref::match_deref! { match &((inConstraintLst.clone(), inClsAttrs.clone(), inGraph.clone())) {
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil, g) => {
@@ -756,7 +756,7 @@ pub fn mkOptNode(mut inName: Name, mut inConstraintLst: Arc<metamodelica::List<S
     Ok(outGraph)
 }
 
-pub fn mkExternalNode(mut inName: Name, mut inExternalDeclOpt: Option<Arc<SCode::ExternalDecl>>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
+pub(crate) fn mkExternalNode(mut inName: Name, mut inExternalDeclOpt: Option<Arc<SCode::ExternalDecl>>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
     let mut outGraph: Graph;
     outGraph = (::match_deref::match_deref! { match &((inExternalDeclOpt.clone(), inGraph.clone())) {
         (None, g) => {
@@ -779,7 +779,7 @@ pub fn mkExternalNode(mut inName: Name, mut inExternalDeclOpt: Option<Arc<SCode:
     Ok(outGraph)
 }
 
-pub fn mkCrefsFromExps(mut inExps: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
+pub(crate) fn mkCrefsFromExps(mut inExps: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
     '__tco: loop {
         ::match_deref::match_deref! { match &((inExps.clone(), inGraph.clone())) {
         (Deref @ metamodelica::List::Nil, g) => {
@@ -955,7 +955,7 @@ fn analyseStatementTraverser(mut stmt: Arc<SCode::Statement>, mut r#ref: Ref, mu
     Ok((stmt, graph))
 }
 
-pub fn addIterators(mut inIterators: Arc<metamodelica::List<Arc<Absyn::ForIterator>>>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
+pub(crate) fn addIterators(mut inIterators: Arc<metamodelica::List<Arc<Absyn::ForIterator>>>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
     let mut outGraph: Graph;
     outGraph = 'mc: {
         let __mc_input = inGraph.clone();
@@ -982,7 +982,7 @@ pub fn addIterators(mut inIterators: Arc<metamodelica::List<Arc<Absyn::ForIterat
     Ok(outGraph)
 }
 
-pub fn addIterators_helper(mut inIterators: Arc<metamodelica::List<Arc<Absyn::ForIterator>>>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
+pub(crate) fn addIterators_helper(mut inIterators: Arc<metamodelica::List<Arc<Absyn::ForIterator>>>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
     '__tco: loop {
         ::match_deref::match_deref! { match &((inIterators.clone(), inGraph.clone())) {
         (Deref @ metamodelica::List::Nil, g) => {
@@ -1002,7 +1002,7 @@ pub fn addIterators_helper(mut inIterators: Arc<metamodelica::List<Arc<Absyn::Fo
     }
 }
 
-pub fn addMatchScope(mut inMatchExp: Arc<Absyn::Exp>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
+pub(crate) fn addMatchScope(mut inMatchExp: Arc<Absyn::Exp>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
     let mut outGraph: Graph;
     let mut n: Node;
     let mut nr: Ref;
@@ -1020,7 +1020,7 @@ pub fn addMatchScope(mut inMatchExp: Arc<Absyn::Exp>, mut inParentRef: Ref, mut 
     Ok(outGraph)
 }
 
-pub fn addMatchScope_helper(mut inElements: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
+pub(crate) fn addMatchScope_helper(mut inElements: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
     '__tco: loop {
         ::match_deref::match_deref! { match &((inElements.clone(), inGraph.clone())) {
         (Deref @ metamodelica::List::Nil, g) => {
@@ -1042,7 +1042,7 @@ pub fn addMatchScope_helper(mut inElements: Arc<metamodelica::List<Arc<Absyn::El
     }
 }
 
-pub fn mkRefNode(mut inName: Name, mut inTargetScope: Scope, mut inParentRef: Ref, mut inGraph: Graph) -> Result<Graph> {
+pub(crate) fn mkRefNode(mut inName: Name, mut inTargetScope: Scope, mut inParentRef: Ref, mut inGraph: Graph) -> Result<Graph> {
     let mut outGraph: Graph;
     outGraph = (match inGraph.clone() {
         mut g => {
@@ -1057,7 +1057,7 @@ pub fn mkRefNode(mut inName: Name, mut inTargetScope: Scope, mut inParentRef: Re
     Ok(outGraph)
 }
 
-pub fn mkAssertNode(mut inName: Name, mut inMessage: ArcStr, mut inParentRef: Ref, mut inGraph: Graph) -> Result<(Graph, Ref)> {
+pub(crate) fn mkAssertNode(mut inName: Name, mut inMessage: ArcStr, mut inParentRef: Ref, mut inGraph: Graph) -> Result<(Graph, Ref)> {
     let mut outGraph: Graph;
     let mut outRef: Ref;
     (outGraph, outRef) = (match inGraph.clone() {

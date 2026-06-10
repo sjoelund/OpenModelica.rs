@@ -195,13 +195,13 @@ pub fn getKnownUnitsInverse() -> Result<UnitToStringTable> {
     Ok(outKnownUnitsInverse)
 }
 
-pub fn newCrefUnitTable(mut size: i32) -> CrefToUnitTable {
+pub(crate) fn newCrefUnitTable(mut size: i32) -> CrefToUnitTable {
     let mut table: CrefToUnitTable;
     table = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), size.clone());
     table
 }
 
-pub fn isUnit(mut inUnit: Unit) -> bool {
+pub(crate) fn isUnit(mut inUnit: Unit) -> bool {
     let mut b: bool;
     b = (match inUnit.clone() {
         Unit::UNIT { .. } => true,
@@ -210,7 +210,7 @@ pub fn isUnit(mut inUnit: Unit) -> bool {
     b
 }
 
-pub fn isMaster(mut unit: Unit) -> bool {
+pub(crate) fn isMaster(mut unit: Unit) -> bool {
     let mut res: bool;
     res = (match unit.clone() {
         Unit::MASTER { .. } => true,
@@ -219,18 +219,18 @@ pub fn isMaster(mut unit: Unit) -> bool {
     res
 }
 
-pub fn hash(mut inKey: Unit) -> Result<i32> {
+pub(crate) fn hash(mut inKey: Unit) -> Result<i32> {
     let mut outHash: i32 = stringHashDjb2((unit2string(inKey.clone())?).clone());
     Ok(outHash)
 }
 
-pub fn realAlmostEqRel(mut a: metamodelica::Real, mut b: metamodelica::Real, mut relTol: metamodelica::Real) -> bool {
+pub(crate) fn realAlmostEqRel(mut a: metamodelica::Real, mut b: metamodelica::Real, mut relTol: metamodelica::Real) -> bool {
     let mut c: bool;
     c = if (a.clone() == b.clone()) {true} else {relTol.clone() > a.clone() - b.clone().abs() / (a.clone().abs() + b.clone().abs())};
     c
 }
 
-pub fn isEqual(mut unit1: Unit, mut unit2: Unit) -> bool {
+pub(crate) fn isEqual(mut unit1: Unit, mut unit2: Unit) -> bool {
     let mut res: bool;
     res = (match (unit1.clone(), unit2.clone()) {
         (Unit::UNIT { .. }, Unit::UNIT { .. }) => var_field!(unit1.s, Unit::UNIT).clone() == var_field!(unit2.s, Unit::UNIT).clone() && var_field!(unit1.m, Unit::UNIT).clone() == var_field!(unit2.m, Unit::UNIT).clone() && var_field!(unit1.g, Unit::UNIT).clone() == var_field!(unit2.g, Unit::UNIT).clone() && var_field!(unit1.A, Unit::UNIT).clone() == var_field!(unit2.A, Unit::UNIT).clone() && var_field!(unit1.K, Unit::UNIT).clone() == var_field!(unit2.K, Unit::UNIT).clone() && var_field!(unit1.mol, Unit::UNIT).clone() == var_field!(unit2.mol, Unit::UNIT).clone() && var_field!(unit1.cd, Unit::UNIT).clone() == var_field!(unit2.cd, Unit::UNIT).clone() && realAlmostEqRel(var_field!(unit1.factor, Unit::UNIT).clone(), var_field!(unit2.factor, Unit::UNIT).clone(), metamodelica::OrderedFloat(1e-3_f64)),
@@ -241,7 +241,7 @@ pub fn isEqual(mut unit1: Unit, mut unit2: Unit) -> bool {
     res
 }
 
-pub fn unit2string(mut unit: Unit) -> Result<ArcStr> {
+pub(crate) fn unit2string(mut unit: Unit) -> Result<ArcStr> {
     let mut outString: ArcStr;
     outString = ((match unit.clone() {
         Unit::UNIT { .. } => {
@@ -303,7 +303,7 @@ pub fn unit2string(mut unit: Unit) -> Result<ArcStr> {
     Ok(outString)
 }
 
-pub fn unitMul(mut inUnit1: Unit, mut inUnit2: Unit) -> Result<Unit> {
+pub(crate) fn unitMul(mut inUnit1: Unit, mut inUnit2: Unit) -> Result<Unit> {
     let mut outUnit: Unit;
     outUnit = (match (inUnit1.clone(), inUnit2.clone()) {
         (Unit::UNIT { .. }, Unit::UNIT { .. }) => Unit::UNIT { s: var_field!(inUnit1.s, Unit::UNIT).clone() + var_field!(inUnit2.s, Unit::UNIT).clone(), m: var_field!(inUnit1.m, Unit::UNIT).clone() + var_field!(inUnit2.m, Unit::UNIT).clone(), g: var_field!(inUnit1.g, Unit::UNIT).clone() + var_field!(inUnit2.g, Unit::UNIT).clone(), A: var_field!(inUnit1.A, Unit::UNIT).clone() + var_field!(inUnit2.A, Unit::UNIT).clone(), K: var_field!(inUnit1.K, Unit::UNIT).clone() + var_field!(inUnit2.K, Unit::UNIT).clone(), mol: var_field!(inUnit1.mol, Unit::UNIT).clone() + var_field!(inUnit2.mol, Unit::UNIT).clone(), cd: var_field!(inUnit1.cd, Unit::UNIT).clone() + var_field!(inUnit2.cd, Unit::UNIT).clone(), factor: var_field!(inUnit1.factor, Unit::UNIT).clone() * var_field!(inUnit2.factor, Unit::UNIT).clone() },
@@ -321,7 +321,7 @@ pub fn unitDiv(mut inUnit1: Unit, mut inUnit2: Unit) -> Result<Unit> {
     Ok(outUnit)
 }
 
-pub fn unitPow(mut inUnit: Unit, mut inExp: i32) -> Result<Unit> {
+pub(crate) fn unitPow(mut inUnit: Unit, mut inExp: i32) -> Result<Unit> {
     let mut outUnit: Unit;
     outUnit = (match inUnit.clone() {
         Unit::UNIT { .. } => Unit::UNIT { s: var_field!(inUnit.s, Unit::UNIT).clone() * inExp.clone(), m: var_field!(inUnit.m, Unit::UNIT).clone() * inExp.clone(), g: var_field!(inUnit.g, Unit::UNIT).clone() * inExp.clone(), A: var_field!(inUnit.A, Unit::UNIT).clone() * inExp.clone(), K: var_field!(inUnit.K, Unit::UNIT).clone() * inExp.clone(), mol: var_field!(inUnit.mol, Unit::UNIT).clone() * inExp.clone(), cd: var_field!(inUnit.cd, Unit::UNIT).clone() * inExp.clone(), factor: (var_field!(inUnit.factor, Unit::UNIT).clone()).powf(metamodelica::OrderedFloat((inExp.clone()) as f64)) },
@@ -330,7 +330,7 @@ pub fn unitPow(mut inUnit: Unit, mut inExp: i32) -> Result<Unit> {
     Ok(outUnit)
 }
 
-pub fn unitMulReal(mut inUnit: Unit, mut inFactor: metamodelica::Real) -> Result<Unit> {
+pub(crate) fn unitMulReal(mut inUnit: Unit, mut inFactor: metamodelica::Real) -> Result<Unit> {
     let mut outUnit: Unit;
     outUnit = (match inUnit.clone() {
         mut unit @ Unit::UNIT { .. } => {
@@ -345,7 +345,7 @@ pub fn unitMulReal(mut inUnit: Unit, mut inFactor: metamodelica::Real) -> Result
     Ok(outUnit)
 }
 
-pub fn unitRoot(mut inUnit: Unit, mut inExponent: metamodelica::Real) -> Result<Unit> {
+pub(crate) fn unitRoot(mut inUnit: Unit, mut inExponent: metamodelica::Real) -> Result<Unit> {
     let mut outUnit: Unit;
     outUnit = (match inUnit.clone() {
         Unit::UNIT { .. } => {

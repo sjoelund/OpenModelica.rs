@@ -96,26 +96,26 @@ pub mod FlowAlias {
 
     pub type FLOW_ALIAS = FlowAlias;
 
-    pub fn isFlow(mut alias: Arc<FlowAlias>) -> Result<bool> {
+    pub(crate) fn isFlow(mut alias: Arc<FlowAlias>) -> Result<bool> {
         let mut isFlow: bool = Util::applyOptionOrDefault(alias.variable.clone(), (std::sync::Arc::new(fnptr!(Variable::isFlow, Arc<Variable::NFVariable>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Variable::NFVariable>) -> Result<bool> + 'static>), false)?;
         Ok(isFlow)
     }
 
 }
 
-pub fn EntryHash(mut entry: Entry) -> Result<i32> {
+pub(crate) fn EntryHash(mut entry: Entry) -> Result<i32> {
     let mut hash: i32;
     hash = ComponentRef::hash(entry.name.clone())?;
     Ok(hash)
 }
 
-pub fn EntryEqual(mut entry1: Entry, mut entry2: Entry) -> Result<bool> {
+pub(crate) fn EntryEqual(mut entry1: Entry, mut entry2: Entry) -> Result<bool> {
     let mut isEqual: bool;
     isEqual = ComponentRef::isEqual(entry1.name.clone(), entry2.name.clone())?;
     Ok(isEqual)
 }
 
-pub fn EntryString(mut entry: Entry) -> Result<ArcStr> {
+pub(crate) fn EntryString(mut entry: Entry) -> Result<ArcStr> {
     let mut r#str: ArcStr;
     r#str = (ComponentRef::toString(entry.name.clone())?).clone();
     if entry.negative.clone() {
@@ -124,7 +124,7 @@ pub fn EntryString(mut entry: Entry) -> Result<ArcStr> {
     Ok(r#str)
 }
 
-pub fn eliminateAliases(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<Arc<FlatModel::NFFlatModel>> {
+pub(crate) fn eliminateAliases(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<Arc<FlatModel::NFFlatModel>> {
     let mut flatModel: Arc<FlatModel::NFFlatModel> = flatModel;
     let mut sets: Sets;
     let mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>;
@@ -136,7 +136,7 @@ pub fn eliminateAliases(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<Ar
     Ok(flatModel)
 }
 
-pub fn fromModel(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<(Arc<FlatModel::NFFlatModel>, Sets)> {
+pub(crate) fn fromModel(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<(Arc<FlatModel::NFFlatModel>, Sets)> {
     let mut flatModel: Arc<FlatModel::NFFlatModel> = flatModel;
     let mut sets: Sets;
     let mut alias_eqs: Arc<metamodelica::List<Arc<Equation::NFEquation>>>;
@@ -176,7 +176,7 @@ pub fn fromModel(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<(Arc<Flat
     Ok((flatModel, sets))
 }
 
-pub fn sortEquations(mut eqs: Arc<metamodelica::List<Arc<Equation::NFEquation>>>) -> Result<(Arc<metamodelica::List<Arc<Equation::NFEquation>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>>>>, Arc<metamodelica::List<Arc<Equation::NFEquation>>>)> {
+pub(crate) fn sortEquations(mut eqs: Arc<metamodelica::List<Arc<Equation::NFEquation>>>) -> Result<(Arc<metamodelica::List<Arc<Equation::NFEquation>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>>>>, Arc<metamodelica::List<Arc<Equation::NFEquation>>>)> {
     let mut aliasEqs: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = metamodelica::nil();
     let mut flowAliases: Arc<metamodelica::List<Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>>>> = metamodelica::nil();
     let mut otherEqs: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = metamodelica::nil();
@@ -201,7 +201,7 @@ pub fn sortEquations(mut eqs: Arc<metamodelica::List<Arc<Equation::NFEquation>>>
     Ok((aliasEqs, flowAliases, otherEqs))
 }
 
-pub fn addAliasEquation(mut aliases: Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>>, mut eq: Arc<Equation::NFEquation>, mut sets: Sets) -> Result<Sets> {
+pub(crate) fn addAliasEquation(mut aliases: Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>>, mut eq: Arc<Equation::NFEquation>, mut sets: Sets) -> Result<Sets> {
     let mut sets: Sets = sets;
     let mut scalar_aliases1: Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>>;
     let mut scalar_aliases2: Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>>;
@@ -223,7 +223,7 @@ pub fn addAliasEquation(mut aliases: Arc<metamodelica::List<Arc<FlowAlias::FlowA
     Ok(sets)
 }
 
-pub fn addAliasBinding(mut var: Arc<Variable::NFVariable>, mut sets: Sets) -> Result<Sets> {
+pub(crate) fn addAliasBinding(mut var: Arc<Variable::NFVariable>, mut sets: Sets) -> Result<Sets> {
     let mut sets: Sets = sets;
     let mut bind_exp: Arc<Expression::NFExpression>;
     let mut aliases: Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>>;
@@ -245,7 +245,7 @@ pub fn addAliasBinding(mut var: Arc<Variable::NFVariable>, mut sets: Sets) -> Re
     Ok(sets)
 }
 
-pub fn addAliasPair(mut alias1: Arc<FlowAlias::FlowAlias>, mut alias2: Arc<FlowAlias::FlowAlias>, mut sets: Sets) -> Result<Sets> {
+pub(crate) fn addAliasPair(mut alias1: Arc<FlowAlias::FlowAlias>, mut alias2: Arc<FlowAlias::FlowAlias>, mut sets: Sets) -> Result<Sets> {
     fn find_set(mut alias: Arc<FlowAlias::FlowAlias>, mut sets: Sets) -> Result<(i32, Sets, bool)> {
         let mut set: i32;
         let mut sets: Sets = sets;
@@ -282,7 +282,7 @@ pub fn addAliasPair(mut alias1: Arc<FlowAlias::FlowAlias>, mut alias2: Arc<FlowA
     Ok(sets)
 }
 
-pub fn getAliasVarsFromEq(mut eq: Arc<Equation::NFEquation>) -> Result<Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>>> {
+pub(crate) fn getAliasVarsFromEq(mut eq: Arc<Equation::NFEquation>) -> Result<Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>>> {
     let mut aliases: Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>> = metamodelica::nil();
     aliases = (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ Equation::EQUALITY { .. } => getAliasVarsFromExpPair(var_field!((*eq).lhs, Equation::NFEquation::EQUALITY).clone(), var_field!((*eq).rhs, Equation::NFEquation::EQUALITY).clone())?,
@@ -292,7 +292,7 @@ pub fn getAliasVarsFromEq(mut eq: Arc<Equation::NFEquation>) -> Result<Arc<metam
     Ok(aliases)
 }
 
-pub fn getAliasVarsFromExpPair(mut exp1: Arc<Expression::NFExpression>, mut exp2: Arc<Expression::NFExpression>) -> Result<Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>>> {
+pub(crate) fn getAliasVarsFromExpPair(mut exp1: Arc<Expression::NFExpression>, mut exp2: Arc<Expression::NFExpression>) -> Result<Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>>> {
     let mut aliases: Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>>;
     aliases = getAliasVarsFromExp(exp1.clone(), exp2.clone(), metamodelica::nil())?;
     aliases = getAliasVarsFromExp(exp2.clone(), exp1.clone(), aliases.clone())?;
@@ -302,7 +302,7 @@ pub fn getAliasVarsFromExpPair(mut exp1: Arc<Expression::NFExpression>, mut exp2
     Ok(aliases)
 }
 
-pub fn getAliasVarsFromExp(mut exp: Arc<Expression::NFExpression>, mut otherExp: Arc<Expression::NFExpression>, mut aliases: Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>>) -> Result<Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>>> {
+pub(crate) fn getAliasVarsFromExp(mut exp: Arc<Expression::NFExpression>, mut otherExp: Arc<Expression::NFExpression>, mut aliases: Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>>) -> Result<Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>>> {
     let mut aliases: Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>> = aliases;
     let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut aliases1: Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>> = metamodelica::nil();
@@ -337,7 +337,7 @@ pub fn getAliasVarsFromExp(mut exp: Arc<Expression::NFExpression>, mut otherExp:
     Ok(aliases)
 }
 
-pub fn isStreamConnectorFlow(mut alias: Arc<FlowAlias::FlowAlias>) -> Result<bool> {
+pub(crate) fn isStreamConnectorFlow(mut alias: Arc<FlowAlias::FlowAlias>) -> Result<bool> {
     let mut isStreamFlow: bool;
     let mut node: Arc<InstNode::InstNode>;
     if !(ComponentRef::isQualified(alias.name.clone())) {
@@ -353,7 +353,7 @@ pub fn isStreamConnectorFlow(mut alias: Arc<FlowAlias::FlowAlias>) -> Result<boo
     Ok(isStreamFlow)
 }
 
-pub fn scalarizeAlias(mut alias: Arc<FlowAlias::FlowAlias>) -> Result<Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>>> {
+pub(crate) fn scalarizeAlias(mut alias: Arc<FlowAlias::FlowAlias>) -> Result<Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>>> {
     let mut scalarAliases: Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>> = metamodelica::nil();
     let mut crefs: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
     crefs = ComponentRef::scalarize(alias.name.clone(), false)?;
@@ -365,7 +365,7 @@ pub fn scalarizeAlias(mut alias: Arc<FlowAlias::FlowAlias>) -> Result<Arc<metamo
     Ok(scalarAliases)
 }
 
-pub fn negateSet(mut set: i32, mut sets: Sets) -> Result<Sets> {
+pub(crate) fn negateSet(mut set: i32, mut sets: Sets) -> Result<Sets> {
     let mut sets: Sets = sets;
     let mut nodes: metamodelica::Array<i32>;
     let mut indices: metamodelica::Array<i32>;
@@ -386,7 +386,7 @@ pub fn negateSet(mut set: i32, mut sets: Sets) -> Result<Sets> {
     Ok(sets)
 }
 
-pub fn createAliases(mut sets: Sets, mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<(Arc<FlatModel::NFFlatModel>, Arc<metamodelica::List<(Arc<FlowAlias::FlowAlias>, Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>>)>>)> {
+pub(crate) fn createAliases(mut sets: Sets, mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<(Arc<FlatModel::NFFlatModel>, Arc<metamodelica::List<(Arc<FlowAlias::FlowAlias>, Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>>)>>)> {
     let mut flatModel: Arc<FlatModel::NFFlatModel> = flatModel;
     let mut aliases: Arc<metamodelica::List<(Arc<FlowAlias::FlowAlias>, Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>>)>> = metamodelica::nil();
     let mut extracted_sets: metamodelica::Array<Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>>>;
@@ -422,7 +422,7 @@ pub fn createAliases(mut sets: Sets, mut flatModel: Arc<FlatModel::NFFlatModel>)
     Ok((flatModel, aliases))
 }
 
-pub fn buildReplacements(mut aliases: Arc<metamodelica::List<(Arc<FlowAlias::FlowAlias>, Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>>)>>) -> Result<Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>> {
+pub(crate) fn buildReplacements(mut aliases: Arc<metamodelica::List<(Arc<FlowAlias::FlowAlias>, Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>>)>>) -> Result<Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>> {
     let mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>;
     let mut representative: Arc<FlowAlias::FlowAlias>;
     let mut exp: Arc<Expression::NFExpression>;
@@ -443,13 +443,13 @@ pub fn buildReplacements(mut aliases: Arc<metamodelica::List<(Arc<FlowAlias::Flo
     Ok(replacements)
 }
 
-pub fn applyReplacements(mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>, mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<Arc<FlatModel::NFFlatModel>> {
+pub(crate) fn applyReplacements(mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>, mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<Arc<FlatModel::NFFlatModel>> {
     let mut flatModel: Arc<FlatModel::NFFlatModel> = flatModel;
     flatModel = FlatModel::mapExp(flatModel.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = (std::sync::Arc::new({ let __pe_b0 = replacements.clone(); move |__pe_a1| applyReplacementsInExp(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
     Ok(flatModel)
 }
 
-pub fn applyReplacementsInExp(mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>, mut exp: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
+pub(crate) fn applyReplacementsInExp(mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>, mut exp: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression> = exp;
     let mut opt_val: Option<Arc<Expression::NFExpression>> = None;
     exp = (::match_deref::match_deref! { match &(exp.clone()) {
@@ -463,7 +463,7 @@ pub fn applyReplacementsInExp(mut replacements: Arc<UnorderedMap::UnorderedMap<A
     Ok(exp)
 }
 
-pub fn defineRepresentative(mut aliases: Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>>) -> Result<(Arc<FlowAlias::FlowAlias>, Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>>)> {
+pub(crate) fn defineRepresentative(mut aliases: Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>>) -> Result<(Arc<FlowAlias::FlowAlias>, Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>>)> {
     let mut representative: Arc<FlowAlias::FlowAlias>;
     let mut restAliases: Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>>;
     let mut start_values: Arc<metamodelica::List<Arc<Binding::NFBinding>>> = metamodelica::nil();
@@ -489,7 +489,7 @@ pub fn defineRepresentative(mut aliases: Arc<metamodelica::List<Arc<FlowAlias::F
     Ok((representative, restAliases))
 }
 
-pub fn computeLimit(mut values: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut reduceFn: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Binding::NFBinding>> {
+pub(crate) fn computeLimit(mut values: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut reduceFn: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Binding::NFBinding>> {
     type ReduceFn = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>;
 
     let mut limit: Arc<Binding::NFBinding>;
@@ -503,7 +503,7 @@ pub fn computeLimit(mut values: Arc<metamodelica::List<Arc<Expression::NFExpress
     Ok(limit)
 }
 
-pub fn defineAlias(mut alias: Arc<FlowAlias::FlowAlias>, mut binding: Arc<Binding::NFBinding>, mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>>) -> Result<(Arc<FlowAlias::FlowAlias>, Arc<metamodelica::List<Arc<Equation::NFEquation>>>)> {
+pub(crate) fn defineAlias(mut alias: Arc<FlowAlias::FlowAlias>, mut binding: Arc<Binding::NFBinding>, mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>>) -> Result<(Arc<FlowAlias::FlowAlias>, Arc<metamodelica::List<Arc<Equation::NFEquation>>>)> {
     let mut alias: Arc<FlowAlias::FlowAlias> = alias;
     let mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = equations;
     let mut var: Arc<Variable::NFVariable>;
@@ -529,7 +529,7 @@ pub fn defineAlias(mut alias: Arc<FlowAlias::FlowAlias>, mut binding: Arc<Bindin
     Ok((alias, equations))
 }
 
-pub fn evalAliasAttributes(mut alias: Arc<FlowAlias::FlowAlias>, mut startValues: Arc<metamodelica::List<Arc<Binding::NFBinding>>>, mut nominalValues: Arc<metamodelica::List<Arc<Binding::NFBinding>>>, mut minValues: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut maxValues: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<(Arc<FlowAlias::FlowAlias>, Arc<metamodelica::List<Arc<Binding::NFBinding>>>, Arc<metamodelica::List<Arc<Binding::NFBinding>>>, Arc<metamodelica::List<Arc<Expression::NFExpression>>>, Arc<metamodelica::List<Arc<Expression::NFExpression>>>)> {
+pub(crate) fn evalAliasAttributes(mut alias: Arc<FlowAlias::FlowAlias>, mut startValues: Arc<metamodelica::List<Arc<Binding::NFBinding>>>, mut nominalValues: Arc<metamodelica::List<Arc<Binding::NFBinding>>>, mut minValues: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut maxValues: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<(Arc<FlowAlias::FlowAlias>, Arc<metamodelica::List<Arc<Binding::NFBinding>>>, Arc<metamodelica::List<Arc<Binding::NFBinding>>>, Arc<metamodelica::List<Arc<Expression::NFExpression>>>, Arc<metamodelica::List<Arc<Expression::NFExpression>>>)> {
     let mut alias: Arc<FlowAlias::FlowAlias> = alias;
     let mut startValues: Arc<metamodelica::List<Arc<Binding::NFBinding>>> = startValues;
     let mut nominalValues: Arc<metamodelica::List<Arc<Binding::NFBinding>>> = nominalValues;
@@ -584,7 +584,7 @@ pub fn evalAliasAttributes(mut alias: Arc<FlowAlias::FlowAlias>, mut startValues
     Ok((alias, startValues, nominalValues, minValues, maxValues))
 }
 
-pub fn evalAliasAttribute(mut binding: Arc<Binding::NFBinding>) -> Result<(Arc<Binding::NFBinding>, Arc<Expression::NFExpression>)> {
+pub(crate) fn evalAliasAttribute(mut binding: Arc<Binding::NFBinding>) -> Result<(Arc<Binding::NFBinding>, Arc<Expression::NFExpression>)> {
     let mut binding: Arc<Binding::NFBinding> = binding;
     let mut bindingExp: Arc<Expression::NFExpression>;
     bindingExp = Binding::getExp(binding.clone())?;
@@ -594,7 +594,7 @@ pub fn evalAliasAttribute(mut binding: Arc<Binding::NFBinding>) -> Result<(Arc<B
     Ok((binding, bindingExp))
 }
 
-pub fn setRepresentativeAttributes(mut alias: Arc<FlowAlias::FlowAlias>, mut startValue: Arc<Binding::NFBinding>, mut nominalValue: Arc<Binding::NFBinding>, mut minValue: Arc<Binding::NFBinding>, mut maxValue: Arc<Binding::NFBinding>) -> Result<Arc<FlowAlias::FlowAlias>> {
+pub(crate) fn setRepresentativeAttributes(mut alias: Arc<FlowAlias::FlowAlias>, mut startValue: Arc<Binding::NFBinding>, mut nominalValue: Arc<Binding::NFBinding>, mut minValue: Arc<Binding::NFBinding>, mut maxValue: Arc<Binding::NFBinding>) -> Result<Arc<FlowAlias::FlowAlias>> {
     fn add_attribute(mut name: ArcStr, mut binding: Arc<Binding::NFBinding>, mut attrs: Arc<metamodelica::List<(ArcStr, Arc<Binding::NFBinding>)>>) -> Arc<metamodelica::List<(ArcStr, Arc<Binding::NFBinding>)>> {
         let mut attrs: Arc<metamodelica::List<(ArcStr, Arc<Binding::NFBinding>)>> = attrs;
         if Binding::isBound(binding.clone()) {
@@ -669,7 +669,7 @@ impl Default for Sets {
 pub type DISJOINT_SETS = Sets;
 
 
-pub fn add(mut entry: Entry, mut sets: Sets) -> Result<(Sets, i32)> {
+pub(crate) fn add(mut entry: Entry, mut sets: Sets) -> Result<(Sets, i32)> {
     let mut sets: Sets = sets;
     let mut index: i32;
     let mut nodes: metamodelica::Array<i32>;
@@ -688,7 +688,7 @@ pub fn add(mut entry: Entry, mut sets: Sets) -> Result<(Sets, i32)> {
     Ok((sets, index))
 }
 
-pub fn addList(mut entries: Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>>, mut sets: Sets) -> Result<Sets> {
+pub(crate) fn addList(mut entries: Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>>, mut sets: Sets) -> Result<Sets> {
     let mut sets: Sets = sets;
     let mut nodes: metamodelica::Array<i32>;
     let mut elements: IndexTable;
@@ -714,13 +714,13 @@ pub fn addList(mut entries: Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>>, 
     Ok(sets)
 }
 
-pub fn contains(mut entry: Entry, mut sets: Sets) -> Result<bool> {
+pub(crate) fn contains(mut entry: Entry, mut sets: Sets) -> Result<bool> {
     let mut found: bool;
     found = isSome(UnorderedMap::get(entry.clone(), sets.elements.clone())?);
     Ok(found)
 }
 
-pub fn emptySets(mut setCount: i32) -> Sets {
+pub(crate) fn emptySets(mut setCount: i32) -> Sets {
     let mut sets: Sets;
     let mut nodes: metamodelica::Array<i32>;
     let mut elements: IndexTable;
@@ -732,7 +732,7 @@ pub fn emptySets(mut setCount: i32) -> Sets {
     sets
 }
 
-pub fn extractSets(mut sets: Sets) -> (metamodelica::Array<Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>>>, Sets) {
+pub(crate) fn extractSets(mut sets: Sets) -> (metamodelica::Array<Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>>>, Sets) {
     let mut setsArray: metamodelica::Array<Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>>>;
     let mut assignedSets: Sets;
     let mut nodes: metamodelica::Array<i32>;
@@ -770,7 +770,7 @@ pub fn extractSets(mut sets: Sets) -> (metamodelica::Array<Arc<metamodelica::Lis
     (setsArray, assignedSets)
 }
 
-pub fn find(mut entry: Entry, mut sets: Sets) -> Result<(Sets, i32)> {
+pub(crate) fn find(mut entry: Entry, mut sets: Sets) -> Result<(Sets, i32)> {
     let mut sets: Sets = sets;
     let mut index: i32;
     let mut oindex: Option<i32>;
@@ -787,7 +787,7 @@ pub fn find(mut entry: Entry, mut sets: Sets) -> Result<(Sets, i32)> {
     Ok((sets, index))
 }
 
-pub fn findRoot(mut nodeIndex: i32, mut nodes: metamodelica::Array<i32>) -> Result<i32> {
+pub(crate) fn findRoot(mut nodeIndex: i32, mut nodes: metamodelica::Array<i32>) -> Result<i32> {
     let mut rootIndex: i32 = nodeIndex.clone();
     let mut parent: i32 = ({let __elt = nodes.borrow()[(nodeIndex.clone()-1) as usize].clone(); __elt});
     let mut idx: i32 = nodeIndex.clone();
@@ -804,7 +804,7 @@ pub fn findRoot(mut nodeIndex: i32, mut nodes: metamodelica::Array<i32>) -> Resu
     Ok(rootIndex)
 }
 
-pub fn findSet(mut entry: Entry, mut sets: Sets) -> Result<(i32, Sets)> {
+pub(crate) fn findSet(mut entry: Entry, mut sets: Sets) -> Result<(i32, Sets)> {
     let mut set: i32;
     let mut updatedSets: Sets;
     let mut index: i32;
@@ -813,7 +813,7 @@ pub fn findSet(mut entry: Entry, mut sets: Sets) -> Result<(i32, Sets)> {
     Ok((set, updatedSets))
 }
 
-pub fn findSetArrayIndex(mut entry: Entry, mut sets: Sets) -> Result<i32> {
+pub(crate) fn findSetArrayIndex(mut entry: Entry, mut sets: Sets) -> Result<i32> {
     let mut set: i32;
     set = UnorderedMap::getOrFail(entry.clone(), sets.elements.clone())?;
     while set.clone() > 0 {
@@ -823,18 +823,18 @@ pub fn findSetArrayIndex(mut entry: Entry, mut sets: Sets) -> Result<i32> {
     Ok(set)
 }
 
-pub fn getEntry(mut entry: Entry, mut sets: Sets) -> Result<Option<Arc<FlowAlias::FlowAlias>>> {
+pub(crate) fn getEntry(mut entry: Entry, mut sets: Sets) -> Result<Option<Arc<FlowAlias::FlowAlias>>> {
     let mut outEntry: Option<Arc<FlowAlias::FlowAlias>>;
     outEntry = UnorderedMap::getKey(entry.clone(), sets.elements.clone())?;
     Ok(outEntry)
 }
 
-pub fn getNodeCount(mut sets: Sets) -> i32 {
+pub(crate) fn getNodeCount(mut sets: Sets) -> i32 {
     let mut nodeCount: i32 = sets.nodeCount.clone();
     nodeCount
 }
 
-pub fn merge(mut entry1: Entry, mut entry2: Entry, mut sets: Sets) -> Result<Sets> {
+pub(crate) fn merge(mut entry1: Entry, mut entry2: Entry, mut sets: Sets) -> Result<Sets> {
     let mut sets: Sets = sets;
     let mut set1: i32;
     let mut set2: i32;
@@ -844,7 +844,7 @@ pub fn merge(mut entry1: Entry, mut entry2: Entry, mut sets: Sets) -> Result<Set
     Ok(sets)
 }
 
-pub fn printSets(mut sets: Sets) -> Result<()> {
+pub(crate) fn printSets(mut sets: Sets) -> Result<()> {
     let mut nodes: metamodelica::Array<i32>;
     let mut entries: Arc<metamodelica::List<(Arc<FlowAlias::FlowAlias>, i32)>>;
     let mut e: Entry;
@@ -866,7 +866,7 @@ pub fn printSets(mut sets: Sets) -> Result<()> {
     Ok(())
 }
 
-pub fn union(mut set1: i32, mut set2: i32, mut sets: Sets) -> Result<Sets> {
+pub(crate) fn union(mut set1: i32, mut set2: i32, mut sets: Sets) -> Result<Sets> {
     let mut sets: Sets = sets;
     let mut rank1: i32;
     let mut rank2: i32;

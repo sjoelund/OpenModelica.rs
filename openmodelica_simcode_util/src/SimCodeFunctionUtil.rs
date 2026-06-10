@@ -146,7 +146,7 @@ pub fn crefIsScalar(mut cref: Arc<DAE::ComponentRef>, mut context: SimCodeFuncti
     Ok(isScalar)
 }
 
-pub fn buildCrefExpFromAsub(mut cref: Arc<DAE::Exp>, mut subs: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<Arc<DAE::Exp>> {
+pub(crate) fn buildCrefExpFromAsub(mut cref: Arc<DAE::Exp>, mut subs: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<Arc<DAE::Exp>> {
     let mut cRefOut: Arc<DAE::Exp>;
     cRefOut = 'mc: {
         let __mc_input = (cref.clone(), subs.clone());
@@ -212,7 +212,7 @@ pub fn incrementInt(mut inInt: i32, mut increment: i32) -> i32 {
     outInt
 }
 
-pub fn decrementInt(mut inInt: i32, mut decrement: i32) -> i32 {
+pub(crate) fn decrementInt(mut inInt: i32, mut decrement: i32) -> i32 {
     let mut outInt: i32;
     outInt = inInt.clone() - decrement.clone();
     outInt
@@ -275,13 +275,13 @@ pub fn splitRecordAssignmentToMemberAssignments(mut lhs_cref: Arc<DAE::Component
     Ok(outAssigns)
 }
 
-pub fn derComponentRef(mut inCref: Arc<DAE::ComponentRef>) -> Arc<DAE::ComponentRef> {
+pub(crate) fn derComponentRef(mut inCref: Arc<DAE::ComponentRef>) -> Arc<DAE::ComponentRef> {
     let mut derCref: Arc<DAE::ComponentRef>;
     derCref = ComponentReference::crefPrefixDer(inCref.clone());
     derCref
 }
 
-pub fn hackArrayReverseToCref(mut inExp: Arc<DAE::Exp>, mut context: SimCodeFunction::Context) -> Arc<DAE::Exp> {
+pub(crate) fn hackArrayReverseToCref(mut inExp: Arc<DAE::Exp>, mut context: SimCodeFunction::Context) -> Arc<DAE::Exp> {
     let mut outExp: Arc<DAE::Exp>;
     outExp = 'mc: {
         let __mc_input = inExp.clone();
@@ -362,7 +362,7 @@ fn isArrayExpansion(mut inArrayElems: Arc<metamodelica::List<Arc<DAE::Exp>>>, mu
     isExpanded
 }
 
-pub fn hackMatrixReverseToCref(mut inExp: Arc<DAE::Exp>, mut context: SimCodeFunction::Context) -> Arc<DAE::Exp> {
+pub(crate) fn hackMatrixReverseToCref(mut inExp: Arc<DAE::Exp>, mut context: SimCodeFunction::Context) -> Arc<DAE::Exp> {
     let mut outExp: Arc<DAE::Exp>;
     outExp = 'mc: {
         let __mc_input = inExp.clone();
@@ -453,7 +453,7 @@ fn isMatrixExpansion(mut rows: Arc<metamodelica::List<Arc<metamodelica::List<Arc
     isExpanded
 }
 
-pub fn hackGetFirstExternalFunctionLib(mut libs: Arc<metamodelica::List<ArcStr>>) -> ArcStr {
+pub(crate) fn hackGetFirstExternalFunctionLib(mut libs: Arc<metamodelica::List<ArcStr>>) -> ArcStr {
     let mut outFirstLib: ArcStr;
     outFirstLib = ('mc: {
         let __mc_input = libs.clone();
@@ -2847,7 +2847,7 @@ fn generateExtFunctionDynamicLoad(mut inMod: Arc<SCode::Mod>) -> bool {
     outDynamicLoad
 }
 
-pub fn getImplicitRecordConstructors(mut inExpLst: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Arc<metamodelica::List<Arc<DAE::Exp>>> {
+pub(crate) fn getImplicitRecordConstructors(mut inExpLst: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Arc<metamodelica::List<Arc<DAE::Exp>>> {
     let mut outExpLst: Arc<metamodelica::List<Arc<DAE::Exp>>>;
     outExpLst = 'mc: {
         let __mc_input = inExpLst.clone();
@@ -2908,7 +2908,7 @@ fn getCalledFunctionsInFunctions(mut paths: Arc<metamodelica::List<Arc<Absyn::Pa
     }
 }
 
-pub fn getCalledFunctionsInFunction2(mut inPath: Arc<Absyn::Path>, mut pathstr: ArcStr, mut inHt: (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Arc<Absyn::Path>)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<ArcStr> + 'static>)), mut funcs: Arc<AvlTreePathFunction::Tree>) -> Result<(metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Arc<Absyn::Path>)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<ArcStr> + 'static>))> {
+pub(crate) fn getCalledFunctionsInFunction2(mut inPath: Arc<Absyn::Path>, mut pathstr: ArcStr, mut inHt: (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Arc<Absyn::Path>)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<ArcStr> + 'static>)), mut funcs: Arc<AvlTreePathFunction::Tree>) -> Result<(metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Arc<Absyn::Path>)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<ArcStr> + 'static>))> {
     let mut outHt: (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Arc<Absyn::Path>)>>), i32, (HashTableStringToPath::FuncHashCref, HashTableStringToPath::FuncCrefEqual, HashTableStringToPath::FuncCrefStr, HashTableStringToPath::FuncExpStr));
     outHt = 'mc: {
         let __mc_input = (inPath.clone(), inHt.clone());
@@ -3185,7 +3185,7 @@ pub fn codegenPeekTryThrowIndex() -> i32 {
     i
 }
 
-pub fn varIndex(mut var: SimCodeVar::SimVar) -> Result<i32> {
+pub(crate) fn varIndex(mut var: SimCodeVar::SimVar) -> Result<i32> {
     let mut index: i32;
     let SimCodeVar::SIMVAR { index: __pa0, .. } = (var.clone()) else { bail!("pattern mismatch") };
     index = __pa0.clone();
@@ -3222,7 +3222,7 @@ pub fn twodigit(mut i: i32) -> ArcStr {
     outS
 }
 
-pub fn generateSubPalceholders(mut cr: Arc<DAE::ComponentRef>) -> Result<ArcStr> {
+pub(crate) fn generateSubPalceholders(mut cr: Arc<DAE::ComponentRef>) -> Result<ArcStr> {
     let mut outdef: ArcStr;
     let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>;
     let mut nrdims: i32;

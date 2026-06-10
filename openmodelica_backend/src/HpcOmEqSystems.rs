@@ -113,7 +113,7 @@ pub type LINSYS = EqSys;
 //--------------------------------------------------//
 // start functions for handling linearTornSystems from here
 //-------------------------------------------------//
-pub fn partitionLinearTornSystem(mut daeIn: Arc<BackendDAE::BackendDAE>) -> Arc<BackendDAE::BackendDAE> {
+pub(crate) fn partitionLinearTornSystem(mut daeIn: Arc<BackendDAE::BackendDAE>) -> Arc<BackendDAE::BackendDAE> {
     let mut daeOut: Arc<BackendDAE::BackendDAE>;
     daeOut = 'mc: {
         let __mc_input = daeIn.clone();
@@ -2212,7 +2212,7 @@ fn dumpEqArrLst1(mut lstIdx: i32, mut inLstLst: Arc<metamodelica::List<Arc<metam
 //--------------------------------------------------//
 // solve torn systems in parallel
 //-------------------------------------------------//
-pub fn parallelizeTornSystems(mut graphIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut metaIn: HpcOmTaskGraph::TaskGraphMeta, mut sccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut simVarMapping: metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>, mut inDAE: Arc<BackendDAE::BackendDAE>) -> (Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, Arc<metamodelica::List<i32>>) {
+pub(crate) fn parallelizeTornSystems(mut graphIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut metaIn: HpcOmTaskGraph::TaskGraphMeta, mut sccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut simVarMapping: metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>, mut inDAE: Arc<BackendDAE::BackendDAE>) -> (Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, Arc<metamodelica::List<i32>>) {
     let mut scheduledTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>;
     let mut daeNodeIdcs: Arc<metamodelica::List<i32>>;
     (scheduledTasks, daeNodeIdcs) = 'mc: {
@@ -2552,7 +2552,7 @@ fn buildDummyCommCost(mut iChildNodeIdx: i32) -> HpcOmTaskGraph::Communication {
     oCommCost
 }
 
-pub fn createSingleBlockSchedule(mut graphIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut metaIn: HpcOmTaskGraph::TaskGraphMeta, mut scheduledTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, mut sccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<Arc<HpcOmSimCode::Schedule>> {
+pub(crate) fn createSingleBlockSchedule(mut graphIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut metaIn: HpcOmTaskGraph::TaskGraphMeta, mut scheduledTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, mut sccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<Arc<HpcOmSimCode::Schedule>> {
     let mut schedule: Arc<HpcOmSimCode::Schedule>;
     let mut nodes: Arc<metamodelica::List<i32>>;
     let mut comps: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>;

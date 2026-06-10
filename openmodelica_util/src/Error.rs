@@ -1456,7 +1456,7 @@ pub fn addMultiSourceMessage(mut inErrorMsg: ErrorTypes::Message, mut inMessageT
     Ok(())
 }
 
-pub fn addMessageOrSourceMessage(mut inErrorMsg: ErrorTypes::Message, mut inMessageTokens: Arc<metamodelica::List<ArcStr>>, mut inInfoOpt: Option<SourceInfo>) -> Result<()> {
+pub(crate) fn addMessageOrSourceMessage(mut inErrorMsg: ErrorTypes::Message, mut inMessageTokens: Arc<metamodelica::List<ArcStr>>, mut inInfoOpt: Option<SourceInfo>) -> Result<()> {
     let () = (match inInfoOpt.clone() {
         None => {
             addMessage(inErrorMsg.clone(), inMessageTokens.clone())?;
@@ -1470,7 +1470,7 @@ pub fn addMessageOrSourceMessage(mut inErrorMsg: ErrorTypes::Message, mut inMess
     Ok(())
 }
 
-pub fn addTotalMessage(mut message: ErrorTypes::TotalMessage) -> Result<()> {
+pub(crate) fn addTotalMessage(mut message: ErrorTypes::TotalMessage) -> Result<()> {
     let mut msg: ErrorTypes::Message;
     let mut info: SourceInfo;
     let ErrorTypes::TOTALMESSAGE { msg: __pa0, info: __pa1 } = (message.clone()) else { bail!("pattern mismatch") };
@@ -1494,13 +1494,13 @@ pub fn printMessagesStr(mut warningsAsErrors: bool) -> ArcStr {
     res
 }
 
-pub fn printErrorsNoWarning() -> ArcStr {
+pub(crate) fn printErrorsNoWarning() -> ArcStr {
     let mut res: ArcStr;
     res = (ErrorExt::printErrorsNoWarning()).clone();
     res
 }
 
-pub fn printMessagesStrLst() -> Arc<metamodelica::List<ArcStr>> {
+pub(crate) fn printMessagesStrLst() -> Arc<metamodelica::List<ArcStr>> {
     let mut outStringLst: Arc<metamodelica::List<ArcStr>>;
     outStringLst = (match () {
         () => list![(literal!("Not impl. yet")).clone()],
@@ -1508,7 +1508,7 @@ pub fn printMessagesStrLst() -> Arc<metamodelica::List<ArcStr>> {
     outStringLst
 }
 
-pub fn printMessagesStrLstType(mut inMessageType: ErrorTypes::MessageType) -> Arc<metamodelica::List<ArcStr>> {
+pub(crate) fn printMessagesStrLstType(mut inMessageType: ErrorTypes::MessageType) -> Arc<metamodelica::List<ArcStr>> {
     let mut outStringLst: Arc<metamodelica::List<ArcStr>>;
     outStringLst = (match inMessageType.clone() {
         _ => list![(literal!("Not impl. yet")).clone()],
@@ -1516,7 +1516,7 @@ pub fn printMessagesStrLstType(mut inMessageType: ErrorTypes::MessageType) -> Ar
     outStringLst
 }
 
-pub fn printMessagesStrLstSeverity(mut inSeverity: ErrorTypes::Severity) -> Arc<metamodelica::List<ArcStr>> {
+pub(crate) fn printMessagesStrLstSeverity(mut inSeverity: ErrorTypes::Severity) -> Arc<metamodelica::List<ArcStr>> {
     let mut outStringLst: Arc<metamodelica::List<ArcStr>>;
     outStringLst = (match inSeverity.clone() {
         _ => list![(literal!("Not impl. yet")).clone()],
@@ -1547,19 +1547,19 @@ pub fn getMessages() -> Arc<metamodelica::List<ErrorTypes::TotalMessage>> {
     res
 }
 
-pub fn getMessagesStrType(mut inMessageType: ErrorTypes::MessageType) -> ArcStr {
+pub(crate) fn getMessagesStrType(mut inMessageType: ErrorTypes::MessageType) -> ArcStr {
     let mut outString: ArcStr;
     outString = (literal!("not impl yet.")).clone();
     outString
 }
 
-pub fn getMessagesStrSeverity(mut inSeverity: ErrorTypes::Severity) -> ArcStr {
+pub(crate) fn getMessagesStrSeverity(mut inSeverity: ErrorTypes::Severity) -> ArcStr {
     let mut outString: ArcStr;
     outString = (literal!("not impl yet.")).clone();
     outString
 }
 
-pub fn messageTypeStr(mut inMessageType: ErrorTypes::MessageType) -> Result<ArcStr> {
+pub(crate) fn messageTypeStr(mut inMessageType: ErrorTypes::MessageType) -> Result<ArcStr> {
     let mut outString: ArcStr;
     outString = ((match inMessageType.clone() {
         ErrorTypes::MessageType::SYNTAX { .. } => literal!("SYNTAX"),
@@ -1572,7 +1572,7 @@ pub fn messageTypeStr(mut inMessageType: ErrorTypes::MessageType) -> Result<ArcS
     Ok(outString)
 }
 
-pub fn severityStr(mut inSeverity: ErrorTypes::Severity) -> Result<ArcStr> {
+pub(crate) fn severityStr(mut inSeverity: ErrorTypes::Severity) -> Result<ArcStr> {
     let mut outString: ArcStr;
     outString = ((match inSeverity.clone() {
         ErrorTypes::Severity::INTERNAL { .. } => literal!("Internal error"),
@@ -1654,7 +1654,7 @@ pub fn addInternalError(mut message: ArcStr, mut info: SourceInfo) -> Result<()>
     Ok(())
 }
 
-pub fn terminateError(mut message: ArcStr, mut info: SourceInfo) -> Result<()> {
+pub(crate) fn terminateError(mut message: ArcStr, mut info: SourceInfo) -> Result<()> {
     ErrorExt::addSourceMessage(0, openmodelica_error::ErrorTypes::MessageType::TRANSLATION, openmodelica_error::ErrorTypes::Severity::INTERNAL, info.lineNumberStart.clone(), info.columnNumberStart.clone(), info.lineNumberEnd.clone(), info.columnNumberEnd.clone(), info.isReadOnly.clone(), info.fileName.clone(), (literal!("%s")).clone(), list![(message.clone()).clone()]);
     metamodelica::print((ErrorExt::printMessagesStr(false)).clone());
     System::exit(-1)?;

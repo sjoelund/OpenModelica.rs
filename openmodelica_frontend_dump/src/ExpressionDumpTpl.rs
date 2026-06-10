@@ -954,7 +954,7 @@ pub fn dumpExp(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_stri
     Ok(out_txt)
 }
 
-pub fn parenthesizeSubExp(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>) -> Result<Tpl::Text> {
+pub(crate) fn parenthesizeSubExp(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone())) {
         (txt, Deref @ DAE::Exp::ICONST { integer: _ }) => {
@@ -1022,7 +1022,7 @@ fn lm_40(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>, 
     Ok(txt)
 }
 
-pub fn dumpExpList(mut txt: Tpl::Text, mut a_expl: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut a_stringDelimiter: ArcStr, mut a_expDelimiter: ArcStr) -> Result<Tpl::Text> {
+pub(crate) fn dumpExpList(mut txt: Tpl::Text, mut a_expl: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut a_stringDelimiter: ArcStr, mut a_expDelimiter: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (a_expDelimiter.clone()).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
     out_txt = lm_40(out_txt.clone(), a_expl.clone(), (a_stringDelimiter.clone()).clone())?;
@@ -1046,7 +1046,7 @@ fn lm_42(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>, 
     Ok(txt)
 }
 
-pub fn dumpExpListCrefs(mut txt: Tpl::Text, mut a_expl: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut a_stringDelimiter: ArcStr, mut a_expDelimiter: ArcStr) -> Result<Tpl::Text> {
+pub(crate) fn dumpExpListCrefs(mut txt: Tpl::Text, mut a_expl: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut a_stringDelimiter: ArcStr, mut a_expDelimiter: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (a_expDelimiter.clone()).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
     out_txt = lm_42(out_txt.clone(), a_expl.clone(), (a_stringDelimiter.clone()).clone())?;
@@ -1245,7 +1245,7 @@ fn fun_49(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_subscripts: Arc<met
     Ok(out_txt)
 }
 
-pub fn dumpSubscripts(mut in_txt: Tpl::Text, mut in_a_subscripts: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<Tpl::Text> {
+pub(crate) fn dumpSubscripts(mut in_txt: Tpl::Text, mut in_a_subscripts: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_subscripts.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
@@ -1294,7 +1294,7 @@ pub fn dumpSubscript(mut in_txt: Tpl::Text, mut in_a_subscript: Arc<DAE::Subscri
     Ok(out_txt)
 }
 
-pub fn dumpReductionIterator(mut in_txt: Tpl::Text, mut in_a_iterator: Arc<DAE::ReductionIterator>, mut in_a_stringDelimiter: ArcStr) -> Result<Tpl::Text> {
+pub(crate) fn dumpReductionIterator(mut in_txt: Tpl::Text, mut in_a_iterator: Arc<DAE::ReductionIterator>, mut in_a_stringDelimiter: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_iterator.clone(), in_a_stringDelimiter.clone())) {
         (txt, Deref @ DAE::ReductionIterator { guardExp: None, exp: i_exp, id: i_id, .. }, a_stringDelimiter) => {
@@ -1344,7 +1344,7 @@ fn fun_53(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_op__str: Tpl::Text)
     Ok(out_txt)
 }
 
-pub fn dumpOperand(mut txt: Tpl::Text, mut a_operand: Arc<DAE::Exp>, mut a_operation: Arc<DAE::Exp>, mut a_lhs: bool) -> Result<Tpl::Text> {
+pub(crate) fn dumpOperand(mut txt: Tpl::Text, mut a_operand: Arc<DAE::Exp>, mut a_operation: Arc<DAE::Exp>, mut a_lhs: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut ret_1: bool;
     let mut l_op__str: Tpl::Text;
@@ -1551,7 +1551,7 @@ fn fun_57(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_op: DAE::Operator) 
     Ok(out_txt)
 }
 
-pub fn dumpBinOp(mut txt: Tpl::Text, mut a_op: DAE::Operator) -> Result<Tpl::Text> {
+pub(crate) fn dumpBinOp(mut txt: Tpl::Text, mut a_op: DAE::Operator) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut ret_0: bool;
     ret_0 = Config::typeinfo()?;
@@ -1559,7 +1559,7 @@ pub fn dumpBinOp(mut txt: Tpl::Text, mut a_op: DAE::Operator) -> Result<Tpl::Tex
     Ok(out_txt)
 }
 
-pub fn dumpUnaryOp(mut in_txt: Tpl::Text, mut in_a_op: DAE::Operator) -> Result<Tpl::Text> {
+pub(crate) fn dumpUnaryOp(mut in_txt: Tpl::Text, mut in_a_op: DAE::Operator) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_op.clone()) {
         (mut txt, DAE::Operator::UMINUS { ty: _ }) => {
@@ -1582,7 +1582,7 @@ pub fn dumpUnaryOp(mut in_txt: Tpl::Text, mut in_a_op: DAE::Operator) -> Result<
     Ok(out_txt)
 }
 
-pub fn dumpLogicalBinOp(mut in_txt: Tpl::Text, mut in_a_op: DAE::Operator) -> Result<Tpl::Text> {
+pub(crate) fn dumpLogicalBinOp(mut in_txt: Tpl::Text, mut in_a_op: DAE::Operator) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_op.clone()) {
         (mut txt, DAE::Operator::AND { ty: _ }) => {
@@ -1601,7 +1601,7 @@ pub fn dumpLogicalBinOp(mut in_txt: Tpl::Text, mut in_a_op: DAE::Operator) -> Re
     Ok(out_txt)
 }
 
-pub fn dumpLogicalUnaryOp(mut in_txt: Tpl::Text, mut in_a_op: DAE::Operator) -> Result<Tpl::Text> {
+pub(crate) fn dumpLogicalUnaryOp(mut in_txt: Tpl::Text, mut in_a_op: DAE::Operator) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_op.clone()) {
         (mut txt, DAE::Operator::NOT { ty: _ }) => {
@@ -1616,7 +1616,7 @@ pub fn dumpLogicalUnaryOp(mut in_txt: Tpl::Text, mut in_a_op: DAE::Operator) -> 
     Ok(out_txt)
 }
 
-pub fn dumpRelationOp(mut in_txt: Tpl::Text, mut in_a_op: DAE::Operator) -> Result<Tpl::Text> {
+pub(crate) fn dumpRelationOp(mut in_txt: Tpl::Text, mut in_a_op: DAE::Operator) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_op.clone()) {
         (mut txt, DAE::Operator::LESS { ty: _ }) => {
@@ -1855,7 +1855,7 @@ pub fn dumpType(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tp
     }
 }
 
-pub fn dumpFuncArg(mut in_txt: Tpl::Text, mut in_a_arg: Arc<DAE::FuncArg>) -> Result<Tpl::Text> {
+pub(crate) fn dumpFuncArg(mut in_txt: Tpl::Text, mut in_a_arg: Arc<DAE::FuncArg>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_arg.clone())) {
         (txt, Deref @ DAE::FuncArg { name: i_arg_name, .. }) => {
@@ -1926,7 +1926,7 @@ pub fn dumpDimension(mut in_txt: Tpl::Text, mut in_a_dim: Arc<DAE::Dimension>) -
     Ok(out_txt)
 }
 
-pub fn dumpClassState(mut txt: Tpl::Text, mut a_state: ClassInf::State) -> Result<Tpl::Text> {
+pub(crate) fn dumpClassState(mut txt: Tpl::Text, mut a_state: ClassInf::State) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut ret_0: Arc<Absyn::Path>;
     ret_0 = ClassInfUtil::getStateName(a_state.clone());
@@ -1934,7 +1934,7 @@ pub fn dumpClassState(mut txt: Tpl::Text, mut a_state: ClassInf::State) -> Resul
     Ok(out_txt)
 }
 
-pub fn dumpMatchType(mut in_txt: Tpl::Text, mut in_a_ty: DAE::MatchType) -> Result<Tpl::Text> {
+pub(crate) fn dumpMatchType(mut in_txt: Tpl::Text, mut in_a_ty: DAE::MatchType) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone())) {
         (txt, DAE::MatchType::MATCHCONTINUE { .. }) => {
@@ -1960,7 +1960,7 @@ pub fn dumpMatchType(mut in_txt: Tpl::Text, mut in_a_ty: DAE::MatchType) -> Resu
     Ok(out_txt)
 }
 
-pub fn dumpMatchCase(mut in_txt: Tpl::Text, mut in_a_mcase: Arc<DAE::MatchCase>) -> Result<Tpl::Text> {
+pub(crate) fn dumpMatchCase(mut in_txt: Tpl::Text, mut in_a_mcase: Arc<DAE::MatchCase>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_mcase.clone())) {
         (txt, Deref @ DAE::MatchCase { body: Deref @ metamodelica::List::Nil, result: Some(i_result), patterns: i_patterns, .. }) => {
@@ -2047,7 +2047,7 @@ fn lm_74(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Pattern>
     Ok(txt)
 }
 
-pub fn dumpPatterns(mut txt: Tpl::Text, mut a_patterns: Arc<metamodelica::List<Arc<DAE::Pattern>>>) -> Result<Tpl::Text> {
+pub(crate) fn dumpPatterns(mut txt: Tpl::Text, mut a_patterns: Arc<metamodelica::List<Arc<DAE::Pattern>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
     out_txt = lm_74(out_txt.clone(), a_patterns.clone())?;
@@ -2071,7 +2071,7 @@ fn lm_76(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<(Arc<DAE::Pattern
     Ok(txt)
 }
 
-pub fn dumpPattern(mut in_txt: Tpl::Text, mut in_a_pattern: Arc<DAE::Pattern>) -> Result<Tpl::Text> {
+pub(crate) fn dumpPattern(mut in_txt: Tpl::Text, mut in_a_pattern: Arc<DAE::Pattern>) -> Result<Tpl::Text> {
     '__tco: loop {
         ::match_deref::match_deref! { match &((in_txt.clone(), in_a_pattern.clone())) {
         (txt, Deref @ DAE::Pattern::PAT_WILD { .. }) => {
@@ -2159,7 +2159,7 @@ pub fn dumpPattern(mut in_txt: Tpl::Text, mut in_a_pattern: Arc<DAE::Pattern>) -
     }
 }
 
-pub fn dumpNamedPattern(mut in_txt: Tpl::Text, mut in_a_pattern: (Arc<DAE::Pattern>, ArcStr, Arc<DAE::Type>)) -> Result<Tpl::Text> {
+pub(crate) fn dumpNamedPattern(mut in_txt: Tpl::Text, mut in_a_pattern: (Arc<DAE::Pattern>, ArcStr, Arc<DAE::Type>)) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_pattern.clone())) {
         (txt, (i_pat, i_id, _)) => {
@@ -2731,7 +2731,7 @@ pub fn dumpExpCrefs(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a
     }
 }
 
-pub fn errorMsg(mut txt: Tpl::Text, mut a_errMessage: ArcStr) -> Result<Tpl::Text> {
+pub(crate) fn errorMsg(mut txt: Tpl::Text, mut a_errMessage: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     Tpl::addTemplateError((a_errMessage.clone()).clone())?;
     out_txt = Tpl::writeStr(txt.clone(), (a_errMessage.clone()).clone())?;

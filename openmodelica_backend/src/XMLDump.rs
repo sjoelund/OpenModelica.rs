@@ -881,7 +881,7 @@ fn dumpDAEInstDims2(mut arry_Dim: Arc<metamodelica::List<Arc<DAE::Dimension>>>) 
     Ok(())
 }
 
-pub fn dumpDAEXML(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
+pub(crate) fn dumpDAEXML(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut outDAE: Arc<BackendDAE::BackendDAE> = inDAE.clone();
     let mut fileNamePrefix: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(inDAE.clone()) {

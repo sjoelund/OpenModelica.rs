@@ -1502,7 +1502,7 @@ fn cevalWholedimRetCall(mut inExp: Arc<DAE::Exp>, mut inCache: FCore::Cache, mut
     Ok((outExp, outProp))
 }
 
-pub fn cevalRangeIfConstant(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<DAE::Exp>, mut inProp: DAE::Properties, mut r#impl: bool, mut inInfo: SourceInfo) -> (FCore::Cache, Arc<DAE::Exp>) {
+pub(crate) fn cevalRangeIfConstant(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<DAE::Exp>, mut inProp: DAE::Properties, mut r#impl: bool, mut inInfo: SourceInfo) -> (FCore::Cache, Arc<DAE::Exp>) {
     let mut outCache: FCore::Cache;
     let mut outExp: Arc<DAE::Exp>;
     (outCache, outExp) = 'mc: {
@@ -1832,7 +1832,7 @@ pub fn cevalKnownExternalFuncs(mut inCache: FCore::Cache, mut env: FCore::Graph,
     Ok((outCache, res))
 }
 
-pub fn isKnownExternalFunc(mut id: ArcStr) -> Result<()> {
+pub(crate) fn isKnownExternalFunc(mut id: ArcStr) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(id.clone()) {
         Deref @ "acos" => (),
         Deref @ "asin" => (),
@@ -4938,7 +4938,7 @@ fn cevalRange(mut cache: FCore::Cache, mut env: FCore::Graph, mut rangeExp: Arc<
     Ok((outCache, outValue))
 }
 
-pub fn cevalRangeEnum(mut startIndex: i32, mut stopIndex: i32, mut enumType: Arc<DAE::Type>) -> Result<Arc<metamodelica::List<Arc<Values::Value>>>> {
+pub(crate) fn cevalRangeEnum(mut startIndex: i32, mut stopIndex: i32, mut enumType: Arc<DAE::Type>) -> Result<Arc<metamodelica::List<Arc<Values::Value>>>> {
     let mut enumValList: Arc<metamodelica::List<Arc<Values::Value>>>;
     enumValList = (::match_deref::match_deref! { match &(enumType.clone()) {
         Deref @ DAE::Type::T_ENUMERATION { path: enum_type, names: enum_names, .. } if (startIndex.clone() <= stopIndex.clone()) => {
@@ -4978,7 +4978,7 @@ pub fn cevalList(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExpEx
     Ok((outCache, outValuesValueLst))
 }
 
-pub fn cevalCref(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inComponentRef: Arc<DAE::ComponentRef>, mut inBoolean: bool, mut inMsg: Absyn::Msg, mut numIter: i32) -> Result<(FCore::Cache, Arc<Values::Value>)> {
+pub(crate) fn cevalCref(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inComponentRef: Arc<DAE::ComponentRef>, mut inBoolean: bool, mut inMsg: Absyn::Msg, mut numIter: i32) -> Result<(FCore::Cache, Arc<Values::Value>)> {
     let mut outCache: FCore::Cache;
     let mut outValue: Arc<Values::Value>;
     (outCache, outValue) = 'mc: {
@@ -5025,7 +5025,7 @@ pub fn cevalCref(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inCompo
     Ok((outCache, outValue))
 }
 
-pub fn cevalCref_dispatch(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inCref: Arc<DAE::ComponentRef>, mut inAttr: Arc<DAE::Attributes>, mut inType: Arc<DAE::Type>, mut inBinding: Arc<DAE::Binding>, mut constForRange: Option<DAE::Const>, mut inSplicedExpData: InstTypes::SplicedExpData, mut inClassEnv: FCore::Graph, mut inComponentEnv: FCore::Graph, mut inFQName: ArcStr, mut inImpl: bool, mut inMsg: Absyn::Msg, mut numIter: i32) -> Result<(FCore::Cache, Arc<Values::Value>)> {
+pub(crate) fn cevalCref_dispatch(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inCref: Arc<DAE::ComponentRef>, mut inAttr: Arc<DAE::Attributes>, mut inType: Arc<DAE::Type>, mut inBinding: Arc<DAE::Binding>, mut constForRange: Option<DAE::Const>, mut inSplicedExpData: InstTypes::SplicedExpData, mut inClassEnv: FCore::Graph, mut inComponentEnv: FCore::Graph, mut inFQName: ArcStr, mut inImpl: bool, mut inMsg: Absyn::Msg, mut numIter: i32) -> Result<(FCore::Cache, Arc<Values::Value>)> {
     let mut outCache: FCore::Cache;
     let mut outValue: Arc<Values::Value>;
     (outCache, outValue) = (::match_deref::match_deref! { match &((inAttr.clone(), inBinding.clone(), constForRange.clone(), inImpl.clone(), inMsg.clone())) {
@@ -5065,7 +5065,7 @@ pub fn cevalCref_dispatch(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
     Ok((outCache, outValue))
 }
 
-pub fn cevalCrefBinding(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inComponentRef: Arc<DAE::ComponentRef>, mut inBinding: Arc<DAE::Binding>, mut inBoolean: bool, mut inMsg: Absyn::Msg, mut numIter: i32) -> Result<(FCore::Cache, Arc<Values::Value>)> {
+pub(crate) fn cevalCrefBinding(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inComponentRef: Arc<DAE::ComponentRef>, mut inBinding: Arc<DAE::Binding>, mut inBoolean: bool, mut inMsg: Absyn::Msg, mut numIter: i32) -> Result<(FCore::Cache, Arc<Values::Value>)> {
     let mut outCache: FCore::Cache;
     let mut outValue: Arc<Values::Value>;
     (outCache, outValue) = 'mc: {
@@ -5249,7 +5249,7 @@ fn isRecursiveBinding(mut cr: Arc<DAE::ComponentRef>, mut exp: Arc<DAE::Exp>) ->
     res
 }
 
-pub fn cevalSubscriptValue(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExpSubscriptLst: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut inValue: Arc<Values::Value>, mut inBoolean: bool, mut inMsg: Absyn::Msg, mut numIter: i32) -> Result<(FCore::Cache, Arc<Values::Value>)> {
+pub(crate) fn cevalSubscriptValue(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExpSubscriptLst: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut inValue: Arc<Values::Value>, mut inBoolean: bool, mut inMsg: Absyn::Msg, mut numIter: i32) -> Result<(FCore::Cache, Arc<Values::Value>)> {
     let mut outCache: FCore::Cache;
     let mut outValue: Arc<Values::Value>;
     (outCache, outValue) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inExpSubscriptLst.clone(), inValue.clone(), inBoolean.clone(), inMsg.clone())) {
@@ -5334,7 +5334,7 @@ fn cevalSubscriptValueList(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, m
     Ok((outCache, outValue))
 }
 
-pub fn cevalSubscripts(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExpSubscriptLst: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut inIntegerLst: Arc<metamodelica::List<i32>>, mut inBoolean: bool, mut inMsg: Absyn::Msg, mut numIter: i32) -> Result<(FCore::Cache, Arc<metamodelica::List<Arc<DAE::Subscript>>>)> {
+pub(crate) fn cevalSubscripts(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExpSubscriptLst: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut inIntegerLst: Arc<metamodelica::List<i32>>, mut inBoolean: bool, mut inMsg: Absyn::Msg, mut numIter: i32) -> Result<(FCore::Cache, Arc<metamodelica::List<Arc<DAE::Subscript>>>)> {
     let mut outCache: FCore::Cache;
     let mut outExpSubscriptLst: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
     (outCache, outExpSubscriptLst) = 'mc: {
@@ -5380,7 +5380,7 @@ pub fn cevalSubscripts(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut i
     Ok((outCache, outExpSubscriptLst))
 }
 
-pub fn cevalSubscript(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inSubscript: Arc<DAE::Subscript>, mut inInteger: i32, mut inBoolean: bool, mut inMsg: Absyn::Msg, mut numIter: i32) -> Result<(FCore::Cache, Arc<DAE::Subscript>)> {
+pub(crate) fn cevalSubscript(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inSubscript: Arc<DAE::Subscript>, mut inInteger: i32, mut inBoolean: bool, mut inMsg: Absyn::Msg, mut numIter: i32) -> Result<(FCore::Cache, Arc<DAE::Subscript>)> {
     let mut outCache: FCore::Cache;
     let mut outSubscript: Arc<DAE::Subscript>;
     (outCache, outSubscript) = 'mc: {
@@ -5755,7 +5755,7 @@ pub fn cevalSimpleWithFunctionTreeReturnExp(mut exp: Arc<DAE::Exp>, mut function
     Ok(oexp)
 }
 
-pub fn cevalAstExp(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<Absyn::Exp>, mut inBoolean: bool, mut inMsg: Absyn::Msg, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<Absyn::Exp>)> {
+pub(crate) fn cevalAstExp(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<Absyn::Exp>, mut inBoolean: bool, mut inMsg: Absyn::Msg, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<Absyn::Exp>)> {
     let mut outCache: FCore::Cache;
     let mut outExp: Arc<Absyn::Exp>;
     (outCache, outExp) = 'mc: {
@@ -5986,7 +5986,7 @@ pub fn cevalAstExp(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp
     Ok((outCache, outExp))
 }
 
-pub fn cevalAstExpList(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inAbsynExpLst: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inBoolean: bool, mut inMsg: Absyn::Msg, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<metamodelica::List<Arc<Absyn::Exp>>>)> {
+pub(crate) fn cevalAstExpList(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inAbsynExpLst: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inBoolean: bool, mut inMsg: Absyn::Msg, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<metamodelica::List<Arc<Absyn::Exp>>>)> {
     let mut outCache: FCore::Cache;
     let mut outAbsynExpLst: Arc<metamodelica::List<Arc<Absyn::Exp>>>;
     (outCache, outAbsynExpLst) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inAbsynExpLst.clone(), inBoolean.clone(), inMsg.clone())) {
@@ -6024,7 +6024,7 @@ fn cevalAstExpListList(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut i
     Ok((outCache, outAbsynExpLstLst))
 }
 
-pub fn cevalAstElt(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inElement: Arc<Absyn::Element>, mut inBoolean: bool, mut inMsg: Absyn::Msg) -> Result<(FCore::Cache, Arc<Absyn::Element>)> {
+pub(crate) fn cevalAstElt(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inElement: Arc<Absyn::Element>, mut inBoolean: bool, mut inMsg: Absyn::Msg) -> Result<(FCore::Cache, Arc<Absyn::Element>)> {
     let mut outCache: FCore::Cache;
     let mut outElement: Arc<Absyn::Element>;
     (outCache, outElement) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inElement.clone(), inBoolean.clone(), inMsg.clone())) {
@@ -6213,7 +6213,7 @@ fn cevalAstExpexpList(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut in
     Ok((outCache, outExpTpls))
 }
 
-pub fn cevalDimension(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inDimension: Arc<DAE::Dimension>, mut inImpl: bool, mut inMsg: Absyn::Msg, mut numIter: i32) -> Result<(FCore::Cache, Arc<Values::Value>)> {
+pub(crate) fn cevalDimension(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inDimension: Arc<DAE::Dimension>, mut inImpl: bool, mut inMsg: Absyn::Msg, mut numIter: i32) -> Result<(FCore::Cache, Arc<Values::Value>)> {
     let mut outCache: FCore::Cache;
     let mut outValue: Arc<Values::Value>;
     (outCache, outValue) = (::match_deref::match_deref! { match &(inDimension.clone()) {

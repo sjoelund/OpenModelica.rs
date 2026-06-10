@@ -785,7 +785,7 @@ pub fn printConnectorTypeStr(mut it: Arc<DAE::Type>) -> Result<(ArcStr, ArcStr)>
     Ok((s, s2))
 }
 
-pub fn printParamsStr(mut inFuncArgLst: Arc<metamodelica::List<Arc<DAE::FuncArg>>>) -> Result<ArcStr> {
+pub(crate) fn printParamsStr(mut inFuncArgLst: Arc<metamodelica::List<Arc<DAE::FuncArg>>>) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = ('mc: {
         let __mc_input = inFuncArgLst.clone();
@@ -886,7 +886,7 @@ pub fn unparseVar(mut inVar: Arc<DAE::Var>) -> Result<ArcStr> {
     Ok(outString)
 }
 
-pub fn connectorTypeStr(mut ct: Arc<DAE::ConnectorType>) -> ArcStr {
+pub(crate) fn connectorTypeStr(mut ct: Arc<DAE::ConnectorType>) -> ArcStr {
     let mut r#str: ArcStr;
     r#str = ('mc: {
         let __mc_input = ct.clone();
@@ -1042,7 +1042,7 @@ pub fn printBindingStr(mut inBinding: Arc<DAE::Binding>) -> Result<ArcStr> {
     Ok(outString)
 }
 
-pub fn printFarg(mut inFuncArg: Arc<DAE::FuncArg>) -> Result<()> {
+pub(crate) fn printFarg(mut inFuncArg: Arc<DAE::FuncArg>) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(inFuncArg.clone()) {
         Deref @ DAE::FuncArg { name: n, ty, .. } => {
             Print::printErrorBuf((printTypeStr(ty.clone())).clone())?;
@@ -1176,7 +1176,7 @@ pub fn getTypeName(mut inType: Arc<DAE::Type>) -> ArcStr {
     outString
 }
 
-pub fn constStrFriendly(mut r#const: DAE::Const) -> Result<ArcStr> {
+pub(crate) fn constStrFriendly(mut r#const: DAE::Const) -> Result<ArcStr> {
     let mut r#str: ArcStr;
     r#str = ((match r#const.clone() {
         DAE::Const::C_VAR { .. } => literal!(""),
@@ -1187,7 +1187,7 @@ pub fn constStrFriendly(mut r#const: DAE::Const) -> Result<ArcStr> {
     Ok(r#str)
 }
 
-pub fn dumpVarParallelismStr(mut inVarParallelism: DAE::VarParallelism) -> Result<ArcStr> {
+pub(crate) fn dumpVarParallelismStr(mut inVarParallelism: DAE::VarParallelism) -> Result<ArcStr> {
     let mut outString: ArcStr;
     outString = ((match inVarParallelism.clone() {
         DAE::VarParallelism::NON_PARALLEL { .. } => literal!(""),
@@ -1197,7 +1197,7 @@ pub fn dumpVarParallelismStr(mut inVarParallelism: DAE::VarParallelism) -> Resul
     Ok(outString)
 }
 
-pub fn printBindingSourceStr(mut bindingSource: DAE::BindingSource) -> Result<ArcStr> {
+pub(crate) fn printBindingSourceStr(mut bindingSource: DAE::BindingSource) -> Result<ArcStr> {
     let mut r#str: ArcStr;
     r#str = ((match bindingSource.clone() {
         DAE::BindingSource::BINDING_FROM_DEFAULT_VALUE { .. } => literal!("[DEFAULT VALUE]"),

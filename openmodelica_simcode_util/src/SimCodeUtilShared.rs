@@ -330,7 +330,7 @@ pub fn getNumElems(mut var: SimCodeVar::SimVar) -> Result<i32> {
     Ok(numElems)
 }
 
-pub fn isArrayVar(mut var: SimCodeVar::SimVar) -> bool {
+pub(crate) fn isArrayVar(mut var: SimCodeVar::SimVar) -> bool {
     let mut isArray: bool;
     isArray = (::match_deref::match_deref! { match &(var.clone()) {
         SimCodeVar::SimVar { type_: Deref @ DAE::Type::T_ARRAY { .. }, .. } => true,

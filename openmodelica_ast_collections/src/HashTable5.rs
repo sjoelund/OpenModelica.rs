@@ -77,7 +77,7 @@ fn hashFunc(mut cr: Key) -> Result<i32> {
     Ok(res)
 }
 
-pub fn emptyHashTable() -> HashTable {
+pub(crate) fn emptyHashTable() -> HashTable {
     let mut hashTable: HashTable;
     hashTable = emptyHashTableSized(BaseHashTable::defaultBucketSize.clone());
     hashTable

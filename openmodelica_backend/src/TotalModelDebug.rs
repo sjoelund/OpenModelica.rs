@@ -68,7 +68,7 @@ pub fn getTotalModel(mut program: Arc<metamodelica::List<Arc<SCode::Element>>>, 
     Ok(program)
 }
 
-pub fn analyseProgram(mut program: Arc<metamodelica::List<Arc<SCode::Element>>>, mut used: UseTable) -> Result<()> {
+pub(crate) fn analyseProgram(mut program: Arc<metamodelica::List<Arc<SCode::Element>>>, mut used: UseTable) -> Result<()> {
     for mut e in &*program.clone() {
         let mut e = e.clone();
         analyseElement(e.clone(), used.clone())?;
@@ -76,7 +76,7 @@ pub fn analyseProgram(mut program: Arc<metamodelica::List<Arc<SCode::Element>>>,
     Ok(())
 }
 
-pub fn analyseElements(mut elements: Arc<metamodelica::List<Arc<SCode::Element>>>, mut used: UseTable) -> Result<()> {
+pub(crate) fn analyseElements(mut elements: Arc<metamodelica::List<Arc<SCode::Element>>>, mut used: UseTable) -> Result<()> {
     for mut e in &*elements.clone() {
         let mut e = e.clone();
         analyseElement(e.clone(), used.clone())?;
@@ -84,7 +84,7 @@ pub fn analyseElements(mut elements: Arc<metamodelica::List<Arc<SCode::Element>>
     Ok(())
 }
 
-pub fn analyseElement(mut element: Arc<SCode::Element>, mut used: UseTable) -> Result<()> {
+pub(crate) fn analyseElement(mut element: Arc<SCode::Element>, mut used: UseTable) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(element.clone()) {
         Deref @ SCode::Element::IMPORT { .. } => {
             analyseImport(var_field!((*element).imp, SCode::Element::IMPORT).clone(), used.clone())?;
@@ -119,12 +119,12 @@ pub fn analyseElement(mut element: Arc<SCode::Element>, mut used: UseTable) -> R
     Ok(())
 }
 
-pub fn analyseImport(mut imp: Absyn::Import, mut used: UseTable) -> Result<()> {
+pub(crate) fn analyseImport(mut imp: Absyn::Import, mut used: UseTable) -> Result<()> {
     analysePath(AbsynUtil::importPath(imp.clone())?, used.clone())?;
     Ok(())
 }
 
-pub fn analyseClassDef(mut def: Arc<SCode::ClassDef>, mut used: UseTable) -> Result<()> {
+pub(crate) fn analyseClassDef(mut def: Arc<SCode::ClassDef>, mut used: UseTable) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(def.clone()) {
         Deref @ SCode::ClassDef::PARTS { .. } => {
             analyseElements(var_field!((*def).elementLst, SCode::ClassDef::PARTS).clone(), used.clone())?;
@@ -154,14 +154,14 @@ pub fn analyseClassDef(mut def: Arc<SCode::ClassDef>, mut used: UseTable) -> Res
     Ok(())
 }
 
-pub fn analyseExternalDecl(mut extDecl: Arc<SCode::ExternalDecl>, mut used: UseTable) -> Result<()> {
+pub(crate) fn analyseExternalDecl(mut extDecl: Arc<SCode::ExternalDecl>, mut used: UseTable) -> Result<()> {
     if isSome(extDecl.annotation_.clone()) {
         analyseAnnotation(Util::getOption(extDecl.annotation_.clone())?, used.clone())?;
     }
     Ok(())
 }
 
-pub fn analyseOperatorRecord(mut element: Arc<SCode::Element>, mut used: UseTable) -> Result<()> {
+pub(crate) fn analyseOperatorRecord(mut element: Arc<SCode::Element>, mut used: UseTable) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(element.clone()) {
         Deref @ SCode::Element::CLASS { .. } => {
             UnorderedSet::add((var_field!((*element).name, SCode::Element::CLASS).clone()).clone(), used.clone())?;
@@ -177,17 +177,17 @@ pub fn analyseOperatorRecord(mut element: Arc<SCode::Element>, mut used: UseTabl
     Ok(())
 }
 
-pub fn analyseAttributes(mut attributes: SCode::Attributes, mut used: UseTable) -> Result<()> {
+pub(crate) fn analyseAttributes(mut attributes: SCode::Attributes, mut used: UseTable) -> Result<()> {
     analyseDims(attributes.arrayDims.clone(), used.clone())?;
     Ok(())
 }
 
-pub fn analysePrefixes(mut prefixes: Arc<SCode::Prefixes>, mut used: UseTable) -> Result<()> {
+pub(crate) fn analysePrefixes(mut prefixes: Arc<SCode::Prefixes>, mut used: UseTable) -> Result<()> {
     analyseReplaceable(prefixes.replaceablePrefix.clone(), used.clone())?;
     Ok(())
 }
 
-pub fn analyseReplaceable(mut repl: Arc<SCode::Replaceable>, mut used: UseTable) -> Result<()> {
+pub(crate) fn analyseReplaceable(mut repl: Arc<SCode::Replaceable>, mut used: UseTable) -> Result<()> {
     let mut cc: Arc<SCode::ConstrainClass> = Arc::new(<SCode::ConstrainClass as ::std::default::Default>::default());
     let () = (::match_deref::match_deref! { match &(repl.clone()) {
         Deref @ SCode::Replaceable::REPLACEABLE { cc: Some(__esc_cc) } => {
@@ -201,14 +201,14 @@ pub fn analyseReplaceable(mut repl: Arc<SCode::Replaceable>, mut used: UseTable)
     Ok(())
 }
 
-pub fn analyseConstrainClass(mut cc: Arc<SCode::ConstrainClass>, mut used: UseTable) -> Result<()> {
+pub(crate) fn analyseConstrainClass(mut cc: Arc<SCode::ConstrainClass>, mut used: UseTable) -> Result<()> {
     analysePath(cc.constrainingClass.clone(), used.clone())?;
     analyseMod(cc.modifier.clone(), used.clone())?;
     analyseComment(cc.comment.clone(), used.clone())?;
     Ok(())
 }
 
-pub fn analyseMod(mut r#mod: Arc<SCode::Mod>, mut used: UseTable) -> Result<()> {
+pub(crate) fn analyseMod(mut r#mod: Arc<SCode::Mod>, mut used: UseTable) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(r#mod.clone()) {
         Deref @ SCode::Mod::MOD { .. } => {
             for mut s in &*var_field!((*r#mod).subModLst, SCode::Mod::MOD).clone() {
@@ -228,7 +228,7 @@ pub fn analyseMod(mut r#mod: Arc<SCode::Mod>, mut used: UseTable) -> Result<()> 
     Ok(())
 }
 
-pub fn analyseTypeSpec(mut ty: Arc<Absyn::TypeSpec>, mut used: UseTable) -> Result<()> {
+pub(crate) fn analyseTypeSpec(mut ty: Arc<Absyn::TypeSpec>, mut used: UseTable) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ Absyn::TypeSpec::TPATH { .. } => {
             analysePath(var_field!((*ty).path, Absyn::TypeSpec::TPATH).clone(), used.clone())?;
@@ -253,7 +253,7 @@ pub fn analyseTypeSpec(mut ty: Arc<Absyn::TypeSpec>, mut used: UseTable) -> Resu
     Ok(())
 }
 
-pub fn analysePath(mut path: Arc<Absyn::Path>, mut used: UseTable) -> Result<()> {
+pub(crate) fn analysePath(mut path: Arc<Absyn::Path>, mut used: UseTable) -> Result<()> {
     for mut i in &*AbsynUtil::pathToStringList(path.clone())? {
         let mut i = i.clone();
         UnorderedSet::add((i.clone()).clone(), used.clone())?;
@@ -261,7 +261,7 @@ pub fn analysePath(mut path: Arc<Absyn::Path>, mut used: UseTable) -> Result<()>
     Ok(())
 }
 
-pub fn analyseEquations(mut eqs: Arc<metamodelica::List<Arc<SCode::Equation>>>, mut used: UseTable) -> Result<()> {
+pub(crate) fn analyseEquations(mut eqs: Arc<metamodelica::List<Arc<SCode::Equation>>>, mut used: UseTable) -> Result<()> {
     for mut e in &*eqs.clone() {
         let mut e = e.clone();
         analyseEquation(e.clone(), used.clone())?;
@@ -269,7 +269,7 @@ pub fn analyseEquations(mut eqs: Arc<metamodelica::List<Arc<SCode::Equation>>>, 
     Ok(())
 }
 
-pub fn analyseEquation(mut eq: Arc<SCode::Equation>, mut used: UseTable) -> Result<()> {
+pub(crate) fn analyseEquation(mut eq: Arc<SCode::Equation>, mut used: UseTable) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ SCode::Equation::EQ_IF { .. } => {
             analyseExpList(var_field!((*eq).condition, SCode::Equation::EQ_IF).clone(), used.clone())?;
@@ -344,7 +344,7 @@ pub fn analyseEquation(mut eq: Arc<SCode::Equation>, mut used: UseTable) -> Resu
     Ok(())
 }
 
-pub fn analyseAlgorithms(mut algs: Arc<metamodelica::List<Arc<SCode::AlgorithmSection>>>, mut used: UseTable) -> Result<()> {
+pub(crate) fn analyseAlgorithms(mut algs: Arc<metamodelica::List<Arc<SCode::AlgorithmSection>>>, mut used: UseTable) -> Result<()> {
     for mut a in &*algs.clone() {
         let mut a = a.clone();
         analyseAlgorithm(a.clone(), used.clone())?;
@@ -352,12 +352,12 @@ pub fn analyseAlgorithms(mut algs: Arc<metamodelica::List<Arc<SCode::AlgorithmSe
     Ok(())
 }
 
-pub fn analyseAlgorithm(mut alg: Arc<SCode::AlgorithmSection>, mut used: UseTable) -> Result<()> {
+pub(crate) fn analyseAlgorithm(mut alg: Arc<SCode::AlgorithmSection>, mut used: UseTable) -> Result<()> {
     analyseStatements(alg.statements.clone(), used.clone())?;
     Ok(())
 }
 
-pub fn analyseStatements(mut stmts: Arc<metamodelica::List<Arc<SCode::Statement>>>, mut used: UseTable) -> Result<()> {
+pub(crate) fn analyseStatements(mut stmts: Arc<metamodelica::List<Arc<SCode::Statement>>>, mut used: UseTable) -> Result<()> {
     for mut s in &*stmts.clone() {
         let mut s = s.clone();
         analyseStatement(s.clone(), used.clone())?;
@@ -365,7 +365,7 @@ pub fn analyseStatements(mut stmts: Arc<metamodelica::List<Arc<SCode::Statement>
     Ok(())
 }
 
-pub fn analyseStatement(mut stmt: Arc<SCode::Statement>, mut used: UseTable) -> Result<()> {
+pub(crate) fn analyseStatement(mut stmt: Arc<SCode::Statement>, mut used: UseTable) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(stmt.clone()) {
         Deref @ SCode::Statement::ALG_ASSIGN { .. } => {
             analyseExp(var_field!((*stmt).assignComponent, SCode::Statement::ALG_ASSIGN).clone(), used.clone())?;
@@ -463,7 +463,7 @@ pub fn analyseSubscripts(mut subs: Arc<metamodelica::List<Arc<Absyn::Subscript>>
     Ok(())
 }
 
-pub fn analyseSubscript(mut sub: Arc<Absyn::Subscript>, mut used: UseTable) -> Result<()> {
+pub(crate) fn analyseSubscript(mut sub: Arc<Absyn::Subscript>, mut used: UseTable) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(sub.clone()) {
         Deref @ Absyn::Subscript::SUBSCRIPT { .. } => {
             analyseExp(var_field!((*sub).subscript, Absyn::Subscript::SUBSCRIPT).clone(), used.clone())?;
@@ -475,14 +475,14 @@ pub fn analyseSubscript(mut sub: Arc<Absyn::Subscript>, mut used: UseTable) -> R
     Ok(())
 }
 
-pub fn analyseExpOpt(mut exp: Option<Arc<Absyn::Exp>>, mut used: UseTable) -> Result<()> {
+pub(crate) fn analyseExpOpt(mut exp: Option<Arc<Absyn::Exp>>, mut used: UseTable) -> Result<()> {
     if isSome(exp.clone()) {
         analyseExp(Util::getOption(exp.clone())?, used.clone())?;
     }
     Ok(())
 }
 
-pub fn analyseExpList(mut expl: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut used: UseTable) -> Result<()> {
+pub(crate) fn analyseExpList(mut expl: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut used: UseTable) -> Result<()> {
     for mut e in &*expl.clone() {
         let mut e = e.clone();
         analyseExp(e.clone(), used.clone())?;
@@ -490,12 +490,12 @@ pub fn analyseExpList(mut expl: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut us
     Ok(())
 }
 
-pub fn analyseExp(mut exp: Arc<Absyn::Exp>, mut used: UseTable) -> Result<()> {
+pub(crate) fn analyseExp(mut exp: Arc<Absyn::Exp>, mut used: UseTable) -> Result<()> {
     AbsynUtil::traverseExp(exp.clone(), (std::sync::Arc::new(analyseExpTraverse) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arc<UnorderedSet::UnorderedSet<ArcStr>>) -> Result<(Arc<Absyn::Exp>, Arc<UnorderedSet::UnorderedSet<ArcStr>>)> + 'static>), used.clone())?;
     Ok(())
 }
 
-pub fn analyseExpTraverse(mut exp: Arc<Absyn::Exp>, mut used: UseTable) -> Result<(Arc<Absyn::Exp>, UseTable)> {
+pub(crate) fn analyseExpTraverse(mut exp: Arc<Absyn::Exp>, mut used: UseTable) -> Result<(Arc<Absyn::Exp>, UseTable)> {
     let mut exp: Arc<Absyn::Exp> = exp;
     let mut used: UseTable = used;
     let () = (::match_deref::match_deref! { match &(exp.clone()) {
@@ -517,7 +517,7 @@ pub fn analyseExpTraverse(mut exp: Arc<Absyn::Exp>, mut used: UseTable) -> Resul
     Ok((exp, used))
 }
 
-pub fn analyseCref(mut cref: Arc<Absyn::ComponentRef>, mut used: UseTable, mut includeLast: bool) -> Result<()> {
+pub(crate) fn analyseCref(mut cref: Arc<Absyn::ComponentRef>, mut used: UseTable, mut includeLast: bool) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { .. } => {
             analyseCref(var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone(), used.clone(), includeLast.clone())?;
@@ -542,19 +542,19 @@ pub fn analyseCref(mut cref: Arc<Absyn::ComponentRef>, mut used: UseTable, mut i
     Ok(())
 }
 
-pub fn analyseComment(mut comment: Arc<SCode::Comment>, mut used: UseTable) -> Result<()> {
+pub(crate) fn analyseComment(mut comment: Arc<SCode::Comment>, mut used: UseTable) -> Result<()> {
     if isSome(comment.annotation_.clone()) {
         analyseAnnotation(Util::getOption(comment.annotation_.clone())?, used.clone())?;
     }
     Ok(())
 }
 
-pub fn analyseAnnotation(mut ann: Arc<SCode::Annotation>, mut used: UseTable) -> Result<()> {
+pub(crate) fn analyseAnnotation(mut ann: Arc<SCode::Annotation>, mut used: UseTable) -> Result<()> {
     analyseMod(ann.modification.clone(), used.clone())?;
     Ok(())
 }
 
-pub fn saveElements(mut elements: Arc<metamodelica::List<Arc<SCode::Element>>>, mut used: UseTable) -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> {
+pub(crate) fn saveElements(mut elements: Arc<metamodelica::List<Arc<SCode::Element>>>, mut used: UseTable) -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> {
     let mut outElements: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
     for mut e in &*elements.clone() {
         let mut e = e.clone();
@@ -564,7 +564,7 @@ pub fn saveElements(mut elements: Arc<metamodelica::List<Arc<SCode::Element>>>, 
     Ok(outElements)
 }
 
-pub fn saveElement(mut element: Arc<SCode::Element>, mut used: UseTable, mut elements: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> {
+pub(crate) fn saveElement(mut element: Arc<SCode::Element>, mut used: UseTable, mut elements: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> {
     let mut elements: Arc<metamodelica::List<Arc<SCode::Element>>> = elements;
     let mut elem: Arc<SCode::Element> = element.clone();
     elements = (::match_deref::match_deref! { match &(elem.clone()) {
@@ -580,7 +580,7 @@ pub fn saveElement(mut element: Arc<SCode::Element>, mut used: UseTable, mut ele
     Ok(elements)
 }
 
-pub fn saveClassDef(mut def: Arc<SCode::ClassDef>, mut used: UseTable) -> Result<Arc<SCode::ClassDef>> {
+pub(crate) fn saveClassDef(mut def: Arc<SCode::ClassDef>, mut used: UseTable) -> Result<Arc<SCode::ClassDef>> {
     let mut def: Arc<SCode::ClassDef> = def;
     let () = (::match_deref::match_deref! { match &(def.clone()) {
         Deref @ SCode::ClassDef::PARTS { .. } => {

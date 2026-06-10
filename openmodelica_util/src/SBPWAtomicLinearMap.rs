@@ -75,7 +75,7 @@ impl Default for SBPWAtomicLinearMap {
 
 pub type PW_ATOMIC_LINEAR_MAP = SBPWAtomicLinearMap;
 
-pub fn new(mut dom: Arc<SBAtomicSet::SBAtomicSet>, mut lmap: Arc<SBLinearMap::SBLinearMap>) -> Arc<SBPWAtomicLinearMap> {
+pub(crate) fn new(mut dom: Arc<SBAtomicSet::SBAtomicSet>, mut lmap: Arc<SBLinearMap::SBLinearMap>) -> Arc<SBPWAtomicLinearMap> {
     let mut map: Arc<SBPWAtomicLinearMap>;
     let mut compatible: bool = true;
     let mut ints: metamodelica::Array<Arc<SBInterval::SBInterval>>;
@@ -124,29 +124,29 @@ pub fn new(mut dom: Arc<SBAtomicSet::SBAtomicSet>, mut lmap: Arc<SBLinearMap::SB
     map
 }
 
-pub fn newEmpty() -> Arc<SBPWAtomicLinearMap> {
+pub(crate) fn newEmpty() -> Arc<SBPWAtomicLinearMap> {
     let mut map: Arc<SBPWAtomicLinearMap>;
     map = Arc::new(SBPWAtomicLinearMap { dom: SBAtomicSet::newEmpty(), lmap: SBLinearMap::newEmpty() });
     map
 }
 
-pub fn dom(mut map: Arc<SBPWAtomicLinearMap>) -> Arc<SBAtomicSet::SBAtomicSet> {
+pub(crate) fn dom(mut map: Arc<SBPWAtomicLinearMap>) -> Arc<SBAtomicSet::SBAtomicSet> {
     let mut dom: Arc<SBAtomicSet::SBAtomicSet> = map.dom.clone();
     dom
 }
 
-pub fn lmap(mut map: Arc<SBPWAtomicLinearMap>) -> Arc<SBLinearMap::SBLinearMap> {
+pub(crate) fn lmap(mut map: Arc<SBPWAtomicLinearMap>) -> Arc<SBLinearMap::SBLinearMap> {
     let mut lmap: Arc<SBLinearMap::SBLinearMap> = map.lmap.clone();
     lmap
 }
 
-pub fn isEmpty(mut map: Arc<SBPWAtomicLinearMap>) -> bool {
+pub(crate) fn isEmpty(mut map: Arc<SBPWAtomicLinearMap>) -> bool {
     let mut empty: bool;
     empty = SBAtomicSet::isEmpty(map.dom.clone()) && SBLinearMap::isEmpty(map.lmap.clone());
     empty
 }
 
-pub fn image(mut map: Arc<SBPWAtomicLinearMap>, mut set: Arc<SBAtomicSet::SBAtomicSet>) -> Result<Arc<SBAtomicSet::SBAtomicSet>> {
+pub(crate) fn image(mut map: Arc<SBPWAtomicLinearMap>, mut set: Arc<SBAtomicSet::SBAtomicSet>) -> Result<Arc<SBAtomicSet::SBAtomicSet>> {
     fn crop_inf(mut v: metamodelica::Real) -> i32 {
         let mut i: i32;
         i = if (v.clone() >= intReal(System::intMaxLit())) {System::intMaxLit()} else {((v.clone()).0.floor() as i32)};
@@ -203,7 +203,7 @@ pub fn image(mut map: Arc<SBPWAtomicLinearMap>, mut set: Arc<SBAtomicSet::SBAtom
     Ok(outSet)
 }
 
-pub fn preImage(mut map: Arc<SBPWAtomicLinearMap>, mut set: Arc<SBAtomicSet::SBAtomicSet>) -> Result<Arc<SBAtomicSet::SBAtomicSet>> {
+pub(crate) fn preImage(mut map: Arc<SBPWAtomicLinearMap>, mut set: Arc<SBAtomicSet::SBAtomicSet>) -> Result<Arc<SBAtomicSet::SBAtomicSet>> {
     let mut outSet: Arc<SBAtomicSet::SBAtomicSet>;
     let mut full_im: Arc<SBAtomicSet::SBAtomicSet>;
     let mut actual_im: Arc<SBAtomicSet::SBAtomicSet>;
@@ -217,13 +217,13 @@ pub fn preImage(mut map: Arc<SBPWAtomicLinearMap>, mut set: Arc<SBAtomicSet::SBA
     Ok(outSet)
 }
 
-pub fn isEqual(mut map1: Arc<SBPWAtomicLinearMap>, mut map2: Arc<SBPWAtomicLinearMap>) -> Result<bool> {
+pub(crate) fn isEqual(mut map1: Arc<SBPWAtomicLinearMap>, mut map2: Arc<SBPWAtomicLinearMap>) -> Result<bool> {
     let mut equal: bool;
     equal = SBAtomicSet::isEqual(map1.dom.clone(), map2.dom.clone())? && SBLinearMap::isEqual(map1.lmap.clone(), map2.lmap.clone())?;
     Ok(equal)
 }
 
-pub fn toString(mut map: Arc<SBPWAtomicLinearMap>) -> ArcStr {
+pub(crate) fn toString(mut map: Arc<SBPWAtomicLinearMap>) -> ArcStr {
     let mut r#str: ArcStr;
     let mut strl: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     let mut g: metamodelica::Array<metamodelica::Real>;

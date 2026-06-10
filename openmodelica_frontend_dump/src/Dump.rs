@@ -94,7 +94,7 @@ pub fn unparseStr(mut inProgram: Absyn::Program, mut markup: bool, mut options: 
     Ok(outString)
 }
 
-pub fn unparseClassList(mut inClasses: Arc<metamodelica::List<Arc<Absyn::Class>>>) -> Result<ArcStr> {
+pub(crate) fn unparseClassList(mut inClasses: Arc<metamodelica::List<Arc<Absyn::Class>>>) -> Result<ArcStr> {
     let mut outString: ArcStr;
     let mut status: bool;
     status = Flags::getConfigBool(Flags::MODELICA_OUTPUT.clone())?;
@@ -145,7 +145,7 @@ pub fn unparseClassAttributesStr(mut inClass: Arc<Absyn::Class>) -> Result<ArcSt
     Ok(outString)
 }
 
-pub fn unparseCommentOption(mut inComment: Option<Arc<Absyn::Comment>>) -> Result<ArcStr> {
+pub(crate) fn unparseCommentOption(mut inComment: Option<Arc<Absyn::Comment>>) -> Result<ArcStr> {
     let mut outString: ArcStr;
     outString = (Tpl::tplString((std::sync::Arc::new(AbsynDumpTpl::dumpCommentOpt) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, Option<Arc<Absyn::Comment>>) -> Result<Tpl::Text> + 'static>), inComment.clone())?).clone();
     Ok(outString)
@@ -157,7 +157,7 @@ pub fn unparseRestrictionStr(mut inRestriction: Absyn::Restriction) -> Result<Ar
     Ok(outString)
 }
 
-pub fn unparseEachStr(mut inEach: Absyn::Each) -> Result<ArcStr> {
+pub(crate) fn unparseEachStr(mut inEach: Absyn::Each) -> Result<ArcStr> {
     let mut outString: ArcStr;
     outString = ((match inEach.clone() {
         Absyn::Each::EACH { .. } => literal!("each "),
@@ -176,7 +176,7 @@ pub fn unparseElementArgStr(mut inElementArg: Arc<Absyn::ElementArg>) -> Result<
     Ok(outString)
 }
 
-pub fn shouldSeparateAfterElementArg(mut args: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>) -> Arc<metamodelica::List<(Arc<Absyn::ElementArg>, bool)>> {
+pub(crate) fn shouldSeparateAfterElementArg(mut args: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>) -> Arc<metamodelica::List<(Arc<Absyn::ElementArg>, bool)>> {
     let mut outArgs: Arc<metamodelica::List<(Arc<Absyn::ElementArg>, bool)>>;
     let mut numNonComment: i32 = 0;
     let mut cur: i32 = 0;
@@ -206,7 +206,7 @@ pub fn shouldSeparateAfterElementArg(mut args: Arc<metamodelica::List<Arc<Absyn:
     outArgs
 }
 
-pub fn unparseElementItemStr(mut inElementItem: Arc<Absyn::ElementItem>) -> Result<ArcStr> {
+pub(crate) fn unparseElementItemStr(mut inElementItem: Arc<Absyn::ElementItem>) -> Result<ArcStr> {
     let mut outString: ArcStr;
     let mut status: bool;
     status = Flags::getConfigBool(Flags::MODELICA_OUTPUT.clone())?;
@@ -240,7 +240,7 @@ pub fn unparseAnnotationOption(mut inAbsynAnnotation: Option<Arc<Absyn::Annotati
     Ok(outString)
 }
 
-pub fn unparseInnerOuterStr(mut inInnerOuter: Absyn::InnerOuter) -> Result<ArcStr> {
+pub(crate) fn unparseInnerOuterStr(mut inInnerOuter: Absyn::InnerOuter) -> Result<ArcStr> {
     let mut outString: ArcStr;
     outString = ((match inInnerOuter.clone() {
         Absyn::InnerOuter::INNER { .. } => literal!("inner "),
@@ -307,7 +307,7 @@ pub fn directionSymbol(mut inDirection: Absyn::Direction) -> Result<ArcStr> {
     Ok(outString)
 }
 
-pub fn unparseParallelismSymbolStr(mut inParallelism: Absyn::Parallelism) -> Result<ArcStr> {
+pub(crate) fn unparseParallelismSymbolStr(mut inParallelism: Absyn::Parallelism) -> Result<ArcStr> {
     let mut outString: ArcStr;
     outString = ((match inParallelism.clone() {
         Absyn::Parallelism::NON_PARALLEL { .. } => literal!(""),
@@ -394,7 +394,7 @@ pub fn unparseEquationStr(mut inEquation: Arc<Absyn::Equation>) -> Result<ArcStr
     Ok(outString)
 }
 
-pub fn unparseEquationItemStr(mut inEquation: Arc<Absyn::EquationItem>) -> Result<ArcStr> {
+pub(crate) fn unparseEquationItemStr(mut inEquation: Arc<Absyn::EquationItem>) -> Result<ArcStr> {
     let mut outString: ArcStr;
     let mut status: bool;
     status = Flags::getConfigBool(Flags::MODELICA_OUTPUT.clone())?;
@@ -467,7 +467,7 @@ pub fn printComponentRefStr(mut inComponentRef: Arc<Absyn::ComponentRef>) -> Res
     Ok(outString)
 }
 
-pub fn printSubscriptsStr(mut inAbsynSubscriptLst: Arc<metamodelica::List<Arc<Absyn::Subscript>>>) -> Result<ArcStr> {
+pub(crate) fn printSubscriptsStr(mut inAbsynSubscriptLst: Arc<metamodelica::List<Arc<Absyn::Subscript>>>) -> Result<ArcStr> {
     let mut outString: ArcStr;
     outString = ('mc: {
         let __mc_input = inAbsynSubscriptLst.clone();
@@ -965,7 +965,7 @@ pub fn opSymbolCompact(mut inOperator: Absyn::Operator) -> Result<ArcStr> {
  * These are utility functions used in some of the other functions.
  *
  */
-pub fn printOption<Type_a: Clone + 'static + metamodelica::gc::MMTrace>(mut inTypeAOption: Option<Type_a>, mut inFuncTypeTypeATo: Arc<dyn ::std::ops::Fn(Type_a) -> Result<()> + 'static>) -> Result<()> {
+pub(crate) fn printOption<Type_a: Clone + 'static + metamodelica::gc::MMTrace>(mut inTypeAOption: Option<Type_a>, mut inFuncTypeTypeATo: Arc<dyn ::std::ops::Fn(Type_a) -> Result<()> + 'static>) -> Result<()> {
     pub type FuncTypeType_aTo<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Type_a) -> Result<()> + 'static>;
 
     let () = (match inTypeAOption.clone() {
@@ -1047,14 +1047,14 @@ pub fn unparseTypeSpec(mut inTypeSpec: Arc<Absyn::TypeSpec>) -> Result<ArcStr> {
     Ok(outString)
 }
 
-pub fn printTypeSpec(mut typeSpec: Arc<Absyn::TypeSpec>) -> Result<()> {
+pub(crate) fn printTypeSpec(mut typeSpec: Arc<Absyn::TypeSpec>) -> Result<()> {
     let mut r#str: ArcStr;
     r#str = (unparseTypeSpec(typeSpec.clone())?).clone();
     metamodelica::print((r#str.clone()).clone());
     Ok(())
 }
 
-pub fn stdout() -> Result<()> {
+pub(crate) fn stdout() -> Result<()> {
     let mut r#str: ArcStr;
     r#str = (Print::getString()?).clone();
     metamodelica::print((r#str.clone()).clone());

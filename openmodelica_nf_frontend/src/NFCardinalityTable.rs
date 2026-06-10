@@ -53,13 +53,13 @@ use openmodelica_util::Util;
 
 pub type Table = Arc<UnorderedMap::UnorderedMap<ArcStr, i32>>;
 
-pub fn emptyCardinalityTable(mut size: i32) -> Table {
+pub(crate) fn emptyCardinalityTable(mut size: i32) -> Table {
     let mut table: Table;
     table = UnorderedMap::new((std::sync::Arc::new(fnptr!(stringHashDjb2, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), size.clone());
     table
 }
 
-pub fn fromConnections(mut conns: Arc<Connections::NFConnections>) -> Result<Table> {
+pub(crate) fn fromConnections(mut conns: Arc<Connections::NFConnections>) -> Result<Table> {
     let mut table: Table;
     if System::getUsesCardinality() {
         table = emptyCardinalityTable(std::cmp::max(1, Util::nextPrime((conns.connections.clone().len() as i32))));
@@ -74,7 +74,7 @@ pub fn fromConnections(mut conns: Arc<Connections::NFConnections>) -> Result<Tab
     Ok(table)
 }
 
-pub fn addConnector(mut conn: Arc<Connector::NFConnector>, mut table: Table) -> Result<()> {
+pub(crate) fn addConnector(mut conn: Arc<Connector::NFConnector>, mut table: Table) -> Result<()> {
     fn update(mut count: Option<i32>) -> i32 {
         let mut outCount: i32 = 0;
         outCount = (match count.clone() {
@@ -93,7 +93,7 @@ pub fn addConnector(mut conn: Arc<Connector::NFConnector>, mut table: Table) -> 
     Ok(())
 }
 
-pub fn evaluateCardinality(mut arg: Arc<Expression::NFExpression>, mut table: Table) -> Result<Arc<Expression::NFExpression>> {
+pub(crate) fn evaluateCardinality(mut arg: Arc<Expression::NFExpression>, mut table: Table) -> Result<Arc<Expression::NFExpression>> {
     let mut res: Arc<Expression::NFExpression>;
     let mut count: i32;
     count = UnorderedMap::getOrDefault((Expression::toString(arg.clone())?).clone(), table.clone(), 0)?;
@@ -101,7 +101,7 @@ pub fn evaluateCardinality(mut arg: Arc<Expression::NFExpression>, mut table: Ta
     Ok(res)
 }
 
-pub fn print(mut table: Table) -> () {
+pub(crate) fn print(mut table: Table) -> () {
     for mut e in &*UnorderedMap::toList(table.clone()) {
         let mut e = e.clone();
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*Util::tuple21(e.clone())); __mm_s.push_str(&*literal!(": ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", Util::tuple22(e.clone())))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());

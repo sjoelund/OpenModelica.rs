@@ -57,15 +57,15 @@ fn collect_functions<'a>(
 }
 
 #[derive(Default)]
-struct RefScan {
+pub(crate) struct RefScan {
     /// Raw dotted names that appear as callees (CALL / ALG_NORETCALL /
     /// PARTEVALFUNCTION callees) and as standalone CREF expressions that
     /// might denote a function value.
-    refs: BTreeSet<String>,
+    pub(crate) refs: BTreeSet<String>,
 }
 
 impl RefScan {
-    fn scan_class(c: &MM::Class) -> Self {
+    pub(crate) fn scan_class(c: &MM::Class) -> Self {
         let mut s = RefScan::default();
         let (algorithms, members) = match &c.body {
             MM::ClassDef::Parts { algorithms, members, .. } => (algorithms, members),
@@ -146,7 +146,7 @@ impl RefScan {
         }
     }
 
-    fn scan_exp(&mut self, e: &Absyn::Exp) {
+    pub(crate) fn scan_exp(&mut self, e: &Absyn::Exp) {
         use Absyn::Exp::*;
         match e {
             INTEGER { .. } | REAL { .. } | STRING { .. } | BOOL { .. } | END | BREAK => {}

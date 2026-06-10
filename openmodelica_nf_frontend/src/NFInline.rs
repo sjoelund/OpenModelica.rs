@@ -61,7 +61,7 @@ use openmodelica_frontend_types::DAE;
 use openmodelica_util::Error;
 use openmodelica_util::Flags;
 
-pub fn inlineCallExp(mut callExp: Arc<Expression::NFExpression>, mut forceInline: bool) -> Result<Arc<Expression::NFExpression>> {
+pub(crate) fn inlineCallExp(mut callExp: Arc<Expression::NFExpression>, mut forceInline: bool) -> Result<Arc<Expression::NFExpression>> {
     let mut result: Arc<Expression::NFExpression>;
     result = (::match_deref::match_deref! { match &(callExp.clone()) {
         Deref @ Expression::CALL { call: call @ Deref @ Call::TYPED_CALL { .. } } => {
@@ -82,7 +82,7 @@ pub fn inlineCallExp(mut callExp: Arc<Expression::NFExpression>, mut forceInline
     Ok(result)
 }
 
-pub fn inlineCall(mut callExp: Arc<Expression::NFExpression>, mut forceInline: bool) -> Result<Arc<Expression::NFExpression>> {
+pub(crate) fn inlineCall(mut callExp: Arc<Expression::NFExpression>, mut forceInline: bool) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut call: Arc<Call::NFCall>;
     let mut r#fn: Arc<Function::Function> = Arc::new(<Function::Function as ::std::default::Default>::default());

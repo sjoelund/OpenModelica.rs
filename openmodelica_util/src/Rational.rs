@@ -80,7 +80,7 @@ pub fn isEqual(mut r1: Arc<Rational>, mut r2: Arc<Rational>) -> bool {
     b
 }
 
-pub fn compare(mut r1: Arc<Rational>, mut r2: Arc<Rational>) -> i32 {
+pub(crate) fn compare(mut r1: Arc<Rational>, mut r2: Arc<Rational>) -> i32 {
     let mut i: i32;
     let mut gn: i32 = Util::gcd(r1.n.clone(), r2.n.clone());
     let mut gd: i32 = Util::gcd(r1.d.clone(), r2.d.clone());
@@ -93,7 +93,7 @@ pub fn toString(mut r: Arc<Rational>) -> ArcStr {
     r#str
 }
 
-pub fn normalize(mut r: Arc<Rational>) -> Arc<Rational> {
+pub(crate) fn normalize(mut r: Arc<Rational>) -> Arc<Rational> {
     let mut r: Arc<Rational> = r;
     if r.n.clone() == 0 {
         assign_field!(r.d = 1);
@@ -110,12 +110,12 @@ pub fn add(mut r1: Arc<Rational>, mut r2: Arc<Rational>) -> Arc<Rational> {
     r
 }
 
-pub fn neg(mut r: Arc<Rational>) -> Arc<Rational> {
+pub(crate) fn neg(mut r: Arc<Rational>) -> Arc<Rational> {
     let mut s: Arc<Rational> = Arc::new(Rational { n: -(r.n.clone()), d: r.d.clone() });
     s
 }
 
-pub fn sub(mut r1: Arc<Rational>, mut r2: Arc<Rational>) -> Arc<Rational> {
+pub(crate) fn sub(mut r1: Arc<Rational>, mut r2: Arc<Rational>) -> Arc<Rational> {
     let mut r: Arc<Rational>;
     let mut g: i32 = Util::gcd(r1.d.clone(), r2.d.clone());
     r = reduce(r1.n.clone() * intDiv(r2.d.clone(), g.clone()) - intDiv(r1.d.clone(), g.clone()) * r2.n.clone(), intDiv(r1.d.clone(), g.clone()) * r2.d.clone());
@@ -130,12 +130,12 @@ pub fn mul(mut r1: Arc<Rational>, mut r2: Arc<Rational>) -> Arc<Rational> {
     r
 }
 
-pub fn inv(mut r: Arc<Rational>) -> Arc<Rational> {
+pub(crate) fn inv(mut r: Arc<Rational>) -> Arc<Rational> {
     let mut s: Arc<Rational> = Arc::new(Rational { n: Util::intSign(r.n.clone()) * r.d.clone(), d: intAbs(r.n.clone()) });
     s
 }
 
-pub fn div(mut r1: Arc<Rational>, mut r2: Arc<Rational>) -> Arc<Rational> {
+pub(crate) fn div(mut r1: Arc<Rational>, mut r2: Arc<Rational>) -> Arc<Rational> {
     let mut r: Arc<Rational>;
     let mut g1: i32 = Util::gcd(r1.n.clone(), r2.n.clone());
     let mut g2: i32 = Util::gcd(r2.d.clone(), r1.d.clone());

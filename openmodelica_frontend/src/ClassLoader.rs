@@ -516,7 +516,7 @@ fn loadCompletePackageFromMp2(mut po: PackageOrder, mut mp: ArcStr, mut strategy
     Ok(cps)
 }
 
-pub fn parsePackageFile(mut name: ArcStr, mut strategy: LoadFileStrategy, mut expectPackage: bool, mut w1: Absyn::Within, mut pack: ArcStr, mut encrypted: bool) -> Result<Option<Arc<Absyn::Class>>> {
+pub(crate) fn parsePackageFile(mut name: ArcStr, mut strategy: LoadFileStrategy, mut expectPackage: bool, mut w1: Absyn::Within, mut pack: ArcStr, mut encrypted: bool) -> Result<Option<Arc<Absyn::Class>>> {
     let mut cl: Option<Arc<Absyn::Class>>;
     let mut class_: Arc<Absyn::Class>;
     let mut cs: Arc<metamodelica::List<Arc<Absyn::Class>>>;

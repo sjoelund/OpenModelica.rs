@@ -97,7 +97,7 @@ fn fun_11(mut in_txt: Tpl::Text, mut in_a_program: Absyn::Program, mut in_a_preT
     Ok((out_txt, out_a_preText))
 }
 
-pub fn dump2(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_program: Absyn::Program, mut a_options: Dump::DumpOptions) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn dump2(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_program: Absyn::Program, mut a_options: Dump::DumpOptions) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = fun_11(txt.clone(), a_program.clone(), a_preText.clone(), a_options.clone())?;
@@ -159,7 +159,7 @@ fn fun_13(mut in_txt: Tpl::Text, mut in_a_cls: Arc<Absyn::Class>, mut in_a_preTe
     Ok((out_txt, out_a_preText))
 }
 
-pub fn dumpClass(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_cls: Arc<Absyn::Class>, mut a_options: Dump::DumpOptions) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn dumpClass(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_cls: Arc<Absyn::Class>, mut a_options: Dump::DumpOptions) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = fun_13(txt.clone(), a_cls.clone(), a_preText.clone(), a_options.clone())?;
@@ -497,7 +497,7 @@ fn fun_25(mut in_txt: Tpl::Text, mut in_a_cdef: Arc<Absyn::ClassDef>, mut in_a_p
     Ok((out_txt, out_a_preText))
 }
 
-pub fn dumpClassDef(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_cdef: Arc<Absyn::ClassDef>, mut a_options: Dump::DumpOptions) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn dumpClassDef(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_cdef: Arc<Absyn::ClassDef>, mut a_options: Dump::DumpOptions) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = fun_25(txt.clone(), a_cdef.clone(), a_preText.clone(), a_options.clone())?;
@@ -550,7 +550,7 @@ fn fun_28(mut in_txt: Tpl::Text, mut in_a_enum__def: Arc<Absyn::EnumDef>, mut in
     Ok((out_txt, out_a_preText))
 }
 
-pub fn dumpEnumDef(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_enum__def: Arc<Absyn::EnumDef>) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn dumpEnumDef(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_enum__def: Arc<Absyn::EnumDef>) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = fun_28(txt.clone(), a_enum__def.clone(), a_preText.clone())?;
@@ -581,7 +581,7 @@ fn fun_30(mut in_txt: Tpl::Text, mut in_a_lit: Arc<Absyn::EnumLiteral>, mut in_a
     Ok((out_txt, out_a_preText))
 }
 
-pub fn dumpEnumLiteral(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_lit: Arc<Absyn::EnumLiteral>) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn dumpEnumLiteral(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_lit: Arc<Absyn::EnumLiteral>) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = fun_30(txt.clone(), a_lit.clone(), a_preText.clone())?;
@@ -622,7 +622,7 @@ fn fun_32(mut in_txt: Tpl::Text, mut in_a_functionRestriction: Absyn::FunctionRe
     Ok(out_txt)
 }
 
-pub fn dumpRestriction(mut in_txt: Tpl::Text, mut in_a_restriction: Absyn::Restriction) -> Result<Tpl::Text> {
+pub(crate) fn dumpRestriction(mut in_txt: Tpl::Text, mut in_a_restriction: Absyn::Restriction) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_restriction.clone()) {
         (mut txt, Absyn::Restriction::R_CLASS { .. }) => {
@@ -1080,14 +1080,14 @@ fn fun_47(mut in_txt: Tpl::Text, mut in_a_class__part: Arc<Absyn::ClassPart>, mu
     Ok((out_txt, out_a_preText))
 }
 
-pub fn dumpClassPart(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_class__part: Arc<Absyn::ClassPart>, mut a_options: Dump::DumpOptions) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn dumpClassPart(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_class__part: Arc<Absyn::ClassPart>, mut a_options: Dump::DumpOptions) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = fun_47(txt.clone(), a_class__part.clone(), a_preText.clone(), a_options.clone())?;
     Ok((out_txt, out_a_preText))
 }
 
-pub fn dumpWithin(mut in_txt: Tpl::Text, mut in_a_within: Absyn::Within) -> Result<Tpl::Text> {
+pub(crate) fn dumpWithin(mut in_txt: Tpl::Text, mut in_a_within: Absyn::Within) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_within.clone()) {
         (mut txt, Absyn::Within::TOP { .. }) => {
@@ -1122,7 +1122,7 @@ fn fun_50(mut in_txt: Tpl::Text, mut in_a_isReadOnly: bool) -> Result<Tpl::Text>
     Ok(out_txt)
 }
 
-pub fn dumpInfo(mut in_txt: Tpl::Text, mut in_a_info: SourceInfo) -> Result<Tpl::Text> {
+pub(crate) fn dumpInfo(mut in_txt: Tpl::Text, mut in_a_info: SourceInfo) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_info.clone()) {
         (mut txt, SourceInfo { isReadOnly: mut i_isReadOnly, fileName: mut i_fileName, lineNumberStart: mut i_lineNumberStart, columnNumberStart: mut i_columnNumberStart, lineNumberEnd: mut i_lineNumberEnd, columnNumberEnd: mut i_columnNumberEnd, .. }) => {
@@ -1194,7 +1194,7 @@ fn fun_53(mut in_txt: Tpl::Text, mut in_a_ann: Arc<Absyn::Annotation>, mut in_a_
     Ok((out_txt, out_a_preText))
 }
 
-pub fn dumpAnnotation(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_ann: Arc<Absyn::Annotation>) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn dumpAnnotation(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_ann: Arc<Absyn::Annotation>) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = fun_53(txt.clone(), a_ann.clone(), a_preText.clone())?;
@@ -1223,7 +1223,7 @@ fn fun_55(mut in_txt: Tpl::Text, mut in_a_oann: Option<Arc<Absyn::Annotation>>, 
     Ok((out_txt, out_a_preText))
 }
 
-pub fn dumpAnnotationOpt(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_oann: Option<Arc<Absyn::Annotation>>) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn dumpAnnotationOpt(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_oann: Option<Arc<Absyn::Annotation>>) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = fun_55(txt.clone(), a_oann.clone(), a_preText.clone())?;
@@ -1252,7 +1252,7 @@ fn fun_57(mut in_txt: Tpl::Text, mut in_a_oann: Option<Arc<Absyn::Annotation>>, 
     Ok((out_txt, out_a_preText))
 }
 
-pub fn dumpAnnotationOptSpace(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_oann: Option<Arc<Absyn::Annotation>>) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn dumpAnnotationOptSpace(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_oann: Option<Arc<Absyn::Annotation>>) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = fun_57(txt.clone(), a_oann.clone(), a_preText.clone())?;
@@ -1281,7 +1281,7 @@ fn fun_59(mut in_txt: Tpl::Text, mut in_a_cmt: Arc<Absyn::Comment>, mut in_a_pre
     Ok((out_txt, out_a_preText))
 }
 
-pub fn dumpComment(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_cmt: Arc<Absyn::Comment>) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn dumpComment(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_cmt: Arc<Absyn::Comment>) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = fun_59(txt.clone(), a_cmt.clone(), a_preText.clone())?;
@@ -1310,7 +1310,7 @@ fn fun_61(mut in_txt: Tpl::Text, mut in_a_ocmt: Option<Arc<Absyn::Comment>>, mut
     Ok((out_txt, out_a_preText))
 }
 
-pub fn dumpCommentOpt(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_ocmt: Option<Arc<Absyn::Comment>>) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn dumpCommentOpt(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_ocmt: Option<Arc<Absyn::Comment>>) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = fun_61(txt.clone(), a_ocmt.clone(), a_preText.clone())?;
@@ -1433,14 +1433,14 @@ fn fun_65(mut in_txt: Tpl::Text, mut in_a_earg: Arc<Absyn::ElementArg>, mut in_a
     Ok((out_txt, out_a_preText))
 }
 
-pub fn dumpElementArg(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_earg: Arc<Absyn::ElementArg>) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn dumpElementArg(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_earg: Arc<Absyn::ElementArg>) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = fun_65(txt.clone(), a_earg.clone(), a_preText.clone())?;
     Ok((out_txt, out_a_preText))
 }
 
-pub fn dumpEach(mut in_txt: Tpl::Text, mut in_a_each: Absyn::Each) -> Result<Tpl::Text> {
+pub(crate) fn dumpEach(mut in_txt: Tpl::Text, mut in_a_each: Absyn::Each) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_each.clone()) {
         (mut txt, Absyn::Each::EACH { .. }) => {
@@ -1455,7 +1455,7 @@ pub fn dumpEach(mut in_txt: Tpl::Text, mut in_a_each: Absyn::Each) -> Result<Tpl
     Ok(out_txt)
 }
 
-pub fn dumpFinal(mut in_txt: Tpl::Text, mut in_a_final: bool) -> Result<Tpl::Text> {
+pub(crate) fn dumpFinal(mut in_txt: Tpl::Text, mut in_a_final: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_final.clone()) {
         (mut txt, false) => {
@@ -1470,7 +1470,7 @@ pub fn dumpFinal(mut in_txt: Tpl::Text, mut in_a_final: bool) -> Result<Tpl::Tex
     Ok(out_txt)
 }
 
-pub fn dumpRedeclare(mut in_txt: Tpl::Text, mut in_a_redecl: Absyn::RedeclareKeywords) -> Result<Tpl::Text> {
+pub(crate) fn dumpRedeclare(mut in_txt: Tpl::Text, mut in_a_redecl: Absyn::RedeclareKeywords) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_redecl.clone()) {
         (mut txt, Absyn::RedeclareKeywords::REDECLARE { .. }) => {
@@ -1489,7 +1489,7 @@ pub fn dumpRedeclare(mut in_txt: Tpl::Text, mut in_a_redecl: Absyn::RedeclareKey
     Ok(out_txt)
 }
 
-pub fn dumpReplaceable(mut in_txt: Tpl::Text, mut in_a_repl: Absyn::RedeclareKeywords) -> Result<Tpl::Text> {
+pub(crate) fn dumpReplaceable(mut in_txt: Tpl::Text, mut in_a_repl: Absyn::RedeclareKeywords) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_repl.clone()) {
         (mut txt, Absyn::RedeclareKeywords::REPLACEABLE { .. }) => {
@@ -1507,7 +1507,7 @@ pub fn dumpReplaceable(mut in_txt: Tpl::Text, mut in_a_repl: Absyn::RedeclareKey
     Ok(out_txt)
 }
 
-pub fn dumpInnerOuter(mut in_txt: Tpl::Text, mut in_a_io: Absyn::InnerOuter) -> Result<Tpl::Text> {
+pub(crate) fn dumpInnerOuter(mut in_txt: Tpl::Text, mut in_a_io: Absyn::InnerOuter) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_io.clone()) {
         (mut txt, Absyn::InnerOuter::INNER { .. }) => {
@@ -1578,7 +1578,7 @@ fn fun_73(mut in_txt: Tpl::Text, mut in_a_mod: Arc<Absyn::Modification>, mut in_
     Ok((out_txt, out_a_preText))
 }
 
-pub fn dumpModification(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_mod: Arc<Absyn::Modification>) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn dumpModification(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_mod: Arc<Absyn::Modification>) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = fun_73(txt.clone(), a_mod.clone(), a_preText.clone())?;
@@ -1616,7 +1616,7 @@ fn fun_75(mut in_txt: Tpl::Text, mut in_a_eqmod: Arc<Absyn::EqMod>, mut in_a_pre
     Ok((out_txt, out_a_preText))
 }
 
-pub fn dumpEqMod(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_eqmod: Arc<Absyn::EqMod>) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn dumpEqMod(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_eqmod: Arc<Absyn::EqMod>) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = fun_75(txt.clone(), a_eqmod.clone(), a_preText.clone())?;
@@ -1735,7 +1735,7 @@ fn fun_79(mut in_txt: Tpl::Text, mut in_a_elem: Arc<Absyn::ElementSpec>, mut in_
     Ok((out_txt, out_a_preText))
 }
 
-pub fn dumpElementSpec(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_elem: Arc<Absyn::ElementSpec>, mut a_options: Dump::DumpOptions) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn dumpElementSpec(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_elem: Arc<Absyn::ElementSpec>, mut a_options: Dump::DumpOptions) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = fun_79(txt.clone(), a_elem.clone(), a_preText.clone(), a_options.clone())?;
@@ -1815,14 +1815,14 @@ fn fun_83(mut in_txt: Tpl::Text, mut in_a_attr: Absyn::ElementAttributes, mut in
     Ok((out_txt, out_a_preText))
 }
 
-pub fn dumpElementAttr(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_attr: Absyn::ElementAttributes) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn dumpElementAttr(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_attr: Absyn::ElementAttributes) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = fun_83(txt.clone(), a_attr.clone(), a_preText.clone())?;
     Ok((out_txt, out_a_preText))
 }
 
-pub fn dumpParallelism(mut in_txt: Tpl::Text, mut in_a_par: Absyn::Parallelism) -> Result<Tpl::Text> {
+pub(crate) fn dumpParallelism(mut in_txt: Tpl::Text, mut in_a_par: Absyn::Parallelism) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_par.clone()) {
         (mut txt, Absyn::Parallelism::PARGLOBAL { .. }) => {
@@ -1844,7 +1844,7 @@ pub fn dumpParallelism(mut in_txt: Tpl::Text, mut in_a_par: Absyn::Parallelism) 
     Ok(out_txt)
 }
 
-pub fn dumpIsField(mut in_txt: Tpl::Text, mut in_a_isField: Absyn::IsField) -> Result<Tpl::Text> {
+pub(crate) fn dumpIsField(mut in_txt: Tpl::Text, mut in_a_isField: Absyn::IsField) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_isField.clone()) {
         (mut txt, Absyn::IsField::NONFIELD { .. }) => {
@@ -1862,7 +1862,7 @@ pub fn dumpIsField(mut in_txt: Tpl::Text, mut in_a_isField: Absyn::IsField) -> R
     Ok(out_txt)
 }
 
-pub fn dumpVariability(mut in_txt: Tpl::Text, mut in_a_var: Absyn::Variability) -> Result<Tpl::Text> {
+pub(crate) fn dumpVariability(mut in_txt: Tpl::Text, mut in_a_var: Absyn::Variability) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_var.clone()) {
         (mut txt, Absyn::Variability::VAR { .. }) => {
@@ -1888,7 +1888,7 @@ pub fn dumpVariability(mut in_txt: Tpl::Text, mut in_a_var: Absyn::Variability) 
     Ok(out_txt)
 }
 
-pub fn dumpDirection(mut in_txt: Tpl::Text, mut in_a_dir: Absyn::Direction) -> Result<Tpl::Text> {
+pub(crate) fn dumpDirection(mut in_txt: Tpl::Text, mut in_a_dir: Absyn::Direction) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_dir.clone()) {
         (mut txt, Absyn::Direction::BIDIR { .. }) => {
@@ -1929,7 +1929,7 @@ fn fun_89(mut in_txt: Tpl::Text, mut in_a_attr: Absyn::ElementAttributes, mut in
     Ok((out_txt, out_a_preText))
 }
 
-pub fn dumpElementAttrDim(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_attr: Absyn::ElementAttributes) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn dumpElementAttrDim(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_attr: Absyn::ElementAttributes) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = fun_89(txt.clone(), a_attr.clone(), a_preText.clone())?;
@@ -1960,7 +1960,7 @@ fn fun_91(mut in_txt: Tpl::Text, mut in_a_cc: Arc<Absyn::ConstrainClass>, mut in
     Ok((out_txt, out_a_preText))
 }
 
-pub fn dumpConstrainClass(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_cc: Arc<Absyn::ConstrainClass>) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn dumpConstrainClass(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_cc: Arc<Absyn::ConstrainClass>) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = fun_91(txt.clone(), a_cc.clone(), a_preText.clone())?;
@@ -2006,7 +2006,7 @@ fn fun_93(mut in_txt: Tpl::Text, mut in_a_comp: Arc<Absyn::ComponentItem>, mut i
     Ok((out_txt, out_a_preText))
 }
 
-pub fn dumpComponentItem(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_comp: Arc<Absyn::ComponentItem>) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn dumpComponentItem(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_comp: Arc<Absyn::ComponentItem>) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = fun_93(txt.clone(), a_comp.clone(), a_preText.clone())?;
@@ -2062,7 +2062,7 @@ fn fun_96(mut in_txt: Tpl::Text, mut in_a_comp: Absyn::Component, mut in_a_preTe
     Ok((out_txt, out_a_preText))
 }
 
-pub fn dumpComponent(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_comp: Absyn::Component) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn dumpComponent(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_comp: Absyn::Component) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = fun_96(txt.clone(), a_comp.clone(), a_preText.clone())?;
@@ -2091,7 +2091,7 @@ fn fun_98(mut in_txt: Tpl::Text, mut in_a_cond: Option<Arc<Absyn::Exp>>, mut in_
     Ok((out_txt, out_a_preText))
 }
 
-pub fn dumpComponentCondition(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_cond: Option<Arc<Absyn::Exp>>) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn dumpComponentCondition(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_cond: Option<Arc<Absyn::Exp>>) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = fun_98(txt.clone(), a_cond.clone(), a_preText.clone())?;
@@ -2113,7 +2113,7 @@ fn lm_100(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Absyn::GroupImpo
     Ok(txt)
 }
 
-pub fn dumpImport(mut in_txt: Tpl::Text, mut in_a_imp: Absyn::Import) -> Result<Tpl::Text> {
+pub(crate) fn dumpImport(mut in_txt: Tpl::Text, mut in_a_imp: Absyn::Import) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_imp.clone()) {
         (mut txt, Absyn::Import::NAMED_IMPORT { name: mut i_name, path: ref i_path }) => {
@@ -2159,7 +2159,7 @@ pub fn dumpImport(mut in_txt: Tpl::Text, mut in_a_imp: Absyn::Import) -> Result<
     Ok(out_txt)
 }
 
-pub fn dumpGroupImport(mut in_txt: Tpl::Text, mut in_a_gimp: Absyn::GroupImport) -> Result<Tpl::Text> {
+pub(crate) fn dumpGroupImport(mut in_txt: Tpl::Text, mut in_a_gimp: Absyn::GroupImport) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_gimp.clone()) {
         (mut txt, Absyn::GroupImport::GROUP_IMPORT_NAME { name: mut i_name }) => {
@@ -2220,7 +2220,7 @@ fn fun_103(mut in_txt: Tpl::Text, mut in_a_eitem: Arc<Absyn::ElementItem>, mut i
     Ok((out_txt, out_a_preText))
 }
 
-pub fn dumpElementItem(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_eitem: Arc<Absyn::ElementItem>, mut a_options: Dump::DumpOptions) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn dumpElementItem(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_eitem: Arc<Absyn::ElementItem>, mut a_options: Dump::DumpOptions) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = fun_103(txt.clone(), a_eitem.clone(), a_preText.clone(), a_options.clone())?;
@@ -2449,7 +2449,7 @@ fn fun_113(mut in_txt: Tpl::Text, mut in_a_elem: Arc<Absyn::Element>, mut in_a_p
     Ok((out_txt, out_a_preText))
 }
 
-pub fn dumpElement(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_elem: Arc<Absyn::Element>, mut a_options: Dump::DumpOptions) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn dumpElement(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_elem: Arc<Absyn::Element>, mut a_options: Dump::DumpOptions) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = fun_113(txt.clone(), a_elem.clone(), a_preText.clone(), a_options.clone())?;
@@ -2497,7 +2497,7 @@ fn fun_115(mut in_txt: Tpl::Text, mut in_a_eq: Arc<Absyn::EquationItem>, mut in_
     Ok((out_txt, out_a_preText))
 }
 
-pub fn dumpEquationItem(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_eq: Arc<Absyn::EquationItem>) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn dumpEquationItem(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_eq: Arc<Absyn::EquationItem>) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = fun_115(txt.clone(), a_eq.clone(), a_preText.clone())?;
@@ -2521,7 +2521,7 @@ fn lm_117(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::Equat
     Ok((txt, a_preText))
 }
 
-pub fn dumpEquationItems(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_eql: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn dumpEquationItems(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_eql: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preText: Tpl::Text;
     out_txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -2712,7 +2712,7 @@ fn fun_121(mut in_txt: Tpl::Text, mut in_a_eq: Arc<Absyn::Equation>, mut in_a_pr
     Ok((out_txt, out_a_preText))
 }
 
-pub fn dumpEquation(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_eq: Arc<Absyn::Equation>) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn dumpEquation(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_eq: Arc<Absyn::Equation>) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = fun_121(txt.clone(), a_eq.clone(), a_preText.clone())?;
@@ -2736,7 +2736,7 @@ fn lm_123(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::Algor
     Ok((txt, a_preText))
 }
 
-pub fn dumpAlgorithmItems(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_algs: Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn dumpAlgorithmItems(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_algs: Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preText: Tpl::Text;
     let mut l_items: Tpl::Text;
@@ -2793,7 +2793,7 @@ fn fun_125(mut in_txt: Tpl::Text, mut in_a_alg: Arc<Absyn::AlgorithmItem>, mut i
     Ok((out_txt, out_a_preText))
 }
 
-pub fn dumpAlgorithmItem(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_alg: Arc<Absyn::AlgorithmItem>) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn dumpAlgorithmItem(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_alg: Arc<Absyn::AlgorithmItem>) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = fun_125(txt.clone(), a_alg.clone(), a_preText.clone())?;
@@ -3015,7 +3015,7 @@ fn fun_130(mut in_txt: Tpl::Text, mut in_a_alg: Arc<Absyn::Algorithm>, mut in_a_
     Ok((out_txt, out_a_preText))
 }
 
-pub fn dumpAlgorithm(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_alg: Arc<Absyn::Algorithm>) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn dumpAlgorithm(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_alg: Arc<Absyn::Algorithm>) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = fun_130(txt.clone(), a_alg.clone(), a_preText.clone())?;
@@ -3050,7 +3050,7 @@ fn fun_132(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_path: Arc<Absyn::P
     Ok(out_txt)
 }
 
-pub fn dumpPath(mut in_txt: Tpl::Text, mut in_a_path: Arc<Absyn::Path>) -> Result<Tpl::Text> {
+pub(crate) fn dumpPath(mut in_txt: Tpl::Text, mut in_a_path: Arc<Absyn::Path>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_path.clone())) {
         (txt, Deref @ Absyn::Path::FULLYQUALIFIED { path: i_path }) => {
@@ -3086,7 +3086,7 @@ pub fn dumpPath(mut in_txt: Tpl::Text, mut in_a_path: Arc<Absyn::Path>) -> Resul
     Ok(out_txt)
 }
 
-pub fn dumpPathNoQual(mut in_txt: Tpl::Text, mut in_a_path: Arc<Absyn::Path>) -> Result<Tpl::Text> {
+pub(crate) fn dumpPathNoQual(mut in_txt: Tpl::Text, mut in_a_path: Arc<Absyn::Path>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_path.clone())) {
         (txt, Deref @ Absyn::Path::FULLYQUALIFIED { path: i_path }) => {
@@ -3106,7 +3106,7 @@ pub fn dumpPathNoQual(mut in_txt: Tpl::Text, mut in_a_path: Arc<Absyn::Path>) ->
     Ok(out_txt)
 }
 
-pub fn dumpStringCommentOption(mut in_txt: Tpl::Text, mut in_a_cmt: Option<ArcStr>) -> Result<Tpl::Text> {
+pub(crate) fn dumpStringCommentOption(mut in_txt: Tpl::Text, mut in_a_cmt: Option<ArcStr>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_cmt.clone()) {
         (mut txt, Some(mut i_str)) => {
@@ -3186,7 +3186,7 @@ fn fun_137(mut in_txt: Tpl::Text, mut in_a_typeSpec: Arc<Absyn::TypeSpec>, mut i
     Ok((out_txt, out_a_preText))
 }
 
-pub fn dumpTypeSpec(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_typeSpec: Arc<Absyn::TypeSpec>) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn dumpTypeSpec(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_typeSpec: Arc<Absyn::TypeSpec>) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = fun_137(txt.clone(), a_typeSpec.clone(), a_preText.clone())?;
@@ -3215,14 +3215,14 @@ fn fun_139(mut in_txt: Tpl::Text, mut in_a_arraydim: Option<Arc<metamodelica::Li
     Ok((out_txt, out_a_preText))
 }
 
-pub fn dumpArrayDimOpt(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_arraydim: Option<Arc<metamodelica::List<Arc<Absyn::Subscript>>>>) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn dumpArrayDimOpt(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_arraydim: Option<Arc<metamodelica::List<Arc<Absyn::Subscript>>>>) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = fun_139(txt.clone(), a_arraydim.clone(), a_preText.clone())?;
     Ok((out_txt, out_a_preText))
 }
 
-pub fn dumpArrayDim(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_arraydim: Arc<metamodelica::List<Arc<Absyn::Subscript>>>) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn dumpArrayDim(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_arraydim: Arc<metamodelica::List<Arc<Absyn::Subscript>>>) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = dumpSubscripts(txt.clone(), a_preText.clone(), a_arraydim.clone())?;
@@ -3246,7 +3246,7 @@ fn lm_142(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::Subsc
     Ok((txt, a_preText))
 }
 
-pub fn dumpSubscripts(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_subscripts: Arc<metamodelica::List<Arc<Absyn::Subscript>>>) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn dumpSubscripts(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_subscripts: Arc<metamodelica::List<Arc<Absyn::Subscript>>>) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preText: Tpl::Text;
     let mut l_sub__str: Tpl::Text;
@@ -3284,7 +3284,7 @@ fn fun_144(mut in_txt: Tpl::Text, mut in_a_subscript: Arc<Absyn::Subscript>, mut
     Ok((out_txt, out_a_preText))
 }
 
-pub fn dumpSubscript(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_subscript: Arc<Absyn::Subscript>) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn dumpSubscript(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_subscript: Arc<Absyn::Subscript>) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = fun_144(txt.clone(), a_subscript.clone(), a_preText.clone())?;
@@ -3697,7 +3697,7 @@ fn fun_151(mut in_txt: Tpl::Text, mut in_a_exp: Arc<Absyn::Exp>, mut in_a_preTex
     Ok((out_txt, out_a_preText))
 }
 
-pub fn dumpExp(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_exp: Arc<Absyn::Exp>) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn dumpExp(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_exp: Arc<Absyn::Exp>) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = fun_151(txt.clone(), a_exp.clone(), a_preText.clone())?;
@@ -3727,14 +3727,14 @@ fn fun_153(mut in_txt: Tpl::Text, mut in_a_lhs: Arc<Absyn::Exp>, mut in_a_preTex
     Ok((out_txt, out_a_preText))
 }
 
-pub fn dumpLhsExp(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_lhs: Arc<Absyn::Exp>) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn dumpLhsExp(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_lhs: Arc<Absyn::Exp>) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = fun_153(txt.clone(), a_lhs.clone(), a_preText.clone())?;
     Ok((out_txt, out_a_preText))
 }
 
-pub fn dumpOperand(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_operand: Arc<Absyn::Exp>, mut a_operation: Arc<Absyn::Exp>, mut a_lhs: bool) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn dumpOperand(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_operand: Arc<Absyn::Exp>, mut a_operation: Arc<Absyn::Exp>, mut a_lhs: bool) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = dumpExp(txt.clone(), a_preText.clone(), a_operand.clone())?;
@@ -3775,7 +3775,7 @@ fn fun_156(mut in_txt: Tpl::Text, mut in_a_if__exp: Arc<Absyn::Exp>, mut in_a_pr
     Ok((out_txt, out_a_preText))
 }
 
-pub fn dumpIfExp(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_if__exp: Arc<Absyn::Exp>) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn dumpIfExp(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_if__exp: Arc<Absyn::Exp>) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = fun_156(txt.clone(), a_if__exp.clone(), a_preText.clone())?;
@@ -3807,7 +3807,7 @@ fn lm_158(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<(Arc<Absyn::Exp>
     Ok((txt, a_preText))
 }
 
-pub fn dumpElseIfExp(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_else__if: Arc<metamodelica::List<(Arc<Absyn::Exp>, Arc<Absyn::Exp>)>>) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn dumpElseIfExp(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_else__if: Arc<metamodelica::List<(Arc<Absyn::Exp>, Arc<Absyn::Exp>)>>) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preText: Tpl::Text;
     let mut l_lst: Tpl::Text;
@@ -3954,7 +3954,7 @@ fn fun_163(mut in_txt: Tpl::Text, mut in_a_code: Arc<Absyn::CodeNode>, mut in_a_
     Ok((out_txt, out_a_preText))
 }
 
-pub fn dumpCodeNode(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_code: Arc<Absyn::CodeNode>) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn dumpCodeNode(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_code: Arc<Absyn::CodeNode>) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = fun_163(txt.clone(), a_code.clone(), a_preText.clone())?;
@@ -4018,14 +4018,14 @@ fn fun_166(mut in_txt: Tpl::Text, mut in_a_match__exp: Arc<Absyn::Exp>, mut in_a
     Ok((out_txt, out_a_preText))
 }
 
-pub fn dumpMatchExp(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_match__exp: Arc<Absyn::Exp>) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn dumpMatchExp(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_match__exp: Arc<Absyn::Exp>) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = fun_166(txt.clone(), a_match__exp.clone(), a_preText.clone())?;
     Ok((out_txt, out_a_preText))
 }
 
-pub fn dumpMatchType(mut in_txt: Tpl::Text, mut in_a_match__type: Absyn::MatchType) -> Result<Tpl::Text> {
+pub(crate) fn dumpMatchType(mut in_txt: Tpl::Text, mut in_a_match__type: Absyn::MatchType) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_match__type.clone()) {
         (mut txt, Absyn::MatchType::MATCH { .. }) => {
@@ -4082,7 +4082,7 @@ fn fun_170(mut in_txt: Tpl::Text, mut in_a_locals: Arc<metamodelica::List<Arc<Ab
     Ok((out_txt, out_a_preText))
 }
 
-pub fn dumpMatchLocals(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_locals: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn dumpMatchLocals(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_locals: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = fun_170(txt.clone(), a_locals.clone(), a_preText.clone())?;
@@ -4165,7 +4165,7 @@ fn fun_174(mut in_txt: Tpl::Text, mut in_a_cp: Arc<Absyn::ClassPart>, mut in_a_p
     Ok((out_txt, out_a_preText))
 }
 
-pub fn dumpMatchEquations(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_cp: Arc<Absyn::ClassPart>) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn dumpMatchEquations(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_cp: Arc<Absyn::ClassPart>) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = fun_174(txt.clone(), a_cp.clone(), a_preText.clone())?;
@@ -4316,14 +4316,14 @@ fn fun_179(mut in_txt: Tpl::Text, mut in_a_c: Arc<Absyn::Case>, mut in_a_preText
     Ok((out_txt, out_a_preText))
 }
 
-pub fn dumpMatchCase(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_c: Arc<Absyn::Case>) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn dumpMatchCase(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_c: Arc<Absyn::Case>) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = fun_179(txt.clone(), a_c.clone(), a_preText.clone())?;
     Ok((out_txt, out_a_preText))
 }
 
-pub fn dumpOperator(mut in_txt: Tpl::Text, mut in_a_op: Absyn::Operator) -> Result<Tpl::Text> {
+pub(crate) fn dumpOperator(mut in_txt: Tpl::Text, mut in_a_op: Absyn::Operator) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_op.clone()) {
         (mut txt, Absyn::Operator::ADD { .. }) => {
@@ -4498,7 +4498,7 @@ fn fun_183(mut in_txt: Tpl::Text, mut in_a_cref: Arc<Absyn::ComponentRef>, mut i
     Ok((out_txt, out_a_preText))
 }
 
-pub fn dumpCref(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_cref: Arc<Absyn::ComponentRef>) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn dumpCref(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_cref: Arc<Absyn::ComponentRef>) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = fun_183(txt.clone(), a_cref.clone(), a_preText.clone())?;
@@ -4621,7 +4621,7 @@ fn fun_189(mut in_txt: Tpl::Text, mut in_a_args: Arc<Absyn::FunctionArgs>, mut i
     Ok((out_txt, out_a_preText))
 }
 
-pub fn dumpFunctionArgs(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_args: Arc<Absyn::FunctionArgs>) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn dumpFunctionArgs(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_args: Arc<Absyn::FunctionArgs>) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = fun_189(txt.clone(), a_args.clone(), a_preText.clone())?;
@@ -4650,7 +4650,7 @@ fn fun_191(mut in_txt: Tpl::Text, mut in_a_narg: Arc<Absyn::NamedArg>, mut in_a_
     Ok((out_txt, out_a_preText))
 }
 
-pub fn dumpNamedArg(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_narg: Arc<Absyn::NamedArg>) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn dumpNamedArg(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_narg: Arc<Absyn::NamedArg>) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = fun_191(txt.clone(), a_narg.clone(), a_preText.clone())?;
@@ -4674,7 +4674,7 @@ fn lm_193(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::ForIt
     Ok((txt, a_preText))
 }
 
-pub fn dumpForIterators(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_iters: Arc<metamodelica::List<Arc<Absyn::ForIterator>>>) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn dumpForIterators(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_iters: Arc<metamodelica::List<Arc<Absyn::ForIterator>>>) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preText: Tpl::Text;
     out_txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -4757,7 +4757,7 @@ fn fun_197(mut in_txt: Tpl::Text, mut in_a_iterator: Arc<Absyn::ForIterator>, mu
     Ok((out_txt, out_a_preText))
 }
 
-pub fn dumpForIterator(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_iterator: Arc<Absyn::ForIterator>) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn dumpForIterator(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_iterator: Arc<Absyn::ForIterator>) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = fun_197(txt.clone(), a_iterator.clone(), a_preText.clone())?;

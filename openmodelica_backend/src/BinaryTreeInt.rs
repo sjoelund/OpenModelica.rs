@@ -131,7 +131,7 @@ fn keyCmp(mut keya: Key, mut keyb: Key) -> i32 {
     cmp
 }
 
-pub fn treeGet(mut bt: Arc<BinTree>, mut key: Key) -> Result<Value> {
+pub(crate) fn treeGet(mut bt: Arc<BinTree>, mut key: Key) -> Result<Value> {
     let mut v: Value;
     v = treeGet3(bt.clone(), key.clone(), treeGet2(bt.clone(), key.clone())?)?;
     Ok(v)
@@ -169,7 +169,7 @@ fn treeGet3(mut inBinTree: Arc<BinTree>, mut ikey: Key, mut inCompResult: i32) -
     }
 }
 
-pub fn treeAddList(mut inBinTree: Arc<BinTree>, mut inKeyLst: Arc<metamodelica::List<i32>>) -> Result<Arc<BinTree>> {
+pub(crate) fn treeAddList(mut inBinTree: Arc<BinTree>, mut inKeyLst: Arc<metamodelica::List<i32>>) -> Result<Arc<BinTree>> {
     '__tco: loop {
         ::match_deref::match_deref! { match &((inBinTree.clone(), inKeyLst.clone())) {
         (bt, Deref @ metamodelica::List::Nil) => {
@@ -186,7 +186,7 @@ pub fn treeAddList(mut inBinTree: Arc<BinTree>, mut inKeyLst: Arc<metamodelica::
     }
 }
 
-pub fn treeAdd(mut inBinTree: Arc<BinTree>, mut inKey: Key, mut inValue: Value) -> Result<Arc<BinTree>> {
+pub(crate) fn treeAdd(mut inBinTree: Arc<BinTree>, mut inKey: Key, mut inValue: Value) -> Result<Arc<BinTree>> {
     let mut outBinTree: Arc<BinTree>;
     outBinTree = 'mc: {
         let __mc_input = inBinTree.clone();
@@ -421,7 +421,7 @@ pub fn treeAdd(mut inBinTree: Arc<BinTree>, mut inKey: Key, mut inValue: Value) 
 //         rd;
 //   end matchcontinue;
 // end bintreeDepth;
-pub fn bintreeToList(mut inBinTree: Arc<BinTree>) -> Result<(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)> {
+pub(crate) fn bintreeToList(mut inBinTree: Arc<BinTree>) -> Result<(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)> {
     let mut outKeyLst: Arc<metamodelica::List<i32>>;
     let mut outValueLst: Arc<metamodelica::List<i32>>;
     (outKeyLst, outValueLst) = 'mc: {

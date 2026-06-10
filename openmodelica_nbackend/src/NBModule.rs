@@ -74,7 +74,7 @@ use openmodelica_util_datatypes_basic::Pointer;
 // Util imports
 pub type wrapper = std::sync::Arc<dyn ::std::ops::Fn(Arc<Jacobian::NBackendDAE>) -> Result<Arc<Jacobian::NBackendDAE>> + 'static>;
 
-pub fn moduleClockString(mut name_clock: (ArcStr, metamodelica::Real)) -> Result<ArcStr> {
+pub(crate) fn moduleClockString(mut name_clock: (ArcStr, metamodelica::Real)) -> Result<ArcStr> {
     let mut r#str: ArcStr;
     let mut name: ArcStr;
     let mut clck: metamodelica::Real;

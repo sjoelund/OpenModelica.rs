@@ -111,7 +111,7 @@ impl Default for NFExpressionIterator {
     fn default() -> Self { Self::NONE_ITERATOR }
 }
 pub use self::NFExpressionIterator::{ARRAY_ITERATOR,SCALAR_ITERATOR,EACH_ITERATOR,NONE_ITERATOR,REPEAT_ITERATOR};
-pub fn toString(mut iter: Arc<NFExpressionIterator>) -> Result<ArcStr> {
+pub(crate) fn toString(mut iter: Arc<NFExpressionIterator>) -> Result<ArcStr> {
     let mut r#str: ArcStr;
     r#str = ((::match_deref::match_deref! { match &(iter.clone()) {
         Deref @ ARRAY_ITERATOR { .. } => List::toString(var_field!((*iter).arrays, NFExpressionIterator::ARRAY_ITERATOR).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(_) -> Result<ArcStr> + 'static> = (std::sync::Arc::new(Expression::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<ArcStr> + 'static>); let __pe_b2 = (literal!("")).clone(); let __pe_b3 = (literal!("{")).clone(); let __pe_b4 = (literal!(", ")).clone(); let __pe_b5 = (literal!("}")).clone(); let __pe_b6 = false; let __pe_b7 = 0; move |__pe_a0| Array::toString(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_b6.clone(), __pe_b7.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<ArcStr> + 'static>), (literal!("[ARRY] array iterator:\n")).clone(), (literal!("")).clone(), (literal!("\n")).clone(), (literal!("")).clone(), true, 0)?,
@@ -157,7 +157,7 @@ pub fn fromExp(mut exp: Arc<Expression::NFExpression>, mut backend: bool, mut re
     Ok(iterator)
 }
 
-pub fn fromExpOpt(mut optExp: Option<Arc<Expression::NFExpression>>) -> Result<Arc<NFExpressionIterator>> {
+pub(crate) fn fromExpOpt(mut optExp: Option<Arc<Expression::NFExpression>>) -> Result<Arc<NFExpressionIterator>> {
     let mut iterator: Arc<NFExpressionIterator>;
     iterator = (::match_deref::match_deref! { match &(optExp.clone()) {
         Some(exp) => {
@@ -171,7 +171,7 @@ pub fn fromExpOpt(mut optExp: Option<Arc<Expression::NFExpression>>) -> Result<A
     Ok(iterator)
 }
 
-pub fn fromBinding(mut binding: Arc<Binding::NFBinding>) -> Result<Arc<NFExpressionIterator>> {
+pub(crate) fn fromBinding(mut binding: Arc<Binding::NFBinding>) -> Result<Arc<NFExpressionIterator>> {
     let mut iterator: Arc<NFExpressionIterator>;
     iterator = (::match_deref::match_deref! { match &(binding.clone()) {
         Deref @ Binding::TYPED_BINDING { eachType: Binding::EachType::EACH, .. } => Arc::new(NFExpressionIterator::EACH_ITERATOR { exp: var_field!((*binding).bindingExp, Binding::NFBinding::TYPED_BINDING).clone() }),
@@ -249,7 +249,7 @@ pub fn next(mut iterator: Arc<NFExpressionIterator>) -> Result<(Arc<NFExpression
     Ok((iterator, nextExp))
 }
 
-pub fn nextOpt(mut iterator: Arc<NFExpressionIterator>) -> Result<(Arc<NFExpressionIterator>, Option<Arc<Expression::NFExpression>>)> {
+pub(crate) fn nextOpt(mut iterator: Arc<NFExpressionIterator>) -> Result<(Arc<NFExpressionIterator>, Option<Arc<Expression::NFExpression>>)> {
     let mut iterator: Arc<NFExpressionIterator> = iterator;
     let mut nextExp: Option<Arc<Expression::NFExpression>>;
     let mut exp: Arc<Expression::NFExpression>;
@@ -262,7 +262,7 @@ pub fn nextOpt(mut iterator: Arc<NFExpressionIterator>) -> Result<(Arc<NFExpress
     Ok((iterator, nextExp))
 }
 
-pub fn toList(mut iterator: Arc<NFExpressionIterator>) -> Result<Arc<metamodelica::List<Arc<Expression::NFExpression>>>> {
+pub(crate) fn toList(mut iterator: Arc<NFExpressionIterator>) -> Result<Arc<metamodelica::List<Arc<Expression::NFExpression>>>> {
     let mut expl: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
     let mut iter: Arc<NFExpressionIterator>;
     let mut exp: Arc<Expression::NFExpression>;
@@ -275,7 +275,7 @@ pub fn toList(mut iterator: Arc<NFExpressionIterator>) -> Result<Arc<metamodelic
     Ok(expl)
 }
 
-pub fn isSubscriptedArrayCall(mut iterator: Arc<NFExpressionIterator>, mut trySimplify: bool) -> Result<bool> {
+pub(crate) fn isSubscriptedArrayCall(mut iterator: Arc<NFExpressionIterator>, mut trySimplify: bool) -> Result<bool> {
     fn is_sub_call(mut exp: Arc<Expression::NFExpression>, mut trySimplify: bool) -> Result<bool> {
         let mut res: bool;
         res = (::match_deref::match_deref! { match &(exp.clone()) {

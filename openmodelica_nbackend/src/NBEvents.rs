@@ -99,7 +99,7 @@ use openmodelica_util_datatypes_basic::Pointer;
 // =========================================================================
 //                      MAIN ROUTINE, PLEASE DO NOT CHANGE
 // =========================================================================
-pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<BackendDAE::NBackendDAE>> {
+pub(crate) fn main(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<BackendDAE::NBackendDAE>> {
     let mut bdae: Arc<BackendDAE::NBackendDAE> = bdae;
     let mut func: Module::eventsInterface;
     func = getModule()?;
@@ -125,7 +125,7 @@ pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<BackendDAE::NB
     Ok(bdae)
 }
 
-pub fn getModule() -> Result<Arc<dyn ::std::ops::Fn(Arc<VarData::VarData>, Arc<EqData::EqData>, Arc<EventInfo::EventInfo>, Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>) -> Result<(Arc<VarData::VarData>, Arc<EqData::EqData>, Arc<EventInfo::EventInfo>)> + 'static>> {
+pub(crate) fn getModule() -> Result<Arc<dyn ::std::ops::Fn(Arc<VarData::VarData>, Arc<EqData::EqData>, Arc<EventInfo::EventInfo>, Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>) -> Result<(Arc<VarData::VarData>, Arc<EqData::EqData>, Arc<EventInfo::EventInfo>)> + 'static>> {
     let mut func: Module::eventsInterface;
     let mut flag: ArcStr = literal!("default");
     func = (::match_deref::match_deref! { match &(flag.clone()) {
@@ -175,7 +175,7 @@ pub mod EventInfo {
 
     pub type EVENT_INFO = EventInfo;
 
-    pub fn toString(mut eventInfo: Arc<EventInfo>) -> Result<ArcStr> {
+    pub(crate) fn toString(mut eventInfo: Arc<EventInfo>) -> Result<ArcStr> {
         fn tplString<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'static + metamodelica::gc::MMTrace>(mut tpl: (T1, T2), mut f1: Arc<dyn ::std::ops::Fn(T1) -> Result<ArcStr> + 'static>, mut f2: Arc<dyn ::std::ops::Fn(T2) -> Result<ArcStr> + 'static>) -> Result<ArcStr> {
             type F1<T1: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T1) -> Result<ArcStr> + 'static>;
 
@@ -203,7 +203,7 @@ pub mod EventInfo {
         Ok(r#str)
     }
 
-    pub fn toLists(mut eventInfo: Arc<EventInfo>) -> Result<(Arc<metamodelica::List<Arc<TimeEvent::TimeEvent>>>, Arc<metamodelica::List<(Arc<Condition::Condition>, Arc<CompositeEvent::CompositeEvent>)>>, Arc<metamodelica::List<(Arc<Condition::Condition>, Arc<StateEvent::StateEvent>)>>)> {
+    pub(crate) fn toLists(mut eventInfo: Arc<EventInfo>) -> Result<(Arc<metamodelica::List<Arc<TimeEvent::TimeEvent>>>, Arc<metamodelica::List<(Arc<Condition::Condition>, Arc<CompositeEvent::CompositeEvent>)>>, Arc<metamodelica::List<(Arc<Condition::Condition>, Arc<StateEvent::StateEvent>)>>)> {
         let mut tev_lst: Arc<metamodelica::List<Arc<TimeEvent::TimeEvent>>>;
         let mut cev_lst: Arc<metamodelica::List<(Arc<Condition::Condition>, Arc<CompositeEvent::CompositeEvent>)>>;
         let mut sev_lst: Arc<metamodelica::List<(Arc<Condition::Condition>, Arc<StateEvent::StateEvent>)>>;
@@ -213,7 +213,7 @@ pub mod EventInfo {
         Ok((tev_lst, cev_lst, sev_lst))
     }
 
-    pub fn create(mut bucket: Arc<Bucket>, mut variables: Arc<VariablePointers::VariablePointers>, mut idx: Pointer::Pointer<i32>) -> Result<(Arc<EventInfo>, Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>, Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>)> {
+    pub(crate) fn create(mut bucket: Arc<Bucket>, mut variables: Arc<VariablePointers::VariablePointers>, mut idx: Pointer::Pointer<i32>) -> Result<(Arc<EventInfo>, Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>, Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>)> {
         let mut eventInfo: Arc<EventInfo>;
         let mut auxiliary_vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
         let mut auxiliary_eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
@@ -238,7 +238,7 @@ pub mod EventInfo {
         Ok((eventInfo, auxiliary_vars, auxiliary_eqns))
     }
 
-    pub fn createAux(mut cond: Arc<Condition::Condition>, mut aux_var: Pointer::Pointer<Arc<Variable::NFVariable>>, mut variables: Arc<VariablePointers::VariablePointers>, mut idx: Pointer::Pointer<i32>, mut auxiliary_vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>, mut auxiliary_eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>) -> Result<(Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>, Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>)> {
+    pub(crate) fn createAux(mut cond: Arc<Condition::Condition>, mut aux_var: Pointer::Pointer<Arc<Variable::NFVariable>>, mut variables: Arc<VariablePointers::VariablePointers>, mut idx: Pointer::Pointer<i32>, mut auxiliary_vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>, mut auxiliary_eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>) -> Result<(Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>, Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>)> {
         let mut auxiliary_vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = auxiliary_vars;
         let mut auxiliary_eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = auxiliary_eqns;
         let mut lhs_cref: Arc<ComponentRef::NFComponentRef>;
@@ -253,7 +253,7 @@ pub mod EventInfo {
         Ok((auxiliary_vars, auxiliary_eqns))
     }
 
-    pub fn createAuxStatements(mut new_stmts: Arc<metamodelica::List<Arc<Statement::NFStatement>>>, mut bucket_ptr: Pointer::Pointer<Arc<Bucket>>, mut variables: Arc<VariablePointers::VariablePointers>) -> Result<Arc<metamodelica::List<Arc<Statement::NFStatement>>>> {
+    pub(crate) fn createAuxStatements(mut new_stmts: Arc<metamodelica::List<Arc<Statement::NFStatement>>>, mut bucket_ptr: Pointer::Pointer<Arc<Bucket>>, mut variables: Arc<VariablePointers::VariablePointers>) -> Result<Arc<metamodelica::List<Arc<Statement::NFStatement>>>> {
         let mut new_stmts: Arc<metamodelica::List<Arc<Statement::NFStatement>>> = new_stmts;
         let mut bucket: Arc<Bucket> = Pointer::access(bucket_ptr.clone());
         let mut new_stmt: Arc<Statement::NFStatement>;
@@ -273,19 +273,19 @@ pub mod EventInfo {
         Ok(new_stmts)
     }
 
-    pub fn empty() -> Arc<EventInfo> {
+    pub(crate) fn empty() -> Arc<EventInfo> {
         let mut eventInfo: Arc<EventInfo>;
         eventInfo = Arc::new(EventInfo { time_set: UnorderedSet::new((std::sync::Arc::new(TimeEvent::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<TimeEvent::TimeEvent>) -> Result<i32> + 'static>), (std::sync::Arc::new(TimeEvent::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<TimeEvent::TimeEvent>, Arc<TimeEvent::TimeEvent>) -> Result<bool> + 'static>), 13), time_map: UnorderedMap::new((std::sync::Arc::new(Condition::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Condition::Condition>) -> Result<i32> + 'static>), (std::sync::Arc::new(Condition::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Condition::Condition>, Arc<Condition::Condition>) -> Result<bool> + 'static>), 1), state_map: UnorderedMap::new((std::sync::Arc::new(Condition::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Condition::Condition>) -> Result<i32> + 'static>), (std::sync::Arc::new(Condition::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Condition::Condition>, Arc<Condition::Condition>) -> Result<bool> + 'static>), 1), numberMathEvents: 0 });
         eventInfo
     }
 
-    pub fn isEmpty(mut eventInfo: Arc<EventInfo>) -> bool {
+    pub(crate) fn isEmpty(mut eventInfo: Arc<EventInfo>) -> bool {
         let mut b: bool;
         b = UnorderedSet::isEmpty(eventInfo.time_set.clone()) && UnorderedMap::isEmpty(eventInfo.time_map.clone()) && UnorderedMap::isEmpty(eventInfo.state_map.clone()) && eventInfo.numberMathEvents.clone() == 0;
         b
     }
 
-    pub fn convert(mut eventInfo: Arc<EventInfo>, mut equation_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Block::Block>>>) -> Result<(Arc<metamodelica::List<OldBackendDAE::ZeroCrossing>>, Arc<metamodelica::List<OldBackendDAE::ZeroCrossing>>, Arc<metamodelica::List<OldBackendDAE::TimeEvent>>)> {
+    pub(crate) fn convert(mut eventInfo: Arc<EventInfo>, mut equation_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Block::Block>>>) -> Result<(Arc<metamodelica::List<OldBackendDAE::ZeroCrossing>>, Arc<metamodelica::List<OldBackendDAE::ZeroCrossing>>, Arc<metamodelica::List<OldBackendDAE::TimeEvent>>)> {
         let mut zeroCrossings: Arc<metamodelica::List<OldBackendDAE::ZeroCrossing>>;
         let mut relations: Arc<metamodelica::List<OldBackendDAE::ZeroCrossing>>;
         let mut timeEvents: Arc<metamodelica::List<OldBackendDAE::TimeEvent>>;
@@ -369,7 +369,7 @@ pub mod TimeEvent {
         }
     }
     pub use self::TimeEvent::{SINGLE,SAMPLE};
-    pub fn toString(mut timeEvent: Arc<TimeEvent>, mut printIndex: bool) -> Result<ArcStr> {
+    pub(crate) fn toString(mut timeEvent: Arc<TimeEvent>, mut printIndex: bool) -> Result<ArcStr> {
         let mut r#str: ArcStr;
         let mut iter: Arc<Iterator::Iterator>;
         (r#str, iter) = (::match_deref::match_deref! { match &(timeEvent.clone()) {
@@ -390,7 +390,7 @@ pub mod TimeEvent {
         Ok(r#str)
     }
 
-    pub fn toStringList(mut events_lst: Arc<metamodelica::List<Arc<TimeEvent>>>) -> Result<ArcStr> {
+    pub(crate) fn toStringList(mut events_lst: Arc<metamodelica::List<Arc<TimeEvent>>>) -> Result<ArcStr> {
         let mut r#str: ArcStr;
         r#str = (StringUtil::headline_4((literal!("Time Events")).clone())).clone();
         if events_lst.clone().is_empty() {
@@ -408,12 +408,12 @@ pub mod TimeEvent {
         Ok(r#str)
     }
 
-    pub fn hash(mut tev: Arc<TimeEvent>) -> Result<i32> {
+    pub(crate) fn hash(mut tev: Arc<TimeEvent>) -> Result<i32> {
         let mut h: i32 = stringHashDjb2((toString(tev.clone(), false)?).clone());
         Ok(h)
     }
 
-    pub fn isEqual(mut tev1: Arc<TimeEvent>, mut tev2: Arc<TimeEvent>) -> Result<bool> {
+    pub(crate) fn isEqual(mut tev1: Arc<TimeEvent>, mut tev2: Arc<TimeEvent>) -> Result<bool> {
         let mut b: bool;
         b = (::match_deref::match_deref! { match &((tev1.clone(), tev2.clone())) {
         (Deref @ SINGLE { .. }, Deref @ SINGLE { .. }) => Expression::isEqual(var_field!((*tev1).trigger, TimeEvent::SINGLE).clone(), var_field!((*tev2).trigger, TimeEvent::SINGLE).clone())?,
@@ -424,12 +424,12 @@ pub mod TimeEvent {
         Ok(b)
     }
 
-    pub fn indexGt(mut tev1: Arc<TimeEvent>, mut tev2: Arc<TimeEvent>) -> Result<bool> {
+    pub(crate) fn indexGt(mut tev1: Arc<TimeEvent>, mut tev2: Arc<TimeEvent>) -> Result<bool> {
         let mut b: bool = getIndex(tev1.clone())? > getIndex(tev2.clone())?;
         Ok(b)
     }
 
-    pub fn create(mut exp: Arc<Expression::NFExpression>, mut bucket: Arc<Bucket>, mut iter: Arc<Iterator::Iterator>, mut eqn: Pointer::Pointer<Arc<Equation::Equation>>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, mut createEqn: bool) -> Result<(Arc<Expression::NFExpression>, Arc<Bucket>, bool)> {
+    pub(crate) fn create(mut exp: Arc<Expression::NFExpression>, mut bucket: Arc<Bucket>, mut iter: Arc<Iterator::Iterator>, mut eqn: Pointer::Pointer<Arc<Equation::Equation>>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, mut createEqn: bool) -> Result<(Arc<Expression::NFExpression>, Arc<Bucket>, bool)> {
         let mut exp: Arc<Expression::NFExpression> = exp;
         let mut bucket: Arc<Bucket> = bucket;
         let mut failed: bool = false;
@@ -461,7 +461,7 @@ pub mod TimeEvent {
         Ok((exp, bucket, failed))
     }
 
-    pub fn createSingleOrSample(mut exp: Arc<Expression::NFExpression>, mut bucket: Arc<Bucket>, mut iter: Arc<Iterator::Iterator>, mut eqn: Pointer::Pointer<Arc<Equation::Equation>>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>) -> Result<(Arc<Expression::NFExpression>, Arc<Bucket>, bool)> {
+    pub(crate) fn createSingleOrSample(mut exp: Arc<Expression::NFExpression>, mut bucket: Arc<Bucket>, mut iter: Arc<Iterator::Iterator>, mut eqn: Pointer::Pointer<Arc<Equation::Equation>>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>) -> Result<(Arc<Expression::NFExpression>, Arc<Bucket>, bool)> {
         let mut exp: Arc<Expression::NFExpression> = exp;
         let mut bucket: Arc<Bucket> = bucket;
         let mut failed: bool = false;
@@ -530,7 +530,7 @@ pub mod TimeEvent {
         Ok((exp, bucket, failed))
     }
 
-    pub fn createSample(mut call: Arc<Call::NFCall>, mut bucket: Arc<Bucket>, mut iter: Arc<Iterator::Iterator>) -> Result<(Arc<Call::NFCall>, Arc<Bucket>, bool, bool)> {
+    pub(crate) fn createSample(mut call: Arc<Call::NFCall>, mut bucket: Arc<Bucket>, mut iter: Arc<Iterator::Iterator>) -> Result<(Arc<Call::NFCall>, Arc<Bucket>, bool, bool)> {
         let mut call: Arc<Call::NFCall> = call;
         let mut bucket: Arc<Bucket> = bucket;
         let mut failed: bool;
@@ -560,7 +560,7 @@ pub mod TimeEvent {
         Ok((call, bucket, failed, clocked))
     }
 
-    pub fn createSampleTraverse(mut exp: Arc<Expression::NFExpression>, mut bucket: Arc<Bucket>, mut iter: Arc<Iterator::Iterator>, mut clocked: Pointer::Pointer<bool>) -> Result<(Arc<Expression::NFExpression>, Arc<Bucket>)> {
+    pub(crate) fn createSampleTraverse(mut exp: Arc<Expression::NFExpression>, mut bucket: Arc<Bucket>, mut iter: Arc<Iterator::Iterator>, mut clocked: Pointer::Pointer<bool>) -> Result<(Arc<Expression::NFExpression>, Arc<Bucket>)> {
         let mut exp: Arc<Expression::NFExpression> = exp;
         let mut bucket: Arc<Bucket> = bucket;
         let mut c: bool = false;
@@ -582,7 +582,7 @@ pub mod TimeEvent {
         Ok((exp, bucket))
     }
 
-    pub fn getIndex(mut timeEvent: Arc<TimeEvent>) -> Result<i32> {
+    pub(crate) fn getIndex(mut timeEvent: Arc<TimeEvent>) -> Result<i32> {
         let mut index: i32;
         index = (::match_deref::match_deref! { match &(timeEvent.clone()) {
         Deref @ SINGLE { .. } => var_field!((*timeEvent).index, TimeEvent::SINGLE).clone(),
@@ -592,7 +592,7 @@ pub mod TimeEvent {
         Ok(index)
     }
 
-    pub fn setIndex(mut timeEvent: Arc<TimeEvent>, mut index: i32) -> Arc<TimeEvent> {
+    pub(crate) fn setIndex(mut timeEvent: Arc<TimeEvent>, mut index: i32) -> Arc<TimeEvent> {
         let mut timeEvent: Arc<TimeEvent> = timeEvent;
         timeEvent = (::match_deref::match_deref! { match &(timeEvent.clone()) {
         Deref @ SINGLE { .. } => {
@@ -609,7 +609,7 @@ pub mod TimeEvent {
         timeEvent
     }
 
-    pub fn convert(mut timeEvent: Arc<TimeEvent>) -> Result<OldBackendDAE::TimeEvent> {
+    pub(crate) fn convert(mut timeEvent: Arc<TimeEvent>) -> Result<OldBackendDAE::TimeEvent> {
         let mut oldTimeEvent: OldBackendDAE::TimeEvent;
         oldTimeEvent = (::match_deref::match_deref! { match &(timeEvent.clone()) {
         Deref @ SINGLE { .. } => OldBackendDAE::TimeEvent::SAMPLE_TIME_EVENT { index: var_field!((*timeEvent).index, TimeEvent::SINGLE).clone(), startExp: Expression::toDAE(var_field!((*timeEvent).trigger, TimeEvent::SINGLE).clone(), false)?, intervalExp: Expression::toDAE(Expression::makeMaxValue(openmodelica_nf_frontend::NFType::interned_REAL())?, false)?, iter: convertEventIterator(var_field!((*timeEvent).iter, TimeEvent::SINGLE).clone())? },
@@ -657,12 +657,12 @@ pub mod StateEvent {
 
     pub type STATE_EVENT = StateEvent;
 
-    pub fn toString(mut sev: Arc<StateEvent>) -> Result<ArcStr> {
+    pub(crate) fn toString(mut sev: Arc<StateEvent>) -> Result<ArcStr> {
         let mut r#str: ArcStr = { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*intString(sev.index.clone())); __mm_s.push_str(&*literal!(") ")); __mm_s.push_str(&*BVariable::toString(Pointer::access(sev.auxiliary.clone()), (literal!("")).clone())?); ArcStr::from(__mm_s) };
         Ok(r#str)
     }
 
-    pub fn toStringList(mut events_lst: Arc<metamodelica::List<Arc<StateEvent>>>) -> Result<ArcStr> {
+    pub(crate) fn toStringList(mut events_lst: Arc<metamodelica::List<Arc<StateEvent>>>) -> Result<ArcStr> {
         let mut r#str: ArcStr;
         r#str = (StringUtil::headline_4((literal!("State Events")).clone())).clone();
         if events_lst.clone().is_empty() {
@@ -680,7 +680,7 @@ pub mod StateEvent {
         Ok(r#str)
     }
 
-    pub fn indexGt(mut tpl1: (Arc<Condition::Condition>, Arc<StateEvent>), mut tpl2: (Arc<Condition::Condition>, Arc<StateEvent>)) -> bool {
+    pub(crate) fn indexGt(mut tpl1: (Arc<Condition::Condition>, Arc<StateEvent>), mut tpl2: (Arc<Condition::Condition>, Arc<StateEvent>)) -> bool {
         let mut b: bool;
         let mut sev1: Arc<StateEvent>;
         let mut sev2: Arc<StateEvent>;
@@ -690,7 +690,7 @@ pub mod StateEvent {
         b
     }
 
-    pub fn fromStatement(mut stmt: Arc<Statement::NFStatement>, mut bucket_ptr: Pointer::Pointer<Arc<Bucket>>, mut eqn: Pointer::Pointer<Arc<Equation::Equation>>, mut variables: Arc<VariablePointers::VariablePointers>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, mut frames: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)>>) -> Result<Arc<Statement::NFStatement>> {
+    pub(crate) fn fromStatement(mut stmt: Arc<Statement::NFStatement>, mut bucket_ptr: Pointer::Pointer<Arc<Bucket>>, mut eqn: Pointer::Pointer<Arc<Equation::Equation>>, mut variables: Arc<VariablePointers::VariablePointers>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, mut frames: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)>>) -> Result<Arc<Statement::NFStatement>> {
         let mut stmt: Arc<Statement::NFStatement> = stmt;
         stmt = (::match_deref::match_deref! { match &(stmt.clone()) {
         Deref @ Statement::ASSERT { .. } => {
@@ -725,7 +725,7 @@ pub mod StateEvent {
         Ok(stmt)
     }
 
-    pub fn create(mut exp: Arc<Expression::NFExpression>, mut bucket: Arc<Bucket>, mut iter: Arc<Iterator::Iterator>, mut eqn: Pointer::Pointer<Arc<Equation::Equation>>, mut createEqn: bool) -> Result<(Arc<Expression::NFExpression>, Arc<Bucket>)> {
+    pub(crate) fn create(mut exp: Arc<Expression::NFExpression>, mut bucket: Arc<Bucket>, mut iter: Arc<Iterator::Iterator>, mut eqn: Pointer::Pointer<Arc<Equation::Equation>>, mut createEqn: bool) -> Result<(Arc<Expression::NFExpression>, Arc<Bucket>)> {
         let mut exp: Arc<Expression::NFExpression> = exp;
         let mut bucket: Arc<Bucket> = bucket;
         let mut condition: Arc<Condition::Condition>;
@@ -765,7 +765,7 @@ pub mod StateEvent {
         Ok((exp, bucket))
     }
 
-    pub fn convert(mut sev_tpl: (Arc<Condition::Condition>, Arc<StateEvent>), mut equation_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Block::Block>>>) -> Result<OldBackendDAE::ZeroCrossing> {
+    pub(crate) fn convert(mut sev_tpl: (Arc<Condition::Condition>, Arc<StateEvent>), mut equation_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Block::Block>>>) -> Result<OldBackendDAE::ZeroCrossing> {
         let mut oldZc: OldBackendDAE::ZeroCrossing;
         let mut cond: Arc<Condition::Condition>;
         let mut sev: Arc<StateEvent>;
@@ -824,12 +824,12 @@ pub mod CompositeEvent {
 
     pub type COMPOSITE_EVENT = CompositeEvent;
 
-    pub fn toString(mut cev: Arc<CompositeEvent>) -> Result<ArcStr> {
+    pub(crate) fn toString(mut cev: Arc<CompositeEvent>) -> Result<ArcStr> {
         let mut r#str: ArcStr = { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*intString(cev.index.clone())); __mm_s.push_str(&*literal!(") ")); __mm_s.push_str(&*BVariable::pointerToString(cev.auxiliary.clone())?); ArcStr::from(__mm_s) };
         Ok(r#str)
     }
 
-    pub fn indexGt(mut tpl1: (Arc<Condition::Condition>, Arc<CompositeEvent>), mut tpl2: (Arc<Condition::Condition>, Arc<CompositeEvent>)) -> bool {
+    pub(crate) fn indexGt(mut tpl1: (Arc<Condition::Condition>, Arc<CompositeEvent>), mut tpl2: (Arc<Condition::Condition>, Arc<CompositeEvent>)) -> bool {
         let mut b: bool;
         let mut cev1: Arc<CompositeEvent>;
         let mut cev2: Arc<CompositeEvent>;
@@ -839,7 +839,7 @@ pub mod CompositeEvent {
         b
     }
 
-    pub fn create(mut exp: Arc<Expression::NFExpression>, mut bucket: Arc<Bucket>, mut iter: Arc<Iterator::Iterator>, mut createEqn: bool) -> Result<(Arc<Expression::NFExpression>, Arc<Bucket>, bool)> {
+    pub(crate) fn create(mut exp: Arc<Expression::NFExpression>, mut bucket: Arc<Bucket>, mut iter: Arc<Iterator::Iterator>, mut createEqn: bool) -> Result<(Arc<Expression::NFExpression>, Arc<Bucket>, bool)> {
         let mut exp: Arc<Expression::NFExpression> = exp;
         let mut bucket: Arc<Bucket> = bucket;
         let mut failed: bool = false;
@@ -902,7 +902,7 @@ pub mod CompositeEvent {
         Ok((exp, bucket, failed))
     }
 
-    pub fn checkDirectComposite(mut call: Arc<Call::NFCall>, mut exp: Arc<Expression::NFExpression>, mut bucket: Arc<Bucket>, mut iter: Arc<Iterator::Iterator>, mut createEqn: bool) -> Result<(Arc<Call::NFCall>, Arc<Expression::NFExpression>, Arc<Bucket>, bool)> {
+    pub(crate) fn checkDirectComposite(mut call: Arc<Call::NFCall>, mut exp: Arc<Expression::NFExpression>, mut bucket: Arc<Bucket>, mut iter: Arc<Iterator::Iterator>, mut createEqn: bool) -> Result<(Arc<Call::NFCall>, Arc<Expression::NFExpression>, Arc<Bucket>, bool)> {
         let mut call: Arc<Call::NFCall> = call;
         let mut exp: Arc<Expression::NFExpression> = exp;
         let mut bucket: Arc<Bucket> = bucket;
@@ -917,7 +917,7 @@ pub mod CompositeEvent {
         Ok((call, exp, bucket, failed))
     }
 
-    pub fn add(mut cond: Arc<Expression::NFExpression>, mut iter: Arc<Iterator::Iterator>, mut bucket: Arc<Bucket>, mut createEqn: bool) -> Result<(Arc<Expression::NFExpression>, Arc<Bucket>)> {
+    pub(crate) fn add(mut cond: Arc<Expression::NFExpression>, mut iter: Arc<Iterator::Iterator>, mut bucket: Arc<Bucket>, mut createEqn: bool) -> Result<(Arc<Expression::NFExpression>, Arc<Bucket>)> {
         let mut exp: Arc<Expression::NFExpression>;
         let mut bucket: Arc<Bucket> = bucket;
         let mut condition: Arc<Condition::Condition>;
@@ -983,7 +983,7 @@ pub mod Condition {
 
     pub type CONDITION = Condition;
 
-    pub fn toString(mut cond: Arc<Condition>) -> Result<ArcStr> {
+    pub(crate) fn toString(mut cond: Arc<Condition>) -> Result<ArcStr> {
         let mut r#str: ArcStr;
         r#str = (Expression::toString(cond.exp.clone())?).clone();
         if !(BEquation::Iterator::isEmpty(cond.iter.clone())) {
@@ -995,22 +995,22 @@ pub mod Condition {
         Ok(r#str)
     }
 
-    pub fn hash(mut cond: Arc<Condition>) -> Result<i32> {
+    pub(crate) fn hash(mut cond: Arc<Condition>) -> Result<i32> {
         let mut h: i32 = stringHashDjb2((toString(cond.clone())?).clone());
         Ok(h)
     }
 
-    pub fn isEqual(mut cond1: Arc<Condition>, mut cond2: Arc<Condition>) -> Result<bool> {
+    pub(crate) fn isEqual(mut cond1: Arc<Condition>, mut cond2: Arc<Condition>) -> Result<bool> {
         let mut b: bool = Expression::isEqual(cond1.exp.clone(), cond2.exp.clone())? && BEquation::Iterator::isEqual(cond1.iter.clone(), cond2.iter.clone())? && cond1.stmt_index.clone() == cond2.stmt_index.clone();
         Ok(b)
     }
 
-    pub fn size(mut cond: Arc<Condition>) -> Result<i32> {
+    pub(crate) fn size(mut cond: Arc<Condition>) -> Result<i32> {
         let mut s: i32 = BEquation::Iterator::size(cond.iter.clone(), false)?;
         Ok(s)
     }
 
-    pub fn setRelationIndex(mut cond: Arc<Condition>, mut index: i32) -> Arc<Condition> {
+    pub(crate) fn setRelationIndex(mut cond: Arc<Condition>, mut index: i32) -> Arc<Condition> {
         let mut cond: Arc<Condition> = cond;
         assign_field!(cond.exp = (::match_deref::match_deref! { match &(cond.exp.clone()) {
         exp @ Deref @ Expression::RELATION { .. } => {
@@ -1028,7 +1028,7 @@ pub mod Condition {
 
 }
 
-pub fn convertEventIterator(mut iter: Arc<Iterator::Iterator>) -> Result<Option<Arc<metamodelica::List<OldSimIterator>>>> {
+pub(crate) fn convertEventIterator(mut iter: Arc<Iterator::Iterator>) -> Result<Option<Arc<metamodelica::List<OldSimIterator>>>> {
     let mut sim_iter: Option<Arc<metamodelica::List<OldSimIterator>>>;
     sim_iter = if (BEquation::Iterator::isEmpty(iter.clone())) {None} else {Some(({
         let mut __acc: Arc<metamodelica::List<OldSimIterator>> = metamodelica::nil();

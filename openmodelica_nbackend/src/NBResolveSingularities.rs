@@ -84,7 +84,7 @@ use openmodelica_util_datatypes_basic::Pointer;
 // NF imports
 // NB imports
 // util imports
-pub fn indexReduction(mut adj: Arc<Adjacency::Matrix::Matrix>, mut full: Arc<Adjacency::Matrix::Matrix>, mut variables: Arc<VariablePointers::VariablePointers>, mut equations: Arc<EquationPointers::EquationPointers>, mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqData::EqData>, mut kind: NBPartition::Kind, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Absyn::Path>, Arc<NFFunction::Function::Function>>>, mut matching: Arc<Matching::NBMatching>, mut mapping_opt: Option<Arc<Adjacency::Mapping::Mapping>>) -> Result<(Arc<Adjacency::Matrix::Matrix>, Arc<Adjacency::Matrix::Matrix>, Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>, Arc<VarData::VarData>, Arc<EqData::EqData>, bool)> {
+pub(crate) fn indexReduction(mut adj: Arc<Adjacency::Matrix::Matrix>, mut full: Arc<Adjacency::Matrix::Matrix>, mut variables: Arc<VariablePointers::VariablePointers>, mut equations: Arc<EquationPointers::EquationPointers>, mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqData::EqData>, mut kind: NBPartition::Kind, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Absyn::Path>, Arc<NFFunction::Function::Function>>>, mut matching: Arc<Matching::NBMatching>, mut mapping_opt: Option<Arc<Adjacency::Mapping::Mapping>>) -> Result<(Arc<Adjacency::Matrix::Matrix>, Arc<Adjacency::Matrix::Matrix>, Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>, Arc<VarData::VarData>, Arc<EqData::EqData>, bool)> {
     pub type SliceSet = Arc<UnorderedSet::UnorderedSet<i32>>;
 
     let mut adj: Arc<Adjacency::Matrix::Matrix> = adj;
@@ -315,7 +315,7 @@ pub fn indexReduction(mut adj: Arc<Adjacency::Matrix::Matrix>, mut full: Arc<Adj
     Ok((adj, full, variables, equations, varData, eqData, changed))
 }
 
-pub fn balanceInitialization(mut adj: Arc<Adjacency::Matrix::Matrix>, mut full: Arc<Adjacency::Matrix::Matrix>, mut variables: Arc<VariablePointers::VariablePointers>, mut equations: Arc<EquationPointers::EquationPointers>, mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqData::EqData>, mut kind: NBPartition::Kind, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Absyn::Path>, Arc<NFFunction::Function::Function>>>, mut matching: Arc<Matching::NBMatching>, mut mapping_opt: Option<Arc<Adjacency::Mapping::Mapping>>) -> Result<(Arc<Adjacency::Matrix::Matrix>, Arc<Adjacency::Matrix::Matrix>, Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>, Arc<VarData::VarData>, Arc<EqData::EqData>, bool)> {
+pub(crate) fn balanceInitialization(mut adj: Arc<Adjacency::Matrix::Matrix>, mut full: Arc<Adjacency::Matrix::Matrix>, mut variables: Arc<VariablePointers::VariablePointers>, mut equations: Arc<EquationPointers::EquationPointers>, mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqData::EqData>, mut kind: NBPartition::Kind, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Absyn::Path>, Arc<NFFunction::Function::Function>>>, mut matching: Arc<Matching::NBMatching>, mut mapping_opt: Option<Arc<Adjacency::Mapping::Mapping>>) -> Result<(Arc<Adjacency::Matrix::Matrix>, Arc<Adjacency::Matrix::Matrix>, Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>, Arc<VarData::VarData>, Arc<EqData::EqData>, bool)> {
     let mut adj: Arc<Adjacency::Matrix::Matrix> = adj;
     let mut full: Arc<Adjacency::Matrix::Matrix> = full;
     let mut variables: Arc<VariablePointers::VariablePointers> = variables;
@@ -598,7 +598,7 @@ fn sortCandidates(mut candidates: Arc<metamodelica::List<Pointer::Pointer<Arc<Va
 }
 
 fn resolveSlicedUnmatched(mut old_unmatched: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>>, mut slice_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<UnorderedSet::UnorderedSet<i32>>>>) -> Result<Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>>> {
-    pub fn resolveSlicedUnmatchedSingle(mut eq: Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>, mut acc: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>>, mut slice_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<UnorderedSet::UnorderedSet<i32>>>>) -> Result<Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>>> {
+    pub(crate) fn resolveSlicedUnmatchedSingle(mut eq: Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>, mut acc: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>>, mut slice_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<UnorderedSet::UnorderedSet<i32>>>>) -> Result<Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>>> {
         let mut acc: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>> = acc;
         let mut relevant_indices: Arc<UnorderedSet::UnorderedSet<i32>>;
         relevant_indices = UnorderedMap::getSafe(Equation::getEqnName(Slice::getT(eq.clone()))?, slice_map.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/1_Main/NBResolveSingularities.mo"))?;

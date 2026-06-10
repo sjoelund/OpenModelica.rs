@@ -51,7 +51,7 @@ use openmodelica_util::Error;
 use openmodelica_util::Flags;
 use openmodelica_util::MMath;
 
-pub fn check(mut tms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>, mut ist: UnitAbsyn::InstStore) -> UnitAbsyn::InstStore {
+pub(crate) fn check(mut tms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>, mut ist: UnitAbsyn::InstStore) -> UnitAbsyn::InstStore {
     let mut outSt: UnitAbsyn::InstStore;
     outSt = 'mc: {
         let __mc_input = (tms.clone(), ist.clone());
@@ -120,7 +120,7 @@ pub fn check(mut tms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>, mut ist
     outSt
 }
 
-pub fn isComplete(mut st: UnitAbsyn::Store) -> Result<(bool, UnitAbsyn::Store)> {
+pub(crate) fn isComplete(mut st: UnitAbsyn::Store) -> Result<(bool, UnitAbsyn::Store)> {
     let mut complete: bool;
     let mut stout: UnitAbsyn::Store;
     (complete, stout) = (match st.clone() {
@@ -187,7 +187,7 @@ fn completeCheck(mut ilst: Arc<metamodelica::List<Option<UnitAbsyn::Unit>>>, mut
     Ok((isComplete, stout))
 }
 
-pub fn checkTerm(mut tm: Arc<UnitAbsyn::UnitTerm>, mut st: UnitAbsyn::Store) -> Result<(UnitAbsyn::UnitCheckResult, UnitAbsyn::SpecUnit, UnitAbsyn::Store)> {
+pub(crate) fn checkTerm(mut tm: Arc<UnitAbsyn::UnitTerm>, mut st: UnitAbsyn::Store) -> Result<(UnitAbsyn::UnitCheckResult, UnitAbsyn::SpecUnit, UnitAbsyn::Store)> {
     let mut result: UnitAbsyn::UnitCheckResult;
     let mut outUnit: UnitAbsyn::SpecUnit;
     let mut outSt: UnitAbsyn::Store;
@@ -483,14 +483,14 @@ fn unifyunits(mut insu1: UnitAbsyn::SpecUnit, mut insu2: UnitAbsyn::SpecUnit, mu
     Ok((outresult, outSt))
 }
 
-pub fn newDimlessSpecUnit() -> Result<UnitAbsyn::SpecUnit> {
+pub(crate) fn newDimlessSpecUnit() -> Result<UnitAbsyn::SpecUnit> {
     let mut su: UnitAbsyn::SpecUnit;
     let UnitAbsyn::SPECIFIED { specified: __pa0 } = (UnitAbsynBuilder::str2unit((literal!("1")).clone(), None)?) else { bail!("pattern mismatch") };
     su = __pa0.clone();
     Ok(su)
 }
 
-pub fn getUnknown(mut suin: UnitAbsyn::SpecUnit) -> Result<(i32, UnitAbsyn::SpecUnit)> {
+pub(crate) fn getUnknown(mut suin: UnitAbsyn::SpecUnit) -> Result<(i32, UnitAbsyn::SpecUnit)> {
     let mut loc: i32;
     let mut suout: UnitAbsyn::SpecUnit;
     (loc, suout) = 'mc: {
@@ -524,7 +524,7 @@ pub fn getUnknown(mut suin: UnitAbsyn::SpecUnit) -> Result<(i32, UnitAbsyn::Spec
     Ok((loc, suout))
 }
 
-pub fn hasUnknown(mut su: UnitAbsyn::SpecUnit) -> Result<bool> {
+pub(crate) fn hasUnknown(mut su: UnitAbsyn::SpecUnit) -> Result<bool> {
     let mut res: bool;
     res = 'mc: {
         let __mc_input = su.clone();
@@ -559,7 +559,7 @@ pub fn hasUnknown(mut su: UnitAbsyn::SpecUnit) -> Result<bool> {
     Ok(res)
 }
 
-pub fn unitHasUnknown(mut u: UnitAbsyn::Unit) -> Result<bool> {
+pub(crate) fn unitHasUnknown(mut u: UnitAbsyn::Unit) -> Result<bool> {
     let mut res: bool;
     res = (match u.clone() {
         UnitAbsyn::Unit::SPECIFIED { specified: mut su } => {
@@ -574,7 +574,7 @@ pub fn unitHasUnknown(mut u: UnitAbsyn::Unit) -> Result<bool> {
     Ok(res)
 }
 
-pub fn mulSpecUnit(mut u1: UnitAbsyn::SpecUnit, mut u2: UnitAbsyn::SpecUnit) -> Result<UnitAbsyn::SpecUnit> {
+pub(crate) fn mulSpecUnit(mut u1: UnitAbsyn::SpecUnit, mut u2: UnitAbsyn::SpecUnit) -> Result<UnitAbsyn::SpecUnit> {
     let mut u: UnitAbsyn::SpecUnit;
     u = 'mc: {
         let __mc_input = (u1.clone(), u2.clone());
@@ -599,7 +599,7 @@ pub fn mulSpecUnit(mut u1: UnitAbsyn::SpecUnit, mut u2: UnitAbsyn::SpecUnit) -> 
     Ok(u)
 }
 
-pub fn mulUnitVec(mut inunitvec1: Arc<metamodelica::List<MMath::Rational>>, mut inunitvec2: Arc<metamodelica::List<MMath::Rational>>) -> Result<Arc<metamodelica::List<MMath::Rational>>> {
+pub(crate) fn mulUnitVec(mut inunitvec1: Arc<metamodelica::List<MMath::Rational>>, mut inunitvec2: Arc<metamodelica::List<MMath::Rational>>) -> Result<Arc<metamodelica::List<MMath::Rational>>> {
     let mut outunitvec: Arc<metamodelica::List<MMath::Rational>>;
     outunitvec = 'mc: {
         let __mc_input = (inunitvec1.clone(), inunitvec2.clone());
@@ -658,7 +658,7 @@ pub fn mulUnitVec(mut inunitvec1: Arc<metamodelica::List<MMath::Rational>>, mut 
     Ok(outunitvec)
 }
 
-pub fn divSpecUnit(mut u1: UnitAbsyn::SpecUnit, mut u2: UnitAbsyn::SpecUnit) -> Result<UnitAbsyn::SpecUnit> {
+pub(crate) fn divSpecUnit(mut u1: UnitAbsyn::SpecUnit, mut u2: UnitAbsyn::SpecUnit) -> Result<UnitAbsyn::SpecUnit> {
     let mut u: UnitAbsyn::SpecUnit;
     u = 'mc: {
         let __mc_input = (u1.clone(), u2.clone());
@@ -685,7 +685,7 @@ pub fn divSpecUnit(mut u1: UnitAbsyn::SpecUnit, mut u2: UnitAbsyn::SpecUnit) -> 
     Ok(u)
 }
 
-pub fn divUnitVec(mut inunitvec1: Arc<metamodelica::List<MMath::Rational>>, mut inunitvec2: Arc<metamodelica::List<MMath::Rational>>) -> Result<Arc<metamodelica::List<MMath::Rational>>> {
+pub(crate) fn divUnitVec(mut inunitvec1: Arc<metamodelica::List<MMath::Rational>>, mut inunitvec2: Arc<metamodelica::List<MMath::Rational>>) -> Result<Arc<metamodelica::List<MMath::Rational>>> {
     let mut outunitvec: Arc<metamodelica::List<MMath::Rational>>;
     outunitvec = 'mc: {
         let __mc_input = (inunitvec1.clone(), inunitvec2.clone());
@@ -746,7 +746,7 @@ pub fn divUnitVec(mut inunitvec1: Arc<metamodelica::List<MMath::Rational>>, mut 
     Ok(outunitvec)
 }
 
-pub fn powSpecUnit(mut suin: UnitAbsyn::SpecUnit, mut expo: MMath::Rational) -> Result<UnitAbsyn::SpecUnit> {
+pub(crate) fn powSpecUnit(mut suin: UnitAbsyn::SpecUnit, mut expo: MMath::Rational) -> Result<UnitAbsyn::SpecUnit> {
     let mut uout: UnitAbsyn::SpecUnit;
     uout = 'mc: {
         let __mc_input = suin.clone();
@@ -769,7 +769,7 @@ pub fn powSpecUnit(mut suin: UnitAbsyn::SpecUnit, mut expo: MMath::Rational) -> 
     Ok(uout)
 }
 
-pub fn powUnitParams(mut inparams: Arc<metamodelica::List<(MMath::Rational, UnitAbsyn::TypeParameter)>>, mut expo: MMath::Rational) -> Result<Arc<metamodelica::List<(MMath::Rational, UnitAbsyn::TypeParameter)>>> {
+pub(crate) fn powUnitParams(mut inparams: Arc<metamodelica::List<(MMath::Rational, UnitAbsyn::TypeParameter)>>, mut expo: MMath::Rational) -> Result<Arc<metamodelica::List<(MMath::Rational, UnitAbsyn::TypeParameter)>>> {
     let mut outparams: Arc<metamodelica::List<(MMath::Rational, UnitAbsyn::TypeParameter)>>;
     outparams = 'mc: {
         let __mc_input = (inparams.clone(), expo.clone());
@@ -808,7 +808,7 @@ pub fn powUnitParams(mut inparams: Arc<metamodelica::List<(MMath::Rational, Unit
     Ok(outparams)
 }
 
-pub fn powUnitVec(mut inunitvec: Arc<metamodelica::List<MMath::Rational>>, mut expo: MMath::Rational) -> Result<Arc<metamodelica::List<MMath::Rational>>> {
+pub(crate) fn powUnitVec(mut inunitvec: Arc<metamodelica::List<MMath::Rational>>, mut expo: MMath::Rational) -> Result<Arc<metamodelica::List<MMath::Rational>>> {
     let mut outunitvec: Arc<metamodelica::List<MMath::Rational>>;
     outunitvec = 'mc: {
         let __mc_input = (inunitvec.clone(), expo.clone());
@@ -886,7 +886,7 @@ fn negParamList(mut ine: Arc<metamodelica::List<(MMath::Rational, UnitAbsyn::Typ
     Ok(oute)
 }
 
-pub fn normalize(mut loc: i32, mut st: UnitAbsyn::Store) -> Result<(UnitAbsyn::Unit, UnitAbsyn::Store)> {
+pub(crate) fn normalize(mut loc: i32, mut st: UnitAbsyn::Store) -> Result<(UnitAbsyn::Unit, UnitAbsyn::Store)> {
     let mut unit: UnitAbsyn::Unit;
     let mut outSt: UnitAbsyn::Store;
     let mut u1: UnitAbsyn::Unit;
@@ -899,7 +899,7 @@ pub fn normalize(mut loc: i32, mut st: UnitAbsyn::Store) -> Result<(UnitAbsyn::U
     Ok((unit, outSt))
 }
 
-pub fn normalizeOnUnit(mut u: UnitAbsyn::Unit, mut st: UnitAbsyn::Store) -> Result<(UnitAbsyn::Unit, UnitAbsyn::Store)> {
+pub(crate) fn normalizeOnUnit(mut u: UnitAbsyn::Unit, mut st: UnitAbsyn::Store) -> Result<(UnitAbsyn::Unit, UnitAbsyn::Store)> {
     let mut unit: UnitAbsyn::Unit;
     let mut outSt: UnitAbsyn::Store;
     (unit, outSt) = 'mc: {
@@ -1120,7 +1120,7 @@ fn mulSpecUnitWithNorm(mut suin: UnitAbsyn::SpecUnit, mut normunit: UnitAbsyn::U
     Ok(suout)
 }
 
-pub fn printSpecUnit(mut text: ArcStr, mut su: UnitAbsyn::SpecUnit) -> Result<()> {
+pub(crate) fn printSpecUnit(mut text: ArcStr, mut su: UnitAbsyn::SpecUnit) -> Result<()> {
     let () = (match (text.clone(), su.clone()) {
         (mut r#str, UnitAbsyn::SpecUnit { typeParameters: ref params, units: _ }) => {
             metamodelica::print((r#str.clone()).clone());
@@ -1135,7 +1135,7 @@ pub fn printSpecUnit(mut text: ArcStr, mut su: UnitAbsyn::SpecUnit) -> Result<()
     Ok(())
 }
 
-pub fn printSpecUnitParams(mut params: Arc<metamodelica::List<(MMath::Rational, UnitAbsyn::TypeParameter)>>) -> Result<()> {
+pub(crate) fn printSpecUnitParams(mut params: Arc<metamodelica::List<(MMath::Rational, UnitAbsyn::TypeParameter)>>) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(params.clone()) {
         Deref @ metamodelica::List::Nil => {
             ()
@@ -1158,12 +1158,12 @@ pub fn printSpecUnitParams(mut params: Arc<metamodelica::List<(MMath::Rational, 
     Ok(())
 }
 
-pub fn testUnitOp() -> () {
+pub(crate) fn testUnitOp() -> () {
     metamodelica::print((literal!("test")).clone());
     ()
 }
 
-pub fn printResult(mut res: UnitAbsyn::UnitCheckResult) -> Result<()> {
+pub(crate) fn printResult(mut res: UnitAbsyn::UnitCheckResult) -> Result<()> {
     let () = (match res.clone() {
         UnitAbsyn::UnitCheckResult::CONSISTENT { .. } => {
             metamodelica::print((literal!("\n---\nThe system of units is consistent.\n---\n")).clone());

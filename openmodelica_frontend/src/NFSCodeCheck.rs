@@ -58,7 +58,7 @@ use openmodelica_util::Debug;
 use openmodelica_util::Error;
 use openmodelica_util::Flags;
 
-pub fn checkRecursiveShortDefinition(mut inTypeSpec: Arc<Absyn::TypeSpec>, mut inTypeName: ArcStr, mut inTypeEnv: Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, mut inInfo: SourceInfo) -> Result<()> {
+pub(crate) fn checkRecursiveShortDefinition(mut inTypeSpec: Arc<Absyn::TypeSpec>, mut inTypeName: ArcStr, mut inTypeEnv: Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, mut inInfo: SourceInfo) -> Result<()> {
     let () = 'mc: {
         let __mc_input = inTypeEnv.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -112,7 +112,7 @@ fn isSelfReference(mut inTypeName: ArcStr, mut inTypePath: Arc<Absyn::Path>, mut
     Ok(selfRef)
 }
 
-pub fn checkClassExtendsReplaceability(mut inBaseClass: Arc<NFSCodeEnv::Item>, mut inOriginInfo: SourceInfo) -> Result<()> {
+pub(crate) fn checkClassExtendsReplaceability(mut inBaseClass: Arc<NFSCodeEnv::Item>, mut inOriginInfo: SourceInfo) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(inBaseClass.clone()) {
         Deref @ NFSCodeEnv::Item::CLASS { cls: Deref @ SCode::Element::CLASS { prefixes: Deref @ SCode::Prefixes { replaceablePrefix: Deref @ SCode::Replaceable::REPLACEABLE { .. }, .. }, .. }, .. } => (),
         _ => bail!("match: no arm matched"),
@@ -120,7 +120,7 @@ pub fn checkClassExtendsReplaceability(mut inBaseClass: Arc<NFSCodeEnv::Item>, m
     Ok(())
 }
 
-pub fn checkRedeclareModifier(mut inModifier: Arc<NFSCodeEnv::Redeclaration>, mut inBaseClass: Arc<Absyn::Path>, mut inEnv: Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>) -> Result<()> {
+pub(crate) fn checkRedeclareModifier(mut inModifier: Arc<NFSCodeEnv::Redeclaration>, mut inBaseClass: Arc<Absyn::Path>, mut inEnv: Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(inModifier.clone()) {
         Deref @ NFSCodeEnv::Redeclaration::RAW_MODIFIER { modifier: e @ Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::DERIVED { .. }, .. } } => {
             checkRedeclareModifier2(e.clone(), inBaseClass.clone(), inEnv.clone())?;
@@ -134,7 +134,7 @@ pub fn checkRedeclareModifier(mut inModifier: Arc<NFSCodeEnv::Redeclaration>, mu
     Ok(())
 }
 
-pub fn checkRedeclareModifier2(mut inModifier: Arc<SCode::Element>, mut inBaseClass: Arc<Absyn::Path>, mut inEnv: Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>) -> Result<()> {
+pub(crate) fn checkRedeclareModifier2(mut inModifier: Arc<SCode::Element>, mut inBaseClass: Arc<Absyn::Path>, mut inEnv: Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>) -> Result<()> {
     let () = 'mc: {
         let __mc_input = inModifier.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -164,7 +164,7 @@ pub fn checkRedeclareModifier2(mut inModifier: Arc<SCode::Element>, mut inBaseCl
     Ok(())
 }
 
-pub fn checkModifierIfRedeclare(mut inItem: Arc<NFSCodeEnv::Item>, mut inModifier: Arc<SCode::Mod>, mut inInfo: SourceInfo) -> Result<()> {
+pub(crate) fn checkModifierIfRedeclare(mut inItem: Arc<NFSCodeEnv::Item>, mut inModifier: Arc<SCode::Mod>, mut inInfo: SourceInfo) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(inModifier.clone()) {
         Deref @ SCode::Mod::REDECL { element: el, .. } => {
             checkRedeclaredElementPrefix(inItem.clone(), el.clone(), inInfo.clone())?;
@@ -178,7 +178,7 @@ pub fn checkModifierIfRedeclare(mut inItem: Arc<NFSCodeEnv::Item>, mut inModifie
     Ok(())
 }
 
-pub fn checkRedeclaredElementPrefix(mut inItem: Arc<NFSCodeEnv::Item>, mut inReplacement: Arc<SCode::Element>, mut inInfo: SourceInfo) -> Result<()> {
+pub(crate) fn checkRedeclaredElementPrefix(mut inItem: Arc<NFSCodeEnv::Item>, mut inReplacement: Arc<SCode::Element>, mut inInfo: SourceInfo) -> Result<()> {
     let () = (::match_deref::match_deref! { match &((inItem.clone(), inReplacement.clone())) {
         (Deref @ NFSCodeEnv::Item::VAR { var: Deref @ SCode::Element::COMPONENT { name, prefixes: Deref @ SCode::Prefixes { finalPrefix: fin, replaceablePrefix: repl, .. }, attributes: SCode::Attributes { variability: var, .. }, typeSpec: ty1, info, .. }, .. }, Deref @ SCode::Element::COMPONENT { prefixes: Deref @ SCode::Prefixes { .. }, typeSpec: ty2, .. }) => {
             let mut ty: ArcStr;
@@ -287,7 +287,7 @@ fn checkRedeclarationVisibility(mut inName: ArcStr, mut inType: ArcStr, mut inOr
     Ok(isValid)
 }
 
-pub fn checkDuplicateRedeclarations(mut inRedeclare: Arc<NFSCodeEnv::Redeclaration>, mut inRedeclarations: Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>>) -> Result<()> {
+pub(crate) fn checkDuplicateRedeclarations(mut inRedeclare: Arc<NFSCodeEnv::Redeclaration>, mut inRedeclarations: Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>>) -> Result<()> {
     let mut el_name: ArcStr;
     let mut el_info: SourceInfo;
     (el_name, el_info) = NFSCodeEnv::getRedeclarationNameInfo(inRedeclare.clone())?;
@@ -334,7 +334,7 @@ fn checkDuplicateRedeclarations2(mut inRedeclareName: ArcStr, mut inRedeclareInf
     outIsDuplicate
 }
 
-pub fn checkRecursiveComponentDeclaration(mut inComponentName: ArcStr, mut inComponentInfo: SourceInfo, mut inTypeEnv: Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, mut inTypeItem: Arc<NFSCodeEnv::Item>, mut inComponentEnv: Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>) -> Result<()> {
+pub(crate) fn checkRecursiveComponentDeclaration(mut inComponentName: ArcStr, mut inComponentInfo: SourceInfo, mut inTypeEnv: Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, mut inTypeItem: Arc<NFSCodeEnv::Item>, mut inComponentEnv: Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>) -> Result<()> {
     let () = 'mc: {
         let __mc_input = (inTypeEnv.clone(), inComponentEnv.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -400,7 +400,7 @@ pub fn checkRecursiveComponentDeclaration(mut inComponentName: ArcStr, mut inCom
     Ok(())
 }
 
-pub fn checkIdentNotEqTypeName(mut inIdent: ArcStr, mut inTypeName: Arc<Absyn::TypeSpec>, mut inInfo: SourceInfo) -> bool {
+pub(crate) fn checkIdentNotEqTypeName(mut inIdent: ArcStr, mut inTypeName: Arc<Absyn::TypeSpec>, mut inInfo: SourceInfo) -> bool {
     let mut outIsNotEq: bool;
     outIsNotEq = 'mc: {
         let __mc_input = (inIdent.clone(), inTypeName.clone());
@@ -427,7 +427,7 @@ pub fn checkIdentNotEqTypeName(mut inIdent: ArcStr, mut inTypeName: Arc<Absyn::T
     outIsNotEq
 }
 
-pub fn checkComponentsEqual(mut inComponent1: Arc<NFInstTypes::Component>, mut inComponent2: Arc<NFInstTypes::Component>) -> () {
+pub(crate) fn checkComponentsEqual(mut inComponent1: Arc<NFInstTypes::Component>, mut inComponent2: Arc<NFInstTypes::Component>) -> () {
     let () = (::match_deref::match_deref! { match &(inComponent2.clone()) {
         _ => {
             metamodelica::print((literal!("Found duplicate component\n")).clone());
@@ -438,7 +438,7 @@ pub fn checkComponentsEqual(mut inComponent1: Arc<NFInstTypes::Component>, mut i
     ()
 }
 
-pub fn checkInstanceRestriction(mut inItem: Arc<NFSCodeEnv::Item>, mut inPrefix: Arc<NFInstPrefix::Prefix>, mut inInfo: SourceInfo) -> Result<()> {
+pub(crate) fn checkInstanceRestriction(mut inItem: Arc<NFSCodeEnv::Item>, mut inPrefix: Arc<NFInstPrefix::Prefix>, mut inInfo: SourceInfo) -> Result<()> {
     let () = 'mc: {
         let __mc_input = inItem.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -478,7 +478,7 @@ pub fn checkInstanceRestriction(mut inItem: Arc<NFSCodeEnv::Item>, mut inPrefix:
     Ok(())
 }
 
-pub fn checkPartialInstance(mut inItem: Arc<NFSCodeEnv::Item>, mut inInfo: SourceInfo) -> Result<()> {
+pub(crate) fn checkPartialInstance(mut inItem: Arc<NFSCodeEnv::Item>, mut inInfo: SourceInfo) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(inItem.clone()) {
         Deref @ NFSCodeEnv::Item::CLASS { cls: Deref @ SCode::Element::CLASS { name, partialPrefix: SCode::Partial::PARTIAL { .. }, .. }, .. } => {
             Error::addSourceMessage(Error::INST_PARTIAL_CLASS.clone(), list![(name.clone()).clone()], inInfo.clone())?;

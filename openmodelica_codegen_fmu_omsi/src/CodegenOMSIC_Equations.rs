@@ -24,7 +24,7 @@ use openmodelica_util::System;
 use openmodelica_util::Util;
 use openmodelica_util_datatypes_basic::List;
 
-pub fn equationFunctionPrototypes(mut txt: Tpl::Text, mut a_eq: Arc<SimCode::SimEqSystem>, mut a_modelNamePrefixStr: ArcStr) -> Result<Tpl::Text> {
+pub(crate) fn equationFunctionPrototypes(mut txt: Tpl::Text, mut a_eq: Arc<SimCode::SimEqSystem>, mut a_modelNamePrefixStr: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut l_ix: Tpl::Text;
     l_ix = CodegenUtilSimulation::equationIndex(Tpl::emptyTxt.clone(), a_eq.clone())?;
@@ -116,7 +116,7 @@ fn fun_55(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_varDecls: Tpl::Text
     Ok(out_txt)
 }
 
-pub fn generateEquationFunction(mut txt: Tpl::Text, mut a_eq: Arc<SimCode::SimEqSystem>, mut a_modelNamePrefixStr: ArcStr, mut a_modelFunctionnamePrefixStr: ArcStr, mut a_context: SimCodeFunction::Context, mut a_functionPrototypes: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn generateEquationFunction(mut txt: Tpl::Text, mut a_eq: Arc<SimCode::SimEqSystem>, mut a_modelNamePrefixStr: ArcStr, mut a_modelFunctionnamePrefixStr: ArcStr, mut a_context: SimCodeFunction::Context, mut a_functionPrototypes: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_functionPrototypes: Tpl::Text;
     let mut ret_9: bool;
@@ -232,7 +232,7 @@ fn fun_57(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>, mut in_
     Ok((out_txt, out_a_auxFunction, out_a_varDecls, out_a_preExp))
 }
 
-pub fn equationCStr(mut txt: Tpl::Text, mut a_eq: Arc<SimCode::SimEqSystem>, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text, mut a_context: SimCodeFunction::Context) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn equationCStr(mut txt: Tpl::Text, mut a_eq: Arc<SimCode::SimEqSystem>, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text, mut a_context: SimCodeFunction::Context) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_auxFunction: Tpl::Text;
@@ -300,7 +300,7 @@ fn fun_59(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>, mut in_
     Ok(out_txt)
 }
 
-pub fn equationCall(mut txt: Tpl::Text, mut a_eq: Arc<SimCode::SimEqSystem>, mut a_modelNamePrefixStr: ArcStr, mut a_modelFunctionnamePrefixStr: ArcStr, mut a_input: ArcStr, mut a_omsiName: ArcStr) -> Result<Tpl::Text> {
+pub(crate) fn equationCall(mut txt: Tpl::Text, mut a_eq: Arc<SimCode::SimEqSystem>, mut a_modelNamePrefixStr: ArcStr, mut a_modelFunctionnamePrefixStr: ArcStr, mut a_input: ArcStr, mut a_omsiName: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = fun_59(txt.clone(), a_eq.clone(), (a_modelNamePrefixStr.clone()).clone(), (a_input.clone()).clone(), (a_omsiName.clone()).clone())?;
     Ok(out_txt)
@@ -344,7 +344,7 @@ fn fun_62(mut in_txt: Tpl::Text, mut in_a_matrix: Option<Arc<SimCode::Derivative
     Ok(out_txt)
 }
 
-pub fn generateMatrixInitialization(mut txt: Tpl::Text, mut a_matrix: Option<Arc<SimCode::DerivativeMatrix>>) -> Result<Tpl::Text> {
+pub(crate) fn generateMatrixInitialization(mut txt: Tpl::Text, mut a_matrix: Option<Arc<SimCode::DerivativeMatrix>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut l_columnsString: Tpl::Text;
     l_columnsString = Tpl::emptyTxt.clone();
@@ -395,7 +395,7 @@ fn fun_65(mut in_txt: Tpl::Text, mut in_a_column: Arc<SimCode::OMSIFunction>, mu
     Ok((out_txt, out_a_auxFunction, out_a_varDecls, out_a_body))
 }
 
-pub fn generateMatrixColumnInitialization(mut txt: Tpl::Text, mut a_column: Arc<SimCode::OMSIFunction>) -> Result<Tpl::Text> {
+pub(crate) fn generateMatrixColumnInitialization(mut txt: Tpl::Text, mut a_column: Arc<SimCode::OMSIFunction>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut l_body: Tpl::Text;
     let mut l_auxFunction: Tpl::Text;
@@ -450,7 +450,7 @@ fn fun_68(mut in_txt: Tpl::Text, mut in_a_matrix: Option<Arc<SimCode::Derivative
     Ok((out_txt, out_a_functionPrototypes))
 }
 
-pub fn generateDerivativeMatrix(mut txt: Tpl::Text, mut a_matrix: Option<Arc<SimCode::DerivativeMatrix>>, mut a_modelName: ArcStr, mut a_index: ArcStr, mut a_functionPrototypes: Tpl::Text, mut a_omsiName: ArcStr) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn generateDerivativeMatrix(mut txt: Tpl::Text, mut a_matrix: Option<Arc<SimCode::DerivativeMatrix>>, mut a_modelName: ArcStr, mut a_index: ArcStr, mut a_functionPrototypes: Tpl::Text, mut a_omsiName: ArcStr) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_functionPrototypes: Tpl::Text;
     let mut l_columnsString: Tpl::Text;
@@ -499,7 +499,7 @@ fn fun_71(mut in_txt: Tpl::Text, mut in_a_column: Arc<SimCode::OMSIFunction>, mu
     Ok((out_txt, out_a_functionPrototypes))
 }
 
-pub fn generateDereivativeMatrixColumnFunction(mut txt: Tpl::Text, mut a_column: Arc<SimCode::OMSIFunction>, mut a_modelName: ArcStr, mut a_index: ArcStr, mut a_functionPrototypes: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn generateDereivativeMatrixColumnFunction(mut txt: Tpl::Text, mut a_column: Arc<SimCode::OMSIFunction>, mut a_modelName: ArcStr, mut a_index: ArcStr, mut a_functionPrototypes: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_functionPrototypes: Tpl::Text;
     let mut l_auxFunction: Tpl::Text;
@@ -569,7 +569,7 @@ fn fun_74(mut in_txt: Tpl::Text, mut in_a_column: Arc<SimCode::OMSIFunction>, mu
     Ok((out_txt, out_a_functionPrototypes))
 }
 
-pub fn generateDereivativeMatrixColumnCall(mut txt: Tpl::Text, mut a_column: Arc<SimCode::OMSIFunction>, mut a_modelName: ArcStr, mut a_index: ArcStr, mut a_functionPrototypes: Tpl::Text, mut a_omsiName: ArcStr) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn generateDereivativeMatrixColumnCall(mut txt: Tpl::Text, mut a_column: Arc<SimCode::OMSIFunction>, mut a_modelName: ArcStr, mut a_index: ArcStr, mut a_functionPrototypes: Tpl::Text, mut a_omsiName: ArcStr) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_functionPrototypes: Tpl::Text;
     let mut l_auxFunction: Tpl::Text;
@@ -721,7 +721,7 @@ fn lm_80(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<BackendDAE:
     }
 }
 
-pub fn equationWhen(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>, mut in_a_context: SimCodeFunction::Context, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn equationWhen(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>, mut in_a_context: SimCodeFunction::Context, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_auxFunction: Tpl::Text;

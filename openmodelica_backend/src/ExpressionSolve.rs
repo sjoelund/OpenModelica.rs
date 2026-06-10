@@ -76,7 +76,7 @@ use openmodelica_util_datatypes_basic::List;
 //
 // solve simple equations otherwise detect EQUATIONSYSTEM
 // =============================================================================
-pub fn solveSimpleEquations(mut dae: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
+pub(crate) fn solveSimpleEquations(mut dae: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut dae: Arc<BackendDAE::BackendDAE> = dae;
     assign_field!(dae.eqs = ({
         let mut __acc: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>> = metamodelica::nil();
@@ -188,7 +188,7 @@ fn printTryToSolve(mut instanceName: ArcStr, mut inExp1: Arc<DAE::Exp>, mut inEx
     Ok(())
 }
 
-pub fn solve(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>, mut inExp3: Arc<DAE::Exp>, mut functions: Option<Arc<AvlTreePathFunction::Tree>>) -> Result<(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Statement>>>)> {
+pub(crate) fn solve(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>, mut inExp3: Arc<DAE::Exp>, mut functions: Option<Arc<AvlTreePathFunction::Tree>>) -> Result<(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Statement>>>)> {
     let mut outExp: Arc<DAE::Exp>;
     let mut outAsserts: Arc<metamodelica::List<Arc<DAE::Statement>>>;
     let mut dummy1: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
@@ -237,7 +237,7 @@ pub fn solve(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>, mut inExp3: A
     Ok((outExp, outAsserts))
 }
 
-pub fn solve2(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>, mut inExp3: Arc<DAE::Exp>, mut functions: Option<Arc<AvlTreePathFunction::Tree>>, mut uniqueEqIndex: Option<i32>, mut doInline: bool, mut isContinuousIntegration: bool) -> Result<(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Statement>>>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)> {
+pub(crate) fn solve2(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>, mut inExp3: Arc<DAE::Exp>, mut functions: Option<Arc<AvlTreePathFunction::Tree>>, mut uniqueEqIndex: Option<i32>, mut doInline: bool, mut isContinuousIntegration: bool) -> Result<(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Statement>>>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)> {
     let mut outExp: Arc<DAE::Exp>;
     let mut outAsserts: Arc<metamodelica::List<Arc<DAE::Statement>>>;
     let mut eqnForNewVars: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
@@ -433,7 +433,7 @@ fn generateAssertType(mut tp: Arc<DAE::Type>, mut cr: Arc<DAE::ComponentRef>, mu
     Ok(outAsserts)
 }
 
-pub fn preprocessingSolve(mut x: Arc<DAE::Exp>, mut y: Arc<DAE::Exp>, mut inExp3: Arc<DAE::Exp>, mut optCond: Option<Arc<DAE::Exp>>, mut functions: Option<Arc<AvlTreePathFunction::Tree>>, mut uniqueEqIndex: Option<i32>, mut idepth: i32, mut doInline: bool) -> Result<(Arc<DAE::Exp>, Arc<DAE::Exp>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, i32)> {
+pub(crate) fn preprocessingSolve(mut x: Arc<DAE::Exp>, mut y: Arc<DAE::Exp>, mut inExp3: Arc<DAE::Exp>, mut optCond: Option<Arc<DAE::Exp>>, mut functions: Option<Arc<AvlTreePathFunction::Tree>>, mut uniqueEqIndex: Option<i32>, mut idepth: i32, mut doInline: bool) -> Result<(Arc<DAE::Exp>, Arc<DAE::Exp>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, i32)> {
     let mut x: Arc<DAE::Exp> = x;
     let mut y: Arc<DAE::Exp> = y;
     let mut eqnForNewVars: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
@@ -783,7 +783,7 @@ fn expAddX2(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>, mut inExp3: Ar
     Ok(ores)
 }
 
-pub fn collectX(mut inExp1: Arc<DAE::Exp>, mut inExp3: Arc<DAE::Exp>, mut expand: bool) -> Result<(Arc<DAE::Exp>, Arc<DAE::Exp>)> {
+pub(crate) fn collectX(mut inExp1: Arc<DAE::Exp>, mut inExp3: Arc<DAE::Exp>, mut expand: bool) -> Result<(Arc<DAE::Exp>, Arc<DAE::Exp>)> {
     let mut outLhs: Arc<DAE::Exp>;
     let mut outRhs: Arc<DAE::Exp>;
     (outLhs, outRhs) = preprocessingSolve5(inExp1.clone(), inExp3.clone(), expand.clone())?;

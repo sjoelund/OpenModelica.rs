@@ -55,7 +55,7 @@ use crate::Util;
 use crate::Vector;
 use openmodelica_util_datatypes_basic::Array;
 
-pub fn minAtomPW(mut dom: Arc<SBAtomicSet::SBAtomicSet>, mut lm1: Arc<SBLinearMap::SBLinearMap>, mut lm2: Arc<SBLinearMap::SBLinearMap>) -> Result<Arc<SBPWLinearMap::SBPWLinearMap>> {
+pub(crate) fn minAtomPW(mut dom: Arc<SBAtomicSet::SBAtomicSet>, mut lm1: Arc<SBLinearMap::SBLinearMap>, mut lm2: Arc<SBLinearMap::SBLinearMap>) -> Result<Arc<SBPWLinearMap::SBPWLinearMap>> {
     fn make_result(mut aset: Arc<SBAtomicSet::SBAtomicSet>, mut map: Arc<SBLinearMap::SBLinearMap>) -> Result<Arc<SBPWLinearMap::SBPWLinearMap>> {
         let mut outMap: Arc<SBPWLinearMap::SBPWLinearMap>;
         let mut dom: metamodelica::Array<Arc<SBSet::SBSet>>;
@@ -141,7 +141,7 @@ pub fn minAtomPW(mut dom: Arc<SBAtomicSet::SBAtomicSet>, mut lm1: Arc<SBLinearMa
     Ok(outMap)
 }
 
-pub fn minPW(mut dom: Arc<SBSet::SBSet>, mut lm1: Arc<SBLinearMap::SBLinearMap>, mut lm2: Arc<SBLinearMap::SBLinearMap>) -> Result<Arc<SBPWLinearMap::SBPWLinearMap>> {
+pub(crate) fn minPW(mut dom: Arc<SBSet::SBSet>, mut lm1: Arc<SBLinearMap::SBLinearMap>, mut lm2: Arc<SBLinearMap::SBLinearMap>) -> Result<Arc<SBPWLinearMap::SBPWLinearMap>> {
     let mut outMap: Arc<SBPWLinearMap::SBPWLinearMap>;
     let mut aux_dom: metamodelica::Array<Arc<SBSet::SBSet>>;
     let mut aux_lm: metamodelica::Array<Arc<SBLinearMap::SBLinearMap>>;
@@ -200,7 +200,7 @@ pub fn minPW(mut dom: Arc<SBSet::SBSet>, mut lm1: Arc<SBLinearMap::SBLinearMap>,
     Ok(outMap)
 }
 
-pub fn minMap(mut pw1: Arc<SBPWLinearMap::SBPWLinearMap>, mut pw2: Arc<SBPWLinearMap::SBPWLinearMap>) -> Result<Arc<SBPWLinearMap::SBPWLinearMap>> {
+pub(crate) fn minMap(mut pw1: Arc<SBPWLinearMap::SBPWLinearMap>, mut pw2: Arc<SBPWLinearMap::SBPWLinearMap>) -> Result<Arc<SBPWLinearMap::SBPWLinearMap>> {
     let mut outMap: Arc<SBPWLinearMap::SBPWLinearMap> = SBPWLinearMap::newEmpty();
     let mut d1: metamodelica::Array<Arc<SBSet::SBSet>>;
     let mut d2: metamodelica::Array<Arc<SBSet::SBSet>>;
@@ -231,7 +231,7 @@ pub fn minMap(mut pw1: Arc<SBPWLinearMap::SBPWLinearMap>, mut pw2: Arc<SBPWLinea
     Ok(outMap)
 }
 
-pub fn reduceMapN(mut pw: Arc<SBPWLinearMap::SBPWLinearMap>, mut dim: i32) -> Result<Arc<SBPWLinearMap::SBPWLinearMap>> {
+pub(crate) fn reduceMapN(mut pw: Arc<SBPWLinearMap::SBPWLinearMap>, mut dim: i32) -> Result<Arc<SBPWLinearMap::SBPWLinearMap>> {
     let mut outMap: Arc<SBPWLinearMap::SBPWLinearMap>;
     let mut dom: metamodelica::Array<Arc<SBSet::SBSet>>;
     let mut new_s: metamodelica::Array<Arc<SBSet::SBSet>>;
@@ -335,7 +335,7 @@ pub fn reduceMapN(mut pw: Arc<SBPWLinearMap::SBPWLinearMap>, mut dim: i32) -> Re
     Ok(outMap)
 }
 
-pub fn mapInf(mut pw: Arc<SBPWLinearMap::SBPWLinearMap>) -> Result<Arc<SBPWLinearMap::SBPWLinearMap>> {
+pub(crate) fn mapInf(mut pw: Arc<SBPWLinearMap::SBPWLinearMap>) -> Result<Arc<SBPWLinearMap::SBPWLinearMap>> {
     fn max_inter(mut aset: Arc<SBAtomicSet::SBAtomicSet>, mut offset: metamodelica::Real, mut dim: i32, mut its: metamodelica::Real) -> metamodelica::Real {
         let mut its: metamodelica::Real = its;
         let mut is: metamodelica::Array<Arc<SBInterval::SBInterval>>;
@@ -401,7 +401,7 @@ pub fn mapInf(mut pw: Arc<SBPWLinearMap::SBPWLinearMap>) -> Result<Arc<SBPWLinea
     Ok(outMap)
 }
 
-pub fn minAdjCompMap(mut pw2: Arc<SBPWLinearMap::SBPWLinearMap>, mut pw1: Arc<SBPWLinearMap::SBPWLinearMap>) -> Result<Arc<SBPWLinearMap::SBPWLinearMap>> {
+pub(crate) fn minAdjCompMap(mut pw2: Arc<SBPWLinearMap::SBPWLinearMap>, mut pw1: Arc<SBPWLinearMap::SBPWLinearMap>) -> Result<Arc<SBPWLinearMap::SBPWLinearMap>> {
     let mut outMap: Arc<SBPWLinearMap::SBPWLinearMap>;
     let mut dom: metamodelica::Array<Arc<SBSet::SBSet>>;
     let mut lmap: metamodelica::Array<Arc<SBLinearMap::SBLinearMap>>;
@@ -526,7 +526,7 @@ pub fn minAdjCompMap(mut pw2: Arc<SBPWLinearMap::SBPWLinearMap>, mut pw1: Arc<SB
     Ok(outMap)
 }
 
-pub fn minAdjMap(mut pw2: Arc<SBPWLinearMap::SBPWLinearMap>, mut pw1: Arc<SBPWLinearMap::SBPWLinearMap>) -> Result<Arc<SBPWLinearMap::SBPWLinearMap>> {
+pub(crate) fn minAdjMap(mut pw2: Arc<SBPWLinearMap::SBPWLinearMap>, mut pw1: Arc<SBPWLinearMap::SBPWLinearMap>) -> Result<Arc<SBPWLinearMap::SBPWLinearMap>> {
     let mut outMap: Arc<SBPWLinearMap::SBPWLinearMap>;
     let mut dom2: metamodelica::Array<Arc<SBSet::SBSet>>;
     let mut lm2: metamodelica::Array<Arc<SBLinearMap::SBLinearMap>>;
@@ -586,14 +586,14 @@ pub fn connectedComponents(mut vss: Arc<SBSet::SBSet>, mut emap1: Arc<SBPWLinear
     Ok(outMap)
 }
 
-pub fn test() -> Result<()> {
+pub(crate) fn test() -> Result<()> {
     test1()?;
     test2()?;
     test3()?;
     Ok(())
 }
 
-pub fn make_set(mut i: Arc<metamodelica::List<Arc<SBInterval::SBInterval>>>) -> Result<Arc<SBSet::SBSet>> {
+pub(crate) fn make_set(mut i: Arc<metamodelica::List<Arc<SBInterval::SBInterval>>>) -> Result<Arc<SBSet::SBSet>> {
     let mut s: Arc<SBSet::SBSet>;
     let mut ss: Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::SBAtomicSet>>>;
     ss = UnorderedSet::new((std::sync::Arc::new(fnptr!(SBAtomicSet::hash, Arc<SBAtomicSet::SBAtomicSet>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>) -> Result<i32> + 'static>), (std::sync::Arc::new(SBAtomicSet::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>, Arc<SBAtomicSet::SBAtomicSet>) -> Result<bool> + 'static>), 13);
@@ -602,7 +602,7 @@ pub fn make_set(mut i: Arc<metamodelica::List<Arc<SBInterval::SBInterval>>>) -> 
     Ok(s)
 }
 
-pub fn make_pw(mut i: Arc<metamodelica::List<Arc<SBInterval::SBInterval>>>, mut gain: Arc<metamodelica::List<metamodelica::Real>>, mut offset: Arc<metamodelica::List<metamodelica::Real>>) -> Result<Arc<SBPWLinearMap::SBPWLinearMap>> {
+pub(crate) fn make_pw(mut i: Arc<metamodelica::List<Arc<SBInterval::SBInterval>>>, mut gain: Arc<metamodelica::List<metamodelica::Real>>, mut offset: Arc<metamodelica::List<metamodelica::Real>>) -> Result<Arc<SBPWLinearMap::SBPWLinearMap>> {
     let mut pw: Arc<SBPWLinearMap::SBPWLinearMap>;
     let mut dom: Arc<SBSet::SBSet>;
     let mut lmap: Arc<SBLinearMap::SBLinearMap>;
@@ -612,7 +612,7 @@ pub fn make_pw(mut i: Arc<metamodelica::List<Arc<SBInterval::SBInterval>>>, mut 
     Ok(pw)
 }
 
-pub fn test1() -> Result<()> {
+pub(crate) fn test1() -> Result<()> {
     let mut vss: Arc<SBSet::SBSet>;
     let mut emap1: Arc<SBPWLinearMap::SBPWLinearMap>;
     let mut emap2: Arc<SBPWLinearMap::SBPWLinearMap>;
@@ -653,7 +653,7 @@ pub fn test1() -> Result<()> {
     Ok(())
 }
 
-pub fn test2() -> Result<()> {
+pub(crate) fn test2() -> Result<()> {
     let mut vss: Arc<SBSet::SBSet>;
     let mut emap1: Arc<SBPWLinearMap::SBPWLinearMap>;
     let mut emap2: Arc<SBPWLinearMap::SBPWLinearMap>;
@@ -694,7 +694,7 @@ pub fn test2() -> Result<()> {
     Ok(())
 }
 
-pub fn test3() -> Result<()> {
+pub(crate) fn test3() -> Result<()> {
     let mut vss: Arc<SBSet::SBSet>;
     let mut emap1: Arc<SBPWLinearMap::SBPWLinearMap>;
     let mut emap2: Arc<SBPWLinearMap::SBPWLinearMap>;

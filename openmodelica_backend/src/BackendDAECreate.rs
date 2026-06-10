@@ -191,7 +191,7 @@ fn printArrayBindingList(mut arrayBindingList: ArrayBindingList) -> Result<ArcSt
     Ok(r#str)
 }
 
-pub fn patchRecordBindings(mut varlst: Arc<metamodelica::List<BackendDAE::Var>>, mut extvarlst: Arc<metamodelica::List<BackendDAE::Var>>, mut globalKnownVarLst: Arc<metamodelica::List<BackendDAE::Var>>, mut eqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut reqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut ieqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) -> Result<(Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>)> {
+pub(crate) fn patchRecordBindings(mut varlst: Arc<metamodelica::List<BackendDAE::Var>>, mut extvarlst: Arc<metamodelica::List<BackendDAE::Var>>, mut globalKnownVarLst: Arc<metamodelica::List<BackendDAE::Var>>, mut eqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut reqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut ieqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) -> Result<(Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>)> {
     let mut globalKnownVarLst: Arc<metamodelica::List<BackendDAE::Var>> = globalKnownVarLst;
     let mut eqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = eqns;
     let mut reqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = reqns;
@@ -959,7 +959,7 @@ fn transformBuiltinExpression(mut inExp: Arc<DAE::Exp>, mut inTuple: ((metamodel
 /*
  *  lower all variables
  */
-pub fn lowerVars(mut inElements: Arc<metamodelica::List<Arc<DAE::Element>>>, mut functionTree: Arc<AvlTreePathFunction::Tree>, mut inVars: Arc<metamodelica::List<BackendDAE::Var>>, mut inGlobalKnownVars: Arc<metamodelica::List<BackendDAE::Var>>, mut inExVars: Arc<metamodelica::List<BackendDAE::Var>>, mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut inREqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) -> Result<(Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>)> {
+pub(crate) fn lowerVars(mut inElements: Arc<metamodelica::List<Arc<DAE::Element>>>, mut functionTree: Arc<AvlTreePathFunction::Tree>, mut inVars: Arc<metamodelica::List<BackendDAE::Var>>, mut inGlobalKnownVars: Arc<metamodelica::List<BackendDAE::Var>>, mut inExVars: Arc<metamodelica::List<BackendDAE::Var>>, mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut inREqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) -> Result<(Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>)> {
     let mut outVars: Arc<metamodelica::List<BackendDAE::Var>> = inVars.clone();
     let mut outGlobalKnownVars: Arc<metamodelica::List<BackendDAE::Var>> = inGlobalKnownVars.clone();
     let mut outExVars: Arc<metamodelica::List<BackendDAE::Var>> = inExVars.clone();
@@ -1193,7 +1193,7 @@ fn lowerKnownVar(mut inElement: Arc<DAE::Element>, mut functionTree: Arc<AvlTree
     Ok((outVar, oInlineHT, assrtEqOut))
 }
 
-pub fn lowerKnownVarSingle(mut element: Arc<DAE::Element>) -> Result<Option<BackendDAE::Var>> {
+pub(crate) fn lowerKnownVarSingle(mut element: Arc<DAE::Element>) -> Result<Option<BackendDAE::Var>> {
     let mut var_opt: Option<BackendDAE::Var>;
     var_opt = (::match_deref::match_deref! { match &(element.clone()) {
         elem @ Deref @ DAE::Element::VAR { .. } if (DAEUtil::isParamOrConstVarKind(var_field!((**elem).kind, DAE::Element::VAR).clone())) => {

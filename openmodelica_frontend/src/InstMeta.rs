@@ -54,7 +54,7 @@ use openmodelica_frontend_types::DAE;
 use openmodelica_frontend_types::SCode;
 use openmodelica_util::Flags;
 
-pub fn fixUniontype(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inState: ClassInf::State, mut inClassDef: Arc<SCode::ClassDef>) -> Result<(FCore::Cache, Option<Arc<DAE::Type>>)> {
+pub(crate) fn fixUniontype(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inState: ClassInf::State, mut inClassDef: Arc<SCode::ClassDef>) -> Result<(FCore::Cache, Option<Arc<DAE::Type>>)> {
     let mut cache: FCore::Cache = inCache.clone();
     let mut outType: Option<Arc<DAE::Type>>;
     outType = (::match_deref::match_deref! { match &((inState.clone(), inClassDef.clone())) {
@@ -139,7 +139,7 @@ fn fixUniontype2(mut arr: metamodelica::Array<(FCore::Cache, FCore::Graph, Arc<A
     Ok(singletonType)
 }
 
-pub fn checkArrayType(mut inType: Arc<DAE::Type>) -> Result<()> {
+pub(crate) fn checkArrayType(mut inType: Arc<DAE::Type>) -> Result<()> {
     let mut el_ty: Arc<DAE::Type>;
     el_ty = Types::arrayElementType(inType.clone());
     let false = (!(Types::isString(el_ty.clone())) && Types::isBoxedType(el_ty.clone()) || Flags::isSet(Flags::RML.clone())?) else { bail!("pattern mismatch") };

@@ -135,7 +135,7 @@ pub const STATE_EVENT_STR: &'static str = "$SEV";
 
 pub const CLOCK_STR: &'static str = "$CLK";
 
-pub fn toString(mut var: Arc<Variable::NFVariable>, mut r#str: ArcStr) -> Result<ArcStr> {
+pub(crate) fn toString(mut var: Arc<Variable::NFVariable>, mut r#str: ArcStr) -> Result<ArcStr> {
     let mut r#str: ArcStr = r#str;
     let mut attr: ArcStr;
     attr = (BackendExtension::VariableAttributes::toString(var.backendinfo.attributes.clone())?).clone();
@@ -143,12 +143,12 @@ pub fn toString(mut var: Arc<Variable::NFVariable>, mut r#str: ArcStr) -> Result
     Ok(r#str)
 }
 
-pub fn pointerToString(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<ArcStr> {
+pub(crate) fn pointerToString(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<ArcStr> {
     let mut r#str: ArcStr = toString(Pointer::access(var_ptr.clone()), (literal!("")).clone())?;
     Ok(r#str)
 }
 
-pub fn nameString(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<ArcStr> {
+pub(crate) fn nameString(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<ArcStr> {
     let mut r#str: ArcStr = ComponentRef::toString(getVarName(var_ptr.clone()))?;
     Ok(r#str)
 }
@@ -163,12 +163,12 @@ pub fn equalName(mut var_ptr1: Pointer::Pointer<Arc<Variable::NFVariable>>, mut 
     Ok(b)
 }
 
-pub fn size(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut resize: bool) -> Result<i32> {
+pub(crate) fn size(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut resize: bool) -> Result<i32> {
     let mut s: i32 = Variable::size(Pointer::access(var_ptr.clone()), resize.clone())?;
     Ok(s)
 }
 
-pub fn applyToType(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut func: Arc<dyn ::std::ops::Fn(Arc<Type::NFType>) -> Result<Arc<Type::NFType>> + 'static>) -> Result<()> {
+pub(crate) fn applyToType(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut func: Arc<dyn ::std::ops::Fn(Arc<Type::NFType>) -> Result<Arc<Type::NFType>> + 'static>) -> Result<()> {
     pub type typeFunc = std::sync::Arc<dyn ::std::ops::Fn(Arc<Type::NFType>) -> Result<Arc<Type::NFType>> + 'static>;
 
     let mut new: Arc<Variable::NFVariable>;
@@ -180,7 +180,7 @@ pub fn applyToType(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut
     Ok(())
 }
 
-pub fn fromCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut attr: Arc<Attributes::NFAttributes>, mut binding: Arc<Binding::NFBinding>) -> Result<Arc<Variable::NFVariable>> {
+pub(crate) fn fromCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut attr: Arc<Attributes::NFAttributes>, mut binding: Arc<Binding::NFBinding>) -> Result<Arc<Variable::NFVariable>> {
     let mut variable: Arc<Variable::NFVariable>;
     let mut node: Arc<InstNode::InstNode>;
     let mut class_node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
@@ -216,7 +216,7 @@ pub fn fromCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut attr: Arc<Attri
     Ok(variable)
 }
 
-pub fn makeVarPtrCyclic(mut var: Arc<Variable::NFVariable>, mut name: Arc<ComponentRef::NFComponentRef>) -> Result<(Pointer::Pointer<Arc<Variable::NFVariable>>, Arc<ComponentRef::NFComponentRef>)> {
+pub(crate) fn makeVarPtrCyclic(mut var: Arc<Variable::NFVariable>, mut name: Arc<ComponentRef::NFComponentRef>) -> Result<(Pointer::Pointer<Arc<Variable::NFVariable>>, Arc<ComponentRef::NFComponentRef>)> {
     let mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>;
     let mut name: Arc<ComponentRef::NFComponentRef> = name;
     var_ptr = Pointer::create(var.clone());
@@ -226,7 +226,7 @@ pub fn makeVarPtrCyclic(mut var: Arc<Variable::NFVariable>, mut name: Arc<Compon
     Ok((var_ptr, name))
 }
 
-pub fn connectPartners(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut par_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut func: Arc<dyn ::std::ops::Fn(Arc<BackendInfo::BackendInfo>, Option<Pointer::Pointer<Arc<Variable::NFVariable>>>) -> Result<Arc<BackendInfo::BackendInfo>> + 'static>) -> Result<()> {
+pub(crate) fn connectPartners(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut par_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut func: Arc<dyn ::std::ops::Fn(Arc<BackendInfo::BackendInfo>, Option<Pointer::Pointer<Arc<Variable::NFVariable>>>) -> Result<Arc<BackendInfo::BackendInfo>> + 'static>) -> Result<()> {
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     let mut par: Arc<Variable::NFVariable> = Pointer::access(par_ptr.clone());
     assign_field!(var.backendinfo = func(var.backendinfo.clone(), Some(par_ptr.clone()))?);
@@ -236,21 +236,21 @@ pub fn connectPartners(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>,
     Ok(())
 }
 
-pub fn removePartner(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut func: Arc<dyn ::std::ops::Fn(Arc<BackendInfo::BackendInfo>, Option<Pointer::Pointer<Arc<Variable::NFVariable>>>) -> Result<Arc<BackendInfo::BackendInfo>> + 'static>) -> Result<()> {
+pub(crate) fn removePartner(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut func: Arc<dyn ::std::ops::Fn(Arc<BackendInfo::BackendInfo>, Option<Pointer::Pointer<Arc<Variable::NFVariable>>>) -> Result<Arc<BackendInfo::BackendInfo>> + 'static>) -> Result<()> {
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     assign_field!(var.backendinfo = func(var.backendinfo.clone(), None)?);
     Pointer::update(var_ptr.clone(), var.clone());
     Ok(())
 }
 
-pub fn getVar(mut cref: Arc<ComponentRef::NFComponentRef>, mut info: SourceInfo) -> Result<Arc<Variable::NFVariable>> {
+pub(crate) fn getVar(mut cref: Arc<ComponentRef::NFComponentRef>, mut info: SourceInfo) -> Result<Arc<Variable::NFVariable>> {
     let mut var: Arc<Variable::NFVariable>;
     var = Pointer::access(getVarPointer(cref.clone(), info.clone())?);
     Ok(var)
 }
 
 // The following functions provide layers of protection. Whenever accessing names or pointers use these!
-pub fn getVarPointer(mut cref: Arc<ComponentRef::NFComponentRef>, mut info: SourceInfo) -> Result<Pointer::Pointer<Arc<Variable::NFVariable>>> {
+pub(crate) fn getVarPointer(mut cref: Arc<ComponentRef::NFComponentRef>, mut info: SourceInfo) -> Result<Pointer::Pointer<Arc<Variable::NFVariable>>> {
     let mut var: Pointer::Pointer<Arc<Variable::NFVariable>>;
     var = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ ComponentRef::CREF { node: Deref @ InstNode::VAR_NODE { varPointer, .. }, .. } => {
@@ -271,14 +271,14 @@ pub fn getVarPointer(mut cref: Arc<ComponentRef::NFComponentRef>, mut info: Sour
     Ok(var)
 }
 
-pub fn getVarName(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Arc<ComponentRef::NFComponentRef> {
+pub(crate) fn getVarName(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Arc<ComponentRef::NFComponentRef> {
     let mut name: Arc<ComponentRef::NFComponentRef>;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     name = var.name.clone();
     name
 }
 
-pub fn setVarName(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut name: Arc<ComponentRef::NFComponentRef>) -> Pointer::Pointer<Arc<Variable::NFVariable>> {
+pub(crate) fn setVarName(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut name: Arc<ComponentRef::NFComponentRef>) -> Pointer::Pointer<Arc<Variable::NFVariable>> {
     let mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>> = var_ptr;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     assign_field!(var.name = name.clone());
@@ -286,7 +286,7 @@ pub fn setVarName(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut 
     var_ptr
 }
 
-pub fn subIdxName(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut index: Pointer::Pointer<i32>) -> Result<Pointer::Pointer<Arc<Variable::NFVariable>>> {
+pub(crate) fn subIdxName(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut index: Pointer::Pointer<i32>) -> Result<Pointer::Pointer<Arc<Variable::NFVariable>>> {
     let mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>> = var_ptr;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     assign_field!(var.name = ComponentRef::rename(({ let mut __mm_s = String::new(); __mm_s.push_str(&*ComponentRef::firstName(var.name.clone(), false)?); __mm_s.push_str(&*literal!("_")); __mm_s.push_str(&*intString(Pointer::access(index.clone()))); ArcStr::from(__mm_s) }).clone(), var.name.clone())?);
@@ -294,28 +294,28 @@ pub fn subIdxName(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut 
     Ok(var_ptr)
 }
 
-pub fn getVarKind(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Arc<VariableKind::VariableKind> {
+pub(crate) fn getVarKind(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Arc<VariableKind::VariableKind> {
     let mut kind: Arc<VariableKind::VariableKind>;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     kind = BackendExtension::BackendInfo::getVarKind(var.backendinfo.clone());
     kind
 }
 
-pub fn toExpression(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<Arc<Expression::NFExpression>> {
+pub(crate) fn toExpression(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression> = Expression::fromCref(getVarName(var_ptr.clone()), false)?;
     Ok(exp)
 }
 
 pub type checkVar = std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>;
 
-pub fn isArray(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn isArray(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = Type::isArray(var.ty.clone());
     b
 }
 
-pub fn getDimensions(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Arc<metamodelica::List<Arc<Dimension::NFDimension>>> {
+pub(crate) fn getDimensions(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Arc<metamodelica::List<Arc<Dimension::NFDimension>>> {
     let mut dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>>;
     let mut var: Arc<Variable::NFVariable>;
     var = Pointer::access(var_ptr.clone());
@@ -323,14 +323,14 @@ pub fn getDimensions(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -
     dims
 }
 
-pub fn isEmpty(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn isEmpty(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = ComponentRef::isEmpty(var.name.clone());
     b
 }
 
-pub fn isForcedState(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn isForcedState(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = (::match_deref::match_deref! { match &(var.backendinfo.varKind.clone()) {
@@ -345,7 +345,7 @@ pub fn isForcedState(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -
     b
 }
 
-pub fn isState(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn isState(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = (::match_deref::match_deref! { match &(var.backendinfo.varKind.clone()) {
@@ -356,7 +356,7 @@ pub fn isState(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool
     b
 }
 
-pub fn isStateDerivative(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn isStateDerivative(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = (::match_deref::match_deref! { match &(var.backendinfo.varKind.clone()) {
@@ -367,7 +367,7 @@ pub fn isStateDerivative(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>
     b
 }
 
-pub fn isAlgebraic(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn isAlgebraic(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = (::match_deref::match_deref! { match &(var.backendinfo.varKind.clone()) {
@@ -378,7 +378,7 @@ pub fn isAlgebraic(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> 
     b
 }
 
-pub fn isStart(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn isStart(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = (::match_deref::match_deref! { match &(var.backendinfo.varKind.clone()) {
@@ -389,7 +389,7 @@ pub fn isStart(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool
     b
 }
 
-pub fn isExtObj(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn isExtObj(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = (::match_deref::match_deref! { match &(var.backendinfo.varKind.clone()) {
@@ -400,7 +400,7 @@ pub fn isExtObj(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> boo
     b
 }
 
-pub fn isTime(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn isTime(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = (::match_deref::match_deref! { match &(var.backendinfo.varKind.clone()) {
@@ -411,7 +411,7 @@ pub fn isTime(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool 
     b
 }
 
-pub fn isContinuous(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut staticAsContinuous: bool) -> Result<bool> {
+pub(crate) fn isContinuous(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut staticAsContinuous: bool) -> Result<bool> {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = (::match_deref::match_deref! { match &(var.backendinfo.varKind.clone()) {
@@ -429,14 +429,14 @@ pub fn isContinuous(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mu
     Ok(b)
 }
 
-pub fn isDiscontinuous(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut staticAsContinuous: bool) -> Result<bool> {
+pub(crate) fn isDiscontinuous(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut staticAsContinuous: bool) -> Result<bool> {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = !(isContinuous(var_ptr.clone(), staticAsContinuous.clone())?);
     Ok(b)
 }
 
-pub fn isContinuousRecordAware(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut staticAsContinuous: bool) -> Result<bool> {
+pub(crate) fn isContinuousRecordAware(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut staticAsContinuous: bool) -> Result<bool> {
     '__tco: loop {
         let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
         match getParent(var_ptr.clone()) {
@@ -450,7 +450,7 @@ pub fn isContinuousRecordAware(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVar
     }
 }
 
-pub fn isDiscreteState(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn isDiscreteState(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = (::match_deref::match_deref! { match &(var.backendinfo.varKind.clone()) {
@@ -461,7 +461,7 @@ pub fn isDiscreteState(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>)
     b
 }
 
-pub fn isDiscrete(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn isDiscrete(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = (::match_deref::match_deref! { match &(var.backendinfo.varKind.clone()) {
@@ -472,7 +472,7 @@ pub fn isDiscrete(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> b
     b
 }
 
-pub fn isPrevious(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn isPrevious(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = (::match_deref::match_deref! { match &(var.backendinfo.varKind.clone()) {
@@ -483,7 +483,7 @@ pub fn isPrevious(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> b
     b
 }
 
-pub fn isRecord(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn isRecord(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = (::match_deref::match_deref! { match &(var.backendinfo.varKind.clone()) {
@@ -494,7 +494,7 @@ pub fn isRecord(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> boo
     b
 }
 
-pub fn isKnownRecord(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn isKnownRecord(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = (::match_deref::match_deref! { match &(var.backendinfo.varKind.clone()) {
@@ -509,7 +509,7 @@ pub fn isKnownRecord(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -
     b
 }
 
-pub fn isUnknownRecord(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn isUnknownRecord(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = (::match_deref::match_deref! { match &(var.backendinfo.varKind.clone()) {
@@ -524,7 +524,7 @@ pub fn isUnknownRecord(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>)
     b
 }
 
-pub fn isClock(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn isClock(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = (::match_deref::match_deref! { match &(var.backendinfo.varKind.clone()) {
@@ -535,7 +535,7 @@ pub fn isClock(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool
     b
 }
 
-pub fn isClocked(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn isClocked(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = (::match_deref::match_deref! { match &(var.backendinfo.varKind.clone()) {
@@ -546,7 +546,7 @@ pub fn isClocked(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bo
     b
 }
 
-pub fn isClockOrClocked(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn isClockOrClocked(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = (::match_deref::match_deref! { match &(var.backendinfo.varKind.clone()) {
@@ -558,7 +558,7 @@ pub fn isClockOrClocked(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>
     b
 }
 
-pub fn isIterator(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn isIterator(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = (::match_deref::match_deref! { match &(var.backendinfo.varKind.clone()) {
@@ -569,7 +569,7 @@ pub fn isIterator(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> b
     b
 }
 
-pub fn isPDer(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn isPDer(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = (::match_deref::match_deref! { match &(var.backendinfo.varKind.clone()) {
@@ -581,7 +581,7 @@ pub fn isPDer(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool 
     b
 }
 
-pub fn hasTearingSelect(mut varPointer: Pointer::Pointer<Arc<Variable::NFVariable>>, mut compareTS: TearingSelect, mut func: Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>) -> Result<bool> {
+pub(crate) fn hasTearingSelect(mut varPointer: Pointer::Pointer<Arc<Variable::NFVariable>>, mut compareTS: TearingSelect, mut func: Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>) -> Result<bool> {
     pub type compare = std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>;
 
     let mut b: bool = func(((getTearingSelect(varPointer.clone())?) as i32), ((compareTS.clone()) as i32))?;
@@ -590,7 +590,7 @@ pub fn hasTearingSelect(mut varPointer: Pointer::Pointer<Arc<Variable::NFVariabl
 
 pub type getVarPartner = std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<(Option<Pointer::Pointer<Arc<Variable::NFVariable>>>, ArcStr)> + 'static>;
 
-pub fn getVarPre(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> (Option<Pointer::Pointer<Arc<Variable::NFVariable>>>, ArcStr) {
+pub(crate) fn getVarPre(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> (Option<Pointer::Pointer<Arc<Variable::NFVariable>>>, ArcStr) {
     let mut partner: Option<Pointer::Pointer<Arc<Variable::NFVariable>>>;
     let mut partnerName: ArcStr;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
@@ -599,7 +599,7 @@ pub fn getVarPre(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> (O
     (partner, partnerName)
 }
 
-pub fn getVarSeed(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> (Option<Pointer::Pointer<Arc<Variable::NFVariable>>>, ArcStr) {
+pub(crate) fn getVarSeed(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> (Option<Pointer::Pointer<Arc<Variable::NFVariable>>>, ArcStr) {
     let mut partner: Option<Pointer::Pointer<Arc<Variable::NFVariable>>>;
     let mut partnerName: ArcStr;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
@@ -608,7 +608,7 @@ pub fn getVarSeed(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> (
     (partner, partnerName)
 }
 
-pub fn getVarPDer(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut isTmp: bool) -> (Option<Pointer::Pointer<Arc<Variable::NFVariable>>>, ArcStr) {
+pub(crate) fn getVarPDer(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut isTmp: bool) -> (Option<Pointer::Pointer<Arc<Variable::NFVariable>>>, ArcStr) {
     let mut partner: Option<Pointer::Pointer<Arc<Variable::NFVariable>>>;
     let mut partnerName: ArcStr;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
@@ -622,7 +622,7 @@ pub fn getVarPDer(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut 
     (partner, partnerName)
 }
 
-pub fn getVarDer(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> (Option<Pointer::Pointer<Arc<Variable::NFVariable>>>, ArcStr) {
+pub(crate) fn getVarDer(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> (Option<Pointer::Pointer<Arc<Variable::NFVariable>>>, ArcStr) {
     let mut partner: Option<Pointer::Pointer<Arc<Variable::NFVariable>>> = None;
     let mut partnerName: ArcStr;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
@@ -638,7 +638,7 @@ pub fn getVarDer(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> (O
     (partner, partnerName)
 }
 
-pub fn getVarState(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> (Option<Pointer::Pointer<Arc<Variable::NFVariable>>>, ArcStr) {
+pub(crate) fn getVarState(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> (Option<Pointer::Pointer<Arc<Variable::NFVariable>>>, ArcStr) {
     let mut partner: Option<Pointer::Pointer<Arc<Variable::NFVariable>>>;
     let mut partnerName: ArcStr;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
@@ -655,7 +655,7 @@ pub fn getVarState(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> 
     (partner, partnerName)
 }
 
-pub fn getVarDummyDer(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> (Option<Pointer::Pointer<Arc<Variable::NFVariable>>>, ArcStr) {
+pub(crate) fn getVarDummyDer(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> (Option<Pointer::Pointer<Arc<Variable::NFVariable>>>, ArcStr) {
     let mut partner: Option<Pointer::Pointer<Arc<Variable::NFVariable>>>;
     let mut partnerName: ArcStr;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
@@ -672,7 +672,7 @@ pub fn getVarDummyDer(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) 
     (partner, partnerName)
 }
 
-pub fn getVarStart(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> (Option<Pointer::Pointer<Arc<Variable::NFVariable>>>, ArcStr) {
+pub(crate) fn getVarStart(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> (Option<Pointer::Pointer<Arc<Variable::NFVariable>>>, ArcStr) {
     let mut partner: Option<Pointer::Pointer<Arc<Variable::NFVariable>>>;
     let mut partnerName: ArcStr;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
@@ -681,7 +681,7 @@ pub fn getVarStart(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> 
     (partner, partnerName)
 }
 
-pub fn getPartnerCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut func: Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<(Option<Pointer::Pointer<Arc<Variable::NFVariable>>>, ArcStr)> + 'static>, mut scalarized: bool) -> Result<Arc<ComponentRef::NFComponentRef>> {
+pub(crate) fn getPartnerCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut func: Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<(Option<Pointer::Pointer<Arc<Variable::NFVariable>>>, ArcStr)> + 'static>, mut scalarized: bool) -> Result<Arc<ComponentRef::NFComponentRef>> {
     let mut partner_cref: Arc<ComponentRef::NFComponentRef>;
     let mut partner: Option<Pointer::Pointer<Arc<Variable::NFVariable>>>;
     let mut partnerName: ArcStr;
@@ -698,21 +698,21 @@ pub fn getPartnerCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut func: Arc
     Ok(partner_cref)
 }
 
-pub fn hasStartAttr(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn hasStartAttr(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = isSome(BackendExtension::VariableAttributes::getStartAttribute(var.backendinfo.attributes.clone()));
     b
 }
 
-pub fn hasPre(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn hasPre(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = !(isPrevious(var_ptr.clone())) && isSome((getVarPre(var_ptr.clone())).0);
     b
 }
 
-pub fn isJacobianResultVar(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn isJacobianResultVar(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = (match (getVarPDer(var_ptr.clone(), false)).0 {
@@ -733,7 +733,7 @@ pub fn isJacobianResultVar(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariabl
     b
 }
 
-pub fn isJacobianResultVarPDer(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn isJacobianResultVarPDer(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = (::match_deref::match_deref! { match &(var.backendinfo.varKind.clone()) {
@@ -744,7 +744,7 @@ pub fn isJacobianResultVarPDer(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVar
     b
 }
 
-pub fn isDummyState(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn isDummyState(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = (::match_deref::match_deref! { match &(var.backendinfo.varKind.clone()) {
@@ -755,7 +755,7 @@ pub fn isDummyState(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) ->
     b
 }
 
-pub fn isDummyDer(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn isDummyDer(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = (::match_deref::match_deref! { match &(var.backendinfo.varKind.clone()) {
@@ -766,7 +766,7 @@ pub fn isDummyDer(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> b
     b
 }
 
-pub fn isParamOrConst(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn isParamOrConst(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = (::match_deref::match_deref! { match &(var.backendinfo.varKind.clone()) {
@@ -778,7 +778,7 @@ pub fn isParamOrConst(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) 
     b
 }
 
-pub fn isConst(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn isConst(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = (::match_deref::match_deref! { match &(var.backendinfo.varKind.clone()) {
@@ -789,7 +789,7 @@ pub fn isConst(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool
     b
 }
 
-pub fn isKnown(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn isKnown(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = (::match_deref::match_deref! { match &(var.backendinfo.varKind.clone()) {
@@ -802,7 +802,7 @@ pub fn isKnown(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool
     b
 }
 
-pub fn isOptimizable(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn isOptimizable(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = (::match_deref::match_deref! { match &(var.backendinfo.clone()) {
@@ -814,14 +814,14 @@ pub fn isOptimizable(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -
     b
 }
 
-pub fn isStateOrOptimizable(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn isStateOrOptimizable(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = isState(var_ptr.clone()) || isOptimizable(var_ptr.clone());
     b
 }
 
-pub fn isInitialTime(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn isInitialTime(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     let mut optExp: OptimizerExpression = OptimizerExpression::MAYER;
@@ -836,7 +836,7 @@ pub fn isInitialTime(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -
     b
 }
 
-pub fn isFinalTime(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn isFinalTime(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     let mut optExp: OptimizerExpression = OptimizerExpression::MAYER;
@@ -851,7 +851,7 @@ pub fn isFinalTime(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> 
     b
 }
 
-pub fn isLagrange(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn isLagrange(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     let mut optExp: OptimizerExpression = OptimizerExpression::MAYER;
@@ -866,7 +866,7 @@ pub fn isLagrange(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> b
     b
 }
 
-pub fn isMayer(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn isMayer(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     let mut optExp: OptimizerExpression = OptimizerExpression::MAYER;
@@ -881,7 +881,7 @@ pub fn isMayer(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool
     b
 }
 
-pub fn isPathConstraint(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn isPathConstraint(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     let mut optExp: OptimizerExpression = OptimizerExpression::MAYER;
@@ -896,7 +896,7 @@ pub fn isPathConstraint(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>
     b
 }
 
-pub fn isFinalConstraint(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn isFinalConstraint(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     let mut optExp: OptimizerExpression = OptimizerExpression::MAYER;
@@ -911,7 +911,7 @@ pub fn isFinalConstraint(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>
     b
 }
 
-pub fn isInitialConstraint(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn isInitialConstraint(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     let mut optExp: OptimizerExpression = OptimizerExpression::MAYER;
@@ -926,7 +926,7 @@ pub fn isInitialConstraint(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariabl
     b
 }
 
-pub fn isLfgFunction(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn isLfgFunction(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     let mut optExp: OptimizerExpression = OptimizerExpression::MAYER;
@@ -945,7 +945,7 @@ pub fn isLfgFunction(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -
     b
 }
 
-pub fn isMrfFunction(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn isMrfFunction(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     let mut optExp: OptimizerExpression = OptimizerExpression::MAYER;
@@ -960,35 +960,35 @@ pub fn isMrfFunction(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -
     b
 }
 
-pub fn isLfgVariable(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn isLfgVariable(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = !(isFinalTime(var_ptr.clone()) || isInitialTime(var_ptr.clone()));
     b
 }
 
-pub fn isMrfVariable(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn isMrfVariable(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = !(isInitialTime(var_ptr.clone()));
     b
 }
 
-pub fn isR0Variable(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn isR0Variable(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = !(isFinalTime(var_ptr.clone()));
     b
 }
 
-pub fn isResizable(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> {
+pub(crate) fn isResizable(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = List::any(Type::arrayDims(var.ty.clone()), (std::sync::Arc::new(fnptr!(Dimension::isResizable, Arc<Dimension::NFDimension>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<bool> + 'static>))?;
     Ok(b)
 }
 
-pub fn isResizableParameter(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn isResizableParameter(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = (::match_deref::match_deref! { match &(var.backendinfo.clone()) {
@@ -999,7 +999,7 @@ pub fn isResizableParameter(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariab
     b
 }
 
-pub fn updateResizableParameter(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut optimal_values: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>) -> Result<()> {
+pub(crate) fn updateResizableParameter(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut optimal_values: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>) -> Result<()> {
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     let mut val: Option<Arc<Expression::NFExpression>> = UnorderedMap::get(var.name.clone(), optimal_values.clone())?;
     let () = (::match_deref::match_deref! { match &((val.clone(), var.backendinfo.clone())) {
@@ -1017,7 +1017,7 @@ pub fn updateResizableParameter(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVa
     Ok(())
 }
 
-pub fn getResizableValue(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<i32> {
+pub(crate) fn getResizableValue(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<i32> {
     let mut val: i32 = 0;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     let _ = (::match_deref::match_deref! { match &(var.backendinfo.clone()) {
@@ -1034,7 +1034,7 @@ pub fn getResizableValue(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>
     Ok(val)
 }
 
-pub fn isResidual(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn isResidual(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = (::match_deref::match_deref! { match &(var.backendinfo.varKind.clone()) {
@@ -1045,7 +1045,7 @@ pub fn isResidual(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> b
     b
 }
 
-pub fn isSeed(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn isSeed(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = (::match_deref::match_deref! { match &(var.backendinfo.varKind.clone()) {
@@ -1056,21 +1056,21 @@ pub fn isSeed(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool 
     b
 }
 
-pub fn isInput(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn isInput(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = var.attributes.direction.clone() == Prefixes::Direction::INPUT.clone();
     b
 }
 
-pub fn isOutput(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn isOutput(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = var.attributes.direction.clone() == Prefixes::Direction::OUTPUT.clone();
     b
 }
 
-pub fn isFixed(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> {
+pub(crate) fn isFixed(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = (::match_deref::match_deref! { match &(var.backendinfo.attributes.clone()) {
@@ -1097,7 +1097,7 @@ pub fn isFixed(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Resu
     Ok(b)
 }
 
-pub fn isFixable(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> {
+pub(crate) fn isFixable(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = (::match_deref::match_deref! { match &(var.backendinfo.varKind.clone()) {
@@ -1111,14 +1111,14 @@ pub fn isFixable(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Re
     Ok(b)
 }
 
-pub fn isStateSelect(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut stateSelect: StateSelect) -> bool {
+pub(crate) fn isStateSelect(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut stateSelect: StateSelect) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = BackendExtension::VariableAttributes::getStateSelect(var.backendinfo.attributes.clone()) == stateSelect.clone();
     b
 }
 
-pub fn setVariableAttributes(mut var: Arc<Variable::NFVariable>, mut variableAttributes: Arc<VariableAttributes::VariableAttributes>) -> Result<Arc<Variable::NFVariable>> {
+pub(crate) fn setVariableAttributes(mut var: Arc<Variable::NFVariable>, mut variableAttributes: Arc<VariableAttributes::VariableAttributes>) -> Result<Arc<Variable::NFVariable>> {
     let mut var: Arc<Variable::NFVariable> = var;
     var = (::match_deref::match_deref! { match &(var.clone()) {
         Deref @ Variable::VARIABLE { backendinfo, .. } => {
@@ -1132,7 +1132,7 @@ pub fn setVariableAttributes(mut var: Arc<Variable::NFVariable>, mut variableAtt
     Ok(var)
 }
 
-pub fn setMin(mut var: Arc<Variable::NFVariable>, mut min_val: Option<Arc<Expression::NFExpression>>, mut overwrite: bool) -> Result<Arc<Variable::NFVariable>> {
+pub(crate) fn setMin(mut var: Arc<Variable::NFVariable>, mut min_val: Option<Arc<Expression::NFExpression>>, mut overwrite: bool) -> Result<Arc<Variable::NFVariable>> {
     let mut var: Arc<Variable::NFVariable> = var;
     var = (::match_deref::match_deref! { match &(var.clone()) {
         Deref @ Variable::VARIABLE { backendinfo: backendinfo @ Deref @ BackendExtension::BackendInfo::BACKEND_INFO { attributes: variableAttributes, .. }, .. } => {
@@ -1146,7 +1146,7 @@ pub fn setMin(mut var: Arc<Variable::NFVariable>, mut min_val: Option<Arc<Expres
     Ok(var)
 }
 
-pub fn setMax(mut var: Arc<Variable::NFVariable>, mut max_val: Option<Arc<Expression::NFExpression>>, mut overwrite: bool) -> Result<Arc<Variable::NFVariable>> {
+pub(crate) fn setMax(mut var: Arc<Variable::NFVariable>, mut max_val: Option<Arc<Expression::NFExpression>>, mut overwrite: bool) -> Result<Arc<Variable::NFVariable>> {
     let mut var: Arc<Variable::NFVariable> = var;
     var = (::match_deref::match_deref! { match &(var.clone()) {
         Deref @ Variable::VARIABLE { backendinfo: backendinfo @ Deref @ BackendExtension::BackendInfo::BACKEND_INFO { attributes: variableAttributes, .. }, .. } => {
@@ -1160,7 +1160,7 @@ pub fn setMax(mut var: Arc<Variable::NFVariable>, mut max_val: Option<Arc<Expres
     Ok(var)
 }
 
-pub fn setStartAttribute(mut var: Arc<Variable::NFVariable>, mut start_val: Arc<Expression::NFExpression>, mut overwrite: bool) -> Result<Arc<Variable::NFVariable>> {
+pub(crate) fn setStartAttribute(mut var: Arc<Variable::NFVariable>, mut start_val: Arc<Expression::NFExpression>, mut overwrite: bool) -> Result<Arc<Variable::NFVariable>> {
     let mut var: Arc<Variable::NFVariable> = var;
     var = (::match_deref::match_deref! { match &(var.clone()) {
         Deref @ Variable::VARIABLE { backendinfo: backendinfo @ Deref @ BackendExtension::BackendInfo::BACKEND_INFO { attributes: variableAttributes, .. }, .. } => {
@@ -1174,7 +1174,7 @@ pub fn setStartAttribute(mut var: Arc<Variable::NFVariable>, mut start_val: Arc<
     Ok(var)
 }
 
-pub fn setStateSelect(mut var: Arc<Variable::NFVariable>, mut stateSelect_val: StateSelect, mut overwrite: bool) -> Result<Arc<Variable::NFVariable>> {
+pub(crate) fn setStateSelect(mut var: Arc<Variable::NFVariable>, mut stateSelect_val: StateSelect, mut overwrite: bool) -> Result<Arc<Variable::NFVariable>> {
     let mut var: Arc<Variable::NFVariable> = var;
     var = (::match_deref::match_deref! { match &(var.clone()) {
         Deref @ Variable::VARIABLE { backendinfo: backendinfo @ Deref @ BackendExtension::BackendInfo::BACKEND_INFO { attributes: variableAttributes, .. }, .. } => {
@@ -1188,7 +1188,7 @@ pub fn setStateSelect(mut var: Arc<Variable::NFVariable>, mut stateSelect_val: S
     Ok(var)
 }
 
-pub fn setTearingSelect(mut var: Arc<Variable::NFVariable>, mut tearingSelect_val: TearingSelect, mut overwrite: bool) -> Arc<Variable::NFVariable> {
+pub(crate) fn setTearingSelect(mut var: Arc<Variable::NFVariable>, mut tearingSelect_val: TearingSelect, mut overwrite: bool) -> Arc<Variable::NFVariable> {
     let mut var: Arc<Variable::NFVariable> = var;
     var = (::match_deref::match_deref! { match &(var.clone()) {
         Deref @ Variable::VARIABLE { backendinfo: backendinfo @ Deref @ BackendExtension::BackendInfo::BACKEND_INFO { attributes: variableAttributes, .. }, .. } => {
@@ -1205,7 +1205,7 @@ pub fn setTearingSelect(mut var: Arc<Variable::NFVariable>, mut tearingSelect_va
     var
 }
 
-pub fn getTearingSelect(mut varPointer: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<TearingSelect> {
+pub(crate) fn getTearingSelect(mut varPointer: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<TearingSelect> {
     let mut tearingSelect_val: TearingSelect;
     tearingSelect_val = (::match_deref::match_deref! { match &(Pointer::access(varPointer.clone())) {
         Deref @ Variable::VARIABLE { backendinfo: Deref @ BackendExtension::BackendInfo::BACKEND_INFO { attributes: variableAttributes, .. }, .. } => {
@@ -1220,7 +1220,7 @@ pub fn getTearingSelect(mut varPointer: Pointer::Pointer<Arc<Variable::NFVariabl
     Ok(tearingSelect_val)
 }
 
-pub fn setVarKind(mut varPointer: Pointer::Pointer<Arc<Variable::NFVariable>>, mut varKind: Arc<VariableKind::VariableKind>) -> () {
+pub(crate) fn setVarKind(mut varPointer: Pointer::Pointer<Arc<Variable::NFVariable>>, mut varKind: Arc<VariableKind::VariableKind>) -> () {
     let mut var: Arc<Variable::NFVariable>;
     var = Pointer::access(varPointer.clone());
     assign_field!(var.backendinfo = BackendExtension::BackendInfo::setVarKind(var.backendinfo.clone(), varKind.clone()));
@@ -1228,7 +1228,7 @@ pub fn setVarKind(mut varPointer: Pointer::Pointer<Arc<Variable::NFVariable>>, m
     ()
 }
 
-pub fn setParent(mut varPointer: Pointer::Pointer<Arc<Variable::NFVariable>>, mut parent: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Pointer::Pointer<Arc<Variable::NFVariable>> {
+pub(crate) fn setParent(mut varPointer: Pointer::Pointer<Arc<Variable::NFVariable>>, mut parent: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Pointer::Pointer<Arc<Variable::NFVariable>> {
     let mut varPointer: Pointer::Pointer<Arc<Variable::NFVariable>> = varPointer;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(varPointer.clone());
     assign_field!(var.backendinfo = BackendExtension::BackendInfo::setParent(var.backendinfo.clone(), parent.clone()));
@@ -1236,14 +1236,14 @@ pub fn setParent(mut varPointer: Pointer::Pointer<Arc<Variable::NFVariable>>, mu
     varPointer
 }
 
-pub fn getParent(mut varPointer: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Option<Pointer::Pointer<Arc<Variable::NFVariable>>> {
+pub(crate) fn getParent(mut varPointer: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Option<Pointer::Pointer<Arc<Variable::NFVariable>>> {
     let mut parent: Option<Pointer::Pointer<Arc<Variable::NFVariable>>>;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(varPointer.clone());
     parent = var.backendinfo.parent.clone();
     parent
 }
 
-pub fn isDummyVariable(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn isDummyVariable(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = (::match_deref::match_deref! { match &(var.backendinfo.varKind.clone()) {
@@ -1254,35 +1254,35 @@ pub fn isDummyVariable(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>)
     b
 }
 
-pub fn isArtificial(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> {
+pub(crate) fn isArtificial(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = StringUtil::startsWith((ComponentRef::firstName(getVarName(var_ptr.clone()), false)?).clone(), (literal!("$")).clone());
     Ok(b)
 }
 
-pub fn isFunctionAlias(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> {
+pub(crate) fn isFunctionAlias(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = StringUtil::startsWith((ComponentRef::firstName(getVarName(var_ptr.clone()), false)?).clone(), (arcstr::literal!(FUNCTION_STR)).clone());
     Ok(b)
 }
 
-pub fn isClockAlias(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> {
+pub(crate) fn isClockAlias(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = StringUtil::startsWith((ComponentRef::firstName(getVarName(var_ptr.clone()), false)?).clone(), (arcstr::literal!(CLOCK_STR)).clone());
     Ok(b)
 }
 
-pub fn createTimeVar() -> Result<Pointer::Pointer<Arc<Variable::NFVariable>>> {
+pub(crate) fn createTimeVar() -> Result<Pointer::Pointer<Arc<Variable::NFVariable>>> {
     let mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>;
     let mut var: Arc<Variable::NFVariable> = TIME_VARIABLE().clone();
     (var_ptr, _) = makeVarPtrCyclic(var.clone(), var.name.clone())?;
     Ok(var_ptr)
 }
 
-pub fn setStateDerivativeVar(mut varPointer: Pointer::Pointer<Arc<Variable::NFVariable>>, mut derivative: Pointer::Pointer<Arc<Variable::NFVariable>>) -> () {
+pub(crate) fn setStateDerivativeVar(mut varPointer: Pointer::Pointer<Arc<Variable::NFVariable>>, mut derivative: Pointer::Pointer<Arc<Variable::NFVariable>>) -> () {
     let mut var: Arc<Variable::NFVariable>;
     var = Pointer::access(varPointer.clone());
     assign_field!(var.backendinfo = BackendExtension::BackendInfo::setVarKind(var.backendinfo.clone(), Arc::new(VariableKind::VariableKind::STATE { index: 1, derivative: Some(derivative.clone()), natural: true })));
@@ -1290,7 +1290,7 @@ pub fn setStateDerivativeVar(mut varPointer: Pointer::Pointer<Arc<Variable::NFVa
     ()
 }
 
-pub fn makeAlgStateVar(mut varPointer: Pointer::Pointer<Arc<Variable::NFVariable>>) -> () {
+pub(crate) fn makeAlgStateVar(mut varPointer: Pointer::Pointer<Arc<Variable::NFVariable>>) -> () {
     let mut var: Arc<Variable::NFVariable>;
     if isAlgebraic(varPointer.clone()) {
         var = Pointer::access(varPointer.clone());
@@ -1300,7 +1300,7 @@ pub fn makeAlgStateVar(mut varPointer: Pointer::Pointer<Arc<Variable::NFVariable
     ()
 }
 
-pub fn makeDerVar(mut cref: Arc<ComponentRef::NFComponentRef>, mut scalarized: bool) -> Result<(Arc<ComponentRef::NFComponentRef>, Pointer::Pointer<Arc<Variable::NFVariable>>)> {
+pub(crate) fn makeDerVar(mut cref: Arc<ComponentRef::NFComponentRef>, mut scalarized: bool) -> Result<(Arc<ComponentRef::NFComponentRef>, Pointer::Pointer<Arc<Variable::NFVariable>>)> {
     let mut der_cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
     let mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>;
     let mut state_cref: Arc<ComponentRef::NFComponentRef> = if (scalarized.clone()) {cref.clone()} else {ComponentRef::stripSubscriptsAll(cref.clone())};
@@ -1332,7 +1332,7 @@ pub fn makeDerVar(mut cref: Arc<ComponentRef::NFComponentRef>, mut scalarized: b
     Ok((der_cref, var_ptr))
 }
 
-pub fn hasDerVar(mut state_var: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn hasDerVar(mut state_var: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     b = (::match_deref::match_deref! { match &(Pointer::access(state_var.clone())) {
         Deref @ Variable::VARIABLE { backendinfo: Deref @ BackendExtension::BackendInfo::BACKEND_INFO { varKind: Deref @ BackendExtension::VariableKind::STATE { derivative: Some(_), .. }, .. }, .. } => true,
@@ -1342,7 +1342,7 @@ pub fn hasDerVar(mut state_var: Pointer::Pointer<Arc<Variable::NFVariable>>) -> 
     b
 }
 
-pub fn addRecordChild(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut child: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<()> {
+pub(crate) fn addRecordChild(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut child: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<()> {
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     var = (::match_deref::match_deref! { match &(var.clone()) {
         Deref @ Variable::VARIABLE { backendinfo: Deref @ BackendExtension::BackendInfo::BACKEND_INFO { varKind: varKind @ Deref @ BackendExtension::VariableKind::RECORD { .. }, .. }, .. } => {
@@ -1361,7 +1361,7 @@ pub fn addRecordChild(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, 
     Ok(())
 }
 
-pub fn setRecordChildren(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut children: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>) -> Result<()> {
+pub(crate) fn setRecordChildren(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut children: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>) -> Result<()> {
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     var = (::match_deref::match_deref! { match &(var.clone()) {
         Deref @ Variable::VARIABLE { backendinfo: Deref @ BackendExtension::BackendInfo::BACKEND_INFO { varKind: varKind @ Deref @ BackendExtension::VariableKind::RECORD { .. }, .. }, .. } => {
@@ -1380,7 +1380,7 @@ pub fn setRecordChildren(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>
     Ok(())
 }
 
-pub fn getRecordChildren(mut var: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> {
+pub(crate) fn getRecordChildren(mut var: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> {
     let mut children: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>;
     children = (::match_deref::match_deref! { match &(Pointer::access(var.clone())) {
         Deref @ Variable::VARIABLE { backendinfo: Deref @ BackendExtension::BackendInfo::BACKEND_INFO { varKind: varKind @ Deref @ BackendExtension::VariableKind::RECORD { .. }, .. }, .. } => {
@@ -1394,7 +1394,7 @@ pub fn getRecordChildren(mut var: Pointer::Pointer<Arc<Variable::NFVariable>>) -
     children
 }
 
-pub fn getRecordChildrenCref(mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>> {
+pub(crate) fn getRecordChildrenCref(mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>> {
     let mut children: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
     let mut subscripts: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>;
     let mut arg_children: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>;
@@ -1411,13 +1411,13 @@ pub fn getRecordChildrenCref(mut cref: Arc<ComponentRef::NFComponentRef>) -> Res
     Ok(children)
 }
 
-pub fn getRecordChildrenCrefOrSelf(mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>> {
+pub(crate) fn getRecordChildrenCrefOrSelf(mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>> {
     let mut children: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = getRecordChildrenCref(cref.clone())?;
     children = if (children.clone().is_empty()) {list![cref.clone()]} else {children.clone()};
     Ok(children)
 }
 
-pub fn makeDummyState(mut varPointer: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<Pointer::Pointer<Arc<Variable::NFVariable>>> {
+pub(crate) fn makeDummyState(mut varPointer: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<Pointer::Pointer<Arc<Variable::NFVariable>>> {
     let mut derivative: Pointer::Pointer<Arc<Variable::NFVariable>>;
     let mut var: Arc<Variable::NFVariable>;
     var = Pointer::access(varPointer.clone());
@@ -1445,14 +1445,14 @@ pub fn makeDummyState(mut varPointer: Pointer::Pointer<Arc<Variable::NFVariable>
     Ok(derivative)
 }
 
-pub fn makeDiscreteStateVar(mut varPointer: Pointer::Pointer<Arc<Variable::NFVariable>>) -> () {
+pub(crate) fn makeDiscreteStateVar(mut varPointer: Pointer::Pointer<Arc<Variable::NFVariable>>) -> () {
     let mut var: Arc<Variable::NFVariable> = Pointer::access(varPointer.clone());
     assign_field!(var.backendinfo = BackendExtension::BackendInfo::setVarKind(var.backendinfo.clone(), openmodelica_nf_frontend::NFBackendExtension::VariableKind::interned_DISCRETE_STATE()));
     Pointer::update(varPointer.clone(), var.clone());
     ()
 }
 
-pub fn makePreVar(mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<(Arc<ComponentRef::NFComponentRef>, Pointer::Pointer<Arc<Variable::NFVariable>>)> {
+pub(crate) fn makePreVar(mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<(Arc<ComponentRef::NFComponentRef>, Pointer::Pointer<Arc<Variable::NFVariable>>)> {
     let mut pre_cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
     let mut pre_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>;
     let () = (::match_deref::match_deref! { match &(ComponentRef::node(cref.clone())?) {
@@ -1478,7 +1478,7 @@ pub fn makePreVar(mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<(Arc<Co
     Ok((pre_cref, pre_ptr))
 }
 
-pub fn makeSeedVar(mut cref: Arc<ComponentRef::NFComponentRef>, mut name: ArcStr) -> Result<(Arc<ComponentRef::NFComponentRef>, Pointer::Pointer<Arc<Variable::NFVariable>>)> {
+pub(crate) fn makeSeedVar(mut cref: Arc<ComponentRef::NFComponentRef>, mut name: ArcStr) -> Result<(Arc<ComponentRef::NFComponentRef>, Pointer::Pointer<Arc<Variable::NFVariable>>)> {
     let mut cref: Arc<ComponentRef::NFComponentRef> = cref;
     let mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>;
     let () = (::match_deref::match_deref! { match &(ComponentRef::node(cref.clone())?) {
@@ -1521,7 +1521,7 @@ pub fn makeSeedVar(mut cref: Arc<ComponentRef::NFComponentRef>, mut name: ArcStr
     Ok((cref, var_ptr))
 }
 
-pub fn makePDerVar(mut cref: Arc<ComponentRef::NFComponentRef>, mut name: ArcStr, mut isTmp: bool) -> Result<(Arc<ComponentRef::NFComponentRef>, Pointer::Pointer<Arc<Variable::NFVariable>>)> {
+pub(crate) fn makePDerVar(mut cref: Arc<ComponentRef::NFComponentRef>, mut name: ArcStr, mut isTmp: bool) -> Result<(Arc<ComponentRef::NFComponentRef>, Pointer::Pointer<Arc<Variable::NFVariable>>)> {
     let mut cref: Arc<ComponentRef::NFComponentRef> = cref;
     let mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>;
     let () = (::match_deref::match_deref! { match &(ComponentRef::node(cref.clone())?) {
@@ -1564,7 +1564,7 @@ pub fn makePDerVar(mut cref: Arc<ComponentRef::NFComponentRef>, mut name: ArcStr
     Ok((cref, var_ptr))
 }
 
-pub fn makeFDerVar(mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<Arc<ComponentRef::NFComponentRef>> {
+pub(crate) fn makeFDerVar(mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<Arc<ComponentRef::NFComponentRef>> {
     let mut cref: Arc<ComponentRef::NFComponentRef> = cref;
     cref = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ ComponentRef::CREF { restCref: Deref @ ComponentRef::EMPTY, .. } => (::match_deref::match_deref! { match &(ComponentRef::node(cref.clone())?) {
@@ -1594,7 +1594,7 @@ pub fn makeFDerVar(mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<Arc<Co
     Ok(cref)
 }
 
-pub fn makeStartVar(mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<(Arc<ComponentRef::NFComponentRef>, Pointer::Pointer<Arc<Variable::NFVariable>>)> {
+pub(crate) fn makeStartVar(mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<(Arc<ComponentRef::NFComponentRef>, Pointer::Pointer<Arc<Variable::NFVariable>>)> {
     let mut start_cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
     let mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>;
     (start_cref, var_ptr) = (::match_deref::match_deref! { match &(ComponentRef::node(cref.clone())?) {
@@ -1638,7 +1638,7 @@ pub fn makeStartVar(mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<(Arc<
     Ok((start_cref, var_ptr))
 }
 
-pub fn makeResidualVar(mut name: ArcStr, mut uniqueIndex: i32, mut ty: Arc<Type::NFType>) -> Result<(Pointer::Pointer<Arc<Variable::NFVariable>>, Arc<ComponentRef::NFComponentRef>)> {
+pub(crate) fn makeResidualVar(mut name: ArcStr, mut uniqueIndex: i32, mut ty: Arc<Type::NFType>) -> Result<(Pointer::Pointer<Arc<Variable::NFVariable>>, Arc<ComponentRef::NFComponentRef>)> {
     let mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>;
     let mut cref: Arc<ComponentRef::NFComponentRef>;
     let mut node: Arc<InstNode::InstNode>;
@@ -1651,7 +1651,7 @@ pub fn makeResidualVar(mut name: ArcStr, mut uniqueIndex: i32, mut ty: Arc<Type:
     Ok((var_ptr, cref))
 }
 
-pub fn makeEventVar(mut name: ArcStr, mut uniqueIndex: i32, mut var_ty: Arc<Type::NFType>, mut iterator: Arc<Iterator::Iterator>) -> Result<(Pointer::Pointer<Arc<Variable::NFVariable>>, Arc<ComponentRef::NFComponentRef>)> {
+pub(crate) fn makeEventVar(mut name: ArcStr, mut uniqueIndex: i32, mut var_ty: Arc<Type::NFType>, mut iterator: Arc<Iterator::Iterator>) -> Result<(Pointer::Pointer<Arc<Variable::NFVariable>>, Arc<ComponentRef::NFComponentRef>)> {
     let mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>;
     let mut cref: Arc<ComponentRef::NFComponentRef>;
     let mut node: Arc<InstNode::InstNode>;
@@ -1675,7 +1675,7 @@ pub fn makeEventVar(mut name: ArcStr, mut uniqueIndex: i32, mut var_ty: Arc<Type
     Ok((var_ptr, cref))
 }
 
-pub fn makeAuxVar(mut name: ArcStr, mut uniqueIndex: i32, mut ty: Arc<Type::NFType>, mut makeParam: bool) -> Result<(Pointer::Pointer<Arc<Variable::NFVariable>>, Arc<ComponentRef::NFComponentRef>)> {
+pub(crate) fn makeAuxVar(mut name: ArcStr, mut uniqueIndex: i32, mut ty: Arc<Type::NFType>, mut makeParam: bool) -> Result<(Pointer::Pointer<Arc<Variable::NFVariable>>, Arc<ComponentRef::NFComponentRef>)> {
     fn updateBackendInfo(mut var: Arc<Variable::NFVariable>, mut makeParam: bool) -> Result<Arc<Variable::NFVariable>> {
         let mut var: Arc<Variable::NFVariable> = var;
         assign_field!(var.backendinfo = BackendExtension::BackendInfo::setVarKind(var.backendinfo.clone(), BackendExtension::VariableKind::fromType(Variable::typeOf(var.clone()), makeParam.clone())?));
@@ -1703,7 +1703,7 @@ pub fn makeAuxVar(mut name: ArcStr, mut uniqueIndex: i32, mut ty: Arc<Type::NFTy
     Ok((var_ptr, cref))
 }
 
-pub fn makeAuxStateVar(mut uniqueIndex: i32, mut binding: Option<Arc<Expression::NFExpression>>) -> Result<(Pointer::Pointer<Arc<Variable::NFVariable>>, Arc<ComponentRef::NFComponentRef>, Pointer::Pointer<Arc<Variable::NFVariable>>, Arc<ComponentRef::NFComponentRef>)> {
+pub(crate) fn makeAuxStateVar(mut uniqueIndex: i32, mut binding: Option<Arc<Expression::NFExpression>>) -> Result<(Pointer::Pointer<Arc<Variable::NFVariable>>, Arc<ComponentRef::NFComponentRef>, Pointer::Pointer<Arc<Variable::NFVariable>>, Arc<ComponentRef::NFComponentRef>)> {
     let mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>;
     let mut cref: Arc<ComponentRef::NFComponentRef>;
     let mut der_var: Pointer::Pointer<Arc<Variable::NFVariable>>;
@@ -1726,7 +1726,7 @@ pub fn makeAuxStateVar(mut uniqueIndex: i32, mut binding: Option<Arc<Expression:
     Ok((var_ptr, cref, der_var, der_cref))
 }
 
-pub fn makeTmpVar(mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<Arc<ComponentRef::NFComponentRef>> {
+pub(crate) fn makeTmpVar(mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<Arc<ComponentRef::NFComponentRef>> {
     let mut tmp_cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
     let mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>;
     let () = (::match_deref::match_deref! { match &(ComponentRef::node(cref.clone())?) {
@@ -1751,7 +1751,7 @@ pub fn makeTmpVar(mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<Arc<Com
     Ok(tmp_cref)
 }
 
-pub fn makeClockVar(mut uniqueIndex: i32, mut ty: Arc<Type::NFType>) -> Result<(Pointer::Pointer<Arc<Variable::NFVariable>>, Arc<ComponentRef::NFComponentRef>)> {
+pub(crate) fn makeClockVar(mut uniqueIndex: i32, mut ty: Arc<Type::NFType>) -> Result<(Pointer::Pointer<Arc<Variable::NFVariable>>, Arc<ComponentRef::NFComponentRef>)> {
     let mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>;
     let mut cref: Arc<ComponentRef::NFComponentRef>;
     let mut node: Arc<InstNode::InstNode>;
@@ -1764,7 +1764,7 @@ pub fn makeClockVar(mut uniqueIndex: i32, mut ty: Arc<Type::NFType>) -> Result<(
     Ok((var_ptr, cref))
 }
 
-pub fn getBindingVariability(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<Prefixes::Variability> {
+pub(crate) fn getBindingVariability(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<Prefixes::Variability> {
     let mut variability: Prefixes::Variability;
     variability = (::match_deref::match_deref! { match &(Pointer::access(var_ptr.clone())) {
         Deref @ Variable::VARIABLE { binding: Deref @ Binding::TYPED_BINDING { variability: tmp, .. }, .. } => {
@@ -1785,7 +1785,7 @@ pub fn getBindingVariability(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVaria
     Ok(variability)
 }
 
-pub fn hasEvaluableBinding(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> {
+pub(crate) fn hasEvaluableBinding(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> {
     fn isEvaluable(mut exp: Arc<Expression::NFExpression>) -> Result<bool> {
         let mut b: bool;
         let mut new_exp: Arc<Expression::NFExpression>;
@@ -1810,7 +1810,7 @@ pub fn hasEvaluableBinding(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariabl
     Ok(b)
 }
 
-pub fn mapExp(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut funcExp: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>, mut mapFunc: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<()> {
+pub(crate) fn mapExp(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut funcExp: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>, mut mapFunc: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<()> {
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     let mut opt_start: Option<Arc<Expression::NFExpression>>;
     let mut binding: Arc<Expression::NFExpression>;
@@ -1845,7 +1845,7 @@ pub fn mapExp(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut func
     Ok(())
 }
 
-pub fn setFixed(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut b: bool, mut overwrite: bool) -> Result<Pointer::Pointer<Arc<Variable::NFVariable>>> {
+pub(crate) fn setFixed(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut b: bool, mut overwrite: bool) -> Result<Pointer::Pointer<Arc<Variable::NFVariable>>> {
     let mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>> = var_ptr;
     let mut var: Arc<Variable::NFVariable>;
     var = Pointer::access(var_ptr.clone());
@@ -1866,7 +1866,7 @@ pub fn setFixed(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut b:
     Ok(var_ptr)
 }
 
-pub fn setBindingAsStart(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut overwrite: bool) -> Result<()> {
+pub(crate) fn setBindingAsStart(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut overwrite: bool) -> Result<()> {
     let mut var: Arc<Variable::NFVariable>;
     var = Pointer::access(var_ptr.clone());
     var = (::match_deref::match_deref! { match &(var.clone()) {
@@ -1888,19 +1888,19 @@ pub fn setBindingAsStart(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>
     Ok(())
 }
 
-pub fn setBindingAsStartAndFix(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut b: bool, mut overwrite: bool) -> Result<Pointer::Pointer<Arc<Variable::NFVariable>>> {
+pub(crate) fn setBindingAsStartAndFix(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut b: bool, mut overwrite: bool) -> Result<Pointer::Pointer<Arc<Variable::NFVariable>>> {
     let mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>> = var_ptr;
     setBindingAsStart(var_ptr.clone(), overwrite.clone())?;
     var_ptr = setFixed(var_ptr.clone(), b.clone(), false)?;
     Ok(var_ptr)
 }
 
-pub fn getStartAttribute(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Option<Arc<Expression::NFExpression>> {
+pub(crate) fn getStartAttribute(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Option<Arc<Expression::NFExpression>> {
     let mut start: Option<Arc<Expression::NFExpression>> = BackendExtension::VariableAttributes::getStartAttribute(Variable::getVariableAttributes(Pointer::access(var_ptr.clone())));
     start
 }
 
-pub fn hasNonTrivialAliasBinding(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> {
+pub(crate) fn hasNonTrivialAliasBinding(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     let mut binding: Arc<Expression::NFExpression> = Binding::getExp(var.binding.clone())?;
@@ -1908,21 +1908,21 @@ pub fn hasNonTrivialAliasBinding(mut var_ptr: Pointer::Pointer<Arc<Variable::NFV
     Ok(b)
 }
 
-pub fn hasConstOrParamAliasBinding(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> {
+pub(crate) fn hasConstOrParamAliasBinding(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = !(checkExpMap(Binding::getExp(var.binding.clone())?, (std::sync::Arc::new(fnptr!(isTimeDependent, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!("NBackEnd/Classes/NBVariable.mo"))?);
     Ok(b)
 }
 
-pub fn isTimeDependent(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn isTimeDependent(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = BackendExtension::VariableKind::isTimeDependent(var.backendinfo.varKind.clone());
     b
 }
 
-pub fn isBound(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub(crate) fn isBound(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = (::match_deref::match_deref! { match &(var.binding.clone()) {
@@ -1939,7 +1939,7 @@ pub fn isBound(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool
 //                        Other type wrappers
 //
 // ==========================================================================
-pub fn checkExp(mut exp: Arc<Expression::NFExpression>, mut func: Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>, mut info: SourceInfo) -> Result<bool> {
+pub(crate) fn checkExp(mut exp: Arc<Expression::NFExpression>, mut func: Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>, mut info: SourceInfo) -> Result<bool> {
     let mut b: bool;
     b = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CREF { cref, .. } => {
@@ -1953,8 +1953,8 @@ pub fn checkExp(mut exp: Arc<Expression::NFExpression>, mut func: Arc<dyn ::std:
     Ok(b)
 }
 
-pub fn checkExpMap(mut exp: Arc<Expression::NFExpression>, mut func: Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>, mut info: SourceInfo) -> Result<bool> {
-    pub fn checkExpTraverse(mut exp: Arc<Expression::NFExpression>, mut func: Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>, mut info: SourceInfo, mut b: bool) -> Result<(Arc<Expression::NFExpression>, bool)> {
+pub(crate) fn checkExpMap(mut exp: Arc<Expression::NFExpression>, mut func: Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>, mut info: SourceInfo) -> Result<bool> {
+    pub(crate) fn checkExpTraverse(mut exp: Arc<Expression::NFExpression>, mut func: Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>, mut info: SourceInfo, mut b: bool) -> Result<(Arc<Expression::NFExpression>, bool)> {
         let mut exp: Arc<Expression::NFExpression> = exp;
         let mut b: bool = b;
         if !(b.clone()) {
@@ -1968,7 +1968,7 @@ pub fn checkExpMap(mut exp: Arc<Expression::NFExpression>, mut func: Arc<dyn ::s
     Ok(b)
 }
 
-pub fn checkCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut func: Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>, mut info: SourceInfo) -> Result<bool> {
+pub(crate) fn checkCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut func: Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>, mut info: SourceInfo) -> Result<bool> {
     let mut b: bool = func(getVarPointer(cref.clone(), info.clone())?)?;
     Ok(b)
 }
@@ -2009,7 +2009,7 @@ pub mod VariablePointers {
 
     pub type VARIABLE_POINTERS = VariablePointers;
 
-    pub fn toString(mut variables: Arc<VariablePointers>, mut r#str: ArcStr, mut mapping_opt: Option<metamodelica::Array<(i32, i32)>>, mut printEmpty: bool) -> Result<ArcStr> {
+    pub(crate) fn toString(mut variables: Arc<VariablePointers>, mut r#str: ArcStr, mut mapping_opt: Option<metamodelica::Array<(i32, i32)>>, mut printEmpty: bool) -> Result<ArcStr> {
         let mut r#str: ArcStr = r#str;
         let mut numberOfElements: i32 = size(variables.clone());
         let mut length: i32;
@@ -2042,7 +2042,7 @@ pub mod VariablePointers {
         Ok(r#str)
     }
 
-    pub fn map(mut variables: Arc<VariablePointers>, mut func: Arc<dyn ::std::ops::Fn(Arc<Variable::NFVariable>) -> Result<Arc<Variable::NFVariable>> + 'static>) -> Result<Arc<VariablePointers>> {
+    pub(crate) fn map(mut variables: Arc<VariablePointers>, mut func: Arc<dyn ::std::ops::Fn(Arc<Variable::NFVariable>) -> Result<Arc<Variable::NFVariable>> + 'static>) -> Result<Arc<VariablePointers>> {
         pub type MapFunc = std::sync::Arc<dyn ::std::ops::Fn(Arc<Variable::NFVariable>) -> Result<Arc<Variable::NFVariable>> + 'static>;
 
         let mut variables: Arc<VariablePointers> = variables;
@@ -2062,7 +2062,7 @@ pub mod VariablePointers {
         Ok(variables)
     }
 
-    pub fn mapPtr(mut variables: Arc<VariablePointers>, mut func: Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<()> + 'static>) -> Result<Arc<VariablePointers>> {
+    pub(crate) fn mapPtr(mut variables: Arc<VariablePointers>, mut func: Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<()> + 'static>) -> Result<Arc<VariablePointers>> {
         pub type MapFunc = std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<()> + 'static>;
 
         let mut variables: Arc<VariablePointers> = variables;
@@ -2076,7 +2076,7 @@ pub mod VariablePointers {
         Ok(variables)
     }
 
-    pub fn mapRemovePtr(mut variables: Arc<VariablePointers>, mut func: Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>) -> Result<Arc<VariablePointers>> {
+    pub(crate) fn mapRemovePtr(mut variables: Arc<VariablePointers>, mut func: Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>) -> Result<Arc<VariablePointers>> {
         pub type MapFunc = std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>;
 
         let mut variables: Arc<VariablePointers> = variables;
@@ -2093,7 +2093,7 @@ pub mod VariablePointers {
         Ok(variables)
     }
 
-    pub fn empty(mut size: i32, mut scalarized: bool) -> Arc<VariablePointers> {
+    pub(crate) fn empty(mut size: i32, mut scalarized: bool) -> Arc<VariablePointers> {
         let mut variables: Arc<VariablePointers>;
         let mut arr_size: i32;
         let mut bucketSize: i32;
@@ -2109,7 +2109,7 @@ pub mod VariablePointers {
         variables
     }
 
-    pub fn clone(mut variables: Arc<VariablePointers>, mut shallow: bool) -> Result<Arc<VariablePointers>> {
+    pub(crate) fn clone(mut variables: Arc<VariablePointers>, mut shallow: bool) -> Result<Arc<VariablePointers>> {
         let mut new: Arc<VariablePointers>;
         if shallow.clone() {
             new = fromList(toList(variables.clone())?, false)?;
@@ -2126,12 +2126,12 @@ pub mod VariablePointers {
         Ok(new)
     }
 
-    pub fn size(mut variables: Arc<VariablePointers>) -> i32 {
+    pub(crate) fn size(mut variables: Arc<VariablePointers>) -> i32 {
         let mut sz: i32 = ExpandableArray::getNumberOfElements(variables.varArr.clone());
         sz
     }
 
-    pub fn scalarSize(mut variables: Arc<VariablePointers>, mut resize: bool) -> Result<i32> {
+    pub(crate) fn scalarSize(mut variables: Arc<VariablePointers>, mut resize: bool) -> Result<i32> {
         let mut sz: i32 = 0;
         for mut var_ptr in &*toList(variables.clone())? {
             let mut var_ptr = var_ptr.clone();
@@ -2140,33 +2140,33 @@ pub mod VariablePointers {
         Ok(sz)
     }
 
-    pub fn toList(mut variables: Arc<VariablePointers>) -> Result<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>> {
+    pub(crate) fn toList(mut variables: Arc<VariablePointers>) -> Result<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>> {
         let mut var_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>;
         var_lst = ExpandableArray::toList(variables.varArr.clone())?;
         Ok(var_lst)
     }
 
-    pub fn fromList(mut var_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>, mut scalarized: bool) -> Result<Arc<VariablePointers>> {
+    pub(crate) fn fromList(mut var_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>, mut scalarized: bool) -> Result<Arc<VariablePointers>> {
         let mut variables: Arc<VariablePointers>;
         variables = empty((var_lst.clone().len() as i32), scalarized.clone());
         variables = addList(var_lst.clone(), variables.clone())?;
         Ok(variables)
     }
 
-    pub fn addList(mut var_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>, mut variables: Arc<VariablePointers>) -> Result<Arc<VariablePointers>> {
+    pub(crate) fn addList(mut var_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>, mut variables: Arc<VariablePointers>) -> Result<Arc<VariablePointers>> {
         let mut variables: Arc<VariablePointers> = variables;
         variables = List::fold(var_lst.clone(), (std::sync::Arc::new(move |__pe_a0, __pe_a1| add(__pe_a0, __pe_a1)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, Arc<VariablePointers>) -> Result<Arc<VariablePointers>> + 'static>), variables.clone())?;
         Ok(variables)
     }
 
-    pub fn removeList(mut var_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>, mut variables: Arc<VariablePointers>) -> Result<Arc<VariablePointers>> {
+    pub(crate) fn removeList(mut var_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>, mut variables: Arc<VariablePointers>) -> Result<Arc<VariablePointers>> {
         let mut variables: Arc<VariablePointers> = variables;
         variables = List::fold(var_lst.clone(), (std::sync::Arc::new(move |__pe_a0, __pe_a1| remove(__pe_a0, __pe_a1)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, Arc<VariablePointers>) -> Result<Arc<VariablePointers>> + 'static>), variables.clone())?;
         variables = compress(variables.clone())?;
         Ok(variables)
     }
 
-    pub fn removeCheck(mut variables: Arc<VariablePointers>, mut func: Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>) -> Result<Arc<VariablePointers>> {
+    pub(crate) fn removeCheck(mut variables: Arc<VariablePointers>, mut func: Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>) -> Result<Arc<VariablePointers>> {
         let mut variables: Arc<VariablePointers> = variables;
         let mut vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>;
         vars = ({
@@ -2182,7 +2182,7 @@ pub mod VariablePointers {
         Ok(variables)
     }
 
-    pub fn add(mut varPointer: Pointer::Pointer<Arc<Variable::NFVariable>>, mut variables: Arc<VariablePointers>) -> Result<Arc<VariablePointers>> {
+    pub(crate) fn add(mut varPointer: Pointer::Pointer<Arc<Variable::NFVariable>>, mut variables: Arc<VariablePointers>) -> Result<Arc<VariablePointers>> {
         let mut variables: Arc<VariablePointers> = variables;
         let mut var: Arc<Variable::NFVariable>;
         let mut index: i32 = 0;
@@ -2201,7 +2201,7 @@ pub mod VariablePointers {
         Ok(variables)
     }
 
-    pub fn remove(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut variables: Arc<VariablePointers>) -> Result<Arc<VariablePointers>> {
+    pub(crate) fn remove(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut variables: Arc<VariablePointers>) -> Result<Arc<VariablePointers>> {
         let mut variables: Arc<VariablePointers> = variables;
         let mut var: Arc<Variable::NFVariable>;
         let mut index: i32 = 0;
@@ -2217,7 +2217,7 @@ pub mod VariablePointers {
         Ok(variables)
     }
 
-    pub fn setVarAt(mut variables: Arc<VariablePointers>, mut idx: i32, mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<()> {
+    pub(crate) fn setVarAt(mut variables: Arc<VariablePointers>, mut idx: i32, mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<()> {
         let mut var: Arc<Variable::NFVariable>;
         ExpandableArray::set(idx.clone(), var_ptr.clone(), variables.varArr.clone())?;
         var = Pointer::access(var_ptr.clone());
@@ -2225,13 +2225,13 @@ pub mod VariablePointers {
         Ok(())
     }
 
-    pub fn getVarAt(mut variables: Arc<VariablePointers>, mut idx: i32) -> Result<Pointer::Pointer<Arc<Variable::NFVariable>>> {
+    pub(crate) fn getVarAt(mut variables: Arc<VariablePointers>, mut idx: i32) -> Result<Pointer::Pointer<Arc<Variable::NFVariable>>> {
         let mut var: Pointer::Pointer<Arc<Variable::NFVariable>>;
         var = ExpandableArray::get(idx.clone(), variables.varArr.clone())?;
         Ok(var)
     }
 
-    pub fn getVarSafe(mut variables: Arc<VariablePointers>, mut cref: Arc<ComponentRef::NFComponentRef>, mut info: Option<SourceInfo>) -> Result<Pointer::Pointer<Arc<Variable::NFVariable>>> {
+    pub(crate) fn getVarSafe(mut variables: Arc<VariablePointers>, mut cref: Arc<ComponentRef::NFComponentRef>, mut info: Option<SourceInfo>) -> Result<Pointer::Pointer<Arc<Variable::NFVariable>>> {
         let mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>;
         let mut index: i32 = 0;
         var_ptr = (match UnorderedMap::get(cref.clone(), variables.map.clone())? {
@@ -2246,22 +2246,22 @@ pub mod VariablePointers {
         Ok(var_ptr)
     }
 
-    pub fn getVarIndex(mut variables: Arc<VariablePointers>, mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<i32> {
+    pub(crate) fn getVarIndex(mut variables: Arc<VariablePointers>, mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<i32> {
         let mut index: i32 = UnorderedMap::getOrDefault(cref.clone(), variables.map.clone(), -1)?;
         Ok(index)
     }
 
-    pub fn contains(mut var: Pointer::Pointer<Arc<Variable::NFVariable>>, mut variables: Arc<VariablePointers>) -> Result<bool> {
+    pub(crate) fn contains(mut var: Pointer::Pointer<Arc<Variable::NFVariable>>, mut variables: Arc<VariablePointers>) -> Result<bool> {
         let mut b: bool = containsCref(getVarName(var.clone()), variables.clone())?;
         Ok(b)
     }
 
-    pub fn containsCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut variables: Arc<VariablePointers>) -> Result<bool> {
+    pub(crate) fn containsCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut variables: Arc<VariablePointers>) -> Result<bool> {
         let mut b: bool = getVarIndex(variables.clone(), cref.clone())? > 0;
         Ok(b)
     }
 
-    pub fn getVarNames(mut variables: Arc<VariablePointers>) -> Result<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>> {
+    pub(crate) fn getVarNames(mut variables: Arc<VariablePointers>) -> Result<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>> {
         let mut names: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
         let mut acc: Pointer::Pointer<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>> = Pointer::create(metamodelica::nil());
         mapPtr(variables.clone(), (std::sync::Arc::new({ let __pe_b1 = acc.clone(); move |__pe_a0| Ok(getVarNameTraverse(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<()> + 'static>))?;
@@ -2269,7 +2269,7 @@ pub mod VariablePointers {
         Ok(names)
     }
 
-    pub fn getScalarVarNames(mut variables: Arc<VariablePointers>, mut resize: bool) -> Result<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>> {
+    pub(crate) fn getScalarVarNames(mut variables: Arc<VariablePointers>, mut resize: bool) -> Result<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>> {
         let mut names: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
         let mut var: Arc<Variable::NFVariable>;
         for mut var_ptr in &*toList(variables.clone())? {
@@ -2291,7 +2291,7 @@ pub mod VariablePointers {
         Ok(names)
     }
 
-    pub fn getMarkedVars(mut variables: Arc<VariablePointers>, mut marks: metamodelica::Array<bool>) -> Result<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>> {
+    pub(crate) fn getMarkedVars(mut variables: Arc<VariablePointers>, mut marks: metamodelica::Array<bool>) -> Result<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>> {
         let mut marked_vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>;
         let mut indices: Arc<metamodelica::List<i32>> = BackendUtil::findTrueIndices(marks.clone());
         if metamodelica::arrayLength(marks.clone()) == size(variables.clone()) {
@@ -2310,7 +2310,7 @@ pub mod VariablePointers {
         Ok(marked_vars)
     }
 
-    pub fn compress(mut variables: Arc<VariablePointers>) -> Result<Arc<VariablePointers>> {
+    pub(crate) fn compress(mut variables: Arc<VariablePointers>) -> Result<Arc<VariablePointers>> {
         let mut variables: Arc<VariablePointers> = variables;
         let mut vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
         for mut i in ({let __s=ExpandableArray::getLastUsedIndex(variables.varArr.clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
@@ -2322,7 +2322,7 @@ pub mod VariablePointers {
         Ok(variables)
     }
 
-    pub fn sort(mut variables: Arc<VariablePointers>) -> Result<Arc<VariablePointers>> {
+    pub(crate) fn sort(mut variables: Arc<VariablePointers>) -> Result<Arc<VariablePointers>> {
         let mut variables: Arc<VariablePointers> = variables;
         let mut size: i32;
         let mut hash_lst: Arc<metamodelica::List<(i32, Pointer::Pointer<Arc<Variable::NFVariable>>)>>;
@@ -2340,7 +2340,7 @@ pub mod VariablePointers {
         Ok(variables)
     }
 
-    pub fn scalarize(mut variables: Arc<VariablePointers>) -> Result<Arc<VariablePointers>> {
+    pub(crate) fn scalarize(mut variables: Arc<VariablePointers>) -> Result<Arc<VariablePointers>> {
         let mut variables: Arc<VariablePointers> = variables;
         let mut vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>;
         let mut flattened: bool;
@@ -2351,7 +2351,7 @@ pub mod VariablePointers {
         Ok(variables)
     }
 
-    pub fn scalarizeList(mut vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>) -> Result<(Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>, bool)> {
+    pub(crate) fn scalarizeList(mut vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>) -> Result<(Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>, bool)> {
         let mut new_vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
         let mut flattened: bool = false;
         let mut scalar_vars: Arc<metamodelica::List<Arc<Variable::NFVariable>>>;
@@ -2384,7 +2384,7 @@ pub mod VariablePointers {
         Ok((new_vars, flattened))
     }
 
-    pub fn varSlice(mut vars: Arc<VariablePointers>, mut scal: i32, mut arr: i32, mut mapping: Arc<Mapping::Mapping>, mut resize: bool) -> Result<Arc<ComponentRef::NFComponentRef>> {
+    pub(crate) fn varSlice(mut vars: Arc<VariablePointers>, mut scal: i32, mut arr: i32, mut mapping: Arc<Mapping::Mapping>, mut resize: bool) -> Result<Arc<ComponentRef::NFComponentRef>> {
         let mut cref: Arc<ComponentRef::NFComponentRef>;
         let mut var: Pointer::Pointer<Arc<Variable::NFVariable>>;
         let mut start: i32;
@@ -2645,7 +2645,7 @@ pub mod VarData {
         fn default() -> Self { Self::VAR_DATA_EMPTY }
     }
     pub use self::VarData::{VAR_DATA_SIM,VAR_DATA_JAC,VAR_DATA_HES,VAR_DATA_EMPTY};
-    pub fn size(mut varData: Arc<VarData>) -> Result<i32> {
+    pub(crate) fn size(mut varData: Arc<VarData>) -> Result<i32> {
         let mut s: i32;
         s = (::match_deref::match_deref! { match &(varData.clone()) {
         Deref @ VAR_DATA_SIM { .. } => VariablePointers::size(var_field!((*varData).unknowns, VarData::VAR_DATA_SIM).clone()),
@@ -2656,7 +2656,7 @@ pub mod VarData {
         Ok(s)
     }
 
-    pub fn scalarSize(mut varData: Arc<VarData>, mut resize: bool) -> Result<i32> {
+    pub(crate) fn scalarSize(mut varData: Arc<VarData>, mut resize: bool) -> Result<i32> {
         let mut s: i32;
         s = (::match_deref::match_deref! { match &(varData.clone()) {
         Deref @ VAR_DATA_SIM { .. } => VariablePointers::scalarSize(var_field!((*varData).unknowns, VarData::VAR_DATA_SIM).clone(), resize.clone())?,
@@ -2667,7 +2667,7 @@ pub mod VarData {
         Ok(s)
     }
 
-    pub fn toString(mut varData: Arc<VarData>, mut level: i32) -> Result<ArcStr> {
+    pub(crate) fn toString(mut varData: Arc<VarData>, mut level: i32) -> Result<ArcStr> {
         let mut r#str: ArcStr;
         r#str = (if (level.clone() == 0) {(::match_deref::match_deref! { match &(varData.clone()) {
         Deref @ VAR_DATA_SIM { .. } => VariablePointers::toString(var_field!((*varData).variables, VarData::VAR_DATA_SIM).clone(), (literal!("Simulation")).clone(), None, true)?,
@@ -2680,7 +2680,7 @@ pub mod VarData {
         Ok(r#str)
     }
 
-    pub fn toStringVerbose(mut varData: Arc<VarData>, mut full: bool) -> Result<ArcStr> {
+    pub(crate) fn toStringVerbose(mut varData: Arc<VarData>, mut full: bool) -> Result<ArcStr> {
         let mut r#str: ArcStr;
         r#str = (({
         let mut tmp: ArcStr = literal!("");
@@ -2728,7 +2728,7 @@ pub mod VarData {
         Ok(r#str)
     }
 
-    pub fn getVariables(mut varData: Arc<VarData>) -> Result<Arc<VariablePointers::VariablePointers>> {
+    pub(crate) fn getVariables(mut varData: Arc<VarData>) -> Result<Arc<VariablePointers::VariablePointers>> {
         let mut variables: Arc<VariablePointers::VariablePointers>;
         variables = (::match_deref::match_deref! { match &(varData.clone()) {
         Deref @ VAR_DATA_SIM { .. } => var_field!((*varData).variables, VarData::VAR_DATA_SIM).clone(),
@@ -2740,7 +2740,7 @@ pub mod VarData {
         Ok(variables)
     }
 
-    pub fn setVariables(mut varData: Arc<VarData>, mut variables: Arc<VariablePointers::VariablePointers>) -> Result<Arc<VarData>> {
+    pub(crate) fn setVariables(mut varData: Arc<VarData>, mut variables: Arc<VariablePointers::VariablePointers>) -> Result<Arc<VarData>> {
         let mut varData: Arc<VarData> = varData;
         varData = (::match_deref::match_deref! { match &(varData.clone()) {
         Deref @ VAR_DATA_SIM { .. } => {
@@ -2761,7 +2761,7 @@ pub mod VarData {
         Ok(varData)
     }
 
-    pub fn getUniqueIndex(mut varData: Arc<VarData>) -> Result<Pointer::Pointer<i32>> {
+    pub(crate) fn getUniqueIndex(mut varData: Arc<VarData>) -> Result<Pointer::Pointer<i32>> {
         let mut uniqueIndex: Pointer::Pointer<i32>;
         uniqueIndex = (::match_deref::match_deref! { match &(varData.clone()) {
         Deref @ VAR_DATA_SIM { .. } => var_field!((*varData).uniqueIndex, VarData::VAR_DATA_SIM).clone(),
@@ -2774,7 +2774,7 @@ pub mod VarData {
         Ok(uniqueIndex)
     }
 
-    pub fn getStateOrder(mut varData: Arc<VarData>) -> Result<Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>>>> {
+    pub(crate) fn getStateOrder(mut varData: Arc<VarData>) -> Result<Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>>>> {
         let mut state_order: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>>>;
         state_order = (::match_deref::match_deref! { match &(varData.clone()) {
         Deref @ VAR_DATA_SIM { .. } => var_field!((*varData).state_order, VarData::VAR_DATA_SIM).clone(),
@@ -2812,7 +2812,7 @@ pub mod VarData {
         fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
     }
 
-    pub fn addTypedList(mut varData: Arc<VarData>, mut var_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>, mut varType: VarType) -> Result<Arc<VarData>> {
+    pub(crate) fn addTypedList(mut varData: Arc<VarData>, mut var_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>, mut varType: VarType) -> Result<Arc<VarData>> {
         let mut varData: Arc<VarData> = varData;
         varData = (::match_deref::match_deref! { match &((varData.clone(), varType.clone())) {
         (Deref @ VAR_DATA_SIM { .. }, VarType::STATE { .. }) => {
@@ -2901,7 +2901,7 @@ pub mod VarData {
         Ok(varData)
     }
 
-    pub fn removeTypedCheck(mut varData: Arc<VarData>, mut func: Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>, mut varType: VarType) -> Result<Arc<VarData>> {
+    pub(crate) fn removeTypedCheck(mut varData: Arc<VarData>, mut func: Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>, mut varType: VarType) -> Result<Arc<VarData>> {
         let mut varData: Arc<VarData> = varData;
         varData = (::match_deref::match_deref! { match &((varData.clone(), varType.clone())) {
         (Deref @ VAR_DATA_SIM { .. }, VarType::STATE { .. }) => {

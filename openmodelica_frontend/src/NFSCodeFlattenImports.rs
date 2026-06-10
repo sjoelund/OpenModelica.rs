@@ -65,14 +65,14 @@ pub type FrameType = NFSCodeEnv::FrameType;
 
 pub type Import = Absyn::Import;
 
-pub fn flattenProgram(mut inProgram: Arc<metamodelica::List<Arc<SCode::Element>>>, mut inEnv: Env) -> Result<(Arc<metamodelica::List<Arc<SCode::Element>>>, Env)> {
+pub(crate) fn flattenProgram(mut inProgram: Arc<metamodelica::List<Arc<SCode::Element>>>, mut inEnv: Env) -> Result<(Arc<metamodelica::List<Arc<SCode::Element>>>, Env)> {
     let mut outProgram: Arc<metamodelica::List<Arc<SCode::Element>>>;
     let mut outEnv: Env;
     (outProgram, outEnv) = List::mapFold(inProgram.clone(), (std::sync::Arc::new(flattenClass) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>) -> Result<(Arc<SCode::Element>, Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>)> + 'static>), inEnv.clone())?;
     Ok((outProgram, outEnv))
 }
 
-pub fn flattenClass(mut inClass: Arc<SCode::Element>, mut inEnv: Env) -> Result<(Arc<SCode::Element>, Env)> {
+pub(crate) fn flattenClass(mut inClass: Arc<SCode::Element>, mut inEnv: Env) -> Result<(Arc<SCode::Element>, Env)> {
     let mut outClass: Arc<SCode::Element>;
     let mut outEnv: Env;
     (outClass, outEnv) = 'mc: {
@@ -593,7 +593,7 @@ fn flattenExpTraverserExit(mut inExp: Arc<Absyn::Exp>, mut inTuple: (Arc<metamod
     (outExp, outTuple)
 }
 
-pub fn flattenComponentRefSubs(mut inCref: Arc<Absyn::ComponentRef>, mut inEnv: Env, mut inInfo: SourceInfo) -> Result<Arc<Absyn::ComponentRef>> {
+pub(crate) fn flattenComponentRefSubs(mut inCref: Arc<Absyn::ComponentRef>, mut inEnv: Env, mut inInfo: SourceInfo) -> Result<Arc<Absyn::ComponentRef>> {
     let mut outCref: Arc<Absyn::ComponentRef>;
     outCref = (::match_deref::match_deref! { match &(inCref.clone()) {
         Deref @ Absyn::ComponentRef::CREF_IDENT { name, subscripts: subs } => {

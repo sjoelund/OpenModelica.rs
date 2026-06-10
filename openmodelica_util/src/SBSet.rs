@@ -73,7 +73,7 @@ impl Default for SBSet {
 
 pub type SET = SBSet;
 
-pub fn new(mut ss: Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::SBAtomicSet>>>) -> Result<Arc<SBSet>> {
+pub(crate) fn new(mut ss: Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::SBAtomicSet>>>) -> Result<Arc<SBSet>> {
     fn is_equal_dim(mut set1: Arc<SBAtomicSet::SBAtomicSet>, mut dim: i32) -> bool {
         let mut equal: bool = SBAtomicSet::ndim(set1.clone()) == dim.clone();
         equal
@@ -100,13 +100,13 @@ pub fn newEmpty() -> Arc<SBSet> {
     set
 }
 
-pub fn copy(mut set: Arc<SBSet>) -> Arc<SBSet> {
+pub(crate) fn copy(mut set: Arc<SBSet>) -> Arc<SBSet> {
     let mut set: Arc<SBSet> = set;
     assign_field!(set.asets = UnorderedSet::copy(set.asets.clone()));
     set
 }
 
-pub fn ndim(mut set: Arc<SBSet>) -> i32 {
+pub(crate) fn ndim(mut set: Arc<SBSet>) -> i32 {
     let mut ndim: i32 = set.ndim.clone();
     ndim
 }
@@ -116,7 +116,7 @@ pub fn isEmpty(mut set: Arc<SBSet>) -> bool {
     empty
 }
 
-pub fn isDim(mut set: Arc<SBSet>, mut dim: i32) -> bool {
+pub(crate) fn isDim(mut set: Arc<SBSet>, mut dim: i32) -> bool {
     let mut res: bool = set.ndim.clone() == dim.clone();
     res
 }
@@ -126,7 +126,7 @@ pub fn asets(mut set: Arc<SBSet>) -> Arc<UnorderedSet::UnorderedSet<Arc<SBAtomic
     asets
 }
 
-pub fn contains(mut vals: metamodelica::Array<i32>, mut set: Arc<SBSet>) -> Result<bool> {
+pub(crate) fn contains(mut vals: metamodelica::Array<i32>, mut set: Arc<SBSet>) -> Result<bool> {
     let mut res: bool;
     res = UnorderedSet::all(set.asets.clone(), (std::sync::Arc::new({ let __pe_b0 = vals.clone(); move |__pe_a1| SBAtomicSet::contains(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>) -> Result<bool> + 'static>))?;
     Ok(res)
@@ -146,7 +146,7 @@ pub fn addAtomicSet(mut aset: Arc<SBAtomicSet::SBAtomicSet>, mut set: Arc<SBSet>
     Ok(set)
 }
 
-pub fn addAtomicSets(mut asets: Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::SBAtomicSet>>>, mut set: Arc<SBSet>) -> Result<Arc<SBSet>> {
+pub(crate) fn addAtomicSets(mut asets: Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::SBAtomicSet>>>, mut set: Arc<SBSet>) -> Result<Arc<SBSet>> {
     let mut set: Arc<SBSet> = set;
     set = UnorderedSet::fold(asets.clone(), (std::sync::Arc::new(addAtomicSet) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>, Arc<SBSet>) -> Result<Arc<SBSet>> + 'static>), set.clone())?;
     Ok(set)
@@ -221,13 +221,13 @@ pub fn union(mut set1: Arc<SBSet>, mut set2: Arc<SBSet>) -> Result<Arc<SBSet>> {
     Ok(outSet)
 }
 
-pub fn card(mut set: Arc<SBSet>) -> Result<i32> {
+pub(crate) fn card(mut set: Arc<SBSet>) -> Result<i32> {
     let mut cardinality: i32 = UnorderedSet::fold(set.asets.clone(), (std::sync::Arc::new(fnptr!(SBAtomicSet::cardinality, Arc<SBAtomicSet::SBAtomicSet>, i32)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>, i32) -> Result<i32> + 'static>), 0)?;
     Ok(cardinality)
 }
 
-pub fn maxCardinality(mut sets: Arc<Vector::Vector<Arc<SBSet>>>) -> Result<(Arc<SBSet>, i32)> {
-    pub fn maxCardinality_traverse(mut set: Arc<SBSet>, mut maxCard: i32) -> Result<(bool, i32)> {
+pub(crate) fn maxCardinality(mut sets: Arc<Vector::Vector<Arc<SBSet>>>) -> Result<(Arc<SBSet>, i32)> {
+    pub(crate) fn maxCardinality_traverse(mut set: Arc<SBSet>, mut maxCard: i32) -> Result<(bool, i32)> {
         let mut res: bool = false;
         let mut maxCard: i32 = maxCard;
         let mut cardinality: i32 = card(set.clone())?;
@@ -251,7 +251,7 @@ pub fn maxCardinality(mut sets: Arc<Vector::Vector<Arc<SBSet>>>) -> Result<(Arc<
     Ok((maxSet, index))
 }
 
-pub fn minElem(mut set: Arc<SBSet>) -> Result<metamodelica::Array<i32>> {
+pub(crate) fn minElem(mut set: Arc<SBSet>) -> Result<metamodelica::Array<i32>> {
     fn lessFn(mut set1: metamodelica::Array<i32>, mut set2: metamodelica::Array<i32>) -> Result<bool> {
         let mut res: bool;
         res = Array::isLess(set1.clone(), set2.clone(), (std::sync::Arc::new(fnptr!(intLt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
@@ -276,12 +276,12 @@ pub fn minElem(mut set: Arc<SBSet>) -> Result<metamodelica::Array<i32>> {
     Ok(res)
 }
 
-pub fn isEqual(mut set1: Arc<SBSet>, mut set2: Arc<SBSet>) -> Result<bool> {
+pub(crate) fn isEqual(mut set1: Arc<SBSet>, mut set2: Arc<SBSet>) -> Result<bool> {
     let mut equal: bool = UnorderedSet::isEqual(set1.asets.clone(), set2.asets.clone())?;
     Ok(equal)
 }
 
-pub fn hash(mut set: Arc<SBSet>) -> i32 {
+pub(crate) fn hash(mut set: Arc<SBSet>) -> i32 {
     let mut hash: i32 = UnorderedSet::size(set.asets.clone());
     hash
 }

@@ -198,13 +198,13 @@ fn fun_49(mut in_txt: Tpl::Text, mut in_a_cl: Arc<SCode::Element>) -> Result<Tpl
     Ok(out_txt)
 }
 
-pub fn classExternalHeader(mut txt: Tpl::Text, mut a_cl: Arc<SCode::Element>, mut a_pack: ArcStr) -> Result<Tpl::Text> {
+pub(crate) fn classExternalHeader(mut txt: Tpl::Text, mut a_cl: Arc<SCode::Element>, mut a_pack: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = fun_49(txt.clone(), a_cl.clone())?;
     Ok(out_txt)
 }
 
-pub fn pathString(mut in_txt: Tpl::Text, mut in_a_path: Arc<Absyn::Path>) -> Result<Tpl::Text> {
+pub(crate) fn pathString(mut in_txt: Tpl::Text, mut in_a_path: Arc<Absyn::Path>) -> Result<Tpl::Text> {
     '__tco: loop {
         ::match_deref::match_deref! { match &((in_txt.clone(), in_a_path.clone())) {
         (txt, Deref @ Absyn::Path::IDENT { name: i_name }) => {
@@ -229,7 +229,7 @@ pub fn pathString(mut in_txt: Tpl::Text, mut in_a_path: Arc<Absyn::Path>) -> Res
     }
 }
 
-pub fn metaHelperBoxStart(mut in_txt: Tpl::Text, mut in_a_numVariables: i32) -> Result<Tpl::Text> {
+pub(crate) fn metaHelperBoxStart(mut in_txt: Tpl::Text, mut in_a_numVariables: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_numVariables.clone()) {
         (mut txt, mut i_numVariables @ 0) => {
@@ -403,7 +403,7 @@ fn fun_56(mut in_txt: Tpl::Text, mut in_a_p_elementLst: Arc<metamodelica::List<A
     Ok(out_txt)
 }
 
-pub fn elementExternalHeader(mut in_txt: Tpl::Text, mut in_a_elt: Arc<SCode::Element>, mut in_a_pack: ArcStr) -> Result<Tpl::Text> {
+pub(crate) fn elementExternalHeader(mut in_txt: Tpl::Text, mut in_a_elt: Arc<SCode::Element>, mut in_a_pack: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_elt.clone(), in_a_pack.clone())) {
         (txt, Deref @ SCode::Element::CLASS { restriction: SCode::Restriction::R_METARECORD { moved: true, name: i_r_name, index: i_r_index, .. }, classDef: Deref @ SCode::ClassDef::PARTS { elementLst: i_p_elementLst, .. }, name: i_c_name, .. }, a_pack) => {
@@ -568,7 +568,7 @@ fn fun_60(mut in_txt: Tpl::Text, mut in_a_cl: Arc<SCode::Element>, mut in_a_buf1
     Ok((out_txt, out_a_buf1, out_a_buf2))
 }
 
-pub fn classExternalHeaderJulia(mut txt: Tpl::Text, mut a_buf1: Tpl::Text, mut a_buf2: Tpl::Text, mut a_cl: Arc<SCode::Element>, mut a_pack: ArcStr) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn classExternalHeaderJulia(mut txt: Tpl::Text, mut a_buf1: Tpl::Text, mut a_buf2: Tpl::Text, mut a_cl: Arc<SCode::Element>, mut a_pack: ArcStr) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_buf1: Tpl::Text;
     let mut out_a_buf2: Tpl::Text;
@@ -613,7 +613,7 @@ fn fun_63(mut in_txt: Tpl::Text, mut in_a_cl: Arc<SCode::Element>, mut in_a_buf1
     Ok((out_txt, out_a_buf1, out_a_buf2))
 }
 
-pub fn classExternalHeaderJuliaWork(mut txt: Tpl::Text, mut a_buf1: Tpl::Text, mut a_buf2: Tpl::Text, mut a_cl: Arc<SCode::Element>, mut a_pack: ArcStr) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn classExternalHeaderJuliaWork(mut txt: Tpl::Text, mut a_buf1: Tpl::Text, mut a_buf2: Tpl::Text, mut a_cl: Arc<SCode::Element>, mut a_pack: ArcStr) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_buf1: Tpl::Text;
     let mut out_a_buf2: Tpl::Text;
@@ -891,7 +891,7 @@ fn fun_69(mut in_txt: Tpl::Text, mut in_a_elt: Arc<SCode::Element>, mut in_a_buf
     Ok((out_txt, out_a_buf1, out_a_buf2))
 }
 
-pub fn elementExternalHeaderJulia(mut txt: Tpl::Text, mut a_buf1: Tpl::Text, mut a_buf2: Tpl::Text, mut a_elt: Arc<SCode::Element>, mut a_pack: ArcStr) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn elementExternalHeaderJulia(mut txt: Tpl::Text, mut a_buf1: Tpl::Text, mut a_buf2: Tpl::Text, mut a_elt: Arc<SCode::Element>, mut a_pack: ArcStr) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_buf1: Tpl::Text;
     let mut out_a_buf2: Tpl::Text;

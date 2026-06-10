@@ -84,7 +84,7 @@ pub mod Stages {
 
     pub type STAGES = Stages;
 
-    pub fn convert(mut stages: Arc<Stages>) -> OldBackendDAE::EvaluationStages {
+    pub(crate) fn convert(mut stages: Arc<Stages>) -> OldBackendDAE::EvaluationStages {
         let mut oldEvalStages: OldBackendDAE::EvaluationStages;
         oldEvalStages = OldBackendDAE::EvaluationStages { dynamicEval: stages.dynamicEval.clone(), algebraicEval: stages.algebraicEval.clone(), zerocrossEval: stages.zerocrossEval.clone(), discreteEval: stages.discreteEval.clone() };
         oldEvalStages
@@ -94,7 +94,7 @@ pub mod Stages {
 
 pub static DEFAULT_STAGES: std::sync::LazyLock<Arc<Stages::Stages>> = std::sync::LazyLock::new(|| { Arc::new(Stages::Stages { dynamicEval: true, algebraicEval: true, zerocrossEval: false, discreteEval: true }) });
 
-pub fn removeDummies(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<BackendDAE::NBackendDAE>> {
+pub(crate) fn removeDummies(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<BackendDAE::NBackendDAE>> {
     let mut bdae: Arc<BackendDAE::NBackendDAE> = bdae;
     bdae = (::match_deref::match_deref! { match &(bdae.clone()) {
         Deref @ BackendDAE::MAIN { .. } => {
@@ -140,7 +140,7 @@ pub fn removeDummies(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<Backe
     Ok(bdae)
 }
 
-pub fn removeDummyComponents(mut part: Arc<Partition::Partition>) -> Result<Arc<Partition::Partition>> {
+pub(crate) fn removeDummyComponents(mut part: Arc<Partition::Partition>) -> Result<Arc<Partition::Partition>> {
     let mut part: Arc<Partition::Partition> = part;
     assign_field!(part.strongComponents = Util::applyOption(part.strongComponents.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(_) -> Result<bool> + 'static> = (std::sync::Arc::new(fnptr!(StrongComponent::isDummy, Arc<StrongComponent::NBStrongComponent>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<StrongComponent::NBStrongComponent>) -> Result<bool> + 'static>); move |__pe_a0| Array::filter(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>))?);
     Ok(part)

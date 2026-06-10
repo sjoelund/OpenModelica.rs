@@ -53,7 +53,7 @@ pub type Priority = i32;
 pub type Data = Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>;
 
 /* Replaceable types */
-pub fn compareElement(mut el1: Element, mut el2: Element) -> bool {
+pub(crate) fn compareElement(mut el1: Element, mut el2: Element) -> bool {
     let mut b: bool;
     let mut p1: Priority;
     let mut p2: Priority;
@@ -73,19 +73,19 @@ pub fn empty() -> Arc<metamodelica::List<Arc<Tree>>> { __empty_TLS.with(|__t| __
 /*
 function isEmpty = listEmpty;
 */
-pub fn isEmpty(mut ts: T) -> bool {
+pub(crate) fn isEmpty(mut ts: T) -> bool {
     let mut isEmpty: bool;
     isEmpty = ts.clone().is_empty();
     isEmpty
 }
 
-pub fn insert(mut elt: Element, mut ts: T) -> Result<T> {
+pub(crate) fn insert(mut elt: Element, mut ts: T) -> Result<T> {
     let mut ots: T;
     ots = ins(Arc::new(Tree { elt: elt.clone(), rank: 0, trees: metamodelica::nil() }), ts.clone())?;
     Ok(ots)
 }
 
-pub fn meld(mut its1: T, mut its2: T) -> Result<T> {
+pub(crate) fn meld(mut its1: T, mut its2: T) -> Result<T> {
     let mut ts: T;
     ts = (::match_deref::match_deref! { match &((its1.clone(), its2.clone())) {
         (ts1, Deref @ metamodelica::List::Nil) => {
@@ -102,7 +102,7 @@ pub fn meld(mut its1: T, mut its2: T) -> Result<T> {
     Ok(ts)
 }
 
-pub fn meld2(mut b1: bool, mut b2: bool, mut t1: Arc<Tree>, mut inTs1: T, mut t2: Arc<Tree>, mut inTs2: T) -> Result<T> {
+pub(crate) fn meld2(mut b1: bool, mut b2: bool, mut t1: Arc<Tree>, mut inTs1: T, mut t2: Arc<Tree>, mut inTs2: T) -> Result<T> {
     let mut ts: T = metamodelica::nil();
     ts = (::match_deref::match_deref! { match &((b1.clone(), b2.clone(), inTs1.clone(), inTs2.clone())) {
         (true, _, ts1, ts2) => {
@@ -121,7 +121,7 @@ pub fn meld2(mut b1: bool, mut b2: bool, mut t1: Arc<Tree>, mut inTs1: T, mut t2
     Ok(ts)
 }
 
-pub fn findMin(mut inTs: T) -> Result<Element> {
+pub(crate) fn findMin(mut inTs: T) -> Result<Element> {
     let mut elt: Element;
     elt = (::match_deref::match_deref! { match &(inTs.clone()) {
         Deref @ metamodelica::List::Cons { head: t, tail: Deref @ metamodelica::List::Nil } => {
@@ -139,7 +139,7 @@ pub fn findMin(mut inTs: T) -> Result<Element> {
     Ok(elt)
 }
 
-pub fn deleteMin(mut ts: T) -> Result<T> {
+pub(crate) fn deleteMin(mut ts: T) -> Result<T> {
     let mut ots: T;
     let mut ts1: T;
     let mut ts2: T;
@@ -153,7 +153,7 @@ pub fn deleteMin(mut ts: T) -> Result<T> {
     Ok(ots)
 }
 
-pub fn deleteAndReturnMin(mut ts: T) -> Result<(T, Element)> {
+pub(crate) fn deleteAndReturnMin(mut ts: T) -> Result<(T, Element)> {
     let mut ots: T;
     let mut elt: Element;
     let mut ts1: T;
@@ -169,13 +169,13 @@ pub fn deleteAndReturnMin(mut ts: T) -> Result<(T, Element)> {
     Ok((ots, elt))
 }
 
-pub fn elements(mut ts: T) -> Result<Arc<metamodelica::List<(i32, Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>)>>> {
+pub(crate) fn elements(mut ts: T) -> Result<Arc<metamodelica::List<(i32, Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>)>>> {
     let mut elts: Arc<metamodelica::List<(i32, Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>)>>;
     elts = elements2(ts.clone(), metamodelica::nil())?;
     Ok(elts)
 }
 
-pub fn elements2(mut its: T, mut acc: Arc<metamodelica::List<(i32, Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>)>>) -> Result<Arc<metamodelica::List<(i32, Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>)>>> {
+pub(crate) fn elements2(mut its: T, mut acc: Arc<metamodelica::List<(i32, Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>)>>) -> Result<Arc<metamodelica::List<(i32, Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>)>>> {
     '__tco: loop {
         ::match_deref::match_deref! { match &(its.clone()) {
         Deref @ metamodelica::List::Nil => {

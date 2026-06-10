@@ -173,7 +173,7 @@ fn lookupTypeQual(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPath
     Ok((outCache, outType, outEnv))
 }
 
-pub fn lookupTypeIdent(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut ident: ArcStr, mut msg: Option<SourceInfo>) -> Result<(FCore::Cache, Arc<DAE::Type>, FCore::Graph)> {
+pub(crate) fn lookupTypeIdent(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut ident: ArcStr, mut msg: Option<SourceInfo>) -> Result<(FCore::Cache, Arc<DAE::Type>, FCore::Graph)> {
     let mut outCache: FCore::Cache;
     let mut outType: Arc<DAE::Type>;
     let mut outEnv: FCore::Graph;
@@ -1131,7 +1131,7 @@ fn lookupUnqualifiedImportedClassInFrame(mut inCache: FCore::Cache, mut inImport
     Ok((outCache, outClass, outEnv, outPrevFrames, outBoolean))
 }
 
-pub fn lookupRecordConstructorClass(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPath: Arc<Absyn::Path>) -> Result<(FCore::Cache, Arc<SCode::Element>, FCore::Graph)> {
+pub(crate) fn lookupRecordConstructorClass(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPath: Arc<Absyn::Path>) -> Result<(FCore::Cache, Arc<SCode::Element>, FCore::Graph)> {
     let mut outCache: FCore::Cache;
     let mut outClass: Arc<SCode::Element>;
     let mut outEnv: FCore::Graph;
@@ -1153,7 +1153,7 @@ pub fn lookupRecordConstructorClass(mut inCache: FCore::Cache, mut inEnv: FCore:
     Ok((outCache, outClass, outEnv))
 }
 
-pub fn lookupConnectorVar(mut env: FCore::Graph, mut cr: Arc<DAE::ComponentRef>, mut firstId: bool) -> Result<(Arc<DAE::Attributes>, Arc<DAE::Type>, FCore::Status, bool)> {
+pub(crate) fn lookupConnectorVar(mut env: FCore::Graph, mut cr: Arc<DAE::ComponentRef>, mut firstId: bool) -> Result<(Arc<DAE::Attributes>, Arc<DAE::Type>, FCore::Status, bool)> {
     let mut attr: Arc<DAE::Attributes> = Arc::new(<DAE::Attributes as ::std::default::Default>::default());
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     let mut status: FCore::Status = FCore::Status::CLS_FULL;
@@ -1299,7 +1299,7 @@ pub fn lookupVar(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inCompo
     Ok((outCache, outAttributes, outType, outBinding, constOfForIteratorRange, outSplicedExpData, outClassEnv, outComponentEnv, name))
 }
 
-pub fn lookupVarIdent(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut ident: ArcStr, mut ss: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<(FCore::Cache, Arc<DAE::Attributes>, Arc<DAE::Type>, Arc<DAE::Binding>, Option<DAE::Const>, InstTypes::SplicedExpData, FCore::Graph, FCore::Graph, ArcStr)> {
+pub(crate) fn lookupVarIdent(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut ident: ArcStr, mut ss: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<(FCore::Cache, Arc<DAE::Attributes>, Arc<DAE::Type>, Arc<DAE::Binding>, Option<DAE::Const>, InstTypes::SplicedExpData, FCore::Graph, FCore::Graph, ArcStr)> {
     let mut outCache: FCore::Cache;
     let mut outAttributes: Arc<DAE::Attributes>;
     let mut outType: Arc<DAE::Type>;
@@ -1376,7 +1376,7 @@ fn checkPackageVariableConstant(mut parentEnv: FCore::Graph, mut classEnv: FCore
     Ok(())
 }
 
-pub fn lookupVarInternal(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inComponentRef: Arc<DAE::ComponentRef>, mut searchStrategy: InstTypes::SearchStrategy) -> Result<(FCore::Cache, Arc<DAE::Attributes>, Arc<DAE::Type>, Arc<DAE::Binding>, Option<DAE::Const>, InstTypes::SplicedExpData, FCore::Graph, FCore::Graph, ArcStr)> {
+pub(crate) fn lookupVarInternal(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inComponentRef: Arc<DAE::ComponentRef>, mut searchStrategy: InstTypes::SearchStrategy) -> Result<(FCore::Cache, Arc<DAE::Attributes>, Arc<DAE::Type>, Arc<DAE::Binding>, Option<DAE::Const>, InstTypes::SplicedExpData, FCore::Graph, FCore::Graph, ArcStr)> {
     let mut outCache: FCore::Cache;
     let mut outAttributes: Arc<DAE::Attributes>;
     let mut outType: Arc<DAE::Type>;
@@ -1454,7 +1454,7 @@ pub fn lookupVarInternal(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut
     Ok((outCache, outAttributes, outType, outBinding, constOfForIteratorRange, splicedExpData, outClassEnv, outComponentEnv, name))
 }
 
-pub fn lookupVarInternalIdent(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut ident: ArcStr, mut ss: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut searchStrategy: InstTypes::SearchStrategy) -> Result<(FCore::Cache, Arc<DAE::Attributes>, Arc<DAE::Type>, Arc<DAE::Binding>, Option<DAE::Const>, InstTypes::SplicedExpData, FCore::Graph, FCore::Graph, ArcStr)> {
+pub(crate) fn lookupVarInternalIdent(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut ident: ArcStr, mut ss: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut searchStrategy: InstTypes::SearchStrategy) -> Result<(FCore::Cache, Arc<DAE::Attributes>, Arc<DAE::Type>, Arc<DAE::Binding>, Option<DAE::Const>, InstTypes::SplicedExpData, FCore::Graph, FCore::Graph, ArcStr)> {
     let mut outCache: FCore::Cache;
     let mut outAttributes: Arc<DAE::Attributes>;
     let mut outType: Arc<DAE::Type>;
@@ -1545,7 +1545,7 @@ fn frameIsImplAddedScope(mut f: FCore::Node) -> bool {
     b
 }
 
-pub fn lookupVarInPackages(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inComponentRef: Arc<DAE::ComponentRef>, mut inPrevFrames: Arc<metamodelica::List<metamodelica::Array<FCore::Node>>>, mut inState: Mutable::Mutable<bool>) -> Result<(FCore::Cache, FCore::Graph, Arc<DAE::Attributes>, Arc<DAE::Type>, Arc<DAE::Binding>, Option<DAE::Const>, InstTypes::SplicedExpData, FCore::Graph, ArcStr)> {
+pub(crate) fn lookupVarInPackages(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inComponentRef: Arc<DAE::ComponentRef>, mut inPrevFrames: Arc<metamodelica::List<metamodelica::Array<FCore::Node>>>, mut inState: Mutable::Mutable<bool>) -> Result<(FCore::Cache, FCore::Graph, Arc<DAE::Attributes>, Arc<DAE::Type>, Arc<DAE::Binding>, Option<DAE::Const>, InstTypes::SplicedExpData, FCore::Graph, ArcStr)> {
     let mut outCache: FCore::Cache;
     let mut outClassEnv: FCore::Graph;
     let mut outAttributes: Arc<DAE::Attributes>;
@@ -1693,7 +1693,7 @@ pub fn lookupVarInPackages(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, m
     Ok((outCache, outClassEnv, outAttributes, outType, outBinding, constOfForIteratorRange, splicedExpData, outComponentEnv, name))
 }
 
-pub fn lookupVarInPackagesIdent(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut id: ArcStr, mut ss: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut inPrevFrames: Arc<metamodelica::List<metamodelica::Array<FCore::Node>>>, mut inState: Mutable::Mutable<bool>) -> Result<(FCore::Cache, FCore::Graph, Arc<DAE::Attributes>, Arc<DAE::Type>, Arc<DAE::Binding>, Option<DAE::Const>, InstTypes::SplicedExpData, FCore::Graph, ArcStr)> {
+pub(crate) fn lookupVarInPackagesIdent(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut id: ArcStr, mut ss: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut inPrevFrames: Arc<metamodelica::List<metamodelica::Array<FCore::Node>>>, mut inState: Mutable::Mutable<bool>) -> Result<(FCore::Cache, FCore::Graph, Arc<DAE::Attributes>, Arc<DAE::Type>, Arc<DAE::Binding>, Option<DAE::Const>, InstTypes::SplicedExpData, FCore::Graph, ArcStr)> {
     let mut outCache: FCore::Cache;
     let mut outClassEnv: FCore::Graph;
     let mut outAttributes: Arc<DAE::Attributes>;
@@ -1836,7 +1836,7 @@ pub fn lookupVarInPackagesIdent(mut inCache: FCore::Cache, mut inEnv: FCore::Gra
     Ok((outCache, outClassEnv, outAttributes, outType, outBinding, constOfForIteratorRange, splicedExpData, outComponentEnv, name))
 }
 
-pub fn lookupVarLocal(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<(FCore::Cache, Arc<DAE::Attributes>, Arc<DAE::Type>, Arc<DAE::Binding>, Option<DAE::Const>, InstTypes::SplicedExpData, FCore::Graph, FCore::Graph, ArcStr)> {
+pub(crate) fn lookupVarLocal(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<(FCore::Cache, Arc<DAE::Attributes>, Arc<DAE::Type>, Arc<DAE::Binding>, Option<DAE::Const>, InstTypes::SplicedExpData, FCore::Graph, FCore::Graph, ArcStr)> {
     let mut outCache: FCore::Cache;
     let mut outAttributes: Arc<DAE::Attributes>;
     let mut outType: Arc<DAE::Type>;
@@ -1850,7 +1850,7 @@ pub fn lookupVarLocal(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut in
     Ok((outCache, outAttributes, outType, outBinding, constOfForIteratorRange, splicedExpData, outClassEnv, outComponentEnv, name))
 }
 
-pub fn lookupIdentLocal(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIdent: ArcStr) -> Result<(FCore::Cache, Arc<DAE::Var>, Arc<SCode::Element>, Arc<DAE::Mod>, FCore::Status, FCore::Graph)> {
+pub(crate) fn lookupIdentLocal(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIdent: ArcStr) -> Result<(FCore::Cache, Arc<DAE::Var>, Arc<SCode::Element>, Arc<DAE::Mod>, FCore::Status, FCore::Graph)> {
     let mut outCache: FCore::Cache;
     let mut outVar: Arc<DAE::Var>;
     let mut outElement: Arc<SCode::Element>;
@@ -1898,7 +1898,7 @@ pub fn lookupIdentLocal(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut 
     Ok((outCache, outVar, outElement, outMod, instStatus, outComponentEnv))
 }
 
-pub fn lookupClassLocal(mut inEnv: FCore::Graph, mut inIdent: ArcStr) -> Result<(Arc<SCode::Element>, FCore::Graph)> {
+pub(crate) fn lookupClassLocal(mut inEnv: FCore::Graph, mut inIdent: ArcStr) -> Result<(Arc<SCode::Element>, FCore::Graph)> {
     let mut outClass: Arc<SCode::Element>;
     let mut outEnv: FCore::Graph;
     (outClass, outEnv) = (::match_deref::match_deref! { match &((inEnv.clone(), inIdent.clone())) {
@@ -1917,7 +1917,7 @@ pub fn lookupClassLocal(mut inEnv: FCore::Graph, mut inIdent: ArcStr) -> Result<
     Ok((outClass, outEnv))
 }
 
-pub fn lookupIdent(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIdent: ArcStr) -> Result<(FCore::Cache, Arc<DAE::Var>, Arc<SCode::Element>, Arc<DAE::Mod>, FCore::Status, FCore::Graph)> {
+pub(crate) fn lookupIdent(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIdent: ArcStr) -> Result<(FCore::Cache, Arc<DAE::Var>, Arc<SCode::Element>, Arc<DAE::Mod>, FCore::Status, FCore::Graph)> {
     let mut outCache: FCore::Cache;
     let mut outVar: Arc<DAE::Var>;
     let mut outElement: Arc<SCode::Element>;
@@ -1963,7 +1963,7 @@ pub fn lookupIdent(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIde
 }
 
 // Function lookup
-pub fn lookupFunctionsInEnv(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inId: Arc<Absyn::Path>, mut inInfo: SourceInfo) -> (FCore::Cache, Arc<metamodelica::List<Arc<DAE::Type>>>) {
+pub(crate) fn lookupFunctionsInEnv(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inId: Arc<Absyn::Path>, mut inInfo: SourceInfo) -> (FCore::Cache, Arc<metamodelica::List<Arc<DAE::Type>>>) {
     let mut outCache: FCore::Cache;
     let mut outTypesTypeLst: Arc<metamodelica::List<Arc<DAE::Type>>>;
     (outCache, outTypesTypeLst) = 'mc: {
@@ -2119,7 +2119,7 @@ pub fn lookupFunctionsInEnv(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
     (outCache, outTypesTypeLst)
 }
 
-pub fn lookupFunctionsListInEnv(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIds: Arc<metamodelica::List<Arc<Absyn::Path>>>, mut info: SourceInfo, mut inAcc: Arc<metamodelica::List<Arc<DAE::Type>>>) -> Result<(FCore::Cache, Arc<metamodelica::List<Arc<DAE::Type>>>)> {
+pub(crate) fn lookupFunctionsListInEnv(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIds: Arc<metamodelica::List<Arc<Absyn::Path>>>, mut info: SourceInfo, mut inAcc: Arc<metamodelica::List<Arc<DAE::Type>>>) -> Result<(FCore::Cache, Arc<metamodelica::List<Arc<DAE::Type>>>)> {
     let mut outCache: FCore::Cache;
     let mut outTypesTypeLst: Arc<metamodelica::List<Arc<DAE::Type>>>;
     (outCache, outTypesTypeLst) = 'mc: {
@@ -2543,7 +2543,7 @@ fn lookupFunctionsInFrame(mut inCache: FCore::Cache, mut inClasses: Arc<FCore::R
     Ok((outCache, outFuncTypes))
 }
 
-pub fn selectUpdatedEnv(mut inNewEnv: FCore::Graph, mut inOldEnv: FCore::Graph) -> FCore::Graph {
+pub(crate) fn selectUpdatedEnv(mut inNewEnv: FCore::Graph, mut inOldEnv: FCore::Graph) -> FCore::Graph {
     let mut outEnv: FCore::Graph;
     outEnv = 'mc: {
         let __mc_input = inOldEnv.clone();
@@ -3670,7 +3670,7 @@ fn sliceDimensionType(mut inTypeD: Arc<DAE::Type>, mut inTypeL: Arc<DAE::Type>) 
     Ok(outType)
 }
 
-pub fn buildMetaRecordType(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut cdef: Arc<SCode::Element>) -> Result<(FCore::Cache, FCore::Graph, Arc<DAE::Type>)> {
+pub(crate) fn buildMetaRecordType(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut cdef: Arc<SCode::Element>) -> Result<(FCore::Cache, FCore::Graph, Arc<DAE::Type>)> {
     let mut outCache: FCore::Cache;
     let mut outEnv: FCore::Graph;
     let mut ftype: Arc<DAE::Type>;
@@ -3712,7 +3712,7 @@ pub fn buildMetaRecordType(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, m
     Ok((outCache, outEnv, ftype))
 }
 
-pub fn isIterator(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inCref: Arc<DAE::ComponentRef>) -> (Option<bool>, FCore::Cache) {
+pub(crate) fn isIterator(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inCref: Arc<DAE::ComponentRef>) -> (Option<bool>, FCore::Cache) {
     let mut outIsIterator: Option<bool>;
     let mut outCache: FCore::Cache;
     (outIsIterator, outCache) = 'mc: {
@@ -3764,7 +3764,7 @@ pub fn isIterator(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inCref
     (outIsIterator, outCache)
 }
 
-pub fn isFunctionCallViaComponent(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPath: Arc<Absyn::Path>) -> bool {
+pub(crate) fn isFunctionCallViaComponent(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPath: Arc<Absyn::Path>) -> bool {
     let mut yes: bool;
     yes = 'mc: {
         let __mc_input = inPath.clone();
@@ -3817,7 +3817,7 @@ fn prefixSplicedExp(mut inCref: Arc<DAE::ComponentRef>, mut inSplicedExp: InstTy
     Ok(outSplicedExp)
 }
 
-pub fn isArrayType(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPath: Arc<Absyn::Path>) -> (FCore::Cache, bool) {
+pub(crate) fn isArrayType(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPath: Arc<Absyn::Path>) -> (FCore::Cache, bool) {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outIsArray: bool = false;
     let mut el: Arc<SCode::Element>;

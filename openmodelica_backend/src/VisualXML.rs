@@ -178,7 +178,7 @@ pub use self::Visualization::{SHAPE,VECTOR,SURFACE};
 //-------------------------
 // dump visualization xml
 //-------------------------
-pub fn visualizationInfoXML(mut daeIn: Arc<BackendDAE::BackendDAE>, mut fileName: ArcStr, mut program: Absyn::Program) -> Result<Arc<BackendDAE::BackendDAE>> {
+pub(crate) fn visualizationInfoXML(mut daeIn: Arc<BackendDAE::BackendDAE>, mut fileName: ArcStr, mut program: Absyn::Program) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut daeOut: Arc<BackendDAE::BackendDAE>;
     let mut eqs: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>>;
     let mut eqs0: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>>;

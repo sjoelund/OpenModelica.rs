@@ -46,7 +46,7 @@ use arcstr::{ArcStr, literal, format};
 use crate::HpcOmBenchmarkExt;
 use openmodelica_util::System;
 
-pub fn benchSystem() -> Result<((i32, i32), (i32, i32))> {
+pub(crate) fn benchSystem() -> Result<((i32, i32), (i32, i32))> {
     let mut oTime: ((i32, i32), (i32, i32));
     let mut comCostM: i32;
     let mut comCostN: i32;
@@ -71,7 +71,7 @@ pub fn benchSystem() -> Result<((i32, i32), (i32, i32))> {
     Ok(oTime)
 }
 
-pub fn readCalcTimesFromFile(mut iFileNamePrefix: ArcStr) -> Result<Arc<metamodelica::List<(i32, i32, metamodelica::Real)>>> {
+pub(crate) fn readCalcTimesFromFile(mut iFileNamePrefix: ArcStr) -> Result<Arc<metamodelica::List<(i32, i32, metamodelica::Real)>>> {
     let mut calcTimes: Arc<metamodelica::List<(i32, i32, metamodelica::Real)>>;
     let mut fullFileName: ArcStr = arcstr::literal!("");
     let mut tmpCalcTimes: Arc<metamodelica::List<(i32, i32, metamodelica::Real)>> = metamodelica::nil();

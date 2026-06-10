@@ -72,7 +72,7 @@ pub type TaskAssignment = metamodelica::Array<i32>;
 //--------------
 // No Scheduling
 //--------------
-pub fn createEmptySchedule(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<Arc<HpcOmSimCode::Schedule>> {
+pub(crate) fn createEmptySchedule(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<Arc<HpcOmSimCode::Schedule>> {
     let mut oSchedule: Arc<HpcOmSimCode::Schedule>;
     let mut taskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
     let mut allTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
@@ -109,7 +109,7 @@ pub fn createEmptySchedule(mut iTaskGraph: metamodelica::Array<Arc<metamodelica:
 //----------------
 // List Scheduling
 //----------------
-pub fn createListSchedule(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut iNumberOfThreads: i32, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iSimVarMapping: metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>) -> Result<Arc<HpcOmSimCode::Schedule>> {
+pub(crate) fn createListSchedule(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut iNumberOfThreads: i32, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iSimVarMapping: metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>) -> Result<Arc<HpcOmSimCode::Schedule>> {
     let mut oSchedule: Arc<HpcOmSimCode::Schedule>;
     let mut taskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
     let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>;
@@ -229,7 +229,7 @@ fn createListSchedule1(mut iNodeList: Arc<metamodelica::List<Arc<HpcOmSimCode::T
 //----------------
 // Random Scheduling
 //----------------
-pub fn createRandomSchedule(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut iNumberOfThreads: i32, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iSimVarMapping: metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>) -> Result<Arc<HpcOmSimCode::Schedule>> {
+pub(crate) fn createRandomSchedule(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut iNumberOfThreads: i32, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iSimVarMapping: metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>) -> Result<Arc<HpcOmSimCode::Schedule>> {
     let mut oSchedule: Arc<HpcOmSimCode::Schedule>;
     let mut taskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
     let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>;
@@ -400,7 +400,7 @@ fn createRandomSchedule1(mut iNodeList: Arc<metamodelica::List<Arc<HpcOmSimCode:
 //------------------------
 // List Scheduling reverse
 //------------------------
-pub fn createListScheduleReverse(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut iNumberOfThreads: i32, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iSimVarMapping: metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>) -> Result<Arc<HpcOmSimCode::Schedule>> {
+pub(crate) fn createListScheduleReverse(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut iNumberOfThreads: i32, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iSimVarMapping: metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>) -> Result<Arc<HpcOmSimCode::Schedule>> {
     let mut oSchedule: Arc<HpcOmSimCode::Schedule>;
     let mut taskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
     let mut nodeList_refCount: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, i32)>>;
@@ -550,7 +550,7 @@ fn getSimEqSysIdcsForCompLst(mut compIdcs: Arc<metamodelica::List<i32>>, mut iSc
     Ok(simEqSysIdcs)
 }
 
-pub fn getSimEqSysIdcsForNodeLst(mut nodeIdcs: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>> {
+pub(crate) fn getSimEqSysIdcsForNodeLst(mut nodeIdcs: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>> {
     let mut simEqSysIdcsLst: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>;
     simEqSysIdcsLst = List::map1(nodeIdcs.clone(), (std::sync::Arc::new(getSimEqSysIdcsForCompLst) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<Arc<metamodelica::List<i32>>> + 'static>), iSccSimEqMapping.clone())?;
     Ok(simEqSysIdcsLst)
@@ -1141,7 +1141,7 @@ fn getTaskByIndex(mut iTaskIdx: i32, mut iAllCalcTasks: metamodelica::Array<(Arc
     Ok(oTask)
 }
 
-pub fn getSuccessorsByTask(mut iTask: Arc<HpcOmSimCode::Task>, mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iAllCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)>) -> Result<(Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, i32)>>, Arc<metamodelica::List<i32>>)> {
+pub(crate) fn getSuccessorsByTask(mut iTask: Arc<HpcOmSimCode::Task>, mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iAllCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)>) -> Result<(Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, i32)>>, Arc<metamodelica::List<i32>>)> {
     let mut oTasks: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, i32)>>;
     let mut oTaskIdc: Arc<metamodelica::List<i32>>;
     let mut taskIdx: i32 = 0;
@@ -1328,12 +1328,12 @@ fn dumpTask(mut iTask: Arc<HpcOmSimCode::Task>) -> Result<ArcStr> {
     Ok(oString)
 }
 
-pub fn printTask(mut iTask: Arc<HpcOmSimCode::Task>) -> Result<()> {
+pub(crate) fn printTask(mut iTask: Arc<HpcOmSimCode::Task>) -> Result<()> {
     metamodelica::print((dumpTask(iTask.clone())?).clone());
     Ok(())
 }
 
-pub fn convertScheduleStrucToInfo(mut iSchedule: Arc<HpcOmSimCode::Schedule>, mut iTaskCount: i32) -> Result<metamodelica::Array<(i32, i32, metamodelica::Real)>> {
+pub(crate) fn convertScheduleStrucToInfo(mut iSchedule: Arc<HpcOmSimCode::Schedule>, mut iTaskCount: i32) -> Result<metamodelica::Array<(i32, i32, metamodelica::Real)>> {
     let mut oScheduleInfo: metamodelica::Array<(i32, i32, metamodelica::Real)>;
     let mut tmpScheduleInfo: metamodelica::Array<(i32, i32, metamodelica::Real)> = Default::default();
     let mut threadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> = Default::default();
@@ -1475,7 +1475,7 @@ fn convertScheduleStrucToInfoLevel1(mut tasks: Arc<metamodelica::List<Arc<HpcOmS
 //-----------------
 // Balanced Level Scheduling
 //-----------------
-pub fn createBalancedLevelScheduling(mut iGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iMeta: HpcOmTaskGraph::TaskGraphMeta, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<(Arc<HpcOmSimCode::Schedule>, HpcOmTaskGraph::TaskGraphMeta)> {
+pub(crate) fn createBalancedLevelScheduling(mut iGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iMeta: HpcOmTaskGraph::TaskGraphMeta, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<(Arc<HpcOmSimCode::Schedule>, HpcOmTaskGraph::TaskGraphMeta)> {
     let mut oSchedule: Arc<HpcOmSimCode::Schedule>;
     let mut oMeta: HpcOmTaskGraph::TaskGraphMeta;
     let mut targetCost: metamodelica::Real;
@@ -1865,7 +1865,7 @@ fn deleteIntListMembers(mut lst1: Arc<metamodelica::List<i32>>, mut lst2: Arc<me
 //-----------------
 // Level Scheduling
 //-----------------
-pub fn createLevelSchedule(mut iGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iMeta: HpcOmTaskGraph::TaskGraphMeta, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<(Arc<HpcOmSimCode::Schedule>, HpcOmTaskGraph::TaskGraphMeta)> {
+pub(crate) fn createLevelSchedule(mut iGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iMeta: HpcOmTaskGraph::TaskGraphMeta, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<(Arc<HpcOmSimCode::Schedule>, HpcOmTaskGraph::TaskGraphMeta)> {
     let mut oSchedule: Arc<HpcOmSimCode::Schedule>;
     let mut oMeta: HpcOmTaskGraph::TaskGraphMeta;
     let mut levelTasks: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>;
@@ -1940,7 +1940,7 @@ fn makeCalcTaskLevel(mut iNodeIdc: Arc<metamodelica::List<i32>>, mut iNodeSccMap
     Ok(oTask)
 }
 
-pub fn makeCalcTask(mut simEqs: Arc<metamodelica::List<i32>>, mut node: i32, mut threadIdx: i32) -> Arc<HpcOmSimCode::Task> {
+pub(crate) fn makeCalcTask(mut simEqs: Arc<metamodelica::List<i32>>, mut node: i32, mut threadIdx: i32) -> Arc<HpcOmSimCode::Task> {
     let mut taskOut: Arc<HpcOmSimCode::Task>;
     taskOut = Arc::new(HpcOmSimCode::Task::CALCTASK { weighting: 0, index: node.clone(), calcTime: metamodelica::OrderedFloat(1.0_f64), timeFinished: metamodelica::OrderedFloat(1.0_f64), threadIdx: threadIdx.clone(), eqIdc: simEqs.clone() });
     taskOut
@@ -1981,7 +1981,7 @@ fn dumpLevelSchedule(mut iLevelInfo: HpcOmSimCode::TaskList, mut iLevel: i32) ->
 //-----------------------
 // Fixed level Scheduling
 //-----------------------
-pub fn createFixedLevelSchedule(mut iGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iMeta: HpcOmTaskGraph::TaskGraphMeta, mut iNumberOfThreads: i32, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<(Arc<HpcOmSimCode::Schedule>, HpcOmTaskGraph::TaskGraphMeta)> {
+pub(crate) fn createFixedLevelSchedule(mut iGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iMeta: HpcOmTaskGraph::TaskGraphMeta, mut iNumberOfThreads: i32, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<(Arc<HpcOmSimCode::Schedule>, HpcOmTaskGraph::TaskGraphMeta)> {
     let mut oSchedule: Arc<HpcOmSimCode::Schedule>;
     let mut oMeta: HpcOmTaskGraph::TaskGraphMeta;
     let mut levelTasks: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>;
@@ -2236,7 +2236,7 @@ fn getFirstReadyThread0(mut iThreadReadyTime: metamodelica::Real, mut iFirstRead
 //---------------------------
 // Task Dependency Scheduling
 //---------------------------
-pub fn createTaskDepSchedule(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<Arc<HpcOmSimCode::Schedule>> {
+pub(crate) fn createTaskDepSchedule(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<Arc<HpcOmSimCode::Schedule>> {
     let mut oSchedule: Arc<HpcOmSimCode::Schedule>;
     let mut tmpSchedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
     let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
@@ -2316,7 +2316,7 @@ fn filterNodeLevelMapping(mut iElem: (Arc<HpcOmSimCode::Task>, i32, Arc<metamode
 //-----------------
 // Metis Scheduling
 //-----------------
-pub fn createMetisSchedule(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut iNumberOfThreads: i32, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iSimVarMapping: metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>) -> Result<Arc<HpcOmSimCode::Schedule>> {
+pub(crate) fn createMetisSchedule(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut iNumberOfThreads: i32, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iSimVarMapping: metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>) -> Result<Arc<HpcOmSimCode::Schedule>> {
     let mut oSchedule: Arc<HpcOmSimCode::Schedule>;
     let mut extInfo: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut xadj: metamodelica::Array<i32> = Default::default();
@@ -2493,7 +2493,7 @@ fn arrayIntIsNotOne(mut idx: i32, mut arr: metamodelica::Array<i32>) -> Result<b
     Ok(isOne)
 }
 
-pub fn createHMetisSchedule(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut iNumberOfThreads: i32, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iSimVarMapping: metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>) -> Result<Arc<HpcOmSimCode::Schedule>> {
+pub(crate) fn createHMetisSchedule(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut iNumberOfThreads: i32, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iSimVarMapping: metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>) -> Result<Arc<HpcOmSimCode::Schedule>> {
     let mut oSchedule: Arc<HpcOmSimCode::Schedule>;
     let mut extInfo: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut xadj: metamodelica::Array<i32> = Default::default();
@@ -2708,7 +2708,7 @@ fn preparehMetis(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>
 //--------------------
 // External Scheduling //TODO: Rename to Yed Scheduling
 //--------------------
-pub fn createExtSchedule(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut iNumberOfThreads: i32, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iSimVarMapping: metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>, mut iGraphMLFile: ArcStr) -> Result<Arc<HpcOmSimCode::Schedule>> {
+pub(crate) fn createExtSchedule(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut iNumberOfThreads: i32, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iSimVarMapping: metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>, mut iGraphMLFile: ArcStr) -> Result<Arc<HpcOmSimCode::Schedule>> {
     let mut oSchedule: Arc<HpcOmSimCode::Schedule>;
     let mut extInfo: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut extInfoArr: metamodelica::Array<i32> = Default::default();
@@ -2890,7 +2890,7 @@ fn createExtSchedule1(mut iNodeList: Arc<metamodelica::List<Arc<HpcOmSimCode::Ta
 //---------------------------------
 // Task Duplication-based Scheduler
 //---------------------------------
-pub fn TDS_schedule(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut numProc: i32, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iSimVarMapping: metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>, mut iSimCode: SimCode::SimCode) -> Result<(Arc<HpcOmSimCode::Schedule>, SimCode::SimCode, metamodelica::Array<Arc<metamodelica::List<i32>>>, HpcOmTaskGraph::TaskGraphMeta, metamodelica::Array<Arc<metamodelica::List<i32>>>)> {
+pub(crate) fn TDS_schedule(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut numProc: i32, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iSimVarMapping: metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>, mut iSimCode: SimCode::SimCode) -> Result<(Arc<HpcOmSimCode::Schedule>, SimCode::SimCode, metamodelica::Array<Arc<metamodelica::List<i32>>>, HpcOmTaskGraph::TaskGraphMeta, metamodelica::Array<Arc<metamodelica::List<i32>>>)> {
     let mut oSchedule: Arc<HpcOmSimCode::Schedule>;
     let mut oSimCode: SimCode::SimCode;
     let mut oTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>;
@@ -4560,7 +4560,7 @@ fn computeFavouritePred1(mut nodeIdx: i32, mut graphT: metamodelica::Array<Arc<m
 //---------------------------------
 // Partition Scheduler
 //---------------------------------
-pub fn createPartSchedule(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut numProc: i32, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iSimVarMapping: metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>) -> Result<Arc<HpcOmSimCode::Schedule>> {
+pub(crate) fn createPartSchedule(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut numProc: i32, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iSimVarMapping: metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>) -> Result<Arc<HpcOmSimCode::Schedule>> {
     let mut oSchedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
     oSchedule = 'mc: {
         let __mc_input = iTaskGraphMeta.clone();
@@ -4708,7 +4708,7 @@ fn reassignPartitions(mut tplIn: (i32, (Arc<metamodelica::List<i32>>, i32))) -> 
 //---------------------------------
 // SingleThread Schedule
 //---------------------------------
-pub fn createSingleThreadSchedule(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut numProc: i32) -> Result<Arc<HpcOmSimCode::Schedule>> {
+pub(crate) fn createSingleThreadSchedule(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut numProc: i32) -> Result<Arc<HpcOmSimCode::Schedule>> {
     let mut oSchedule: Arc<HpcOmSimCode::Schedule>;
     let mut nTasks: i32;
     let mut size: i32;
@@ -4737,7 +4737,7 @@ pub fn createSingleThreadSchedule(mut iTaskGraph: metamodelica::Array<Arc<metamo
 //---------------------------------
 // Modified Critical Path Scheduler
 //---------------------------------
-pub fn createMCPschedule(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut numProc: i32, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iSimVarMapping: metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>) -> Result<Arc<HpcOmSimCode::Schedule>> {
+pub(crate) fn createMCPschedule(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut numProc: i32, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iSimVarMapping: metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>) -> Result<Arc<HpcOmSimCode::Schedule>> {
     let mut oSchedule: Arc<HpcOmSimCode::Schedule>;
     let mut size: i32;
     let mut numSfLocks: i32;
@@ -5119,7 +5119,7 @@ fn listIndecesForValues(mut idx: i32, mut lstIn: Arc<metamodelica::List<i32>>, m
 //---------------------------
 // quicksort with order
 //---------------------------
-pub fn quicksortWithOrder(mut lstIn: Arc<metamodelica::List<metamodelica::Real>>) -> Result<(Arc<metamodelica::List<metamodelica::Real>>, Arc<metamodelica::List<i32>>)> {
+pub(crate) fn quicksortWithOrder(mut lstIn: Arc<metamodelica::List<metamodelica::Real>>) -> Result<(Arc<metamodelica::List<metamodelica::Real>>, Arc<metamodelica::List<i32>>)> {
     let mut lstOut: Arc<metamodelica::List<metamodelica::Real>>;
     let mut orderOut: Arc<metamodelica::List<i32>>;
     (lstOut, orderOut) = 'mc: {
@@ -5551,7 +5551,7 @@ fn realSubr(mut r1: metamodelica::Real, mut r2: metamodelica::Real) -> metamodel
 //-----
 // Util
 //-----
-pub fn printSchedule(mut iSchedule: Arc<HpcOmSimCode::Schedule>) -> Result<()> {
+pub(crate) fn printSchedule(mut iSchedule: Arc<HpcOmSimCode::Schedule>) -> Result<()> {
     metamodelica::print((dumpSchedule(iSchedule.clone())?).clone());
     Ok(())
 }
@@ -5600,7 +5600,7 @@ fn dumpSchedule(mut iSchedule: Arc<HpcOmSimCode::Schedule>) -> Result<ArcStr> {
     Ok(r#str)
 }
 
-pub fn analyseScheduledTaskGraph(mut scheduleIn: Arc<HpcOmSimCode::Schedule>, mut numProcIn: i32, mut taskGraphIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut taskGraphMetaIn: HpcOmTaskGraph::TaskGraphMeta, mut inSystemName: ArcStr) -> ArcStr {
+pub(crate) fn analyseScheduledTaskGraph(mut scheduleIn: Arc<HpcOmSimCode::Schedule>, mut numProcIn: i32, mut taskGraphIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut taskGraphMetaIn: HpcOmTaskGraph::TaskGraphMeta, mut inSystemName: ArcStr) -> ArcStr {
     let mut criticalPathInfoOut: ArcStr;
     criticalPathInfoOut = ('mc: {
         let __mc_input = scheduleIn.clone();
@@ -5855,7 +5855,7 @@ fn getLevelTaskCosts(mut levelTask: Arc<HpcOmSimCode::Task>, mut iMeta: HpcOmTas
     Ok(costsOut)
 }
 
-pub fn predictExecutionTime(mut scheduleIn: Arc<HpcOmSimCode::Schedule>, mut cpCostsOption: Option<metamodelica::Real>, mut numProc: i32, mut taskGraphIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut taskGraphMetaIn: HpcOmTaskGraph::TaskGraphMeta) -> Result<(metamodelica::Real, metamodelica::Real, metamodelica::Real, metamodelica::Real)> {
+pub(crate) fn predictExecutionTime(mut scheduleIn: Arc<HpcOmSimCode::Schedule>, mut cpCostsOption: Option<metamodelica::Real>, mut numProc: i32, mut taskGraphIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut taskGraphMetaIn: HpcOmTaskGraph::TaskGraphMeta) -> Result<(metamodelica::Real, metamodelica::Real, metamodelica::Real, metamodelica::Real)> {
     let mut serialTimeOut: metamodelica::Real;
     let mut parallelTimeOut: metamodelica::Real;
     let mut speedUpOut: metamodelica::Real;
@@ -5911,7 +5911,7 @@ fn printPredictedExeTimeInfo(mut serTime: metamodelica::Real, mut parTime: metam
     Ok(())
 }
 
-pub fn getSerialExecutionTime(mut taskGraphMetaIn: HpcOmTaskGraph::TaskGraphMeta) -> Result<metamodelica::Real> {
+pub(crate) fn getSerialExecutionTime(mut taskGraphMetaIn: HpcOmTaskGraph::TaskGraphMeta) -> Result<metamodelica::Real> {
     let mut serialTimeOut: metamodelica::Real;
     let mut odeComps: Arc<metamodelica::List<i32>>;
     let mut exeCostsReal: Arc<metamodelica::List<metamodelica::Real>>;
@@ -6744,7 +6744,7 @@ fn intListListString(mut lstIn: Arc<metamodelica::List<Arc<metamodelica::List<i3
     Ok(s)
 }
 
-pub fn expandSchedule(mut iNumProc: i32, mut iNumUsedProc: i32, mut iSchedule: Arc<HpcOmSimCode::Schedule>) -> Result<Arc<HpcOmSimCode::Schedule>> {
+pub(crate) fn expandSchedule(mut iNumProc: i32, mut iNumUsedProc: i32, mut iSchedule: Arc<HpcOmSimCode::Schedule>) -> Result<Arc<HpcOmSimCode::Schedule>> {
     let mut oSchedule: Arc<HpcOmSimCode::Schedule>;
     let mut threadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> = Default::default();
     let mut outgoingDepTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();

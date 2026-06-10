@@ -152,12 +152,12 @@ pub fn prefixCref(mut node: Arc<InstNode::InstNode>, mut ty: Arc<Type::NFType>, 
     cref
 }
 
-pub fn prefixScope(mut node: Arc<InstNode::InstNode>, mut ty: Arc<Type::NFType>, mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>, mut restCref: Arc<NFComponentRef>) -> Arc<NFComponentRef> {
+pub(crate) fn prefixScope(mut node: Arc<InstNode::InstNode>, mut ty: Arc<Type::NFType>, mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>, mut restCref: Arc<NFComponentRef>) -> Arc<NFComponentRef> {
     let mut cref: Arc<NFComponentRef> = Arc::new(NFComponentRef::CREF { node: node.clone(), subscripts: subs.clone(), ty: ty.clone(), origin: Origin::SCOPE.clone(), restCref: restCref.clone() });
     cref
 }
 
-pub fn fromAbsyn(mut node: Arc<InstNode::InstNode>, mut subs: Arc<metamodelica::List<Arc<Absyn::Subscript>>>, mut restCref: Arc<NFComponentRef>) -> Arc<NFComponentRef> {
+pub(crate) fn fromAbsyn(mut node: Arc<InstNode::InstNode>, mut subs: Arc<metamodelica::List<Arc<Absyn::Subscript>>>, mut restCref: Arc<NFComponentRef>) -> Arc<NFComponentRef> {
     let mut cref: Arc<NFComponentRef>;
     let mut sl: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>;
     sl = ({
@@ -172,7 +172,7 @@ pub fn fromAbsyn(mut node: Arc<InstNode::InstNode>, mut subs: Arc<metamodelica::
     cref
 }
 
-pub fn fromAbsynCref(mut acref: Arc<Absyn::ComponentRef>, mut restCref: Arc<NFComponentRef>) -> Result<Arc<NFComponentRef>> {
+pub(crate) fn fromAbsynCref(mut acref: Arc<Absyn::ComponentRef>, mut restCref: Arc<NFComponentRef>) -> Result<Arc<NFComponentRef>> {
     '__tco: loop {
         ::match_deref::match_deref! { match &(acref.clone()) {
         Deref @ Absyn::ComponentRef::CREF_IDENT { .. } => return Ok(fromAbsyn(Arc::new(InstNode::InstNode::NAME_NODE { name: (var_field!((*acref).name, Absyn::ComponentRef::CREF_IDENT).clone()).clone() }), var_field!((*acref).subscripts, Absyn::ComponentRef::CREF_IDENT).clone(), restCref.clone())),
@@ -185,7 +185,7 @@ pub fn fromAbsynCref(mut acref: Arc<Absyn::ComponentRef>, mut restCref: Arc<NFCo
     }
 }
 
-pub fn fromBuiltin(mut node: Arc<InstNode::InstNode>, mut ty: Arc<Type::NFType>) -> Arc<NFComponentRef> {
+pub(crate) fn fromBuiltin(mut node: Arc<InstNode::InstNode>, mut ty: Arc<Type::NFType>) -> Arc<NFComponentRef> {
     let mut cref: Arc<NFComponentRef> = Arc::new(NFComponentRef::CREF { node: node.clone(), subscripts: metamodelica::nil(), ty: ty.clone(), origin: Origin::SCOPE.clone(), restCref: crate::NFComponentRef::interned_EMPTY() });
     cref
 }
@@ -215,7 +215,7 @@ pub fn isEmpty(mut cref: Arc<NFComponentRef>) -> bool {
     isEmpty
 }
 
-pub fn isSimple(mut cref: Arc<NFComponentRef>) -> bool {
+pub(crate) fn isSimple(mut cref: Arc<NFComponentRef>) -> bool {
     let mut isSimple: bool;
     isSimple = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { restCref: Deref @ EMPTY { .. }, .. } => true,
@@ -225,7 +225,7 @@ pub fn isSimple(mut cref: Arc<NFComponentRef>) -> bool {
     isSimple
 }
 
-pub fn isQualified(mut cref: Arc<NFComponentRef>) -> bool {
+pub(crate) fn isQualified(mut cref: Arc<NFComponentRef>) -> bool {
     let mut qualified: bool;
     qualified = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { restCref: Deref @ CREF { .. }, .. } => true,
@@ -257,7 +257,7 @@ pub fn isTopLevel(mut cref: Arc<NFComponentRef>) -> bool {
     b
 }
 
-pub fn isCref(mut cref: Arc<NFComponentRef>) -> bool {
+pub(crate) fn isCref(mut cref: Arc<NFComponentRef>) -> bool {
     let mut isCref: bool;
     isCref = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { .. } => true,
@@ -267,7 +267,7 @@ pub fn isCref(mut cref: Arc<NFComponentRef>) -> bool {
     isCref
 }
 
-pub fn isIterator(mut cref: Arc<NFComponentRef>) -> bool {
+pub(crate) fn isIterator(mut cref: Arc<NFComponentRef>) -> bool {
     let mut isIterator: bool;
     isIterator = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { origin: Origin::ITERATOR { .. }, .. } => true,
@@ -277,7 +277,7 @@ pub fn isIterator(mut cref: Arc<NFComponentRef>) -> bool {
     isIterator
 }
 
-pub fn isInput(mut cref: Arc<NFComponentRef>) -> bool {
+pub(crate) fn isInput(mut cref: Arc<NFComponentRef>) -> bool {
     let mut res: bool;
     res = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { .. } => InstNode::isInput(var_field!((*cref).node, NFComponentRef::CREF).clone()),
@@ -287,7 +287,7 @@ pub fn isInput(mut cref: Arc<NFComponentRef>) -> bool {
     res
 }
 
-pub fn isOutput(mut cref: Arc<NFComponentRef>) -> bool {
+pub(crate) fn isOutput(mut cref: Arc<NFComponentRef>) -> bool {
     let mut res: bool;
     res = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { .. } => InstNode::isOutput(var_field!((*cref).node, NFComponentRef::CREF).clone()),
@@ -315,7 +315,7 @@ pub fn isEqualRecordChild(mut child: Arc<NFComponentRef>, mut recd: Arc<NFCompon
     Ok(b)
 }
 
-pub fn isRecordChild(mut child: Arc<NFComponentRef>, mut recd: Arc<NFComponentRef>) -> Result<bool> {
+pub(crate) fn isRecordChild(mut child: Arc<NFComponentRef>, mut recd: Arc<NFComponentRef>) -> Result<bool> {
     let mut b: bool;
     b = (::match_deref::match_deref! { match &(recd.clone()) {
         Deref @ CREF { .. } => isEqual(child.clone(), recd.clone())? || isRecordChild(child.clone(), var_field!((*recd).restCref, NFComponentRef::CREF).clone())?,
@@ -335,7 +335,7 @@ pub fn node(mut cref: Arc<NFComponentRef>) -> Result<Arc<InstNode::InstNode>> {
     Ok(node)
 }
 
-pub fn nodes(mut cref: Arc<NFComponentRef>, mut accum: Arc<metamodelica::List<Arc<InstNode::InstNode>>>) -> Result<Arc<metamodelica::List<Arc<InstNode::InstNode>>>> {
+pub(crate) fn nodes(mut cref: Arc<NFComponentRef>, mut accum: Arc<metamodelica::List<Arc<InstNode::InstNode>>>) -> Result<Arc<metamodelica::List<Arc<InstNode::InstNode>>>> {
     '__tco: loop {
         ::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { .. } => { (cref, accum) = (var_field!((*cref).restCref, NFComponentRef::CREF).clone(), metamodelica::cons(var_field!((*cref).node, NFComponentRef::CREF).clone(), accum.clone())); continue '__tco; },
@@ -345,7 +345,7 @@ pub fn nodes(mut cref: Arc<NFComponentRef>, mut accum: Arc<metamodelica::List<Ar
     }
 }
 
-pub fn nodesIncludingSplitSubs(mut cref: Arc<NFComponentRef>, mut accum: Arc<metamodelica::List<Arc<InstNode::InstNode>>>) -> Result<Arc<metamodelica::List<Arc<InstNode::InstNode>>>> {
+pub(crate) fn nodesIncludingSplitSubs(mut cref: Arc<NFComponentRef>, mut accum: Arc<metamodelica::List<Arc<InstNode::InstNode>>>) -> Result<Arc<metamodelica::List<Arc<InstNode::InstNode>>>> {
     let mut nodes: Arc<metamodelica::List<Arc<InstNode::InstNode>>> = accum.clone();
     let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     nodes = (::match_deref::match_deref! { match &(cref.clone()) {
@@ -369,7 +369,7 @@ pub fn nodesIncludingSplitSubs(mut cref: Arc<NFComponentRef>, mut accum: Arc<met
     Ok(nodes)
 }
 
-pub fn containsNode(mut cref: Arc<NFComponentRef>, mut node: Arc<InstNode::InstNode>) -> bool {
+pub(crate) fn containsNode(mut cref: Arc<NFComponentRef>, mut node: Arc<InstNode::InstNode>) -> bool {
     let mut res: bool;
     res = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { .. } => InstNode::refEqual(var_field!((*cref).node, NFComponentRef::CREF).clone(), node.clone()) || containsNode(var_field!((*cref).restCref, NFComponentRef::CREF).clone(), node.clone()),
@@ -389,7 +389,7 @@ pub fn nodeType(mut cref: Arc<NFComponentRef>) -> Result<Arc<Type::NFType>> {
     Ok(ty)
 }
 
-pub fn setNodeType(mut ty: Arc<Type::NFType>, mut cref: Arc<NFComponentRef>) -> Arc<NFComponentRef> {
+pub(crate) fn setNodeType(mut ty: Arc<Type::NFType>, mut cref: Arc<NFComponentRef>) -> Arc<NFComponentRef> {
     let mut cref: Arc<NFComponentRef> = cref;
     let () = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { .. } => {
@@ -402,7 +402,7 @@ pub fn setNodeType(mut ty: Arc<Type::NFType>, mut cref: Arc<NFComponentRef>) -> 
     cref
 }
 
-pub fn updateNodeType(mut cref: Arc<NFComponentRef>) -> Result<Arc<NFComponentRef>> {
+pub(crate) fn updateNodeType(mut cref: Arc<NFComponentRef>) -> Result<Arc<NFComponentRef>> {
     let mut cref: Arc<NFComponentRef> = cref;
     let () = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { .. } if (InstNode::isComponent(var_field!((*cref).node, NFComponentRef::CREF).clone())?) => {
@@ -426,7 +426,7 @@ pub fn scalarType(mut cref: Arc<NFComponentRef>) -> Result<Arc<Type::NFType>> {
     Ok(ty)
 }
 
-pub fn applyToType(mut cref: Arc<NFComponentRef>, mut func: Arc<dyn ::std::ops::Fn(Arc<Type::NFType>) -> Result<Arc<Type::NFType>> + 'static>) -> Result<Arc<NFComponentRef>> {
+pub(crate) fn applyToType(mut cref: Arc<NFComponentRef>, mut func: Arc<dyn ::std::ops::Fn(Arc<Type::NFType>) -> Result<Arc<Type::NFType>> + 'static>) -> Result<Arc<NFComponentRef>> {
     pub type typeFunc = std::sync::Arc<dyn ::std::ops::Fn(Arc<Type::NFType>) -> Result<Arc<Type::NFType>> + 'static>;
 
     let mut cref: Arc<NFComponentRef> = cref;
@@ -455,7 +455,7 @@ pub fn firstName(mut cref: Arc<NFComponentRef>, mut baseModelica: bool) -> Resul
     Ok(name)
 }
 
-pub fn first(mut cref: Arc<NFComponentRef>) -> Arc<NFComponentRef> {
+pub(crate) fn first(mut cref: Arc<NFComponentRef>) -> Arc<NFComponentRef> {
     let mut cref: Arc<NFComponentRef> = cref;
     let () = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { .. } => {
@@ -478,7 +478,7 @@ pub fn rest(mut cref: Arc<NFComponentRef>) -> Result<Arc<NFComponentRef>> {
     Ok(restCref)
 }
 
-pub fn last(mut cref: Arc<NFComponentRef>) -> Arc<NFComponentRef> {
+pub(crate) fn last(mut cref: Arc<NFComponentRef>) -> Arc<NFComponentRef> {
     '__tco: loop {
         ::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { restCref: Deref @ CREF { .. }, .. } => { cref = var_field!((*cref).restCref, NFComponentRef::CREF).clone(); continue '__tco; },
@@ -488,7 +488,7 @@ pub fn last(mut cref: Arc<NFComponentRef>) -> Arc<NFComponentRef> {
     }
 }
 
-pub fn firstNonScope(mut cref: Arc<NFComponentRef>) -> Result<Arc<NFComponentRef>> {
+pub(crate) fn firstNonScope(mut cref: Arc<NFComponentRef>) -> Result<Arc<NFComponentRef>> {
     '__tco: loop {
         let mut rest_cr: Arc<NFComponentRef> = rest(cref.clone())?;
         ::match_deref::match_deref! { match &(rest_cr.clone()) {
@@ -513,7 +513,7 @@ pub fn append(mut cref: Arc<NFComponentRef>, mut restCref: Arc<NFComponentRef>) 
     Ok(cref)
 }
 
-pub fn appendScope(mut scope: Arc<InstNode::InstNode>, mut cref: Arc<NFComponentRef>, mut includeRoot: bool) -> Result<Arc<NFComponentRef>> {
+pub(crate) fn appendScope(mut scope: Arc<InstNode::InstNode>, mut cref: Arc<NFComponentRef>, mut includeRoot: bool) -> Result<Arc<NFComponentRef>> {
     let mut cref: Arc<NFComponentRef> = cref;
     let mut prefix: Arc<NFComponentRef>;
     prefix = fromNodeList(InstNode::scopeList(scope.clone(), includeRoot.clone(), metamodelica::nil())?)?;
@@ -524,7 +524,7 @@ pub fn appendScope(mut scope: Arc<InstNode::InstNode>, mut cref: Arc<NFComponent
     Ok(cref)
 }
 
-pub fn prepend(mut restCref: Arc<NFComponentRef>, mut cref: Arc<NFComponentRef>) -> Result<Arc<NFComponentRef>> {
+pub(crate) fn prepend(mut restCref: Arc<NFComponentRef>, mut cref: Arc<NFComponentRef>) -> Result<Arc<NFComponentRef>> {
     let mut cref: Arc<NFComponentRef> = cref;
     cref = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { .. } => {
@@ -557,7 +557,7 @@ pub fn getSubscriptedType(mut cref: Arc<NFComponentRef>, mut includeScope: bool)
     Ok(ty)
 }
 
-pub fn getSubscriptedType2(mut restCref: Arc<NFComponentRef>, mut accumTy: Arc<Type::NFType>, mut includeScope: bool) -> Result<Arc<Type::NFType>> {
+pub(crate) fn getSubscriptedType2(mut restCref: Arc<NFComponentRef>, mut accumTy: Arc<Type::NFType>, mut includeScope: bool) -> Result<Arc<Type::NFType>> {
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     ty = (::match_deref::match_deref! { match &(restCref.clone()) {
         Deref @ CREF { .. } if (var_field!((*restCref).origin, NFComponentRef::CREF).clone() == Origin::CREF.clone() || includeScope.clone()) => {
@@ -570,7 +570,7 @@ pub fn getSubscriptedType2(mut restCref: Arc<NFComponentRef>, mut accumTy: Arc<T
     Ok(ty)
 }
 
-pub fn lookupVarAttr(mut cref: Arc<NFComponentRef>, mut attr_name: ArcStr) -> Option<Arc<Expression::NFExpression>> {
+pub(crate) fn lookupVarAttr(mut cref: Arc<NFComponentRef>, mut attr_name: ArcStr) -> Option<Arc<Expression::NFExpression>> {
     let mut attrValue: Option<Arc<Expression::NFExpression>>;
     attrValue = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { node: Deref @ InstNode::VAR_NODE { varPointer: v, .. }, .. } => {
@@ -584,7 +584,7 @@ pub fn lookupVarAttr(mut cref: Arc<NFComponentRef>, mut attr_name: ArcStr) -> Op
     attrValue
 }
 
-pub fn nodeVariability(mut cref: Arc<NFComponentRef>) -> Result<Variability> {
+pub(crate) fn nodeVariability(mut cref: Arc<NFComponentRef>) -> Result<Variability> {
     let mut var: Variability;
     var = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { node: Deref @ InstNode::COMPONENT_NODE { .. }, .. } => {
@@ -604,7 +604,7 @@ pub fn nodeVariability(mut cref: Arc<NFComponentRef>) -> Result<Variability> {
     Ok(var)
 }
 
-pub fn isResizable(mut cref: Arc<NFComponentRef>) -> Result<bool> {
+pub(crate) fn isResizable(mut cref: Arc<NFComponentRef>) -> Result<bool> {
     let mut b: bool = false;
     b = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { node: Deref @ InstNode::COMPONENT_NODE { .. }, .. } => {
@@ -628,7 +628,7 @@ pub fn isResizable(mut cref: Arc<NFComponentRef>) -> Result<bool> {
     Ok(b)
 }
 
-pub fn subscriptsVariability(mut cref: Arc<NFComponentRef>, mut var: Variability) -> Result<Variability> {
+pub(crate) fn subscriptsVariability(mut cref: Arc<NFComponentRef>, mut var: Variability) -> Result<Variability> {
     let mut var: Variability = var;
     let () = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { origin: Origin::CREF { .. }, .. } => {
@@ -644,12 +644,12 @@ pub fn subscriptsVariability(mut cref: Arc<NFComponentRef>, mut var: Variability
     Ok(var)
 }
 
-pub fn variability(mut cref: Arc<NFComponentRef>) -> Result<Variability> {
+pub(crate) fn variability(mut cref: Arc<NFComponentRef>) -> Result<Variability> {
     let mut var: Variability = Prefixes::variabilityMax(nodeVariability(cref.clone())?, subscriptsVariability(cref.clone(), Prefixes::Variability::CONSTANT.clone())?);
     Ok(var)
 }
 
-pub fn purity(mut cref: Arc<NFComponentRef>) -> Result<Purity> {
+pub(crate) fn purity(mut cref: Arc<NFComponentRef>) -> Result<Purity> {
     fn sub_purity(mut sub: Arc<Subscript::NFSubscript>, mut pur: Purity) -> Result<Purity> {
         let mut pur: Purity = pur;
         pur = Prefixes::purityMin(pur.clone(), Subscript::purity(sub.clone())?);
@@ -666,7 +666,7 @@ pub fn purity(mut cref: Arc<NFComponentRef>) -> Result<Purity> {
     Ok(pur)
 }
 
-pub fn visibility(mut cref: Arc<NFComponentRef>) -> Visibility {
+pub(crate) fn visibility(mut cref: Arc<NFComponentRef>) -> Visibility {
     '__tco: loop {
         ::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { .. } => if (InstNode::isProtected(var_field!((*cref).node, NFComponentRef::CREF).clone())) {return Visibility::PROTECTED.clone()} else {{ cref = var_field!((*cref).restCref, NFComponentRef::CREF).clone(); continue '__tco; }},
@@ -689,7 +689,7 @@ pub fn rename(mut name: ArcStr, mut cref: Arc<NFComponentRef>) -> Result<Arc<NFC
     Ok(cref)
 }
 
-pub fn addSubscript(mut subscript: Arc<Subscript::NFSubscript>, mut cref: Arc<NFComponentRef>) -> Result<Arc<NFComponentRef>> {
+pub(crate) fn addSubscript(mut subscript: Arc<Subscript::NFSubscript>, mut cref: Arc<NFComponentRef>) -> Result<Arc<NFComponentRef>> {
     let mut cref: Arc<NFComponentRef> = cref;
     let () = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { .. } => {
@@ -713,7 +713,7 @@ pub fn mergeSubscripts(mut subscripts: Arc<metamodelica::List<Arc<Subscript::NFS
     Ok(cref)
 }
 
-pub fn mergeSubscripts2(mut subscripts: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>, mut cref: Arc<NFComponentRef>, mut applyToScope: bool, mut backend: bool, mut reverse: bool) -> Result<(Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>, Arc<NFComponentRef>)> {
+pub(crate) fn mergeSubscripts2(mut subscripts: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>, mut cref: Arc<NFComponentRef>, mut applyToScope: bool, mut backend: bool, mut reverse: bool) -> Result<(Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>, Arc<NFComponentRef>)> {
     let mut subscripts: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = subscripts;
     let mut cref: Arc<NFComponentRef> = cref;
     (subscripts, cref) = (::match_deref::match_deref! { match &(cref.clone()) {
@@ -809,7 +809,7 @@ pub fn hasSubscripts(mut cref: Arc<NFComponentRef>) -> Result<bool> {
     Ok(hasSubscripts)
 }
 
-pub fn hasNonModelSubscripts(mut cref: Arc<NFComponentRef>) -> Result<bool> {
+pub(crate) fn hasNonModelSubscripts(mut cref: Arc<NFComponentRef>) -> Result<bool> {
     '__tco: loop {
         ::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { .. } if (InstNode::isModel(var_field!((*cref).node, NFComponentRef::CREF).clone())?) => { cref = var_field!((*cref).restCref, NFComponentRef::CREF).clone(); continue '__tco; },
@@ -820,7 +820,7 @@ pub fn hasNonModelSubscripts(mut cref: Arc<NFComponentRef>) -> Result<bool> {
     }
 }
 
-pub fn hasSplitSubscripts(mut cref: Arc<NFComponentRef>) -> Result<bool> {
+pub(crate) fn hasSplitSubscripts(mut cref: Arc<NFComponentRef>) -> Result<bool> {
     let mut res: bool;
     res = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { origin: Origin::CREF { .. }, .. } => List::any(var_field!((*cref).subscripts, NFComponentRef::CREF).clone(), (std::sync::Arc::new(fnptr!(Subscript::isSplitIndex, Arc<Subscript::NFSubscript>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Subscript::NFSubscript>) -> Result<bool> + 'static>))? || hasSplitSubscripts(var_field!((*cref).restCref, NFComponentRef::CREF).clone())?,
@@ -830,7 +830,7 @@ pub fn hasSplitSubscripts(mut cref: Arc<NFComponentRef>) -> Result<bool> {
     Ok(res)
 }
 
-pub fn expandSplitSubscripts(mut cref: Arc<NFComponentRef>) -> Result<Arc<NFComponentRef>> {
+pub(crate) fn expandSplitSubscripts(mut cref: Arc<NFComponentRef>) -> Result<Arc<NFComponentRef>> {
     let mut cref: Arc<NFComponentRef> = cref;
     let () = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { origin: Origin::CREF { .. }, .. } => {
@@ -846,7 +846,7 @@ pub fn expandSplitSubscripts(mut cref: Arc<NFComponentRef>) -> Result<Arc<NFComp
     Ok(cref)
 }
 
-pub fn getSubscripts(mut cref: Arc<NFComponentRef>) -> Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> {
+pub(crate) fn getSubscripts(mut cref: Arc<NFComponentRef>) -> Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> {
     let mut subscripts: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>;
     subscripts = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { .. } => var_field!((*cref).subscripts, NFComponentRef::CREF).clone(),
@@ -893,7 +893,7 @@ pub fn copySubscripts(mut origin: Arc<NFComponentRef>, mut target: Arc<NFCompone
     Ok(target)
 }
 
-pub fn subscriptsAllWithWhole(mut cref: Arc<NFComponentRef>, mut accumSubs: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>>> {
+pub(crate) fn subscriptsAllWithWhole(mut cref: Arc<NFComponentRef>, mut accumSubs: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>>> {
     '__tco: loop {
         ::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { subscripts: Deref @ metamodelica::List::Nil, .. } => {
@@ -930,7 +930,7 @@ pub fn subscriptsAll(mut cref: Arc<NFComponentRef>) -> Arc<metamodelica::List<Ar
     subscripts
 }
 
-pub fn subscriptsAllReverse(mut cref: Arc<NFComponentRef>, mut accumSubs: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>>) -> Arc<metamodelica::List<Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>> {
+pub(crate) fn subscriptsAllReverse(mut cref: Arc<NFComponentRef>, mut accumSubs: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>>) -> Arc<metamodelica::List<Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>> {
     '__tco: loop {
         ::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { .. } => { (cref, accumSubs) = (var_field!((*cref).restCref, NFComponentRef::CREF).clone(), metamodelica::cons(var_field!((*cref).subscripts, NFComponentRef::CREF).clone(), accumSubs.clone())); continue '__tco; },
@@ -945,7 +945,7 @@ pub fn subscriptsAllFlat(mut cref: Arc<NFComponentRef>) -> Result<Arc<metamodeli
     Ok(subscripts)
 }
 
-pub fn subscriptsExceptModel(mut cref: Arc<NFComponentRef>, mut accumSubs: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>>> {
+pub(crate) fn subscriptsExceptModel(mut cref: Arc<NFComponentRef>, mut accumSubs: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>>> {
     '__tco: loop {
         ::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { .. } if (InstNode::isModel(var_field!((*cref).node, NFComponentRef::CREF).clone())?) => { (cref, accumSubs) = (var_field!((*cref).restCref, NFComponentRef::CREF).clone(), metamodelica::cons(metamodelica::nil(), accumSubs.clone())); continue '__tco; },
@@ -956,7 +956,7 @@ pub fn subscriptsExceptModel(mut cref: Arc<NFComponentRef>, mut accumSubs: Arc<m
     }
 }
 
-pub fn subscriptsN(mut cref: Arc<NFComponentRef>, mut n: i32) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>>> {
+pub(crate) fn subscriptsN(mut cref: Arc<NFComponentRef>, mut n: i32) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>>> {
     let mut subscripts: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>> = metamodelica::nil();
     let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>;
     let mut rest: Arc<NFComponentRef> = cref.clone();
@@ -975,7 +975,7 @@ pub fn subscriptsN(mut cref: Arc<NFComponentRef>, mut n: i32) -> Result<Arc<meta
     Ok(subscripts)
 }
 
-pub fn transferSubscripts(mut srcCref: Arc<NFComponentRef>, mut dstCref: Arc<NFComponentRef>) -> Result<Arc<NFComponentRef>> {
+pub(crate) fn transferSubscripts(mut srcCref: Arc<NFComponentRef>, mut dstCref: Arc<NFComponentRef>) -> Result<Arc<NFComponentRef>> {
     let mut cref: Arc<NFComponentRef> = Arc::new(NFComponentRef::EMPTY);
     let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
     cref = (::match_deref::match_deref! { match &((srcCref.clone(), dstCref.clone())) {
@@ -1002,7 +1002,7 @@ pub fn transferSubscripts(mut srcCref: Arc<NFComponentRef>, mut dstCref: Arc<NFC
     Ok(cref)
 }
 
-pub fn applySubscripts(mut cref: Arc<NFComponentRef>, mut func: Arc<dyn ::std::ops::Fn(Arc<Subscript::NFSubscript>) -> Result<()> + 'static>, mut applyToScope: bool) -> Result<()> {
+pub(crate) fn applySubscripts(mut cref: Arc<NFComponentRef>, mut func: Arc<dyn ::std::ops::Fn(Arc<Subscript::NFSubscript>) -> Result<()> + 'static>, mut applyToScope: bool) -> Result<()> {
     pub type FuncT = std::sync::Arc<dyn ::std::ops::Fn(Arc<Subscript::NFSubscript>) -> Result<()> + 'static>;
 
     let () = (::match_deref::match_deref! { match &(cref.clone()) {
@@ -1020,7 +1020,7 @@ pub fn applySubscripts(mut cref: Arc<NFComponentRef>, mut func: Arc<dyn ::std::o
     Ok(())
 }
 
-pub fn foldSubscripts<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut cref: Arc<NFComponentRef>, mut func: Arc<dyn ::std::ops::Fn(Arc<Subscript::NFSubscript>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT, mut applyToScope: bool) -> Result<ArgT> {
+pub(crate) fn foldSubscripts<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut cref: Arc<NFComponentRef>, mut func: Arc<dyn ::std::ops::Fn(Arc<Subscript::NFSubscript>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT, mut applyToScope: bool) -> Result<ArgT> {
     pub type FuncT<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Subscript::NFSubscript>, ArgT) -> Result<ArgT> + 'static>;
 
     let mut arg: ArgT = arg;
@@ -1063,7 +1063,7 @@ pub fn mapSubscripts(mut cref: Arc<NFComponentRef>, mut func: Arc<dyn ::std::ops
     Ok(cref)
 }
 
-pub fn fillSubscripts(mut cref: Arc<NFComponentRef>) -> Arc<NFComponentRef> {
+pub(crate) fn fillSubscripts(mut cref: Arc<NFComponentRef>) -> Arc<NFComponentRef> {
     let mut cref: Arc<NFComponentRef> = cref;
     let () = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { .. } => {
@@ -1087,7 +1087,7 @@ pub fn fillSubscripts(mut cref: Arc<NFComponentRef>) -> Arc<NFComponentRef> {
     cref
 }
 
-pub fn replaceWholeSubscripts(mut cref: Arc<NFComponentRef>) -> Result<Arc<NFComponentRef>> {
+pub(crate) fn replaceWholeSubscripts(mut cref: Arc<NFComponentRef>) -> Result<Arc<NFComponentRef>> {
     let mut cref: Arc<NFComponentRef> = cref;
     let () = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { .. } => {
@@ -1117,7 +1117,7 @@ pub fn replaceWholeSubscripts(mut cref: Arc<NFComponentRef>) -> Result<Arc<NFCom
     Ok(cref)
 }
 
-pub fn combineSubscripts(mut cref: Arc<NFComponentRef>) -> Result<Arc<NFComponentRef>> {
+pub(crate) fn combineSubscripts(mut cref: Arc<NFComponentRef>) -> Result<Arc<NFComponentRef>> {
     let mut cref: Arc<NFComponentRef> = cref;
     let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>;
     cref = fillSubscripts(cref.clone());
@@ -1129,7 +1129,7 @@ pub fn combineSubscripts(mut cref: Arc<NFComponentRef>) -> Result<Arc<NFComponen
     Ok(cref)
 }
 
-pub fn compare(mut cref1: Arc<NFComponentRef>, mut cref2: Arc<NFComponentRef>) -> Result<i32> {
+pub(crate) fn compare(mut cref1: Arc<NFComponentRef>, mut cref2: Arc<NFComponentRef>) -> Result<i32> {
     let mut comp: i32 = 0;
     comp = (::match_deref::match_deref! { match &((cref1.clone(), cref2.clone())) {
         (Deref @ CREF { .. }, Deref @ CREF { .. }) => {
@@ -1190,17 +1190,17 @@ pub fn isEqualStrip(mut cref1: Arc<NFComponentRef>, mut cref2: Arc<NFComponentRe
     Ok(b)
 }
 
-pub fn isLess(mut cref1: Arc<NFComponentRef>, mut cref2: Arc<NFComponentRef>) -> Result<bool> {
+pub(crate) fn isLess(mut cref1: Arc<NFComponentRef>, mut cref2: Arc<NFComponentRef>) -> Result<bool> {
     let mut isLess: bool = compare(cref1.clone(), cref2.clone())? < 0;
     Ok(isLess)
 }
 
-pub fn isGreater(mut cref1: Arc<NFComponentRef>, mut cref2: Arc<NFComponentRef>) -> Result<bool> {
+pub(crate) fn isGreater(mut cref1: Arc<NFComponentRef>, mut cref2: Arc<NFComponentRef>) -> Result<bool> {
     let mut isGreater: bool = compare(cref1.clone(), cref2.clone())? > 0;
     Ok(isGreater)
 }
 
-pub fn isPrefix(mut cref1: Arc<NFComponentRef>, mut cref2: Arc<NFComponentRef>) -> Result<bool> {
+pub(crate) fn isPrefix(mut cref1: Arc<NFComponentRef>, mut cref2: Arc<NFComponentRef>) -> Result<bool> {
     let mut isPrefix: bool;
     if referenceEq(&*(cref1.clone()),&*(cref2.clone())) {
         isPrefix = true;
@@ -1214,7 +1214,7 @@ pub fn isPrefix(mut cref1: Arc<NFComponentRef>, mut cref2: Arc<NFComponentRef>) 
     Ok(isPrefix)
 }
 
-pub fn toAbsyn(mut cref: Arc<NFComponentRef>) -> Result<Arc<Absyn::ComponentRef>> {
+pub(crate) fn toAbsyn(mut cref: Arc<NFComponentRef>) -> Result<Arc<Absyn::ComponentRef>> {
     let mut acref: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
     acref = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { .. } => {
@@ -1234,7 +1234,7 @@ pub fn toAbsyn(mut cref: Arc<NFComponentRef>) -> Result<Arc<Absyn::ComponentRef>
     Ok(acref)
 }
 
-pub fn toAbsyn_impl(mut cref: Arc<NFComponentRef>, mut accumCref: Arc<Absyn::ComponentRef>) -> Result<Arc<Absyn::ComponentRef>> {
+pub(crate) fn toAbsyn_impl(mut cref: Arc<NFComponentRef>, mut accumCref: Arc<Absyn::ComponentRef>) -> Result<Arc<Absyn::ComponentRef>> {
     let mut acref: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
     acref = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ EMPTY { .. } => accumCref.clone(),
@@ -1274,7 +1274,7 @@ pub fn toDAE(mut cref: Arc<NFComponentRef>) -> Result<Arc<DAE::ComponentRef>> {
     Ok(dcref)
 }
 
-pub fn toDAE_impl(mut cref: Arc<NFComponentRef>, mut accumCref: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> {
+pub(crate) fn toDAE_impl(mut cref: Arc<NFComponentRef>, mut accumCref: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> {
     let mut dcref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     dcref = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ EMPTY { .. } => {
@@ -1306,7 +1306,7 @@ pub fn toString(mut cref: Arc<NFComponentRef>) -> Result<ArcStr> {
     Ok(r#str)
 }
 
-pub fn toString_impl(mut cref: Arc<NFComponentRef>, mut strl: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub(crate) fn toString_impl(mut cref: Arc<NFComponentRef>, mut strl: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut strl: Arc<metamodelica::List<ArcStr>> = strl;
     strl = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { .. } => {
@@ -1325,7 +1325,7 @@ pub fn toString_impl(mut cref: Arc<NFComponentRef>, mut strl: Arc<metamodelica::
     Ok(strl)
 }
 
-pub fn toFlatString(mut cref: Arc<NFComponentRef>, mut format: BaseModelica::OutputFormat) -> Result<ArcStr> {
+pub(crate) fn toFlatString(mut cref: Arc<NFComponentRef>, mut format: BaseModelica::OutputFormat) -> Result<ArcStr> {
     let mut r#str: ArcStr;
     let mut strl: Arc<metamodelica::List<ArcStr>>;
     let mut crefs: Arc<metamodelica::List<Arc<NFComponentRef>>>;
@@ -1403,7 +1403,7 @@ pub fn listToString(mut crs: Arc<metamodelica::List<Arc<NFComponentRef>>>) -> Re
     Ok(r#str)
 }
 
-pub fn toJSON(mut cref: Arc<NFComponentRef>) -> Result<Arc<JSON::JSON>> {
+pub(crate) fn toJSON(mut cref: Arc<NFComponentRef>) -> Result<Arc<JSON::JSON>> {
     let mut json: Arc<JSON::JSON> = Arc::new(JSON::FALSE);
     json = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { .. } => {
@@ -1425,7 +1425,7 @@ pub fn toJSON(mut cref: Arc<NFComponentRef>) -> Result<Arc<JSON::JSON>> {
     Ok(json)
 }
 
-pub fn toJSON_impl(mut cref: Arc<NFComponentRef>, mut accum: Arc<metamodelica::List<Arc<JSON::JSON>>>) -> Result<Arc<metamodelica::List<Arc<JSON::JSON>>>> {
+pub(crate) fn toJSON_impl(mut cref: Arc<NFComponentRef>, mut accum: Arc<metamodelica::List<Arc<JSON::JSON>>>) -> Result<Arc<metamodelica::List<Arc<JSON::JSON>>>> {
     '__tco: loop {
         let mut obj: Arc<JSON::JSON> = Arc::new(JSON::FALSE);
         ::match_deref::match_deref! { match &(cref.clone()) {
@@ -1443,7 +1443,7 @@ pub fn toJSON_impl(mut cref: Arc<NFComponentRef>, mut accum: Arc<metamodelica::L
     }
 }
 
-pub fn toJSON_context(mut node: Arc<InstNode::InstNode>, mut accum: Arc<metamodelica::List<Arc<JSON::JSON>>>) -> Result<Arc<metamodelica::List<Arc<JSON::JSON>>>> {
+pub(crate) fn toJSON_context(mut node: Arc<InstNode::InstNode>, mut accum: Arc<metamodelica::List<Arc<JSON::JSON>>>) -> Result<Arc<metamodelica::List<Arc<JSON::JSON>>>> {
     let mut accum: Arc<metamodelica::List<Arc<JSON::JSON>>> = accum;
     let mut opt_context: Option<Arc<Absyn::Path>>;
     opt_context = InstNode::rootClassContext(InstNode::instanceParent(node.clone())?);
@@ -1466,7 +1466,7 @@ pub fn hashStrip(mut cref: Arc<NFComponentRef>) -> Result<i32> {
     Ok(hash)
 }
 
-pub fn hashContinue(mut cref: Arc<NFComponentRef>, mut strip: bool, mut hash: i32) -> Result<i32> {
+pub(crate) fn hashContinue(mut cref: Arc<NFComponentRef>, mut strip: bool, mut hash: i32) -> Result<i32> {
     let mut hash: i32 = hash;
     hash = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { .. } => {
@@ -1486,7 +1486,7 @@ pub fn hashContinue(mut cref: Arc<NFComponentRef>, mut strip: bool, mut hash: i3
     Ok(hash)
 }
 
-pub fn toPath(mut cref: Arc<NFComponentRef>) -> Result<Arc<Absyn::Path>> {
+pub(crate) fn toPath(mut cref: Arc<NFComponentRef>) -> Result<Arc<Absyn::Path>> {
     let mut path: Arc<Absyn::Path>;
     path = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { .. } => toPath_impl(var_field!((*cref).restCref, NFComponentRef::CREF).clone(), Arc::new(Absyn::Path::IDENT { name: (InstNode::name(var_field!((*cref).node, NFComponentRef::CREF).clone())?).clone() }))?,
@@ -1495,7 +1495,7 @@ pub fn toPath(mut cref: Arc<NFComponentRef>) -> Result<Arc<Absyn::Path>> {
     Ok(path)
 }
 
-pub fn toPath_impl(mut cref: Arc<NFComponentRef>, mut accumPath: Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> {
+pub(crate) fn toPath_impl(mut cref: Arc<NFComponentRef>, mut accumPath: Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> {
     '__tco: loop {
         ::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { .. } => { (cref, accumPath) = (var_field!((*cref).restCref, NFComponentRef::CREF).clone(), Arc::new(Absyn::Path::QUALIFIED { name: (InstNode::name(var_field!((*cref).node, NFComponentRef::CREF).clone())?).clone(), path: accumPath.clone() })); continue '__tco; },
@@ -1505,7 +1505,7 @@ pub fn toPath_impl(mut cref: Arc<NFComponentRef>, mut accumPath: Arc<Absyn::Path
     }
 }
 
-pub fn fromNodeList(mut nodes: Arc<metamodelica::List<Arc<InstNode::InstNode>>>) -> Result<Arc<NFComponentRef>> {
+pub(crate) fn fromNodeList(mut nodes: Arc<metamodelica::List<Arc<InstNode::InstNode>>>) -> Result<Arc<NFComponentRef>> {
     let mut cref: Arc<NFComponentRef> = crate::NFComponentRef::interned_EMPTY();
     for mut n in &*nodes.clone() {
         let mut n = n.clone();
@@ -1514,7 +1514,7 @@ pub fn fromNodeList(mut nodes: Arc<metamodelica::List<Arc<InstNode::InstNode>>>)
     Ok(cref)
 }
 
-pub fn scalarize(mut cref: Arc<NFComponentRef>, mut resize: bool) -> Result<Arc<metamodelica::List<Arc<NFComponentRef>>>> {
+pub(crate) fn scalarize(mut cref: Arc<NFComponentRef>, mut resize: bool) -> Result<Arc<metamodelica::List<Arc<NFComponentRef>>>> {
     let mut crefs: Arc<metamodelica::List<Arc<NFComponentRef>>>;
     crefs = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { ty: Deref @ Type::ARRAY { .. }, .. } => {
@@ -1556,7 +1556,7 @@ pub fn scalarizeAll(mut cref: Arc<NFComponentRef>, mut resize: bool) -> Result<A
     Ok(crefs)
 }
 
-pub fn scalarizeAll_Nesting(mut nested_crefs: Arc<metamodelica::List<Arc<metamodelica::List<Arc<NFComponentRef>>>>>, mut cref: Arc<NFComponentRef>, mut crefs: Arc<metamodelica::List<Arc<NFComponentRef>>>) -> Result<Arc<metamodelica::List<Arc<NFComponentRef>>>> {
+pub(crate) fn scalarizeAll_Nesting(mut nested_crefs: Arc<metamodelica::List<Arc<metamodelica::List<Arc<NFComponentRef>>>>>, mut cref: Arc<NFComponentRef>, mut crefs: Arc<metamodelica::List<Arc<NFComponentRef>>>) -> Result<Arc<metamodelica::List<Arc<NFComponentRef>>>> {
     let mut crefs: Arc<metamodelica::List<Arc<NFComponentRef>>> = crefs;
     crefs = (::match_deref::match_deref! { match &(nested_crefs.clone()) {
         Deref @ metamodelica::List::Cons { head: head, tail: tail } => {
@@ -1603,13 +1603,13 @@ pub fn scalarizeSlice(mut cref: Arc<NFComponentRef>, mut slice: Arc<metamodelica
     Ok(crefs)
 }
 
-pub fn isPackageConstant(mut cref: Arc<NFComponentRef>) -> Result<bool> {
+pub(crate) fn isPackageConstant(mut cref: Arc<NFComponentRef>) -> Result<bool> {
     let mut isPkgConst: bool;
     isPkgConst = nodeVariability(cref.clone())? <= Variability::PARAMETER.clone() && isPackageConstant2(cref.clone());
     Ok(isPkgConst)
 }
 
-pub fn isPackageConstant2(mut cref: Arc<NFComponentRef>) -> bool {
+pub(crate) fn isPackageConstant2(mut cref: Arc<NFComponentRef>) -> bool {
     '__tco: loop {
         ::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { node: Deref @ InstNode::CLASS_NODE { .. }, .. } => return InstNode::isUserdefinedClass(var_field!((*cref).node, NFComponentRef::CREF).clone()),
@@ -1620,7 +1620,7 @@ pub fn isPackageConstant2(mut cref: Arc<NFComponentRef>) -> bool {
     }
 }
 
-pub fn stripSubscripts(mut cref: Arc<NFComponentRef>) -> (Arc<NFComponentRef>, Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>) {
+pub(crate) fn stripSubscripts(mut cref: Arc<NFComponentRef>) -> (Arc<NFComponentRef>, Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>) {
     let mut strippedCref: Arc<NFComponentRef>;
     let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>;
     (strippedCref, subs) = (::match_deref::match_deref! { match &(cref.clone()) {
@@ -1641,7 +1641,7 @@ pub fn stripSubscriptsAll(mut cref: Arc<NFComponentRef>) -> Arc<NFComponentRef> 
     strippedCref
 }
 
-pub fn stripSubscriptsExceptModel(mut cref: Arc<NFComponentRef>) -> Result<Arc<NFComponentRef>> {
+pub(crate) fn stripSubscriptsExceptModel(mut cref: Arc<NFComponentRef>) -> Result<Arc<NFComponentRef>> {
     let mut cref: Arc<NFComponentRef> = cref;
     cref = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { node, restCref, .. } if (InstNode::isModel(node.clone())?) => {
@@ -1699,7 +1699,7 @@ pub fn simplifySubscripts(mut cref: Arc<NFComponentRef>, mut trim: bool) -> Resu
     Ok(cref)
 }
 
-pub fn evaluateSubscripts(mut cref: Arc<NFComponentRef>) -> Result<Arc<NFComponentRef>> {
+pub(crate) fn evaluateSubscripts(mut cref: Arc<NFComponentRef>) -> Result<Arc<NFComponentRef>> {
     let mut cref: Arc<NFComponentRef> = cref;
     cref = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { subscripts: Deref @ metamodelica::List::Nil, origin: Origin::CREF { .. }, .. } => {
@@ -1726,7 +1726,7 @@ pub fn evaluateSubscripts(mut cref: Arc<NFComponentRef>) -> Result<Arc<NFCompone
     Ok(cref)
 }
 
-pub fn isDeleted(mut cref: Arc<NFComponentRef>) -> Result<bool> {
+pub(crate) fn isDeleted(mut cref: Arc<NFComponentRef>) -> Result<bool> {
     let mut isDeleted: bool;
     isDeleted = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { node, origin: Origin::CREF { .. }, .. } => {
@@ -1740,7 +1740,7 @@ pub fn isDeleted(mut cref: Arc<NFComponentRef>) -> Result<bool> {
     Ok(isDeleted)
 }
 
-pub fn isFromCref(mut cref: Arc<NFComponentRef>) -> bool {
+pub(crate) fn isFromCref(mut cref: Arc<NFComponentRef>) -> bool {
     let mut fromCref: bool;
     fromCref = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { origin: Origin::CREF { .. }, .. } => true,
@@ -1751,7 +1751,7 @@ pub fn isFromCref(mut cref: Arc<NFComponentRef>) -> bool {
     fromCref
 }
 
-pub fn toListReverse(mut cref: Arc<NFComponentRef>, mut includeScope: bool, mut accum: Arc<metamodelica::List<Arc<NFComponentRef>>>) -> Arc<metamodelica::List<Arc<NFComponentRef>>> {
+pub(crate) fn toListReverse(mut cref: Arc<NFComponentRef>, mut includeScope: bool, mut accum: Arc<metamodelica::List<Arc<NFComponentRef>>>) -> Arc<metamodelica::List<Arc<NFComponentRef>>> {
     '__tco: loop {
         ::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { .. } if (includeScope.clone()) => { (cref, includeScope, accum) = (var_field!((*cref).restCref, NFComponentRef::CREF).clone(), includeScope.clone(), metamodelica::cons(cref.clone(), accum.clone())); continue '__tco; },
@@ -1811,7 +1811,7 @@ pub fn sizes(mut cref: Arc<NFComponentRef>, mut withComplex: bool, mut resize: b
     Ok(s_lst)
 }
 
-pub fn sizes_local(mut cref: Arc<NFComponentRef>, mut withComplex: bool, mut resize: bool) -> Result<Arc<metamodelica::List<i32>>> {
+pub(crate) fn sizes_local(mut cref: Arc<NFComponentRef>, mut withComplex: bool, mut resize: bool) -> Result<Arc<metamodelica::List<i32>>> {
     let mut s_lst: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut complex_size: Option<i32> = None;
     s_lst = (::match_deref::match_deref! { match &(cref.clone()) {
@@ -1837,7 +1837,7 @@ pub fn sizes_local(mut cref: Arc<NFComponentRef>, mut withComplex: bool, mut res
     Ok(s_lst)
 }
 
-pub fn sizes_local_exp(mut cref: Arc<NFComponentRef>, mut withComplex: bool) -> Result<Arc<metamodelica::List<Arc<Expression::NFExpression>>>> {
+pub(crate) fn sizes_local_exp(mut cref: Arc<NFComponentRef>, mut withComplex: bool) -> Result<Arc<metamodelica::List<Arc<Expression::NFExpression>>>> {
     let mut s_lst: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
     let mut complex_size: Option<i32> = None;
     s_lst = (::match_deref::match_deref! { match &(cref.clone()) {
@@ -1905,7 +1905,7 @@ pub fn subscriptsToExpression(mut cref: Arc<NFComponentRef>, mut addScalar: bool
     Ok(e_lst)
 }
 
-pub fn isEmptyArray(mut cref: Arc<NFComponentRef>) -> Result<bool> {
+pub(crate) fn isEmptyArray(mut cref: Arc<NFComponentRef>) -> Result<bool> {
     let mut isEmpty: bool;
     isEmpty = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { .. } => Type::isEmptyArray(var_field!((*cref).ty, NFComponentRef::CREF).clone())? || isEmptyArray(var_field!((*cref).restCref, NFComponentRef::CREF).clone())?,
@@ -1915,7 +1915,7 @@ pub fn isEmptyArray(mut cref: Arc<NFComponentRef>) -> Result<bool> {
     Ok(isEmpty)
 }
 
-pub fn isComplexArray(mut cref: Arc<NFComponentRef>) -> Result<bool> {
+pub(crate) fn isComplexArray(mut cref: Arc<NFComponentRef>) -> Result<bool> {
     let mut complexArray: bool;
     complexArray = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { .. } => isComplexArray2(var_field!((*cref).restCref, NFComponentRef::CREF).clone())?,
@@ -1925,7 +1925,7 @@ pub fn isComplexArray(mut cref: Arc<NFComponentRef>) -> Result<bool> {
     Ok(complexArray)
 }
 
-pub fn isComplexArray2(mut cref: Arc<NFComponentRef>) -> Result<bool> {
+pub(crate) fn isComplexArray2(mut cref: Arc<NFComponentRef>) -> Result<bool> {
     '__tco: loop {
         ::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { ty: Deref @ Type::ARRAY { .. }, .. } if (Type::isArray(Type::subscript(var_field!((*cref).ty, NFComponentRef::CREF).clone(), var_field!((*cref).subscripts, NFComponentRef::CREF).clone(), true)?)) => return Ok(true),
@@ -1936,7 +1936,7 @@ pub fn isComplexArray2(mut cref: Arc<NFComponentRef>) -> Result<bool> {
     }
 }
 
-pub fn containsExp(mut cref: Arc<NFComponentRef>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>) -> Result<bool> {
+pub(crate) fn containsExp(mut cref: Arc<NFComponentRef>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>) -> Result<bool> {
     pub type ContainsPred = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>;
 
     let mut res: bool;
@@ -1948,7 +1948,7 @@ pub fn containsExp(mut cref: Arc<NFComponentRef>, mut func: Arc<dyn ::std::ops::
     Ok(res)
 }
 
-pub fn containsExpShallow(mut cref: Arc<NFComponentRef>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>) -> Result<bool> {
+pub(crate) fn containsExpShallow(mut cref: Arc<NFComponentRef>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>) -> Result<bool> {
     pub type ContainsPred = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>;
 
     let mut res: bool;
@@ -1960,7 +1960,7 @@ pub fn containsExpShallow(mut cref: Arc<NFComponentRef>, mut func: Arc<dyn ::std
     Ok(res)
 }
 
-pub fn applyExp(mut cref: Arc<NFComponentRef>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>) -> Result<()> {
+pub(crate) fn applyExp(mut cref: Arc<NFComponentRef>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>) -> Result<()> {
     pub type ApplyFunc = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>;
 
     let () = (::match_deref::match_deref! { match &(cref.clone()) {
@@ -1978,7 +1978,7 @@ pub fn applyExp(mut cref: Arc<NFComponentRef>, mut func: Arc<dyn ::std::ops::Fn(
     Ok(())
 }
 
-pub fn applyExpShallow(mut cref: Arc<NFComponentRef>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>) -> Result<()> {
+pub(crate) fn applyExpShallow(mut cref: Arc<NFComponentRef>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>) -> Result<()> {
     pub type ApplyFunc = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>;
 
     let () = (::match_deref::match_deref! { match &(cref.clone()) {
@@ -2023,7 +2023,7 @@ pub fn mapExp(mut cref: Arc<NFComponentRef>, mut func: Arc<dyn ::std::ops::Fn(Ar
     Ok(outCref)
 }
 
-pub fn mapExpShallow(mut cref: Arc<NFComponentRef>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<NFComponentRef>> {
+pub(crate) fn mapExpShallow(mut cref: Arc<NFComponentRef>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<NFComponentRef>> {
     pub type MapFunc = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>;
 
     let mut outCref: Arc<NFComponentRef>;
@@ -2050,7 +2050,7 @@ pub fn mapExpShallow(mut cref: Arc<NFComponentRef>, mut func: Arc<dyn ::std::ops
     Ok(outCref)
 }
 
-pub fn foldExp<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut cref: Arc<NFComponentRef>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
+pub(crate) fn foldExp<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut cref: Arc<NFComponentRef>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
     pub type FoldFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>;
 
     let mut arg: ArgT = arg;
@@ -2066,7 +2066,7 @@ pub fn foldExp<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut cref: Arc<
     Ok(arg)
 }
 
-pub fn mapFoldExp<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut cref: Arc<NFComponentRef>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<(Arc<Expression::NFExpression>, ArgT)> + 'static>, mut arg: ArgT) -> Result<(Arc<NFComponentRef>, ArgT)> {
+pub(crate) fn mapFoldExp<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut cref: Arc<NFComponentRef>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<(Arc<Expression::NFExpression>, ArgT)> + 'static>, mut arg: ArgT) -> Result<(Arc<NFComponentRef>, ArgT)> {
     pub type MapFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<(Arc<Expression::NFExpression>, ArgT)> + 'static>;
 
     let mut outCref: Arc<NFComponentRef>;
@@ -2087,7 +2087,7 @@ pub fn mapFoldExp<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut cref: A
     Ok((outCref, arg))
 }
 
-pub fn mapFoldExpShallow<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut cref: Arc<NFComponentRef>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<(Arc<Expression::NFExpression>, ArgT)> + 'static>, mut arg: ArgT) -> Result<(Arc<NFComponentRef>, ArgT)> {
+pub(crate) fn mapFoldExpShallow<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut cref: Arc<NFComponentRef>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<(Arc<Expression::NFExpression>, ArgT)> + 'static>, mut arg: ArgT) -> Result<(Arc<NFComponentRef>, ArgT)> {
     pub type MapFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<(Arc<Expression::NFExpression>, ArgT)> + 'static>;
 
     let mut outCref: Arc<NFComponentRef>;
@@ -2113,17 +2113,17 @@ pub fn isTime(mut cref: Arc<NFComponentRef>) -> Result<bool> {
     Ok(b)
 }
 
-pub fn isSubstitute(mut cref: Arc<NFComponentRef>) -> Result<bool> {
+pub(crate) fn isSubstitute(mut cref: Arc<NFComponentRef>) -> Result<bool> {
     let mut b: bool = firstName(cref.clone(), false)? == literal!("$SUBST_CREF");
     Ok(b)
 }
 
-pub fn isDiscrete(mut cref: Arc<NFComponentRef>) -> Result<bool> {
+pub(crate) fn isDiscrete(mut cref: Arc<NFComponentRef>) -> Result<bool> {
     let mut result: bool = Type::isDiscrete(nodeType(cref.clone())?)?;
     Ok(result)
 }
 
-pub fn removeOuterCrefPrefix(mut cref: Arc<NFComponentRef>) -> Arc<NFComponentRef> {
+pub(crate) fn removeOuterCrefPrefix(mut cref: Arc<NFComponentRef>) -> Arc<NFComponentRef> {
     let mut cref: Arc<NFComponentRef> = cref;
     let () = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { .. } => {
@@ -2140,7 +2140,7 @@ pub fn removeOuterCrefPrefix(mut cref: Arc<NFComponentRef>) -> Arc<NFComponentRe
     cref
 }
 
-pub fn mapTypes(mut cref: Arc<NFComponentRef>, mut func: Arc<dyn ::std::ops::Fn(Arc<Type::NFType>) -> Result<Arc<Type::NFType>> + 'static>) -> Result<Arc<NFComponentRef>> {
+pub(crate) fn mapTypes(mut cref: Arc<NFComponentRef>, mut func: Arc<dyn ::std::ops::Fn(Arc<Type::NFType>) -> Result<Arc<Type::NFType>> + 'static>) -> Result<Arc<NFComponentRef>> {
     pub type MapFunc = std::sync::Arc<dyn ::std::ops::Fn(Arc<Type::NFType>) -> Result<Arc<Type::NFType>> + 'static>;
 
     let mut outCref: Arc<NFComponentRef>;
@@ -2160,7 +2160,7 @@ pub fn mapTypes(mut cref: Arc<NFComponentRef>, mut func: Arc<dyn ::std::ops::Fn(
     Ok(outCref)
 }
 
-pub fn mapNodes(mut cref: Arc<NFComponentRef>, mut func: Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<Arc<InstNode::InstNode>> + 'static>) -> Result<Arc<NFComponentRef>> {
+pub(crate) fn mapNodes(mut cref: Arc<NFComponentRef>, mut func: Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<Arc<InstNode::InstNode>> + 'static>) -> Result<Arc<NFComponentRef>> {
     pub type MapFunc = std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<Arc<InstNode::InstNode>> + 'static>;
 
     let mut outCref: Arc<NFComponentRef>;
@@ -2198,7 +2198,7 @@ pub fn getArrayCrefOpt(mut scal: Arc<NFComponentRef>) -> Result<Option<Arc<NFCom
     Ok(arr)
 }
 
-pub fn isSliced(mut cref: Arc<NFComponentRef>) -> Result<bool> {
+pub(crate) fn isSliced(mut cref: Arc<NFComponentRef>) -> Result<bool> {
     fn is_sliced_impl(mut cref: Arc<NFComponentRef>) -> Result<bool> {
         let mut sliced: bool = false;
         sliced = (::match_deref::match_deref! { match &(cref.clone()) {
@@ -2221,7 +2221,7 @@ pub fn isSliced(mut cref: Arc<NFComponentRef>) -> Result<bool> {
     Ok(sliced)
 }
 
-pub fn hasImplicitTrailingIndex(mut cref: Arc<NFComponentRef>) -> bool {
+pub(crate) fn hasImplicitTrailingIndex(mut cref: Arc<NFComponentRef>) -> bool {
     let mut res: bool;
     res = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { origin: Origin::CREF { .. }, .. } => !(var_field!((*cref).subscripts, NFComponentRef::CREF).clone().is_empty()) && (var_field!((*cref).subscripts, NFComponentRef::CREF).clone().len() as i32) < Type::dimensionCount(var_field!((*cref).ty, NFComponentRef::CREF).clone()),
@@ -2231,7 +2231,7 @@ pub fn hasImplicitTrailingIndex(mut cref: Arc<NFComponentRef>) -> bool {
     res
 }
 
-pub fn iterate(mut cref: Arc<NFComponentRef>) -> Result<(Arc<NFComponentRef>, Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>>)> {
+pub(crate) fn iterate(mut cref: Arc<NFComponentRef>) -> Result<(Arc<NFComponentRef>, Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>>)> {
     fn iterate_impl(mut cref: Arc<NFComponentRef>, mut iterators: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>>) -> Result<(Arc<NFComponentRef>, Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>>)> {
         let mut cref: Arc<NFComponentRef> = cref;
         let mut iterators: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>> = iterators;

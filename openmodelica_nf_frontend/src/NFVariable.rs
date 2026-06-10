@@ -199,7 +199,7 @@ pub fn equalName(mut var1: Arc<NFVariable>, mut var2: Arc<NFVariable>) -> Result
     Ok(b)
 }
 
-pub fn expand(mut var: Arc<NFVariable>, mut backend: bool) -> Result<Arc<metamodelica::List<Arc<NFVariable>>>> {
+pub(crate) fn expand(mut var: Arc<NFVariable>, mut backend: bool) -> Result<Arc<metamodelica::List<Arc<NFVariable>>>> {
     let mut vars: Arc<metamodelica::List<Arc<NFVariable>>>;
     let mut crefs: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
     let mut v: Arc<NFVariable>;
@@ -299,7 +299,7 @@ pub fn variability(mut variable: Arc<NFVariable>) -> Variability {
     variability
 }
 
-pub fn setVariability(mut variable: Arc<NFVariable>, mut variability: Variability) -> Arc<NFVariable> {
+pub(crate) fn setVariability(mut variable: Arc<NFVariable>, mut variability: Variability) -> Arc<NFVariable> {
     let mut variable: Arc<NFVariable> = variable;
     let mut attr: Arc<Attributes::NFAttributes>;
     attr = variable.attributes.clone();
@@ -308,22 +308,22 @@ pub fn setVariability(mut variable: Arc<NFVariable>, mut variability: Variabilit
     variable
 }
 
-pub fn visibility(mut variable: Arc<NFVariable>) -> Visibility {
+pub(crate) fn visibility(mut variable: Arc<NFVariable>) -> Visibility {
     let mut visibility: Visibility = variable.visibility.clone();
     visibility
 }
 
-pub fn isComplex(mut var: Arc<NFVariable>) -> bool {
+pub(crate) fn isComplex(mut var: Arc<NFVariable>) -> bool {
     let mut b: bool = Type::isComplex(var.ty.clone());
     b
 }
 
-pub fn isComplexArray(mut var: Arc<NFVariable>) -> Result<bool> {
+pub(crate) fn isComplexArray(mut var: Arc<NFVariable>) -> Result<bool> {
     let mut b: bool = Type::isComplexArray(var.ty.clone())?;
     Ok(b)
 }
 
-pub fn isStructural(mut variable: Arc<NFVariable>) -> bool {
+pub(crate) fn isStructural(mut variable: Arc<NFVariable>) -> bool {
     let mut structural: bool = variable.attributes.variability.clone() <= Variability::STRUCTURAL_PARAMETER.clone();
     structural
 }
@@ -333,7 +333,7 @@ pub fn isEmptyArray(mut variable: Arc<NFVariable>) -> Result<bool> {
     Ok(isEmpty)
 }
 
-pub fn isDeleted(mut variable: Arc<NFVariable>) -> Result<bool> {
+pub(crate) fn isDeleted(mut variable: Arc<NFVariable>) -> Result<bool> {
     let mut deleted: bool;
     let mut node: Arc<InstNode::InstNode>;
     node = ComponentRef::node(variable.name.clone())?;
@@ -341,27 +341,27 @@ pub fn isDeleted(mut variable: Arc<NFVariable>) -> Result<bool> {
     Ok(deleted)
 }
 
-pub fn isPresent(mut variable: Arc<NFVariable>) -> bool {
+pub(crate) fn isPresent(mut variable: Arc<NFVariable>) -> bool {
     let mut present: bool = !(ConnectorType::isPotentiallyPresent(variable.attributes.connectorType.clone()));
     present
 }
 
-pub fn isPotential(mut variable: Arc<NFVariable>) -> bool {
+pub(crate) fn isPotential(mut variable: Arc<NFVariable>) -> bool {
     let mut potential: bool = ConnectorType::isPotential(variable.attributes.connectorType.clone());
     potential
 }
 
-pub fn isFlow(mut variable: Arc<NFVariable>) -> bool {
+pub(crate) fn isFlow(mut variable: Arc<NFVariable>) -> bool {
     let mut potential: bool = ConnectorType::isFlow(variable.attributes.connectorType.clone());
     potential
 }
 
-pub fn isStream(mut variable: Arc<NFVariable>) -> bool {
+pub(crate) fn isStream(mut variable: Arc<NFVariable>) -> bool {
     let mut potential: bool = ConnectorType::isStream(variable.attributes.connectorType.clone());
     potential
 }
 
-pub fn isInput(mut variable: Arc<NFVariable>) -> bool {
+pub(crate) fn isInput(mut variable: Arc<NFVariable>) -> bool {
     let mut b: bool = variable.attributes.direction.clone() == Direction::INPUT.clone();
     b
 }
@@ -371,12 +371,12 @@ pub fn isTopLevelInput(mut variable: Arc<NFVariable>) -> bool {
     topInput
 }
 
-pub fn isPublic(mut variable: Arc<NFVariable>) -> bool {
+pub(crate) fn isPublic(mut variable: Arc<NFVariable>) -> bool {
     let mut isPublic: bool = variable.visibility.clone() == Visibility::PUBLIC.clone();
     isPublic
 }
 
-pub fn isProtected(mut variable: Arc<NFVariable>) -> bool {
+pub(crate) fn isProtected(mut variable: Arc<NFVariable>) -> bool {
     let mut isProtected: bool = variable.visibility.clone() == Visibility::PROTECTED.clone();
     isProtected
 }
@@ -398,7 +398,7 @@ pub fn isEncrypted(mut variable: Arc<NFVariable>) -> Result<bool> {
     Ok(isEncrypted)
 }
 
-pub fn isAccessible(mut variable: Arc<NFVariable>) -> Result<bool> {
+pub(crate) fn isAccessible(mut variable: Arc<NFVariable>) -> Result<bool> {
     let mut isAccessible: bool;
     let mut oaccess: Option<AccessLevel>;
     let mut access: AccessLevel;
@@ -422,7 +422,7 @@ pub fn isAccessible(mut variable: Arc<NFVariable>) -> Result<bool> {
     Ok(isAccessible)
 }
 
-pub fn lookupTypeAttribute(mut name: ArcStr, mut var: Arc<NFVariable>) -> Arc<Binding::NFBinding> {
+pub(crate) fn lookupTypeAttribute(mut name: ArcStr, mut var: Arc<NFVariable>) -> Arc<Binding::NFBinding> {
     let mut binding: Arc<Binding::NFBinding>;
     for mut attr in &*var.typeAttributes.clone() {
         let mut attr = attr.clone();
@@ -446,7 +446,7 @@ pub fn applyToType(mut var: Arc<NFVariable>, mut func: Arc<dyn ::std::ops::Fn(Ar
     Ok(var)
 }
 
-pub fn propagateAnnotation(mut name: ArcStr, mut overwrite: bool, mut evaluate: bool, mut var: Arc<NFVariable>) -> Result<Arc<NFVariable>> {
+pub(crate) fn propagateAnnotation(mut name: ArcStr, mut overwrite: bool, mut evaluate: bool, mut var: Arc<NFVariable>) -> Result<Arc<NFVariable>> {
     let mut var: Arc<NFVariable> = var;
     let mut node: Arc<InstNode::InstNode>;
     let mut r#mod: Arc<SCode::Mod>;
@@ -496,7 +496,7 @@ pub fn propagateAnnotation(mut name: ArcStr, mut overwrite: bool, mut evaluate: 
     Ok(var)
 }
 
-pub fn removeNonTopLevelDirection(mut var: Arc<NFVariable>) -> Result<Arc<NFVariable>> {
+pub(crate) fn removeNonTopLevelDirection(mut var: Arc<NFVariable>) -> Result<Arc<NFVariable>> {
     let mut var: Arc<NFVariable> = var;
     let mut rest_name: Arc<ComponentRef::NFComponentRef>;
     let mut node: Arc<InstNode::InstNode>;
@@ -520,7 +520,7 @@ pub fn removeNonTopLevelDirection(mut var: Arc<NFVariable>) -> Result<Arc<NFVari
 
 pub type ApplyFn = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>;
 
-pub fn applyExp(mut var: Arc<NFVariable>, mut r#fn: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>) -> Result<()> {
+pub(crate) fn applyExp(mut var: Arc<NFVariable>, mut r#fn: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>) -> Result<()> {
     Binding::applyExp(var.binding.clone(), r#fn.clone())?;
     for mut ty_attr in &*var.typeAttributes.clone() {
         let mut ty_attr = ty_attr.clone();
@@ -533,7 +533,7 @@ pub fn applyExp(mut var: Arc<NFVariable>, mut r#fn: Arc<dyn ::std::ops::Fn(Arc<E
     Ok(())
 }
 
-pub fn applyExpShallow(mut var: Arc<NFVariable>, mut r#fn: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>) -> Result<()> {
+pub(crate) fn applyExpShallow(mut var: Arc<NFVariable>, mut r#fn: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>) -> Result<()> {
     Binding::applyExpShallow(var.binding.clone(), r#fn.clone())?;
     for mut ty_attr in &*var.typeAttributes.clone() {
         let mut ty_attr = ty_attr.clone();
@@ -575,7 +575,7 @@ pub fn mapExp(mut var: Arc<NFVariable>, mut r#fn: Arc<dyn ::std::ops::Fn(Arc<Exp
     Ok(var)
 }
 
-pub fn mapExpShallow(mut var: Arc<NFVariable>, mut r#fn: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<NFVariable>> {
+pub(crate) fn mapExpShallow(mut var: Arc<NFVariable>, mut r#fn: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<NFVariable>> {
     let mut var: Arc<NFVariable> = var;
     assign_field!(
         var.binding = Binding::mapExpShallow(var.binding.clone(), r#fn.clone())?,
@@ -609,7 +609,7 @@ pub fn toString(mut var: Arc<NFVariable>, mut indent: ArcStr, mut printBindingTy
     Ok(r#str)
 }
 
-pub fn toStream(mut var: Arc<NFVariable>, mut indent: ArcStr, mut printBindingType: bool, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
+pub(crate) fn toStream(mut var: Arc<NFVariable>, mut indent: ArcStr, mut printBindingType: bool, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut s: IOStream::IOStream = s;
     let mut first: bool;
     let mut b: Arc<Binding::NFBinding>;
@@ -653,7 +653,7 @@ pub fn toStream(mut var: Arc<NFVariable>, mut indent: ArcStr, mut printBindingTy
     Ok(s)
 }
 
-pub fn toFlatStream(mut var: Arc<NFVariable>, mut format: BaseModelica::OutputFormat, mut indent: ArcStr, mut printBindingType: bool, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
+pub(crate) fn toFlatStream(mut var: Arc<NFVariable>, mut format: BaseModelica::OutputFormat, mut indent: ArcStr, mut printBindingType: bool, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut s: IOStream::IOStream = s;
     let mut dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>>;
     s = IOStream::append(s.clone(), (indent.clone()).clone())?;
@@ -675,7 +675,7 @@ pub fn toFlatStream(mut var: Arc<NFVariable>, mut format: BaseModelica::OutputFo
     Ok(s)
 }
 
-pub fn toFlatStreamBinding(mut binding: Arc<Binding::NFBinding>, mut printBindingType: bool, mut format: BaseModelica::OutputFormat, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
+pub(crate) fn toFlatStreamBinding(mut binding: Arc<Binding::NFBinding>, mut printBindingType: bool, mut format: BaseModelica::OutputFormat, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut s: IOStream::IOStream = s;
     if Binding::isBound(binding.clone()) {
         s = IOStream::append(s.clone(), (literal!(" = ")).clone())?;
@@ -689,7 +689,7 @@ pub fn toFlatStreamBinding(mut binding: Arc<Binding::NFBinding>, mut printBindin
     Ok(s)
 }
 
-pub fn toFlatStreamModifier(mut children: Arc<metamodelica::List<Arc<NFVariable>>>, mut overwrittenBinding: bool, mut printBindingType: bool, mut format: BaseModelica::OutputFormat, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
+pub(crate) fn toFlatStreamModifier(mut children: Arc<metamodelica::List<Arc<NFVariable>>>, mut overwrittenBinding: bool, mut printBindingType: bool, mut format: BaseModelica::OutputFormat, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut s: IOStream::IOStream = s;
     let mut empty: bool = true;
     let mut overwritten_binding: bool;
@@ -727,7 +727,7 @@ pub fn toFlatStreamModifier(mut children: Arc<metamodelica::List<Arc<NFVariable>
     Ok(s)
 }
 
-pub fn moveBinding(mut var: Arc<NFVariable>, mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>>) -> Result<(Arc<NFVariable>, Arc<metamodelica::List<Arc<Equation::NFEquation>>>)> {
+pub(crate) fn moveBinding(mut var: Arc<NFVariable>, mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>>) -> Result<(Arc<NFVariable>, Arc<metamodelica::List<Arc<Equation::NFEquation>>>)> {
     let mut var: Arc<NFVariable> = var;
     let mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = equations;
     if variability(var.clone()) >= Variability::DISCRETE.clone() && Binding::isBound(var.binding.clone()) {
@@ -742,12 +742,12 @@ pub fn getVariableAttributes(mut var: Arc<NFVariable>) -> Arc<VariableAttributes
     variableAttributes
 }
 
-pub fn getNominal(mut var: Arc<NFVariable>) -> Option<Arc<Expression::NFExpression>> {
+pub(crate) fn getNominal(mut var: Arc<NFVariable>) -> Option<Arc<Expression::NFExpression>> {
     let mut nominal: Option<Arc<Expression::NFExpression>> = VariableAttributes::getNominal(getVariableAttributes(var.clone()));
     nominal
 }
 
-pub fn asBinding(mut var: Arc<NFVariable>, mut source: Binding::Source) -> Arc<Binding::NFBinding> {
+pub(crate) fn asBinding(mut var: Arc<NFVariable>, mut source: Binding::Source) -> Arc<Binding::NFBinding> {
     let mut binding: Arc<Binding::NFBinding>;
     binding = Binding::makeFlat(Expression::fromTypedCref(var.name.clone(), var.ty.clone()), variability(var.clone()), source.clone(), Binding::NO_CONFIDENCE.clone());
     binding

@@ -140,7 +140,7 @@ pub fn printStateStr(mut inState: ClassInf::State) -> ArcStr {
     outString
 }
 
-pub fn printState(mut inState: ClassInf::State) -> Result<()> {
+pub(crate) fn printState(mut inState: ClassInf::State) -> Result<()> {
     let () = (match inState.clone() {
         ClassInf::State::UNKNOWN { path: ref p } => {
             Print::printBuf((literal!("UNKNOWN ")).clone())?;
@@ -681,7 +681,7 @@ pub fn assertTrans(mut inState: ClassInf::State, mut event: ClassInf::Event, mut
     Ok(outState)
 }
 
-pub fn matchingState(mut inState: ClassInf::State, mut inStateLst: Arc<metamodelica::List<ClassInf::State>>) -> Result<bool> {
+pub(crate) fn matchingState(mut inState: ClassInf::State, mut inStateLst: Arc<metamodelica::List<ClassInf::State>>) -> Result<bool> {
     '__tco: loop {
         ::match_deref::match_deref! { match &((inState.clone(), inStateLst.clone())) {
         (_, Deref @ metamodelica::List::Nil) => {
@@ -795,7 +795,7 @@ pub fn isRecord(mut inState: ClassInf::State) -> bool {
     outIsRecord
 }
 
-pub fn isMetaRecord(mut inState: ClassInf::State) -> bool {
+pub(crate) fn isMetaRecord(mut inState: ClassInf::State) -> bool {
     let mut outIsRecord: bool;
     outIsRecord = (match inState.clone() {
         ClassInf::State::META_RECORD { .. } => true,

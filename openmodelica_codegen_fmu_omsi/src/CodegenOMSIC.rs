@@ -1532,7 +1532,7 @@ fn fun_99(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_target: ArcStr, m
     Ok(out_txt)
 }
 
-pub fn createMakefileIn(mut txt: Tpl::Text, mut a_simCode: SimCode::SimCode, mut a_target: ArcStr, mut a_FileNamePrefix: ArcStr, mut a_makeflieName: ArcStr) -> Result<Tpl::Text> {
+pub(crate) fn createMakefileIn(mut txt: Tpl::Text, mut a_simCode: SimCode::SimCode, mut a_target: ArcStr, mut a_FileNamePrefix: ArcStr, mut a_makeflieName: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut str_8: ArcStr;
     let mut txt_7: Tpl::Text;

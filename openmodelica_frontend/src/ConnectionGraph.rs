@@ -141,7 +141,7 @@ pub fn EMPTY() -> ConnectionGraph { __EMPTY_TLS.with(|__t| __t.clone()) }
 thread_local! { static __NOUPDATE_EMPTY_TLS: ConnectionGraph = ConnectionGraph { updateGraph: false, definiteRoots: metamodelica::nil(), potentialRoots: metamodelica::nil(), uniqueRoots: metamodelica::nil(), branches: metamodelica::nil(), connections: metamodelica::nil() }; }
 pub fn NOUPDATE_EMPTY() -> ConnectionGraph { __NOUPDATE_EMPTY_TLS.with(|__t| __t.clone()) }
 
-pub fn handleOverconstrainedConnections(mut inGraph: ConnectionGraph, mut modelNameQualified: ArcStr, mut inDAE: DAE::DAElist) -> Result<(DAE::DAElist, DaeEdges, DaeEdges)> {
+pub(crate) fn handleOverconstrainedConnections(mut inGraph: ConnectionGraph, mut modelNameQualified: ArcStr, mut inDAE: DAE::DAElist) -> Result<(DAE::DAElist, DaeEdges, DaeEdges)> {
     let mut outDAE: DAE::DAElist;
     let mut outConnected: DaeEdges;
     let mut outBroken: DaeEdges;
@@ -192,7 +192,7 @@ pub fn handleOverconstrainedConnections(mut inGraph: ConnectionGraph, mut modelN
     Ok((outDAE, outConnected, outBroken))
 }
 
-pub fn addDefiniteRoot(mut inGraph: ConnectionGraph, mut inRoot: Arc<DAE::ComponentRef>) -> Result<ConnectionGraph> {
+pub(crate) fn addDefiniteRoot(mut inGraph: ConnectionGraph, mut inRoot: Arc<DAE::ComponentRef>) -> Result<ConnectionGraph> {
     let mut outGraph: ConnectionGraph;
     outGraph = (::match_deref::match_deref! { match &((inGraph.clone(), inRoot.clone())) {
         (ConnectionGraph { updateGraph, definiteRoots, potentialRoots, uniqueRoots, branches, connections }, root) => {
@@ -206,7 +206,7 @@ pub fn addDefiniteRoot(mut inGraph: ConnectionGraph, mut inRoot: Arc<DAE::Compon
     Ok(outGraph)
 }
 
-pub fn addPotentialRoot(mut inGraph: ConnectionGraph, mut inRoot: Arc<DAE::ComponentRef>, mut inPriority: metamodelica::Real) -> Result<ConnectionGraph> {
+pub(crate) fn addPotentialRoot(mut inGraph: ConnectionGraph, mut inRoot: Arc<DAE::ComponentRef>, mut inPriority: metamodelica::Real) -> Result<ConnectionGraph> {
     let mut outGraph: ConnectionGraph;
     outGraph = (::match_deref::match_deref! { match &((inGraph.clone(), inRoot.clone(), inPriority.clone())) {
         (ConnectionGraph { updateGraph, definiteRoots, potentialRoots, uniqueRoots, branches, connections }, root, priority) => {
@@ -220,7 +220,7 @@ pub fn addPotentialRoot(mut inGraph: ConnectionGraph, mut inRoot: Arc<DAE::Compo
     Ok(outGraph)
 }
 
-pub fn addUniqueRoots(mut inGraph: ConnectionGraph, mut inRoots: Arc<DAE::Exp>, mut inMessage: Arc<DAE::Exp>) -> Result<ConnectionGraph> {
+pub(crate) fn addUniqueRoots(mut inGraph: ConnectionGraph, mut inRoots: Arc<DAE::Exp>, mut inMessage: Arc<DAE::Exp>) -> Result<ConnectionGraph> {
     '__tco: loop {
         ::match_deref::match_deref! { match &((inGraph.clone(), inRoots.clone())) {
         (ConnectionGraph { updateGraph, definiteRoots, potentialRoots, uniqueRoots, branches, connections }, Deref @ DAE::Exp::CREF { componentRef: root, ty: _ }) => {
@@ -248,7 +248,7 @@ pub fn addUniqueRoots(mut inGraph: ConnectionGraph, mut inRoots: Arc<DAE::Exp>, 
     }
 }
 
-pub fn addBranch(mut inGraph: ConnectionGraph, mut inRef1: Arc<DAE::ComponentRef>, mut inRef2: Arc<DAE::ComponentRef>) -> Result<ConnectionGraph> {
+pub(crate) fn addBranch(mut inGraph: ConnectionGraph, mut inRef1: Arc<DAE::ComponentRef>, mut inRef2: Arc<DAE::ComponentRef>) -> Result<ConnectionGraph> {
     let mut outGraph: ConnectionGraph;
     outGraph = (::match_deref::match_deref! { match &((inGraph.clone(), inRef1.clone(), inRef2.clone())) {
         (ConnectionGraph { updateGraph, definiteRoots, potentialRoots, uniqueRoots, branches, connections }, ref1, ref2) => {
@@ -262,7 +262,7 @@ pub fn addBranch(mut inGraph: ConnectionGraph, mut inRef1: Arc<DAE::ComponentRef
     Ok(outGraph)
 }
 
-pub fn addConnection(mut inGraph: ConnectionGraph, mut inRef1: Arc<DAE::ComponentRef>, mut inRef2: Arc<DAE::ComponentRef>, mut inDae: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<ConnectionGraph> {
+pub(crate) fn addConnection(mut inGraph: ConnectionGraph, mut inRef1: Arc<DAE::ComponentRef>, mut inRef2: Arc<DAE::ComponentRef>, mut inDae: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<ConnectionGraph> {
     let mut outGraph: ConnectionGraph;
     outGraph = (::match_deref::match_deref! { match &((inGraph.clone(), inRef1.clone(), inRef2.clone(), inDae.clone())) {
         (ConnectionGraph { updateGraph, definiteRoots, potentialRoots, uniqueRoots, branches, connections }, ref1, ref2, dae) => {
@@ -1220,7 +1220,7 @@ fn getConnections(mut inGraph: ConnectionGraph) -> Result<DaeEdges> {
     Ok(outResult)
 }
 
-pub fn merge(mut inGraph1: ConnectionGraph, mut inGraph2: ConnectionGraph) -> Result<ConnectionGraph> {
+pub(crate) fn merge(mut inGraph1: ConnectionGraph, mut inGraph2: ConnectionGraph) -> Result<ConnectionGraph> {
     let mut outGraph: ConnectionGraph;
     outGraph = 'mc: {
         let __mc_input = (inGraph1.clone(), inGraph2.clone());
@@ -1472,7 +1472,7 @@ fn showGraphViz(mut fileNameGraphViz: ArcStr, mut modelNameQualified: ArcStr) ->
     Ok(brokenConnectsViaGraphViz)
 }
 
-pub fn removeBrokenConnects(mut inConnects: Arc<metamodelica::List<DAE::Connect::ConnectorElement>>, mut inConnected: DaeEdges, mut inBroken: DaeEdges) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<DAE::Connect::ConnectorElement>>>>> {
+pub(crate) fn removeBrokenConnects(mut inConnects: Arc<metamodelica::List<DAE::Connect::ConnectorElement>>, mut inConnected: DaeEdges, mut inBroken: DaeEdges) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<DAE::Connect::ConnectorElement>>>>> {
     let mut outConnects: Arc<metamodelica::List<Arc<metamodelica::List<DAE::Connect::ConnectorElement>>>>;
     outConnects = (::match_deref::match_deref! { match &(inBroken.clone()) {
         Deref @ metamodelica::List::Nil => {
@@ -1602,7 +1602,7 @@ fn removeFromConnects(mut inConnects: Arc<metamodelica::List<DAE::Connect::Conne
     }
 }
 
-pub fn addBrokenEqualityConstraintEquations(mut inDAE: DAE::DAElist, mut inBroken: DaeEdges) -> Result<DAE::DAElist> {
+pub(crate) fn addBrokenEqualityConstraintEquations(mut inDAE: DAE::DAElist, mut inBroken: DaeEdges) -> Result<DAE::DAElist> {
     let mut outDAE: DAE::DAElist;
     outDAE = 'mc: {
         let __mc_input = inBroken.clone();

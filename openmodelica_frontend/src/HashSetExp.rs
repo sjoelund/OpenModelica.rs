@@ -67,7 +67,7 @@ pub type FuncCrefEqual = std::sync::Arc<dyn ::std::ops::Fn(Key, Key) -> Result<b
 
 pub type FuncCrefStr = std::sync::Arc<dyn ::std::ops::Fn(Key) -> Result<ArcStr> + 'static>;
 
-pub fn emptyHashSet() -> HashSet {
+pub(crate) fn emptyHashSet() -> HashSet {
     let mut hashSet: HashSet;
     hashSet = emptyHashSetSized(BaseHashSet::defaultBucketSize.clone());
     hashSet

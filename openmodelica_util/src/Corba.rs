@@ -49,12 +49,12 @@ pub fn haveCorba() -> bool {
     b
 }
 
-pub fn setObjectReferenceFilePath(mut inObjectReferenceFilePath: ArcStr) -> Result<()> {
+pub(crate) fn setObjectReferenceFilePath(mut inObjectReferenceFilePath: ArcStr) -> Result<()> {
     todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("Corba_setObjectReferenceFilePath"), lang: Some("C"), output_: None, args: Cons { head: CREF { componentRef: CREF_IDENT { name: "inObjectReferenceFilePath", subscripts: Nil } }, tail: Nil }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: ARRAY { arrayExp: Cons { head: STRING { value: "omcruntime" }, tail: Cons { head: STRING { value: "OpenModelicaCorba" }, tail: Nil } } }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Corba.mo", isReadOnly: false, lineNumberStart: 64, columnNumberStart: 95, lineNumberEnd: 64, columnNumberEnd: 132, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Corba.mo", isReadOnly: false, lineNumberStart: 64, columnNumberStart: 87, lineNumberEnd: 64, columnNumberEnd: 132, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
     Ok(())
 }
 
-pub fn setSessionName(mut inSessionName: ArcStr) -> Result<()> {
+pub(crate) fn setSessionName(mut inSessionName: ArcStr) -> Result<()> {
     todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("Corba_setSessionName"), lang: Some("C"), output_: None, args: Cons { head: CREF { componentRef: CREF_IDENT { name: "inSessionName", subscripts: Nil } }, tail: Nil }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: ARRAY { arrayExp: Cons { head: STRING { value: "omcruntime" }, tail: Cons { head: STRING { value: "OpenModelicaCorba" }, tail: Nil } } }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Corba.mo", isReadOnly: false, lineNumberStart: 70, columnNumberStart: 71, lineNumberEnd: 70, columnNumberEnd: 108, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Corba.mo", isReadOnly: false, lineNumberStart: 70, columnNumberStart: 63, lineNumberEnd: 70, columnNumberEnd: 108, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
     Ok(())
 }

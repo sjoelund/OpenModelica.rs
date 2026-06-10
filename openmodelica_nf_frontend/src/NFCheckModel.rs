@@ -60,7 +60,7 @@ use openmodelica_util::UnorderedSet;
 use openmodelica_util::Util;
 use openmodelica_util_datatypes_basic::List;
 
-pub fn checkModel(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<(i32, i32)> {
+pub(crate) fn checkModel(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<(i32, i32)> {
     let mut variables: i32 = 0;
     let mut equations: i32 = 0;
     for mut v in &*flatModel.variables.clone() {
@@ -75,7 +75,7 @@ pub fn checkModel(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<(i32, i3
     Ok((variables, equations))
 }
 
-pub fn countVariableSize(mut var: Arc<Variable::NFVariable>, mut variables: i32, mut equations: i32) -> Result<(i32, i32)> {
+pub(crate) fn countVariableSize(mut var: Arc<Variable::NFVariable>, mut variables: i32, mut equations: i32) -> Result<(i32, i32)> {
     let mut variables: i32 = variables;
     let mut equations: i32 = equations;
     let mut ty: Arc<Type::NFType>;
@@ -105,7 +105,7 @@ pub fn countVariableSize(mut var: Arc<Variable::NFVariable>, mut variables: i32,
     Ok((variables, equations))
 }
 
-pub fn countAlgorithmSize(mut alg: Arc<Algorithm::NFAlgorithm>) -> Result<i32> {
+pub(crate) fn countAlgorithmSize(mut alg: Arc<Algorithm::NFAlgorithm>) -> Result<i32> {
     let mut equations: i32 = 0;
     let mut crefs: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
     crefs = UnorderedSet::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);

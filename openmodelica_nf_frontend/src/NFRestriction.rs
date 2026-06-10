@@ -167,7 +167,7 @@ impl Default for NFRestriction {
     fn default() -> Self { Self::BLOCK }
 }
 pub use self::NFRestriction::{BLOCK,CLASS,CLOCK,CONNECTOR,ENUMERATION,EXTERNAL_OBJECT,FUNCTION,MODEL,PACKAGE,OPERATOR,RECORD,RECORD_CONSTRUCTOR,TYPE,UNKNOWN};
-pub fn fromSCode(mut sres: SCode::Restriction) -> Arc<NFRestriction> {
+pub(crate) fn fromSCode(mut sres: SCode::Restriction) -> Arc<NFRestriction> {
     let mut res: Arc<NFRestriction>;
     res = (match sres.clone() {
         SCode::Restriction::R_BLOCK { .. } => crate::NFRestriction::interned_BLOCK(),
@@ -186,7 +186,7 @@ pub fn fromSCode(mut sres: SCode::Restriction) -> Arc<NFRestriction> {
     res
 }
 
-pub fn toDAE(mut res: Arc<NFRestriction>, mut path: Arc<Absyn::Path>) -> ClassInf::State {
+pub(crate) fn toDAE(mut res: Arc<NFRestriction>, mut path: Arc<Absyn::Path>) -> ClassInf::State {
     let mut state: ClassInf::State;
     state = (::match_deref::match_deref! { match &(res.clone()) {
         Deref @ BLOCK { .. } => ClassInf::State::BLOCK { path: path.clone() },
@@ -207,7 +207,7 @@ pub fn toDAE(mut res: Arc<NFRestriction>, mut path: Arc<Absyn::Path>) -> ClassIn
     state
 }
 
-pub fn isConnector(mut res: Arc<NFRestriction>) -> bool {
+pub(crate) fn isConnector(mut res: Arc<NFRestriction>) -> bool {
     let mut isConnector: bool;
     isConnector = (::match_deref::match_deref! { match &(res.clone()) {
         Deref @ CONNECTOR { .. } => true,
@@ -217,7 +217,7 @@ pub fn isConnector(mut res: Arc<NFRestriction>) -> bool {
     isConnector
 }
 
-pub fn isExpandableConnector(mut res: Arc<NFRestriction>) -> bool {
+pub(crate) fn isExpandableConnector(mut res: Arc<NFRestriction>) -> bool {
     let mut isConnector: bool;
     isConnector = (::match_deref::match_deref! { match &(res.clone()) {
         Deref @ CONNECTOR { .. } => var_field!((*res).isExpandable, NFRestriction::CONNECTOR).clone(),
@@ -227,7 +227,7 @@ pub fn isExpandableConnector(mut res: Arc<NFRestriction>) -> bool {
     isConnector
 }
 
-pub fn isNonexpandableConnector(mut res: Arc<NFRestriction>) -> bool {
+pub(crate) fn isNonexpandableConnector(mut res: Arc<NFRestriction>) -> bool {
     let mut isNonexpandable: bool;
     isNonexpandable = (::match_deref::match_deref! { match &(res.clone()) {
         Deref @ CONNECTOR { .. } => !(var_field!((*res).isExpandable, NFRestriction::CONNECTOR).clone()),
@@ -237,7 +237,7 @@ pub fn isNonexpandableConnector(mut res: Arc<NFRestriction>) -> bool {
     isNonexpandable
 }
 
-pub fn isExternalObject(mut res: Arc<NFRestriction>) -> bool {
+pub(crate) fn isExternalObject(mut res: Arc<NFRestriction>) -> bool {
     let mut isExternalObject: bool;
     isExternalObject = (::match_deref::match_deref! { match &(res.clone()) {
         Deref @ EXTERNAL_OBJECT { .. } => true,
@@ -247,7 +247,7 @@ pub fn isExternalObject(mut res: Arc<NFRestriction>) -> bool {
     isExternalObject
 }
 
-pub fn isFunction(mut res: Arc<NFRestriction>) -> bool {
+pub(crate) fn isFunction(mut res: Arc<NFRestriction>) -> bool {
     let mut isFunction: bool;
     isFunction = (::match_deref::match_deref! { match &(res.clone()) {
         Deref @ FUNCTION { .. } => true,
@@ -257,7 +257,7 @@ pub fn isFunction(mut res: Arc<NFRestriction>) -> bool {
     isFunction
 }
 
-pub fn isRecordConstructor(mut res: Arc<NFRestriction>) -> bool {
+pub(crate) fn isRecordConstructor(mut res: Arc<NFRestriction>) -> bool {
     let mut isConstructor: bool;
     isConstructor = (::match_deref::match_deref! { match &(res.clone()) {
         Deref @ RECORD_CONSTRUCTOR { .. } => true,
@@ -267,7 +267,7 @@ pub fn isRecordConstructor(mut res: Arc<NFRestriction>) -> bool {
     isConstructor
 }
 
-pub fn isRecord(mut res: Arc<NFRestriction>) -> bool {
+pub(crate) fn isRecord(mut res: Arc<NFRestriction>) -> bool {
     let mut isRecord: bool;
     isRecord = (::match_deref::match_deref! { match &(res.clone()) {
         Deref @ RECORD { .. } => true,
@@ -277,7 +277,7 @@ pub fn isRecord(mut res: Arc<NFRestriction>) -> bool {
     isRecord
 }
 
-pub fn isExternalRecord(mut res: Arc<NFRestriction>) -> bool {
+pub(crate) fn isExternalRecord(mut res: Arc<NFRestriction>) -> bool {
     let mut isExtRecord: bool;
     isExtRecord = (::match_deref::match_deref! { match &(res.clone()) {
         Deref @ RECORD { .. } => var_field!((*res).usedExternally, NFRestriction::RECORD).clone(),
@@ -287,7 +287,7 @@ pub fn isExternalRecord(mut res: Arc<NFRestriction>) -> bool {
     isExtRecord
 }
 
-pub fn setExternalRecord(mut res: Arc<NFRestriction>) -> Arc<NFRestriction> {
+pub(crate) fn setExternalRecord(mut res: Arc<NFRestriction>) -> Arc<NFRestriction> {
     let mut res: Arc<NFRestriction> = res;
     let () = (::match_deref::match_deref! { match &(res.clone()) {
         Deref @ RECORD { usedExternally: false, .. } => {
@@ -300,7 +300,7 @@ pub fn setExternalRecord(mut res: Arc<NFRestriction>) -> Arc<NFRestriction> {
     res
 }
 
-pub fn isOperatorRecord(mut res: Arc<NFRestriction>) -> bool {
+pub(crate) fn isOperatorRecord(mut res: Arc<NFRestriction>) -> bool {
     let mut isOpRecord: bool;
     isOpRecord = (::match_deref::match_deref! { match &(res.clone()) {
         Deref @ RECORD { .. } => var_field!((*res).isOperator, NFRestriction::RECORD).clone(),
@@ -310,7 +310,7 @@ pub fn isOperatorRecord(mut res: Arc<NFRestriction>) -> bool {
     isOpRecord
 }
 
-pub fn isOperator(mut res: Arc<NFRestriction>) -> bool {
+pub(crate) fn isOperator(mut res: Arc<NFRestriction>) -> bool {
     let mut isOperator: bool;
     isOperator = (::match_deref::match_deref! { match &(res.clone()) {
         Deref @ OPERATOR { .. } => true,
@@ -320,7 +320,7 @@ pub fn isOperator(mut res: Arc<NFRestriction>) -> bool {
     isOperator
 }
 
-pub fn isType(mut res: Arc<NFRestriction>) -> bool {
+pub(crate) fn isType(mut res: Arc<NFRestriction>) -> bool {
     let mut isType: bool;
     isType = (::match_deref::match_deref! { match &(res.clone()) {
         Deref @ TYPE { .. } => true,
@@ -330,7 +330,7 @@ pub fn isType(mut res: Arc<NFRestriction>) -> bool {
     isType
 }
 
-pub fn isClock(mut res: Arc<NFRestriction>) -> bool {
+pub(crate) fn isClock(mut res: Arc<NFRestriction>) -> bool {
     let mut isClock: bool;
     isClock = (::match_deref::match_deref! { match &(res.clone()) {
         Deref @ CLOCK { .. } => true,
@@ -340,7 +340,7 @@ pub fn isClock(mut res: Arc<NFRestriction>) -> bool {
     isClock
 }
 
-pub fn isModel(mut res: Arc<NFRestriction>) -> bool {
+pub(crate) fn isModel(mut res: Arc<NFRestriction>) -> bool {
     let mut isModel: bool;
     isModel = (::match_deref::match_deref! { match &(res.clone()) {
         Deref @ MODEL { .. } => true,
@@ -372,7 +372,7 @@ pub fn toString(mut res: Arc<NFRestriction>) -> ArcStr {
     r#str
 }
 
-pub fn assertNoEquations(mut equations: Arc<metamodelica::List<Arc<SCode::Equation>>>, mut initialEquations: Arc<metamodelica::List<Arc<SCode::Equation>>>, mut res: Arc<NFRestriction>, mut onlyDeprecated: bool) -> Result<()> {
+pub(crate) fn assertNoEquations(mut equations: Arc<metamodelica::List<Arc<SCode::Equation>>>, mut initialEquations: Arc<metamodelica::List<Arc<SCode::Equation>>>, mut res: Arc<NFRestriction>, mut onlyDeprecated: bool) -> Result<()> {
     let mut eq: Arc<SCode::Equation>;
     if equations.clone().is_empty() && initialEquations.clone().is_empty() {
         return Ok(());
@@ -387,7 +387,7 @@ pub fn assertNoEquations(mut equations: Arc<metamodelica::List<Arc<SCode::Equati
     Ok(())
 }
 
-pub fn assertNoAlgorithms(mut algorithms: Arc<metamodelica::List<Arc<SCode::AlgorithmSection>>>, mut initialAlgorithms: Arc<metamodelica::List<Arc<SCode::AlgorithmSection>>>, mut res: Arc<NFRestriction>, mut onlyDeprecated: bool) -> Result<()> {
+pub(crate) fn assertNoAlgorithms(mut algorithms: Arc<metamodelica::List<Arc<SCode::AlgorithmSection>>>, mut initialAlgorithms: Arc<metamodelica::List<Arc<SCode::AlgorithmSection>>>, mut res: Arc<NFRestriction>, mut onlyDeprecated: bool) -> Result<()> {
     let mut alg_opt: Option<Arc<SCode::AlgorithmSection>> = None;
     let mut alg: Arc<SCode::AlgorithmSection>;
     let mut info: SourceInfo;
@@ -413,7 +413,7 @@ pub fn assertNoAlgorithms(mut algorithms: Arc<metamodelica::List<Arc<SCode::Algo
     Ok(())
 }
 
-pub fn assertNoInitialAlgorithms(mut algs: Arc<metamodelica::List<Arc<SCode::AlgorithmSection>>>, mut res: Arc<NFRestriction>) -> Result<()> {
+pub(crate) fn assertNoInitialAlgorithms(mut algs: Arc<metamodelica::List<Arc<SCode::AlgorithmSection>>>, mut res: Arc<NFRestriction>) -> Result<()> {
     for mut alg in &*algs.clone() {
         let mut alg = alg.clone();
         if !(alg.statements.clone().is_empty()) {
@@ -424,7 +424,7 @@ pub fn assertNoInitialAlgorithms(mut algs: Arc<metamodelica::List<Arc<SCode::Alg
     Ok(())
 }
 
-pub fn assertNoProtected(mut elements: Arc<metamodelica::List<Arc<SCode::Element>>>, mut res: Arc<NFRestriction>) -> Result<()> {
+pub(crate) fn assertNoProtected(mut elements: Arc<metamodelica::List<Arc<SCode::Element>>>, mut res: Arc<NFRestriction>) -> Result<()> {
     for mut e in &*elements.clone() {
         let mut e = e.clone();
         if SCodeUtil::isElementProtected(e.clone())? {
@@ -435,7 +435,7 @@ pub fn assertNoProtected(mut elements: Arc<metamodelica::List<Arc<SCode::Element
     Ok(())
 }
 
-pub fn assertNoComponents(mut elements: Arc<metamodelica::List<Arc<SCode::Element>>>, mut res: Arc<NFRestriction>) -> Result<()> {
+pub(crate) fn assertNoComponents(mut elements: Arc<metamodelica::List<Arc<SCode::Element>>>, mut res: Arc<NFRestriction>) -> Result<()> {
     for mut e in &*elements.clone() {
         let mut e = e.clone();
         if SCodeUtil::isComponent(e.clone()) {
@@ -445,7 +445,7 @@ pub fn assertNoComponents(mut elements: Arc<metamodelica::List<Arc<SCode::Elemen
     Ok(())
 }
 
-pub fn assertOnlyConstantComponents(mut elements: Arc<metamodelica::List<Arc<SCode::Element>>>, mut clsNode: Arc<InstNode::InstNode>) -> Result<()> {
+pub(crate) fn assertOnlyConstantComponents(mut elements: Arc<metamodelica::List<Arc<SCode::Element>>>, mut clsNode: Arc<InstNode::InstNode>) -> Result<()> {
     for mut e in &*elements.clone() {
         let mut e = e.clone();
         let () = (::match_deref::match_deref! { match &(e.clone()) {
@@ -460,7 +460,7 @@ pub fn assertOnlyConstantComponents(mut elements: Arc<metamodelica::List<Arc<SCo
     Ok(())
 }
 
-pub fn assertOnlyFunctions(mut elements: Arc<metamodelica::List<Arc<SCode::Element>>>, mut res: Arc<NFRestriction>) -> () {
+pub(crate) fn assertOnlyFunctions(mut elements: Arc<metamodelica::List<Arc<SCode::Element>>>, mut res: Arc<NFRestriction>) -> () {
     for mut e in &*elements.clone() {
         let mut e = e.clone();
         if !(SCodeUtil::isFunction(e.clone())) {
@@ -469,7 +469,7 @@ pub fn assertOnlyFunctions(mut elements: Arc<metamodelica::List<Arc<SCode::Eleme
     ()
 }
 
-pub fn checkClass(mut node: Arc<InstNode::InstNode>, mut restriction: Arc<NFRestriction>, mut context: i32) -> Result<()> {
+pub(crate) fn checkClass(mut node: Arc<InstNode::InstNode>, mut restriction: Arc<NFRestriction>, mut context: i32) -> Result<()> {
     let mut cdef: Arc<SCode::ClassDef>;
     if InstContext::inRelaxed(context.clone()) {
         return Ok(());

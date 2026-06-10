@@ -68,19 +68,19 @@ pub type FuncCrefStr = std::sync::Arc<dyn ::std::ops::Fn(Key) -> Result<ArcStr> 
 
 pub type FuncExpStr = std::sync::Arc<dyn ::std::ops::Fn(Value) -> Result<ArcStr> + 'static>;
 
-pub fn emptyHashTable() -> HashTable {
+pub(crate) fn emptyHashTable() -> HashTable {
     let mut hashTable: HashTable;
     hashTable = emptyHashTableSized(BaseHashTable::defaultBucketSize.clone());
     hashTable
 }
 
-pub fn emptyHashTableSized(mut size: i32) -> HashTable {
+pub(crate) fn emptyHashTableSized(mut size: i32) -> HashTable {
     let mut hashTable: HashTable;
     hashTable = BaseHashTable::emptyHashTableWork(size.clone(), ((std::sync::Arc::new(ComponentReferenceBasics::hashComponentRef) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentReferenceBasics::crefEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>), (std::sync::Arc::new(ComponentReferenceBasics::printComponentRefStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(modeStr) as std::sync::Arc<dyn ::std::ops::Fn(InstStateMachineUtil::SMNode) -> Result<ArcStr> + 'static>)));
     hashTable
 }
 
-pub fn modeStr(mut mode: InstStateMachineUtil::SMNode) -> Result<ArcStr> {
+pub(crate) fn modeStr(mut mode: InstStateMachineUtil::SMNode) -> Result<ArcStr> {
     let mut s: ArcStr;
     let mut componentRef: Arc<DAE::ComponentRef>;
     let mut isInitial: bool;

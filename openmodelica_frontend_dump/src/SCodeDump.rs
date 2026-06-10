@@ -100,7 +100,7 @@ pub type OPTIONS = SCodeDumpOptions;
 
 pub static defaultOptions: SCodeDumpOptions = SCodeDumpOptions { stripAlgorithmSections: false, stripProtectedImports: false, stripProtectedClasses: false, stripProtectedComponents: false, stripMetaRecords: true, stripGraphicalAnnotations: true, stripStringComments: false, stripExternalDecl: false, stripOutputBindings: false };
 
-pub fn generateOptions(mut stripAlgorithmSections: bool, mut stripProtectedImports: bool, mut stripProtectedClasses: bool, mut stripProtectedComponents: bool, mut stripMetaRecords: bool, mut stripGraphicalAnnotations: bool, mut stripStringComments: bool, mut stripExternalDecl: bool, mut stripOutputBindings: bool) -> SCodeDumpOptions {
+pub(crate) fn generateOptions(mut stripAlgorithmSections: bool, mut stripProtectedImports: bool, mut stripProtectedClasses: bool, mut stripProtectedComponents: bool, mut stripMetaRecords: bool, mut stripGraphicalAnnotations: bool, mut stripStringComments: bool, mut stripExternalDecl: bool, mut stripOutputBindings: bool) -> SCodeDumpOptions {
     let mut options: SCodeDumpOptions;
     options = SCodeDumpOptions { stripAlgorithmSections: stripAlgorithmSections.clone(), stripProtectedImports: stripProtectedImports.clone(), stripProtectedClasses: stripProtectedClasses.clone(), stripProtectedComponents: stripProtectedComponents.clone(), stripMetaRecords: stripMetaRecords.clone(), stripGraphicalAnnotations: stripGraphicalAnnotations.clone(), stripStringComments: stripStringComments.clone(), stripExternalDecl: stripExternalDecl.clone(), stripOutputBindings: stripOutputBindings.clone() };
     options
@@ -136,7 +136,7 @@ pub fn printModStr(mut inMod: Arc<SCode::Mod>, mut options: SCodeDumpOptions) ->
     Ok(outString)
 }
 
-pub fn printCommentAndAnnotationStr(mut inComment: Arc<SCode::Comment>, mut options: SCodeDumpOptions) -> Result<ArcStr> {
+pub(crate) fn printCommentAndAnnotationStr(mut inComment: Arc<SCode::Comment>, mut options: SCodeDumpOptions) -> Result<ArcStr> {
     let mut outString: ArcStr;
     outString = (Tpl::tplString2((std::sync::Arc::new(SCodeDumpTpl::dumpComment) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, Arc<SCode::Comment>, SCodeDumpOptions) -> Result<Tpl::Text> + 'static>), inComment.clone(), options.clone())?).clone();
     Ok(outString)
@@ -275,7 +275,7 @@ pub fn shortElementStr(mut inElement: Arc<SCode::Element>) -> Result<ArcStr> {
     Ok(outString)
 }
 
-pub fn printEnumStr(mut en: Arc<SCode::Enum>) -> Result<ArcStr> {
+pub(crate) fn printEnumStr(mut en: Arc<SCode::Enum>) -> Result<ArcStr> {
     let mut r#str: ArcStr;
     r#str = ((::match_deref::match_deref! { match &(en.clone()) {
         Deref @ SCode::Enum { literal: s, comment: _ } => {
@@ -297,7 +297,7 @@ pub fn variabilityString(mut inVariability: SCode::Variability) -> Result<ArcStr
     Ok(outString)
 }
 
-pub fn parallelismString(mut inParallelism: SCode::Parallelism) -> Result<ArcStr> {
+pub(crate) fn parallelismString(mut inParallelism: SCode::Parallelism) -> Result<ArcStr> {
     let mut outString: ArcStr;
     outString = ((match inParallelism.clone() {
         SCode::Parallelism::PARGLOBAL { .. } => literal!("PARGLOBAL"),
@@ -307,7 +307,7 @@ pub fn parallelismString(mut inParallelism: SCode::Parallelism) -> Result<ArcStr
     Ok(outString)
 }
 
-pub fn innerouterString(mut innerOuter: Absyn::InnerOuter) -> Result<ArcStr> {
+pub(crate) fn innerouterString(mut innerOuter: Absyn::InnerOuter) -> Result<ArcStr> {
     let mut outString: ArcStr;
     outString = ((match innerOuter.clone() {
         Absyn::InnerOuter::INNER_OUTER { .. } => literal!("INNER/OUTER"),
@@ -348,7 +348,7 @@ pub fn connectorTypeStr(mut inConnectorType: SCode::ConnectorType) -> Result<Arc
     Ok(r#str)
 }
 
-pub fn encapsulatedStr(mut inEncapsulated: SCode::Encapsulated) -> Result<ArcStr> {
+pub(crate) fn encapsulatedStr(mut inEncapsulated: SCode::Encapsulated) -> Result<ArcStr> {
     let mut r#str: ArcStr;
     r#str = ((match inEncapsulated.clone() {
         SCode::Encapsulated::ENCAPSULATED { .. } => literal!("encapsulated "),
@@ -357,7 +357,7 @@ pub fn encapsulatedStr(mut inEncapsulated: SCode::Encapsulated) -> Result<ArcStr
     Ok(r#str)
 }
 
-pub fn partialStr(mut inPartial: SCode::Partial) -> Result<ArcStr> {
+pub(crate) fn partialStr(mut inPartial: SCode::Partial) -> Result<ArcStr> {
     let mut r#str: ArcStr;
     r#str = ((match inPartial.clone() {
         SCode::Partial::PARTIAL { .. } => literal!("partial "),
@@ -393,7 +393,7 @@ pub fn eachStr(mut inEach: SCode::Each) -> Result<ArcStr> {
     Ok(r#str)
 }
 
-pub fn redeclareStr(mut inRedeclare: SCode::Redeclare) -> Result<ArcStr> {
+pub(crate) fn redeclareStr(mut inRedeclare: SCode::Redeclare) -> Result<ArcStr> {
     let mut r#str: ArcStr;
     r#str = ((match inRedeclare.clone() {
         SCode::Redeclare::REDECLARE { .. } => literal!("redeclare "),
@@ -402,7 +402,7 @@ pub fn redeclareStr(mut inRedeclare: SCode::Redeclare) -> Result<ArcStr> {
     Ok(r#str)
 }
 
-pub fn replaceableStr(mut inReplaceable: Arc<SCode::Replaceable>) -> Result<(ArcStr, ArcStr)> {
+pub(crate) fn replaceableStr(mut inReplaceable: Arc<SCode::Replaceable>) -> Result<(ArcStr, ArcStr)> {
     let mut strReplaceable: ArcStr;
     let mut strConstraint: ArcStr;
     (strReplaceable, strConstraint) = (::match_deref::match_deref! { match &(inReplaceable.clone()) {
@@ -424,7 +424,7 @@ pub fn replaceableStr(mut inReplaceable: Arc<SCode::Replaceable>) -> Result<(Arc
     Ok((strReplaceable, strConstraint))
 }
 
-pub fn replaceablePrefixStr(mut inReplaceable: Arc<SCode::Replaceable>) -> Result<ArcStr> {
+pub(crate) fn replaceablePrefixStr(mut inReplaceable: Arc<SCode::Replaceable>) -> Result<ArcStr> {
     let mut strReplaceable: ArcStr;
     strReplaceable = ((::match_deref::match_deref! { match &(inReplaceable.clone()) {
         Deref @ SCode::Replaceable::REPLACEABLE { cc: _ } => literal!("replaceable "),
@@ -434,13 +434,13 @@ pub fn replaceablePrefixStr(mut inReplaceable: Arc<SCode::Replaceable>) -> Resul
     Ok(strReplaceable)
 }
 
-pub fn replaceableConstrainClassStr(mut inReplaceable: Arc<SCode::Replaceable>) -> Result<ArcStr> {
+pub(crate) fn replaceableConstrainClassStr(mut inReplaceable: Arc<SCode::Replaceable>) -> Result<ArcStr> {
     let mut strReplaceable: ArcStr;
     (_, strReplaceable) = replaceableStr(inReplaceable.clone())?;
     Ok(strReplaceable)
 }
 
-pub fn prefixesStr(mut prefixes: Arc<SCode::Prefixes>) -> Result<ArcStr> {
+pub(crate) fn prefixesStr(mut prefixes: Arc<SCode::Prefixes>) -> Result<ArcStr> {
     let mut r#str: ArcStr;
     r#str = ((::match_deref::match_deref! { match &(prefixes.clone()) {
         Deref @ SCode::Prefixes { visibility: v, redeclarePrefix: rd, finalPrefix: f, innerOuter: io, replaceablePrefix: rpl } => {

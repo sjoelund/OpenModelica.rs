@@ -89,7 +89,7 @@ use openmodelica_util_datatypes_basic::Pointer;
 ///  package:      NBInline
 ///  description:  This file contains functions for inlining operations.
 pub struct NBInline<T>(std::marker::PhantomData<T>);
-pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>, mut inline_types: Arc<metamodelica::List<DAE::InlineType>>, mut init: bool) -> Result<Arc<BackendDAE::NBackendDAE>> {
+pub(crate) fn main(mut bdae: Arc<BackendDAE::NBackendDAE>, mut inline_types: Arc<metamodelica::List<DAE::InlineType>>, mut init: bool) -> Result<Arc<BackendDAE::NBackendDAE>> {
     let mut bdae: Arc<BackendDAE::NBackendDAE> = bdae;
     bdae = (::match_deref::match_deref! { match &(bdae.clone()) {
         Deref @ BackendDAE::MAIN { .. } => {
@@ -117,7 +117,7 @@ pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>, mut inline_types: Arc<metamo
     Ok(bdae)
 }
 
-pub fn inlineForEquation(mut eqn: Arc<Equation::Equation>) -> Result<Arc<Equation::Equation>> {
+pub(crate) fn inlineForEquation(mut eqn: Arc<Equation::Equation>) -> Result<Arc<Equation::Equation>> {
     let mut eqn: Arc<Equation::Equation> = eqn;
     eqn = (::match_deref::match_deref! { match &(eqn.clone()) {
         Deref @ BEquation::Equation::FOR_EQUATION { body: Deref @ metamodelica::List::Cons { head: new_eqn, tail: Deref @ metamodelica::List::Nil }, .. } if (BEquation::Iterator::size(var_field!((*eqn).iter, Equation::Equation::FOR_EQUATION).clone(), false)? == 1 && !(BEquation::Iterator::isResizable(var_field!((*eqn).iter, Equation::Equation::FOR_EQUATION).clone())?)) => {
@@ -151,7 +151,7 @@ pub fn inlineForEquation(mut eqn: Arc<Equation::Equation>) -> Result<Arc<Equatio
     Ok(eqn)
 }
 
-pub fn functionInlineable(mut r#fn: Arc<Function::Function>) -> Result<bool> {
+pub(crate) fn functionInlineable(mut r#fn: Arc<Function::Function>) -> Result<bool> {
     let mut b: bool = false;
     if Function::hasSingleOrEmptyBody(r#fn.clone()) {
         b = (::match_deref::match_deref! { match &(Function::getBody(r#fn.clone())?) {
@@ -163,7 +163,7 @@ pub fn functionInlineable(mut r#fn: Arc<Function::Function>) -> Result<bool> {
     Ok(b)
 }
 
-pub fn inlineRecordSliceEquation(mut slice: Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>, mut variables: Arc<VariablePointers::VariablePointers>, mut set: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>>, mut index: Pointer::Pointer<i32>, mut inlineSimple: bool) -> Result<Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>>> {
+pub(crate) fn inlineRecordSliceEquation(mut slice: Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>, mut variables: Arc<VariablePointers::VariablePointers>, mut set: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>>, mut index: Pointer::Pointer<i32>, mut inlineSimple: bool) -> Result<Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>>> {
     let mut slices: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>>;
     let mut record_eqns: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>> = Pointer::create(metamodelica::nil());
     inlineRecordTupleArrayEquation(Pointer::access(Slice::getT(slice.clone())), crate::NBEquation::Iterator::interned_EMPTY(), variables.clone(), record_eqns.clone(), set.clone(), index.clone(), inlineSimple.clone())?;
@@ -181,7 +181,7 @@ pub fn inlineRecordSliceEquation(mut slice: Arc<Slice::NBSlice<Pointer::Pointer<
     Ok(slices)
 }
 
-pub fn inlineArrayConstructorSingle(mut eqn: Arc<Equation::Equation>, mut iter: Arc<Iterator::Iterator>, mut variables: Arc<VariablePointers::VariablePointers>, mut set: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>>, mut index: Pointer::Pointer<i32>, mut new_eqns: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>>) -> Result<(Arc<Equation::Equation>, bool)> {
+pub(crate) fn inlineArrayConstructorSingle(mut eqn: Arc<Equation::Equation>, mut iter: Arc<Iterator::Iterator>, mut variables: Arc<VariablePointers::VariablePointers>, mut set: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>>, mut index: Pointer::Pointer<i32>, mut new_eqns: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>>) -> Result<(Arc<Equation::Equation>, bool)> {
     let mut eqn: Arc<Equation::Equation> = eqn;
     let mut changed: bool = false;
     match '__try0: {
@@ -274,7 +274,7 @@ fn inlineRecordsTuplesArrays(mut eqData: Arc<EqData::EqData>, mut variables: Arc
     Ok(eqData)
 }
 
-pub fn inlineRecordTupleArrayEquation(mut eqn: Arc<Equation::Equation>, mut iter: Arc<Iterator::Iterator>, mut variables: Arc<VariablePointers::VariablePointers>, mut new_eqns: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>>, mut set: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>>, mut index: Pointer::Pointer<i32>, mut inlineSimple: bool) -> Result<Arc<Equation::Equation>> {
+pub(crate) fn inlineRecordTupleArrayEquation(mut eqn: Arc<Equation::Equation>, mut iter: Arc<Iterator::Iterator>, mut variables: Arc<VariablePointers::VariablePointers>, mut new_eqns: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>>, mut set: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>>, mut index: Pointer::Pointer<i32>, mut inlineSimple: bool) -> Result<Arc<Equation::Equation>> {
     let mut eqn: Arc<Equation::Equation> = eqn;
     if '__try0: {
         eqn = (::match_deref::match_deref! { match &(eqn.clone()) {
@@ -842,13 +842,13 @@ pub mod InlineRating {
 
     pub type INLINE_RATING = InlineRating;
 
-    pub fn toString(mut ir: Arc<InlineRating>) -> Result<ArcStr> {
+    pub(crate) fn toString(mut ir: Arc<InlineRating>) -> Result<ArcStr> {
         let mut r#str: ArcStr;
         r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("{resolved: ")); __mm_s.push_str(&*realString(resolve(ir.clone()))); __mm_s.push_str(&*literal!(" | input: ")); __mm_s.push_str(&*Array::toString(ir.input_rating.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("[")).clone(), (literal!(", ")).clone(), (literal!("]")).clone(), true, 0)?); __mm_s.push_str(&*literal!(" | constant: ")); __mm_s.push_str(&*intString(ir.constant_rating.clone())); __mm_s.push_str(&*literal!("}")); ArcStr::from(__mm_s) }).clone();
         Ok(r#str)
     }
 
-    pub fn resolve(mut ir: Arc<InlineRating>) -> metamodelica::Real {
+    pub(crate) fn resolve(mut ir: Arc<InlineRating>) -> metamodelica::Real {
         let mut r: metamodelica::Real = metamodelica::OrderedFloat((({
         let mut __acc: i32 = 0;
         for mut v in (ir.input_rating.clone()).borrow().iter() {
@@ -860,7 +860,7 @@ pub mod InlineRating {
         r
     }
 
-    pub fn add(mut dst: Arc<InlineRating>, mut src: Arc<InlineRating>) -> Result<Arc<InlineRating>> {
+    pub(crate) fn add(mut dst: Arc<InlineRating>, mut src: Arc<InlineRating>) -> Result<Arc<InlineRating>> {
         let mut dst: Arc<InlineRating> = dst;
         if metamodelica::arrayLength(dst.input_rating.clone()) == metamodelica::arrayLength(src.input_rating.clone()) {
             for mut i in 1..=metamodelica::arrayLength(dst.input_rating.clone()) {
@@ -878,7 +878,7 @@ pub mod InlineRating {
         Ok(dst)
     }
 
-    pub fn multiply(mut ir: Arc<InlineRating>, mut i: i32) -> Arc<InlineRating> {
+    pub(crate) fn multiply(mut ir: Arc<InlineRating>, mut i: i32) -> Arc<InlineRating> {
         let mut ir: Arc<InlineRating> = ir;
         for mut i in 1..=metamodelica::arrayLength(ir.input_rating.clone()) {
             {
@@ -891,13 +891,13 @@ pub mod InlineRating {
         ir
     }
 
-    pub fn addConst(mut ir: Arc<InlineRating>) -> Arc<InlineRating> {
+    pub(crate) fn addConst(mut ir: Arc<InlineRating>) -> Arc<InlineRating> {
         let mut ir: Arc<InlineRating> = ir;
         assign_field!(ir.constant_rating = ir.constant_rating.clone() + 1);
         ir
     }
 
-    pub fn addMapped(mut dst: Arc<InlineRating>, mut src: Arc<InlineRating>, mut args: metamodelica::Array<Arc<Expression::NFExpression>>, mut local_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<InlineRating>>>) -> Result<Arc<InlineRating>> {
+    pub(crate) fn addMapped(mut dst: Arc<InlineRating>, mut src: Arc<InlineRating>, mut args: metamodelica::Array<Arc<Expression::NFExpression>>, mut local_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<InlineRating>>>) -> Result<Arc<InlineRating>> {
         let mut dst: Arc<InlineRating> = dst;
         let mut irp: Pointer::Pointer<Arc<InlineRating>> = Pointer::create(Arc::new(InlineRating { input_rating: arrayCreate(metamodelica::arrayLength(dst.input_rating.clone()), 0), constant_rating: src.constant_rating.clone() }));
         if metamodelica::arrayLength(src.input_rating.clone()) == metamodelica::arrayLength(args.clone()) {
@@ -914,7 +914,7 @@ pub mod InlineRating {
         Ok(dst)
     }
 
-    pub fn addMappedExp(mut exp: Arc<Expression::NFExpression>, mut i: i32, mut irp: Pointer::Pointer<Arc<InlineRating>>, mut local_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<InlineRating>>>) -> Result<Arc<Expression::NFExpression>> {
+    pub(crate) fn addMappedExp(mut exp: Arc<Expression::NFExpression>, mut i: i32, mut irp: Pointer::Pointer<Arc<InlineRating>>, mut local_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<InlineRating>>>) -> Result<Arc<Expression::NFExpression>> {
         let mut exp: Arc<Expression::NFExpression> = exp;
         let () = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CREF { .. } => {
@@ -933,7 +933,7 @@ pub mod InlineRating {
         Ok(exp)
     }
 
-    pub fn fromFunction(mut r#fn: Arc<Function::Function>, mut func_map: Arc<UnorderedMap::UnorderedMap<Arc<Function::Function>, Arc<InlineRating>>>) -> Result<Arc<InlineRating>> {
+    pub(crate) fn fromFunction(mut r#fn: Arc<Function::Function>, mut func_map: Arc<UnorderedMap::UnorderedMap<Arc<Function::Function>, Arc<InlineRating>>>) -> Result<Arc<InlineRating>> {
         let mut ir: Arc<InlineRating>;
         let mut irp: Pointer::Pointer<Arc<InlineRating>>;
         let mut lir: Arc<InlineRating>;
@@ -974,7 +974,7 @@ pub mod InlineRating {
         Ok(ir)
     }
 
-    pub fn rateExpression(mut exp: Arc<Expression::NFExpression>, mut func_map: Arc<UnorderedMap::UnorderedMap<Arc<Function::Function>, Arc<InlineRating>>>, mut local_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<InlineRating>>>, mut irp: Pointer::Pointer<Arc<InlineRating>>) -> Result<Arc<Expression::NFExpression>> {
+    pub(crate) fn rateExpression(mut exp: Arc<Expression::NFExpression>, mut func_map: Arc<UnorderedMap::UnorderedMap<Arc<Function::Function>, Arc<InlineRating>>>, mut local_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<InlineRating>>>, mut irp: Pointer::Pointer<Arc<InlineRating>>) -> Result<Arc<Expression::NFExpression>> {
         let mut exp: Arc<Expression::NFExpression> = exp;
         let mut cont: bool = false;
         if Expression::isLiteral(exp.clone())? {

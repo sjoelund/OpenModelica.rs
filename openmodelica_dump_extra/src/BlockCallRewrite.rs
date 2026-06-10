@@ -72,7 +72,7 @@ fn parseProgram(mut inPg: Absyn::Program, mut defs: Absyn::Program) -> Result<Ab
     Ok(outPg)
 }
 
-pub fn parseClasses(mut classes: Arc<metamodelica::List<Arc<Absyn::Class>>>, mut defs: Absyn::Program) -> Result<Arc<metamodelica::List<Arc<Absyn::Class>>>> {
+pub(crate) fn parseClasses(mut classes: Arc<metamodelica::List<Arc<Absyn::Class>>>, mut defs: Absyn::Program) -> Result<Arc<metamodelica::List<Arc<Absyn::Class>>>> {
     let mut out_classes: Arc<metamodelica::List<Arc<Absyn::Class>>>;
     out_classes = (::match_deref::match_deref! { match &(classes.clone()) {
         Deref @ metamodelica::List::Nil => {
@@ -90,7 +90,7 @@ pub fn parseClasses(mut classes: Arc<metamodelica::List<Arc<Absyn::Class>>>, mut
     Ok(out_classes)
 }
 
-pub fn parseClass(mut in_class: Arc<Absyn::Class>, mut defs: Absyn::Program) -> Result<Arc<Absyn::Class>> {
+pub(crate) fn parseClass(mut in_class: Arc<Absyn::Class>, mut defs: Absyn::Program) -> Result<Arc<Absyn::Class>> {
     let mut out_class: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
     out_class = (::match_deref::match_deref! { match &(in_class.clone()) {
         __esc_out_class @ Deref @ Absyn::Class { body, .. } => {

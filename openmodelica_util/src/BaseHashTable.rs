@@ -98,7 +98,7 @@ pub type FuncKeyString<Key: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn
 
 pub type FuncValString<Value: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Value) -> Result<ArcStr> + 'static>;
 
-pub fn bucketToValuesSize(mut szBucket: i32) -> i32 {
+pub(crate) fn bucketToValuesSize(mut szBucket: i32) -> i32 {
     let mut szArr: i32;
     szArr = (((intReal(szBucket.clone())) * (metamodelica::OrderedFloat(0.6_f64))).0.floor() as i32);
     szArr
@@ -260,7 +260,7 @@ pub fn update<Key: Clone + 'static + metamodelica::gc::MMTrace, Value: Clone + '
     Ok(())
 }
 
-pub fn delete<Key: Clone + 'static + metamodelica::gc::MMTrace, Value: Clone + 'static + metamodelica::gc::MMTrace>(mut key: Key, mut hashTable: HashTable<Key, Value>) -> Result<()> {
+pub(crate) fn delete<Key: Clone + 'static + metamodelica::gc::MMTrace, Value: Clone + 'static + metamodelica::gc::MMTrace>(mut key: Key, mut hashTable: HashTable<Key, Value>) -> Result<()> {
     let mut indx: i32;
     let mut varr: ValueArray<Key, Value>;
     indx = hasKeyIndex(key.clone(), hashTable.clone())?;
@@ -281,7 +281,7 @@ pub fn hasKey<Key: Clone + 'static + metamodelica::gc::MMTrace, Value: Clone + '
     Ok(b)
 }
 
-pub fn anyKeyInHashTable<Key: Clone + 'static + metamodelica::gc::MMTrace, Value: Clone + 'static + metamodelica::gc::MMTrace>(mut keys: Arc<metamodelica::List<Key>>, mut ht: HashTable<Key, Value>) -> Result<bool> {
+pub(crate) fn anyKeyInHashTable<Key: Clone + 'static + metamodelica::gc::MMTrace, Value: Clone + 'static + metamodelica::gc::MMTrace>(mut keys: Arc<metamodelica::List<Key>>, mut ht: HashTable<Key, Value>) -> Result<bool> {
     let mut res: bool;
     for mut key in &*keys.clone() {
         let mut key = key.clone();
@@ -365,7 +365,7 @@ pub fn dumpHashTable<Key: Clone + 'static + metamodelica::gc::MMTrace, Value: Cl
     Ok(())
 }
 
-pub fn debugDump<Key: Clone + 'static + metamodelica::gc::MMTrace, Value: Clone + 'static + metamodelica::gc::MMTrace>(mut ht: HashTable<Key, Value>) -> Result<()> {
+pub(crate) fn debugDump<Key: Clone + 'static + metamodelica::gc::MMTrace, Value: Clone + 'static + metamodelica::gc::MMTrace>(mut ht: HashTable<Key, Value>) -> Result<()> {
     let mut printKey: FuncKeyString<Key>;
     let mut printValue: FuncValString<Value>;
     let mut k: Key;
@@ -454,7 +454,7 @@ pub fn hashTableList<Key: Clone + 'static + metamodelica::gc::MMTrace, Value: Cl
     Ok(outEntries)
 }
 
-pub fn hashTableListReversed<Key: Clone + 'static + metamodelica::gc::MMTrace, Value: Clone + 'static + metamodelica::gc::MMTrace>(mut hashTable: HashTable<Key, Value>) -> Result<Arc<metamodelica::List<(Key, Value)>>> {
+pub(crate) fn hashTableListReversed<Key: Clone + 'static + metamodelica::gc::MMTrace, Value: Clone + 'static + metamodelica::gc::MMTrace>(mut hashTable: HashTable<Key, Value>) -> Result<Arc<metamodelica::List<(Key, Value)>>> {
     let mut entries: Arc<metamodelica::List<(Key, Value)>>;
     let mut varr: ValueArray<Key, Value>;
     (_, varr, _, _) = hashTable.clone();
@@ -462,7 +462,7 @@ pub fn hashTableListReversed<Key: Clone + 'static + metamodelica::gc::MMTrace, V
     Ok(entries)
 }
 
-pub fn valueArrayList<Key: Clone + 'static + metamodelica::gc::MMTrace, Value: Clone + 'static + metamodelica::gc::MMTrace>(mut valueArray: ValueArray<Key, Value>) -> Result<Arc<metamodelica::List<(Key, Value)>>> {
+pub(crate) fn valueArrayList<Key: Clone + 'static + metamodelica::gc::MMTrace, Value: Clone + 'static + metamodelica::gc::MMTrace>(mut valueArray: ValueArray<Key, Value>) -> Result<Arc<metamodelica::List<(Key, Value)>>> {
     let mut outEntries: Arc<metamodelica::List<(Key, Value)>>;
     let mut arr: metamodelica::Array<Option<(Key, Value)>>;
     (_, _, arr) = valueArray.clone();
@@ -471,7 +471,7 @@ pub fn valueArrayList<Key: Clone + 'static + metamodelica::gc::MMTrace, Value: C
     Ok(outEntries)
 }
 
-pub fn valueArrayListReversed<Key: Clone + 'static + metamodelica::gc::MMTrace, Value: Clone + 'static + metamodelica::gc::MMTrace>(mut valueArray: ValueArray<Key, Value>) -> Result<Arc<metamodelica::List<(Key, Value)>>> {
+pub(crate) fn valueArrayListReversed<Key: Clone + 'static + metamodelica::gc::MMTrace, Value: Clone + 'static + metamodelica::gc::MMTrace>(mut valueArray: ValueArray<Key, Value>) -> Result<Arc<metamodelica::List<(Key, Value)>>> {
     let mut entries: Arc<metamodelica::List<(Key, Value)>>;
     let mut arr: metamodelica::Array<Option<(Key, Value)>>;
     (_, _, arr) = valueArray.clone();
@@ -487,7 +487,7 @@ pub fn hashTableCurrentSize<Key: Clone + 'static + metamodelica::gc::MMTrace, Va
     sz
 }
 
-pub fn valueArrayLength<Key: Clone + 'static + metamodelica::gc::MMTrace, Value: Clone + 'static + metamodelica::gc::MMTrace>(mut valueArray: ValueArray<Key, Value>) -> i32 {
+pub(crate) fn valueArrayLength<Key: Clone + 'static + metamodelica::gc::MMTrace, Value: Clone + 'static + metamodelica::gc::MMTrace>(mut valueArray: ValueArray<Key, Value>) -> i32 {
     let mut sz: i32;
     (sz, _, _) = valueArray.clone();
     sz

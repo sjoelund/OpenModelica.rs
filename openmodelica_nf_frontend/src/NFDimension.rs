@@ -223,7 +223,7 @@ pub fn fromExp(mut exp: Arc<Expression::NFExpression>, mut var: Variability) -> 
     }
 }
 
-pub fn fromRange(mut range: Arc<Expression::NFExpression>) -> Result<Arc<NFDimension>> {
+pub(crate) fn fromRange(mut range: Arc<Expression::NFExpression>) -> Result<Arc<NFDimension>> {
     let mut dim: Arc<NFDimension>;
     let mut start: i32 = 0;
     let mut step: i32 = 0;
@@ -255,23 +255,23 @@ pub fn fromInteger(mut n: i32, mut var: Variability) -> Arc<NFDimension> {
     dim
 }
 
-pub fn fromExpArray(mut expl: metamodelica::Array<Arc<Expression::NFExpression>>) -> Arc<NFDimension> {
+pub(crate) fn fromExpArray(mut expl: metamodelica::Array<Arc<Expression::NFExpression>>) -> Arc<NFDimension> {
     let mut dim: Arc<NFDimension> = Arc::new(NFDimension::INTEGER { size: metamodelica::arrayLength(expl.clone()), var: Variability::CONSTANT.clone() });
     dim
 }
 
-pub fn fromExpList(mut expl: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Arc<NFDimension> {
+pub(crate) fn fromExpList(mut expl: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Arc<NFDimension> {
     let mut dim: Arc<NFDimension> = Arc::new(NFDimension::INTEGER { size: (expl.clone().len() as i32), var: Variability::CONSTANT.clone() });
     dim
 }
 
-pub fn toRange(mut dim: Arc<NFDimension>) -> Result<Arc<Expression::NFExpression>> {
+pub(crate) fn toRange(mut dim: Arc<NFDimension>) -> Result<Arc<Expression::NFExpression>> {
     let mut range: Arc<Expression::NFExpression>;
     range = Arc::new(Expression::NFExpression::RANGE { ty: Type::liftArrayLeft(typeOf(dim.clone()), dim.clone()), start: lowerBoundExp(dim.clone())?, step: None, stop: upperBoundExp(dim.clone())? });
     Ok(range)
 }
 
-pub fn toDAE(mut dim: Arc<NFDimension>) -> Result<Arc<DAE::Dimension>> {
+pub(crate) fn toDAE(mut dim: Arc<NFDimension>) -> Result<Arc<DAE::Dimension>> {
     let mut daeDim: Arc<DAE::Dimension>;
     daeDim = (::match_deref::match_deref! { match &(dim.clone()) {
         Deref @ INTEGER { .. } => {
@@ -297,7 +297,7 @@ pub fn toDAE(mut dim: Arc<NFDimension>) -> Result<Arc<DAE::Dimension>> {
     Ok(daeDim)
 }
 
-pub fn add(mut a: Arc<NFDimension>, mut b: Arc<NFDimension>) -> Arc<NFDimension> {
+pub(crate) fn add(mut a: Arc<NFDimension>, mut b: Arc<NFDimension>) -> Arc<NFDimension> {
     fn addExp(mut e1: Arc<Expression::NFExpression>, mut e2: Arc<Expression::NFExpression>) -> Arc<Expression::NFExpression> {
         let mut res: Arc<Expression::NFExpression> = Arc::new(Expression::NFExpression::BINARY { exp1: e1.clone(), operator: Arc::new(Operator::NFOperator { ty: crate::NFType::interned_INTEGER(), op: Operator::Op::ADD.clone() }), exp2: e2.clone() });
         res
@@ -399,7 +399,7 @@ pub fn isEqual(mut dim1: Arc<NFDimension>, mut dim2: Arc<NFDimension>) -> Result
     Ok(isEqual)
 }
 
-pub fn isEqualKnown(mut dim1: Arc<NFDimension>, mut dim2: Arc<NFDimension>) -> Result<bool> {
+pub(crate) fn isEqualKnown(mut dim1: Arc<NFDimension>, mut dim2: Arc<NFDimension>) -> Result<bool> {
     let mut isEqual: bool;
     isEqual = (::match_deref::match_deref! { match &((dim1.clone(), dim2.clone())) {
         (Deref @ UNKNOWN { .. }, _) => false,
@@ -414,7 +414,7 @@ pub fn isEqualKnown(mut dim1: Arc<NFDimension>, mut dim2: Arc<NFDimension>) -> R
     Ok(isEqual)
 }
 
-pub fn isEqualKnownSize(mut dim1: Arc<NFDimension>, mut node1: Arc<InstNode::InstNode>, mut index1: i32, mut dim2: Arc<NFDimension>, mut node2: Arc<InstNode::InstNode>, mut index2: i32) -> Result<bool> {
+pub(crate) fn isEqualKnownSize(mut dim1: Arc<NFDimension>, mut node1: Arc<InstNode::InstNode>, mut index1: i32, mut dim2: Arc<NFDimension>, mut node2: Arc<InstNode::InstNode>, mut index2: i32) -> Result<bool> {
     let mut isEqual: bool;
     isEqual = (::match_deref::match_deref! { match &((dim1.clone(), dim2.clone())) {
         (Deref @ EXP { .. }, _) if (isSizeOf(dim1.clone(), node2.clone(), index2.clone())?) => true,
@@ -429,7 +429,7 @@ pub fn isEqualKnownSize(mut dim1: Arc<NFDimension>, mut node1: Arc<InstNode::Ins
     Ok(isEqual)
 }
 
-pub fn isSizeOf(mut dim: Arc<NFDimension>, mut node: Arc<InstNode::InstNode>, mut index: i32) -> Result<bool> {
+pub(crate) fn isSizeOf(mut dim: Arc<NFDimension>, mut node: Arc<InstNode::InstNode>, mut index: i32) -> Result<bool> {
     let mut res: bool;
     let mut cref_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut index_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
@@ -455,12 +455,12 @@ pub fn isResizable(mut dim: Arc<NFDimension>) -> bool {
     b
 }
 
-pub fn allEqualKnown(mut dims1: Arc<metamodelica::List<Arc<NFDimension>>>, mut dims2: Arc<metamodelica::List<Arc<NFDimension>>>) -> Result<bool> {
+pub(crate) fn allEqualKnown(mut dims1: Arc<metamodelica::List<Arc<NFDimension>>>, mut dims2: Arc<metamodelica::List<Arc<NFDimension>>>) -> Result<bool> {
     let mut allEqual: bool = List::isEqualOnTrue(dims1.clone(), dims2.clone(), (std::sync::Arc::new(isEqualKnown) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFDimension>, Arc<NFDimension>) -> Result<bool> + 'static>))?;
     Ok(allEqual)
 }
 
-pub fn isKnown(mut dim: Arc<NFDimension>, mut allowExp: bool) -> bool {
+pub(crate) fn isKnown(mut dim: Arc<NFDimension>, mut allowExp: bool) -> bool {
     let mut known: bool;
     known = (::match_deref::match_deref! { match &(dim.clone()) {
         Deref @ INTEGER { .. } => true,
@@ -474,7 +474,7 @@ pub fn isKnown(mut dim: Arc<NFDimension>, mut allowExp: bool) -> bool {
     known
 }
 
-pub fn isUnknown(mut dim: Arc<NFDimension>) -> bool {
+pub(crate) fn isUnknown(mut dim: Arc<NFDimension>) -> bool {
     let mut isUnknown: bool;
     isUnknown = (::match_deref::match_deref! { match &(dim.clone()) {
         Deref @ UNKNOWN { .. } => true,
@@ -484,7 +484,7 @@ pub fn isUnknown(mut dim: Arc<NFDimension>) -> bool {
     isUnknown
 }
 
-pub fn isZero(mut dim: Arc<NFDimension>) -> Result<bool> {
+pub(crate) fn isZero(mut dim: Arc<NFDimension>) -> Result<bool> {
     let mut isZero: bool;
     isZero = (::match_deref::match_deref! { match &(dim.clone()) {
         Deref @ INTEGER { .. } => var_field!((*dim).size, NFDimension::INTEGER).clone() == 0,
@@ -506,7 +506,7 @@ pub fn isOne(mut dim: Arc<NFDimension>) -> Result<bool> {
     Ok(isOne)
 }
 
-pub fn subscriptType(mut dim: Arc<NFDimension>) -> Arc<Type::NFType> {
+pub(crate) fn subscriptType(mut dim: Arc<NFDimension>) -> Arc<Type::NFType> {
     let mut ty: Arc<Type::NFType>;
     ty = (::match_deref::match_deref! { match &(dim.clone()) {
         Deref @ INTEGER { .. } => crate::NFType::interned_INTEGER(),
@@ -561,7 +561,7 @@ pub fn hashList(mut dims: Arc<metamodelica::List<Arc<NFDimension>>>) -> Result<i
     Ok(hash)
 }
 
-pub fn toStringList(mut dims: Arc<metamodelica::List<Arc<NFDimension>>>, mut brackets: bool) -> Result<ArcStr> {
+pub(crate) fn toStringList(mut dims: Arc<metamodelica::List<Arc<NFDimension>>>, mut brackets: bool) -> Result<ArcStr> {
     let mut r#str: ArcStr;
     r#str = stringDelimitList(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -577,7 +577,7 @@ pub fn toStringList(mut dims: Arc<metamodelica::List<Arc<NFDimension>>>, mut bra
     Ok(r#str)
 }
 
-pub fn toFlatString(mut dim: Arc<NFDimension>, mut format: BaseModelica::OutputFormat) -> Result<ArcStr> {
+pub(crate) fn toFlatString(mut dim: Arc<NFDimension>, mut format: BaseModelica::OutputFormat) -> Result<ArcStr> {
     let mut r#str: ArcStr;
     r#str = ((::match_deref::match_deref! { match &(dim.clone()) {
         Deref @ INTEGER { .. } => ArcStr::from(::std::format!("{}", var_field!((*dim).size, NFDimension::INTEGER).clone())),
@@ -592,13 +592,13 @@ pub fn toFlatString(mut dim: Arc<NFDimension>, mut format: BaseModelica::OutputF
     Ok(r#str)
 }
 
-pub fn toFlatStringList(mut dims: Arc<metamodelica::List<Arc<NFDimension>>>, mut format: BaseModelica::OutputFormat, mut name: ArcStr) -> Result<ArcStr> {
+pub(crate) fn toFlatStringList(mut dims: Arc<metamodelica::List<Arc<NFDimension>>>, mut format: BaseModelica::OutputFormat, mut name: ArcStr) -> Result<ArcStr> {
     let mut r#str: ArcStr;
     r#str = (List::toString(dims.clone(), (std::sync::Arc::new({ let __pe_b1 = format.clone(); move |__pe_a0| toFlatString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFDimension>) -> Result<ArcStr> + 'static>), (name.clone()).clone(), (literal!("[")).clone(), (literal!(", ")).clone(), (literal!("]")).clone(), false, 0)?).clone();
     Ok(r#str)
 }
 
-pub fn endExp(mut dim: Arc<NFDimension>, mut subscriptedExp: Arc<Expression::NFExpression>, mut index: i32) -> Result<Arc<Expression::NFExpression>> {
+pub(crate) fn endExp(mut dim: Arc<NFDimension>, mut subscriptedExp: Arc<Expression::NFExpression>, mut index: i32) -> Result<Arc<Expression::NFExpression>> {
     let mut sizeExp: Arc<Expression::NFExpression>;
     sizeExp = (::match_deref::match_deref! { match &(dim.clone()) {
         Deref @ INTEGER { .. } => {
@@ -651,7 +651,7 @@ pub fn sizeExp(mut dim: Arc<NFDimension>) -> Result<Arc<Expression::NFExpression
     Ok(sizeExp)
 }
 
-pub fn lowerBoundExp(mut dim: Arc<NFDimension>) -> Result<Arc<Expression::NFExpression>> {
+pub(crate) fn lowerBoundExp(mut dim: Arc<NFDimension>) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression>;
     exp = (::match_deref::match_deref! { match &(dim.clone()) {
         Deref @ BOOLEAN { .. } => Arc::new(Expression::NFExpression::BOOLEAN { value: false }),
@@ -662,7 +662,7 @@ pub fn lowerBoundExp(mut dim: Arc<NFDimension>) -> Result<Arc<Expression::NFExpr
     Ok(exp)
 }
 
-pub fn expIsLowerBound(mut exp: Arc<Expression::NFExpression>) -> bool {
+pub(crate) fn expIsLowerBound(mut exp: Arc<Expression::NFExpression>) -> bool {
     let mut isStart: bool;
     isStart = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::INTEGER { .. } => var_field!((*exp).value, Expression::NFExpression::INTEGER).clone() == 1,
@@ -674,7 +674,7 @@ pub fn expIsLowerBound(mut exp: Arc<Expression::NFExpression>) -> bool {
     isStart
 }
 
-pub fn upperBoundExp(mut dim: Arc<NFDimension>) -> Result<Arc<Expression::NFExpression>> {
+pub(crate) fn upperBoundExp(mut dim: Arc<NFDimension>) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression>;
     exp = (::match_deref::match_deref! { match &(dim.clone()) {
         Deref @ INTEGER { .. } => {
@@ -697,7 +697,7 @@ pub fn upperBoundExp(mut dim: Arc<NFDimension>) -> Result<Arc<Expression::NFExpr
     Ok(exp)
 }
 
-pub fn expIsUpperBound(mut exp: Arc<Expression::NFExpression>, mut dim: Arc<NFDimension>) -> bool {
+pub(crate) fn expIsUpperBound(mut exp: Arc<Expression::NFExpression>, mut dim: Arc<NFDimension>) -> bool {
     let mut isEnd: bool;
     isEnd = (::match_deref::match_deref! { match &((exp.clone(), dim.clone())) {
         (Deref @ Expression::INTEGER { .. }, Deref @ INTEGER { .. }) => {
@@ -717,7 +717,7 @@ pub fn expIsUpperBound(mut exp: Arc<Expression::NFExpression>, mut dim: Arc<NFDi
     isEnd
 }
 
-pub fn variability(mut dim: Arc<NFDimension>) -> Result<Variability> {
+pub(crate) fn variability(mut dim: Arc<NFDimension>) -> Result<Variability> {
     let mut var: Variability;
     var = (::match_deref::match_deref! { match &(dim.clone()) {
         Deref @ INTEGER { .. } => var_field!((*dim).var, NFDimension::INTEGER).clone(),
@@ -731,7 +731,7 @@ pub fn variability(mut dim: Arc<NFDimension>) -> Result<Variability> {
     Ok(var)
 }
 
-pub fn mapExp(mut dim: Arc<NFDimension>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<NFDimension>> {
+pub(crate) fn mapExp(mut dim: Arc<NFDimension>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<NFDimension>> {
     pub type MapFunc = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>;
 
     let mut outDim: Arc<NFDimension>;
@@ -759,7 +759,7 @@ pub fn mapExp(mut dim: Arc<NFDimension>, mut func: Arc<dyn ::std::ops::Fn(Arc<Ex
     Ok(outDim)
 }
 
-pub fn foldExp<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut dim: Arc<NFDimension>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
+pub(crate) fn foldExp<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut dim: Arc<NFDimension>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
     pub type FoldFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>;
 
     let mut outArg: ArgT;
@@ -773,7 +773,7 @@ pub fn foldExp<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut dim: Arc<N
     Ok(outArg)
 }
 
-pub fn foldExpList<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut dims: Arc<metamodelica::List<Arc<NFDimension>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
+pub(crate) fn foldExpList<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut dims: Arc<metamodelica::List<Arc<NFDimension>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
     pub type FoldFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>;
 
     let mut arg: ArgT = arg;
@@ -784,7 +784,7 @@ pub fn foldExpList<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut dims: 
     Ok(arg)
 }
 
-pub fn eval(mut dim: Arc<NFDimension>, mut target: Arc<EvalTarget::EvalTarget>) -> Result<Arc<NFDimension>> {
+pub(crate) fn eval(mut dim: Arc<NFDimension>, mut target: Arc<EvalTarget::EvalTarget>) -> Result<Arc<NFDimension>> {
     let mut outDim: Arc<NFDimension>;
     outDim = (::match_deref::match_deref! { match &(dim.clone()) {
         Deref @ EXP { .. } => fromExp(Ceval::evalExp(var_field!((*dim).exp, NFDimension::EXP).clone(), target.clone())?, var_field!((*dim).var, NFDimension::EXP).clone())?,
@@ -798,7 +798,7 @@ pub fn eval(mut dim: Arc<NFDimension>, mut target: Arc<EvalTarget::EvalTarget>) 
     Ok(outDim)
 }
 
-pub fn simplify(mut dim: Arc<NFDimension>) -> Result<Arc<NFDimension>> {
+pub(crate) fn simplify(mut dim: Arc<NFDimension>) -> Result<Arc<NFDimension>> {
     let mut dim: Arc<NFDimension> = dim;
     dim = (::match_deref::match_deref! { match &(dim.clone()) {
         Deref @ EXP { .. } => {
@@ -818,7 +818,7 @@ pub fn simplify(mut dim: Arc<NFDimension>) -> Result<Arc<NFDimension>> {
     Ok(dim)
 }
 
-pub fn typeOf(mut dim: Arc<NFDimension>) -> Arc<Type::NFType> {
+pub(crate) fn typeOf(mut dim: Arc<NFDimension>) -> Arc<Type::NFType> {
     let mut ty: Arc<Type::NFType>;
     ty = (::match_deref::match_deref! { match &(dim.clone()) {
         Deref @ INTEGER { .. } => crate::NFType::interned_INTEGER(),

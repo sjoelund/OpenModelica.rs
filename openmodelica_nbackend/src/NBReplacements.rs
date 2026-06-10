@@ -88,7 +88,7 @@ use openmodelica_util_datatypes_basic::Pointer;
 ///  For instance, having a rule a->b and adding a rule b->c requires to find the first rule a->b and update it to
 ///  a->c. This is what the second binary tree is used for.
 pub struct NBReplacements;
-pub fn single(mut exp: Arc<Expression::NFExpression>, mut old: Arc<Expression::NFExpression>, mut new: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
+pub(crate) fn single(mut exp: Arc<Expression::NFExpression>, mut old: Arc<Expression::NFExpression>, mut new: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
     fn traverse(mut exp: Arc<Expression::NFExpression>, mut old: Arc<Expression::NFExpression>, mut new: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
         let mut exp: Arc<Expression::NFExpression> = exp;
         exp = if (Expression::isEqual(exp.clone(), old.clone())?) {new.clone()} else {exp.clone()};
@@ -100,7 +100,7 @@ pub fn single(mut exp: Arc<Expression::NFExpression>, mut old: Arc<Expression::N
     Ok(exp)
 }
 
-pub fn simple(mut comps: Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>>, mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>) -> Result<()> {
+pub(crate) fn simple(mut comps: Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>>, mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>) -> Result<()> {
     for mut comp in &*comps.clone() {
         let mut comp = comp.clone();
         addSimple(comp.clone(), replacements.clone())?;
@@ -108,7 +108,7 @@ pub fn simple(mut comps: Arc<metamodelica::List<Arc<StrongComponent::NBStrongCom
     Ok(())
 }
 
-pub fn addSimple(mut comp: Arc<StrongComponent::NBStrongComponent>, mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>) -> Result<()> {
+pub(crate) fn addSimple(mut comp: Arc<StrongComponent::NBStrongComponent>, mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(comp.clone()) {
         Deref @ StrongComponent::SINGLE_COMPONENT { .. } => {
             let mut varName: Arc<ComponentRef::NFComponentRef>;
@@ -163,7 +163,7 @@ pub fn addSimple(mut comp: Arc<StrongComponent::NBStrongComponent>, mut replacem
     Ok(())
 }
 
-pub fn applySimple(mut eqData: Arc<EqData::EqData>, mut varData: Arc<VarData::VarData>, mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>) -> Result<(Arc<EqData::EqData>, Arc<VarData::VarData>)> {
+pub(crate) fn applySimple(mut eqData: Arc<EqData::EqData>, mut varData: Arc<VarData::VarData>, mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>) -> Result<(Arc<EqData::EqData>, Arc<VarData::VarData>)> {
     let mut eqData: Arc<EqData::EqData> = eqData;
     let mut varData: Arc<VarData::VarData> = varData;
     let mut entries: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>)>>;
@@ -205,7 +205,7 @@ pub fn applySimple(mut eqData: Arc<EqData::EqData>, mut varData: Arc<VarData::Va
     Ok((eqData, varData))
 }
 
-pub fn applySimpleExp(mut exp: Arc<Expression::NFExpression>, mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>) -> Result<Arc<Expression::NFExpression>> {
+pub(crate) fn applySimpleExp(mut exp: Arc<Expression::NFExpression>, mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression> = exp;
     exp = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CREF { .. } => {
@@ -234,7 +234,7 @@ pub fn applySimpleExp(mut exp: Arc<Expression::NFExpression>, mut replacements: 
     Ok(exp)
 }
 
-pub fn applySimpleVar(mut var: Arc<Variable::NFVariable>, mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>) -> Result<Arc<Variable::NFVariable>> {
+pub(crate) fn applySimpleVar(mut var: Arc<Variable::NFVariable>, mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>) -> Result<Arc<Variable::NFVariable>> {
     let mut var: Arc<Variable::NFVariable> = var;
     var = (::match_deref::match_deref! { match &(var.clone()) {
         Deref @ Variable::VARIABLE { binding: binding @ Deref @ Binding::TYPED_BINDING { .. }, .. } => {
@@ -251,7 +251,7 @@ pub fn applySimpleVar(mut var: Arc<Variable::NFVariable>, mut replacements: Arc<
     Ok(var)
 }
 
-pub fn replaceVarPtr(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>>>) -> Result<Pointer::Pointer<Arc<Variable::NFVariable>>> {
+pub(crate) fn replaceVarPtr(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>>>) -> Result<Pointer::Pointer<Arc<Variable::NFVariable>>> {
     let mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>> = var_ptr;
     let mut cref: Option<Arc<ComponentRef::NFComponentRef>>;
     cref = UnorderedMap::get(BVariable::getVarName(var_ptr.clone()), replacements.clone())?;
@@ -261,7 +261,7 @@ pub fn replaceVarPtr(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, m
     Ok(var_ptr)
 }
 
-pub fn simpleToString(mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>) -> Result<ArcStr> {
+pub(crate) fn simpleToString(mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>) -> Result<ArcStr> {
     let mut r#str: ArcStr = literal!("");
     let mut entries: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>)>>;
     let mut constStr: ArcStr = literal!("");
@@ -287,7 +287,7 @@ pub fn simpleToString(mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<Compo
     Ok(r#str)
 }
 
-pub fn replaceFunctions(mut eqData: Arc<EqData::EqData>, mut variables: Arc<VariablePointers::VariablePointers>, mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<Absyn::Path>, Arc<Function::Function>>>) -> Result<Arc<EqData::EqData>> {
+pub(crate) fn replaceFunctions(mut eqData: Arc<EqData::EqData>, mut variables: Arc<VariablePointers::VariablePointers>, mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<Absyn::Path>, Arc<Function::Function>>>) -> Result<Arc<EqData::EqData>> {
     let mut eqData: Arc<EqData::EqData> = eqData;
     let mut prev_replacements: Arc<UnorderedMap::UnorderedMap<Arc<Expression::NFExpression>, Arc<Expression::NFExpression>>> = UnorderedMap::new((std::sync::Arc::new(Expression::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<i32> + 'static>), (std::sync::Arc::new(Expression::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<bool> + 'static>), 1);
     if UnorderedMap::isEmpty(replacements.clone()) {
@@ -297,7 +297,7 @@ pub fn replaceFunctions(mut eqData: Arc<EqData::EqData>, mut variables: Arc<Vari
     Ok(eqData)
 }
 
-pub fn applyFuncExp(mut exp: Arc<Expression::NFExpression>, mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<Absyn::Path>, Arc<Function::Function>>>, mut prev_replacements: Arc<UnorderedMap::UnorderedMap<Arc<Expression::NFExpression>, Arc<Expression::NFExpression>>>, mut variables: Arc<VariablePointers::VariablePointers>) -> Result<Arc<Expression::NFExpression>> {
+pub(crate) fn applyFuncExp(mut exp: Arc<Expression::NFExpression>, mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<Absyn::Path>, Arc<Function::Function>>>, mut prev_replacements: Arc<UnorderedMap::UnorderedMap<Arc<Expression::NFExpression>, Arc<Expression::NFExpression>>>, mut variables: Arc<VariablePointers::VariablePointers>) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression> = exp;
     exp = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CALL { call: call @ Deref @ Call::TYPED_CALL { r#fn, .. } } if (UnorderedMap::contains(r#fn.path.clone(), replacements.clone())?) => {
@@ -370,7 +370,7 @@ pub fn applyFuncExp(mut exp: Arc<Expression::NFExpression>, mut replacements: Ar
     Ok(exp)
 }
 
-pub fn addInputArgTpl(mut tpl: (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>), mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>, mut lowered_lhs: bool) -> Result<()> {
+pub(crate) fn addInputArgTpl(mut tpl: (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>), mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>, mut lowered_lhs: bool) -> Result<()> {
     let mut cref: Arc<ComponentRef::NFComponentRef>;
     let mut arg: Arc<Expression::NFExpression>;
     let mut children_args: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
@@ -421,7 +421,7 @@ pub fn addInputArgTpl(mut tpl: (Arc<ComponentRef::NFComponentRef>, Arc<Expressio
     Ok(())
 }
 
-pub fn wrapEvents(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
+pub(crate) fn wrapEvents(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression> = exp;
     exp = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::IF { .. } => {

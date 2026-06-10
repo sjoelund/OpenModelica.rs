@@ -104,7 +104,7 @@ pub type MATCHING = NBMatching;
 thread_local! { static __EMPTY_MATCHING_TLS: Arc<NBMatching> = Arc::new(NBMatching { var_to_eqn: metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect()), eqn_to_var: metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect()) }); }
 pub fn EMPTY_MATCHING() -> Arc<NBMatching> { __EMPTY_MATCHING_TLS.with(|__t| __t.clone()) }
 
-pub fn toString(mut matching: Arc<NBMatching>, mut r#str: ArcStr) -> ArcStr {
+pub(crate) fn toString(mut matching: Arc<NBMatching>, mut r#str: ArcStr) -> ArcStr {
     let mut r#str: ArcStr = r#str;
     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_2(({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("Scalar Matching")); ArcStr::from(__mm_s) }).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*toStringSingle(matching.var_to_eqn.clone(), false)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
@@ -112,14 +112,14 @@ pub fn toString(mut matching: Arc<NBMatching>, mut r#str: ArcStr) -> ArcStr {
     r#str
 }
 
-pub fn trivial(mut n: i32) -> Arc<NBMatching> {
+pub(crate) fn trivial(mut n: i32) -> Arc<NBMatching> {
     let mut matching: Arc<NBMatching>;
     let mut arr: metamodelica::Array<i32> = Array::createIntRange(n.clone());
     matching = Arc::new(NBMatching { var_to_eqn: arr.clone(), eqn_to_var: arr.clone() });
     matching
 }
 
-pub fn regular(mut matching: Arc<NBMatching>, mut adj: Arc<Adjacency::Matrix::Matrix>, mut transposed: bool, mut partially: bool, mut clear: bool) -> Result<Arc<NBMatching>> {
+pub(crate) fn regular(mut matching: Arc<NBMatching>, mut adj: Arc<Adjacency::Matrix::Matrix>, mut transposed: bool, mut partially: bool, mut clear: bool) -> Result<Arc<NBMatching>> {
     let mut matching: Arc<NBMatching> = matching;
     let mut marked_eqns: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>;
     (matching, marked_eqns, _, _) = continue_(matching.clone(), adj.clone(), transposed.clone(), clear.clone())?;
@@ -130,7 +130,7 @@ pub fn regular(mut matching: Arc<NBMatching>, mut adj: Arc<Adjacency::Matrix::Ma
     Ok(matching)
 }
 
-pub fn singular(mut matching: Arc<NBMatching>, mut adj: Arc<Adjacency::Matrix::Matrix>, mut full: Arc<Adjacency::Matrix::Matrix>, mut vars: Arc<VariablePointers::VariablePointers>, mut eqns: Arc<EquationPointers::EquationPointers>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqData::EqData>, mut kind: Partition::Kind, mut transposed: bool, mut clear: bool) -> Result<(Arc<NBMatching>, Arc<Adjacency::Matrix::Matrix>, Arc<Adjacency::Matrix::Matrix>, Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>, Arc<VarData::VarData>, Arc<EqData::EqData>)> {
+pub(crate) fn singular(mut matching: Arc<NBMatching>, mut adj: Arc<Adjacency::Matrix::Matrix>, mut full: Arc<Adjacency::Matrix::Matrix>, mut vars: Arc<VariablePointers::VariablePointers>, mut eqns: Arc<EquationPointers::EquationPointers>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqData::EqData>, mut kind: Partition::Kind, mut transposed: bool, mut clear: bool) -> Result<(Arc<NBMatching>, Arc<Adjacency::Matrix::Matrix>, Arc<Adjacency::Matrix::Matrix>, Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>, Arc<VarData::VarData>, Arc<EqData::EqData>)> {
     let mut matching: Arc<NBMatching> = matching;
     let mut adj: Arc<Adjacency::Matrix::Matrix> = adj;
     let mut full: Arc<Adjacency::Matrix::Matrix> = full;
@@ -168,7 +168,7 @@ pub fn singular(mut matching: Arc<NBMatching>, mut adj: Arc<Adjacency::Matrix::M
     Ok((matching, adj, full, vars, eqns, varData, eqData))
 }
 
-pub fn continue_(mut matching: Arc<NBMatching>, mut adj: Arc<Adjacency::Matrix::Matrix>, mut transposed: bool, mut clear: bool) -> Result<(Arc<NBMatching>, Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, Option<Arc<Adjacency::Mapping::Mapping>>, Adjacency::MatrixStrictness)> {
+pub(crate) fn continue_(mut matching: Arc<NBMatching>, mut adj: Arc<Adjacency::Matrix::Matrix>, mut transposed: bool, mut clear: bool) -> Result<(Arc<NBMatching>, Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, Option<Arc<Adjacency::Mapping::Mapping>>, Adjacency::MatrixStrictness)> {
     let mut matching: Arc<NBMatching> = matching;
     let mut marked_eqns: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
     let mut mapping: Option<Arc<Adjacency::Mapping::Mapping>>;
@@ -192,12 +192,12 @@ pub fn continue_(mut matching: Arc<NBMatching>, mut adj: Arc<Adjacency::Matrix::
     Ok((matching, marked_eqns, mapping, matrixStrictness))
 }
 
-pub fn isEmpty(mut matching: Arc<NBMatching>) -> bool {
+pub(crate) fn isEmpty(mut matching: Arc<NBMatching>) -> bool {
     let mut b: bool = matching.eqn_to_var.clone().borrow().is_empty() && matching.var_to_eqn.clone().borrow().is_empty();
     b
 }
 
-pub fn isPerfect(mut matching: Arc<NBMatching>) -> Result<bool> {
+pub(crate) fn isPerfect(mut matching: Arc<NBMatching>) -> Result<bool> {
     let mut b: bool;
     if metamodelica::arrayLength(matching.var_to_eqn.clone()) > metamodelica::arrayLength(matching.eqn_to_var.clone()) {
         b = Array::all(matching.eqn_to_var.clone(), (std::sync::Arc::new({ let __pe_b1 = 0; move |__pe_a0| Ok(intGt(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
@@ -207,7 +207,7 @@ pub fn isPerfect(mut matching: Arc<NBMatching>) -> Result<bool> {
     Ok(b)
 }
 
-pub fn getAssignments(mut matching: Arc<NBMatching>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<(metamodelica::Array<i32>, metamodelica::Array<i32>)> {
+pub(crate) fn getAssignments(mut matching: Arc<NBMatching>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<(metamodelica::Array<i32>, metamodelica::Array<i32>)> {
     let mut var_to_eqn: metamodelica::Array<i32>;
     let mut eqn_to_var: metamodelica::Array<i32>;
     let mut nVars: i32 = metamodelica::arrayLength(mT.clone());
@@ -217,7 +217,7 @@ pub fn getAssignments(mut matching: Arc<NBMatching>, mut m: metamodelica::Array<
     Ok((var_to_eqn, eqn_to_var))
 }
 
-pub fn getMatches(mut matching: Arc<NBMatching>, mut mapping_opt: Option<Arc<Adjacency::Mapping::Mapping>>, mut variables: Arc<VariablePointers::VariablePointers>, mut equations: Arc<EquationPointers::EquationPointers>) -> Result<(Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Variable::NFVariable>>>>>>, Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Variable::NFVariable>>>>>>, Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>>, Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>>)> {
+pub(crate) fn getMatches(mut matching: Arc<NBMatching>, mut mapping_opt: Option<Arc<Adjacency::Mapping::Mapping>>, mut variables: Arc<VariablePointers::VariablePointers>, mut equations: Arc<EquationPointers::EquationPointers>) -> Result<(Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Variable::NFVariable>>>>>>, Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Variable::NFVariable>>>>>>, Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>>, Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>>)> {
     let mut matched_vars: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Variable::NFVariable>>>>>> = metamodelica::nil();
     let mut unmatched_vars: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Variable::NFVariable>>>>>> = metamodelica::nil();
     let mut matched_eqns: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>> = metamodelica::nil();

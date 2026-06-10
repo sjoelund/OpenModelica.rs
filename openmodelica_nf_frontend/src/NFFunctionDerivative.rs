@@ -119,7 +119,7 @@ impl Default for Condition {
     fn default() -> Self { Self::ZERO_DERIVATIVE }
 }
 
-pub fn instDerivatives(mut fnNode: Arc<InstNode::InstNode>, mut r#fn: Arc<Function::Function>) -> Result<Arc<metamodelica::List<Arc<NFFunctionDerivative>>>> {
+pub(crate) fn instDerivatives(mut fnNode: Arc<InstNode::InstNode>, mut r#fn: Arc<Function::Function>) -> Result<Arc<metamodelica::List<Arc<NFFunctionDerivative>>>> {
     let mut ders: Arc<metamodelica::List<Arc<NFFunctionDerivative>>> = metamodelica::nil();
     let mut der_mods: Arc<metamodelica::List<Arc<SCode::Mod>>>;
     let mut scope: Arc<InstNode::InstNode>;
@@ -132,7 +132,7 @@ pub fn instDerivatives(mut fnNode: Arc<InstNode::InstNode>, mut r#fn: Arc<Functi
     Ok(ders)
 }
 
-pub fn typeDerivative(mut fnDer: Arc<NFFunctionDerivative>) -> Result<()> {
+pub(crate) fn typeDerivative(mut fnDer: Arc<NFFunctionDerivative>) -> Result<()> {
     let mut mk: MatchKind;
     let mut order: Arc<Expression::NFExpression>;
     let mut order_ty: Arc<Type::NFType>;
@@ -154,7 +154,7 @@ pub fn typeDerivative(mut fnDer: Arc<NFFunctionDerivative>) -> Result<()> {
     Ok(())
 }
 
-pub fn toDAE(mut fnDer: Arc<NFFunctionDerivative>) -> Result<DAE::FunctionDefinition> {
+pub(crate) fn toDAE(mut fnDer: Arc<NFFunctionDerivative>) -> Result<DAE::FunctionDefinition> {
     let mut derDef: DAE::FunctionDefinition;
     let mut order: i32;
     let __pa0 = ::match_deref::match_deref! { match &(fnDer.order.clone()) {
@@ -180,7 +180,7 @@ pub fn toDAE(mut fnDer: Arc<NFFunctionDerivative>) -> Result<DAE::FunctionDefini
     Ok(derDef)
 }
 
-pub fn conditionToDAE(mut cond: (i32, ArcStr, Condition)) -> Result<(i32, DAE::derivativeCond)> {
+pub(crate) fn conditionToDAE(mut cond: (i32, ArcStr, Condition)) -> Result<(i32, DAE::derivativeCond)> {
     let mut daeCond: (i32, DAE::derivativeCond);
     let mut idx: i32;
     let mut c: Condition;
@@ -192,7 +192,7 @@ pub fn conditionToDAE(mut cond: (i32, ArcStr, Condition)) -> Result<(i32, DAE::d
     Ok(daeCond)
 }
 
-pub fn toSubMod(mut fnDer: Arc<NFFunctionDerivative>) -> Result<Arc<SCode::SubMod>> {
+pub(crate) fn toSubMod(mut fnDer: Arc<NFFunctionDerivative>) -> Result<Arc<SCode::SubMod>> {
     let mut subMod: Arc<SCode::SubMod>;
     let mut tpl: (i32, Condition) = (0, Condition::ZERO_DERIVATIVE);
     let mut condition: Condition;
@@ -222,7 +222,7 @@ pub fn toSubMod(mut fnDer: Arc<NFFunctionDerivative>) -> Result<Arc<SCode::SubMo
     Ok(subMod)
 }
 
-pub fn perfectFit(mut fnDer: Arc<NFFunctionDerivative>, mut interface_map: Arc<UnorderedMap::UnorderedMap<ArcStr, bool>>) -> Result<bool> {
+pub(crate) fn perfectFit(mut fnDer: Arc<NFFunctionDerivative>, mut interface_map: Arc<UnorderedMap::UnorderedMap<ArcStr, bool>>) -> Result<bool> {
     let mut b: bool = true;
     let mut name: ArcStr;
     let mut cond: Condition;

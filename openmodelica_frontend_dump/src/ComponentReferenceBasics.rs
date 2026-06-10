@@ -211,7 +211,7 @@ pub mod CompareWithGenericSubscript {
     use super::*;
     pub static compareSubscript: std::sync::LazyLock<CompareWithSubsType> = std::sync::LazyLock::new(|| { CompareWithSubsType::WithGenericSubscript.clone() });
 
-    pub fn compare(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::ComponentRef>) -> Result<i32> {
+    pub(crate) fn compare(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::ComponentRef>) -> Result<i32> {
         let mut res: i32 = 0;
         res = (::match_deref::match_deref! { match &((cr1.clone(), cr2.clone())) {
         (Deref @ DAE::ComponentRef::CREF_IDENT { .. }, Deref @ DAE::ComponentRef::CREF_IDENT { .. }) => {
@@ -265,7 +265,7 @@ pub mod CompareWithGenericSubscript {
         Ok(res)
     }
 
-    pub fn compareSubs(mut ss1: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut ss2: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<i32> {
+    pub(crate) fn compareSubs(mut ss1: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut ss2: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<i32> {
         let mut res: i32 = 0;
         let mut ss: Arc<metamodelica::List<Arc<DAE::Subscript>>> = ss2.clone();
         let mut s2: Arc<DAE::Subscript>;
@@ -306,7 +306,7 @@ pub mod CompareWithGenericSubscript {
 
 pub mod CompareWithGenericSubscriptNotAlphabetic {
     use super::*;
-    pub fn compare(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::ComponentRef>) -> Result<i32> {
+    pub(crate) fn compare(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::ComponentRef>) -> Result<i32> {
         let mut res: i32 = 0;
         res = (::match_deref::match_deref! { match &((cr1.clone(), cr2.clone())) {
         (Deref @ DAE::ComponentRef::CREF_IDENT { .. }, Deref @ DAE::ComponentRef::CREF_IDENT { .. }) => {
@@ -360,7 +360,7 @@ pub mod CompareWithGenericSubscriptNotAlphabetic {
         Ok(res)
     }
 
-    pub fn compareSubs(mut ss1: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut ss2: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<i32> {
+    pub(crate) fn compareSubs(mut ss1: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut ss2: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<i32> {
         let mut res: i32 = 0;
         let mut ss: Arc<metamodelica::List<Arc<DAE::Subscript>>> = ss2.clone();
         let mut s2: Arc<DAE::Subscript>;
@@ -403,7 +403,7 @@ pub mod CompareWithGenericSubscriptNotAlphabetic {
 
 pub mod CompareWithoutSubscripts {
     use super::*;
-    pub fn compare(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::ComponentRef>) -> Result<i32> {
+    pub(crate) fn compare(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::ComponentRef>) -> Result<i32> {
         let mut res: i32 = 0;
         res = (::match_deref::match_deref! { match &((cr1.clone(), cr2.clone())) {
         (Deref @ DAE::ComponentRef::CREF_IDENT { .. }, Deref @ DAE::ComponentRef::CREF_IDENT { .. }) => {
@@ -457,7 +457,7 @@ pub mod CompareWithoutSubscripts {
         Ok(res)
     }
 
-    pub fn compareSubs(mut ss1: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut ss2: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<i32> {
+    pub(crate) fn compareSubs(mut ss1: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut ss2: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<i32> {
         let mut res: i32 = 0;
         let mut ss: Arc<metamodelica::List<Arc<DAE::Subscript>>> = ss2.clone();
         let mut s2: Arc<DAE::Subscript>;
@@ -500,7 +500,7 @@ pub mod CompareWithoutSubscripts {
 
 pub mod CompareWithIntSubscript {
     use super::*;
-    pub fn compare(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::ComponentRef>) -> Result<i32> {
+    pub(crate) fn compare(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::ComponentRef>) -> Result<i32> {
         let mut res: i32 = 0;
         res = (::match_deref::match_deref! { match &((cr1.clone(), cr2.clone())) {
         (Deref @ DAE::ComponentRef::CREF_IDENT { .. }, Deref @ DAE::ComponentRef::CREF_IDENT { .. }) => {
@@ -554,7 +554,7 @@ pub mod CompareWithIntSubscript {
         Ok(res)
     }
 
-    pub fn compareSubs(mut ss1: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut ss2: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<i32> {
+    pub(crate) fn compareSubs(mut ss1: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut ss2: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<i32> {
         let mut res: i32 = 0;
         let mut ss: Arc<metamodelica::List<Arc<DAE::Subscript>>> = ss2.clone();
         let mut s2: Arc<DAE::Subscript>;
@@ -613,7 +613,7 @@ pub fn crefCompareIntSubscript(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE
     Ok(comp)
 }
 
-pub fn crefCompareGenericNotAlphabetic(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::ComponentRef>) -> Result<i32> {
+pub(crate) fn crefCompareGenericNotAlphabetic(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::ComponentRef>) -> Result<i32> {
     let mut comp: i32;
     comp = CompareWithGenericSubscriptNotAlphabetic::compare(cr1.clone(), cr2.clone())?;
     Ok(comp)
@@ -625,7 +625,7 @@ pub fn crefLexicalGreaterSubsAtEnd(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc
     Ok(isGreater)
 }
 
-pub fn crefLexicalCompareSubsAtEnd(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::ComponentRef>) -> Result<i32> {
+pub(crate) fn crefLexicalCompareSubsAtEnd(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::ComponentRef>) -> Result<i32> {
     let mut res: i32;
     let mut subs1: Arc<metamodelica::List<i32>>;
     let mut subs2: Arc<metamodelica::List<i32>>;
@@ -658,7 +658,7 @@ fn crefLexicalCompareSubsAtEnd2(mut inSubs1: Arc<metamodelica::List<i32>>, mut i
     Ok(res)
 }
 
-pub fn crefContainedIn(mut containerCref: Arc<DAE::ComponentRef>, mut containedCref: Arc<DAE::ComponentRef>) -> bool {
+pub(crate) fn crefContainedIn(mut containerCref: Arc<DAE::ComponentRef>, mut containedCref: Arc<DAE::ComponentRef>) -> bool {
     let mut outBoolean: bool;
     outBoolean = 'mc: {
         let __mc_input = (containerCref.clone(), containedCref.clone());
@@ -757,7 +757,7 @@ pub fn crefNotInLst(mut cref: Arc<DAE::ComponentRef>, mut lst: Arc<metamodelica:
     Ok(b)
 }
 
-pub fn crefEqualVerySlowStringCompareDoNotUse(mut inComponentRef1: Arc<DAE::ComponentRef>, mut inComponentRef2: Arc<DAE::ComponentRef>) -> bool {
+pub(crate) fn crefEqualVerySlowStringCompareDoNotUse(mut inComponentRef1: Arc<DAE::ComponentRef>, mut inComponentRef2: Arc<DAE::ComponentRef>) -> bool {
     let mut outBoolean: bool;
     outBoolean = 'mc: {
         let __mc_input = (inComponentRef1.clone(), inComponentRef2.clone());
@@ -880,7 +880,7 @@ pub fn crefEqualNoStringCompare(mut inCref1: Arc<DAE::ComponentRef>, mut inCref2
     Ok(outEqual)
 }
 
-pub fn crefEqualReturn(mut cr: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> {
+pub(crate) fn crefEqualReturn(mut cr: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> {
     let mut ocr: Arc<DAE::ComponentRef>;
     let true = (crefEqualNoStringCompare(cr.clone(), cr2.clone())?) else { bail!("pattern mismatch") };
     ocr = cr.clone();

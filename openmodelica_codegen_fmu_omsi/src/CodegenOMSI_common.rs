@@ -137,7 +137,7 @@ fn fun_56(mut in_txt: Tpl::Text, mut in_a_omsiFunction: Arc<SimCode::OMSIFunctio
     Ok(out_txt)
 }
 
-pub fn generateOmsiFunctionCode(mut txt: Tpl::Text, mut a_omsiFunction: Arc<SimCode::OMSIFunction>, mut a_FileNamePrefix: ArcStr, mut a_modelFunctionnamePrefixStr: ArcStr, mut a_omsiName: ArcStr) -> Result<Tpl::Text> {
+pub(crate) fn generateOmsiFunctionCode(mut txt: Tpl::Text, mut a_omsiFunction: Arc<SimCode::OMSIFunction>, mut a_FileNamePrefix: ArcStr, mut a_modelFunctionnamePrefixStr: ArcStr, mut a_omsiName: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut txt_12: Tpl::Text;
     let mut l_headerFileContent: Tpl::Text;
@@ -181,7 +181,7 @@ pub fn generateOmsiFunctionCode(mut txt: Tpl::Text, mut a_omsiFunction: Arc<SimC
     Ok(out_txt)
 }
 
-pub fn lastIdentOfPath(mut in_txt: Tpl::Text, mut in_a_modelName: Arc<Absyn::Path>) -> Result<Tpl::Text> {
+pub(crate) fn lastIdentOfPath(mut in_txt: Tpl::Text, mut in_a_modelName: Arc<Absyn::Path>) -> Result<Tpl::Text> {
     '__tco: loop {
         ::match_deref::match_deref! { match &((in_txt.clone(), in_a_modelName.clone())) {
         (txt, Deref @ Absyn::Path::QUALIFIED { path: i_path, .. }) => {
@@ -342,7 +342,7 @@ fn fun_61(mut in_txt: Tpl::Text, mut in_a_omsiFunction: Arc<SimCode::OMSIFunctio
     Ok((out_txt, out_a_includes, out_a_residualCall, out_a_functionCall, out_a_functionPrototypes, out_a_evaluationCode))
 }
 
-pub fn generateOmsiFunctionCode_inner(mut txt: Tpl::Text, mut a_omsiFunction: Arc<SimCode::OMSIFunction>, mut a_FileNamePrefix: ArcStr, mut a_modelFunctionnamePrefixStr: ArcStr, mut a_funcCallArgName: ArcStr, mut a_includes: Tpl::Text, mut a_evaluationCode: Tpl::Text, mut a_functionCall: Tpl::Text, mut a_residualCall: Tpl::Text, mut a_functionPrototypes: Tpl::Text, mut a_omsiName: ArcStr) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn generateOmsiFunctionCode_inner(mut txt: Tpl::Text, mut a_omsiFunction: Arc<SimCode::OMSIFunction>, mut a_FileNamePrefix: ArcStr, mut a_modelFunctionnamePrefixStr: ArcStr, mut a_funcCallArgName: ArcStr, mut a_includes: Tpl::Text, mut a_evaluationCode: Tpl::Text, mut a_functionCall: Tpl::Text, mut a_residualCall: Tpl::Text, mut a_functionPrototypes: Tpl::Text, mut a_omsiName: ArcStr) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_includes: Tpl::Text;
     let mut out_a_evaluationCode: Tpl::Text;
@@ -450,7 +450,7 @@ fn fun_65(mut in_txt: Tpl::Text, mut in_a_omsiFunction: Arc<SimCode::OMSIFunctio
     Ok((out_txt, out_a_functionPrototypes, out_a_evaluationCode))
 }
 
-pub fn generateOmsiMemberFunction(mut txt: Tpl::Text, mut a_omsiFunction: Arc<SimCode::OMSIFunction>, mut a_FileNamePrefix: ArcStr, mut a_FunctionnamePrefix: ArcStr) -> Result<Tpl::Text> {
+pub(crate) fn generateOmsiMemberFunction(mut txt: Tpl::Text, mut a_omsiFunction: Arc<SimCode::OMSIFunction>, mut a_FileNamePrefix: ArcStr, mut a_FunctionnamePrefix: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut l_functionPrototypes: Tpl::Text;
     let mut l_evaluationCode: Tpl::Text;
@@ -682,7 +682,7 @@ fn fun_67(mut in_txt: Tpl::Text, mut in_a_equationSystem: Arc<SimCode::SimEqSyst
     Ok((out_txt, out_a_residualCall, out_a_functionCall, out_a_evaluationCode, out_a_functionPrototypes, out_a_includes))
 }
 
-pub fn generateOmsiAlgSystemCode(mut txt: Tpl::Text, mut a_equationSystem: Arc<SimCode::SimEqSystem>, mut a_FileNamePrefix: ArcStr, mut a_omsiName: ArcStr) -> Result<Tpl::Text> {
+pub(crate) fn generateOmsiAlgSystemCode(mut txt: Tpl::Text, mut a_equationSystem: Arc<SimCode::SimEqSystem>, mut a_FileNamePrefix: ArcStr, mut a_omsiName: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut ret_9: SimCode::SimCode;
     let mut l_fullPathPrefix: Tpl::Text;
@@ -708,7 +708,7 @@ pub fn generateOmsiAlgSystemCode(mut txt: Tpl::Text, mut a_equationSystem: Arc<S
     Ok(out_txt)
 }
 
-pub fn generateCodeHeader(mut txt: Tpl::Text, mut a_FileNamePrefix: ArcStr, mut a_includes: Tpl::Text, mut a_headerName: ArcStr, mut a_functionPrototypes: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn generateCodeHeader(mut txt: Tpl::Text, mut a_FileNamePrefix: ArcStr, mut a_includes: Tpl::Text, mut a_headerName: ArcStr, mut a_functionPrototypes: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_includes: Tpl::Text;
     let mut out_a_functionPrototypes: Tpl::Text;
@@ -780,7 +780,7 @@ fn fun_71(mut in_txt: Tpl::Text, mut in_a_matrix: Option<Arc<SimCode::Derivative
     Ok((out_txt, out_a_includes, out_a_functionPrototypes))
 }
 
-pub fn generateDerivativeFile(mut txt: Tpl::Text, mut a_matrix: Option<Arc<SimCode::DerivativeMatrix>>, mut a_FileNamePrefix: ArcStr, mut a_index: ArcStr, mut a_omsiName: ArcStr) -> Result<Tpl::Text> {
+pub(crate) fn generateDerivativeFile(mut txt: Tpl::Text, mut a_matrix: Option<Arc<SimCode::DerivativeMatrix>>, mut a_FileNamePrefix: ArcStr, mut a_index: ArcStr, mut a_omsiName: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut txt_14: Tpl::Text;
     let mut l_headerFileContent: Tpl::Text;
@@ -937,7 +937,7 @@ fn fun_77(mut in_txt: Tpl::Text, mut in_a_matrix: Option<Arc<SimCode::Derivative
     Ok(out_txt)
 }
 
-pub fn generateInitalizationAlgSystem(mut in_txt: Tpl::Text, mut in_a_equationSystem: Arc<SimCode::SimEqSystem>, mut in_a_FileNamePrefix: ArcStr, mut in_a_functionPrototypes: Tpl::Text, mut in_a_includes: Tpl::Text, mut in_a_omsiName: ArcStr) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn generateInitalizationAlgSystem(mut in_txt: Tpl::Text, mut in_a_equationSystem: Arc<SimCode::SimEqSystem>, mut in_a_FileNamePrefix: ArcStr, mut in_a_functionPrototypes: Tpl::Text, mut in_a_includes: Tpl::Text, mut in_a_omsiName: ArcStr) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_functionPrototypes: Tpl::Text;
     let mut out_a_includes: Tpl::Text;
@@ -1137,7 +1137,7 @@ fn fun_82(mut in_txt: Tpl::Text, mut in_mArg: i32, mut in_a_stringBuffer: Tpl::T
     Ok(out_txt)
 }
 
-pub fn generateOmsiIndexTypeInitialization(mut txt: Tpl::Text, mut a_variables: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_StrucPrefix: ArcStr, mut a_targetName: ArcStr, mut a_omsiFuncName: ArcStr) -> Result<Tpl::Text> {
+pub(crate) fn generateOmsiIndexTypeInitialization(mut txt: Tpl::Text, mut a_variables: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_StrucPrefix: ArcStr, mut a_targetName: ArcStr, mut a_omsiFuncName: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut ret_1: i32;
     let mut l_stringBuffer: Tpl::Text;
@@ -1306,7 +1306,7 @@ fn fun_88(mut in_txt: Tpl::Text, mut in_a_omsiFunction: Arc<SimCode::OMSIFunctio
     Ok((out_txt, out_a_functionPrototypes, out_a_includes))
 }
 
-pub fn generateInitalizationOMSIFunction(mut txt: Tpl::Text, mut a_omsiFunction: Arc<SimCode::OMSIFunction>, mut a_functionName: ArcStr, mut a_FileNamePrefix: ArcStr, mut a_modelFunctionnamePrefixStr: ArcStr, mut a_functionPrototypes: Tpl::Text, mut a_includes: Tpl::Text, mut a_hasLocalVars: bool, mut a_omsiName: ArcStr) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn generateInitalizationOMSIFunction(mut txt: Tpl::Text, mut a_omsiFunction: Arc<SimCode::OMSIFunction>, mut a_functionName: ArcStr, mut a_FileNamePrefix: ArcStr, mut a_modelFunctionnamePrefixStr: ArcStr, mut a_functionPrototypes: Tpl::Text, mut a_includes: Tpl::Text, mut a_hasLocalVars: bool, mut a_omsiName: ArcStr) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_functionPrototypes: Tpl::Text;
     let mut out_a_includes: Tpl::Text;
@@ -1367,7 +1367,7 @@ fn lm_91(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SimCode::SimE
     Ok(txt)
 }
 
-pub fn generateAlgebraicSystemInstantiation(mut txt: Tpl::Text, mut a_FileNamePrefix: ArcStr, mut a_nAlgebraicSystems: i32, mut a_equations: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut a_omsiName: ArcStr) -> Result<Tpl::Text> {
+pub(crate) fn generateAlgebraicSystemInstantiation(mut txt: Tpl::Text, mut a_FileNamePrefix: ArcStr, mut a_nAlgebraicSystems: i32, mut a_equations: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut a_omsiName: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut l_initialization: Tpl::Text;
     l_initialization = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -1434,7 +1434,7 @@ fn lm_94(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<BackendDAE::TimeE
     Ok((txt, a_auxFunction, a_varDecls))
 }
 
-pub fn functionInitSample(mut txt: Tpl::Text, mut a_timeEvents: Arc<metamodelica::List<BackendDAE::TimeEvent>>, mut a_fileNamePrefix: ArcStr) -> Result<Tpl::Text> {
+pub(crate) fn functionInitSample(mut txt: Tpl::Text, mut a_timeEvents: Arc<metamodelica::List<BackendDAE::TimeEvent>>, mut a_fileNamePrefix: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut l_body: Tpl::Text;
     let mut l_auxFunction: Tpl::Text;
@@ -1459,7 +1459,7 @@ pub fn functionInitSample(mut txt: Tpl::Text, mut a_timeEvents: Arc<metamodelica
     Ok(out_txt)
 }
 
-pub fn insertCopyrightOpenModelica(mut txt: Tpl::Text) -> Result<Tpl::Text> {
+pub(crate) fn insertCopyrightOpenModelica(mut txt: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("/*\n")).clone(), (literal!(" * This file is part of OpenModelica.\n")).clone(), (literal!(" *\n")).clone(), (literal!(" * Copyright (c) 1998-2014, Open Source Modelica Consortium (OSMC),\n")).clone(), (literal!(" * c/o Linköpings universitet, Department of Computer and Information Science,\n")).clone(), (literal!(" * SE-58183 Linköping, Sweden.\n")).clone(), (literal!(" *\n")).clone(), (literal!(" * All rights reserved.\n")).clone(), (literal!(" *\n")).clone(), (literal!(" * THIS PROGRAM IS PROVIDED UNDER THE TERMS OF GPL VERSION 3 LICENSE OR\n")).clone(), (literal!(" * THIS OSMC PUBLIC LICENSE (OSMC-PL) VERSION 1.2.\n")).clone(), (literal!(" * ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS PROGRAM CONSTITUTES\n")).clone(), (literal!(" * RECIPIENT'S ACCEPTANCE OF THE OSMC PUBLIC LICENSE OR THE GPL VERSION 3,\n")).clone(), (literal!(" * ACCORDING TO RECIPIENTS CHOICE.\n")).clone(), (literal!(" *\n")).clone(), (literal!(" * The OpenModelica software and the Open Source Modelica\n")).clone(), (literal!(" * Consortium (OSMC) Public License (OSMC-PL) are obtained\n")).clone(), (literal!(" * from OSMC, either from the above address,\n")).clone(), (literal!(" * from the URLs: http://www.ida.liu.se/projects/OpenModelica or\n")).clone(), (literal!(" * http://www.openmodelica.org, and in the OpenModelica distribution.\n")).clone(), (literal!(" * GNU version 3 is obtained from: http://www.gnu.org/copyleft/gpl.html.\n")).clone(), (literal!(" *\n")).clone(), (literal!(" * This program is distributed WITHOUT ANY WARRANTY; without\n")).clone(), (literal!(" * even the implied warranty of  MERCHANTABILITY or FITNESS\n")).clone(), (literal!(" * FOR A PARTICULAR PURPOSE, EXCEPT AS EXPRESSLY SET FORTH\n")).clone(), (literal!(" * IN THE BY RECIPIENT SELECTED SUBSIDIARY LICENSE CONDITIONS OF OSMC-PL.\n")).clone(), (literal!(" *\n")).clone(), (literal!(" * See the full OSMC Public License conditions for more details.\n")).clone(), (literal!(" *\n")).clone(), (literal!(" */")).clone()], lastHasNewLine: false }))?;
     Ok(out_txt)

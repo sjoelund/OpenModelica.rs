@@ -104,7 +104,7 @@ use openmodelica_util_datatypes_basic::List;
 // size used for DAE_Mode symbolic jacobians
 pub const DAE_CJ: &'static str = "$DAE_CJ";
 
-pub fn symbolicJacobian(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
+pub(crate) fn symbolicJacobian(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut outDAE: Arc<BackendDAE::BackendDAE>;
     outDAE = (::match_deref::match_deref! { match &(Flags::getConfigString(Flags::GENERATE_DYNAMIC_JACOBIAN.clone())?) {
         Deref @ "none" => inDAE.clone(),
@@ -119,7 +119,7 @@ pub fn symbolicJacobian(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<Ba
 // section for postOptModule >>calculateStateSetsJacobians<<
 //
 // =============================================================================
-pub fn calculateStateSetsJacobians(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
+pub(crate) fn calculateStateSetsJacobians(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut outDAE: Arc<BackendDAE::BackendDAE>;
     outDAE = BackendDAEUtil::mapEqSystem(inDAE.clone(), (std::sync::Arc::new(calculateEqSystemStateSetsJacobians) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>) -> Result<(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>)> + 'static>))?;
     Ok(outDAE)
@@ -130,7 +130,7 @@ pub fn calculateStateSetsJacobians(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Re
 //
 // Module for to calculate strong component Jacobian matrices
 // =============================================================================
-pub fn calculateStrongComponentJacobians(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Arc<BackendDAE::BackendDAE> {
+pub(crate) fn calculateStrongComponentJacobians(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Arc<BackendDAE::BackendDAE> {
     let mut outDAE: Arc<BackendDAE::BackendDAE>;
     match '__try0: {
         outDAE = unwrap_break_err!(BackendDAEUtil::mapEqSystem(inDAE.clone(), (std::sync::Arc::new(calculateEqSystemJacobians) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>) -> Result<(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>)> + 'static>)), '__try0);
@@ -152,7 +152,7 @@ pub fn calculateStrongComponentJacobians(mut inDAE: Arc<BackendDAE::BackendDAE>)
 // constant Jacobian matrices. Linear system of equations (A x = b) where
 // A and b are constant.
 // =============================================================================
-pub fn constantLinearSystem(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
+pub(crate) fn constantLinearSystem(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut outDAE: Arc<BackendDAE::BackendDAE>;
     (outDAE, _) = BackendDAEUtil::mapEqSystemAndFold(inDAE.clone(), (std::sync::Arc::new(constantLinearSystem0) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, (bool, i32)) -> Result<(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, (bool, i32))> + 'static>), (false, 1))?;
     Ok(outDAE)
@@ -231,7 +231,7 @@ fn detectSparsePatternODE(mut inBackendDAE: Arc<BackendDAE::BackendDAE>) -> Resu
 //
 // Generate symbolic jacobian for DAEMode
 // =============================================================================
-pub fn symbolicJacobianDAE(mut inBackendDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
+pub(crate) fn symbolicJacobianDAE(mut inBackendDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut outBackendDAE: Arc<BackendDAE::BackendDAE>;
     let mut DAE: Arc<BackendDAE::BackendDAE>;
     let mut eqs: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>>;
@@ -395,7 +395,7 @@ fn createSymbolicJacobianforStates(mut inBackendDAE: Arc<BackendDAE::BackendDAE>
 // That function generates symbolic sentivities for parameters
 // by differentiatiating the states with respect to the parameters
 // =============================================================================
-pub fn generateSymbolicSensitivities(mut inBackendDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
+pub(crate) fn generateSymbolicSensitivities(mut inBackendDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut outBackendDAE: Arc<BackendDAE::BackendDAE>;
     let mut eqs: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>>;
     let mut shared: Arc<BackendDAE::Shared>;
@@ -467,7 +467,7 @@ fn createSymbolicJacobianforParameters(mut inBackendDAE: Arc<BackendDAE::Backend
 // section for postOptModule >>generateSymbolicLinearizationPast<<
 //
 // =============================================================================
-pub fn generateSymbolicLinearizationPast(mut inBackendDAE: Arc<BackendDAE::BackendDAE>) -> Arc<BackendDAE::BackendDAE> {
+pub(crate) fn generateSymbolicLinearizationPast(mut inBackendDAE: Arc<BackendDAE::BackendDAE>) -> Arc<BackendDAE::BackendDAE> {
     let mut outBackendDAE: Arc<BackendDAE::BackendDAE> = Arc::new(<BackendDAE::BackendDAE as ::std::default::Default>::default());
     outBackendDAE = 'mc: {
         let __mc_input = inBackendDAE.clone();
@@ -516,7 +516,7 @@ pub fn generateSymbolicLinearizationPast(mut inBackendDAE: Arc<BackendDAE::Backe
 //
 // check for derivatives of inputs
 // =============================================================================
-pub fn inputDerivativesUsed(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
+pub(crate) fn inputDerivativesUsed(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut outDAE: Arc<BackendDAE::BackendDAE>;
     (outDAE, _) = BackendDAEUtil::mapEqSystemAndFold(inDAE.clone(), (std::sync::Arc::new(inputDerivativesUsedWork) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, bool) -> Result<(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, bool)> + 'static>), false)?;
     Ok(outDAE)
@@ -780,7 +780,7 @@ fn createSysEquations(mut A: metamodelica::Array<metamodelica::Array<metamodelic
     Ok(sysEqs)
 }
 
-pub fn makeBinaryExp(mut inLhs: Arc<DAE::Exp>, mut inRhs: Arc<DAE::Exp>, mut inOp: DAE::Operator) -> Arc<DAE::Exp> {
+pub(crate) fn makeBinaryExp(mut inLhs: Arc<DAE::Exp>, mut inRhs: Arc<DAE::Exp>, mut inOp: DAE::Operator) -> Arc<DAE::Exp> {
     let mut outExp: Arc<DAE::Exp>;
     outExp = Arc::new(DAE::Exp::BINARY { exp1: inLhs.clone(), operator: inOp.clone(), exp2: inRhs.clone() });
     outExp
@@ -1101,7 +1101,7 @@ fn changeConstantLinearSystemVars(mut inVarLst: Arc<metamodelica::List<BackendDA
     }
 }
 
-pub fn evaluateConstantJacobian(mut size: i32, mut jac: Arc<metamodelica::List<(i32, i32, Arc<BackendDAE::Equation>)>>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>> {
+pub(crate) fn evaluateConstantJacobian(mut size: i32, mut jac: Arc<metamodelica::List<(i32, i32, Arc<BackendDAE::Equation>)>>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>> {
     let mut vals: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>;
     let mut valarr: metamodelica::Array<metamodelica::Array<metamodelica::Real>>;
     let mut tmp2: Arc<metamodelica::List<metamodelica::Array<metamodelica::Real>>>;
@@ -1187,7 +1187,7 @@ fn checkLinearSystem(mut info: i32, mut vars: Arc<metamodelica::List<Arc<DAE::Co
     Ok(())
 }
 
-pub fn generateSparsePattern(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut inIndependentVars: Arc<metamodelica::List<BackendDAE::Var>>, mut inDependentVars: Arc<metamodelica::List<BackendDAE::Var>>, mut nonlinearPattern: bool) -> Result<((Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>), i32), Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>>>)> {
+pub(crate) fn generateSparsePattern(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut inIndependentVars: Arc<metamodelica::List<BackendDAE::Var>>, mut inDependentVars: Arc<metamodelica::List<BackendDAE::Var>>, mut nonlinearPattern: bool) -> Result<((Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>), i32), Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>>>)> {
     let mut outSparsePattern: (Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>), i32) = (metamodelica::nil(), metamodelica::nil(), (metamodelica::nil(), metamodelica::nil()), 0);
     let mut outColoredCols: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>>>;
     let debug: bool = false;
@@ -1664,7 +1664,7 @@ fn getSparsePatternHelp(mut inInputVars: Arc<metamodelica::List<i32>>, mut invar
     Ok(outLocalList)
 }
 
-pub fn transposeSparsePattern(mut inSparsePattern: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut inAccumList: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut inValue: i32) -> Result<metamodelica::Array<Arc<metamodelica::List<i32>>>> {
+pub(crate) fn transposeSparsePattern(mut inSparsePattern: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut inAccumList: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut inValue: i32) -> Result<metamodelica::Array<Arc<metamodelica::List<i32>>>> {
     let mut outSparsePattern: metamodelica::Array<Arc<metamodelica::List<i32>>> = inAccumList.clone();
     let mut value: i32 = inValue.clone();
     let mut tmplist: Arc<metamodelica::List<i32>>;
@@ -1680,7 +1680,7 @@ pub fn transposeSparsePattern(mut inSparsePattern: Arc<metamodelica::List<Arc<me
     Ok(outSparsePattern)
 }
 
-pub fn transposeSparsePatternTuple(mut inSparsePattern: Arc<metamodelica::List<(i32, Arc<metamodelica::List<i32>>)>>, mut inAccumList: metamodelica::Array<(i32, Arc<metamodelica::List<i32>>)>) -> Result<metamodelica::Array<(i32, Arc<metamodelica::List<i32>>)>> {
+pub(crate) fn transposeSparsePatternTuple(mut inSparsePattern: Arc<metamodelica::List<(i32, Arc<metamodelica::List<i32>>)>>, mut inAccumList: metamodelica::Array<(i32, Arc<metamodelica::List<i32>>)>) -> Result<metamodelica::Array<(i32, Arc<metamodelica::List<i32>>)>> {
     let mut outSparsePattern: metamodelica::Array<(i32, Arc<metamodelica::List<i32>>)> = inAccumList.clone();
     let mut value: i32;
     let mut tmplist: Arc<metamodelica::List<i32>>;
@@ -1818,7 +1818,7 @@ pub fn createFMIModelDerivatives(mut inBackendDAE: Arc<BackendDAE::BackendDAE>) 
     Ok((outJacobianMatrices, outFunctionTree))
 }
 
-pub fn createFMIModelDerivativesForInitialization(mut initDAE: Arc<BackendDAE::BackendDAE>, mut simDAE: Arc<BackendDAE::BackendDAE>, mut depVars: Arc<metamodelica::List<BackendDAE::Var>>, mut indepVars: Arc<metamodelica::List<BackendDAE::Var>>, mut orderedVars: BackendDAE::Variables, mut sparsePattern_: (Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>), i32), mut sparseColoring_: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>>>) -> Result<Arc<metamodelica::List<(Option<(Arc<BackendDAE::BackendDAE>, ArcStr, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>, (Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>), i32), Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>>>, (Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>), i32))>>> {
+pub(crate) fn createFMIModelDerivativesForInitialization(mut initDAE: Arc<BackendDAE::BackendDAE>, mut simDAE: Arc<BackendDAE::BackendDAE>, mut depVars: Arc<metamodelica::List<BackendDAE::Var>>, mut indepVars: Arc<metamodelica::List<BackendDAE::Var>>, mut orderedVars: BackendDAE::Variables, mut sparsePattern_: (Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>), i32), mut sparseColoring_: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>>>) -> Result<Arc<metamodelica::List<(Option<(Arc<BackendDAE::BackendDAE>, ArcStr, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>, (Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>), i32), Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>>>, (Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>), i32))>>> {
     let mut outJacobianMatrices: Arc<metamodelica::List<(Option<(Arc<BackendDAE::BackendDAE>, ArcStr, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>, (Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>), i32), Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>>>, (Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>), i32))>> = metamodelica::nil();
     let mut backendDAE: Arc<BackendDAE::BackendDAE>;
     let mut backendDAE_1: Arc<BackendDAE::BackendDAE>;
@@ -2395,7 +2395,7 @@ fn generateSymbolicJacobian(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut i
     Ok((outJacobian, outFunctions))
 }
 
-pub fn createSeedVars(mut indiffVar: Arc<DAE::ComponentRef>, mut inMatrixName: ArcStr) -> Result<BackendDAE::Var> {
+pub(crate) fn createSeedVars(mut indiffVar: Arc<DAE::ComponentRef>, mut inMatrixName: ArcStr) -> Result<BackendDAE::Var> {
     let mut outSeedVar: BackendDAE::Var;
     let mut derivedCref: Arc<DAE::ComponentRef>;
     derivedCref = Differentiate::createSeedCrefName(indiffVar.clone(), (inMatrixName.clone()).clone())?;
@@ -2512,7 +2512,7 @@ fn deriveAll(mut inEquations: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>
     Ok((outDerivedEquations, outFunctions))
 }
 
-pub fn getJacobianMatrixbyName(mut injacobianMatrices: Arc<metamodelica::List<(Option<(Arc<BackendDAE::BackendDAE>, ArcStr, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>, (Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>), i32), Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>>>, (Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>), i32))>>, mut inJacobianName: ArcStr) -> Option<(Option<(Arc<BackendDAE::BackendDAE>, ArcStr, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>, (Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>), i32), Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>>>, (Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>), i32))> {
+pub(crate) fn getJacobianMatrixbyName(mut injacobianMatrices: Arc<metamodelica::List<(Option<(Arc<BackendDAE::BackendDAE>, ArcStr, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>, (Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>), i32), Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>>>, (Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>), i32))>>, mut inJacobianName: ArcStr) -> Option<(Option<(Arc<BackendDAE::BackendDAE>, ArcStr, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>, (Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>), i32), Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>>>, (Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>), i32))> {
     '__tco: loop {
         ::match_deref::match_deref! { match &(injacobianMatrices.clone()) {
         Deref @ metamodelica::List::Cons { head: matrix @ (Some((_, name, _, _, _, _)), _, _, _), tail: _ } if (stringEq((name.clone()).clone(), (inJacobianName.clone()).clone())) => {
@@ -2529,7 +2529,7 @@ pub fn getJacobianMatrixbyName(mut injacobianMatrices: Arc<metamodelica::List<(O
     }
 }
 
-pub fn updateJacobianDependencies(mut jacobian: Arc<BackendDAE::Jacobian>) -> Result<Arc<BackendDAE::Jacobian>> {
+pub(crate) fn updateJacobianDependencies(mut jacobian: Arc<BackendDAE::Jacobian>) -> Result<Arc<BackendDAE::Jacobian>> {
     let mut jacobian: Arc<BackendDAE::Jacobian> = jacobian;
     jacobian = (::match_deref::match_deref! { match &(jacobian.clone()) {
         jac @ Deref @ BackendDAE::Jacobian::GENERIC_JACOBIAN { .. } => {
@@ -2566,7 +2566,7 @@ pub fn updateJacobianDependencies(mut jacobian: Arc<BackendDAE::Jacobian>) -> Re
     Ok(jacobian)
 }
 
-pub fn calcJacobianDependencies(mut jacobian: (Arc<BackendDAE::BackendDAE>, ArcStr, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> {
+pub(crate) fn calcJacobianDependencies(mut jacobian: (Arc<BackendDAE::BackendDAE>, ArcStr, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> {
     let mut dependencies: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
     let mut systems: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>>;
     let mut shared: Arc<BackendDAE::Shared>;
@@ -2582,7 +2582,7 @@ pub fn calcJacobianDependencies(mut jacobian: (Arc<BackendDAE::BackendDAE>, ArcS
     Ok(dependencies)
 }
 
-pub fn getJacobianDependencies(mut jacobian: Arc<BackendDAE::Jacobian>) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> {
+pub(crate) fn getJacobianDependencies(mut jacobian: Arc<BackendDAE::Jacobian>) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> {
     let mut dependencies: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
     dependencies = (::match_deref::match_deref! { match &(jacobian.clone()) {
         Deref @ BackendDAE::Jacobian::GENERIC_JACOBIAN { jacobian: Some((_, _, _, _, _, __esc_dependencies)), .. } => {
@@ -2641,7 +2641,7 @@ fn calculateJacobiansComponents(mut inComps: Arc<metamodelica::List<Arc<BackendD
     Ok((outComps, outShared))
 }
 
-pub fn prepareTornStrongComponentData(mut inVars: BackendDAE::Variables, mut inEqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut inIterationvarsInts: Arc<metamodelica::List<i32>>, mut inResidualequations: Arc<metamodelica::List<i32>>, mut innerEquations: Arc<metamodelica::List<BackendDAE::InnerEquation>>, mut funcTree: Arc<AvlTreePathFunction::Tree>, mut name: ArcStr) -> Result<(BackendDAE::Variables, BackendDAE::Variables, BackendDAE::Variables, Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>)> {
+pub(crate) fn prepareTornStrongComponentData(mut inVars: BackendDAE::Variables, mut inEqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut inIterationvarsInts: Arc<metamodelica::List<i32>>, mut inResidualequations: Arc<metamodelica::List<i32>>, mut innerEquations: Arc<metamodelica::List<BackendDAE::InnerEquation>>, mut funcTree: Arc<AvlTreePathFunction::Tree>, mut name: ArcStr) -> Result<(BackendDAE::Variables, BackendDAE::Variables, BackendDAE::Variables, Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>)> {
     let mut outDiffVars: BackendDAE::Variables;
     let mut outResidualVars: BackendDAE::Variables;
     let mut outOtherVars: BackendDAE::Variables;
@@ -3075,7 +3075,7 @@ fn printNonLinIterVarsAndEqs(mut jacobian: Arc<BackendDAE::Jacobian>, mut eqnInd
     Ok(())
 }
 
-pub fn getNonLinearVariables(mut jacobian: Arc<BackendDAE::Jacobian>) -> Result<Arc<metamodelica::List<BackendDAE::Var>>> {
+pub(crate) fn getNonLinearVariables(mut jacobian: Arc<BackendDAE::Jacobian>) -> Result<Arc<metamodelica::List<BackendDAE::Var>>> {
     let mut nonLin: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
     nonLin = (::match_deref::match_deref! { match &(jacobian.clone()) {
         Deref @ BackendDAE::Jacobian::GENERIC_JACOBIAN { jacobian: Some((_, _, diffVars, _, _, dependentVarsCref)), .. } => {
@@ -3175,7 +3175,7 @@ fn isRecordInvoled(mut inType: Arc<DAE::Type>) -> Result<bool> {
     }
 }
 
-pub fn getSymbolicJacobian(mut inDiffVars: BackendDAE::Variables, mut inResEquations: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut inResVars: BackendDAE::Variables, mut inotherEquations: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut inotherVars: BackendDAE::Variables, mut inShared: Arc<BackendDAE::Shared>, mut inAllVars: BackendDAE::Variables, mut inName: ArcStr, mut inOnlySparsePattern: bool) -> Result<(Arc<BackendDAE::Jacobian>, Arc<BackendDAE::Shared>)> {
+pub(crate) fn getSymbolicJacobian(mut inDiffVars: BackendDAE::Variables, mut inResEquations: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut inResVars: BackendDAE::Variables, mut inotherEquations: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut inotherVars: BackendDAE::Variables, mut inShared: Arc<BackendDAE::Shared>, mut inAllVars: BackendDAE::Variables, mut inName: ArcStr, mut inOnlySparsePattern: bool) -> Result<(Arc<BackendDAE::Jacobian>, Arc<BackendDAE::Shared>)> {
     let mut outJacobian: Arc<BackendDAE::Jacobian>;
     let mut outShared: Arc<BackendDAE::Shared>;
     let mut backendDAE: Arc<BackendDAE::BackendDAE>;
@@ -3272,7 +3272,7 @@ pub fn getSymbolicJacobian(mut inDiffVars: BackendDAE::Variables, mut inResEquat
     Ok((outJacobian, outShared))
 }
 
-pub fn hasGenericSymbolicJacobian(mut inJacobian: Arc<BackendDAE::Jacobian>) -> bool {
+pub(crate) fn hasGenericSymbolicJacobian(mut inJacobian: Arc<BackendDAE::Jacobian>) -> bool {
     let mut out: bool;
     out = (::match_deref::match_deref! { match &(inJacobian.clone()) {
         Deref @ BackendDAE::Jacobian::GENERIC_JACOBIAN { jacobian: Some(_), .. } => true,
@@ -3679,7 +3679,7 @@ fn addBackendDAESharedJacobianSparsePattern(mut inSparsePattern: (Arc<metamodeli
     Ok(outShared)
 }
 
-pub fn analyzeJacobian(mut vars: BackendDAE::Variables, mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut inTplIntegerIntegerEquationLstOption: Option<Arc<metamodelica::List<(i32, i32, Arc<BackendDAE::Equation>)>>>) -> (BackendDAE::JacobianType, bool) {
+pub(crate) fn analyzeJacobian(mut vars: BackendDAE::Variables, mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut inTplIntegerIntegerEquationLstOption: Option<Arc<metamodelica::List<(i32, i32, Arc<BackendDAE::Equation>)>>>) -> (BackendDAE::JacobianType, bool) {
     let mut outJacobianType: BackendDAE::JacobianType;
     let mut jacConstant: bool;
     (outJacobianType, jacConstant) = 'mc: {
@@ -3865,7 +3865,7 @@ fn jacobianConstant(mut inTplIntegerIntegerEquationLst: Arc<metamodelica::List<(
     Ok(outBoolean)
 }
 
-pub fn isJacobianGeneric(mut inJac: Arc<BackendDAE::Jacobian>) -> bool {
+pub(crate) fn isJacobianGeneric(mut inJac: Arc<BackendDAE::Jacobian>) -> bool {
     let mut result: bool;
     result = (::match_deref::match_deref! { match &(inJac.clone()) {
         Deref @ BackendDAE::Jacobian::GENERIC_JACOBIAN { .. } => true,
@@ -4134,7 +4134,7 @@ fn checkForNonLinearStrongComponents_work(mut syst: Arc<BackendDAE::EqSystem>, m
     Ok((syst, shared))
 }
 
-pub fn getFixedStatesForSelfdependentSets(mut stateSet: BackendDAE::StateSet, mut unfixedStates: Arc<metamodelica::List<BackendDAE::Var>>, mut toFix: i32) -> Result<Arc<metamodelica::List<BackendDAE::Var>>> {
+pub(crate) fn getFixedStatesForSelfdependentSets(mut stateSet: BackendDAE::StateSet, mut unfixedStates: Arc<metamodelica::List<BackendDAE::Var>>, mut toFix: i32) -> Result<Arc<metamodelica::List<BackendDAE::Var>>> {
     let mut statesToFix: Arc<metamodelica::List<BackendDAE::Var>>;
     let mut nonlinearCountLst: Arc<metamodelica::List<(i32, BackendDAE::Var)>> = metamodelica::nil();
     let _ = (::match_deref::match_deref! { match &(stateSet.jacobian.clone()) {
@@ -4377,7 +4377,7 @@ pub mod LinearJacobian {
 
     pub type LINEAR_REAL_JACOBIAN = LinearJacobian;
 
-    pub fn toString(mut linJac: Arc<LinearJacobian>, mut heading: ArcStr) -> Result<ArcStr> {
+    pub(crate) fn toString(mut linJac: Arc<LinearJacobian>, mut heading: ArcStr) -> Result<ArcStr> {
         let mut r#str: ArcStr;
         r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("######################################################\n")); __mm_s.push_str(&*literal!(" LinearJacobian sparsity pattern: ")); __mm_s.push_str(&*heading.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!("######################################################\n")); __mm_s.push_str(&*literal!("(scal_idx|arr_idx|changed) [var_index, value] || RHS_EXPRESSION\n")); ArcStr::from(__mm_s) }).clone();
         for mut idx in 1..=metamodelica::arrayLength(linJac.rows.clone()) {
@@ -4409,7 +4409,7 @@ pub mod LinearJacobian {
         Ok(r#str)
     }
 
-    pub fn generate(mut loopEqs: Arc<metamodelica::List<(Arc<BackendDAE::Equation>, (i32, i32))>>, mut loopVars: Arc<metamodelica::List<(BackendDAE::Var, i32)>>, mut ass1: metamodelica::Array<i32>) -> Result<Arc<LinearJacobian>> {
+    pub(crate) fn generate(mut loopEqs: Arc<metamodelica::List<(Arc<BackendDAE::Equation>, (i32, i32))>>, mut loopVars: Arc<metamodelica::List<(BackendDAE::Var, i32)>>, mut ass1: metamodelica::Array<i32>) -> Result<Arc<LinearJacobian>> {
         type evaluateFunc = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<metamodelica::Real> + 'static>;
 
         fn intWrapperFunc(mut e: Arc<DAE::Exp>) -> Result<metamodelica::Real> {
@@ -4470,12 +4470,12 @@ pub mod LinearJacobian {
         Ok(linJac)
     }
 
-    pub fn emptyOrSingle(mut linJac: Arc<LinearJacobian>) -> bool {
+    pub(crate) fn emptyOrSingle(mut linJac: Arc<LinearJacobian>) -> bool {
         let mut empty: bool = metamodelica::arrayLength(linJac.rows.clone()) < 2 && metamodelica::arrayLength(linJac.rhs.clone()) < 2 && metamodelica::arrayLength(linJac.ind.clone()) < 2 && metamodelica::arrayLength(linJac.eq_marks.clone()) < 2;
         empty
     }
 
-    pub fn solve(mut linJac: Arc<LinearJacobian>) -> Arc<LinearJacobian> {
+    pub(crate) fn solve(mut linJac: Arc<LinearJacobian>) -> Arc<LinearJacobian> {
         let mut linJac: Arc<LinearJacobian> = linJac;
         let mut col_index: i32;
         let mut piv_value: metamodelica::Real;
@@ -4506,7 +4506,7 @@ pub mod LinearJacobian {
         linJac
     }
 
-    pub fn solveRow(mut pivot_row: Arc<UnorderedMap::UnorderedMap<i32, metamodelica::Real>>, mut row: Arc<UnorderedMap::UnorderedMap<i32, metamodelica::Real>>, mut piv_value: metamodelica::Real, mut row_value: metamodelica::Real) -> Result<()> {
+    pub(crate) fn solveRow(mut pivot_row: Arc<UnorderedMap::UnorderedMap<i32, metamodelica::Real>>, mut row: Arc<UnorderedMap::UnorderedMap<i32, metamodelica::Real>>, mut piv_value: metamodelica::Real, mut row_value: metamodelica::Real) -> Result<()> {
         let mut idx: i32 = 0;
         let mut val: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
         let mut diag_val: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
@@ -4550,7 +4550,7 @@ pub mod LinearJacobian {
         Ok(())
     }
 
-    pub fn updatePivotRow(mut pivot_row: Arc<UnorderedMap::UnorderedMap<i32, metamodelica::Real>>, mut piv_value: metamodelica::Real) -> Result<()> {
+    pub(crate) fn updatePivotRow(mut pivot_row: Arc<UnorderedMap::UnorderedMap<i32, metamodelica::Real>>, mut piv_value: metamodelica::Real) -> Result<()> {
         let mut value: metamodelica::Real;
         if !(realEq(piv_value.clone(), metamodelica::OrderedFloat(1.0_f64))) {
             for mut idx in &*UnorderedMap::keyList(pivot_row.clone()) {
@@ -4574,7 +4574,7 @@ pub mod LinearJacobian {
         Ok((idx, value))
     }
 
-    pub fn resolveASSC(mut linJac: Arc<LinearJacobian>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<i32>, mut syst: Arc<BackendDAE::EqSystem>, mut init: bool) -> Result<(metamodelica::Array<i32>, metamodelica::Array<i32>, Arc<BackendDAE::EqSystem>)> {
+    pub(crate) fn resolveASSC(mut linJac: Arc<LinearJacobian>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<i32>, mut syst: Arc<BackendDAE::EqSystem>, mut init: bool) -> Result<(metamodelica::Array<i32>, metamodelica::Array<i32>, Arc<BackendDAE::EqSystem>)> {
         let mut ass1: metamodelica::Array<i32> = ass1;
         let mut ass2: metamodelica::Array<i32> = ass2;
         let mut syst: Arc<BackendDAE::EqSystem> = syst;
@@ -4652,7 +4652,7 @@ pub mod LinearJacobian {
         Ok(lhs)
     }
 
-    pub fn anyChanges(mut linJac: Arc<LinearJacobian>) -> bool {
+    pub(crate) fn anyChanges(mut linJac: Arc<LinearJacobian>) -> bool {
         let mut changed: bool = false;
         for mut i in 1..=metamodelica::arrayLength(linJac.eq_marks.clone()) {
             if ({let __elt = linJac.eq_marks.borrow()[(i.clone()-1) as usize].clone(); __elt}) {

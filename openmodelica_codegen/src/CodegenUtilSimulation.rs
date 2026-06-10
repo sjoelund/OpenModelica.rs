@@ -882,7 +882,7 @@ fn lm_66(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SimCode::SimE
     Ok(txt)
 }
 
-pub fn dumpEqsWork(mut txt: Tpl::Text, mut a_eqs: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>) -> Result<Tpl::Text> {
+pub(crate) fn dumpEqsWork(mut txt: Tpl::Text, mut a_eqs: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = lm_66(txt.clone(), a_eqs.clone())?;
     Ok(out_txt)
@@ -931,7 +931,7 @@ fn fun_69(mut in_txt: Tpl::Text, mut in_a_derivativeMatrix: Option<Arc<SimCode::
     Ok((out_txt, out_a_varsBuffer, out_a_columnBuffer))
 }
 
-pub fn dumpAlgSystemOps(mut txt: Tpl::Text, mut a_derivativeMatrix: Option<Arc<SimCode::DerivativeMatrix>>) -> Result<Tpl::Text> {
+pub(crate) fn dumpAlgSystemOps(mut txt: Tpl::Text, mut a_derivativeMatrix: Option<Arc<SimCode::DerivativeMatrix>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut l_columnBuffer: Tpl::Text;
     let mut l_varsBuffer: Tpl::Text;
@@ -983,7 +983,7 @@ fn lm_72(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SimCode::SimE
     Ok((txt, a_columnBuffer))
 }
 
-pub fn dumpAlgSystemColumn(mut in_txt: Tpl::Text, mut in_a_column: Arc<SimCode::OMSIFunction>, mut in_a_columnBuffer: Tpl::Text, mut in_a_varsBuffer: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn dumpAlgSystemColumn(mut in_txt: Tpl::Text, mut in_a_column: Arc<SimCode::OMSIFunction>, mut in_a_columnBuffer: Tpl::Text, mut in_a_varsBuffer: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_columnBuffer: Tpl::Text;
     let mut out_a_varsBuffer: Tpl::Text;
@@ -1006,7 +1006,7 @@ pub fn dumpAlgSystemColumn(mut in_txt: Tpl::Text, mut in_a_column: Arc<SimCode::
     Ok((out_txt, out_a_columnBuffer, out_a_varsBuffer))
 }
 
-pub fn dumpWhenOps(mut in_txt: Tpl::Text, mut in_a_whenOps: Arc<metamodelica::List<BackendDAE::WhenOperator>>) -> Result<Tpl::Text> {
+pub(crate) fn dumpWhenOps(mut in_txt: Tpl::Text, mut in_a_whenOps: Arc<metamodelica::List<BackendDAE::WhenOperator>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_whenOps.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
@@ -1336,7 +1336,7 @@ fn lm_84(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SimCode::SimE
     Ok(txt)
 }
 
-pub fn dumpEqsAlternativeTearingWork(mut txt: Tpl::Text, mut a_eqs: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>) -> Result<Tpl::Text> {
+pub(crate) fn dumpEqsAlternativeTearingWork(mut txt: Tpl::Text, mut a_eqs: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = lm_84(txt.clone(), a_eqs.clone())?;
     Ok(out_txt)

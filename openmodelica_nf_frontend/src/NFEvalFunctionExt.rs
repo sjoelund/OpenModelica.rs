@@ -50,7 +50,7 @@ use crate::NFExpression as Expression;
 use crate::NFType as Type;
 use openmodelica_util::Lapack;
 
-pub fn Lapack_dgeev(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<()> {
+pub(crate) fn Lapack_dgeev(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<()> {
     let mut jobvl: Arc<Expression::NFExpression>;
     let mut jobvr: Arc<Expression::NFExpression>;
     let mut n: Arc<Expression::NFExpression>;
@@ -117,7 +117,7 @@ pub fn Lapack_dgeev(mut args: Arc<metamodelica::List<Arc<Expression::NFExpressio
     Ok(())
 }
 
-pub fn Lapack_dgegv(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<()> {
+pub(crate) fn Lapack_dgegv(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<()> {
     let mut jobvl: Arc<Expression::NFExpression>;
     let mut jobvr: Arc<Expression::NFExpression>;
     let mut n: Arc<Expression::NFExpression>;
@@ -195,7 +195,7 @@ pub fn Lapack_dgegv(mut args: Arc<metamodelica::List<Arc<Expression::NFExpressio
     Ok(())
 }
 
-pub fn Lapack_dgels(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<()> {
+pub(crate) fn Lapack_dgels(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<()> {
     let mut trans: Arc<Expression::NFExpression>;
     let mut m: Arc<Expression::NFExpression>;
     let mut n: Arc<Expression::NFExpression>;
@@ -251,7 +251,7 @@ pub fn Lapack_dgels(mut args: Arc<metamodelica::List<Arc<Expression::NFExpressio
     Ok(())
 }
 
-pub fn Lapack_dgelsx(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<()> {
+pub(crate) fn Lapack_dgelsx(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<()> {
     let mut m: Arc<Expression::NFExpression>;
     let mut n: Arc<Expression::NFExpression>;
     let mut nrhs: Arc<Expression::NFExpression>;
@@ -330,7 +330,7 @@ pub fn Lapack_dgelsx(mut args: Arc<metamodelica::List<Arc<Expression::NFExpressi
     Ok(())
 }
 
-pub fn Lapack_dgelsy(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<()> {
+pub(crate) fn Lapack_dgelsy(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<()> {
     let mut m: Arc<Expression::NFExpression>;
     let mut n: Arc<Expression::NFExpression>;
     let mut nrhs: Arc<Expression::NFExpression>;
@@ -395,7 +395,7 @@ pub fn Lapack_dgelsy(mut args: Arc<metamodelica::List<Arc<Expression::NFExpressi
     Ok(())
 }
 
-pub fn Lapack_dgesv(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<()> {
+pub(crate) fn Lapack_dgesv(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<()> {
     let mut n: Arc<Expression::NFExpression>;
     let mut nrhs: Arc<Expression::NFExpression>;
     let mut a: Arc<Expression::NFExpression>;
@@ -438,7 +438,7 @@ pub fn Lapack_dgesv(mut args: Arc<metamodelica::List<Arc<Expression::NFExpressio
     Ok(())
 }
 
-pub fn Lapack_dgglse(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<()> {
+pub(crate) fn Lapack_dgglse(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<()> {
     let mut m: Arc<Expression::NFExpression>;
     let mut n: Arc<Expression::NFExpression>;
     let mut p: Arc<Expression::NFExpression>;
@@ -504,7 +504,7 @@ pub fn Lapack_dgglse(mut args: Arc<metamodelica::List<Arc<Expression::NFExpressi
     Ok(())
 }
 
-pub fn Lapack_dgtsv(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<()> {
+pub(crate) fn Lapack_dgtsv(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<()> {
     let mut n: Arc<Expression::NFExpression>;
     let mut nrhs: Arc<Expression::NFExpression>;
     let mut dl: Arc<Expression::NFExpression>;
@@ -549,7 +549,7 @@ pub fn Lapack_dgtsv(mut args: Arc<metamodelica::List<Arc<Expression::NFExpressio
     Ok(())
 }
 
-pub fn Lapack_dgbsv(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<()> {
+pub(crate) fn Lapack_dgbsv(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<()> {
     let mut n: Arc<Expression::NFExpression>;
     let mut kl: Arc<Expression::NFExpression>;
     let mut ku: Arc<Expression::NFExpression>;
@@ -600,7 +600,7 @@ pub fn Lapack_dgbsv(mut args: Arc<metamodelica::List<Arc<Expression::NFExpressio
     Ok(())
 }
 
-pub fn Lapack_dgesvd(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<()> {
+pub(crate) fn Lapack_dgesvd(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<()> {
     let mut jobu: Arc<Expression::NFExpression>;
     let mut jobvt: Arc<Expression::NFExpression>;
     let mut m: Arc<Expression::NFExpression>;
@@ -667,7 +667,7 @@ pub fn Lapack_dgesvd(mut args: Arc<metamodelica::List<Arc<Expression::NFExpressi
     Ok(())
 }
 
-pub fn Lapack_dgetrf(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<()> {
+pub(crate) fn Lapack_dgetrf(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<()> {
     let mut m: Arc<Expression::NFExpression>;
     let mut n: Arc<Expression::NFExpression>;
     let mut a: Arc<Expression::NFExpression>;
@@ -701,7 +701,7 @@ pub fn Lapack_dgetrf(mut args: Arc<metamodelica::List<Arc<Expression::NFExpressi
     Ok(())
 }
 
-pub fn Lapack_dgetrs(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<()> {
+pub(crate) fn Lapack_dgetrs(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<()> {
     let mut trans: Arc<Expression::NFExpression>;
     let mut n: Arc<Expression::NFExpression>;
     let mut nrhs: Arc<Expression::NFExpression>;
@@ -747,7 +747,7 @@ pub fn Lapack_dgetrs(mut args: Arc<metamodelica::List<Arc<Expression::NFExpressi
     Ok(())
 }
 
-pub fn Lapack_dgetri(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<()> {
+pub(crate) fn Lapack_dgetri(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<()> {
     let mut n: Arc<Expression::NFExpression>;
     let mut a: Arc<Expression::NFExpression>;
     let mut lda: Arc<Expression::NFExpression>;
@@ -786,7 +786,7 @@ pub fn Lapack_dgetri(mut args: Arc<metamodelica::List<Arc<Expression::NFExpressi
     Ok(())
 }
 
-pub fn Lapack_dgeqpf(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<()> {
+pub(crate) fn Lapack_dgeqpf(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<()> {
     let mut m: Arc<Expression::NFExpression>;
     let mut n: Arc<Expression::NFExpression>;
     let mut a: Arc<Expression::NFExpression>;
@@ -829,7 +829,7 @@ pub fn Lapack_dgeqpf(mut args: Arc<metamodelica::List<Arc<Expression::NFExpressi
     Ok(())
 }
 
-pub fn Lapack_dorgqr(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<()> {
+pub(crate) fn Lapack_dorgqr(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<()> {
     let mut m: Arc<Expression::NFExpression>;
     let mut n: Arc<Expression::NFExpression>;
     let mut k: Arc<Expression::NFExpression>;
@@ -876,7 +876,7 @@ pub fn Lapack_dorgqr(mut args: Arc<metamodelica::List<Arc<Expression::NFExpressi
     Ok(())
 }
 
-pub fn Lapack_dhseqr(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<()> {
+pub(crate) fn Lapack_dhseqr(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<()> {
     let mut job: Arc<Expression::NFExpression>;
     let mut compz: Arc<Expression::NFExpression>;
     let mut n: Arc<Expression::NFExpression>;

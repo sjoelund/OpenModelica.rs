@@ -55,7 +55,7 @@ use openmodelica_util::Flags;
 use openmodelica_util::Global;
 use openmodelica_util::Util;
 
-pub fn variableIsBuiltin(mut cref: Arc<DAE::ComponentRef>) -> Result<bool> {
+pub(crate) fn variableIsBuiltin(mut cref: Arc<DAE::ComponentRef>) -> Result<bool> {
     let mut b: bool;
     b = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ DAE::ComponentRef::CREF_IDENT { ident: id, .. } => {
@@ -69,7 +69,7 @@ pub fn variableIsBuiltin(mut cref: Arc<DAE::ComponentRef>) -> Result<bool> {
     Ok(b)
 }
 
-pub fn variableNameIsBuiltin(mut name: ArcStr) -> Result<bool> {
+pub(crate) fn variableNameIsBuiltin(mut name: ArcStr) -> Result<bool> {
     let mut b: bool;
     b = (::match_deref::match_deref! { match &(name.clone()) {
         Deref @ "time" => true,

@@ -51,7 +51,7 @@ pub fn getCevalScriptInterface(mut txt: Tpl::Text, mut a_tys: Arc<metamodelica::
     Ok(out_txt)
 }
 
-pub fn getInType(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Text> {
+pub(crate) fn getInType(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone())) {
         (txt, Deref @ DAE::Type::T_STRING { varLst: _ }) => {
@@ -168,7 +168,7 @@ fn fun_46(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
     Ok(out_txt)
 }
 
-pub fn getInValue(mut txt: Tpl::Text, mut a_name: Tpl::Text, mut a_ty: Arc<DAE::Type>) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn getInValue(mut txt: Tpl::Text, mut a_name: Tpl::Text, mut a_ty: Arc<DAE::Type>) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_name: Tpl::Text;
     out_txt = fun_46(txt.clone(), a_ty.clone(), a_name.clone())?;
@@ -262,7 +262,7 @@ fn fun_48(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
     Ok((out_txt, out_a_varDecl, out_a_postMatch))
 }
 
-pub fn getOutValue(mut txt: Tpl::Text, mut a_name: Tpl::Text, mut a_ty: Arc<DAE::Type>, mut a_varDecl: Tpl::Text, mut a_postMatch: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn getOutValue(mut txt: Tpl::Text, mut a_name: Tpl::Text, mut a_ty: Arc<DAE::Type>, mut a_varDecl: Tpl::Text, mut a_postMatch: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_name: Tpl::Text;
     let mut out_a_varDecl: Tpl::Text;
@@ -347,7 +347,7 @@ fn fun_50(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
     Ok(out_txt)
 }
 
-pub fn getOutValueArray(mut txt: Tpl::Text, mut a_name: Tpl::Text, mut a_ty: Arc<DAE::Type>) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn getOutValueArray(mut txt: Tpl::Text, mut a_name: Tpl::Text, mut a_ty: Arc<DAE::Type>) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_name: Tpl::Text;
     out_txt = fun_50(txt.clone(), a_ty.clone(), a_name.clone())?;
@@ -519,7 +519,7 @@ fn fun_58(mut in_txt: Tpl::Text, mut in_a_varDecl: Tpl::Text) -> Result<Tpl::Tex
     Ok(out_txt)
 }
 
-pub fn getCevalScriptInterfaceFunc(mut txt: Tpl::Text, mut a_name: ArcStr, mut a_args: Arc<metamodelica::List<Arc<DAE::FuncArg>>>, mut a_res: Arc<DAE::Type>) -> Result<Tpl::Text> {
+pub(crate) fn getCevalScriptInterfaceFunc(mut txt: Tpl::Text, mut a_name: ArcStr, mut a_args: Arc<metamodelica::List<Arc<DAE::FuncArg>>>, mut a_res: Arc<DAE::Type>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut l_outVals: Tpl::Text;
     let mut l_inVals: Tpl::Text;
@@ -637,7 +637,7 @@ pub fn getQtInterfaceHeaders(mut txt: Tpl::Text, mut a_tys: Arc<metamodelica::Li
     Ok(out_txt)
 }
 
-pub fn getQtType(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Text> {
+pub(crate) fn getQtType(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone())) {
         (txt, Deref @ DAE::Type::T_STRING { varLst: _ }) => {
@@ -687,7 +687,7 @@ pub fn getQtType(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<T
     Ok(out_txt)
 }
 
-pub fn getQtTupleTypeOutputNameHelper(mut in_txt: Tpl::Text, mut in_a_names: Option<Arc<metamodelica::List<ArcStr>>>, mut in_a_index: i32) -> Result<Tpl::Text> {
+pub(crate) fn getQtTupleTypeOutputNameHelper(mut in_txt: Tpl::Text, mut in_a_names: Option<Arc<metamodelica::List<ArcStr>>>, mut in_a_index: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_names.clone(), in_a_index.clone())) {
         (txt, Some(i_lst), a_index) => {
@@ -708,7 +708,7 @@ pub fn getQtTupleTypeOutputNameHelper(mut in_txt: Tpl::Text, mut in_a_names: Opt
     Ok(out_txt)
 }
 
-pub fn getQtTupleTypeOutputName(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_index: i32) -> Result<Tpl::Text> {
+pub(crate) fn getQtTupleTypeOutputName(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_index: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_index.clone())) {
         (txt, Deref @ DAE::Type::T_TUPLE { names: i_names, .. }, a_index) => {
@@ -826,7 +826,7 @@ fn fun_67(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_res: Arc<
     Ok((out_txt, out_a_name))
 }
 
-pub fn structToString(mut txt: Tpl::Text, mut a_res: Arc<DAE::Type>, mut a_ty: Arc<DAE::Type>, mut a_index: i32, mut a_name: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn structToString(mut txt: Tpl::Text, mut a_res: Arc<DAE::Type>, mut a_ty: Arc<DAE::Type>, mut a_index: i32, mut a_name: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_name: Tpl::Text;
     (out_txt, out_a_name) = fun_67(txt.clone(), a_ty.clone(), a_res.clone(), a_index.clone(), a_name.clone())?;
@@ -964,7 +964,7 @@ fn fun_73(mut in_txt: Tpl::Text, mut in_a_res: Arc<DAE::Type>, mut in_a_name: Ar
     Ok(out_txt)
 }
 
-pub fn getQtInterfaceHeader(mut txt: Tpl::Text, mut a_name: ArcStr, mut a_prefix: ArcStr, mut a_args: Arc<metamodelica::List<Arc<DAE::FuncArg>>>, mut a_res: Arc<DAE::Type>, mut a_className: ArcStr, mut a_addStructs: bool) -> Result<Tpl::Text> {
+pub(crate) fn getQtInterfaceHeader(mut txt: Tpl::Text, mut a_name: ArcStr, mut a_prefix: ArcStr, mut a_args: Arc<metamodelica::List<Arc<DAE::FuncArg>>>, mut a_res: Arc<DAE::Type>, mut a_className: ArcStr, mut a_addStructs: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut l_outType: Tpl::Text;
     let mut l_inTypes: Tpl::Text;
@@ -1094,7 +1094,7 @@ fn fun_75(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
     Ok((out_txt, out_a_varDecl))
 }
 
-pub fn getQtInArg(mut txt: Tpl::Text, mut a_name: Tpl::Text, mut a_ty: Arc<DAE::Type>, mut a_varDecl: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn getQtInArg(mut txt: Tpl::Text, mut a_name: Tpl::Text, mut a_ty: Arc<DAE::Type>, mut a_varDecl: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_name: Tpl::Text;
     let mut out_a_varDecl: Tpl::Text;
@@ -1157,7 +1157,7 @@ fn fun_77(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
     Ok(out_txt)
 }
 
-pub fn getQtInArgBoxed(mut txt: Tpl::Text, mut a_name: Tpl::Text, mut a_ty: Arc<DAE::Type>) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn getQtInArgBoxed(mut txt: Tpl::Text, mut a_name: Tpl::Text, mut a_ty: Arc<DAE::Type>) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_name: Tpl::Text;
     out_txt = fun_77(txt.clone(), a_ty.clone(), a_name.clone())?;
@@ -1267,7 +1267,7 @@ fn fun_79(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
     Ok((out_txt, out_a_commandLog))
 }
 
-pub fn getQtCommandLogText(mut txt: Tpl::Text, mut a_name: Tpl::Text, mut a_ty: Arc<DAE::Type>, mut a_commandLog: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn getQtCommandLogText(mut txt: Tpl::Text, mut a_name: Tpl::Text, mut a_ty: Arc<DAE::Type>, mut a_commandLog: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_name: Tpl::Text;
     let mut out_a_commandLog: Tpl::Text;
@@ -1365,7 +1365,7 @@ fn fun_81(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
     Ok((out_txt, out_a_name, out_a_shortName, out_a_varDecl, out_a_postCall))
 }
 
-pub fn getQtOutArg(mut txt: Tpl::Text, mut a_name: Tpl::Text, mut a_shortName: Tpl::Text, mut a_ty: Arc<DAE::Type>, mut a_varDecl: Tpl::Text, mut a_postCall: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn getQtOutArg(mut txt: Tpl::Text, mut a_name: Tpl::Text, mut a_shortName: Tpl::Text, mut a_ty: Arc<DAE::Type>, mut a_varDecl: Tpl::Text, mut a_postCall: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_name: Tpl::Text;
     let mut out_a_shortName: Tpl::Text;
@@ -1471,7 +1471,7 @@ fn fun_83(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
     Ok(out_txt)
 }
 
-pub fn getQtOutArgArray(mut txt: Tpl::Text, mut a_name: Tpl::Text, mut a_shortName: Tpl::Text, mut a_mm: Tpl::Text, mut a_ty: Arc<DAE::Type>) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn getQtOutArgArray(mut txt: Tpl::Text, mut a_name: Tpl::Text, mut a_shortName: Tpl::Text, mut a_mm: Tpl::Text, mut a_ty: Arc<DAE::Type>) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_name: Tpl::Text;
     let mut out_a_shortName: Tpl::Text;
@@ -1594,7 +1594,7 @@ fn fun_85(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
     Ok((out_txt, out_a_responseLog))
 }
 
-pub fn getQtResponseLogText(mut txt: Tpl::Text, mut a_name: Tpl::Text, mut a_ty: Arc<DAE::Type>, mut a_responseLog: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn getQtResponseLogText(mut txt: Tpl::Text, mut a_name: Tpl::Text, mut a_ty: Arc<DAE::Type>, mut a_responseLog: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_name: Tpl::Text;
     let mut out_a_responseLog: Tpl::Text;
@@ -1774,7 +1774,7 @@ fn fun_93(mut in_txt: Tpl::Text, mut in_a_outArg: Tpl::Text) -> Result<Tpl::Text
     Ok(out_txt)
 }
 
-pub fn getQtInterfaceFunc(mut txt: Tpl::Text, mut a_name: ArcStr, mut a_args: Arc<metamodelica::List<Arc<DAE::FuncArg>>>, mut a_res: Arc<DAE::Type>, mut a_className: ArcStr) -> Result<Tpl::Text> {
+pub(crate) fn getQtInterfaceFunc(mut txt: Tpl::Text, mut a_name: ArcStr, mut a_args: Arc<metamodelica::List<Arc<DAE::FuncArg>>>, mut a_res: Arc<DAE::Type>, mut a_className: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut ret_12: bool;
     let mut ret_11: i32;

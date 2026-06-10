@@ -135,7 +135,7 @@ fn parseCommand(mut inCommand: ArcStr) -> (Option<GlobalScript::Statements>, Opt
     (outStatements, outProgram)
 }
 
-pub fn handleCommand(mut inCommand: ArcStr) -> Result<(bool, ArcStr)> {
+pub(crate) fn handleCommand(mut inCommand: ArcStr) -> Result<(bool, ArcStr)> {
     let mut outContinue: bool;
     let mut outResult: ArcStr;
     let mut stmts: Option<GlobalScript::Statements>;
@@ -583,7 +583,7 @@ fn serverLoopCorba() -> Result<()> {
     Ok(())
 }
 
-pub fn readSettings(mut inArguments: Arc<metamodelica::List<ArcStr>>) -> Result<()> {
+pub(crate) fn readSettings(mut inArguments: Arc<metamodelica::List<ArcStr>>) -> Result<()> {
     let mut settings_file: ArcStr;
     settings_file = (Util::flagValue((literal!("-s")).clone(), inArguments.clone())?).clone();
     if settings_file.clone() != literal!("") {
@@ -602,7 +602,7 @@ fn readSettingsFile(mut filePath: ArcStr) -> Result<()> {
     Ok(())
 }
 
-pub fn setWindowsPaths(mut inOMHome: ArcStr) -> Result<()> {
+pub(crate) fn setWindowsPaths(mut inOMHome: ArcStr) -> Result<()> {
     let () = (match inOMHome.clone() {
         mut omHome => {
             let mut oldPath: ArcStr;
@@ -658,7 +658,7 @@ fn setDefaultCC() -> () {
     ()
 }
 
-pub fn init(mut args: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub(crate) fn init(mut args: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut args_1: Arc<metamodelica::List<ArcStr>>;
     System::setEnv((literal!("G_SLICE")).clone(), (literal!("always-malloc")).clone(), true);
     System::initGarbageCollector();

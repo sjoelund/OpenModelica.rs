@@ -74,7 +74,7 @@ use openmodelica_util_datatypes_basic::List;
 // late inline functions stuff
 //
 // =============================================================================
-pub fn lateInlineFunction(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
+pub(crate) fn lateInlineFunction(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut outDAE: Arc<BackendDAE::BackendDAE>;
     outDAE = inlineCalls(list![openmodelica_frontend_types::DAE::InlineType::NORM_INLINE, openmodelica_frontend_types::DAE::InlineType::AFTER_INDEX_RED_INLINE], inDAE.clone())?;
     Ok(outDAE)
@@ -84,7 +84,7 @@ pub fn lateInlineFunction(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<
 // normal inline functions stuff
 //
 // =============================================================================
-pub fn normalInlineFunction(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
+pub(crate) fn normalInlineFunction(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut outDAE: Arc<BackendDAE::BackendDAE>;
     if Flags::getConfigEnum(Flags::INLINE_METHOD.clone())? == 1 {
         outDAE = inlineCalls(list![openmodelica_frontend_types::DAE::InlineType::NORM_INLINE], inDAE.clone())?;
@@ -172,7 +172,7 @@ fn inlineEquationOptArray(mut inEqnArray: Arc<ExpandableArray::ExpandableArray<A
     Ok(oInlined)
 }
 
-pub fn inlineEq(mut inEquation: Arc<BackendDAE::Equation>, mut fns: (Option<Arc<AvlTreePathFunction::Tree>>, Arc<metamodelica::List<DAE::InlineType>>)) -> (Arc<BackendDAE::Equation>, bool) {
+pub(crate) fn inlineEq(mut inEquation: Arc<BackendDAE::Equation>, mut fns: (Option<Arc<AvlTreePathFunction::Tree>>, Arc<metamodelica::List<DAE::InlineType>>)) -> (Arc<BackendDAE::Equation>, bool) {
     let mut outEquation: Arc<BackendDAE::Equation>;
     let mut inlined: bool;
     (outEquation, inlined) = 'mc: {
@@ -359,7 +359,7 @@ fn inlineEqsLst(mut inEqnsList: Arc<metamodelica::List<Arc<metamodelica::List<Ar
     }
 }
 
-pub fn inlineEqs(mut inEqnsList: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut inFunctions: (Option<Arc<AvlTreePathFunction::Tree>>, Arc<metamodelica::List<DAE::InlineType>>), mut iAcc: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut iInlined: bool) -> (Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, bool) {
+pub(crate) fn inlineEqs(mut inEqnsList: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut inFunctions: (Option<Arc<AvlTreePathFunction::Tree>>, Arc<metamodelica::List<DAE::InlineType>>), mut iAcc: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut iInlined: bool) -> (Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, bool) {
     '__tco: loop {
         ::match_deref::match_deref! { match &(inEqnsList.clone()) {
         Deref @ metamodelica::List::Nil => {
@@ -707,7 +707,7 @@ fn inlineEquationOptArrayAppend(mut inEqnArray: Arc<ExpandableArray::ExpandableA
     Ok((outEqs, oInlined, shared))
 }
 
-pub fn inlineEqAppend_debug(mut inEquationOption: Arc<BackendDAE::Equation>, mut inElementList: (Option<Arc<AvlTreePathFunction::Tree>>, Arc<metamodelica::List<DAE::InlineType>>), mut iShared: Arc<BackendDAE::Shared>) -> Result<(Arc<BackendDAE::Equation>, Arc<BackendDAE::EqSystem>, bool, Arc<BackendDAE::Shared>)> {
+pub(crate) fn inlineEqAppend_debug(mut inEquationOption: Arc<BackendDAE::Equation>, mut inElementList: (Option<Arc<AvlTreePathFunction::Tree>>, Arc<metamodelica::List<DAE::InlineType>>), mut iShared: Arc<BackendDAE::Shared>) -> Result<(Arc<BackendDAE::Equation>, Arc<BackendDAE::EqSystem>, bool, Arc<BackendDAE::Shared>)> {
     let mut outEquationOption: Arc<BackendDAE::Equation>;
     let mut outEqs: Arc<BackendDAE::EqSystem>;
     let mut inlined: bool;

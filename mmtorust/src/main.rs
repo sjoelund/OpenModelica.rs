@@ -9,6 +9,7 @@ mod typedexp;
 mod codegen;
 mod external_c_calls;
 mod fallibility;
+mod visibility;
 mod validate;
 mod dep_analysis;
 mod unused_functions;
@@ -94,6 +95,20 @@ fn start_compilation(results: Vec<Absyn::Program>) {
             info.matchcontinue_as_match.len(),
         );
     }
+
+    // Visibility analysis: narrow every public function not reachable across a
+    // crate boundary from `pub` to `pub(crate)`.
+    let t0 = std::time::Instant::now();
+    let vis = visibility::analyze(&hier);
+    let total_fns = info.total_functions;
+    let crate_local = total_fns.saturating_sub(vis.keep_public.len());
+    hier.keep_public_fns = vis.keep_public;
+    println!(
+        "Visibility analysis: {} functions kept `pub`, ~{} narrowable to `pub(crate)`; {:.2}s",
+        hier.keep_public_fns.len(),
+        crate_local,
+        t0.elapsed().as_secs_f64(),
+    );
 
     // PartialEq requirement analysis: for each user-defined function,
     // figure out which of its type parameters need a `+ PartialEq` bound

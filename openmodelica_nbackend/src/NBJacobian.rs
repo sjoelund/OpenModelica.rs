@@ -117,7 +117,7 @@ impl metamodelica::gc::MMTrace for JacobianType {
     fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 
-pub fn isDynamic(mut jacType: JacobianType) -> bool {
+pub(crate) fn isDynamic(mut jacType: JacobianType) -> bool {
     let mut b: bool;
     b = (match jacType.clone() {
         JacobianType::ODE => true,
@@ -130,7 +130,7 @@ pub fn isDynamic(mut jacType: JacobianType) -> bool {
     b
 }
 
-pub fn main(mut bdae: Arc<Jacobian::NBackendDAE>, mut kind: Partition::Kind) -> Result<Arc<Jacobian::NBackendDAE>> {
+pub(crate) fn main(mut bdae: Arc<Jacobian::NBackendDAE>, mut kind: Partition::Kind) -> Result<Arc<Jacobian::NBackendDAE>> {
     let mut bdae: Arc<Jacobian::NBackendDAE> = bdae;
     let func: Module::jacobianInterface = getModule()?;
     bdae = (::match_deref::match_deref! { match &(bdae.clone()) {
@@ -175,7 +175,7 @@ pub fn main(mut bdae: Arc<Jacobian::NBackendDAE>, mut kind: Partition::Kind) -> 
     Ok(bdae)
 }
 
-pub fn applyToPartitions(mut partitions: Arc<metamodelica::List<Arc<Partition::Partition::Partition>>>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, mut knowns: Arc<VariablePointers::VariablePointers>, mut name: ArcStr, mut func: Arc<dyn ::std::ops::Fn(ArcStr, JacobianType, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>, Option<metamodelica::Array<Arc<StrongComponent::NBStrongComponent>>>, Option<Arc<Adjacency::Matrix::Matrix>>, Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, bool) -> Result<Option<Arc<Jacobian::NBackendDAE>>> + 'static>) -> Result<(Arc<metamodelica::List<Arc<Partition::Partition::Partition>>>, Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>)> {
+pub(crate) fn applyToPartitions(mut partitions: Arc<metamodelica::List<Arc<Partition::Partition::Partition>>>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, mut knowns: Arc<VariablePointers::VariablePointers>, mut name: ArcStr, mut func: Arc<dyn ::std::ops::Fn(ArcStr, JacobianType, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>, Option<metamodelica::Array<Arc<StrongComponent::NBStrongComponent>>>, Option<Arc<Adjacency::Matrix::Matrix>>, Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, bool) -> Result<Option<Arc<Jacobian::NBackendDAE>>> + 'static>) -> Result<(Arc<metamodelica::List<Arc<Partition::Partition::Partition>>>, Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>)> {
     let mut partitions: Arc<metamodelica::List<Arc<Partition::Partition::Partition>>> = partitions;
     let mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>> = funcMap;
     partitions = ({
@@ -189,14 +189,14 @@ pub fn applyToPartitions(mut partitions: Arc<metamodelica::List<Arc<Partition::P
     Ok((partitions, funcMap))
 }
 
-pub fn nonlinear(mut seedCandidates: Arc<VariablePointers::VariablePointers>, mut partialCandidates: Arc<VariablePointers::VariablePointers>, mut equations: Arc<EquationPointers::EquationPointers>, mut comps: metamodelica::Array<Arc<StrongComponent::NBStrongComponent>>, mut full: Option<Arc<Adjacency::Matrix::Matrix>>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, mut name: ArcStr, mut staticAsContinuous: bool) -> Result<Option<Arc<Jacobian::NBackendDAE>>> {
+pub(crate) fn nonlinear(mut seedCandidates: Arc<VariablePointers::VariablePointers>, mut partialCandidates: Arc<VariablePointers::VariablePointers>, mut equations: Arc<EquationPointers::EquationPointers>, mut comps: metamodelica::Array<Arc<StrongComponent::NBStrongComponent>>, mut full: Option<Arc<Adjacency::Matrix::Matrix>>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, mut name: ArcStr, mut staticAsContinuous: bool) -> Result<Option<Arc<Jacobian::NBackendDAE>>> {
     let mut jacobian: Option<Arc<Jacobian::NBackendDAE>>;
     let func: Module::jacobianInterface = if (Flags::isSet(Flags::NLS_ANALYTIC_JACOBIAN.clone())?) {(std::sync::Arc::new(jacobianSymbolic) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, JacobianType, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>, Option<metamodelica::Array<Arc<StrongComponent::NBStrongComponent>>>, Option<Arc<Adjacency::Matrix::Matrix>>, Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, bool) -> Result<Option<Arc<Jacobian::NBackendDAE>>> + 'static>)} else {(std::sync::Arc::new(jacobianNumeric) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, JacobianType, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>, Option<metamodelica::Array<Arc<StrongComponent::NBStrongComponent>>>, Option<Arc<Adjacency::Matrix::Matrix>>, Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, bool) -> Result<Option<Arc<Jacobian::NBackendDAE>>> + 'static>)};
     jacobian = func((name.clone()).clone(), JacobianType::NLS.clone(), seedCandidates.clone(), partialCandidates.clone(), equations.clone(), Some(comps.clone()), full.clone(), funcMap.clone(), staticAsContinuous.clone())?;
     Ok(jacobian)
 }
 
-pub fn combine(mut jacobians: Arc<metamodelica::List<Arc<Jacobian::NBackendDAE>>>, mut name: ArcStr) -> Result<Arc<Jacobian::NBackendDAE>> {
+pub(crate) fn combine(mut jacobians: Arc<metamodelica::List<Arc<Jacobian::NBackendDAE>>>, mut name: ArcStr) -> Result<Arc<Jacobian::NBackendDAE>> {
     let mut jacobian: Arc<Jacobian::NBackendDAE>;
     let mut jacType: JacobianType = JacobianType::ODE;
     let mut variables: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
@@ -268,7 +268,7 @@ pub fn combine(mut jacobians: Arc<metamodelica::List<Arc<Jacobian::NBackendDAE>>
     Ok(jacobian)
 }
 
-pub fn getModule() -> Result<Arc<dyn ::std::ops::Fn(ArcStr, JacobianType, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>, Option<metamodelica::Array<Arc<StrongComponent::NBStrongComponent>>>, Option<Arc<Adjacency::Matrix::Matrix>>, Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, bool) -> Result<Option<Arc<Jacobian::NBackendDAE>>> + 'static>> {
+pub(crate) fn getModule() -> Result<Arc<dyn ::std::ops::Fn(ArcStr, JacobianType, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>, Option<metamodelica::Array<Arc<StrongComponent::NBStrongComponent>>>, Option<Arc<Adjacency::Matrix::Matrix>>, Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, bool) -> Result<Option<Arc<Jacobian::NBackendDAE>>> + 'static>> {
     let mut func: Module::jacobianInterface;
     func = (::match_deref::match_deref! { match &(Flags::getConfigString(Flags::GENERATE_DYNAMIC_JACOBIAN.clone())?) {
         Deref @ "symbolic" => (std::sync::Arc::new(jacobianSymbolic) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, JacobianType, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>, Option<metamodelica::Array<Arc<StrongComponent::NBStrongComponent>>>, Option<Arc<Adjacency::Matrix::Matrix>>, Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, bool) -> Result<Option<Arc<Jacobian::NBackendDAE>>> + 'static>),
@@ -280,13 +280,13 @@ pub fn getModule() -> Result<Arc<dyn ::std::ops::Fn(ArcStr, JacobianType, Arc<Va
     Ok(func)
 }
 
-pub fn toString(mut jacobian: Arc<Jacobian::NBackendDAE>, mut r#str: ArcStr) -> Result<ArcStr> {
+pub(crate) fn toString(mut jacobian: Arc<Jacobian::NBackendDAE>, mut r#str: ArcStr) -> Result<ArcStr> {
     let mut r#str: ArcStr = r#str;
     r#str = (Jacobian::toString(jacobian.clone(), (r#str.clone()).clone())?).clone();
     Ok(r#str)
 }
 
-pub fn jacobianTypeString(mut jacType: JacobianType) -> ArcStr {
+pub(crate) fn jacobianTypeString(mut jacType: JacobianType) -> ArcStr {
     let mut r#str: ArcStr;
     r#str = ((match jacType.clone() {
         JacobianType::ODE => literal!("[ODE]"),
@@ -350,7 +350,7 @@ pub mod SparsityPattern {
 
     pub type SPARSITY_PATTERN = SparsityPattern;
 
-    pub fn toString(mut pattern: Arc<SparsityPattern>) -> Result<ArcStr> {
+    pub(crate) fn toString(mut pattern: Arc<SparsityPattern>) -> Result<ArcStr> {
         let mut r#str: ArcStr = StringUtil::headline_2(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Sparsity Pattern (nnz: ")); __mm_s.push_str(&*intString(pattern.nnz.clone())); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone());
         let mut cref: Arc<ComponentRef::NFComponentRef>;
         let mut dependencies: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
@@ -379,7 +379,7 @@ pub mod SparsityPattern {
         Ok(r#str)
     }
 
-    pub fn lazy(mut seedCandidates: Arc<VariablePointers::VariablePointers>, mut partialCandidates: Arc<VariablePointers::VariablePointers>, mut strongComponents: Option<metamodelica::Array<Arc<StrongComponent::NBStrongComponent>>>, mut jacType: JacobianType) -> Result<(Arc<SparsityPattern>, Arc<SparsityColoring::SparsityColoring>)> {
+    pub(crate) fn lazy(mut seedCandidates: Arc<VariablePointers::VariablePointers>, mut partialCandidates: Arc<VariablePointers::VariablePointers>, mut strongComponents: Option<metamodelica::Array<Arc<StrongComponent::NBStrongComponent>>>, mut jacType: JacobianType) -> Result<(Arc<SparsityPattern>, Arc<SparsityColoring::SparsityColoring>)> {
         let mut sparsityPattern: Arc<SparsityPattern>;
         let mut sparsityColoring: Arc<SparsityColoring::SparsityColoring>;
         let mut seed_vars: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
@@ -411,7 +411,7 @@ pub mod SparsityPattern {
         Ok((sparsityPattern, sparsityColoring))
     }
 
-    pub fn adjacencyMapToString(mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>>) -> Result<ArcStr> {
+    pub(crate) fn adjacencyMapToString(mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>>) -> Result<ArcStr> {
         let mut s: ArcStr;
         let mut keys: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
         let mut k: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
@@ -428,7 +428,7 @@ pub mod SparsityPattern {
         Ok(s)
     }
 
-    pub fn create(mut seedCandidates: Arc<VariablePointers::VariablePointers>, mut partialCandidates: Arc<VariablePointers::VariablePointers>, mut strongComponents: Option<metamodelica::Array<Arc<StrongComponent::NBStrongComponent>>>, mut jacType: JacobianType) -> Result<(Arc<SparsityPattern>, Arc<SparsityColoring::SparsityColoring>)> {
+    pub(crate) fn create(mut seedCandidates: Arc<VariablePointers::VariablePointers>, mut partialCandidates: Arc<VariablePointers::VariablePointers>, mut strongComponents: Option<metamodelica::Array<Arc<StrongComponent::NBStrongComponent>>>, mut jacType: JacobianType) -> Result<(Arc<SparsityPattern>, Arc<SparsityColoring::SparsityColoring>)> {
         let mut sparsityPattern: Arc<SparsityPattern>;
         let mut sparsityColoring: Arc<SparsityColoring::SparsityColoring>;
         let mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>> as ::std::default::Default>::default();
@@ -526,7 +526,7 @@ pub mod SparsityPattern {
         Ok((sparsityPattern, sparsityColoring))
     }
 
-    pub fn createEmpty() -> (Arc<SparsityPattern>, Arc<SparsityColoring::SparsityColoring>) {
+    pub(crate) fn createEmpty() -> (Arc<SparsityPattern>, Arc<SparsityColoring::SparsityColoring>) {
         let mut sparsityPattern: Arc<SparsityPattern> = EMPTY_SPARSITY_PATTERN().clone();
         let mut sparsityColoring: Arc<SparsityColoring::SparsityColoring> = EMPTY_SPARSITY_COLORING().clone();
         (sparsityPattern, sparsityColoring)
@@ -573,7 +573,7 @@ pub mod SparsityColoring {
 
     pub type SPARSITY_COLORING = SparsityColoring;
 
-    pub fn toString(mut sparsityColoring: Arc<SparsityColoring>) -> Result<ArcStr> {
+    pub(crate) fn toString(mut sparsityColoring: Arc<SparsityColoring>) -> Result<ArcStr> {
         let mut r#str: ArcStr = StringUtil::headline_2((literal!("Sparsity Coloring")).clone());
         let mut empty: bool = metamodelica::arrayLength(sparsityColoring.cols.clone()) == 0;
         if empty.clone() {
@@ -588,7 +588,7 @@ pub mod SparsityColoring {
         Ok(r#str)
     }
 
-    pub fn lazy(mut sparsityPattern: Arc<SparsityPattern::SparsityPattern>) -> Arc<SparsityColoring> {
+    pub(crate) fn lazy(mut sparsityPattern: Arc<SparsityPattern::SparsityPattern>) -> Arc<SparsityColoring> {
         let mut sparsityColoring: Arc<SparsityColoring>;
         let mut cols: metamodelica::Array<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>;
         let mut rows: metamodelica::Array<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>;
@@ -605,7 +605,7 @@ pub mod SparsityColoring {
         sparsityColoring
     }
 
-    pub fn PartialD2ColoringAlgC(mut sparsityPattern: Arc<SparsityPattern::SparsityPattern>, mut jacType: JacobianType) -> Result<Arc<SparsityColoring>> {
+    pub(crate) fn PartialD2ColoringAlgC(mut sparsityPattern: Arc<SparsityPattern::SparsityPattern>, mut jacType: JacobianType) -> Result<Arc<SparsityColoring>> {
         fn getIndices(mut cref: Arc<ComponentRef::NFComponentRef>, mut seed_indices: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut partial_indices: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut rows: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<Arc<metamodelica::List<i32>>> {
             let mut indices: Arc<metamodelica::List<i32>>;
             if UnorderedMap::contains(cref.clone(), seed_indices.clone())? {
@@ -728,7 +728,7 @@ pub mod SparsityColoring {
         Ok(sparsityColoring)
     }
 
-    pub fn PartialD2ColoringAlgColumnAndRow(mut sparsityPattern: Arc<SparsityPattern::SparsityPattern>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>>) -> Result<Arc<SparsityColoring>> {
+    pub(crate) fn PartialD2ColoringAlgColumnAndRow(mut sparsityPattern: Arc<SparsityPattern::SparsityPattern>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>>) -> Result<Arc<SparsityColoring>> {
         let mut sparsityColoring: Arc<SparsityColoring>;
         let mut seed_nodes: metamodelica::Array<Arc<ComponentRef::NFComponentRef>>;
         let mut partial_nodes: metamodelica::Array<Arc<ComponentRef::NFComponentRef>>;
@@ -746,7 +746,7 @@ pub mod SparsityColoring {
         Ok(sparsityColoring)
     }
 
-    pub fn GreedyPartialD2Color(mut nodes: metamodelica::Array<Arc<ComponentRef::NFComponentRef>>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>>> {
+    pub(crate) fn GreedyPartialD2Color(mut nodes: metamodelica::Array<Arc<ComponentRef::NFComponentRef>>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>>> {
         let mut groups_lst: Arc<metamodelica::List<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>>;
         let mut index_lookup: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>;
         let mut coloring: metamodelica::Array<i32>;
@@ -812,7 +812,7 @@ pub mod SparsityColoring {
         Ok(groups_lst)
     }
 
-    pub fn PartialD2ColoringAlg(mut sparsityPattern: Arc<SparsityPattern::SparsityPattern>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>>) -> Result<Arc<SparsityColoring>> {
+    pub(crate) fn PartialD2ColoringAlg(mut sparsityPattern: Arc<SparsityPattern::SparsityPattern>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>>) -> Result<Arc<SparsityColoring>> {
         let mut sparsityColoring: Arc<SparsityColoring>;
         let mut cref_lookup: metamodelica::Array<Arc<ComponentRef::NFComponentRef>>;
         let mut index_lookup: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>;
@@ -887,7 +887,7 @@ pub mod SparsityColoring {
         Ok(sparsityColoring)
     }
 
-    pub fn combine(mut coloring1: Arc<SparsityColoring>, mut coloring2: Arc<SparsityColoring>) -> Arc<SparsityColoring> {
+    pub(crate) fn combine(mut coloring1: Arc<SparsityColoring>, mut coloring2: Arc<SparsityColoring>) -> Arc<SparsityColoring> {
         let mut coloring_out: Arc<SparsityColoring>;
         let mut cols_big: metamodelica::Array<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>;
         let mut cols_small: metamodelica::Array<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>;

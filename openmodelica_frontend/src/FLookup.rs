@@ -114,7 +114,7 @@ pub static ignoreParentsAndImports: Options = Options { ignoreImports: true, ign
 
 pub static ignoreAll: Options = Options { ignoreImports: true, ignoreExtends: true, ignoreParents: true };
 
-pub fn id(mut inGraph: Graph, mut inRef: Ref, mut inName: Name, mut inOptions: Options, mut inMsg: Msg) -> Result<(Graph, Ref)> {
+pub(crate) fn id(mut inGraph: Graph, mut inRef: Ref, mut inName: Name, mut inOptions: Options, mut inMsg: Msg) -> Result<(Graph, Ref)> {
     let mut outGraph: Graph;
     let mut outRef: Ref;
     (outGraph, outRef) = 'mc: {
@@ -193,7 +193,7 @@ pub fn id(mut inGraph: Graph, mut inRef: Ref, mut inName: Name, mut inOptions: O
     Ok((outGraph, outRef))
 }
 
-pub fn search(mut inGraph: Graph, mut inRefs: Refs, mut inName: Name, mut inOptions: Options, mut inMsg: Msg) -> Result<(Graph, Ref)> {
+pub(crate) fn search(mut inGraph: Graph, mut inRefs: Refs, mut inName: Name, mut inOptions: Options, mut inMsg: Msg) -> Result<(Graph, Ref)> {
     let mut outGraph: Graph;
     let mut outRef: Ref;
     (outGraph, outRef) = 'mc: {
@@ -242,7 +242,7 @@ pub fn search(mut inGraph: Graph, mut inRefs: Refs, mut inName: Name, mut inOpti
     Ok((outGraph, outRef))
 }
 
-pub fn name(mut inGraph: Graph, mut inRef: Ref, mut inPath: Arc<Absyn::Path>, mut inOptions: Options, mut inMsg: Msg) -> Result<(Graph, Ref)> {
+pub(crate) fn name(mut inGraph: Graph, mut inRef: Ref, mut inPath: Arc<Absyn::Path>, mut inOptions: Options, mut inMsg: Msg) -> Result<(Graph, Ref)> {
     let mut outGraph: Graph;
     let mut outRef: Ref;
     (outGraph, outRef) = 'mc: {
@@ -314,7 +314,7 @@ pub fn name(mut inGraph: Graph, mut inRef: Ref, mut inPath: Arc<Absyn::Path>, mu
     Ok((outGraph, outRef))
 }
 
-pub fn ext(mut inGraph: Graph, mut inRef: Ref, mut inName: Name, mut inOptions: Options, mut inMsg: Msg) -> Result<(Graph, Ref)> {
+pub(crate) fn ext(mut inGraph: Graph, mut inRef: Ref, mut inName: Name, mut inOptions: Options, mut inMsg: Msg) -> Result<(Graph, Ref)> {
     let mut outGraph: Graph;
     let mut outRef: Ref;
     (outGraph, outRef) = 'mc: {
@@ -351,7 +351,7 @@ pub fn ext(mut inGraph: Graph, mut inRef: Ref, mut inName: Name, mut inOptions: 
     Ok((outGraph, outRef))
 }
 
-pub fn imp(mut inGraph: Graph, mut inRef: Ref, mut inName: Name, mut inOptions: Options, mut inMsg: Msg) -> Result<(Graph, Ref)> {
+pub(crate) fn imp(mut inGraph: Graph, mut inRef: Ref, mut inName: Name, mut inOptions: Options, mut inMsg: Msg) -> Result<(Graph, Ref)> {
     let mut outGraph: Graph;
     let mut outRef: Ref;
     (outGraph, outRef) = 'mc: {
@@ -422,7 +422,7 @@ fn imp_qual(mut inGraph: Graph, mut inRef: Ref, mut inName: Name, mut inImports:
     Ok((outGraph, outRef))
 }
 
-pub fn imp_unqual(mut inGraph: Graph, mut inRef: Ref, mut inName: Name, mut inImports: Arc<metamodelica::List<Absyn::Import>>, mut inOptions: Options, mut inMsg: Msg) -> Result<(Graph, Ref)> {
+pub(crate) fn imp_unqual(mut inGraph: Graph, mut inRef: Ref, mut inName: Name, mut inImports: Arc<metamodelica::List<Absyn::Import>>, mut inOptions: Options, mut inMsg: Msg) -> Result<(Graph, Ref)> {
     let mut outGraph: Graph;
     let mut outRef: Ref;
     (outGraph, outRef) = 'mc: {
@@ -455,14 +455,14 @@ pub fn imp_unqual(mut inGraph: Graph, mut inRef: Ref, mut inName: Name, mut inIm
     Ok((outGraph, outRef))
 }
 
-pub fn fq(mut inGraph: Graph, mut inName: Arc<Absyn::Path>, mut inOptions: Options, mut inMsg: Msg) -> Result<(Graph, Ref)> {
+pub(crate) fn fq(mut inGraph: Graph, mut inName: Arc<Absyn::Path>, mut inOptions: Options, mut inMsg: Msg) -> Result<(Graph, Ref)> {
     let mut outGraph: Graph;
     let mut outRef: Ref;
     (outGraph, outRef) = name(inGraph.clone(), FGraph::top(inGraph.clone())?, inName.clone(), inOptions.clone(), inMsg.clone())?;
     Ok((outGraph, outRef))
 }
 
-pub fn cr(mut inGraph: Graph, mut inRef: Ref, mut inCref: Arc<Absyn::ComponentRef>, mut inOptions: Options, mut inMsg: Msg) -> Result<(Graph, Ref)> {
+pub(crate) fn cr(mut inGraph: Graph, mut inRef: Ref, mut inCref: Arc<Absyn::ComponentRef>, mut inOptions: Options, mut inMsg: Msg) -> Result<(Graph, Ref)> {
     let mut outGraph: Graph;
     let mut outRef: Ref;
     (outGraph, outRef) = 'mc: {

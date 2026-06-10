@@ -189,7 +189,7 @@ pub fn TIME_CREF() -> Arc<ComponentRef::NFComponentRef> { __TIME_CREF_TLS.with(|
 thread_local! { static __SUBST_CREF_TLS: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::NFComponentRef::CREF { node: SUBST_NODE().clone(), subscripts: metamodelica::nil(), ty: crate::NFType::interned_ANY(), origin: Origin::CREF.clone(), restCref: crate::NFComponentRef::interned_EMPTY() }); }
 pub fn SUBST_CREF() -> Arc<ComponentRef::NFComponentRef> { __SUBST_CREF_TLS.with(|__t| __t.clone()) }
 
-pub fn makeBuiltinLookupTree(mut name: ArcStr, mut components: Arc<metamodelica::List<ArcStr>>, mut classes: Arc<metamodelica::List<ArcStr>>) -> Result<()> {
+pub(crate) fn makeBuiltinLookupTree(mut name: ArcStr, mut components: Arc<metamodelica::List<ArcStr>>, mut classes: Arc<metamodelica::List<ArcStr>>) -> Result<()> {
     let mut ltree: Arc<LookupTree::Tree> = LookupTree::new();
     let mut i: i32;
     i = 1;

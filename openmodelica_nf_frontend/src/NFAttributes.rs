@@ -122,7 +122,7 @@ pub fn IMPL_DISCRETE_ATTR() -> Arc<NFAttributes> { __IMPL_DISCRETE_ATTR_TLS.with
 thread_local! { static __AUGMENTED_ATTR_TLS: Arc<NFAttributes> = Arc::new(NFAttributes { connectorType: ConnectorType::AUGMENTED.clone(), parallelism: Parallelism::NON_PARALLEL.clone(), variability: Variability::CONTINUOUS.clone(), direction: Direction::NONE.clone(), innerOuter: InnerOuter::NOT_INNER_OUTER.clone(), isFinal: false, isRedeclare: false, isReplaceable: crate::NFPrefixes::Replaceable::NOT_REPLACEABLE, isResizable: false }); }
 pub fn AUGMENTED_ATTR() -> Arc<NFAttributes> { __AUGMENTED_ATTR_TLS.with(|__t| __t.clone()) }
 
-pub fn fromSCode(mut compAttr: SCode::Attributes, mut compPrefs: Arc<SCode::Prefixes>) -> Result<Arc<NFAttributes>> {
+pub(crate) fn fromSCode(mut compAttr: SCode::Attributes, mut compPrefs: Arc<SCode::Prefixes>) -> Result<Arc<NFAttributes>> {
     let mut attributes: Arc<NFAttributes>;
     let mut cty: i32 = 0;
     let mut par: Prefixes::Parallelism = Prefixes::Parallelism::NON_PARALLEL;
@@ -150,7 +150,7 @@ pub fn fromSCode(mut compAttr: SCode::Attributes, mut compPrefs: Arc<SCode::Pref
     Ok(attributes)
 }
 
-pub fn fromDerivedSCode(mut scodeAttr: SCode::Attributes) -> Result<Arc<NFAttributes>> {
+pub(crate) fn fromDerivedSCode(mut scodeAttr: SCode::Attributes) -> Result<Arc<NFAttributes>> {
     let mut attributes: Arc<NFAttributes>;
     let mut cty: i32 = 0;
     let mut var: Prefixes::Variability = Prefixes::Variability::CONSTANT;
@@ -167,7 +167,7 @@ pub fn fromDerivedSCode(mut scodeAttr: SCode::Attributes) -> Result<Arc<NFAttrib
     Ok(attributes)
 }
 
-pub fn mergeComponentAttributes(mut outerAttr: Arc<NFAttributes>, mut innerAttr: Arc<NFAttributes>, mut node: Arc<InstNode::InstNode>, mut parentRestriction: Arc<Restriction::NFRestriction>) -> Result<Arc<NFAttributes>> {
+pub(crate) fn mergeComponentAttributes(mut outerAttr: Arc<NFAttributes>, mut innerAttr: Arc<NFAttributes>, mut node: Arc<InstNode::InstNode>, mut parentRestriction: Arc<Restriction::NFRestriction>) -> Result<Arc<NFAttributes>> {
     let mut attr: Arc<NFAttributes>;
     let mut cty: i32;
     let mut par: Prefixes::Parallelism;
@@ -200,7 +200,7 @@ pub fn mergeComponentAttributes(mut outerAttr: Arc<NFAttributes>, mut innerAttr:
     Ok(attr)
 }
 
-pub fn mergeDerivedAttributes(mut outerAttr: Arc<NFAttributes>, mut innerAttr: Arc<NFAttributes>, mut node: Arc<InstNode::InstNode>) -> Result<Arc<NFAttributes>> {
+pub(crate) fn mergeDerivedAttributes(mut outerAttr: Arc<NFAttributes>, mut innerAttr: Arc<NFAttributes>, mut node: Arc<InstNode::InstNode>) -> Result<Arc<NFAttributes>> {
     let mut attr: Arc<NFAttributes>;
     let mut cty: i32;
     let mut par: Prefixes::Parallelism;
@@ -237,7 +237,7 @@ pub fn mergeDerivedAttributes(mut outerAttr: Arc<NFAttributes>, mut innerAttr: A
     Ok(attr)
 }
 
-pub fn mergeRedeclaredComponentAttributes(mut origAttr: Arc<NFAttributes>, mut redeclAttr: Arc<NFAttributes>, mut node: Arc<InstNode::InstNode>) -> Result<Arc<NFAttributes>> {
+pub(crate) fn mergeRedeclaredComponentAttributes(mut origAttr: Arc<NFAttributes>, mut redeclAttr: Arc<NFAttributes>, mut node: Arc<InstNode::InstNode>) -> Result<Arc<NFAttributes>> {
     let mut attr: Arc<NFAttributes>;
     let mut cty: i32;
     let mut rcty: i32;
@@ -319,7 +319,7 @@ pub fn mergeRedeclaredComponentAttributes(mut origAttr: Arc<NFAttributes>, mut r
     Ok(attr)
 }
 
-pub fn mergeRedeclaredClassPrefixes(mut origPrefs: Arc<Class::Prefixes::Prefixes>, mut redeclPrefs: Arc<Class::Prefixes::Prefixes>, mut node: Arc<InstNode::InstNode>) -> Result<Arc<Class::Prefixes::Prefixes>> {
+pub(crate) fn mergeRedeclaredClassPrefixes(mut origPrefs: Arc<Class::Prefixes::Prefixes>, mut redeclPrefs: Arc<Class::Prefixes::Prefixes>, mut node: Arc<InstNode::InstNode>) -> Result<Arc<Class::Prefixes::Prefixes>> {
     let mut prefs: Arc<Class::Prefixes::Prefixes>;
     let mut enc: SCode::Encapsulated;
     let mut par: SCode::Partial;
@@ -360,13 +360,13 @@ pub fn mergeRedeclaredClassPrefixes(mut origPrefs: Arc<Class::Prefixes::Prefixes
     Ok(prefs)
 }
 
-pub fn printRedeclarePrefixError(mut node: Arc<InstNode::InstNode>, mut prefix1: ArcStr, mut prefix2: ArcStr) -> Result<()> {
+pub(crate) fn printRedeclarePrefixError(mut node: Arc<InstNode::InstNode>, mut prefix1: ArcStr, mut prefix2: ArcStr) -> Result<()> {
     Error::addSourceMessageAndFail(Error::REDECLARE_MISMATCHED_PREFIX.clone(), list![(prefix1.clone()).clone(), (InstNode::name(node.clone())?).clone(), (prefix2.clone()).clone()], InstNode::info(node.clone()))?;
     unreachable!("Error.addSourceMessageAndFail always fails — caller-side flow-analysis hint");
     Ok(())
 }
 
-pub fn checkDeclaredComponentAttributes(mut attr: Arc<NFAttributes>, mut parentRestriction: Arc<Restriction::NFRestriction>, mut component: Arc<InstNode::InstNode>) -> Result<Arc<NFAttributes>> {
+pub(crate) fn checkDeclaredComponentAttributes(mut attr: Arc<NFAttributes>, mut parentRestriction: Arc<Restriction::NFRestriction>, mut component: Arc<InstNode::InstNode>) -> Result<Arc<NFAttributes>> {
     let mut attr: Arc<NFAttributes> = attr;
     let () = (::match_deref::match_deref! { match &(parentRestriction.clone()) {
         Deref @ Restriction::CONNECTOR { .. } => {
@@ -389,12 +389,12 @@ pub fn checkDeclaredComponentAttributes(mut attr: Arc<NFAttributes>, mut parentR
     Ok(attr)
 }
 
-pub fn invalidComponentPrefixError(mut prefix: ArcStr, mut node: Arc<InstNode::InstNode>, mut restriction: Arc<Restriction::NFRestriction>) -> Result<()> {
+pub(crate) fn invalidComponentPrefixError(mut prefix: ArcStr, mut node: Arc<InstNode::InstNode>, mut restriction: Arc<Restriction::NFRestriction>) -> Result<()> {
     Error::addSourceMessage(Error::INVALID_COMPONENT_PREFIX.clone(), list![(prefix.clone()).clone(), (InstNode::name(node.clone())?).clone(), (Restriction::toString(restriction.clone())).clone()], InstNode::info(node.clone()))?;
     Ok(())
 }
 
-pub fn assertNotInputOutput(mut dir: Prefixes::Direction, mut node: Arc<InstNode::InstNode>, mut restriction: Arc<Restriction::NFRestriction>) -> Result<()> {
+pub(crate) fn assertNotInputOutput(mut dir: Prefixes::Direction, mut node: Arc<InstNode::InstNode>, mut restriction: Arc<Restriction::NFRestriction>) -> Result<()> {
     if dir.clone() != Direction::NONE.clone() {
         invalidComponentPrefixError((Prefixes::directionString(dir.clone())).clone(), node.clone(), restriction.clone())?;
         bail!("fail");
@@ -402,7 +402,7 @@ pub fn assertNotInputOutput(mut dir: Prefixes::Direction, mut node: Arc<InstNode
     Ok(())
 }
 
-pub fn assertNotInnerOuter(mut io: Prefixes::InnerOuter, mut node: Arc<InstNode::InstNode>, mut restriction: Arc<Restriction::NFRestriction>) -> Result<()> {
+pub(crate) fn assertNotInnerOuter(mut io: Prefixes::InnerOuter, mut node: Arc<InstNode::InstNode>, mut restriction: Arc<Restriction::NFRestriction>) -> Result<()> {
     if io.clone() != InnerOuter::NOT_INNER_OUTER.clone() {
         invalidComponentPrefixError((Prefixes::innerOuterString(io.clone())).clone(), node.clone(), restriction.clone())?;
         bail!("fail");
@@ -410,7 +410,7 @@ pub fn assertNotInnerOuter(mut io: Prefixes::InnerOuter, mut node: Arc<InstNode:
     Ok(())
 }
 
-pub fn assertNotFlowStream(mut cty: i32, mut node: Arc<InstNode::InstNode>, mut restriction: Arc<Restriction::NFRestriction>) -> Result<()> {
+pub(crate) fn assertNotFlowStream(mut cty: i32, mut node: Arc<InstNode::InstNode>, mut restriction: Arc<Restriction::NFRestriction>) -> Result<()> {
     if Prefixes::ConnectorType::isFlowOrStream(cty.clone()) {
         invalidComponentPrefixError((Prefixes::ConnectorType::toString(cty.clone())).clone(), node.clone(), restriction.clone())?;
         bail!("fail");
@@ -418,7 +418,7 @@ pub fn assertNotFlowStream(mut cty: i32, mut node: Arc<InstNode::InstNode>, mut 
     Ok(())
 }
 
-pub fn updateComponentConnectorType(mut attributes: Arc<NFAttributes>, mut restriction: Arc<Restriction::NFRestriction>, mut context: i32, mut component: Arc<InstNode::InstNode>) -> Result<Arc<NFAttributes>> {
+pub(crate) fn updateComponentConnectorType(mut attributes: Arc<NFAttributes>, mut restriction: Arc<Restriction::NFRestriction>, mut context: i32, mut component: Arc<InstNode::InstNode>) -> Result<Arc<NFAttributes>> {
     let mut attributes: Arc<NFAttributes> = attributes;
     let mut cty: i32 = attributes.connectorType.clone();
     if Prefixes::ConnectorType::isConnectorType(cty.clone()) {
@@ -448,7 +448,7 @@ pub fn updateComponentConnectorType(mut attributes: Arc<NFAttributes>, mut restr
     Ok(attributes)
 }
 
-pub fn updateClassConnectorType(mut res: Arc<Restriction::NFRestriction>, mut attrs: Arc<NFAttributes>) -> Arc<NFAttributes> {
+pub(crate) fn updateClassConnectorType(mut res: Arc<Restriction::NFRestriction>, mut attrs: Arc<NFAttributes>) -> Arc<NFAttributes> {
     let mut attrs: Arc<NFAttributes> = attrs;
     if Restriction::isExpandableConnector(res.clone()) {
         assign_field!(attrs.connectorType = Prefixes::ConnectorType::setExpandable(attrs.connectorType.clone()));
@@ -458,7 +458,7 @@ pub fn updateClassConnectorType(mut res: Arc<Restriction::NFRestriction>, mut at
     attrs
 }
 
-pub fn updateVariability(mut attr: Arc<NFAttributes>, mut cls: Arc<Class::NFClass>, mut clsNode: Arc<InstNode::InstNode>, mut compNode: Arc<InstNode::InstNode>, mut context: i32) -> Result<Arc<NFAttributes>> {
+pub(crate) fn updateVariability(mut attr: Arc<NFAttributes>, mut cls: Arc<Class::NFClass>, mut clsNode: Arc<InstNode::InstNode>, mut compNode: Arc<InstNode::InstNode>, mut context: i32) -> Result<Arc<NFAttributes>> {
     let mut attr: Arc<NFAttributes> = attr;
     let mut var: Prefixes::Variability = attr.variability.clone();
     if referenceEq(&*(attr.clone()),&*(DEFAULT_ATTR().clone())) && InstNode::isDiscreteClass(clsNode.clone())? {
@@ -476,61 +476,61 @@ pub fn updateVariability(mut attr: Arc<NFAttributes>, mut cls: Arc<Class::NFClas
     Ok(attr)
 }
 
-pub fn setConnectorType(mut cty: i32, mut attr: Arc<NFAttributes>) -> Arc<NFAttributes> {
+pub(crate) fn setConnectorType(mut cty: i32, mut attr: Arc<NFAttributes>) -> Arc<NFAttributes> {
     let mut attr: Arc<NFAttributes> = attr;
     assign_field!(attr.connectorType = cty.clone());
     attr
 }
 
-pub fn setVariability(mut var: Prefixes::Variability, mut attr: Arc<NFAttributes>) -> Arc<NFAttributes> {
+pub(crate) fn setVariability(mut var: Prefixes::Variability, mut attr: Arc<NFAttributes>) -> Arc<NFAttributes> {
     let mut attr: Arc<NFAttributes> = attr;
     assign_field!(attr.variability = var.clone());
     attr
 }
 
-pub fn setDirection(mut dir: Prefixes::Direction, mut attr: Arc<NFAttributes>) -> Arc<NFAttributes> {
+pub(crate) fn setDirection(mut dir: Prefixes::Direction, mut attr: Arc<NFAttributes>) -> Arc<NFAttributes> {
     let mut attr: Arc<NFAttributes> = attr;
     assign_field!(attr.direction = dir.clone());
     attr
 }
 
-pub fn setInnerOuter(mut io: Prefixes::InnerOuter, mut attr: Arc<NFAttributes>) -> Arc<NFAttributes> {
+pub(crate) fn setInnerOuter(mut io: Prefixes::InnerOuter, mut attr: Arc<NFAttributes>) -> Arc<NFAttributes> {
     let mut attr: Arc<NFAttributes> = attr;
     assign_field!(attr.innerOuter = io.clone());
     attr
 }
 
-pub fn setFinal(mut fin: bool, mut attr: Arc<NFAttributes>) -> Arc<NFAttributes> {
+pub(crate) fn setFinal(mut fin: bool, mut attr: Arc<NFAttributes>) -> Arc<NFAttributes> {
     let mut attr: Arc<NFAttributes> = attr;
     assign_field!(attr.isFinal = fin.clone());
     attr
 }
 
-pub fn setRedeclare(mut redecl: bool, mut attr: Arc<NFAttributes>) -> Arc<NFAttributes> {
+pub(crate) fn setRedeclare(mut redecl: bool, mut attr: Arc<NFAttributes>) -> Arc<NFAttributes> {
     let mut attr: Arc<NFAttributes> = attr;
     assign_field!(attr.isRedeclare = redecl.clone());
     attr
 }
 
-pub fn setReplaceable(mut repl: Prefixes::Replaceable, mut attr: Arc<NFAttributes>) -> Arc<NFAttributes> {
+pub(crate) fn setReplaceable(mut repl: Prefixes::Replaceable, mut attr: Arc<NFAttributes>) -> Arc<NFAttributes> {
     let mut attr: Arc<NFAttributes> = attr;
     assign_field!(attr.isReplaceable = repl.clone());
     attr
 }
 
-pub fn toDAE(mut ina: Arc<NFAttributes>, mut vis: Prefixes::Visibility) -> Result<Arc<DAE::Attributes>> {
+pub(crate) fn toDAE(mut ina: Arc<NFAttributes>, mut vis: Prefixes::Visibility) -> Result<Arc<DAE::Attributes>> {
     let mut outa: Arc<DAE::Attributes>;
     outa = Arc::new(DAE::Attributes { connectorType: Prefixes::ConnectorType::toDAE(ina.connectorType.clone()), parallelism: parallelismToSCode(ina.parallelism.clone())?, variability: variabilityToSCode(ina.variability.clone()), direction: directionToAbsyn(ina.direction.clone()), innerOuter: innerOuterToAbsyn(ina.innerOuter.clone())?, visibility: visibilityToSCode(vis.clone()) });
     Ok(outa)
 }
 
-pub fn toString(mut attr: Arc<NFAttributes>, mut ty: Arc<NFType::NFType>) -> Result<ArcStr> {
+pub(crate) fn toString(mut attr: Arc<NFAttributes>, mut ty: Arc<NFType::NFType>) -> Result<ArcStr> {
     let mut r#str: ArcStr;
     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*if (attr.isRedeclare.clone()) {literal!("redeclare ")} else {literal!("")}); __mm_s.push_str(&*if (attr.isFinal.clone()) {literal!("final ")} else {literal!("")}); __mm_s.push_str(&*Prefixes::unparseInnerOuter(attr.innerOuter.clone())); __mm_s.push_str(&*Prefixes::unparseReplaceable(attr.isReplaceable.clone())); __mm_s.push_str(&*Prefixes::unparseParallelism(attr.parallelism.clone())); __mm_s.push_str(&*Prefixes::ConnectorType::unparse(attr.connectorType.clone())); __mm_s.push_str(&*Prefixes::unparseVariability(attr.variability.clone(), ty.clone())?); __mm_s.push_str(&*Prefixes::unparseDirection(attr.direction.clone())); ArcStr::from(__mm_s) }).clone();
     Ok(r#str)
 }
 
-pub fn toFlatStream(mut attr: Arc<NFAttributes>, mut ty: Arc<NFType::NFType>, mut s: IOStream::IOStream, mut isTopLevel: bool) -> Result<IOStream::IOStream> {
+pub(crate) fn toFlatStream(mut attr: Arc<NFAttributes>, mut ty: Arc<NFType::NFType>, mut s: IOStream::IOStream, mut isTopLevel: bool) -> Result<IOStream::IOStream> {
     let mut s: IOStream::IOStream = s;
     s = IOStream::append(s.clone(), (Prefixes::unparseVariability(attr.variability.clone(), ty.clone())?).clone())?;
     if isTopLevel.clone() {

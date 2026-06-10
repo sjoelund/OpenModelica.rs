@@ -13,7 +13,7 @@ use crate::GraphML;
 use crate::Tpl;
 use openmodelica_util::Util;
 
-pub fn dumpGraphInfo(mut txt: Tpl::Text, mut a_graphInfo: GraphML::GraphInfo, mut a_fileName: ArcStr) -> Result<Tpl::Text> {
+pub(crate) fn dumpGraphInfo(mut txt: Tpl::Text, mut a_graphInfo: GraphML::GraphInfo, mut a_fileName: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut txt_0: Tpl::Text;
     txt_0 = dumpGraphInfoInternal(Tpl::emptyTxt.clone(), a_graphInfo.clone())?;
@@ -52,7 +52,7 @@ fn lm_6(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<GraphML::Edge>>, m
     Ok(txt)
 }
 
-pub fn dumpGraphInfoInternal(mut in_txt: Tpl::Text, mut in_a_graphInfo: GraphML::GraphInfo) -> Result<Tpl::Text> {
+pub(crate) fn dumpGraphInfoInternal(mut in_txt: Tpl::Text, mut in_a_graphInfo: GraphML::GraphInfo) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_graphInfo.clone()) {
         (mut txt, GraphML::GraphInfo::GRAPHINFOARR { attributes: mut i_attributes, edges: ref i_edges, graphEdgeKey: ref i_graphEdgeKey @ ref i_graphInfo_graphEdgeKey, graphNodeKey: mut i_graphNodeKey, graphs: mut i_graphs, nodes: mut i_nodes }) => {
@@ -135,7 +135,7 @@ fn lm_9(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<(i32, ArcStr)>>, m
     Ok(txt)
 }
 
-pub fn dumpGraph(mut in_txt: Tpl::Text, mut in_a_graph: GraphML::Graph, mut in_a_allGraphs: metamodelica::Array<GraphML::Graph>, mut in_a_allNodes: metamodelica::Array<GraphML::Node>, mut in_a_edgeDesc: ArcStr, mut in_a_graphNodeKey: ArcStr, mut in_a_graphAttributes: metamodelica::Array<GraphML::Attribute>) -> Result<Tpl::Text> {
+pub(crate) fn dumpGraph(mut in_txt: Tpl::Text, mut in_a_graph: GraphML::Graph, mut in_a_allGraphs: metamodelica::Array<GraphML::Graph>, mut in_a_allNodes: metamodelica::Array<GraphML::Node>, mut in_a_edgeDesc: ArcStr, mut in_a_graphNodeKey: ArcStr, mut in_a_graphAttributes: metamodelica::Array<GraphML::Attribute>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_graph.clone(), in_a_allGraphs.clone(), in_a_allNodes.clone(), in_a_edgeDesc.clone(), in_a_graphNodeKey.clone(), in_a_graphAttributes.clone()) {
         (mut txt, GraphML::Graph { nodeIdc: ref i_nodeIdc, attValues: ref i_attValues, directed: mut i_directed, id: mut i_id }, mut a_allGraphs, mut a_allNodes, mut a_edgeDesc, mut a_graphNodeKey, mut a_graphAttributes) => {
@@ -245,7 +245,7 @@ fn fun_15(mut in_txt: Tpl::Text, mut in_a_isFolded: bool) -> Result<Tpl::Text> {
     Ok(out_txt)
 }
 
-pub fn dumpNode(mut in_txt: Tpl::Text, mut in_a_node: GraphML::Node, mut in_a_allGraphs: metamodelica::Array<GraphML::Graph>, mut in_a_allNodes: metamodelica::Array<GraphML::Node>, mut in_a_graphNodeKey: ArcStr, mut in_a_graphAttributes: metamodelica::Array<GraphML::Attribute>) -> Result<Tpl::Text> {
+pub(crate) fn dumpNode(mut in_txt: Tpl::Text, mut in_a_node: GraphML::Node, mut in_a_allGraphs: metamodelica::Array<GraphML::Graph>, mut in_a_allNodes: metamodelica::Array<GraphML::Node>, mut in_a_graphNodeKey: ArcStr, mut in_a_graphAttributes: metamodelica::Array<GraphML::Attribute>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_node.clone(), in_a_allGraphs.clone(), in_a_allNodes.clone(), in_a_graphNodeKey.clone(), in_a_graphAttributes.clone()) {
         (mut txt, GraphML::Node::NODE { nodeLabels: ref i_nodeLabels, attValues: ref i_attValues, id: mut i_id, optDesc: mut i_optDesc, color: mut i_color, border: mut i_border, shapeType: mut i_shapeType }, _, _, mut a_graphNodeKey, mut a_graphAttributes) => {
@@ -376,7 +376,7 @@ fn lm_18(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<(i32, ArcStr)>>, 
     Ok(txt)
 }
 
-pub fn dumpEdge(mut in_txt: Tpl::Text, mut in_a_edge: GraphML::Edge, mut in_a_graphEdgeKey: ArcStr, mut in_a_graphAttributes: metamodelica::Array<GraphML::Attribute>) -> Result<Tpl::Text> {
+pub(crate) fn dumpEdge(mut in_txt: Tpl::Text, mut in_a_edge: GraphML::Edge, mut in_a_graphEdgeKey: ArcStr, mut in_a_graphAttributes: metamodelica::Array<GraphML::Attribute>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_edge.clone(), in_a_graphEdgeKey.clone(), in_a_graphAttributes.clone()) {
         (mut txt, GraphML::Edge { edgeLabels: ref i_edgeLabels, attValues: ref i_attValues, id: mut i_id, source: mut i_source, target: mut i_target, color: mut i_color, lineType: mut i_lineType, lineWidth: mut i_lineWidth, arrows: mut i_arrows, smooth: mut i_smooth }, mut a_graphEdgeKey, mut a_graphAttributes) => {
@@ -434,7 +434,7 @@ pub fn dumpEdge(mut in_txt: Tpl::Text, mut in_a_edge: GraphML::Edge, mut in_a_gr
     Ok(out_txt)
 }
 
-pub fn dumpEdgeLabel(mut in_txt: Tpl::Text, mut in_a_edgeLabel: GraphML::EdgeLabel) -> Result<Tpl::Text> {
+pub(crate) fn dumpEdgeLabel(mut in_txt: Tpl::Text, mut in_a_edgeLabel: GraphML::EdgeLabel) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_edgeLabel.clone()) {
         (mut txt, GraphML::EdgeLabel { backgroundColor: mut i_backgroundColor, fontSize: mut i_fontSize, text: mut i_text }) => {
@@ -456,7 +456,7 @@ pub fn dumpEdgeLabel(mut in_txt: Tpl::Text, mut in_a_edgeLabel: GraphML::EdgeLab
     Ok(out_txt)
 }
 
-pub fn dumpNodeLabel(mut in_txt: Tpl::Text, mut in_a_nodeLabel: GraphML::NodeLabel) -> Result<Tpl::Text> {
+pub(crate) fn dumpNodeLabel(mut in_txt: Tpl::Text, mut in_a_nodeLabel: GraphML::NodeLabel) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_nodeLabel.clone()) {
         (mut txt, GraphML::NodeLabel::NODELABEL_INTERNAL { backgroundColor: mut i_backgroundColor, fontStyle: mut i_fontStyle, text: mut i_text }) => {
@@ -515,7 +515,7 @@ fn fun_22(mut in_txt: Tpl::Text, mut in_mArg: GraphML::Attribute, mut in_a_val: 
     Ok(out_txt)
 }
 
-pub fn dumpAttKey(mut in_txt: Tpl::Text, mut in_a_key: (i32, ArcStr), mut in_a_graphAttributes: metamodelica::Array<GraphML::Attribute>) -> Result<Tpl::Text> {
+pub(crate) fn dumpAttKey(mut in_txt: Tpl::Text, mut in_a_key: (i32, ArcStr), mut in_a_graphAttributes: metamodelica::Array<GraphML::Attribute>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_key.clone(), in_a_graphAttributes.clone()) {
         (mut txt, (mut i_idx, mut i_val), mut a_graphAttributes) => {
@@ -528,7 +528,7 @@ pub fn dumpAttKey(mut in_txt: Tpl::Text, mut in_a_key: (i32, ArcStr), mut in_a_g
     Ok(out_txt)
 }
 
-pub fn dumpAttDef(mut in_txt: Tpl::Text, mut in_a_attribute: GraphML::Attribute) -> Result<Tpl::Text> {
+pub(crate) fn dumpAttDef(mut in_txt: Tpl::Text, mut in_a_attribute: GraphML::Attribute) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_attribute.clone()) {
         (mut txt, GraphML::Attribute { name: mut i_name, attType: mut i_attType, attTarget: mut i_attTarget, attIdx: mut i_attIdx, defaultValue: mut i_defaultValue }) => {
@@ -556,7 +556,7 @@ pub fn dumpAttDef(mut in_txt: Tpl::Text, mut in_a_attribute: GraphML::Attribute)
     Ok(out_txt)
 }
 
-pub fn dumpAttType(mut in_txt: Tpl::Text, mut in_a_type: GraphML::AttributeType) -> Result<Tpl::Text> {
+pub(crate) fn dumpAttType(mut in_txt: Tpl::Text, mut in_a_type: GraphML::AttributeType) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_type.clone()) {
         (mut txt, GraphML::AttributeType::TYPE_STRING { .. }) => {
@@ -582,7 +582,7 @@ pub fn dumpAttType(mut in_txt: Tpl::Text, mut in_a_type: GraphML::AttributeType)
     Ok(out_txt)
 }
 
-pub fn dumpAttTarget(mut in_txt: Tpl::Text, mut in_a_target: GraphML::AttributeTarget) -> Result<Tpl::Text> {
+pub(crate) fn dumpAttTarget(mut in_txt: Tpl::Text, mut in_a_target: GraphML::AttributeTarget) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_target.clone()) {
         (mut txt, GraphML::AttributeTarget::TARGET_NODE { .. }) => {
@@ -604,7 +604,7 @@ pub fn dumpAttTarget(mut in_txt: Tpl::Text, mut in_a_target: GraphML::AttributeT
     Ok(out_txt)
 }
 
-pub fn dumpDirected(mut in_txt: Tpl::Text, mut in_a_directed: bool) -> Result<Tpl::Text> {
+pub(crate) fn dumpDirected(mut in_txt: Tpl::Text, mut in_a_directed: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_directed.clone()) {
         (mut txt, true) => {
@@ -622,7 +622,7 @@ pub fn dumpDirected(mut in_txt: Tpl::Text, mut in_a_directed: bool) -> Result<Tp
     Ok(out_txt)
 }
 
-pub fn dumpColorOpt(mut in_txt: Tpl::Text, mut in_a_colorOpt: Option<ArcStr>) -> Result<Tpl::Text> {
+pub(crate) fn dumpColorOpt(mut in_txt: Tpl::Text, mut in_a_colorOpt: Option<ArcStr>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_colorOpt.clone()) {
         (mut txt, Some(mut i_col)) => {
@@ -638,7 +638,7 @@ pub fn dumpColorOpt(mut in_txt: Tpl::Text, mut in_a_colorOpt: Option<ArcStr>) ->
     Ok(out_txt)
 }
 
-pub fn dumpFontStyle(mut in_txt: Tpl::Text, mut in_a_fontStyle: GraphML::FontStyle) -> Result<Tpl::Text> {
+pub(crate) fn dumpFontStyle(mut in_txt: Tpl::Text, mut in_a_fontStyle: GraphML::FontStyle) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_fontStyle.clone()) {
         (mut txt, GraphML::FontStyle::FONTPLAIN { .. }) => {
@@ -664,7 +664,7 @@ pub fn dumpFontStyle(mut in_txt: Tpl::Text, mut in_a_fontStyle: GraphML::FontSty
     Ok(out_txt)
 }
 
-pub fn dumpLineType(mut in_txt: Tpl::Text, mut in_a_lineType: GraphML::LineType) -> Result<Tpl::Text> {
+pub(crate) fn dumpLineType(mut in_txt: Tpl::Text, mut in_a_lineType: GraphML::LineType) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_lineType.clone()) {
         (mut txt, GraphML::LineType::LINE { .. }) => {
@@ -686,7 +686,7 @@ pub fn dumpLineType(mut in_txt: Tpl::Text, mut in_a_lineType: GraphML::LineType)
     Ok(out_txt)
 }
 
-pub fn dumpArrowType(mut in_txt: Tpl::Text, mut in_a_arrowType: GraphML::ArrowType) -> Result<Tpl::Text> {
+pub(crate) fn dumpArrowType(mut in_txt: Tpl::Text, mut in_a_arrowType: GraphML::ArrowType) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_arrowType.clone()) {
         (mut txt, GraphML::ArrowType::ARROWSTANDART { .. }) => {
@@ -708,7 +708,7 @@ pub fn dumpArrowType(mut in_txt: Tpl::Text, mut in_a_arrowType: GraphML::ArrowTy
     Ok(out_txt)
 }
 
-pub fn dumpShapeType(mut in_txt: Tpl::Text, mut in_a_shape: GraphML::ShapeType) -> Result<Tpl::Text> {
+pub(crate) fn dumpShapeType(mut in_txt: Tpl::Text, mut in_a_shape: GraphML::ShapeType) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_shape.clone()) {
         (mut txt, GraphML::ShapeType::RECTANGLE { .. }) => {

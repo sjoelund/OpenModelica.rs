@@ -115,7 +115,7 @@ impl Default for NFRangeIterator {
     }
 }
 pub use self::NFRangeIterator::{INT_RANGE,INT_STEP_RANGE,REAL_RANGE,ARRAY_RANGE,INVALID_RANGE};
-pub fn isValid(mut iterator: Arc<NFRangeIterator>) -> bool {
+pub(crate) fn isValid(mut iterator: Arc<NFRangeIterator>) -> bool {
     let mut isValid: bool;
     isValid = (::match_deref::match_deref! { match &(iterator.clone()) {
         Deref @ INVALID_RANGE { .. } => false,
@@ -125,7 +125,7 @@ pub fn isValid(mut iterator: Arc<NFRangeIterator>) -> bool {
     isValid
 }
 
-pub fn fromExp(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<NFRangeIterator>> {
+pub(crate) fn fromExp(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<NFRangeIterator>> {
     let mut iterator: Arc<NFRangeIterator>;
     iterator = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::ARRAY { .. } => {
@@ -194,7 +194,7 @@ pub fn fromExp(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<NFRangeIter
     Ok(iterator)
 }
 
-pub fn fromDim(mut dim: Arc<Dimension::NFDimension>, mut resizable: bool) -> Result<Arc<NFRangeIterator>> {
+pub(crate) fn fromDim(mut dim: Arc<Dimension::NFDimension>, mut resizable: bool) -> Result<Arc<NFRangeIterator>> {
     let mut iterator: Arc<NFRangeIterator>;
     iterator = (::match_deref::match_deref! { match &(dim.clone()) {
         Deref @ Dimension::INTEGER { .. } => {
@@ -221,7 +221,7 @@ pub fn fromDim(mut dim: Arc<Dimension::NFDimension>, mut resizable: bool) -> Res
     Ok(iterator)
 }
 
-pub fn next(mut iterator: Arc<NFRangeIterator>) -> Result<(Arc<NFRangeIterator>, Arc<Expression::NFExpression>)> {
+pub(crate) fn next(mut iterator: Arc<NFRangeIterator>) -> Result<(Arc<NFRangeIterator>, Arc<Expression::NFExpression>)> {
     let mut iterator: Arc<NFRangeIterator> = iterator;
     let mut nextExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     nextExp = (::match_deref::match_deref! { match &(iterator.clone()) {
@@ -254,7 +254,7 @@ pub fn next(mut iterator: Arc<NFRangeIterator>) -> Result<(Arc<NFRangeIterator>,
     Ok((iterator, nextExp))
 }
 
-pub fn hasNext(mut iterator: Arc<NFRangeIterator>) -> Result<bool> {
+pub(crate) fn hasNext(mut iterator: Arc<NFRangeIterator>) -> Result<bool> {
     let mut hasNext: bool;
     hasNext = (::match_deref::match_deref! { match &(iterator.clone()) {
         Deref @ INT_RANGE { .. } => var_field!((*iterator).current, NFRangeIterator::INT_RANGE).clone() <= var_field!((*iterator).last, NFRangeIterator::INT_RANGE).clone(),
@@ -270,12 +270,12 @@ pub fn hasNext(mut iterator: Arc<NFRangeIterator>) -> Result<bool> {
     Ok(hasNext)
 }
 
-pub fn toList(mut iterator: Arc<NFRangeIterator>) -> Result<Arc<metamodelica::List<Arc<Expression::NFExpression>>>> {
+pub(crate) fn toList(mut iterator: Arc<NFRangeIterator>) -> Result<Arc<metamodelica::List<Arc<Expression::NFExpression>>>> {
     let mut expl: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = toListReverse(iterator.clone())?.reverse();
     Ok(expl)
 }
 
-pub fn toListReverse(mut iterator: Arc<NFRangeIterator>) -> Result<Arc<metamodelica::List<Arc<Expression::NFExpression>>>> {
+pub(crate) fn toListReverse(mut iterator: Arc<NFRangeIterator>) -> Result<Arc<metamodelica::List<Arc<Expression::NFExpression>>>> {
     let mut expl: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
     let mut iter: Arc<NFRangeIterator> = iterator.clone();
     let mut exp: Arc<Expression::NFExpression>;
@@ -286,7 +286,7 @@ pub fn toListReverse(mut iterator: Arc<NFRangeIterator>) -> Result<Arc<metamodel
     Ok(expl)
 }
 
-pub fn map<T: Clone + 'static + metamodelica::gc::MMTrace>(mut iterator: Arc<NFRangeIterator>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<T> + 'static>) -> Result<Arc<metamodelica::List<T>>> {
+pub(crate) fn map<T: Clone + 'static + metamodelica::gc::MMTrace>(mut iterator: Arc<NFRangeIterator>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<T> + 'static>) -> Result<Arc<metamodelica::List<T>>> {
     pub type FuncT<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<T> + 'static>;
 
     let mut lst: Arc<metamodelica::List<T>> = metamodelica::nil();
@@ -300,7 +300,7 @@ pub fn map<T: Clone + 'static + metamodelica::gc::MMTrace>(mut iterator: Arc<NFR
     Ok(lst)
 }
 
-pub fn fold<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut iterator: Arc<NFRangeIterator>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
+pub(crate) fn fold<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut iterator: Arc<NFRangeIterator>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
     pub type FuncT<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>;
 
     let mut arg: ArgT = arg;

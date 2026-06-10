@@ -63,7 +63,7 @@ use openmodelica_util_datatypes_basic::List;
 //--------------------------------
 // collect for-loops
 //--------------------------------
-pub fn collectForLoops(mut varsIn: Arc<metamodelica::List<BackendDAE::Var>>, mut eqsIn: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) -> Result<(Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>)> {
+pub(crate) fn collectForLoops(mut varsIn: Arc<metamodelica::List<BackendDAE::Var>>, mut eqsIn: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) -> Result<(Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>)> {
     let mut varsOut: Arc<metamodelica::List<BackendDAE::Var>>;
     let mut eqsOut: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
     let mut arrayCrefs: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>;
@@ -303,7 +303,7 @@ fn buildAccumExpInEquations2(mut minmaxTerm: Arc<metamodelica::List<(Arc<DAE::Ex
     Ok(foldOut)
 }
 
-pub fn replaceSubscriptInCrefExp(mut expIn: Arc<DAE::Exp>, mut subsIn: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> (Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Subscript>>>) {
+pub(crate) fn replaceSubscriptInCrefExp(mut expIn: Arc<DAE::Exp>, mut subsIn: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> (Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Subscript>>>) {
     let mut expOut: Arc<DAE::Exp>;
     let mut subsOut: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
     (expOut, subsOut) = 'mc: {
@@ -339,7 +339,7 @@ fn minmaxTermEqual(mut minmaxTerm: (Arc<DAE::Exp>, i32, i32), mut term: Arc<DAE:
     Ok(b)
 }
 
-pub fn equationEqualNoCrefSubs(mut e1: Arc<BackendDAE::Equation>, mut e2: Arc<BackendDAE::Equation>) -> bool {
+pub(crate) fn equationEqualNoCrefSubs(mut e1: Arc<BackendDAE::Equation>, mut e2: Arc<BackendDAE::Equation>) -> bool {
     let mut res: bool = false;
     res = 'mc: {
         let __mc_input = (e1.clone(), e2.clone());
@@ -448,7 +448,7 @@ pub fn equationEqualNoCrefSubs(mut e1: Arc<BackendDAE::Equation>, mut e2: Arc<Ba
     res
 }
 
-pub fn expEqualNoCrefSubs(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>) -> Result<bool> {
+pub(crate) fn expEqualNoCrefSubs(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>) -> Result<bool> {
     let mut outEqual: bool;
     if referenceEq(&*(inExp1.clone()),&*(inExp2.clone())) {
         outEqual = true;
@@ -1338,7 +1338,7 @@ fn crefPartlyEqual(mut cref0: Arc<DAE::ComponentRef>, mut cref1: Arc<DAE::Compon
     partlyEq
 }
 
-pub fn reduceLoopExpressions(mut expIn: Arc<DAE::Exp>, mut maxSub: i32) -> (Arc<DAE::Exp>, bool) {
+pub(crate) fn reduceLoopExpressions(mut expIn: Arc<DAE::Exp>, mut maxSub: i32) -> (Arc<DAE::Exp>, bool) {
     let mut expOut: Arc<DAE::Exp>;
     let mut notRemoved: bool;
     (expOut, notRemoved) = 'mc: {
@@ -1399,7 +1399,7 @@ pub fn reduceLoopExpressions(mut expIn: Arc<DAE::Exp>, mut maxSub: i32) -> (Arc<
     (expOut, notRemoved)
 }
 
-pub fn insertSUMexp(mut expIn: Arc<DAE::Exp>, mut tplIn: (Arc<DAE::ComponentRef>, Arc<DAE::Exp>)) -> (Arc<DAE::Exp>, (Arc<DAE::ComponentRef>, Arc<DAE::Exp>)) {
+pub(crate) fn insertSUMexp(mut expIn: Arc<DAE::Exp>, mut tplIn: (Arc<DAE::ComponentRef>, Arc<DAE::Exp>)) -> (Arc<DAE::Exp>, (Arc<DAE::ComponentRef>, Arc<DAE::Exp>)) {
     let mut expOut: Arc<DAE::Exp>;
     let mut tplOut: (Arc<DAE::ComponentRef>, Arc<DAE::Exp>);
     (expOut, tplOut) = 'mc: {
@@ -1458,7 +1458,7 @@ fn getIndexSubScript(mut sub: Arc<DAE::Subscript>) -> Result<i32> {
     Ok(int)
 }
 
-pub fn replaceFirstSubsInCref(mut crefIn: Arc<DAE::ComponentRef>, mut subs: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Arc<DAE::ComponentRef> {
+pub(crate) fn replaceFirstSubsInCref(mut crefIn: Arc<DAE::ComponentRef>, mut subs: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Arc<DAE::ComponentRef> {
     let mut crefOut: Arc<DAE::ComponentRef>;
     crefOut = 'mc: {
         let __mc_input = crefIn.clone();

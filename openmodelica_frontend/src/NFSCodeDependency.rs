@@ -74,7 +74,7 @@ pub type FrameType = NFSCodeEnv::FrameType;
 
 pub type Import = Absyn::Import;
 
-pub fn analyse(mut inClassName: Arc<Absyn::Path>, mut inEnv: Env, mut inProgram: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<(Arc<metamodelica::List<Arc<SCode::Element>>>, Env)> {
+pub(crate) fn analyse(mut inClassName: Arc<Absyn::Path>, mut inEnv: Env, mut inProgram: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<(Arc<metamodelica::List<Arc<SCode::Element>>>, Env)> {
     let mut outProgram: Arc<metamodelica::List<Arc<SCode::Element>>>;
     let mut outEnv: Env;
     analyseClass(inClassName.clone(), inEnv.clone(), Absyn::dummyInfo.clone())?;

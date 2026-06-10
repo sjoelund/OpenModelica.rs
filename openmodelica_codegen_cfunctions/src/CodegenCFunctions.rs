@@ -322,7 +322,7 @@ fn fun_55(mut in_txt: Tpl::Text, mut in_a_mainFunction: Option<Arc<SimCodeFuncti
     Ok(out_txt)
 }
 
-pub fn functionsFile(mut txt: Tpl::Text, mut a_filePrefix: ArcStr, mut a_mainFunction: Option<Arc<SimCodeFunction::Function::Function>>, mut a_functions: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>>, mut a_literals: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut a_staticPrototypes: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn functionsFile(mut txt: Tpl::Text, mut a_filePrefix: ArcStr, mut a_mainFunction: Option<Arc<SimCodeFunction::Function::Function>>, mut a_functions: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>>, mut a_literals: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut a_staticPrototypes: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_staticPrototypes: Tpl::Text;
     let mut ret_0: bool;
@@ -385,7 +385,7 @@ fn fun_58(mut in_txt: Tpl::Text, mut in_a_mainFunction: Option<Arc<SimCodeFuncti
     Ok((out_txt, out_a_staticPrototypes))
 }
 
-pub fn functionsHeaderFile(mut txt: Tpl::Text, mut a_filePrefix: ArcStr, mut a_mainFunction: Option<Arc<SimCodeFunction::Function::Function>>, mut a_functions: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>>, mut a_extraRecordDecls: Arc<metamodelica::List<SimCodeFunction::RecordDeclaration>>, mut a_staticPrototypes: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn functionsHeaderFile(mut txt: Tpl::Text, mut a_filePrefix: ArcStr, mut a_mainFunction: Option<Arc<SimCodeFunction::Function::Function>>, mut a_functions: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>>, mut a_extraRecordDecls: Arc<metamodelica::List<SimCodeFunction::RecordDeclaration>>, mut a_staticPrototypes: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_staticPrototypes: Tpl::Text;
     let mut ret_1: ArcStr;
@@ -531,7 +531,7 @@ fn fun_67(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
     Ok(out_txt)
 }
 
-pub fn functionsMakefile(mut in_txt: Tpl::Text, mut in_a_fnCode: SimCodeFunction::FunctionCode) -> Result<Tpl::Text> {
+pub(crate) fn functionsMakefile(mut in_txt: Tpl::Text, mut in_a_fnCode: SimCodeFunction::FunctionCode) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_fnCode.clone()) {
         (mut txt, SimCodeFunction::FunctionCode { makefileParams: SimCodeFunction::MakefileParams { libs: ref i_makefileParams_libs, platform: mut i_makefileParams_platform, ccompiler: mut i_makefileParams_ccompiler, cxxcompiler: mut i_makefileParams_cxxcompiler, linker: mut i_makefileParams_linker, exeext: mut i_makefileParams_exeext, dllext: mut i_makefileParams_dllext, cflags: mut i_makefileParams_cflags, includes: ref i_makefileParams_includes, omhome: mut i_makefileParams_omhome, runtimelibs: mut i_makefileParams_runtimelibs, ldflags: mut i_makefileParams_ldflags, .. }, name: mut i_name, .. }) => {
@@ -785,7 +785,7 @@ fn lm_76(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SimCodeFuncti
     Ok(txt)
 }
 
-pub fn parallelFunctionHeadersImpl(mut txt: Tpl::Text, mut a_functions: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>>) -> Result<Tpl::Text> {
+pub(crate) fn parallelFunctionHeadersImpl(mut txt: Tpl::Text, mut a_functions: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\n")).clone(), (literal!("\n")).clone()], lastHasNewLine: true })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
     out_txt = lm_76(out_txt.clone(), a_functions.clone())?;
@@ -885,7 +885,7 @@ fn fun_81(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_funArgsStr: Tpl::Te
     Ok(out_txt)
 }
 
-pub fn functionHeader(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimCodeFunction::Function::Function>, mut in_a_inFunc: bool, mut in_a_isSimulation: bool, mut in_a_staticPrototypes: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn functionHeader(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimCodeFunction::Function::Function>, mut in_a_inFunc: bool, mut in_a_isSimulation: bool, mut in_a_staticPrototypes: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_staticPrototypes: Tpl::Text;
     (out_txt, out_a_staticPrototypes) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fn.clone(), in_a_inFunc.clone(), in_a_isSimulation.clone(), in_a_staticPrototypes.clone())) {
@@ -967,7 +967,7 @@ pub fn functionHeader(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimCodeFunction::F
     Ok((out_txt, out_a_staticPrototypes))
 }
 
-pub fn parallelFunctionHeader(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimCodeFunction::Function::Function>, mut in_a_inFunc: bool) -> Result<Tpl::Text> {
+pub(crate) fn parallelFunctionHeader(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimCodeFunction::Function::Function>, mut in_a_inFunc: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fn.clone(), in_a_inFunc.clone())) {
         (txt, Deref @ SimCodeFunction::Function::PARALLEL_FUNCTION { name: i_name, functionArguments: i_functionArguments, outVars: i_outVars, .. }, a_inFunc) => {
@@ -1074,7 +1074,7 @@ fn fun_87(mut in_txt: Tpl::Text, mut in_a_outVars: Arc<metamodelica::List<Arc<Si
     Ok((out_txt, out_a_fargsStr))
 }
 
-pub fn functionHeaderParallelImpl(mut txt: Tpl::Text, mut a_fname: ArcStr, mut a_fargs: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>, mut a_outVars: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>, mut a_inFunc: bool, mut a_boxed: bool) -> Result<Tpl::Text> {
+pub(crate) fn functionHeaderParallelImpl(mut txt: Tpl::Text, mut a_fname: ArcStr, mut a_fargs: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>, mut a_outVars: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>, mut a_inFunc: bool, mut a_boxed: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut l_fargsStr: Tpl::Text;
     l_fargsStr = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -1138,7 +1138,7 @@ fn lm_91(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<ArcStr>>) -> Resu
     Ok(txt)
 }
 
-pub fn recordDeclaration(mut in_txt: Tpl::Text, mut in_a_recDecl: SimCodeFunction::RecordDeclaration) -> Result<Tpl::Text> {
+pub(crate) fn recordDeclaration(mut in_txt: Tpl::Text, mut in_a_recDecl: SimCodeFunction::RecordDeclaration) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_recDecl.clone())) {
         (txt, SimCodeFunction::RecordDeclaration::RECORD_DECL_FULL { defPath: i_defPath, variables: i_r_variables @ i_variables, name: i_r_name, usedExternally: i_r_usedExternally, .. }) => {
@@ -1292,7 +1292,7 @@ fn lm_97(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SimCodeFuncti
     Ok(txt)
 }
 
-pub fn recordDeclarationExtraCtor(mut in_txt: Tpl::Text, mut in_a_recDecl: SimCodeFunction::RecordDeclaration) -> Result<Tpl::Text> {
+pub(crate) fn recordDeclarationExtraCtor(mut in_txt: Tpl::Text, mut in_a_recDecl: SimCodeFunction::RecordDeclaration) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_recDecl.clone()) {
         (mut txt, SimCodeFunction::RecordDeclaration::RECORD_DECL_ADD_CONSTRCTOR { ctor_name: mut i_r_ctor__name, name: mut i_r_name, variables: ref i_r_variables }) => {
@@ -1619,7 +1619,7 @@ fn fun_111(mut in_txt: Tpl::Text, mut in_a_r_usedExternally: bool, mut in_a_cpy_
     Ok(out_txt)
 }
 
-pub fn recordDeclarationFullHeader(mut in_txt: Tpl::Text, mut in_a_recDecl: SimCodeFunction::RecordDeclaration) -> Result<Tpl::Text> {
+pub(crate) fn recordDeclarationFullHeader(mut in_txt: Tpl::Text, mut in_a_recDecl: SimCodeFunction::RecordDeclaration) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_recDecl.clone()) {
         (mut txt, SimCodeFunction::RecordDeclaration::RECORD_DECL_FULL { name: mut i_r_name, variables: ref i_r_variables, aliasName: mut i_aliasName, usedExternally: mut i_r_usedExternally, defPath: ref i_r_defPath }) => {
@@ -1776,7 +1776,7 @@ fn lm_113(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SimCodeFunct
     Ok((txt, a_auxFunction, a_varCopies))
 }
 
-pub fn recordCopyDef(mut txt: Tpl::Text, mut a_rec__name: ArcStr, mut a_variables: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>) -> Result<Tpl::Text> {
+pub(crate) fn recordCopyDef(mut txt: Tpl::Text, mut a_rec__name: ArcStr, mut a_variables: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut l_0__: Tpl::Text;
     let mut l_src__pref: Tpl::Text;
@@ -1845,7 +1845,7 @@ fn lm_116(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SimCodeFunct
     Ok((txt, a_auxFunction, a_varCopiesFrom))
 }
 
-pub fn recordCopyExternalDefs(mut txt: Tpl::Text, mut a_rec__name: ArcStr, mut a_variables: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>) -> Result<Tpl::Text> {
+pub(crate) fn recordCopyExternalDefs(mut txt: Tpl::Text, mut a_rec__name: ArcStr, mut a_variables: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut l_0___1: Tpl::Text;
     let mut l_0__: Tpl::Text;
@@ -2004,7 +2004,7 @@ fn lm_122(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SimCodeFunct
     Ok(txt)
 }
 
-pub fn recordCreateFromVarsDef(mut txt: Tpl::Text, mut a_rec__name: ArcStr, mut a_variables: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>) -> Result<Tpl::Text> {
+pub(crate) fn recordCreateFromVarsDef(mut txt: Tpl::Text, mut a_rec__name: ArcStr, mut a_variables: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut l_ctor__additional__inputs: Tpl::Text;
     let mut l_fn__inputs: Tpl::Text;
@@ -2079,7 +2079,7 @@ fn fun_124(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_dstName:
     Ok((out_txt, out_a_varCopies))
 }
 
-pub fn recordMemberCopy(mut in_txt: Tpl::Text, mut in_a_var: Arc<SimCodeFunction::Variable::Variable>, mut in_a_src__pref: ArcStr, mut in_a_dst__pref: ArcStr, mut in_a_varCopies: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn recordMemberCopy(mut in_txt: Tpl::Text, mut in_a_var: Arc<SimCodeFunction::Variable::Variable>, mut in_a_src__pref: ArcStr, mut in_a_dst__pref: ArcStr, mut in_a_varCopies: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varCopies: Tpl::Text;
     let mut out_a_auxFunction: Tpl::Text;
@@ -2188,7 +2188,7 @@ fn fun_128(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_srcName:
     Ok((out_txt, out_a_varCopies))
 }
 
-pub fn recordMemberCopyToFromExternal(mut in_txt: Tpl::Text, mut in_a_var: Arc<SimCodeFunction::Variable::Variable>, mut in_a_src__pref: ArcStr, mut in_a_dst__pref: ArcStr, mut in_a_copy__to: bool, mut in_a_varCopies: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn recordMemberCopyToFromExternal(mut in_txt: Tpl::Text, mut in_a_var: Arc<SimCodeFunction::Variable::Variable>, mut in_a_src__pref: ArcStr, mut in_a_dst__pref: ArcStr, mut in_a_copy__to: bool, mut in_a_varCopies: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varCopies: Tpl::Text;
     let mut out_a_auxFunction: Tpl::Text;
@@ -2273,7 +2273,7 @@ fn lm_132(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SimCodeFunct
     Ok((txt, a_auxFunction, a_varDecls))
 }
 
-pub fn recordConstructorDef(mut txt: Tpl::Text, mut a_ctor__name: ArcStr, mut a_rec__name: ArcStr, mut a_variables: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>) -> Result<Tpl::Text> {
+pub(crate) fn recordConstructorDef(mut txt: Tpl::Text, mut a_ctor__name: ArcStr, mut a_rec__name: ArcStr, mut a_variables: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut l_varInits: Tpl::Text;
     let mut l_ctor__additional__inputs: Tpl::Text;
@@ -2333,7 +2333,7 @@ fn fun_134(mut in_txt: Tpl::Text, mut in_a_var_ty: Arc<DAE::Type>, mut in_a_auxF
     Ok((out_txt, out_a_auxFunction, out_a_varDecls))
 }
 
-pub fn recordMemberAllocInit(mut in_txt: Tpl::Text, mut in_a_var: Arc<SimCodeFunction::Variable::Variable>, mut in_a_context: SimCodeFunction::Context, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn recordMemberAllocInit(mut in_txt: Tpl::Text, mut in_a_var: Arc<SimCodeFunction::Variable::Variable>, mut in_a_context: SimCodeFunction::Context, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_auxFunction: Tpl::Text;
@@ -2417,7 +2417,7 @@ fn fun_137(mut in_txt: Tpl::Text, mut in_a_value: Option<Arc<DAE::Exp>>, mut in_
     Ok((out_txt, out_a_auxFunction, out_a_varDecls))
 }
 
-pub fn simpleVarInit(mut txt: Tpl::Text, mut a_value: Option<Arc<DAE::Exp>>, mut a_var__cref: Arc<DAE::ComponentRef>, mut a_bind__outside: bool, mut a_context: SimCodeFunction::Context, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn simpleVarInit(mut txt: Tpl::Text, mut a_value: Option<Arc<DAE::Exp>>, mut a_var__cref: Arc<DAE::ComponentRef>, mut a_bind__outside: bool, mut a_context: SimCodeFunction::Context, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_auxFunction: Tpl::Text;
@@ -2550,7 +2550,7 @@ fn fun_142(mut in_txt: Tpl::Text, mut in_a_value: Option<Arc<DAE::Exp>>, mut in_
     Ok((out_txt, out_a_auxFunction, out_a_varDecls))
 }
 
-pub fn recordVarAllocInit(mut txt: Tpl::Text, mut a_value: Option<Arc<DAE::Exp>>, mut a_var__cref: Arc<DAE::ComponentRef>, mut a_bind__outside: bool, mut a_var__type: Arc<DAE::Type>, mut a_context: SimCodeFunction::Context, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn recordVarAllocInit(mut txt: Tpl::Text, mut a_value: Option<Arc<DAE::Exp>>, mut a_var__cref: Arc<DAE::ComponentRef>, mut a_bind__outside: bool, mut a_var__type: Arc<DAE::Type>, mut a_context: SimCodeFunction::Context, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_auxFunction: Tpl::Text;
@@ -2575,7 +2575,7 @@ pub fn recordVarAllocInit(mut txt: Tpl::Text, mut a_value: Option<Arc<DAE::Exp>>
     Ok((out_txt, out_a_varDecls, out_a_auxFunction))
 }
 
-pub fn recordInitOutsideBindings(mut in_txt: Tpl::Text, mut in_a_subvar: Arc<DAE::Var>, mut in_a_ix: i32, mut in_a_ctor__suffix: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn recordInitOutsideBindings(mut in_txt: Tpl::Text, mut in_a_subvar: Arc<DAE::Var>, mut in_a_ix: i32, mut in_a_ctor__suffix: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_ctor__suffix: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
@@ -2815,7 +2815,7 @@ fn fun_150(mut in_txt: Tpl::Text, mut in_a_value: Option<Arc<DAE::Exp>>, mut in_
     Ok((out_txt, out_a_auxFunction, out_a_varDecls))
 }
 
-pub fn arrayVarAllocInit(mut txt: Tpl::Text, mut a_var__cref: Arc<DAE::ComponentRef>, mut a_var__type: Arc<DAE::Type>, mut a_var__dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>, mut a_value: Option<Arc<DAE::Exp>>, mut a_bind__outside: bool, mut a_context: SimCodeFunction::Context, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn arrayVarAllocInit(mut txt: Tpl::Text, mut a_var__cref: Arc<DAE::ComponentRef>, mut a_var__type: Arc<DAE::Type>, mut a_var__dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>, mut a_value: Option<Arc<DAE::Exp>>, mut a_bind__outside: bool, mut a_context: SimCodeFunction::Context, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_auxFunction: Tpl::Text;
@@ -2885,13 +2885,13 @@ fn fun_153(mut in_txt: Tpl::Text, mut in_a_encName: ArcStr, mut in_a_origName: A
     Ok(out_txt)
 }
 
-pub fn recordDefinition(mut txt: Tpl::Text, mut a_origName: ArcStr, mut a_encName: ArcStr, mut a_fieldNames: ArcStr, mut a_numFields: i32) -> Result<Tpl::Text> {
+pub(crate) fn recordDefinition(mut txt: Tpl::Text, mut a_origName: ArcStr, mut a_encName: ArcStr, mut a_fieldNames: ArcStr, mut a_numFields: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = fun_153(txt.clone(), (a_encName.clone()).clone(), (a_origName.clone()).clone(), (a_fieldNames.clone()).clone(), a_numFields.clone())?;
     Ok(out_txt)
 }
 
-pub fn recordDefinitionHeader(mut txt: Tpl::Text, mut a_origName: ArcStr, mut a_encName: ArcStr, mut a_numFields: i32) -> Result<Tpl::Text> {
+pub(crate) fn recordDefinitionHeader(mut txt: Tpl::Text, mut a_origName: ArcStr, mut a_encName: ArcStr, mut a_numFields: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("extern struct record_description ")).clone() }))?;
     out_txt = Tpl::writeStr(out_txt.clone(), (a_encName.clone()).clone())?;
@@ -2899,7 +2899,7 @@ pub fn recordDefinitionHeader(mut txt: Tpl::Text, mut a_origName: ArcStr, mut a_
     Ok(out_txt)
 }
 
-pub fn functionHeaderNormal(mut txt: Tpl::Text, mut a_fname: ArcStr, mut a_fargs: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>, mut a_outVars: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>, mut a_inFunc: bool, mut a_visibility: SCode::Visibility, mut a_dynLoad: bool, mut a_isSimulation: bool, mut a_staticPrototypes: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn functionHeaderNormal(mut txt: Tpl::Text, mut a_fname: ArcStr, mut a_fargs: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>, mut a_outVars: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>, mut a_inFunc: bool, mut a_visibility: SCode::Visibility, mut a_dynLoad: bool, mut a_isSimulation: bool, mut a_staticPrototypes: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_staticPrototypes: Tpl::Text;
     (out_txt, out_a_staticPrototypes) = functionHeaderImpl(txt.clone(), (a_fname.clone()).clone(), a_fargs.clone(), a_outVars.clone(), a_inFunc.clone(), false, a_visibility.clone(), a_dynLoad.clone(), a_isSimulation.clone(), a_staticPrototypes.clone())?;
@@ -2998,7 +2998,7 @@ fn fun_161(mut in_txt: Tpl::Text, mut in_a_visibility: SCode::Visibility, mut in
     Ok((out_txt, out_a_staticPrototypes))
 }
 
-pub fn functionHeaderBoxed(mut txt: Tpl::Text, mut a_fname: ArcStr, mut a_fargs: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>, mut a_outVars: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>, mut a_inFunc: bool, mut a_isBoxed: bool, mut a_visibility: SCode::Visibility, mut a_dynLoad: bool, mut a_isSimulation: bool, mut a_staticPrototypes: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn functionHeaderBoxed(mut txt: Tpl::Text, mut a_fname: ArcStr, mut a_fargs: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>, mut a_outVars: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>, mut a_inFunc: bool, mut a_isBoxed: bool, mut a_visibility: SCode::Visibility, mut a_dynLoad: bool, mut a_isSimulation: bool, mut a_staticPrototypes: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_staticPrototypes: Tpl::Text;
     let mut ret_1: bool;
@@ -3126,7 +3126,7 @@ fn fun_168(mut in_txt: Tpl::Text, mut in_a_visibility: SCode::Visibility, mut in
     Ok((out_txt, out_a_staticPrototypes))
 }
 
-pub fn functionHeaderImpl(mut txt: Tpl::Text, mut a_fname: ArcStr, mut a_fargs: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>, mut a_outVars: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>, mut a_inFunc: bool, mut a_boxed: bool, mut a_visibility: SCode::Visibility, mut a_dynamicLoad: bool, mut a_isSimulation: bool, mut a_staticPrototypes: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn functionHeaderImpl(mut txt: Tpl::Text, mut a_fname: ArcStr, mut a_fargs: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>, mut a_outVars: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>, mut a_inFunc: bool, mut a_boxed: bool, mut a_visibility: SCode::Visibility, mut a_dynamicLoad: bool, mut a_isSimulation: bool, mut a_staticPrototypes: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_staticPrototypes: Tpl::Text;
     let mut ret_3: bool;
@@ -3491,7 +3491,7 @@ fn fun_188(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_fn__name__impl: Tp
     Ok((out_txt, out_a_afterBody))
 }
 
-pub fn functionPrototype(mut txt: Tpl::Text, mut a_fname: ArcStr, mut a_fargs: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>, mut a_outVars: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>, mut a_boxed: bool, mut a_visibility: SCode::Visibility, mut a_isSimulation: bool, mut a_isPrototype: bool, mut a_afterBody: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn functionPrototype(mut txt: Tpl::Text, mut a_fname: ArcStr, mut a_fargs: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>, mut a_outVars: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>, mut a_boxed: bool, mut a_visibility: SCode::Visibility, mut a_isSimulation: bool, mut a_isPrototype: bool, mut a_afterBody: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_afterBody: Tpl::Text;
     let mut ret_11: bool;
@@ -3524,7 +3524,7 @@ pub fn functionPrototype(mut txt: Tpl::Text, mut a_fname: ArcStr, mut a_fargs: A
     Ok((out_txt, out_a_afterBody))
 }
 
-pub fn functionHeaderKernelFunctionInterface(mut txt: Tpl::Text, mut a_fname: ArcStr, mut a_fargs: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>, mut a_outVars: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>) -> Result<Tpl::Text> {
+pub(crate) fn functionHeaderKernelFunctionInterface(mut txt: Tpl::Text, mut a_fname: ArcStr, mut a_fargs: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>, mut a_outVars: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = functionHeaderKernelFunctionInterfacePrototype(txt.clone(), (a_fname.clone()).clone(), a_fargs.clone(), a_outVars.clone())?;
     out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
@@ -3638,7 +3638,7 @@ fn fun_195(mut in_txt: Tpl::Text, mut in_a_outVars: Arc<metamodelica::List<Arc<S
     Ok((out_txt, out_a_fargsStr))
 }
 
-pub fn functionHeaderKernelFunctionInterfacePrototype(mut txt: Tpl::Text, mut a_fname: ArcStr, mut a_fargs: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>, mut a_outVars: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>) -> Result<Tpl::Text> {
+pub(crate) fn functionHeaderKernelFunctionInterfacePrototype(mut txt: Tpl::Text, mut a_fname: ArcStr, mut a_fargs: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>, mut a_outVars: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut l_fargsStr: Tpl::Text;
     l_fargsStr = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("threadData_t *threadData")).clone() }))?;
@@ -3673,7 +3673,7 @@ fn fun_197(mut in_txt: Tpl::Text, mut in_a_var: Arc<SimCodeFunction::Variable::V
     Ok((out_txt, out_a_auxFunction))
 }
 
-pub fn funArgName(mut txt: Tpl::Text, mut a_var: Arc<SimCodeFunction::Variable::Variable>) -> Result<Tpl::Text> {
+pub(crate) fn funArgName(mut txt: Tpl::Text, mut a_var: Arc<SimCodeFunction::Variable::Variable>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut l_auxFunction: Tpl::Text;
     l_auxFunction = Tpl::emptyTxt.clone();
@@ -3726,7 +3726,7 @@ fn fun_200(mut in_txt: Tpl::Text, mut in_a_var: Arc<SimCodeFunction::Variable::V
     Ok((out_txt, out_a_auxFunction))
 }
 
-pub fn funArgDefinition(mut txt: Tpl::Text, mut a_var: Arc<SimCodeFunction::Variable::Variable>) -> Result<Tpl::Text> {
+pub(crate) fn funArgDefinition(mut txt: Tpl::Text, mut a_var: Arc<SimCodeFunction::Variable::Variable>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut l_auxFunction: Tpl::Text;
     l_auxFunction = Tpl::emptyTxt.clone();
@@ -3754,7 +3754,7 @@ fn fun_202(mut in_txt: Tpl::Text, mut in_a_var: Arc<SimCodeFunction::Variable::V
     Ok(out_txt)
 }
 
-pub fn funArgDefinitionKernelFunctionInterface(mut txt: Tpl::Text, mut a_var: Arc<SimCodeFunction::Variable::Variable>) -> Result<Tpl::Text> {
+pub(crate) fn funArgDefinitionKernelFunctionInterface(mut txt: Tpl::Text, mut a_var: Arc<SimCodeFunction::Variable::Variable>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut l_auxFunction: Tpl::Text;
     l_auxFunction = Tpl::emptyTxt.clone();
@@ -3782,7 +3782,7 @@ fn fun_204(mut in_txt: Tpl::Text, mut in_a_var: Arc<SimCodeFunction::Variable::V
     Ok(out_txt)
 }
 
-pub fn tupleOutfunArgDefinitionKernelFunctionInterface(mut txt: Tpl::Text, mut a_var: Arc<SimCodeFunction::Variable::Variable>) -> Result<Tpl::Text> {
+pub(crate) fn tupleOutfunArgDefinitionKernelFunctionInterface(mut txt: Tpl::Text, mut a_var: Arc<SimCodeFunction::Variable::Variable>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut l_auxFunction: Tpl::Text;
     l_auxFunction = Tpl::emptyTxt.clone();
@@ -3899,7 +3899,7 @@ fn fun_208(mut in_txt: Tpl::Text, mut in_a_var: Arc<SimCodeFunction::Variable::V
     Ok((out_txt, out_a_auxFunction))
 }
 
-pub fn funArgDefinitionKernelFunctionBody(mut txt: Tpl::Text, mut a_var: Arc<SimCodeFunction::Variable::Variable>) -> Result<Tpl::Text> {
+pub(crate) fn funArgDefinitionKernelFunctionBody(mut txt: Tpl::Text, mut a_var: Arc<SimCodeFunction::Variable::Variable>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut l_auxFunction: Tpl::Text;
     l_auxFunction = Tpl::emptyTxt.clone();
@@ -3986,7 +3986,7 @@ fn fun_211(mut in_txt: Tpl::Text, mut in_a_var: Arc<SimCodeFunction::Variable::V
     Ok((out_txt, out_a_parArgList, out_a_auxFunction))
 }
 
-pub fn funArgDefinitionKernelFunctionBody2(mut txt: Tpl::Text, mut a_var: Arc<SimCodeFunction::Variable::Variable>, mut a_parArgList: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn funArgDefinitionKernelFunctionBody2(mut txt: Tpl::Text, mut a_var: Arc<SimCodeFunction::Variable::Variable>, mut a_parArgList: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_parArgList: Tpl::Text;
     let mut l_auxFunction: Tpl::Text;
@@ -4053,7 +4053,7 @@ fn fun_214(mut in_txt: Tpl::Text, mut in_a_cref_identType: Arc<DAE::Type>, mut i
     Ok(out_txt)
 }
 
-pub fn parFunArgDefinitionFromLooptupleVar(mut in_txt: Tpl::Text, mut in_a_tupleVar: (Arc<DAE::ComponentRef>, SourceInfo)) -> Result<Tpl::Text> {
+pub(crate) fn parFunArgDefinitionFromLooptupleVar(mut in_txt: Tpl::Text, mut in_a_tupleVar: (Arc<DAE::ComponentRef>, SourceInfo)) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_tupleVar.clone())) {
         (txt, (i_cref @ Deref @ DAE::ComponentRef::CREF_IDENT { identType: i_cref_identType @ Deref @ DAE::Type::T_ARRAY { ty: _, .. }, .. }, _)) => {
@@ -4139,7 +4139,7 @@ fn fun_216(mut in_txt: Tpl::Text, mut in_a_cref_identType: Arc<DAE::Type>, mut i
     Ok((out_txt, out_a_reconstructedArrs))
 }
 
-pub fn reconstructKernelArraysFromLooptupleVars(mut in_txt: Tpl::Text, mut in_a_tupleVar: (Arc<DAE::ComponentRef>, SourceInfo), mut in_a_reconstructedArrs: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn reconstructKernelArraysFromLooptupleVars(mut in_txt: Tpl::Text, mut in_a_tupleVar: (Arc<DAE::ComponentRef>, SourceInfo), mut in_a_reconstructedArrs: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_reconstructedArrs: Tpl::Text;
     (out_txt, out_a_reconstructedArrs) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_tupleVar.clone(), in_a_reconstructedArrs.clone())) {
@@ -4277,7 +4277,7 @@ fn fun_219(mut in_txt: Tpl::Text, mut in_a_var: Arc<SimCodeFunction::Variable::V
     Ok((out_txt, out_a_reconstructedArrs, out_a_auxFunction))
 }
 
-pub fn reconstructKernelArrays(mut txt: Tpl::Text, mut a_var: Arc<SimCodeFunction::Variable::Variable>, mut a_reconstructedArrs: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn reconstructKernelArrays(mut txt: Tpl::Text, mut a_var: Arc<SimCodeFunction::Variable::Variable>, mut a_reconstructedArrs: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_reconstructedArrs: Tpl::Text;
     let mut l_auxFunction: Tpl::Text;
@@ -4313,7 +4313,7 @@ fn fun_221(mut in_txt: Tpl::Text, mut in_a_var: Arc<SimCodeFunction::Variable::V
     Ok((out_txt, out_a_auxFunction))
 }
 
-pub fn funArgBoxedDefinition(mut txt: Tpl::Text, mut a_var: Arc<SimCodeFunction::Variable::Variable>) -> Result<Tpl::Text> {
+pub(crate) fn funArgBoxedDefinition(mut txt: Tpl::Text, mut a_var: Arc<SimCodeFunction::Variable::Variable>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut l_auxFunction: Tpl::Text;
     l_auxFunction = Tpl::emptyTxt.clone();
@@ -4370,7 +4370,7 @@ fn fun_224(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_fargsStrEscaped: T
     Ok(out_txt)
 }
 
-pub fn extFunDef(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimCodeFunction::Function::Function>) -> Result<Tpl::Text> {
+pub(crate) fn extFunDef(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimCodeFunction::Function::Function>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fn.clone())) {
         (txt, Deref @ SimCodeFunction::Function::EXTERNAL_FUNCTION { extName: i_extName, language: i_language, extArgs: i_extArgs, includes: i_includes, extReturn: i_extReturn, .. }) => {
@@ -4404,7 +4404,7 @@ pub fn extFunDef(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimCodeFunction::Functi
     Ok(out_txt)
 }
 
-pub fn extFunDefDynamic(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimCodeFunction::Function::Function>) -> Result<Tpl::Text> {
+pub(crate) fn extFunDefDynamic(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimCodeFunction::Function::Function>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fn.clone())) {
         (txt, Deref @ SimCodeFunction::Function::EXTERNAL_FUNCTION { extName: i_extName, language: i_language, extArgs: i_extArgs, extReturn: i_extReturn, .. }) => {
@@ -4519,13 +4519,13 @@ fn fun_230(mut in_txt: Tpl::Text, mut in_a_language: ArcStr, mut in_a_args: Arc<
     Ok(out_txt)
 }
 
-pub fn extFunDefArgs(mut txt: Tpl::Text, mut a_args: Arc<metamodelica::List<Arc<SimCodeFunction::SimExtArg::SimExtArg>>>, mut a_language: ArcStr) -> Result<Tpl::Text> {
+pub(crate) fn extFunDefArgs(mut txt: Tpl::Text, mut a_args: Arc<metamodelica::List<Arc<SimCodeFunction::SimExtArg::SimExtArg>>>, mut a_language: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = fun_230(txt.clone(), (a_language.clone()).clone(), a_args.clone())?;
     Ok(out_txt)
 }
 
-pub fn extReturnType(mut in_txt: Tpl::Text, mut in_a_extArg: Arc<SimCodeFunction::SimExtArg::SimExtArg>) -> Result<Tpl::Text> {
+pub(crate) fn extReturnType(mut in_txt: Tpl::Text, mut in_a_extArg: Arc<SimCodeFunction::SimExtArg::SimExtArg>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_extArg.clone())) {
         (txt, Deref @ SimCodeFunction::SimExtArg::SIMEXTARG { type_: i_ty @ Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path: _ }, .. }, .. }) => {
@@ -4704,7 +4704,7 @@ fn fun_237(mut in_txt: Tpl::Text, mut in_a_type: Arc<DAE::Type>, mut in_a_isArra
     Ok(out_txt)
 }
 
-pub fn extType(mut txt: Tpl::Text, mut a_type: Arc<DAE::Type>, mut a_isInput: bool, mut a_isArray: bool, mut a_returnType: bool) -> Result<Tpl::Text> {
+pub(crate) fn extType(mut txt: Tpl::Text, mut a_type: Arc<DAE::Type>, mut a_isInput: bool, mut a_isArray: bool, mut a_returnType: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut l_s: Tpl::Text;
     l_s = fun_233(Tpl::emptyTxt.clone(), a_type.clone(), a_returnType.clone(), a_isInput.clone())?;
@@ -4814,7 +4814,7 @@ fn fun_241(mut in_txt: Tpl::Text, mut in_a_type: Arc<DAE::Type>, mut in_a_isRefe
     Ok(out_txt)
 }
 
-pub fn extTypeF77(mut txt: Tpl::Text, mut a_type: Arc<DAE::Type>, mut a_isReference: bool) -> Result<Tpl::Text> {
+pub(crate) fn extTypeF77(mut txt: Tpl::Text, mut a_type: Arc<DAE::Type>, mut a_isReference: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut l_s: Tpl::Text;
     l_s = fun_239(Tpl::emptyTxt.clone(), a_type.clone())?;
@@ -4880,7 +4880,7 @@ fn fun_243(mut in_txt: Tpl::Text, mut in_a_extArg: Arc<SimCodeFunction::SimExtAr
     Ok((out_txt, out_a_auxFunction))
 }
 
-pub fn extFunDefArg(mut txt: Tpl::Text, mut a_extArg: Arc<SimCodeFunction::SimExtArg::SimExtArg>) -> Result<Tpl::Text> {
+pub(crate) fn extFunDefArg(mut txt: Tpl::Text, mut a_extArg: Arc<SimCodeFunction::SimExtArg::SimExtArg>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut l_auxFunction: Tpl::Text;
     l_auxFunction = Tpl::emptyTxt.clone();
@@ -4923,7 +4923,7 @@ fn fun_245(mut in_txt: Tpl::Text, mut in_a_extArg: Arc<SimCodeFunction::SimExtAr
     Ok((out_txt, out_a_auxFunction))
 }
 
-pub fn extFunDefArgF77(mut txt: Tpl::Text, mut a_extArg: Arc<SimCodeFunction::SimExtArg::SimExtArg>) -> Result<Tpl::Text> {
+pub(crate) fn extFunDefArgF77(mut txt: Tpl::Text, mut a_extArg: Arc<SimCodeFunction::SimExtArg::SimExtArg>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut l_auxFunction: Tpl::Text;
     l_auxFunction = Tpl::emptyTxt.clone();
@@ -5059,7 +5059,7 @@ pub fn functionBodiesParModelica(mut txt: Tpl::Text, mut a_functions: Arc<metamo
     Ok(out_txt)
 }
 
-pub fn functionBody(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimCodeFunction::Function::Function>, mut in_a_inFunc: bool, mut in_a_isSimulation: bool) -> Result<Tpl::Text> {
+pub(crate) fn functionBody(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimCodeFunction::Function::Function>, mut in_a_inFunc: bool, mut in_a_isSimulation: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fn.clone(), in_a_inFunc.clone(), in_a_isSimulation.clone())) {
         (txt, i_fn @ Deref @ SimCodeFunction::Function::FUNCTION { name: _, .. }, a_inFunc, a_isSimulation) => {
@@ -5090,7 +5090,7 @@ pub fn functionBody(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimCodeFunction::Fun
     Ok(out_txt)
 }
 
-pub fn functionBodyParModelica(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimCodeFunction::Function::Function>, mut in_a_inFunc: bool) -> Result<Tpl::Text> {
+pub(crate) fn functionBodyParModelica(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimCodeFunction::Function::Function>, mut in_a_inFunc: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fn.clone(), in_a_inFunc.clone())) {
         (txt, i_fn @ Deref @ SimCodeFunction::Function::FUNCTION { name: _, .. }, a_inFunc) => {
@@ -5141,7 +5141,7 @@ fn fun_257(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimCodeFunction::Function::Fu
     Ok(out_txt)
 }
 
-pub fn extractParforBodies(mut txt: Tpl::Text, mut a_fn: Arc<SimCodeFunction::Function::Function>, mut a_inFunc: bool) -> Result<Tpl::Text> {
+pub(crate) fn extractParforBodies(mut txt: Tpl::Text, mut a_fn: Arc<SimCodeFunction::Function::Function>, mut a_inFunc: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = fun_257(txt.clone(), a_fn.clone())?;
     Ok(out_txt)
@@ -5343,7 +5343,7 @@ fn fun_269(mut in_txt: Tpl::Text, mut in_a_inFunc: bool, mut in_a_outVars: Arc<m
     Ok((out_txt, out_a_fname))
 }
 
-pub fn functionBodyRegularFunction(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimCodeFunction::Function::Function>, mut in_a_inFunc: bool, mut in_a_isSimulation: bool) -> Result<Tpl::Text> {
+pub(crate) fn functionBodyRegularFunction(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimCodeFunction::Function::Function>, mut in_a_inFunc: bool, mut in_a_isSimulation: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fn.clone(), in_a_inFunc.clone(), in_a_isSimulation.clone())) {
         (txt, i_fn @ Deref @ SimCodeFunction::Function::FUNCTION { name: i_name, body: i_body, variableDeclarations: i_variableDeclarations, outVars: i_outVars, functionArguments: i_functionArguments, visibility: i_visibility, .. }, a_inFunc, a_isSimulation) => {
@@ -5582,7 +5582,7 @@ fn fun_279(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
     Ok(out_txt)
 }
 
-pub fn generateInFunc(mut txt: Tpl::Text, mut a_fname: Tpl::Text, mut a_functionArguments: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>, mut a_outVars: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn generateInFunc(mut txt: Tpl::Text, mut a_fname: Tpl::Text, mut a_functionArguments: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>, mut a_outVars: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_fname: Tpl::Text;
     let mut ret_3: bool;
@@ -5803,7 +5803,7 @@ fn fun_286(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimCodeFunction::Function::Fu
     Ok(out_txt)
 }
 
-pub fn functionBodyKernelFunction(mut txt: Tpl::Text, mut a_fn: Arc<SimCodeFunction::Function::Function>, mut a_inFunc: bool) -> Result<Tpl::Text> {
+pub(crate) fn functionBodyKernelFunction(mut txt: Tpl::Text, mut a_fn: Arc<SimCodeFunction::Function::Function>, mut a_inFunc: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = fun_286(txt.clone(), a_fn.clone())?;
     Ok(out_txt)
@@ -5929,7 +5929,7 @@ fn fun_291(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimCodeFunction::Function::Fu
     Ok(out_txt)
 }
 
-pub fn functionBodyParallelFunction(mut txt: Tpl::Text, mut a_fn: Arc<SimCodeFunction::Function::Function>, mut a_inFunc: bool) -> Result<Tpl::Text> {
+pub(crate) fn functionBodyParallelFunction(mut txt: Tpl::Text, mut a_fn: Arc<SimCodeFunction::Function::Function>, mut a_inFunc: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = fun_291(txt.clone(), a_fn.clone())?;
     Ok(out_txt)
@@ -6135,7 +6135,7 @@ fn fun_299(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimCodeFunction::Function::Fu
     Ok(out_txt)
 }
 
-pub fn functionBodyKernelFunctionInterface(mut txt: Tpl::Text, mut a_fn: Arc<SimCodeFunction::Function::Function>, mut a_inFunc: bool) -> Result<Tpl::Text> {
+pub(crate) fn functionBodyKernelFunctionInterface(mut txt: Tpl::Text, mut a_fn: Arc<SimCodeFunction::Function::Function>, mut a_inFunc: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = fun_299(txt.clone(), a_fn.clone())?;
     Ok(out_txt)
@@ -6266,7 +6266,7 @@ fn fun_302(mut in_txt: Tpl::Text, mut in_a_var: Arc<SimCodeFunction::Variable::V
     Ok((out_txt, out_a_parVarList, out_a_auxFunction))
 }
 
-pub fn setKernelArg_ith(mut txt: Tpl::Text, mut a_var: Arc<SimCodeFunction::Variable::Variable>, mut a_KernelName: Tpl::Text, mut a_argNr: Tpl::Text, mut a_parVarList: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn setKernelArg_ith(mut txt: Tpl::Text, mut a_var: Arc<SimCodeFunction::Variable::Variable>, mut a_KernelName: Tpl::Text, mut a_argNr: Tpl::Text, mut a_parVarList: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_KernelName: Tpl::Text;
     let mut out_a_argNr: Tpl::Text;
@@ -6333,7 +6333,7 @@ fn fun_304(mut in_txt: Tpl::Text, mut in_a_tupleVar: (Arc<DAE::ComponentRef>, So
     Ok((out_txt, out_a_parVarList))
 }
 
-pub fn setKernelArgFormTupleLoopVars_ith(mut txt: Tpl::Text, mut a_tupleVar: (Arc<DAE::ComponentRef>, SourceInfo), mut a_KernelName: Tpl::Text, mut a_argNr: Tpl::Text, mut a_parVarList: Tpl::Text, mut a_context: SimCodeFunction::Context) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn setKernelArgFormTupleLoopVars_ith(mut txt: Tpl::Text, mut a_tupleVar: (Arc<DAE::ComponentRef>, SourceInfo), mut a_KernelName: Tpl::Text, mut a_argNr: Tpl::Text, mut a_parVarList: Tpl::Text, mut a_context: SimCodeFunction::Context) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_KernelName: Tpl::Text;
     let mut out_a_argNr: Tpl::Text;
@@ -6454,7 +6454,7 @@ fn fun_311(mut in_txt: Tpl::Text, mut in_a_inFunc: bool, mut in_a_outVars: Arc<m
     Ok((out_txt, out_a_fname))
 }
 
-pub fn functionBodyExternalFunction(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimCodeFunction::Function::Function>, mut in_a_inFunc: bool, mut in_a_isSimulation: bool) -> Result<Tpl::Text> {
+pub(crate) fn functionBodyExternalFunction(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimCodeFunction::Function::Function>, mut in_a_inFunc: bool, mut in_a_isSimulation: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fn.clone(), in_a_inFunc.clone(), in_a_isSimulation.clone())) {
         (txt, i_efn @ Deref @ SimCodeFunction::Function::EXTERNAL_FUNCTION { name: i_name, outVars: i_outVars, funArgs: i_funArgs, visibility: i_visibility, info: i_info, dynamicLoad: i_dynamicLoad, extName: i_extName, language: i_language, .. }, a_inFunc, a_isSimulation) => {
@@ -6631,7 +6631,7 @@ fn fun_317(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_fname: Tpl::Text) 
     Ok(out_txt)
 }
 
-pub fn functionBodyRecordConstructor(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimCodeFunction::Function::Function>, mut in_a_isSimulation: bool) -> Result<Tpl::Text> {
+pub(crate) fn functionBodyRecordConstructor(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimCodeFunction::Function::Function>, mut in_a_isSimulation: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fn.clone(), in_a_isSimulation.clone())) {
         (txt, i_fn @ Deref @ SimCodeFunction::Function::RECORD_CONSTRUCTOR { name: i_name, locals: i_locals, funArgs: i_funArgs, .. }, a_isSimulation) => {
@@ -6800,7 +6800,7 @@ fn fun_321(mut in_txt: Tpl::Text, mut in_a_instDims: Arc<metamodelica::List<Arc<
     Ok((out_txt, out_a_auxFunction, out_a_varDecls, out_a_varInits))
 }
 
-pub fn varInitRecord(mut in_txt: Tpl::Text, mut in_a_var: Arc<SimCodeFunction::Variable::Variable>, mut in_a_prefix: ArcStr, mut in_a_varDecls: Tpl::Text, mut in_a_varInits: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn varInitRecord(mut in_txt: Tpl::Text, mut in_a_var: Arc<SimCodeFunction::Variable::Variable>, mut in_a_prefix: ArcStr, mut in_a_varDecls: Tpl::Text, mut in_a_varInits: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_varInits: Tpl::Text;
@@ -6926,7 +6926,7 @@ fn fun_326(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimCodeFunction::Function::Fu
     Ok(out_txt)
 }
 
-pub fn functionBodyBoxed(mut txt: Tpl::Text, mut a_fn: Arc<SimCodeFunction::Function::Function>, mut a_isSimulation: bool) -> Result<Tpl::Text> {
+pub(crate) fn functionBodyBoxed(mut txt: Tpl::Text, mut a_fn: Arc<SimCodeFunction::Function::Function>, mut a_isSimulation: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut l_fname: Tpl::Text;
     l_fname = fun_323(Tpl::emptyTxt.clone(), a_fn.clone())?;
@@ -7202,7 +7202,7 @@ fn fun_337(mut in_txt: Tpl::Text, mut in_a_outvars: Arc<metamodelica::List<Arc<S
     Ok(out_txt)
 }
 
-pub fn functionBodyBoxedImpl(mut txt: Tpl::Text, mut a_name: Arc<Absyn::Path>, mut a_funargs: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>, mut a_outvars: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>, mut a_visibility: SCode::Visibility, mut a_isSimulation: bool) -> Result<Tpl::Text> {
+pub(crate) fn functionBodyBoxedImpl(mut txt: Tpl::Text, mut a_name: Arc<Absyn::Path>, mut a_funargs: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>, mut a_outvars: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>, mut a_visibility: SCode::Visibility, mut a_isSimulation: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut l_prototype: Tpl::Text;
     let mut l_afterBody: Tpl::Text;
@@ -7450,7 +7450,7 @@ fn fun_346(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimCodeFunction::Function::Fu
     Ok((out_txt, out_a_auxFunction))
 }
 
-pub fn boxRecordConstructor(mut txt: Tpl::Text, mut a_fn: Arc<SimCodeFunction::Function::Function>, mut a_isSimulation: bool) -> Result<Tpl::Text> {
+pub(crate) fn boxRecordConstructor(mut txt: Tpl::Text, mut a_fn: Arc<SimCodeFunction::Function::Function>, mut a_isSimulation: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut l_auxFunction: Tpl::Text;
     l_auxFunction = Tpl::emptyTxt.clone();
@@ -7458,7 +7458,7 @@ pub fn boxRecordConstructor(mut txt: Tpl::Text, mut a_fn: Arc<SimCodeFunction::F
     Ok(out_txt)
 }
 
-pub fn funArgUnbox(mut in_txt: Tpl::Text, mut in_a_var: Arc<SimCodeFunction::Variable::Variable>, mut in_a_varDecls: Tpl::Text, mut in_a_varBox: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn funArgUnbox(mut in_txt: Tpl::Text, mut in_a_var: Arc<SimCodeFunction::Variable::Variable>, mut in_a_varDecls: Tpl::Text, mut in_a_varBox: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_varBox: Tpl::Text;
@@ -7598,7 +7598,7 @@ fn fun_349(mut in_txt: Tpl::Text, mut in_a_varType: Arc<DAE::Type>, mut in_a_var
     Ok((out_txt, out_a_preExp, out_a_varDecls))
 }
 
-pub fn unboxVariable(mut txt: Tpl::Text, mut a_varName: ArcStr, mut a_varType: Arc<DAE::Type>, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn unboxVariable(mut txt: Tpl::Text, mut a_varName: ArcStr, mut a_varType: Arc<DAE::Type>, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -7676,7 +7676,7 @@ fn fun_352(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_recordVa
     Ok((out_txt, out_a_preExp, out_a_varDecls))
 }
 
-pub fn unboxRecord(mut txt: Tpl::Text, mut a_recordVar: ArcStr, mut a_ty: Arc<DAE::Type>, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn unboxRecord(mut txt: Tpl::Text, mut a_recordVar: ArcStr, mut a_ty: Arc<DAE::Type>, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -7747,7 +7747,7 @@ fn fun_355(mut in_txt: Tpl::Text, mut in_a_constructorType: Tpl::Text, mut in_a_
     Ok((out_txt, out_a_varDecls, out_a_varUnbox))
 }
 
-pub fn funArgBox(mut txt: Tpl::Text, mut a_outName: ArcStr, mut a_varName: ArcStr, mut a_condition: ArcStr, mut a_ty: Arc<DAE::Type>, mut a_varUnbox: Tpl::Text, mut a_varDecls: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn funArgBox(mut txt: Tpl::Text, mut a_outName: ArcStr, mut a_varName: ArcStr, mut a_condition: ArcStr, mut a_ty: Arc<DAE::Type>, mut a_varUnbox: Tpl::Text, mut a_varDecls: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varUnbox: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -7757,7 +7757,7 @@ pub fn funArgBox(mut txt: Tpl::Text, mut a_outName: ArcStr, mut a_varName: ArcSt
     Ok((out_txt, out_a_varUnbox, out_a_varDecls))
 }
 
-pub fn mmcConstructorType(mut in_txt: Tpl::Text, mut in_a_type: Arc<DAE::Type>) -> Result<Tpl::Text> {
+pub(crate) fn mmcConstructorType(mut in_txt: Tpl::Text, mut in_a_type: Arc<DAE::Type>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_type.clone())) {
         (txt, Deref @ DAE::Type::T_INTEGER { varLst: _ }) => {
@@ -7825,7 +7825,7 @@ fn lm_358(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Var>>>,
     Ok((txt, a_preExp, a_varDecls))
 }
 
-pub fn mmcConstructor(mut in_txt: Tpl::Text, mut in_a_type: Arc<DAE::Type>, mut in_a_varName: ArcStr, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn mmcConstructor(mut in_txt: Tpl::Text, mut in_a_type: Arc<DAE::Type>, mut in_a_varName: ArcStr, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -7968,7 +7968,7 @@ fn fun_361(mut in_txt: Tpl::Text, mut in_a_var: Arc<SimCodeFunction::Variable::V
     Ok((out_txt, out_a_auxFunction))
 }
 
-pub fn readInVar(mut txt: Tpl::Text, mut a_var: Arc<SimCodeFunction::Variable::Variable>) -> Result<Tpl::Text> {
+pub(crate) fn readInVar(mut txt: Tpl::Text, mut a_var: Arc<SimCodeFunction::Variable::Variable>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut l_auxFunction: Tpl::Text;
     l_auxFunction = Tpl::emptyTxt.clone();
@@ -8021,7 +8021,7 @@ fn lm_364(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Var>>>,
     Ok(txt)
 }
 
-pub fn readInVarRecordMembers(mut in_txt: Tpl::Text, mut in_a_type: Arc<DAE::Type>, mut in_a_prefix: ArcStr) -> Result<Tpl::Text> {
+pub(crate) fn readInVarRecordMembers(mut in_txt: Tpl::Text, mut in_a_type: Arc<DAE::Type>, mut in_a_prefix: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_type.clone(), in_a_prefix.clone())) {
         (txt, Deref @ DAE::Type::T_COMPLEX { varLst: i_vl, .. }, a_prefix) => {
@@ -8039,7 +8039,7 @@ pub fn readInVarRecordMembers(mut in_txt: Tpl::Text, mut in_a_type: Arc<DAE::Typ
     Ok(out_txt)
 }
 
-pub fn writeOutVar(mut in_txt: Tpl::Text, mut in_a_var: Arc<SimCodeFunction::Variable::Variable>) -> Result<Tpl::Text> {
+pub(crate) fn writeOutVar(mut in_txt: Tpl::Text, mut in_a_var: Arc<SimCodeFunction::Variable::Variable>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_var.clone())) {
         (txt, i_var @ Deref @ SimCodeFunction::Variable::VARIABLE { ty: i_ty @ Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path: _ }, .. }, .. }) => {
@@ -8133,7 +8133,7 @@ fn fun_369(mut in_txt: Tpl::Text, mut in_a_args: Tpl::Text) -> Result<Tpl::Text>
     Ok(out_txt)
 }
 
-pub fn writeOutVarRecordMembers(mut in_txt: Tpl::Text, mut in_a_type: Arc<DAE::Type>, mut in_a_prefix: ArcStr) -> Result<Tpl::Text> {
+pub(crate) fn writeOutVarRecordMembers(mut in_txt: Tpl::Text, mut in_a_type: Arc<DAE::Type>, mut in_a_prefix: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_type.clone(), in_a_prefix.clone())) {
         (txt, Deref @ DAE::Type::T_COMPLEX { varLst: i_vl, complexClassType: i_n, .. }, a_prefix) => {
@@ -8285,7 +8285,7 @@ fn fun_375(mut in_txt: Tpl::Text, mut in_a_defaultValue: Option<Arc<DAE::Exp>>, 
     Ok((out_txt, out_a_auxFunction, out_a_varDecls, out_a_varInits))
 }
 
-pub fn varInit(mut in_txt: Tpl::Text, mut in_a_var: Arc<SimCodeFunction::Variable::Variable>, mut in_a_outStruct: ArcStr, mut in_a_varDecls: Tpl::Text, mut in_a_varInits: Tpl::Text, mut in_a_varFrees: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn varInit(mut in_txt: Tpl::Text, mut in_a_var: Arc<SimCodeFunction::Variable::Variable>, mut in_a_outStruct: ArcStr, mut in_a_varDecls: Tpl::Text, mut in_a_varInits: Tpl::Text, mut in_a_varFrees: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_varInits: Tpl::Text;
@@ -8602,7 +8602,7 @@ fn fun_383(mut in_txt: Tpl::Text, mut in_a_var: Arc<SimCodeFunction::Variable::V
     Ok((out_txt, out_a_varDecls, out_a_varInits, out_a_auxFunction))
 }
 
-pub fn parVarInit(mut txt: Tpl::Text, mut a_var: Arc<SimCodeFunction::Variable::Variable>, mut a_outStruct: ArcStr, mut a_varDecls: Tpl::Text, mut a_varInits: Tpl::Text, mut a_varFrees: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn parVarInit(mut txt: Tpl::Text, mut a_var: Arc<SimCodeFunction::Variable::Variable>, mut a_outStruct: ArcStr, mut a_varDecls: Tpl::Text, mut a_varInits: Tpl::Text, mut a_varFrees: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_varInits: Tpl::Text;
@@ -8790,7 +8790,7 @@ fn fun_390(mut in_txt: Tpl::Text, mut in_a_var: Arc<SimCodeFunction::Variable::V
     Ok((out_txt, out_a_varDecls, out_a_varInits, out_a_auxFunction))
 }
 
-pub fn varInitParallel(mut txt: Tpl::Text, mut a_var: Arc<SimCodeFunction::Variable::Variable>, mut a_outStruct: ArcStr, mut a_i: i32, mut a_varDecls: Tpl::Text, mut a_varInits: Tpl::Text, mut a_varFrees: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn varInitParallel(mut txt: Tpl::Text, mut a_var: Arc<SimCodeFunction::Variable::Variable>, mut a_outStruct: ArcStr, mut a_i: i32, mut a_varDecls: Tpl::Text, mut a_varInits: Tpl::Text, mut a_varFrees: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_varInits: Tpl::Text;
@@ -8976,7 +8976,7 @@ fn fun_395(mut in_txt: Tpl::Text, mut in_a_var: Arc<SimCodeFunction::Variable::V
     Ok((out_txt, out_a_varDecls, out_a_varInits, out_a_auxFunction))
 }
 
-pub fn varAllocDefaultValue(mut txt: Tpl::Text, mut a_var: Arc<SimCodeFunction::Variable::Variable>, mut a_context: SimCodeFunction::Context, mut a_lhsVarName: ArcStr, mut a_allocNoDefault: Tpl::Text, mut a_varDecls: Tpl::Text, mut a_varInits: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn varAllocDefaultValue(mut txt: Tpl::Text, mut a_var: Arc<SimCodeFunction::Variable::Variable>, mut a_context: SimCodeFunction::Context, mut a_lhsVarName: ArcStr, mut a_allocNoDefault: Tpl::Text, mut a_varDecls: Tpl::Text, mut a_varInits: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_allocNoDefault: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -9072,7 +9072,7 @@ fn fun_398(mut in_txt: Tpl::Text, mut in_a_instDims: Arc<metamodelica::List<Arc<
     Ok(out_txt)
 }
 
-pub fn varOutput(mut in_txt: Tpl::Text, mut in_a_var: Arc<SimCodeFunction::Variable::Variable>) -> Result<Tpl::Text> {
+pub(crate) fn varOutput(mut in_txt: Tpl::Text, mut in_a_var: Arc<SimCodeFunction::Variable::Variable>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_var.clone())) {
         (txt, i_var @ Deref @ SimCodeFunction::Variable::FUNCTION_PTR { name: _, .. }) => {
@@ -9452,7 +9452,7 @@ fn fun_406(mut in_txt: Tpl::Text, mut in_a_var: Arc<SimCodeFunction::Variable::V
     Ok((out_txt, out_a_varDecls, out_a_varInits, out_a_varAssign, out_a_auxFunction))
 }
 
-pub fn varOutputKernelInterface(mut txt: Tpl::Text, mut a_var: Arc<SimCodeFunction::Variable::Variable>, mut a_dest: ArcStr, mut a_ix: i32, mut a_varDecls: Tpl::Text, mut a_varInits: Tpl::Text, mut a_varCopy: Tpl::Text, mut a_varAssign: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn varOutputKernelInterface(mut txt: Tpl::Text, mut a_var: Arc<SimCodeFunction::Variable::Variable>, mut a_dest: ArcStr, mut a_ix: i32, mut a_varDecls: Tpl::Text, mut a_varInits: Tpl::Text, mut a_varCopy: Tpl::Text, mut a_varAssign: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_varInits: Tpl::Text;
@@ -9526,7 +9526,7 @@ fn fun_409(mut in_txt: Tpl::Text, mut in_a_var: Arc<SimCodeFunction::Variable::V
     Ok((out_txt, out_a_varDecls, out_a_auxFunction))
 }
 
-pub fn initRecordMembers(mut txt: Tpl::Text, mut a_var: Arc<SimCodeFunction::Variable::Variable>, mut a_varDecls: Tpl::Text, mut a_varInits: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn initRecordMembers(mut txt: Tpl::Text, mut a_var: Arc<SimCodeFunction::Variable::Variable>, mut a_varDecls: Tpl::Text, mut a_varInits: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_varInits: Tpl::Text;
@@ -9536,7 +9536,7 @@ pub fn initRecordMembers(mut txt: Tpl::Text, mut a_var: Arc<SimCodeFunction::Var
     Ok((out_txt, out_a_varDecls, out_a_varInits, out_a_auxFunction))
 }
 
-pub fn extVarName(mut txt: Tpl::Text, mut a_cr: Arc<DAE::ComponentRef>) -> Result<Tpl::Text> {
+pub(crate) fn extVarName(mut txt: Tpl::Text, mut a_cr: Arc<DAE::ComponentRef>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut ret_0: Arc<DAE::ComponentRef>;
     out_txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_")).clone() }))?;
@@ -9590,7 +9590,7 @@ fn fun_412(mut in_txt: Tpl::Text, mut in_a_language: ArcStr, mut in_a_varInit: T
     Ok((out_txt, out_a_varInit, out_a_auxFunction, out_a_varDecls, out_a_preExp))
 }
 
-pub fn extFunCall(mut in_txt: Tpl::Text, mut in_a_fun: Arc<SimCodeFunction::Function::Function>, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_varInit: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn extFunCall(mut in_txt: Tpl::Text, mut in_a_fun: Arc<SimCodeFunction::Function::Function>, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_varInit: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -9824,7 +9824,7 @@ fn fun_424(mut in_txt: Tpl::Text, mut in_a_extReturn: Arc<SimCodeFunction::SimEx
     Ok((out_txt, out_a_auxFunction))
 }
 
-pub fn extFunCallC(mut in_txt: Tpl::Text, mut in_a_fun: Arc<SimCodeFunction::Function::Function>, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn extFunCallC(mut in_txt: Tpl::Text, mut in_a_fun: Arc<SimCodeFunction::Function::Function>, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -10006,7 +10006,7 @@ fn fun_432(mut in_txt: Tpl::Text, mut in_a_extReturn: Arc<SimCodeFunction::SimEx
     Ok((out_txt, out_a_auxFunction))
 }
 
-pub fn extFunCallF77(mut in_txt: Tpl::Text, mut in_a_fun: Arc<SimCodeFunction::Function::Function>, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_varInit: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn extFunCallF77(mut in_txt: Tpl::Text, mut in_a_fun: Arc<SimCodeFunction::Function::Function>, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_varInit: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -10362,7 +10362,7 @@ fn fun_442(mut in_txt: Tpl::Text, mut in_a_arg: Arc<SimCodeFunction::SimExtArg::
     Ok((out_txt, out_a_varDecls, out_a_auxFunction))
 }
 
-pub fn extFunCallVardecl(mut txt: Tpl::Text, mut a_arg: Arc<SimCodeFunction::SimExtArg::SimExtArg>, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text, mut a_isReturn: bool) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn extFunCallVardecl(mut txt: Tpl::Text, mut a_arg: Arc<SimCodeFunction::SimExtArg::SimExtArg>, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text, mut a_isReturn: bool) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_auxFunction: Tpl::Text;
@@ -10467,7 +10467,7 @@ fn fun_447(mut in_txt: Tpl::Text, mut in_a_oi: i32, mut in_a_auxFunction: Tpl::T
     Ok((out_txt, out_a_auxFunction, out_a_varDecls))
 }
 
-pub fn extFunCallVardeclF77(mut in_txt: Tpl::Text, mut in_a_arg: Arc<SimCodeFunction::SimExtArg::SimExtArg>, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn extFunCallVardeclF77(mut in_txt: Tpl::Text, mut in_a_arg: Arc<SimCodeFunction::SimExtArg::SimExtArg>, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_auxFunction: Tpl::Text;
@@ -10529,7 +10529,7 @@ pub fn boolStrC(mut in_txt: Tpl::Text, mut in_a_v: bool) -> Result<Tpl::Text> {
     Ok(out_txt)
 }
 
-pub fn typeDefaultValue(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Text> {
+pub(crate) fn typeDefaultValue(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone())) {
         (txt, Deref @ DAE::Type::T_INTEGER { varLst: _ }) => {
@@ -10678,7 +10678,7 @@ fn fun_455(mut in_txt: Tpl::Text, mut in_a_instDims: Arc<metamodelica::List<Arc<
     Ok((out_txt, out_a_preExp))
 }
 
-pub fn extFunCallBiVar(mut in_txt: Tpl::Text, mut in_a_var: Arc<SimCodeFunction::Variable::Variable>, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn extFunCallBiVar(mut in_txt: Tpl::Text, mut in_a_var: Arc<SimCodeFunction::Variable::Variable>, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -10839,7 +10839,7 @@ fn fun_461(mut in_txt: Tpl::Text, mut in_a_instDims: Arc<metamodelica::List<Arc<
     Ok((out_txt, out_a_preExp))
 }
 
-pub fn extFunCallBiVarF77(mut in_txt: Tpl::Text, mut in_a_var: Arc<SimCodeFunction::Variable::Variable>, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn extFunCallBiVarF77(mut in_txt: Tpl::Text, mut in_a_var: Arc<SimCodeFunction::Variable::Variable>, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -10945,7 +10945,7 @@ fn fun_465(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_cr: Tpl:
     Ok(out_txt)
 }
 
-pub fn extFunCallVarcopy(mut in_txt: Tpl::Text, mut in_a_arg: Arc<SimCodeFunction::SimExtArg::SimExtArg>, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn extFunCallVarcopy(mut in_txt: Tpl::Text, mut in_a_arg: Arc<SimCodeFunction::SimExtArg::SimExtArg>, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_auxFunction: Tpl::Text;
     (out_txt, out_a_auxFunction) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_arg.clone(), in_a_auxFunction.clone())) {
@@ -11057,7 +11057,7 @@ fn fun_468(mut in_txt: Tpl::Text, mut in_a_oi: i32, mut in_a_ty: Arc<DAE::Type>,
     Ok((out_txt, out_a_auxFunction))
 }
 
-pub fn extFunCallVarcopyF77(mut in_txt: Tpl::Text, mut in_a_arg: Arc<SimCodeFunction::SimExtArg::SimExtArg>, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn extFunCallVarcopyF77(mut in_txt: Tpl::Text, mut in_a_arg: Arc<SimCodeFunction::SimExtArg::SimExtArg>, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_auxFunction: Tpl::Text;
     (out_txt, out_a_auxFunction) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_arg.clone(), in_a_auxFunction.clone())) {
@@ -11141,7 +11141,7 @@ fn fun_472(mut in_txt: Tpl::Text, mut in_a_t: Arc<DAE::Type>, mut in_a_auxFuncti
     Ok((out_txt, out_a_auxFunction))
 }
 
-pub fn extArg(mut in_txt: Tpl::Text, mut in_a_extArg: Arc<SimCodeFunction::SimExtArg::SimExtArg>, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn extArg(mut in_txt: Tpl::Text, mut in_a_extArg: Arc<SimCodeFunction::SimExtArg::SimExtArg>, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -11254,7 +11254,7 @@ fn fun_475(mut in_txt: Tpl::Text, mut in_a_oi: i32) -> Result<Tpl::Text> {
     Ok(out_txt)
 }
 
-pub fn extArgF77(mut in_txt: Tpl::Text, mut in_a_extArg: Arc<SimCodeFunction::SimExtArg::SimExtArg>, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn extArgF77(mut in_txt: Tpl::Text, mut in_a_extArg: Arc<SimCodeFunction::SimExtArg::SimExtArg>, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -11380,7 +11380,7 @@ fn fun_477(mut in_txt: Tpl::Text, mut in_a_indices: Arc<DAE::Exp>, mut in_a_c: A
     Ok((out_txt, out_a_auxFunction))
 }
 
-pub fn tempSizeVarName(mut txt: Tpl::Text, mut a_c: Arc<DAE::ComponentRef>, mut a_indices: Arc<DAE::Exp>, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn tempSizeVarName(mut txt: Tpl::Text, mut a_c: Arc<DAE::ComponentRef>, mut a_indices: Arc<DAE::Exp>, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_auxFunction: Tpl::Text;
     (out_txt, out_a_auxFunction) = fun_477(txt.clone(), a_indices.clone(), a_c.clone(), a_auxFunction.clone())?;
@@ -11405,7 +11405,7 @@ fn lm_479(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Stateme
     Ok((txt, a_auxFunction, a_varDecls))
 }
 
-pub fn funStatement(mut txt: Tpl::Text, mut a_statementLst: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn funStatement(mut txt: Tpl::Text, mut a_statementLst: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_auxFunction: Tpl::Text;
@@ -11433,7 +11433,7 @@ fn lm_481(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Stateme
     Ok((txt, a_auxFunction, a_varDecls))
 }
 
-pub fn parModelicafunStatement(mut txt: Tpl::Text, mut a_statementLst: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn parModelicafunStatement(mut txt: Tpl::Text, mut a_statementLst: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_auxFunction: Tpl::Text;
@@ -11461,7 +11461,7 @@ fn lm_483(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Stateme
     Ok((txt, a_auxFunction, a_varDecls))
 }
 
-pub fn extractParFors(mut txt: Tpl::Text, mut a_statementLst: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn extractParFors(mut txt: Tpl::Text, mut a_statementLst: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_auxFunction: Tpl::Text;
@@ -11491,7 +11491,7 @@ fn fun_485(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>, mut in_a_v
     Ok((out_txt, out_a_varDecls, out_a_auxFunction))
 }
 
-pub fn extractParFors_impl(mut txt: Tpl::Text, mut a_stmt: Arc<DAE::Statement>, mut a_context: SimCodeFunction::Context, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn extractParFors_impl(mut txt: Tpl::Text, mut a_stmt: Arc<DAE::Statement>, mut a_context: SimCodeFunction::Context, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_auxFunction: Tpl::Text;
@@ -11738,7 +11738,7 @@ fn fun_491(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_val: Arc<DAE::Ex
     Ok((out_txt, out_a_auxFunction, out_a_varDecls))
 }
 
-pub fn algStmtAssign(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>, mut in_a_context: SimCodeFunction::Context, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn algStmtAssign(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>, mut in_a_context: SimCodeFunction::Context, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_auxFunction: Tpl::Text;
@@ -12081,7 +12081,7 @@ pub fn algStmtAssign(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>, 
     Ok((out_txt, out_a_varDecls, out_a_auxFunction))
 }
 
-pub fn algStmtAssignRecord(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn algStmtAssignRecord(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -12158,7 +12158,7 @@ fn fun_494(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mu
     Ok((out_txt, out_a_preExp, out_a_varDecls, out_a_auxFunction))
 }
 
-pub fn assignRhsExpToRecordCref(mut txt: Tpl::Text, mut a_lhs__cref: Arc<DAE::ComponentRef>, mut a_rhs__exp: Arc<DAE::Exp>, mut a_rec__type: Arc<DAE::Type>, mut a_context: SimCodeFunction::Context, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn assignRhsExpToRecordCref(mut txt: Tpl::Text, mut a_lhs__cref: Arc<DAE::ComponentRef>, mut a_rhs__exp: Arc<DAE::Exp>, mut a_rec__type: Arc<DAE::Type>, mut a_context: SimCodeFunction::Context, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -12248,7 +12248,7 @@ fn fun_498(mut in_txt: Tpl::Text, mut in_a_rhs__exp: Arc<DAE::Exp>, mut in_a_rec
     Ok((out_txt, out_a_sub, out_a_auxFunction, out_a_varDecls, out_a_preExp))
 }
 
-pub fn assignRhsExpToRecordCrefSimContext(mut txt: Tpl::Text, mut a_lhs__cref: Arc<DAE::ComponentRef>, mut a_rhs__exp: Arc<DAE::Exp>, mut a_rec__type: Arc<DAE::Type>, mut a_context: SimCodeFunction::Context, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn assignRhsExpToRecordCrefSimContext(mut txt: Tpl::Text, mut a_lhs__cref: Arc<DAE::ComponentRef>, mut a_rhs__exp: Arc<DAE::Exp>, mut a_rec__type: Arc<DAE::Type>, mut a_context: SimCodeFunction::Context, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -12312,7 +12312,7 @@ fn fun_500(mut in_txt: Tpl::Text, mut in_a_rhs__exp: Arc<DAE::Exp>, mut in_a_lhs
     Ok((out_txt, out_a_sub, out_a_auxFunction, out_a_varDecls, out_a_preExp))
 }
 
-pub fn assignRhsExpToRecordCrefFunctionContext(mut txt: Tpl::Text, mut a_lhs__cref: Arc<DAE::ComponentRef>, mut a_rhs__exp: Arc<DAE::Exp>, mut a_rec__type: Arc<DAE::Type>, mut a_context: SimCodeFunction::Context, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn assignRhsExpToRecordCrefFunctionContext(mut txt: Tpl::Text, mut a_lhs__cref: Arc<DAE::ComponentRef>, mut a_rhs__exp: Arc<DAE::Exp>, mut a_rec__type: Arc<DAE::Type>, mut a_context: SimCodeFunction::Context, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -12329,7 +12329,7 @@ pub fn assignRhsExpToRecordCrefFunctionContext(mut txt: Tpl::Text, mut a_lhs__cr
     Ok((out_txt, out_a_preExp, out_a_varDecls, out_a_auxFunction))
 }
 
-pub fn algStmtAssignArr(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>, mut in_a_context: SimCodeFunction::Context, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn algStmtAssignArr(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>, mut in_a_context: SimCodeFunction::Context, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_auxFunction: Tpl::Text;
@@ -12605,7 +12605,7 @@ fn fun_508(mut in_txt: Tpl::Text, mut in_a_lhsexp: Arc<DAE::Exp>, mut in_a_rhsEx
     Ok((out_txt, out_a_preExp, out_a_varDecls, out_a_auxFunction))
 }
 
-pub fn algStmtAssignRecordWithRhsExpStr(mut txt: Tpl::Text, mut a_lhsexp: Arc<DAE::Exp>, mut a_rhsExpStr: Tpl::Text, mut a_context: SimCodeFunction::Context, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn algStmtAssignRecordWithRhsExpStr(mut txt: Tpl::Text, mut a_lhsexp: Arc<DAE::Exp>, mut a_rhsExpStr: Tpl::Text, mut a_context: SimCodeFunction::Context, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_rhsExpStr: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
@@ -12758,7 +12758,7 @@ fn fun_514(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_sub: Tpl
     Ok((out_txt, out_a_sub, out_a_auxFunction, out_a_varDecls))
 }
 
-pub fn fillArrayFromRange(mut txt: Tpl::Text, mut a_ty: Arc<DAE::Type>, mut a_exp: Arc<DAE::Exp>, mut a_cr: Arc<DAE::ComponentRef>, mut a_context: SimCodeFunction::Context, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn fillArrayFromRange(mut txt: Tpl::Text, mut a_ty: Arc<DAE::Type>, mut a_exp: Arc<DAE::Exp>, mut a_cr: Arc<DAE::ComponentRef>, mut a_context: SimCodeFunction::Context, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_auxFunction: Tpl::Text;
@@ -12902,7 +12902,7 @@ fn fun_518(mut in_txt: Tpl::Text, mut in_a_lhs: Arc<DAE::Exp>, mut in_a_exp: Arc
     Ok((out_txt, out_a_sub, out_a_auxFunction, out_a_varDecls, out_a_preExp))
 }
 
-pub fn indexedAssign(mut txt: Tpl::Text, mut a_lhs: Arc<DAE::Exp>, mut a_exp: ArcStr, mut a_context: SimCodeFunction::Context, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn indexedAssign(mut txt: Tpl::Text, mut a_lhs: Arc<DAE::Exp>, mut a_exp: ArcStr, mut a_context: SimCodeFunction::Context, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -13001,7 +13001,7 @@ fn lm_523(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>,
     Ok((txt, a_varDecls))
 }
 
-pub fn algStmtTupleAssign(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>, mut in_a_context: SimCodeFunction::Context, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn algStmtTupleAssign(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>, mut in_a_context: SimCodeFunction::Context, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_auxFunction: Tpl::Text;
@@ -13332,7 +13332,7 @@ fn lm_530(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Stateme
     Ok((txt, a_auxFunction, a_varDecls))
 }
 
-pub fn algStmtIf(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>, mut in_a_context: SimCodeFunction::Context, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn algStmtIf(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>, mut in_a_context: SimCodeFunction::Context, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_auxFunction: Tpl::Text;
@@ -13368,7 +13368,7 @@ pub fn algStmtIf(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>, mut 
     Ok((out_txt, out_a_varDecls, out_a_auxFunction))
 }
 
-pub fn algStmtParForBody(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>, mut in_a_context: SimCodeFunction::Context, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn algStmtParForBody(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>, mut in_a_context: SimCodeFunction::Context, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_auxFunction: Tpl::Text;
@@ -13516,7 +13516,7 @@ fn fun_536(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>, mut in_a_c
     Ok((out_txt, out_a_auxFunction))
 }
 
-pub fn algStmtParForRangeBody(mut txt: Tpl::Text, mut a_stmt: Arc<DAE::Statement>, mut a_context: SimCodeFunction::Context, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn algStmtParForRangeBody(mut txt: Tpl::Text, mut a_stmt: Arc<DAE::Statement>, mut a_context: SimCodeFunction::Context, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_auxFunction: Tpl::Text;
@@ -13525,7 +13525,7 @@ pub fn algStmtParForRangeBody(mut txt: Tpl::Text, mut a_stmt: Arc<DAE::Statement
     Ok((out_txt, out_a_varDecls, out_a_auxFunction))
 }
 
-pub fn algStmtParForInterface(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>, mut in_a_context: SimCodeFunction::Context, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn algStmtParForInterface(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>, mut in_a_context: SimCodeFunction::Context, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_auxFunction: Tpl::Text;
@@ -13570,7 +13570,7 @@ fn lm_539(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Stateme
     Ok((txt, a_auxFunction, a_varDecls))
 }
 
-pub fn algStmtParForRangeInterface(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>, mut in_a_context: SimCodeFunction::Context, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn algStmtParForRangeInterface(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>, mut in_a_context: SimCodeFunction::Context, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_auxFunction: Tpl::Text;
@@ -13743,7 +13743,7 @@ fn fun_543(mut in_txt: Tpl::Text, mut in_a_range: Arc<DAE::Exp>, mut in_a_iterat
     Ok((out_txt, out_a_varDecls, out_a_auxFunction))
 }
 
-pub fn algStmtParForRangeInterface_impl(mut txt: Tpl::Text, mut a_range: Arc<DAE::Exp>, mut a_iterator: ArcStr, mut a_type: ArcStr, mut a_shortType: ArcStr, mut a_loopPrlVars: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, SourceInfo)>>, mut a_body: Tpl::Text, mut a_context: SimCodeFunction::Context, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn algStmtParForRangeInterface_impl(mut txt: Tpl::Text, mut a_range: Arc<DAE::Exp>, mut a_iterator: ArcStr, mut a_type: ArcStr, mut a_shortType: ArcStr, mut a_loopPrlVars: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, SourceInfo)>>, mut a_body: Tpl::Text, mut a_context: SimCodeFunction::Context, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_body: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -13753,7 +13753,7 @@ pub fn algStmtParForRangeInterface_impl(mut txt: Tpl::Text, mut a_range: Arc<DAE
     Ok((out_txt, out_a_body, out_a_varDecls, out_a_auxFunction))
 }
 
-pub fn algStmtFor(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>, mut in_a_context: SimCodeFunction::Context, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn algStmtFor(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>, mut in_a_context: SimCodeFunction::Context, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_auxFunction: Tpl::Text;
@@ -13798,7 +13798,7 @@ fn lm_546(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Stateme
     Ok((txt, a_auxFunction, a_varDecls))
 }
 
-pub fn algStmtForRange(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>, mut in_a_context: SimCodeFunction::Context, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn algStmtForRange(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>, mut in_a_context: SimCodeFunction::Context, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_auxFunction: Tpl::Text;
@@ -14009,7 +14009,7 @@ fn fun_552(mut in_txt: Tpl::Text, mut in_a_range: Arc<DAE::Exp>, mut in_a_iterat
     Ok((out_txt, out_a_varDecls, out_a_auxFunction))
 }
 
-pub fn algStmtForRange_impl(mut txt: Tpl::Text, mut a_range: Arc<DAE::Exp>, mut a_iterator: ArcStr, mut a_type: ArcStr, mut a_shortType: ArcStr, mut a_body: Tpl::Text, mut a_context: SimCodeFunction::Context, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn algStmtForRange_impl(mut txt: Tpl::Text, mut a_range: Arc<DAE::Exp>, mut a_iterator: ArcStr, mut a_type: ArcStr, mut a_shortType: ArcStr, mut a_body: Tpl::Text, mut a_context: SimCodeFunction::Context, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_body: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -14081,7 +14081,7 @@ fn lm_556(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Stateme
     Ok((txt, a_auxFunction, a_varDecls))
 }
 
-pub fn algStmtForGeneric(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>, mut in_a_context: SimCodeFunction::Context, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn algStmtForGeneric(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>, mut in_a_context: SimCodeFunction::Context, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_auxFunction: Tpl::Text;
@@ -14327,7 +14327,7 @@ fn fun_560(mut in_txt: Tpl::Text, mut in_a_type: ArcStr, mut in_a_ivar: Tpl::Tex
     Ok((out_txt, out_a_varDecls))
 }
 
-pub fn algStmtForGeneric_impl(mut txt: Tpl::Text, mut a_exp: Arc<DAE::Exp>, mut a_iterator: ArcStr, mut a_type: ArcStr, mut a_arrayType: ArcStr, mut a_iterIsArray: bool, mut a_body: Tpl::Text, mut a_tvar: Tpl::Text, mut a_context: SimCodeFunction::Context, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn algStmtForGeneric_impl(mut txt: Tpl::Text, mut a_exp: Arc<DAE::Exp>, mut a_iterator: ArcStr, mut a_type: ArcStr, mut a_arrayType: ArcStr, mut a_iterIsArray: bool, mut a_body: Tpl::Text, mut a_tvar: Tpl::Text, mut a_context: SimCodeFunction::Context, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_body: Tpl::Text;
     let mut out_a_tvar: Tpl::Text;
@@ -14376,7 +14376,7 @@ fn lm_562(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Stateme
     Ok((txt, a_auxFunction, a_varDecls))
 }
 
-pub fn algStmtWhile(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>, mut in_a_context: SimCodeFunction::Context, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn algStmtWhile(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>, mut in_a_context: SimCodeFunction::Context, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_auxFunction: Tpl::Text;
@@ -14412,7 +14412,7 @@ pub fn algStmtWhile(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>, m
     Ok((out_txt, out_a_varDecls, out_a_auxFunction))
 }
 
-pub fn algStmtAssert(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>, mut in_a_context: SimCodeFunction::Context, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn algStmtAssert(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>, mut in_a_context: SimCodeFunction::Context, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_auxFunction: Tpl::Text;
@@ -14434,7 +14434,7 @@ pub fn algStmtAssert(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>, 
     Ok((out_txt, out_a_varDecls, out_a_auxFunction))
 }
 
-pub fn algStmtTerminate(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>, mut in_a_context: SimCodeFunction::Context, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn algStmtTerminate(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>, mut in_a_context: SimCodeFunction::Context, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_auxFunction: Tpl::Text;
@@ -14488,7 +14488,7 @@ fn lm_566(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Stateme
     Ok((txt, a_auxFunction, a_varDecls))
 }
 
-pub fn algStmtFailure(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>, mut in_a_context: SimCodeFunction::Context, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn algStmtFailure(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>, mut in_a_context: SimCodeFunction::Context, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_auxFunction: Tpl::Text;
@@ -14556,7 +14556,7 @@ fn fun_568(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_expPart: Tpl::Text
     Ok(out_txt)
 }
 
-pub fn algStmtNoretcall(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>, mut in_a_context: SimCodeFunction::Context, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn algStmtNoretcall(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>, mut in_a_context: SimCodeFunction::Context, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_auxFunction: Tpl::Text;
@@ -14872,7 +14872,7 @@ fn fun_578(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mu
     Ok((out_txt, out_a_auxFunction, out_a_varDecls, out_a_sub))
 }
 
-pub fn algStmtWhen(mut txt: Tpl::Text, mut a_when: Arc<DAE::Statement>, mut a_context: SimCodeFunction::Context, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn algStmtWhen(mut txt: Tpl::Text, mut a_when: Arc<DAE::Statement>, mut a_context: SimCodeFunction::Context, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_auxFunction: Tpl::Text;
@@ -14999,7 +14999,7 @@ fn fun_583(mut in_txt: Tpl::Text, mut in_a_stmt: Option<Arc<DAE::Statement>>, mu
     Ok((out_txt, out_a_auxFunction, out_a_varDecls, out_a_sub))
 }
 
-pub fn algStatementWhenElse(mut txt: Tpl::Text, mut a_stmt: Option<Arc<DAE::Statement>>, mut a_context: SimCodeFunction::Context, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn algStatementWhenElse(mut txt: Tpl::Text, mut a_stmt: Option<Arc<DAE::Statement>>, mut a_context: SimCodeFunction::Context, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_auxFunction: Tpl::Text;
@@ -15009,7 +15009,7 @@ pub fn algStatementWhenElse(mut txt: Tpl::Text, mut a_stmt: Option<Arc<DAE::Stat
     Ok((out_txt, out_a_varDecls, out_a_auxFunction))
 }
 
-pub fn algStmtReinit(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>, mut in_a_context: SimCodeFunction::Context, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn algStmtReinit(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>, mut in_a_context: SimCodeFunction::Context, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_auxFunction: Tpl::Text;
@@ -15080,7 +15080,7 @@ fn lm_587(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Stateme
     Ok((txt, a_auxFunction, a_varDecls))
 }
 
-pub fn elseExpr(mut in_txt: Tpl::Text, mut in_a_else__: Arc<DAE::Else>, mut in_a_context: SimCodeFunction::Context, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn elseExpr(mut in_txt: Tpl::Text, mut in_a_else__: Arc<DAE::Else>, mut in_a_context: SimCodeFunction::Context, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_auxFunction: Tpl::Text;
@@ -15154,7 +15154,7 @@ fn fun_589(mut in_txt: Tpl::Text, mut in_a_mainFunction: Option<Arc<SimCodeFunct
     Ok(out_txt)
 }
 
-pub fn functionsParModelicaKernelsFile(mut txt: Tpl::Text, mut a_filePrefix: ArcStr, mut a_mainFunction: Option<Arc<SimCodeFunction::Function::Function>>, mut a_functions: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>>) -> Result<Tpl::Text> {
+pub(crate) fn functionsParModelicaKernelsFile(mut txt: Tpl::Text, mut a_filePrefix: ArcStr, mut a_mainFunction: Option<Arc<SimCodeFunction::Function::Function>>, mut a_functions: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     System::tmpTickResetIndex(0, 20);
     out_txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("#include <ParModelica/explicit/openclrt/OCLRuntimeUtil.cl>\n")).clone(), (literal!("\n")).clone(), (literal!("// ParModelica Parallel Function headers.\n")).clone()], lastHasNewLine: true }))?;
@@ -16044,7 +16044,7 @@ fn fun_613(mut in_txt: Tpl::Text, mut in_a_lit: Arc<DAE::Exp>, mut in_a_index: T
     Ok((out_txt, out_a_index))
 }
 
-pub fn literalExpConstBoxedVal(mut txt: Tpl::Text, mut a_lit: Arc<DAE::Exp>, mut a_index: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn literalExpConstBoxedVal(mut txt: Tpl::Text, mut a_lit: Arc<DAE::Exp>, mut a_index: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_index: Tpl::Text;
     let mut l_name: Tpl::Text;
@@ -16054,7 +16054,7 @@ pub fn literalExpConstBoxedVal(mut txt: Tpl::Text, mut a_lit: Arc<DAE::Exp>, mut
     Ok((out_txt, out_a_index))
 }
 
-pub fn literalExpConstBoxedValPreLit(mut in_txt: Tpl::Text, mut in_a_lit: Arc<DAE::Exp>, mut in_a_index: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn literalExpConstBoxedValPreLit(mut in_txt: Tpl::Text, mut in_a_lit: Arc<DAE::Exp>, mut in_a_index: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
     '__tco: loop {
         ::match_deref::match_deref! { match &((in_txt.clone(), in_a_lit.clone(), in_a_index.clone())) {
         (txt, Deref @ DAE::Exp::RCONST { real: i_lit_real }, a_index) => {
@@ -16090,7 +16090,7 @@ pub fn literalExpConstBoxedValPreLit(mut in_txt: Tpl::Text, mut in_a_lit: Arc<DA
     }
 }
 
-pub fn literalExpConstArrayVal(mut in_txt: Tpl::Text, mut in_a_lit: Arc<DAE::Exp>) -> Result<Tpl::Text> {
+pub(crate) fn literalExpConstArrayVal(mut in_txt: Tpl::Text, mut in_a_lit: Arc<DAE::Exp>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_lit.clone())) {
         (txt, Deref @ DAE::Exp::SCONST { string: i_string }) => {
@@ -16197,7 +16197,7 @@ fn fun_619(mut in_txt: Tpl::Text, mut in_a_instDims: Arc<metamodelica::List<Arc<
     Ok(out_txt)
 }
 
-pub fn varType(mut in_txt: Tpl::Text, mut in_a_var: Arc<SimCodeFunction::Variable::Variable>) -> Result<Tpl::Text> {
+pub(crate) fn varType(mut in_txt: Tpl::Text, mut in_a_var: Arc<SimCodeFunction::Variable::Variable>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_var.clone())) {
         (txt, Deref @ SimCodeFunction::Variable::VARIABLE { parallelism: DAE::VarParallelism::NON_PARALLEL { .. }, instDims: i_instDims, ty: i_var_ty, .. }) => {
@@ -16235,7 +16235,7 @@ pub fn varType(mut in_txt: Tpl::Text, mut in_a_var: Arc<SimCodeFunction::Variabl
     Ok(out_txt)
 }
 
-pub fn varTypeBoxed(mut in_txt: Tpl::Text, mut in_a_var: Arc<SimCodeFunction::Variable::Variable>) -> Result<Tpl::Text> {
+pub(crate) fn varTypeBoxed(mut in_txt: Tpl::Text, mut in_a_var: Arc<SimCodeFunction::Variable::Variable>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_var.clone())) {
         (txt, Deref @ SimCodeFunction::Variable::VARIABLE { name: _, .. }) => {
@@ -16472,7 +16472,7 @@ fn fun_627(mut in_txt: Tpl::Text, mut in_mArg: SimCodeVar::SimVar, mut in_a_cref
     Ok(out_txt)
 }
 
-pub fn crefToOMSICStr(mut in_txt: Tpl::Text, mut in_a_cref: Arc<DAE::ComponentRef>, mut in_a_hashTable: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, SimCodeVar::SimVar)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(SimCodeVar::SimVar) -> Result<ArcStr> + 'static>))) -> Result<Tpl::Text> {
+pub(crate) fn crefToOMSICStr(mut in_txt: Tpl::Text, mut in_a_cref: Arc<DAE::ComponentRef>, mut in_a_hashTable: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, SimCodeVar::SimVar)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(SimCodeVar::SimVar) -> Result<ArcStr> + 'static>))) -> Result<Tpl::Text> {
     '__tco: loop {
         ::match_deref::match_deref! { match &((in_txt.clone(), in_a_cref.clone(), in_a_hashTable.clone())) {
         (txt, Deref @ DAE::ComponentRef::CREF_QUAL { ident: Deref @ "$START", componentRef: i_componentRef, .. }, a_hashTable) => {
@@ -16496,7 +16496,7 @@ pub fn crefToOMSICStr(mut in_txt: Tpl::Text, mut in_a_cref: Arc<DAE::ComponentRe
     }
 }
 
-pub fn expTypeRW(mut in_txt: Tpl::Text, mut in_a_type: Arc<DAE::Type>) -> Result<Tpl::Text> {
+pub(crate) fn expTypeRW(mut in_txt: Tpl::Text, mut in_a_type: Arc<DAE::Type>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_type.clone())) {
         (txt, Deref @ DAE::Type::T_INTEGER { varLst: _ }) => {
@@ -16677,7 +16677,7 @@ pub fn expTypeShort(mut in_txt: Tpl::Text, mut in_a_type: Arc<DAE::Type>) -> Res
     }
 }
 
-pub fn mmcTypeShort(mut in_txt: Tpl::Text, mut in_a_type: Arc<DAE::Type>) -> Result<Tpl::Text> {
+pub(crate) fn mmcTypeShort(mut in_txt: Tpl::Text, mut in_a_type: Arc<DAE::Type>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_type.clone())) {
         (txt, Deref @ DAE::Type::T_INTEGER { varLst: _ }) => {
@@ -16796,7 +16796,7 @@ fn fun_633(mut in_txt: Tpl::Text, mut in_a_array: bool, mut in_a_ty: Arc<DAE::Ty
     Ok(out_txt)
 }
 
-pub fn expType(mut txt: Tpl::Text, mut a_ty: Arc<DAE::Type>, mut a_array: bool) -> Result<Tpl::Text> {
+pub(crate) fn expType(mut txt: Tpl::Text, mut a_ty: Arc<DAE::Type>, mut a_array: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = fun_633(txt.clone(), a_array.clone(), a_ty.clone())?;
     Ok(out_txt)
@@ -16808,13 +16808,13 @@ pub fn expTypeModelica(mut txt: Tpl::Text, mut a_ty: Arc<DAE::Type>) -> Result<T
     Ok(out_txt)
 }
 
-pub fn expTypeArray(mut txt: Tpl::Text, mut a_ty: Arc<DAE::Type>) -> Result<Tpl::Text> {
+pub(crate) fn expTypeArray(mut txt: Tpl::Text, mut a_ty: Arc<DAE::Type>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = expTypeFlag(txt.clone(), a_ty.clone(), 3)?;
     Ok(out_txt)
 }
 
-pub fn expTypeArrayIf(mut txt: Tpl::Text, mut a_ty: Arc<DAE::Type>) -> Result<Tpl::Text> {
+pub(crate) fn expTypeArrayIf(mut txt: Tpl::Text, mut a_ty: Arc<DAE::Type>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = expTypeFlag(txt.clone(), a_ty.clone(), 4)?;
     Ok(out_txt)
@@ -16826,19 +16826,19 @@ pub fn expTypeFromExpShort(mut txt: Tpl::Text, mut a_exp: Arc<DAE::Exp>) -> Resu
     Ok(out_txt)
 }
 
-pub fn expTypeFromExpModelica(mut txt: Tpl::Text, mut a_exp: Arc<DAE::Exp>) -> Result<Tpl::Text> {
+pub(crate) fn expTypeFromExpModelica(mut txt: Tpl::Text, mut a_exp: Arc<DAE::Exp>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = expTypeFromExpFlag(txt.clone(), a_exp.clone(), 2)?;
     Ok(out_txt)
 }
 
-pub fn expTypeFromExpArray(mut txt: Tpl::Text, mut a_exp: Arc<DAE::Exp>) -> Result<Tpl::Text> {
+pub(crate) fn expTypeFromExpArray(mut txt: Tpl::Text, mut a_exp: Arc<DAE::Exp>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = expTypeFromExpFlag(txt.clone(), a_exp.clone(), 3)?;
     Ok(out_txt)
 }
 
-pub fn expTypeFromExpArrayIf(mut txt: Tpl::Text, mut a_exp: Arc<DAE::Exp>) -> Result<Tpl::Text> {
+pub(crate) fn expTypeFromExpArrayIf(mut txt: Tpl::Text, mut a_exp: Arc<DAE::Exp>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = expTypeFromExpFlag(txt.clone(), a_exp.clone(), 4)?;
     Ok(out_txt)
@@ -17008,7 +17008,7 @@ fn fun_647(mut in_txt: Tpl::Text, mut in_a_flag: i32, mut in_a_ty: Arc<DAE::Type
     Ok(out_txt)
 }
 
-pub fn expTypeFlag(mut txt: Tpl::Text, mut a_ty: Arc<DAE::Type>, mut a_flag: i32) -> Result<Tpl::Text> {
+pub(crate) fn expTypeFlag(mut txt: Tpl::Text, mut a_ty: Arc<DAE::Type>, mut a_flag: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = fun_647(txt.clone(), a_flag.clone(), a_ty.clone())?;
     Ok(out_txt)
@@ -17202,7 +17202,7 @@ fn fun_660(mut in_txt: Tpl::Text, mut in_a_flag: i32) -> Result<Tpl::Text> {
     Ok(out_txt)
 }
 
-pub fn expTypeFromExpFlag(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_flag: i32) -> Result<Tpl::Text> {
+pub(crate) fn expTypeFromExpFlag(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_flag: i32) -> Result<Tpl::Text> {
     '__tco: loop {
         ::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone(), in_a_flag.clone())) {
         (txt, Deref @ DAE::Exp::ICONST { integer: _ }, a_flag) => {
@@ -17410,7 +17410,7 @@ fn fun_664(mut in_txt: Tpl::Text, mut in_a_flag: i32) -> Result<Tpl::Text> {
     Ok(out_txt)
 }
 
-pub fn expTypeFromOpFlag(mut in_txt: Tpl::Text, mut in_a_op: DAE::Operator, mut in_a_flag: i32) -> Result<Tpl::Text> {
+pub(crate) fn expTypeFromOpFlag(mut in_txt: Tpl::Text, mut in_a_op: DAE::Operator, mut in_a_flag: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_op.clone(), in_a_flag.clone()) {
         (mut txt, DAE::Operator::ADD { ty: ref i_o_ty }, mut a_flag) => {
@@ -17560,7 +17560,7 @@ fn fun_666(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_integer: i32) -> R
     Ok(out_txt)
 }
 
-pub fn dimension(mut in_txt: Tpl::Text, mut in_a_d: Arc<DAE::Dimension>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn dimension(mut in_txt: Tpl::Text, mut in_a_d: Arc<DAE::Dimension>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -17705,7 +17705,7 @@ fn fun_670(mut in_txt: Tpl::Text, mut in_a_pat: Arc<DAE::Pattern>, mut in_a_assi
     Ok((out_txt, out_a_assignments1, out_a_varDecls))
 }
 
-pub fn algStmtAssignPattern(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>, mut in_a_context: SimCodeFunction::Context, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn algStmtAssignPattern(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>, mut in_a_context: SimCodeFunction::Context, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_auxFunction: Tpl::Text;
@@ -18165,7 +18165,7 @@ fn lm_682(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Pattern
     Ok((txt, a_assignments, a_onPatternFail, a_varDecls))
 }
 
-pub fn patternMatch(mut in_txt: Tpl::Text, mut in_a_pat: Arc<DAE::Pattern>, mut in_a_rhs: Tpl::Text, mut in_a_onPatternFail: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_assignments: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn patternMatch(mut in_txt: Tpl::Text, mut in_a_pat: Arc<DAE::Pattern>, mut in_a_rhs: Tpl::Text, mut in_a_onPatternFail: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_assignments: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     '__tco: loop {
         ::match_deref::match_deref! { match &((in_txt.clone(), in_a_pat.clone(), in_a_rhs.clone(), in_a_onPatternFail.clone(), in_a_varDecls.clone(), in_a_assignments.clone())) {
         (txt, Deref @ DAE::Pattern::PAT_WILD { .. }, a_rhs, a_onPatternFail, a_varDecls, a_assignments) => {
@@ -18592,7 +18592,7 @@ pub fn assertCommon(mut txt: Tpl::Text, mut a_condition: Arc<DAE::Exp>, mut a_me
     Ok((out_txt, out_a_varDecls, out_a_auxFunction))
 }
 
-pub fn expToFormatString(mut txt: Tpl::Text, mut a_exp: Arc<DAE::Exp>, mut a_context: SimCodeFunction::Context, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn expToFormatString(mut txt: Tpl::Text, mut a_exp: Arc<DAE::Exp>, mut a_context: SimCodeFunction::Context, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -18656,7 +18656,7 @@ fn fun_695(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mu
     Ok(out_txt)
 }
 
-pub fn assertCommonVar(mut txt: Tpl::Text, mut a_condVar: Tpl::Text, mut a_msgVar: Tpl::Text, mut a_context: SimCodeFunction::Context, mut a_varDecls: Tpl::Text, mut a_info: SourceInfo) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn assertCommonVar(mut txt: Tpl::Text, mut a_condVar: Tpl::Text, mut a_msgVar: Tpl::Text, mut a_context: SimCodeFunction::Context, mut a_varDecls: Tpl::Text, mut a_info: SourceInfo) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_condVar: Tpl::Text;
     let mut out_a_msgVar: Tpl::Text;
@@ -18913,7 +18913,7 @@ fn fun_703(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>, mut in_a_
     Ok((out_txt, out_a_preExp, out_a_varDecls, out_a_auxFunction))
 }
 
-pub fn functionContextCref(mut txt: Tpl::Text, mut a_cr: Arc<DAE::ComponentRef>, mut a_context: SimCodeFunction::Context, mut a_pref: Tpl::Text, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn functionContextCref(mut txt: Tpl::Text, mut a_cr: Arc<DAE::ComponentRef>, mut a_context: SimCodeFunction::Context, mut a_pref: Tpl::Text, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_pref: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
@@ -19074,7 +19074,7 @@ fn fun_707(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>, mut in_a_
     Ok((out_txt, out_a_preExp, out_a_varDecls, out_a_auxFunction))
 }
 
-pub fn functionContextCrefFirstIdentNoUnderscore(mut txt: Tpl::Text, mut a_cr: Arc<DAE::ComponentRef>, mut a_context: SimCodeFunction::Context, mut a_pref: Tpl::Text, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn functionContextCrefFirstIdentNoUnderscore(mut txt: Tpl::Text, mut a_cr: Arc<DAE::ComponentRef>, mut a_context: SimCodeFunction::Context, mut a_pref: Tpl::Text, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_pref: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
@@ -19255,7 +19255,7 @@ fn fun_714(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mu
     Ok(out_txt)
 }
 
-pub fn jacCrefs(mut txt: Tpl::Text, mut a_cr: Arc<DAE::ComponentRef>, mut a_context: SimCodeFunction::Context, mut a_ix: i32) -> Result<Tpl::Text> {
+pub(crate) fn jacCrefs(mut txt: Tpl::Text, mut a_cr: Arc<DAE::ComponentRef>, mut a_context: SimCodeFunction::Context, mut a_ix: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = fun_714(txt.clone(), a_context.clone(), a_cr.clone(), a_ix.clone())?;
     Ok(out_txt)
@@ -19281,7 +19281,7 @@ fn fun_716(mut in_txt: Tpl::Text, mut in_a_isPre: bool, mut in_a_cr: Arc<DAE::Co
     Ok((out_txt, out_a_auxFunction))
 }
 
-pub fn contextCrefIsPre(mut txt: Tpl::Text, mut a_cr: Arc<DAE::ComponentRef>, mut a_context: SimCodeFunction::Context, mut a_auxFunction: Tpl::Text, mut a_isPre: bool) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn contextCrefIsPre(mut txt: Tpl::Text, mut a_cr: Arc<DAE::ComponentRef>, mut a_context: SimCodeFunction::Context, mut a_auxFunction: Tpl::Text, mut a_isPre: bool) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_auxFunction: Tpl::Text;
     (out_txt, out_a_auxFunction) = fun_716(txt.clone(), a_isPre.clone(), a_cr.clone(), a_context.clone(), a_auxFunction.clone())?;
@@ -19308,7 +19308,7 @@ fn fun_718(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mu
     Ok(out_txt)
 }
 
-pub fn contextIteratorName(mut txt: Tpl::Text, mut a_name: ArcStr, mut a_context: SimCodeFunction::Context) -> Result<Tpl::Text> {
+pub(crate) fn contextIteratorName(mut txt: Tpl::Text, mut a_name: ArcStr, mut a_context: SimCodeFunction::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = fun_718(txt.clone(), a_context.clone(), (a_name.clone()).clone())?;
     Ok(out_txt)
@@ -19392,7 +19392,7 @@ fn fun_721(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>, mut in_a_
     Ok((out_txt, out_a_sub))
 }
 
-pub fn crefOld(mut txt: Tpl::Text, mut a_cr: Arc<DAE::ComponentRef>, mut a_ix: i32) -> Result<Tpl::Text> {
+pub(crate) fn crefOld(mut txt: Tpl::Text, mut a_cr: Arc<DAE::ComponentRef>, mut a_ix: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut l_sub: Tpl::Text;
     l_sub = Tpl::emptyTxt.clone();
@@ -19428,7 +19428,7 @@ pub fn crefPre(mut txt: Tpl::Text, mut a_cr: Arc<DAE::ComponentRef>) -> Result<T
     Ok(out_txt)
 }
 
-pub fn crefDefine(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>) -> Result<Tpl::Text> {
+pub(crate) fn crefDefine(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone())) {
         (txt, i_cr @ Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "xloc", .. }) => {
@@ -19458,7 +19458,7 @@ pub fn crefDefine(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>) ->
     Ok(out_txt)
 }
 
-pub fn crefNonSimVar(mut txt: Tpl::Text, mut a_cr: Arc<DAE::ComponentRef>) -> Result<Tpl::Text> {
+pub(crate) fn crefNonSimVar(mut txt: Tpl::Text, mut a_cr: Arc<DAE::ComponentRef>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut l_auxFunction: Tpl::Text;
     let mut l_varDecls: Tpl::Text;
@@ -19646,7 +19646,7 @@ fn fun_730(mut in_txt: Tpl::Text, mut in_mArg: SimCodeVar::SimVar, mut in_a_cr: 
     Ok((out_txt, out_a_sub))
 }
 
-pub fn crefToCStr(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>, mut in_a_ix: i32, mut in_a_isPre: bool, mut in_a_isStart: bool, mut in_a_sub: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn crefToCStr(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>, mut in_a_ix: i32, mut in_a_isPre: bool, mut in_a_isStart: bool, mut in_a_sub: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
     '__tco: loop {
         ::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone(), in_a_ix.clone(), in_a_isPre.clone(), in_a_isStart.clone(), in_a_sub.clone())) {
         (txt, Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "time", .. }, _, _, _, a_sub) => {
@@ -19708,7 +19708,7 @@ pub fn crefToIndex(mut txt: Tpl::Text, mut a_cr: Arc<DAE::ComponentRef>) -> Resu
     Ok(out_txt)
 }
 
-pub fn crefTypeOMSIC(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>) -> Result<Tpl::Text> {
+pub(crate) fn crefTypeOMSIC(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>) -> Result<Tpl::Text> {
     '__tco: loop {
         ::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone())) {
         (txt, Deref @ DAE::ComponentRef::CREF_IDENT { identType: i_identType, .. }) => {
@@ -19728,7 +19728,7 @@ pub fn crefTypeOMSIC(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>)
     }
 }
 
-pub fn crefTypeNameOMSIC(mut in_txt: Tpl::Text, mut in_a_type: Arc<DAE::Type>) -> Result<Tpl::Text> {
+pub(crate) fn crefTypeNameOMSIC(mut in_txt: Tpl::Text, mut in_a_type: Arc<DAE::Type>) -> Result<Tpl::Text> {
     '__tco: loop {
         ::match_deref::match_deref! { match &((in_txt.clone(), in_a_type.clone())) {
         (txt, Deref @ DAE::Type::T_INTEGER { varLst: _ }) => {
@@ -19804,7 +19804,7 @@ fn fun_736(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mu
     Ok((out_txt, out_a_sub))
 }
 
-pub fn contextArrayCref(mut txt: Tpl::Text, mut a_cr: Arc<DAE::ComponentRef>, mut a_context: SimCodeFunction::Context) -> Result<Tpl::Text> {
+pub(crate) fn contextArrayCref(mut txt: Tpl::Text, mut a_cr: Arc<DAE::ComponentRef>, mut a_context: SimCodeFunction::Context) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut l_sub: Tpl::Text;
     l_sub = Tpl::emptyTxt.clone();
@@ -19812,7 +19812,7 @@ pub fn contextArrayCref(mut txt: Tpl::Text, mut a_cr: Arc<DAE::ComponentRef>, mu
     Ok(out_txt)
 }
 
-pub fn arrayCrefStr(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>) -> Result<Tpl::Text> {
+pub(crate) fn arrayCrefStr(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>) -> Result<Tpl::Text> {
     '__tco: loop {
         ::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone())) {
         (txt, Deref @ DAE::ComponentRef::CREF_IDENT { ident: i_ident, .. }) => {
@@ -19838,7 +19838,7 @@ pub fn arrayCrefStr(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>) 
     }
 }
 
-pub fn crefFunctionName(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>) -> Result<Tpl::Text> {
+pub(crate) fn crefFunctionName(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>) -> Result<Tpl::Text> {
     '__tco: loop {
         ::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone())) {
         (txt, Deref @ DAE::ComponentRef::CREF_IDENT { ident: i_ident, .. }) => {
@@ -20090,7 +20090,7 @@ pub fn tempDecl(mut txt: Tpl::Text, mut a_ty: ArcStr, mut a_varDecls: Tpl::Text)
     Ok((out_txt, out_a_varDecls))
 }
 
-pub fn tempDeclArray(mut txt: Tpl::Text, mut a_ty: ArcStr, mut a_len: Tpl::Text, mut a_elts: Tpl::Text, mut a_varDecls: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn tempDeclArray(mut txt: Tpl::Text, mut a_ty: ArcStr, mut a_len: Tpl::Text, mut a_elts: Tpl::Text, mut a_varDecls: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_len: Tpl::Text;
     let mut out_a_elts: Tpl::Text;
@@ -20185,7 +20185,7 @@ fn fun_752(mut in_txt: Tpl::Text, mut in_a_ty: ArcStr, mut in_a_varDecls: Tpl::T
     Ok((out_txt, out_a_varDecls))
 }
 
-pub fn tempDeclZero(mut txt: Tpl::Text, mut a_ty: ArcStr, mut a_varDecls: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn tempDeclZero(mut txt: Tpl::Text, mut a_ty: ArcStr, mut a_varDecls: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut l_newVar: Tpl::Text;
@@ -20208,7 +20208,7 @@ fn fun_754(mut in_txt: Tpl::Text, mut in_a_matchTy: DAE::MatchType) -> Result<Tp
     Ok(out_txt)
 }
 
-pub fn tempDeclMatchInput(mut txt: Tpl::Text, mut a_matchTy: DAE::MatchType, mut a_ty: ArcStr, mut a_startIndex: ArcStr, mut a_index: ArcStr, mut a_varDecls: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn tempDeclMatchInput(mut txt: Tpl::Text, mut a_matchTy: DAE::MatchType, mut a_ty: ArcStr, mut a_startIndex: ArcStr, mut a_index: ArcStr, mut a_varDecls: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut l_ix: Tpl::Text;
@@ -20225,7 +20225,7 @@ pub fn tempDeclMatchInput(mut txt: Tpl::Text, mut a_matchTy: DAE::MatchType, mut
     Ok((out_txt, out_a_varDecls))
 }
 
-pub fn getTempDeclMatchInputName(mut txt: Tpl::Text, mut a_startIndex: ArcStr, mut a_index: i32) -> Result<Tpl::Text> {
+pub(crate) fn getTempDeclMatchInputName(mut txt: Tpl::Text, mut a_startIndex: ArcStr, mut a_index: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("tmp")).clone() }))?;
     out_txt = Tpl::writeStr(out_txt.clone(), (a_startIndex.clone()).clone())?;
@@ -20285,7 +20285,7 @@ fn fun_757(mut in_txt: Tpl::Text, mut in_a_ty: ArcStr, mut in_a_varDecls: Tpl::T
     Ok((out_txt, out_a_varDecls))
 }
 
-pub fn tempDeclMatchOutput(mut txt: Tpl::Text, mut a_ty: ArcStr, mut a_prefix: ArcStr, mut a_startIndex: ArcStr, mut a_index: ArcStr, mut a_varDecls: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn tempDeclMatchOutput(mut txt: Tpl::Text, mut a_ty: ArcStr, mut a_prefix: ArcStr, mut a_startIndex: ArcStr, mut a_index: ArcStr, mut a_varDecls: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     let mut l_newVar: Tpl::Text;
@@ -20346,7 +20346,7 @@ fn fun_759(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_prefix: ArcStr, 
     Ok(out_txt)
 }
 
-pub fn getTempDeclMatchOutputName(mut txt: Tpl::Text, mut a_outputs: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut a_prefix: ArcStr, mut a_startIndex: ArcStr, mut a_index: i32) -> Result<Tpl::Text> {
+pub(crate) fn getTempDeclMatchOutputName(mut txt: Tpl::Text, mut a_outputs: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut a_prefix: ArcStr, mut a_startIndex: ArcStr, mut a_index: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut str_3: ArcStr;
     let mut l_newVar: Tpl::Text;
@@ -20753,7 +20753,7 @@ fn fun_765(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_res1: Tpl::Text, m
     Ok((out_txt, out_a_preExp, out_a_varDecls))
 }
 
-pub fn daeExpAsLValue(mut txt: Tpl::Text, mut a_exp: Arc<DAE::Exp>, mut a_context: SimCodeFunction::Context, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeExpAsLValue(mut txt: Tpl::Text, mut a_exp: Arc<DAE::Exp>, mut a_context: SimCodeFunction::Context, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -20817,7 +20817,7 @@ fn fun_767(mut in_txt: Tpl::Text, mut in_mArg: Arc<DAE::Type>, mut in_a_exp: Arc
     Ok((out_txt, out_a_preExp, out_a_varDecls, out_a_auxFunction))
 }
 
-pub fn daeExternalCExp(mut txt: Tpl::Text, mut a_exp: Arc<DAE::Exp>, mut a_context: SimCodeFunction::Context, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeExternalCExp(mut txt: Tpl::Text, mut a_exp: Arc<DAE::Exp>, mut a_context: SimCodeFunction::Context, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -20899,7 +20899,7 @@ fn fun_769(mut in_txt: Tpl::Text, mut in_mArg: Arc<DAE::Type>, mut in_a_exp: Arc
     Ok((out_txt, out_a_preExp, out_a_varDecls, out_a_auxFunction))
 }
 
-pub fn daeExternalF77Exp(mut txt: Tpl::Text, mut a_exp: Arc<DAE::Exp>, mut a_context: SimCodeFunction::Context, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeExternalF77Exp(mut txt: Tpl::Text, mut a_exp: Arc<DAE::Exp>, mut a_context: SimCodeFunction::Context, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -20951,7 +20951,7 @@ fn fun_771(mut in_txt: Tpl::Text, mut in_mArg: i32, mut in_a_escstr: Tpl::Text, 
     Ok((out_txt, out_a_varDecls))
 }
 
-pub fn daeExpSconst(mut txt: Tpl::Text, mut a_string: ArcStr, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeExpSconst(mut txt: Tpl::Text, mut a_string: ArcStr, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -20966,7 +20966,7 @@ pub fn daeExpSconst(mut txt: Tpl::Text, mut a_string: ArcStr, mut a_preExp: Tpl:
     Ok((out_txt, out_a_preExp, out_a_varDecls))
 }
 
-pub fn daeExpList(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeExpList(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -20997,7 +20997,7 @@ pub fn daeExpList(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_c
     Ok((out_txt, out_a_preExp, out_a_varDecls, out_a_auxFunction))
 }
 
-pub fn daeExpListToCons(mut in_txt: Tpl::Text, mut in_a_listItems: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeExpListToCons(mut in_txt: Tpl::Text, mut in_a_listItems: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -21029,7 +21029,7 @@ pub fn daeExpListToCons(mut in_txt: Tpl::Text, mut in_a_listItems: Arc<metamodel
     Ok((out_txt, out_a_preExp, out_a_varDecls, out_a_auxFunction))
 }
 
-pub fn daeExpCons(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeExpCons(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -21086,7 +21086,7 @@ fn lm_776(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Type>>>
     Ok(txt)
 }
 
-pub fn tempDeclTuple(mut in_txt: Tpl::Text, mut in_a_inType: Arc<DAE::Type>, mut in_a_varDecls: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn tempDeclTuple(mut in_txt: Tpl::Text, mut in_a_inType: Arc<DAE::Type>, mut in_a_varDecls: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_inType.clone(), in_a_varDecls.clone())) {
@@ -21151,7 +21151,7 @@ fn lm_778(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>,
     Ok((txt, a_auxFunction, a_varDecls, a_preExp))
 }
 
-pub fn daeExpTuple(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeExpTuple(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -21217,7 +21217,7 @@ fn fun_781(mut in_txt: Tpl::Text, mut in_a_args: Tpl::Text) -> Result<Tpl::Text>
     Ok(out_txt)
 }
 
-pub fn daeExpMetaTuple(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeExpMetaTuple(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -21257,7 +21257,7 @@ pub fn daeExpMetaTuple(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut i
     Ok((out_txt, out_a_preExp, out_a_varDecls, out_a_auxFunction))
 }
 
-pub fn daeExpMetaOption(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeExpMetaOption(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -21332,7 +21332,7 @@ fn fun_785(mut in_txt: Tpl::Text, mut in_a_args: Arc<metamodelica::List<Arc<DAE:
     Ok((out_txt, out_a_auxFunction, out_a_varDecls, out_a_preExp))
 }
 
-pub fn daeExpMetarecordcall(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeExpMetarecordcall(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -21398,7 +21398,7 @@ fn fun_787(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_numVariables: i32)
     Ok(out_txt)
 }
 
-pub fn daeExpMetaHelperBoxStart(mut txt: Tpl::Text, mut a_numVariables: i32) -> Result<Tpl::Text> {
+pub(crate) fn daeExpMetaHelperBoxStart(mut txt: Tpl::Text, mut a_numVariables: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut ret_0: bool;
     ret_0 = intGt(a_numVariables.clone(), 20);
@@ -21450,7 +21450,7 @@ fn lm_790(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Subscri
     Ok(txt)
 }
 
-pub fn subscriptsToMStr(mut in_txt: Tpl::Text, mut in_a_subscripts: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<Tpl::Text> {
+pub(crate) fn subscriptsToMStr(mut in_txt: Tpl::Text, mut in_a_subscripts: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_subscripts.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
@@ -21504,7 +21504,7 @@ fn fun_792(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>) -> Result<Tpl::Te
     Ok(out_txt)
 }
 
-pub fn subscriptToMStr(mut in_txt: Tpl::Text, mut in_a_subscript: Arc<DAE::Subscript>) -> Result<Tpl::Text> {
+pub(crate) fn subscriptToMStr(mut in_txt: Tpl::Text, mut in_a_subscript: Arc<DAE::Subscript>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_subscript.clone())) {
         (txt, Deref @ DAE::Subscript::SLICE { exp: Deref @ DAE::Exp::ICONST { integer: i_i } }) => {
@@ -21604,7 +21604,7 @@ fn fun_796(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mu
     Ok((out_txt, out_a_auxFunction, out_a_varDecls, out_a_preExp))
 }
 
-pub fn daeExpCrefRhs(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeExpCrefRhs(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -21670,7 +21670,7 @@ pub fn daeExpCrefRhs(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_
     Ok((out_txt, out_a_preExp, out_a_varDecls, out_a_auxFunction))
 }
 
-pub fn constVarOrDaeExp(mut in_txt: Tpl::Text, mut in_a_var: Arc<DAE::Var>, mut in_a_cr: Arc<DAE::ComponentRef>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn constVarOrDaeExp(mut in_txt: Tpl::Text, mut in_a_var: Arc<DAE::Var>, mut in_a_cr: Arc<DAE::ComponentRef>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -22024,7 +22024,7 @@ fn fun_806(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_auxFunction: Tpl::
     Ok((out_txt, out_a_auxFunction, out_a_varDecls, out_a_preExp))
 }
 
-pub fn daeExpCrefRhsSimContext(mut in_txt: Tpl::Text, mut in_a_ecr: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeExpCrefRhsSimContext(mut in_txt: Tpl::Text, mut in_a_ecr: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -22249,7 +22249,7 @@ fn fun_811(mut in_txt: Tpl::Text, mut in_a_ecr: Arc<DAE::Exp>, mut in_a_sub: Tpl
     Ok((out_txt, out_a_sub, out_a_auxFunction, out_a_varDecls, out_a_preExp))
 }
 
-pub fn daeExpCrefRhsFunContext(mut txt: Tpl::Text, mut a_ecr: Arc<DAE::Exp>, mut a_context: SimCodeFunction::Context, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeExpCrefRhsFunContext(mut txt: Tpl::Text, mut a_ecr: Arc<DAE::Exp>, mut a_context: SimCodeFunction::Context, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -22428,7 +22428,7 @@ fn fun_816(mut in_txt: Tpl::Text, mut in_a_ecr: Arc<DAE::Exp>, mut in_a_sub: Tpl
     Ok((out_txt, out_a_sub, out_a_auxFunction, out_a_varDecls, out_a_preExp))
 }
 
-pub fn daeExpCrefRhsFunContextParallel(mut txt: Tpl::Text, mut a_ecr: Arc<DAE::Exp>, mut a_context: SimCodeFunction::Context, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeExpCrefRhsFunContextParallel(mut txt: Tpl::Text, mut a_ecr: Arc<DAE::Exp>, mut a_context: SimCodeFunction::Context, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -22539,7 +22539,7 @@ fn fun_821(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_subs: Arc<metamo
     Ok(out_txt)
 }
 
-pub fn arrayScalarRhs(mut txt: Tpl::Text, mut a_ty: Arc<DAE::Type>, mut a_subs: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut a_arrName: ArcStr, mut a_context: SimCodeFunction::Context, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn arrayScalarRhs(mut txt: Tpl::Text, mut a_ty: Arc<DAE::Type>, mut a_subs: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut a_arrName: ArcStr, mut a_context: SimCodeFunction::Context, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -22839,7 +22839,7 @@ fn fun_830(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_varDecls: Tpl::Tex
     Ok((out_txt, out_a_varDecls, out_a_preExp, out_a_auxFunction))
 }
 
-pub fn daeExpCrefLhsSimContext(mut in_txt: Tpl::Text, mut in_a_ecr: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text, mut in_a_isPre: bool) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeExpCrefLhsSimContext(mut in_txt: Tpl::Text, mut in_a_ecr: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text, mut in_a_isPre: bool) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -22941,7 +22941,7 @@ fn fun_832(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_dims: Arc<metamode
     Ok((out_txt, out_a_preExp, out_a_varDecls, out_a_auxFunction))
 }
 
-pub fn indexSubs(mut txt: Tpl::Text, mut a_dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>, mut a_subs: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut a_context: SimCodeFunction::Context, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn indexSubs(mut txt: Tpl::Text, mut a_dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>, mut a_subs: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut a_context: SimCodeFunction::Context, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -23003,7 +23003,7 @@ fn fun_834(mut in_txt: Tpl::Text, mut in_a_subs: Arc<metamodelica::List<Arc<DAE:
     Ok((out_txt, out_a_preExp, out_a_varDecls, out_a_auxFunction))
 }
 
-pub fn indexSubRecursive(mut txt: Tpl::Text, mut a_dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>, mut a_subs: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut a_context: SimCodeFunction::Context, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn indexSubRecursive(mut txt: Tpl::Text, mut a_dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>, mut a_subs: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut a_context: SimCodeFunction::Context, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -23047,7 +23047,7 @@ fn fun_836(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mu
     Ok((out_txt, out_a_preExp, out_a_varDecls, out_a_auxFunction))
 }
 
-pub fn daeExpCrefLhsFunContext(mut txt: Tpl::Text, mut a_ecr: Arc<DAE::Exp>, mut a_context: SimCodeFunction::Context, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeExpCrefLhsFunContext(mut txt: Tpl::Text, mut a_ecr: Arc<DAE::Exp>, mut a_context: SimCodeFunction::Context, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -23117,7 +23117,7 @@ fn fun_839(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_sub: Tpl::Text, mu
     Ok((out_txt, out_a_sub, out_a_auxFunction, out_a_varDecls, out_a_preExp))
 }
 
-pub fn daeExpCrefLhsFunContextNormal(mut in_txt: Tpl::Text, mut in_a_ecr: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeExpCrefLhsFunContextNormal(mut in_txt: Tpl::Text, mut in_a_ecr: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -23258,7 +23258,7 @@ fn fun_843(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_ty: Arc<DAE::Type>
     Ok((out_txt, out_a_auxFunction, out_a_varDecls, out_a_preExp))
 }
 
-pub fn daeExpCrefLhsFunContextParModExpl(mut in_txt: Tpl::Text, mut in_a_ecr: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeExpCrefLhsFunContextParModExpl(mut in_txt: Tpl::Text, mut in_a_ecr: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -23363,7 +23363,7 @@ fn lm_846(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Subscri
     Ok((txt, a_auxFunction, a_varDecls, a_preExp))
 }
 
-pub fn daeExpCrefIndexSpec(mut txt: Tpl::Text, mut a_subs: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut a_context: SimCodeFunction::Context, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeExpCrefIndexSpec(mut txt: Tpl::Text, mut a_subs: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut a_context: SimCodeFunction::Context, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -24449,7 +24449,7 @@ fn fun_871(mut in_txt: Tpl::Text, mut in_a_operator: DAE::Operator, mut in_a_aux
     Ok((out_txt, out_a_auxFunction, out_a_preExp, out_a_varDecls))
 }
 
-pub fn daeExpBinary(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeExpBinary(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -24551,7 +24551,7 @@ fn fun_874(mut in_txt: Tpl::Text, mut in_a_operator: DAE::Operator, mut in_a_pre
     Ok((out_txt, out_a_preExp, out_a_varDecls))
 }
 
-pub fn daeExpUnary(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeExpUnary(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -24642,7 +24642,7 @@ fn fun_876(mut in_txt: Tpl::Text, mut in_a_operator: DAE::Operator, mut in_a_e2:
     Ok((out_txt, out_a_preExp, out_a_varDecls))
 }
 
-pub fn daeExpLbinary(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeExpLbinary(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -24700,7 +24700,7 @@ fn fun_878(mut in_txt: Tpl::Text, mut in_a_operator: DAE::Operator, mut in_a_e: 
     Ok((out_txt, out_a_preExp, out_a_varDecls))
 }
 
-pub fn daeExpLunary(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeExpLunary(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -25051,7 +25051,7 @@ fn fun_881(mut in_txt: Tpl::Text, mut in_a_simRel: Tpl::Text, mut in_a_preExp2: 
     Ok((out_txt, out_a_auxFunction, out_a_varDecls, out_a_preExp))
 }
 
-pub fn daeExpRelation(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeExpRelation(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -26415,7 +26415,7 @@ fn fun_918(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mu
     Ok((out_txt, out_a_auxFunction, out_a_varDecls, out_a_preExp))
 }
 
-pub fn daeExpRelationSim(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeExpRelationSim(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -26437,7 +26437,7 @@ pub fn daeExpRelationSim(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut
     Ok((out_txt, out_a_preExp, out_a_varDecls, out_a_auxFunction))
 }
 
-pub fn daeExpNominalTmp(mut txt: Tpl::Text, mut a_tmp1: ArcStr, mut a_tmp2: ArcStr, mut a_exp1: Arc<DAE::Exp>, mut a_exp2: Arc<DAE::Exp>, mut a_context: SimCodeFunction::Context, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeExpNominalTmp(mut txt: Tpl::Text, mut a_tmp1: ArcStr, mut a_tmp2: ArcStr, mut a_exp1: Arc<DAE::Exp>, mut a_exp2: Arc<DAE::Exp>, mut a_context: SimCodeFunction::Context, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -26624,7 +26624,7 @@ fn fun_927(mut in_txt: Tpl::Text, mut in_a_shortIfExp: Tpl::Text, mut in_a_eElse
     Ok((out_txt, out_a_preExp, out_a_varDecls))
 }
 
-pub fn daeExpIf(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeExpIf(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -26658,7 +26658,7 @@ pub fn daeExpIf(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_con
     Ok((out_txt, out_a_preExp, out_a_varDecls, out_a_auxFunction))
 }
 
-pub fn iteratedCrefStr(mut txt: Tpl::Text, mut a_cref: Arc<DAE::ComponentRef>) -> Result<Tpl::Text> {
+pub(crate) fn iteratedCrefStr(mut txt: Tpl::Text, mut a_cref: Arc<DAE::ComponentRef>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut ret_1: ArcStr;
     let mut txt_0: Tpl::Text;
@@ -26716,7 +26716,7 @@ fn fun_931(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_lhs: Tpl
     Ok(out_txt)
 }
 
-pub fn resultVarAssignment(mut txt: Tpl::Text, mut a_ty: Arc<DAE::Type>, mut a_lhs: Tpl::Text, mut a_rhs: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn resultVarAssignment(mut txt: Tpl::Text, mut a_ty: Arc<DAE::Type>, mut a_lhs: Tpl::Text, mut a_rhs: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_lhs: Tpl::Text;
     let mut out_a_rhs: Tpl::Text;
@@ -26750,7 +26750,7 @@ fn lm_933(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<(Arc<DAE::Exp>, 
     Ok((txt, a_auxFunction, a_varDecls, a_preExp))
 }
 
-pub fn daeExpRecord(mut in_txt: Tpl::Text, mut in_a_rec: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeExpRecord(mut in_txt: Tpl::Text, mut in_a_rec: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -27111,7 +27111,7 @@ fn fun_948(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
     Ok(out_txt)
 }
 
-pub fn daeExpPartEvalFunction(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeExpPartEvalFunction(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -29669,7 +29669,7 @@ fn fun_987(mut in_txt: Tpl::Text, mut in_a_call: Arc<DAE::Exp>, mut in_a_sub: Tp
     Ok((out_txt, out_a_sub, out_a_auxFunction, out_a_varDecls, out_a_preExp))
 }
 
-pub fn daeExpCall(mut txt: Tpl::Text, mut a_call: Arc<DAE::Exp>, mut a_context: SimCodeFunction::Context, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeExpCall(mut txt: Tpl::Text, mut a_call: Arc<DAE::Exp>, mut a_context: SimCodeFunction::Context, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -30043,7 +30043,7 @@ fn fun_1003(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
     Ok(out_txt)
 }
 
-pub fn generateTypeCast(mut txt: Tpl::Text, mut a_ty: Arc<DAE::Type>, mut a_es: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut a_isClosure: bool) -> Result<Tpl::Text> {
+pub(crate) fn generateTypeCast(mut txt: Tpl::Text, mut a_ty: Arc<DAE::Type>, mut a_es: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut a_isClosure: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut ret_5: bool;
     let mut ret_4: bool;
@@ -30181,7 +30181,7 @@ fn fun_1011(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
     Ok(out_txt)
 }
 
-pub fn generateTypeCastFromType(mut txt: Tpl::Text, mut a_ty: Arc<DAE::Type>, mut a_isClosure: bool) -> Result<Tpl::Text> {
+pub(crate) fn generateTypeCastFromType(mut txt: Tpl::Text, mut a_ty: Arc<DAE::Type>, mut a_isClosure: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut ret_5: bool;
     let mut ret_4: bool;
@@ -30382,7 +30382,7 @@ fn fun_1017(mut in_txt: Tpl::Text, mut in_a_vs: Arc<metamodelica::List<ArcStr>>,
     Ok((out_txt, out_a_postExp, out_a_auxFunction, out_a_varDecls, out_a_preExp))
 }
 
-pub fn daeExpTailCall(mut in_txt: Tpl::Text, mut in_a_es: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut in_a_vs: Arc<metamodelica::List<ArcStr>>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_postExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeExpTailCall(mut in_txt: Tpl::Text, mut in_a_es: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut in_a_vs: Arc<metamodelica::List<ArcStr>>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_postExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_postExp: Tpl::Text;
@@ -30547,7 +30547,7 @@ fn fun_1025(mut in_txt: Tpl::Text, mut in_a_params: Tpl::Text) -> Result<Tpl::Te
     Ok(out_txt)
 }
 
-pub fn daeExpArray(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeExpArray(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -31033,7 +31033,7 @@ fn fun_1034(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_typeStr: Tpl::T
     Ok((out_txt, out_a_auxFunction, out_a_preExp, out_a_varDecls))
 }
 
-pub fn daeExpMatrix(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeExpMatrix(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -31127,7 +31127,7 @@ fn lm_1036(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>
     Ok((txt, a_varLstStr, a_auxFunction, a_varDecls, a_preExp))
 }
 
-pub fn daeExpMatrixRow(mut txt: Tpl::Text, mut a_row: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut a_arrayTypeStr: ArcStr, mut a_context: SimCodeFunction::Context, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeExpMatrixRow(mut txt: Tpl::Text, mut a_row: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut a_arrayTypeStr: ArcStr, mut a_context: SimCodeFunction::Context, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -31168,7 +31168,7 @@ fn fun_1038(mut in_txt: Tpl::Text, mut in_a_step: Option<Arc<DAE::Exp>>, mut in_
     Ok((out_txt, out_a_auxFunction, out_a_varDecls, out_a_preExp))
 }
 
-pub fn daeExpRange(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeExpRange(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -31343,7 +31343,7 @@ fn fun_1042(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_preExp:
     Ok((out_txt, out_a_preExp, out_a_varDecls))
 }
 
-pub fn daeExpCast(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeExpCast(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -31419,7 +31419,7 @@ fn fun_1046(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_v: Tpl::Text) -> 
     Ok(out_txt)
 }
 
-pub fn daeExpTsub(mut in_txt: Tpl::Text, mut in_a_inExp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeExpTsub(mut in_txt: Tpl::Text, mut in_a_inExp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -31479,7 +31479,7 @@ pub fn daeExpTsub(mut in_txt: Tpl::Text, mut in_a_inExp: Arc<DAE::Exp>, mut in_a
     Ok((out_txt, out_a_preExp, out_a_varDecls, out_a_auxFunction))
 }
 
-pub fn daeExpRsub(mut in_txt: Tpl::Text, mut in_a_inExp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeExpRsub(mut in_txt: Tpl::Text, mut in_a_inExp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -31909,7 +31909,7 @@ fn fun_1057(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_inExp: Arc<DAE:
     Ok((out_txt, out_a_preExp, out_a_varDecls, out_a_auxFunction))
 }
 
-pub fn daeExpAsub(mut txt: Tpl::Text, mut a_inExp: Arc<DAE::Exp>, mut a_context: SimCodeFunction::Context, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeExpAsub(mut txt: Tpl::Text, mut a_inExp: Arc<DAE::Exp>, mut a_context: SimCodeFunction::Context, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -31922,7 +31922,7 @@ pub fn daeExpAsub(mut txt: Tpl::Text, mut a_inExp: Arc<DAE::Exp>, mut a_context:
     Ok((out_txt, out_a_preExp, out_a_varDecls, out_a_auxFunction))
 }
 
-pub fn daeSubscriptASubIndex(mut in_txt: Tpl::Text, mut in_a_sub: Arc<DAE::Subscript>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeSubscriptASubIndex(mut in_txt: Tpl::Text, mut in_a_sub: Arc<DAE::Subscript>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -31949,7 +31949,7 @@ pub fn daeSubscriptASubIndex(mut in_txt: Tpl::Text, mut in_a_sub: Arc<DAE::Subsc
     Ok((out_txt, out_a_preExp, out_a_varDecls, out_a_auxFunction))
 }
 
-pub fn daeExpASubIndex(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeExpASubIndex(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -31984,7 +31984,7 @@ pub fn daeExpASubIndex(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut i
     Ok((out_txt, out_a_preExp, out_a_varDecls, out_a_auxFunction))
 }
 
-pub fn daeExpCallPre(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeExpCallPre(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -32012,7 +32012,7 @@ pub fn daeExpCallPre(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_
     Ok((out_txt, out_a_preExp, out_a_varDecls, out_a_auxFunction))
 }
 
-pub fn daeExpSize(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeExpSize(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -35152,7 +35152,7 @@ fn fun_1178(mut in_txt: Tpl::Text, mut in_a_resTail: Tpl::Text) -> Result<Tpl::T
     Ok(out_txt)
 }
 
-pub fn daeExpReduction(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeExpReduction(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -35446,7 +35446,7 @@ fn fun_1180(mut in_txt: Tpl::Text, mut in_a_et: Arc<DAE::Type>, mut in_a_varDecl
     Ok((out_txt, out_a_varDecls))
 }
 
-pub fn daeExpMatch(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeExpMatch(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -35917,7 +35917,7 @@ fn fun_1194(mut in_txt: Tpl::Text, mut in_a_exp_matchType: DAE::MatchType, mut i
     Ok((out_txt, out_a_varDecls, out_a_startIndexInputs, out_a_startIndexOutputs, out_a_res, out_a_prefix, out_a_ix, out_a_auxFunction))
 }
 
-pub fn daeExpMatch2(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_tupleAssignExps: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut in_a_res: Tpl::Text, mut in_a_startIndexOutputs: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeExpMatch2(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_tupleAssignExps: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut in_a_res: Tpl::Text, mut in_a_startIndexOutputs: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_res: Tpl::Text;
     let mut out_a_startIndexOutputs: Tpl::Text;
@@ -36493,7 +36493,7 @@ fn lm_1213(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::MatchC
     Ok((txt, a_auxFunction))
 }
 
-pub fn daeExpMatchCases(mut txt: Tpl::Text, mut a_cases: Arc<metamodelica::List<Arc<DAE::MatchCase>>>, mut a_tupleAssignExps: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut a_ty: DAE::MatchType, mut a_ix: Tpl::Text, mut a_res: Tpl::Text, mut a_startIndexOutputs: Tpl::Text, mut a_prefix: Tpl::Text, mut a_startIndexInputs: Tpl::Text, mut a_inputs: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut a_context: SimCodeFunction::Context, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text, mut a_startTmpTickIndex: i32) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeExpMatchCases(mut txt: Tpl::Text, mut a_cases: Arc<metamodelica::List<Arc<DAE::MatchCase>>>, mut a_tupleAssignExps: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut a_ty: DAE::MatchType, mut a_ix: Tpl::Text, mut a_res: Tpl::Text, mut a_startIndexOutputs: Tpl::Text, mut a_prefix: Tpl::Text, mut a_startIndexInputs: Tpl::Text, mut a_inputs: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut a_context: SimCodeFunction::Context, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text, mut a_startTmpTickIndex: i32) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_ix: Tpl::Text;
     let mut out_a_res: Tpl::Text;
@@ -36514,7 +36514,7 @@ pub fn daeExpMatchCases(mut txt: Tpl::Text, mut a_cases: Arc<metamodelica::List<
     Ok((out_txt, out_a_ix, out_a_res, out_a_startIndexOutputs, out_a_prefix, out_a_startIndexInputs, out_a_varDecls, out_a_auxFunction))
 }
 
-pub fn switchIndex(mut in_txt: Tpl::Text, mut in_a_pattern: Arc<DAE::Pattern>, mut in_a_extraArg: i32) -> Result<Tpl::Text> {
+pub(crate) fn switchIndex(mut in_txt: Tpl::Text, mut in_a_pattern: Arc<DAE::Pattern>, mut in_a_extraArg: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_pattern.clone(), in_a_extraArg.clone())) {
         (txt, Deref @ DAE::Pattern::PAT_CALL { index: i_index, .. }, _) => {
@@ -36587,7 +36587,7 @@ fn fun_1216(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_exp: Arc<DAE::Exp
     Ok(out_txt)
 }
 
-pub fn daeExpBox(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeExpBox(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -36621,7 +36621,7 @@ pub fn daeExpBox(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_co
     Ok((out_txt, out_a_preExp, out_a_varDecls, out_a_auxFunction))
 }
 
-pub fn daeExpUnbox(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeExpUnbox(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -36651,7 +36651,7 @@ pub fn daeExpUnbox(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_
     Ok((out_txt, out_a_preExp, out_a_varDecls, out_a_auxFunction))
 }
 
-pub fn daeExpSharedLiteral(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>) -> Result<Tpl::Text> {
+pub(crate) fn daeExpSharedLiteral(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone())) {
         (txt, Deref @ DAE::Exp::SHARED_LITERAL { index: i_exp_index, .. }) => {
@@ -36668,7 +36668,7 @@ pub fn daeExpSharedLiteral(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>) -
     Ok(out_txt)
 }
 
-pub fn daeSubscript(mut in_txt: Tpl::Text, mut in_a_sub: Arc<DAE::Subscript>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeSubscript(mut in_txt: Tpl::Text, mut in_a_sub: Arc<DAE::Subscript>, mut in_a_context: SimCodeFunction::Context, mut in_a_preExp: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -36712,7 +36712,7 @@ fn fun_1221(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_res: Tpl::Text)
     Ok(out_txt)
 }
 
-pub fn daeSubscriptExp(mut txt: Tpl::Text, mut a_exp: Arc<DAE::Exp>, mut a_context: SimCodeFunction::Context, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub(crate) fn daeSubscriptExp(mut txt: Tpl::Text, mut a_exp: Arc<DAE::Exp>, mut a_context: SimCodeFunction::Context, mut a_preExp: Tpl::Text, mut a_varDecls: Tpl::Text, mut a_auxFunction: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
@@ -36727,7 +36727,7 @@ pub fn daeSubscriptExp(mut txt: Tpl::Text, mut a_exp: Arc<DAE::Exp>, mut a_conte
     Ok((out_txt, out_a_preExp, out_a_varDecls, out_a_auxFunction))
 }
 
-pub fn crefShortType(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>) -> Result<Tpl::Text> {
+pub(crate) fn crefShortType(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>) -> Result<Tpl::Text> {
     '__tco: loop {
         ::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone())) {
         (txt, Deref @ DAE::ComponentRef::CREF_IDENT { identType: i_identType, .. }) => {
@@ -37027,7 +37027,7 @@ fn fun_1232(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_ix: i32, mut in
     Ok((out_txt, out_a_sub))
 }
 
-pub fn varArrayNameValues(mut txt: Tpl::Text, mut a_var: SimCodeVar::SimVar, mut a_ix: i32, mut a_isPre: bool, mut a_isStart: bool, mut a_sub: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn varArrayNameValues(mut txt: Tpl::Text, mut a_var: SimCodeVar::SimVar, mut a_ix: i32, mut a_isPre: bool, mut a_isStart: bool, mut a_sub: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_sub: Tpl::Text;
     let mut ret_2: ArcStr;
@@ -37040,7 +37040,7 @@ pub fn varArrayNameValues(mut txt: Tpl::Text, mut a_var: SimCodeVar::SimVar, mut
     Ok((out_txt, out_a_sub))
 }
 
-pub fn varArrayName(mut in_txt: Tpl::Text, mut in_a_var: SimCodeVar::SimVar) -> Result<Tpl::Text> {
+pub(crate) fn varArrayName(mut in_txt: Tpl::Text, mut in_a_var: SimCodeVar::SimVar) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_var.clone()) {
         (mut txt, SimCodeVar::SimVar { varKind: BackendDAE::VarKind::PARAM { .. }, name: ref i_name, .. }) => {
@@ -37305,7 +37305,7 @@ fn fun_1246(mut in_txt: Tpl::Text, mut in_a_var: SimCodeVar::SimVar, mut in_a_su
     Ok(out_txt)
 }
 
-pub fn varAttributes(mut txt: Tpl::Text, mut a_var: SimCodeVar::SimVar, mut a_sub: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn varAttributes(mut txt: Tpl::Text, mut a_var: SimCodeVar::SimVar, mut a_sub: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_sub: Tpl::Text;
     let mut ret_1: bool;
@@ -37442,7 +37442,7 @@ fn fun_1252(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::T
     Ok(out_txt)
 }
 
-pub fn typeCastContext(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Text> {
+pub(crate) fn typeCastContext(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_context.clone(), in_a_ty.clone())) {
         (txt, SimCodeFunction::Context::OMSI_CONTEXT { hashTable: _ }, a_ty) => {
@@ -37497,7 +37497,7 @@ fn fun_1255(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::T
     Ok(out_txt)
 }
 
-pub fn typeCastContextInt(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Text> {
+pub(crate) fn typeCastContextInt(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_context.clone(), in_a_ty.clone())) {
         (txt, SimCodeFunction::Context::OMSI_CONTEXT { hashTable: _ }, a_ty) => {

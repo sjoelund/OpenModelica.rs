@@ -61,7 +61,7 @@ use openmodelica_util::System;
 use openmodelica_util::Util;
 use openmodelica_util_datatypes_basic::List;
 
-pub fn dumpMmaDAEStr(mut inTuple: (BackendDAE::Variables, BackendDAE::Variables, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>)) -> Result<ArcStr> {
+pub(crate) fn dumpMmaDAEStr(mut inTuple: (BackendDAE::Variables, BackendDAE::Variables, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>)) -> Result<ArcStr> {
     let mut res: ArcStr = arcstr::literal!("");
     res = ((::match_deref::match_deref! { match &(inTuple.clone()) {
         (vars, knvars, eqns, ieqns) => {
@@ -96,7 +96,7 @@ pub fn dumpMmaDAEStr(mut inTuple: (BackendDAE::Variables, BackendDAE::Variables,
     Ok(res)
 }
 
-pub fn printMmaEqnsStr(mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut inTuple: (BackendDAE::Variables, BackendDAE::Variables)) -> Result<ArcStr> {
+pub(crate) fn printMmaEqnsStr(mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut inTuple: (BackendDAE::Variables, BackendDAE::Variables)) -> Result<ArcStr> {
     let mut res: ArcStr = arcstr::literal!("");
     res = ((::match_deref::match_deref! { match &(inEqns.clone()) {
         eqns => {
@@ -110,7 +110,7 @@ pub fn printMmaEqnsStr(mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::Equati
     Ok(res)
 }
 
-pub fn printMmaEqnStr(mut eqn: Arc<BackendDAE::Equation>, mut inTuple: (BackendDAE::Variables, BackendDAE::Variables)) -> Result<ArcStr> {
+pub(crate) fn printMmaEqnStr(mut eqn: Arc<BackendDAE::Equation>, mut inTuple: (BackendDAE::Variables, BackendDAE::Variables)) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = ((::match_deref::match_deref! { match &((eqn.clone(), inTuple.clone())) {
         (Deref @ BackendDAE::Equation::EQUATION { exp: e1, scalar: e2, .. }, (vars, knvars)) => {
@@ -165,7 +165,7 @@ pub fn printMmaEqnStr(mut eqn: Arc<BackendDAE::Equation>, mut inTuple: (BackendD
 }
 
 /* Printing of equations and variables on Mathematica format*/
-pub fn printExpMmaStr(mut e: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mut knvars: BackendDAE::Variables) -> Result<ArcStr> {
+pub(crate) fn printExpMmaStr(mut e: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mut knvars: BackendDAE::Variables) -> Result<ArcStr> {
     let mut s: ArcStr;
     s = (printExp2MmaStr(e.clone(), vars.clone(), knvars.clone())?).clone();
     Ok(s)
@@ -943,7 +943,7 @@ fn dumpSingleAlgorithmStr(mut algs: Arc<DAE::Algorithm>) -> Result<ArcStr> {
     Ok(outString)
 }
 
-pub fn printMmaVarsStr(mut vars: BackendDAE::Variables) -> Result<(Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>)> {
+pub(crate) fn printMmaVarsStr(mut vars: BackendDAE::Variables) -> Result<(Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>)> {
     let mut states: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     let mut algs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     let mut outputs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -963,7 +963,7 @@ pub fn printMmaVarsStr(mut vars: BackendDAE::Variables) -> Result<(Arc<metamodel
     Ok((states, algs, outputs, inputs))
 }
 
-pub fn printMmaVarStr(mut v: BackendDAE::Var, mut selectKind: bool, mut allVars: BackendDAE::Variables) -> ArcStr {
+pub(crate) fn printMmaVarStr(mut v: BackendDAE::Var, mut selectKind: bool, mut allVars: BackendDAE::Variables) -> ArcStr {
     let mut r#str: ArcStr;
     r#str = ('mc: {
         let __mc_input = (v.clone(), selectKind.clone());
@@ -1094,7 +1094,7 @@ fn printMmaInputStr(mut param: BackendDAE::Var) -> ArcStr {
     r#str
 }
 
-pub fn printMmaParamsStr(mut knvars: BackendDAE::Variables) -> Result<(Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>)> {
+pub(crate) fn printMmaParamsStr(mut knvars: BackendDAE::Variables) -> Result<(Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>)> {
     let mut params: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     let mut inputs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     (params, inputs) = (match knvars.clone() {

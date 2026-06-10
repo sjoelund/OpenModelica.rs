@@ -90,7 +90,7 @@ pub type FuncEq<Key: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, K
 
 pub type FuncKeyString<Key: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key) -> Result<ArcStr> + 'static>;
 
-pub fn bucketToValuesSize(mut szBucket: i32) -> i32 {
+pub(crate) fn bucketToValuesSize(mut szBucket: i32) -> i32 {
     let mut szArr: i32;
     szArr = (((intReal(szBucket.clone())) * (metamodelica::OrderedFloat(0.6_f64))).0.floor() as i32);
     szArr
@@ -147,7 +147,7 @@ pub fn add<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut entry: Key, mut
     Ok(outHashSet)
 }
 
-pub fn addNoUpdCheck<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut entry: Key, mut hashSet: HashSet<Key>) -> Result<HashSet<Key>> {
+pub(crate) fn addNoUpdCheck<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut entry: Key, mut hashSet: HashSet<Key>) -> Result<HashSet<Key>> {
     let mut outHashSet: HashSet<Key>;
     outHashSet = (match (entry.clone(), hashSet.clone()) {
         (mut key, (mut hashvec, mut varr, mut bsize, _, ref fntpl @ (ref hashFunc, _, _))) => {
@@ -311,7 +311,7 @@ pub fn hashSetList<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut hashSet
     Ok(lst)
 }
 
-pub fn valueArrayList<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut inValueArray: ValueArray<Key>) -> Result<Arc<metamodelica::List<Key>>> {
+pub(crate) fn valueArrayList<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut inValueArray: ValueArray<Key>) -> Result<Arc<metamodelica::List<Key>>> {
     let mut outList: Arc<metamodelica::List<Key>> = metamodelica::nil();
     let mut arr: metamodelica::Array<Option<Key>>;
     let mut size: i32;
@@ -339,13 +339,13 @@ pub fn currentSize<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut hashSet
     sz
 }
 
-pub fn valueArrayLength<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut valueArray: ValueArray<Key>) -> i32 {
+pub(crate) fn valueArrayLength<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut valueArray: ValueArray<Key>) -> i32 {
     let mut sz: i32;
     (sz, _, _) = valueArray.clone();
     sz
 }
 
-pub fn valueArrayAdd<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut valueArray: ValueArray<Key>, mut entry: Key) -> Result<ValueArray<Key>> {
+pub(crate) fn valueArrayAdd<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut valueArray: ValueArray<Key>, mut entry: Key) -> Result<ValueArray<Key>> {
     let mut outValueArray: ValueArray<Key>;
     let mut n: i32;
     let mut size: i32;
@@ -368,7 +368,7 @@ pub fn valueArrayAdd<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut value
     Ok(outValueArray)
 }
 
-pub fn valueArraySetnth<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut valueArray: ValueArray<Key>, mut pos: i32, mut entry: Key) -> Result<ValueArray<Key>> {
+pub(crate) fn valueArraySetnth<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut valueArray: ValueArray<Key>, mut pos: i32, mut entry: Key) -> Result<ValueArray<Key>> {
     let mut outValueArray: ValueArray<Key>;
     let mut arr_1: metamodelica::Array<Option<Key>>;
     let mut arr: metamodelica::Array<Option<Key>>;
@@ -381,7 +381,7 @@ pub fn valueArraySetnth<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut va
     Ok(outValueArray)
 }
 
-pub fn valueArrayClearnth<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut valueArray: ValueArray<Key>, mut pos: i32) -> Result<ValueArray<Key>> {
+pub(crate) fn valueArrayClearnth<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut valueArray: ValueArray<Key>, mut pos: i32) -> Result<ValueArray<Key>> {
     let mut outValueArray: ValueArray<Key>;
     let mut arr_1: metamodelica::Array<Option<Key>>;
     let mut arr: metamodelica::Array<Option<Key>>;
@@ -394,7 +394,7 @@ pub fn valueArrayClearnth<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut 
     Ok(outValueArray)
 }
 
-pub fn valueArrayNth<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut valueArray: ValueArray<Key>, mut pos: i32) -> Result<Key> {
+pub(crate) fn valueArrayNth<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut valueArray: ValueArray<Key>, mut pos: i32) -> Result<Key> {
     let mut key: Key;
     key = (match valueArray.clone() {
         (mut n, _, mut arr) if (pos.clone() <= n.clone()) => {

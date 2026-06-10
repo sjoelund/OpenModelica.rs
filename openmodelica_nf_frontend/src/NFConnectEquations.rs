@@ -90,7 +90,7 @@ use openmodelica_util_datatypes_basic::List;
 thread_local! { static __EQ_ASSERT_STR_TLS: Arc<Expression::NFExpression> = Arc::new(Expression::NFExpression::STRING { value: (literal!("Connected constants/parameters must be equal")).clone() }); }
 pub fn EQ_ASSERT_STR() -> Arc<Expression::NFExpression> { __EQ_ASSERT_STR_TLS.with(|__t| __t.clone()) }
 
-pub fn generateEquations(mut sets: metamodelica::Array<Arc<metamodelica::List<Arc<Connector::NFConnector>>>>, mut variables: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Variable::NFVariable>>>) -> Result<(Arc<metamodelica::List<Arc<Equation::NFEquation>>>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<Connector::NFConnector>>>>>)> {
+pub(crate) fn generateEquations(mut sets: metamodelica::Array<Arc<metamodelica::List<Arc<Connector::NFConnector>>>>, mut variables: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Variable::NFVariable>>>) -> Result<(Arc<metamodelica::List<Arc<Equation::NFEquation>>>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<Connector::NFConnector>>>>>)> {
     type potFunc = std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Connector::NFConnector>>>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<(Arc<metamodelica::List<Arc<Equation::NFEquation>>>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>)> + 'static>;
 
     let mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = metamodelica::nil();
@@ -129,7 +129,7 @@ pub fn generateEquations(mut sets: metamodelica::Array<Arc<metamodelica::List<Ar
     Ok((equations, connectedLocalIOs, unhandledStreamSets))
 }
 
-pub fn evaluateOperators(mut exp: Arc<Expression::NFExpression>, mut sets: ConnectionSets::Sets, mut setsArray: metamodelica::Array<Arc<metamodelica::List<Arc<Connector::NFConnector>>>>, mut variables: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Variable::NFVariable>>>, mut ctable: Arc<UnorderedMap::UnorderedMap<ArcStr, i32>>) -> Result<Arc<Expression::NFExpression>> {
+pub(crate) fn evaluateOperators(mut exp: Arc<Expression::NFExpression>, mut sets: ConnectionSets::Sets, mut setsArray: metamodelica::Array<Arc<metamodelica::List<Arc<Connector::NFConnector>>>>, mut variables: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Variable::NFVariable>>>, mut ctable: Arc<UnorderedMap::UnorderedMap<ArcStr, i32>>) -> Result<Arc<Expression::NFExpression>> {
     use crate::NFOperator::Op;
     let mut evalExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     evalExp = (::match_deref::match_deref! { match &(exp.clone()) {

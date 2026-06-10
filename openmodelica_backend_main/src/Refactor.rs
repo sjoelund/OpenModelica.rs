@@ -53,7 +53,7 @@ use openmodelica_util::System;
 use openmodelica_util_datatypes_basic::List;
 
 // stringReal
-pub fn refactorGraphicalAnnotation(mut wholeAST: Absyn::Program, mut classToRefactor: Arc<Absyn::Class>) -> Result<Arc<Absyn::Class>> {
+pub(crate) fn refactorGraphicalAnnotation(mut wholeAST: Absyn::Program, mut classToRefactor: Arc<Absyn::Class>) -> Result<Arc<Absyn::Class>> {
     let mut changedClass: Arc<Absyn::Class>;
     changedClass = (::match_deref::match_deref! { match &(classToRefactor.clone()) {
         _ => {

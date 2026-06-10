@@ -92,7 +92,7 @@ pub type Type = Arc<DAE::Type>;
 
 pub type Types = Arc<metamodelica::List<Arc<DAE::Type>>>;
 
-pub fn dumpGraph(mut inGraph: Graph, mut fileName: ArcStr) -> Result<()> {
+pub(crate) fn dumpGraph(mut inGraph: Graph, mut fileName: ArcStr) -> Result<()> {
     let () = 'mc: {
         let __mc_input = fileName.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -222,7 +222,7 @@ fn addNode(mut gin: (GraphML::GraphInfo, i32), mut node: Node) -> Result<(GraphM
     Ok(gout)
 }
 
-pub fn graphml(mut node: Node, mut escape: bool) -> Result<(ArcStr, GraphML::ShapeType, ArcStr)> {
+pub(crate) fn graphml(mut node: Node, mut escape: bool) -> Result<(ArcStr, GraphML::ShapeType, ArcStr)> {
     let mut color: ArcStr;
     let mut shape: GraphML::ShapeType;
     let mut nname: ArcStr;

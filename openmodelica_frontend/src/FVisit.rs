@@ -79,19 +79,19 @@ pub type AvlTreeValue = FCore::VAvlTreeValue;
 thread_local! { static __emptyVisited_TLS: FCore::Visited = FCore::Visited { tree: FCore::emptyVAvlTree().clone(), next: FCore::firstId.clone() }; }
 pub fn emptyVisited() -> FCore::Visited { __emptyVisited_TLS.with(|__t| __t.clone()) }
 
-pub fn new() -> Visited {
+pub(crate) fn new() -> Visited {
     let mut visited: Visited;
     visited = emptyVisited().clone();
     visited
 }
 
-pub fn reset(mut inVisited: Visited) -> Visited {
+pub(crate) fn reset(mut inVisited: Visited) -> Visited {
     let mut visited: Visited;
     visited = new();
     visited
 }
 
-pub fn next(mut inVisited: Visited) -> Result<(Visited, Next)> {
+pub(crate) fn next(mut inVisited: Visited) -> Result<(Visited, Next)> {
     let mut outVisited: Visited;
     let mut next: Next;
     let mut v: VAvlTree;
@@ -105,7 +105,7 @@ pub fn next(mut inVisited: Visited) -> Result<(Visited, Next)> {
     Ok((outVisited, next))
 }
 
-pub fn visited(mut inVisited: Visited, mut inRef: Ref) -> bool {
+pub(crate) fn visited(mut inVisited: Visited, mut inRef: Ref) -> bool {
     let mut b: bool;
     b = 'mc: {
         let __mc_input = inVisited.clone();
@@ -124,28 +124,28 @@ pub fn visited(mut inVisited: Visited, mut inRef: Ref) -> bool {
     b
 }
 
-pub fn seq(mut v: Visit) -> Result<Seq> {
+pub(crate) fn seq(mut v: Visit) -> Result<Seq> {
     let mut s: Seq;
     let FCore::VN { seq: __pa0, .. } = (v.clone()) else { bail!("pattern mismatch") };
     s = __pa0.clone();
     Ok(s)
 }
 
-pub fn r#ref(mut v: Visit) -> Result<Ref> {
+pub(crate) fn r#ref(mut v: Visit) -> Result<Ref> {
     let mut r: Ref;
     let FCore::VN { r#ref: __pa0, .. } = (v.clone()) else { bail!("pattern mismatch") };
     r = __pa0.clone();
     Ok(r)
 }
 
-pub fn tree(mut v: Visited) -> Result<AvlTree> {
+pub(crate) fn tree(mut v: Visited) -> Result<AvlTree> {
     let mut a: AvlTree;
     let FCore::V { tree: __pa0, .. } = (v.clone()) else { bail!("pattern mismatch") };
     a = __pa0.clone();
     Ok(a)
 }
 
-pub fn visit(mut inVisited: Visited, mut inRef: Ref) -> Result<Visited> {
+pub(crate) fn visit(mut inVisited: Visited, mut inRef: Ref) -> Result<Visited> {
     let mut outVisited: Visited = <FCore::Visited as ::std::default::Default>::default();
     outVisited = 'mc: {
         let __mc_input = inVisited.clone();
@@ -185,19 +185,19 @@ pub fn visit(mut inVisited: Visited, mut inRef: Ref) -> Result<Visited> {
 // ************************ AVL Tree implementation ***************************
 // ************************ AVL Tree implementation ***************************
 // ************************ AVL Tree implementation ***************************
-pub fn keyCompare(mut k1: AvlKey, mut k2: AvlKey) -> i32 {
+pub(crate) fn keyCompare(mut k1: AvlKey, mut k2: AvlKey) -> i32 {
     let mut i: i32;
     i = if (intGt(k1.clone(), k2.clone())) {1} else {if (intLt(k1.clone(), k2.clone())) {-1} else {0}};
     i
 }
 
-pub fn keyStr(mut k: AvlKey) -> ArcStr {
+pub(crate) fn keyStr(mut k: AvlKey) -> ArcStr {
     let mut r#str: ArcStr;
     r#str = (intString(k.clone())).clone();
     r#str
 }
 
-pub fn valueStr(mut v: AvlValue) -> Result<ArcStr> {
+pub(crate) fn valueStr(mut v: AvlValue) -> Result<ArcStr> {
     let mut r#str: ArcStr;
     r#str = ((match v.clone() {
         FCore::Visit { seq: mut seq, .. } => {
@@ -208,13 +208,13 @@ pub fn valueStr(mut v: AvlValue) -> Result<ArcStr> {
 }
 
 /* Generic Code below */
-pub fn avlTreeNew() -> AvlTree {
+pub(crate) fn avlTreeNew() -> AvlTree {
     let mut tree: AvlTree;
     tree = FCore::emptyVAvlTree().clone();
     tree
 }
 
-pub fn avlTreeAdd(mut inAvlTree: AvlTree, mut inKey: AvlKey, mut inValue: AvlValue) -> Result<AvlTree> {
+pub(crate) fn avlTreeAdd(mut inAvlTree: AvlTree, mut inKey: AvlKey, mut inValue: AvlValue) -> Result<AvlTree> {
     let mut outAvlTree: AvlTree;
     outAvlTree = (::match_deref::match_deref! { match &((inAvlTree.clone(), inKey.clone(), inValue.clone())) {
         (Deref @ FCore::VAvlTree { value: None, left: None, right: None, .. }, key, value) => {
@@ -232,7 +232,7 @@ pub fn avlTreeAdd(mut inAvlTree: AvlTree, mut inKey: AvlKey, mut inValue: AvlVal
     Ok(outAvlTree)
 }
 
-pub fn avlTreeAdd2(mut inAvlTree: AvlTree, mut keyComp: i32, mut inKey: AvlKey, mut inValue: AvlValue) -> Result<AvlTree> {
+pub(crate) fn avlTreeAdd2(mut inAvlTree: AvlTree, mut keyComp: i32, mut inKey: AvlKey, mut inValue: AvlValue) -> Result<AvlTree> {
     let mut outAvlTree: AvlTree;
     outAvlTree = (::match_deref::match_deref! { match &((inAvlTree.clone(), keyComp.clone(), inKey.clone(), inValue.clone())) {
         (Deref @ FCore::VAvlTree { value: Some(FCore::VAvlTreeValue { key: rkey, .. }), height: h, left, right }, 0, _, value) => {
@@ -520,7 +520,7 @@ fn differenceInHeight(mut node: AvlTree) -> Result<i32> {
     Ok(diff)
 }
 
-pub fn avlTreeGet(mut inAvlTree: AvlTree, mut inKey: AvlKey) -> Result<AvlValue> {
+pub(crate) fn avlTreeGet(mut inAvlTree: AvlTree, mut inKey: AvlKey) -> Result<AvlValue> {
     let mut outValue: AvlValue;
     outValue = (::match_deref::match_deref! { match &((inAvlTree.clone(), inKey.clone())) {
         (Deref @ FCore::VAvlTree { value: Some(FCore::VAvlTreeValue { key: rkey, .. }), .. }, key) => {
@@ -622,7 +622,7 @@ fn getHeight(mut bt: Option<Arc<FCore::VAvlTree>>) -> Result<i32> {
     Ok(height)
 }
 
-pub fn printAvlTreeStrPP(mut inTree: AvlTree) -> Result<ArcStr> {
+pub(crate) fn printAvlTreeStrPP(mut inTree: AvlTree) -> Result<ArcStr> {
     let mut outString: ArcStr;
     outString = (printAvlTreeStrPP2(Some(inTree.clone()), (literal!("")).clone())?).clone();
     Ok(outString)
@@ -661,7 +661,7 @@ fn printAvlTreeStrPP2(mut inTree: Option<Arc<FCore::VAvlTree>>, mut inIndent: Ar
     Ok(outString)
 }
 
-pub fn avlTreeReplace(mut inAvlTree: AvlTree, mut inKey: AvlKey, mut inValue: AvlValue) -> Result<AvlTree> {
+pub(crate) fn avlTreeReplace(mut inAvlTree: AvlTree, mut inKey: AvlKey, mut inValue: AvlValue) -> Result<AvlTree> {
     let mut outAvlTree: AvlTree;
     outAvlTree = (::match_deref::match_deref! { match &((inAvlTree.clone(), inKey.clone(), inValue.clone())) {
         (Deref @ FCore::VAvlTree { value: Some(FCore::VAvlTreeValue { key: rkey, .. }), .. }, key, value) => {
@@ -699,7 +699,7 @@ fn avlTreeReplace2(mut inAvlTree: AvlTree, mut inKeyComp: i32, mut inKey: AvlKey
     Ok(outAvlTree)
 }
 
-pub fn getAvlTreeValues(mut tree: Arc<metamodelica::List<Option<Arc<FCore::VAvlTree>>>>, mut acc: Arc<metamodelica::List<FCore::VAvlTreeValue>>) -> Result<Arc<metamodelica::List<FCore::VAvlTreeValue>>> {
+pub(crate) fn getAvlTreeValues(mut tree: Arc<metamodelica::List<Option<Arc<FCore::VAvlTree>>>>, mut acc: Arc<metamodelica::List<FCore::VAvlTreeValue>>) -> Result<Arc<metamodelica::List<FCore::VAvlTreeValue>>> {
     '__tco: loop {
         ::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ metamodelica::List::Nil => {
@@ -716,7 +716,7 @@ pub fn getAvlTreeValues(mut tree: Arc<metamodelica::List<Option<Arc<FCore::VAvlT
     }
 }
 
-pub fn getAvlValue(mut inValue: AvlTreeValue) -> Result<AvlValue> {
+pub(crate) fn getAvlValue(mut inValue: AvlTreeValue) -> Result<AvlValue> {
     let mut res: AvlValue = <FCore::Visit as ::std::default::Default>::default();
     res = (match inValue.clone() {
         FCore::VAvlTreeValue { value: mut __esc_res, .. } => {

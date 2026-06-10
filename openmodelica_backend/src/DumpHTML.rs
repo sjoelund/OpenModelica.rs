@@ -392,7 +392,7 @@ fn dumpStyle(mut inStyle: Style) -> Result<ArcStr> {
     Ok(outBuffer)
 }
 
-pub fn dumpDAE(mut inDAE: Arc<BackendDAE::BackendDAE>, mut inHeader: ArcStr, mut inFilename: ArcStr) -> Result<()> {
+pub(crate) fn dumpDAE(mut inDAE: Arc<BackendDAE::BackendDAE>, mut inHeader: ArcStr, mut inFilename: ArcStr) -> Result<()> {
     let mut doc: Document;
     let mut r#str: ArcStr;
     let mut eqs: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>>;
@@ -556,7 +556,7 @@ fn dumpMatching2(mut v: metamodelica::Array<i32>, mut i: i32, mut len: i32, mut 
     outTags
 }
 
-pub fn dumpMatrixHTML(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut rowNames: Arc<metamodelica::List<ArcStr>>, mut columNames: Arc<metamodelica::List<ArcStr>>, mut fileName: ArcStr) -> Result<()> {
+pub(crate) fn dumpMatrixHTML(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut rowNames: Arc<metamodelica::List<ArcStr>>, mut columNames: Arc<metamodelica::List<ArcStr>>, mut fileName: ArcStr) -> Result<()> {
     let mut size: i32;
     let mut rowIdx: i32 = 0;
     let mut colIdx: i32 = 0;

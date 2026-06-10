@@ -115,7 +115,7 @@ pub use self::TearingMethod::{MINIMAL_TEARING,OMC_TEARING,CELLIER_TEARING,TOTAL_
 //
 // main function to divide to the selected tearing method
 // =============================================================================
-pub fn tearingSystem(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
+pub(crate) fn tearingSystem(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut outDAE: Arc<BackendDAE::BackendDAE>;
     let mut methodString: ArcStr = Config::getTearingMethod()?;
     let mut method: TearingMethod;
@@ -613,7 +613,7 @@ fn getUnsolvableVars(mut size: i32, mut meT: metamodelica::Array<Arc<metamodelic
     Ok(unsolvables)
 }
 
-pub fn unsolvable(mut elem: Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>) -> Result<bool> {
+pub(crate) fn unsolvable(mut elem: Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>) -> Result<bool> {
     let mut isUnsolvable: bool = true;
     let mut e: i32;
     let mut s: BackendDAE::Solvability;
@@ -1998,7 +1998,7 @@ fn tearingSelect(mut var_lstIn: Arc<metamodelica::List<BackendDAE::Var>>, mut al
     Ok((always, prefer, avoid, never, alwaysByUser))
 }
 
-pub fn deleteNegativeEntries(mut rowIn: Arc<metamodelica::List<i32>>) -> Arc<metamodelica::List<i32>> {
+pub(crate) fn deleteNegativeEntries(mut rowIn: Arc<metamodelica::List<i32>>) -> Arc<metamodelica::List<i32>> {
     let mut rowOut: Arc<metamodelica::List<i32>>;
     rowOut = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -3525,7 +3525,7 @@ fn findNEntries(mut mtIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut
 // inline and repeat tearing
 // author: Vitalij Ruge
 // =============================================================================
-pub fn recursiveTearing(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
+pub(crate) fn recursiveTearing(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut outDAE: Arc<BackendDAE::BackendDAE>;
     let mut con: bool;
     if Flags::getConfigInt(Flags::RTEARING.clone())? > 0 {

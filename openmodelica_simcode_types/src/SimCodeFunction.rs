@@ -217,7 +217,7 @@ pub mod Function {
         }
     }
     pub use self::Function::{FUNCTION,PARALLEL_FUNCTION,KERNEL_FUNCTION,EXTERNAL_FUNCTION,RECORD_CONSTRUCTOR};
-    pub fn toString(mut func: Arc<Function>) -> Result<ArcStr> {
+    pub(crate) fn toString(mut func: Arc<Function>) -> Result<ArcStr> {
         let mut r#str: ArcStr = literal!("");
         r#str = (({
         let mut tmp: ArcStr = literal!("");
@@ -468,7 +468,7 @@ pub mod SimExtArg {
         fn default() -> Self { Self::SIMNOEXTARG }
     }
     pub use self::SimExtArg::{SIMEXTARG,SIMEXTARGEXP,SIMEXTARGSIZE,SIMNOEXTARG};
-    pub fn toString(mut simExtArg: Arc<SimExtArg>) -> Result<ArcStr> {
+    pub(crate) fn toString(mut simExtArg: Arc<SimExtArg>) -> Result<ArcStr> {
         let mut r#str: ArcStr = literal!("");
         r#str = (({
         let mut tmp: ArcStr = literal!("");
@@ -567,7 +567,7 @@ pub mod Variable {
         }
     }
     pub use self::Variable::{VARIABLE,FUNCTION_PTR};
-    pub fn toString(mut variable: Arc<Variable>) -> Result<ArcStr> {
+    pub(crate) fn toString(mut variable: Arc<Variable>) -> Result<ArcStr> {
         let mut r#str: ArcStr = literal!("");
         r#str = (({
         let mut tmp: ArcStr = literal!("");

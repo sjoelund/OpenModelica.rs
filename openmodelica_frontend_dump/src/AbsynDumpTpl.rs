@@ -34,7 +34,7 @@ fn lm_9(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::Class>>
     Ok(txt)
 }
 
-pub fn dump(mut in_txt: Tpl::Text, mut in_a_program: Absyn::Program, mut in_a_options: Dump::DumpOptions) -> Result<Tpl::Text> {
+pub(crate) fn dump(mut in_txt: Tpl::Text, mut in_a_program: Absyn::Program, mut in_a_options: Dump::DumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_program.clone(), in_a_options.clone())) {
         (txt, Absyn::Program { classes: Deref @ metamodelica::List::Nil, .. }, _) => {
@@ -60,13 +60,13 @@ pub fn dump(mut in_txt: Tpl::Text, mut in_a_program: Absyn::Program, mut in_a_op
     Ok(out_txt)
 }
 
-pub fn dumpClass(mut txt: Tpl::Text, mut a_cls: Arc<Absyn::Class>, mut a_sc: ArcStr, mut a_options: Dump::DumpOptions) -> Result<Tpl::Text> {
+pub(crate) fn dumpClass(mut txt: Tpl::Text, mut a_cls: Arc<Absyn::Class>, mut a_sc: ArcStr, mut a_options: Dump::DumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = dumpClassElement(txt.clone(), a_cls.clone(), (literal!("")).clone(), (literal!("")).clone(), (literal!("")).clone(), (literal!("")).clone(), (a_sc.clone()).clone(), a_options.clone())?;
     Ok(out_txt)
 }
 
-pub fn dumpWithin(mut in_txt: Tpl::Text, mut in_a_within: Absyn::Within) -> Result<Tpl::Text> {
+pub(crate) fn dumpWithin(mut in_txt: Tpl::Text, mut in_a_within: Absyn::Within) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_within.clone()) {
         (mut txt, Absyn::Within::TOP { .. }) => {
@@ -88,7 +88,7 @@ pub fn dumpWithin(mut in_txt: Tpl::Text, mut in_a_within: Absyn::Within) -> Resu
     Ok(out_txt)
 }
 
-pub fn dumpClassHeader(mut in_txt: Tpl::Text, mut in_a_cls: Arc<Absyn::Class>, mut in_a_final__str: ArcStr, mut in_a_redecl__str: ArcStr, mut in_a_repl__str: ArcStr, mut in_a_io__str: ArcStr) -> Result<Tpl::Text> {
+pub(crate) fn dumpClassHeader(mut in_txt: Tpl::Text, mut in_a_cls: Arc<Absyn::Class>, mut in_a_final__str: ArcStr, mut in_a_redecl__str: ArcStr, mut in_a_repl__str: ArcStr, mut in_a_io__str: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cls.clone(), in_a_final__str.clone(), in_a_redecl__str.clone(), in_a_repl__str.clone(), in_a_io__str.clone())) {
         (txt, i_cls @ Deref @ Absyn::Class { restriction: i_restriction, .. }, a_final__str, a_redecl__str, a_repl__str, a_io__str) => {
@@ -182,7 +182,7 @@ fn smf_18(mut in_txt: Tpl::Text, mut in_it: Tpl::Text) -> Result<Tpl::Text> {
     Ok(out_txt)
 }
 
-pub fn dumpClassElement(mut in_txt: Tpl::Text, mut in_a_cls: Arc<Absyn::Class>, mut in_a_final__str: ArcStr, mut in_a_redecl__str: ArcStr, mut in_a_repl__str: ArcStr, mut in_a_io__str: ArcStr, mut in_a_sc: ArcStr, mut in_a_options: Dump::DumpOptions) -> Result<Tpl::Text> {
+pub(crate) fn dumpClassElement(mut in_txt: Tpl::Text, mut in_a_cls: Arc<Absyn::Class>, mut in_a_final__str: ArcStr, mut in_a_redecl__str: ArcStr, mut in_a_repl__str: ArcStr, mut in_a_io__str: ArcStr, mut in_a_sc: ArcStr, mut in_a_options: Dump::DumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cls.clone(), in_a_final__str.clone(), in_a_redecl__str.clone(), in_a_repl__str.clone(), in_a_io__str.clone(), in_a_sc.clone(), in_a_options.clone())) {
         (txt, i_cls @ Deref @ Absyn::Class { body: i_body, name: i_name, commentsBeforeEnd: i_commentsBeforeEnd, commentsBeforeClass: i_commentsBeforeClass, commentsAfterEnd: i_commentsAfterEnd, .. }, a_final__str, a_redecl__str, a_repl__str, a_io__str, a_sc, a_options) => {
@@ -499,7 +499,7 @@ fn lm_37(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<ArcStr>>) -> Resu
     Ok(txt)
 }
 
-pub fn dumpClassDef(mut in_txt: Tpl::Text, mut in_a_cdef: Arc<Absyn::ClassDef>, mut in_a_cls__name: ArcStr, mut in_a_commentsBeforeEnd: Arc<metamodelica::List<ArcStr>>, mut in_a_options: Dump::DumpOptions) -> Result<Tpl::Text> {
+pub(crate) fn dumpClassDef(mut in_txt: Tpl::Text, mut in_a_cdef: Arc<Absyn::ClassDef>, mut in_a_cls__name: ArcStr, mut in_a_commentsBeforeEnd: Arc<metamodelica::List<ArcStr>>, mut in_a_options: Dump::DumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cdef.clone(), in_a_cls__name.clone(), in_a_commentsBeforeEnd.clone(), in_a_options.clone())) {
         (txt, Deref @ Absyn::ClassDef::PARTS { typeVars: i_typeVars, ann: i_ann, comment: i_comment, classParts: i_classParts, .. }, a_cls__name, a_commentsBeforeEnd, a_options) => {
@@ -657,7 +657,7 @@ fn lm_39(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::EnumLi
     Ok(txt)
 }
 
-pub fn dumpEnumDef(mut in_txt: Tpl::Text, mut in_a_enum__def: Arc<Absyn::EnumDef>) -> Result<Tpl::Text> {
+pub(crate) fn dumpEnumDef(mut in_txt: Tpl::Text, mut in_a_enum__def: Arc<Absyn::EnumDef>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_enum__def.clone())) {
         (txt, Deref @ Absyn::EnumDef::ENUMLITERALS { enumLiterals: i_enumLiterals }) => {
@@ -680,7 +680,7 @@ pub fn dumpEnumDef(mut in_txt: Tpl::Text, mut in_a_enum__def: Arc<Absyn::EnumDef
     Ok(out_txt)
 }
 
-pub fn dumpEnumLiteral(mut in_txt: Tpl::Text, mut in_a_lit: Arc<Absyn::EnumLiteral>) -> Result<Tpl::Text> {
+pub(crate) fn dumpEnumLiteral(mut in_txt: Tpl::Text, mut in_a_lit: Arc<Absyn::EnumLiteral>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_lit.clone())) {
         (txt, Deref @ Absyn::EnumLiteral { comment: i_comment, literal: i_literal }) => {
@@ -754,13 +754,13 @@ fn fun_44(mut in_txt: Tpl::Text, mut in_a_cls: Arc<Absyn::Class>, mut in_a_redec
     Ok(out_txt)
 }
 
-pub fn dumpClassPrefixes(mut txt: Tpl::Text, mut a_cls: Arc<Absyn::Class>, mut a_final__str: ArcStr, mut a_redecl__str: ArcStr, mut a_repl__str: ArcStr, mut a_io__str: ArcStr) -> Result<Tpl::Text> {
+pub(crate) fn dumpClassPrefixes(mut txt: Tpl::Text, mut a_cls: Arc<Absyn::Class>, mut a_final__str: ArcStr, mut a_redecl__str: ArcStr, mut a_repl__str: ArcStr, mut a_io__str: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = fun_44(txt.clone(), a_cls.clone(), (a_redecl__str.clone()).clone(), (a_repl__str.clone()).clone(), (a_io__str.clone()).clone())?;
     Ok(out_txt)
 }
 
-pub fn dumpPurity(mut in_txt: Tpl::Text, mut in_a_purity: Absyn::FunctionPurity) -> Result<Tpl::Text> {
+pub(crate) fn dumpPurity(mut in_txt: Tpl::Text, mut in_a_purity: Absyn::FunctionPurity) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_purity.clone()) {
         (mut txt, Absyn::FunctionPurity::PURE { .. }) => {
@@ -1190,7 +1190,7 @@ fn fun_64(mut in_txt: Tpl::Text, mut in_a_externalDecl: Arc<Absyn::ExternalDecl>
     Ok(out_txt)
 }
 
-pub fn dumpClassPart(mut in_txt: Tpl::Text, mut in_a_class__part: Arc<Absyn::ClassPart>, mut in_a_idx: i32, mut in_a_options: Dump::DumpOptions) -> Result<Tpl::Text> {
+pub(crate) fn dumpClassPart(mut in_txt: Tpl::Text, mut in_a_class__part: Arc<Absyn::ClassPart>, mut in_a_idx: i32, mut in_a_options: Dump::DumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_class__part.clone(), in_a_idx.clone(), in_a_options.clone())) {
         (txt, Deref @ Absyn::ClassPart::PUBLIC { contents: i_contents }, a_idx, a_options) => {
@@ -1331,7 +1331,7 @@ fn fun_68(mut in_txt: Tpl::Text, mut in_a_rest__str: Tpl::Text) -> Result<Tpl::T
     Ok(out_txt)
 }
 
-pub fn dumpElementItems(mut in_txt: Tpl::Text, mut in_a_items: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut in_a_prevSpacing: ArcStr, mut in_a_first: bool, mut in_a_options: Dump::DumpOptions) -> Result<Tpl::Text> {
+pub(crate) fn dumpElementItems(mut in_txt: Tpl::Text, mut in_a_items: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut in_a_prevSpacing: ArcStr, mut in_a_first: bool, mut in_a_options: Dump::DumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_items.clone(), in_a_prevSpacing.clone(), in_a_first.clone(), in_a_options.clone())) {
         (txt, Deref @ metamodelica::List::Cons { head: i_item, tail: i_rest__items }, a_prevSpacing, a_first, a_options) => {
@@ -1378,13 +1378,13 @@ fn fun_70(mut in_txt: Tpl::Text, mut in_a_prevSpacing: ArcStr, mut in_a_curSpaci
     Ok(out_txt)
 }
 
-pub fn dumpElementItemPreSpacing(mut txt: Tpl::Text, mut a_curSpacing: ArcStr, mut a_prevSpacing: ArcStr) -> Result<Tpl::Text> {
+pub(crate) fn dumpElementItemPreSpacing(mut txt: Tpl::Text, mut a_curSpacing: ArcStr, mut a_prevSpacing: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = fun_70(txt.clone(), (a_prevSpacing.clone()).clone(), (a_curSpacing.clone()).clone())?;
     Ok(out_txt)
 }
 
-pub fn dumpElementItemSpacing(mut in_txt: Tpl::Text, mut in_a_item: Arc<Absyn::ElementItem>) -> Result<Tpl::Text> {
+pub(crate) fn dumpElementItemSpacing(mut in_txt: Tpl::Text, mut in_a_item: Arc<Absyn::ElementItem>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_item.clone())) {
         (txt, Deref @ Absyn::ElementItem::ELEMENTITEM { element: Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::CLASSDEF { class_: Deref @ Absyn::Class { body: i_cdef, .. }, .. }, .. } }) => {
@@ -1400,7 +1400,7 @@ pub fn dumpElementItemSpacing(mut in_txt: Tpl::Text, mut in_a_item: Arc<Absyn::E
     Ok(out_txt)
 }
 
-pub fn dumpClassDefSpacing(mut in_txt: Tpl::Text, mut in_a_cdef: Arc<Absyn::ClassDef>) -> Result<Tpl::Text> {
+pub(crate) fn dumpClassDefSpacing(mut in_txt: Tpl::Text, mut in_a_cdef: Arc<Absyn::ClassDef>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cdef.clone())) {
         (txt, Deref @ Absyn::ClassDef::PARTS { typeVars: _, .. }) => {
@@ -1421,7 +1421,7 @@ pub fn dumpClassDefSpacing(mut in_txt: Tpl::Text, mut in_a_cdef: Arc<Absyn::Clas
     Ok(out_txt)
 }
 
-pub fn dumpElementItem(mut in_txt: Tpl::Text, mut in_a_eitem: Arc<Absyn::ElementItem>, mut in_a_options: Dump::DumpOptions) -> Result<Tpl::Text> {
+pub(crate) fn dumpElementItem(mut in_txt: Tpl::Text, mut in_a_eitem: Arc<Absyn::ElementItem>, mut in_a_options: Dump::DumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_eitem.clone(), in_a_options.clone())) {
         (txt, Deref @ Absyn::ElementItem::ELEMENTITEM { element: i_element }, a_options) => {
@@ -1589,7 +1589,7 @@ fn fun_82(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_string: ArcStr, mut
     Ok(out_txt)
 }
 
-pub fn dumpElement(mut in_txt: Tpl::Text, mut in_a_elem: Arc<Absyn::Element>, mut in_a_options: Dump::DumpOptions) -> Result<Tpl::Text> {
+pub(crate) fn dumpElement(mut in_txt: Tpl::Text, mut in_a_elem: Arc<Absyn::Element>, mut in_a_options: Dump::DumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_elem.clone(), in_a_options.clone())) {
         (txt, i_elem @ Deref @ Absyn::Element::ELEMENT { info: i_info, finalPrefix: i_finalPrefix, redeclareKeywords: i_redeclareKeywords, innerOuter: i_innerOuter, specification: i_specification, constrainClass: i_constrainClass }, a_options) => {
@@ -1645,7 +1645,7 @@ fn fun_84(mut in_txt: Tpl::Text, mut in_a_isReadOnly: bool) -> Result<Tpl::Text>
     Ok(out_txt)
 }
 
-pub fn dumpInfo(mut in_txt: Tpl::Text, mut in_a_info: SourceInfo) -> Result<Tpl::Text> {
+pub(crate) fn dumpInfo(mut in_txt: Tpl::Text, mut in_a_info: SourceInfo) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_info.clone()) {
         (mut txt, SourceInfo { isReadOnly: mut i_isReadOnly, fileName: mut i_fileName, lineNumberStart: mut i_lineNumberStart, columnNumberStart: mut i_columnNumberStart, lineNumberEnd: mut i_lineNumberEnd, columnNumberEnd: mut i_columnNumberEnd, .. }) => {
@@ -1673,7 +1673,7 @@ pub fn dumpInfo(mut in_txt: Tpl::Text, mut in_a_info: SourceInfo) -> Result<Tpl:
     Ok(out_txt)
 }
 
-pub fn dumpAnnotation(mut in_txt: Tpl::Text, mut in_a_ann: Arc<Absyn::Annotation>) -> Result<Tpl::Text> {
+pub(crate) fn dumpAnnotation(mut in_txt: Tpl::Text, mut in_a_ann: Arc<Absyn::Annotation>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ann.clone())) {
         (txt, Deref @ Absyn::Annotation { elementArgs: Deref @ metamodelica::List::Nil }) => {
@@ -1701,7 +1701,7 @@ pub fn dumpAnnotation(mut in_txt: Tpl::Text, mut in_a_ann: Arc<Absyn::Annotation
     Ok(out_txt)
 }
 
-pub fn dumpAnnotationOpt(mut in_txt: Tpl::Text, mut in_a_oann: Option<Arc<Absyn::Annotation>>) -> Result<Tpl::Text> {
+pub(crate) fn dumpAnnotationOpt(mut in_txt: Tpl::Text, mut in_a_oann: Option<Arc<Absyn::Annotation>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_oann.clone())) {
         (txt, Some(i_ann)) => {
@@ -1717,7 +1717,7 @@ pub fn dumpAnnotationOpt(mut in_txt: Tpl::Text, mut in_a_oann: Option<Arc<Absyn:
     Ok(out_txt)
 }
 
-pub fn dumpAnnotationOptSpace(mut in_txt: Tpl::Text, mut in_a_oann: Option<Arc<Absyn::Annotation>>) -> Result<Tpl::Text> {
+pub(crate) fn dumpAnnotationOptSpace(mut in_txt: Tpl::Text, mut in_a_oann: Option<Arc<Absyn::Annotation>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_oann.clone())) {
         (txt, Some(i_ann)) => {
@@ -1734,7 +1734,7 @@ pub fn dumpAnnotationOptSpace(mut in_txt: Tpl::Text, mut in_a_oann: Option<Arc<A
     Ok(out_txt)
 }
 
-pub fn dumpComment(mut in_txt: Tpl::Text, mut in_a_cmt: Arc<Absyn::Comment>) -> Result<Tpl::Text> {
+pub(crate) fn dumpComment(mut in_txt: Tpl::Text, mut in_a_cmt: Arc<Absyn::Comment>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cmt.clone())) {
         (txt, Deref @ Absyn::Comment { comment: i_comment, annotation_: i_annotation__ }) => {
@@ -1751,7 +1751,7 @@ pub fn dumpComment(mut in_txt: Tpl::Text, mut in_a_cmt: Arc<Absyn::Comment>) -> 
     Ok(out_txt)
 }
 
-pub fn dumpCommentOpt(mut in_txt: Tpl::Text, mut in_a_ocmt: Option<Arc<Absyn::Comment>>) -> Result<Tpl::Text> {
+pub(crate) fn dumpCommentOpt(mut in_txt: Tpl::Text, mut in_a_ocmt: Option<Arc<Absyn::Comment>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ocmt.clone())) {
         (txt, Some(i_cmt)) => {
@@ -1797,7 +1797,7 @@ fn lm_92(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<(Arc<Absyn::Eleme
     Ok(txt)
 }
 
-pub fn dumpElementArgList(mut txt: Tpl::Text, mut a_elementArgs: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, mut a_separator: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
+pub(crate) fn dumpElementArgList(mut txt: Tpl::Text, mut a_elementArgs: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, mut a_separator: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text;
     let mut out_a_separator: Tpl::Text;
     let mut ret_0: Arc<metamodelica::List<(Arc<Absyn::ElementArg>, bool)>>;
@@ -1839,7 +1839,7 @@ fn fun_95(mut in_txt: Tpl::Text, mut in_a_constrainClass: Option<Arc<Absyn::Cons
     Ok(out_txt)
 }
 
-pub fn dumpElementArg(mut in_txt: Tpl::Text, mut in_a_earg: Arc<Absyn::ElementArg>) -> Result<Tpl::Text> {
+pub(crate) fn dumpElementArg(mut in_txt: Tpl::Text, mut in_a_earg: Arc<Absyn::ElementArg>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_earg.clone())) {
         (txt, Deref @ Absyn::ElementArg::MODIFICATION { eachPrefix: i_eachPrefix, finalPrefix: i_finalPrefix, path: i_path, modification: i_modification, comment: i_comment, .. }) => {
@@ -1898,7 +1898,7 @@ pub fn dumpElementArg(mut in_txt: Tpl::Text, mut in_a_earg: Arc<Absyn::ElementAr
     Ok(out_txt)
 }
 
-pub fn dumpEach(mut in_txt: Tpl::Text, mut in_a_each: Absyn::Each) -> Result<Tpl::Text> {
+pub(crate) fn dumpEach(mut in_txt: Tpl::Text, mut in_a_each: Absyn::Each) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_each.clone()) {
         (mut txt, Absyn::Each::EACH { .. }) => {
@@ -1912,7 +1912,7 @@ pub fn dumpEach(mut in_txt: Tpl::Text, mut in_a_each: Absyn::Each) -> Result<Tpl
     Ok(out_txt)
 }
 
-pub fn dumpFinal(mut in_txt: Tpl::Text, mut in_a_final: bool) -> Result<Tpl::Text> {
+pub(crate) fn dumpFinal(mut in_txt: Tpl::Text, mut in_a_final: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_final.clone()) {
         (mut txt, false) => {
@@ -1926,7 +1926,7 @@ pub fn dumpFinal(mut in_txt: Tpl::Text, mut in_a_final: bool) -> Result<Tpl::Tex
     Ok(out_txt)
 }
 
-pub fn dumpRedeclare(mut in_txt: Tpl::Text, mut in_a_redecl: Absyn::RedeclareKeywords) -> Result<Tpl::Text> {
+pub(crate) fn dumpRedeclare(mut in_txt: Tpl::Text, mut in_a_redecl: Absyn::RedeclareKeywords) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_redecl.clone()) {
         (mut txt, Absyn::RedeclareKeywords::REDECLARE { .. }) => {
@@ -1944,7 +1944,7 @@ pub fn dumpRedeclare(mut in_txt: Tpl::Text, mut in_a_redecl: Absyn::RedeclareKey
     Ok(out_txt)
 }
 
-pub fn dumpReplaceable(mut in_txt: Tpl::Text, mut in_a_repl: Absyn::RedeclareKeywords) -> Result<Tpl::Text> {
+pub(crate) fn dumpReplaceable(mut in_txt: Tpl::Text, mut in_a_repl: Absyn::RedeclareKeywords) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_repl.clone()) {
         (mut txt, Absyn::RedeclareKeywords::REPLACEABLE { .. }) => {
@@ -1962,7 +1962,7 @@ pub fn dumpReplaceable(mut in_txt: Tpl::Text, mut in_a_repl: Absyn::RedeclareKey
     Ok(out_txt)
 }
 
-pub fn dumpInnerOuter(mut in_txt: Tpl::Text, mut in_a_io: Absyn::InnerOuter) -> Result<Tpl::Text> {
+pub(crate) fn dumpInnerOuter(mut in_txt: Tpl::Text, mut in_a_io: Absyn::InnerOuter) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_io.clone()) {
         (mut txt, Absyn::InnerOuter::INNER { .. }) => {
@@ -2002,7 +2002,7 @@ fn fun_102(mut in_txt: Tpl::Text, mut in_a_elementArgLst: Arc<metamodelica::List
     Ok(out_txt)
 }
 
-pub fn dumpModification(mut in_txt: Tpl::Text, mut in_a_mod: Arc<Absyn::Modification>) -> Result<Tpl::Text> {
+pub(crate) fn dumpModification(mut in_txt: Tpl::Text, mut in_a_mod: Arc<Absyn::Modification>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_mod.clone())) {
         (txt, Deref @ Absyn::Modification { elementArgLst: i_elementArgLst, eqMod: i_eqMod }) => {
@@ -2023,7 +2023,7 @@ pub fn dumpModification(mut in_txt: Tpl::Text, mut in_a_mod: Arc<Absyn::Modifica
     Ok(out_txt)
 }
 
-pub fn dumpEqMod(mut in_txt: Tpl::Text, mut in_a_eqmod: Arc<Absyn::EqMod>) -> Result<Tpl::Text> {
+pub(crate) fn dumpEqMod(mut in_txt: Tpl::Text, mut in_a_eqmod: Arc<Absyn::EqMod>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_eqmod.clone())) {
         (txt, Deref @ Absyn::EqMod::EQMOD { exp: i_exp, .. }) => {
@@ -2075,7 +2075,7 @@ fn lm_106(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::Compo
     Ok(txt)
 }
 
-pub fn dumpElementSpec(mut in_txt: Tpl::Text, mut in_a_elem: Arc<Absyn::ElementSpec>, mut in_a_final: ArcStr, mut in_a_redecl: ArcStr, mut in_a_repl: ArcStr, mut in_a_io: ArcStr, mut in_a_options: Dump::DumpOptions) -> Result<Tpl::Text> {
+pub(crate) fn dumpElementSpec(mut in_txt: Tpl::Text, mut in_a_elem: Arc<Absyn::ElementSpec>, mut in_a_final: ArcStr, mut in_a_redecl: ArcStr, mut in_a_repl: ArcStr, mut in_a_io: ArcStr, mut in_a_options: Dump::DumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_elem.clone(), in_a_final.clone(), in_a_redecl.clone(), in_a_repl.clone(), in_a_io.clone(), in_a_options.clone())) {
         (txt, Deref @ Absyn::ElementSpec::CLASSDEF { class_: i_class__, .. }, a_final, a_redecl, a_repl, a_io, a_options) => {
@@ -2169,7 +2169,7 @@ fn fun_109(mut in_txt: Tpl::Text, mut in_a_streamPrefix: bool) -> Result<Tpl::Te
     Ok(out_txt)
 }
 
-pub fn dumpElementAttr(mut in_txt: Tpl::Text, mut in_a_attr: Absyn::ElementAttributes) -> Result<Tpl::Text> {
+pub(crate) fn dumpElementAttr(mut in_txt: Tpl::Text, mut in_a_attr: Absyn::ElementAttributes) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_attr.clone()) {
         (mut txt, Absyn::ElementAttributes { flowPrefix: mut i_flowPrefix, streamPrefix: mut i_streamPrefix, parallelism: mut i_parallelism, isField: mut i_isField, variability: mut i_variability, direction: mut i_direction, .. }) => {
@@ -2200,7 +2200,7 @@ pub fn dumpElementAttr(mut in_txt: Tpl::Text, mut in_a_attr: Absyn::ElementAttri
     Ok(out_txt)
 }
 
-pub fn dumpParallelism(mut in_txt: Tpl::Text, mut in_a_par: Absyn::Parallelism) -> Result<Tpl::Text> {
+pub(crate) fn dumpParallelism(mut in_txt: Tpl::Text, mut in_a_par: Absyn::Parallelism) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_par.clone()) {
         (mut txt, Absyn::Parallelism::PARGLOBAL { .. }) => {
@@ -2221,7 +2221,7 @@ pub fn dumpParallelism(mut in_txt: Tpl::Text, mut in_a_par: Absyn::Parallelism) 
     Ok(out_txt)
 }
 
-pub fn dumpIsField(mut in_txt: Tpl::Text, mut in_a_isField: Absyn::IsField) -> Result<Tpl::Text> {
+pub(crate) fn dumpIsField(mut in_txt: Tpl::Text, mut in_a_isField: Absyn::IsField) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_isField.clone()) {
         (mut txt, Absyn::IsField::NONFIELD { .. }) => {
@@ -2238,7 +2238,7 @@ pub fn dumpIsField(mut in_txt: Tpl::Text, mut in_a_isField: Absyn::IsField) -> R
     Ok(out_txt)
 }
 
-pub fn dumpVariability(mut in_txt: Tpl::Text, mut in_a_var: Absyn::Variability) -> Result<Tpl::Text> {
+pub(crate) fn dumpVariability(mut in_txt: Tpl::Text, mut in_a_var: Absyn::Variability) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_var.clone()) {
         (mut txt, Absyn::Variability::VAR { .. }) => {
@@ -2263,7 +2263,7 @@ pub fn dumpVariability(mut in_txt: Tpl::Text, mut in_a_var: Absyn::Variability) 
     Ok(out_txt)
 }
 
-pub fn dumpDirection(mut in_txt: Tpl::Text, mut in_a_dir: Absyn::Direction) -> Result<Tpl::Text> {
+pub(crate) fn dumpDirection(mut in_txt: Tpl::Text, mut in_a_dir: Absyn::Direction) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_dir.clone()) {
         (mut txt, Absyn::Direction::BIDIR { .. }) => {
@@ -2288,7 +2288,7 @@ pub fn dumpDirection(mut in_txt: Tpl::Text, mut in_a_dir: Absyn::Direction) -> R
     Ok(out_txt)
 }
 
-pub fn dumpElementAttrDim(mut in_txt: Tpl::Text, mut in_a_attr: Absyn::ElementAttributes) -> Result<Tpl::Text> {
+pub(crate) fn dumpElementAttrDim(mut in_txt: Tpl::Text, mut in_a_attr: Absyn::ElementAttributes) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_attr.clone()) {
         (mut txt, Absyn::ElementAttributes { arrayDim: ref i_arrayDim, .. }) => {
@@ -2320,7 +2320,7 @@ fn fun_116(mut in_txt: Tpl::Text, mut in_a_el: Arc<metamodelica::List<Arc<Absyn:
     Ok(out_txt)
 }
 
-pub fn dumpConstrainClass(mut in_txt: Tpl::Text, mut in_a_cc: Arc<Absyn::ConstrainClass>) -> Result<Tpl::Text> {
+pub(crate) fn dumpConstrainClass(mut in_txt: Tpl::Text, mut in_a_cc: Arc<Absyn::ConstrainClass>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cc.clone())) {
         (txt, Deref @ Absyn::ConstrainClass { elementSpec: Deref @ Absyn::ElementSpec::EXTENDS { path: i_p, elementArg: i_el, .. }, comment: i_comment }) => {
@@ -2347,7 +2347,7 @@ pub fn dumpConstrainClass(mut in_txt: Tpl::Text, mut in_a_cc: Arc<Absyn::Constra
     Ok(out_txt)
 }
 
-pub fn dumpComponentItem(mut in_txt: Tpl::Text, mut in_a_comp: Arc<Absyn::ComponentItem>) -> Result<Tpl::Text> {
+pub(crate) fn dumpComponentItem(mut in_txt: Tpl::Text, mut in_a_comp: Arc<Absyn::ComponentItem>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_comp.clone())) {
         (txt, Deref @ Absyn::ComponentItem { component: i_component, condition: i_condition, comment: i_comment }) => {
@@ -2387,7 +2387,7 @@ fn fun_119(mut in_txt: Tpl::Text, mut in_a_modification: Option<Arc<Absyn::Modif
     Ok(out_txt)
 }
 
-pub fn dumpComponent(mut in_txt: Tpl::Text, mut in_a_comp: Absyn::Component) -> Result<Tpl::Text> {
+pub(crate) fn dumpComponent(mut in_txt: Tpl::Text, mut in_a_comp: Absyn::Component) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_comp.clone()) {
         (mut txt, Absyn::Component { arrayDim: ref i_arrayDim, modification: mut i_modification, name: mut i_name }) => {
@@ -2407,7 +2407,7 @@ pub fn dumpComponent(mut in_txt: Tpl::Text, mut in_a_comp: Absyn::Component) -> 
     Ok(out_txt)
 }
 
-pub fn dumpComponentCondition(mut in_txt: Tpl::Text, mut in_a_cond: Option<Arc<Absyn::Exp>>) -> Result<Tpl::Text> {
+pub(crate) fn dumpComponentCondition(mut in_txt: Tpl::Text, mut in_a_cond: Option<Arc<Absyn::Exp>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cond.clone())) {
         (txt, Some(i_cexp)) => {
@@ -2443,7 +2443,7 @@ fn lm_122(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Absyn::GroupImpo
     Ok(txt)
 }
 
-pub fn dumpImport(mut in_txt: Tpl::Text, mut in_a_imp: Absyn::Import) -> Result<Tpl::Text> {
+pub(crate) fn dumpImport(mut in_txt: Tpl::Text, mut in_a_imp: Absyn::Import) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_imp.clone()) {
         (mut txt, Absyn::Import::NAMED_IMPORT { name: mut i_name, path: ref i_path }) => {
@@ -2481,7 +2481,7 @@ pub fn dumpImport(mut in_txt: Tpl::Text, mut in_a_imp: Absyn::Import) -> Result<
     Ok(out_txt)
 }
 
-pub fn dumpGroupImport(mut in_txt: Tpl::Text, mut in_a_gimp: Absyn::GroupImport) -> Result<Tpl::Text> {
+pub(crate) fn dumpGroupImport(mut in_txt: Tpl::Text, mut in_a_gimp: Absyn::GroupImport) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_gimp.clone()) {
         (mut txt, Absyn::GroupImport::GROUP_IMPORT_NAME { name: mut i_name }) => {
@@ -2501,7 +2501,7 @@ pub fn dumpGroupImport(mut in_txt: Tpl::Text, mut in_a_gimp: Absyn::GroupImport)
     Ok(out_txt)
 }
 
-pub fn dumpEquationItem(mut in_txt: Tpl::Text, mut in_a_eq: Arc<Absyn::EquationItem>) -> Result<Tpl::Text> {
+pub(crate) fn dumpEquationItem(mut in_txt: Tpl::Text, mut in_a_eq: Arc<Absyn::EquationItem>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_eq.clone())) {
         (txt, Deref @ Absyn::EquationItem::EQUATIONITEM { equation_: i_equation__, comment: i_comment, .. }) => {
@@ -2548,7 +2548,7 @@ fn lm_126(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::Equat
     Ok(txt)
 }
 
-pub fn dumpEquationItems(mut txt: Tpl::Text, mut a_eql: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>) -> Result<Tpl::Text> {
+pub(crate) fn dumpEquationItems(mut txt: Tpl::Text, mut a_eql: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
     out_txt = lm_126(out_txt.clone(), a_eql.clone())?;
@@ -2607,7 +2607,7 @@ fn lm_130(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<(Arc<Absyn::Exp>
     Ok(txt)
 }
 
-pub fn dumpEquation(mut in_txt: Tpl::Text, mut in_a_eq: Arc<Absyn::Equation>) -> Result<Tpl::Text> {
+pub(crate) fn dumpEquation(mut in_txt: Tpl::Text, mut in_a_eq: Arc<Absyn::Equation>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_eq.clone())) {
         (txt, Deref @ Absyn::Equation::EQ_IF { ifExp: i_ifExp, equationTrueItems: i_equationTrueItems, elseIfBranches: i_elseIfBranches, equationElseItems: i_equationElseItems }) => {
@@ -2746,7 +2746,7 @@ fn lm_132(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::Equat
     Ok(txt)
 }
 
-pub fn dumpEquationBranch(mut txt: Tpl::Text, mut a_cond: Arc<Absyn::Exp>, mut a_body: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, mut a_header: ArcStr) -> Result<Tpl::Text> {
+pub(crate) fn dumpEquationBranch(mut txt: Tpl::Text, mut a_cond: Arc<Absyn::Exp>, mut a_body: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, mut a_header: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut l_body__str: Tpl::Text;
     let mut l_cond__str: Tpl::Text;
@@ -2780,7 +2780,7 @@ fn lm_134(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::Algor
     Ok(txt)
 }
 
-pub fn dumpAlgorithmItems(mut txt: Tpl::Text, mut a_algs: Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>) -> Result<Tpl::Text> {
+pub(crate) fn dumpAlgorithmItems(mut txt: Tpl::Text, mut a_algs: Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
     out_txt = lm_134(out_txt.clone(), a_algs.clone())?;
@@ -2788,7 +2788,7 @@ pub fn dumpAlgorithmItems(mut txt: Tpl::Text, mut a_algs: Arc<metamodelica::List
     Ok(out_txt)
 }
 
-pub fn dumpAlgorithmItem(mut in_txt: Tpl::Text, mut in_a_alg: Arc<Absyn::AlgorithmItem>) -> Result<Tpl::Text> {
+pub(crate) fn dumpAlgorithmItem(mut in_txt: Tpl::Text, mut in_a_alg: Arc<Absyn::AlgorithmItem>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_alg.clone())) {
         (txt, Deref @ Absyn::AlgorithmItem::ALGORITHMITEM { algorithm_: i_algorithm__, comment: i_comment, .. }) => {
@@ -2888,7 +2888,7 @@ fn fun_140(mut in_txt: Tpl::Text, mut in_a_equ: Arc<metamodelica::List<Arc<Absyn
     Ok(out_txt)
 }
 
-pub fn dumpAlgorithm(mut in_txt: Tpl::Text, mut in_a_alg: Arc<Absyn::Algorithm>) -> Result<Tpl::Text> {
+pub(crate) fn dumpAlgorithm(mut in_txt: Tpl::Text, mut in_a_alg: Arc<Absyn::Algorithm>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_alg.clone())) {
         (txt, Deref @ Absyn::Algorithm::ALG_ASSIGN { assignComponent: i_assignComponent, value: i_value }) => {
@@ -3058,7 +3058,7 @@ fn lm_142(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::Algor
     Ok(txt)
 }
 
-pub fn dumpAlgorithmBranch(mut txt: Tpl::Text, mut a_cond: Arc<Absyn::Exp>, mut a_body: Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>, mut a_header: ArcStr, mut a_exec__str: ArcStr) -> Result<Tpl::Text> {
+pub(crate) fn dumpAlgorithmBranch(mut txt: Tpl::Text, mut a_cond: Arc<Absyn::Exp>, mut a_body: Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>, mut a_header: ArcStr, mut a_exec__str: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut l_body__str: Tpl::Text;
     let mut l_cond__str: Tpl::Text;
@@ -3127,7 +3127,7 @@ pub fn dumpPath(mut in_txt: Tpl::Text, mut in_a_path: Arc<Absyn::Path>) -> Resul
     }
 }
 
-pub fn dumpPathNoQual(mut in_txt: Tpl::Text, mut in_a_path: Arc<Absyn::Path>) -> Result<Tpl::Text> {
+pub(crate) fn dumpPathNoQual(mut in_txt: Tpl::Text, mut in_a_path: Arc<Absyn::Path>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_path.clone())) {
         (txt, Deref @ Absyn::Path::FULLYQUALIFIED { path: i_path }) => {
@@ -3145,7 +3145,7 @@ pub fn dumpPathNoQual(mut in_txt: Tpl::Text, mut in_a_path: Arc<Absyn::Path>) ->
     Ok(out_txt)
 }
 
-pub fn dumpStringCommentOption(mut in_txt: Tpl::Text, mut in_a_cmt: Option<ArcStr>) -> Result<Tpl::Text> {
+pub(crate) fn dumpStringCommentOption(mut in_txt: Tpl::Text, mut in_a_cmt: Option<ArcStr>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_cmt.clone()) {
         (mut txt, Some(mut i_str)) => {
@@ -3178,7 +3178,7 @@ fn lm_148(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::TypeS
     Ok(txt)
 }
 
-pub fn dumpTypeSpec(mut in_txt: Tpl::Text, mut in_a_typeSpec: Arc<Absyn::TypeSpec>) -> Result<Tpl::Text> {
+pub(crate) fn dumpTypeSpec(mut in_txt: Tpl::Text, mut in_a_typeSpec: Arc<Absyn::TypeSpec>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_typeSpec.clone())) {
         (txt, Deref @ Absyn::TypeSpec::TPATH { path: i_path, arrayDim: i_arrayDim }) => {
@@ -3216,7 +3216,7 @@ pub fn dumpTypeSpec(mut in_txt: Tpl::Text, mut in_a_typeSpec: Arc<Absyn::TypeSpe
     Ok(out_txt)
 }
 
-pub fn dumpArrayDimOpt(mut in_txt: Tpl::Text, mut in_a_arraydim: Option<Arc<metamodelica::List<Arc<Absyn::Subscript>>>>) -> Result<Tpl::Text> {
+pub(crate) fn dumpArrayDimOpt(mut in_txt: Tpl::Text, mut in_a_arraydim: Option<Arc<metamodelica::List<Arc<Absyn::Subscript>>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_arraydim.clone())) {
         (txt, Some(i_ad)) => {
@@ -3248,7 +3248,7 @@ fn lm_151(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::Subsc
     Ok(txt)
 }
 
-pub fn dumpSubscripts(mut in_txt: Tpl::Text, mut in_a_subscripts: Arc<metamodelica::List<Arc<Absyn::Subscript>>>) -> Result<Tpl::Text> {
+pub(crate) fn dumpSubscripts(mut in_txt: Tpl::Text, mut in_a_subscripts: Arc<metamodelica::List<Arc<Absyn::Subscript>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_subscripts.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
@@ -3270,7 +3270,7 @@ pub fn dumpSubscripts(mut in_txt: Tpl::Text, mut in_a_subscripts: Arc<metamodeli
     Ok(out_txt)
 }
 
-pub fn dumpSubscript(mut in_txt: Tpl::Text, mut in_a_subscript: Arc<Absyn::Subscript>) -> Result<Tpl::Text> {
+pub(crate) fn dumpSubscript(mut in_txt: Tpl::Text, mut in_a_subscript: Arc<Absyn::Subscript>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_subscript.clone())) {
         (txt, Deref @ Absyn::Subscript::NOSUB { .. }) => {
@@ -3690,7 +3690,7 @@ pub fn dumpExp(mut in_txt: Tpl::Text, mut in_a_exp: Arc<Absyn::Exp>) -> Result<T
     }
 }
 
-pub fn dumpLhsExp(mut in_txt: Tpl::Text, mut in_a_lhs: Arc<Absyn::Exp>) -> Result<Tpl::Text> {
+pub(crate) fn dumpLhsExp(mut in_txt: Tpl::Text, mut in_a_lhs: Arc<Absyn::Exp>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_lhs.clone())) {
         (txt, i_lhs @ Deref @ Absyn::Exp::IFEXP { ifExp: _, .. }) => {
@@ -3710,7 +3710,7 @@ pub fn dumpLhsExp(mut in_txt: Tpl::Text, mut in_a_lhs: Arc<Absyn::Exp>) -> Resul
     Ok(out_txt)
 }
 
-pub fn dumpOperand(mut txt: Tpl::Text, mut a_operand: Arc<Absyn::Exp>, mut a_operation: Arc<Absyn::Exp>, mut a_lhs: bool) -> Result<Tpl::Text> {
+pub(crate) fn dumpOperand(mut txt: Tpl::Text, mut a_operand: Arc<Absyn::Exp>, mut a_operation: Arc<Absyn::Exp>, mut a_lhs: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut l_op__str: Tpl::Text;
     l_op__str = dumpExp(Tpl::emptyTxt.clone(), a_operand.clone())?;
@@ -3718,7 +3718,7 @@ pub fn dumpOperand(mut txt: Tpl::Text, mut a_operand: Arc<Absyn::Exp>, mut a_ope
     Ok(out_txt)
 }
 
-pub fn dumpIfExp(mut in_txt: Tpl::Text, mut in_a_if__exp: Arc<Absyn::Exp>) -> Result<Tpl::Text> {
+pub(crate) fn dumpIfExp(mut in_txt: Tpl::Text, mut in_a_if__exp: Arc<Absyn::Exp>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_if__exp.clone())) {
         (txt, Deref @ Absyn::Exp::IFEXP { ifExp: i_ifExp, trueBranch: i_trueBranch, elseBranch: i_elseBranch, elseIfBranch: i_elseIfBranch }) => {
@@ -3773,7 +3773,7 @@ fn lm_167(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<(Arc<Absyn::Exp>
     Ok(txt)
 }
 
-pub fn dumpElseIfExp(mut txt: Tpl::Text, mut a_else__if: Arc<metamodelica::List<(Arc<Absyn::Exp>, Arc<Absyn::Exp>)>>) -> Result<Tpl::Text> {
+pub(crate) fn dumpElseIfExp(mut txt: Tpl::Text, mut a_else__if: Arc<metamodelica::List<(Arc<Absyn::Exp>, Arc<Absyn::Exp>)>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
     out_txt = lm_167(out_txt.clone(), a_else__if.clone())?;
@@ -3823,7 +3823,7 @@ fn fun_171(mut in_txt: Tpl::Text, mut in_a_boolean: bool) -> Result<Tpl::Text> {
     Ok(out_txt)
 }
 
-pub fn dumpCodeNode(mut in_txt: Tpl::Text, mut in_a_code: Arc<Absyn::CodeNode>) -> Result<Tpl::Text> {
+pub(crate) fn dumpCodeNode(mut in_txt: Tpl::Text, mut in_a_code: Arc<Absyn::CodeNode>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_code.clone())) {
         (txt, Deref @ Absyn::CodeNode::C_TYPENAME { path: i_path }) => {
@@ -3914,7 +3914,7 @@ fn lm_173(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::Case>
     Ok(txt)
 }
 
-pub fn dumpMatchExp(mut in_txt: Tpl::Text, mut in_a_match__exp: Arc<Absyn::Exp>) -> Result<Tpl::Text> {
+pub(crate) fn dumpMatchExp(mut in_txt: Tpl::Text, mut in_a_match__exp: Arc<Absyn::Exp>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_match__exp.clone())) {
         (txt, Deref @ Absyn::Exp::MATCHEXP { matchTy: i_matchTy, inputExp: i_inputExp, localDecls: i_localDecls, cases: i_cases, comment: i_comment }) => {
@@ -3954,7 +3954,7 @@ pub fn dumpMatchExp(mut in_txt: Tpl::Text, mut in_a_match__exp: Arc<Absyn::Exp>)
     Ok(out_txt)
 }
 
-pub fn dumpMatchType(mut in_txt: Tpl::Text, mut in_a_match__type: Absyn::MatchType) -> Result<Tpl::Text> {
+pub(crate) fn dumpMatchType(mut in_txt: Tpl::Text, mut in_a_match__type: Absyn::MatchType) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_match__type.clone()) {
         (mut txt, Absyn::MatchType::MATCH { .. }) => {
@@ -3988,7 +3988,7 @@ fn lm_176(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::Eleme
     Ok(txt)
 }
 
-pub fn dumpMatchLocals(mut in_txt: Tpl::Text, mut in_a_locals: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>) -> Result<Tpl::Text> {
+pub(crate) fn dumpMatchLocals(mut in_txt: Tpl::Text, mut in_a_locals: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_locals.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
@@ -4043,7 +4043,7 @@ fn lm_179(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::Algor
     Ok(txt)
 }
 
-pub fn dumpMatchEquations(mut in_txt: Tpl::Text, mut in_a_cp: Arc<Absyn::ClassPart>) -> Result<Tpl::Text> {
+pub(crate) fn dumpMatchEquations(mut in_txt: Tpl::Text, mut in_a_cp: Arc<Absyn::ClassPart>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cp.clone())) {
         (txt, Deref @ Absyn::ClassPart::EQUATIONS { contents: Deref @ metamodelica::List::Nil }) => {
@@ -4142,7 +4142,7 @@ fn fun_183(mut in_txt: Tpl::Text, mut in_a_eql__str: Tpl::Text, mut in_a_result_
     Ok(out_txt)
 }
 
-pub fn dumpMatchCase(mut in_txt: Tpl::Text, mut in_a_c: Arc<Absyn::Case>) -> Result<Tpl::Text> {
+pub(crate) fn dumpMatchCase(mut in_txt: Tpl::Text, mut in_a_c: Arc<Absyn::Case>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_c.clone())) {
         (txt, Deref @ Absyn::Case::CASE { pattern: i_pattern, patternGuard: i_patternGuard, classPart: i_classPart, result: i_result, comment: i_comment, .. }) => {
@@ -4310,7 +4310,7 @@ fn fun_186(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
     Ok(out_txt)
 }
 
-pub fn dumpCref(mut in_txt: Tpl::Text, mut in_a_cref: Arc<Absyn::ComponentRef>) -> Result<Tpl::Text> {
+pub(crate) fn dumpCref(mut in_txt: Tpl::Text, mut in_a_cref: Arc<Absyn::ComponentRef>) -> Result<Tpl::Text> {
     '__tco: loop {
         ::match_deref::match_deref! { match &((in_txt.clone(), in_a_cref.clone())) {
         (txt, Deref @ Absyn::ComponentRef::CREF_QUAL { name: i_name, subscripts: i_subscripts, componentRef: i_componentRef }) => {
@@ -4442,7 +4442,7 @@ fn fun_193(mut in_txt: Tpl::Text, mut in_a_iterType: Absyn::ReductionIterType) -
     Ok(out_txt)
 }
 
-pub fn dumpFunctionArgs(mut in_txt: Tpl::Text, mut in_a_args: Arc<Absyn::FunctionArgs>) -> Result<Tpl::Text> {
+pub(crate) fn dumpFunctionArgs(mut in_txt: Tpl::Text, mut in_a_args: Arc<Absyn::FunctionArgs>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_args.clone())) {
         (txt, Deref @ Absyn::FunctionArgs::FUNCTIONARGS { args: i_args, argNames: i_argNames }) => {
@@ -4485,7 +4485,7 @@ pub fn dumpFunctionArgs(mut in_txt: Tpl::Text, mut in_a_args: Arc<Absyn::Functio
     Ok(out_txt)
 }
 
-pub fn dumpNamedArg(mut in_txt: Tpl::Text, mut in_a_narg: Arc<Absyn::NamedArg>) -> Result<Tpl::Text> {
+pub(crate) fn dumpNamedArg(mut in_txt: Tpl::Text, mut in_a_narg: Arc<Absyn::NamedArg>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_narg.clone())) {
         (txt, Deref @ Absyn::NamedArg { argName: i_argName, argValue: i_argValue }) => {
@@ -4519,7 +4519,7 @@ fn lm_196(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<Absyn::ForIt
     Ok(txt)
 }
 
-pub fn dumpForIterators(mut txt: Tpl::Text, mut a_iters: Arc<metamodelica::List<Arc<Absyn::ForIterator>>>) -> Result<Tpl::Text> {
+pub(crate) fn dumpForIterators(mut txt: Tpl::Text, mut a_iters: Arc<metamodelica::List<Arc<Absyn::ForIterator>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
     out_txt = lm_196(out_txt.clone(), a_iters.clone())?;
@@ -4565,7 +4565,7 @@ fn fun_199(mut in_txt: Tpl::Text, mut in_a_guardExp: Option<Arc<Absyn::Exp>>) ->
     Ok(out_txt)
 }
 
-pub fn dumpForIterator(mut in_txt: Tpl::Text, mut in_a_iterator: Arc<Absyn::ForIterator>) -> Result<Tpl::Text> {
+pub(crate) fn dumpForIterator(mut in_txt: Tpl::Text, mut in_a_iterator: Arc<Absyn::ForIterator>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_iterator.clone())) {
         (txt, Deref @ Absyn::ForIterator { range: i_range, guardExp: i_guardExp, name: i_name }) => {

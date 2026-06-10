@@ -131,7 +131,7 @@ impl metamodelica::gc::MMTrace for RelationInversion {
     fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 
-pub fn statusString(mut status: Status) -> ArcStr {
+pub(crate) fn statusString(mut status: Status) -> ArcStr {
     let mut r#str: ArcStr;
     r#str = ((match status.clone() {
         Status::UNPROCESSED => literal!("Solve.UNPROCESSED"),
@@ -143,7 +143,7 @@ pub fn statusString(mut status: Status) -> ArcStr {
     r#str
 }
 
-pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<BackendDAE::NBackendDAE>> {
+pub(crate) fn main(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<BackendDAE::NBackendDAE>> {
     pub type StrongComponentLst = Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>>;
 
     let mut bdae: Arc<BackendDAE::NBackendDAE> = bdae;
@@ -232,7 +232,7 @@ pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<BackendDAE::NB
     Ok(bdae)
 }
 
-pub fn solvePartition(mut partition: Arc<Partition::Partition>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, mut implicit_index_ptr: Pointer::Pointer<i32>, mut duplicate_map: Arc<UnorderedMap::UnorderedMap<Arc<StrongComponent::NBStrongComponent>, Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>>>>, mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqData::EqData>) -> Result<Arc<Partition::Partition>> {
+pub(crate) fn solvePartition(mut partition: Arc<Partition::Partition>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, mut implicit_index_ptr: Pointer::Pointer<i32>, mut duplicate_map: Arc<UnorderedMap::UnorderedMap<Arc<StrongComponent::NBStrongComponent>, Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>>>>, mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqData::EqData>) -> Result<Arc<Partition::Partition>> {
     pub type EquationPointerList = Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>;
 
     let mut partition: Arc<Partition::Partition> = partition;
@@ -287,7 +287,7 @@ pub fn solvePartition(mut partition: Arc<Partition::Partition>, mut funcMap: Arc
     Ok(partition)
 }
 
-pub fn solveStrongComponent(mut comp: Arc<StrongComponent::NBStrongComponent>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, mut kind: BPartition::Kind, mut implicit_index: i32, mut slicing_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>>>, mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqData::EqData>) -> Result<(Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>>, i32)> {
+pub(crate) fn solveStrongComponent(mut comp: Arc<StrongComponent::NBStrongComponent>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, mut kind: BPartition::Kind, mut implicit_index: i32, mut slicing_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>>>, mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqData::EqData>) -> Result<(Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>>, i32)> {
     let mut solved_comps: Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>> = metamodelica::nil();
     let mut implicit_index: i32 = implicit_index;
     let mut solve_status: Status = Status::UNPROCESSED;
@@ -566,7 +566,7 @@ pub fn solveStrongComponent(mut comp: Arc<StrongComponent::NBStrongComponent>, m
     Ok((solved_comps, implicit_index))
 }
 
-pub fn solveGenericEquation(mut comp: Arc<StrongComponent::NBStrongComponent>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, mut kind: BPartition::Kind, mut implicit_index: i32, mut slicing_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>>>, mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqData::EqData>) -> Result<(Arc<StrongComponent::NBStrongComponent>, Status, i32)> {
+pub(crate) fn solveGenericEquation(mut comp: Arc<StrongComponent::NBStrongComponent>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, mut kind: BPartition::Kind, mut implicit_index: i32, mut slicing_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>>>, mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqData::EqData>) -> Result<(Arc<StrongComponent::NBStrongComponent>, Status, i32)> {
     let mut comp: Arc<StrongComponent::NBStrongComponent> = comp;
     let mut solve_status: Status = Status::UNPROCESSED;
     let mut implicit_index: i32 = implicit_index;
@@ -590,7 +590,7 @@ pub fn solveGenericEquation(mut comp: Arc<StrongComponent::NBStrongComponent>, m
     Ok((comp, solve_status, implicit_index))
 }
 
-pub fn solveGenericEquationSlice(mut var_slice: Arc<Slice::NBSlice<Pointer::Pointer<Arc<Variable::NFVariable>>>>, mut eqn_slice: Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>, mut cref: Arc<ComponentRef::NFComponentRef>, mut functions: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, mut kind: BPartition::Kind, mut implicit_index: i32, mut slicing_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>>>, mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqData::EqData>) -> Result<(Arc<StrongComponent::NBStrongComponent>, Status, i32)> {
+pub(crate) fn solveGenericEquationSlice(mut var_slice: Arc<Slice::NBSlice<Pointer::Pointer<Arc<Variable::NFVariable>>>>, mut eqn_slice: Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>, mut cref: Arc<ComponentRef::NFComponentRef>, mut functions: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, mut kind: BPartition::Kind, mut implicit_index: i32, mut slicing_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>>>, mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqData::EqData>) -> Result<(Arc<StrongComponent::NBStrongComponent>, Status, i32)> {
     let mut comp: Arc<StrongComponent::NBStrongComponent>;
     let mut solve_status: Status;
     let mut implicit_index: i32 = implicit_index;
@@ -617,7 +617,7 @@ pub fn solveGenericEquationSlice(mut var_slice: Arc<Slice::NBSlice<Pointer::Poin
     Ok((comp, solve_status, implicit_index))
 }
 
-pub fn solveSingleStrongComponent(mut eqn: Arc<Equation::Equation>, mut var: Arc<Variable::NFVariable>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, mut kind: BPartition::Kind, mut implicit_index: i32, mut slicing_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>>>, mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqData::EqData>) -> Result<(Arc<Equation::Equation>, Status, i32)> {
+pub(crate) fn solveSingleStrongComponent(mut eqn: Arc<Equation::Equation>, mut var: Arc<Variable::NFVariable>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, mut kind: BPartition::Kind, mut implicit_index: i32, mut slicing_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>>>, mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqData::EqData>) -> Result<(Arc<Equation::Equation>, Status, i32)> {
     let mut eqn: Arc<Equation::Equation> = eqn;
     let mut status: Status;
     let mut implicit_index: i32 = implicit_index;
@@ -632,7 +632,7 @@ pub fn solveSingleStrongComponent(mut eqn: Arc<Equation::Equation>, mut var: Arc
     Ok((eqn, status, implicit_index))
 }
 
-pub fn solveMultiStrongComponent(mut eqn_slice: Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>, mut var_slices: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Variable::NFVariable>>>>>>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, mut kind: BPartition::Kind, mut implicit_index: i32, mut slicing_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>>>, mut iter: Arc<Iterator::Iterator>, mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqData::EqData>) -> Result<(Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>, Status, i32)> {
+pub(crate) fn solveMultiStrongComponent(mut eqn_slice: Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>, mut var_slices: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Variable::NFVariable>>>>>>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, mut kind: BPartition::Kind, mut implicit_index: i32, mut slicing_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>>>, mut iter: Arc<Iterator::Iterator>, mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqData::EqData>) -> Result<(Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>, Status, i32)> {
     let mut eqn_slice: Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>> = eqn_slice;
     let mut status: Status = Status::UNPROCESSED;
     let mut implicit_index: i32 = implicit_index;
@@ -679,7 +679,7 @@ pub fn solveMultiStrongComponent(mut eqn_slice: Arc<Slice::NBSlice<Pointer::Poin
     Ok((eqn_slice, status, implicit_index))
 }
 
-pub fn solveMultiRecordStrongComponent(mut eqn: Arc<Equation::Equation>, mut var_slices: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Variable::NFVariable>>>>>>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>) -> Result<(Arc<Equation::Equation>, Status)> {
+pub(crate) fn solveMultiRecordStrongComponent(mut eqn: Arc<Equation::Equation>, mut var_slices: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Variable::NFVariable>>>>>>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>) -> Result<(Arc<Equation::Equation>, Status)> {
     let mut solved_eqn: Arc<Equation::Equation> = eqn.clone();
     let mut status: Status = Status::UNPROCESSED;
     let mut vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = ({
@@ -729,7 +729,7 @@ pub fn solveMultiRecordStrongComponent(mut eqn: Arc<Equation::Equation>, mut var
     Ok((solved_eqn, status))
 }
 
-pub fn solveEquation(mut eqn: Arc<Equation::Equation>, mut cref: Arc<ComponentRef::NFComponentRef>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, mut kind: BPartition::Kind, mut implicit_index: i32, mut slicing_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>>>, mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqData::EqData>) -> Result<(Arc<Equation::Equation>, Status, i32, RelationInversion)> {
+pub(crate) fn solveEquation(mut eqn: Arc<Equation::Equation>, mut cref: Arc<ComponentRef::NFComponentRef>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, mut kind: BPartition::Kind, mut implicit_index: i32, mut slicing_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>>>, mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqData::EqData>) -> Result<(Arc<Equation::Equation>, Status, i32, RelationInversion)> {
     let mut eqn: Arc<Equation::Equation> = eqn;
     let mut status: Status = Status::UNPROCESSED;
     let mut implicit_index: i32 = implicit_index;
@@ -766,7 +766,7 @@ pub fn solveEquation(mut eqn: Arc<Equation::Equation>, mut cref: Arc<ComponentRe
     Ok((eqn, status, implicit_index, invertRelation))
 }
 
-pub fn solveBody(mut eqn: Arc<Equation::Equation>, mut cref: Arc<ComponentRef::NFComponentRef>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>) -> Result<(Arc<Equation::Equation>, Status, RelationInversion)> {
+pub(crate) fn solveBody(mut eqn: Arc<Equation::Equation>, mut cref: Arc<ComponentRef::NFComponentRef>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>) -> Result<(Arc<Equation::Equation>, Status, RelationInversion)> {
     let mut eqn: Arc<Equation::Equation> = eqn;
     let mut status: Status;
     let mut invertRelation: RelationInversion;
@@ -817,7 +817,7 @@ pub fn solveBody(mut eqn: Arc<Equation::Equation>, mut cref: Arc<ComponentRef::N
     Ok((eqn, status, invertRelation))
 }
 
-pub fn solveIfBody(mut body: Arc<IfEquationBody::IfEquationBody>, mut vars: Arc<VariablePointers::VariablePointers>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, mut kind: BPartition::Kind, mut implicit_index: i32, mut slicing_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>>>, mut iter: Arc<Iterator::Iterator>, mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqData::EqData>) -> Result<(Arc<IfEquationBody::IfEquationBody>, Status, i32)> {
+pub(crate) fn solveIfBody(mut body: Arc<IfEquationBody::IfEquationBody>, mut vars: Arc<VariablePointers::VariablePointers>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, mut kind: BPartition::Kind, mut implicit_index: i32, mut slicing_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>>>, mut iter: Arc<Iterator::Iterator>, mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqData::EqData>) -> Result<(Arc<IfEquationBody::IfEquationBody>, Status, i32)> {
     let mut body: Arc<IfEquationBody::IfEquationBody> = body;
     let mut status: Status;
     let mut implicit_index: i32 = implicit_index;
@@ -844,7 +844,7 @@ pub fn solveIfBody(mut body: Arc<IfEquationBody::IfEquationBody>, mut vars: Arc<
     Ok((body, status, implicit_index))
 }
 
-pub fn solveSimple(mut eqn: Arc<Equation::Equation>, mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<(Arc<Equation::Equation>, Status, RelationInversion)> {
+pub(crate) fn solveSimple(mut eqn: Arc<Equation::Equation>, mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<(Arc<Equation::Equation>, Status, RelationInversion)> {
     let mut eqn: Arc<Equation::Equation> = eqn;
     let mut status: Status = Status::UNPROCESSED;
     let mut invertRelation: RelationInversion = RelationInversion::TRUE;

@@ -202,61 +202,61 @@ pub static returnContext: Context = Context::FUNCTION_RETURN_CONTEXT { retValsSt
 
 pub static inputContext: Context = Context::INPUT_CONTEXT { ty_str: literal!("") };
 
-pub fn makeUniontypeContext(mut name: ArcStr) -> Context {
+pub(crate) fn makeUniontypeContext(mut name: ArcStr) -> Context {
     let mut context: Context;
     context = Context::UNIONTYPE { name: (name.clone()).clone() };
     context
 }
 
-pub fn makeInputContext(mut ty_str: ArcStr) -> Context {
+pub(crate) fn makeInputContext(mut ty_str: ArcStr) -> Context {
     let mut context: Context;
     context = Context::INPUT_CONTEXT { ty_str: (ty_str.clone()).clone() };
     context
 }
 
-pub fn makeFunctionContext(mut returnValuesStr: ArcStr) -> Context {
+pub(crate) fn makeFunctionContext(mut returnValuesStr: ArcStr) -> Context {
     let mut context: Context;
     context = Context::FUNCTION { retValsStr: (returnValuesStr.clone()).clone() };
     context
 }
 
-pub fn makeFunctionReturnContext(mut returnValuesStr: ArcStr, mut ty_str: ArcStr) -> Context {
+pub(crate) fn makeFunctionReturnContext(mut returnValuesStr: ArcStr, mut ty_str: ArcStr) -> Context {
     let mut context: Context;
     context = Context::FUNCTION_RETURN_CONTEXT { retValsStr: (returnValuesStr.clone()).clone(), ty_str: (ty_str.clone()).clone() };
     context
 }
 
-pub fn makeMatchContext(mut iExp: Arc<Absyn::Exp>) -> Context {
+pub(crate) fn makeMatchContext(mut iExp: Arc<Absyn::Exp>) -> Context {
     let mut context: Context;
     context = Context::MATCH_CONTEXT { inputExp: iExp.clone() };
     context
 }
 
-pub fn makeInputDirection() -> Absyn::Direction {
+pub(crate) fn makeInputDirection() -> Absyn::Direction {
     let mut direction: Absyn::Direction;
     direction = openmodelica_ast::Absyn::Direction::INPUT;
     direction
 }
 
-pub fn makeOutputDirection() -> Absyn::Direction {
+pub(crate) fn makeOutputDirection() -> Absyn::Direction {
     let mut direction: Absyn::Direction;
     direction = openmodelica_ast::Absyn::Direction::OUTPUT;
     direction
 }
 
-pub fn makeInputOutputDirection() -> Absyn::Direction {
+pub(crate) fn makeInputOutputDirection() -> Absyn::Direction {
     let mut direction: Absyn::Direction;
     direction = openmodelica_ast::Absyn::Direction::INPUT_OUTPUT;
     direction
 }
 
-pub fn makeBDirection() -> Absyn::Direction {
+pub(crate) fn makeBDirection() -> Absyn::Direction {
     let mut direction: Absyn::Direction;
     direction = openmodelica_ast::Absyn::Direction::BIDIR;
     direction
 }
 
-pub fn isFunctionContext(mut givenCTX: Context) -> bool {
+pub(crate) fn isFunctionContext(mut givenCTX: Context) -> bool {
     let mut isFuncCTX: bool = false;
     isFuncCTX = (match givenCTX.clone() {
         Context::FUNCTION { retValsStr: _ } => true,
@@ -265,7 +265,7 @@ pub fn isFunctionContext(mut givenCTX: Context) -> bool {
     isFuncCTX
 }
 
-pub fn filterOnDirection(mut inputs: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut direction: Absyn::Direction) -> Arc<metamodelica::List<Arc<Absyn::ElementItem>>> {
+pub(crate) fn filterOnDirection(mut inputs: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut direction: Absyn::Direction) -> Arc<metamodelica::List<Arc<Absyn::ElementItem>>> {
     let mut outputs: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
     let mut ioDirection: Absyn::Direction = makeInputOutputDirection();
     let mut directionEQ: bool = false;
@@ -279,7 +279,7 @@ pub fn filterOnDirection(mut inputs: Arc<metamodelica::List<Arc<Absyn::ElementIt
     outputs
 }
 
-pub fn elementSpecIsBIDIR(mut spec: Arc<Absyn::ElementSpec>) -> bool {
+pub(crate) fn elementSpecIsBIDIR(mut spec: Arc<Absyn::ElementSpec>) -> bool {
     let mut isBidir: bool;
     isBidir = (::match_deref::match_deref! { match &(spec.clone()) {
         Deref @ Absyn::ElementSpec::COMPONENTS { attributes, .. } => {
@@ -296,7 +296,7 @@ pub fn elementSpecIsBIDIR(mut spec: Arc<Absyn::ElementSpec>) -> bool {
     isBidir
 }
 
-pub fn elementSpecIsOUTPUT(mut spec: Arc<Absyn::ElementSpec>) -> bool {
+pub(crate) fn elementSpecIsOUTPUT(mut spec: Arc<Absyn::ElementSpec>) -> bool {
     let mut isOutput: bool;
     isOutput = (::match_deref::match_deref! { match &(spec.clone()) {
         Deref @ Absyn::ElementSpec::COMPONENTS { attributes, .. } => {
@@ -313,13 +313,13 @@ pub fn elementSpecIsOUTPUT(mut spec: Arc<Absyn::ElementSpec>) -> bool {
     isOutput
 }
 
-pub fn elementSpecIsOUTPUT_OR_BIDIR(mut spec: Arc<Absyn::ElementSpec>) -> bool {
+pub(crate) fn elementSpecIsOUTPUT_OR_BIDIR(mut spec: Arc<Absyn::ElementSpec>) -> bool {
     let mut isOutput: bool;
     isOutput = elementSpecIsOUTPUT(spec.clone()) || elementSpecIsBIDIR(spec.clone());
     isOutput
 }
 
-pub fn explicitReturnInClassPart(mut classParts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> bool {
+pub(crate) fn explicitReturnInClassPart(mut classParts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> bool {
     let mut existsImplicitReturn: bool = false;
     for mut cp in &*classParts.clone() {
         let mut cp = cp.clone();
@@ -336,7 +336,7 @@ pub fn explicitReturnInClassPart(mut classParts: Arc<metamodelica::List<Arc<Absy
     existsImplicitReturn
 }
 
-pub fn algorithmItemsContainsReturn(mut contents: Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>) -> bool {
+pub(crate) fn algorithmItemsContainsReturn(mut contents: Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>) -> bool {
     let mut existsReturn: bool = false;
     for mut item in &*contents.clone() {
         let mut item = item.clone();
@@ -357,7 +357,7 @@ pub fn algorithmItemsContainsReturn(mut contents: Arc<metamodelica::List<Arc<Abs
     existsReturn
 }
 
-pub fn mMKeywordToJLKeyword() -> () {
+pub(crate) fn mMKeywordToJLKeyword() -> () {
     ()
 }
 

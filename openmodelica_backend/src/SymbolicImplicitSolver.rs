@@ -58,7 +58,7 @@ use openmodelica_util::Flags;
 use openmodelica_util::FlagsUtil;
 use openmodelica_util_datatypes_basic::List;
 
-pub fn symSolver(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Option<BackendDAE::InlineData>> {
+pub(crate) fn symSolver(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Option<BackendDAE::InlineData>> {
     let mut inlineData: Option<BackendDAE::InlineData>;
     if Flags::getConfigEnum(Flags::SYM_SOLVER.clone())? > 0 {
         inlineData = Some(symSolverWork(inDAE.clone())?);

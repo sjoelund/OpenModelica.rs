@@ -61,19 +61,19 @@ pub mod CacheTree {
 
     pub type Value = Arc<metamodelica::List<TplAbsyn::ASTDef>>;
 
-    pub fn keyStr(mut inKey: Key) -> ArcStr {
+    pub(crate) fn keyStr(mut inKey: Key) -> ArcStr {
         let mut outString: ArcStr;
         outString = (inKey.clone()).clone();
         outString
     }
 
-    pub fn valueStr(mut inValue: Value) -> ArcStr {
+    pub(crate) fn valueStr(mut inValue: Value) -> ArcStr {
         let mut outString: ArcStr;
         outString = (literal!("#OPAQUE#")).clone();
         outString
     }
 
-    pub fn keyCompare(mut inKey1: Key, mut inKey2: Key) -> i32 {
+    pub(crate) fn keyCompare(mut inKey1: Key, mut inKey2: Key) -> i32 {
         let mut outResult: i32;
         outResult = stringCompare((inKey1.clone()).clone(), (inKey2.clone()).clone());
         outResult
@@ -136,7 +136,7 @@ pub mod CacheTree {
 
     pub type ValueNode = ArcStr;
 
-    pub fn add(mut inTree: Arc<Tree>, mut inKey: Key, mut inValue: Value, mut conflictFunc: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<TplAbsyn::ASTDef>>, Arc<metamodelica::List<TplAbsyn::ASTDef>>, ArcStr) -> Result<Arc<metamodelica::List<TplAbsyn::ASTDef>>> + 'static>) -> Result<Arc<Tree>> {
+    pub(crate) fn add(mut inTree: Arc<Tree>, mut inKey: Key, mut inValue: Value, mut conflictFunc: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<TplAbsyn::ASTDef>>, Arc<metamodelica::List<TplAbsyn::ASTDef>>, ArcStr) -> Result<Arc<metamodelica::List<TplAbsyn::ASTDef>>> + 'static>) -> Result<Arc<Tree>> {
         let mut tree: Arc<Tree> = inTree.clone();
         tree = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::EMPTY { .. } => {
@@ -189,17 +189,17 @@ pub mod CacheTree {
         Ok(value)
     }
 
-    pub fn addConflictKeep(mut newValue: Value, mut oldValue: Value, mut key: Key) -> Value {
+    pub(crate) fn addConflictKeep(mut newValue: Value, mut oldValue: Value, mut key: Key) -> Value {
         let mut value: Value = oldValue.clone();
         value
     }
 
-    pub fn addConflictReplace(mut newValue: Value, mut oldValue: Value, mut key: Key) -> Value {
+    pub(crate) fn addConflictReplace(mut newValue: Value, mut oldValue: Value, mut key: Key) -> Value {
         let mut value: Value = newValue.clone();
         value
     }
 
-    pub fn addList(mut tree: Arc<Tree>, mut inValues: Arc<metamodelica::List<(ArcStr, Arc<metamodelica::List<TplAbsyn::ASTDef>>)>>, mut conflictFunc: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<TplAbsyn::ASTDef>>, Arc<metamodelica::List<TplAbsyn::ASTDef>>, ArcStr) -> Result<Arc<metamodelica::List<TplAbsyn::ASTDef>>> + 'static>) -> Result<Arc<Tree>> {
+    pub(crate) fn addList(mut tree: Arc<Tree>, mut inValues: Arc<metamodelica::List<(ArcStr, Arc<metamodelica::List<TplAbsyn::ASTDef>>)>>, mut conflictFunc: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<TplAbsyn::ASTDef>>, Arc<metamodelica::List<TplAbsyn::ASTDef>>, ArcStr) -> Result<Arc<metamodelica::List<TplAbsyn::ASTDef>>> + 'static>) -> Result<Arc<Tree>> {
         let mut tree: Arc<Tree> = tree;
         let mut key: Key;
         let mut value: Value;
@@ -211,7 +211,7 @@ pub mod CacheTree {
         Ok(tree)
     }
 
-    pub fn addUpdate(mut tree: Arc<Tree>, mut key: Key, mut r#fn: Arc<dyn ::std::ops::Fn(Option<Arc<metamodelica::List<TplAbsyn::ASTDef>>>) -> Result<Arc<metamodelica::List<TplAbsyn::ASTDef>>> + 'static>) -> Result<Arc<Tree>> {
+    pub(crate) fn addUpdate(mut tree: Arc<Tree>, mut key: Key, mut r#fn: Arc<dyn ::std::ops::Fn(Option<Arc<metamodelica::List<TplAbsyn::ASTDef>>>) -> Result<Arc<metamodelica::List<TplAbsyn::ASTDef>>> + 'static>) -> Result<Arc<Tree>> {
         pub type UpdateFn = std::sync::Arc<dyn ::std::ops::Fn(Option<Arc<metamodelica::List<TplAbsyn::ASTDef>>>) -> Result<Value> + 'static>;
 
         let mut tree: Arc<Tree> = tree;
@@ -289,7 +289,7 @@ pub mod CacheTree {
         outBalance
     }
 
-    pub fn fold<FT: Clone + 'static + metamodelica::gc::MMTrace>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(ArcStr, Arc<metamodelica::List<TplAbsyn::ASTDef>>, FT) -> Result<FT> + 'static>, mut inStartValue: FT) -> Result<FT> {
+    pub(crate) fn fold<FT: Clone + 'static + metamodelica::gc::MMTrace>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(ArcStr, Arc<metamodelica::List<TplAbsyn::ASTDef>>, FT) -> Result<FT> + 'static>, mut inStartValue: FT) -> Result<FT> {
         pub type FoldFunc<FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT) -> Result<FT> + 'static>;
 
         let mut outResult: FT = inStartValue.clone();
@@ -312,7 +312,7 @@ pub mod CacheTree {
         Ok(outResult)
     }
 
-    pub fn foldCond<FT: Clone + 'static + metamodelica::gc::MMTrace>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(ArcStr, Arc<metamodelica::List<TplAbsyn::ASTDef>>, FT) -> Result<(FT, bool)> + 'static>, mut value: FT) -> Result<FT> {
+    pub(crate) fn foldCond<FT: Clone + 'static + metamodelica::gc::MMTrace>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(ArcStr, Arc<metamodelica::List<TplAbsyn::ASTDef>>, FT) -> Result<(FT, bool)> + 'static>, mut value: FT) -> Result<FT> {
         pub type FoldFunc<FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT) -> Result<(FT, bool)> + 'static>;
 
         let mut value: FT = value;
@@ -339,7 +339,7 @@ pub mod CacheTree {
         Ok(value)
     }
 
-    pub fn fold_2<FT1: Clone + 'static + metamodelica::gc::MMTrace, FT2: Clone + 'static + metamodelica::gc::MMTrace>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(ArcStr, Arc<metamodelica::List<TplAbsyn::ASTDef>>, FT1, FT2) -> Result<(FT1, FT2)> + 'static>, mut foldArg1: FT1, mut foldArg2: FT2) -> Result<(FT1, FT2)> {
+    pub(crate) fn fold_2<FT1: Clone + 'static + metamodelica::gc::MMTrace, FT2: Clone + 'static + metamodelica::gc::MMTrace>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(ArcStr, Arc<metamodelica::List<TplAbsyn::ASTDef>>, FT1, FT2) -> Result<(FT1, FT2)> + 'static>, mut foldArg1: FT1, mut foldArg2: FT2) -> Result<(FT1, FT2)> {
         pub type FoldFunc<FT1: Clone + 'static, FT2: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT1, FT2) -> Result<(FT1, FT2)> + 'static>;
 
         let mut foldArg1: FT1 = foldArg1;
@@ -361,7 +361,7 @@ pub mod CacheTree {
         Ok((foldArg1, foldArg2))
     }
 
-    pub fn forEach(mut tree: Arc<Tree>, mut func: Arc<dyn ::std::ops::Fn(ArcStr, Arc<metamodelica::List<TplAbsyn::ASTDef>>) -> Result<()> + 'static>) -> Result<()> {
+    pub(crate) fn forEach(mut tree: Arc<Tree>, mut func: Arc<dyn ::std::ops::Fn(ArcStr, Arc<metamodelica::List<TplAbsyn::ASTDef>>) -> Result<()> + 'static>) -> Result<()> {
         pub type EachFunc = std::sync::Arc<dyn ::std::ops::Fn(Key, Value) -> Result<()> + 'static>;
 
         let () = (::match_deref::match_deref! { match &(tree.clone()) {
@@ -381,7 +381,7 @@ pub mod CacheTree {
         Ok(())
     }
 
-    pub fn fromList(mut inValues: Arc<metamodelica::List<(ArcStr, Arc<metamodelica::List<TplAbsyn::ASTDef>>)>>, mut conflictFunc: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<TplAbsyn::ASTDef>>, Arc<metamodelica::List<TplAbsyn::ASTDef>>, ArcStr) -> Result<Arc<metamodelica::List<TplAbsyn::ASTDef>>> + 'static>) -> Result<Arc<Tree>> {
+    pub(crate) fn fromList(mut inValues: Arc<metamodelica::List<(ArcStr, Arc<metamodelica::List<TplAbsyn::ASTDef>>)>>, mut conflictFunc: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<TplAbsyn::ASTDef>>, Arc<metamodelica::List<TplAbsyn::ASTDef>>, ArcStr) -> Result<Arc<metamodelica::List<TplAbsyn::ASTDef>>> + 'static>) -> Result<Arc<Tree>> {
         let mut tree: Arc<Tree> = crate::TplParser::CacheTree::Tree::interned_EMPTY();
         let mut key: Key;
         let mut value: Value;
@@ -393,7 +393,7 @@ pub mod CacheTree {
         Ok(tree)
     }
 
-    pub fn get(mut tree: Arc<Tree>, mut key: Key) -> Result<Value> {
+    pub(crate) fn get(mut tree: Arc<Tree>, mut key: Key) -> Result<Value> {
         let mut value: Value;
         let mut k: Key;
         k = ((::match_deref::match_deref! { match &(tree.clone()) {
@@ -411,7 +411,7 @@ pub mod CacheTree {
         Ok(value)
     }
 
-    pub fn getOpt(mut tree: Arc<Tree>, mut key: Key) -> Option<Arc<metamodelica::List<TplAbsyn::ASTDef>>> {
+    pub(crate) fn getOpt(mut tree: Arc<Tree>, mut key: Key) -> Option<Arc<metamodelica::List<TplAbsyn::ASTDef>>> {
         '__tco: loop {
             let mut k: Key;
             k = ((::match_deref::match_deref! { match &(tree.clone()) {
@@ -431,7 +431,7 @@ pub mod CacheTree {
         }
     }
 
-    pub fn hasKey(mut inTree: Arc<Tree>, mut inKey: Key) -> Result<bool> {
+    pub(crate) fn hasKey(mut inTree: Arc<Tree>, mut inKey: Key) -> Result<bool> {
         let mut comp: bool = false;
         let mut key: Key;
         let mut key_comp: i32;
@@ -473,12 +473,12 @@ pub mod CacheTree {
         outHeight
     }
 
-    pub fn intersection() -> Result<()> {
+    pub(crate) fn intersection() -> Result<()> {
         bail!("fail");
         Ok(())
     }
 
-    pub fn isEmpty(mut tree: Arc<Tree>) -> bool {
+    pub(crate) fn isEmpty(mut tree: Arc<Tree>) -> bool {
         let mut isEmpty: bool;
         isEmpty = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::EMPTY { .. } => true,
@@ -488,7 +488,7 @@ pub mod CacheTree {
         isEmpty
     }
 
-    pub fn join(mut tree: Arc<Tree>, mut treeToJoin: Arc<Tree>, mut conflictFunc: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<TplAbsyn::ASTDef>>, Arc<metamodelica::List<TplAbsyn::ASTDef>>, ArcStr) -> Result<Arc<metamodelica::List<TplAbsyn::ASTDef>>> + 'static>) -> Result<Arc<Tree>> {
+    pub(crate) fn join(mut tree: Arc<Tree>, mut treeToJoin: Arc<Tree>, mut conflictFunc: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<TplAbsyn::ASTDef>>, Arc<metamodelica::List<TplAbsyn::ASTDef>>, ArcStr) -> Result<Arc<metamodelica::List<TplAbsyn::ASTDef>>> + 'static>) -> Result<Arc<Tree>> {
         let mut tree: Arc<Tree> = tree;
         tree = (::match_deref::match_deref! { match &(treeToJoin.clone()) {
         Deref @ Tree::EMPTY { .. } => tree.clone(),
@@ -504,7 +504,7 @@ pub mod CacheTree {
         Ok(tree)
     }
 
-    pub fn listKeys(mut tree: Arc<Tree>, mut lst: Arc<metamodelica::List<ArcStr>>) -> Arc<metamodelica::List<ArcStr>> {
+    pub(crate) fn listKeys(mut tree: Arc<Tree>, mut lst: Arc<metamodelica::List<ArcStr>>) -> Arc<metamodelica::List<ArcStr>> {
         let mut lst: Arc<metamodelica::List<ArcStr>> = lst;
         lst = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { key, .. } => {
@@ -524,7 +524,7 @@ pub mod CacheTree {
         lst
     }
 
-    pub fn listKeysReverse(mut inTree: Arc<Tree>, mut lst: Arc<metamodelica::List<ArcStr>>) -> Arc<metamodelica::List<ArcStr>> {
+    pub(crate) fn listKeysReverse(mut inTree: Arc<Tree>, mut lst: Arc<metamodelica::List<ArcStr>>) -> Arc<metamodelica::List<ArcStr>> {
         let mut lst: Arc<metamodelica::List<ArcStr>> = lst;
         lst = (::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::LEAF { .. } => metamodelica::cons((var_field!((*inTree).key, Tree::LEAF).clone()).clone(), lst.clone()),
@@ -540,7 +540,7 @@ pub mod CacheTree {
         lst
     }
 
-    pub fn listValues(mut tree: Arc<Tree>, mut lst: Arc<metamodelica::List<Arc<metamodelica::List<TplAbsyn::ASTDef>>>>) -> Arc<metamodelica::List<Arc<metamodelica::List<TplAbsyn::ASTDef>>>> {
+    pub(crate) fn listValues(mut tree: Arc<Tree>, mut lst: Arc<metamodelica::List<Arc<metamodelica::List<TplAbsyn::ASTDef>>>>) -> Arc<metamodelica::List<Arc<metamodelica::List<TplAbsyn::ASTDef>>>> {
         let mut lst: Arc<metamodelica::List<Arc<metamodelica::List<TplAbsyn::ASTDef>>>> = lst;
         lst = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { value, .. } => {
@@ -560,7 +560,7 @@ pub mod CacheTree {
         lst
     }
 
-    pub fn map(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(ArcStr, Arc<metamodelica::List<TplAbsyn::ASTDef>>) -> Result<Arc<metamodelica::List<TplAbsyn::ASTDef>>> + 'static>) -> Result<Arc<Tree>> {
+    pub(crate) fn map(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(ArcStr, Arc<metamodelica::List<TplAbsyn::ASTDef>>) -> Result<Arc<metamodelica::List<TplAbsyn::ASTDef>>> + 'static>) -> Result<Arc<Tree>> {
         pub type MapFunc = std::sync::Arc<dyn ::std::ops::Fn(Key, Value) -> Result<Value> + 'static>;
 
         let mut outTree: Arc<Tree> = inTree.clone();
@@ -593,7 +593,7 @@ pub mod CacheTree {
         Ok(outTree)
     }
 
-    pub fn mapFold<FT: Clone + 'static + metamodelica::gc::MMTrace>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(ArcStr, Arc<metamodelica::List<TplAbsyn::ASTDef>>, FT) -> Result<(Arc<metamodelica::List<TplAbsyn::ASTDef>>, FT)> + 'static>, mut inStartValue: FT) -> Result<(Arc<Tree>, FT)> {
+    pub(crate) fn mapFold<FT: Clone + 'static + metamodelica::gc::MMTrace>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(ArcStr, Arc<metamodelica::List<TplAbsyn::ASTDef>>, FT) -> Result<(Arc<metamodelica::List<TplAbsyn::ASTDef>>, FT)> + 'static>, mut inStartValue: FT) -> Result<(Arc<Tree>, FT)> {
         pub type MapFunc<FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT) -> Result<Value> + 'static>;
 
         let mut outTree: Arc<Tree> = inTree.clone();
@@ -627,12 +627,12 @@ pub mod CacheTree {
         Ok((outTree, outResult))
     }
 
-    pub fn new() -> Arc<Tree> {
+    pub(crate) fn new() -> Arc<Tree> {
         let mut outTree: Arc<Tree> = crate::TplParser::CacheTree::Tree::interned_EMPTY();
         outTree
     }
 
-    pub fn printNodeStr(mut inNode: Arc<Tree>) -> Result<ArcStr> {
+    pub(crate) fn printNodeStr(mut inNode: Arc<Tree>) -> Result<ArcStr> {
         let mut outString: ArcStr;
         outString = ((::match_deref::match_deref! { match &(inNode.clone()) {
         Deref @ Tree::NODE { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*keyStr((var_field!((*inNode).key, Tree::NODE).clone()).clone())); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*valueStr(var_field!((*inNode).value, Tree::NODE).clone())); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) },
@@ -642,7 +642,7 @@ pub mod CacheTree {
         Ok(outString)
     }
 
-    pub fn printTreeStr(mut inTree: Arc<Tree>) -> Result<ArcStr> {
+    pub(crate) fn printTreeStr(mut inTree: Arc<Tree>) -> Result<ArcStr> {
         let mut outString: ArcStr;
         let mut left: Arc<Tree> = Arc::new(Tree::EMPTY);
         let mut right: Arc<Tree> = Arc::new(Tree::EMPTY);
@@ -724,7 +724,7 @@ pub mod CacheTree {
         Ok(outNode)
     }
 
-    pub fn setTreeLeftRight(mut orig: Arc<Tree>, mut left: Arc<Tree>, mut right: Arc<Tree>) -> Result<Arc<Tree>> {
+    pub(crate) fn setTreeLeftRight(mut orig: Arc<Tree>, mut left: Arc<Tree>, mut right: Arc<Tree>) -> Result<Arc<Tree>> {
         let mut res: Arc<Tree>;
         res = (::match_deref::match_deref! { match &((orig.clone(), left.clone(), right.clone())) {
         (Deref @ Tree::NODE { .. }, Deref @ Tree::EMPTY { .. }, Deref @ Tree::EMPTY { .. }) => Arc::new(Tree::LEAF { key: (var_field!((*orig).key, Tree::NODE).clone()).clone(), value: var_field!((*orig).value, Tree::NODE).clone() }),
@@ -736,7 +736,7 @@ pub mod CacheTree {
         Ok(res)
     }
 
-    pub fn smallestKey(mut tree: Arc<Tree>) -> Result<Key> {
+    pub(crate) fn smallestKey(mut tree: Arc<Tree>) -> Result<Key> {
         '__tco: loop {
             ::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { right: Deref @ Tree::EMPTY { .. }, .. } => return Ok(var_field!((*tree).key, Tree::NODE).clone()),
@@ -747,7 +747,7 @@ pub mod CacheTree {
         }
     }
 
-    pub fn toList(mut inTree: Arc<Tree>, mut lst: Arc<metamodelica::List<(ArcStr, Arc<metamodelica::List<TplAbsyn::ASTDef>>)>>) -> Arc<metamodelica::List<(ArcStr, Arc<metamodelica::List<TplAbsyn::ASTDef>>)>> {
+    pub(crate) fn toList(mut inTree: Arc<Tree>, mut lst: Arc<metamodelica::List<(ArcStr, Arc<metamodelica::List<TplAbsyn::ASTDef>>)>>) -> Arc<metamodelica::List<(ArcStr, Arc<metamodelica::List<TplAbsyn::ASTDef>>)>> {
         let mut lst: Arc<metamodelica::List<(ArcStr, Arc<metamodelica::List<TplAbsyn::ASTDef>>)>> = lst;
         lst = (::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::NODE { key, value, .. } => {
@@ -767,7 +767,7 @@ pub mod CacheTree {
         lst
     }
 
-    pub fn update(mut tree: Arc<Tree>, mut key: Key, mut value: Value) -> Result<Arc<Tree>> {
+    pub(crate) fn update(mut tree: Arc<Tree>, mut key: Key, mut value: Value) -> Result<Arc<Tree>> {
         let mut outTree: Arc<Tree> = add(tree.clone(), (key.clone()).clone(), value.clone(), (std::sync::Arc::new(fnptr!(addConflictReplace, Arc<metamodelica::List<TplAbsyn::ASTDef>>, Arc<metamodelica::List<TplAbsyn::ASTDef>>, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<TplAbsyn::ASTDef>>, Arc<metamodelica::List<TplAbsyn::ASTDef>>, ArcStr) -> Result<Arc<metamodelica::List<TplAbsyn::ASTDef>>> + 'static>))?;
         Ok(outTree)
     }
@@ -833,7 +833,7 @@ impl Default for LineInfo {
 pub type LINE_INFO = LineInfo;
 
 
-pub fn getPosition(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(i32, i32)> {
+pub(crate) fn getPosition(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(i32, i32)> {
     let mut outLineNumber: i32;
     let mut outColumnNumber: i32;
     (outLineNumber, outColumnNumber) = (::match_deref::match_deref! { match &((inChars.clone(), inLineInfo.clone())) {
@@ -851,7 +851,7 @@ pub type LineColumnNumber = (i32, i32);
 
 pub static dummySourceInfo: std::sync::LazyLock<SourceInfo> = std::sync::LazyLock::new(|| { TplAbsyn::dummySourceInfo.clone() });
 
-pub fn captureStartPosition(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inColumnOffset: i32) -> Result<LineColumnNumber> {
+pub(crate) fn captureStartPosition(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inColumnOffset: i32) -> Result<LineColumnNumber> {
     let mut outLineColumnNumber: LineColumnNumber;
     let mut line: i32;
     let mut col: i32;
@@ -862,7 +862,7 @@ pub fn captureStartPosition(mut inChars: Arc<metamodelica::List<ArcStr>>, mut in
 }
 
 //TODO: add correct TIME_STAMP
-pub fn tplSourceInfo(mut inStartLineColumnNumber: LineColumnNumber, mut inEndChars: Arc<metamodelica::List<ArcStr>>, mut inEndLineInfo: LineInfo) -> Result<SourceInfo> {
+pub(crate) fn tplSourceInfo(mut inStartLineColumnNumber: LineColumnNumber, mut inEndChars: Arc<metamodelica::List<ArcStr>>, mut inEndLineInfo: LineInfo) -> Result<SourceInfo> {
     let mut outSourceInfo: SourceInfo = <SourceInfo as ::std::default::Default>::default();
     outSourceInfo = (match (inStartLineColumnNumber.clone(), inEndLineInfo.clone()) {
         ((mut startL, mut startC), ref endlinfo @ LineInfo { parseInfo: ParseInfo { fileName: ref fileName, .. }, .. }) => {
@@ -877,7 +877,7 @@ pub fn tplSourceInfo(mut inStartLineColumnNumber: LineColumnNumber, mut inEndCha
     Ok(outSourceInfo)
 }
 
-pub fn startPositionFromExp(mut inExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo)) -> Result<LineColumnNumber> {
+pub(crate) fn startPositionFromExp(mut inExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo)) -> Result<LineColumnNumber> {
     let mut outLineColumnNumber: LineColumnNumber;
     outLineColumnNumber = (::match_deref::match_deref! { match &(inExpression.clone()) {
         (_, SourceInfo { lineNumberStart: startL, columnNumberStart: startC, .. }) => {
@@ -888,7 +888,7 @@ pub fn startPositionFromExp(mut inExpression: (Arc<TplAbsyn::ExpressionBase>, So
     Ok(outLineColumnNumber)
 }
 
-pub fn charsTillEndOfLine(mut inChars: Arc<metamodelica::List<ArcStr>>, mut outCharsTillEnd: i32) -> Result<i32> {
+pub(crate) fn charsTillEndOfLine(mut inChars: Arc<metamodelica::List<ArcStr>>, mut outCharsTillEnd: i32) -> Result<i32> {
     let mut outCharsTillEnd: i32 = outCharsTillEnd;
     let mut i: i32;
     for mut c in &*inChars.clone() {
@@ -902,7 +902,7 @@ pub fn charsTillEndOfLine(mut inChars: Arc<metamodelica::List<ArcStr>>, mut outC
     Ok(outCharsTillEnd)
 }
 
-pub fn makeStartLineInfo(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inFileName: ArcStr) -> Result<LineInfo> {
+pub(crate) fn makeStartLineInfo(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inFileName: ArcStr) -> Result<LineInfo> {
     let mut outLineInfo: LineInfo;
     let mut llen: i32;
     llen = charsTillEndOfLine(inChars.clone(), 1)?;
@@ -910,7 +910,7 @@ pub fn makeStartLineInfo(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inFil
     Ok(outLineInfo)
 }
 
-pub fn printAndFailIfError(mut inLineInfo: LineInfo) -> Result<()> {
+pub(crate) fn printAndFailIfError(mut inLineInfo: LineInfo) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(inLineInfo.clone()) {
         LineInfo { parseInfo: ParseInfo { errors: Deref @ metamodelica::List::Nil, .. }, .. } => {
             metamodelica::print((literal!("\nSusan parsing successful.\n")).clone());
@@ -927,7 +927,7 @@ pub fn printAndFailIfError(mut inLineInfo: LineInfo) -> Result<()> {
     Ok(())
 }
 
-pub fn parseError(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inErrMessage: ArcStr, mut isFatal: bool) -> Result<LineInfo> {
+pub(crate) fn parseError(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inErrMessage: ArcStr, mut isFatal: bool) -> Result<LineInfo> {
     let mut outLineInfo: LineInfo;
     outLineInfo = 'mc: {
         let __mc_input = (inChars.clone(), inLineInfo.clone(), inErrMessage.clone(), isFatal.clone());
@@ -971,7 +971,7 @@ pub fn parseError(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: 
     Ok(outLineInfo)
 }
 
-pub fn parseErrorPrevPosition(mut inCharsPrevPos: Arc<metamodelica::List<ArcStr>>, mut inLineInfoPrevPos: LineInfo, mut inLineInfo: LineInfo, mut inErrMessage: ArcStr, mut isFatal: bool) -> Result<LineInfo> {
+pub(crate) fn parseErrorPrevPosition(mut inCharsPrevPos: Arc<metamodelica::List<ArcStr>>, mut inLineInfoPrevPos: LineInfo, mut inLineInfo: LineInfo, mut inErrMessage: ArcStr, mut isFatal: bool) -> Result<LineInfo> {
     let mut outLineInfo: LineInfo;
     outLineInfo = 'mc: {
         let __mc_input = (inCharsPrevPos.clone(), inLineInfoPrevPos.clone(), inLineInfo.clone(), inErrMessage.clone(), isFatal.clone());
@@ -1003,7 +1003,7 @@ pub fn parseErrorPrevPosition(mut inCharsPrevPos: Arc<metamodelica::List<ArcStr>
     Ok(outLineInfo)
 }
 
-pub fn wasFatalError(mut inLineInfo: LineInfo) -> bool {
+pub(crate) fn wasFatalError(mut inLineInfo: LineInfo) -> bool {
     let mut outWasError: bool;
     outWasError = (match inLineInfo.clone() {
         LineInfo { parseInfo: ParseInfo { wasFatalError: true, .. }, .. } => true,
@@ -1012,7 +1012,7 @@ pub fn wasFatalError(mut inLineInfo: LineInfo) -> bool {
     outWasError
 }
 
-pub fn mergeErrors(mut inLineInfo: LineInfo, mut inLineInfoToAddErrorsFrom: LineInfo) -> Result<LineInfo> {
+pub(crate) fn mergeErrors(mut inLineInfo: LineInfo, mut inLineInfoToAddErrorsFrom: LineInfo) -> Result<LineInfo> {
     let mut outLineInfo: LineInfo;
     outLineInfo = 'mc: {
         let __mc_input = (inLineInfo.clone(), inLineInfoToAddErrorsFrom.clone());
@@ -1033,7 +1033,7 @@ pub fn mergeErrors(mut inLineInfo: LineInfo, mut inLineInfoToAddErrorsFrom: Line
     Ok(outLineInfo)
 }
 
-pub fn parseErrorPrevPositionOpt(mut inCharsPrevPos: Arc<metamodelica::List<ArcStr>>, mut inLineInfoPrevPos: LineInfo, mut inLineInfo: LineInfo, mut inErrMessage: Option<ArcStr>, mut isFatal: bool) -> Result<LineInfo> {
+pub(crate) fn parseErrorPrevPositionOpt(mut inCharsPrevPos: Arc<metamodelica::List<ArcStr>>, mut inLineInfoPrevPos: LineInfo, mut inLineInfo: LineInfo, mut inErrMessage: Option<ArcStr>, mut isFatal: bool) -> Result<LineInfo> {
     let mut outLineInfo: LineInfo;
     outLineInfo = 'mc: {
         let __mc_input = (inCharsPrevPos.clone(), inLineInfoPrevPos.clone(), inLineInfo.clone(), inErrMessage.clone(), isFatal.clone());
@@ -1070,7 +1070,7 @@ pub fn parseErrorPrevPositionOpt(mut inCharsPrevPos: Arc<metamodelica::List<ArcS
     Ok(outLineInfo)
 }
 
-pub fn parseErrorPrevPositionOptInfoChars(mut inLineInfoPrevPos: LineInfo, mut inLineInfo: LineInfo, mut inErrMessage: Option<ArcStr>, mut isFatal: bool) -> Result<LineInfo> {
+pub(crate) fn parseErrorPrevPositionOptInfoChars(mut inLineInfoPrevPos: LineInfo, mut inLineInfo: LineInfo, mut inErrMessage: Option<ArcStr>, mut isFatal: bool) -> Result<LineInfo> {
     let mut outLineInfo: LineInfo;
     let mut sol_chars: Arc<metamodelica::List<ArcStr>>;
     let LineInfo { startOfLineChars: __pa0, .. } = (inLineInfoPrevPos.clone()) else { bail!("pattern mismatch") };
@@ -1079,7 +1079,7 @@ pub fn parseErrorPrevPositionOptInfoChars(mut inLineInfoPrevPos: LineInfo, mut i
     Ok(outLineInfo)
 }
 
-pub fn expectChar(mut chars: Arc<metamodelica::List<ArcStr>>, mut lineInfo: LineInfo, mut inExpectedChar: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo)> {
+pub(crate) fn expectChar(mut chars: Arc<metamodelica::List<ArcStr>>, mut lineInfo: LineInfo, mut inExpectedChar: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo)> {
     let mut chars: Arc<metamodelica::List<ArcStr>> = chars;
     let mut lineInfo: LineInfo = lineInfo;
     chars = (::match_deref::match_deref! { match &(chars.clone()) {
@@ -1097,7 +1097,7 @@ pub fn expectChar(mut chars: Arc<metamodelica::List<ArcStr>>, mut lineInfo: Line
 
 //intended to say error before the last interleave, but need
 //TODO: remember the last position before interleave in the LINE_INFO
-pub fn interleaveExpectChar(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inExpectedChar: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo)> {
+pub(crate) fn interleaveExpectChar(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inExpectedChar: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo)> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     (outChars, outLineInfo) = 'mc: {
@@ -1146,7 +1146,7 @@ pub fn interleaveExpectChar(mut inChars: Arc<metamodelica::List<ArcStr>>, mut in
     Ok((outChars, outLineInfo))
 }
 
-pub fn takeKeywordChars(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inKeywordChars: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub(crate) fn takeKeywordChars(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inKeywordChars: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<ArcStr>>> {
     '__tco: loop {
         ::match_deref::match_deref! { match &((inChars.clone(), inKeywordChars.clone())) {
         (Deref @ metamodelica::List::Cons { head: c, tail: chars }, Deref @ metamodelica::List::Cons { head: kwc, tail: kwchars }) => {
@@ -1161,7 +1161,7 @@ pub fn takeKeywordChars(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inKeyw
     }
 }
 
-pub fn isKeyword(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inKeywordChars: Arc<metamodelica::List<ArcStr>>) -> (Arc<metamodelica::List<ArcStr>>, bool) {
+pub(crate) fn isKeyword(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inKeywordChars: Arc<metamodelica::List<ArcStr>>) -> (Arc<metamodelica::List<ArcStr>>, bool) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut isKeyword: bool;
     (outChars, isKeyword) = 'mc: {
@@ -1190,7 +1190,7 @@ pub fn isKeyword(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inKeywordChar
     (outChars, isKeyword)
 }
 
-pub fn interleaveExpectKeyWord(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inKeywordChars: Arc<metamodelica::List<ArcStr>>, mut isFatal: bool) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo)> {
+pub(crate) fn interleaveExpectKeyWord(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inKeywordChars: Arc<metamodelica::List<ArcStr>>, mut isFatal: bool) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo)> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     (outChars, outLineInfo) = 'mc: {
@@ -1244,7 +1244,7 @@ pub fn interleaveExpectKeyWord(mut inChars: Arc<metamodelica::List<ArcStr>>, mut
     Ok((outChars, outLineInfo))
 }
 
-pub fn interleaveExpectEndOfFile(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo)> {
+pub(crate) fn interleaveExpectEndOfFile(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo)> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     (outChars, outLineInfo) = 'mc: {
@@ -1290,7 +1290,7 @@ pub fn interleaveExpectEndOfFile(mut inChars: Arc<metamodelica::List<ArcStr>>, m
     Ok((outChars, outLineInfo))
 }
 
-pub fn openFile(mut inFile: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Option<ArcStr>)> {
+pub(crate) fn openFile(mut inFile: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Option<ArcStr>)> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outErrorOpt: Option<ArcStr>;
@@ -1329,7 +1329,7 @@ pub fn openFile(mut inFile: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, 
     Ok((outChars, outLineInfo, outErrorOpt))
 }
 
-pub fn templPackageFromFile(mut inFile: ArcStr) -> Result<TplAbsyn::TemplPackage> {
+pub(crate) fn templPackageFromFile(mut inFile: ArcStr) -> Result<TplAbsyn::TemplPackage> {
     let mut outTemplPackage: TplAbsyn::TemplPackage;
     outTemplPackage = 'mc: {
         let __mc_input = inFile.clone();
@@ -1461,7 +1461,7 @@ fn typeviewDefsFromTemplateFile(mut packageName: Arc<TplAbsyn::PathIdent>, mut i
     Ok((astDefs, linfo, errOpt, cachedDefs))
 }
 
-pub fn templateDefToAstDefType(mut inTemplateDef: (ArcStr, TplAbsyn::TemplateDef)) -> Result<(ArcStr, TplAbsyn::TypeInfo)> {
+pub(crate) fn templateDefToAstDefType(mut inTemplateDef: (ArcStr, TplAbsyn::TemplateDef)) -> Result<(ArcStr, TplAbsyn::TypeInfo)> {
     let mut outType: (ArcStr, TplAbsyn::TypeInfo);
     outType = 'mc: {
         let __mc_input = inTemplateDef.clone();
@@ -1500,7 +1500,7 @@ newLine:
   |
   \r     //LF only ... Mac OS up to 9
 */
-pub fn newLine(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo)> {
+pub(crate) fn newLine(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo)> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     (outChars, outLineInfo) = (::match_deref::match_deref! { match &((inChars.clone(), inLineInfo.clone())) {
@@ -1538,7 +1538,7 @@ interleave:  //i.e. space / comment
   |
   _ //just nothing
 */
-pub fn interleave(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo) {
+pub(crate) fn interleave(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     (outChars, outLineInfo) = 'mc: {
@@ -1636,7 +1636,7 @@ toEndOfLine:
     |
     any  toEndOfLine //any is any character
 */
-pub fn toEndOfLine(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo)> {
+pub(crate) fn toEndOfLine(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo)> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     (outChars, outLineInfo) = 'mc: {
@@ -1682,7 +1682,7 @@ pub fn toEndOfLine(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo:
 //  '/''*' comment comment  //nesting is possible
 //  |
 //  any  comment
-pub fn comment(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo)> {
+pub(crate) fn comment(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo)> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     (outChars, outLineInfo) = 'mc: {
@@ -1746,7 +1746,7 @@ afterKeyword:
     |
     _  => ()
 */
-pub fn afterKeyword(mut inChars: Arc<metamodelica::List<ArcStr>>) -> Result<()> {
+pub(crate) fn afterKeyword(mut inChars: Arc<metamodelica::List<ArcStr>>) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(inChars.clone()) {
         Deref @ metamodelica::List::Cons { head: c, tail: _ } => {
             let mut i: i32;
@@ -1768,7 +1768,7 @@ identifier:
 */
 pub static keywords: std::sync::LazyLock<Arc<metamodelica::List<ArcStr>>> = std::sync::LazyLock::new(|| { list![(literal!("end")).clone(), (literal!("if")).clone(), (literal!("then")).clone(), (literal!("else")).clone(), (literal!("match")).clone(), (literal!("case")).clone(), (literal!("equation")).clone(), (literal!("equality")).clone(), (literal!("failure")).clone(), (literal!("algorithm")).clone(), (literal!("input")).clone(), (literal!("output")).clone(), (literal!("matchcontinue")).clone(), (literal!("local")).clone(), (literal!("constant")).clone(), (literal!("extends")).clone(), (literal!("external")).clone(), (literal!("for")).clone(), (literal!("function")).clone(), (literal!("import")).clone(), (literal!("package")).clone(), (literal!("partial")).clone(), (literal!("protected")).clone(), (literal!("public")).clone(), (literal!("record")).clone(), (literal!("as")).clone(), (literal!("uniontype")).clone(), (literal!("subtypeof")).clone()] });
 
-pub fn identifier(mut inChars: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<metamodelica::List<ArcStr>>, ArcStr)> {
+pub(crate) fn identifier(mut inChars: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<metamodelica::List<ArcStr>>, ArcStr)> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outIdent: ArcStr;
     (outChars, outIdent) = (::match_deref::match_deref! { match &(inChars.clone()) {
@@ -1794,7 +1794,7 @@ identifier_rest:
     |
   _  =>  {}
 */
-pub fn identifier_rest(mut inChars: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>)> {
+pub(crate) fn identifier_rest(mut inChars: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>)> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outRestIdentChars: Arc<metamodelica::List<ArcStr>>;
     (outChars, outRestIdentChars) = (::match_deref::match_deref! { match &(inChars.clone()) {
@@ -1821,7 +1821,7 @@ pub fn identifier_rest(mut inChars: Arc<metamodelica::List<ArcStr>>) -> Result<(
 pathIdent:
   identifier:head  pathIdentPath(head):pid => pid
 */
-pub fn pathIdent(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<TplAbsyn::PathIdent>)> {
+pub(crate) fn pathIdent(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<TplAbsyn::PathIdent>)> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outPathIdent: Arc<TplAbsyn::PathIdent>;
@@ -1850,7 +1850,7 @@ pathIdentPath(head):
   |
   _ =>  IDENT(head)
 */
-pub fn pathIdentPath(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inHeadIdent: ArcStr) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<TplAbsyn::PathIdent>) {
+pub(crate) fn pathIdentPath(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inHeadIdent: ArcStr) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<TplAbsyn::PathIdent>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outPathIdent: Arc<TplAbsyn::PathIdent>;
@@ -1882,7 +1882,7 @@ pub fn pathIdentPath(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInf
     (outChars, outLineInfo, outPathIdent)
 }
 
-pub fn identifierNoOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, ArcStr)> {
+pub(crate) fn identifierNoOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, ArcStr)> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outIdent: ArcStr;
@@ -1918,7 +1918,7 @@ pub fn identifierNoOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineI
     Ok((outChars, outLineInfo, outIdent))
 }
 
-pub fn pathIdentNoOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<TplAbsyn::PathIdent>)> {
+pub(crate) fn pathIdentNoOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<TplAbsyn::PathIdent>)> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outPathIdent: Arc<TplAbsyn::PathIdent>;
@@ -1945,7 +1945,7 @@ templPackage:
   endDefPathIdent(pid)
   =>   TEMPL_PACKAGE(pid, astDefs,templDefs)
 */
-pub fn templPackage(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut cachedDefs: Arc<CacheTree::Tree>) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, TplAbsyn::TemplPackage, Arc<CacheTree::Tree>)> {
+pub(crate) fn templPackage(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut cachedDefs: Arc<CacheTree::Tree>) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, TplAbsyn::TemplPackage, Arc<CacheTree::Tree>)> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outTemplPackage: TplAbsyn::TemplPackage;
@@ -2013,7 +2013,7 @@ definitions(astDefs,templDefs):
 //  |
 //  error "Expecting 'end' | ['public' | 'protected' ] 'package' definition | template definition starting with an identifier."
 */
-pub fn definitions(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inAccASTDefs: Arc<metamodelica::List<TplAbsyn::ASTDef>>, mut inAccTemplDefs: Arc<metamodelica::List<(ArcStr, TplAbsyn::TemplateDef)>>, mut cachedDefs: Arc<CacheTree::Tree>) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<TplAbsyn::ASTDef>>, Arc<metamodelica::List<(ArcStr, TplAbsyn::TemplateDef)>>, Arc<CacheTree::Tree>) {
+pub(crate) fn definitions(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inAccASTDefs: Arc<metamodelica::List<TplAbsyn::ASTDef>>, mut inAccTemplDefs: Arc<metamodelica::List<(ArcStr, TplAbsyn::TemplateDef)>>, mut cachedDefs: Arc<CacheTree::Tree>) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<TplAbsyn::ASTDef>>, Arc<metamodelica::List<(ArcStr, TplAbsyn::TemplateDef)>>, Arc<CacheTree::Tree>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outASTDefs: Arc<metamodelica::List<TplAbsyn::ASTDef>>;
@@ -2137,7 +2137,7 @@ unqualImportPostfix:
   |
   _ => false
 */
-pub fn unqualImportPostfix(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, bool) {
+pub(crate) fn unqualImportPostfix(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, bool) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outIsUnqual: bool;
@@ -2173,7 +2173,7 @@ pub fn unqualImportPostfix(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inL
 }
 
 //optional, may fail
-pub fn typeSig(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<TplAbsyn::TypeSignature>)> {
+pub(crate) fn typeSig(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<TplAbsyn::TypeSignature>)> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outTypeSignature: Arc<TplAbsyn::TypeSignature>;
@@ -2192,7 +2192,7 @@ pub fn typeSig(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: Lin
 }
 
 //must not fail
-pub fn typeSigNoOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<TplAbsyn::TypeSignature>)> {
+pub(crate) fn typeSigNoOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<TplAbsyn::TypeSignature>)> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outTypeSignature: Arc<TplAbsyn::TypeSignature>;
@@ -2237,7 +2237,7 @@ typeSig_base:
   |
   pathIdent:pid  =>  NAMED_TYPE(pid)  // +specializations for String, Integer, .... => STRING_TYPE(), ...
 */
-pub fn typeSig_base(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<TplAbsyn::TypeSignature>)> {
+pub(crate) fn typeSig_base(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<TplAbsyn::TypeSignature>)> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outTypeSignature: Arc<TplAbsyn::TypeSignature>;
@@ -2335,7 +2335,7 @@ typeSig_restList:
     |
     _  => {}
 */
-pub fn typeSig_restList(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<Arc<TplAbsyn::TypeSignature>>>) {
+pub(crate) fn typeSig_restList(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<Arc<TplAbsyn::TypeSignature>>>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outTypeSignatureList: Arc<metamodelica::List<Arc<TplAbsyn::TypeSignature>>>;
@@ -2370,7 +2370,7 @@ pub fn typeSig_restList(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLine
     (outChars, outLineInfo, outTypeSignatureList)
 }
 
-pub fn typeSigFromPathIdent(mut inPathIdent: Arc<TplAbsyn::PathIdent>) -> Arc<TplAbsyn::TypeSignature> {
+pub(crate) fn typeSigFromPathIdent(mut inPathIdent: Arc<TplAbsyn::PathIdent>) -> Arc<TplAbsyn::TypeSignature> {
     let mut outTypeSignature: Arc<TplAbsyn::TypeSignature>;
     outTypeSignature = (::match_deref::match_deref! { match &(inPathIdent.clone()) {
         Deref @ TplAbsyn::PathIdent::IDENT { ident: Deref @ "String" } => crate::TplAbsyn::TypeSignature::interned_STRING_TYPE(),
@@ -2391,7 +2391,7 @@ publicProtected:
   |
   _ => true
 */
-pub fn publicProtected(mut inChars: Arc<metamodelica::List<ArcStr>>) -> (Arc<metamodelica::List<ArcStr>>, bool) {
+pub(crate) fn publicProtected(mut inChars: Arc<metamodelica::List<ArcStr>>) -> (Arc<metamodelica::List<ArcStr>>, bool) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outIsDefault: bool;
     (outChars, outIsDefault) = 'mc: {
@@ -2433,7 +2433,7 @@ stringComment:
   |
   _
 */
-pub fn stringComment(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo) {
+pub(crate) fn stringComment(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     (outChars, outLineInfo) = 'mc: {
@@ -2474,7 +2474,7 @@ stringCommentRest:
   |
   '"'
 */
-pub fn stringCommentRest(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Option<ArcStr>)> {
+pub(crate) fn stringCommentRest(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Option<ArcStr>)> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outError: Option<ArcStr>;
@@ -2559,7 +2559,7 @@ pub fn stringCommentRest(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLin
     Ok((outChars, outLineInfo, outError))
 }
 
-pub fn semicolon(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo)> {
+pub(crate) fn semicolon(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo)> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     (outChars, outLineInfo) = 'mc: {
@@ -2604,7 +2604,7 @@ interfacePackage(astDefs):
   endDefPathIdent(pid)
   =>   (pid, ads)
 */
-pub fn interfacePackage(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inAccASTDefs: Arc<metamodelica::List<TplAbsyn::ASTDef>>) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<TplAbsyn::PathIdent>, Arc<metamodelica::List<TplAbsyn::ASTDef>>)> {
+pub(crate) fn interfacePackage(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inAccASTDefs: Arc<metamodelica::List<TplAbsyn::ASTDef>>) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<TplAbsyn::PathIdent>, Arc<metamodelica::List<TplAbsyn::ASTDef>>)> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outPid: Arc<TplAbsyn::PathIdent>;
@@ -2654,7 +2654,7 @@ typeviewDefs(astDefs):
   |
   _ => astDefs
 */
-pub fn typeviewDefs(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inAccASTDefs: Arc<metamodelica::List<TplAbsyn::ASTDef>>) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<TplAbsyn::ASTDef>>) {
+pub(crate) fn typeviewDefs(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inAccASTDefs: Arc<metamodelica::List<TplAbsyn::ASTDef>>) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<TplAbsyn::ASTDef>>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outASTDefs: Arc<metamodelica::List<TplAbsyn::ASTDef>>;
@@ -2695,7 +2695,7 @@ absynDef:
   endDefPathIdent(pid)
   =>  AST_DEF(pid, isD, types)
 */
-pub fn absynDef(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, TplAbsyn::ASTDef)> {
+pub(crate) fn absynDef(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, TplAbsyn::ASTDef)> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outASTDef: TplAbsyn::ASTDef;
@@ -2734,7 +2734,7 @@ pub fn absynDef(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: Li
 endDefPathIdent(pid):
   'end' pathIdent:pidEnd ';' // pid == pidEnd | warning
 */
-pub fn endDefPathIdent(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inPathIdentToMatch: Arc<TplAbsyn::PathIdent>) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo)> {
+pub(crate) fn endDefPathIdent(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inPathIdentToMatch: Arc<TplAbsyn::PathIdent>) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo)> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     (outChars, outLineInfo) = 'mc: {
@@ -2811,7 +2811,7 @@ pub fn endDefPathIdent(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineI
 endDefIdent(id):
   'end' identifier:idEnd ';' // id == idEnd | warning
 */
-pub fn endDefIdent(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inIdentToMatch: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo)> {
+pub(crate) fn endDefIdent(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inIdentToMatch: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo)> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     (outChars, outLineInfo) = 'mc: {
@@ -2889,7 +2889,7 @@ absynTypes:
   |
   _ => {}
 */
-pub fn absynTypes(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(ArcStr, TplAbsyn::TypeInfo)>>) {
+pub(crate) fn absynTypes(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(ArcStr, TplAbsyn::TypeInfo)>>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outTypes: Arc<metamodelica::List<(ArcStr, TplAbsyn::TypeInfo)>>;
@@ -2944,7 +2944,7 @@ absynType:
   'type' identifier:id '=' typeSig:ts stringComment  ';'
   => (id, TI_ALIAS_TYPE(ts))
 */
-pub fn absynType(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, (ArcStr, TplAbsyn::TypeInfo))> {
+pub(crate) fn absynType(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, (ArcStr, TplAbsyn::TypeInfo))> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outType: (ArcStr, TplAbsyn::TypeInfo);
@@ -3070,7 +3070,7 @@ recordType:
   'end' identifier:idEnd ';' // id == idEnd
   => (id,tids)
 */
-pub fn recordType(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, (ArcStr, Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>))> {
+pub(crate) fn recordType(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, (ArcStr, Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>))> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outRecordType: (ArcStr, Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>);
@@ -3104,7 +3104,7 @@ typeDecls:
   |
   _ => {}
 */
-pub fn typeDecls(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>) {
+pub(crate) fn typeDecls(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outTypeDecls: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>;
@@ -3160,7 +3160,7 @@ recordTags:
   |
   _ => {}
 */
-pub fn recordTags(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut id: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(ArcStr, Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>)>>)> {
+pub(crate) fn recordTags(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut id: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(ArcStr, Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>)>>)> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outRecordTags: Arc<metamodelica::List<(ArcStr, Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>)>>;
@@ -3217,7 +3217,7 @@ inputFunArgs:
   |
   _ => {}
 */
-pub fn inputFunArgs(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>) {
+pub(crate) fn inputFunArgs(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outTypedIdents: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>;
@@ -3268,7 +3268,7 @@ outputFunArgs:
   |
   _ => {}
 */
-pub fn outputFunArgs(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>) {
+pub(crate) fn outputFunArgs(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outTypedIdents: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>;
@@ -3319,7 +3319,7 @@ typeVars(tyvars):
   |
   _ => tyvars
 */
-pub fn typeVars(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inTyVars: Arc<metamodelica::List<ArcStr>>) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<ArcStr>>) {
+pub(crate) fn typeVars(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inTyVars: Arc<metamodelica::List<ArcStr>>) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<ArcStr>>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outTyVars: Arc<metamodelica::List<ArcStr>>;
@@ -3371,7 +3371,7 @@ templDef:
       stringComment ';'
       => (name, td)
 */
-pub fn templDef(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, ArcStr, TplAbsyn::TemplateDef)> {
+pub(crate) fn templDef(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, ArcStr, TplAbsyn::TemplateDef)> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outTemplName: ArcStr;
@@ -3434,7 +3434,7 @@ templDef_Const:
   '=' literalConstant:(str,litType)
     =>  LITERAL_DEF(str, litType)
 */
-pub fn templDef_Const(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, TplAbsyn::TemplateDef, Arc<TplAbsyn::TypeSignature>)> {
+pub(crate) fn templDef_Const(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, TplAbsyn::TemplateDef, Arc<TplAbsyn::TypeSignature>)> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outTemplDef: TplAbsyn::TemplateDef;
@@ -3506,7 +3506,7 @@ constantType:
   'Real'    => REAL_TYPE()
   'Boolean' => BOOLEAN_TYPE()
 */
-pub fn constantType(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<TplAbsyn::TypeSignature>)> {
+pub(crate) fn constantType(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<TplAbsyn::TypeSignature>)> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outConstType: Arc<TplAbsyn::TypeSignature>;
@@ -3563,7 +3563,7 @@ pub fn constantType(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo
     Ok((outChars, outLineInfo, outConstType))
 }
 
-pub fn checkConstantType(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inConstType: Arc<TplAbsyn::TypeSignature>, mut inConstTypeLiteral: Arc<TplAbsyn::TypeSignature>) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo)> {
+pub(crate) fn checkConstantType(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inConstType: Arc<TplAbsyn::TypeSignature>, mut inConstTypeLiteral: Arc<TplAbsyn::TypeSignature>) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo)> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     (outChars, outLineInfo) = (::match_deref::match_deref! { match &((inChars.clone(), inLineInfo.clone(), inConstType.clone(), inConstTypeLiteral.clone())) {
@@ -3592,7 +3592,7 @@ templDef_Templ:
   ///|
   //'$$='  expression(LEsc = '$',REsc = '$'):exp   => (exp,'$','$')
 */
-pub fn templDef_Templ(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, (Arc<TplAbsyn::ExpressionBase>, SourceInfo), ArcStr, ArcStr)> {
+pub(crate) fn templDef_Templ(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, (Arc<TplAbsyn::ExpressionBase>, SourceInfo), ArcStr, ArcStr)> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo);
@@ -3657,7 +3657,7 @@ templArgs:
     |
     _  => {}
 */
-pub fn templArgs(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>) {
+pub(crate) fn templArgs(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outArgs: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>;
@@ -3797,7 +3797,7 @@ templArgs_rest
   |
   _  => {}
 */
-pub fn templArgs_rest(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>) {
+pub(crate) fn templArgs_rest(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outArgs: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>;
@@ -3915,7 +3915,7 @@ expression(lesc,resc):
   expressionNoOptions(lesc,resc):exp  escapedOptions:opts
     => makeEscapedExp(exp, opts)
 */
-pub fn expression(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr, mut isOptional: bool) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))> {
+pub(crate) fn expression(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr, mut isOptional: bool) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo);
@@ -3953,7 +3953,7 @@ pub fn expression(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: 
     Ok((outChars, outLineInfo, outExpression))
 }
 
-pub fn makeEscapedExp(mut inEndChars: Arc<metamodelica::List<ArcStr>>, mut inEndLineInfo: LineInfo, mut inExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo), mut inOptions: Arc<metamodelica::List<(ArcStr, Option<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>)>>) -> Result<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)> {
+pub(crate) fn makeEscapedExp(mut inEndChars: Arc<metamodelica::List<ArcStr>>, mut inEndLineInfo: LineInfo, mut inExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo), mut inOptions: Arc<metamodelica::List<(ArcStr, Option<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>)>>) -> Result<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)> {
     let mut outExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo);
     outExpression = (::match_deref::match_deref! { match &((inExpression.clone(), inOptions.clone())) {
         (exp, Deref @ metamodelica::List::Nil) => {
@@ -3977,7 +3977,7 @@ escapedOptions(lesc,resc):
   _ => {}
 
 */
-pub fn escapedOptions(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(ArcStr, Option<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>)>>) {
+pub(crate) fn escapedOptions(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(ArcStr, Option<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>)>>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outOptions: Arc<metamodelica::List<(ArcStr, Option<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>)>>;
@@ -4022,7 +4022,7 @@ escOptionExp(lesc,resc):
   |
   _ => NONE
 */
-pub fn escOptionExp(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Option<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>) {
+pub(crate) fn escOptionExp(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Option<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outExpOption: Option<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>;
@@ -4059,7 +4059,7 @@ expressionNoOptions(lesc,resc):
   expressionLet(lesc,resc):expLet  mapTailOpt(lesc,resc,expLet):exp
     => exp
 */
-pub fn expressionNoOptions(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, (Arc<TplAbsyn::ExpressionBase>, SourceInfo), Arc<metamodelica::List<(ArcStr, Option<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>)>>)> {
+pub(crate) fn expressionNoOptions(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, (Arc<TplAbsyn::ExpressionBase>, SourceInfo), Arc<metamodelica::List<(ArcStr, Option<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>)>>)> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo);
@@ -4087,7 +4087,7 @@ mapTailOpt(headExp,lesc,resc):
   |
   _ => headExp
 */
-pub fn mapTailOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inHeadExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo), mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, (Arc<TplAbsyn::ExpressionBase>, SourceInfo), Arc<metamodelica::List<(ArcStr, Option<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>)>>) {
+pub(crate) fn mapTailOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inHeadExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo), mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, (Arc<TplAbsyn::ExpressionBase>, SourceInfo), Arc<metamodelica::List<(ArcStr, Option<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>)>>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo);
@@ -4138,7 +4138,7 @@ indexedByOpt:
   |
   _ => NONE
 */
-pub fn indexedByOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Option<ArcStr>, Arc<metamodelica::List<(ArcStr, Option<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>)>>) {
+pub(crate) fn indexedByOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Option<ArcStr>, Arc<metamodelica::List<(ArcStr, Option<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>)>>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outIndexNameOpt: Option<ArcStr>;
@@ -4182,7 +4182,7 @@ fromOpt:
   |
   _ => {}
 */
-pub fn fromOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(ArcStr, Option<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>)>>) {
+pub(crate) fn fromOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(ArcStr, Option<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>)>>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outIndexOffsetOption: Arc<metamodelica::List<(ArcStr, Option<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>)>>;
@@ -4237,7 +4237,7 @@ expressionLet(lesc,resc):
   |
   expressionMatch(lesc,resc):exp
 */
-pub fn expressionLet(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))> {
+pub(crate) fn expressionLet(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo);
@@ -4350,7 +4350,7 @@ letExp(lesc,resc):
   letBinding:bd '=' expression(lesc,resc):exp
     =>  LET_BINDING(bd, exp)
 */
-pub fn letExp(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))> {
+pub(crate) fn letExp(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo);
@@ -4501,7 +4501,7 @@ expressionMatch(lesc,resc):
   expressionIf(lesc,resc):exp
     => exp
 */
-pub fn expressionMatch(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))> {
+pub(crate) fn expressionMatch(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo);
@@ -4544,7 +4544,7 @@ expressionIf(lesc,resc):
   expressionPlus(lesc,resc):exp
     => exp
 */
-pub fn expressionIf(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))> {
+pub(crate) fn expressionIf(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo);
@@ -4584,7 +4584,7 @@ expressionPlus(lesc,resc):
   expression_base(lesc,resc):bexp  plusTailOpt(lesc,resc,bexp):exp
     => exp
 */
-pub fn expressionPlus(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))> {
+pub(crate) fn expressionPlus(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo);
@@ -4610,7 +4610,7 @@ plusTailOpt(lesc,resc,bexp):
   |
   _ => bexp
 */
-pub fn plusTailOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inBaseExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo), mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, (Arc<TplAbsyn::ExpressionBase>, SourceInfo)) {
+pub(crate) fn plusTailOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inBaseExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo), mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, (Arc<TplAbsyn::ExpressionBase>, SourceInfo)) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo);
@@ -4653,7 +4653,7 @@ concatExp_rest(lesc,resc):
   |
   _ => {}
 */
-pub fn concatExp_rest(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>) {
+pub(crate) fn concatExp_rest(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>;
@@ -4712,7 +4712,7 @@ expression_base(lesc,resc):
   |// TODO: create an optional/error reporting variant of pathIdent
   pathIdent:name  boundValueOrFunCall(name,lesc,resc):exp  =>  exp
 */
-pub fn expression_base(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))> {
+pub(crate) fn expression_base(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo);
@@ -4855,7 +4855,7 @@ boundValueOrFunCall(name,lesc,resc):
   |
   _ => BOUND_VALUE(name)
 */
-pub fn boundValueOrFunCall(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inName: Arc<TplAbsyn::PathIdent>, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<TplAbsyn::ExpressionBase>) {
+pub(crate) fn boundValueOrFunCall(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inName: Arc<TplAbsyn::PathIdent>, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<TplAbsyn::ExpressionBase>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outExpressionBase: Arc<TplAbsyn::ExpressionBase>;
@@ -4894,7 +4894,7 @@ funCall(name,lesc,resc):
   '(' expression(lesc,resc):exp  expressionList_rest(lesc,resc):expLst ')'  //template  or  intrinsic function
     => FUN_CALL(name,exp::expLst)
 */
-pub fn funCall(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inName: Arc<TplAbsyn::PathIdent>, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<TplAbsyn::ExpressionBase>)> {
+pub(crate) fn funCall(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inName: Arc<TplAbsyn::PathIdent>, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<TplAbsyn::ExpressionBase>)> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outExpressionBase: Arc<TplAbsyn::ExpressionBase>;
@@ -4944,7 +4944,7 @@ expressionList_rest(lesc,resc):
   |
   _ => {}
 */
-pub fn expressionList_rest(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>) {
+pub(crate) fn expressionList_rest(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>;
@@ -4993,7 +4993,7 @@ stringConstant:
   '\\' escChar:c  escUnquotedChars({c}, {}):stRevLst
     => stRevLst
 */
-pub fn stringConstant(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<ArcStr>>)> {
+pub(crate) fn stringConstant(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<ArcStr>>)> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outStrRevList: Arc<metamodelica::List<ArcStr>>;
@@ -5055,7 +5055,7 @@ literalConstant:
   |
   'false' => ("false", BOOLEAN_TYPE())
 */
-pub fn literalConstant(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, ArcStr, Arc<TplAbsyn::TypeSignature>)> {
+pub(crate) fn literalConstant(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, ArcStr, Arc<TplAbsyn::TypeSignature>)> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outConstantValue: ArcStr;
@@ -5109,7 +5109,7 @@ pub fn literalConstant(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineI
     Ok((outChars, outLineInfo, outConstantValue, outConstantType))
 }
 
-pub fn stripFirstNewLine(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo) {
+pub(crate) fn stripFirstNewLine(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     (outChars, outLineInfo) = 'mc: {
@@ -5138,7 +5138,7 @@ pub fn stripFirstNewLine(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLin
     (outChars, outLineInfo)
 }
 
-pub fn rightVerbatimConstQuote(mut inLeftQuote: ArcStr) -> ArcStr {
+pub(crate) fn rightVerbatimConstQuote(mut inLeftQuote: ArcStr) -> ArcStr {
     let mut outRightQuote: ArcStr;
     outRightQuote = ((::match_deref::match_deref! { match &(inLeftQuote.clone()) {
         Deref @ "(" => literal!(")"),
@@ -5169,7 +5169,7 @@ doubleQuoteConst(accChars,accStrList):
   |
   Error end of file
 */
-pub fn doubleQuoteConst(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inAccChars: Arc<metamodelica::List<ArcStr>>, mut inAccStrList: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<ArcStr>>, Option<ArcStr>)> {
+pub(crate) fn doubleQuoteConst(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inAccChars: Arc<metamodelica::List<ArcStr>>, mut inAccStrList: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<ArcStr>>, Option<ArcStr>)> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outStrRevList: Arc<metamodelica::List<ArcStr>>;
@@ -5275,7 +5275,7 @@ escChar:
   => the escaped char
 
 */
-pub fn escChar(mut inEscChar: ArcStr) -> Result<ArcStr> {
+pub(crate) fn escChar(mut inEscChar: ArcStr) -> Result<ArcStr> {
     let mut outTheChar: ArcStr;
     outTheChar = ((::match_deref::match_deref! { match &(inEscChar.clone()) {
         Deref @ "'" => literal!("'"),
@@ -5305,7 +5305,7 @@ verbatimConst(rquot, accChars, accStrList):
   |
   Error end of file
 */
-pub fn verbatimConst(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inRightQuote: ArcStr, mut inAccChars: Arc<metamodelica::List<ArcStr>>, mut inAccStrList: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<ArcStr>>, Option<ArcStr>)> {
+pub(crate) fn verbatimConst(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inRightQuote: ArcStr, mut inAccChars: Arc<metamodelica::List<ArcStr>>, mut inAccStrList: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<ArcStr>>, Option<ArcStr>)> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outStrRevList: Arc<metamodelica::List<ArcStr>>;
@@ -5407,7 +5407,7 @@ escUnquotedChars(accChars,accStrList):
   _ => stringCharListString(listReverse(accChars)) :: accStrList
 
 */
-pub fn escUnquotedChars(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inAccChars: Arc<metamodelica::List<ArcStr>>, mut inAccStrList: Arc<metamodelica::List<ArcStr>>) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<ArcStr>>) {
+pub(crate) fn escUnquotedChars(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inAccChars: Arc<metamodelica::List<ArcStr>>, mut inAccStrList: Arc<metamodelica::List<ArcStr>>) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<ArcStr>>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outStrRevList: Arc<metamodelica::List<ArcStr>>;
@@ -5456,7 +5456,7 @@ pub fn escUnquotedChars(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLine
     (outChars, outLineInfo, outStrRevList)
 }
 
-pub fn makeStrTokFromRevStrList(mut inRevStrList: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<Tpl::StringToken>> {
+pub(crate) fn makeStrTokFromRevStrList(mut inRevStrList: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<Tpl::StringToken>> {
     let mut outStringToken: Arc<Tpl::StringToken>;
     outStringToken = 'mc: {
         let __mc_input = inRevStrList.clone();
@@ -5527,7 +5527,7 @@ plusMinus:
   |
   _ => ""
 */
-pub fn plusMinus(mut inChars: Arc<metamodelica::List<ArcStr>>) -> (Arc<metamodelica::List<ArcStr>>, ArcStr) {
+pub(crate) fn plusMinus(mut inChars: Arc<metamodelica::List<ArcStr>>) -> (Arc<metamodelica::List<ArcStr>>, ArcStr) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outSign: ArcStr;
     (outChars, outSign) = (::match_deref::match_deref! { match &(inChars.clone()) {
@@ -5548,7 +5548,7 @@ digits:
   |
   _ => {}
 */
-pub fn digits(mut inChars: Arc<metamodelica::List<ArcStr>>) -> (Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>) {
+pub(crate) fn digits(mut inChars: Arc<metamodelica::List<ArcStr>>) -> (Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outDigits: Arc<metamodelica::List<ArcStr>>;
     (outChars, outDigits) = 'mc: {
@@ -5586,7 +5586,7 @@ dotNumber:
   |
   _ => INTEGER_TYPE()
 */
-pub fn dotNumber(mut inChars: Arc<metamodelica::List<ArcStr>>) -> (Arc<metamodelica::List<ArcStr>>, ArcStr, Arc<TplAbsyn::TypeSignature>) {
+pub(crate) fn dotNumber(mut inChars: Arc<metamodelica::List<ArcStr>>) -> (Arc<metamodelica::List<ArcStr>>, ArcStr, Arc<TplAbsyn::TypeSignature>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outDotNumber: ArcStr;
     let mut outLitType: Arc<TplAbsyn::TypeSignature>;
@@ -5630,7 +5630,7 @@ exponent(typ):
   |
   => ("",typ)
 */
-pub fn exponent(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLitType: Arc<TplAbsyn::TypeSignature>) -> (Arc<metamodelica::List<ArcStr>>, ArcStr, Arc<TplAbsyn::TypeSignature>) {
+pub(crate) fn exponent(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLitType: Arc<TplAbsyn::TypeSignature>) -> (Arc<metamodelica::List<ArcStr>>, ArcStr, Arc<TplAbsyn::TypeSignature>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outExponent: ArcStr;
     let mut outLitType: Arc<TplAbsyn::TypeSignature>;
@@ -5693,7 +5693,7 @@ templateExp(lesc, resc):
   |
   '<<' stripFirstNewLine templateBody(lesc, resc, isSingleQuote = false,{},{},0 )
 */
-pub fn templateExp(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))> {
+pub(crate) fn templateExp(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo);
@@ -5767,7 +5767,7 @@ takeSpaceAndNewLine:
   |
   '\t' takeSpaceAndNewLine
 */
-pub fn takeSpaceAndNewLine(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo)> {
+pub(crate) fn takeSpaceAndNewLine(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo)> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     (outChars, outLineInfo) = 'mc: {
@@ -5806,7 +5806,7 @@ templateBody(lesc, resc, isSingleQuote, expList, indStack, actInd):
     restOfTemplLine(lesc, resc, isSingleQuote, expList, indStack, actInd, lineInd, {}):exp
   => exp
 */
-pub fn templateBody(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr, mut inIsSingleQuote: bool, mut inExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>, mut inIndentStack: Arc<metamodelica::List<(i32, Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>)>>, mut inActualIndent: i32) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<TplAbsyn::ExpressionBase>)> {
+pub(crate) fn templateBody(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr, mut inIsSingleQuote: bool, mut inExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>, mut inIndentStack: Arc<metamodelica::List<(i32, Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>)>>, mut inActualIndent: i32) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<TplAbsyn::ExpressionBase>)> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outExpressionBase: Arc<TplAbsyn::ExpressionBase>;
@@ -5825,7 +5825,7 @@ lineIndent(ind):
   _  =>  ind
 
 */
-pub fn lineIndent(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineIndent: i32) -> (Arc<metamodelica::List<ArcStr>>, i32) {
+pub(crate) fn lineIndent(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineIndent: i32) -> (Arc<metamodelica::List<ArcStr>>, i32) {
     let mut outChars: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     let mut outLineIndent: i32;
     (outChars, outLineIndent) = (::match_deref::match_deref! { match &(inChars.clone()) {
@@ -5886,7 +5886,7 @@ restOfTemplLine(lesc, resc, isSingleQuote, expList, indStack, actInd, lineInd, a
     & restOfTemplLine(lesc, resc, isSingleQuote, expList, indStack, actInd, lineInd, c :: accStrChars) : exp
     => exp
 */
-pub fn restOfTemplLine(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr, mut inIsSingleQuote: bool, mut inExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>, mut inIndentStack: Arc<metamodelica::List<(i32, Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>)>>, mut inActualIndent: i32, mut inLineIndent: i32) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<TplAbsyn::ExpressionBase>)> {
+pub(crate) fn restOfTemplLine(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr, mut inIsSingleQuote: bool, mut inExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>, mut inIndentStack: Arc<metamodelica::List<(i32, Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>)>>, mut inActualIndent: i32, mut inLineIndent: i32) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<TplAbsyn::ExpressionBase>)> {
     let mut outChars: Arc<metamodelica::List<ArcStr>> = inChars.clone();
     let mut outLineInfo: LineInfo = inLineInfo.clone();
     let mut outExpressionBase: Arc<TplAbsyn::ExpressionBase>;
@@ -5963,7 +5963,7 @@ pub fn restOfTemplLine(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineI
     Ok((outChars, outLineInfo, outExpressionBase))
 }
 
-pub fn dropNewLineAfterEmptyExp(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLineIndent: i32, mut inAccStringChars: Arc<metamodelica::List<ArcStr>>) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, i32) {
+pub(crate) fn dropNewLineAfterEmptyExp(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLineIndent: i32, mut inAccStringChars: Arc<metamodelica::List<ArcStr>>) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, i32) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outLineIndent: i32;
@@ -5995,7 +5995,7 @@ pub fn dropNewLineAfterEmptyExp(mut inChars: Arc<metamodelica::List<ArcStr>>, mu
     (outChars, outLineInfo, outLineIndent)
 }
 
-pub fn makeTemplateFromExpList(mut inExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>, mut inLeftQuote: ArcStr, mut inRightQuote: ArcStr) -> Arc<TplAbsyn::ExpressionBase> {
+pub(crate) fn makeTemplateFromExpList(mut inExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>, mut inLeftQuote: ArcStr, mut inRightQuote: ArcStr) -> Arc<TplAbsyn::ExpressionBase> {
     let mut outExpressionBase: Arc<TplAbsyn::ExpressionBase>;
     outExpressionBase = 'mc: {
         let __mc_input = (inExpressionList.clone(), inLeftQuote.clone(), inRightQuote.clone());
@@ -6030,7 +6030,7 @@ pub fn makeTemplateFromExpList(mut inExpressionList: Arc<metamodelica::List<(Arc
     outExpressionBase
 }
 
-pub fn onEscapedExp(mut inExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo), mut inExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>, mut inIndentStack: Arc<metamodelica::List<(i32, Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>)>>, mut inActualIndent: i32, mut inLineIndent: i32, mut inAccStringChars: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>, Arc<metamodelica::List<(i32, Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>)>>, i32, Option<ArcStr>)> {
+pub(crate) fn onEscapedExp(mut inExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo), mut inExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>, mut inIndentStack: Arc<metamodelica::List<(i32, Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>)>>, mut inActualIndent: i32, mut inLineIndent: i32, mut inAccStringChars: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>, Arc<metamodelica::List<(i32, Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>)>>, i32, Option<ArcStr>)> {
     let mut outExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>;
     let mut outIndentStack: Arc<metamodelica::List<(i32, Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>)>>;
     let mut outActualIndent: i32;
@@ -6114,7 +6114,7 @@ pub fn onEscapedExp(mut inExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo
     Ok((outExpressionList, outIndentStack, outActualIndent, outError))
 }
 
-pub fn onNewLine(mut inExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>, mut inIndentStack: Arc<metamodelica::List<(i32, Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>)>>, mut inActualIndent: i32, mut inLineIndent: i32, mut inAccStringChars: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>, Arc<metamodelica::List<(i32, Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>)>>, i32, Option<ArcStr>)> {
+pub(crate) fn onNewLine(mut inExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>, mut inIndentStack: Arc<metamodelica::List<(i32, Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>)>>, mut inActualIndent: i32, mut inLineIndent: i32, mut inAccStringChars: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>, Arc<metamodelica::List<(i32, Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>)>>, i32, Option<ArcStr>)> {
     let mut outExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>;
     let mut outIndentStack: Arc<metamodelica::List<(i32, Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>)>>;
     let mut outActualIndent: i32;
@@ -6253,7 +6253,7 @@ pub fn onNewLine(mut inExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn::Exp
     Ok((outExpressionList, outIndentStack, outActualIndent, outError))
 }
 
-pub fn onTemplEnd(mut inDropLastNewLine: bool, mut inExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>, mut inIndentStack: Arc<metamodelica::List<(i32, Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>)>>, mut inActualIndent: i32, mut inLineIndent: i32, mut inAccStringChars: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>> {
+pub(crate) fn onTemplEnd(mut inDropLastNewLine: bool, mut inExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>, mut inIndentStack: Arc<metamodelica::List<(i32, Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>)>>, mut inActualIndent: i32, mut inLineIndent: i32, mut inAccStringChars: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>> {
     let mut outExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>;
     outExpressionList = 'mc: {
         let __mc_input = (inDropLastNewLine.clone(), inExpressionList.clone(), inIndentStack.clone(), inActualIndent.clone(), inLineIndent.clone(), inAccStringChars.clone());
@@ -6375,7 +6375,7 @@ pub fn onTemplEnd(mut inDropLastNewLine: bool, mut inExpressionList: Arc<metamod
     Ok(outExpressionList)
 }
 
-pub fn popIndentStack(mut inExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>, mut inIndentStack: Arc<metamodelica::List<(i32, Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>)>>, mut inActualIndent: i32, mut inLineIndent: i32) -> Result<(Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>, Arc<metamodelica::List<(i32, Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>)>>, i32)> {
+pub(crate) fn popIndentStack(mut inExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>, mut inIndentStack: Arc<metamodelica::List<(i32, Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>)>>, mut inActualIndent: i32, mut inLineIndent: i32) -> Result<(Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>, Arc<metamodelica::List<(i32, Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>)>>, i32)> {
     let mut outExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>;
     let mut outIndentStack: Arc<metamodelica::List<(i32, Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>)>>;
     let mut outActualIndent: i32;
@@ -6430,7 +6430,7 @@ pub fn popIndentStack(mut inExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn
     Ok((outExpressionList, outIndentStack, outActualIndent))
 }
 
-pub fn addAccStringChars(mut inExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>, mut inAccStringChars: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>> {
+pub(crate) fn addAccStringChars(mut inExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>, mut inAccStringChars: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>> {
     let mut outExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>;
     outExpressionList = 'mc: {
         let __mc_input = (inExpressionList.clone(), inAccStringChars.clone());
@@ -6514,7 +6514,7 @@ pub fn addAccStringChars(mut inExpressionList: Arc<metamodelica::List<(Arc<TplAb
     Ok(outExpressionList)
 }
 
-pub fn finalizeLastStringToken(mut inExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>) -> Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>> {
+pub(crate) fn finalizeLastStringToken(mut inExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>) -> Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>> {
     let mut outExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>;
     outExpressionList = 'mc: {
         let __mc_input = inExpressionList.clone();
@@ -6630,7 +6630,7 @@ conditionExp(lesc,resc):
   elseBranch(lesc,resc):elseBrOpt
    => CONDITION(isNot, lhsExp, rhsMExpOpt, trueBr, elseBrOpt)
 */
-pub fn conditionExp(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))> {
+pub(crate) fn conditionExp(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo);
@@ -6659,7 +6659,7 @@ pub fn conditionExp(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo
     Ok((outChars, outLineInfo, outExpression))
 }
 
-pub fn thenBranch(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))> {
+pub(crate) fn thenBranch(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outTrueBranch: (Arc<TplAbsyn::ExpressionBase>, SourceInfo);
@@ -6719,7 +6719,7 @@ elseBranch(lesc,resc):
   _ => NONE
 
 */
-pub fn elseBranch(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Option<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>) {
+pub(crate) fn elseBranch(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Option<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outElseBranchOpt: Option<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>;
@@ -6763,7 +6763,7 @@ condArgExp:
   { isNot = false }
    => (isNot,lhsExp, rhsMExpOpt)
 */
-pub fn condArgExp(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, bool, (Arc<TplAbsyn::ExpressionBase>, SourceInfo), Option<Arc<TplAbsyn::MatchingExp>>)> {
+pub(crate) fn condArgExp(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, bool, (Arc<TplAbsyn::ExpressionBase>, SourceInfo), Option<Arc<TplAbsyn::MatchingExp>>)> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outIsNot: bool;
@@ -6875,7 +6875,7 @@ matchExp(lesc,resc):
   //matchCaseList(lesc,resc):mcaseLst { (_::_) = mcaseLst }
   //=> MATCH(BOUND_VALUE(IDENT("it")), mcaseLst)
 */
-pub fn matchExp(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))> {
+pub(crate) fn matchExp(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo);
@@ -6910,7 +6910,7 @@ matchCase(lesc,resc):
   'then'  expression:exp
      => makeMatchCaseLst(mexp::mexpHeadLst,exp)
 */
-pub fn matchCase(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(Arc<TplAbsyn::MatchingExp>, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))>>)> {
+pub(crate) fn matchCase(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(Arc<TplAbsyn::MatchingExp>, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))>>)> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outMatchCaseLst: Arc<metamodelica::List<(Arc<TplAbsyn::MatchingExp>, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))>>;
@@ -6944,7 +6944,7 @@ matchElseCase(lesc,resc):
   |
   _ => {}
 */
-pub fn matchElseCase(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(Arc<TplAbsyn::MatchingExp>, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))>>) {
+pub(crate) fn matchElseCase(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(Arc<TplAbsyn::MatchingExp>, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))>>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outMatchCaseLst: Arc<metamodelica::List<(Arc<TplAbsyn::MatchingExp>, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))>>;
@@ -6983,7 +6983,7 @@ matchEndMatch:
   |
   _
 */
-pub fn matchEndMatch(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo) {
+pub(crate) fn matchEndMatch(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     (outChars, outLineInfo) = 'mc: {
@@ -7026,7 +7026,7 @@ matchCaseHeads(lesc,resc):
   |
   _ => {}
 */
-pub fn matchCaseHeads(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<Arc<TplAbsyn::MatchingExp>>>) {
+pub(crate) fn matchCaseHeads(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<Arc<TplAbsyn::MatchingExp>>>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outMExpHeadLst: Arc<metamodelica::List<Arc<TplAbsyn::MatchingExp>>>;
@@ -7062,7 +7062,7 @@ pub fn matchCaseHeads(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineIn
     (outChars, outLineInfo, outMExpHeadLst)
 }
 
-pub fn makeMatchCaseLst(mut inMExpHeadLst: Arc<metamodelica::List<Arc<TplAbsyn::MatchingExp>>>, mut inExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo)) -> Result<Arc<metamodelica::List<(Arc<TplAbsyn::MatchingExp>, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))>>> {
+pub(crate) fn makeMatchCaseLst(mut inMExpHeadLst: Arc<metamodelica::List<Arc<TplAbsyn::MatchingExp>>>, mut inExpression: (Arc<TplAbsyn::ExpressionBase>, SourceInfo)) -> Result<Arc<metamodelica::List<(Arc<TplAbsyn::MatchingExp>, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))>>> {
     let mut outMatchCaseLst: Arc<metamodelica::List<(Arc<TplAbsyn::MatchingExp>, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))>>;
     outMatchCaseLst = (::match_deref::match_deref! { match &((inMExpHeadLst.clone(), inExpression.clone())) {
         (Deref @ metamodelica::List::Nil, _) => {
@@ -7085,7 +7085,7 @@ matchCaseList(lesc,resc):
   |
   _ => {}
 */
-pub fn matchCaseList(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(Arc<TplAbsyn::MatchingExp>, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))>>) {
+pub(crate) fn matchCaseList(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(Arc<TplAbsyn::MatchingExp>, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))>>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outMatchCases: Arc<metamodelica::List<(Arc<TplAbsyn::MatchingExp>, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))>>;
@@ -7120,7 +7120,7 @@ pub fn matchCaseList(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInf
     (outChars, outLineInfo, outMatchCases)
 }
 
-pub fn matchCaseListNoOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(Arc<TplAbsyn::MatchingExp>, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))>>)> {
+pub(crate) fn matchCaseListNoOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inLeftEsc: ArcStr, mut inRightEsc: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(Arc<TplAbsyn::MatchingExp>, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))>>)> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outMatchCases: Arc<metamodelica::List<(Arc<TplAbsyn::MatchingExp>, (Arc<TplAbsyn::ExpressionBase>, SourceInfo))>>;
@@ -7177,7 +7177,7 @@ matchBinding:
     => mexp
 
 */
-pub fn matchBinding(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<TplAbsyn::MatchingExp>)> {
+pub(crate) fn matchBinding(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<TplAbsyn::MatchingExp>)> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outMatchingExp: Arc<TplAbsyn::MatchingExp>;
@@ -7204,7 +7204,7 @@ matchBinding_tail(headMExp):
   |
   _ => headMExp
 */
-pub fn matchBinding_tail(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inHeadMatchingExp: Arc<TplAbsyn::MatchingExp>) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<TplAbsyn::MatchingExp>) {
+pub(crate) fn matchBinding_tail(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inHeadMatchingExp: Arc<TplAbsyn::MatchingExp>) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<TplAbsyn::MatchingExp>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outMatchingExp: Arc<TplAbsyn::MatchingExp>;
@@ -7265,7 +7265,7 @@ matchBinding_base:
   pathIdent:pid  afterIdentBinding(pid):mexp
     => mexp
 */
-pub fn matchBinding_base(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<TplAbsyn::MatchingExp>)> {
+pub(crate) fn matchBinding_base(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<TplAbsyn::MatchingExp>)> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outMatchingExp: Arc<TplAbsyn::MatchingExp>;
@@ -7423,7 +7423,7 @@ someBinding_rest:
   |
   _ => SOME_MATCH(REST_MATCH())
 */
-pub fn someBinding_rest(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<TplAbsyn::MatchingExp>) {
+pub(crate) fn someBinding_rest(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<TplAbsyn::MatchingExp>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outMatchingExp: Arc<TplAbsyn::MatchingExp>;
@@ -7479,7 +7479,7 @@ takeEmptyBraces:
   |
   _
 */
-pub fn takeEmptyBraces(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo) {
+pub(crate) fn takeEmptyBraces(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     (outChars, outLineInfo) = 'mc: {
@@ -7516,7 +7516,7 @@ tupleOrSingleMatch(headMExp):
   _ => headMExp
 
 */
-pub fn tupleOrSingleMatch(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inHeadMatchingExp: Arc<TplAbsyn::MatchingExp>) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<TplAbsyn::MatchingExp>) {
+pub(crate) fn tupleOrSingleMatch(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inHeadMatchingExp: Arc<TplAbsyn::MatchingExp>) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<TplAbsyn::MatchingExp>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outMatchingExp: Arc<TplAbsyn::MatchingExp>;
@@ -7559,7 +7559,7 @@ listMatch_rest:
   _ => {}
 
 */
-pub fn listMatch_rest(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<Arc<TplAbsyn::MatchingExp>>>) {
+pub(crate) fn listMatch_rest(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<Arc<TplAbsyn::MatchingExp>>>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outMatchingExpListRest: Arc<metamodelica::List<Arc<TplAbsyn::MatchingExp>>>;
@@ -7616,7 +7616,7 @@ afterIdentBinding(pid):
   {pid is IDENT(id)}
   _ => BIND_MATCH(id)
 */
-pub fn afterIdentBinding(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inPathIdent: Arc<TplAbsyn::PathIdent>) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<TplAbsyn::MatchingExp>)> {
+pub(crate) fn afterIdentBinding(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo, mut inPathIdent: Arc<TplAbsyn::PathIdent>) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<TplAbsyn::MatchingExp>)> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outMatchingExp: Arc<TplAbsyn::MatchingExp>;
@@ -7725,7 +7725,7 @@ fieldBinding:
   identifier:fldId '=' matchBinding:mexp
     => (fldId, mexp)
 */
-pub fn fieldBinding(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, (ArcStr, Arc<TplAbsyn::MatchingExp>))> {
+pub(crate) fn fieldBinding(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, LineInfo, (ArcStr, Arc<TplAbsyn::MatchingExp>))> {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outFieldBinding: (ArcStr, Arc<TplAbsyn::MatchingExp>);
@@ -7770,7 +7770,7 @@ fieldBinding_rest:
   _ => {}
 
 */
-pub fn fieldBinding_rest(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::MatchingExp>)>>) {
+pub(crate) fn fieldBinding_rest(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: LineInfo) -> (Arc<metamodelica::List<ArcStr>>, LineInfo, Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::MatchingExp>)>>) {
     let mut outChars: Arc<metamodelica::List<ArcStr>>;
     let mut outLineInfo: LineInfo;
     let mut outFieldBindingsRest: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::MatchingExp>)>>;

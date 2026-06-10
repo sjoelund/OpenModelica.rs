@@ -95,7 +95,7 @@ pub const defaultMaxIter: i32 = 20;
 //  - differentiateExpSolve
 //  - differentiateExpTime
 // =============================================================================
-pub fn differentiateEquationTime(mut inEquation: Arc<BackendDAE::Equation>, mut inVariables: BackendDAE::Variables, mut inShared: Arc<BackendDAE::Shared>) -> Result<(Option<Arc<BackendDAE::Equation>>, Arc<BackendDAE::Shared>)> {
+pub(crate) fn differentiateEquationTime(mut inEquation: Arc<BackendDAE::Equation>, mut inVariables: BackendDAE::Variables, mut inShared: Arc<BackendDAE::Shared>) -> Result<(Option<Arc<BackendDAE::Equation>>, Arc<BackendDAE::Shared>)> {
     let mut outEquation: Option<Arc<BackendDAE::Equation>>;
     let mut outShared: Arc<BackendDAE::Shared> = inShared.clone();
     let mut diffData: BackendDAE::DifferentiateInputData;
@@ -133,7 +133,7 @@ pub fn differentiateEquationTime(mut inEquation: Arc<BackendDAE::Equation>, mut 
     Ok((outEquation, outShared))
 }
 
-pub fn differentiateExpTime(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDAE::Variables, mut inShared: Arc<BackendDAE::Shared>) -> Result<(Arc<DAE::Exp>, Arc<BackendDAE::Shared>)> {
+pub(crate) fn differentiateExpTime(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDAE::Variables, mut inShared: Arc<BackendDAE::Shared>) -> Result<(Arc<DAE::Exp>, Arc<BackendDAE::Shared>)> {
     let mut outExp: Arc<DAE::Exp>;
     let mut outShared: Arc<BackendDAE::Shared>;
     let mut dexp: Arc<DAE::Exp>;
@@ -175,7 +175,7 @@ pub fn differentiateExpTime(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDA
     Ok((outExp, outShared))
 }
 
-pub fn differentiateExpSolve(mut inExp: Arc<DAE::Exp>, mut inCref: Arc<DAE::ComponentRef>, mut functions: Option<Arc<AvlTreePathFunction::Tree>>) -> Result<Arc<DAE::Exp>> {
+pub(crate) fn differentiateExpSolve(mut inExp: Arc<DAE::Exp>, mut inCref: Arc<DAE::ComponentRef>, mut functions: Option<Arc<AvlTreePathFunction::Tree>>) -> Result<Arc<DAE::Exp>> {
     let mut outExp: Arc<DAE::Exp>;
     let mut fac: Arc<metamodelica::List<Arc<DAE::Exp>>> = Expression::factors(inExp.clone())?;
     let mut dexp: Arc<DAE::Exp>;
@@ -219,7 +219,7 @@ pub fn differentiateExpSolve(mut inExp: Arc<DAE::Exp>, mut inCref: Arc<DAE::Comp
     Ok(outExp)
 }
 
-pub fn differentiateExpCrefFullJacobian(mut inExp: Arc<DAE::Exp>, mut inCref: Arc<DAE::ComponentRef>, mut inVariables: BackendDAE::Variables, mut inShared: Arc<BackendDAE::Shared>) -> Result<(Arc<DAE::Exp>, Arc<BackendDAE::Shared>)> {
+pub(crate) fn differentiateExpCrefFullJacobian(mut inExp: Arc<DAE::Exp>, mut inCref: Arc<DAE::ComponentRef>, mut inVariables: BackendDAE::Variables, mut inShared: Arc<BackendDAE::Shared>) -> Result<(Arc<DAE::Exp>, Arc<BackendDAE::Shared>)> {
     let mut outExp: Arc<DAE::Exp>;
     let mut outShared: Arc<BackendDAE::Shared>;
     let mut dexp: Arc<DAE::Exp>;
@@ -261,7 +261,7 @@ pub fn differentiateExpCrefFullJacobian(mut inExp: Arc<DAE::Exp>, mut inCref: Ar
 //  - differentiateBackendDAE
 //
 // =============================================================================
-pub fn differentiateEquation(mut inEquation: Arc<BackendDAE::Equation>, mut inDiffwrtCref: Arc<DAE::ComponentRef>, mut inInputData: BackendDAE::DifferentiateInputData, mut inDiffType: BackendDAE::DifferentiationType, mut inFunctionTree: Arc<AvlTreePathFunction::Tree>) -> Result<(Arc<BackendDAE::Equation>, Arc<AvlTreePathFunction::Tree>)> {
+pub(crate) fn differentiateEquation(mut inEquation: Arc<BackendDAE::Equation>, mut inDiffwrtCref: Arc<DAE::ComponentRef>, mut inInputData: BackendDAE::DifferentiateInputData, mut inDiffType: BackendDAE::DifferentiationType, mut inFunctionTree: Arc<AvlTreePathFunction::Tree>) -> Result<(Arc<BackendDAE::Equation>, Arc<AvlTreePathFunction::Tree>)> {
     let mut outEquation: Arc<BackendDAE::Equation>;
     let mut outFunctionTree: Arc<AvlTreePathFunction::Tree>;
     if let Ok((__pa0, __pa1)) = differentiateEquationFragile(inEquation.clone(), inDiffwrtCref.clone(), inInputData.clone(), inDiffType.clone(), inFunctionTree.clone()) {
@@ -274,7 +274,7 @@ pub fn differentiateEquation(mut inEquation: Arc<BackendDAE::Equation>, mut inDi
     Ok((outEquation, outFunctionTree))
 }
 
-pub fn differentiateEquationFragile(mut inEquation: Arc<BackendDAE::Equation>, mut inDiffwrtCref: Arc<DAE::ComponentRef>, mut inInputData: BackendDAE::DifferentiateInputData, mut inDiffType: BackendDAE::DifferentiationType, mut inFunctionTree: Arc<AvlTreePathFunction::Tree>) -> Result<(Arc<BackendDAE::Equation>, Arc<AvlTreePathFunction::Tree>)> {
+pub(crate) fn differentiateEquationFragile(mut inEquation: Arc<BackendDAE::Equation>, mut inDiffwrtCref: Arc<DAE::ComponentRef>, mut inInputData: BackendDAE::DifferentiateInputData, mut inDiffType: BackendDAE::DifferentiationType, mut inFunctionTree: Arc<AvlTreePathFunction::Tree>) -> Result<(Arc<BackendDAE::Equation>, Arc<AvlTreePathFunction::Tree>)> {
     let mut outEquation: Arc<BackendDAE::Equation>;
     let mut outFunctionTree: Arc<AvlTreePathFunction::Tree>;
     if Flags::isSet(Flags::DEBUG_DIFFERENTIATION.clone())? {
@@ -1518,7 +1518,7 @@ fn differentiateCrefs(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Comp
     Ok((outDiffedExp, outFunctionTree))
 }
 
-pub fn createDiffedCrefName(mut inCref: Arc<DAE::ComponentRef>, mut inMatrixName: ArcStr) -> Result<Arc<DAE::ComponentRef>> {
+pub(crate) fn createDiffedCrefName(mut inCref: Arc<DAE::ComponentRef>, mut inMatrixName: ArcStr) -> Result<Arc<DAE::ComponentRef>> {
     let mut outCref: Arc<DAE::ComponentRef>;
     let mut subs: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
     subs = ComponentReference::crefLastSubs(inCref.clone())?;
@@ -1530,7 +1530,7 @@ pub fn createDiffedCrefName(mut inCref: Arc<DAE::ComponentRef>, mut inMatrixName
     Ok(outCref)
 }
 
-pub fn createSeedCrefName(mut inCref: Arc<DAE::ComponentRef>, mut inMatrixName: ArcStr) -> Result<Arc<DAE::ComponentRef>> {
+pub(crate) fn createSeedCrefName(mut inCref: Arc<DAE::ComponentRef>, mut inMatrixName: ArcStr) -> Result<Arc<DAE::ComponentRef>> {
     let mut outCref: Arc<DAE::ComponentRef>;
     let mut subs: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
     let debug: bool = false;
@@ -1555,7 +1555,7 @@ pub fn createSeedCrefName(mut inCref: Arc<DAE::ComponentRef>, mut inMatrixName: 
     Ok(outCref)
 }
 
-pub fn isSeedCref(mut cr: Arc<DAE::ComponentRef>) -> bool {
+pub(crate) fn isSeedCref(mut cr: Arc<DAE::ComponentRef>) -> bool {
     '__tco: loop {
         ::match_deref::match_deref! { match &(cr.clone()) {
         Deref @ DAE::ComponentRef::CREF_IDENT { .. } => return StringUtil::startsWith((var_field!((*cr).ident, DAE::ComponentRef::CREF_IDENT).clone()).clone(), (literal!("Seed")).clone()),
@@ -3403,7 +3403,7 @@ fn getlowerOrderDerivative(mut fname: Arc<Absyn::Path>, mut functions: Arc<AvlTr
     Ok(outFName)
 }
 
-pub fn getFunctionMapper(mut fname: Arc<Absyn::Path>, mut functions: Arc<AvlTreePathFunction::Tree>) -> Result<(DAE::FunctionDefinition, Arc<DAE::Type>)> {
+pub(crate) fn getFunctionMapper(mut fname: Arc<Absyn::Path>, mut functions: Arc<AvlTreePathFunction::Tree>) -> Result<(DAE::FunctionDefinition, Arc<DAE::Type>)> {
     let mut mapper: DAE::FunctionDefinition;
     let mut tp: Arc<DAE::Type>;
     (mapper, tp) = 'mc: {

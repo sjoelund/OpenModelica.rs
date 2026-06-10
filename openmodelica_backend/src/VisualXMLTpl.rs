@@ -17,7 +17,7 @@ use openmodelica_frontend_types::DAE;
 use openmodelica_susan::Tpl;
 use openmodelica_util::Util;
 
-pub fn dumpVisXML(mut txt: Tpl::Text, mut a_vis: metamodelica::Array<VisualXML::Visualization>, mut a_fileName: ArcStr) -> Result<Tpl::Text> {
+pub(crate) fn dumpVisXML(mut txt: Tpl::Text, mut a_vis: metamodelica::Array<VisualXML::Visualization>, mut a_fileName: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut txt_0: Tpl::Text;
     txt_0 = dumpVisXML1(Tpl::emptyTxt.clone(), a_vis.clone())?;
@@ -41,7 +41,7 @@ fn lm_9(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<VisualXML::Visuali
     Ok(txt)
 }
 
-pub fn dumpVisXML1(mut txt: Tpl::Text, mut a_visArr: metamodelica::Array<VisualXML::Visualization>) -> Result<Tpl::Text> {
+pub(crate) fn dumpVisXML1(mut txt: Tpl::Text, mut a_visArr: metamodelica::Array<VisualXML::Visualization>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut ret_1: Arc<metamodelica::List<VisualXML::Visualization>>;
     let mut l_visDump: Tpl::Text;
@@ -104,7 +104,7 @@ fn lm_13(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<metamodelica:
     Ok(txt)
 }
 
-pub fn dumpVisualization(mut in_txt: Tpl::Text, mut in_a_vis: VisualXML::Visualization) -> Result<Tpl::Text> {
+pub(crate) fn dumpVisualization(mut in_txt: Tpl::Text, mut in_a_vis: VisualXML::Visualization) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_vis.clone())) {
         (txt, VisualXML::Visualization::SHAPE { shapeType: Deref @ DAE::Exp::SCONST { string: i_svalue }, T: i_T, r: i_r, r_shape: i_r__shape, lengthDir: i_lengthDir, widthDir: i_widthDir, color: i_color, ident: i_ident, length: i_length, width: i_width, height: i_height, extra: i_extra, specularCoeff: i_specularCoeff }) => {
@@ -325,7 +325,7 @@ fn lm_15(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>) 
     Ok(txt)
 }
 
-pub fn dumpVecExp(mut txt: Tpl::Text, mut a_vector: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<Tpl::Text> {
+pub(crate) fn dumpVecExp(mut txt: Tpl::Text, mut a_vector: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut l_vecDump: Tpl::Text;
     l_vecDump = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -351,7 +351,7 @@ fn lm_17(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>) 
     Ok(txt)
 }
 
-pub fn dumpExp(mut in_txt: Tpl::Text, mut in_a_expIn: Arc<DAE::Exp>) -> Result<Tpl::Text> {
+pub(crate) fn dumpExp(mut in_txt: Tpl::Text, mut in_a_expIn: Arc<DAE::Exp>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_expIn.clone())) {
         (txt, Deref @ DAE::Exp::ENUM_LITERAL { index: i_index, .. }) => {
@@ -500,7 +500,7 @@ pub fn dumpExp(mut in_txt: Tpl::Text, mut in_a_expIn: Arc<DAE::Exp>) -> Result<T
     Ok(out_txt)
 }
 
-pub fn dumpOperator(mut in_txt: Tpl::Text, mut in_a_op: DAE::Operator) -> Result<Tpl::Text> {
+pub(crate) fn dumpOperator(mut in_txt: Tpl::Text, mut in_a_op: DAE::Operator) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_op.clone()) {
         (mut txt, DAE::Operator::ADD { ty: _ }) => {

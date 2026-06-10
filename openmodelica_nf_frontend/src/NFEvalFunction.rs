@@ -112,7 +112,7 @@ pub const STATEMENT_CONTEXT: i32 = intBitOr(InstContext::FUNCTION, InstContext::
 
 pub const IF_COND_CONTEXT: i32 = intBitOr(STATEMENT_CONTEXT, intBitOr(InstContext::IF, InstContext::CONDITION));
 
-pub fn evaluate(mut r#fn: Arc<Function::Function>, mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut target: Arc<EvalTarget::EvalTarget>) -> Result<Arc<Expression::NFExpression>> {
+pub(crate) fn evaluate(mut r#fn: Arc<Function::Function>, mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut target: Arc<EvalTarget::EvalTarget>) -> Result<Arc<Expression::NFExpression>> {
     let mut result: Arc<Expression::NFExpression>;
     if Function::isExternal(r#fn.clone())? {
         result = evaluateExternal(r#fn.clone(), args.clone(), target.clone())?;
@@ -124,7 +124,7 @@ pub fn evaluate(mut r#fn: Arc<Function::Function>, mut args: Arc<metamodelica::L
     Ok(result)
 }
 
-pub fn evaluateNormal(mut r#fn: Arc<Function::Function>, mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut context: i32) -> Result<Arc<Expression::NFExpression>> {
+pub(crate) fn evaluateNormal(mut r#fn: Arc<Function::Function>, mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut context: i32) -> Result<Arc<Expression::NFExpression>> {
     let mut result: Arc<Expression::NFExpression>;
     let mut fn_body: Arc<metamodelica::List<Arc<Statement::NFStatement>>>;
     let mut arg_map: ArgumentMap;
@@ -177,7 +177,7 @@ pub fn evaluateNormal(mut r#fn: Arc<Function::Function>, mut args: Arc<metamodel
     Ok(result)
 }
 
-pub fn evaluateExternal(mut r#fn: Arc<Function::Function>, mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut target: Arc<EvalTarget::EvalTarget>) -> Result<Arc<Expression::NFExpression>> {
+pub(crate) fn evaluateExternal(mut r#fn: Arc<Function::Function>, mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut target: Arc<EvalTarget::EvalTarget>) -> Result<Arc<Expression::NFExpression>> {
     let mut result: Arc<Expression::NFExpression>;
     let mut name: ArcStr;
     let mut lang: ArcStr;
@@ -236,7 +236,7 @@ pub fn evaluateExternal(mut r#fn: Arc<Function::Function>, mut args: Arc<metamod
     Ok(result)
 }
 
-pub fn evaluateRecordConstructor(mut r#fn: Arc<Function::Function>, mut ty: Arc<Type::NFType>, mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut evaluate: bool) -> Result<Arc<Expression::NFExpression>> {
+pub(crate) fn evaluateRecordConstructor(mut r#fn: Arc<Function::Function>, mut ty: Arc<Type::NFType>, mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut evaluate: bool) -> Result<Arc<Expression::NFExpression>> {
     let mut result: Arc<Expression::NFExpression>;
     let mut arg_map: ArgumentMap;
     let mut expl: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
@@ -684,7 +684,7 @@ fn evaluateAssignment(mut lhsExp: Arc<Expression::NFExpression>, mut rhsExp: Arc
     Ok(ctrl)
 }
 
-pub fn assignVariable(mut variable: Arc<Expression::NFExpression>, mut value: Arc<Expression::NFExpression>) -> Result<()> {
+pub(crate) fn assignVariable(mut variable: Arc<Expression::NFExpression>, mut value: Arc<Expression::NFExpression>) -> Result<()> {
     let () = (::match_deref::match_deref! { match &((variable.clone(), value.clone())) {
         (Deref @ Expression::MUTABLE { exp: var_ptr }, _) => {
             Mutable::update(var_ptr.clone(), assignExp(Mutable::access(var_ptr.clone()), value.clone())?);
@@ -1161,7 +1161,7 @@ fn cacheLibrary(mut libName: ArcStr, mut libHandle: i32) -> () {
     ()
 }
 
-pub fn clearLibraryCache() -> Result<()> {
+pub(crate) fn clearLibraryCache() -> Result<()> {
     let mut cache: Arc<metamodelica::List<(ArcStr, i32)>>;
     let mut lib_handle: i32;
     cache = openmodelica_util::Globals::sharedLibraryCacheIndex.with(|__root| __root.borrow().clone());

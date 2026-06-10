@@ -241,7 +241,7 @@ pub fn generateVerificationScenarios(mut package_path: Path, mut in_env: Absyn::
     Ok(out_env)
 }
 
-pub fn updatePackage(mut in_class: Arc<Absyn::Class>, mut ag_elems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>) -> Result<Arc<Absyn::Class>> {
+pub(crate) fn updatePackage(mut in_class: Arc<Absyn::Class>, mut ag_elems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>) -> Result<Arc<Absyn::Class>> {
     let mut out_class: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
     out_class = (::match_deref::match_deref! { match &(in_class.clone()) {
         __esc_out_class @ Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::PARTS { typeVars, classAttrs, classParts: _, ann, comment }, .. } => {
@@ -440,7 +440,7 @@ fn inferBindingClient(mut client_e: Arc<Client_e>, mut vmodel: Arc<Absyn::Class>
     Ok(out_vmodel)
 }
 
-pub fn toExpList(mut e_list: Arc<metamodelica::List<(Arc<Absyn::Exp>, ArcStr)>>, mut in_es: Arc<metamodelica::List<Arc<Absyn::Exp>>>) -> Arc<metamodelica::List<Arc<Absyn::Exp>>> {
+pub(crate) fn toExpList(mut e_list: Arc<metamodelica::List<(Arc<Absyn::Exp>, ArcStr)>>, mut in_es: Arc<metamodelica::List<Arc<Absyn::Exp>>>) -> Arc<metamodelica::List<Arc<Absyn::Exp>>> {
     '__tco: loop {
         ::match_deref::match_deref! { match &(e_list.clone()) {
         Deref @ metamodelica::List::Nil => {
@@ -454,7 +454,7 @@ pub fn toExpList(mut e_list: Arc<metamodelica::List<(Arc<Absyn::Exp>, ArcStr)>>,
     }
 }
 
-pub fn updateClass(mut in_class: Arc<Absyn::Class>, mut typeSpec: TypeSpec, mut rootType: TypeSpec, mut exp: Arc<metamodelica::List<(Arc<Absyn::Exp>, ArcStr)>>, mut instance_name: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>, mut defs: Absyn::Program, mut hasPreferred: bool, mut preferred: Arc<metamodelica::List<Preferred>>, mut path: ArcStr) -> Result<Arc<Absyn::Class>> {
+pub(crate) fn updateClass(mut in_class: Arc<Absyn::Class>, mut typeSpec: TypeSpec, mut rootType: TypeSpec, mut exp: Arc<metamodelica::List<(Arc<Absyn::Exp>, ArcStr)>>, mut instance_name: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>, mut defs: Absyn::Program, mut hasPreferred: bool, mut preferred: Arc<metamodelica::List<Preferred>>, mut path: ArcStr) -> Result<Arc<Absyn::Class>> {
     let mut out_class: Arc<Absyn::Class>;
     let __pa0 = ::match_deref::match_deref! { match &(in_class.clone()) {
         __pa0 @ Deref @ Absyn::Class { .. } => __pa0.clone(),
@@ -864,7 +864,7 @@ fn parseAggregator(mut in_eq: Arc<Absyn::Exp>, mut fargs: Arc<Absyn::FunctionArg
     out_eq
 }
 
-pub fn getProviders(mut providers: Arc<metamodelica::List<Provider>>, mut vmodel: Arc<Absyn::Class>, mut env: Absyn::Program, mut in_es: Arc<metamodelica::List<(Arc<Absyn::Exp>, ArcStr)>>) -> Result<Arc<metamodelica::List<(Arc<Absyn::Exp>, ArcStr)>>> {
+pub(crate) fn getProviders(mut providers: Arc<metamodelica::List<Provider>>, mut vmodel: Arc<Absyn::Class>, mut env: Absyn::Program, mut in_es: Arc<metamodelica::List<(Arc<Absyn::Exp>, ArcStr)>>) -> Result<Arc<metamodelica::List<(Arc<Absyn::Exp>, ArcStr)>>> {
     '__tco: loop {
         ::match_deref::match_deref! { match &(providers.clone()) {
         Deref @ metamodelica::List::Nil => {

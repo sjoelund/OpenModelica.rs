@@ -82,7 +82,7 @@ use openmodelica_util::Util;
 use openmodelica_util_datatypes_basic::Array;
 use openmodelica_util_datatypes_basic::List;
 
-pub fn needSpecialHandling(mut call: Arc<Call::NFCall>) -> Result<bool> {
+pub(crate) fn needSpecialHandling(mut call: Arc<Call::NFCall>) -> Result<bool> {
     let mut special: bool = false;
     let () = (::match_deref::match_deref! { match &(call.clone()) {
         Deref @ Call::UNTYPED_CALL { .. } => {
@@ -106,7 +106,7 @@ pub fn needSpecialHandling(mut call: Arc<Call::NFCall>) -> Result<bool> {
     Ok(special)
 }
 
-pub fn typeSpecial(mut call: Arc<Call::NFCall>, mut context: i32, mut info: SourceInfo) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>, Variability, Purity)> {
+pub(crate) fn typeSpecial(mut call: Arc<Call::NFCall>, mut context: i32, mut info: SourceInfo) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>, Variability, Purity)> {
     let mut callExp: Arc<Expression::NFExpression>;
     let mut ty: Arc<Type::NFType>;
     let mut variability: Variability;
@@ -170,7 +170,7 @@ pub fn typeSpecial(mut call: Arc<Call::NFCall>, mut context: i32, mut info: Sour
     Ok((callExp, ty, variability, purity))
 }
 
-pub fn makeSizeExp(mut posArgs: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut namedArgs: Arc<metamodelica::List<(ArcStr, Arc<Expression::NFExpression>)>>, mut info: SourceInfo) -> Result<Arc<Expression::NFExpression>> {
+pub(crate) fn makeSizeExp(mut posArgs: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut namedArgs: Arc<metamodelica::List<(ArcStr, Arc<Expression::NFExpression>)>>, mut info: SourceInfo) -> Result<Arc<Expression::NFExpression>> {
     let mut callExp: Arc<Expression::NFExpression>;
     let mut arg1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut arg2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
@@ -194,7 +194,7 @@ pub fn makeSizeExp(mut posArgs: Arc<metamodelica::List<Arc<Expression::NFExpress
     Ok(callExp)
 }
 
-pub fn makeArrayExp(mut posArgs: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut namedArgs: Arc<metamodelica::List<(ArcStr, Arc<Expression::NFExpression>)>>, mut info: SourceInfo) -> Result<Arc<Expression::NFExpression>> {
+pub(crate) fn makeArrayExp(mut posArgs: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut namedArgs: Arc<metamodelica::List<(ArcStr, Arc<Expression::NFExpression>)>>, mut info: SourceInfo) -> Result<Arc<Expression::NFExpression>> {
     let mut arrayExp: Arc<Expression::NFExpression>;
     assertNoNamedParams((literal!("array")).clone(), namedArgs.clone(), info.clone())?;
     if posArgs.clone().is_empty() {
@@ -205,7 +205,7 @@ pub fn makeArrayExp(mut posArgs: Arc<metamodelica::List<Arc<Expression::NFExpres
     Ok(arrayExp)
 }
 
-pub fn makeCatExp(mut n: i32, mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut tys: Arc<metamodelica::List<Arc<Type::NFType>>>, mut variability: Variability, mut purity: Purity, mut info: SourceInfo) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>)> {
+pub(crate) fn makeCatExp(mut n: i32, mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut tys: Arc<metamodelica::List<Arc<Type::NFType>>>, mut variability: Variability, mut purity: Purity, mut info: SourceInfo) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>)> {
     let mut callExp: Arc<Expression::NFExpression>;
     let mut ty: Arc<Type::NFType>;
     let mut arg2: Arc<Expression::NFExpression>;

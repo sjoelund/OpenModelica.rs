@@ -125,7 +125,7 @@ use openmodelica_util_datatypes_basic::List;
 
 // public imports
 // protected imports
-pub fn ceval(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<DAE::Exp>, mut inBoolean: bool, mut inMsg: Absyn::Msg, mut numIter: i32) -> Result<(FCore::Cache, Arc<Values::Value>)> {
+pub(crate) fn ceval(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<DAE::Exp>, mut inBoolean: bool, mut inMsg: Absyn::Msg, mut numIter: i32) -> Result<(FCore::Cache, Arc<Values::Value>)> {
     pub type ReductionOperator = std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>, Arc<Values::Value>) -> Result<Arc<Values::Value>> + 'static>;
 
     let mut outCache: FCore::Cache;
@@ -173,7 +173,7 @@ pub fn ceval(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<
     Ok((outCache, outValue))
 }
 
-pub fn isCompleteFunction(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inFuncPath: Arc<Absyn::Path>) -> bool {
+pub(crate) fn isCompleteFunction(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inFuncPath: Arc<Absyn::Path>) -> bool {
     let mut isComplete: bool;
     isComplete = 'mc: {
         let __mc_input = (inCache.clone(), inEnv.clone(), inFuncPath.clone());
@@ -223,7 +223,7 @@ pub fn isCompleteFunction(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
     isComplete
 }
 
-pub fn compileModel(mut fileprefix: ArcStr, mut libs: Arc<metamodelica::List<ArcStr>>, mut workingDir: ArcStr, mut makeVars: Arc<metamodelica::List<ArcStr>>) -> Result<()> {
+pub(crate) fn compileModel(mut fileprefix: ArcStr, mut libs: Arc<metamodelica::List<ArcStr>>, mut workingDir: ArcStr, mut makeVars: Arc<metamodelica::List<ArcStr>>) -> Result<()> {
     let mut omhome: ArcStr = Settings::getInstallationDirectoryPath()?;
     let mut omhome_1: ArcStr = System::stringReplace((omhome.clone()).clone(), (literal!("\"")).clone(), (literal!("")).clone())?;
     let mut pd: ArcStr = arcstr::literal!(Autoconf::pathDelimiter);
@@ -312,7 +312,7 @@ pub fn compileModel(mut fileprefix: ArcStr, mut libs: Arc<metamodelica::List<Arc
     Ok(())
 }
 
-pub fn loadFile(mut inName: ArcStr, mut encoding: ArcStr, mut p: Absyn::Program, mut checkUses: bool, mut notifyLoad: bool, mut requireExactVersion: bool, mut allowWithin: bool) -> Result<Absyn::Program> {
+pub(crate) fn loadFile(mut inName: ArcStr, mut encoding: ArcStr, mut p: Absyn::Program, mut checkUses: bool, mut notifyLoad: bool, mut requireExactVersion: bool, mut allowWithin: bool) -> Result<Absyn::Program> {
     let mut outProgram: Absyn::Program;
     let mut dir: ArcStr;
     let mut name: ArcStr = inName.clone();
@@ -412,7 +412,7 @@ fn checkUsesAndUpdateProgram(mut newp: Absyn::Program, mut p: Absyn::Program, mu
     Ok(p)
 }
 
-pub fn loadModel(mut imodelsToLoad: Arc<metamodelica::List<(Arc<Absyn::Path>, ArcStr, Arc<metamodelica::List<ArcStr>>, bool)>>, mut modelicaPath: ArcStr, mut ip: Absyn::Program, mut forceLoad: bool, mut notifyLoad: bool, mut checkUses: bool, mut requireExactVersion: bool, mut encrypted: bool, mut pathToFile: ArcStr) -> Result<(Absyn::Program, bool)> {
+pub(crate) fn loadModel(mut imodelsToLoad: Arc<metamodelica::List<(Arc<Absyn::Path>, ArcStr, Arc<metamodelica::List<ArcStr>>, bool)>>, mut modelicaPath: ArcStr, mut ip: Absyn::Program, mut forceLoad: bool, mut notifyLoad: bool, mut checkUses: bool, mut requireExactVersion: bool, mut encrypted: bool, mut pathToFile: ArcStr) -> Result<(Absyn::Program, bool)> {
     let mut pnew: Absyn::Program = ip.clone();
     let mut success: bool = true;
     let mut b: bool;
@@ -613,7 +613,7 @@ fn checkPatchedModelicaServices(mut name: ArcStr, mut program: Absyn::Program) -
     ()
 }
 
-pub fn cevalInteractiveFunctions(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<DAE::Exp>, mut msg: Absyn::Msg, mut numIter: i32) -> Result<(FCore::Cache, Arc<Values::Value>)> {
+pub(crate) fn cevalInteractiveFunctions(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<DAE::Exp>, mut msg: Absyn::Msg, mut numIter: i32) -> Result<(FCore::Cache, Arc<Values::Value>)> {
     let mut outCache: FCore::Cache;
     let mut outValue: Arc<Values::Value>;
     (outCache, outValue) = 'mc: {
@@ -653,7 +653,7 @@ pub fn cevalInteractiveFunctions(mut inCache: FCore::Cache, mut inEnv: FCore::Gr
     Ok((outCache, outValue))
 }
 
-pub fn cevalInteractiveFunctions2(mut cache: FCore::Cache, mut env: FCore::Graph, mut functionName: ArcStr, mut args: Arc<metamodelica::List<Arc<Values::Value>>>, mut msg: Absyn::Msg) -> Result<(FCore::Cache, Arc<Values::Value>)> {
+pub(crate) fn cevalInteractiveFunctions2(mut cache: FCore::Cache, mut env: FCore::Graph, mut functionName: ArcStr, mut args: Arc<metamodelica::List<Arc<Values::Value>>>, mut msg: Absyn::Msg) -> Result<(FCore::Cache, Arc<Values::Value>)> {
     let mut outCache: FCore::Cache = cache.clone();
     let mut outValue: Arc<Values::Value>;
     outValue = 'mc: {
@@ -2271,7 +2271,7 @@ pub fn cevalInteractiveFunctions2(mut cache: FCore::Cache, mut env: FCore::Graph
     Ok((outCache, outValue))
 }
 
-pub fn evalCodeTypeName(mut val: Arc<Values::Value>, mut env: FCore::Graph) -> Arc<Values::Value> {
+pub(crate) fn evalCodeTypeName(mut val: Arc<Values::Value>, mut env: FCore::Graph) -> Arc<Values::Value> {
     let mut res: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
     res = 'mc: {
         let __mc_input = val.clone();
@@ -2319,7 +2319,7 @@ fn getVariableNames(mut vars: Arc<metamodelica::List<InteractiveTypes::Variable>
     }
 }
 
-pub fn getPackageVersion(mut path: Arc<Absyn::Path>, mut p: Absyn::Program) -> Result<ArcStr> {
+pub(crate) fn getPackageVersion(mut path: Arc<Absyn::Path>, mut p: Absyn::Program) -> Result<ArcStr> {
     let mut version: ArcStr = literal!("");
     let mut evalParamAnn: bool;
     evalParamAnn = Config::getEvaluateParametersInAnnotations()?;
@@ -2439,7 +2439,7 @@ fn generateFunctionFileName(mut functionPath: Arc<Absyn::Path>) -> Result<ArcStr
     Ok(functionName)
 }
 
-pub fn getFunctionDependencies(mut cache: FCore::Cache, mut functionName: Arc<Absyn::Path>) -> Result<(DAE::Function, Arc<metamodelica::List<Arc<Absyn::Path>>>, Arc<AvlTreePathFunction::Tree>)> {
+pub(crate) fn getFunctionDependencies(mut cache: FCore::Cache, mut functionName: Arc<Absyn::Path>) -> Result<(DAE::Function, Arc<metamodelica::List<Arc<Absyn::Path>>>, Arc<AvlTreePathFunction::Tree>)> {
     let mut mainFunction: DAE::Function;
     let mut dependencies: Arc<metamodelica::List<Arc<Absyn::Path>>>;
     let mut funcs: Arc<AvlTreePathFunction::Tree>;
@@ -2449,7 +2449,7 @@ pub fn getFunctionDependencies(mut cache: FCore::Cache, mut functionName: Arc<Ab
     Ok((mainFunction, dependencies, funcs))
 }
 
-pub fn collectDependencies(mut inCache: FCore::Cache, mut env: FCore::Graph, mut functionName: Arc<Absyn::Path>) -> Result<(FCore::Cache, DAE::Function, Arc<metamodelica::List<DAE::Function>>, Arc<metamodelica::List<Arc<DAE::Type>>>)> {
+pub(crate) fn collectDependencies(mut inCache: FCore::Cache, mut env: FCore::Graph, mut functionName: Arc<Absyn::Path>) -> Result<(FCore::Cache, DAE::Function, Arc<metamodelica::List<DAE::Function>>, Arc<metamodelica::List<Arc<DAE::Type>>>)> {
     let mut outCache: FCore::Cache;
     let mut mainFunction: DAE::Function;
     let mut dependencies: Arc<metamodelica::List<DAE::Function>>;
@@ -2465,7 +2465,7 @@ pub fn collectDependencies(mut inCache: FCore::Cache, mut env: FCore::Graph, mut
     Ok((outCache, mainFunction, dependencies, metarecordTypes))
 }
 
-pub fn cevalGenerateFunction(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut program: Absyn::Program, mut inPath: Arc<Absyn::Path>) -> Result<(FCore::Cache, ArcStr, ArcStr)> {
+pub(crate) fn cevalGenerateFunction(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut program: Absyn::Program, mut inPath: Arc<Absyn::Path>) -> Result<(FCore::Cache, ArcStr, ArcStr)> {
     let mut outCache: FCore::Cache;
     let mut functionName: ArcStr;
     let mut functionFileName: ArcStr;
@@ -2760,7 +2760,7 @@ fn addNonPartialClassRef(mut name: ArcStr, mut r#ref: metamodelica::Array<FCore:
     Ok(classes)
 }
 
-pub fn cevalCallFunction(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<DAE::Exp>, mut inValuesValueLst: Arc<metamodelica::List<Arc<Values::Value>>>, mut r#impl: bool, mut inMsg: Absyn::Msg, mut numIter: i32) -> Result<(FCore::Cache, Arc<Values::Value>)> {
+pub(crate) fn cevalCallFunction(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<DAE::Exp>, mut inValuesValueLst: Arc<metamodelica::List<Arc<Values::Value>>>, mut r#impl: bool, mut inMsg: Absyn::Msg, mut numIter: i32) -> Result<(FCore::Cache, Arc<Values::Value>)> {
     let mut outCache: FCore::Cache;
     let mut outValue: Arc<Values::Value>;
     (outCache, outValue) = 'mc: {
@@ -3557,7 +3557,7 @@ fn reloadClass(mut filename: ArcStr, mut encoding: ArcStr) -> Result<()> {
     Ok(())
 }
 
-pub fn translateFunctions(mut program: Absyn::Program, mut name: ArcStr, mut optMainFunction: Option<DAE::Function>, mut idaeElements: Arc<metamodelica::List<DAE::Function>>, mut metarecordTypes: Arc<metamodelica::List<Arc<DAE::Type>>>, mut inIncludes: Arc<metamodelica::List<ArcStr>>) -> Result<()> {
+pub(crate) fn translateFunctions(mut program: Absyn::Program, mut name: ArcStr, mut optMainFunction: Option<DAE::Function>, mut idaeElements: Arc<metamodelica::List<DAE::Function>>, mut metarecordTypes: Arc<metamodelica::List<Arc<DAE::Type>>>, mut inIncludes: Arc<metamodelica::List<ArcStr>>) -> Result<()> {
     { let __v = None; openmodelica_backend::Globals::optionSimCode.with(|__root| *__root.borrow_mut() = __v) };
     let () = (::match_deref::match_deref! { match &((optMainFunction.clone(), idaeElements.clone(), inIncludes.clone())) {
         (Some(daeMainFunction), daeElements, includes) => {
@@ -4152,7 +4152,7 @@ fn generateSeparateCode(mut args: Arc<metamodelica::List<Arc<Values::Value>>>, m
     (res, outCache)
 }
 
-pub fn getImportedNames(mut inClass: Arc<Absyn::Class>) -> Result<(Arc<metamodelica::List<Arc<Values::Value>>>, Arc<metamodelica::List<Arc<Values::Value>>>)> {
+pub(crate) fn getImportedNames(mut inClass: Arc<Absyn::Class>) -> Result<(Arc<metamodelica::List<Arc<Values::Value>>>, Arc<metamodelica::List<Arc<Values::Value>>>)> {
     let mut outPublicImports: Arc<metamodelica::List<Arc<Values::Value>>>;
     let mut outProtectedImports: Arc<metamodelica::List<Arc<Values::Value>>>;
     let mut ident: ArcStr;
@@ -4178,7 +4178,7 @@ pub fn getImportedNames(mut inClass: Arc<Absyn::Class>) -> Result<(Arc<metamodel
     Ok((outPublicImports, outProtectedImports))
 }
 
-pub fn getImportList(mut inClass: Arc<Absyn::Class>, mut pub_imports_list: Arc<metamodelica::List<Absyn::Import>>, mut pro_imports_list: Arc<metamodelica::List<Absyn::Import>>) -> (Arc<metamodelica::List<Absyn::Import>>, Arc<metamodelica::List<Absyn::Import>>) {
+pub(crate) fn getImportList(mut inClass: Arc<Absyn::Class>, mut pub_imports_list: Arc<metamodelica::List<Absyn::Import>>, mut pro_imports_list: Arc<metamodelica::List<Absyn::Import>>) -> (Arc<metamodelica::List<Absyn::Import>>, Arc<metamodelica::List<Absyn::Import>>) {
     let mut pub_imports_list: Arc<metamodelica::List<Absyn::Import>> = pub_imports_list;
     let mut pro_imports_list: Arc<metamodelica::List<Absyn::Import>> = pro_imports_list;
     for mut part in &*AbsynUtil::getClassPartsInClass(inClass.clone()) {

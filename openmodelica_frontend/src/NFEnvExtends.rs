@@ -117,7 +117,7 @@ impl Default for ExtendsWrapper {
 }
 pub use self::ExtendsWrapper::{UNQUALIFIED_EXTENDS,QUALIFIED_EXTENDS,NO_EXTENDS};
 
-pub fn update(mut inEnv: Env) -> Result<Env> {
+pub(crate) fn update(mut inEnv: Env) -> Result<Env> {
     let mut outEnv: Env;
     let mut env: Env;
     env = qualify(inEnv.clone())?;
@@ -125,7 +125,7 @@ pub fn update(mut inEnv: Env) -> Result<Env> {
     Ok(outEnv)
 }
 
-pub fn qualify(mut inEnv: Env) -> Result<Env> {
+pub(crate) fn qualify(mut inEnv: Env) -> Result<Env> {
     let mut outEnv: Env;
     outEnv = 'mc: {
         let __mc_input = inEnv.clone();
@@ -468,7 +468,7 @@ fn splitExtendsErrorPath(mut inPath: Arc<Absyn::Path>) -> Result<(Arc<Absyn::Pat
     Ok((outBaseClass, outPartPath))
 }
 
-pub fn printExtendsError(mut inErrorPath: Arc<Absyn::Path>, mut inEnv: Env, mut inInfo: SourceInfo) -> Result<()> {
+pub(crate) fn printExtendsError(mut inErrorPath: Arc<Absyn::Path>, mut inEnv: Env, mut inInfo: SourceInfo) -> Result<()> {
     let () = 'mc: {
         let __mc_input = inErrorPath.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -500,7 +500,7 @@ pub fn printExtendsError(mut inErrorPath: Arc<Absyn::Path>, mut inEnv: Env, mut 
     Ok(())
 }
 
-pub fn printExtendsError2(mut inError: ArcStr, mut inBaseClass: Arc<Absyn::Path>, mut inPartPath: Arc<Absyn::Path>, mut inEnv: Env, mut inInfo: SourceInfo) -> Result<()> {
+pub(crate) fn printExtendsError2(mut inError: ArcStr, mut inBaseClass: Arc<Absyn::Path>, mut inPartPath: Arc<Absyn::Path>, mut inEnv: Env, mut inInfo: SourceInfo) -> Result<()> {
     let () = 'mc: {
         let __mc_input = inPartPath.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -1110,7 +1110,7 @@ fn lookupClassExtendsBaseClass(mut inName: ArcStr, mut inEnv: Env, mut inInfo: S
     Ok((outPath, outItem))
 }
 
-pub fn extendEnvWithClassExtends(mut inClassExtends: Arc<SCode::Element>, mut inEnv: Env) -> Result<Env> {
+pub(crate) fn extendEnvWithClassExtends(mut inClassExtends: Arc<SCode::Element>, mut inEnv: Env) -> Result<Env> {
     let mut outEnv: Env;
     outEnv = (::match_deref::match_deref! { match &(inClassExtends.clone()) {
         Deref @ SCode::Element::CLASS { name, prefixes, encapsulatedPrefix: ep, partialPrefix: pp, restriction: res, classDef: Deref @ SCode::ClassDef::CLASS_EXTENDS { modifications: mods, composition: cdef }, cmt, info } => {

@@ -156,7 +156,7 @@ pub fn copy<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static +
     outMap
 }
 
-pub fn deepCopy<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>, mut r#fn: Arc<dyn ::std::ops::Fn(V) -> Result<V> + 'static>) -> Result<Arc<UnorderedMap<K, V>>> {
+pub(crate) fn deepCopy<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>, mut r#fn: Arc<dyn ::std::ops::Fn(V) -> Result<V> + 'static>) -> Result<Arc<UnorderedMap<K, V>>> {
     pub type CopyFn<V: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(V) -> Result<V> + 'static>;
 
     let mut outMap: Arc<UnorderedMap<K, V>>;
@@ -368,7 +368,7 @@ pub fn keyAt<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static 
     Ok(key)
 }
 
-pub fn valueAt<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>, mut index: i32) -> Result<V> {
+pub(crate) fn valueAt<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>, mut index: i32) -> Result<V> {
     let mut value: V = Vector::get(map.values.clone(), index.clone())?;
     Ok(value)
 }
@@ -411,7 +411,7 @@ pub fn valueArray<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'st
     values
 }
 
-pub fn toVector<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>) -> Arc<Vector::Vector<(K, V)>> {
+pub(crate) fn toVector<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>) -> Arc<Vector::Vector<(K, V)>> {
     pub type EntryT<K, V> = (K, V);
 
     let mut entries: Arc<Vector::Vector<(K, V)>>;
@@ -425,12 +425,12 @@ pub fn toVector<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'stat
     entries
 }
 
-pub fn keyVector<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>) -> Arc<Vector::Vector<K>> {
+pub(crate) fn keyVector<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>) -> Arc<Vector::Vector<K>> {
     let mut keys: Arc<Vector::Vector<K>> = Vector::copy(map.keys.clone());
     keys
 }
 
-pub fn valueVector<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>) -> Arc<Vector::Vector<V>> {
+pub(crate) fn valueVector<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>) -> Arc<Vector::Vector<V>> {
     let mut values: Arc<Vector::Vector<V>> = Vector::copy(map.values.clone());
     values
 }
@@ -454,7 +454,7 @@ pub fn keySet<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static
     Ok(set)
 }
 
-pub fn fold<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace, FT: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>, mut r#fn: Arc<dyn ::std::ops::Fn(V, FT) -> Result<FT> + 'static>, mut arg: FT) -> Result<FT> {
+pub(crate) fn fold<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace, FT: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>, mut r#fn: Arc<dyn ::std::ops::Fn(V, FT) -> Result<FT> + 'static>, mut arg: FT) -> Result<FT> {
     pub type FoldFn<V: Clone + 'static, FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(V, FT) -> Result<FT> + 'static>;
 
     let mut arg: FT = arg;
@@ -462,7 +462,7 @@ pub fn fold<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static +
     Ok(arg)
 }
 
-pub fn map<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace, OT: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>, mut r#fn: Arc<dyn ::std::ops::Fn(V) -> Result<OT> + 'static>) -> Result<Arc<UnorderedMap<K, OT>>> {
+pub(crate) fn map<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace, OT: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>, mut r#fn: Arc<dyn ::std::ops::Fn(V) -> Result<OT> + 'static>) -> Result<Arc<UnorderedMap<K, OT>>> {
     pub type MapFn<V: Clone + 'static, OT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(V) -> Result<OT> + 'static>;
 
     let mut outMap: Arc<UnorderedMap<K, OT>>;
@@ -524,7 +524,7 @@ pub fn all<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + 
     Ok(res)
 }
 
-pub fn any<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>, mut r#fn: Arc<dyn ::std::ops::Fn(V) -> Result<bool> + 'static>) -> Result<bool> {
+pub(crate) fn any<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>, mut r#fn: Arc<dyn ::std::ops::Fn(V) -> Result<bool> + 'static>) -> Result<bool> {
     pub type PredFn<V: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(V) -> Result<bool> + 'static>;
 
     let mut res: bool;
@@ -550,17 +550,17 @@ pub fn isEmpty<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'stati
     empty
 }
 
-pub fn bucketCount<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>) -> i32 {
+pub(crate) fn bucketCount<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>) -> i32 {
     let mut count: i32 = Vector::size(map.buckets.clone());
     count
 }
 
-pub fn loadFactor<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>) -> metamodelica::Real {
+pub(crate) fn loadFactor<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>) -> metamodelica::Real {
     let mut load: metamodelica::Real = intReal(Vector::size(map.keys.clone())) / metamodelica::OrderedFloat((Vector::size(map.buckets.clone())) as f64);
     load
 }
 
-pub fn rehash<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>) -> Result<()> {
+pub(crate) fn rehash<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>) -> Result<()> {
     let mut keys: Arc<Vector::Vector<K>> = map.keys.clone();
     let mut buckets: Arc<Vector::Vector<Arc<metamodelica::List<i32>>>> = map.buckets.clone();
     let mut bucket_count: i32;

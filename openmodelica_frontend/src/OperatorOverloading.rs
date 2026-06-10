@@ -75,7 +75,7 @@ use openmodelica_util::Global;
 use openmodelica_util::Util;
 use openmodelica_util_datatypes_basic::List;
 
-pub fn binary(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inOperator1: Absyn::Operator, mut inProp1: DAE::Properties, mut inExp1: Arc<DAE::Exp>, mut inProp2: DAE::Properties, mut inExp2: Arc<DAE::Exp>, mut AbExp: Arc<Absyn::Exp>, mut AbExp1: Arc<Absyn::Exp>, mut AbExp2: Arc<Absyn::Exp>, mut inImpl: bool, mut inPre: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
+pub(crate) fn binary(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inOperator1: Absyn::Operator, mut inProp1: DAE::Properties, mut inExp1: Arc<DAE::Exp>, mut inProp2: DAE::Properties, mut inExp2: Arc<DAE::Exp>, mut AbExp: Arc<Absyn::Exp>, mut AbExp1: Arc<Absyn::Exp>, mut AbExp2: Arc<Absyn::Exp>, mut inImpl: bool, mut inPre: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     '__tco: loop {
         ::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inOperator1.clone(), inProp1.clone(), inExp1.clone(), inProp2.clone(), inExp2.clone())) {
         (_, _, _, props1 @ DAE::Properties::PROP_TUPLE { .. }, _, DAE::Properties::PROP { .. }, _) if (!(Config::acceptMetaModelicaGrammar()?)) => {
@@ -149,7 +149,7 @@ pub fn binary(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inOperator
     }
 }
 
-pub fn unary(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inOperator1: Absyn::Operator, mut inProp1: DAE::Properties, mut inExp1: Arc<DAE::Exp>, mut AbExp: Arc<Absyn::Exp>, mut AbExp1: Arc<Absyn::Exp>, mut inImpl: bool, mut inPre: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
+pub(crate) fn unary(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inOperator1: Absyn::Operator, mut inProp1: DAE::Properties, mut inExp1: Arc<DAE::Exp>, mut AbExp: Arc<Absyn::Exp>, mut AbExp1: Arc<Absyn::Exp>, mut inImpl: bool, mut inPre: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache;
     let mut outExp: Arc<DAE::Exp>;
     let mut outProp: DAE::Properties;
@@ -242,7 +242,7 @@ pub fn unary(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inOperator1
     Ok((outCache, outExp, outProp))
 }
 
-pub fn string(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp1: Arc<Absyn::Exp>, mut inImpl: bool, mut inDoVect: bool, mut inPre: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
+pub(crate) fn string(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp1: Arc<Absyn::Exp>, mut inImpl: bool, mut inDoVect: bool, mut inPre: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache;
     let mut outExp: Arc<DAE::Exp>;
     let mut outProp: DAE::Properties;
@@ -293,7 +293,7 @@ pub fn string(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp1: Ar
     Ok((outCache, outExp, outProp))
 }
 
-pub fn elabArglist(mut inTypes: Arc<metamodelica::List<Arc<DAE::Type>>>, mut inArgs: Arc<metamodelica::List<(Arc<DAE::Exp>, Arc<DAE::Type>)>>) -> Result<(Arc<metamodelica::List<Arc<DAE::Exp>>>, Arc<metamodelica::List<Arc<DAE::Type>>>)> {
+pub(crate) fn elabArglist(mut inTypes: Arc<metamodelica::List<Arc<DAE::Type>>>, mut inArgs: Arc<metamodelica::List<(Arc<DAE::Exp>, Arc<DAE::Type>)>>) -> Result<(Arc<metamodelica::List<Arc<DAE::Exp>>>, Arc<metamodelica::List<Arc<DAE::Type>>>)> {
     let mut outArgs: Arc<metamodelica::List<Arc<DAE::Exp>>>;
     let mut outTypes: Arc<metamodelica::List<Arc<DAE::Type>>>;
     (outArgs, outTypes) = (::match_deref::match_deref! { match &((inTypes.clone(), inArgs.clone())) {
@@ -314,7 +314,7 @@ pub fn elabArglist(mut inTypes: Arc<metamodelica::List<Arc<DAE::Type>>>, mut inA
     Ok((outArgs, outTypes))
 }
 
-pub fn initCache() -> () {
+pub(crate) fn initCache() -> () {
     { let __v = (crate::OperatorOverloading::AvlTreePathPathEnv::Tree::interned_EMPTY(), crate::OperatorOverloading::AvlTreePathOperatorTypes::Tree::interned_EMPTY()); crate::Globals::operatorOverloadingCache.with(|__root| *__root.borrow_mut() = __v) };
     ()
 }
@@ -1431,19 +1431,19 @@ pub mod AvlTreePathPathEnv {
 
     pub type Value = Arc<Absyn::Path>;
 
-    pub fn keyStr(mut inKey: Key) -> Result<ArcStr> {
+    pub(crate) fn keyStr(mut inKey: Key) -> Result<ArcStr> {
         let mut outString: ArcStr;
         outString = (AbsynUtil::pathString(inKey.clone(), (literal!(".")).clone(), true, false)?).clone();
         Ok(outString)
     }
 
-    pub fn valueStr(mut inValue: Value) -> Result<ArcStr> {
+    pub(crate) fn valueStr(mut inValue: Value) -> Result<ArcStr> {
         let mut outString: ArcStr;
         outString = (AbsynUtil::pathString(inValue.clone(), (literal!(".")).clone(), true, false)?).clone();
         Ok(outString)
     }
 
-    pub fn keyCompare(mut inKey1: Key, mut inKey2: Key) -> Result<i32> {
+    pub(crate) fn keyCompare(mut inKey1: Key, mut inKey2: Key) -> Result<i32> {
         let mut outResult: i32;
         outResult = AbsynUtil::pathCompareNoQual(inKey1.clone(), inKey2.clone())?;
         Ok(outResult)
@@ -1508,7 +1508,7 @@ pub mod AvlTreePathPathEnv {
 
     pub type ValueNode = Arc<Absyn::Path>;
 
-    pub fn add(mut inTree: Arc<Tree>, mut inKey: Key, mut inValue: Value, mut conflictFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> + 'static>) -> Result<Arc<Tree>> {
+    pub(crate) fn add(mut inTree: Arc<Tree>, mut inKey: Key, mut inValue: Value, mut conflictFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> + 'static>) -> Result<Arc<Tree>> {
         let mut tree: Arc<Tree> = inTree.clone();
         tree = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::EMPTY { .. } => {
@@ -1553,7 +1553,7 @@ pub mod AvlTreePathPathEnv {
         Ok(tree)
     }
 
-    pub fn addConflictFail(mut newValue: Value, mut oldValue: Value, mut key: Key) -> Result<Value> {
+    pub(crate) fn addConflictFail(mut newValue: Value, mut oldValue: Value, mut key: Key) -> Result<Value> {
         let mut value: Value;
         bail!("fail");
         Ok(value)
@@ -1564,12 +1564,12 @@ pub mod AvlTreePathPathEnv {
         value
     }
 
-    pub fn addConflictReplace(mut newValue: Value, mut oldValue: Value, mut key: Key) -> Value {
+    pub(crate) fn addConflictReplace(mut newValue: Value, mut oldValue: Value, mut key: Key) -> Value {
         let mut value: Value = newValue.clone();
         value
     }
 
-    pub fn addList(mut tree: Arc<Tree>, mut inValues: Arc<metamodelica::List<(Arc<Absyn::Path>, Arc<Absyn::Path>)>>, mut conflictFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> + 'static>) -> Result<Arc<Tree>> {
+    pub(crate) fn addList(mut tree: Arc<Tree>, mut inValues: Arc<metamodelica::List<(Arc<Absyn::Path>, Arc<Absyn::Path>)>>, mut conflictFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> + 'static>) -> Result<Arc<Tree>> {
         let mut tree: Arc<Tree> = tree;
         let mut key: Key;
         let mut value: Value;
@@ -1581,7 +1581,7 @@ pub mod AvlTreePathPathEnv {
         Ok(tree)
     }
 
-    pub fn addUpdate(mut tree: Arc<Tree>, mut key: Key, mut r#fn: Arc<dyn ::std::ops::Fn(Option<Arc<Absyn::Path>>) -> Result<Arc<Absyn::Path>> + 'static>) -> Result<Arc<Tree>> {
+    pub(crate) fn addUpdate(mut tree: Arc<Tree>, mut key: Key, mut r#fn: Arc<dyn ::std::ops::Fn(Option<Arc<Absyn::Path>>) -> Result<Arc<Absyn::Path>> + 'static>) -> Result<Arc<Tree>> {
         pub type UpdateFn = std::sync::Arc<dyn ::std::ops::Fn(Option<Arc<Absyn::Path>>) -> Result<Value> + 'static>;
 
         let mut tree: Arc<Tree> = tree;
@@ -1659,7 +1659,7 @@ pub mod AvlTreePathPathEnv {
         outBalance
     }
 
-    pub fn fold<FT: Clone + 'static + metamodelica::gc::MMTrace>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>, FT) -> Result<FT> + 'static>, mut inStartValue: FT) -> Result<FT> {
+    pub(crate) fn fold<FT: Clone + 'static + metamodelica::gc::MMTrace>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>, FT) -> Result<FT> + 'static>, mut inStartValue: FT) -> Result<FT> {
         pub type FoldFunc<FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT) -> Result<FT> + 'static>;
 
         let mut outResult: FT = inStartValue.clone();
@@ -1682,7 +1682,7 @@ pub mod AvlTreePathPathEnv {
         Ok(outResult)
     }
 
-    pub fn foldCond<FT: Clone + 'static + metamodelica::gc::MMTrace>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>, FT) -> Result<(FT, bool)> + 'static>, mut value: FT) -> Result<FT> {
+    pub(crate) fn foldCond<FT: Clone + 'static + metamodelica::gc::MMTrace>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>, FT) -> Result<(FT, bool)> + 'static>, mut value: FT) -> Result<FT> {
         pub type FoldFunc<FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT) -> Result<(FT, bool)> + 'static>;
 
         let mut value: FT = value;
@@ -1709,7 +1709,7 @@ pub mod AvlTreePathPathEnv {
         Ok(value)
     }
 
-    pub fn fold_2<FT1: Clone + 'static + metamodelica::gc::MMTrace, FT2: Clone + 'static + metamodelica::gc::MMTrace>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>, FT1, FT2) -> Result<(FT1, FT2)> + 'static>, mut foldArg1: FT1, mut foldArg2: FT2) -> Result<(FT1, FT2)> {
+    pub(crate) fn fold_2<FT1: Clone + 'static + metamodelica::gc::MMTrace, FT2: Clone + 'static + metamodelica::gc::MMTrace>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>, FT1, FT2) -> Result<(FT1, FT2)> + 'static>, mut foldArg1: FT1, mut foldArg2: FT2) -> Result<(FT1, FT2)> {
         pub type FoldFunc<FT1: Clone + 'static, FT2: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT1, FT2) -> Result<(FT1, FT2)> + 'static>;
 
         let mut foldArg1: FT1 = foldArg1;
@@ -1731,7 +1731,7 @@ pub mod AvlTreePathPathEnv {
         Ok((foldArg1, foldArg2))
     }
 
-    pub fn forEach(mut tree: Arc<Tree>, mut func: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<()> + 'static>) -> Result<()> {
+    pub(crate) fn forEach(mut tree: Arc<Tree>, mut func: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<()> + 'static>) -> Result<()> {
         pub type EachFunc = std::sync::Arc<dyn ::std::ops::Fn(Key, Value) -> Result<()> + 'static>;
 
         let () = (::match_deref::match_deref! { match &(tree.clone()) {
@@ -1751,7 +1751,7 @@ pub mod AvlTreePathPathEnv {
         Ok(())
     }
 
-    pub fn fromList(mut inValues: Arc<metamodelica::List<(Arc<Absyn::Path>, Arc<Absyn::Path>)>>, mut conflictFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> + 'static>) -> Result<Arc<Tree>> {
+    pub(crate) fn fromList(mut inValues: Arc<metamodelica::List<(Arc<Absyn::Path>, Arc<Absyn::Path>)>>, mut conflictFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> + 'static>) -> Result<Arc<Tree>> {
         let mut tree: Arc<Tree> = crate::OperatorOverloading::AvlTreePathPathEnv::Tree::interned_EMPTY();
         let mut key: Key;
         let mut value: Value;
@@ -1763,7 +1763,7 @@ pub mod AvlTreePathPathEnv {
         Ok(tree)
     }
 
-    pub fn get(mut tree: Arc<Tree>, mut key: Key) -> Result<Value> {
+    pub(crate) fn get(mut tree: Arc<Tree>, mut key: Key) -> Result<Value> {
         let mut value: Value;
         let mut k: Key;
         k = (::match_deref::match_deref! { match &(tree.clone()) {
@@ -1781,7 +1781,7 @@ pub mod AvlTreePathPathEnv {
         Ok(value)
     }
 
-    pub fn getOpt(mut tree: Arc<Tree>, mut key: Key) -> Result<Option<Arc<Absyn::Path>>> {
+    pub(crate) fn getOpt(mut tree: Arc<Tree>, mut key: Key) -> Result<Option<Arc<Absyn::Path>>> {
         '__tco: loop {
             let mut k: Key;
             k = (::match_deref::match_deref! { match &(tree.clone()) {
@@ -1801,7 +1801,7 @@ pub mod AvlTreePathPathEnv {
         }
     }
 
-    pub fn hasKey(mut inTree: Arc<Tree>, mut inKey: Key) -> Result<bool> {
+    pub(crate) fn hasKey(mut inTree: Arc<Tree>, mut inKey: Key) -> Result<bool> {
         let mut comp: bool = false;
         let mut key: Key;
         let mut key_comp: i32;
@@ -1843,12 +1843,12 @@ pub mod AvlTreePathPathEnv {
         outHeight
     }
 
-    pub fn intersection() -> Result<()> {
+    pub(crate) fn intersection() -> Result<()> {
         bail!("fail");
         Ok(())
     }
 
-    pub fn isEmpty(mut tree: Arc<Tree>) -> bool {
+    pub(crate) fn isEmpty(mut tree: Arc<Tree>) -> bool {
         let mut isEmpty: bool;
         isEmpty = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::EMPTY { .. } => true,
@@ -1858,7 +1858,7 @@ pub mod AvlTreePathPathEnv {
         isEmpty
     }
 
-    pub fn join(mut tree: Arc<Tree>, mut treeToJoin: Arc<Tree>, mut conflictFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> + 'static>) -> Result<Arc<Tree>> {
+    pub(crate) fn join(mut tree: Arc<Tree>, mut treeToJoin: Arc<Tree>, mut conflictFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> + 'static>) -> Result<Arc<Tree>> {
         let mut tree: Arc<Tree> = tree;
         tree = (::match_deref::match_deref! { match &(treeToJoin.clone()) {
         Deref @ Tree::EMPTY { .. } => tree.clone(),
@@ -1874,7 +1874,7 @@ pub mod AvlTreePathPathEnv {
         Ok(tree)
     }
 
-    pub fn listKeys(mut tree: Arc<Tree>, mut lst: Arc<metamodelica::List<Arc<Absyn::Path>>>) -> Arc<metamodelica::List<Arc<Absyn::Path>>> {
+    pub(crate) fn listKeys(mut tree: Arc<Tree>, mut lst: Arc<metamodelica::List<Arc<Absyn::Path>>>) -> Arc<metamodelica::List<Arc<Absyn::Path>>> {
         let mut lst: Arc<metamodelica::List<Arc<Absyn::Path>>> = lst;
         lst = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { key, .. } => {
@@ -1894,7 +1894,7 @@ pub mod AvlTreePathPathEnv {
         lst
     }
 
-    pub fn listKeysReverse(mut inTree: Arc<Tree>, mut lst: Arc<metamodelica::List<Arc<Absyn::Path>>>) -> Arc<metamodelica::List<Arc<Absyn::Path>>> {
+    pub(crate) fn listKeysReverse(mut inTree: Arc<Tree>, mut lst: Arc<metamodelica::List<Arc<Absyn::Path>>>) -> Arc<metamodelica::List<Arc<Absyn::Path>>> {
         let mut lst: Arc<metamodelica::List<Arc<Absyn::Path>>> = lst;
         lst = (::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::LEAF { .. } => metamodelica::cons(var_field!((*inTree).key, Tree::LEAF).clone(), lst.clone()),
@@ -1910,7 +1910,7 @@ pub mod AvlTreePathPathEnv {
         lst
     }
 
-    pub fn listValues(mut tree: Arc<Tree>, mut lst: Arc<metamodelica::List<Arc<Absyn::Path>>>) -> Arc<metamodelica::List<Arc<Absyn::Path>>> {
+    pub(crate) fn listValues(mut tree: Arc<Tree>, mut lst: Arc<metamodelica::List<Arc<Absyn::Path>>>) -> Arc<metamodelica::List<Arc<Absyn::Path>>> {
         let mut lst: Arc<metamodelica::List<Arc<Absyn::Path>>> = lst;
         lst = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { value, .. } => {
@@ -1930,7 +1930,7 @@ pub mod AvlTreePathPathEnv {
         lst
     }
 
-    pub fn map(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> + 'static>) -> Result<Arc<Tree>> {
+    pub(crate) fn map(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> + 'static>) -> Result<Arc<Tree>> {
         pub type MapFunc = std::sync::Arc<dyn ::std::ops::Fn(Key, Value) -> Result<Value> + 'static>;
 
         let mut outTree: Arc<Tree> = inTree.clone();
@@ -1963,7 +1963,7 @@ pub mod AvlTreePathPathEnv {
         Ok(outTree)
     }
 
-    pub fn mapFold<FT: Clone + 'static + metamodelica::gc::MMTrace>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>, FT) -> Result<(Arc<Absyn::Path>, FT)> + 'static>, mut inStartValue: FT) -> Result<(Arc<Tree>, FT)> {
+    pub(crate) fn mapFold<FT: Clone + 'static + metamodelica::gc::MMTrace>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>, FT) -> Result<(Arc<Absyn::Path>, FT)> + 'static>, mut inStartValue: FT) -> Result<(Arc<Tree>, FT)> {
         pub type MapFunc<FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT) -> Result<Value> + 'static>;
 
         let mut outTree: Arc<Tree> = inTree.clone();
@@ -1997,12 +1997,12 @@ pub mod AvlTreePathPathEnv {
         Ok((outTree, outResult))
     }
 
-    pub fn new() -> Arc<Tree> {
+    pub(crate) fn new() -> Arc<Tree> {
         let mut outTree: Arc<Tree> = crate::OperatorOverloading::AvlTreePathPathEnv::Tree::interned_EMPTY();
         outTree
     }
 
-    pub fn printNodeStr(mut inNode: Arc<Tree>) -> Result<ArcStr> {
+    pub(crate) fn printNodeStr(mut inNode: Arc<Tree>) -> Result<ArcStr> {
         let mut outString: ArcStr;
         outString = ((::match_deref::match_deref! { match &(inNode.clone()) {
         Deref @ Tree::NODE { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*keyStr(var_field!((*inNode).key, Tree::NODE).clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*valueStr(var_field!((*inNode).value, Tree::NODE).clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) },
@@ -2012,7 +2012,7 @@ pub mod AvlTreePathPathEnv {
         Ok(outString)
     }
 
-    pub fn printTreeStr(mut inTree: Arc<Tree>) -> Result<ArcStr> {
+    pub(crate) fn printTreeStr(mut inTree: Arc<Tree>) -> Result<ArcStr> {
         let mut outString: ArcStr;
         let mut left: Arc<Tree> = Arc::new(Tree::EMPTY);
         let mut right: Arc<Tree> = Arc::new(Tree::EMPTY);
@@ -2094,7 +2094,7 @@ pub mod AvlTreePathPathEnv {
         Ok(outNode)
     }
 
-    pub fn setTreeLeftRight(mut orig: Arc<Tree>, mut left: Arc<Tree>, mut right: Arc<Tree>) -> Result<Arc<Tree>> {
+    pub(crate) fn setTreeLeftRight(mut orig: Arc<Tree>, mut left: Arc<Tree>, mut right: Arc<Tree>) -> Result<Arc<Tree>> {
         let mut res: Arc<Tree>;
         res = (::match_deref::match_deref! { match &((orig.clone(), left.clone(), right.clone())) {
         (Deref @ Tree::NODE { .. }, Deref @ Tree::EMPTY { .. }, Deref @ Tree::EMPTY { .. }) => Arc::new(Tree::LEAF { key: var_field!((*orig).key, Tree::NODE).clone(), value: var_field!((*orig).value, Tree::NODE).clone() }),
@@ -2106,7 +2106,7 @@ pub mod AvlTreePathPathEnv {
         Ok(res)
     }
 
-    pub fn smallestKey(mut tree: Arc<Tree>) -> Result<Key> {
+    pub(crate) fn smallestKey(mut tree: Arc<Tree>) -> Result<Key> {
         '__tco: loop {
             ::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { right: Deref @ Tree::EMPTY { .. }, .. } => return Ok(var_field!((*tree).key, Tree::NODE).clone()),
@@ -2117,7 +2117,7 @@ pub mod AvlTreePathPathEnv {
         }
     }
 
-    pub fn toList(mut inTree: Arc<Tree>, mut lst: Arc<metamodelica::List<(Arc<Absyn::Path>, Arc<Absyn::Path>)>>) -> Arc<metamodelica::List<(Arc<Absyn::Path>, Arc<Absyn::Path>)>> {
+    pub(crate) fn toList(mut inTree: Arc<Tree>, mut lst: Arc<metamodelica::List<(Arc<Absyn::Path>, Arc<Absyn::Path>)>>) -> Arc<metamodelica::List<(Arc<Absyn::Path>, Arc<Absyn::Path>)>> {
         let mut lst: Arc<metamodelica::List<(Arc<Absyn::Path>, Arc<Absyn::Path>)>> = lst;
         lst = (::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::NODE { key, value, .. } => {
@@ -2137,7 +2137,7 @@ pub mod AvlTreePathPathEnv {
         lst
     }
 
-    pub fn update(mut tree: Arc<Tree>, mut key: Key, mut value: Value) -> Result<Arc<Tree>> {
+    pub(crate) fn update(mut tree: Arc<Tree>, mut key: Key, mut value: Value) -> Result<Arc<Tree>> {
         let mut outTree: Arc<Tree> = add(tree.clone(), key.clone(), value.clone(), (std::sync::Arc::new(fnptr!(addConflictReplace, Arc<Absyn::Path>, Arc<Absyn::Path>, Arc<Absyn::Path>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> + 'static>))?;
         Ok(outTree)
     }
@@ -2150,19 +2150,19 @@ pub mod AvlTreePathOperatorTypes {
 
     pub type Value = Arc<metamodelica::List<Arc<DAE::Type>>>;
 
-    pub fn keyStr(mut inKey: Key) -> Result<ArcStr> {
+    pub(crate) fn keyStr(mut inKey: Key) -> Result<ArcStr> {
         let mut outString: ArcStr;
         outString = (AbsynUtil::pathString(inKey.clone(), (literal!(".")).clone(), true, false)?).clone();
         Ok(outString)
     }
 
-    pub fn valueStr(mut inValue: Value) -> Result<ArcStr> {
+    pub(crate) fn valueStr(mut inValue: Value) -> Result<ArcStr> {
         let mut outString: ArcStr;
         outString = (TypesDump::unparseType(Arc::new(DAE::Type::T_METATUPLE { types: inValue.clone() }))?).clone();
         Ok(outString)
     }
 
-    pub fn keyCompare(mut inKey1: Key, mut inKey2: Key) -> Result<i32> {
+    pub(crate) fn keyCompare(mut inKey1: Key, mut inKey2: Key) -> Result<i32> {
         let mut outResult: i32;
         outResult = AbsynUtil::pathCompareNoQual(inKey1.clone(), inKey2.clone())?;
         Ok(outResult)
@@ -2229,7 +2229,7 @@ pub mod AvlTreePathOperatorTypes {
 
     pub type ValueNode = Arc<Absyn::Path>;
 
-    pub fn add(mut inTree: Arc<Tree>, mut inKey: Key, mut inValue: Value, mut conflictFunc: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<Absyn::Path>) -> Result<Arc<metamodelica::List<Arc<DAE::Type>>>> + 'static>) -> Result<Arc<Tree>> {
+    pub(crate) fn add(mut inTree: Arc<Tree>, mut inKey: Key, mut inValue: Value, mut conflictFunc: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<Absyn::Path>) -> Result<Arc<metamodelica::List<Arc<DAE::Type>>>> + 'static>) -> Result<Arc<Tree>> {
         let mut tree: Arc<Tree> = inTree.clone();
         tree = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::EMPTY { .. } => {
@@ -2274,7 +2274,7 @@ pub mod AvlTreePathOperatorTypes {
         Ok(tree)
     }
 
-    pub fn addConflictFail(mut newValue: Value, mut oldValue: Value, mut key: Key) -> Result<Value> {
+    pub(crate) fn addConflictFail(mut newValue: Value, mut oldValue: Value, mut key: Key) -> Result<Value> {
         let mut value: Value;
         bail!("fail");
         Ok(value)
@@ -2285,12 +2285,12 @@ pub mod AvlTreePathOperatorTypes {
         value
     }
 
-    pub fn addConflictReplace(mut newValue: Value, mut oldValue: Value, mut key: Key) -> Value {
+    pub(crate) fn addConflictReplace(mut newValue: Value, mut oldValue: Value, mut key: Key) -> Value {
         let mut value: Value = newValue.clone();
         value
     }
 
-    pub fn addList(mut tree: Arc<Tree>, mut inValues: Arc<metamodelica::List<(Arc<Absyn::Path>, Arc<metamodelica::List<Arc<DAE::Type>>>)>>, mut conflictFunc: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<Absyn::Path>) -> Result<Arc<metamodelica::List<Arc<DAE::Type>>>> + 'static>) -> Result<Arc<Tree>> {
+    pub(crate) fn addList(mut tree: Arc<Tree>, mut inValues: Arc<metamodelica::List<(Arc<Absyn::Path>, Arc<metamodelica::List<Arc<DAE::Type>>>)>>, mut conflictFunc: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<Absyn::Path>) -> Result<Arc<metamodelica::List<Arc<DAE::Type>>>> + 'static>) -> Result<Arc<Tree>> {
         let mut tree: Arc<Tree> = tree;
         let mut key: Key;
         let mut value: Value;
@@ -2302,7 +2302,7 @@ pub mod AvlTreePathOperatorTypes {
         Ok(tree)
     }
 
-    pub fn addUpdate(mut tree: Arc<Tree>, mut key: Key, mut r#fn: Arc<dyn ::std::ops::Fn(Option<Arc<metamodelica::List<Arc<DAE::Type>>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Type>>>> + 'static>) -> Result<Arc<Tree>> {
+    pub(crate) fn addUpdate(mut tree: Arc<Tree>, mut key: Key, mut r#fn: Arc<dyn ::std::ops::Fn(Option<Arc<metamodelica::List<Arc<DAE::Type>>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Type>>>> + 'static>) -> Result<Arc<Tree>> {
         pub type UpdateFn = std::sync::Arc<dyn ::std::ops::Fn(Option<Arc<metamodelica::List<Arc<DAE::Type>>>>) -> Result<Value> + 'static>;
 
         let mut tree: Arc<Tree> = tree;
@@ -2380,7 +2380,7 @@ pub mod AvlTreePathOperatorTypes {
         outBalance
     }
 
-    pub fn fold<FT: Clone + 'static + metamodelica::gc::MMTrace>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<metamodelica::List<Arc<DAE::Type>>>, FT) -> Result<FT> + 'static>, mut inStartValue: FT) -> Result<FT> {
+    pub(crate) fn fold<FT: Clone + 'static + metamodelica::gc::MMTrace>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<metamodelica::List<Arc<DAE::Type>>>, FT) -> Result<FT> + 'static>, mut inStartValue: FT) -> Result<FT> {
         pub type FoldFunc<FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT) -> Result<FT> + 'static>;
 
         let mut outResult: FT = inStartValue.clone();
@@ -2403,7 +2403,7 @@ pub mod AvlTreePathOperatorTypes {
         Ok(outResult)
     }
 
-    pub fn foldCond<FT: Clone + 'static + metamodelica::gc::MMTrace>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<metamodelica::List<Arc<DAE::Type>>>, FT) -> Result<(FT, bool)> + 'static>, mut value: FT) -> Result<FT> {
+    pub(crate) fn foldCond<FT: Clone + 'static + metamodelica::gc::MMTrace>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<metamodelica::List<Arc<DAE::Type>>>, FT) -> Result<(FT, bool)> + 'static>, mut value: FT) -> Result<FT> {
         pub type FoldFunc<FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT) -> Result<(FT, bool)> + 'static>;
 
         let mut value: FT = value;
@@ -2430,7 +2430,7 @@ pub mod AvlTreePathOperatorTypes {
         Ok(value)
     }
 
-    pub fn fold_2<FT1: Clone + 'static + metamodelica::gc::MMTrace, FT2: Clone + 'static + metamodelica::gc::MMTrace>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<metamodelica::List<Arc<DAE::Type>>>, FT1, FT2) -> Result<(FT1, FT2)> + 'static>, mut foldArg1: FT1, mut foldArg2: FT2) -> Result<(FT1, FT2)> {
+    pub(crate) fn fold_2<FT1: Clone + 'static + metamodelica::gc::MMTrace, FT2: Clone + 'static + metamodelica::gc::MMTrace>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<metamodelica::List<Arc<DAE::Type>>>, FT1, FT2) -> Result<(FT1, FT2)> + 'static>, mut foldArg1: FT1, mut foldArg2: FT2) -> Result<(FT1, FT2)> {
         pub type FoldFunc<FT1: Clone + 'static, FT2: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT1, FT2) -> Result<(FT1, FT2)> + 'static>;
 
         let mut foldArg1: FT1 = foldArg1;
@@ -2452,7 +2452,7 @@ pub mod AvlTreePathOperatorTypes {
         Ok((foldArg1, foldArg2))
     }
 
-    pub fn forEach(mut tree: Arc<Tree>, mut func: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<metamodelica::List<Arc<DAE::Type>>>) -> Result<()> + 'static>) -> Result<()> {
+    pub(crate) fn forEach(mut tree: Arc<Tree>, mut func: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<metamodelica::List<Arc<DAE::Type>>>) -> Result<()> + 'static>) -> Result<()> {
         pub type EachFunc = std::sync::Arc<dyn ::std::ops::Fn(Key, Value) -> Result<()> + 'static>;
 
         let () = (::match_deref::match_deref! { match &(tree.clone()) {
@@ -2472,7 +2472,7 @@ pub mod AvlTreePathOperatorTypes {
         Ok(())
     }
 
-    pub fn fromList(mut inValues: Arc<metamodelica::List<(Arc<Absyn::Path>, Arc<metamodelica::List<Arc<DAE::Type>>>)>>, mut conflictFunc: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<Absyn::Path>) -> Result<Arc<metamodelica::List<Arc<DAE::Type>>>> + 'static>) -> Result<Arc<Tree>> {
+    pub(crate) fn fromList(mut inValues: Arc<metamodelica::List<(Arc<Absyn::Path>, Arc<metamodelica::List<Arc<DAE::Type>>>)>>, mut conflictFunc: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<Absyn::Path>) -> Result<Arc<metamodelica::List<Arc<DAE::Type>>>> + 'static>) -> Result<Arc<Tree>> {
         let mut tree: Arc<Tree> = crate::OperatorOverloading::AvlTreePathOperatorTypes::Tree::interned_EMPTY();
         let mut key: Key;
         let mut value: Value;
@@ -2484,7 +2484,7 @@ pub mod AvlTreePathOperatorTypes {
         Ok(tree)
     }
 
-    pub fn get(mut tree: Arc<Tree>, mut key: Key) -> Result<Value> {
+    pub(crate) fn get(mut tree: Arc<Tree>, mut key: Key) -> Result<Value> {
         let mut value: Value;
         let mut k: Key;
         k = (::match_deref::match_deref! { match &(tree.clone()) {
@@ -2502,7 +2502,7 @@ pub mod AvlTreePathOperatorTypes {
         Ok(value)
     }
 
-    pub fn getOpt(mut tree: Arc<Tree>, mut key: Key) -> Result<Option<Arc<metamodelica::List<Arc<DAE::Type>>>>> {
+    pub(crate) fn getOpt(mut tree: Arc<Tree>, mut key: Key) -> Result<Option<Arc<metamodelica::List<Arc<DAE::Type>>>>> {
         '__tco: loop {
             let mut k: Key;
             k = (::match_deref::match_deref! { match &(tree.clone()) {
@@ -2522,7 +2522,7 @@ pub mod AvlTreePathOperatorTypes {
         }
     }
 
-    pub fn hasKey(mut inTree: Arc<Tree>, mut inKey: Key) -> Result<bool> {
+    pub(crate) fn hasKey(mut inTree: Arc<Tree>, mut inKey: Key) -> Result<bool> {
         let mut comp: bool = false;
         let mut key: Key;
         let mut key_comp: i32;
@@ -2564,12 +2564,12 @@ pub mod AvlTreePathOperatorTypes {
         outHeight
     }
 
-    pub fn intersection() -> Result<()> {
+    pub(crate) fn intersection() -> Result<()> {
         bail!("fail");
         Ok(())
     }
 
-    pub fn isEmpty(mut tree: Arc<Tree>) -> bool {
+    pub(crate) fn isEmpty(mut tree: Arc<Tree>) -> bool {
         let mut isEmpty: bool;
         isEmpty = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::EMPTY { .. } => true,
@@ -2579,7 +2579,7 @@ pub mod AvlTreePathOperatorTypes {
         isEmpty
     }
 
-    pub fn join(mut tree: Arc<Tree>, mut treeToJoin: Arc<Tree>, mut conflictFunc: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<Absyn::Path>) -> Result<Arc<metamodelica::List<Arc<DAE::Type>>>> + 'static>) -> Result<Arc<Tree>> {
+    pub(crate) fn join(mut tree: Arc<Tree>, mut treeToJoin: Arc<Tree>, mut conflictFunc: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<Absyn::Path>) -> Result<Arc<metamodelica::List<Arc<DAE::Type>>>> + 'static>) -> Result<Arc<Tree>> {
         let mut tree: Arc<Tree> = tree;
         tree = (::match_deref::match_deref! { match &(treeToJoin.clone()) {
         Deref @ Tree::EMPTY { .. } => tree.clone(),
@@ -2595,7 +2595,7 @@ pub mod AvlTreePathOperatorTypes {
         Ok(tree)
     }
 
-    pub fn listKeys(mut tree: Arc<Tree>, mut lst: Arc<metamodelica::List<Arc<Absyn::Path>>>) -> Arc<metamodelica::List<Arc<Absyn::Path>>> {
+    pub(crate) fn listKeys(mut tree: Arc<Tree>, mut lst: Arc<metamodelica::List<Arc<Absyn::Path>>>) -> Arc<metamodelica::List<Arc<Absyn::Path>>> {
         let mut lst: Arc<metamodelica::List<Arc<Absyn::Path>>> = lst;
         lst = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { key, .. } => {
@@ -2615,7 +2615,7 @@ pub mod AvlTreePathOperatorTypes {
         lst
     }
 
-    pub fn listKeysReverse(mut inTree: Arc<Tree>, mut lst: Arc<metamodelica::List<Arc<Absyn::Path>>>) -> Arc<metamodelica::List<Arc<Absyn::Path>>> {
+    pub(crate) fn listKeysReverse(mut inTree: Arc<Tree>, mut lst: Arc<metamodelica::List<Arc<Absyn::Path>>>) -> Arc<metamodelica::List<Arc<Absyn::Path>>> {
         let mut lst: Arc<metamodelica::List<Arc<Absyn::Path>>> = lst;
         lst = (::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::LEAF { .. } => metamodelica::cons(var_field!((*inTree).key, Tree::LEAF).clone(), lst.clone()),
@@ -2631,7 +2631,7 @@ pub mod AvlTreePathOperatorTypes {
         lst
     }
 
-    pub fn listValues(mut tree: Arc<Tree>, mut lst: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Type>>>>>) -> Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Type>>>>> {
+    pub(crate) fn listValues(mut tree: Arc<Tree>, mut lst: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Type>>>>>) -> Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Type>>>>> {
         let mut lst: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Type>>>>> = lst;
         lst = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { value, .. } => {
@@ -2651,7 +2651,7 @@ pub mod AvlTreePathOperatorTypes {
         lst
     }
 
-    pub fn map(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<metamodelica::List<Arc<DAE::Type>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Type>>>> + 'static>) -> Result<Arc<Tree>> {
+    pub(crate) fn map(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<metamodelica::List<Arc<DAE::Type>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Type>>>> + 'static>) -> Result<Arc<Tree>> {
         pub type MapFunc = std::sync::Arc<dyn ::std::ops::Fn(Key, Value) -> Result<Value> + 'static>;
 
         let mut outTree: Arc<Tree> = inTree.clone();
@@ -2684,7 +2684,7 @@ pub mod AvlTreePathOperatorTypes {
         Ok(outTree)
     }
 
-    pub fn mapFold<FT: Clone + 'static + metamodelica::gc::MMTrace>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<metamodelica::List<Arc<DAE::Type>>>, FT) -> Result<(Arc<metamodelica::List<Arc<DAE::Type>>>, FT)> + 'static>, mut inStartValue: FT) -> Result<(Arc<Tree>, FT)> {
+    pub(crate) fn mapFold<FT: Clone + 'static + metamodelica::gc::MMTrace>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<metamodelica::List<Arc<DAE::Type>>>, FT) -> Result<(Arc<metamodelica::List<Arc<DAE::Type>>>, FT)> + 'static>, mut inStartValue: FT) -> Result<(Arc<Tree>, FT)> {
         pub type MapFunc<FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT) -> Result<Value> + 'static>;
 
         let mut outTree: Arc<Tree> = inTree.clone();
@@ -2718,12 +2718,12 @@ pub mod AvlTreePathOperatorTypes {
         Ok((outTree, outResult))
     }
 
-    pub fn new() -> Arc<Tree> {
+    pub(crate) fn new() -> Arc<Tree> {
         let mut outTree: Arc<Tree> = crate::OperatorOverloading::AvlTreePathOperatorTypes::Tree::interned_EMPTY();
         outTree
     }
 
-    pub fn printNodeStr(mut inNode: Arc<Tree>) -> Result<ArcStr> {
+    pub(crate) fn printNodeStr(mut inNode: Arc<Tree>) -> Result<ArcStr> {
         let mut outString: ArcStr;
         outString = ((::match_deref::match_deref! { match &(inNode.clone()) {
         Deref @ Tree::NODE { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*keyStr(var_field!((*inNode).key, Tree::NODE).clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*valueStr(var_field!((*inNode).value, Tree::NODE).clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) },
@@ -2733,7 +2733,7 @@ pub mod AvlTreePathOperatorTypes {
         Ok(outString)
     }
 
-    pub fn printTreeStr(mut inTree: Arc<Tree>) -> Result<ArcStr> {
+    pub(crate) fn printTreeStr(mut inTree: Arc<Tree>) -> Result<ArcStr> {
         let mut outString: ArcStr;
         let mut left: Arc<Tree> = Arc::new(Tree::EMPTY);
         let mut right: Arc<Tree> = Arc::new(Tree::EMPTY);
@@ -2815,7 +2815,7 @@ pub mod AvlTreePathOperatorTypes {
         Ok(outNode)
     }
 
-    pub fn setTreeLeftRight(mut orig: Arc<Tree>, mut left: Arc<Tree>, mut right: Arc<Tree>) -> Result<Arc<Tree>> {
+    pub(crate) fn setTreeLeftRight(mut orig: Arc<Tree>, mut left: Arc<Tree>, mut right: Arc<Tree>) -> Result<Arc<Tree>> {
         let mut res: Arc<Tree>;
         res = (::match_deref::match_deref! { match &((orig.clone(), left.clone(), right.clone())) {
         (Deref @ Tree::NODE { .. }, Deref @ Tree::EMPTY { .. }, Deref @ Tree::EMPTY { .. }) => Arc::new(Tree::LEAF { key: var_field!((*orig).key, Tree::NODE).clone(), value: var_field!((*orig).value, Tree::NODE).clone() }),
@@ -2827,7 +2827,7 @@ pub mod AvlTreePathOperatorTypes {
         Ok(res)
     }
 
-    pub fn smallestKey(mut tree: Arc<Tree>) -> Result<Key> {
+    pub(crate) fn smallestKey(mut tree: Arc<Tree>) -> Result<Key> {
         '__tco: loop {
             ::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { right: Deref @ Tree::EMPTY { .. }, .. } => return Ok(var_field!((*tree).key, Tree::NODE).clone()),
@@ -2838,7 +2838,7 @@ pub mod AvlTreePathOperatorTypes {
         }
     }
 
-    pub fn toList(mut inTree: Arc<Tree>, mut lst: Arc<metamodelica::List<(Arc<Absyn::Path>, Arc<metamodelica::List<Arc<DAE::Type>>>)>>) -> Arc<metamodelica::List<(Arc<Absyn::Path>, Arc<metamodelica::List<Arc<DAE::Type>>>)>> {
+    pub(crate) fn toList(mut inTree: Arc<Tree>, mut lst: Arc<metamodelica::List<(Arc<Absyn::Path>, Arc<metamodelica::List<Arc<DAE::Type>>>)>>) -> Arc<metamodelica::List<(Arc<Absyn::Path>, Arc<metamodelica::List<Arc<DAE::Type>>>)>> {
         let mut lst: Arc<metamodelica::List<(Arc<Absyn::Path>, Arc<metamodelica::List<Arc<DAE::Type>>>)>> = lst;
         lst = (::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::NODE { key, value, .. } => {
@@ -2858,7 +2858,7 @@ pub mod AvlTreePathOperatorTypes {
         lst
     }
 
-    pub fn update(mut tree: Arc<Tree>, mut key: Key, mut value: Value) -> Result<Arc<Tree>> {
+    pub(crate) fn update(mut tree: Arc<Tree>, mut key: Key, mut value: Value) -> Result<Arc<Tree>> {
         let mut outTree: Arc<Tree> = add(tree.clone(), key.clone(), value.clone(), (std::sync::Arc::new(fnptr!(addConflictReplace, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<Absyn::Path>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<Absyn::Path>) -> Result<Arc<metamodelica::List<Arc<DAE::Type>>>> + 'static>))?;
         Ok(outTree)
     }

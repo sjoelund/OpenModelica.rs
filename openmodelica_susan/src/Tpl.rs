@@ -504,7 +504,7 @@ fn isAtStartOfLineTok(mut inTok: Arc<StringToken>) -> bool {
     }
 }
 
-pub fn newLine(mut inText: Text) -> Result<Text> {
+pub(crate) fn newLine(mut inText: Text) -> Result<Text> {
     let mut outText: Text;
     outText = (match inText.clone() {
         Text::MEM_TEXT { tokens: ref toks, blocksStack: ref blstack } => {
@@ -811,7 +811,7 @@ pub fn textString(mut inText: Text) -> Result<ArcStr> {
     Ok(outString)
 }
 
-pub fn textStringBuf(mut inText: Text) -> Result<()> {
+pub(crate) fn textStringBuf(mut inText: Text) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(inText.clone()) {
         Text::MEM_TEXT { tokens: toks, blocksStack: Deref @ metamodelica::List::Nil } => {
             tokensString(toks.clone().reverse(), 0, true, 0)?;
@@ -1573,7 +1573,7 @@ pub fn stringText(mut inString: ArcStr) -> Text {
     outText
 }
 
-pub fn strTokString(mut inStringToken: Arc<StringToken>) -> Result<ArcStr> {
+pub(crate) fn strTokString(mut inStringToken: Arc<StringToken>) -> Result<ArcStr> {
     let mut outString: ArcStr;
     outString = (textString(Text::MEM_TEXT { tokens: list![inStringToken.clone()], blocksStack: metamodelica::nil() })?).clone();
     Ok(outString)
@@ -1617,7 +1617,7 @@ pub fn tplCallWithFailError<ArgType1: Clone + 'static + metamodelica::gc::MMTrac
     Ok(txt)
 }
 
-pub fn tplCallWithFailError2<ArgType1: Clone + 'static + metamodelica::gc::MMTrace, ArgType2: Clone + 'static + metamodelica::gc::MMTrace>(mut inFun: Arc<dyn ::std::ops::Fn(Text, ArgType1, ArgType2) -> Result<Text> + 'static>, mut inArgA: ArgType1, mut inArgB: ArgType2, mut txt: Text) -> Result<Text> {
+pub(crate) fn tplCallWithFailError2<ArgType1: Clone + 'static + metamodelica::gc::MMTrace, ArgType2: Clone + 'static + metamodelica::gc::MMTrace>(mut inFun: Arc<dyn ::std::ops::Fn(Text, ArgType1, ArgType2) -> Result<Text> + 'static>, mut inArgA: ArgType1, mut inArgB: ArgType2, mut txt: Text) -> Result<Text> {
     pub type Tpl_Fun<ArgType1: Clone + 'static, ArgType2: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Text, ArgType1, ArgType2) -> Result<Text> + 'static>;
 
     let mut txt: Text = txt;
@@ -1672,7 +1672,7 @@ pub fn tplString3<ArgType1: Clone + 'static + metamodelica::gc::MMTrace, ArgType
     Ok(outString)
 }
 
-pub fn tplPrint<ArgType1: Clone + 'static + metamodelica::gc::MMTrace>(mut inFun: Arc<dyn ::std::ops::Fn(Text, ArgType1) -> Result<Text> + 'static>, mut inArg: ArgType1) -> Result<()> {
+pub(crate) fn tplPrint<ArgType1: Clone + 'static + metamodelica::gc::MMTrace>(mut inFun: Arc<dyn ::std::ops::Fn(Text, ArgType1) -> Result<Text> + 'static>, mut inArg: ArgType1) -> Result<()> {
     pub type Tpl_Fun<ArgType1: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Text, ArgType1) -> Result<Text> + 'static>;
 
     let mut txt: Text;
@@ -1696,7 +1696,7 @@ pub fn tplPrint2<ArgType1: Clone + 'static + metamodelica::gc::MMTrace, ArgType2
     Ok(())
 }
 
-pub fn tplPrint3<ArgType1: Clone + 'static + metamodelica::gc::MMTrace, ArgType2: Clone + 'static + metamodelica::gc::MMTrace, ArgType3: Clone + 'static + metamodelica::gc::MMTrace>(mut inFun: Arc<dyn ::std::ops::Fn(Text, ArgType1, ArgType2, ArgType3) -> Result<Text> + 'static>, mut inArgA: ArgType1, mut inArgB: ArgType2, mut inArgC: ArgType3) -> Result<()> {
+pub(crate) fn tplPrint3<ArgType1: Clone + 'static + metamodelica::gc::MMTrace, ArgType2: Clone + 'static + metamodelica::gc::MMTrace, ArgType3: Clone + 'static + metamodelica::gc::MMTrace>(mut inFun: Arc<dyn ::std::ops::Fn(Text, ArgType1, ArgType2, ArgType3) -> Result<Text> + 'static>, mut inArgA: ArgType1, mut inArgB: ArgType2, mut inArgC: ArgType3) -> Result<()> {
     pub type Tpl_Fun<ArgType1: Clone + 'static, ArgType2: Clone + 'static, ArgType3: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Text, ArgType1, ArgType2, ArgType3) -> Result<Text> + 'static>;
 
     let mut txt: Text;
@@ -1954,13 +1954,13 @@ fn handleTok(mut txt: Text) -> Result<()> {
     Ok(())
 }
 
-pub fn debugSusan() -> Result<bool> {
+pub(crate) fn debugSusan() -> Result<bool> {
     let mut b: bool;
     b = Flags::isSet(Flags::SUSAN_MATCHCONTINUE_DEBUG.clone())?;
     Ok(b)
 }
 
-pub fn fakeStackOverflow() -> Result<()> {
+pub(crate) fn fakeStackOverflow() -> Result<()> {
     Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Stack overflow:\n")); __mm_s.push_str(&*StackOverflow::generateReadableMessage(1000, 4, (literal!("\n")).clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("Template/Tpl.mo"))?;
     StackOverflow::triggerStackOverflow()?;
     Ok(())

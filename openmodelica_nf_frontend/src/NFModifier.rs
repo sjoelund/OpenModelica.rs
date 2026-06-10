@@ -63,19 +63,19 @@ pub fn EMPTY_MOD() -> Arc<Modifier::Modifier> { __EMPTY_MOD_TLS.with(|__t| __t.c
 
 pub mod ModTable {
     use super::*;
-    pub fn keyStr(mut inKey: Key) -> ArcStr {
+    pub(crate) fn keyStr(mut inKey: Key) -> ArcStr {
         let mut outString: ArcStr;
         outString = (inKey.clone()).clone();
         outString
     }
 
-    pub fn valueStr(mut inValue: Value) -> Result<ArcStr> {
+    pub(crate) fn valueStr(mut inValue: Value) -> Result<ArcStr> {
         let mut outString: ArcStr;
         outString = (Modifier::toString(inValue.clone(), true)?).clone();
         Ok(outString)
     }
 
-    pub fn keyCompare(mut inKey1: Key, mut inKey2: Key) -> i32 {
+    pub(crate) fn keyCompare(mut inKey1: Key, mut inKey2: Key) -> i32 {
         let mut outResult: i32;
         outResult = stringCompare((inKey1.clone()).clone(), (inKey2.clone()).clone());
         outResult
@@ -144,7 +144,7 @@ pub mod ModTable {
 
     pub type ValueNode = ArcStr;
 
-    pub fn add(mut inTree: Arc<Tree>, mut inKey: Key, mut inValue: Value, mut conflictFunc: Arc<dyn ::std::ops::Fn(Arc<Modifier::Modifier>, Arc<Modifier::Modifier>, ArcStr) -> Result<Arc<Modifier::Modifier>> + 'static>) -> Result<Arc<Tree>> {
+    pub(crate) fn add(mut inTree: Arc<Tree>, mut inKey: Key, mut inValue: Value, mut conflictFunc: Arc<dyn ::std::ops::Fn(Arc<Modifier::Modifier>, Arc<Modifier::Modifier>, ArcStr) -> Result<Arc<Modifier::Modifier>> + 'static>) -> Result<Arc<Tree>> {
         let mut tree: Arc<Tree> = inTree.clone();
         tree = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::EMPTY { .. } => {
@@ -197,17 +197,17 @@ pub mod ModTable {
         Ok(value)
     }
 
-    pub fn addConflictKeep(mut newValue: Value, mut oldValue: Value, mut key: Key) -> Value {
+    pub(crate) fn addConflictKeep(mut newValue: Value, mut oldValue: Value, mut key: Key) -> Value {
         let mut value: Value = oldValue.clone();
         value
     }
 
-    pub fn addConflictReplace(mut newValue: Value, mut oldValue: Value, mut key: Key) -> Value {
+    pub(crate) fn addConflictReplace(mut newValue: Value, mut oldValue: Value, mut key: Key) -> Value {
         let mut value: Value = newValue.clone();
         value
     }
 
-    pub fn addList(mut tree: Arc<Tree>, mut inValues: Arc<metamodelica::List<(ArcStr, Arc<Modifier::Modifier>)>>, mut conflictFunc: Arc<dyn ::std::ops::Fn(Arc<Modifier::Modifier>, Arc<Modifier::Modifier>, ArcStr) -> Result<Arc<Modifier::Modifier>> + 'static>) -> Result<Arc<Tree>> {
+    pub(crate) fn addList(mut tree: Arc<Tree>, mut inValues: Arc<metamodelica::List<(ArcStr, Arc<Modifier::Modifier>)>>, mut conflictFunc: Arc<dyn ::std::ops::Fn(Arc<Modifier::Modifier>, Arc<Modifier::Modifier>, ArcStr) -> Result<Arc<Modifier::Modifier>> + 'static>) -> Result<Arc<Tree>> {
         let mut tree: Arc<Tree> = tree;
         let mut key: Key;
         let mut value: Value;
@@ -219,7 +219,7 @@ pub mod ModTable {
         Ok(tree)
     }
 
-    pub fn addUpdate(mut tree: Arc<Tree>, mut key: Key, mut r#fn: Arc<dyn ::std::ops::Fn(Option<Arc<Modifier::Modifier>>) -> Result<Arc<Modifier::Modifier>> + 'static>) -> Result<Arc<Tree>> {
+    pub(crate) fn addUpdate(mut tree: Arc<Tree>, mut key: Key, mut r#fn: Arc<dyn ::std::ops::Fn(Option<Arc<Modifier::Modifier>>) -> Result<Arc<Modifier::Modifier>> + 'static>) -> Result<Arc<Tree>> {
         pub type UpdateFn = std::sync::Arc<dyn ::std::ops::Fn(Option<Arc<Modifier::Modifier>>) -> Result<Value> + 'static>;
 
         let mut tree: Arc<Tree> = tree;
@@ -297,7 +297,7 @@ pub mod ModTable {
         outBalance
     }
 
-    pub fn fold<FT: Clone + 'static + metamodelica::gc::MMTrace>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(ArcStr, Arc<Modifier::Modifier>, FT) -> Result<FT> + 'static>, mut inStartValue: FT) -> Result<FT> {
+    pub(crate) fn fold<FT: Clone + 'static + metamodelica::gc::MMTrace>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(ArcStr, Arc<Modifier::Modifier>, FT) -> Result<FT> + 'static>, mut inStartValue: FT) -> Result<FT> {
         pub type FoldFunc<FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT) -> Result<FT> + 'static>;
 
         let mut outResult: FT = inStartValue.clone();
@@ -320,7 +320,7 @@ pub mod ModTable {
         Ok(outResult)
     }
 
-    pub fn foldCond<FT: Clone + 'static + metamodelica::gc::MMTrace>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(ArcStr, Arc<Modifier::Modifier>, FT) -> Result<(FT, bool)> + 'static>, mut value: FT) -> Result<FT> {
+    pub(crate) fn foldCond<FT: Clone + 'static + metamodelica::gc::MMTrace>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(ArcStr, Arc<Modifier::Modifier>, FT) -> Result<(FT, bool)> + 'static>, mut value: FT) -> Result<FT> {
         pub type FoldFunc<FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT) -> Result<(FT, bool)> + 'static>;
 
         let mut value: FT = value;
@@ -347,7 +347,7 @@ pub mod ModTable {
         Ok(value)
     }
 
-    pub fn fold_2<FT1: Clone + 'static + metamodelica::gc::MMTrace, FT2: Clone + 'static + metamodelica::gc::MMTrace>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(ArcStr, Arc<Modifier::Modifier>, FT1, FT2) -> Result<(FT1, FT2)> + 'static>, mut foldArg1: FT1, mut foldArg2: FT2) -> Result<(FT1, FT2)> {
+    pub(crate) fn fold_2<FT1: Clone + 'static + metamodelica::gc::MMTrace, FT2: Clone + 'static + metamodelica::gc::MMTrace>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(ArcStr, Arc<Modifier::Modifier>, FT1, FT2) -> Result<(FT1, FT2)> + 'static>, mut foldArg1: FT1, mut foldArg2: FT2) -> Result<(FT1, FT2)> {
         pub type FoldFunc<FT1: Clone + 'static, FT2: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT1, FT2) -> Result<(FT1, FT2)> + 'static>;
 
         let mut foldArg1: FT1 = foldArg1;
@@ -369,7 +369,7 @@ pub mod ModTable {
         Ok((foldArg1, foldArg2))
     }
 
-    pub fn forEach(mut tree: Arc<Tree>, mut func: Arc<dyn ::std::ops::Fn(ArcStr, Arc<Modifier::Modifier>) -> Result<()> + 'static>) -> Result<()> {
+    pub(crate) fn forEach(mut tree: Arc<Tree>, mut func: Arc<dyn ::std::ops::Fn(ArcStr, Arc<Modifier::Modifier>) -> Result<()> + 'static>) -> Result<()> {
         pub type EachFunc = std::sync::Arc<dyn ::std::ops::Fn(Key, Value) -> Result<()> + 'static>;
 
         let () = (::match_deref::match_deref! { match &(tree.clone()) {
@@ -389,7 +389,7 @@ pub mod ModTable {
         Ok(())
     }
 
-    pub fn fromList(mut inValues: Arc<metamodelica::List<(ArcStr, Arc<Modifier::Modifier>)>>, mut conflictFunc: Arc<dyn ::std::ops::Fn(Arc<Modifier::Modifier>, Arc<Modifier::Modifier>, ArcStr) -> Result<Arc<Modifier::Modifier>> + 'static>) -> Result<Arc<Tree>> {
+    pub(crate) fn fromList(mut inValues: Arc<metamodelica::List<(ArcStr, Arc<Modifier::Modifier>)>>, mut conflictFunc: Arc<dyn ::std::ops::Fn(Arc<Modifier::Modifier>, Arc<Modifier::Modifier>, ArcStr) -> Result<Arc<Modifier::Modifier>> + 'static>) -> Result<Arc<Tree>> {
         let mut tree: Arc<Tree> = crate::NFModifier::ModTable::Tree::interned_EMPTY();
         let mut key: Key;
         let mut value: Value;
@@ -401,7 +401,7 @@ pub mod ModTable {
         Ok(tree)
     }
 
-    pub fn get(mut tree: Arc<Tree>, mut key: Key) -> Result<Value> {
+    pub(crate) fn get(mut tree: Arc<Tree>, mut key: Key) -> Result<Value> {
         let mut value: Value;
         let mut k: Key;
         k = ((::match_deref::match_deref! { match &(tree.clone()) {
@@ -419,7 +419,7 @@ pub mod ModTable {
         Ok(value)
     }
 
-    pub fn getOpt(mut tree: Arc<Tree>, mut key: Key) -> Option<Arc<Modifier::Modifier>> {
+    pub(crate) fn getOpt(mut tree: Arc<Tree>, mut key: Key) -> Option<Arc<Modifier::Modifier>> {
         '__tco: loop {
             let mut k: Key;
             k = ((::match_deref::match_deref! { match &(tree.clone()) {
@@ -439,7 +439,7 @@ pub mod ModTable {
         }
     }
 
-    pub fn hasKey(mut inTree: Arc<Tree>, mut inKey: Key) -> Result<bool> {
+    pub(crate) fn hasKey(mut inTree: Arc<Tree>, mut inKey: Key) -> Result<bool> {
         let mut comp: bool = false;
         let mut key: Key;
         let mut key_comp: i32;
@@ -481,12 +481,12 @@ pub mod ModTable {
         outHeight
     }
 
-    pub fn intersection() -> Result<()> {
+    pub(crate) fn intersection() -> Result<()> {
         bail!("fail");
         Ok(())
     }
 
-    pub fn isEmpty(mut tree: Arc<Tree>) -> bool {
+    pub(crate) fn isEmpty(mut tree: Arc<Tree>) -> bool {
         let mut isEmpty: bool;
         isEmpty = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::EMPTY { .. } => true,
@@ -496,7 +496,7 @@ pub mod ModTable {
         isEmpty
     }
 
-    pub fn join(mut tree: Arc<Tree>, mut treeToJoin: Arc<Tree>, mut conflictFunc: Arc<dyn ::std::ops::Fn(Arc<Modifier::Modifier>, Arc<Modifier::Modifier>, ArcStr) -> Result<Arc<Modifier::Modifier>> + 'static>) -> Result<Arc<Tree>> {
+    pub(crate) fn join(mut tree: Arc<Tree>, mut treeToJoin: Arc<Tree>, mut conflictFunc: Arc<dyn ::std::ops::Fn(Arc<Modifier::Modifier>, Arc<Modifier::Modifier>, ArcStr) -> Result<Arc<Modifier::Modifier>> + 'static>) -> Result<Arc<Tree>> {
         let mut tree: Arc<Tree> = tree;
         tree = (::match_deref::match_deref! { match &(treeToJoin.clone()) {
         Deref @ Tree::EMPTY { .. } => tree.clone(),
@@ -512,7 +512,7 @@ pub mod ModTable {
         Ok(tree)
     }
 
-    pub fn listKeys(mut tree: Arc<Tree>, mut lst: Arc<metamodelica::List<ArcStr>>) -> Arc<metamodelica::List<ArcStr>> {
+    pub(crate) fn listKeys(mut tree: Arc<Tree>, mut lst: Arc<metamodelica::List<ArcStr>>) -> Arc<metamodelica::List<ArcStr>> {
         let mut lst: Arc<metamodelica::List<ArcStr>> = lst;
         lst = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { key, .. } => {
@@ -532,7 +532,7 @@ pub mod ModTable {
         lst
     }
 
-    pub fn listKeysReverse(mut inTree: Arc<Tree>, mut lst: Arc<metamodelica::List<ArcStr>>) -> Arc<metamodelica::List<ArcStr>> {
+    pub(crate) fn listKeysReverse(mut inTree: Arc<Tree>, mut lst: Arc<metamodelica::List<ArcStr>>) -> Arc<metamodelica::List<ArcStr>> {
         let mut lst: Arc<metamodelica::List<ArcStr>> = lst;
         lst = (::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::LEAF { .. } => metamodelica::cons((var_field!((*inTree).key, Tree::LEAF).clone()).clone(), lst.clone()),
@@ -548,7 +548,7 @@ pub mod ModTable {
         lst
     }
 
-    pub fn listValues(mut tree: Arc<Tree>, mut lst: Arc<metamodelica::List<Arc<Modifier::Modifier>>>) -> Arc<metamodelica::List<Arc<Modifier::Modifier>>> {
+    pub(crate) fn listValues(mut tree: Arc<Tree>, mut lst: Arc<metamodelica::List<Arc<Modifier::Modifier>>>) -> Arc<metamodelica::List<Arc<Modifier::Modifier>>> {
         let mut lst: Arc<metamodelica::List<Arc<Modifier::Modifier>>> = lst;
         lst = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { value, .. } => {
@@ -568,7 +568,7 @@ pub mod ModTable {
         lst
     }
 
-    pub fn map(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(ArcStr, Arc<Modifier::Modifier>) -> Result<Arc<Modifier::Modifier>> + 'static>) -> Result<Arc<Tree>> {
+    pub(crate) fn map(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(ArcStr, Arc<Modifier::Modifier>) -> Result<Arc<Modifier::Modifier>> + 'static>) -> Result<Arc<Tree>> {
         pub type MapFunc = std::sync::Arc<dyn ::std::ops::Fn(Key, Value) -> Result<Value> + 'static>;
 
         let mut outTree: Arc<Tree> = inTree.clone();
@@ -601,7 +601,7 @@ pub mod ModTable {
         Ok(outTree)
     }
 
-    pub fn mapFold<FT: Clone + 'static + metamodelica::gc::MMTrace>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(ArcStr, Arc<Modifier::Modifier>, FT) -> Result<(Arc<Modifier::Modifier>, FT)> + 'static>, mut inStartValue: FT) -> Result<(Arc<Tree>, FT)> {
+    pub(crate) fn mapFold<FT: Clone + 'static + metamodelica::gc::MMTrace>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(ArcStr, Arc<Modifier::Modifier>, FT) -> Result<(Arc<Modifier::Modifier>, FT)> + 'static>, mut inStartValue: FT) -> Result<(Arc<Tree>, FT)> {
         pub type MapFunc<FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT) -> Result<Value> + 'static>;
 
         let mut outTree: Arc<Tree> = inTree.clone();
@@ -635,12 +635,12 @@ pub mod ModTable {
         Ok((outTree, outResult))
     }
 
-    pub fn new() -> Arc<Tree> {
+    pub(crate) fn new() -> Arc<Tree> {
         let mut outTree: Arc<Tree> = crate::NFModifier::ModTable::Tree::interned_EMPTY();
         outTree
     }
 
-    pub fn printNodeStr(mut inNode: Arc<Tree>) -> Result<ArcStr> {
+    pub(crate) fn printNodeStr(mut inNode: Arc<Tree>) -> Result<ArcStr> {
         let mut outString: ArcStr;
         outString = ((::match_deref::match_deref! { match &(inNode.clone()) {
         Deref @ Tree::NODE { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*keyStr((var_field!((*inNode).key, Tree::NODE).clone()).clone())); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*valueStr(var_field!((*inNode).value, Tree::NODE).clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) },
@@ -650,7 +650,7 @@ pub mod ModTable {
         Ok(outString)
     }
 
-    pub fn printTreeStr(mut inTree: Arc<Tree>) -> Result<ArcStr> {
+    pub(crate) fn printTreeStr(mut inTree: Arc<Tree>) -> Result<ArcStr> {
         let mut outString: ArcStr;
         let mut left: Arc<Tree> = Arc::new(Tree::EMPTY);
         let mut right: Arc<Tree> = Arc::new(Tree::EMPTY);
@@ -732,7 +732,7 @@ pub mod ModTable {
         Ok(outNode)
     }
 
-    pub fn setTreeLeftRight(mut orig: Arc<Tree>, mut left: Arc<Tree>, mut right: Arc<Tree>) -> Result<Arc<Tree>> {
+    pub(crate) fn setTreeLeftRight(mut orig: Arc<Tree>, mut left: Arc<Tree>, mut right: Arc<Tree>) -> Result<Arc<Tree>> {
         let mut res: Arc<Tree>;
         res = (::match_deref::match_deref! { match &((orig.clone(), left.clone(), right.clone())) {
         (Deref @ Tree::NODE { .. }, Deref @ Tree::EMPTY { .. }, Deref @ Tree::EMPTY { .. }) => Arc::new(Tree::LEAF { key: (var_field!((*orig).key, Tree::NODE).clone()).clone(), value: var_field!((*orig).value, Tree::NODE).clone() }),
@@ -744,7 +744,7 @@ pub mod ModTable {
         Ok(res)
     }
 
-    pub fn smallestKey(mut tree: Arc<Tree>) -> Result<Key> {
+    pub(crate) fn smallestKey(mut tree: Arc<Tree>) -> Result<Key> {
         '__tco: loop {
             ::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { right: Deref @ Tree::EMPTY { .. }, .. } => return Ok(var_field!((*tree).key, Tree::NODE).clone()),
@@ -755,7 +755,7 @@ pub mod ModTable {
         }
     }
 
-    pub fn toList(mut inTree: Arc<Tree>, mut lst: Arc<metamodelica::List<(ArcStr, Arc<Modifier::Modifier>)>>) -> Arc<metamodelica::List<(ArcStr, Arc<Modifier::Modifier>)>> {
+    pub(crate) fn toList(mut inTree: Arc<Tree>, mut lst: Arc<metamodelica::List<(ArcStr, Arc<Modifier::Modifier>)>>) -> Arc<metamodelica::List<(ArcStr, Arc<Modifier::Modifier>)>> {
         let mut lst: Arc<metamodelica::List<(ArcStr, Arc<Modifier::Modifier>)>> = lst;
         lst = (::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::NODE { key, value, .. } => {
@@ -775,7 +775,7 @@ pub mod ModTable {
         lst
     }
 
-    pub fn update(mut tree: Arc<Tree>, mut key: Key, mut value: Value) -> Result<Arc<Tree>> {
+    pub(crate) fn update(mut tree: Arc<Tree>, mut key: Key, mut value: Value) -> Result<Arc<Tree>> {
         let mut outTree: Arc<Tree> = add(tree.clone(), (key.clone()).clone(), value.clone(), (std::sync::Arc::new(fnptr!(addConflictReplace, Arc<Modifier::Modifier>, Arc<Modifier::Modifier>, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Modifier::Modifier>, Arc<Modifier::Modifier>, ArcStr) -> Result<Arc<Modifier::Modifier>> + 'static>))?;
         Ok(outTree)
     }
@@ -823,7 +823,7 @@ pub mod ModifierScope {
         }
     }
     pub use self::ModifierScope::{COMPONENT,CLASS,EXTENDS};
-    pub fn fromElement(mut element: Arc<SCode::Element>) -> Result<Arc<ModifierScope>> {
+    pub(crate) fn fromElement(mut element: Arc<SCode::Element>) -> Result<Arc<ModifierScope>> {
         let mut scope: Arc<ModifierScope>;
         scope = (::match_deref::match_deref! { match &(element.clone()) {
         Deref @ SCode::Element::COMPONENT { .. } => Arc::new(ModifierScope::COMPONENT { name: (var_field!((*element).name, SCode::Element::COMPONENT).clone()).clone() }),
@@ -834,7 +834,7 @@ pub mod ModifierScope {
         Ok(scope)
     }
 
-    pub fn name(mut scope: Arc<ModifierScope>) -> Result<ArcStr> {
+    pub(crate) fn name(mut scope: Arc<ModifierScope>) -> Result<ArcStr> {
         let mut name: ArcStr;
         name = ((::match_deref::match_deref! { match &(scope.clone()) {
         Deref @ COMPONENT { .. } => var_field!((*scope).name, ModifierScope::COMPONENT).clone(),
@@ -845,7 +845,7 @@ pub mod ModifierScope {
         Ok(name)
     }
 
-    pub fn isClass(mut scope: Arc<ModifierScope>) -> bool {
+    pub(crate) fn isClass(mut scope: Arc<ModifierScope>) -> bool {
         let mut res: bool;
         res = (::match_deref::match_deref! { match &(scope.clone()) {
         Deref @ CLASS { .. } => true,
@@ -855,7 +855,7 @@ pub mod ModifierScope {
         res
     }
 
-    pub fn toString(mut scope: Arc<ModifierScope>) -> Result<ArcStr> {
+    pub(crate) fn toString(mut scope: Arc<ModifierScope>) -> Result<ArcStr> {
         let mut string: ArcStr;
         string = ((::match_deref::match_deref! { match &(scope.clone()) {
         Deref @ COMPONENT { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("component ")); __mm_s.push_str(&*var_field!((*scope).name, ModifierScope::COMPONENT).clone()); ArcStr::from(__mm_s) },
@@ -970,7 +970,7 @@ pub mod Modifier {
         Ok(newMod)
     }
 
-    pub fn createConstrainingMod(mut element: Arc<SCode::Element>, mut scope: Arc<InstNode::InstNode>, mut confidence: i32) -> Result<Arc<Modifier>> {
+    pub(crate) fn createConstrainingMod(mut element: Arc<SCode::Element>, mut scope: Arc<InstNode::InstNode>, mut confidence: i32) -> Result<Arc<Modifier>> {
         let mut r#mod: Arc<Modifier>;
         let mut smod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
         r#mod = (::match_deref::match_deref! { match &(element.clone()) {
@@ -988,7 +988,7 @@ pub mod Modifier {
         Ok(r#mod)
     }
 
-    pub fn stripSCodeMod(mut elem: Arc<SCode::Element>) -> (Arc<SCode::Element>, Arc<SCode::Mod>) {
+    pub(crate) fn stripSCodeMod(mut elem: Arc<SCode::Element>) -> (Arc<SCode::Element>, Arc<SCode::Mod>) {
         let mut elem: Arc<SCode::Element> = elem;
         let mut r#mod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
         r#mod = (::match_deref::match_deref! { match &(elem.clone()) {
@@ -1016,7 +1016,7 @@ pub mod Modifier {
         (elem, r#mod)
     }
 
-    pub fn fromElement(mut element: Arc<SCode::Element>, mut scope: Arc<InstNode::InstNode>, mut confidence: i32) -> Result<Arc<Modifier>> {
+    pub(crate) fn fromElement(mut element: Arc<SCode::Element>, mut scope: Arc<InstNode::InstNode>, mut confidence: i32) -> Result<Arc<Modifier>> {
         let mut r#mod: Arc<Modifier>;
         r#mod = (::match_deref::match_deref! { match &(element.clone()) {
         Deref @ SCode::Element::EXTENDS { .. } => {
@@ -1041,7 +1041,7 @@ pub mod Modifier {
         Ok(r#mod)
     }
 
-    pub fn patchElementModFinal(mut prefixes: Arc<SCode::Prefixes>, mut info: SourceInfo, mut r#mod: Arc<SCode::Mod>) -> Result<Arc<SCode::Mod>> {
+    pub(crate) fn patchElementModFinal(mut prefixes: Arc<SCode::Prefixes>, mut info: SourceInfo, mut r#mod: Arc<SCode::Mod>) -> Result<Arc<SCode::Mod>> {
         let mut r#mod: Arc<SCode::Mod> = r#mod;
         if SCodeUtil::finalBool(SCodeUtil::prefixesFinal(prefixes.clone())?)? {
             r#mod = (::match_deref::match_deref! { match &(r#mod.clone()) {
@@ -1060,7 +1060,7 @@ pub mod Modifier {
         Ok(r#mod)
     }
 
-    pub fn lookupModifier(mut modName: ArcStr, mut modifier: Arc<Modifier>) -> Arc<Modifier> {
+    pub(crate) fn lookupModifier(mut modName: ArcStr, mut modifier: Arc<Modifier>) -> Arc<Modifier> {
         let mut subMod: Arc<Modifier>;
         subMod = 'mc: {
         let __mc_input = modifier.clone();
@@ -1085,7 +1085,7 @@ pub mod Modifier {
         subMod
     }
 
-    pub fn name(mut modifier: Arc<Modifier>) -> Result<ArcStr> {
+    pub(crate) fn name(mut modifier: Arc<Modifier>) -> Result<ArcStr> {
         let mut name: ArcStr;
         name = ((::match_deref::match_deref! { match &(modifier.clone()) {
         Deref @ MODIFIER { .. } => var_field!((*modifier).name, Modifier::MODIFIER).clone(),
@@ -1095,7 +1095,7 @@ pub mod Modifier {
         Ok(name)
     }
 
-    pub fn info(mut modifier: Arc<Modifier>) -> SourceInfo {
+    pub(crate) fn info(mut modifier: Arc<Modifier>) -> SourceInfo {
         let mut info: SourceInfo;
         info = (::match_deref::match_deref! { match &(modifier.clone()) {
         Deref @ MODIFIER { .. } => var_field!((*modifier).info, Modifier::MODIFIER).clone(),
@@ -1106,7 +1106,7 @@ pub mod Modifier {
         info
     }
 
-    pub fn hasBinding(mut modifier: Arc<Modifier>) -> bool {
+    pub(crate) fn hasBinding(mut modifier: Arc<Modifier>) -> bool {
         let mut hasBinding: bool;
         hasBinding = (::match_deref::match_deref! { match &(modifier.clone()) {
         Deref @ MODIFIER { .. } => Binding::isBound(var_field!((*modifier).binding, Modifier::MODIFIER).clone()),
@@ -1116,7 +1116,7 @@ pub mod Modifier {
         hasBinding
     }
 
-    pub fn binding(mut modifier: Arc<Modifier>) -> Arc<Binding::NFBinding> {
+    pub(crate) fn binding(mut modifier: Arc<Modifier>) -> Arc<Binding::NFBinding> {
         let mut binding: Arc<Binding::NFBinding>;
         binding = (::match_deref::match_deref! { match &(modifier.clone()) {
         Deref @ MODIFIER { .. } => var_field!((*modifier).binding, Modifier::MODIFIER).clone(),
@@ -1126,7 +1126,7 @@ pub mod Modifier {
         binding
     }
 
-    pub fn setBinding(mut binding: Arc<Binding::NFBinding>, mut modifier: Arc<Modifier>) -> Result<Arc<Modifier>> {
+    pub(crate) fn setBinding(mut binding: Arc<Binding::NFBinding>, mut modifier: Arc<Modifier>) -> Result<Arc<Modifier>> {
         let mut modifier: Arc<Modifier> = modifier;
         let () = (::match_deref::match_deref! { match &(modifier.clone()) {
         Deref @ MODIFIER { .. } => {
@@ -1138,7 +1138,7 @@ pub mod Modifier {
         Ok(modifier)
     }
 
-    pub fn merge(mut outerMod: Arc<Modifier>, mut innerMod: Arc<Modifier>, mut name: ArcStr) -> Result<Arc<Modifier>> {
+    pub(crate) fn merge(mut outerMod: Arc<Modifier>, mut innerMod: Arc<Modifier>, mut name: ArcStr) -> Result<Arc<Modifier>> {
         let mut mergedMod: Arc<Modifier>;
         mergedMod = (::match_deref::match_deref! { match &((outerMod.clone(), innerMod.clone())) {
         (Deref @ NOMOD { .. }, _) => {
@@ -1181,12 +1181,12 @@ pub mod Modifier {
         Ok(mergedMod)
     }
 
-    pub fn propagate(mut r#mod: Arc<Modifier>, mut origin: Arc<InstNode::InstNode>, mut parent: Arc<InstNode::InstNode>) -> Result<Arc<Modifier>> {
+    pub(crate) fn propagate(mut r#mod: Arc<Modifier>, mut origin: Arc<InstNode::InstNode>, mut parent: Arc<InstNode::InstNode>) -> Result<Arc<Modifier>> {
         let mut outMod: Arc<Modifier> = propagateSubs(r#mod.clone(), list![Arc::new(Subscript::NFSubscript::SPLIT_PROXY { origin: origin.clone(), parent: parent.clone() })])?;
         Ok(outMod)
     }
 
-    pub fn propagateSubs(mut r#mod: Arc<Modifier>, mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>) -> Result<Arc<Modifier>> {
+    pub(crate) fn propagateSubs(mut r#mod: Arc<Modifier>, mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>) -> Result<Arc<Modifier>> {
         let mut r#mod: Arc<Modifier> = r#mod;
         let () = (::match_deref::match_deref! { match &(r#mod.clone()) {
         Deref @ MODIFIER { .. } => {
@@ -1199,7 +1199,7 @@ pub mod Modifier {
         Ok(r#mod)
     }
 
-    pub fn propagateBinding(mut r#mod: Arc<Modifier>, mut origin: Arc<InstNode::InstNode>, mut parent: Arc<InstNode::InstNode>) -> Arc<Modifier> {
+    pub(crate) fn propagateBinding(mut r#mod: Arc<Modifier>, mut origin: Arc<InstNode::InstNode>, mut parent: Arc<InstNode::InstNode>) -> Arc<Modifier> {
         let mut r#mod: Arc<Modifier> = r#mod;
         let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
         let () = (::match_deref::match_deref! { match &(r#mod.clone()) {
@@ -1214,7 +1214,7 @@ pub mod Modifier {
         r#mod
     }
 
-    pub fn propagateSubMod(mut name: ArcStr, mut submod: Arc<Modifier>, mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>) -> Result<Arc<Modifier>> {
+    pub(crate) fn propagateSubMod(mut name: ArcStr, mut submod: Arc<Modifier>, mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>) -> Result<Arc<Modifier>> {
         let mut submod: Arc<Modifier> = submod;
         let () = (::match_deref::match_deref! { match &(submod.clone()) {
         Deref @ MODIFIER { eachPrefix: SCode::Each::NOT_EACH { .. }, .. } => {
@@ -1237,7 +1237,7 @@ pub mod Modifier {
         Ok(submod)
     }
 
-    pub fn isEmpty(mut r#mod: Arc<Modifier>) -> bool {
+    pub(crate) fn isEmpty(mut r#mod: Arc<Modifier>) -> bool {
         let mut isEmpty: bool;
         isEmpty = (::match_deref::match_deref! { match &(r#mod.clone()) {
         Deref @ NOMOD { .. } => true,
@@ -1247,7 +1247,7 @@ pub mod Modifier {
         isEmpty
     }
 
-    pub fn isRedeclare(mut r#mod: Arc<Modifier>) -> bool {
+    pub(crate) fn isRedeclare(mut r#mod: Arc<Modifier>) -> bool {
         let mut isRedeclare: bool;
         isRedeclare = (::match_deref::match_deref! { match &(r#mod.clone()) {
         Deref @ REDECLARE { .. } => true,
@@ -1257,7 +1257,7 @@ pub mod Modifier {
         isRedeclare
     }
 
-    pub fn toList(mut r#mod: Arc<Modifier>) -> Arc<metamodelica::List<Arc<Modifier>>> {
+    pub(crate) fn toList(mut r#mod: Arc<Modifier>) -> Arc<metamodelica::List<Arc<Modifier>>> {
         let mut modList: Arc<metamodelica::List<Arc<Modifier>>>;
         modList = (::match_deref::match_deref! { match &(r#mod.clone()) {
         Deref @ MODIFIER { .. } => ModTable::listValues(var_field!((*r#mod).subModifiers, Modifier::MODIFIER).clone(), metamodelica::nil()),
@@ -1267,7 +1267,7 @@ pub mod Modifier {
         modList
     }
 
-    pub fn isEach(mut r#mod: Arc<Modifier>) -> bool {
+    pub(crate) fn isEach(mut r#mod: Arc<Modifier>) -> bool {
         let mut isEach: bool;
         isEach = (::match_deref::match_deref! { match &(r#mod.clone()) {
         Deref @ MODIFIER { eachPrefix: SCode::Each::EACH { .. }, .. } => true,
@@ -1277,7 +1277,7 @@ pub mod Modifier {
         isEach
     }
 
-    pub fn isFinal(mut r#mod: Arc<Modifier>) -> bool {
+    pub(crate) fn isFinal(mut r#mod: Arc<Modifier>) -> bool {
         let mut isFinal: bool;
         isFinal = (::match_deref::match_deref! { match &(r#mod.clone()) {
         Deref @ MODIFIER { finalPrefix: SCode::Final::FINAL { .. }, .. } => true,
@@ -1287,7 +1287,7 @@ pub mod Modifier {
         isFinal
     }
 
-    pub fn map(mut r#mod: Arc<Modifier>, mut func: Arc<dyn ::std::ops::Fn(ArcStr, Arc<Modifier>) -> Result<Arc<Modifier>> + 'static>) -> Result<Arc<Modifier>> {
+    pub(crate) fn map(mut r#mod: Arc<Modifier>, mut func: Arc<dyn ::std::ops::Fn(ArcStr, Arc<Modifier>) -> Result<Arc<Modifier>> + 'static>) -> Result<Arc<Modifier>> {
         pub type FuncT = std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<Modifier>) -> Result<Arc<Modifier>> + 'static>;
 
         let mut r#mod: Arc<Modifier> = r#mod;
@@ -1302,7 +1302,7 @@ pub mod Modifier {
         Ok(r#mod)
     }
 
-    pub fn toString(mut r#mod: Arc<Modifier>, mut printName: bool) -> Result<ArcStr> {
+    pub(crate) fn toString(mut r#mod: Arc<Modifier>, mut printName: bool) -> Result<ArcStr> {
         let mut string: ArcStr;
         string = ((::match_deref::match_deref! { match &(r#mod.clone()) {
         Deref @ MODIFIER { .. } => {
@@ -1339,7 +1339,7 @@ pub mod Modifier {
         Ok(string)
     }
 
-    pub fn toFlatStreamList(mut modifiers: Arc<metamodelica::List<Arc<Modifier>>>, mut format: BaseModelica::OutputFormat, mut s: IOStream::IOStream, mut delimiter: ArcStr) -> Result<IOStream::IOStream> {
+    pub(crate) fn toFlatStreamList(mut modifiers: Arc<metamodelica::List<Arc<Modifier>>>, mut format: BaseModelica::OutputFormat, mut s: IOStream::IOStream, mut delimiter: ArcStr) -> Result<IOStream::IOStream> {
         let mut s: IOStream::IOStream = s;
         let mut mods: Arc<metamodelica::List<Arc<Modifier>>> = modifiers.clone();
         if mods.clone().is_empty() {
@@ -1357,7 +1357,7 @@ pub mod Modifier {
         Ok(s)
     }
 
-    pub fn toFlatStream(mut r#mod: Arc<Modifier>, mut format: BaseModelica::OutputFormat, mut s: IOStream::IOStream, mut printName: bool) -> Result<IOStream::IOStream> {
+    pub(crate) fn toFlatStream(mut r#mod: Arc<Modifier>, mut format: BaseModelica::OutputFormat, mut s: IOStream::IOStream, mut printName: bool) -> Result<IOStream::IOStream> {
         let mut s: IOStream::IOStream = s;
         let mut submods: Arc<metamodelica::List<Arc<Modifier>>> = metamodelica::nil();
         let mut binding_sep: ArcStr = arcstr::literal!("");
@@ -1384,7 +1384,7 @@ pub mod Modifier {
         Ok(s)
     }
 
-    pub fn toFlatString(mut r#mod: Arc<Modifier>, mut format: BaseModelica::OutputFormat, mut printName: bool) -> Result<ArcStr> {
+    pub(crate) fn toFlatString(mut r#mod: Arc<Modifier>, mut format: BaseModelica::OutputFormat, mut printName: bool) -> Result<ArcStr> {
         let mut r#str: ArcStr;
         let mut s: IOStream::IOStream;
         s = IOStream::create(literal!("NFModifier.Modifier.toFlatString"), openmodelica_util::IOStream::IOStreamType::LIST)?;

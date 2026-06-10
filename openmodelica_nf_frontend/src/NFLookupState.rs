@@ -84,7 +84,7 @@ pub mod LookupStateName {
         }
     }
     pub use self::LookupStateName::{PATH,CREF};
-    pub fn toString(mut name: Arc<LookupStateName>) -> Result<ArcStr> {
+    pub(crate) fn toString(mut name: Arc<LookupStateName>) -> Result<ArcStr> {
         let mut r#str: ArcStr;
         r#str = ((::match_deref::match_deref! { match &(name.clone()) {
         Deref @ PATH { .. } => AbsynUtil::pathString(var_field!((*name).path, LookupStateName::PATH).clone(), (literal!(".")).clone(), true, false)?,
@@ -94,7 +94,7 @@ pub mod LookupStateName {
         Ok(r#str)
     }
 
-    pub fn firstIdent(mut name: Arc<LookupStateName>) -> Result<ArcStr> {
+    pub(crate) fn firstIdent(mut name: Arc<LookupStateName>) -> Result<ArcStr> {
         let mut id: ArcStr;
         id = ((::match_deref::match_deref! { match &(name.clone()) {
         Deref @ PATH { .. } => AbsynUtil::pathFirstIdent(var_field!((*name).path, LookupStateName::PATH).clone())?,
@@ -104,7 +104,7 @@ pub mod LookupStateName {
         Ok(id)
     }
 
-    pub fn secondIdent(mut name: Arc<LookupStateName>) -> Result<ArcStr> {
+    pub(crate) fn secondIdent(mut name: Arc<LookupStateName>) -> Result<ArcStr> {
         let mut id: ArcStr;
         id = ((::match_deref::match_deref! { match &(name.clone()) {
         Deref @ PATH { .. } => AbsynUtil::pathSecondIdent(var_field!((*name).path, LookupStateName::PATH).clone())?,
@@ -254,27 +254,27 @@ pub mod LookupState {
         fn default() -> Self { Self::BEGIN }
     }
     pub use self::LookupState::{BEGIN,COMP,CLASS_COMP,COMP_CLASS,COMP_FUNC,PACKAGE,CLASS,FUNC,PREDEF_COMP,PREDEF_CLASS,IMPORT,PARTIAL_CLASS,NON_CONSTANT,NON_ENCAPSULATED,ERROR};
-    pub fn assertClass(mut endState: Arc<LookupState>, mut node: Arc<InstNode::InstNode>, mut name: Arc<Absyn::Path>, mut context: i32, mut info: SourceInfo) -> Result<()> {
+    pub(crate) fn assertClass(mut endState: Arc<LookupState>, mut node: Arc<InstNode::InstNode>, mut name: Arc<Absyn::Path>, mut context: i32, mut info: SourceInfo) -> Result<()> {
         assertState(endState.clone(), crate::NFLookupState::LookupState::interned_CLASS(), node.clone(), Arc::new(LookupStateName::LookupStateName::PATH { path: name.clone() }), context.clone(), info.clone())?;
         Ok(())
     }
 
-    pub fn assertFunction(mut endState: Arc<LookupState>, mut node: Arc<InstNode::InstNode>, mut name: Arc<Absyn::ComponentRef>, mut context: i32, mut info: SourceInfo) -> Result<()> {
+    pub(crate) fn assertFunction(mut endState: Arc<LookupState>, mut node: Arc<InstNode::InstNode>, mut name: Arc<Absyn::ComponentRef>, mut context: i32, mut info: SourceInfo) -> Result<()> {
         assertState(endState.clone(), crate::NFLookupState::LookupState::interned_FUNC(), node.clone(), Arc::new(LookupStateName::LookupStateName::CREF { cref: name.clone() }), context.clone(), info.clone())?;
         Ok(())
     }
 
-    pub fn assertComponent(mut endState: Arc<LookupState>, mut node: Arc<InstNode::InstNode>, mut name: Arc<Absyn::ComponentRef>, mut context: i32, mut info: SourceInfo) -> Result<()> {
+    pub(crate) fn assertComponent(mut endState: Arc<LookupState>, mut node: Arc<InstNode::InstNode>, mut name: Arc<Absyn::ComponentRef>, mut context: i32, mut info: SourceInfo) -> Result<()> {
         assertState(endState.clone(), crate::NFLookupState::LookupState::interned_COMP(), node.clone(), Arc::new(LookupStateName::LookupStateName::CREF { cref: name.clone() }), context.clone(), info.clone())?;
         Ok(())
     }
 
-    pub fn assertImport(mut endState: Arc<LookupState>, mut node: Arc<InstNode::InstNode>, mut name: Arc<Absyn::Path>, mut info: SourceInfo) -> Result<()> {
+    pub(crate) fn assertImport(mut endState: Arc<LookupState>, mut node: Arc<InstNode::InstNode>, mut name: Arc<Absyn::Path>, mut info: SourceInfo) -> Result<()> {
         assertState(endState.clone(), crate::NFLookupState::LookupState::interned_IMPORT(), node.clone(), Arc::new(LookupStateName::LookupStateName::PATH { path: name.clone() }), InstContext::NO_CONTEXT.clone(), info.clone())?;
         Ok(())
     }
 
-    pub fn isCallableType(mut node: Arc<InstNode::InstNode>) -> Result<bool> {
+    pub(crate) fn isCallableType(mut node: Arc<InstNode::InstNode>) -> Result<bool> {
         let mut callable: bool;
         let mut n: Arc<InstNode::InstNode>;
         if !(InstNode::isClass(node.clone())?) {
@@ -294,13 +294,13 @@ pub mod LookupState {
         Ok(callable)
     }
 
-    pub fn isCallableComponent(mut node: Arc<InstNode::InstNode>) -> Result<bool> {
+    pub(crate) fn isCallableComponent(mut node: Arc<InstNode::InstNode>) -> Result<bool> {
         let mut callable: bool;
         callable = Class::isFunction(InstNode::getClass(node.clone())?);
         Ok(callable)
     }
 
-    pub fn isFunction(mut state: Arc<LookupState>, mut node: Arc<InstNode::InstNode>) -> Result<bool> {
+    pub(crate) fn isFunction(mut state: Arc<LookupState>, mut node: Arc<InstNode::InstNode>) -> Result<bool> {
         let mut isFunction: bool;
         isFunction = (::match_deref::match_deref! { match &(state.clone()) {
         Deref @ FUNC { .. } => true,
@@ -313,7 +313,7 @@ pub mod LookupState {
         Ok(isFunction)
     }
 
-    pub fn isClass(mut state: Arc<LookupState>) -> bool {
+    pub(crate) fn isClass(mut state: Arc<LookupState>) -> bool {
         let mut isClass: bool;
         isClass = (::match_deref::match_deref! { match &(state.clone()) {
         Deref @ COMP_CLASS { .. } => true,
@@ -325,7 +325,7 @@ pub mod LookupState {
         isClass
     }
 
-    pub fn assertState(mut endState: Arc<LookupState>, mut expectedState: Arc<LookupState>, mut node: Arc<InstNode::InstNode>, mut name: Arc<LookupStateName::LookupStateName>, mut context: i32, mut info: SourceInfo) -> Result<()> {
+    pub(crate) fn assertState(mut endState: Arc<LookupState>, mut expectedState: Arc<LookupState>, mut node: Arc<InstNode::InstNode>, mut name: Arc<LookupStateName::LookupStateName>, mut context: i32, mut info: SourceInfo) -> Result<()> {
         let () = (::match_deref::match_deref! { match &((endState.clone(), expectedState.clone())) {
         (Deref @ COMP { .. }, Deref @ COMP { .. }) => {
             ()
@@ -451,7 +451,7 @@ pub mod LookupState {
         Ok(())
     }
 
-    pub fn isError(mut state: Arc<LookupState>) -> bool {
+    pub(crate) fn isError(mut state: Arc<LookupState>) -> bool {
         let mut isError: bool;
         isError = (::match_deref::match_deref! { match &(state.clone()) {
         Deref @ ERROR { .. } => true,
@@ -461,7 +461,7 @@ pub mod LookupState {
         isError
     }
 
-    pub fn lookupStateString(mut state: Arc<LookupState>) -> Result<ArcStr> {
+    pub(crate) fn lookupStateString(mut state: Arc<LookupState>) -> Result<ArcStr> {
         let mut r#str: ArcStr;
         r#str = ((::match_deref::match_deref! { match &(state.clone()) {
         Deref @ BEGIN { .. } => literal!("<begin>"),
@@ -479,7 +479,7 @@ pub mod LookupState {
         Ok(r#str)
     }
 
-    pub fn printFoundWrongTypeError(mut foundState: Arc<LookupState>, mut expectedState: Arc<LookupState>, mut name: Arc<LookupStateName::LookupStateName>, mut info: SourceInfo) -> Result<()> {
+    pub(crate) fn printFoundWrongTypeError(mut foundState: Arc<LookupState>, mut expectedState: Arc<LookupState>, mut name: Arc<LookupStateName::LookupStateName>, mut info: SourceInfo) -> Result<()> {
         let mut name_str: ArcStr;
         let mut found_str: ArcStr;
         let mut expected_str: ArcStr;
@@ -490,7 +490,7 @@ pub mod LookupState {
         Ok(())
     }
 
-    pub fn next(mut node: Arc<InstNode::InstNode>, mut currentState: Arc<LookupState>, mut context: i32, mut checkAccessViolations: bool) -> Result<Arc<LookupState>> {
+    pub(crate) fn next(mut node: Arc<InstNode::InstNode>, mut currentState: Arc<LookupState>, mut context: i32, mut checkAccessViolations: bool) -> Result<Arc<LookupState>> {
         let mut nextState: Arc<LookupState>;
         let mut entry_ty: Arc<LookupState>;
         if checkAccessViolations.clone() && !(InstContext::inInstanceAPI(context.clone())) {
@@ -501,7 +501,7 @@ pub mod LookupState {
         Ok(nextState)
     }
 
-    pub fn checkProtection(mut node: Arc<InstNode::InstNode>, mut currentState: Arc<LookupState>) -> Result<()> {
+    pub(crate) fn checkProtection(mut node: Arc<InstNode::InstNode>, mut currentState: Arc<LookupState>) -> Result<()> {
         let () = (::match_deref::match_deref! { match &(currentState.clone()) {
         Deref @ BEGIN { .. } => (),
         _ => {
@@ -516,7 +516,7 @@ pub mod LookupState {
         Ok(())
     }
 
-    pub fn nodeState(mut node: Arc<InstNode::InstNode>) -> Result<Arc<LookupState>> {
+    pub(crate) fn nodeState(mut node: Arc<InstNode::InstNode>) -> Result<Arc<LookupState>> {
         let mut state: Arc<LookupState>;
         if InstNode::isComponent(node.clone())? || InstNode::isName(node.clone()) || InstNode::isEmpty(node.clone()) {
             state = crate::NFLookupState::LookupState::interned_COMP();
@@ -526,7 +526,7 @@ pub mod LookupState {
         Ok(state)
     }
 
-    pub fn elementState(mut element: Arc<SCode::Element>) -> Result<Arc<LookupState>> {
+    pub(crate) fn elementState(mut element: Arc<SCode::Element>) -> Result<Arc<LookupState>> {
         let mut state: Arc<LookupState>;
         state = (::match_deref::match_deref! { match &(element.clone()) {
         Deref @ SCode::Element::CLASS { restriction: SCode::Restriction::R_PACKAGE { .. }, .. } => crate::NFLookupState::LookupState::interned_PACKAGE(),
@@ -541,7 +541,7 @@ pub mod LookupState {
         Ok(state)
     }
 
-    pub fn next2(mut elementState: Arc<LookupState>, mut currentState: Arc<LookupState>, mut node: Arc<InstNode::InstNode>) -> Result<Arc<LookupState>> {
+    pub(crate) fn next2(mut elementState: Arc<LookupState>, mut currentState: Arc<LookupState>, mut node: Arc<InstNode::InstNode>) -> Result<Arc<LookupState>> {
         let mut nextState: Arc<LookupState>;
         nextState = (::match_deref::match_deref! { match &((elementState.clone(), currentState.clone())) {
         (_, Deref @ BEGIN { .. }) => elementState.clone(),
@@ -573,7 +573,7 @@ pub mod LookupState {
         Ok(nextState)
     }
 
-    pub fn checkCrefVariability(mut cref: Arc<ComponentRef::NFComponentRef>, mut inEnclosingScope: bool, mut context: i32, mut state: Arc<LookupState>) -> Result<Arc<LookupState>> {
+    pub(crate) fn checkCrefVariability(mut cref: Arc<ComponentRef::NFComponentRef>, mut inEnclosingScope: bool, mut context: i32, mut state: Arc<LookupState>) -> Result<Arc<LookupState>> {
         let mut state: Arc<LookupState> = state;
         if isError(state.clone()) {
             return Ok(state.clone());
@@ -584,7 +584,7 @@ pub mod LookupState {
         Ok(state)
     }
 
-    pub fn isNonConstantComponent(mut node: Arc<InstNode::InstNode>) -> Result<bool> {
+    pub(crate) fn isNonConstantComponent(mut node: Arc<InstNode::InstNode>) -> Result<bool> {
         let mut res: bool;
         res = InstNode::isComponent(node.clone())? && !(Component::isConst(InstNode::component(node.clone())?)?);
         Ok(res)

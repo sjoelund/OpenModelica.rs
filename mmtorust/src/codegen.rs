@@ -393,6 +393,11 @@ struct GenCtx {
     /// this set are infallible: their Rust signature drops `Result<>` and
     /// their call sites omit `?` (or the surrounding [`QMode`] equivalent).
     fallible_functions: BTreeSet<String>,
+    /// FQNs of public functions reachable from another crate, which therefore
+    /// stay `pub`. A public function absent from this set is narrowed to
+    /// `pub(crate)`. Populated by [`crate::visibility::analyze`]; consulted by
+    /// [`emit_function`] when choosing the visibility keyword.
+    keep_public_fns: BTreeSet<String>,
     /// Per-function set of type parameter names that need a `+ PartialEq`
     /// bound. Populated by [`analyze_partial_eq`] and consulted by
     /// [`emit_function`] when formatting the signature's type parameters.
@@ -641,6 +646,7 @@ impl GenCtx {
             variants: HashMap::new(),
             variant_shapes: HashMap::new(),
             fallible_functions,
+            keep_public_fns: BTreeSet::new(),
             partial_eq_required,
             reference_eq_required,
             default_required,
@@ -1471,7 +1477,7 @@ pub fn generate_all(hier: &InstanceHierarchy<'_>, output_dir: &str) -> std::io::
             eprintln!("[mmtorust] codegen start {file_path}");
         }
         let file_t0 = std::time::Instant::now();
-        let (content, file_unwraps, file_missing) = generate_file(name, node, &crate_map, current_crate, &nullable_global_roots, &top_level_uniontype_names, hier.recursive_types.clone(), hier.types_containing_mutable.clone(), hier.types_containing_array.clone(), hier.types_containing_dyn_fn.clone(), hier.types_directly_containing_dyn_fn.clone(), &no_mod_uniontypes, &hier.top_level, &fn_type_vars, &hier.fallible_functions, &hier.partial_eq_required, &hier.reference_eq_required, &hier.default_required, &defaultable_struct_qnames, &types_needing_default);
+        let (content, file_unwraps, file_missing) = generate_file(name, node, &crate_map, current_crate, &nullable_global_roots, &top_level_uniontype_names, hier.recursive_types.clone(), hier.types_containing_mutable.clone(), hier.types_containing_array.clone(), hier.types_containing_dyn_fn.clone(), hier.types_directly_containing_dyn_fn.clone(), &no_mod_uniontypes, &hier.top_level, &fn_type_vars, &hier.fallible_functions, &hier.keep_public_fns, &hier.partial_eq_required, &hier.reference_eq_required, &hier.default_required, &defaultable_struct_qnames, &types_needing_default);
         if !file_unwraps.is_empty() {
             infallible_unwraps.lock().unwrap().extend(file_unwraps);
         }
@@ -1868,8 +1874,9 @@ fn collect_no_mod_uniontypes(nodes: &BTreeMap<String, NameNode<'_>>, prefix: &st
     }
 }
 
-fn generate_file<'a>(top_name: &str, node: &NameNode<'_>, crate_map: &BTreeMap<String, String>, current_crate: Option<String>, nullable_global_roots: &HashSet<String>, top_level_uniontype_names: &HashSet<String>, recursive_types: BTreeSet<String>, types_containing_mutable: BTreeSet<String>, types_containing_array: BTreeSet<String>, types_containing_dyn_fn: BTreeSet<String>, types_directly_containing_dyn_fn: BTreeSet<String>, no_mod_uniontypes: &HashSet<String>, top_level: &'a BTreeMap<String, NameNode<'a>>, fn_type_vars: &BTreeMap<String, Vec<String>>, fallible_functions: &BTreeSet<String>, partial_eq_required: &BTreeMap<String, HashSet<String>>, reference_eq_required: &BTreeMap<String, HashSet<String>>, default_required: &BTreeMap<String, HashSet<String>>, defaultable_struct_qnames: &HashSet<String>, types_needing_default: &HashSet<String>) -> (String, BTreeSet<String>, BTreeSet<String>) {
+fn generate_file<'a>(top_name: &str, node: &NameNode<'_>, crate_map: &BTreeMap<String, String>, current_crate: Option<String>, nullable_global_roots: &HashSet<String>, top_level_uniontype_names: &HashSet<String>, recursive_types: BTreeSet<String>, types_containing_mutable: BTreeSet<String>, types_containing_array: BTreeSet<String>, types_containing_dyn_fn: BTreeSet<String>, types_directly_containing_dyn_fn: BTreeSet<String>, no_mod_uniontypes: &HashSet<String>, top_level: &'a BTreeMap<String, NameNode<'a>>, fn_type_vars: &BTreeMap<String, Vec<String>>, fallible_functions: &BTreeSet<String>, keep_public_fns: &BTreeSet<String>, partial_eq_required: &BTreeMap<String, HashSet<String>>, reference_eq_required: &BTreeMap<String, HashSet<String>>, default_required: &BTreeMap<String, HashSet<String>>, defaultable_struct_qnames: &HashSet<String>, types_needing_default: &HashSet<String>) -> (String, BTreeSet<String>, BTreeSet<String>) {
     let mut ctx = GenCtx::new(top_name, current_crate, crate_map.clone(), nullable_global_roots.clone(), top_level_uniontype_names.clone(), recursive_types, types_containing_mutable, types_containing_array, types_containing_dyn_fn, types_directly_containing_dyn_fn, fn_type_vars.clone(), fallible_functions.clone(), partial_eq_required.clone(), reference_eq_required.clone(), default_required.clone(), defaultable_struct_qnames.clone(), types_needing_default.clone());
+    ctx.keep_public_fns = keep_public_fns.clone();
     ctx.no_mod_uniontypes = no_mod_uniontypes.clone();
     if let NodeKind::Class(c) = &node.kind {
         // Diagnostics (`sourceInfo()`) report the .mo relative to
@@ -5703,8 +5710,6 @@ fn emit_function<'a>(out: &mut String, name: &str, node: &NameNode<'_>, c: &MM::
     };
     let ename = escape_ident(name);
 
-    let pub_kw = if node.visibility == MM::Visibility::Public { "pub " } else { "" };
-
     // Determine this function's fallibility. The fallibility analysis records
     // *fallible* user functions by fully-qualified MM name; absence means
     // infallible. The FQN we construct here must match the convention used by
@@ -5728,6 +5733,17 @@ fn emit_function<'a>(out: &mut String, name: &str, node: &NameNode<'_>, c: &MM::
     ctx.current_fn_fallible = ctx.fallible_functions.contains(&fn_qname);
     let saved_fn_qname = std::mem::replace(&mut ctx.current_fn_qname, fn_qname.clone());
     let is_fallible_fn = ctx.current_fn_fallible;
+
+    // Visibility keyword. MetaModelica-protected functions stay module-private
+    // (`fn`). Public ones are `pub` only when the visibility analysis found them
+    // reachable from another crate; the rest are narrowed to `pub(crate)`, which
+    // still covers every in-crate (cross-module) caller. See
+    // [`crate::visibility`].
+    let pub_kw = if node.visibility == MM::Visibility::Public {
+        if ctx.keep_public_fns.contains(&fn_qname) { "pub " } else { "pub(crate) " }
+    } else {
+        ""
+    };
 
     // Hand-written per-function replacement: when the lowering of a specific
     // function is provably wrong (a `referenceEq` on a type parameter, an

@@ -78,7 +78,7 @@ impl metamodelica::gc::MMTrace for ElementType {
     fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 
-pub fn appendElementSourceCommentString(mut source: Arc<DAE::ElementSource>, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
+pub(crate) fn appendElementSourceCommentString(mut source: Arc<DAE::ElementSource>, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut s: IOStream::IOStream = s;
     let mut opt_cmt: Option<Arc<SCode::Comment>>;
     opt_cmt = ElementSource::getOptComment(source.clone())?;
@@ -88,7 +88,7 @@ pub fn appendElementSourceCommentString(mut source: Arc<DAE::ElementSource>, mut
     Ok(s)
 }
 
-pub fn appendElementSourceCommentAnnotation(mut source: Arc<DAE::ElementSource>, mut elementType: ElementType, mut indent: ArcStr, mut ending: ArcStr, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
+pub(crate) fn appendElementSourceCommentAnnotation(mut source: Arc<DAE::ElementSource>, mut elementType: ElementType, mut indent: ArcStr, mut ending: ArcStr, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut s: IOStream::IOStream = s;
     let mut opt_cmt: Option<Arc<SCode::Comment>>;
     opt_cmt = ElementSource::getOptComment(source.clone())?;
@@ -98,13 +98,13 @@ pub fn appendElementSourceCommentAnnotation(mut source: Arc<DAE::ElementSource>,
     Ok(s)
 }
 
-pub fn appendElementSourceComment(mut source: Arc<DAE::ElementSource>, mut elementType: ElementType, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
+pub(crate) fn appendElementSourceComment(mut source: Arc<DAE::ElementSource>, mut elementType: ElementType, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut s: IOStream::IOStream = s;
     s = appendCommentOpt(ElementSource::getOptComment(source.clone())?, elementType.clone(), s.clone())?;
     Ok(s)
 }
 
-pub fn appendCommentOpt(mut comment: Option<Arc<SCode::Comment>>, mut elementType: ElementType, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
+pub(crate) fn appendCommentOpt(mut comment: Option<Arc<SCode::Comment>>, mut elementType: ElementType, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut s: IOStream::IOStream = s;
     if isSome(comment.clone()) {
         s = appendComment(Util::getOption(comment.clone())?, elementType.clone(), s.clone())?;
@@ -112,14 +112,14 @@ pub fn appendCommentOpt(mut comment: Option<Arc<SCode::Comment>>, mut elementTyp
     Ok(s)
 }
 
-pub fn appendComment(mut comment: Arc<SCode::Comment>, mut elementType: ElementType, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
+pub(crate) fn appendComment(mut comment: Arc<SCode::Comment>, mut elementType: ElementType, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut s: IOStream::IOStream = s;
     s = appendCommentString(comment.clone(), s.clone())?;
     s = appendCommentAnnotation(comment.clone(), elementType.clone(), (literal!(" ")).clone(), (literal!("")).clone(), s.clone())?;
     Ok(s)
 }
 
-pub fn appendCommentString(mut comment: Arc<SCode::Comment>, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
+pub(crate) fn appendCommentString(mut comment: Arc<SCode::Comment>, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut s: IOStream::IOStream = s;
     let mut r#str: ArcStr = arcstr::literal!("");
     let () = (::match_deref::match_deref! { match &(comment.clone()) {
@@ -136,7 +136,7 @@ pub fn appendCommentString(mut comment: Arc<SCode::Comment>, mut s: IOStream::IO
     Ok(s)
 }
 
-pub fn appendCommentAnnotation(mut comment: Arc<SCode::Comment>, mut elementType: ElementType, mut indent: ArcStr, mut ending: ArcStr, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
+pub(crate) fn appendCommentAnnotation(mut comment: Arc<SCode::Comment>, mut elementType: ElementType, mut indent: ArcStr, mut ending: ArcStr, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut s: IOStream::IOStream = s;
     let mut r#mod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
     let () = (::match_deref::match_deref! { match &(comment.clone()) {
@@ -160,7 +160,7 @@ pub fn appendCommentAnnotation(mut comment: Arc<SCode::Comment>, mut elementType
     Ok(s)
 }
 
-pub fn filterRootClassAnnotations(mut r#mod: Arc<SCode::Mod>) -> Result<Arc<SCode::Mod>> {
+pub(crate) fn filterRootClassAnnotations(mut r#mod: Arc<SCode::Mod>) -> Result<Arc<SCode::Mod>> {
     fn filter(mut smod: Arc<SCode::SubMod>) -> bool {
         let mut keep: bool;
         keep = (::match_deref::match_deref! { match &(smod.ident.clone()) {
@@ -176,7 +176,7 @@ pub fn filterRootClassAnnotations(mut r#mod: Arc<SCode::Mod>) -> Result<Arc<SCod
     Ok(r#mod)
 }
 
-pub fn appendAnnotationMod(mut r#mod: Arc<SCode::Mod>, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
+pub(crate) fn appendAnnotationMod(mut r#mod: Arc<SCode::Mod>, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut s: IOStream::IOStream = s;
     let () = (::match_deref::match_deref! { match &(r#mod.clone()) {
         Deref @ SCode::Mod::MOD { .. } => {
@@ -202,7 +202,7 @@ pub fn appendAnnotationMod(mut r#mod: Arc<SCode::Mod>, mut s: IOStream::IOStream
     Ok(s)
 }
 
-pub fn appendAnnotationSubMod(mut r#mod: Arc<SCode::SubMod>, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
+pub(crate) fn appendAnnotationSubMod(mut r#mod: Arc<SCode::SubMod>, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut s: IOStream::IOStream = s;
     let mut m: Arc<SCode::Mod> = r#mod.r#mod.clone();
     let () = (::match_deref::match_deref! { match &(m.clone()) {
@@ -223,7 +223,7 @@ pub fn appendAnnotationSubMod(mut r#mod: Arc<SCode::SubMod>, mut s: IOStream::IO
     Ok(s)
 }
 
-pub fn appendExp(mut exp: Arc<Absyn::Exp>, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
+pub(crate) fn appendExp(mut exp: Arc<Absyn::Exp>, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut s: IOStream::IOStream = s;
     let mut e: Arc<Absyn::Exp>;
     (e, _) = AbsynUtil::traverseExp(exp.clone(), (std::sync::Arc::new(quoteCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, i32) -> Result<(Arc<Absyn::Exp>, i32)> + 'static>), 0)?;
@@ -231,7 +231,7 @@ pub fn appendExp(mut exp: Arc<Absyn::Exp>, mut s: IOStream::IOStream) -> Result<
     Ok(s)
 }
 
-pub fn quoteCref(mut exp: Arc<Absyn::Exp>, mut dummy: i32) -> Result<(Arc<Absyn::Exp>, i32)> {
+pub(crate) fn quoteCref(mut exp: Arc<Absyn::Exp>, mut dummy: i32) -> Result<(Arc<Absyn::Exp>, i32)> {
     let mut exp: Arc<Absyn::Exp> = exp;
     let mut dummy: i32 = dummy;
     let mut r#str: ArcStr = arcstr::literal!("");

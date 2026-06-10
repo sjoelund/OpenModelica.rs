@@ -236,24 +236,24 @@ pub mod Identifier {
 
     pub type IDENTIFIER = Identifier;
 
-    pub fn toString(mut ident: Arc<Identifier>) -> Result<ArcStr> {
+    pub(crate) fn toString(mut ident: Arc<Identifier>) -> Result<ArcStr> {
         let mut r#str: ArcStr = { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("cref: ")); __mm_s.push_str(&*ComponentRef::toString(ident.var_cref.clone())?); __mm_s.push_str(&*literal!("\neqn: ")); __mm_s.push_str(&*BEquation::Equation::pointerToString(ident.eqn.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n(resizable=")); __mm_s.push_str(&*boolString(ident.resizable.clone())); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) };
         Ok(r#str)
     }
 
-    pub fn hash(mut ident: Arc<Identifier>) -> Result<i32> {
+    pub(crate) fn hash(mut ident: Arc<Identifier>) -> Result<i32> {
         let mut i: i32 = stringHashDjb2((toString(ident.clone())?).clone());
         Ok(i)
     }
 
-    pub fn isEqual(mut ident1: Arc<Identifier>, mut ident2: Arc<Identifier>) -> Result<bool> {
+    pub(crate) fn isEqual(mut ident1: Arc<Identifier>, mut ident2: Arc<Identifier>) -> Result<bool> {
         let mut b: bool = BEquation::Equation::equalName(ident1.eqn.clone(), ident2.eqn.clone())? && ComponentRef::isEqual(ident1.var_cref.clone(), ident2.var_cref.clone())?;
         Ok(b)
     }
 
 }
 
-pub fn EMPTY_SIM_CODE_INDICES() -> SimCodeIndices {
+pub(crate) fn EMPTY_SIM_CODE_INDICES() -> SimCodeIndices {
     let mut indices: SimCodeIndices = SimCodeIndices { uniqueIndex: 1, realVarIndex: 0, integerVarIndex: 0, booleanVarIndex: 0, stringVarIndex: 0, enumerationVarIndex: 0, realParamIndex: 0, integerParamIndex: 0, booleanParamIndex: 0, stringParamIndex: 0, enumerationParamIndex: 0, realAliasIndex: 0, integerAliasIndex: 0, booleanAliasIndex: 0, stringAliasIndex: 0, enumerationAliasIndex: 0, equationIndex: 1, linearSystemIndex: 0, nonlinearSystemIndex: 0, jacobianIndex: 0, residualIndex: 0, implicitIndex: 0, extObjIndex: 0, alias_map: UnorderedMap::new((std::sync::Arc::new(AliasInfo::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<AliasInfo::AliasInfo>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(AliasInfo::isEqual, Arc<AliasInfo::AliasInfo>, Arc<AliasInfo::AliasInfo>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<AliasInfo::AliasInfo>, Arc<AliasInfo::AliasInfo>) -> Result<bool> + 'static>), 1), generic_call_map: UnorderedMap::new((std::sync::Arc::new(Identifier::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Identifier::Identifier>) -> Result<i32> + 'static>), (std::sync::Arc::new(Identifier::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Identifier::Identifier>, Arc<Identifier::Identifier>) -> Result<bool> + 'static>), 1) };
     indices
 }
@@ -802,13 +802,13 @@ pub mod ModelInfo {
 
     pub type MODEL_INFO = ModelInfo;
 
-    pub fn toString(mut modelInfo: Arc<ModelInfo>) -> Result<ArcStr> {
+    pub(crate) fn toString(mut modelInfo: Arc<ModelInfo>) -> Result<ArcStr> {
         let mut r#str: ArcStr;
         r#str = (SimVars::toString(modelInfo.vars.clone(), (literal!("")).clone())?).clone();
         Ok(r#str)
     }
 
-    pub fn create(mut vars: Arc<SimVars::SimVars>, mut name: Arc<Absyn::Path>, mut fileName: ArcStr, mut directory: ArcStr, mut functions: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>>, mut linearLoops: Arc<metamodelica::List<Arc<SimStrongComponent::Block::Block>>>, mut nonlinearLoops: Arc<metamodelica::List<Arc<SimStrongComponent::Block::Block>>>, mut eventInfo: Arc<EventInfo::EventInfo>, mut clockedInfo: Arc<ClockedInfo::ClockedInfo>, mut simCodeIndices: SimCodeIndices) -> Result<(Arc<ModelInfo>, SimCodeIndices)> {
+    pub(crate) fn create(mut vars: Arc<SimVars::SimVars>, mut name: Arc<Absyn::Path>, mut fileName: ArcStr, mut directory: ArcStr, mut functions: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>>, mut linearLoops: Arc<metamodelica::List<Arc<SimStrongComponent::Block::Block>>>, mut nonlinearLoops: Arc<metamodelica::List<Arc<SimStrongComponent::Block::Block>>>, mut eventInfo: Arc<EventInfo::EventInfo>, mut clockedInfo: Arc<ClockedInfo::ClockedInfo>, mut simCodeIndices: SimCodeIndices) -> Result<(Arc<ModelInfo>, SimCodeIndices)> {
         let mut modelInfo: Arc<ModelInfo>;
         let mut simCodeIndices: SimCodeIndices = simCodeIndices;
         let mut info: Arc<VarInfo::VarInfo>;
@@ -817,7 +817,7 @@ pub mod ModelInfo {
         Ok((modelInfo, simCodeIndices))
     }
 
-    pub fn setSeedVars(mut modelInfo: Arc<ModelInfo>, mut seedVars: Arc<metamodelica::List<Arc<SimVar::SimVar>>>) -> Result<Arc<ModelInfo>> {
+    pub(crate) fn setSeedVars(mut modelInfo: Arc<ModelInfo>, mut seedVars: Arc<metamodelica::List<Arc<SimVar::SimVar>>>) -> Result<Arc<ModelInfo>> {
         let mut modelInfo: Arc<ModelInfo> = modelInfo;
         modelInfo = (::match_deref::match_deref! { match &(modelInfo.clone()) {
         Deref @ ModelInfo { vars, .. } => {
@@ -835,7 +835,7 @@ pub mod ModelInfo {
         Ok(modelInfo)
     }
 
-    pub fn convert(mut modelInfo: Arc<ModelInfo>) -> Result<OldSimCode::ModelInfo> {
+    pub(crate) fn convert(mut modelInfo: Arc<ModelInfo>) -> Result<OldSimCode::ModelInfo> {
         let mut oldModelInfo: OldSimCode::ModelInfo;
         let mut varInfo: OldSimCode::VarInfo;
         varInfo = VarInfo::convert(modelInfo.varInfo.clone());
@@ -887,7 +887,7 @@ pub mod DaeModeData {
 
     pub type DAE_MODE_DATA = DaeModeData;
 
-    pub fn toString(mut data: Arc<DaeModeData>) -> Result<ArcStr> {
+    pub(crate) fn toString(mut data: Arc<DaeModeData>) -> Result<ArcStr> {
         let mut r#str: ArcStr = literal!("");
         let mut idx: i32 = 1;
         for mut blck_lst in &*data.blcks.clone() {
@@ -901,7 +901,7 @@ pub mod DaeModeData {
         Ok(r#str)
     }
 
-    pub fn create(mut systems: Arc<metamodelica::List<Arc<Partition::Partition::Partition>>>, mut simCodeIndices: SimCodeIndices, mut simcode_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<SimVar::SimVar>>>, mut equation_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<SimStrongComponent::Block::Block>>>) -> Result<(Option<Arc<DaeModeData>>, SimCodeIndices)> {
+    pub(crate) fn create(mut systems: Arc<metamodelica::List<Arc<Partition::Partition::Partition>>>, mut simCodeIndices: SimCodeIndices, mut simcode_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<SimVar::SimVar>>>, mut equation_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<SimStrongComponent::Block::Block>>>) -> Result<(Option<Arc<DaeModeData>>, SimCodeIndices)> {
         let mut data: Option<Arc<DaeModeData>>;
         let mut simCodeIndices: SimCodeIndices = simCodeIndices;
         let mut blcks: Arc<metamodelica::List<Arc<metamodelica::List<Arc<SimStrongComponent::Block::Block>>>>>;
@@ -911,7 +911,7 @@ pub mod DaeModeData {
         Ok((data, simCodeIndices))
     }
 
-    pub fn addJacobian(mut data: Option<Arc<DaeModeData>>, mut daeModeJac: Arc<SimJacobian::SimJacobian>) -> Option<Arc<DaeModeData>> {
+    pub(crate) fn addJacobian(mut data: Option<Arc<DaeModeData>>, mut daeModeJac: Arc<SimJacobian::SimJacobian>) -> Option<Arc<DaeModeData>> {
         let mut data: Option<Arc<DaeModeData>> = data;
         data = (::match_deref::match_deref! { match &(data.clone()) {
         Some(dmd) => {
@@ -927,7 +927,7 @@ pub mod DaeModeData {
         data
     }
 
-    pub fn convert(mut data: Arc<DaeModeData>) -> Result<OldSimCode::DaeModeData> {
+    pub(crate) fn convert(mut data: Arc<DaeModeData>) -> Result<OldSimCode::DaeModeData> {
         let mut oldData: OldSimCode::DaeModeData;
         let mut simEqSystems: Arc<metamodelica::List<Arc<metamodelica::List<Arc<OldSimCode::SimEqSystem>>>>> = metamodelica::nil();
         simEqSystems = SimStrongComponent::Block::convertListList(data.blcks.clone())?;

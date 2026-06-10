@@ -85,7 +85,7 @@ use openmodelica_util_datatypes_basic::Pointer;
 // NF imports
 // Backend imports
 // Util imports
-pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>, mut kind: Partition::Kind) -> Result<Arc<BackendDAE::NBackendDAE>> {
+pub(crate) fn main(mut bdae: Arc<BackendDAE::NBackendDAE>, mut kind: Partition::Kind) -> Result<Arc<BackendDAE::NBackendDAE>> {
     let mut bdae: Arc<BackendDAE::NBackendDAE> = bdae;
     let mut func: Module::aliasInterface;
     func = getModule()?;
@@ -119,7 +119,7 @@ pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>, mut kind: Partition::Kind) -
     Ok(bdae)
 }
 
-pub fn getModule() -> Result<Arc<dyn ::std::ops::Fn(Arc<VarData::VarData>, Arc<EqData::EqData>, Partition::Kind) -> Result<(Arc<VarData::VarData>, Arc<EqData::EqData>)> + 'static>> {
+pub(crate) fn getModule() -> Result<Arc<dyn ::std::ops::Fn(Arc<VarData::VarData>, Arc<EqData::EqData>, Partition::Kind) -> Result<(Arc<VarData::VarData>, Arc<EqData::EqData>)> + 'static>> {
     let mut func: Module::functionAliasInterface;
     let mut flag: ArcStr = literal!("default");
     func = (::match_deref::match_deref! { match &(flag.clone()) {
@@ -130,7 +130,7 @@ pub fn getModule() -> Result<Arc<dyn ::std::ops::Fn(Arc<VarData::VarData>, Arc<E
     Ok(func)
 }
 
-pub fn introduceSlicedStateAlias(mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqData::EqData>, mut kind: Partition::Kind) -> Result<(Arc<VarData::VarData>, Arc<EqData::EqData>)> {
+pub(crate) fn introduceSlicedStateAlias(mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqData::EqData>, mut kind: Partition::Kind) -> Result<(Arc<VarData::VarData>, Arc<EqData::EqData>)> {
     let mut varData: Arc<VarData::VarData> = varData;
     let mut eqData: Arc<EqData::EqData> = eqData;
     let mut aux_map: Arc<UnorderedMap::UnorderedMap<Arc<Call_Id::Call_Id>, Arc<Call_Aux::Call_Aux>>> = UnorderedMap::new((std::sync::Arc::new(Call_Id::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Call_Id::Call_Id>) -> Result<i32> + 'static>), (std::sync::Arc::new(Call_Id::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Call_Id::Call_Id>, Arc<Call_Id::Call_Id>) -> Result<bool> + 'static>), 1);
@@ -198,20 +198,20 @@ pub mod Call_Id {
 
     pub type CALL_ID = Call_Id;
 
-    pub fn toString(mut id: Arc<Call_Id>) -> Result<ArcStr> {
+    pub(crate) fn toString(mut id: Arc<Call_Id>) -> Result<ArcStr> {
         let mut r#str: ArcStr;
         r#str = (if (!(BEquation::Iterator::isEmpty(id.iter.clone()))) {{ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" [")); __mm_s.push_str(&*BEquation::Iterator::toString(id.iter.clone())?); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }} else {literal!("")}).clone();
         r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*Expression::toString(id.call.clone())?); __mm_s.push_str(&*r#str.clone()); ArcStr::from(__mm_s) }).clone();
         Ok(r#str)
     }
 
-    pub fn hash(mut id: Arc<Call_Id>) -> Result<i32> {
+    pub(crate) fn hash(mut id: Arc<Call_Id>) -> Result<i32> {
         let mut hash: i32;
         hash = stringHashDjb2((toString(id.clone())?).clone());
         Ok(hash)
     }
 
-    pub fn isEqual(mut id1: Arc<Call_Id>, mut id2: Arc<Call_Id>) -> Result<bool> {
+    pub(crate) fn isEqual(mut id1: Arc<Call_Id>, mut id2: Arc<Call_Id>) -> Result<bool> {
         let mut b: bool;
         b = Expression::isEqual(id1.call.clone(), id2.call.clone())? && BEquation::Iterator::isEqual(id1.iter.clone(), id2.iter.clone())?;
         Ok(b)
@@ -251,12 +251,12 @@ pub mod Call_Aux {
 
     pub type CALL_AUX = Call_Aux;
 
-    pub fn toString(mut aux: Arc<Call_Aux>) -> Result<ArcStr> {
+    pub(crate) fn toString(mut aux: Arc<Call_Aux>) -> Result<ArcStr> {
         let mut r#str: ArcStr = Expression::toString(aux.replacer.clone())?;
         Ok(r#str)
     }
 
-    pub fn getVars(mut aux: Arc<Call_Aux>) -> Result<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>> {
+    pub(crate) fn getVars(mut aux: Arc<Call_Aux>) -> Result<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>> {
         fn getVarsExp(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>> {
             let mut vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>;
             vars = (::match_deref::match_deref! { match &(exp.clone()) {
@@ -283,7 +283,7 @@ pub mod Call_Aux {
         Ok(vars)
     }
 
-    pub fn createName(mut ty: Arc<Type::NFType>, mut iter: Arc<Iterator::Iterator>, mut aux_index: Pointer::Pointer<i32>, mut aux_name: ArcStr, mut init: bool) -> Result<Arc<ComponentRef::NFComponentRef>> {
+    pub(crate) fn createName(mut ty: Arc<Type::NFType>, mut iter: Arc<Iterator::Iterator>, mut aux_index: Pointer::Pointer<i32>, mut aux_name: ArcStr, mut init: bool) -> Result<Arc<ComponentRef::NFComponentRef>> {
         let mut name: Arc<ComponentRef::NFComponentRef>;
         let mut new_ty: Arc<Type::NFType> = ty.clone();
         let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>;

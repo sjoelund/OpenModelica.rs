@@ -138,7 +138,7 @@ fn translateClass2(mut inClass: Arc<Absyn::Class>, mut inNumMessages: i32) -> Re
 
 //mahge: FIX HERE. Check for proper input and output
 //declarations in operators according to the specifications.
-pub fn translateOperatorDef(mut inClassDef: Arc<Absyn::ClassDef>, mut operatorName: ArcStr, mut info: SourceInfo) -> Result<(Arc<SCode::ClassDef>, Arc<SCode::Comment>)> {
+pub(crate) fn translateOperatorDef(mut inClassDef: Arc<Absyn::ClassDef>, mut operatorName: ArcStr, mut info: SourceInfo) -> Result<(Arc<SCode::ClassDef>, Arc<SCode::Comment>)> {
     let mut outOperDef: Arc<SCode::ClassDef>;
     let mut cmt: Arc<SCode::Comment> = Arc::new(<SCode::Comment as ::std::default::Default>::default());
     (outOperDef, cmt) = (::match_deref::match_deref! { match &(inClassDef.clone()) {
@@ -157,7 +157,7 @@ pub fn translateOperatorDef(mut inClassDef: Arc<Absyn::ClassDef>, mut operatorNa
     Ok((outOperDef, cmt))
 }
 
-pub fn getOperatorGivenName(mut inOperatorFunction: Arc<SCode::Element>) -> Result<Arc<Absyn::Path>> {
+pub(crate) fn getOperatorGivenName(mut inOperatorFunction: Arc<SCode::Element>) -> Result<Arc<Absyn::Path>> {
     let mut outName: Arc<Absyn::Path>;
     outName = (::match_deref::match_deref! { match &(inOperatorFunction.clone()) {
         Deref @ SCode::Element::CLASS { name, prefixes: _, encapsulatedPrefix: _, partialPrefix: _, restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_OPERATOR_FUNCTION { .. } }, classDef: _, cmt: _, info: _ } => {
@@ -168,7 +168,7 @@ pub fn getOperatorGivenName(mut inOperatorFunction: Arc<SCode::Element>) -> Resu
     Ok(outName)
 }
 
-pub fn getOperatorQualName(mut inOperatorFunction: Arc<SCode::Element>, mut operName: ArcStr) -> Result<Arc<Absyn::Path>> {
+pub(crate) fn getOperatorQualName(mut inOperatorFunction: Arc<SCode::Element>, mut operName: ArcStr) -> Result<Arc<Absyn::Path>> {
     let mut outName: Arc<Absyn::Path>;
     outName = (::match_deref::match_deref! { match &((inOperatorFunction.clone(), operName.clone())) {
         (Deref @ SCode::Element::CLASS { name, prefixes: _, encapsulatedPrefix: _, partialPrefix: _, restriction: SCode::Restriction::R_FUNCTION { functionRestriction: _ }, classDef: _, cmt: _, info: _ }, opname) => {
@@ -197,7 +197,7 @@ pub fn getListofQualOperatorFuncsfromOperator(mut inOperator: Arc<SCode::Element
     Ok(outNames)
 }
 
-pub fn translateRestriction(mut inClass: Arc<Absyn::Class>, mut inRestriction: Absyn::Restriction) -> Result<SCode::Restriction> {
+pub(crate) fn translateRestriction(mut inClass: Arc<Absyn::Class>, mut inRestriction: Absyn::Restriction) -> Result<SCode::Restriction> {
     let mut outRestriction: SCode::Restriction;
     outRestriction = (::match_deref::match_deref! { match &((inClass.clone(), inRestriction.clone())) {
         (d, Absyn::Restriction::R_FUNCTION { functionRestriction: Absyn::FunctionRestriction::FR_NORMAL_FUNCTION { purity } }) => {
@@ -824,7 +824,7 @@ pub fn translateEitemlist(mut inAbsynElementItemLst: Arc<metamodelica::List<Arc<
 }
 
 // stefan
-pub fn translateAnnotation(mut inAnnotation: Arc<Absyn::Annotation>) -> Result<Option<Arc<SCode::Annotation>>> {
+pub(crate) fn translateAnnotation(mut inAnnotation: Arc<Absyn::Annotation>) -> Result<Option<Arc<SCode::Annotation>>> {
     let mut outAnnotation: Option<Arc<SCode::Annotation>>;
     outAnnotation = (::match_deref::match_deref! { match &(inAnnotation.clone()) {
         Deref @ Absyn::Annotation { elementArgs: Deref @ metamodelica::List::Nil } => {
@@ -840,7 +840,7 @@ pub fn translateAnnotation(mut inAnnotation: Arc<Absyn::Annotation>) -> Result<O
     Ok(outAnnotation)
 }
 
-pub fn translateAnnotationOpt(mut absynAnnotation: Option<Arc<Absyn::Annotation>>) -> Result<Option<Arc<SCode::Annotation>>> {
+pub(crate) fn translateAnnotationOpt(mut absynAnnotation: Option<Arc<Absyn::Annotation>>) -> Result<Option<Arc<SCode::Annotation>>> {
     let mut scodeAnnotation: Option<Arc<SCode::Annotation>>;
     scodeAnnotation = (::match_deref::match_deref! { match &(absynAnnotation.clone()) {
         Some(ann) => {

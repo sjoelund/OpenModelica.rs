@@ -95,7 +95,7 @@ pub fn dimensionsString(mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>) 
     Ok(r#str)
 }
 
-pub fn shouldParenthesize(mut inOperand: Arc<DAE::Exp>, mut inOperator: Arc<DAE::Exp>, mut inLhs: bool) -> Result<bool> {
+pub(crate) fn shouldParenthesize(mut inOperand: Arc<DAE::Exp>, mut inOperator: Arc<DAE::Exp>, mut inLhs: bool) -> Result<bool> {
     let mut outShouldParenthesize: bool;
     outShouldParenthesize = (::match_deref::match_deref! { match &(inOperand.clone()) {
         Deref @ DAE::Exp::UNARY { .. } => {
@@ -938,7 +938,7 @@ pub fn operatorCompare(mut inOperator1: DAE::Operator, mut inOperator2: DAE::Ope
     Ok(comp)
 }
 
-pub fn compareSubscripts(mut sub1: Arc<DAE::Subscript>, mut sub2: Arc<DAE::Subscript>) -> Result<i32> {
+pub(crate) fn compareSubscripts(mut sub1: Arc<DAE::Subscript>, mut sub2: Arc<DAE::Subscript>) -> Result<i32> {
     let mut res: i32;
     if referenceEq(&*(sub1.clone()),&*(sub2.clone())) {
         res = 0;

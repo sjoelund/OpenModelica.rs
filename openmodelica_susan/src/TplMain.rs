@@ -77,7 +77,7 @@ pub fn main(mut inFile: ArcStr) -> Result<()> {
     Ok(())
 }
 
-pub fn translateFile(mut inFile: ArcStr) -> Result<()> {
+pub(crate) fn translateFile(mut inFile: ArcStr) -> Result<()> {
     let () = 'mc: {
         let __mc_input = inFile.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -120,7 +120,7 @@ pub fn translateFile(mut inFile: ArcStr) -> Result<()> {
 }
 
 // ********** Tests ****************
-pub fn testStringEquality(mut inStringReturned: ArcStr, mut inStringShouldBe: ArcStr, mut inPrintResult: bool, mut inPrintErrorBuffer: bool, mut inTestLabel: ArcStr, mut inNotPassedCnt: i32) -> Result<i32> {
+pub(crate) fn testStringEquality(mut inStringReturned: ArcStr, mut inStringShouldBe: ArcStr, mut inPrintResult: bool, mut inPrintErrorBuffer: bool, mut inTestLabel: ArcStr, mut inNotPassedCnt: i32) -> Result<i32> {
     let mut outNotPassedCnt: i32;
     outNotPassedCnt = 'mc: {
         let __mc_input = (inStringReturned.clone(), inStringShouldBe.clone(), inPrintResult.clone(), inPrintErrorBuffer.clone(), inTestLabel.clone(), inNotPassedCnt.clone());
@@ -165,7 +165,7 @@ pub fn testStringEquality(mut inStringReturned: ArcStr, mut inStringShouldBe: Ar
     Ok(outNotPassedCnt)
 }
 
-pub fn testTranslateTplFile(mut inFile: ArcStr, mut inPrintResult: bool, mut inPrintErrorBuffer: bool, mut inNotPassedCnt: i32) -> Result<i32> {
+pub(crate) fn testTranslateTplFile(mut inFile: ArcStr, mut inPrintResult: bool, mut inPrintErrorBuffer: bool, mut inNotPassedCnt: i32) -> Result<i32> {
     let mut outNotPassedCnt: i32;
     outNotPassedCnt = 'mc: {
         let __mc_input = (inFile.clone(), inPrintResult.clone(), inPrintErrorBuffer.clone(), inNotPassedCnt.clone());
@@ -195,7 +195,7 @@ pub fn testTranslateTplFile(mut inFile: ArcStr, mut inPrintResult: bool, mut inP
     Ok(outNotPassedCnt)
 }
 
-pub fn tplMainTest(mut inFile: ArcStr) -> Result<()> {
+pub(crate) fn tplMainTest(mut inFile: ArcStr) -> Result<()> {
     let () = 'mc: {
         let __mc_input = inFile.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -715,7 +715,7 @@ fn lm_1(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Statemen
     Ok(out_txt)
 }
 
-pub fn statement(mut in_txt: Tpl::Text, mut in_i_it: Arc<Statement>) -> Tpl::Text {
+pub(crate) fn statement(mut in_txt: Tpl::Text, mut in_i_it: Arc<Statement>) -> Tpl::Text {
     let mut out_txt: Tpl::Text;
     out_txt = 'mc: {
         let __mc_input = (in_txt.clone(), in_i_it.clone());
@@ -764,7 +764,7 @@ pub fn statement(mut in_txt: Tpl::Text, mut in_i_it: Arc<Statement>) -> Tpl::Tex
     out_txt
 }
 
-pub fn exp(mut in_txt: Tpl::Text, mut in_i_it: Arc<Exp>) -> Tpl::Text {
+pub(crate) fn exp(mut in_txt: Tpl::Text, mut in_i_it: Arc<Exp>) -> Tpl::Text {
     let mut out_txt: Tpl::Text;
     out_txt = 'mc: {
         let __mc_input = (in_txt.clone(), in_i_it.clone());
@@ -817,7 +817,7 @@ pub fn exp(mut in_txt: Tpl::Text, mut in_i_it: Arc<Exp>) -> Tpl::Text {
     out_txt
 }
 
-pub fn oper(mut in_txt: Tpl::Text, mut in_i_it: Operator) -> Tpl::Text {
+pub(crate) fn oper(mut in_txt: Tpl::Text, mut in_i_it: Operator) -> Tpl::Text {
     let mut out_txt: Tpl::Text;
     out_txt = 'mc: {
         let __mc_input = (in_txt.clone(), in_i_it.clone());
@@ -928,7 +928,7 @@ fn lm_55(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamod
     Ok(out_txt)
 }
 
-pub fn intMatrix(mut txt: Tpl::Text, mut i_lstOfLst: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>) -> Result<Tpl::Text> {
+pub(crate) fn intMatrix(mut txt: Tpl::Text, mut i_lstOfLst: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("[ ")).clone() }))?;
     out_txt = Tpl::pushBlock(out_txt.clone(), Arc::new(Tpl::BlockType::BT_ANCHOR { offset: 0 }))?;

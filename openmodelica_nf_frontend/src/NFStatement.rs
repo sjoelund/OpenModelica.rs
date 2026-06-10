@@ -246,7 +246,7 @@ impl Default for ForType {
 }
 pub use self::ForType::{NORMAL,PARALLEL};
 
-pub fn isDiscrete(mut stmt: Arc<NFStatement>) -> Result<bool> {
+pub(crate) fn isDiscrete(mut stmt: Arc<NFStatement>) -> Result<bool> {
     let mut b: bool = false;
     b = (::match_deref::match_deref! { match &(stmt.clone()) {
         Deref @ ASSIGNMENT { .. } => Type::isDiscrete(var_field!((*stmt).ty, NFStatement::ASSIGNMENT).clone())?,
@@ -355,7 +355,7 @@ pub fn makeAssignment(mut lhs: Arc<Expression::NFExpression>, mut rhs: Arc<Expre
     stmt
 }
 
-pub fn isAssignment(mut stmt: Arc<NFStatement>) -> bool {
+pub(crate) fn isAssignment(mut stmt: Arc<NFStatement>) -> bool {
     let mut res: bool;
     res = (::match_deref::match_deref! { match &(stmt.clone()) {
         Deref @ ASSIGNMENT { .. } => true,
@@ -365,7 +365,7 @@ pub fn isAssignment(mut stmt: Arc<NFStatement>) -> bool {
     res
 }
 
-pub fn isFor(mut stmt: Arc<NFStatement>) -> bool {
+pub(crate) fn isFor(mut stmt: Arc<NFStatement>) -> bool {
     let mut res: bool;
     res = (::match_deref::match_deref! { match &(stmt.clone()) {
         Deref @ FOR { .. } => true,
@@ -375,7 +375,7 @@ pub fn isFor(mut stmt: Arc<NFStatement>) -> bool {
     res
 }
 
-pub fn isReturn(mut stmt: Arc<NFStatement>) -> bool {
+pub(crate) fn isReturn(mut stmt: Arc<NFStatement>) -> bool {
     let mut res: bool;
     res = (::match_deref::match_deref! { match &(stmt.clone()) {
         Deref @ RETURN { .. } => true,
@@ -385,13 +385,13 @@ pub fn isReturn(mut stmt: Arc<NFStatement>) -> bool {
     res
 }
 
-pub fn makeIf(mut branches: Arc<metamodelica::List<(Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<NFStatement>>>)>>, mut src: Arc<DAE::ElementSource>) -> Arc<NFStatement> {
+pub(crate) fn makeIf(mut branches: Arc<metamodelica::List<(Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<NFStatement>>>)>>, mut src: Arc<DAE::ElementSource>) -> Arc<NFStatement> {
     let mut stmt: Arc<NFStatement>;
     stmt = Arc::new(NFStatement::IF { branches: branches.clone(), source: src.clone() });
     stmt
 }
 
-pub fn source(mut stmt: Arc<NFStatement>) -> Result<Arc<DAE::ElementSource>> {
+pub(crate) fn source(mut stmt: Arc<NFStatement>) -> Result<Arc<DAE::ElementSource>> {
     let mut source: Arc<DAE::ElementSource>;
     source = (::match_deref::match_deref! { match &(stmt.clone()) {
         Deref @ ASSIGNMENT { .. } => var_field!((*stmt).source, NFStatement::ASSIGNMENT).clone(),
@@ -412,7 +412,7 @@ pub fn source(mut stmt: Arc<NFStatement>) -> Result<Arc<DAE::ElementSource>> {
     Ok(source)
 }
 
-pub fn setSource(mut source: Arc<DAE::ElementSource>, mut stmt: Arc<NFStatement>) -> Result<Arc<NFStatement>> {
+pub(crate) fn setSource(mut source: Arc<DAE::ElementSource>, mut stmt: Arc<NFStatement>) -> Result<Arc<NFStatement>> {
     let mut stmt: Arc<NFStatement> = stmt;
     let () = (::match_deref::match_deref! { match &(stmt.clone()) {
         Deref @ ASSIGNMENT { .. } => {
@@ -468,14 +468,14 @@ pub fn setSource(mut source: Arc<DAE::ElementSource>, mut stmt: Arc<NFStatement>
     Ok(stmt)
 }
 
-pub fn info(mut stmt: Arc<NFStatement>) -> Result<SourceInfo> {
+pub(crate) fn info(mut stmt: Arc<NFStatement>) -> Result<SourceInfo> {
     let mut info: SourceInfo = ElementSource::getInfo(source(stmt.clone())?);
     Ok(info)
 }
 
 pub type ApplyFn = std::sync::Arc<dyn ::std::ops::Fn(Arc<NFStatement>) -> Result<()> + 'static>;
 
-pub fn apply(mut stmt: Arc<NFStatement>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFStatement>) -> Result<()> + 'static>) -> Result<()> {
+pub(crate) fn apply(mut stmt: Arc<NFStatement>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFStatement>) -> Result<()> + 'static>) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(stmt.clone()) {
         Deref @ FOR { .. } => {
             for mut e in &*var_field!((*stmt).body, NFStatement::FOR).clone() {
@@ -525,7 +525,7 @@ pub fn apply(mut stmt: Arc<NFStatement>, mut func: Arc<dyn ::std::ops::Fn(Arc<NF
     Ok(())
 }
 
-pub fn map(mut stmt: Arc<NFStatement>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFStatement>) -> Result<Arc<NFStatement>> + 'static>) -> Result<Arc<NFStatement>> {
+pub(crate) fn map(mut stmt: Arc<NFStatement>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFStatement>) -> Result<Arc<NFStatement>> + 'static>) -> Result<Arc<NFStatement>> {
     pub type MapFn = std::sync::Arc<dyn ::std::ops::Fn(Arc<NFStatement>) -> Result<Arc<NFStatement>> + 'static>;
 
     let mut stmt: Arc<NFStatement> = stmt;
@@ -595,7 +595,7 @@ pub fn map(mut stmt: Arc<NFStatement>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFSt
     Ok(stmt)
 }
 
-pub fn fold<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut stmt: Arc<NFStatement>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFStatement>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
+pub(crate) fn fold<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut stmt: Arc<NFStatement>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFStatement>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
     pub type MapFn<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<NFStatement>, ArgT) -> Result<ArgT> + 'static>;
 
     let mut arg: ArgT = arg;
@@ -641,7 +641,7 @@ pub fn fold<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut stmt: Arc<NFS
     Ok(arg)
 }
 
-pub fn applyExpList(mut stmt: Arc<metamodelica::List<Arc<NFStatement>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>) -> Result<()> {
+pub(crate) fn applyExpList(mut stmt: Arc<metamodelica::List<Arc<NFStatement>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>) -> Result<()> {
     pub type FoldFunc = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>;
 
     for mut s in &*stmt.clone() {
@@ -651,7 +651,7 @@ pub fn applyExpList(mut stmt: Arc<metamodelica::List<Arc<NFStatement>>>, mut fun
     Ok(())
 }
 
-pub fn applyExp(mut stmt: Arc<NFStatement>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>) -> Result<()> {
+pub(crate) fn applyExp(mut stmt: Arc<NFStatement>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>) -> Result<()> {
     pub type ApplyFunc = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>;
 
     let () = (::match_deref::match_deref! { match &(stmt.clone()) {
@@ -713,7 +713,7 @@ pub fn applyExp(mut stmt: Arc<NFStatement>, mut func: Arc<dyn ::std::ops::Fn(Arc
     Ok(())
 }
 
-pub fn mapExpList(mut stmtl: Arc<metamodelica::List<Arc<NFStatement>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<metamodelica::List<Arc<NFStatement>>>> {
+pub(crate) fn mapExpList(mut stmtl: Arc<metamodelica::List<Arc<NFStatement>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<metamodelica::List<Arc<NFStatement>>>> {
     pub type MapFunc = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>;
 
     let mut stmtl: Arc<metamodelica::List<Arc<NFStatement>>> = stmtl;
@@ -806,7 +806,7 @@ pub fn mapExp(mut stmt: Arc<NFStatement>, mut func: Arc<dyn ::std::ops::Fn(Arc<E
     Ok(stmt)
 }
 
-pub fn mapExpShallow(mut stmt: Arc<NFStatement>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<NFStatement>> {
+pub(crate) fn mapExpShallow(mut stmt: Arc<NFStatement>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<NFStatement>> {
     pub type MapFunc = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>;
 
     let mut stmt: Arc<NFStatement> = stmt;
@@ -881,7 +881,7 @@ pub fn mapExpShallow(mut stmt: Arc<NFStatement>, mut func: Arc<dyn ::std::ops::F
     Ok(stmt)
 }
 
-pub fn foldExpList<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut stmt: Arc<metamodelica::List<Arc<NFStatement>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
+pub(crate) fn foldExpList<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut stmt: Arc<metamodelica::List<Arc<NFStatement>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
     pub type FoldFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>;
 
     let mut arg: ArgT = arg;
@@ -892,7 +892,7 @@ pub fn foldExpList<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut stmt: 
     Ok(arg)
 }
 
-pub fn foldExp<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut stmt: Arc<NFStatement>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
+pub(crate) fn foldExp<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut stmt: Arc<NFStatement>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
     pub type FoldFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>;
 
     let mut arg: ArgT = arg;
@@ -955,7 +955,7 @@ pub fn foldExp<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut stmt: Arc<
     Ok(arg)
 }
 
-pub fn contains(mut stmt: Arc<NFStatement>, mut r#fn: Arc<dyn ::std::ops::Fn(Arc<NFStatement>) -> Result<bool> + 'static>) -> Result<bool> {
+pub(crate) fn contains(mut stmt: Arc<NFStatement>, mut r#fn: Arc<dyn ::std::ops::Fn(Arc<NFStatement>) -> Result<bool> + 'static>) -> Result<bool> {
     pub type PredFn = std::sync::Arc<dyn ::std::ops::Fn(Arc<NFStatement>) -> Result<bool> + 'static>;
 
     let mut res: bool = false;
@@ -992,7 +992,7 @@ pub fn contains(mut stmt: Arc<NFStatement>, mut r#fn: Arc<dyn ::std::ops::Fn(Arc
     Ok(res)
 }
 
-pub fn containsList(mut eql: Arc<metamodelica::List<Arc<NFStatement>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFStatement>) -> Result<bool> + 'static>) -> Result<bool> {
+pub(crate) fn containsList(mut eql: Arc<metamodelica::List<Arc<NFStatement>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFStatement>) -> Result<bool> + 'static>) -> Result<bool> {
     pub type PredFn = std::sync::Arc<dyn ::std::ops::Fn(Arc<NFStatement>) -> Result<bool> + 'static>;
 
     let mut res: bool;
@@ -1007,7 +1007,7 @@ pub fn containsList(mut eql: Arc<metamodelica::List<Arc<NFStatement>>>, mut func
     Ok(res)
 }
 
-pub fn replaceIteratorList(mut stmtl: Arc<metamodelica::List<Arc<NFStatement>>>, mut iterator: Arc<InstNode::InstNode>, mut value: Arc<Expression::NFExpression>) -> Result<Arc<metamodelica::List<Arc<NFStatement>>>> {
+pub(crate) fn replaceIteratorList(mut stmtl: Arc<metamodelica::List<Arc<NFStatement>>>, mut iterator: Arc<InstNode::InstNode>, mut value: Arc<Expression::NFExpression>) -> Result<Arc<metamodelica::List<Arc<NFStatement>>>> {
     let mut stmtl: Arc<metamodelica::List<Arc<NFStatement>>> = stmtl;
     stmtl = mapExpList(stmtl.clone(), (std::sync::Arc::new({ let __pe_b1 = iterator.clone(); let __pe_b2 = value.clone(); move |__pe_a0| Expression::replaceIterator(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
     Ok(stmtl)
@@ -1033,7 +1033,7 @@ pub fn toStringList(mut stmtl: Arc<metamodelica::List<Arc<NFStatement>>>, mut in
     Ok(r#str)
 }
 
-pub fn toStream(mut stmt: Arc<NFStatement>, mut indent: ArcStr, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
+pub(crate) fn toStream(mut stmt: Arc<NFStatement>, mut indent: ArcStr, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut s: IOStream::IOStream = s;
     let mut branches: Arc<metamodelica::List<(Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<NFStatement>>>)>> = metamodelica::nil();
     let mut cond: Arc<Expression::NFExpression> = Arc::new(Expression::END);
@@ -1147,7 +1147,7 @@ pub fn toStream(mut stmt: Arc<NFStatement>, mut indent: ArcStr, mut s: IOStream:
     Ok(s)
 }
 
-pub fn toStreamList(mut stmtl: Arc<metamodelica::List<Arc<NFStatement>>>, mut indent: ArcStr, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
+pub(crate) fn toStreamList(mut stmtl: Arc<metamodelica::List<Arc<NFStatement>>>, mut indent: ArcStr, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut s: IOStream::IOStream = s;
     let mut prev_multi_line: bool = false;
     let mut multi_line: bool;
@@ -1167,7 +1167,7 @@ pub fn toStreamList(mut stmtl: Arc<metamodelica::List<Arc<NFStatement>>>, mut in
     Ok(s)
 }
 
-pub fn toFlatStream(mut stmt: Arc<NFStatement>, mut format: BaseModelica::OutputFormat, mut indent: ArcStr, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
+pub(crate) fn toFlatStream(mut stmt: Arc<NFStatement>, mut format: BaseModelica::OutputFormat, mut indent: ArcStr, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut s: IOStream::IOStream = s;
     let mut branches: Arc<metamodelica::List<(Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<NFStatement>>>)>> = metamodelica::nil();
     let mut cond: Arc<Expression::NFExpression> = Arc::new(Expression::END);
@@ -1282,7 +1282,7 @@ pub fn toFlatStream(mut stmt: Arc<NFStatement>, mut format: BaseModelica::Output
     Ok(s)
 }
 
-pub fn toFlatStreamList(mut stmtl: Arc<metamodelica::List<Arc<NFStatement>>>, mut format: BaseModelica::OutputFormat, mut indent: ArcStr, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
+pub(crate) fn toFlatStreamList(mut stmtl: Arc<metamodelica::List<Arc<NFStatement>>>, mut format: BaseModelica::OutputFormat, mut indent: ArcStr, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut s: IOStream::IOStream = s;
     let mut prev_multi_line: bool = false;
     let mut multi_line: bool;
@@ -1302,7 +1302,7 @@ pub fn toFlatStreamList(mut stmtl: Arc<metamodelica::List<Arc<NFStatement>>>, mu
     Ok(s)
 }
 
-pub fn isMultiLine(mut stmt: Arc<NFStatement>) -> bool {
+pub(crate) fn isMultiLine(mut stmt: Arc<NFStatement>) -> bool {
     let mut multiLine: bool;
     multiLine = (::match_deref::match_deref! { match &(stmt.clone()) {
         Deref @ FOR { .. } => true,

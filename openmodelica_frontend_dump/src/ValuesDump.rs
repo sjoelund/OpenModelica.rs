@@ -438,7 +438,7 @@ fn valListString(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>>) ->
     Ok(())
 }
 
-pub fn printVal(mut v: Arc<Values::Value>) -> Result<()> {
+pub(crate) fn printVal(mut v: Arc<Values::Value>) -> Result<()> {
     let mut s: ArcStr;
     s = (valString(v.clone())?).clone();
     Print::printBuf((s.clone()).clone())?;

@@ -95,7 +95,7 @@ pub type Import = Absyn::Import;
 
 pub type Msg = Option<SourceInfo>;
 
-pub fn inst(mut inPath: Arc<Absyn::Path>, mut inProgram: Arc<metamodelica::List<Arc<SCode::Element>>>) -> DAE::DAElist {
+pub(crate) fn inst(mut inPath: Arc<Absyn::Path>, mut inProgram: Arc<metamodelica::List<Arc<SCode::Element>>>) -> DAE::DAElist {
     let mut dae: DAE::DAElist;
     dae = 'mc: {
         let __mc_input = inProgram.clone();

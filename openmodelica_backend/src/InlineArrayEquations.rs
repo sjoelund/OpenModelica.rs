@@ -63,7 +63,7 @@ use openmodelica_util_datatypes_basic::List;
 //   - inlineArrayEqn
 //   - getScalarArrayEqns
 // =============================================================================
-pub fn inlineArrayEqn(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
+pub(crate) fn inlineArrayEqn(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut outDAE: Arc<BackendDAE::BackendDAE>;
     (outDAE, _) = BackendDAEUtil::mapEqSystemAndFold(inDAE.clone(), (std::sync::Arc::new(fnptr!(inlineArrayEqn1, Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, bool)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, bool) -> Result<(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, bool)> + 'static>), false)?;
     Ok(outDAE)
@@ -105,7 +105,7 @@ fn inlineArrayEqn1(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc<
     (outEqSystem, outShared, outOptimized)
 }
 
-pub fn getScalarArrayEqns(mut inEqnLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) -> (Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, bool) {
+pub(crate) fn getScalarArrayEqns(mut inEqnLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) -> (Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, bool) {
     let mut outEqnLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
     let mut outFound: bool;
     (outEqnLst, outFound) = getScalarArrayEqns0(inEqnLst.clone(), metamodelica::nil(), false);

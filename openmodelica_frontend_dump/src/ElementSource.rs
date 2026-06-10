@@ -194,7 +194,7 @@ pub fn condAddSymbolicTransformation(mut cond: bool, mut source: Arc<DAE::Elemen
     Ok(source)
 }
 
-pub fn addSymbolicTransformationDeriveLst(mut source: Arc<DAE::ElementSource>, mut explst1: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut explst2: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<Arc<DAE::ElementSource>> {
+pub(crate) fn addSymbolicTransformationDeriveLst(mut source: Arc<DAE::ElementSource>, mut explst1: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut explst2: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<Arc<DAE::ElementSource>> {
     let mut source: Arc<DAE::ElementSource> = source;
     if !(Flags::isSet(Flags::INFO_XML_OPERATIONS.clone())?) {
         return Ok(source.clone());
@@ -314,7 +314,7 @@ pub fn addSymbolicTransformationSolve(mut add: bool, mut source: Arc<DAE::Elemen
     Ok(source)
 }
 
-pub fn getAssertCond(mut stmt: Arc<DAE::Statement>) -> Result<Arc<DAE::Exp>> {
+pub(crate) fn getAssertCond(mut stmt: Arc<DAE::Statement>) -> Result<Arc<DAE::Exp>> {
     let mut cond: Arc<DAE::Exp>;
     let __pa0 = ::match_deref::match_deref! { match &(stmt.clone()) {
         Deref @ DAE::Statement::STMT_ASSERT { cond: __pa0, .. } => __pa0.clone(),
@@ -405,25 +405,25 @@ pub fn getElementSourceTypes(mut source: Arc<DAE::ElementSource>) -> Arc<metamod
     pathLst
 }
 
-pub fn getElementSourceInstances(mut source: Arc<DAE::ElementSource>) -> Arc<DAE::ComponentPrefix> {
+pub(crate) fn getElementSourceInstances(mut source: Arc<DAE::ElementSource>) -> Arc<DAE::ComponentPrefix> {
     let mut instanceOpt: Arc<DAE::ComponentPrefix>;
     instanceOpt = source.instance.clone();
     instanceOpt
 }
 
-pub fn getElementSourceConnects(mut source: Arc<DAE::ElementSource>) -> Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>)>> {
+pub(crate) fn getElementSourceConnects(mut source: Arc<DAE::ElementSource>) -> Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>)>> {
     let mut connectEquationOptLst: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>)>>;
     connectEquationOptLst = source.connectEquationOptLst.clone();
     connectEquationOptLst
 }
 
-pub fn getElementSourcePartOfs(mut source: Arc<DAE::ElementSource>) -> Arc<metamodelica::List<Absyn::Within>> {
+pub(crate) fn getElementSourcePartOfs(mut source: Arc<DAE::ElementSource>) -> Arc<metamodelica::List<Absyn::Within>> {
     let mut withinLst: Arc<metamodelica::List<Absyn::Within>>;
     withinLst = source.partOfLst.clone();
     withinLst
 }
 
-pub fn addElementSourcePartOf(mut source: Arc<DAE::ElementSource>, mut withinPath: Absyn::Within) -> Result<Arc<DAE::ElementSource>> {
+pub(crate) fn addElementSourcePartOf(mut source: Arc<DAE::ElementSource>, mut withinPath: Absyn::Within) -> Result<Arc<DAE::ElementSource>> {
     let mut source: Arc<DAE::ElementSource> = source;
     if !(Flags::isSet(Flags::INFO_XML_OPERATIONS.clone())? || Flags::isSet(Flags::VISUAL_XML.clone())?) {
         return Ok(source.clone());

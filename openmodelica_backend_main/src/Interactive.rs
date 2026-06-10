@@ -199,7 +199,7 @@ impl metamodelica::gc::MMTrace for Access {
     fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 
-pub fn evaluate(mut inStatements: GlobalScript::Statements, mut verbose: bool) -> Result<ArcStr> {
+pub(crate) fn evaluate(mut inStatements: GlobalScript::Statements, mut verbose: bool) -> Result<ArcStr> {
     let mut outString: ArcStr;
     let mut semicolon: bool;
     let mut res: ArcStr;
@@ -219,7 +219,7 @@ pub fn evaluate(mut inStatements: GlobalScript::Statements, mut verbose: bool) -
     Ok(outString)
 }
 
-pub fn evaluateToStdOut(mut statements: GlobalScript::Statements, mut verbose: bool) -> Result<()> {
+pub(crate) fn evaluateToStdOut(mut statements: GlobalScript::Statements, mut verbose: bool) -> Result<()> {
     let mut semicolon: bool;
     let mut res: ArcStr;
     semicolon = statements.semicolon.clone();
@@ -236,7 +236,7 @@ pub fn evaluateToStdOut(mut statements: GlobalScript::Statements, mut verbose: b
     Ok(())
 }
 
-pub fn evaluateFork(mut inTpl: (ArcStr, Arc<SymbolTable::SymbolTable>)) -> bool {
+pub(crate) fn evaluateFork(mut inTpl: (ArcStr, Arc<SymbolTable::SymbolTable>)) -> bool {
     let mut b: bool;
     b = 'mc: {
         let __mc_input = inTpl.clone();
@@ -830,7 +830,7 @@ fn makeTupleCref(mut inCref: Arc<Absyn::Exp>, mut inType: Arc<DAE::Type>, mut in
     Ok(outCref)
 }
 
-pub fn getTypeOfVariable(mut inIdent: ArcStr, mut inVariableLst: Arc<metamodelica::List<InteractiveTypes::Variable>>) -> Result<Arc<DAE::Type>> {
+pub(crate) fn getTypeOfVariable(mut inIdent: ArcStr, mut inVariableLst: Arc<metamodelica::List<InteractiveTypes::Variable>>) -> Result<Arc<DAE::Type>> {
     let mut outType: Arc<DAE::Type>;
     let mut id: ArcStr;
     let mut tp: Arc<DAE::Type>;
@@ -886,7 +886,7 @@ fn isClassReadOnly(mut cl: Arc<Absyn::Class>) -> Result<bool> {
     Ok(readOnly)
 }
 
-pub fn renameComponent(mut classPath: Arc<Absyn::Path>, mut oldName: Arc<Absyn::ComponentRef>, mut newName: Arc<Absyn::ComponentRef>, mut program: Absyn::Program) -> (Absyn::Program, Arc<Values::Value>) {
+pub(crate) fn renameComponent(mut classPath: Arc<Absyn::Path>, mut oldName: Arc<Absyn::ComponentRef>, mut newName: Arc<Absyn::ComponentRef>, mut program: Absyn::Program) -> (Absyn::Program, Arc<Values::Value>) {
     let mut program: Absyn::Program = program;
     let mut result: Arc<Values::Value>;
     let mut comp_reps: InteractiveTypes::ComponentReplacementRules;
@@ -912,7 +912,7 @@ pub fn renameComponent(mut classPath: Arc<Absyn::Path>, mut oldName: Arc<Absyn::
     (program, result)
 }
 
-pub fn renameComponentOnlyInClass(mut classPath: Arc<Absyn::Path>, mut oldName: Arc<Absyn::ComponentRef>, mut newName: Arc<Absyn::ComponentRef>, mut program: Absyn::Program) -> (Absyn::Program, Arc<Values::Value>) {
+pub(crate) fn renameComponentOnlyInClass(mut classPath: Arc<Absyn::Path>, mut oldName: Arc<Absyn::ComponentRef>, mut newName: Arc<Absyn::ComponentRef>, mut program: Absyn::Program) -> (Absyn::Program, Arc<Values::Value>) {
     let mut program: Absyn::Program = program;
     let mut result: Arc<Values::Value>;
     let mut cl: Arc<Absyn::Class>;
@@ -2972,7 +2972,7 @@ fn isParameterElement(mut inElement: Arc<Absyn::Element>) -> bool {
     outBoolean
 }
 
-pub fn getParameterNames(mut path: Arc<Absyn::Path>, mut inProgram: Absyn::Program) -> Arc<metamodelica::List<ArcStr>> {
+pub(crate) fn getParameterNames(mut path: Arc<Absyn::Path>, mut inProgram: Absyn::Program) -> Arc<metamodelica::List<ArcStr>> {
     let mut outList: Arc<metamodelica::List<ArcStr>>;
     outList = 'mc: {
         let __mc_input = inProgram.clone();
@@ -3007,7 +3007,7 @@ pub fn getParameterNames(mut path: Arc<Absyn::Path>, mut inProgram: Absyn::Progr
     outList
 }
 
-pub fn getClassEnv(mut p: Absyn::Program, mut p_class: Arc<Absyn::Path>) -> Result<GraphicEnvCache> {
+pub(crate) fn getClassEnv(mut p: Absyn::Program, mut p_class: Arc<Absyn::Path>) -> Result<GraphicEnvCache> {
     let mut env_2: GraphicEnvCache;
     let mut ocache: Option<Arc<metamodelica::List<(Absyn::Program, Arc<Absyn::Path>, GraphicEnvCache)>>>;
     let mut cache: Arc<metamodelica::List<(Absyn::Program, Arc<Absyn::Path>, GraphicEnvCache)>>;
@@ -3067,7 +3067,7 @@ pub fn getClassEnv(mut p: Absyn::Program, mut p_class: Arc<Absyn::Path>) -> Resu
     Ok(env_2)
 }
 
-pub fn matchPath(mut p: Arc<Absyn::Path>, mut entry: (Absyn::Program, Arc<Absyn::Path>, GraphicEnvCache)) -> bool {
+pub(crate) fn matchPath(mut p: Arc<Absyn::Path>, mut entry: (Absyn::Program, Arc<Absyn::Path>, GraphicEnvCache)) -> bool {
     let mut matches: bool;
     let mut po: Arc<Absyn::Path>;
     (_, po, _) = entry.clone();
@@ -3171,7 +3171,7 @@ impl Default for ComponentProperties {
 pub type PROPERTIES = ComponentProperties;
 
 
-pub fn setComponentProperties(mut classPath: Arc<Absyn::Path>, mut component: ArcStr, mut prefixes: Arc<metamodelica::List<bool>>, mut variability: ArcStr, mut innerPrefix: bool, mut outerPrefix: bool, mut direction: ArcStr, mut program: Absyn::Program) -> (Absyn::Program, Arc<Values::Value>) {
+pub(crate) fn setComponentProperties(mut classPath: Arc<Absyn::Path>, mut component: ArcStr, mut prefixes: Arc<metamodelica::List<bool>>, mut variability: ArcStr, mut innerPrefix: bool, mut outerPrefix: bool, mut direction: ArcStr, mut program: Absyn::Program) -> (Absyn::Program, Arc<Values::Value>) {
     let mut program: Absyn::Program = program;
     let mut result: Arc<Values::Value>;
     let mut is_final: bool;
@@ -3431,7 +3431,7 @@ fn setElementAttributes(mut attributes: Absyn::ElementAttributes, mut properties
     attributes
 }
 
-pub fn getCrefInfo(mut classPath: Arc<Absyn::Path>, mut program: Absyn::Program) -> Arc<Values::Value> {
+pub(crate) fn getCrefInfo(mut classPath: Arc<Absyn::Path>, mut program: Absyn::Program) -> Arc<Values::Value> {
     let mut result: Arc<Values::Value>;
     let mut cls: Arc<Absyn::Class>;
     let mut info: SourceInfo;
@@ -3646,7 +3646,7 @@ fn appendNonEmptyStrings(mut str1: ArcStr, mut str2: ArcStr, mut delim: ArcStr) 
     outString
 }
 
-pub fn getElementsInfo(mut classPath: Arc<Absyn::Path>, mut program: Absyn::Program) -> Arc<Values::Value> {
+pub(crate) fn getElementsInfo(mut classPath: Arc<Absyn::Path>, mut program: Absyn::Program) -> Arc<Values::Value> {
     let mut result: Arc<Values::Value>;
     let mut result_str: ArcStr;
     let mut public_str: ArcStr;
@@ -3673,7 +3673,7 @@ pub fn getElementsInfo(mut classPath: Arc<Absyn::Path>, mut program: Absyn::Prog
     result
 }
 
-pub fn getSourceFile(mut p_class: Arc<Absyn::Path>, mut inProgram: Absyn::Program) -> ArcStr {
+pub(crate) fn getSourceFile(mut p_class: Arc<Absyn::Path>, mut inProgram: Absyn::Program) -> ArcStr {
     let mut outString: ArcStr;
     outString = ('mc: {
         let __mc_input = inProgram.clone();
@@ -3694,7 +3694,7 @@ pub fn getSourceFile(mut p_class: Arc<Absyn::Path>, mut inProgram: Absyn::Progra
     outString
 }
 
-pub fn setSourceFile(mut path: Arc<Absyn::Path>, mut inString: ArcStr, mut inProgram: Absyn::Program) -> (bool, Absyn::Program) {
+pub(crate) fn setSourceFile(mut path: Arc<Absyn::Path>, mut inString: ArcStr, mut inProgram: Absyn::Program) -> (bool, Absyn::Program) {
     let mut success: bool;
     let mut outProgram: Absyn::Program;
     (success, outProgram) = 'mc: {
@@ -3720,7 +3720,7 @@ pub fn setSourceFile(mut path: Arc<Absyn::Path>, mut inString: ArcStr, mut inPro
     (success, outProgram)
 }
 
-pub fn removeExtendsModifiers(mut inClassPath: Arc<Absyn::Path>, mut inBaseClassPath: Arc<Absyn::Path>, mut inProgram: Absyn::Program, mut keepRedeclares: bool) -> (Absyn::Program, bool) {
+pub(crate) fn removeExtendsModifiers(mut inClassPath: Arc<Absyn::Path>, mut inBaseClassPath: Arc<Absyn::Path>, mut inProgram: Absyn::Program, mut keepRedeclares: bool) -> (Absyn::Program, bool) {
     let mut outProgram: Absyn::Program;
     let mut outResult: bool;
     (outProgram, outResult) = 'mc: {
@@ -3910,7 +3910,7 @@ fn removeExtendsModifiersInElement(mut inElement: Arc<Absyn::Element>, mut inPat
     outElement
 }
 
-pub fn mkFullyQual(mut env: GraphicEnvCache, mut ipath: Arc<Absyn::Path>, mut failOnError: bool) -> Result<(FCore::Cache, Arc<Absyn::Path>)> {
+pub(crate) fn mkFullyQual(mut env: GraphicEnvCache, mut ipath: Arc<Absyn::Path>, mut failOnError: bool) -> Result<(FCore::Cache, Arc<Absyn::Path>)> {
     let mut ocache: FCore::Cache;
     let mut opath: Arc<Absyn::Path>;
     let mut cpath: Arc<Absyn::Path>;
@@ -3925,7 +3925,7 @@ pub fn mkFullyQual(mut env: GraphicEnvCache, mut ipath: Arc<Absyn::Path>, mut fa
     Ok((ocache, opath))
 }
 
-pub fn getExtendsModifierValue(mut classPath: Arc<Absyn::Path>, mut extendsPath: Arc<Absyn::Path>, mut modifierPath: Arc<Absyn::Path>, mut program: Absyn::Program) -> Arc<Values::Value> {
+pub(crate) fn getExtendsModifierValue(mut classPath: Arc<Absyn::Path>, mut extendsPath: Arc<Absyn::Path>, mut modifierPath: Arc<Absyn::Path>, mut program: Absyn::Program) -> Arc<Values::Value> {
     let mut result: Arc<Values::Value>;
     let mut ext_mod: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
     match '__try0: {
@@ -3947,7 +3947,7 @@ pub fn getExtendsModifierValue(mut classPath: Arc<Absyn::Path>, mut extendsPath:
     result
 }
 
-pub fn isExtendsModifierFinal(mut classPath: Arc<Absyn::Path>, mut extendsPath: Arc<Absyn::Path>, mut modifierPath: Arc<Absyn::Path>, mut program: Absyn::Program) -> Arc<Values::Value> {
+pub(crate) fn isExtendsModifierFinal(mut classPath: Arc<Absyn::Path>, mut extendsPath: Arc<Absyn::Path>, mut modifierPath: Arc<Absyn::Path>, mut program: Absyn::Program) -> Arc<Values::Value> {
     let mut result: Arc<Values::Value>;
     let mut ext_mod: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
     match '__try0: {
@@ -3969,7 +3969,7 @@ pub fn isExtendsModifierFinal(mut classPath: Arc<Absyn::Path>, mut extendsPath: 
     result
 }
 
-pub fn isModifierfinal(mut inAbsynElementArgLst: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, mut inPath: Arc<Absyn::Path>) -> Result<bool> {
+pub(crate) fn isModifierfinal(mut inAbsynElementArgLst: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, mut inPath: Arc<Absyn::Path>) -> Result<bool> {
     '__tco: loop {
         ::match_deref::match_deref! { match &((inAbsynElementArgLst.clone(), inPath.clone())) {
         (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { finalPrefix: f, path: p1, modification: Some(_), .. }, tail: _ }, p2) if (AbsynUtil::pathEqual(p1.clone(), p2.clone())) => {
@@ -3991,7 +3991,7 @@ pub fn isModifierfinal(mut inAbsynElementArgLst: Arc<metamodelica::List<Arc<Absy
     }
 }
 
-pub fn makeExtendsFullyQualified(mut inElementSpec: Arc<Absyn::ElementSpec>, mut inEnv: GraphicEnvCache) -> Result<Arc<Absyn::ElementSpec>> {
+pub(crate) fn makeExtendsFullyQualified(mut inElementSpec: Arc<Absyn::ElementSpec>, mut inEnv: GraphicEnvCache) -> Result<Arc<Absyn::ElementSpec>> {
     let mut outElementSpec: Arc<Absyn::ElementSpec>;
     outElementSpec = (::match_deref::match_deref! { match &((inElementSpec.clone(), inEnv.clone())) {
         (Deref @ Absyn::ElementSpec::EXTENDS { path, elementArg: earg, annotationOpt: annOpt }, env) => {
@@ -4004,7 +4004,7 @@ pub fn makeExtendsFullyQualified(mut inElementSpec: Arc<Absyn::ElementSpec>, mut
     Ok(outElementSpec)
 }
 
-pub fn removeComponentModifiers(mut path: Arc<Absyn::Path>, mut inComponentName: ArcStr, mut inProgram: Absyn::Program, mut keepRedeclares: bool) -> (Absyn::Program, bool) {
+pub(crate) fn removeComponentModifiers(mut path: Arc<Absyn::Path>, mut inComponentName: ArcStr, mut inProgram: Absyn::Program, mut keepRedeclares: bool) -> (Absyn::Program, bool) {
     let mut outProgram: Absyn::Program;
     let mut outResult: bool;
     let mut within_: Absyn::Within;
@@ -4029,7 +4029,7 @@ pub fn removeComponentModifiers(mut path: Arc<Absyn::Path>, mut inComponentName:
     (outProgram, outResult)
 }
 
-pub fn getComponentModifierValue(mut classRef: Arc<Absyn::ComponentRef>, mut varRef: Arc<Absyn::ComponentRef>, mut subModRef: Arc<Absyn::ComponentRef>, mut program: Absyn::Program) -> ArcStr {
+pub(crate) fn getComponentModifierValue(mut classRef: Arc<Absyn::ComponentRef>, mut varRef: Arc<Absyn::ComponentRef>, mut subModRef: Arc<Absyn::ComponentRef>, mut program: Absyn::Program) -> ArcStr {
     let mut valueStr: ArcStr;
     let mut cls_path: Arc<Absyn::Path>;
     let mut name: ArcStr;
@@ -4057,7 +4057,7 @@ pub fn getComponentModifierValue(mut classRef: Arc<Absyn::ComponentRef>, mut var
     valueStr
 }
 
-pub fn getModificationValue(mut args: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, mut path: Arc<Absyn::Path>) -> Result<Arc<Absyn::Exp>> {
+pub(crate) fn getModificationValue(mut args: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, mut path: Arc<Absyn::Path>) -> Result<Arc<Absyn::Exp>> {
     let mut value: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     let mut name: ArcStr = arcstr::literal!("");
     let mut rest_args: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = args.clone();
@@ -4095,7 +4095,7 @@ pub fn getModificationValue(mut args: Arc<metamodelica::List<Arc<Absyn::ElementA
     Ok(value)
 }
 
-pub fn getComponentModifierValues(mut inComponentRef1: Arc<Absyn::ComponentRef>, mut inComponentRef2: Arc<Absyn::ComponentRef>, mut inComponentRef3: Arc<Absyn::ComponentRef>, mut inProgram4: Absyn::Program) -> ArcStr {
+pub(crate) fn getComponentModifierValues(mut inComponentRef1: Arc<Absyn::ComponentRef>, mut inComponentRef2: Arc<Absyn::ComponentRef>, mut inComponentRef3: Arc<Absyn::ComponentRef>, mut inProgram4: Absyn::Program) -> ArcStr {
     let mut outString: ArcStr;
     outString = ('mc: {
         let __mc_input = (inComponentRef1.clone(), inComponentRef2.clone(), inComponentRef3.clone(), inProgram4.clone());
@@ -4165,7 +4165,7 @@ fn getModificationValues(mut inAbsynElementArgLst: Arc<metamodelica::List<Arc<Ab
     }
 }
 
-pub fn getComponentModifierNames(mut path: Arc<Absyn::Path>, mut inComponentName: ArcStr, mut inProgram3: Absyn::Program) -> Arc<metamodelica::List<ArcStr>> {
+pub(crate) fn getComponentModifierNames(mut path: Arc<Absyn::Path>, mut inComponentName: ArcStr, mut inProgram3: Absyn::Program) -> Arc<metamodelica::List<ArcStr>> {
     let mut outList: Arc<metamodelica::List<ArcStr>>;
     outList = 'mc: {
         let __mc_input = inProgram3.clone();
@@ -4293,7 +4293,7 @@ fn getModificationNames(mut inAbsynElementArgLst: Arc<metamodelica::List<Arc<Abs
     outStringLst
 }
 
-pub fn getComponentBinding(mut path: Arc<Absyn::Path>, mut parameterName: ArcStr, mut program: Absyn::Program) -> ArcStr {
+pub(crate) fn getComponentBinding(mut path: Arc<Absyn::Path>, mut parameterName: ArcStr, mut program: Absyn::Program) -> ArcStr {
     let mut bindingStr: ArcStr;
     let mut cls: Arc<Absyn::Class>;
     let mut component: Arc<Absyn::ComponentItem>;
@@ -4324,7 +4324,7 @@ fn getComponentitemName(mut inComponentItem: Arc<Absyn::ComponentItem>) -> Resul
     Ok(outIdent)
 }
 
-pub fn renameClass(mut oldName: Arc<Absyn::Path>, mut newName: Arc<Absyn::Path>, mut program: Absyn::Program) -> Result<(Absyn::Program, Arc<Values::Value>)> {
+pub(crate) fn renameClass(mut oldName: Arc<Absyn::Path>, mut newName: Arc<Absyn::Path>, mut program: Absyn::Program) -> Result<(Absyn::Program, Arc<Values::Value>)> {
     let mut program: Absyn::Program = program;
     let mut result: Arc<Values::Value>;
     let mut env: FCore::Graph;
@@ -4686,7 +4686,7 @@ fn renameClassInElementSpec(mut spec: Arc<Absyn::ElementSpec>, mut oldName: Arc<
     (spec, changed)
 }
 
-pub fn refactorClass(mut classPath: Arc<Absyn::Path>, mut program: Absyn::Program) -> Result<Arc<Values::Value>> {
+pub(crate) fn refactorClass(mut classPath: Arc<Absyn::Path>, mut program: Absyn::Program) -> Result<Arc<Values::Value>> {
     fn r#impl(mut classPath: Arc<Absyn::Path>, mut program: Absyn::Program, mut accessLevel: Access) -> Result<Arc<Values::Value>> {
         let mut result: Arc<Values::Value>;
         let mut cls: Arc<Absyn::Class>;
@@ -4738,7 +4738,7 @@ fn changeLastIdent(mut inPath1: Arc<Absyn::Path>, mut inPath2: Arc<Absyn::Path>)
     Ok(outPath)
 }
 
-pub fn isPrimitive(mut className: Arc<Absyn::Path>, mut inProgram: Absyn::Program) -> Result<bool> {
+pub(crate) fn isPrimitive(mut className: Arc<Absyn::Path>, mut inProgram: Absyn::Program) -> Result<bool> {
     let mut outBoolean: bool;
     outBoolean = (::match_deref::match_deref! { match &(className.clone()) {
         Deref @ Absyn::Path::IDENT { name: Deref @ "Real" } => {
@@ -4766,7 +4766,7 @@ pub fn isPrimitive(mut className: Arc<Absyn::Path>, mut inProgram: Absyn::Progra
     Ok(outBoolean)
 }
 
-pub fn createModel(mut className: Arc<Absyn::Path>, mut inProgram: Absyn::Program) -> Result<Absyn::Program> {
+pub(crate) fn createModel(mut className: Arc<Absyn::Path>, mut inProgram: Absyn::Program) -> Result<Absyn::Program> {
     let mut outProgram: Absyn::Program;
     let mut name: ArcStr;
     let mut w: Absyn::Within;
@@ -4787,13 +4787,13 @@ pub fn createModel(mut className: Arc<Absyn::Path>, mut inProgram: Absyn::Progra
     Ok(outProgram)
 }
 
-pub fn newModel(mut className: Arc<Absyn::Path>, mut withinPath: Arc<Absyn::Path>, mut program: Absyn::Program) -> Result<Absyn::Program> {
+pub(crate) fn newModel(mut className: Arc<Absyn::Path>, mut withinPath: Arc<Absyn::Path>, mut program: Absyn::Program) -> Result<Absyn::Program> {
     let mut program: Absyn::Program = program;
     program = createModel(AbsynUtil::joinPaths(withinPath.clone(), className.clone())?, program.clone())?;
     Ok(program)
 }
 
-pub fn deleteClass(mut classPath: Arc<Absyn::Path>, mut inProgram: Absyn::Program) -> (bool, Absyn::Program) {
+pub(crate) fn deleteClass(mut classPath: Arc<Absyn::Path>, mut inProgram: Absyn::Program) -> (bool, Absyn::Program) {
     let mut success: bool;
     let mut outProgram: Absyn::Program = inProgram.clone();
     (success, outProgram) = 'mc: {
@@ -4845,7 +4845,7 @@ pub fn deleteClass(mut classPath: Arc<Absyn::Path>, mut inProgram: Absyn::Progra
     (success, outProgram)
 }
 
-pub fn setClassComment(mut path: Arc<Absyn::Path>, mut inString: ArcStr, mut inProgram: Absyn::Program) -> (Absyn::Program, bool) {
+pub(crate) fn setClassComment(mut path: Arc<Absyn::Path>, mut inString: ArcStr, mut inProgram: Absyn::Program) -> (Absyn::Program, bool) {
     let mut outProgram: Absyn::Program;
     let mut success: bool;
     (outProgram, success) = 'mc: {
@@ -4920,7 +4920,7 @@ fn setClassCommentInClassdef(mut classDef: Arc<Absyn::ClassDef>, mut commentStri
     Ok(classDef)
 }
 
-pub fn getShortDefinitionBaseClassInformation(mut classPath: Arc<Absyn::Path>, mut program: Absyn::Program) -> Arc<Values::Value> {
+pub(crate) fn getShortDefinitionBaseClassInformation(mut classPath: Arc<Absyn::Path>, mut program: Absyn::Program) -> Arc<Values::Value> {
     let mut result: Arc<Values::Value>;
     let mut ty: Arc<Absyn::TypeSpec>;
     let mut attr: Absyn::ElementAttributes;
@@ -4951,7 +4951,7 @@ pub fn getShortDefinitionBaseClassInformation(mut classPath: Arc<Absyn::Path>, m
     result
 }
 
-pub fn getExternalFunctionSpecification(mut functionName: Arc<Absyn::Path>, mut program: Absyn::Program) -> Arc<Values::Value> {
+pub(crate) fn getExternalFunctionSpecification(mut functionName: Arc<Absyn::Path>, mut program: Absyn::Program) -> Arc<Values::Value> {
     let mut result: Arc<Values::Value>;
     let mut cls: Arc<Absyn::Class>;
     let mut ext_decl: Arc<Absyn::ExternalDecl>;
@@ -4998,7 +4998,7 @@ fn getClassDimensions(mut cdef: Arc<Absyn::ClassDef>) -> Result<ArcStr> {
     Ok(r#str)
 }
 
-pub fn getClassRestriction(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> ArcStr {
+pub(crate) fn getClassRestriction(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> ArcStr {
     let mut outRestriction: ArcStr;
     let mut restr: Absyn::Restriction;
     match '__try0: {
@@ -5020,7 +5020,7 @@ pub fn getClassRestriction(mut path: Arc<Absyn::Path>, mut program: Absyn::Progr
     outRestriction
 }
 
-pub fn isType(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> bool {
+pub(crate) fn isType(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> bool {
     let mut res: bool;
     res = (match InteractiveUtil::getPathedClassRestriction(path.clone(), program.clone()) {
         Absyn::Restriction::R_TYPE { .. } => true,
@@ -5029,7 +5029,7 @@ pub fn isType(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> bool {
     res
 }
 
-pub fn isConnector(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> bool {
+pub(crate) fn isConnector(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> bool {
     let mut res: bool;
     res = (match InteractiveUtil::getPathedClassRestriction(path.clone(), program.clone()) {
         Absyn::Restriction::R_CONNECTOR { .. } => true,
@@ -5039,7 +5039,7 @@ pub fn isConnector(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> b
     res
 }
 
-pub fn isModel(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> bool {
+pub(crate) fn isModel(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> bool {
     let mut res: bool;
     res = (match InteractiveUtil::getPathedClassRestriction(path.clone(), program.clone()) {
         Absyn::Restriction::R_MODEL { .. } => true,
@@ -5048,7 +5048,7 @@ pub fn isModel(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> bool 
     res
 }
 
-pub fn isOperator(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> bool {
+pub(crate) fn isOperator(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> bool {
     let mut res: bool;
     res = (match InteractiveUtil::getPathedClassRestriction(path.clone(), program.clone()) {
         Absyn::Restriction::R_OPERATOR { .. } => true,
@@ -5057,7 +5057,7 @@ pub fn isOperator(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> bo
     res
 }
 
-pub fn isOperatorRecord(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> bool {
+pub(crate) fn isOperatorRecord(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> bool {
     let mut res: bool;
     res = (match InteractiveUtil::getPathedClassRestriction(path.clone(), program.clone()) {
         Absyn::Restriction::R_OPERATOR_RECORD { .. } => true,
@@ -5066,7 +5066,7 @@ pub fn isOperatorRecord(mut path: Arc<Absyn::Path>, mut program: Absyn::Program)
     res
 }
 
-pub fn isOperatorFunction(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> bool {
+pub(crate) fn isOperatorFunction(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> bool {
     let mut res: bool;
     res = (match InteractiveUtil::getPathedClassRestriction(path.clone(), program.clone()) {
         Absyn::Restriction::R_FUNCTION { functionRestriction: Absyn::FunctionRestriction::FR_OPERATOR_FUNCTION { .. } } => true,
@@ -5075,7 +5075,7 @@ pub fn isOperatorFunction(mut path: Arc<Absyn::Path>, mut program: Absyn::Progra
     res
 }
 
-pub fn isRecord(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> bool {
+pub(crate) fn isRecord(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> bool {
     let mut res: bool;
     res = (match InteractiveUtil::getPathedClassRestriction(path.clone(), program.clone()) {
         Absyn::Restriction::R_RECORD { .. } => true,
@@ -5084,7 +5084,7 @@ pub fn isRecord(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> bool
     res
 }
 
-pub fn isBlock(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> bool {
+pub(crate) fn isBlock(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> bool {
     let mut res: bool;
     res = (match InteractiveUtil::getPathedClassRestriction(path.clone(), program.clone()) {
         Absyn::Restriction::R_BLOCK { .. } => true,
@@ -5093,7 +5093,7 @@ pub fn isBlock(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> bool 
     res
 }
 
-pub fn isOptimization(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> bool {
+pub(crate) fn isOptimization(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> bool {
     let mut res: bool;
     res = (match InteractiveUtil::getPathedClassRestriction(path.clone(), program.clone()) {
         Absyn::Restriction::R_OPTIMIZATION { .. } => true,
@@ -5102,7 +5102,7 @@ pub fn isOptimization(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -
     res
 }
 
-pub fn isFunction(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> bool {
+pub(crate) fn isFunction(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> bool {
     let mut res: bool;
     res = (match InteractiveUtil::getPathedClassRestriction(path.clone(), program.clone()) {
         Absyn::Restriction::R_FUNCTION { functionRestriction: Absyn::FunctionRestriction::FR_NORMAL_FUNCTION { .. } } => true,
@@ -5111,7 +5111,7 @@ pub fn isFunction(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> bo
     res
 }
 
-pub fn isPackage(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> bool {
+pub(crate) fn isPackage(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> bool {
     let mut res: bool;
     res = (match InteractiveUtil::getPathedClassRestriction(path.clone(), program.clone()) {
         Absyn::Restriction::R_PACKAGE { .. } => true,
@@ -5120,7 +5120,7 @@ pub fn isPackage(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> boo
     res
 }
 
-pub fn isClass(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> bool {
+pub(crate) fn isClass(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> bool {
     let mut res: bool;
     res = (match InteractiveUtil::getPathedClassRestriction(path.clone(), program.clone()) {
         Absyn::Restriction::R_CLASS { .. } => true,
@@ -5129,7 +5129,7 @@ pub fn isClass(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> bool 
     res
 }
 
-pub fn isPartial(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> bool {
+pub(crate) fn isPartial(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> bool {
     let mut res: bool;
     match '__try0: {
         ::match_deref::match_deref! { match &(unwrap_break_err!(ProgramUtil::getPathedClassInProgram(path.clone(), program.clone(), false, false), '__try0)) {
@@ -5149,7 +5149,7 @@ pub fn isPartial(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> boo
     res
 }
 
-pub fn isReplaceable(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> bool {
+pub(crate) fn isReplaceable(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> bool {
     let mut res: bool;
     match '__try0: {
         res = AbsynUtil::isElementReplaceable(unwrap_break_err!(InteractiveUtil::getPathedElementInProgram(path.clone(), program.clone()), '__try0));
@@ -5165,7 +5165,7 @@ pub fn isReplaceable(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) ->
     res
 }
 
-pub fn isRedeclare(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> bool {
+pub(crate) fn isRedeclare(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> bool {
     let mut res: bool;
     match '__try0: {
         res = AbsynUtil::isElementRedeclare(unwrap_break_err!(InteractiveUtil::getPathedElementInProgram(path.clone(), program.clone()), '__try0));
@@ -5181,7 +5181,7 @@ pub fn isRedeclare(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> b
     res
 }
 
-pub fn isParameter(mut componentName: Arc<Absyn::Path>, mut className: Arc<Absyn::Path>, mut program: Absyn::Program) -> bool {
+pub(crate) fn isParameter(mut componentName: Arc<Absyn::Path>, mut className: Arc<Absyn::Path>, mut program: Absyn::Program) -> bool {
     let mut res: bool;
     let mut path: Arc<Absyn::Path>;
     match '__try0: {
@@ -5203,7 +5203,7 @@ pub fn isParameter(mut componentName: Arc<Absyn::Path>, mut className: Arc<Absyn
     res
 }
 
-pub fn isConstant(mut componentName: Arc<Absyn::Path>, mut className: Arc<Absyn::Path>, mut program: Absyn::Program) -> bool {
+pub(crate) fn isConstant(mut componentName: Arc<Absyn::Path>, mut className: Arc<Absyn::Path>, mut program: Absyn::Program) -> bool {
     let mut res: bool;
     let mut path: Arc<Absyn::Path>;
     match '__try0: {
@@ -5225,7 +5225,7 @@ pub fn isConstant(mut componentName: Arc<Absyn::Path>, mut className: Arc<Absyn:
     res
 }
 
-pub fn isProtected(mut componentName: Arc<Absyn::Path>, mut className: Arc<Absyn::Path>, mut program: Absyn::Program) -> bool {
+pub(crate) fn isProtected(mut componentName: Arc<Absyn::Path>, mut className: Arc<Absyn::Path>, mut program: Absyn::Program) -> bool {
     let mut res: bool;
     let mut parts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>;
     let mut items: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>;
@@ -5246,7 +5246,7 @@ pub fn isProtected(mut componentName: Arc<Absyn::Path>, mut className: Arc<Absyn
     res
 }
 
-pub fn isEnumeration(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> bool {
+pub(crate) fn isEnumeration(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> bool {
     let mut res: bool;
     match '__try0: {
         ::match_deref::match_deref! { match &(unwrap_break_err!(ProgramUtil::getPathedClassInProgram(path.clone(), program.clone(), false, false), '__try0)) {
@@ -5266,7 +5266,7 @@ pub fn isEnumeration(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) ->
     res
 }
 
-pub fn isProtectedClass(mut path: Arc<Absyn::Path>, mut className: ArcStr, mut program: Absyn::Program) -> bool {
+pub(crate) fn isProtectedClass(mut path: Arc<Absyn::Path>, mut className: ArcStr, mut program: Absyn::Program) -> bool {
     let mut res: bool;
     let mut parts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>;
     let mut items: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>;
@@ -5306,7 +5306,7 @@ fn isProtectedClassInElements(mut items: Arc<metamodelica::List<Arc<Absyn::Eleme
     res
 }
 
-pub fn getEnumerationLiterals(mut classPath: Arc<Absyn::Path>, mut program: Absyn::Program) -> Result<Arc<Values::Value>> {
+pub(crate) fn getEnumerationLiterals(mut classPath: Arc<Absyn::Path>, mut program: Absyn::Program) -> Result<Arc<Values::Value>> {
     let mut result: Arc<Values::Value>;
     let mut literals: Arc<metamodelica::List<Arc<Absyn::EnumLiteral>>>;
     let mut names: Arc<metamodelica::List<ArcStr>>;
@@ -5337,7 +5337,7 @@ pub fn getEnumerationLiterals(mut classPath: Arc<Absyn::Path>, mut program: Absy
     Ok(result)
 }
 
-pub fn getDerivedClassModifierNames(mut inClass: Arc<Absyn::Class>) -> Arc<metamodelica::List<ArcStr>> {
+pub(crate) fn getDerivedClassModifierNames(mut inClass: Arc<Absyn::Class>) -> Arc<metamodelica::List<ArcStr>> {
     let mut outString: Arc<metamodelica::List<ArcStr>>;
     let mut args: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
     outString = (::match_deref::match_deref! { match &(inClass.clone()) {
@@ -5351,7 +5351,7 @@ pub fn getDerivedClassModifierNames(mut inClass: Arc<Absyn::Class>) -> Arc<metam
     outString
 }
 
-pub fn getDerivedClassModifierValue(mut cls: Arc<Absyn::Class>, mut path: Arc<Absyn::Path>) -> ArcStr {
+pub(crate) fn getDerivedClassModifierValue(mut cls: Arc<Absyn::Class>, mut path: Arc<Absyn::Path>) -> ArcStr {
     let mut value: ArcStr;
     let mut args: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
     match '__try0: {
@@ -5485,7 +5485,7 @@ fn getCompitemNamed(mut inComponentRef: Arc<Absyn::ComponentRef>, mut inAbsynCom
     Ok(outComponentItem)
 }
 
-pub fn existClass(mut classPath: Arc<Absyn::Path>, mut program: Absyn::Program) -> bool {
+pub(crate) fn existClass(mut classPath: Arc<Absyn::Path>, mut program: Absyn::Program) -> bool {
     let mut res: bool;
     match '__try0: {
         unwrap_break_err!(ProgramUtil::getPathedClassInProgram(classPath.clone(), program.clone(), false, false), '__try0);
@@ -5502,7 +5502,7 @@ pub fn existClass(mut classPath: Arc<Absyn::Path>, mut program: Absyn::Program) 
     res
 }
 
-pub fn isPrimitiveClass(mut inClass: Arc<Absyn::Class>, mut inProgram: Absyn::Program) -> Result<bool> {
+pub(crate) fn isPrimitiveClass(mut inClass: Arc<Absyn::Class>, mut inProgram: Absyn::Program) -> Result<bool> {
     '__tco: loop {
         ::match_deref::match_deref! { match &((inClass.clone(), inProgram.clone())) {
         (Deref @ Absyn::Class { restriction: Absyn::Restriction::R_PREDEFINED_INTEGER { .. }, .. }, _) => {
@@ -5539,7 +5539,7 @@ pub fn isPrimitiveClass(mut inClass: Arc<Absyn::Class>, mut inProgram: Absyn::Pr
     }
 }
 
-pub fn addScope(mut inProgram: Absyn::Program, mut inVariableLst: Arc<metamodelica::List<InteractiveTypes::Variable>>) -> Absyn::Program {
+pub(crate) fn addScope(mut inProgram: Absyn::Program, mut inVariableLst: Arc<metamodelica::List<InteractiveTypes::Variable>>) -> Absyn::Program {
     let mut outProgram: Absyn::Program;
     outProgram = 'mc: {
         let __mc_input = (inProgram.clone(), inVariableLst.clone());
@@ -5974,7 +5974,7 @@ fn deleteOrUpdateComponentFromElementitems(mut inString: ArcStr, mut inAbsynElem
     Ok((outAbsynElementItemLst, success))
 }
 
-pub fn addComponent(mut componentName: ArcStr, mut typeName: Arc<Absyn::Path>, mut classPath: Arc<Absyn::Path>, mut bindingExp: Arc<Absyn::Exp>, mut modifier: Arc<Absyn::Modification>, mut commentExp: Arc<Absyn::Exp>, mut annotationExp: Arc<Absyn::Exp>, mut program: Absyn::Program) -> (Absyn::Program, bool) {
+pub(crate) fn addComponent(mut componentName: ArcStr, mut typeName: Arc<Absyn::Path>, mut classPath: Arc<Absyn::Path>, mut bindingExp: Arc<Absyn::Exp>, mut modifier: Arc<Absyn::Modification>, mut commentExp: Arc<Absyn::Exp>, mut annotationExp: Arc<Absyn::Exp>, mut program: Absyn::Program) -> (Absyn::Program, bool) {
     let mut program: Absyn::Program = program;
     let mut success: bool = true;
     let mut filename: ArcStr;
@@ -6134,7 +6134,7 @@ fn getDefaultAttr(mut r#str: ArcStr) -> Absyn::ElementAttributes {
     attr
 }
 
-pub fn updateComponent(mut componentName: ArcStr, mut typeName: Arc<Absyn::Path>, mut classPath: Arc<Absyn::Path>, mut bindingExp: Arc<Absyn::Exp>, mut modifier: Arc<Absyn::Modification>, mut commentExp: Arc<Absyn::Exp>, mut annotationExp: Arc<Absyn::Exp>, mut program: Absyn::Program) -> (Absyn::Program, bool) {
+pub(crate) fn updateComponent(mut componentName: ArcStr, mut typeName: Arc<Absyn::Path>, mut classPath: Arc<Absyn::Path>, mut bindingExp: Arc<Absyn::Exp>, mut modifier: Arc<Absyn::Modification>, mut commentExp: Arc<Absyn::Exp>, mut annotationExp: Arc<Absyn::Exp>, mut program: Absyn::Program) -> (Absyn::Program, bool) {
     let mut program: Absyn::Program = program;
     let mut success: bool = true;
     let mut parts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>;
@@ -6178,7 +6178,7 @@ pub fn updateComponent(mut componentName: ArcStr, mut typeName: Arc<Absyn::Path>
     (program, success)
 }
 
-pub fn deleteComponent(mut componentName: ArcStr, mut classPath: Arc<Absyn::Path>, mut program: Absyn::Program) -> (Absyn::Program, bool) {
+pub(crate) fn deleteComponent(mut componentName: ArcStr, mut classPath: Arc<Absyn::Path>, mut program: Absyn::Program) -> (Absyn::Program, bool) {
     let mut program: Absyn::Program = program;
     let mut success: bool = true;
     if '__try0: {
@@ -6190,7 +6190,7 @@ pub fn deleteComponent(mut componentName: ArcStr, mut classPath: Arc<Absyn::Path
     (program, success)
 }
 
-pub fn addClassAnnotation(mut inClass: Arc<Absyn::ComponentRef>, mut inAnnotation: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inProgram: Absyn::Program) -> Result<Absyn::Program> {
+pub(crate) fn addClassAnnotation(mut inClass: Arc<Absyn::ComponentRef>, mut inAnnotation: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inProgram: Absyn::Program) -> Result<Absyn::Program> {
     let mut outProgram: Absyn::Program;
     let mut class_path: Arc<Absyn::Path>;
     let mut cls: Arc<Absyn::Class>;
@@ -6203,7 +6203,7 @@ pub fn addClassAnnotation(mut inClass: Arc<Absyn::ComponentRef>, mut inAnnotatio
     Ok(outProgram)
 }
 
-pub fn addClassAnnotationToClass(mut inClass: Arc<Absyn::Class>, mut inAnnotation: Arc<Absyn::Annotation>) -> Result<Arc<Absyn::Class>> {
+pub(crate) fn addClassAnnotationToClass(mut inClass: Arc<Absyn::Class>, mut inAnnotation: Arc<Absyn::Annotation>) -> Result<Arc<Absyn::Class>> {
     let mut outClass: Arc<Absyn::Class>;
     let mut body: Arc<Absyn::ClassDef>;
     let __pa0 = ::match_deref::match_deref! { match &(inClass.clone()) {
@@ -6282,7 +6282,7 @@ fn getInheritedClassesHelper(mut inClass1: Arc<SCode::Element>, mut inClass2: Ar
     Ok(outAbsynComponentRefLst)
 }
 
-pub fn getInheritedClasses(mut inPath: Arc<Absyn::Path>) -> Result<Arc<metamodelica::List<Arc<Absyn::Path>>>> {
+pub(crate) fn getInheritedClasses(mut inPath: Arc<Absyn::Path>) -> Result<Arc<metamodelica::List<Arc<Absyn::Path>>>> {
     let mut outPaths: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
     if Flags::isSet(Flags::NF_API.clone())? {
         outPaths = NFApi::getInheritedClasses(inPath.clone(), SymbolTable::getAbsyn())?;
@@ -6362,7 +6362,7 @@ pub fn getInheritedClasses(mut inPath: Arc<Absyn::Path>) -> Result<Arc<metamodel
     Ok(outPaths)
 }
 
-pub fn getInheritanceCount(mut classPath: Arc<Absyn::Path>, mut program: Absyn::Program) -> Arc<Values::Value> {
+pub(crate) fn getInheritanceCount(mut classPath: Arc<Absyn::Path>, mut program: Absyn::Program) -> Arc<Values::Value> {
     let mut result: Arc<Values::Value>;
     let mut cls: Arc<Absyn::Class>;
     match '__try0: {
@@ -6450,7 +6450,7 @@ fn getMapAnnotationStr(mut inAbsynElementArgLst: Arc<metamodelica::List<Arc<Absy
     outString
 }
 
-pub fn getNthInheritedClassIconMapAnnotation(mut classPath: Arc<Absyn::Path>, mut n: i32, mut program: Absyn::Program) -> Result<Arc<Values::Value>> {
+pub(crate) fn getNthInheritedClassIconMapAnnotation(mut classPath: Arc<Absyn::Path>, mut n: i32, mut program: Absyn::Program) -> Result<Arc<Values::Value>> {
     fn r#impl(mut classPath: Arc<Absyn::Path>, mut n: i32, mut program: Absyn::Program, mut accessLevel: Access) -> Result<Arc<Values::Value>> {
         let mut result: Arc<Values::Value>;
         result = getNthInheritedClassMapAnnotation(classPath.clone(), n.clone(), program.clone(), (literal!("IconMap")).clone())?;
@@ -6462,7 +6462,7 @@ pub fn getNthInheritedClassIconMapAnnotation(mut classPath: Arc<Absyn::Path>, mu
     Ok(result)
 }
 
-pub fn getNthInheritedClassDiagramMapAnnotation(mut classPath: Arc<Absyn::Path>, mut n: i32, mut program: Absyn::Program) -> Result<Arc<Values::Value>> {
+pub(crate) fn getNthInheritedClassDiagramMapAnnotation(mut classPath: Arc<Absyn::Path>, mut n: i32, mut program: Absyn::Program) -> Result<Arc<Values::Value>> {
     fn r#impl(mut classPath: Arc<Absyn::Path>, mut n: i32, mut program: Absyn::Program, mut accessLevel: Access) -> Result<Arc<Values::Value>> {
         let mut result: Arc<Values::Value>;
         result = getNthInheritedClassMapAnnotation(classPath.clone(), n.clone(), program.clone(), (literal!("DiagramMap")).clone())?;
@@ -6534,7 +6534,7 @@ fn getExtendsInParts(mut parts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) 
     outExtends
 }
 
-pub fn getComponentCount(mut model_: Arc<Absyn::Path>, mut p: Absyn::Program) -> Result<i32> {
+pub(crate) fn getComponentCount(mut model_: Arc<Absyn::Path>, mut p: Absyn::Program) -> Result<i32> {
     let mut count: i32;
     let mut cdef: Arc<Absyn::Class>;
     cdef = ProgramUtil::getPathedClassInProgram(model_.clone(), p.clone(), false, false)?;
@@ -6672,7 +6672,7 @@ fn countComponentsInElts(mut inAbsynElementItemLst: Arc<metamodelica::List<Arc<A
     }
 }
 
-pub fn getNthComponent(mut classPath: Arc<Absyn::Path>, mut program: Absyn::Program, mut n: i32) -> Arc<Values::Value> {
+pub(crate) fn getNthComponent(mut classPath: Arc<Absyn::Path>, mut program: Absyn::Program, mut n: i32) -> Arc<Values::Value> {
     let mut result: Arc<Values::Value>;
     let mut genv: GraphicEnvCache;
     let mut cdef: Arc<Absyn::Class>;
@@ -6722,7 +6722,7 @@ fn useQuotes(mut inAbsynNamedArgLst: Arc<metamodelica::List<Arc<Absyn::NamedArg>
     }
 }
 
-pub fn insertQuotesToList(mut inStringList: Arc<metamodelica::List<ArcStr>>) -> Arc<metamodelica::List<ArcStr>> {
+pub(crate) fn insertQuotesToList(mut inStringList: Arc<metamodelica::List<ArcStr>>) -> Arc<metamodelica::List<ArcStr>> {
     let mut outStringList: Arc<metamodelica::List<ArcStr>>;
     outStringList = (::match_deref::match_deref! { match &(inStringList.clone()) {
         Deref @ metamodelica::List::Nil => {
@@ -6740,13 +6740,13 @@ pub fn insertQuotesToList(mut inStringList: Arc<metamodelica::List<ArcStr>>) -> 
     outStringList
 }
 
-pub fn getComponents(mut classPath: Arc<Absyn::Path>, mut useQuotes: bool, mut program: Absyn::Program) -> Arc<Values::Value> {
+pub(crate) fn getComponents(mut classPath: Arc<Absyn::Path>, mut useQuotes: bool, mut program: Absyn::Program) -> Arc<Values::Value> {
     let mut result: Arc<Values::Value>;
     result = getElements(classPath.clone(), useQuotes.clone(), program.clone(), true);
     result
 }
 
-pub fn getElements(mut classPath: Arc<Absyn::Path>, mut useQuotes: bool, mut program: Absyn::Program, mut onlyComponents: bool) -> Arc<Values::Value> {
+pub(crate) fn getElements(mut classPath: Arc<Absyn::Path>, mut useQuotes: bool, mut program: Absyn::Program, mut onlyComponents: bool) -> Arc<Values::Value> {
     let mut result: Arc<Values::Value>;
     let mut access: Access;
     let mut cls: Arc<Absyn::Class>;
@@ -6789,7 +6789,7 @@ pub fn getElements(mut classPath: Arc<Absyn::Path>, mut useQuotes: bool, mut pro
     result
 }
 
-pub fn getComponentAnnotations(mut classPath: Arc<Absyn::Path>, mut program: Absyn::Program) -> Result<Arc<Values::Value>> {
+pub(crate) fn getComponentAnnotations(mut classPath: Arc<Absyn::Path>, mut program: Absyn::Program) -> Result<Arc<Values::Value>> {
     fn r#impl(mut classPath: Arc<Absyn::Path>, mut program: Absyn::Program, mut accessLevel: Access) -> Result<Arc<Values::Value>> {
         let mut result: Arc<Values::Value>;
         let mut cdef: Arc<Absyn::Class>;
@@ -6808,7 +6808,7 @@ pub fn getComponentAnnotations(mut classPath: Arc<Absyn::Path>, mut program: Abs
     Ok(result)
 }
 
-pub fn getElementAnnotations(mut classPath: Arc<Absyn::Path>, mut program: Absyn::Program) -> Result<Arc<Values::Value>> {
+pub(crate) fn getElementAnnotations(mut classPath: Arc<Absyn::Path>, mut program: Absyn::Program) -> Result<Arc<Values::Value>> {
     fn r#impl(mut classPath: Arc<Absyn::Path>, mut program: Absyn::Program, mut accessLevel: Access) -> Result<Arc<Values::Value>> {
         let mut result: Arc<Values::Value>;
         let mut cdef: Arc<Absyn::Class>;
@@ -6827,7 +6827,7 @@ pub fn getElementAnnotations(mut classPath: Arc<Absyn::Path>, mut program: Absyn
     Ok(result)
 }
 
-pub fn getNthComponentAnnotation(mut classPath: Arc<Absyn::Path>, mut n: i32, mut program: Absyn::Program) -> Result<Arc<Values::Value>> {
+pub(crate) fn getNthComponentAnnotation(mut classPath: Arc<Absyn::Path>, mut n: i32, mut program: Absyn::Program) -> Result<Arc<Values::Value>> {
     fn r#impl(mut classPath: Arc<Absyn::Path>, mut n: i32, mut program: Absyn::Program, mut accessLevel: Access) -> Result<Arc<Values::Value>> {
         let mut result: Arc<Values::Value>;
         let mut cdef: Arc<Absyn::Class>;
@@ -6846,7 +6846,7 @@ pub fn getNthComponentAnnotation(mut classPath: Arc<Absyn::Path>, mut n: i32, mu
     Ok(result)
 }
 
-pub fn getNthComponentModification(mut classPath: Arc<Absyn::Path>, mut n: i32, mut program: Absyn::Program) -> Arc<Values::Value> {
+pub(crate) fn getNthComponentModification(mut classPath: Arc<Absyn::Path>, mut n: i32, mut program: Absyn::Program) -> Arc<Values::Value> {
     let mut result: Arc<Values::Value>;
     let mut cls: Arc<Absyn::Class>;
     let mut comp: Arc<Absyn::Element>;
@@ -6866,7 +6866,7 @@ pub fn getNthComponentModification(mut classPath: Arc<Absyn::Path>, mut n: i32, 
     result
 }
 
-pub fn getNthComponentCondition(mut classPath: Arc<Absyn::Path>, mut n: i32, mut program: Absyn::Program) -> Arc<Values::Value> {
+pub(crate) fn getNthComponentCondition(mut classPath: Arc<Absyn::Path>, mut n: i32, mut program: Absyn::Program) -> Arc<Values::Value> {
     let mut result: Arc<Values::Value>;
     let mut cls: Arc<Absyn::Class>;
     let mut comp: Arc<Absyn::Element>;
@@ -6929,7 +6929,7 @@ fn getComponentitemsCondition(mut inAbsynComponentItemLst: Arc<metamodelica::Lis
     Ok(outString)
 }
 
-pub fn getNthConnection(mut inComponentRef: Arc<Absyn::ComponentRef>, mut inProgram: Absyn::Program, mut inInteger: i32) -> Arc<metamodelica::List<Arc<Values::Value>>> {
+pub(crate) fn getNthConnection(mut inComponentRef: Arc<Absyn::ComponentRef>, mut inProgram: Absyn::Program, mut inInteger: i32) -> Arc<metamodelica::List<Arc<Values::Value>>> {
     let mut outValue: Arc<metamodelica::List<Arc<Values::Value>>>;
     outValue = 'mc: {
         let __mc_input = (inComponentRef.clone(), inProgram.clone(), inInteger.clone());
@@ -6973,7 +6973,7 @@ pub fn getNthConnection(mut inComponentRef: Arc<Absyn::ComponentRef>, mut inProg
     outValue
 }
 
-pub fn getStringComment(mut inAbsynCommentOption: Option<Arc<Absyn::Comment>>) -> ArcStr {
+pub(crate) fn getStringComment(mut inAbsynCommentOption: Option<Arc<Absyn::Comment>>) -> ArcStr {
     let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(inAbsynCommentOption.clone()) {
         Some(Deref @ Absyn::Comment { annotation_: _, comment: Some(r#str) }) => {
@@ -6987,7 +6987,7 @@ pub fn getStringComment(mut inAbsynCommentOption: Option<Arc<Absyn::Comment>>) -
     outString
 }
 
-pub fn addConnection(mut classPath: Arc<Absyn::Path>, mut connector1: Arc<Absyn::ComponentRef>, mut connector2: Arc<Absyn::ComponentRef>, mut commentExp: Arc<Absyn::Exp>, mut annotationExp: Arc<Absyn::Exp>, mut program: Absyn::Program) -> (Absyn::Program, bool) {
+pub(crate) fn addConnection(mut classPath: Arc<Absyn::Path>, mut connector1: Arc<Absyn::ComponentRef>, mut connector2: Arc<Absyn::ComponentRef>, mut commentExp: Arc<Absyn::Exp>, mut annotationExp: Arc<Absyn::Exp>, mut program: Absyn::Program) -> (Absyn::Program, bool) {
     let mut program: Absyn::Program = program;
     let mut success: bool;
     let mut eq: Arc<Absyn::EquationItem>;
@@ -7009,7 +7009,7 @@ pub fn addConnection(mut classPath: Arc<Absyn::Path>, mut connector1: Arc<Absyn:
     (program, success)
 }
 
-pub fn deleteConnection(mut classPath: Arc<Absyn::Path>, mut connector1: Arc<Absyn::ComponentRef>, mut connector2: Arc<Absyn::ComponentRef>, mut program: Absyn::Program) -> (Absyn::Program, bool) {
+pub(crate) fn deleteConnection(mut classPath: Arc<Absyn::Path>, mut connector1: Arc<Absyn::ComponentRef>, mut connector2: Arc<Absyn::ComponentRef>, mut program: Absyn::Program) -> (Absyn::Program, bool) {
     let mut program: Absyn::Program = program;
     let mut success: bool;
     match '__try0: {
@@ -7082,14 +7082,14 @@ fn deleteEquationInEqlist(mut inAbsynEquationItemLst1: Arc<metamodelica::List<Ar
     }
 }
 
-pub fn addTransition(mut inComponentRef: Arc<Absyn::ComponentRef>, mut from: ArcStr, mut to: ArcStr, mut condition: ArcStr, mut immediate: bool, mut reset: bool, mut synchronize: bool, mut priority: i32, mut inAbsynNamedArgLst: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inProgram: Absyn::Program) -> Result<(bool, Absyn::Program)> {
+pub(crate) fn addTransition(mut inComponentRef: Arc<Absyn::ComponentRef>, mut from: ArcStr, mut to: ArcStr, mut condition: ArcStr, mut immediate: bool, mut reset: bool, mut synchronize: bool, mut priority: i32, mut inAbsynNamedArgLst: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inProgram: Absyn::Program) -> Result<(bool, Absyn::Program)> {
     let mut b: bool;
     let mut outProgram: Absyn::Program;
     (b, outProgram) = addTransitionWithAnnotation(inComponentRef.clone(), (from.clone()).clone(), (to.clone()).clone(), (condition.clone()).clone(), immediate.clone(), reset.clone(), synchronize.clone(), priority.clone(), InteractiveUtil::annotationListToAbsyn(inAbsynNamedArgLst.clone())?, inProgram.clone())?;
     Ok((b, outProgram))
 }
 
-pub fn addTransitionWithAnnotation(mut inComponentRef: Arc<Absyn::ComponentRef>, mut from: ArcStr, mut to: ArcStr, mut condition: ArcStr, mut immediate: bool, mut reset: bool, mut synchronize: bool, mut priority: i32, mut inAnnotation: Arc<Absyn::Annotation>, mut inProgram: Absyn::Program) -> Result<(bool, Absyn::Program)> {
+pub(crate) fn addTransitionWithAnnotation(mut inComponentRef: Arc<Absyn::ComponentRef>, mut from: ArcStr, mut to: ArcStr, mut condition: ArcStr, mut immediate: bool, mut reset: bool, mut synchronize: bool, mut priority: i32, mut inAnnotation: Arc<Absyn::Annotation>, mut inProgram: Absyn::Program) -> Result<(bool, Absyn::Program)> {
     let mut b: bool;
     let mut outProgram: Absyn::Program;
     (b, outProgram) = (::match_deref::match_deref! { match &((inComponentRef.clone(), from.clone(), to.clone(), condition.clone(), immediate.clone(), reset.clone(), synchronize.clone(), priority.clone(), inAnnotation.clone(), inProgram.clone())) {
@@ -7138,7 +7138,7 @@ pub fn addTransitionWithAnnotation(mut inComponentRef: Arc<Absyn::ComponentRef>,
     Ok((b, outProgram))
 }
 
-pub fn deleteTransition(mut inComponentRef1: Arc<Absyn::ComponentRef>, mut from: ArcStr, mut to: ArcStr, mut condition: ArcStr, mut immediate: bool, mut reset: bool, mut synchronize: bool, mut priority: i32, mut inProgram: Absyn::Program) -> Result<(bool, Absyn::Program)> {
+pub(crate) fn deleteTransition(mut inComponentRef1: Arc<Absyn::ComponentRef>, mut from: ArcStr, mut to: ArcStr, mut condition: ArcStr, mut immediate: bool, mut reset: bool, mut synchronize: bool, mut priority: i32, mut inProgram: Absyn::Program) -> Result<(bool, Absyn::Program)> {
     let mut b: bool;
     let mut outProgram: Absyn::Program;
     (b, outProgram) = 'mc: {
@@ -7271,7 +7271,7 @@ fn deleteTransitionInEqlist(mut inAbsynEquationItemLst: Arc<metamodelica::List<A
     Ok(outAbsynEquationItemLst)
 }
 
-pub fn addOrUpdateNamedArg(mut inNamedArgLst: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut namedArg: ArcStr, mut defaultValue: ArcStr, mut inTransition: Arc<metamodelica::List<ArcStr>>, mut position: i32) -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub(crate) fn addOrUpdateNamedArg(mut inNamedArgLst: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut namedArg: ArcStr, mut defaultValue: ArcStr, mut inTransition: Arc<metamodelica::List<ArcStr>>, mut position: i32) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut outTransition: Arc<metamodelica::List<ArcStr>>;
     let mut namedArgValue: ArcStr;
     let mut isDefault: bool;
@@ -7365,7 +7365,7 @@ fn compareTransitionFuncArgs(mut args: Arc<metamodelica::List<ArcStr>>, mut from
     b
 }
 
-pub fn getComponentComment(mut classPath: Arc<Absyn::Path>, mut componentName: Arc<Absyn::Path>, mut program: Absyn::Program) -> Result<Arc<Values::Value>> {
+pub(crate) fn getComponentComment(mut classPath: Arc<Absyn::Path>, mut componentName: Arc<Absyn::Path>, mut program: Absyn::Program) -> Result<Arc<Values::Value>> {
     let mut comment: Arc<Values::Value>;
     let mut path: Arc<Absyn::Path>;
     let mut elem: Arc<Absyn::Element>;
@@ -7383,7 +7383,7 @@ pub fn getComponentComment(mut classPath: Arc<Absyn::Path>, mut componentName: A
     Ok(comment)
 }
 
-pub fn setComponentComment(mut classPath: Arc<Absyn::Path>, mut componentName: Arc<Absyn::Path>, mut comment: ArcStr, mut program: Absyn::Program) -> (Absyn::Program, bool) {
+pub(crate) fn setComponentComment(mut classPath: Arc<Absyn::Path>, mut componentName: Arc<Absyn::Path>, mut comment: ArcStr, mut program: Absyn::Program) -> (Absyn::Program, bool) {
     let mut program: Absyn::Program = program;
     let mut success: bool;
     let mut path: Arc<Absyn::Path>;
@@ -7431,7 +7431,7 @@ fn setComponentCommentInElement(mut element: Arc<Absyn::Element>, mut componentN
     Ok(element)
 }
 
-pub fn setConnectionComment(mut classPath: Arc<Absyn::Path>, mut connector1: Arc<Absyn::ComponentRef>, mut connector2: Arc<Absyn::ComponentRef>, mut comment: ArcStr, mut program: Absyn::Program) -> (Absyn::Program, bool) {
+pub(crate) fn setConnectionComment(mut classPath: Arc<Absyn::Path>, mut connector1: Arc<Absyn::ComponentRef>, mut connector2: Arc<Absyn::ComponentRef>, mut comment: ArcStr, mut program: Absyn::Program) -> (Absyn::Program, bool) {
     let mut program: Absyn::Program = program;
     let mut success: bool;
     match '__try0: {
@@ -7531,7 +7531,7 @@ fn setConnectionCommentInEquation(mut eq: Arc<Absyn::EquationItem>, mut connecto
     Ok((eq, success))
 }
 
-pub fn getNthConnectionAnnotation(mut classPath: Arc<Absyn::Path>, mut n: i32, mut program: Absyn::Program) -> Result<Arc<Values::Value>> {
+pub(crate) fn getNthConnectionAnnotation(mut classPath: Arc<Absyn::Path>, mut n: i32, mut program: Absyn::Program) -> Result<Arc<Values::Value>> {
     fn r#impl(mut classPath: Arc<Absyn::Path>, mut n: i32, mut program: Absyn::Program, mut accessLevel: Access) -> Result<Arc<Values::Value>> {
         let mut result: Arc<Values::Value>;
         let mut cdef: Arc<Absyn::Class>;
@@ -7547,7 +7547,7 @@ pub fn getNthConnectionAnnotation(mut classPath: Arc<Absyn::Path>, mut n: i32, m
     Ok(result)
 }
 
-pub fn getConnectorCount(mut classPath: Arc<Absyn::Path>, mut program: Absyn::Program) -> Arc<Values::Value> {
+pub(crate) fn getConnectorCount(mut classPath: Arc<Absyn::Path>, mut program: Absyn::Program) -> Arc<Values::Value> {
     let mut result: Arc<Values::Value>;
     let mut cdef: Arc<Absyn::Class>;
     match '__try0: {
@@ -7565,7 +7565,7 @@ pub fn getConnectorCount(mut classPath: Arc<Absyn::Path>, mut program: Absyn::Pr
     result
 }
 
-pub fn getNthConnector(mut classPath: Arc<Absyn::Path>, mut n: i32, mut program: Absyn::Program) -> Arc<Values::Value> {
+pub(crate) fn getNthConnector(mut classPath: Arc<Absyn::Path>, mut n: i32, mut program: Absyn::Program) -> Arc<Values::Value> {
     let mut result: Arc<Values::Value>;
     let mut cls: Arc<Absyn::Class>;
     let mut name: ArcStr;
@@ -7591,7 +7591,7 @@ pub fn getNthConnector(mut classPath: Arc<Absyn::Path>, mut n: i32, mut program:
     result
 }
 
-pub fn getNthConnectorIconAnnotation(mut classPath: Arc<Absyn::Path>, mut n: i32, mut program: Absyn::Program) -> Result<Arc<Values::Value>> {
+pub(crate) fn getNthConnectorIconAnnotation(mut classPath: Arc<Absyn::Path>, mut n: i32, mut program: Absyn::Program) -> Result<Arc<Values::Value>> {
     fn r#impl(mut classPath: Arc<Absyn::Path>, mut n: i32, mut program: Absyn::Program, mut accessLevel: Access) -> Result<Arc<Values::Value>> {
         let mut result: Arc<Values::Value>;
         let mut cls: Arc<Absyn::Class>;
@@ -7611,7 +7611,7 @@ pub fn getNthConnectorIconAnnotation(mut classPath: Arc<Absyn::Path>, mut n: i32
     Ok(result)
 }
 
-pub fn getIconAnnotation(mut classPath: Arc<Absyn::Path>, mut program: Absyn::Program) -> Result<Arc<Values::Value>> {
+pub(crate) fn getIconAnnotation(mut classPath: Arc<Absyn::Path>, mut program: Absyn::Program) -> Result<Arc<Values::Value>> {
     fn r#impl(mut classPath: Arc<Absyn::Path>, mut program: Absyn::Program, mut accessLevel: Access) -> Result<Arc<Values::Value>> {
         let mut result: Arc<Values::Value>;
         result = getNamedAnnotationValue(classPath.clone(), program.clone(), (literal!("Icon")).clone())?;
@@ -7623,7 +7623,7 @@ pub fn getIconAnnotation(mut classPath: Arc<Absyn::Path>, mut program: Absyn::Pr
     Ok(result)
 }
 
-pub fn refactorIconAnnotation(mut classPath: Arc<Absyn::Path>, mut program: Absyn::Program) -> Result<Arc<Values::Value>> {
+pub(crate) fn refactorIconAnnotation(mut classPath: Arc<Absyn::Path>, mut program: Absyn::Program) -> Result<Arc<Values::Value>> {
     fn r#impl(mut classPath: Arc<Absyn::Path>, mut program: Absyn::Program, mut accessLevel: Access) -> Result<Arc<Values::Value>> {
         let mut result: Arc<Values::Value>;
         let mut cls: Arc<Absyn::Class>;
@@ -7638,7 +7638,7 @@ pub fn refactorIconAnnotation(mut classPath: Arc<Absyn::Path>, mut program: Absy
     Ok(result)
 }
 
-pub fn getDiagramAnnotation(mut classPath: Arc<Absyn::Path>, mut program: Absyn::Program) -> Result<Arc<Values::Value>> {
+pub(crate) fn getDiagramAnnotation(mut classPath: Arc<Absyn::Path>, mut program: Absyn::Program) -> Result<Arc<Values::Value>> {
     fn r#impl(mut classPath: Arc<Absyn::Path>, mut program: Absyn::Program, mut accessLevel: Access) -> Result<Arc<Values::Value>> {
         let mut result: Arc<Values::Value>;
         result = getNamedAnnotationValue(classPath.clone(), program.clone(), (literal!("Diagram")).clone())?;
@@ -7650,7 +7650,7 @@ pub fn getDiagramAnnotation(mut classPath: Arc<Absyn::Path>, mut program: Absyn:
     Ok(result)
 }
 
-pub fn refactorDiagramAnnotation(mut classPath: Arc<Absyn::Path>, mut program: Absyn::Program) -> Result<Arc<Values::Value>> {
+pub(crate) fn refactorDiagramAnnotation(mut classPath: Arc<Absyn::Path>, mut program: Absyn::Program) -> Result<Arc<Values::Value>> {
     fn r#impl(mut classPath: Arc<Absyn::Path>, mut program: Absyn::Program, mut accessLevel: Access) -> Result<Arc<Values::Value>> {
         let mut result: Arc<Values::Value>;
         let mut cls: Arc<Absyn::Class>;
@@ -7665,7 +7665,7 @@ pub fn refactorDiagramAnnotation(mut classPath: Arc<Absyn::Path>, mut program: A
     Ok(result)
 }
 
-pub fn getNamedAnnotation(mut classPath: Arc<Absyn::Path>, mut annotationPath: Arc<Absyn::Path>, mut program: Absyn::Program) -> Result<Arc<Values::Value>> {
+pub(crate) fn getNamedAnnotation(mut classPath: Arc<Absyn::Path>, mut annotationPath: Arc<Absyn::Path>, mut program: Absyn::Program) -> Result<Arc<Values::Value>> {
     fn r#impl(mut classPath: Arc<Absyn::Path>, mut annotationPath: Arc<Absyn::Path>, mut program: Absyn::Program, mut accessLevel: Access) -> Result<Arc<Values::Value>> {
         let mut result: Arc<Values::Value>;
         let mut r#str: ArcStr;
@@ -7679,7 +7679,7 @@ pub fn getNamedAnnotation(mut classPath: Arc<Absyn::Path>, mut annotationPath: A
     Ok(result)
 }
 
-pub fn getStringNamedAnnotation(mut inPath: Arc<Absyn::Path>, mut inProgram: Absyn::Program, mut id: Arc<Absyn::Path>) -> ArcStr {
+pub(crate) fn getStringNamedAnnotation(mut inPath: Arc<Absyn::Path>, mut inProgram: Absyn::Program, mut id: Arc<Absyn::Path>) -> ArcStr {
     let mut outString: ArcStr;
     match '__try0: {
         let __pa1 = ::match_deref::match_deref! { match &(unwrap_break_err!(ProgramUtil::getNamedAnnotationExp(inPath.clone(), inProgram.clone(), id.clone(), Some(Arc::new(Absyn::Exp::STRING { value: (literal!("")).clone() })), (std::sync::Arc::new(getAnnotationExp) as std::sync::Arc<dyn ::std::ops::Fn(Option<Arc<Absyn::Modification>>) -> Result<Arc<Absyn::Exp>> + 'static>)), '__try0)) {
@@ -7699,7 +7699,7 @@ pub fn getStringNamedAnnotation(mut inPath: Arc<Absyn::Path>, mut inProgram: Abs
     outString
 }
 
-pub fn getIntegerNamedAnnotation(mut inPath: Arc<Absyn::Path>, mut inProgram: Absyn::Program, mut id: Arc<Absyn::Path>) -> ArcStr {
+pub(crate) fn getIntegerNamedAnnotation(mut inPath: Arc<Absyn::Path>, mut inProgram: Absyn::Program, mut id: Arc<Absyn::Path>) -> ArcStr {
     let mut outString: ArcStr;
     let mut cdef: Arc<Absyn::Class>;
     let mut exp: Option<Arc<Absyn::Exp>>;
@@ -7729,7 +7729,7 @@ pub fn getIntegerNamedAnnotation(mut inPath: Arc<Absyn::Path>, mut inProgram: Ab
     outString
 }
 
-pub fn getNamedAnnotationValue(mut classPath: Arc<Absyn::Path>, mut program: Absyn::Program, mut name: ArcStr) -> Result<Arc<Values::Value>> {
+pub(crate) fn getNamedAnnotationValue(mut classPath: Arc<Absyn::Path>, mut program: Absyn::Program, mut name: ArcStr) -> Result<Arc<Values::Value>> {
     let mut result: Arc<Values::Value>;
     let mut cls: Arc<Absyn::Class>;
     cls = ProgramUtil::getPathedClassInProgram(classPath.clone(), program.clone(), false, false)?;
@@ -7737,7 +7737,7 @@ pub fn getNamedAnnotationValue(mut classPath: Arc<Absyn::Path>, mut program: Abs
     Ok(result)
 }
 
-pub fn getNamedAnnotationValueInClass(mut classPath: Arc<Absyn::Path>, mut cls: Arc<Absyn::Class>, mut program: Absyn::Program, mut name: ArcStr) -> Result<Arc<Values::Value>> {
+pub(crate) fn getNamedAnnotationValueInClass(mut classPath: Arc<Absyn::Path>, mut cls: Arc<Absyn::Class>, mut program: Absyn::Program, mut name: ArcStr) -> Result<Arc<Values::Value>> {
     let mut result: Arc<Values::Value>;
     let mut r#mod: Option<Arc<Absyn::Modification>>;
     let mut arg: Arc<Absyn::ElementArg> = Arc::new(<Absyn::ElementArg as ::std::default::Default>::default());
@@ -7757,7 +7757,7 @@ pub fn getNamedAnnotationValueInClass(mut classPath: Arc<Absyn::Path>, mut cls: 
 
 pub static USES_PATH: std::sync::LazyLock<Arc<Absyn::Path>> = std::sync::LazyLock::new(|| { Arc::new(Absyn::Path::IDENT { name: (literal!("uses")).clone() }) });
 
-pub fn getUsesAnnotation(mut program: Absyn::Program) -> Result<Arc<metamodelica::List<(Arc<Absyn::Path>, ArcStr, Arc<metamodelica::List<ArcStr>>, bool)>>> {
+pub(crate) fn getUsesAnnotation(mut program: Absyn::Program) -> Result<Arc<metamodelica::List<(Arc<Absyn::Path>, ArcStr, Arc<metamodelica::List<ArcStr>>, bool)>>> {
     pub type Annotation = (Arc<Absyn::Path>, ArcStr, Arc<metamodelica::List<ArcStr>>, bool);
 
     let mut outUses: Arc<metamodelica::List<(Arc<Absyn::Path>, ArcStr, Arc<metamodelica::List<ArcStr>>, bool)>> = metamodelica::nil();
@@ -7781,7 +7781,7 @@ pub fn getUsesAnnotation(mut program: Absyn::Program) -> Result<Arc<metamodelica
     Ok(outUses)
 }
 
-pub fn getUsesAnnotationOrDefault(mut p: Absyn::Program, mut requireExactVersion: bool) -> Result<Arc<metamodelica::List<(Arc<Absyn::Path>, ArcStr, Arc<metamodelica::List<ArcStr>>, bool)>>> {
+pub(crate) fn getUsesAnnotationOrDefault(mut p: Absyn::Program, mut requireExactVersion: bool) -> Result<Arc<metamodelica::List<(Arc<Absyn::Path>, ArcStr, Arc<metamodelica::List<ArcStr>>, bool)>>> {
     let mut usesStr: Arc<metamodelica::List<(Arc<Absyn::Path>, ArcStr, Arc<metamodelica::List<ArcStr>>, bool)>>;
     let mut paths: Arc<metamodelica::List<Arc<Absyn::Path>>>;
     let mut strs: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>;
@@ -7860,7 +7860,7 @@ fn getUsesAnnotationString2(mut eltArgs: Arc<metamodelica::List<Arc<Absyn::Eleme
     }
 }
 
-pub fn getUsedVersion(mut cls: Arc<Absyn::Class>, mut library: Arc<Absyn::Path>) -> Result<Option<ArcStr>> {
+pub(crate) fn getUsedVersion(mut cls: Arc<Absyn::Class>, mut library: Arc<Absyn::Path>) -> Result<Option<ArcStr>> {
     let mut version: Option<ArcStr> = None;
     let mut uses: Arc<metamodelica::List<(Arc<Absyn::Path>, ArcStr, Arc<metamodelica::List<ArcStr>>, bool)>>;
     let mut lib: Arc<Absyn::Path>;
@@ -7879,7 +7879,7 @@ pub fn getUsedVersion(mut cls: Arc<Absyn::Class>, mut library: Arc<Absyn::Path>)
     Ok(version)
 }
 
-pub fn updateUsedVersion(mut cls: Arc<Absyn::Class>, mut library: Arc<Absyn::Path>, mut newVersion: ArcStr) -> Result<Arc<Absyn::Class>> {
+pub(crate) fn updateUsedVersion(mut cls: Arc<Absyn::Class>, mut library: Arc<Absyn::Path>, mut newVersion: ArcStr) -> Result<Arc<Absyn::Class>> {
     fn make_version_exp(mut exp: Arc<Absyn::Exp>, mut version: ArcStr) -> Arc<Absyn::Exp> {
         let mut outExp: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::STRING { value: (version.clone()).clone() });
         outExp
@@ -7905,7 +7905,7 @@ pub fn updateUsedVersion(mut cls: Arc<Absyn::Class>, mut library: Arc<Absyn::Pat
     Ok(cls)
 }
 
-pub fn getConversionAnnotation(mut cls: Arc<Absyn::Class>) -> (Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>) {
+pub(crate) fn getConversionAnnotation(mut cls: Arc<Absyn::Class>) -> (Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>) {
     let mut withoutConversion: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     let mut withConversion: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     let mut opt_conversion: Option<(Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>)>;
@@ -7947,7 +7947,7 @@ fn getConversionAnnotationString(mut r#mod: Option<Arc<Absyn::Modification>>) ->
     Ok(result)
 }
 
-pub fn getConversionsInClass(mut cls: Arc<Absyn::Class>) -> Arc<metamodelica::List<(ArcStr, Option<ArcStr>, Option<ArcStr>)>> {
+pub(crate) fn getConversionsInClass(mut cls: Arc<Absyn::Class>) -> Arc<metamodelica::List<(ArcStr, Option<ArcStr>, Option<ArcStr>)>> {
     let mut result: Arc<metamodelica::List<(ArcStr, Option<ArcStr>, Option<ArcStr>)>>;
     let mut res: Option<Arc<metamodelica::List<(ArcStr, Option<ArcStr>, Option<ArcStr>)>>>;
     res = AbsynUtil::getNamedAnnotationInClass(cls.clone(), Arc::new(Absyn::Path::IDENT { name: (literal!("conversion")).clone() }), (std::sync::Arc::new(getConversionsInClassMod) as std::sync::Arc<dyn ::std::ops::Fn(Option<Arc<Absyn::Modification>>) -> Result<Arc<metamodelica::List<(ArcStr, Option<ArcStr>, Option<ArcStr>)>>> + 'static>));
@@ -8085,7 +8085,7 @@ fn parseConversionAnnotationElement(mut r#mod: Arc<Absyn::ElementArg>) -> Result
     Ok((fromVersion, toVersion, scriptFilename))
 }
 
-pub fn getPackagesInPath(mut inPath: Arc<Absyn::Path>, mut inProgram: Absyn::Program) -> Arc<metamodelica::List<Arc<Absyn::Path>>> {
+pub(crate) fn getPackagesInPath(mut inPath: Arc<Absyn::Path>, mut inProgram: Absyn::Program) -> Arc<metamodelica::List<Arc<Absyn::Path>>> {
     let mut paths: Arc<metamodelica::List<Arc<Absyn::Path>>>;
     paths = 'mc: {
         let __mc_input = (inPath.clone(), inProgram.clone());
@@ -8112,7 +8112,7 @@ pub fn getPackagesInPath(mut inPath: Arc<Absyn::Path>, mut inProgram: Absyn::Pro
     paths
 }
 
-pub fn getTopPackages(mut p: Absyn::Program) -> Result<Arc<metamodelica::List<Arc<Absyn::Path>>>> {
+pub(crate) fn getTopPackages(mut p: Absyn::Program) -> Result<Arc<metamodelica::List<Arc<Absyn::Path>>>> {
     let mut paths: Arc<metamodelica::List<Arc<Absyn::Path>>>;
     paths = List::map(getTopPackagesInProgram(p.clone())?, (std::sync::Arc::new(fnptr!(AbsynUtil::makeIdentPathFromString, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<Arc<Absyn::Path>> + 'static>))?;
     Ok(paths)
@@ -8268,7 +8268,7 @@ fn getPackagesInElts(mut inAbsynElementItemLst: Arc<metamodelica::List<Arc<Absyn
     outStringLst
 }
 
-pub fn getClassnamesInPath(mut inPath: Arc<Absyn::Path>, mut inProgram: Absyn::Program, mut inShowProtected: bool, mut includeConstants: bool) -> Arc<metamodelica::List<Arc<Absyn::Path>>> {
+pub(crate) fn getClassnamesInPath(mut inPath: Arc<Absyn::Path>, mut inProgram: Absyn::Program, mut inShowProtected: bool, mut includeConstants: bool) -> Arc<metamodelica::List<Arc<Absyn::Path>>> {
     let mut paths: Arc<metamodelica::List<Arc<Absyn::Path>>>;
     paths = 'mc: {
         let __mc_input = (inPath.clone(), inProgram.clone(), inShowProtected.clone(), includeConstants.clone());
@@ -8295,13 +8295,13 @@ pub fn getClassnamesInPath(mut inPath: Arc<Absyn::Path>, mut inProgram: Absyn::P
     paths
 }
 
-pub fn getTopClassnames(mut p: Absyn::Program) -> Result<Arc<metamodelica::List<Arc<Absyn::Path>>>> {
+pub(crate) fn getTopClassnames(mut p: Absyn::Program) -> Result<Arc<metamodelica::List<Arc<Absyn::Path>>>> {
     let mut paths: Arc<metamodelica::List<Arc<Absyn::Path>>>;
     paths = List::map(getTopClassnamesInProgram(p.clone())?, (std::sync::Arc::new(fnptr!(AbsynUtil::makeIdentPathFromString, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<Arc<Absyn::Path>> + 'static>))?;
     Ok(paths)
 }
 
-pub fn getTopClassnamesInProgram(mut inProgram: Absyn::Program) -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub(crate) fn getTopClassnamesInProgram(mut inProgram: Absyn::Program) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut outStringLst: Arc<metamodelica::List<ArcStr>>;
     outStringLst = 'mc: {
         let __mc_input = inProgram.clone();
@@ -8525,7 +8525,7 @@ fn countBaseClassesFromParts(mut parts: Arc<metamodelica::List<Arc<Absyn::ClassP
     count
 }
 
-pub fn getDocumentationClassAnnotation(mut className: Arc<Absyn::Path>, mut p: Absyn::Program) -> Result<bool> {
+pub(crate) fn getDocumentationClassAnnotation(mut className: Arc<Absyn::Path>, mut p: Absyn::Program) -> Result<bool> {
     let mut isDocClass: bool;
     isDocClass = (match p.clone() {
         _ => {
@@ -8564,7 +8564,7 @@ fn getDocumentationClassAnnotationModStr(mut r#mod: Option<Arc<Absyn::Modificati
     docStr
 }
 
-pub fn getDefaultComponentName(mut classPath: Arc<Absyn::Path>, mut program: Absyn::Program) -> Arc<Values::Value> {
+pub(crate) fn getDefaultComponentName(mut classPath: Arc<Absyn::Path>, mut program: Absyn::Program) -> Arc<Values::Value> {
     let mut result: Arc<Values::Value>;
     let mut r#str: ArcStr;
     r#str = (getStringNamedAnnotation(classPath.clone(), program.clone(), Arc::new(Absyn::Path::IDENT { name: (literal!("defaultComponentName")).clone() }))).clone();
@@ -8572,7 +8572,7 @@ pub fn getDefaultComponentName(mut classPath: Arc<Absyn::Path>, mut program: Abs
     result
 }
 
-pub fn getDefaultComponentPrefixes(mut classPath: Arc<Absyn::Path>, mut program: Absyn::Program) -> Arc<Values::Value> {
+pub(crate) fn getDefaultComponentPrefixes(mut classPath: Arc<Absyn::Path>, mut program: Absyn::Program) -> Arc<Values::Value> {
     let mut result: Arc<Values::Value>;
     let mut r#str: ArcStr;
     r#str = (getStringNamedAnnotation(classPath.clone(), program.clone(), Arc::new(Absyn::Path::IDENT { name: (literal!("defaultComponentPrefixes")).clone() }))).clone();
@@ -8606,7 +8606,7 @@ fn getAnnotationValue(mut r#mod: Option<Arc<Absyn::Modification>>) -> ArcStr {
     r#str
 }
 
-pub fn getAnnotationExp(mut r#mod: Option<Arc<Absyn::Modification>>) -> Result<Arc<Absyn::Exp>> {
+pub(crate) fn getAnnotationExp(mut r#mod: Option<Arc<Absyn::Modification>>) -> Result<Arc<Absyn::Exp>> {
     let mut exp: Arc<Absyn::Exp>;
     let __pa0 = ::match_deref::match_deref! { match &(r#mod.clone()) {
         Some(Deref @ Absyn::Modification { elementArgLst: Deref @ metamodelica::List::Nil, eqMod: Deref @ Absyn::EqMod::EQMOD { exp: __pa0, .. } }) => __pa0.clone(),
@@ -8616,7 +8616,7 @@ pub fn getAnnotationExp(mut r#mod: Option<Arc<Absyn::Modification>>) -> Result<A
     Ok(exp)
 }
 
-pub fn getAnnotationStringValueOrFail(mut r#mod: Option<Arc<Absyn::Modification>>) -> Result<ArcStr> {
+pub(crate) fn getAnnotationStringValueOrFail(mut r#mod: Option<Arc<Absyn::Modification>>) -> Result<ArcStr> {
     let mut r#str: ArcStr;
     r#str = ((::match_deref::match_deref! { match &(r#mod.clone()) {
         Some(Deref @ Absyn::Modification { elementArgLst: Deref @ metamodelica::List::Nil, eqMod: Deref @ Absyn::EqMod::EQMOD { exp, .. } }) => {
@@ -8627,7 +8627,7 @@ pub fn getAnnotationStringValueOrFail(mut r#mod: Option<Arc<Absyn::Modification>
     Ok(r#str)
 }
 
-pub fn getExperimentAnnotationString(mut r#mod: Option<Arc<Absyn::Modification>>) -> Result<ArcStr> {
+pub(crate) fn getExperimentAnnotationString(mut r#mod: Option<Arc<Absyn::Modification>>) -> Result<ArcStr> {
     let mut experimentStr: ArcStr;
     experimentStr = ((::match_deref::match_deref! { match &(r#mod.clone()) {
         Some(Deref @ Absyn::Modification { elementArgLst: arglst, .. }) => {
@@ -8682,7 +8682,7 @@ fn getExperimentAnnotationString2(mut eltArgs: Arc<metamodelica::List<Arc<Absyn:
     strs
 }
 
-pub fn getDocumentationAnnotationString(mut r#mod: Option<Arc<Absyn::Modification>>) -> Result<(ArcStr, ArcStr, ArcStr)> {
+pub(crate) fn getDocumentationAnnotationString(mut r#mod: Option<Arc<Absyn::Modification>>) -> Result<(ArcStr, ArcStr, ArcStr)> {
     let mut docStr: (ArcStr, ArcStr, ArcStr);
     docStr = (::match_deref::match_deref! { match &(r#mod.clone()) {
         Some(Deref @ Absyn::Modification { elementArgLst: arglst, .. }) => {
@@ -9049,7 +9049,7 @@ fn getConnectionAnnotationStr(mut inEquationItem: Arc<Absyn::EquationItem>, mut 
     Ok(result)
 }
 
-pub fn createFuncargsFromElementargs(mut inAbsynElementArgLst: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>) -> Result<Arc<Absyn::FunctionArgs>> {
+pub(crate) fn createFuncargsFromElementargs(mut inAbsynElementArgLst: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>) -> Result<Arc<Absyn::FunctionArgs>> {
     let mut outFunctionArgs: Arc<Absyn::FunctionArgs>;
     outFunctionArgs = 'mc: {
         let __mc_input = inAbsynElementArgLst.clone();
@@ -9114,7 +9114,7 @@ fn getConnectionStr(mut inEquation: Arc<Absyn::Equation>) -> Result<(ArcStr, Arc
     Ok((outFromString, outToString))
 }
 
-pub fn getConnections(mut inClass: Arc<Absyn::Class>) -> Arc<metamodelica::List<Arc<Absyn::EquationItem>>> {
+pub(crate) fn getConnections(mut inClass: Arc<Absyn::Class>) -> Arc<metamodelica::List<Arc<Absyn::EquationItem>>> {
     let mut connections: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>;
     connections = getConnectionsInClassparts(AbsynUtil::getClassPartsInClass(inClass.clone()));
     connections
@@ -9186,7 +9186,7 @@ fn getConnectionsInEquations(mut inAbsynEquationItemLst: Arc<metamodelica::List<
     }
 }
 
-pub fn getComponentModification(mut element: Arc<Absyn::Element>) -> Result<Arc<Values::Value>> {
+pub(crate) fn getComponentModification(mut element: Arc<Absyn::Element>) -> Result<Arc<Values::Value>> {
     let mut result: Arc<Values::Value>;
     let mut comps: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>> = metamodelica::nil();
     let mut opt_mod: Option<Arc<Absyn::Modification>> = None;
@@ -9210,7 +9210,7 @@ pub fn getComponentModification(mut element: Arc<Absyn::Element>) -> Result<Arc<
     Ok(result)
 }
 
-pub fn cacheProgramAndPath(mut inCache: GraphicEnvCache) -> Result<(Absyn::Program, Arc<Absyn::Path>)> {
+pub(crate) fn cacheProgramAndPath(mut inCache: GraphicEnvCache) -> Result<(Absyn::Program, Arc<Absyn::Path>)> {
     let mut outProgram: Absyn::Program;
     let mut outPath: Arc<Absyn::Path>;
     (outProgram, outPath) = (match inCache.clone() {
@@ -9221,7 +9221,7 @@ pub fn cacheProgramAndPath(mut inCache: GraphicEnvCache) -> Result<(Absyn::Progr
     Ok((outProgram, outPath))
 }
 
-pub fn envFromGraphicEnvCache(mut inEnvCache: GraphicEnvCache) -> Result<FCore::Graph> {
+pub(crate) fn envFromGraphicEnvCache(mut inEnvCache: GraphicEnvCache) -> Result<FCore::Graph> {
     let mut env: FCore::Graph;
     let GraphicEnvCache::GRAPHIC_ENV_FULL_CACHE { env: __pa0, .. } = (inEnvCache.clone()) else { bail!("pattern mismatch") };
     env = __pa0.clone();
@@ -9277,7 +9277,7 @@ fn getAnnotationString(mut inAnnotation: Arc<Absyn::Annotation>, mut inClass: Ar
     Ok(outString)
 }
 
-pub fn keywordReplaceable(mut inAbsynRedeclareKeywordsOption: Option<Absyn::RedeclareKeywords>) -> bool {
+pub(crate) fn keywordReplaceable(mut inAbsynRedeclareKeywordsOption: Option<Absyn::RedeclareKeywords>) -> bool {
     let mut outBoolean: bool;
     outBoolean = (match inAbsynRedeclareKeywordsOption.clone() {
         Some(Absyn::RedeclareKeywords::REPLACEABLE { .. }) => true,
@@ -9306,7 +9306,7 @@ fn getComponentInfoOld(mut inElement: Arc<Absyn::Element>, mut inEnv: GraphicEnv
     Ok((componentName, typeName, comment))
 }
 
-pub fn transformPathedClassInProgram(mut inPath: Arc<Absyn::Path>, mut inProgram: Absyn::Program, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Class>) -> Result<Arc<Absyn::Class>> + 'static>) -> Result<Absyn::Program> {
+pub(crate) fn transformPathedClassInProgram(mut inPath: Arc<Absyn::Path>, mut inProgram: Absyn::Program, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Class>) -> Result<Arc<Absyn::Class>> + 'static>) -> Result<Absyn::Program> {
     pub type FuncType = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Class>) -> Result<Arc<Absyn::Class>> + 'static>;
 
     '__tco: loop {
@@ -9319,7 +9319,7 @@ pub fn transformPathedClassInProgram(mut inPath: Arc<Absyn::Path>, mut inProgram
     }
 }
 
-pub fn transformClassInProgram(mut inName: ArcStr, mut inProgram: Absyn::Program, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Class>) -> Result<Arc<Absyn::Class>> + 'static>) -> Result<Absyn::Program> {
+pub(crate) fn transformClassInProgram(mut inName: ArcStr, mut inProgram: Absyn::Program, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Class>) -> Result<Arc<Absyn::Class>> + 'static>) -> Result<Absyn::Program> {
     pub type FuncType = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Class>) -> Result<Arc<Absyn::Class>> + 'static>;
 
     let mut outProgram: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
@@ -9472,7 +9472,7 @@ fn transformClassInElementSpec(mut name: ArcStr, mut func: Arc<dyn ::std::ops::F
     Ok((spec, found))
 }
 
-pub fn getContainedClassAndFile(mut inPath: Arc<Absyn::Path>, mut inProgram: Absyn::Program) -> Result<(Absyn::Program, ArcStr)> {
+pub(crate) fn getContainedClassAndFile(mut inPath: Arc<Absyn::Path>, mut inProgram: Absyn::Program) -> Result<(Absyn::Program, ArcStr)> {
     let mut outProgram: Absyn::Program;
     let mut outString: ArcStr;
     (outProgram, outString) = (::match_deref::match_deref! { match &((inPath.clone(), inProgram.clone())) {
@@ -9589,7 +9589,7 @@ fn getSurroundingPackage(mut classpath: Arc<Absyn::Path>, mut inProgram: Absyn::
     Ok(p)
 }
 
-pub fn transformFlatProgram(mut p: Absyn::Program) -> Result<Absyn::Program> {
+pub(crate) fn transformFlatProgram(mut p: Absyn::Program) -> Result<Absyn::Program> {
     let mut newP: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
     newP = (match p.clone() {
         _ => {
@@ -9700,7 +9700,7 @@ fn transformFlatClassDef(mut cdef: Arc<Absyn::ClassDef>) -> Result<Arc<Absyn::Cl
     Ok(outCdef)
 }
 
-pub fn transformFlatPart(mut part: Arc<Absyn::ClassPart>) -> Result<Arc<Absyn::ClassPart>> {
+pub(crate) fn transformFlatPart(mut part: Arc<Absyn::ClassPart>) -> Result<Arc<Absyn::ClassPart>> {
     let mut outPart: Arc<Absyn::ClassPart>;
     outPart = 'mc: {
         let __mc_input = part.clone();
@@ -10207,7 +10207,7 @@ fn transformFlatElseIfAlgorithm(mut elseIfbranch: (Arc<Absyn::Exp>, Arc<metamode
 }
 
 /* Start getDefinitions */
-pub fn getDefinitions(mut ast: Absyn::Program, mut addFunctions: bool) -> Result<Arc<Values::Value>> {
+pub(crate) fn getDefinitions(mut ast: Absyn::Program, mut addFunctions: bool) -> Result<Arc<Values::Value>> {
     let mut res: Arc<Values::Value>;
     let mut classes: Arc<metamodelica::List<Arc<Absyn::Class>>>;
     let mut handle: i32;
@@ -10379,7 +10379,7 @@ fn getDefinitionPathString(mut path: Arc<Absyn::Path>) -> Result<ArcStr> {
     Ok(out)
 }
 
-pub fn getDefinitionTypeSpecPathString(mut tp: Arc<Absyn::TypeSpec>) -> Result<ArcStr> {
+pub(crate) fn getDefinitionTypeSpecPathString(mut tp: Arc<Absyn::TypeSpec>) -> Result<ArcStr> {
     let mut s: ArcStr;
     s = ('mc: {
         let __mc_input = tp.clone();
@@ -10622,7 +10622,7 @@ fn getDefinitionTypeVars(mut inTypeVars: Arc<metamodelica::List<ArcStr>>, mut in
 }
 
 /* End getDefinitions */
-pub fn parseFile(mut fileName: ArcStr, mut encoding: ArcStr, mut updateProgram: bool) -> Result<Arc<metamodelica::List<Arc<Absyn::Path>>>> {
+pub(crate) fn parseFile(mut fileName: ArcStr, mut encoding: ArcStr, mut updateProgram: bool) -> Result<Arc<metamodelica::List<Arc<Absyn::Path>>>> {
     let mut topClassNamesQualified: Arc<metamodelica::List<Arc<Absyn::Path>>>;
     let mut parsed: Absyn::Program;
     let mut dir: ArcStr;
@@ -10654,7 +10654,7 @@ pub fn parseFile(mut fileName: ArcStr, mut encoding: ArcStr, mut updateProgram: 
     Ok(topClassNamesQualified)
 }
 
-pub fn getSCodeClassNamesRecursive(mut inProgram: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<Arc<metamodelica::List<Arc<Absyn::Path>>>> {
+pub(crate) fn getSCodeClassNamesRecursive(mut inProgram: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<Arc<metamodelica::List<Arc<Absyn::Path>>>> {
     let mut paths: Arc<metamodelica::List<Arc<Absyn::Path>>>;
     paths = List::fold1(inProgram.clone(), (std::sync::Arc::new(getSCodeClassNamesRecursiveWork) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, Option<Arc<Absyn::Path>>, Arc<metamodelica::List<Arc<Absyn::Path>>>) -> Result<Arc<metamodelica::List<Arc<Absyn::Path>>>> + 'static>), None, metamodelica::nil())?;
     Ok(paths)
@@ -10691,7 +10691,7 @@ fn getSCodeClassNamesRecursiveWork(mut inElement: Arc<SCode::Element>, mut inPat
     Ok(paths)
 }
 
-pub fn getAllInheritedClasses(mut inClassName: Arc<Absyn::Path>, mut inProgram: Absyn::Program) -> Arc<metamodelica::List<Arc<Absyn::Path>>> {
+pub(crate) fn getAllInheritedClasses(mut inClassName: Arc<Absyn::Path>, mut inProgram: Absyn::Program) -> Arc<metamodelica::List<Arc<Absyn::Path>>> {
     let mut outBaseClassNames: Arc<metamodelica::List<Arc<Absyn::Path>>>;
     outBaseClassNames = 'mc: {
         let __mc_input = (inClassName.clone(), inProgram.clone());
@@ -10722,7 +10722,7 @@ pub fn getAllInheritedClasses(mut inClassName: Arc<Absyn::Path>, mut inProgram: 
     outBaseClassNames
 }
 
-pub fn printIstmtStr(mut inStatements: GlobalScript::Statements) -> Result<ArcStr> {
+pub(crate) fn printIstmtStr(mut inStatements: GlobalScript::Statements) -> Result<ArcStr> {
     let mut strIstmt: ArcStr;
     strIstmt = (GlobalScriptDump::printIstmtsStr(inStatements.clone())?).clone();
     Ok(strIstmt)
@@ -10763,7 +10763,7 @@ fn getClassEnvNoElaboration(mut inProgram: Absyn::Program, mut inClassPath: Arc<
     Ok(outEnv)
 }
 
-pub fn setComponentDimensions(mut inClass: Arc<Absyn::Path>, mut inComponentName: Arc<Absyn::Path>, mut inDimensions: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inProgram: Absyn::Program) -> (Absyn::Program, bool) {
+pub(crate) fn setComponentDimensions(mut inClass: Arc<Absyn::Path>, mut inComponentName: Arc<Absyn::Path>, mut inDimensions: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inProgram: Absyn::Program) -> (Absyn::Program, bool) {
     let mut outProgram: Absyn::Program;
     let mut outResult: bool;
     let mut within_: Absyn::Within;
@@ -10837,7 +10837,7 @@ fn setComponentDimensionsInCompitems(mut inComponents: Arc<metamodelica::List<Ar
     Ok((outComponents, outFound, outContinue))
 }
 
-pub fn getInstantiatedParametersAndValues(mut odae: Option<DAE::DAElist>) -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub(crate) fn getInstantiatedParametersAndValues(mut odae: Option<DAE::DAElist>) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut parametersAndValues: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     let mut els: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
     let mut params: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
@@ -10865,7 +10865,7 @@ pub fn getInstantiatedParametersAndValues(mut odae: Option<DAE::DAElist>) -> Res
     Ok(parametersAndValues)
 }
 
-pub fn getAccessAnnotation(mut className: Arc<Absyn::Path>, mut p: Absyn::Program) -> Result<ArcStr> {
+pub(crate) fn getAccessAnnotation(mut className: Arc<Absyn::Path>, mut p: Absyn::Program) -> Result<ArcStr> {
     let mut access: ArcStr;
     access = ((match p.clone() {
         _ => {
@@ -10910,7 +10910,7 @@ fn getAccessAnnotationString2(mut eltArgs: Arc<metamodelica::List<Arc<Absyn::Ele
     }
 }
 
-pub fn checkAccessAnnotationAndEncryption(mut path: Arc<Absyn::Path>, mut p: Absyn::Program) -> Access {
+pub(crate) fn checkAccessAnnotationAndEncryption(mut path: Arc<Absyn::Path>, mut p: Absyn::Program) -> Access {
     let mut access: Access;
     let mut fileName: ArcStr;
     let mut encryptedClass: bool;
@@ -10950,7 +10950,7 @@ pub fn checkAccessAnnotationAndEncryption(mut path: Arc<Absyn::Path>, mut p: Abs
     access
 }
 
-pub fn astContainsEncryptedClass(mut inProgram: Absyn::Program) -> Result<bool> {
+pub(crate) fn astContainsEncryptedClass(mut inProgram: Absyn::Program) -> Result<bool> {
     let mut containsEncryptedClass: bool = false;
     let mut classes: Arc<metamodelica::List<Arc<Absyn::Class>>>;
     let mut fileName: ArcStr;
@@ -10971,7 +10971,7 @@ pub fn astContainsEncryptedClass(mut inProgram: Absyn::Program) -> Result<bool> 
     Ok(containsEncryptedClass)
 }
 
-pub fn addEquation(mut clsPath: Arc<Absyn::Path>, mut eqStr: ArcStr, mut isInitial: bool) -> bool {
+pub(crate) fn addEquation(mut clsPath: Arc<Absyn::Path>, mut eqStr: ArcStr, mut isInitial: bool) -> bool {
     let mut success: bool = false;
     let mut program: Absyn::Program;
     let mut eq: Arc<Absyn::EquationItem>;
@@ -10986,7 +10986,7 @@ pub fn addEquation(mut clsPath: Arc<Absyn::Path>, mut eqStr: ArcStr, mut isIniti
     success
 }
 
-pub fn updateEquation(mut clsPath: Arc<Absyn::Path>, mut oldEq: ArcStr, mut newEq: ArcStr, mut matchAll: bool, mut matchShallow: bool, mut matchDescription: bool, mut mergeDescription: bool) -> bool {
+pub(crate) fn updateEquation(mut clsPath: Arc<Absyn::Path>, mut oldEq: ArcStr, mut newEq: ArcStr, mut matchAll: bool, mut matchShallow: bool, mut matchDescription: bool, mut mergeDescription: bool) -> bool {
     let mut success: bool;
     let mut program: Absyn::Program;
     let mut old_eq: Arc<Absyn::EquationItem>;

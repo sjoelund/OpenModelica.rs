@@ -79,7 +79,7 @@ impl Default for SBPWLinearMap {
 
 pub type PW_LINEAR_MAP = SBPWLinearMap;
 
-pub fn new(mut dom: metamodelica::Array<Arc<SBSet::SBSet>>, mut lmap: metamodelica::Array<Arc<SBLinearMap::SBLinearMap>>) -> Result<Arc<SBPWLinearMap>> {
+pub(crate) fn new(mut dom: metamodelica::Array<Arc<SBSet::SBSet>>, mut lmap: metamodelica::Array<Arc<SBLinearMap::SBLinearMap>>) -> Result<Arc<SBPWLinearMap>> {
     let mut map: Arc<SBPWLinearMap>;
     let mut dim: i32 = 0;
     let mut same_dims: bool = false;
@@ -115,14 +115,14 @@ pub fn newEmpty() -> Arc<SBPWLinearMap> {
     map
 }
 
-pub fn newIdentity(mut set: Arc<SBSet::SBSet>) -> Arc<SBPWLinearMap> {
+pub(crate) fn newIdentity(mut set: Arc<SBSet::SBSet>) -> Arc<SBPWLinearMap> {
     let mut map: Arc<SBPWLinearMap>;
     let mut lmap: Arc<SBLinearMap::SBLinearMap> = SBLinearMap::newIdentity(SBSet::ndim(set.clone()));
     map = Arc::new(SBPWLinearMap { dom: arrayCreate(1, set.clone()), lmap: arrayCreate(1, lmap.clone()), ndim: 1 });
     map
 }
 
-pub fn copy(mut map: Arc<SBPWLinearMap>) -> Result<Arc<SBPWLinearMap>> {
+pub(crate) fn copy(mut map: Arc<SBPWLinearMap>) -> Result<Arc<SBPWLinearMap>> {
     let mut map: Arc<SBPWLinearMap> = map;
     assign_field!(
         map.dom = Array::map(map.dom.clone(), (std::sync::Arc::new(fnptr!(SBSet::copy, Arc<SBSet::SBSet>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBSet::SBSet>) -> Result<Arc<SBSet::SBSet>> + 'static>))?,
@@ -131,22 +131,22 @@ pub fn copy(mut map: Arc<SBPWLinearMap>) -> Result<Arc<SBPWLinearMap>> {
     Ok(map)
 }
 
-pub fn dom(mut map: Arc<SBPWLinearMap>) -> metamodelica::Array<Arc<SBSet::SBSet>> {
+pub(crate) fn dom(mut map: Arc<SBPWLinearMap>) -> metamodelica::Array<Arc<SBSet::SBSet>> {
     let mut dom: metamodelica::Array<Arc<SBSet::SBSet>> = map.dom.clone();
     dom
 }
 
-pub fn lmap(mut map: Arc<SBPWLinearMap>) -> metamodelica::Array<Arc<SBLinearMap::SBLinearMap>> {
+pub(crate) fn lmap(mut map: Arc<SBPWLinearMap>) -> metamodelica::Array<Arc<SBLinearMap::SBLinearMap>> {
     let mut lmap: metamodelica::Array<Arc<SBLinearMap::SBLinearMap>> = map.lmap.clone();
     lmap
 }
 
-pub fn ndim(mut map: Arc<SBPWLinearMap>) -> i32 {
+pub(crate) fn ndim(mut map: Arc<SBPWLinearMap>) -> i32 {
     let mut ndim: i32 = map.ndim.clone();
     ndim
 }
 
-pub fn isEmpty(mut map: Arc<SBPWLinearMap>) -> bool {
+pub(crate) fn isEmpty(mut map: Arc<SBPWLinearMap>) -> bool {
     let mut empty: bool = map.dom.clone().borrow().is_empty();
     empty
 }
@@ -202,7 +202,7 @@ pub fn preImage(mut map: Arc<SBPWLinearMap>, mut set: Arc<SBSet::SBSet>) -> Resu
     Ok(outSet)
 }
 
-pub fn compPW(mut map1: Arc<SBPWLinearMap>, mut map2: Arc<SBPWLinearMap>) -> Result<Arc<SBPWLinearMap>> {
+pub(crate) fn compPW(mut map1: Arc<SBPWLinearMap>, mut map2: Arc<SBPWLinearMap>) -> Result<Arc<SBPWLinearMap>> {
     let mut outMap: Arc<SBPWLinearMap>;
     let mut dom1: metamodelica::Array<Arc<SBSet::SBSet>> = map1.dom.clone();
     let mut dom2: metamodelica::Array<Arc<SBSet::SBSet>> = map2.dom.clone();
@@ -244,7 +244,7 @@ pub fn compPW(mut map1: Arc<SBPWLinearMap>, mut map2: Arc<SBPWLinearMap>) -> Res
     Ok(outMap)
 }
 
-pub fn minInvCompact(mut map: Arc<SBPWLinearMap>) -> Result<Arc<SBPWLinearMap>> {
+pub(crate) fn minInvCompact(mut map: Arc<SBPWLinearMap>) -> Result<Arc<SBPWLinearMap>> {
     let mut outMap: Arc<SBPWLinearMap>;
     let mut aux_dom: Arc<SBSet::SBSet>;
     let mut dom_inv: Arc<SBSet::SBSet>;
@@ -341,7 +341,7 @@ pub fn combine(mut map1: Arc<SBPWLinearMap>, mut map2: Arc<SBPWLinearMap>) -> Re
     Ok(outMap)
 }
 
-pub fn atomize(mut map: Arc<SBPWLinearMap>) -> Result<Arc<SBPWLinearMap>> {
+pub(crate) fn atomize(mut map: Arc<SBPWLinearMap>) -> Result<Arc<SBPWLinearMap>> {
     let mut outMap: Arc<SBPWLinearMap>;
     let mut dres: Arc<metamodelica::List<Arc<SBSet::SBSet>>> = metamodelica::nil();
     let mut dom: metamodelica::Array<Arc<SBSet::SBSet>> = map.dom.clone();
@@ -367,7 +367,7 @@ pub fn atomize(mut map: Arc<SBPWLinearMap>) -> Result<Arc<SBPWLinearMap>> {
     Ok(outMap)
 }
 
-pub fn isEqual(mut map1: Arc<SBPWLinearMap>, mut map2: Arc<SBPWLinearMap>) -> Result<bool> {
+pub(crate) fn isEqual(mut map1: Arc<SBPWLinearMap>, mut map2: Arc<SBPWLinearMap>) -> Result<bool> {
     let mut equal: bool;
     equal = Array::isEqualOnTrue(map1.dom.clone(), map2.dom.clone(), (std::sync::Arc::new(SBSet::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBSet::SBSet>, Arc<SBSet::SBSet>) -> Result<bool> + 'static>))? && Array::isEqualOnTrue(map1.lmap.clone(), map2.lmap.clone(), (std::sync::Arc::new(SBLinearMap::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBLinearMap::SBLinearMap>, Arc<SBLinearMap::SBLinearMap>) -> Result<bool> + 'static>))?;
     Ok(equal)

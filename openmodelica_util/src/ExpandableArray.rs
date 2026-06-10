@@ -264,7 +264,7 @@ pub fn compress<T: Clone + 'static + metamodelica::gc::MMTrace>(mut exarray: Arc
     exarray
 }
 
-pub fn shrink<T: Clone + 'static + metamodelica::gc::MMTrace>(mut exarray: Arc<ExpandableArray<T>>) -> Arc<ExpandableArray<T>> {
+pub(crate) fn shrink<T: Clone + 'static + metamodelica::gc::MMTrace>(mut exarray: Arc<ExpandableArray<T>>) -> Arc<ExpandableArray<T>> {
     let mut exarray: Arc<ExpandableArray<T>> = exarray;
     let mut numberOfElements: i32 = Mutable::access(exarray.numberOfElements.clone());
     let mut data: metamodelica::Array<Option<T>> = Mutable::access(exarray.data.clone());
@@ -324,7 +324,7 @@ pub fn getLastUsedIndex<T: Clone + 'static + metamodelica::gc::MMTrace>(mut exar
     lastUsedIndex
 }
 
-pub fn getCapacity<T: Clone + 'static + metamodelica::gc::MMTrace>(mut exarray: Arc<ExpandableArray<T>>) -> i32 {
+pub(crate) fn getCapacity<T: Clone + 'static + metamodelica::gc::MMTrace>(mut exarray: Arc<ExpandableArray<T>>) -> i32 {
     let mut capacity: i32 = Mutable::access(exarray.capacity.clone());
     capacity
 }

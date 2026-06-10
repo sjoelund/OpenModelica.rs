@@ -57,7 +57,7 @@ use openmodelica_util_datatypes_basic::List;
 
 pub type Env = Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>;
 
-pub fn flattenProgram(mut inProgram: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> {
+pub(crate) fn flattenProgram(mut inProgram: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> {
     let mut outProgram: Arc<metamodelica::List<Arc<SCode::Element>>>;
     let mut cls_path: Arc<Absyn::Path>;
     cls_path = getLastClassNameInProgram(inProgram.clone())?;
@@ -89,7 +89,7 @@ fn isClass(mut inClass: Arc<SCode::Element>) -> bool {
     outIsClass
 }
 
-pub fn flattenClass(mut inClass: Arc<SCode::Element>) -> Result<Arc<SCode::Element>> {
+pub(crate) fn flattenClass(mut inClass: Arc<SCode::Element>) -> Result<Arc<SCode::Element>> {
     let mut outClass: Arc<SCode::Element>;
     let __pa0 = ::match_deref::match_deref! { match &(flattenProgram(list![inClass.clone()])?) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Nil } => __pa0.clone(),
@@ -139,7 +139,7 @@ pub fn flattenClassInProgram(mut inClassName: Arc<Absyn::Path>, mut inProgram: A
     Ok((outProgram, outEnv))
 }
 
-pub fn flattenCompleteProgram(mut inProgram: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> {
+pub(crate) fn flattenCompleteProgram(mut inProgram: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> {
     let mut outProgram: Arc<metamodelica::List<Arc<SCode::Element>>>;
     outProgram = 'mc: {
         let __mc_input = inProgram.clone();

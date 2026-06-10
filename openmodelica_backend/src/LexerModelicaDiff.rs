@@ -53,7 +53,7 @@ pub mod LexTable {
 
 }
 
-pub fn scan(mut fileName: ArcStr) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Token>>)> {
+pub(crate) fn scan(mut fileName: ArcStr) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Token>>)> {
     let mut tokens: Arc<metamodelica::List<Token>>;
     let mut errorTokens: Arc<metamodelica::List<Token>>;
     let mut contents: ArcStr;
@@ -69,7 +69,7 @@ pub fn scanString(mut fileSource: ArcStr, mut fileName: ArcStr) -> Result<(Arc<m
     Ok((tokens, errorTokens))
 }
 
-pub fn action(mut act: i32, mut startSt: i32, mut mm_currSt: i32, mut mm_pos: i32, mut mm_sPos: i32, mut mm_ePos: i32, mut mm_linenr: i32, mut lineNrStart: i32, mut buffer: i32, mut fileNm: ArcStr, mut fileContents: ArcStr, mut inErrorTokens: Arc<metamodelica::List<Token>>) -> Result<(Token, i32, i32, Arc<metamodelica::List<Token>>)> {
+pub(crate) fn action(mut act: i32, mut startSt: i32, mut mm_currSt: i32, mut mm_pos: i32, mut mm_sPos: i32, mut mm_ePos: i32, mut mm_linenr: i32, mut lineNrStart: i32, mut buffer: i32, mut fileNm: ArcStr, mut fileContents: ArcStr, mut inErrorTokens: Arc<metamodelica::List<Token>>) -> Result<(Token, i32, i32, Arc<metamodelica::List<Token>>)> {
     let mut token: Token;
     let mut mm_startSt: i32;
     let mut bufferRet: i32;
@@ -822,7 +822,7 @@ pub type TOKEN = Token;
 
 pub static noToken: std::sync::LazyLock<Token> = std::sync::LazyLock::new(|| { Token { fileName: (literal!("<NoFile>")).clone(), id: TokenId::_NO_TOKEN.clone(), fileContents: (literal!("")).clone(), byteOffset: 0, length: 0, lineNumberStart: 0, columnNumberStart: 0, lineNumberEnd: 0, columnNumberEnd: 0 } });
 
-pub fn printToken(mut token: Token) -> Result<ArcStr> {
+pub(crate) fn printToken(mut token: Token) -> Result<ArcStr> {
     let mut strTk: ArcStr;
     let mut id: TokenId;
     let mut contents: ArcStr;
@@ -850,7 +850,7 @@ pub fn tokenContent(mut token: Token) -> Result<ArcStr> {
     Ok(contents)
 }
 
-pub fn tokenContentEq(mut token1: Token, mut token2: Token) -> Result<bool> {
+pub(crate) fn tokenContentEq(mut token1: Token, mut token2: Token) -> Result<bool> {
     let mut b: bool;
     let mut contents1: ArcStr;
     let mut contents2: ArcStr;
@@ -870,7 +870,7 @@ pub fn tokenContentEq(mut token1: Token, mut token2: Token) -> Result<bool> {
     Ok(b)
 }
 
-pub fn tokenSourceInfo(mut token: Token) -> Result<SourceInfo> {
+pub(crate) fn tokenSourceInfo(mut token: Token) -> Result<SourceInfo> {
     let mut info: SourceInfo;
     info = { let mut t = token.clone(); (match t.clone() {
         Token { .. } => SourceInfo { fileName: (t.fileName.clone()).clone(), isReadOnly: false, lineNumberStart: t.lineNumberStart.clone(), columnNumberStart: t.columnNumberStart.clone(), lineNumberEnd: t.lineNumberEnd.clone(), columnNumberEnd: t.columnNumberEnd.clone(), lastModification: metamodelica::OrderedFloat(0.0_f64) },
@@ -1433,13 +1433,13 @@ pub fn isLineComment(mut t: Token) -> bool {
     b
 }
 
-pub fn tuple21<A: Clone + 'static + metamodelica::gc::MMTrace, B: Clone + 'static + metamodelica::gc::MMTrace>(mut t: (A, B)) -> A {
+pub(crate) fn tuple21<A: Clone + 'static + metamodelica::gc::MMTrace, B: Clone + 'static + metamodelica::gc::MMTrace>(mut t: (A, B)) -> A {
     let mut a: A;
     (a, _) = t.clone();
     a
 }
 
-pub fn tuple22<A: Clone + 'static + metamodelica::gc::MMTrace, B: Clone + 'static + metamodelica::gc::MMTrace>(mut t: (A, B)) -> B {
+pub(crate) fn tuple22<A: Clone + 'static + metamodelica::gc::MMTrace, B: Clone + 'static + metamodelica::gc::MMTrace>(mut t: (A, B)) -> B {
     let mut b: B;
     (_, b) = t.clone();
     b
@@ -1458,7 +1458,7 @@ pub fn blockCommentCanonical(mut t: Token) -> Result<Arc<metamodelica::List<ArcS
     Ok(lines)
 }
 
-pub fn deleteWhitespaceFollowedByEqualNonWhitespace(mut inRest: Arc<metamodelica::List<(DiffAlgorithm::Diff, Token)>>) -> Result<(bool, Arc<metamodelica::List<(DiffAlgorithm::Diff, Token)>>)> {
+pub(crate) fn deleteWhitespaceFollowedByEqualNonWhitespace(mut inRest: Arc<metamodelica::List<(DiffAlgorithm::Diff, Token)>>) -> Result<(bool, Arc<metamodelica::List<(DiffAlgorithm::Diff, Token)>>)> {
     use openmodelica_util::DiffAlgorithm::Diff;
     let mut b: bool = false;
     let mut result: Arc<metamodelica::List<(Diff, Token)>>;

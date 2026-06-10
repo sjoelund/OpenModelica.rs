@@ -163,7 +163,7 @@ fn checkInvalidPatternNamedArgs(mut args: Arc<metamodelica::List<Arc<Absyn::Name
     Ok(outStatus)
 }
 
-pub fn elabPatternCheckDuplicateBindings(mut cache: FCore::Cache, mut env: FCore::Graph, mut lhs: Arc<Absyn::Exp>, mut ty: Arc<DAE::Type>, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Pattern>)> {
+pub(crate) fn elabPatternCheckDuplicateBindings(mut cache: FCore::Cache, mut env: FCore::Graph, mut lhs: Arc<Absyn::Exp>, mut ty: Arc<DAE::Type>, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Pattern>)> {
     let mut outCache: FCore::Cache;
     let mut pattern: Arc<DAE::Pattern>;
     (outCache, pattern) = elabPattern2(cache.clone(), env.clone(), lhs.clone(), ty.clone(), info.clone(), Error::getNumErrorMessages())?;
@@ -853,7 +853,7 @@ fn validUniontype(mut path1: Arc<Absyn::Path>, mut path2: Arc<Absyn::Path>, mut 
     Ok(())
 }
 
-pub fn elabMatchExpression(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut matchExp: Arc<Absyn::Exp>, mut r#impl: bool, mut performVectorization: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
+pub(crate) fn elabMatchExpression(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut matchExp: Arc<Absyn::Exp>, mut r#impl: bool, mut performVectorization: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache;
     let mut outExp: Arc<DAE::Exp>;
     let mut outProperties: DAE::Properties;
@@ -1703,7 +1703,7 @@ fn addPatternAsBindings(mut inPat: Arc<DAE::Pattern>, mut inHt: (metamodelica::A
     (pat, ht)
 }
 
-pub fn traversePatternList<TypeA: Clone + 'static + metamodelica::gc::MMTrace>(mut inPatterns: Arc<metamodelica::List<Arc<DAE::Pattern>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Pattern>, TypeA) -> Result<(Arc<DAE::Pattern>, TypeA)> + 'static>, mut inExtra: TypeA) -> Result<(Arc<metamodelica::List<Arc<DAE::Pattern>>>, TypeA)> {
+pub(crate) fn traversePatternList<TypeA: Clone + 'static + metamodelica::gc::MMTrace>(mut inPatterns: Arc<metamodelica::List<Arc<DAE::Pattern>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Pattern>, TypeA) -> Result<(Arc<DAE::Pattern>, TypeA)> + 'static>, mut inExtra: TypeA) -> Result<(Arc<metamodelica::List<Arc<DAE::Pattern>>>, TypeA)> {
     pub type Func<TypeA: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Pattern>, TypeA) -> Result<(Arc<DAE::Pattern>, TypeA)> + 'static>;
 
     let mut outPatterns: Arc<metamodelica::List<Arc<DAE::Pattern>>> = metamodelica::nil();
@@ -1718,7 +1718,7 @@ pub fn traversePatternList<TypeA: Clone + 'static + metamodelica::gc::MMTrace>(m
     Ok((outPatterns, extra))
 }
 
-pub fn traversePattern<TypeA: Clone + 'static + metamodelica::gc::MMTrace>(mut inPattern: Arc<DAE::Pattern>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Pattern>, TypeA) -> Result<(Arc<DAE::Pattern>, TypeA)> + 'static>, mut inExtra: TypeA) -> Result<(Arc<DAE::Pattern>, TypeA)> {
+pub(crate) fn traversePattern<TypeA: Clone + 'static + metamodelica::gc::MMTrace>(mut inPattern: Arc<DAE::Pattern>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Pattern>, TypeA) -> Result<(Arc<DAE::Pattern>, TypeA)> + 'static>, mut inExtra: TypeA) -> Result<(Arc<DAE::Pattern>, TypeA)> {
     pub type Func<TypeA: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Pattern>, TypeA) -> Result<(Arc<DAE::Pattern>, TypeA)> + 'static>;
 
     let mut outPattern: Arc<DAE::Pattern>;
@@ -2531,7 +2531,7 @@ pub fn traverseConstantPatternsHelper<T: Clone + 'static + metamodelica::gc::MMT
     Ok((outExp, outT))
 }
 
-pub fn traverseConstantPatternsHelper2<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inPattern: Arc<DAE::Pattern>, mut inExtra: T, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, T) -> Result<(Arc<DAE::Exp>, T)> + 'static>) -> Result<(Arc<DAE::Pattern>, T)> {
+pub(crate) fn traverseConstantPatternsHelper2<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inPattern: Arc<DAE::Pattern>, mut inExtra: T, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, T) -> Result<(Arc<DAE::Exp>, T)> + 'static>) -> Result<(Arc<DAE::Pattern>, T)> {
     pub type FuncExpType<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, T) -> Result<(Arc<DAE::Exp>, T)> + 'static>;
 
     let mut outPattern: Arc<DAE::Pattern> = Arc::new(DAE::Pattern::PAT_WILD);

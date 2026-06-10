@@ -104,7 +104,7 @@ impl Default for NFImport {
     }
 }
 pub use self::NFImport::{UNRESOLVED_IMPORT,RESOLVED_IMPORT,CONFLICTING_IMPORT};
-pub fn name(mut imp: Arc<NFImport>) -> Result<ArcStr> {
+pub(crate) fn name(mut imp: Arc<NFImport>) -> Result<ArcStr> {
     let mut name: ArcStr;
     name = ((::match_deref::match_deref! { match &(imp.clone()) {
         Deref @ UNRESOLVED_IMPORT { .. } => AbsynUtil::importName(var_field!((*imp).imp, NFImport::UNRESOLVED_IMPORT).clone())?,
@@ -114,7 +114,7 @@ pub fn name(mut imp: Arc<NFImport>) -> Result<ArcStr> {
     Ok(name)
 }
 
-pub fn info(mut imp: Arc<NFImport>) -> Result<SourceInfo> {
+pub(crate) fn info(mut imp: Arc<NFImport>) -> Result<SourceInfo> {
     let mut info: SourceInfo;
     info = (::match_deref::match_deref! { match &(imp.clone()) {
         Deref @ UNRESOLVED_IMPORT { .. } => var_field!((*imp).info, NFImport::UNRESOLVED_IMPORT).clone(),
@@ -124,7 +124,7 @@ pub fn info(mut imp: Arc<NFImport>) -> Result<SourceInfo> {
     Ok(info)
 }
 
-pub fn resolve(mut imp: Arc<NFImport>) -> Result<(Arc<InstNode::InstNode>, bool, Arc<NFImport>)> {
+pub(crate) fn resolve(mut imp: Arc<NFImport>) -> Result<(Arc<InstNode::InstNode>, bool, Arc<NFImport>)> {
     let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     let mut changed: bool;
     let mut outImport: Arc<NFImport> = Arc::new(<NFImport as ::std::default::Default>::default());
@@ -161,7 +161,7 @@ pub fn resolveList(mut imps: metamodelica::Array<Arc<NFImport>>) -> Arc<metamode
     resolvedImps
 }
 
-pub fn instQualified(mut imp: Absyn::Import, mut scope: Arc<InstNode::InstNode>, mut info: SourceInfo) -> Result<(Arc<NFImport>, Arc<InstNode::InstNode>)> {
+pub(crate) fn instQualified(mut imp: Absyn::Import, mut scope: Arc<InstNode::InstNode>, mut info: SourceInfo) -> Result<(Arc<NFImport>, Arc<InstNode::InstNode>)> {
     let mut outImport: Arc<NFImport>;
     let mut node: Arc<InstNode::InstNode>;
     let mut short_name: ArcStr;
@@ -178,7 +178,7 @@ pub fn instQualified(mut imp: Absyn::Import, mut scope: Arc<InstNode::InstNode>,
     Ok((outImport, node))
 }
 
-pub fn instUnqualified(mut imp: Arc<NFImport>, mut imps: Arc<metamodelica::List<Arc<NFImport>>>) -> Result<Arc<metamodelica::List<Arc<NFImport>>>> {
+pub(crate) fn instUnqualified(mut imp: Arc<NFImport>, mut imps: Arc<metamodelica::List<Arc<NFImport>>>) -> Result<Arc<metamodelica::List<Arc<NFImport>>>> {
     let mut imps: Arc<metamodelica::List<Arc<NFImport>>> = imps;
     let mut path: Arc<Absyn::Path>;
     let mut node: Arc<InstNode::InstNode>;
@@ -216,7 +216,7 @@ pub fn instUnqualified(mut imp: Arc<NFImport>, mut imps: Arc<metamodelica::List<
     Ok(imps)
 }
 
-pub fn printImportError(mut imp1: Arc<NFImport>, mut imp2: Arc<NFImport>) -> Result<()> {
+pub(crate) fn printImportError(mut imp1: Arc<NFImport>, mut imp2: Arc<NFImport>) -> Result<()> {
     let mut err_msg: ErrorTypes::Message;
     Error::addSourceMessage(Error::ERROR_FROM_HERE.clone(), metamodelica::nil(), info(imp1.clone())?)?;
     err_msg = (::match_deref::match_deref! { match &(imp2.clone()) {

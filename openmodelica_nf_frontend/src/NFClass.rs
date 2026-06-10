@@ -238,24 +238,24 @@ pub mod Prefixes {
 
     pub type PREFIXES = Prefixes;
 
-    pub fn isEqual(mut prefs1: Arc<Prefixes>, mut prefs2: Arc<Prefixes>) -> bool {
+    pub(crate) fn isEqual(mut prefs1: Arc<Prefixes>, mut prefs2: Arc<Prefixes>) -> bool {
         let mut isEqual: bool = prefs1.clone() == prefs2.clone();
         isEqual
     }
 
-    pub fn isPartial(mut prefs: Arc<Prefixes>) -> Result<bool> {
+    pub(crate) fn isPartial(mut prefs: Arc<Prefixes>) -> Result<bool> {
         let mut isPartial: bool = SCodeUtil::partialBool(prefs.partialPrefix.clone())?;
         Ok(isPartial)
     }
 
-    pub fn isEncapsulated(mut prefs: Arc<Prefixes>) -> Result<bool> {
+    pub(crate) fn isEncapsulated(mut prefs: Arc<Prefixes>) -> Result<bool> {
         let mut isEncapsulated: bool = SCodeUtil::encapsulatedBool(prefs.encapsulatedPrefix.clone())?;
         Ok(isEncapsulated)
     }
 
 }
 
-pub fn fromSCode(mut elements: Arc<metamodelica::List<Arc<Element>>>, mut isClassExtends: bool, mut scope: Arc<InstNode::InstNode>, mut prefixes: Arc<Prefixes::Prefixes>) -> Result<Arc<NFClass>> {
+pub(crate) fn fromSCode(mut elements: Arc<metamodelica::List<Arc<Element>>>, mut isClassExtends: bool, mut scope: Arc<InstNode::InstNode>, mut prefixes: Arc<Prefixes::Prefixes>) -> Result<Arc<NFClass>> {
     let mut cls: Arc<NFClass>;
     let mut tree: Arc<ClassTree::ClassTree>;
     tree = ClassTree::fromSCode(elements.clone(), isClassExtends.clone(), scope.clone())?;
@@ -263,7 +263,7 @@ pub fn fromSCode(mut elements: Arc<metamodelica::List<Arc<Element>>>, mut isClas
     Ok(cls)
 }
 
-pub fn initImports(mut cls: Arc<NFClass>, mut parent: Arc<InstNode::InstNode>) -> Result<Arc<NFClass>> {
+pub(crate) fn initImports(mut cls: Arc<NFClass>, mut parent: Arc<InstNode::InstNode>) -> Result<Arc<NFClass>> {
     let mut cls: Arc<NFClass> = cls;
     let () = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ PARTIAL_CLASS { .. } => {
@@ -276,7 +276,7 @@ pub fn initImports(mut cls: Arc<NFClass>, mut parent: Arc<InstNode::InstNode>) -
     Ok(cls)
 }
 
-pub fn fromEnumeration(mut literals: Arc<metamodelica::List<Arc<SCode::Enum>>>, mut enumType: Arc<Type::NFType>, mut prefixes: Arc<Prefixes::Prefixes>, mut enumClass: Arc<InstNode::InstNode>) -> Result<Arc<NFClass>> {
+pub(crate) fn fromEnumeration(mut literals: Arc<metamodelica::List<Arc<SCode::Enum>>>, mut enumType: Arc<Type::NFType>, mut prefixes: Arc<Prefixes::Prefixes>, mut enumClass: Arc<InstNode::InstNode>) -> Result<Arc<NFClass>> {
     let mut cls: Arc<NFClass>;
     let mut tree: Arc<ClassTree::ClassTree>;
     tree = ClassTree::fromEnumeration(literals.clone(), enumType.clone(), enumClass.clone())?;
@@ -284,7 +284,7 @@ pub fn fromEnumeration(mut literals: Arc<metamodelica::List<Arc<SCode::Enum>>>, 
     Ok(cls)
 }
 
-pub fn makeRecordConstructor(mut fields: Arc<metamodelica::List<Arc<InstNode::InstNode>>>, mut out: Arc<InstNode::InstNode>) -> Result<Arc<NFClass>> {
+pub(crate) fn makeRecordConstructor(mut fields: Arc<metamodelica::List<Arc<InstNode::InstNode>>>, mut out: Arc<InstNode::InstNode>) -> Result<Arc<NFClass>> {
     let mut cls: Arc<NFClass>;
     let mut tree: Arc<ClassTree::ClassTree>;
     tree = ClassTree::fromRecordConstructor(fields.clone(), out.clone())?;
@@ -292,7 +292,7 @@ pub fn makeRecordConstructor(mut fields: Arc<metamodelica::List<Arc<InstNode::In
     Ok(cls)
 }
 
-pub fn initExpandedClass(mut cls: Arc<NFClass>) -> Result<Arc<NFClass>> {
+pub(crate) fn initExpandedClass(mut cls: Arc<NFClass>) -> Result<Arc<NFClass>> {
     let mut cls: Arc<NFClass> = cls;
     cls = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ PARTIAL_CLASS { .. } => Arc::new(NFClass::EXPANDED_CLASS { elements: var_field!((*cls).elements, NFClass::PARTIAL_CLASS).clone(), modifier: var_field!((*cls).modifier, NFClass::PARTIAL_CLASS).clone(), ccMod: var_field!((*cls).ccMod, NFClass::PARTIAL_CLASS).clone(), prefixes: var_field!((*cls).prefixes, NFClass::PARTIAL_CLASS).clone(), restriction: crate::NFRestriction::interned_UNKNOWN() }),
@@ -312,7 +312,7 @@ pub fn getSections(mut cls: Arc<NFClass>) -> Result<Arc<Sections::NFSections>> {
     }
 }
 
-pub fn setSections(mut sections: Arc<Sections::NFSections>, mut cls: Arc<NFClass>) -> Result<Arc<NFClass>> {
+pub(crate) fn setSections(mut sections: Arc<Sections::NFSections>, mut cls: Arc<NFClass>) -> Result<Arc<NFClass>> {
     let mut cls: Arc<NFClass> = cls;
     cls = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ INSTANCED_CLASS { .. } => Arc::new(NFClass::INSTANCED_CLASS { ty: var_field!((*cls).ty, NFClass::INSTANCED_CLASS).clone(), elements: var_field!((*cls).elements, NFClass::INSTANCED_CLASS).clone(), sections: sections.clone(), prefixes: var_field!((*cls).prefixes, NFClass::INSTANCED_CLASS).clone(), restriction: var_field!((*cls).restriction, NFClass::INSTANCED_CLASS).clone() }),
@@ -325,14 +325,14 @@ pub fn setSections(mut sections: Arc<Sections::NFSections>, mut cls: Arc<NFClass
     Ok(cls)
 }
 
-pub fn lookupElement(mut name: ArcStr, mut cls: Arc<NFClass>) -> Result<(Arc<InstNode::InstNode>, bool)> {
+pub(crate) fn lookupElement(mut name: ArcStr, mut cls: Arc<NFClass>) -> Result<(Arc<InstNode::InstNode>, bool)> {
     let mut node: Arc<InstNode::InstNode>;
     let mut isImport: bool;
     (node, isImport) = ClassTree::lookupElement((name.clone()).clone(), classTree(cls.clone())?)?;
     Ok((node, isImport))
 }
 
-pub fn tryLookupElement(mut name: ArcStr, mut cls: Arc<NFClass>) -> (Option<Arc<InstNode::InstNode>>, bool) {
+pub(crate) fn tryLookupElement(mut name: ArcStr, mut cls: Arc<NFClass>) -> (Option<Arc<InstNode::InstNode>>, bool) {
     let mut node: Option<Arc<InstNode::InstNode>>;
     let mut isImport: bool;
     let mut n: Arc<InstNode::InstNode>;
@@ -353,13 +353,13 @@ pub fn tryLookupElement(mut name: ArcStr, mut cls: Arc<NFClass>) -> (Option<Arc<
     (node, isImport)
 }
 
-pub fn lookupComponentIndex(mut name: ArcStr, mut cls: Arc<NFClass>) -> Result<i32> {
+pub(crate) fn lookupComponentIndex(mut name: ArcStr, mut cls: Arc<NFClass>) -> Result<i32> {
     let mut index: i32;
     index = ClassTree::lookupComponentIndex((name.clone()).clone(), classTree(cls.clone())?)?;
     Ok(index)
 }
 
-pub fn nthComponent(mut index: i32, mut cls: Arc<NFClass>) -> Result<Arc<InstNode::InstNode>> {
+pub(crate) fn nthComponent(mut index: i32, mut cls: Arc<NFClass>) -> Result<Arc<InstNode::InstNode>> {
     let mut component: Arc<InstNode::InstNode>;
     component = ClassTree::nthComponent(index.clone(), classTree(cls.clone())?)?;
     Ok(component)
@@ -370,7 +370,7 @@ pub fn getComponents(mut cls: Arc<NFClass>) -> Result<metamodelica::Array<Arc<In
     Ok(comps)
 }
 
-pub fn lookupAttributeBinding(mut name: ArcStr, mut cls: Arc<NFClass>) -> Arc<Binding::NFBinding> {
+pub(crate) fn lookupAttributeBinding(mut name: ArcStr, mut cls: Arc<NFClass>) -> Arc<Binding::NFBinding> {
     let mut binding: Arc<Binding::NFBinding>;
     let mut attr_node: Arc<InstNode::InstNode>;
     match '__try0: {
@@ -388,7 +388,7 @@ pub fn lookupAttributeBinding(mut name: ArcStr, mut cls: Arc<NFClass>) -> Arc<Bi
     binding
 }
 
-pub fn lookupAttributeValue(mut name: ArcStr, mut cls: Arc<NFClass>) -> Option<Arc<Expression::NFExpression>> {
+pub(crate) fn lookupAttributeValue(mut name: ArcStr, mut cls: Arc<NFClass>) -> Option<Arc<Expression::NFExpression>> {
     let mut value: Option<Arc<Expression::NFExpression>> = Binding::typedExp(lookupAttributeBinding((name.clone()).clone(), cls.clone()));
     value
 }
@@ -404,7 +404,7 @@ pub fn isOnlyBuiltin(mut cls: Arc<NFClass>) -> bool {
     builtin
 }
 
-pub fn isBuiltin(mut cls: Arc<NFClass>) -> Result<bool> {
+pub(crate) fn isBuiltin(mut cls: Arc<NFClass>) -> Result<bool> {
     '__tco: loop {
         ::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ PARTIAL_BUILTIN { .. } => return Ok(true),
@@ -433,7 +433,7 @@ pub fn classTree(mut cls: Arc<NFClass>) -> Result<Arc<ClassTree::ClassTree>> {
     }
 }
 
-pub fn setClassTree(mut tree: Arc<ClassTree::ClassTree>, mut cls: Arc<NFClass>) -> Result<Arc<NFClass>> {
+pub(crate) fn setClassTree(mut tree: Arc<ClassTree::ClassTree>, mut cls: Arc<NFClass>) -> Result<Arc<NFClass>> {
     let mut cls: Arc<NFClass> = cls;
     let () = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ PARTIAL_CLASS { .. } => {
@@ -461,7 +461,7 @@ pub fn setClassTree(mut tree: Arc<ClassTree::ClassTree>, mut cls: Arc<NFClass>) 
     Ok(cls)
 }
 
-pub fn classTreeApply(mut cls: Arc<NFClass>, mut func: Arc<dyn ::std::ops::Fn(Arc<ClassTree::ClassTree>) -> Result<Arc<ClassTree::ClassTree>> + 'static>) -> Result<Arc<NFClass>> {
+pub(crate) fn classTreeApply(mut cls: Arc<NFClass>, mut func: Arc<dyn ::std::ops::Fn(Arc<ClassTree::ClassTree>) -> Result<Arc<ClassTree::ClassTree>> + 'static>) -> Result<Arc<NFClass>> {
     pub type FuncType = std::sync::Arc<dyn ::std::ops::Fn(Arc<ClassTree::ClassTree>) -> Result<Arc<ClassTree::ClassTree>> + 'static>;
 
     let mut cls: Arc<NFClass> = cls;
@@ -492,7 +492,7 @@ pub fn classTreeApply(mut cls: Arc<NFClass>, mut func: Arc<dyn ::std::ops::Fn(Ar
     Ok(cls)
 }
 
-pub fn getModifier(mut cls: Arc<NFClass>) -> Arc<Modifier::Modifier> {
+pub(crate) fn getModifier(mut cls: Arc<NFClass>) -> Arc<Modifier::Modifier> {
     let mut modifier: Arc<Modifier::Modifier>;
     modifier = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ PARTIAL_CLASS { .. } => var_field!((*cls).modifier, NFClass::PARTIAL_CLASS).clone(),
@@ -505,7 +505,7 @@ pub fn getModifier(mut cls: Arc<NFClass>) -> Arc<Modifier::Modifier> {
     modifier
 }
 
-pub fn getCCModifier(mut cls: Arc<NFClass>) -> Arc<Modifier::Modifier> {
+pub(crate) fn getCCModifier(mut cls: Arc<NFClass>) -> Arc<Modifier::Modifier> {
     let mut modifier: Arc<Modifier::Modifier>;
     modifier = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ PARTIAL_CLASS { .. } => var_field!((*cls).ccMod, NFClass::PARTIAL_CLASS).clone(),
@@ -517,7 +517,7 @@ pub fn getCCModifier(mut cls: Arc<NFClass>) -> Arc<Modifier::Modifier> {
     modifier
 }
 
-pub fn setModifier(mut modifier: Arc<Modifier::Modifier>, mut cls: Arc<NFClass>) -> Result<Arc<NFClass>> {
+pub(crate) fn setModifier(mut modifier: Arc<Modifier::Modifier>, mut cls: Arc<NFClass>) -> Result<Arc<NFClass>> {
     let mut cls: Arc<NFClass> = cls;
     let () = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ PARTIAL_CLASS { .. } => {
@@ -545,7 +545,7 @@ pub fn setModifier(mut modifier: Arc<Modifier::Modifier>, mut cls: Arc<NFClass>)
     Ok(cls)
 }
 
-pub fn mergeModifier(mut modifier: Arc<Modifier::Modifier>, mut cls: Arc<NFClass>) -> Result<Arc<NFClass>> {
+pub(crate) fn mergeModifier(mut modifier: Arc<Modifier::Modifier>, mut cls: Arc<NFClass>) -> Result<Arc<NFClass>> {
     let mut cls: Arc<NFClass> = cls;
     let () = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ PARTIAL_CLASS { .. } => {
@@ -573,7 +573,7 @@ pub fn mergeModifier(mut modifier: Arc<Modifier::Modifier>, mut cls: Arc<NFClass
     Ok(cls)
 }
 
-pub fn isIdentical(mut cls1: Arc<NFClass>, mut cls2: Arc<NFClass>) -> Result<bool> {
+pub(crate) fn isIdentical(mut cls1: Arc<NFClass>, mut cls2: Arc<NFClass>) -> Result<bool> {
     let mut identical: bool = false;
     if referenceEq(&*(cls1.clone()),&*(cls2.clone())) {
         identical = true;
@@ -593,7 +593,7 @@ pub fn isIdentical(mut cls1: Arc<NFClass>, mut cls2: Arc<NFClass>) -> Result<boo
     Ok(identical)
 }
 
-pub fn hasDimensions(mut cls: Arc<NFClass>) -> Result<bool> {
+pub(crate) fn hasDimensions(mut cls: Arc<NFClass>) -> Result<bool> {
     let mut hasDims: bool;
     hasDims = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ EXPANDED_DERIVED { .. } => metamodelica::arrayLength(var_field!((*cls).dims, NFClass::EXPANDED_DERIVED).clone()) > 0 || hasDimensions(InstNode::getClass(var_field!((*cls).baseClass, NFClass::EXPANDED_DERIVED).clone())?)?,
@@ -604,7 +604,7 @@ pub fn hasDimensions(mut cls: Arc<NFClass>) -> Result<bool> {
     Ok(hasDims)
 }
 
-pub fn getDimensions(mut cls: Arc<NFClass>) -> Arc<metamodelica::List<Arc<Dimension::NFDimension>>> {
+pub(crate) fn getDimensions(mut cls: Arc<NFClass>) -> Arc<metamodelica::List<Arc<Dimension::NFDimension>>> {
     let mut dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>>;
     dims = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ INSTANCED_CLASS { .. } => Type::arrayDims(var_field!((*cls).ty, NFClass::INSTANCED_CLASS).clone()),
@@ -616,7 +616,7 @@ pub fn getDimensions(mut cls: Arc<NFClass>) -> Arc<metamodelica::List<Arc<Dimens
     dims
 }
 
-pub fn dimensionCount(mut cls: Arc<NFClass>) -> i32 {
+pub(crate) fn dimensionCount(mut cls: Arc<NFClass>) -> i32 {
     let mut count: i32;
     count = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ EXPANDED_DERIVED { .. } => metamodelica::arrayLength(var_field!((*cls).dims, NFClass::EXPANDED_DERIVED).clone()),
@@ -629,7 +629,7 @@ pub fn dimensionCount(mut cls: Arc<NFClass>) -> i32 {
     count
 }
 
-pub fn getAttributes(mut cls: Arc<NFClass>) -> Arc<Attributes::NFAttributes> {
+pub(crate) fn getAttributes(mut cls: Arc<NFClass>) -> Arc<Attributes::NFAttributes> {
     let mut attr: Arc<Attributes::NFAttributes>;
     attr = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ EXPANDED_DERIVED { .. } => var_field!((*cls).attributes, NFClass::EXPANDED_DERIVED).clone(),
@@ -639,7 +639,7 @@ pub fn getAttributes(mut cls: Arc<NFClass>) -> Arc<Attributes::NFAttributes> {
     attr
 }
 
-pub fn getTypeAttributes(mut cls: Arc<NFClass>) -> Arc<metamodelica::List<Arc<Modifier::Modifier>>> {
+pub(crate) fn getTypeAttributes(mut cls: Arc<NFClass>) -> Arc<metamodelica::List<Arc<Modifier::Modifier>>> {
     let mut attributes: Arc<metamodelica::List<Arc<Modifier::Modifier>>> = metamodelica::nil();
     let mut comps: metamodelica::Array<Arc<InstNode::InstNode>>;
     let mut r#mod: Arc<Modifier::Modifier>;
@@ -658,7 +658,7 @@ pub fn getTypeAttributes(mut cls: Arc<NFClass>) -> Arc<metamodelica::List<Arc<Mo
     attributes
 }
 
-pub fn getType(mut cls: Arc<NFClass>, mut clsNode: Arc<InstNode::InstNode>) -> Result<Arc<Type::NFType>> {
+pub(crate) fn getType(mut cls: Arc<NFClass>, mut clsNode: Arc<InstNode::InstNode>) -> Result<Arc<Type::NFType>> {
     '__tco: loop {
         ::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ PARTIAL_BUILTIN { .. } => return Ok(var_field!((*cls).ty, NFClass::PARTIAL_BUILTIN).clone()),
@@ -672,7 +672,7 @@ pub fn getType(mut cls: Arc<NFClass>, mut clsNode: Arc<InstNode::InstNode>) -> R
     }
 }
 
-pub fn setType(mut ty: Arc<Type::NFType>, mut cls: Arc<NFClass>) -> Result<Arc<NFClass>> {
+pub(crate) fn setType(mut ty: Arc<Type::NFType>, mut cls: Arc<NFClass>) -> Result<Arc<NFClass>> {
     let mut cls: Arc<NFClass> = cls;
     let () = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ PARTIAL_BUILTIN { .. } => {
@@ -716,7 +716,7 @@ pub fn restriction(mut cls: Arc<NFClass>) -> Arc<Restriction::NFRestriction> {
     res
 }
 
-pub fn setRestriction(mut res: Arc<Restriction::NFRestriction>, mut cls: Arc<NFClass>) -> Result<Arc<NFClass>> {
+pub(crate) fn setRestriction(mut res: Arc<Restriction::NFRestriction>, mut cls: Arc<NFClass>) -> Result<Arc<NFClass>> {
     let mut cls: Arc<NFClass> = cls;
     let () = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ EXPANDED_CLASS { .. } => {
@@ -744,27 +744,27 @@ pub fn setRestriction(mut res: Arc<Restriction::NFRestriction>, mut cls: Arc<NFC
     Ok(cls)
 }
 
-pub fn isConnectorClass(mut cls: Arc<NFClass>) -> bool {
+pub(crate) fn isConnectorClass(mut cls: Arc<NFClass>) -> bool {
     let mut isConnector: bool = Restriction::isConnector(restriction(cls.clone()));
     isConnector
 }
 
-pub fn isNonexpandableConnectorClass(mut cls: Arc<NFClass>) -> bool {
+pub(crate) fn isNonexpandableConnectorClass(mut cls: Arc<NFClass>) -> bool {
     let mut isConnector: bool = Restriction::isNonexpandableConnector(restriction(cls.clone()));
     isConnector
 }
 
-pub fn isExpandableConnectorClass(mut cls: Arc<NFClass>) -> bool {
+pub(crate) fn isExpandableConnectorClass(mut cls: Arc<NFClass>) -> bool {
     let mut isConnector: bool = Restriction::isExpandableConnector(restriction(cls.clone()));
     isConnector
 }
 
-pub fn isExternalObject(mut cls: Arc<NFClass>) -> bool {
+pub(crate) fn isExternalObject(mut cls: Arc<NFClass>) -> bool {
     let mut isExternalObject: bool = Restriction::isExternalObject(restriction(cls.clone()));
     isExternalObject
 }
 
-pub fn isFunction(mut cls: Arc<NFClass>) -> bool {
+pub(crate) fn isFunction(mut cls: Arc<NFClass>) -> bool {
     let mut isFunction: bool = Restriction::isFunction(restriction(cls.clone()));
     isFunction
 }
@@ -782,7 +782,7 @@ pub fn isEnumeration(mut cls: Arc<NFClass>) -> Result<bool> {
     }
 }
 
-pub fn isExternalFunction(mut cls: Arc<NFClass>) -> Result<bool> {
+pub(crate) fn isExternalFunction(mut cls: Arc<NFClass>) -> Result<bool> {
     '__tco: loop {
         ::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ EXPANDED_DERIVED { .. } => {
@@ -802,7 +802,7 @@ pub fn isExternalFunction(mut cls: Arc<NFClass>) -> Result<bool> {
     }
 }
 
-pub fn isOverdetermined(mut cls: Arc<NFClass>) -> bool {
+pub(crate) fn isOverdetermined(mut cls: Arc<NFClass>) -> bool {
     let mut isOverdetermined: bool;
     match '__try0: {
         unwrap_break_err!(lookupElement((literal!("equalityConstraint")).clone(), cls.clone()), '__try0);
@@ -820,7 +820,7 @@ pub fn isOverdetermined(mut cls: Arc<NFClass>) -> bool {
     isOverdetermined
 }
 
-pub fn getPrefixes(mut cls: Arc<NFClass>) -> Result<Arc<Prefixes::Prefixes>> {
+pub(crate) fn getPrefixes(mut cls: Arc<NFClass>) -> Result<Arc<Prefixes::Prefixes>> {
     '__tco: loop {
         ::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ PARTIAL_CLASS { .. } => return Ok(var_field!((*cls).prefixes, NFClass::PARTIAL_CLASS).clone()),
@@ -835,7 +835,7 @@ pub fn getPrefixes(mut cls: Arc<NFClass>) -> Result<Arc<Prefixes::Prefixes>> {
     }
 }
 
-pub fn setPrefixes(mut prefs: Arc<Prefixes::Prefixes>, mut cls: Arc<NFClass>) -> Result<Arc<NFClass>> {
+pub(crate) fn setPrefixes(mut prefs: Arc<Prefixes::Prefixes>, mut cls: Arc<NFClass>) -> Result<Arc<NFClass>> {
     let mut cls: Arc<NFClass> = cls;
     let () = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ PARTIAL_CLASS { .. } => {
@@ -863,17 +863,17 @@ pub fn setPrefixes(mut prefs: Arc<Prefixes::Prefixes>, mut cls: Arc<NFClass>) ->
     Ok(cls)
 }
 
-pub fn isEncapsulated(mut cls: Arc<NFClass>) -> Result<bool> {
+pub(crate) fn isEncapsulated(mut cls: Arc<NFClass>) -> Result<bool> {
     let mut isEncapsulated: bool = Prefixes::isEncapsulated(getPrefixes(cls.clone())?)?;
     Ok(isEncapsulated)
 }
 
-pub fn isPartial(mut cls: Arc<NFClass>) -> Result<bool> {
+pub(crate) fn isPartial(mut cls: Arc<NFClass>) -> Result<bool> {
     let mut isPartial: bool = Prefixes::isPartial(getPrefixes(cls.clone())?)?;
     Ok(isPartial)
 }
 
-pub fn lastBaseClass(mut node: Arc<InstNode::InstNode>) -> Result<Arc<InstNode::InstNode>> {
+pub(crate) fn lastBaseClass(mut node: Arc<InstNode::InstNode>) -> Result<Arc<InstNode::InstNode>> {
     let mut node: Arc<InstNode::InstNode> = node;
     let mut cls: Arc<NFClass> = InstNode::getClass(node.clone())?;
     node = (::match_deref::match_deref! { match &(cls.clone()) {
@@ -885,7 +885,7 @@ pub fn lastBaseClass(mut node: Arc<InstNode::InstNode>) -> Result<Arc<InstNode::
     Ok(node)
 }
 
-pub fn getDerivedComments(mut cls: Arc<NFClass>, mut cmts: Arc<metamodelica::List<Arc<SCode::Comment>>>) -> Arc<metamodelica::List<Arc<SCode::Comment>>> {
+pub(crate) fn getDerivedComments(mut cls: Arc<NFClass>, mut cmts: Arc<metamodelica::List<Arc<SCode::Comment>>>) -> Arc<metamodelica::List<Arc<SCode::Comment>>> {
     let mut cmts: Arc<metamodelica::List<Arc<SCode::Comment>>> = cmts;
     cmts = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ EXPANDED_DERIVED { .. } => InstNode::getComments(var_field!((*cls).baseClass, NFClass::EXPANDED_DERIVED).clone(), cmts.clone()),
@@ -939,7 +939,7 @@ pub fn hasOperator(mut name: ArcStr, mut cls: Arc<NFClass>) -> bool {
     hasOperator
 }
 
-pub fn makeRecordExp(mut clsNode: Arc<InstNode::InstNode>, mut scope: Arc<InstNode::InstNode>, mut typed: bool) -> Result<Arc<Expression::NFExpression>> {
+pub(crate) fn makeRecordExp(mut clsNode: Arc<InstNode::InstNode>, mut scope: Arc<InstNode::InstNode>, mut typed: bool) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression>;
     let mut cls: Arc<NFClass>;
     let mut ty: Arc<Type::NFType>;
@@ -980,7 +980,7 @@ pub fn makeRecordExp(mut clsNode: Arc<InstNode::InstNode>, mut scope: Arc<InstNo
     Ok(exp)
 }
 
-pub fn toFlatStream(mut cls: Arc<NFClass>, mut clsNode: Arc<InstNode::InstNode>, mut format: BaseModelica::OutputFormat, mut indent: ArcStr, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
+pub(crate) fn toFlatStream(mut cls: Arc<NFClass>, mut clsNode: Arc<InstNode::InstNode>, mut format: BaseModelica::OutputFormat, mut indent: ArcStr, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut s: IOStream::IOStream = s;
     let mut name: ArcStr;
     name = (Util::makeQuotedIdentifier((AbsynUtil::pathString(InstNode::scopePath(clsNode.clone(), InstNode::ScopeType::RELATIVE.clone(), false)?, (literal!(".")).clone(), true, false)?).clone())?).clone();

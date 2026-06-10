@@ -70,7 +70,7 @@ use openmodelica_util::Util;
 use openmodelica_util_datatypes_basic::Array;
 use openmodelica_util_datatypes_basic::List;
 
-pub fn registerUnitWeights(mut cache: FCore::Cache, mut env: FCore::Graph, mut dae: DAE::DAElist) -> () {
+pub(crate) fn registerUnitWeights(mut cache: FCore::Cache, mut env: FCore::Graph, mut dae: DAE::DAElist) -> () {
     let mut paths: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
     let mut du: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
     let () = 'mc: {
@@ -188,7 +188,7 @@ fn registerUnitWeightDefineunits2(mut idu: Arc<metamodelica::List<Arc<SCode::Ele
     ()
 }
 
-pub fn registerUnits(mut prg: Absyn::Program) -> () {
+pub(crate) fn registerUnits(mut prg: Absyn::Program) -> () {
     let () = 'mc: {
         let __mc_input = prg.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -320,7 +320,7 @@ fn registerDefineunits2(mut elts: Arc<metamodelica::List<Arc<Absyn::Element>>>) 
     Ok(())
 }
 
-pub fn add(mut unit: UnitAbsyn::Unit, mut ist: UnitAbsyn::Store) -> Result<(UnitAbsyn::Store, i32)> {
+pub(crate) fn add(mut unit: UnitAbsyn::Unit, mut ist: UnitAbsyn::Store) -> Result<(UnitAbsyn::Store, i32)> {
     let mut outSt: UnitAbsyn::Store;
     let mut index: i32 = 0;
     (outSt, index) = 'mc: {
@@ -346,7 +346,7 @@ pub fn add(mut unit: UnitAbsyn::Unit, mut ist: UnitAbsyn::Store) -> Result<(Unit
     Ok((outSt, index))
 }
 
-pub fn updateInstStore(mut store: UnitAbsyn::InstStore, mut st: UnitAbsyn::Store) -> Result<UnitAbsyn::InstStore> {
+pub(crate) fn updateInstStore(mut store: UnitAbsyn::InstStore, mut st: UnitAbsyn::Store) -> Result<UnitAbsyn::InstStore> {
     let mut outStore: UnitAbsyn::InstStore;
     outStore = (match store.clone() {
         UnitAbsyn::InstStore::INSTSTORE { store: _, ht: mut ht, checkResult: mut res } => {
@@ -372,7 +372,7 @@ fn expandStore(mut st: UnitAbsyn::Store) -> Result<UnitAbsyn::Store> {
     Ok(outSt)
 }
 
-pub fn update(mut unit: UnitAbsyn::Unit, mut index: i32, mut st: UnitAbsyn::Store) -> Result<UnitAbsyn::Store> {
+pub(crate) fn update(mut unit: UnitAbsyn::Unit, mut index: i32, mut st: UnitAbsyn::Store) -> Result<UnitAbsyn::Store> {
     let mut outSt: UnitAbsyn::Store;
     outSt = 'mc: {
         let __mc_input = st.clone();
@@ -393,7 +393,7 @@ pub fn update(mut unit: UnitAbsyn::Unit, mut index: i32, mut st: UnitAbsyn::Stor
     Ok(outSt)
 }
 
-pub fn find(mut index: i32, mut st: UnitAbsyn::Store) -> Result<UnitAbsyn::Unit> {
+pub(crate) fn find(mut index: i32, mut st: UnitAbsyn::Store) -> Result<UnitAbsyn::Unit> {
     let mut unit: UnitAbsyn::Unit = UnitAbsyn::Unit::UNSPECIFIED;
     unit = 'mc: {
         let __mc_input = st.clone();
@@ -419,7 +419,7 @@ pub fn find(mut index: i32, mut st: UnitAbsyn::Store) -> Result<UnitAbsyn::Unit>
     Ok(unit)
 }
 
-pub fn instGetStore(mut store: UnitAbsyn::InstStore) -> Result<UnitAbsyn::Store> {
+pub(crate) fn instGetStore(mut store: UnitAbsyn::InstStore) -> Result<UnitAbsyn::Store> {
     let mut st: UnitAbsyn::Store = <UnitAbsyn::Store as ::std::default::Default>::default();
     st = (match store.clone() {
         UnitAbsyn::InstStore::INSTSTORE { store: mut __esc_st, ht: _, checkResult: _ } => {
@@ -431,7 +431,7 @@ pub fn instGetStore(mut store: UnitAbsyn::InstStore) -> Result<UnitAbsyn::Store>
     Ok(st)
 }
 
-pub fn emptyInstStore() -> UnitAbsyn::InstStore {
+pub(crate) fn emptyInstStore() -> UnitAbsyn::InstStore {
     let mut st: UnitAbsyn::InstStore;
     st = emptyInstStore2(false);
     st
@@ -454,7 +454,7 @@ fn emptyInstStore2(mut wantInstStore: bool) -> UnitAbsyn::InstStore {
     st
 }
 
-pub fn emptyStore() -> UnitAbsyn::Store {
+pub(crate) fn emptyStore() -> UnitAbsyn::Store {
     let mut st: UnitAbsyn::Store;
     let mut vector: metamodelica::Array<Option<UnitAbsyn::Unit>>;
     vector = arrayCreate(10, None);
@@ -462,18 +462,18 @@ pub fn emptyStore() -> UnitAbsyn::Store {
     st
 }
 
-pub fn printTerms(mut terms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>) -> Result<()> {
+pub(crate) fn printTerms(mut terms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>) -> Result<()> {
     metamodelica::print((printTermsStr(terms.clone())?).clone());
     Ok(())
 }
 
-pub fn printTermsStr(mut terms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>) -> Result<ArcStr> {
+pub(crate) fn printTermsStr(mut terms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>) -> Result<ArcStr> {
     let mut r#str: ArcStr;
     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("{")); __mm_s.push_str(&*stringDelimitList(List::map(terms.clone(), (std::sync::Arc::new(printTermStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<UnitAbsyn::UnitTerm>) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("}")); ArcStr::from(__mm_s) }).clone();
     Ok(r#str)
 }
 
-pub fn printTermStr(mut term: Arc<UnitAbsyn::UnitTerm>) -> Result<ArcStr> {
+pub(crate) fn printTermStr(mut term: Arc<UnitAbsyn::UnitTerm>) -> Result<ArcStr> {
     let mut r#str: ArcStr;
     r#str = ((::match_deref::match_deref! { match &(term.clone()) {
         Deref @ UnitAbsyn::UnitTerm::ADD { ut1: _, ut2: _, origExp: e } => {
@@ -516,7 +516,7 @@ pub fn printTermStr(mut term: Arc<UnitAbsyn::UnitTerm>) -> Result<ArcStr> {
     Ok(r#str)
 }
 
-pub fn printInstStore(mut st: UnitAbsyn::InstStore) -> Result<()> {
+pub(crate) fn printInstStore(mut st: UnitAbsyn::InstStore) -> Result<()> {
     let () = (match st.clone() {
         UnitAbsyn::InstStore::INSTSTORE { store: mut s, ht: mut h, checkResult: _ } => {
             metamodelica::print((literal!("instStore, s:")).clone());
@@ -532,7 +532,7 @@ pub fn printInstStore(mut st: UnitAbsyn::InstStore) -> Result<()> {
     Ok(())
 }
 
-pub fn printStore(mut st: UnitAbsyn::Store) -> Result<()> {
+pub(crate) fn printStore(mut st: UnitAbsyn::Store) -> Result<()> {
     let () = (match st.clone() {
         UnitAbsyn::Store { storeVector: mut vector, numElts: _ } => {
             let mut lst: Arc<metamodelica::List<Option<UnitAbsyn::Unit>>>;
@@ -661,7 +661,7 @@ fn printTypeParameterStr(mut typeParam: (MMath::Rational, UnitAbsyn::TypeParamet
     Ok(r#str)
 }
 
-pub fn splitRationals(mut inRationals: Arc<metamodelica::List<MMath::Rational>>) -> Result<(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)> {
+pub(crate) fn splitRationals(mut inRationals: Arc<metamodelica::List<MMath::Rational>>) -> Result<(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)> {
     let mut nums: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut denoms: Arc<metamodelica::List<i32>> = metamodelica::nil();
     (nums, denoms) = (::match_deref::match_deref! { match &(inRationals.clone()) {
@@ -677,7 +677,7 @@ pub fn splitRationals(mut inRationals: Arc<metamodelica::List<MMath::Rational>>)
     Ok((nums, denoms))
 }
 
-pub fn joinRationals(mut inums: Arc<metamodelica::List<i32>>, mut idenoms: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<MMath::Rational>>> {
+pub(crate) fn joinRationals(mut inums: Arc<metamodelica::List<i32>>, mut idenoms: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<MMath::Rational>>> {
     let mut rationals: Arc<metamodelica::List<MMath::Rational>> = metamodelica::nil();
     rationals = (::match_deref::match_deref! { match &((inums.clone(), idenoms.clone())) {
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => {
@@ -692,7 +692,7 @@ pub fn joinRationals(mut inums: Arc<metamodelica::List<i32>>, mut idenoms: Arc<m
     Ok(rationals)
 }
 
-pub fn joinTypeParams(mut inums: Arc<metamodelica::List<i32>>, mut idenoms: Arc<metamodelica::List<i32>>, mut itpstrs: Arc<metamodelica::List<ArcStr>>, mut funcInstIdOpt: Option<i32>) -> Result<Arc<metamodelica::List<(MMath::Rational, UnitAbsyn::TypeParameter)>>> {
+pub(crate) fn joinTypeParams(mut inums: Arc<metamodelica::List<i32>>, mut idenoms: Arc<metamodelica::List<i32>>, mut itpstrs: Arc<metamodelica::List<ArcStr>>, mut funcInstIdOpt: Option<i32>) -> Result<Arc<metamodelica::List<(MMath::Rational, UnitAbsyn::TypeParameter)>>> {
     let mut typeParams: Arc<metamodelica::List<(MMath::Rational, UnitAbsyn::TypeParameter)>> = metamodelica::nil();
     typeParams = (::match_deref::match_deref! { match &((inums.clone(), idenoms.clone(), itpstrs.clone())) {
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => {
@@ -711,7 +711,7 @@ pub fn joinTypeParams(mut inums: Arc<metamodelica::List<i32>>, mut idenoms: Arc<
     Ok(typeParams)
 }
 
-pub fn splitTypeParams(mut iTypeParams: Arc<metamodelica::List<(MMath::Rational, UnitAbsyn::TypeParameter)>>) -> Result<(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<ArcStr>>)> {
+pub(crate) fn splitTypeParams(mut iTypeParams: Arc<metamodelica::List<(MMath::Rational, UnitAbsyn::TypeParameter)>>) -> Result<(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<ArcStr>>)> {
     let mut nums: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut denoms: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut tpstrs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -728,7 +728,7 @@ pub fn splitTypeParams(mut iTypeParams: Arc<metamodelica::List<(MMath::Rational,
     Ok((nums, denoms, tpstrs))
 }
 
-pub fn instBuildUnitTerms(mut env: FCore::Graph, mut dae: DAE::DAElist, mut compDae: DAE::DAElist, mut store: UnitAbsyn::InstStore) -> Result<(UnitAbsyn::InstStore, Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>)> {
+pub(crate) fn instBuildUnitTerms(mut env: FCore::Graph, mut dae: DAE::DAElist, mut compDae: DAE::DAElist, mut store: UnitAbsyn::InstStore) -> Result<(UnitAbsyn::InstStore, Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>)> {
     let mut outStore: UnitAbsyn::InstStore;
     let mut terms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = metamodelica::nil();
     (outStore, terms) = 'mc: {
@@ -758,7 +758,7 @@ pub fn instBuildUnitTerms(mut env: FCore::Graph, mut dae: DAE::DAElist, mut comp
     Ok((outStore, terms))
 }
 
-pub fn buildUnitTerms(mut env: FCore::Graph, mut dae: DAE::DAElist) -> Result<(Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>, UnitAbsyn::Store, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)))> {
+pub(crate) fn buildUnitTerms(mut env: FCore::Graph, mut dae: DAE::DAElist) -> Result<(Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>, UnitAbsyn::Store, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)))> {
     let mut terms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>;
     let mut store: UnitAbsyn::Store;
     let mut ht: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, i32)>>), i32, (HashTable::FuncHashCref, HashTable::FuncCrefEqual, HashTable::FuncCrefStr, HashTable::FuncExpStr));
@@ -768,7 +768,7 @@ pub fn buildUnitTerms(mut env: FCore::Graph, mut dae: DAE::DAElist) -> Result<(A
     Ok((terms, store, ht))
 }
 
-pub fn instAddStore(mut istore: UnitAbsyn::InstStore, mut itp: Arc<DAE::Type>, mut cr: Arc<DAE::ComponentRef>) -> UnitAbsyn::InstStore {
+pub(crate) fn instAddStore(mut istore: UnitAbsyn::InstStore, mut itp: Arc<DAE::Type>, mut cr: Arc<DAE::ComponentRef>) -> UnitAbsyn::InstStore {
     let mut outStore: UnitAbsyn::InstStore = UnitAbsyn::InstStore::NOSTORE;
     outStore = 'mc: {
         let __mc_input = (istore.clone(), itp.clone());
@@ -834,7 +834,7 @@ pub fn instAddStore(mut istore: UnitAbsyn::InstStore, mut itp: Arc<DAE::Type>, m
     outStore
 }
 
-pub fn storeSize(mut store: UnitAbsyn::Store) -> Result<i32> {
+pub(crate) fn storeSize(mut store: UnitAbsyn::Store) -> Result<i32> {
     let mut size: i32 = 0;
     size = (match store.clone() {
         UnitAbsyn::Store { storeVector: _, numElts: mut __esc_size } => {
@@ -1951,7 +1951,7 @@ fn buildStoreExp(mut exp: Arc<DAE::Exp>, mut inStore: UnitAbsyn::Store, mut inHt
     (outStore, outHt)
 }
 
-pub fn unitMultiply(mut u1: UnitAbsyn::Unit, mut u2: UnitAbsyn::Unit) -> Result<UnitAbsyn::Unit> {
+pub(crate) fn unitMultiply(mut u1: UnitAbsyn::Unit, mut u2: UnitAbsyn::Unit) -> Result<UnitAbsyn::Unit> {
     let mut u: UnitAbsyn::Unit;
     u = (match (u1.clone(), u2.clone()) {
         (UnitAbsyn::Unit::SPECIFIED { specified: UnitAbsyn::SpecUnit { typeParameters: ref tparams1, units: ref units1 } }, UnitAbsyn::Unit::SPECIFIED { specified: UnitAbsyn::SpecUnit { typeParameters: ref tparams2, units: ref units2 } }) => {
@@ -1977,7 +1977,7 @@ fn selectConstantUnit(mut op: Option<DAE::Operator>) -> Result<UnitAbsyn::Unit> 
     Ok(unit)
 }
 
-pub fn unit2str(mut unit: UnitAbsyn::Unit) -> Result<ArcStr> {
+pub(crate) fn unit2str(mut unit: UnitAbsyn::Unit) -> Result<ArcStr> {
     let mut res: ArcStr = arcstr::literal!("");
     res = ((match unit.clone() {
         UnitAbsyn::Unit::SPECIFIED { specified: UnitAbsyn::SpecUnit { typeParameters: ref typeParams, units: mut units } } => {
@@ -2060,7 +2060,7 @@ algorithm
   der(v) = a;
 end Test1;
 */
-pub fn buildTest1() -> Result<(Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>, UnitAbsyn::Store)> {
+pub(crate) fn buildTest1() -> Result<(Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>, UnitAbsyn::Store)> {
     let mut ut: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>;
     let mut sigma: UnitAbsyn::Store;
     let mut r0: MMath::Rational;

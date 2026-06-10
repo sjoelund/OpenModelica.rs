@@ -82,7 +82,7 @@ impl metamodelica::gc::MMTrace for SetType {
     fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 
-pub fn edge_finder<EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut index: i32, mut e: EdgeT, mut edges: Arc<Vector::Vector<EdgeT>>, mut eqFn: Arc<dyn ::std::ops::Fn(EdgeT, EdgeT) -> Result<bool> + 'static>) -> Result<bool> {
+pub(crate) fn edge_finder<EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut index: i32, mut e: EdgeT, mut edges: Arc<Vector::Vector<EdgeT>>, mut eqFn: Arc<dyn ::std::ops::Fn(EdgeT, EdgeT) -> Result<bool> + 'static>) -> Result<bool> {
     let mut matching: bool = eqFn(e.clone(), Vector::get(edges.clone(), index.clone())?)?;
     Ok(matching)
 }
@@ -150,7 +150,7 @@ pub mod IncidenceList {
         il
     }
 
-    pub fn getRow<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<IncidenceList<VertexT, EdgeT>>, mut d: i32) -> Result<Arc<metamodelica::List<i32>>> {
+    pub(crate) fn getRow<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<IncidenceList<VertexT, EdgeT>>, mut d: i32) -> Result<Arc<metamodelica::List<i32>>> {
         let mut row: Arc<metamodelica::List<i32>>;
         row = Vector::get(il.graph.clone(), d.clone())?;
         Ok(row)
@@ -180,7 +180,7 @@ pub mod IncidenceList {
         Ok(v)
     }
 
-    pub fn getVerticesFromSet<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<IncidenceList<VertexT, EdgeT>>, mut set: Arc<SBSet::SBSet>, mut getSet: Arc<dyn ::std::ops::Fn(VertexT) -> Result<Arc<SBSet::SBSet>> + 'static>) -> Result<Arc<metamodelica::List<VertexT>>> {
+    pub(crate) fn getVerticesFromSet<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<IncidenceList<VertexT, EdgeT>>, mut set: Arc<SBSet::SBSet>, mut getSet: Arc<dyn ::std::ops::Fn(VertexT) -> Result<Arc<SBSet::SBSet>> + 'static>) -> Result<Arc<metamodelica::List<VertexT>>> {
         pub type getSetFn<VertexT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(VertexT) -> Result<Arc<SBSet::SBSet>> + 'static>;
 
         let mut set_vertices: Arc<metamodelica::List<VertexT>> = metamodelica::nil();
@@ -209,23 +209,23 @@ pub mod IncidenceList {
         Ok(ei)
     }
 
-    pub fn getEdge<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<IncidenceList<VertexT, EdgeT>>, mut d: i32) -> Result<EdgeT> {
+    pub(crate) fn getEdge<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<IncidenceList<VertexT, EdgeT>>, mut d: i32) -> Result<EdgeT> {
         let mut e: EdgeT;
         e = Vector::get(il.edges.clone(), d.clone())?;
         Ok(e)
     }
 
-    pub fn isEmpty<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<IncidenceList<VertexT, EdgeT>>) -> bool {
+    pub(crate) fn isEmpty<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<IncidenceList<VertexT, EdgeT>>) -> bool {
         let mut empty: bool = Vector::size(il.vertices.clone()) == 0;
         empty
     }
 
-    pub fn vertexCount<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<IncidenceList<VertexT, EdgeT>>) -> i32 {
+    pub(crate) fn vertexCount<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<IncidenceList<VertexT, EdgeT>>) -> i32 {
         let mut count: i32 = Vector::size(il.vertices.clone());
         count
     }
 
-    pub fn edgeCount<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<IncidenceList<VertexT, EdgeT>>) -> i32 {
+    pub(crate) fn edgeCount<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<IncidenceList<VertexT, EdgeT>>) -> i32 {
         let mut count: i32 = Vector::size(il.edges.clone());
         count
     }
@@ -324,7 +324,7 @@ pub mod BipartiteIncidenceList {
 
     pub type BIPARTITE_INCIDENCE_LIST<VertexT, EdgeT> = BipartiteIncidenceList<VertexT, EdgeT>;
 
-    pub fn new<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut vertexEq: Arc<dyn ::std::ops::Fn(VertexT, VertexT) -> Result<bool> + 'static>, mut edgeEq: Arc<dyn ::std::ops::Fn(EdgeT, EdgeT) -> Result<bool> + 'static>, mut vertexStr: Arc<dyn ::std::ops::Fn(VertexT) -> Result<ArcStr> + 'static>, mut edgeStr: Arc<dyn ::std::ops::Fn(EdgeT) -> Result<ArcStr> + 'static>) -> Arc<BipartiteIncidenceList<VertexT, EdgeT>> {
+    pub(crate) fn new<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut vertexEq: Arc<dyn ::std::ops::Fn(VertexT, VertexT) -> Result<bool> + 'static>, mut edgeEq: Arc<dyn ::std::ops::Fn(EdgeT, EdgeT) -> Result<bool> + 'static>, mut vertexStr: Arc<dyn ::std::ops::Fn(VertexT) -> Result<ArcStr> + 'static>, mut edgeStr: Arc<dyn ::std::ops::Fn(EdgeT) -> Result<ArcStr> + 'static>) -> Arc<BipartiteIncidenceList<VertexT, EdgeT>> {
         pub type Indices = Arc<metamodelica::List<i32>>;
 
         let mut il: Arc<BipartiteIncidenceList<VertexT, EdgeT>>;
@@ -332,12 +332,12 @@ pub mod BipartiteIncidenceList {
         il
     }
 
-    pub fn getRow<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<BipartiteIncidenceList<VertexT, EdgeT>>, mut d: i32) -> Result<Arc<metamodelica::List<i32>>> {
+    pub(crate) fn getRow<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<BipartiteIncidenceList<VertexT, EdgeT>>, mut d: i32) -> Result<Arc<metamodelica::List<i32>>> {
         let mut row: Arc<metamodelica::List<i32>> = Vector::get(il.graph.clone(), d.clone())?;
         Ok(row)
     }
 
-    pub fn addVertex<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<BipartiteIncidenceList<VertexT, EdgeT>>, mut v: VertexT, mut ST: SetType) -> Result<i32> {
+    pub(crate) fn addVertex<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<BipartiteIncidenceList<VertexT, EdgeT>>, mut v: VertexT, mut ST: SetType) -> Result<i32> {
         let mut d: i32;
         d = (match ST.clone() {
         SetType::F => {
@@ -358,7 +358,7 @@ pub mod BipartiteIncidenceList {
         Ok(d)
     }
 
-    pub fn findVertex<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<BipartiteIncidenceList<VertexT, EdgeT>>, mut ST: SetType, mut predFn: Arc<dyn ::std::ops::Fn(VertexT) -> Result<bool> + 'static>) -> Result<Option<i32>> {
+    pub(crate) fn findVertex<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<BipartiteIncidenceList<VertexT, EdgeT>>, mut ST: SetType, mut predFn: Arc<dyn ::std::ops::Fn(VertexT) -> Result<bool> + 'static>) -> Result<Option<i32>> {
         pub type PredFn<VertexT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(VertexT) -> Result<bool> + 'static>;
 
         let mut od: Option<i32>;
@@ -381,7 +381,7 @@ pub mod BipartiteIncidenceList {
         Ok(od)
     }
 
-    pub fn getVertex<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<BipartiteIncidenceList<VertexT, EdgeT>>, mut d: i32, mut ST: SetType) -> Result<VertexT> {
+    pub(crate) fn getVertex<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<BipartiteIncidenceList<VertexT, EdgeT>>, mut d: i32, mut ST: SetType) -> Result<VertexT> {
         let mut v: VertexT;
         v = (match ST.clone() {
         SetType::F => Vector::get(il.F_vertices.clone(), d.clone())?,
@@ -394,7 +394,7 @@ pub mod BipartiteIncidenceList {
         Ok(v)
     }
 
-    pub fn getVerticesFromSet<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<BipartiteIncidenceList<VertexT, EdgeT>>, mut set: Arc<SBSet::SBSet>, mut ST: SetType, mut getSet: Arc<dyn ::std::ops::Fn(VertexT) -> Result<Arc<SBSet::SBSet>> + 'static>) -> Result<Arc<metamodelica::List<VertexT>>> {
+    pub(crate) fn getVerticesFromSet<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<BipartiteIncidenceList<VertexT, EdgeT>>, mut set: Arc<SBSet::SBSet>, mut ST: SetType, mut getSet: Arc<dyn ::std::ops::Fn(VertexT) -> Result<Arc<SBSet::SBSet>> + 'static>) -> Result<Arc<metamodelica::List<VertexT>>> {
         pub type getSetFn<VertexT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(VertexT) -> Result<Arc<SBSet::SBSet>> + 'static>;
 
         let mut set_vertices: Arc<metamodelica::List<VertexT>> = metamodelica::nil();
@@ -407,7 +407,7 @@ pub mod BipartiteIncidenceList {
         Ok(set_vertices)
     }
 
-    pub fn addEdge<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<BipartiteIncidenceList<VertexT, EdgeT>>, mut d1: i32, mut d2: i32, mut e: EdgeT) -> Result<i32> {
+    pub(crate) fn addEdge<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<BipartiteIncidenceList<VertexT, EdgeT>>, mut d1: i32, mut d2: i32, mut e: EdgeT) -> Result<i32> {
         let mut ei: i32;
         let mut eil: Arc<metamodelica::List<i32>>;
         eil = getRow(il.clone(), d1.clone())?;
@@ -423,7 +423,7 @@ pub mod BipartiteIncidenceList {
         Ok(ei)
     }
 
-    pub fn getEdgesFromSet<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<BipartiteIncidenceList<VertexT, EdgeT>>, mut set: Arc<SBSet::SBSet>, mut getSet: Arc<dyn ::std::ops::Fn(EdgeT) -> Result<Arc<SBSet::SBSet>> + 'static>) -> Result<Arc<metamodelica::List<EdgeT>>> {
+    pub(crate) fn getEdgesFromSet<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<BipartiteIncidenceList<VertexT, EdgeT>>, mut set: Arc<SBSet::SBSet>, mut getSet: Arc<dyn ::std::ops::Fn(EdgeT) -> Result<Arc<SBSet::SBSet>> + 'static>) -> Result<Arc<metamodelica::List<EdgeT>>> {
         pub type getSetFn<EdgeT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(EdgeT) -> Result<Arc<SBSet::SBSet>> + 'static>;
 
         let mut set_edges: Arc<metamodelica::List<EdgeT>> = metamodelica::nil();
@@ -436,17 +436,17 @@ pub mod BipartiteIncidenceList {
         Ok(set_edges)
     }
 
-    pub fn getEdge<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<BipartiteIncidenceList<VertexT, EdgeT>>, mut d: i32) -> Result<EdgeT> {
+    pub(crate) fn getEdge<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<BipartiteIncidenceList<VertexT, EdgeT>>, mut d: i32) -> Result<EdgeT> {
         let mut e: EdgeT = Vector::get(il.edges.clone(), d.clone())?;
         Ok(e)
     }
 
-    pub fn isEmpty<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<BipartiteIncidenceList<VertexT, EdgeT>>) -> bool {
+    pub(crate) fn isEmpty<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<BipartiteIncidenceList<VertexT, EdgeT>>) -> bool {
         let mut empty: bool = Vector::size(il.F_vertices.clone()) == 0 && Vector::size(il.U_vertices.clone()) == 0;
         empty
     }
 
-    pub fn vertexCount<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<BipartiteIncidenceList<VertexT, EdgeT>>, mut ST: SetType) -> Result<i32> {
+    pub(crate) fn vertexCount<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<BipartiteIncidenceList<VertexT, EdgeT>>, mut ST: SetType) -> Result<i32> {
         let mut count: i32;
         count = (match ST.clone() {
         SetType::V { .. } => Vector::size(il.F_vertices.clone()) + Vector::size(il.U_vertices.clone()),
@@ -460,12 +460,12 @@ pub mod BipartiteIncidenceList {
         Ok(count)
     }
 
-    pub fn edgeCount<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<BipartiteIncidenceList<VertexT, EdgeT>>) -> i32 {
+    pub(crate) fn edgeCount<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<BipartiteIncidenceList<VertexT, EdgeT>>) -> i32 {
         let mut count: i32 = Vector::size(il.edges.clone());
         count
     }
 
-    pub fn vertices<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<BipartiteIncidenceList<VertexT, EdgeT>>, mut ST: SetType) -> Result<Arc<metamodelica::List<VertexT>>> {
+    pub(crate) fn vertices<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<BipartiteIncidenceList<VertexT, EdgeT>>, mut ST: SetType) -> Result<Arc<metamodelica::List<VertexT>>> {
         let mut vl: Arc<metamodelica::List<VertexT>>;
         vl = (match ST.clone() {
         SetType::V { .. } => listAppend(Vector::toList(il.F_vertices.clone()), Vector::toList(il.U_vertices.clone())),
@@ -479,12 +479,12 @@ pub mod BipartiteIncidenceList {
         Ok(vl)
     }
 
-    pub fn edges<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<BipartiteIncidenceList<VertexT, EdgeT>>) -> Arc<metamodelica::List<EdgeT>> {
+    pub(crate) fn edges<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<BipartiteIncidenceList<VertexT, EdgeT>>) -> Arc<metamodelica::List<EdgeT>> {
         let mut el: Arc<metamodelica::List<EdgeT>> = Vector::toList(il.edges.clone());
         el
     }
 
-    pub fn toString<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<BipartiteIncidenceList<VertexT, EdgeT>>) -> Result<ArcStr> {
+    pub(crate) fn toString<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut il: Arc<BipartiteIncidenceList<VertexT, EdgeT>>) -> Result<ArcStr> {
         let mut r#str: ArcStr;
         let mut vertToString: VertexStr<VertexT>;
         let mut edgeToString: EdgeStr<EdgeT>;
@@ -519,7 +519,7 @@ pub mod BipartiteIncidenceList {
         Ok(r#str)
     }
 
-    pub fn setTypeString(mut ST: SetType) -> ArcStr {
+    pub(crate) fn setTypeString(mut ST: SetType) -> ArcStr {
         let mut r#str: ArcStr;
         r#str = ((match ST.clone() {
         SetType::V { .. } => literal!("V (generic vertex set)"),

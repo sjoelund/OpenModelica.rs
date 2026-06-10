@@ -84,7 +84,7 @@ pub fn emptyHashTableSized(mut size: i32) -> HashTable {
     hashTable
 }
 
-pub fn printIntListArrayStr(mut iValue: (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>)) -> Result<ArcStr> {
+pub(crate) fn printIntListArrayStr(mut iValue: (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>)) -> Result<ArcStr> {
     let mut res: ArcStr;
     let mut iList: Arc<metamodelica::List<i32>>;
     let mut iArray: metamodelica::Array<i32>;

@@ -87,7 +87,7 @@ pub type Import = Absyn::Import;
 
 pub type Msg = Option<SourceInfo>;
 
-pub fn path(mut inGraph: Graph, mut inPath: Arc<Absyn::Path>) -> Result<(Graph, Ref)> {
+pub(crate) fn path(mut inGraph: Graph, mut inPath: Arc<Absyn::Path>) -> Result<(Graph, Ref)> {
     let mut outGraph: Graph;
     let mut outRef: Ref;
     (outGraph, outRef) = (match inGraph.clone() {
@@ -102,7 +102,7 @@ pub fn path(mut inGraph: Graph, mut inPath: Arc<Absyn::Path>) -> Result<(Graph, 
     Ok((outGraph, outRef))
 }
 
-pub fn all(mut inGraph: Graph) -> Result<Graph> {
+pub(crate) fn all(mut inGraph: Graph) -> Result<Graph> {
     let mut outGraph: Graph;
     outGraph = (match inGraph.clone() {
         mut g => {

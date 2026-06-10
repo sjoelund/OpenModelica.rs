@@ -1800,7 +1800,7 @@ fn sMCompEqualsRef(mut inElement: Arc<DAE::Element>, mut inCref: Arc<DAE::Compon
     Ok(result)
 }
 
-pub fn dumpTransitionStr(mut transition: Transition) -> Result<ArcStr> {
+pub(crate) fn dumpTransitionStr(mut transition: Transition) -> Result<ArcStr> {
     let mut transitionStr: ArcStr;
     let mut from: i32;
     let mut to: i32;

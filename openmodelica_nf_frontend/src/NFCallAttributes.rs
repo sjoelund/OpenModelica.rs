@@ -86,7 +86,7 @@ impl Default for NFCallAttributes {
 
 pub type CALL_ATTR = NFCallAttributes;
 
-pub fn toDAE(mut attr: Arc<NFCallAttributes>, mut returnType: Arc<NFType::NFType>) -> Result<Arc<DAE::CallAttributes>> {
+pub(crate) fn toDAE(mut attr: Arc<NFCallAttributes>, mut returnType: Arc<NFType::NFType>) -> Result<Arc<DAE::CallAttributes>> {
     let mut fattr: Arc<DAE::CallAttributes>;
     fattr = Arc::new(DAE::CallAttributes { ty: NFType::toDAE(returnType.clone(), true)?, tuple_: attr.tuple_.clone(), builtin: attr.builtin.clone(), isImpure: attr.isImpure.clone(), isFunctionPointerCall: attr.isFunctionPointerCall.clone(), inlineType: attr.inlineType.clone(), tailCall: attr.tailCall.clone() });
     Ok(fattr)

@@ -192,7 +192,7 @@ pub fn appendList(mut inStream: IOStream, mut inStringList: Arc<metamodelica::Li
     Ok(outStream)
 }
 
-pub fn appendListReverse(mut s: IOStream, mut data: Arc<metamodelica::List<ArcStr>>) -> Result<IOStream> {
+pub(crate) fn appendListReverse(mut s: IOStream, mut data: Arc<metamodelica::List<ArcStr>>) -> Result<IOStream> {
     let mut s: IOStream = s;
     let mut s_data: IOStreamData = s.data.clone();
     let () = (match s_data.clone() {
@@ -231,7 +231,7 @@ pub fn appendListStream(mut srcStream: IOStream, mut dstStream: IOStream) -> Res
     Ok(dstStream)
 }
 
-pub fn close(mut inStream: IOStream) -> IOStream {
+pub(crate) fn close(mut inStream: IOStream) -> IOStream {
     let mut outStream: IOStream;
     outStream = 'mc: {
         let __mc_input = inStream.clone();
@@ -267,7 +267,7 @@ pub fn delete(mut inStream: IOStream) -> Result<()> {
     Ok(())
 }
 
-pub fn clear(mut inStream: IOStream) -> Result<IOStream> {
+pub(crate) fn clear(mut inStream: IOStream) -> Result<IOStream> {
     let mut outStream: IOStream;
     outStream = 'mc: {
         let __mc_input = inStream.clone();

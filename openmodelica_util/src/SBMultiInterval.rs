@@ -78,7 +78,7 @@ pub fn newEmpty() -> Arc<SBMultiInterval> {
     mi
 }
 
-pub fn copy(mut mi: Arc<SBMultiInterval>) -> Arc<SBMultiInterval> {
+pub(crate) fn copy(mut mi: Arc<SBMultiInterval>) -> Arc<SBMultiInterval> {
     let mut outMI: Arc<SBMultiInterval>;
     outMI = Arc::new(SBMultiInterval { intervals: metamodelica::arrayFromVec(mi.intervals.clone().borrow().clone()), ndim: mi.ndim.clone() });
     outMI
@@ -141,7 +141,7 @@ pub fn intersection(mut mi1: Arc<SBMultiInterval>, mut mi2: Arc<SBMultiInterval>
     Ok(outMI)
 }
 
-pub fn complement(mut mi1: Arc<SBMultiInterval>, mut mi2: Arc<SBMultiInterval>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<SBMultiInterval>>>> {
+pub(crate) fn complement(mut mi1: Arc<SBMultiInterval>, mut mi2: Arc<SBMultiInterval>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<SBMultiInterval>>>> {
     fn add_interval(mut i: Arc<SBInterval::SBInterval>, mut count: i32, mut size: i32, mut ints1: metamodelica::Array<Arc<SBInterval::SBInterval>>, mut ints2: metamodelica::Array<Arc<SBInterval::SBInterval>>, mut res: Arc<UnorderedSet::UnorderedSet<Arc<SBMultiInterval>>>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<SBMultiInterval>>>> {
         let mut res: Arc<UnorderedSet::UnorderedSet<Arc<SBMultiInterval>>> = res;
         let mut dummyi: Arc<SBInterval::SBInterval>;
@@ -236,7 +236,7 @@ pub fn minElem(mut mi: Arc<SBMultiInterval>) -> Result<metamodelica::Array<i32>>
     Ok(res)
 }
 
-pub fn replace(mut i: Arc<SBInterval::SBInterval>, mut dim: i32, mut mi: Arc<SBMultiInterval>) -> Result<Arc<SBMultiInterval>> {
+pub(crate) fn replace(mut i: Arc<SBInterval::SBInterval>, mut dim: i32, mut mi: Arc<SBMultiInterval>) -> Result<Arc<SBMultiInterval>> {
     let mut res: Arc<SBMultiInterval>;
     let mut ints: metamodelica::Array<Arc<SBInterval::SBInterval>>;
     ints = metamodelica::arrayFromVec(mi.intervals.clone().borrow().clone());
@@ -255,7 +255,7 @@ pub fn isEqual(mut mi1: Arc<SBMultiInterval>, mut mi2: Arc<SBMultiInterval>) -> 
     Ok(equal)
 }
 
-pub fn hash(mut mi: Arc<SBMultiInterval>) -> i32 {
+pub(crate) fn hash(mut mi: Arc<SBMultiInterval>) -> i32 {
     let mut res: i32;
     res = metamodelica::arrayLength(mi.intervals.clone());
     res
@@ -270,7 +270,7 @@ pub fn size(mut mi: Arc<SBMultiInterval>) -> i32 {
     sz
 }
 
-pub fn toString(mut mi: Arc<SBMultiInterval>) -> ArcStr {
+pub(crate) fn toString(mut mi: Arc<SBMultiInterval>) -> ArcStr {
     let mut r#str: ArcStr;
     if isEmpty(mi.clone()) {
         r#str = (literal!("emptyInterval")).clone();

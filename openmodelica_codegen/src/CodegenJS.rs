@@ -44,7 +44,7 @@ pub fn markdownFile(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -
     Ok(out_txt)
 }
 
-pub fn nodeJSDriver(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+pub(crate) fn nodeJSDriver(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_simCode.clone()) {
         (mut txt, SimCode::SimCode { simulationSettingsOpt: Some(SimCode::SimulationSettings { outputFormat: mut i_s_outputFormat, .. }), fileNamePrefix: mut i_fileNamePrefix, .. }) => {
@@ -72,7 +72,7 @@ pub fn nodeJSDriver(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -
     Ok(out_txt)
 }
 
-pub fn markdownContents(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+pub(crate) fn markdownContents(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_simCode.clone()) {
         (mut txt, SimCode::SimCode { modelInfo: SimCode::ModelInfo { functions: _, varInfo: SimCode::VarInfo { numZeroCrossings: _, .. }, vars: SimCodeVar::SimVars { stateVars: _, .. }, name: ref i_modelInfo_name, .. }, simulationSettingsOpt: Some(SimCode::SimulationSettings { stopTime: mut i_s_stopTime, numberOfIntervals: mut i_s_numberOfIntervals, tolerance: mut i_s_tolerance, .. }), makefileParams: SimCodeFunction::MakefileParams { ccompiler: _, .. }, fileNamePrefix: mut i_fileNamePrefix, .. }) => {

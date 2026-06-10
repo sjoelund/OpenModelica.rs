@@ -110,17 +110,17 @@ pub mod SetVertex {
 
     pub type SET_VERTEX = SetVertex;
 
-    pub fn isEqual(mut v1: Arc<SetVertex>, mut v2: Arc<SetVertex>) -> Result<bool> {
+    pub(crate) fn isEqual(mut v1: Arc<SetVertex>, mut v2: Arc<SetVertex>) -> Result<bool> {
         let mut equal: bool = Connector::isEqual(v1.name.clone(), v2.name.clone())?;
         Ok(equal)
     }
 
-    pub fn isNamed(mut v: Arc<SetVertex>, mut name: Arc<Connector::NFConnector>) -> Result<bool> {
+    pub(crate) fn isNamed(mut v: Arc<SetVertex>, mut name: Arc<Connector::NFConnector>) -> Result<bool> {
         let mut equal: bool = Connector::isEqual(v.name.clone(), name.clone())?;
         Ok(equal)
     }
 
-    pub fn toString(mut v: Arc<SetVertex>) -> Result<ArcStr> {
+    pub(crate) fn toString(mut v: Arc<SetVertex>) -> Result<ArcStr> {
         let mut r#str: ArcStr = { let mut __mm_s = String::new(); __mm_s.push_str(&*Connector::toString(v.name.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*SBSet::toString(v.vs.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) };
         Ok(r#str)
     }
@@ -156,12 +156,12 @@ pub mod SetEdge {
 
     pub type SET_EDGE = SetEdge;
 
-    pub fn isEqual(mut e1: Arc<SetEdge>, mut e2: Arc<SetEdge>) -> bool {
+    pub(crate) fn isEqual(mut e1: Arc<SetEdge>, mut e2: Arc<SetEdge>) -> bool {
         let mut equal: bool = e1.name.clone() == e2.name.clone();
         equal
     }
 
-    pub fn toString(mut e: Arc<SetEdge>) -> Result<ArcStr> {
+    pub(crate) fn toString(mut e: Arc<SetEdge>) -> Result<ArcStr> {
         let mut r#str: ArcStr = { let mut __mm_s = String::new(); __mm_s.push_str(&*e.name.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!("SetVertex 1:\t")); __mm_s.push_str(&*SBPWLinearMap::toString(e.es1.clone())?); __mm_s.push_str(&*literal!("\nSetVertex 2:\t")); __mm_s.push_str(&*SBPWLinearMap::toString(e.es2.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) };
         Ok(r#str)
     }
@@ -172,7 +172,7 @@ pub type NameVertexTable = Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<SBMultiInt
 
 pub type SBGraph = Arc<IncidenceList::IncidenceList<Arc<SetVertex::SetVertex>, Arc<SetEdge::SetEdge>>>;
 
-pub fn resolve(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<Arc<FlatModel::NFFlatModel>> {
+pub(crate) fn resolve(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<Arc<FlatModel::NFFlatModel>> {
     let mut flatModel: Arc<FlatModel::NFFlatModel> = flatModel;
     let mut max_dim: i32 = 1;
     let mut v_count: Arc<Vector::Vector<i32>>;

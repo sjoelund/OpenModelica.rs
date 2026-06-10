@@ -141,7 +141,7 @@ impl metamodelica::gc::MMTrace for FigaroObject {
 pub type FIGAROOBJECT = FigaroObject;
 
 
-pub fn makeFigaro(mut inProgram: Arc<metamodelica::List<Arc<SCode::Element>>>, mut inModel: Arc<SCode::Element>, mut env: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<ArcStr> {
+pub(crate) fn makeFigaro(mut inProgram: Arc<metamodelica::List<Arc<SCode::Element>>>, mut inModel: Arc<SCode::Element>, mut env: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<ArcStr> {
     let mut outCode: ArcStr;
     let mut fcl: Arc<metamodelica::List<FigaroClass>>;
     let mut fol: Arc<metamodelica::List<FigaroObject>>;

@@ -56,25 +56,25 @@ use openmodelica_util_datatypes_basic::List;
 
 pub mod ConnectionSets {
     use super::*;
-    pub fn EntryHash(mut entry: Entry) -> Result<i32> {
+    pub(crate) fn EntryHash(mut entry: Entry) -> Result<i32> {
         let mut hash: i32;
         hash = Connector::hash(entry.clone())?;
         Ok(hash)
     }
 
-    pub fn EntryEqual(mut entry1: Entry, mut entry2: Entry) -> Result<bool> {
+    pub(crate) fn EntryEqual(mut entry1: Entry, mut entry2: Entry) -> Result<bool> {
         let mut isEqual: bool;
         isEqual = Connector::isEqual(entry1.clone(), entry2.clone())?;
         Ok(isEqual)
     }
 
-    pub fn EntryString(mut entry: Entry) -> Result<ArcStr> {
+    pub(crate) fn EntryString(mut entry: Entry) -> Result<ArcStr> {
         let mut r#str: ArcStr;
         r#str = (Connector::toString(entry.clone())?).clone();
         Ok(r#str)
     }
 
-    pub fn fromConnections(mut connections: Arc<Connections::NFConnections>) -> Result<Sets> {
+    pub(crate) fn fromConnections(mut connections: Arc<Connections::NFConnections>) -> Result<Sets> {
         let mut sets: Sets;
         sets = emptySets((connections.connections.clone().len() as i32) + (connections.flows.clone().len() as i32));
         if !(Flags::isSet(Flags::DISABLE_SINGLE_FLOW_EQ.clone())?) {
@@ -84,25 +84,25 @@ pub mod ConnectionSets {
         Ok(sets)
     }
 
-    pub fn addScalarConnector(mut conn: Arc<Connector::NFConnector>, mut sets: Sets) -> Result<Sets> {
+    pub(crate) fn addScalarConnector(mut conn: Arc<Connector::NFConnector>, mut sets: Sets) -> Result<Sets> {
         let mut sets: Sets = sets;
         (sets, _) = add(conn.clone(), sets.clone())?;
         Ok(sets)
     }
 
-    pub fn addConnector(mut conn: Arc<Connector::NFConnector>, mut sets: Sets) -> Result<Sets> {
+    pub(crate) fn addConnector(mut conn: Arc<Connector::NFConnector>, mut sets: Sets) -> Result<Sets> {
         let mut sets: Sets = sets;
         sets = addList(Connector::scalarize(conn.clone())?, sets.clone())?;
         Ok(sets)
     }
 
-    pub fn addSingleConnector(mut conn: Arc<Connector::NFConnector>, mut sets: Sets) -> Result<Sets> {
+    pub(crate) fn addSingleConnector(mut conn: Arc<Connector::NFConnector>, mut sets: Sets) -> Result<Sets> {
         let mut sets: Sets = sets;
         (sets, _) = find(conn.clone(), sets.clone())?;
         Ok(sets)
     }
 
-    pub fn addConnection(mut connection: Arc<Connection::NFConnection>, mut broken: Arc<metamodelica::List<Connections::BrokenEdge>>, mut sets: Sets) -> Result<Sets> {
+    pub(crate) fn addConnection(mut connection: Arc<Connection::NFConnection>, mut broken: Arc<metamodelica::List<Connections::BrokenEdge>>, mut sets: Sets) -> Result<Sets> {
         let mut sets: Sets = sets;
         if !(broken.clone().is_empty()) && isBroken(connection.lhs.clone(), connection.rhs.clone(), broken.clone())? {
             return Ok(sets.clone());
@@ -111,7 +111,7 @@ pub mod ConnectionSets {
         Ok(sets)
     }
 
-    pub fn isBroken(mut c1: Arc<Connector::NFConnector>, mut c2: Arc<Connector::NFConnector>, mut broken: Arc<metamodelica::List<Connections::BrokenEdge>>) -> Result<bool> {
+    pub(crate) fn isBroken(mut c1: Arc<Connector::NFConnector>, mut c2: Arc<Connector::NFConnector>, mut broken: Arc<metamodelica::List<Connections::BrokenEdge>>) -> Result<bool> {
         let mut b: bool = false;
         let mut cr1: Arc<ComponentRef::NFComponentRef>;
         let mut cr2: Arc<ComponentRef::NFComponentRef>;
@@ -167,7 +167,7 @@ pub mod ConnectionSets {
     pub type DISJOINT_SETS = Sets;
 
 
-    pub fn add(mut entry: Entry, mut sets: Sets) -> Result<(Sets, i32)> {
+    pub(crate) fn add(mut entry: Entry, mut sets: Sets) -> Result<(Sets, i32)> {
         let mut sets: Sets = sets;
         let mut index: i32;
         let mut nodes: metamodelica::Array<i32>;
@@ -186,7 +186,7 @@ pub mod ConnectionSets {
         Ok((sets, index))
     }
 
-    pub fn addList(mut entries: Arc<metamodelica::List<Arc<Connector::NFConnector>>>, mut sets: Sets) -> Result<Sets> {
+    pub(crate) fn addList(mut entries: Arc<metamodelica::List<Arc<Connector::NFConnector>>>, mut sets: Sets) -> Result<Sets> {
         let mut sets: Sets = sets;
         let mut nodes: metamodelica::Array<i32>;
         let mut elements: IndexTable;
@@ -212,13 +212,13 @@ pub mod ConnectionSets {
         Ok(sets)
     }
 
-    pub fn contains(mut entry: Entry, mut sets: Sets) -> Result<bool> {
+    pub(crate) fn contains(mut entry: Entry, mut sets: Sets) -> Result<bool> {
         let mut found: bool;
         found = isSome(UnorderedMap::get(entry.clone(), sets.elements.clone())?);
         Ok(found)
     }
 
-    pub fn emptySets(mut setCount: i32) -> Sets {
+    pub(crate) fn emptySets(mut setCount: i32) -> Sets {
         let mut sets: Sets;
         let mut nodes: metamodelica::Array<i32>;
         let mut elements: IndexTable;
@@ -230,7 +230,7 @@ pub mod ConnectionSets {
         sets
     }
 
-    pub fn extractSets(mut sets: Sets) -> (metamodelica::Array<Arc<metamodelica::List<Arc<Connector::NFConnector>>>>, Sets) {
+    pub(crate) fn extractSets(mut sets: Sets) -> (metamodelica::Array<Arc<metamodelica::List<Arc<Connector::NFConnector>>>>, Sets) {
         let mut setsArray: metamodelica::Array<Arc<metamodelica::List<Arc<Connector::NFConnector>>>>;
         let mut assignedSets: Sets;
         let mut nodes: metamodelica::Array<i32>;
@@ -268,7 +268,7 @@ pub mod ConnectionSets {
         (setsArray, assignedSets)
     }
 
-    pub fn find(mut entry: Entry, mut sets: Sets) -> Result<(Sets, i32)> {
+    pub(crate) fn find(mut entry: Entry, mut sets: Sets) -> Result<(Sets, i32)> {
         let mut sets: Sets = sets;
         let mut index: i32;
         let mut oindex: Option<i32>;
@@ -285,7 +285,7 @@ pub mod ConnectionSets {
         Ok((sets, index))
     }
 
-    pub fn findRoot(mut nodeIndex: i32, mut nodes: metamodelica::Array<i32>) -> Result<i32> {
+    pub(crate) fn findRoot(mut nodeIndex: i32, mut nodes: metamodelica::Array<i32>) -> Result<i32> {
         let mut rootIndex: i32 = nodeIndex.clone();
         let mut parent: i32 = ({let __elt = nodes.borrow()[(nodeIndex.clone()-1) as usize].clone(); __elt});
         let mut idx: i32 = nodeIndex.clone();
@@ -302,7 +302,7 @@ pub mod ConnectionSets {
         Ok(rootIndex)
     }
 
-    pub fn findSet(mut entry: Entry, mut sets: Sets) -> Result<(i32, Sets)> {
+    pub(crate) fn findSet(mut entry: Entry, mut sets: Sets) -> Result<(i32, Sets)> {
         let mut set: i32;
         let mut updatedSets: Sets;
         let mut index: i32;
@@ -311,7 +311,7 @@ pub mod ConnectionSets {
         Ok((set, updatedSets))
     }
 
-    pub fn findSetArrayIndex(mut entry: Entry, mut sets: Sets) -> Result<i32> {
+    pub(crate) fn findSetArrayIndex(mut entry: Entry, mut sets: Sets) -> Result<i32> {
         let mut set: i32;
         set = UnorderedMap::getOrFail(entry.clone(), sets.elements.clone())?;
         while set.clone() > 0 {
@@ -321,18 +321,18 @@ pub mod ConnectionSets {
         Ok(set)
     }
 
-    pub fn getEntry(mut entry: Entry, mut sets: Sets) -> Result<Option<Arc<Connector::NFConnector>>> {
+    pub(crate) fn getEntry(mut entry: Entry, mut sets: Sets) -> Result<Option<Arc<Connector::NFConnector>>> {
         let mut outEntry: Option<Arc<Connector::NFConnector>>;
         outEntry = UnorderedMap::getKey(entry.clone(), sets.elements.clone())?;
         Ok(outEntry)
     }
 
-    pub fn getNodeCount(mut sets: Sets) -> i32 {
+    pub(crate) fn getNodeCount(mut sets: Sets) -> i32 {
         let mut nodeCount: i32 = sets.nodeCount.clone();
         nodeCount
     }
 
-    pub fn merge(mut entry1: Entry, mut entry2: Entry, mut sets: Sets) -> Result<Sets> {
+    pub(crate) fn merge(mut entry1: Entry, mut entry2: Entry, mut sets: Sets) -> Result<Sets> {
         let mut sets: Sets = sets;
         let mut set1: i32;
         let mut set2: i32;
@@ -342,7 +342,7 @@ pub mod ConnectionSets {
         Ok(sets)
     }
 
-    pub fn printSets(mut sets: Sets) -> Result<()> {
+    pub(crate) fn printSets(mut sets: Sets) -> Result<()> {
         let mut nodes: metamodelica::Array<i32>;
         let mut entries: Arc<metamodelica::List<(Arc<Connector::NFConnector>, i32)>>;
         let mut e: Entry;
@@ -364,7 +364,7 @@ pub mod ConnectionSets {
         Ok(())
     }
 
-    pub fn union(mut set1: i32, mut set2: i32, mut sets: Sets) -> Result<Sets> {
+    pub(crate) fn union(mut set1: i32, mut set2: i32, mut sets: Sets) -> Result<Sets> {
         let mut sets: Sets = sets;
         let mut rank1: i32;
         let mut rank2: i32;

@@ -110,7 +110,7 @@ pub fn intersection(mut set1: Arc<SBAtomicSet>, mut set2: Arc<SBAtomicSet>) -> R
     Ok(res)
 }
 
-pub fn complement(mut set1: Arc<SBAtomicSet>, mut set2: Arc<SBAtomicSet>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet>>>> {
+pub(crate) fn complement(mut set1: Arc<SBAtomicSet>, mut set2: Arc<SBAtomicSet>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet>>>> {
     let mut res: Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet>>>;
     let mut diff: Arc<UnorderedSet::UnorderedSet<Arc<SBMultiInterval::SBMultiInterval>>>;
     diff = SBMultiInterval::complement(set1.aset.clone(), set2.aset.clone())?;
@@ -124,7 +124,7 @@ pub fn complement(mut set1: Arc<SBAtomicSet>, mut set2: Arc<SBAtomicSet>) -> Res
     Ok(res)
 }
 
-pub fn crossProd(mut set1: Arc<SBAtomicSet>, mut set2: Arc<SBAtomicSet>) -> Result<Arc<SBAtomicSet>> {
+pub(crate) fn crossProd(mut set1: Arc<SBAtomicSet>, mut set2: Arc<SBAtomicSet>) -> Result<Arc<SBAtomicSet>> {
     let mut res: Arc<SBAtomicSet>;
     res = new(SBMultiInterval::crossProd(set1.aset.clone(), set2.aset.clone())?);
     Ok(res)
@@ -141,7 +141,7 @@ pub fn aset(mut set: Arc<SBAtomicSet>) -> Arc<SBMultiInterval::SBMultiInterval> 
     res
 }
 
-pub fn minElem(mut set: Arc<SBAtomicSet>) -> Result<metamodelica::Array<i32>> {
+pub(crate) fn minElem(mut set: Arc<SBAtomicSet>) -> Result<metamodelica::Array<i32>> {
     let mut res: metamodelica::Array<i32> = SBMultiInterval::minElem(set.aset.clone())?;
     Ok(res)
 }
@@ -157,7 +157,7 @@ pub fn isEqual(mut set1: Arc<SBAtomicSet>, mut set2: Arc<SBAtomicSet>) -> Result
     Ok(equal)
 }
 
-pub fn hash(mut set1: Arc<SBAtomicSet>) -> i32 {
+pub(crate) fn hash(mut set1: Arc<SBAtomicSet>) -> i32 {
     let mut hash: i32 = SBMultiInterval::hash(set1.aset.clone());
     hash
 }

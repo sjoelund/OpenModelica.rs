@@ -29,7 +29,7 @@ fn lm_3(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<TplAbsyn::MM
     }
 }
 
-pub fn mmPackage(mut in_txt: Tpl::Text, mut in_a_it: TplAbsyn::MMPackage) -> Result<Tpl::Text> {
+pub(crate) fn mmPackage(mut in_txt: Tpl::Text, mut in_a_it: TplAbsyn::MMPackage) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_it.clone()) {
         (mut txt, TplAbsyn::MMPackage { name: ref i_name, mmDeclarations: ref i_mmDeclarations, annotationFooter: mut i_annotationFooter }) => {
@@ -180,7 +180,7 @@ fn fun_9(mut in_txt: Tpl::Text, mut in_a_statements: Arc<metamodelica::List<Arc<
     Ok(out_txt)
 }
 
-pub fn mmDeclaration(mut in_txt: Tpl::Text, mut in_a_it: TplAbsyn::MMDeclaration) -> Result<Tpl::Text> {
+pub(crate) fn mmDeclaration(mut in_txt: Tpl::Text, mut in_a_it: TplAbsyn::MMDeclaration) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_it.clone())) {
         (txt, TplAbsyn::MMDeclaration::MM_IMPORT { packageName: Deref @ TplAbsyn::PathIdent::IDENT { ident: Deref @ "Tpl" }, .. }) => {
@@ -458,7 +458,7 @@ fn fun_21(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
     Ok(out_txt)
 }
 
-pub fn mmMatchFunBody(mut txt: Tpl::Text, mut a_inArgs: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>, mut a_outArgs: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>, mut a_locals: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>, mut a_matchCases: Arc<metamodelica::List<(Arc<metamodelica::List<Arc<TplAbsyn::MatchingExp>>>, Arc<metamodelica::List<Arc<TplAbsyn::MMExp>>>)>>) -> Result<Tpl::Text> {
+pub(crate) fn mmMatchFunBody(mut txt: Tpl::Text, mut a_inArgs: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>, mut a_outArgs: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>, mut a_locals: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>, mut a_matchCases: Arc<metamodelica::List<(Arc<metamodelica::List<Arc<TplAbsyn::MatchingExp>>>, Arc<metamodelica::List<Arc<TplAbsyn::MMExp>>>)>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut ret_1: bool;
     let mut ret_0: bool;
@@ -581,7 +581,7 @@ fn fun_27(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
     Ok(out_txt)
 }
 
-pub fn mmForLoopFunBody(mut txt: Tpl::Text, mut a_inArgs: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>, mut a_outArgs: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>, mut a_locals: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>, mut a_idxName: ArcStr, mut a_arrName: ArcStr, mut a_eltName: ArcStr, mut a_statements: Arc<metamodelica::List<Arc<TplAbsyn::MMExp>>>) -> Result<Tpl::Text> {
+pub(crate) fn mmForLoopFunBody(mut txt: Tpl::Text, mut a_inArgs: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>, mut a_outArgs: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>, mut a_locals: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>, mut a_idxName: ArcStr, mut a_arrName: ArcStr, mut a_eltName: ArcStr, mut a_statements: Arc<metamodelica::List<Arc<TplAbsyn::MMExp>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut ret_1: bool;
     let mut ret_0: bool;
@@ -888,7 +888,7 @@ fn fun_42(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
     Ok(out_txt)
 }
 
-pub fn mmListForLoopFunBody(mut txt: Tpl::Text, mut a_inArgs: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>, mut a_outArgs: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>, mut a_locals: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>, mut a_eltName: ArcStr, mut a_listName: ArcStr, mut a_matchLocals: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>, mut a_matchCases: Arc<metamodelica::List<(Arc<metamodelica::List<Arc<TplAbsyn::MatchingExp>>>, Arc<metamodelica::List<Arc<TplAbsyn::MMExp>>>)>>) -> Result<Tpl::Text> {
+pub(crate) fn mmListForLoopFunBody(mut txt: Tpl::Text, mut a_inArgs: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>, mut a_outArgs: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>, mut a_locals: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>, mut a_eltName: ArcStr, mut a_listName: ArcStr, mut a_matchLocals: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>, mut a_matchCases: Arc<metamodelica::List<(Arc<metamodelica::List<Arc<TplAbsyn::MatchingExp>>>, Arc<metamodelica::List<Arc<TplAbsyn::MMExp>>>)>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut ret_1: bool;
     let mut ret_0: bool;
@@ -1047,7 +1047,7 @@ fn fun_50(mut in_txt: Tpl::Text, mut in_mArg: (Arc<metamodelica::List<(ArcStr, A
     Ok(out_txt)
 }
 
-pub fn inOutArgs(mut txt: Tpl::Text, mut a_inArgs: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>, mut a_outArgs: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>) -> Result<Tpl::Text> {
+pub(crate) fn inOutArgs(mut txt: Tpl::Text, mut a_inArgs: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>, mut a_outArgs: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut ret_0: (Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>, Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>, Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>);
     ret_0 = TplAbsyn::intersectInOutArgs(a_inArgs.clone(), a_outArgs.clone())?;
@@ -1055,7 +1055,7 @@ pub fn inOutArgs(mut txt: Tpl::Text, mut a_inArgs: Arc<metamodelica::List<(ArcSt
     Ok(out_txt)
 }
 
-pub fn pathIdent(mut in_txt: Tpl::Text, mut in_a_path: Arc<TplAbsyn::PathIdent>) -> Result<Tpl::Text> {
+pub(crate) fn pathIdent(mut in_txt: Tpl::Text, mut in_a_path: Arc<TplAbsyn::PathIdent>) -> Result<Tpl::Text> {
     '__tco: loop {
         ::match_deref::match_deref! { match &((in_txt.clone(), in_a_path.clone())) {
         (txt, Deref @ TplAbsyn::PathIdent::IDENT { ident: i_ident }) => {
@@ -1080,7 +1080,7 @@ pub fn pathIdent(mut in_txt: Tpl::Text, mut in_a_path: Arc<TplAbsyn::PathIdent>)
     }
 }
 
-pub fn mmPublic(mut in_txt: Tpl::Text, mut in_a_it: bool) -> Result<Tpl::Text> {
+pub(crate) fn mmPublic(mut in_txt: Tpl::Text, mut in_a_it: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_it.clone()) {
         (mut txt, true) => {
@@ -1115,7 +1115,7 @@ fn lm_54(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(ArcStr, Ar
     }
 }
 
-pub fn typedIdents(mut txt: Tpl::Text, mut a_decls: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>) -> Result<Tpl::Text> {
+pub(crate) fn typedIdents(mut txt: Tpl::Text, mut a_decls: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(crate::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: crate::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: crate::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
     out_txt = lm_54(out_txt.clone(), a_decls.clone())?;
@@ -1146,7 +1146,7 @@ fn lm_56(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(ArcStr, Ar
     }
 }
 
-pub fn typedIdentsEx(mut txt: Tpl::Text, mut a_decls: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>, mut a_typePrfx: ArcStr, mut a_idPrfx: ArcStr) -> Result<Tpl::Text> {
+pub(crate) fn typedIdentsEx(mut txt: Tpl::Text, mut a_decls: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>, mut a_typePrfx: ArcStr, mut a_idPrfx: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(crate::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: crate::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: crate::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
     out_txt = lm_56(out_txt.clone(), a_decls.clone(), (a_idPrfx.clone()).clone(), (a_typePrfx.clone()).clone())?;
@@ -1171,7 +1171,7 @@ fn lm_58(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<TplAbsy
     }
 }
 
-pub fn typeSig(mut in_txt: Tpl::Text, mut in_a_it: Arc<TplAbsyn::TypeSignature>) -> Result<Tpl::Text> {
+pub(crate) fn typeSig(mut in_txt: Tpl::Text, mut in_a_it: Arc<TplAbsyn::TypeSignature>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_it.clone())) {
         (txt, Deref @ TplAbsyn::TypeSignature::LIST_TYPE { ofType: i_ofType }) => {
@@ -1273,7 +1273,7 @@ fn lm_60(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<ArcStr>>) -
     }
 }
 
-pub fn mmStringTokenConstant(mut in_txt: Tpl::Text, mut in_a_it: Arc<Tpl::StringToken>) -> Result<Tpl::Text> {
+pub(crate) fn mmStringTokenConstant(mut in_txt: Tpl::Text, mut in_a_it: Arc<Tpl::StringToken>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_it.clone())) {
         (txt, Deref @ Tpl::StringToken::ST_NEW_LINE { .. }) => {
@@ -1388,7 +1388,7 @@ fn lm_64(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<ArcStr>>, m
     }
 }
 
-pub fn mmEscapeStringConst(mut txt: Tpl::Text, mut a_internalValue: ArcStr, mut a_escapeNewLine: bool) -> Result<Tpl::Text> {
+pub(crate) fn mmEscapeStringConst(mut txt: Tpl::Text, mut a_internalValue: ArcStr, mut a_escapeNewLine: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     let mut ret_0: Arc<metamodelica::List<ArcStr>>;
     ret_0 = stringListStringChar((a_internalValue.clone()).clone());
@@ -1452,7 +1452,7 @@ fn lm_68(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<TplAbsy
     }
 }
 
-pub fn mmExp(mut in_txt: Tpl::Text, mut in_a_it: Arc<TplAbsyn::MMExp>, mut in_a_assignStr: ArcStr) -> Result<Tpl::Text> {
+pub(crate) fn mmExp(mut in_txt: Tpl::Text, mut in_a_it: Arc<TplAbsyn::MMExp>, mut in_a_assignStr: ArcStr) -> Result<Tpl::Text> {
     '__tco: loop {
         ::match_deref::match_deref! { match &((in_txt.clone(), in_a_it.clone(), in_a_assignStr.clone())) {
         (txt, Deref @ TplAbsyn::MMExp::MM_ASSIGN { lhsArgs: i_lhsArgs, rhs: i_rhs }, a_assignStr) => {
@@ -1553,7 +1553,7 @@ fn lm_72(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<TplAbsy
     }
 }
 
-pub fn mmMatchingExp(mut in_txt: Tpl::Text, mut in_a_it: Arc<TplAbsyn::MatchingExp>) -> Result<Tpl::Text> {
+pub(crate) fn mmMatchingExp(mut in_txt: Tpl::Text, mut in_a_it: Arc<TplAbsyn::MatchingExp>) -> Result<Tpl::Text> {
     '__tco: loop {
         ::match_deref::match_deref! { match &((in_txt.clone(), in_a_it.clone())) {
         (txt, Deref @ TplAbsyn::MatchingExp::BIND_AS_MATCH { bindIdent: i_bindIdent, matchingExp: i_matchingExp }) => {
@@ -1649,7 +1649,7 @@ fn lm_74(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<TplAbsy
     }
 }
 
-pub fn mmStatements(mut txt: Tpl::Text, mut a_stmts: Arc<metamodelica::List<Arc<TplAbsyn::MMExp>>>) -> Result<Tpl::Text> {
+pub(crate) fn mmStatements(mut txt: Tpl::Text, mut a_stmts: Arc<metamodelica::List<Arc<TplAbsyn::MMExp>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(crate::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: crate::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: crate::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
     out_txt = lm_74(out_txt.clone(), a_stmts.clone())?;
@@ -1739,7 +1739,7 @@ fn lm_79(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(ArcStr, Tp
     }
 }
 
-pub fn sTemplPackage(mut in_txt: Tpl::Text, mut in_a_it: TplAbsyn::TemplPackage) -> Result<Tpl::Text> {
+pub(crate) fn sTemplPackage(mut in_txt: Tpl::Text, mut in_a_it: TplAbsyn::TemplPackage) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_it.clone()) {
         (mut txt, TplAbsyn::TemplPackage { name: ref i_name, astDefs: ref i_astDefs, templateDefs: ref i_templateDefs, .. }) => {
@@ -1892,7 +1892,7 @@ fn fun_84(mut in_txt: Tpl::Text, mut in_a_info: TplAbsyn::TypeInfo, mut in_a_id:
     Ok(out_txt)
 }
 
-pub fn sASTDefType(mut txt: Tpl::Text, mut a_id: ArcStr, mut a_info: TplAbsyn::TypeInfo) -> Result<Tpl::Text> {
+pub(crate) fn sASTDefType(mut txt: Tpl::Text, mut a_id: ArcStr, mut a_info: TplAbsyn::TypeInfo) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = fun_84(txt.clone(), a_info.clone(), (a_id.clone()).clone())?;
     Ok(out_txt)
@@ -1937,7 +1937,7 @@ fn fun_87(mut in_txt: Tpl::Text, mut in_a_fields: Arc<metamodelica::List<(ArcStr
     Ok(out_txt)
 }
 
-pub fn sRecordTypeDef(mut txt: Tpl::Text, mut a_id: ArcStr, mut a_fields: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>) -> Result<Tpl::Text> {
+pub(crate) fn sRecordTypeDef(mut txt: Tpl::Text, mut a_id: ArcStr, mut a_fields: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("record ")).clone() }))?;
     out_txt = Tpl::writeStr(out_txt.clone(), (a_id.clone()).clone())?;
@@ -1949,7 +1949,7 @@ pub fn sRecordTypeDef(mut txt: Tpl::Text, mut a_id: ArcStr, mut a_fields: Arc<me
     Ok(out_txt)
 }
 
-pub fn sTemplateDef(mut in_txt: Tpl::Text, mut in_a_it: TplAbsyn::TemplateDef, mut in_a_templId: ArcStr) -> Result<Tpl::Text> {
+pub(crate) fn sTemplateDef(mut in_txt: Tpl::Text, mut in_a_it: TplAbsyn::TemplateDef, mut in_a_templId: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_it.clone(), in_a_templId.clone()) {
         (mut txt, TplAbsyn::TemplateDef::STR_TOKEN_DEF { value: ref i_value }, mut a_templId) => {
@@ -2057,7 +2057,7 @@ fn fun_94(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_sl: Arc<metamodelic
     Ok(out_txt)
 }
 
-pub fn sConstStringToken(mut in_txt: Tpl::Text, mut in_a_it: Arc<Tpl::StringToken>) -> Result<Tpl::Text> {
+pub(crate) fn sConstStringToken(mut in_txt: Tpl::Text, mut in_a_it: Arc<Tpl::StringToken>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_it.clone())) {
         (txt, Deref @ Tpl::StringToken::ST_NEW_LINE { .. }) => {
@@ -2113,7 +2113,7 @@ fn lm_96(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(ArcStr, Ar
     }
 }
 
-pub fn sTypedIdents(mut txt: Tpl::Text, mut a_args: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>) -> Result<Tpl::Text> {
+pub(crate) fn sTypedIdents(mut txt: Tpl::Text, mut a_args: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: crate::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: crate::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
     out_txt = lm_96(out_txt.clone(), a_args.clone())?;
@@ -2121,7 +2121,7 @@ pub fn sTypedIdents(mut txt: Tpl::Text, mut a_args: Arc<metamodelica::List<(ArcS
     Ok(out_txt)
 }
 
-pub fn sFunSignature(mut txt: Tpl::Text, mut a_name: Arc<TplAbsyn::PathIdent>, mut a_iargs: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>, mut a_oargs: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>) -> Result<Tpl::Text> {
+pub(crate) fn sFunSignature(mut txt: Tpl::Text, mut a_name: Arc<TplAbsyn::PathIdent>, mut a_iargs: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>, mut a_oargs: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = pathIdent(txt.clone(), a_name.clone())?;
     out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(")).clone() }))?;
@@ -2151,7 +2151,7 @@ fn lm_99(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(Arc<TplAbs
     }
 }
 
-pub fn sActualMMParams(mut txt: Tpl::Text, mut a_argValues: Arc<metamodelica::List<(Arc<TplAbsyn::MMExp>, Arc<TplAbsyn::TypeSignature>)>>) -> Result<Tpl::Text> {
+pub(crate) fn sActualMMParams(mut txt: Tpl::Text, mut a_argValues: Arc<metamodelica::List<(Arc<TplAbsyn::MMExp>, Arc<TplAbsyn::TypeSignature>)>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(")).clone() }))?;
     out_txt = Tpl::pushIter(out_txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: crate::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: crate::Tpl::StringToken::interned_ST_NEW_LINE() }))?;

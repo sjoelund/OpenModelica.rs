@@ -79,7 +79,7 @@ pub type ExtAdjacencyMatrix = Arc<metamodelica::List<(i32, Arc<metamodelica::Lis
 
 pub const UNDERLINE: &'static str = "==========================================================================";
 
-pub fn newExtractionAlgorithm(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
+pub(crate) fn newExtractionAlgorithm(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut outDAE: Arc<BackendDAE::BackendDAE>;
     let mut currentSystem: Arc<BackendDAE::EqSystem>;
     let mut outOtherEqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>;
@@ -280,7 +280,7 @@ pub fn newExtractionAlgorithm(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<
 }
 
 // extract the "-sx =.csv" file path from simflags
-pub fn extractSxPath(mut simflags: ArcStr) -> Result<ArcStr> {
+pub(crate) fn extractSxPath(mut simflags: ArcStr) -> Result<ArcStr> {
     let mut csvFilePath: ArcStr = arcstr::literal!("");
     let mut nummatches: i32;
     let mut filePath: ArcStr = literal!("");
@@ -416,7 +416,7 @@ fn dumpRelatedBoundaryConditionsEquations(mut setBFailedBoundaryConditionEquatio
     Ok(())
 }
 
-pub fn extractBoundaryCondition(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
+pub(crate) fn extractBoundaryCondition(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut outDAE: Arc<BackendDAE::BackendDAE>;
     let mut currentSystem: Arc<BackendDAE::EqSystem>;
     let mut outOtherEqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>;
@@ -606,7 +606,7 @@ pub fn extractBoundaryCondition(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Resul
     Ok(outDAE)
 }
 
-pub fn stateEstimation(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
+pub(crate) fn stateEstimation(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut outDAE: Arc<BackendDAE::BackendDAE>;
     let mut currentSystem: Arc<BackendDAE::EqSystem>;
     let mut outOtherEqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>;
@@ -1226,7 +1226,7 @@ fn extractNewMinimalSetS(mut unknownsInSetC: Arc<metamodelica::List<i32>>, mut s
     Ok((unknownsInSetC, minimalSetS, visitedVars, status, boundaryConditionVarIndex))
 }
 
-pub fn extractionAlgorithm(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
+pub(crate) fn extractionAlgorithm(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut outDAE: Arc<BackendDAE::BackendDAE>;
     let mut currentSystem: Arc<BackendDAE::EqSystem>;
     let mut outOtherEqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>;
@@ -1697,7 +1697,7 @@ fn dumpExtractedEquationsToHTML(mut eqs: Arc<ExpandableArray::ExpandableArray<Ar
     Ok(outstring)
 }
 
-pub fn setBoundaryConditionEquationsAndVars(mut currentSystem: Arc<BackendDAE::EqSystem>, mut shared: Arc<BackendDAE::Shared>, mut debug: bool) -> Result<(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>)> {
+pub(crate) fn setBoundaryConditionEquationsAndVars(mut currentSystem: Arc<BackendDAE::EqSystem>, mut shared: Arc<BackendDAE::Shared>, mut debug: bool) -> Result<(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>)> {
     let mut currentSystem: Arc<BackendDAE::EqSystem> = currentSystem;
     let mut shared: Arc<BackendDAE::Shared> = shared;
     let mut eqnLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
@@ -1954,7 +1954,7 @@ fn dumpPredecessorBlocksHelper(mut predecessorBlockInfo: Arc<metamodelica::List<
     Ok(())
 }
 
-pub fn ExtractEquationsUsingSetOperations(mut predecessorBlockInfo: Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, i32)>>, Arc<metamodelica::List<(Arc<metamodelica::List<ArcStr>>, i32)>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)>>, mut e_BLTBlockRanks: Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, i32)>>, mut approximatedEquations: Arc<metamodelica::List<i32>>, mut debug: bool) -> Result<(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)> {
+pub(crate) fn ExtractEquationsUsingSetOperations(mut predecessorBlockInfo: Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, i32)>>, Arc<metamodelica::List<(Arc<metamodelica::List<ArcStr>>, i32)>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)>>, mut e_BLTBlockRanks: Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, i32)>>, mut approximatedEquations: Arc<metamodelica::List<i32>>, mut debug: bool) -> Result<(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)> {
     let mut setC: Arc<metamodelica::List<i32>>;
     let mut setS: Arc<metamodelica::List<i32>>;
     let mut mainBlock: Arc<metamodelica::List<i32>>;
@@ -2022,7 +2022,7 @@ pub fn ExtractEquationsUsingSetOperations(mut predecessorBlockInfo: Arc<metamode
     Ok((setC, setS))
 }
 
-pub fn filterTargetBlocksWithoutRanks(mut targetBlocks: Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, i32)>>, mut inBlocks: Arc<metamodelica::List<i32>>) -> Arc<metamodelica::List<i32>> {
+pub(crate) fn filterTargetBlocksWithoutRanks(mut targetBlocks: Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, i32)>>, mut inBlocks: Arc<metamodelica::List<i32>>) -> Arc<metamodelica::List<i32>> {
     let mut outBlocks: Arc<metamodelica::List<i32>>;
     let mut mainBlocks: Arc<metamodelica::List<i32>> = metamodelica::nil();
     for mut blocks in &*targetBlocks.clone() {
@@ -2033,7 +2033,7 @@ pub fn filterTargetBlocksWithoutRanks(mut targetBlocks: Arc<metamodelica::List<(
     outBlocks
 }
 
-pub fn setEBLTEquationsWithIndexAndRank(mut unMatchedEqList: Arc<metamodelica::List<i32>>, mut unMatchedEqsLstCorrectIndex: Arc<metamodelica::List<i32>>, mut inEqArray: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut adjacencyMatrix: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<(Arc<metamodelica::List<(i32, Arc<BackendDAE::Equation>)>>, ExtAdjacencyMatrix, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, i32)>>)> {
+pub(crate) fn setEBLTEquationsWithIndexAndRank(mut unMatchedEqList: Arc<metamodelica::List<i32>>, mut unMatchedEqsLstCorrectIndex: Arc<metamodelica::List<i32>>, mut inEqArray: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut adjacencyMatrix: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<(Arc<metamodelica::List<(i32, Arc<BackendDAE::Equation>)>>, ExtAdjacencyMatrix, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, i32)>>)> {
     let mut eBLT_Equation_WithIndex: Arc<metamodelica::List<(i32, Arc<BackendDAE::Equation>)>> = metamodelica::nil();
     let mut e_BLTAdjacencyMatrix: ExtAdjacencyMatrix = metamodelica::nil();
     let mut e_BLTSolvedEqsAndVars: Arc<metamodelica::List<(i32, i32)>> = metamodelica::nil();
@@ -2063,7 +2063,7 @@ pub fn setEBLTEquationsWithIndexAndRank(mut unMatchedEqList: Arc<metamodelica::L
     Ok((eBLT_Equation_WithIndex, e_BLTAdjacencyMatrix, e_BLTSolvedEqsAndVars, e_BLTBlocks, e_BLTBlockRanks))
 }
 
-pub fn inverseModelicaModel(mut inVar: BackendDAE::Variables, mut knownVariablesWithEquationBinding: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>> {
+pub(crate) fn inverseModelicaModel(mut inVar: BackendDAE::Variables, mut knownVariablesWithEquationBinding: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>> {
     let mut eqnlst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
     let mut variablesOfInterest: Arc<metamodelica::List<BackendDAE::Var>>;
     let mut variablesOfInterestIndexes: Arc<metamodelica::List<i32>>;
@@ -2080,7 +2080,7 @@ pub fn inverseModelicaModel(mut inVar: BackendDAE::Variables, mut knownVariables
     Ok(eqnlst)
 }
 
-pub fn dumplistInteger(mut inlist: Arc<metamodelica::List<i32>>) -> Result<ArcStr> {
+pub(crate) fn dumplistInteger(mut inlist: Arc<metamodelica::List<i32>>) -> Result<ArcStr> {
     let mut outstring: ArcStr;
     let mut s: Arc<metamodelica::List<ArcStr>>;
     s = List::map(inlist.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?;
@@ -2089,7 +2089,7 @@ pub fn dumplistInteger(mut inlist: Arc<metamodelica::List<i32>>) -> Result<ArcSt
     Ok(outstring)
 }
 
-pub fn traverseBLTAndUpdateBlockStatus(mut inlist: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut knowns: Arc<metamodelica::List<i32>>, mut boundaryConditionVars: Arc<metamodelica::List<i32>>, mut exactEquationVars: Arc<metamodelica::List<i32>>, mut solvedVariables: Arc<metamodelica::List<(i32, i32)>>) -> (Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>) {
+pub(crate) fn traverseBLTAndUpdateBlockStatus(mut inlist: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut knowns: Arc<metamodelica::List<i32>>, mut boundaryConditionVars: Arc<metamodelica::List<i32>>, mut exactEquationVars: Arc<metamodelica::List<i32>>, mut solvedVariables: Arc<metamodelica::List<(i32, i32)>>) -> (Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>) {
     let mut outlist: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
     let mut outstringlist: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>> = metamodelica::nil();
     let mut blocks: Arc<metamodelica::List<i32>>;
@@ -2105,7 +2105,7 @@ pub fn traverseBLTAndUpdateBlockStatus(mut inlist: Arc<metamodelica::List<Arc<me
     (outlist, outstringlist)
 }
 
-pub fn checkBlueOrRedOrBrownBlocks(mut inlist: Arc<metamodelica::List<i32>>, mut knowns: Arc<metamodelica::List<i32>>, mut boundaryConditionVars: Arc<metamodelica::List<i32>>, mut exactEquationVars: Arc<metamodelica::List<i32>>, mut solvedVar: Arc<metamodelica::List<(i32, i32)>>) -> (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<ArcStr>>) {
+pub(crate) fn checkBlueOrRedOrBrownBlocks(mut inlist: Arc<metamodelica::List<i32>>, mut knowns: Arc<metamodelica::List<i32>>, mut boundaryConditionVars: Arc<metamodelica::List<i32>>, mut exactEquationVars: Arc<metamodelica::List<i32>>, mut solvedVar: Arc<metamodelica::List<(i32, i32)>>) -> (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<ArcStr>>) {
     let mut outIntegerList: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut outStringList: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     let mut varNumber: i32;
@@ -2128,7 +2128,7 @@ pub fn checkBlueOrRedOrBrownBlocks(mut inlist: Arc<metamodelica::List<i32>>, mut
     (outIntegerList, outStringList)
 }
 
-pub fn getSolvedVariableNumber(mut eqnumber: i32, mut inlist: Arc<metamodelica::List<(i32, i32)>>) -> i32 {
+pub(crate) fn getSolvedVariableNumber(mut eqnumber: i32, mut inlist: Arc<metamodelica::List<(i32, i32)>>) -> i32 {
     let mut solvedvar: i32 = 0;
     let mut solvedeq: i32;
     for mut var in &*inlist.clone() {
@@ -2141,7 +2141,7 @@ pub fn getSolvedVariableNumber(mut eqnumber: i32, mut inlist: Arc<metamodelica::
     solvedvar
 }
 
-pub fn getSolvedEquationNumber(mut varnumber: i32, mut inlist: Arc<metamodelica::List<(i32, i32)>>) -> i32 {
+pub(crate) fn getSolvedEquationNumber(mut varnumber: i32, mut inlist: Arc<metamodelica::List<(i32, i32)>>) -> i32 {
     let mut solvedeq: i32 = 0;
     let mut solvedvar: i32;
     for mut var in &*inlist.clone() {
@@ -2154,7 +2154,7 @@ pub fn getSolvedEquationNumber(mut varnumber: i32, mut inlist: Arc<metamodelica:
     solvedeq
 }
 
-pub fn getSolvedEquationAndVarsInfo(mut v: metamodelica::Array<i32>) -> (Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>) {
+pub(crate) fn getSolvedEquationAndVarsInfo(mut v: metamodelica::Array<i32>) -> (Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>) {
     let mut eqvarlist: Arc<metamodelica::List<(i32, i32)>> = metamodelica::nil();
     let mut solvedEqLst: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut count: i32 = 1;
@@ -2204,12 +2204,12 @@ fn getUncertainRefineAndUnknownVariableIndexes(mut allVariables: BackendDAE::Var
     Ok((knowns, unknowns))
 }
 
-pub fn dumpListList(mut lstLst: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut heading: ArcStr) -> Result<()> {
+pub(crate) fn dumpListList(mut lstLst: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut heading: ArcStr) -> Result<()> {
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*heading.clone()); __mm_s.push_str(&*literal!(":\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!("{")); __mm_s.push_str(&*stringDelimitList(List::map(lstLst.clone(), (std::sync::Arc::new(dumplistInteger) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("}")); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
     Ok(())
 }
 
-pub fn getEquationsTaggedApproximatedOrBoundaryCondition(mut eqs: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut index: i32) -> (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>) {
+pub(crate) fn getEquationsTaggedApproximatedOrBoundaryCondition(mut eqs: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut index: i32) -> (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>) {
     let mut approximatedEquations: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut boundaryConditionEquations: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut isApproximateEquations: bool;
@@ -2318,7 +2318,7 @@ fn isEquationTaggedConstant(mut m: Arc<SCode::SubMod>) -> bool {
     constantEquations
 }
 
-pub fn getSBLTAdjacencyMatrix(mut adjacencyMatrix: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> ExtAdjacencyMatrix {
+pub(crate) fn getSBLTAdjacencyMatrix(mut adjacencyMatrix: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> ExtAdjacencyMatrix {
     let mut extAdjacencyMatrix: ExtAdjacencyMatrix = metamodelica::nil();
     let mut count: i32 = 1;
     let __range0 = adjacencyMatrix.clone().borrow().iter().cloned().collect::<Vec<_>>();
@@ -2333,7 +2333,7 @@ pub fn getSBLTAdjacencyMatrix(mut adjacencyMatrix: metamodelica::Array<Arc<metam
 /*
  Block Target Alogrithm
 */
-pub fn findBlockTargets(mut inlist1: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut inlist2: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>, mut solvedvariables: Arc<metamodelica::List<(i32, i32)>>, mut mxt: ExtAdjacencyMatrix, mut blockranks: Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, i32)>>, mut debug: bool) -> Result<Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, i32)>>, Arc<metamodelica::List<(Arc<metamodelica::List<ArcStr>>, i32)>>)>>> {
+pub(crate) fn findBlockTargets(mut inlist1: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut inlist2: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>, mut solvedvariables: Arc<metamodelica::List<(i32, i32)>>, mut mxt: ExtAdjacencyMatrix, mut blockranks: Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, i32)>>, mut debug: bool) -> Result<Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, i32)>>, Arc<metamodelica::List<(Arc<metamodelica::List<ArcStr>>, i32)>>)>>> {
     let mut outlist: Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, i32)>>, Arc<metamodelica::List<(Arc<metamodelica::List<ArcStr>>, i32)>>)>> = metamodelica::nil();
     let mut targetblocks: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>;
     let mut eBLTBlocks: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>;
@@ -2373,7 +2373,7 @@ pub fn findBlockTargets(mut inlist1: Arc<metamodelica::List<Arc<metamodelica::Li
     Ok(outlist)
 }
 
-pub fn findBlockTargetsHelper(mut inlist1: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut inlist2: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>, mut solvedvariables: Arc<metamodelica::List<(i32, i32)>>, mut mxt: ExtAdjacencyMatrix, mut actualblocks: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut debug: bool) -> Result<(Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>)> {
+pub(crate) fn findBlockTargetsHelper(mut inlist1: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut inlist2: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>, mut solvedvariables: Arc<metamodelica::List<(i32, i32)>>, mut mxt: ExtAdjacencyMatrix, mut actualblocks: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut debug: bool) -> Result<(Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>)> {
     let mut outSBLT: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
     let mut outEBLT: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
     (outSBLT, outEBLT) = (::match_deref::match_deref! { match &((inlist1.clone(), inlist2.clone(), solvedvariables.clone(), mxt.clone(), actualblocks.clone(), debug.clone())) {
@@ -2399,7 +2399,7 @@ pub fn findBlockTargetsHelper(mut inlist1: Arc<metamodelica::List<Arc<metamodeli
     Ok((outSBLT, outEBLT))
 }
 
-pub fn findBlockTargetsHelper1(mut inlist: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut solvedvariables: Arc<metamodelica::List<(i32, i32)>>, mut mxt: ExtAdjacencyMatrix) -> (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>) {
+pub(crate) fn findBlockTargetsHelper1(mut inlist: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut solvedvariables: Arc<metamodelica::List<(i32, i32)>>, mut mxt: ExtAdjacencyMatrix) -> (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>) {
     let mut outSBLT: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut outEBLT: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
     let mut tmpSBLT: Arc<metamodelica::List<i32>>;
@@ -2413,7 +2413,7 @@ pub fn findBlockTargetsHelper1(mut inlist: Arc<metamodelica::List<Arc<metamodeli
     (outSBLT, outEBLT)
 }
 
-pub fn getDependencyequation(mut inlist: Arc<metamodelica::List<i32>>, mut inlist1: Arc<metamodelica::List<i32>>, mut solvedvariables: Arc<metamodelica::List<(i32, i32)>>, mut m: ExtAdjacencyMatrix) -> (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>) {
+pub(crate) fn getDependencyequation(mut inlist: Arc<metamodelica::List<i32>>, mut inlist1: Arc<metamodelica::List<i32>>, mut solvedvariables: Arc<metamodelica::List<(i32, i32)>>, mut m: ExtAdjacencyMatrix) -> (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>) {
     let mut outSBLT: Arc<metamodelica::List<i32>>;
     let mut outEBLT: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut t: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -2435,7 +2435,7 @@ pub fn getDependencyequation(mut inlist: Arc<metamodelica::List<i32>>, mut inlis
     (outSBLT, outEBLT)
 }
 
-pub fn getdirectOccurrencesinEquation(mut m: ExtAdjacencyMatrix, mut eqnumber: i32, mut varnumber: i32) -> (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>) {
+pub(crate) fn getdirectOccurrencesinEquation(mut m: ExtAdjacencyMatrix, mut eqnumber: i32, mut varnumber: i32) -> (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>) {
     let mut outSBLT: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut outEBLT: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut vars: Arc<metamodelica::List<i32>>;
@@ -2459,7 +2459,7 @@ pub fn getdirectOccurrencesinEquation(mut m: ExtAdjacencyMatrix, mut eqnumber: i
     (outSBLT, outEBLT)
 }
 
-pub fn findBlocksRanks(mut inlist1: Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, i32)>>, mut inlist2: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>) -> Result<(Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, i32)>>, Arc<metamodelica::List<i32>>)> {
+pub(crate) fn findBlocksRanks(mut inlist1: Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, i32)>>, mut inlist2: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>) -> Result<(Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, i32)>>, Arc<metamodelica::List<i32>>)> {
     let mut outlist: Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, i32)>> = metamodelica::nil();
     let mut ranklist: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut blocks: Arc<metamodelica::List<i32>>;
@@ -2486,7 +2486,7 @@ pub fn findBlocksRanks(mut inlist1: Arc<metamodelica::List<(Arc<metamodelica::Li
     Ok((outlist, ranklist))
 }
 
-pub fn sortBlocks(mut sortedranklist: Arc<metamodelica::List<i32>>, mut inlist2: Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, i32)>>) -> Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, i32)>> {
+pub(crate) fn sortBlocks(mut sortedranklist: Arc<metamodelica::List<i32>>, mut inlist2: Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, i32)>>) -> Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, i32)>> {
     let mut outlist: Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, i32)>> = metamodelica::nil();
     let mut e1: i32;
     let mut blocks: Arc<metamodelica::List<i32>>;
@@ -2504,7 +2504,7 @@ pub fn sortBlocks(mut sortedranklist: Arc<metamodelica::List<i32>>, mut inlist2:
     outlist
 }
 
-pub fn getBlockVarList(mut blocktofind: Arc<metamodelica::List<i32>>, mut inlist1: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut inlist2: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>) -> Result<Arc<metamodelica::List<ArcStr>>> {
+pub(crate) fn getBlockVarList(mut blocktofind: Arc<metamodelica::List<i32>>, mut inlist1: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut inlist2: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut outstringlist: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     let mut count: i32 = 1;
     let mut blockFound: bool;
@@ -2519,7 +2519,7 @@ pub fn getBlockVarList(mut blocktofind: Arc<metamodelica::List<i32>>, mut inlist
     Ok(outstringlist)
 }
 
-pub fn getActualBlocks(mut searchblock: Arc<metamodelica::List<i32>>, mut inlist1: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut inlist2: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>> {
+pub(crate) fn getActualBlocks(mut searchblock: Arc<metamodelica::List<i32>>, mut inlist1: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut inlist2: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>> {
     let mut outlist: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
     for mut i in &*inlist1.clone() {
         let mut i = i.clone();
@@ -2535,7 +2535,7 @@ pub fn getActualBlocks(mut searchblock: Arc<metamodelica::List<i32>>, mut inlist
 /*
   finding PredecessorBlocks Algorithm
 */
-pub fn findPredecessorBlocks(mut blockinfo: Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, i32)>>, Arc<metamodelica::List<(Arc<metamodelica::List<ArcStr>>, i32)>>)>>) -> Result<Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, i32)>>, Arc<metamodelica::List<(Arc<metamodelica::List<ArcStr>>, i32)>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)>>> {
+pub(crate) fn findPredecessorBlocks(mut blockinfo: Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, i32)>>, Arc<metamodelica::List<(Arc<metamodelica::List<ArcStr>>, i32)>>)>>) -> Result<Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, i32)>>, Arc<metamodelica::List<(Arc<metamodelica::List<ArcStr>>, i32)>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)>>> {
     let mut outblockinfo: Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, i32)>>, Arc<metamodelica::List<(Arc<metamodelica::List<ArcStr>>, i32)>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)>> = metamodelica::nil();
     let mut dependencyequation: Arc<metamodelica::List<i32>>;
     let mut constantEquations: Arc<metamodelica::List<i32>>;
@@ -2573,7 +2573,7 @@ pub fn findPredecessorBlocks(mut blockinfo: Arc<metamodelica::List<(Arc<metamode
     Ok(outblockinfo)
 }
 
-pub fn findSquareAndNonSquareBlocksHelper1(mut inlist1: Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, i32)>>, mut inlist2: Arc<metamodelica::List<(Arc<metamodelica::List<ArcStr>>, i32)>>) -> Result<(bool, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)> {
+pub(crate) fn findSquareAndNonSquareBlocksHelper1(mut inlist1: Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, i32)>>, mut inlist2: Arc<metamodelica::List<(Arc<metamodelica::List<ArcStr>>, i32)>>) -> Result<(bool, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)> {
     let mut exists: bool = false;
     let mut foundknownblocks: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut constantBlocks: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -2619,7 +2619,7 @@ fn getKnownOrExactEquationBlocksHelper(mut blocksVarList: Arc<metamodelica::List
 }
 
 /* end of finding PredecessorBlocks Algorithm */
-pub fn getVariablesAfterExtraction(mut setc: Arc<metamodelica::List<i32>>, mut sets: Arc<metamodelica::List<i32>>, mut mext: ExtAdjacencyMatrix) -> Arc<metamodelica::List<i32>> {
+pub(crate) fn getVariablesAfterExtraction(mut setc: Arc<metamodelica::List<i32>>, mut sets: Arc<metamodelica::List<i32>>, mut mext: ExtAdjacencyMatrix) -> Arc<metamodelica::List<i32>> {
     let mut finalvars: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut fulleqs: Arc<metamodelica::List<i32>>;
     let mut vars: Arc<metamodelica::List<i32>>;
@@ -2875,7 +2875,7 @@ fn generateCompileTimeHtmlReport(mut shared: Arc<BackendDAE::Shared>, mut condit
     Ok(())
 }
 
-pub fn getVariableOccurence(mut setCOrSetS: Arc<metamodelica::List<i32>>, mut mext: ExtAdjacencyMatrix, mut knowns: Arc<metamodelica::List<i32>>) -> (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>) {
+pub(crate) fn getVariableOccurence(mut setCOrSetS: Arc<metamodelica::List<i32>>, mut mext: ExtAdjacencyMatrix, mut knowns: Arc<metamodelica::List<i32>>) -> (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>) {
     let mut knownvariables: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut unknownvariables: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut vars: Arc<metamodelica::List<i32>>;
@@ -2903,7 +2903,7 @@ pub fn getVariableOccurence(mut setCOrSetS: Arc<metamodelica::List<i32>>, mut me
 }
 
 /* function which dumps the variable names to csv file */
-pub fn dumpToCsv(mut instring: ArcStr, mut invar: Arc<metamodelica::List<BackendDAE::Var>>) -> Result<ArcStr> {
+pub(crate) fn dumpToCsv(mut instring: ArcStr, mut invar: Arc<metamodelica::List<BackendDAE::Var>>) -> Result<ArcStr> {
     let mut outstring: ArcStr = literal!("");
     let mut cr: Arc<DAE::ComponentRef>;
     for mut i in &*invar.clone() {
@@ -2916,7 +2916,7 @@ pub fn dumpToCsv(mut instring: ArcStr, mut invar: Arc<metamodelica::List<Backend
 }
 
 /* function which dumps the variable names to csv file */
-pub fn dumpCorrelationVarsToCsv(mut invar: Arc<metamodelica::List<BackendDAE::Var>>) -> Result<ArcStr> {
+pub(crate) fn dumpCorrelationVarsToCsv(mut invar: Arc<metamodelica::List<BackendDAE::Var>>) -> Result<ArcStr> {
     let mut outstring: ArcStr = literal!("");
     let mut cr: Arc<DAE::ComponentRef>;
     let mut r#str: ArcStr = literal!("Sxij,");
@@ -2930,7 +2930,7 @@ pub fn dumpCorrelationVarsToCsv(mut invar: Arc<metamodelica::List<BackendDAE::Va
 }
 
 /* function which dumps non reconciledVars failing for condition -2 to a log file*/
-pub fn dumpNonReconciledVars(mut invar: Arc<metamodelica::List<BackendDAE::Var>>) -> Result<ArcStr> {
+pub(crate) fn dumpNonReconciledVars(mut invar: Arc<metamodelica::List<BackendDAE::Var>>) -> Result<ArcStr> {
     let mut outstring: ArcStr = literal!("");
     let mut cr: Arc<DAE::ComponentRef>;
     for mut i in &*invar.clone() {

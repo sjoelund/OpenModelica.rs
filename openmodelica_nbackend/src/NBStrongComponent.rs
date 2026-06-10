@@ -264,24 +264,24 @@ pub mod AliasInfo {
 
     pub type ALIAS_INFO = AliasInfo;
 
-    pub fn toString(mut info: Arc<AliasInfo>) -> Result<ArcStr> {
+    pub(crate) fn toString(mut info: Arc<AliasInfo>) -> Result<ArcStr> {
         let mut r#str: ArcStr = { let mut __mm_s = String::new(); __mm_s.push_str(&*BPartition::Partition::kindToString(info.kind.clone())?); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*intString(info.partitionIndex.clone())); __mm_s.push_str(&*literal!(" | ")); __mm_s.push_str(&*intString(info.componentIndex.clone())); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) };
         Ok(r#str)
     }
 
-    pub fn hash(mut info: Arc<AliasInfo>) -> Result<i32> {
+    pub(crate) fn hash(mut info: Arc<AliasInfo>) -> Result<i32> {
         let mut i: i32 = stringHashDjb2((toString(info.clone())?).clone());
         Ok(i)
     }
 
-    pub fn isEqual(mut info1: Arc<AliasInfo>, mut info2: Arc<AliasInfo>) -> bool {
+    pub(crate) fn isEqual(mut info1: Arc<AliasInfo>, mut info2: Arc<AliasInfo>) -> bool {
         let mut b: bool = info1.componentIndex.clone() == info2.componentIndex.clone() && info1.partitionIndex.clone() == info2.partitionIndex.clone() && info1.kind.clone() == info2.kind.clone();
         b
     }
 
 }
 
-pub fn toString(mut comp: Arc<NBStrongComponent>, mut index: i32) -> Result<ArcStr> {
+pub(crate) fn toString(mut comp: Arc<NBStrongComponent>, mut index: i32) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
     let mut s: i32 = size(comp.clone(), true)?;
     let mut indexStr: ArcStr = if (index.clone() > 0) {{ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*intString(index.clone())); ArcStr::from(__mm_s) }} else {literal!("")};
@@ -387,7 +387,7 @@ impl metamodelica::gc::MMTrace for CountCollector {
 pub type COUNT_COLLECTOR = CountCollector;
 
 
-pub fn strongComponentInfo(mut comp: Arc<NBStrongComponent>, mut collector_ptr: Pointer::Pointer<CountCollector>) -> Result<Arc<NBStrongComponent>> {
+pub(crate) fn strongComponentInfo(mut comp: Arc<NBStrongComponent>, mut collector_ptr: Pointer::Pointer<CountCollector>) -> Result<Arc<NBStrongComponent>> {
     let mut comp: Arc<NBStrongComponent> = comp;
     let mut collector: CountCollector = Pointer::access(collector_ptr.clone());
     let () = (::match_deref::match_deref! { match &(comp.clone()) {
@@ -509,7 +509,7 @@ pub fn strongComponentInfo(mut comp: Arc<NBStrongComponent>, mut collector_ptr: 
     Ok(comp)
 }
 
-pub fn hash(mut comp: Arc<NBStrongComponent>) -> Result<i32> {
+pub(crate) fn hash(mut comp: Arc<NBStrongComponent>) -> Result<i32> {
     let mut i: i32;
     i = (::match_deref::match_deref! { match &(comp.clone()) {
         Deref @ SINGLE_COMPONENT { .. } => BVariable::hash(var_field!((*comp).var, NBStrongComponent::SINGLE_COMPONENT).clone())? + Equation::hash(var_field!((*comp).eqn, NBStrongComponent::SINGLE_COMPONENT).clone())?,
@@ -532,7 +532,7 @@ pub fn hash(mut comp: Arc<NBStrongComponent>) -> Result<i32> {
     Ok(i)
 }
 
-pub fn isEqual(mut comp1: Arc<NBStrongComponent>, mut comp2: Arc<NBStrongComponent>) -> Result<bool> {
+pub(crate) fn isEqual(mut comp1: Arc<NBStrongComponent>, mut comp2: Arc<NBStrongComponent>) -> Result<bool> {
     let mut b: bool;
     b = (::match_deref::match_deref! { match &((comp1.clone(), comp2.clone())) {
         (Deref @ SINGLE_COMPONENT { .. }, Deref @ SINGLE_COMPONENT { .. }) => BVariable::equalName(var_field!((*comp1).var, NBStrongComponent::SINGLE_COMPONENT).clone(), var_field!((*comp2).var, NBStrongComponent::SINGLE_COMPONENT).clone())? && Equation::isEqualPtr(var_field!((*comp1).eqn, NBStrongComponent::SINGLE_COMPONENT).clone(), var_field!((*comp2).eqn, NBStrongComponent::SINGLE_COMPONENT).clone())?,
@@ -549,7 +549,7 @@ pub fn isEqual(mut comp1: Arc<NBStrongComponent>, mut comp2: Arc<NBStrongCompone
     Ok(b)
 }
 
-pub fn size(mut comp: Arc<NBStrongComponent>, mut resize: bool) -> Result<i32> {
+pub(crate) fn size(mut comp: Arc<NBStrongComponent>, mut resize: bool) -> Result<i32> {
     let mut s: i32;
     s = (::match_deref::match_deref! { match &(comp.clone()) {
         Deref @ SINGLE_COMPONENT { .. } => Equation::size(var_field!((*comp).eqn, NBStrongComponent::SINGLE_COMPONENT).clone(), resize.clone())?,
@@ -576,7 +576,7 @@ pub fn size(mut comp: Arc<NBStrongComponent>, mut resize: bool) -> Result<i32> {
     Ok(s)
 }
 
-pub fn removeAlias(mut comp: Arc<NBStrongComponent>) -> Arc<NBStrongComponent> {
+pub(crate) fn removeAlias(mut comp: Arc<NBStrongComponent>) -> Arc<NBStrongComponent> {
     let mut comp: Arc<NBStrongComponent> = comp;
     comp = (::match_deref::match_deref! { match &(comp.clone()) {
         Deref @ ALIAS { .. } => var_field!((*comp).original, NBStrongComponent::ALIAS).clone(),
@@ -586,7 +586,7 @@ pub fn removeAlias(mut comp: Arc<NBStrongComponent>) -> Arc<NBStrongComponent> {
     comp
 }
 
-pub fn createPseudoSlice(mut var_arr_idx: i32, mut eqn_arr_idx: i32, mut cref_to_solve: Arc<ComponentRef::NFComponentRef>, mut eqn_scal_indices: Arc<metamodelica::List<i32>>, mut eqn_to_var: metamodelica::Array<i32>, mut eqns: Arc<EquationPointers::EquationPointers>, mut mapping: Arc<Mapping::Mapping>, mut independent: bool) -> Result<Arc<NBStrongComponent>> {
+pub(crate) fn createPseudoSlice(mut var_arr_idx: i32, mut eqn_arr_idx: i32, mut cref_to_solve: Arc<ComponentRef::NFComponentRef>, mut eqn_scal_indices: Arc<metamodelica::List<i32>>, mut eqn_to_var: metamodelica::Array<i32>, mut eqns: Arc<EquationPointers::EquationPointers>, mut mapping: Arc<Mapping::Mapping>, mut independent: bool) -> Result<Arc<NBStrongComponent>> {
     let mut comp: Arc<NBStrongComponent>;
     let mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>;
     let mut eqn_ptr: Pointer::Pointer<Arc<Equation::Equation>>;
@@ -640,7 +640,7 @@ pub fn createPseudoSlice(mut var_arr_idx: i32, mut eqn_arr_idx: i32, mut cref_to
     Ok(comp)
 }
 
-pub fn createPseudoEntwined(mut eqn_indices: Arc<metamodelica::List<i32>>, mut eqn_to_var: metamodelica::Array<i32>, mut mapping: Arc<Mapping::Mapping>, mut vars: Arc<VariablePointers::VariablePointers>, mut eqns: Arc<EquationPointers::EquationPointers>, mut nodes: Arc<metamodelica::List<Arc<SuperNode::SuperNode>>>) -> Result<Arc<NBStrongComponent>> {
+pub(crate) fn createPseudoEntwined(mut eqn_indices: Arc<metamodelica::List<i32>>, mut eqn_to_var: metamodelica::Array<i32>, mut mapping: Arc<Mapping::Mapping>, mut vars: Arc<VariablePointers::VariablePointers>, mut eqns: Arc<EquationPointers::EquationPointers>, mut nodes: Arc<metamodelica::List<Arc<SuperNode::SuperNode>>>) -> Result<Arc<NBStrongComponent>> {
     let mut entwined: Arc<NBStrongComponent>;
     let mut elem_map: Arc<UnorderedMap::UnorderedMap<i32, Arc<metamodelica::List<i32>>>> = UnorderedMap::new(std::sync::Arc::new(fnptr!(Util::id, _)), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), 1);
     let mut cref_map: Arc<UnorderedMap::UnorderedMap<i32, Arc<ComponentRef::NFComponentRef>>> = UnorderedMap::new(std::sync::Arc::new(fnptr!(Util::id, _)), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), 1);
@@ -682,14 +682,14 @@ pub fn createPseudoEntwined(mut eqn_indices: Arc<metamodelica::List<i32>>, mut e
     Ok(entwined)
 }
 
-pub fn createAlias(mut kind: BPartition::Kind, mut partitionIndex: i32, mut index_ptr: Pointer::Pointer<i32>, mut orig_comp: Arc<NBStrongComponent>) -> Arc<NBStrongComponent> {
+pub(crate) fn createAlias(mut kind: BPartition::Kind, mut partitionIndex: i32, mut index_ptr: Pointer::Pointer<i32>, mut orig_comp: Arc<NBStrongComponent>) -> Arc<NBStrongComponent> {
     let mut alias_comp: Arc<NBStrongComponent>;
     alias_comp = Arc::new(NBStrongComponent::ALIAS { aliasInfo: Arc::new(AliasInfo::AliasInfo { kind: kind.clone(), partitionIndex: partitionIndex.clone(), componentIndex: Pointer::access(index_ptr.clone()) }), original: orig_comp.clone() });
     Pointer::update(index_ptr.clone(), Pointer::access(index_ptr.clone()) + 1);
     alias_comp
 }
 
-pub fn createPseudoEntwinedIndices(mut entwined_indices: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut eqns: Arc<EquationPointers::EquationPointers>, mut mapping: Arc<Mapping::Mapping>) -> Result<Arc<metamodelica::List<(Pointer::Pointer<Arc<Equation::Equation>>, i32)>>> {
+pub(crate) fn createPseudoEntwinedIndices(mut entwined_indices: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut eqns: Arc<EquationPointers::EquationPointers>, mut mapping: Arc<Mapping::Mapping>) -> Result<Arc<metamodelica::List<(Pointer::Pointer<Arc<Equation::Equation>>, i32)>>> {
     let mut flat_tpl_indices: Arc<metamodelica::List<(Pointer::Pointer<Arc<Equation::Equation>>, i32)>> = metamodelica::nil();
     let mut arr_idx: i32;
     let mut first_idx: i32;
@@ -726,7 +726,7 @@ impl metamodelica::gc::MMTrace for DAEType {
     fn mm_accept(&self, _: &mut dyn metamodelica::gc::MMVisitor) -> Result<(), ()> { Ok(()) }
 }
 
-pub fn sortDAEModeComponents(mut comps: Option<metamodelica::Array<Arc<NBStrongComponent>>>, mut variables: Arc<VariablePointers::VariablePointers>, mut uniqueIndex: Pointer::Pointer<i32>) -> Result<Option<metamodelica::Array<Arc<NBStrongComponent>>>> {
+pub(crate) fn sortDAEModeComponents(mut comps: Option<metamodelica::Array<Arc<NBStrongComponent>>>, mut variables: Arc<VariablePointers::VariablePointers>, mut uniqueIndex: Pointer::Pointer<i32>) -> Result<Option<metamodelica::Array<Arc<NBStrongComponent>>>> {
     let mut comps: Option<metamodelica::Array<Arc<NBStrongComponent>>> = comps;
     let mut residuals: Arc<metamodelica::List<Arc<NBStrongComponent>>> = metamodelica::nil();
     let mut inners: Arc<metamodelica::List<Arc<NBStrongComponent>>> = metamodelica::nil();
@@ -747,7 +747,7 @@ pub fn sortDAEModeComponents(mut comps: Option<metamodelica::Array<Arc<NBStrongC
     Ok(comps)
 }
 
-pub fn sortDAEModeComponent(mut comp: Arc<NBStrongComponent>, mut residuals: Arc<metamodelica::List<Arc<NBStrongComponent>>>, mut inners: Arc<metamodelica::List<Arc<NBStrongComponent>>>, mut variables: Arc<VariablePointers::VariablePointers>, mut uniqueIndex: Pointer::Pointer<i32>, mut slice_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<(Arc<metamodelica::List<Arc<NBStrongComponent>>>, Arc<metamodelica::List<Arc<NBStrongComponent>>>)> {
+pub(crate) fn sortDAEModeComponent(mut comp: Arc<NBStrongComponent>, mut residuals: Arc<metamodelica::List<Arc<NBStrongComponent>>>, mut inners: Arc<metamodelica::List<Arc<NBStrongComponent>>>, mut variables: Arc<VariablePointers::VariablePointers>, mut uniqueIndex: Pointer::Pointer<i32>, mut slice_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<(Arc<metamodelica::List<Arc<NBStrongComponent>>>, Arc<metamodelica::List<Arc<NBStrongComponent>>>)> {
     let mut residuals: Arc<metamodelica::List<Arc<NBStrongComponent>>> = residuals;
     let mut inners: Arc<metamodelica::List<Arc<NBStrongComponent>>> = inners;
     let mut new_residuals: Arc<metamodelica::List<Arc<NBStrongComponent>>> = metamodelica::nil();
@@ -788,7 +788,7 @@ pub fn sortDAEModeComponent(mut comp: Arc<NBStrongComponent>, mut residuals: Arc
     Ok((residuals, inners))
 }
 
-pub fn slicedDAEModeComponent(mut var_slices: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Variable::NFVariable>>>>>>, mut eqn_slices: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>>, mut variables: Arc<VariablePointers::VariablePointers>, mut uniqueIndex: Pointer::Pointer<i32>, mut slice_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<(Arc<metamodelica::List<Arc<NBStrongComponent>>>, DAEType)> {
+pub(crate) fn slicedDAEModeComponent(mut var_slices: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Variable::NFVariable>>>>>>, mut eqn_slices: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>>, mut variables: Arc<VariablePointers::VariablePointers>, mut uniqueIndex: Pointer::Pointer<i32>, mut slice_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<(Arc<metamodelica::List<Arc<NBStrongComponent>>>, DAEType)> {
     let mut new_residuals: Arc<metamodelica::List<Arc<NBStrongComponent>>>;
     let mut dae_type: DAEType = DAEType::UNPROCESSED;
     let mut eqn: Pointer::Pointer<Arc<Equation::Equation>>;
@@ -835,7 +835,7 @@ pub fn slicedDAEModeComponent(mut var_slices: Arc<metamodelica::List<Arc<Slice::
     Ok((new_residuals, dae_type))
 }
 
-pub fn singleDAEModeComponent(mut eqn_ptr: Pointer::Pointer<Arc<Equation::Equation>>, mut variables: Arc<VariablePointers::VariablePointers>, mut uniqueIndex: Pointer::Pointer<i32>) -> Result<(Arc<metamodelica::List<Arc<NBStrongComponent>>>, DAEType)> {
+pub(crate) fn singleDAEModeComponent(mut eqn_ptr: Pointer::Pointer<Arc<Equation::Equation>>, mut variables: Arc<VariablePointers::VariablePointers>, mut uniqueIndex: Pointer::Pointer<i32>) -> Result<(Arc<metamodelica::List<Arc<NBStrongComponent>>>, DAEType)> {
     let mut new_residuals: Arc<metamodelica::List<Arc<NBStrongComponent>>>;
     let mut dae_type: DAEType = DAEType::RESIDUAL.clone();
     let mut new_eqns: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>>;
@@ -851,7 +851,7 @@ pub fn singleDAEModeComponent(mut eqn_ptr: Pointer::Pointer<Arc<Equation::Equati
     Ok((new_residuals, dae_type))
 }
 
-pub fn inlinedDAEModeComponent(mut eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>) -> Result<(Arc<metamodelica::List<Arc<NBStrongComponent>>>, DAEType)> {
+pub(crate) fn inlinedDAEModeComponent(mut eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>) -> Result<(Arc<metamodelica::List<Arc<NBStrongComponent>>>, DAEType)> {
     let mut comps: Arc<metamodelica::List<Arc<NBStrongComponent>>> = metamodelica::nil();
     let mut dae_type: DAEType = DAEType::UNPROCESSED.clone();
     let mut new_eqn: Pointer::Pointer<Arc<Equation::Equation>>;
@@ -877,7 +877,7 @@ pub fn inlinedDAEModeComponent(mut eqns: Arc<metamodelica::List<Pointer::Pointer
     Ok((comps, dae_type))
 }
 
-pub fn fromSolvedEquationSlice(mut eqn_slice: Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>) -> Result<Arc<NBStrongComponent>> {
+pub(crate) fn fromSolvedEquationSlice(mut eqn_slice: Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>) -> Result<Arc<NBStrongComponent>> {
     let mut comp: Arc<NBStrongComponent>;
     let mut eqn: Pointer::Pointer<Arc<Equation::Equation>> = Slice::getT(eqn_slice.clone());
     comp = (::match_deref::match_deref! { match &(Pointer::access(eqn.clone())) {
@@ -895,7 +895,7 @@ pub fn fromSolvedEquationSlice(mut eqn_slice: Arc<Slice::NBSlice<Pointer::Pointe
     Ok(comp)
 }
 
-pub fn toSolvedEquation(mut comp: Arc<NBStrongComponent>) -> Result<Pointer::Pointer<Arc<Equation::Equation>>> {
+pub(crate) fn toSolvedEquation(mut comp: Arc<NBStrongComponent>) -> Result<Pointer::Pointer<Arc<Equation::Equation>>> {
     let mut eqn: Pointer::Pointer<Arc<Equation::Equation>>;
     eqn = (::match_deref::match_deref! { match &(comp.clone()) {
         Deref @ SINGLE_COMPONENT { status: Solve::Status::EXPLICIT, .. } => var_field!((*comp).eqn, NBStrongComponent::SINGLE_COMPONENT).clone(),
@@ -911,7 +911,7 @@ pub fn toSolvedEquation(mut comp: Arc<NBStrongComponent>) -> Result<Pointer::Poi
     Ok(eqn)
 }
 
-pub fn collectCrefs(mut comp: Arc<NBStrongComponent>, mut var_rep: Arc<VariablePointers::VariablePointers>, mut eqn_rep: Arc<VariablePointers::VariablePointers>, mut var_rep_mapping: Arc<Mapping::Mapping>, mut eqn_rep_mapping: Arc<Mapping::Mapping>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>>, mut set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut jacType: JacobianType) -> Result<()> {
+pub(crate) fn collectCrefs(mut comp: Arc<NBStrongComponent>, mut var_rep: Arc<VariablePointers::VariablePointers>, mut eqn_rep: Arc<VariablePointers::VariablePointers>, mut var_rep_mapping: Arc<Mapping::Mapping>, mut eqn_rep_mapping: Arc<Mapping::Mapping>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>>, mut set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut jacType: JacobianType) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(comp.clone()) {
         Deref @ SINGLE_COMPONENT { .. } if (Equation::isArrayEquation(var_field!((*comp).eqn, NBStrongComponent::SINGLE_COMPONENT).clone())) => {
             let mut dependencies: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
@@ -1086,7 +1086,7 @@ pub fn collectCrefs(mut comp: Arc<NBStrongComponent>, mut var_rep: Arc<VariableP
     Ok(())
 }
 
-pub fn addScalarizedDependencies(mut scalarized_dependencies: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>)>>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>>, mut jacType: JacobianType) -> Result<()> {
+pub(crate) fn addScalarizedDependencies(mut scalarized_dependencies: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>)>>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>>, mut jacType: JacobianType) -> Result<()> {
     let mut cref: Arc<ComponentRef::NFComponentRef>;
     let mut dependencies: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
     let mut deps_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
@@ -1099,7 +1099,7 @@ pub fn addScalarizedDependencies(mut scalarized_dependencies: Arc<metamodelica::
     Ok(())
 }
 
-pub fn addForLoopDependencies(mut eqn: Arc<Equation::Equation>, mut indices: Arc<metamodelica::List<i32>>, mut var_cref: Arc<ComponentRef::NFComponentRef>, mut var_rep: Arc<VariablePointers::VariablePointers>, mut eqn_rep: Arc<VariablePointers::VariablePointers>, mut var_rep_mapping: Arc<Mapping::Mapping>, mut eqn_rep_mapping: Arc<Mapping::Mapping>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>>, mut set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut jacType: JacobianType) -> Result<()> {
+pub(crate) fn addForLoopDependencies(mut eqn: Arc<Equation::Equation>, mut indices: Arc<metamodelica::List<i32>>, mut var_cref: Arc<ComponentRef::NFComponentRef>, mut var_rep: Arc<VariablePointers::VariablePointers>, mut eqn_rep: Arc<VariablePointers::VariablePointers>, mut var_rep_mapping: Arc<Mapping::Mapping>, mut eqn_rep_mapping: Arc<Mapping::Mapping>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>>, mut set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut jacType: JacobianType) -> Result<()> {
     let mut iter: Arc<Iterator::Iterator>;
     let mut body: Arc<Equation::Equation>;
     let mut dependencies: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
@@ -1138,7 +1138,7 @@ pub fn addForLoopDependencies(mut eqn: Arc<Equation::Equation>, mut indices: Arc
     Ok(())
 }
 
-pub fn addLoopJacobian(mut comp: Arc<NBStrongComponent>, mut jac: Option<Arc<BackendDAE::NBackendDAE>>) -> Result<Arc<NBStrongComponent>> {
+pub(crate) fn addLoopJacobian(mut comp: Arc<NBStrongComponent>, mut jac: Option<Arc<BackendDAE::NBackendDAE>>) -> Result<Arc<NBStrongComponent>> {
     let mut comp: Arc<NBStrongComponent> = comp;
     comp = (::match_deref::match_deref! { match &(comp.clone()) {
         Deref @ ALGEBRAIC_LOOP { strict, .. } => {
@@ -1156,7 +1156,7 @@ pub fn addLoopJacobian(mut comp: Arc<NBStrongComponent>, mut jac: Option<Arc<Bac
     Ok(comp)
 }
 
-pub fn getLoopResiduals(mut comp: Arc<NBStrongComponent>) -> Result<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>> {
+pub(crate) fn getLoopResiduals(mut comp: Arc<NBStrongComponent>) -> Result<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>> {
     let mut residuals: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>;
     residuals = (::match_deref::match_deref! { match &(comp.clone()) {
         Deref @ ALGEBRAIC_LOOP { .. } => Tearing::getResidualVars(var_field!((*comp).strict, NBStrongComponent::ALGEBRAIC_LOOP).clone())?,
@@ -1166,7 +1166,7 @@ pub fn getLoopResiduals(mut comp: Arc<NBStrongComponent>) -> Result<Arc<metamode
     Ok(residuals)
 }
 
-pub fn getVariables(mut comp: Arc<NBStrongComponent>) -> Result<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>> {
+pub(crate) fn getVariables(mut comp: Arc<NBStrongComponent>) -> Result<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>> {
     '__tco: loop {
         ::match_deref::match_deref! { match &(comp.clone()) {
         Deref @ SINGLE_COMPONENT { .. } => return Ok(list![var_field!((*comp).var, NBStrongComponent::SINGLE_COMPONENT).clone()]),
@@ -1200,7 +1200,7 @@ pub fn getVariables(mut comp: Arc<NBStrongComponent>) -> Result<Arc<metamodelica
     }
 }
 
-pub fn getVarCref(mut comp: Arc<NBStrongComponent>) -> Result<Arc<ComponentRef::NFComponentRef>> {
+pub(crate) fn getVarCref(mut comp: Arc<NBStrongComponent>) -> Result<Arc<ComponentRef::NFComponentRef>> {
     '__tco: loop {
         ::match_deref::match_deref! { match &(comp.clone()) {
         Deref @ SLICED_COMPONENT { .. } => return Ok(var_field!((*comp).var_cref, NBStrongComponent::SLICED_COMPONENT).clone()),
@@ -1216,7 +1216,7 @@ pub fn getVarCref(mut comp: Arc<NBStrongComponent>) -> Result<Arc<ComponentRef::
     }
 }
 
-pub fn getEquations(mut comp: Arc<NBStrongComponent>) -> Result<Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>> {
+pub(crate) fn getEquations(mut comp: Arc<NBStrongComponent>) -> Result<Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>> {
     '__tco: loop {
         ::match_deref::match_deref! { match &(comp.clone()) {
         Deref @ SINGLE_COMPONENT { .. } => return Ok(list![var_field!((*comp).eqn, NBStrongComponent::SINGLE_COMPONENT).clone()]),
@@ -1243,7 +1243,7 @@ pub fn getEquations(mut comp: Arc<NBStrongComponent>) -> Result<Arc<metamodelica
     }
 }
 
-pub fn getSolveStatus(mut comp: Arc<NBStrongComponent>) -> Result<Solve::Status> {
+pub(crate) fn getSolveStatus(mut comp: Arc<NBStrongComponent>) -> Result<Solve::Status> {
     '__tco: loop {
         ::match_deref::match_deref! { match &(comp.clone()) {
         Deref @ SINGLE_COMPONENT { .. } => return Ok(var_field!((*comp).status, NBStrongComponent::SINGLE_COMPONENT).clone()),
@@ -1263,7 +1263,7 @@ pub fn getSolveStatus(mut comp: Arc<NBStrongComponent>) -> Result<Solve::Status>
     }
 }
 
-pub fn isDiscrete(mut comp: Arc<NBStrongComponent>) -> Result<bool> {
+pub(crate) fn isDiscrete(mut comp: Arc<NBStrongComponent>) -> Result<bool> {
     '__tco: loop {
         ::match_deref::match_deref! { match &(comp.clone()) {
         Deref @ SINGLE_COMPONENT { .. } => return Ok(Equation::isDiscrete(var_field!((*comp).eqn, NBStrongComponent::SINGLE_COMPONENT).clone())),
@@ -1283,7 +1283,7 @@ pub fn isDiscrete(mut comp: Arc<NBStrongComponent>) -> Result<bool> {
     }
 }
 
-pub fn isDummy(mut comp: Arc<NBStrongComponent>) -> bool {
+pub(crate) fn isDummy(mut comp: Arc<NBStrongComponent>) -> bool {
     let mut b: bool;
     b = (::match_deref::match_deref! { match &(comp.clone()) {
         Deref @ SINGLE_COMPONENT { .. } => Equation::isDummy(Pointer::access(var_field!((*comp).eqn, NBStrongComponent::SINGLE_COMPONENT).clone())),
@@ -1294,7 +1294,7 @@ pub fn isDummy(mut comp: Arc<NBStrongComponent>) -> bool {
     b
 }
 
-pub fn isAlias(mut comp: Arc<NBStrongComponent>) -> bool {
+pub(crate) fn isAlias(mut comp: Arc<NBStrongComponent>) -> bool {
     let mut b: bool;
     b = (::match_deref::match_deref! { match &(comp.clone()) {
         Deref @ ALIAS { .. } => true,
@@ -1304,7 +1304,7 @@ pub fn isAlias(mut comp: Arc<NBStrongComponent>) -> bool {
     b
 }
 
-pub fn isSingleComponent(mut comp: Arc<NBStrongComponent>) -> bool {
+pub(crate) fn isSingleComponent(mut comp: Arc<NBStrongComponent>) -> bool {
     let mut b: bool;
     b = (::match_deref::match_deref! { match &(removeAlias(comp.clone())) {
         Deref @ SINGLE_COMPONENT { .. } => true,
@@ -1314,7 +1314,7 @@ pub fn isSingleComponent(mut comp: Arc<NBStrongComponent>) -> bool {
     b
 }
 
-pub fn isAlgebraicLoop(mut comp: Arc<NBStrongComponent>) -> bool {
+pub(crate) fn isAlgebraicLoop(mut comp: Arc<NBStrongComponent>) -> bool {
     let mut b: bool;
     b = (::match_deref::match_deref! { match &(removeAlias(comp.clone())) {
         Deref @ ALGEBRAIC_LOOP { .. } => true,
@@ -1324,7 +1324,7 @@ pub fn isAlgebraicLoop(mut comp: Arc<NBStrongComponent>) -> bool {
     b
 }
 
-pub fn setHomotopy(mut comp: Arc<NBStrongComponent>, mut homotopy: bool) -> Arc<NBStrongComponent> {
+pub(crate) fn setHomotopy(mut comp: Arc<NBStrongComponent>, mut homotopy: bool) -> Arc<NBStrongComponent> {
     let mut comp: Arc<NBStrongComponent> = comp;
     comp = (::match_deref::match_deref! { match &(comp.clone()) {
         Deref @ ALGEBRAIC_LOOP { .. } => {
@@ -1337,7 +1337,7 @@ pub fn setHomotopy(mut comp: Arc<NBStrongComponent>, mut homotopy: bool) -> Arc<
     comp
 }
 
-pub fn createPseudoScalar(mut comp_indices: Arc<metamodelica::List<i32>>, mut eqn_to_var: metamodelica::Array<i32>, mut mapping: Arc<Mapping::Mapping>, mut vars: Arc<VariablePointers::VariablePointers>, mut eqns: Arc<EquationPointers::EquationPointers>) -> Result<Arc<NBStrongComponent>> {
+pub(crate) fn createPseudoScalar(mut comp_indices: Arc<metamodelica::List<i32>>, mut eqn_to_var: metamodelica::Array<i32>, mut mapping: Arc<Mapping::Mapping>, mut vars: Arc<VariablePointers::VariablePointers>, mut eqns: Arc<EquationPointers::EquationPointers>) -> Result<Arc<NBStrongComponent>> {
     let mut comp: Arc<NBStrongComponent> = Arc::new(<NBStrongComponent as ::std::default::Default>::default());
     comp = ({
         let mut homotopy: Pointer::Pointer<bool> = Pointer::create(false);
@@ -1416,7 +1416,7 @@ pub fn createPseudoScalar(mut comp_indices: Arc<metamodelica::List<i32>>, mut eq
     Ok(comp)
 }
 
-pub fn createSliceOrSingle(mut cref: Arc<ComponentRef::NFComponentRef>, mut var_slice: Arc<Slice::NBSlice<Pointer::Pointer<Arc<Variable::NFVariable>>>>, mut eqn_slice: Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>) -> Result<Arc<NBStrongComponent>> {
+pub(crate) fn createSliceOrSingle(mut cref: Arc<ComponentRef::NFComponentRef>, mut var_slice: Arc<Slice::NBSlice<Pointer::Pointer<Arc<Variable::NFVariable>>>>, mut eqn_slice: Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>) -> Result<Arc<NBStrongComponent>> {
     let mut comp: Arc<NBStrongComponent>;
     if Slice::isFull(var_slice.clone()) && Slice::isFull(eqn_slice.clone()) && !(ComponentRef::hasSubscripts(cref.clone())?) {
         comp = Arc::new(NBStrongComponent::SINGLE_COMPONENT { var: Slice::getT(var_slice.clone()), eqn: Slice::getT(eqn_slice.clone()), status: Solve::Status::UNPROCESSED.clone() });
