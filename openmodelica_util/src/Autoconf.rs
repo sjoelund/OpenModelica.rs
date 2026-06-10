@@ -49,12 +49,12 @@ use std::sync::Arc;
 use arcstr::{literal, ArcStr};
 use metamodelica::list;
 
-pub const configureCommandLine: &'static str =
+pub const configureCommandLine: &str =
     "Hand-maintained Autoconf.rs (Rust port); platform detected at compile time, no configure run";
 
 /// `@CONFIG_OS@`: "Windows_NT" on Windows, "darwin" on macOS, otherwise
 /// `$host_os` with the `-gnu` suffix stripped (i.e. "linux").
-pub const os: &'static str = if cfg!(windows) {
+pub const os: &str = if cfg!(windows) {
     "Windows_NT"
 } else if cfg!(target_os = "macos") {
     "darwin"
@@ -66,7 +66,7 @@ pub const is64Bit: bool = cfg!(target_pointer_width = "64");
 
 pub const isWindows: bool = cfg!(windows);
 
-pub const platform: &'static str = if isWindows && is64Bit {
+pub const platform: &str = if isWindows && is64Bit {
     "WIN64"
 } else if isWindows {
     "WIN32"
@@ -76,14 +76,14 @@ pub const platform: &'static str = if isWindows && is64Bit {
 
 // On Windows shells, commands go through `cmd /c`, so the MSYS `make` must
 // not be used — `Autoconf.mo.omdev.mingw` mandates `mingw32-make` there.
-pub const make: &'static str = if isWindows { "mingw32-make" } else { "make" };
+pub const make: &str = if isWindows { "mingw32-make" } else { "make" };
 
-pub const cmake: &'static str = "cmake";
+pub const cmake: &str = "cmake";
 
-pub const exeExt: &'static str = if isWindows { ".exe" } else { "" };
+pub const exeExt: &str = if isWindows { ".exe" } else { "" };
 
 /// `@SHREXT@`.
-pub const dllExt: &'static str = if isWindows {
+pub const dllExt: &str = if isWindows {
     ".dll"
 } else if cfg!(target_os = "macos") {
     ".dylib"
@@ -95,13 +95,13 @@ pub const dllExt: &'static str = if isWindows {
 /// MinGW yes, Apple's ld64 no).
 pub const haveBStatic: bool = !cfg!(target_os = "macos");
 
-pub const bstatic: &'static str = if haveBStatic { "-Wl,-Bstatic" } else { "" };
+pub const bstatic: &str = if haveBStatic { "-Wl,-Bstatic" } else { "" };
 
-pub const bdynamic: &'static str = if haveBStatic { "-Wl,-Bdynamic" } else { "" };
+pub const bdynamic: &str = if haveBStatic { "-Wl,-Bdynamic" } else { "" };
 
-pub const groupDelimiter: &'static str = if isWindows { ";" } else { ":" };
+pub const groupDelimiter: &str = if isWindows { ";" } else { ":" };
 
-pub const pathDelimiter: &'static str = "/";
+pub const pathDelimiter: &str = "/";
 
 // ── Link flags for generated simulation / FMU code ──────────────────────────
 //
@@ -112,9 +112,9 @@ pub const pathDelimiter: &'static str = "/";
 // Unix: the values configure produces on GNU/Linux; macOS drops the
 // GNU-ld-only flags (see the module comment).
 
-const win_linkType: &'static str = " -Wl,-B$(OMC_LDFLAGS_LINK_TYPE) ";
+const win_linkType: &str = " -Wl,-B$(OMC_LDFLAGS_LINK_TYPE) ";
 
-const win_ldflags_basic: &'static str = const_str::concat!(
+const win_ldflags_basic: &str = const_str::concat!(
     " -lomcgc -lryu ",
     win_linkType,
     "-static-libgcc -luuid -loleaut32 -lole32 -limagehlp -lws2_32",
@@ -123,9 +123,9 @@ const win_ldflags_basic: &'static str = const_str::concat!(
     "-luser32 -lkernel32 -ladvapi32 -lshell32 -lopenblas -Wl,-Bdynamic"
 );
 
-const win_ldflags_zip: &'static str = "-lz -lsz ";
+const win_ldflags_zip: &str = "-lz -lsz ";
 
-const win_ldflags_runtime_fmu: &'static str = const_str::concat!(
+const win_ldflags_runtime_fmu: &str = const_str::concat!(
     win_linkType,
     "-lregex -ltre -lintl -liconv -static-libgcc -lpthread -lm ",
     "-lgfortran -lquadmath -lmingw32 -lgcc_eh -lmoldname -lmingwex ",
@@ -135,7 +135,7 @@ const win_ldflags_runtime_fmu: &'static str = const_str::concat!(
 );
 
 /// `@RT_LDFLAGS_GENERATED_CODE@`.
-pub const ldflags_runtime: &'static str = if cfg!(windows) {
+pub const ldflags_runtime: &str = if cfg!(windows) {
     const_str::concat!(" -lOpenModelicaRuntimeC", win_ldflags_basic)
 } else if cfg!(target_os = "macos") {
     " -lOpenModelicaRuntimeC -lopenblas -lm -lomcgc -lryu -lpthread"
@@ -144,7 +144,7 @@ pub const ldflags_runtime: &'static str = if cfg!(windows) {
 };
 
 /// `@RT_LDFLAGS_GENERATED_CODE_SIM@`.
-pub const ldflags_runtime_sim: &'static str = if cfg!(windows) {
+pub const ldflags_runtime_sim: &str = if cfg!(windows) {
     const_str::concat!(
         "-lSimulationRuntimeC -Wl,-Bdynamic -lomcgc -lryu -lopenblas",
         win_linkType,
@@ -157,7 +157,7 @@ pub const ldflags_runtime_sim: &'static str = if cfg!(windows) {
 };
 
 /// `@RT_LDFLAGS_GENERATED_CODE_SOURCE_FMU@`.
-pub const ldflags_runtime_fmu: &'static str = if cfg!(windows) {
+pub const ldflags_runtime_fmu: &str = if cfg!(windows) {
     win_ldflags_runtime_fmu
 } else if cfg!(target_os = "macos") {
     " -lopenblas -lm -lpthread -lryu"
@@ -166,7 +166,7 @@ pub const ldflags_runtime_fmu: &'static str = if cfg!(windows) {
 };
 
 /// `@RT_LDFLAGS_GENERATED_CODE_SOURCE_FMU_STATIC@`.
-pub const ldflags_runtime_fmu_static: &'static str = if cfg!(windows) {
+pub const ldflags_runtime_fmu_static: &str = if cfg!(windows) {
     const_str::concat!(" -lSimulationRuntimeFMI ", win_ldflags_runtime_fmu)
 } else if cfg!(target_os = "macos") {
     " -lSimulationRuntimeFMI -lopenblas -lm -lpthread -lryu"
@@ -178,13 +178,13 @@ pub const ldflags_runtime_fmu_static: &'static str = if cfg!(windows) {
 /// (ParModelica auto) is enabled. Mirrors `Util/Autoconf.mo`, which hardcodes
 /// the pair below: the ParModelica auto runtime (`libParModelicaAuto`) ships
 /// with the OpenModelica build on every supported platform.
-pub const parModelicaAutoLibs: &'static str = " -lParModelicaAuto -ltbb ";
+pub const parModelicaAutoLibs: &str = " -lParModelicaAuto -ltbb ";
 
-pub const corbaLibs: &'static str = "";
+pub const corbaLibs: &str = "";
 
 /// `@WITH_HWLOC@` defaults to 0 on every platform unless explicitly
 /// requested at configure time; mirror the default.
-pub const hwloc: &'static str = "";
+pub const hwloc: &str = "";
 
 pub static systemLibs: std::sync::LazyLock<Arc<metamodelica::List<ArcStr>>> =
     std::sync::LazyLock::new(|| {
@@ -206,7 +206,7 @@ pub static systemLibs: std::sync::LazyLock<Arc<metamodelica::List<ArcStr>>> =
 /// `$host_cpu` for the compilation target. Extend the chain when porting to
 /// a new architecture — an explicit "unknown" keeps path construction
 /// greppable rather than silently wrong.
-const target_arch_str: &'static str = if cfg!(target_arch = "x86_64") {
+const target_arch_str: &str = if cfg!(target_arch = "x86_64") {
     "x86_64"
 } else if cfg!(target_arch = "aarch64") {
     "aarch64"
@@ -221,7 +221,7 @@ const target_arch_str: &'static str = if cfg!(target_arch = "x86_64") {
 };
 
 /// `-$host_os` for the compilation target (Unix only; Windows uses "").
-const os_triple_suffix: &'static str = if cfg!(target_os = "macos") {
+const os_triple_suffix: &str = if cfg!(target_os = "macos") {
     "-apple-darwin"
 } else if cfg!(all(target_os = "linux", target_env = "musl")) {
     "-linux-musl"
@@ -233,7 +233,7 @@ const os_triple_suffix: &'static str = if cfg!(target_os = "macos") {
 /// component under `lib/` where the omc runtime libraries are installed
 /// (e.g. `/usr/lib/x86_64-linux-gnu/omc`). The OMDev Windows file uses the
 /// empty string (no per-triple subdirectory on Windows installs).
-pub const triple: &'static str = if cfg!(windows) {
+pub const triple: &str = if cfg!(windows) {
     ""
 } else {
     const_str::concat!(target_arch_str, os_triple_suffix)

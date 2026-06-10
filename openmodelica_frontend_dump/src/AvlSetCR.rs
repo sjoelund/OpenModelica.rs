@@ -50,13 +50,13 @@ use openmodelica_util::BaseAvlSet;
 pub type Key = Arc<DAE::ComponentRef>;
 
 pub fn keyStr(mut inKey: Key) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = (ComponentReferenceBasics::printComponentRefStr(inKey.clone())?).clone();
     Ok(outString)
 }
 
 pub fn keyCompare(mut inKey1: Key, mut inKey2: Key) -> Result<i32> {
-    let mut outResult: i32 = 0;
+    let mut outResult: i32;
     outResult = ComponentReferenceBasics::crefCompareGenericNotAlphabetic(inKey1.clone(), inKey2.clone())?;
     Ok(outResult)
 }
@@ -171,7 +171,7 @@ fn balance(mut inTree: Arc<Tree>) -> Result<Arc<Tree>> {
 }
 
 fn calculateBalance(mut inNode: Arc<Tree>) -> i32 {
-    let mut outBalance: i32 = 0;
+    let mut outBalance: i32;
     outBalance = (::match_deref::match_deref! { match &(inNode.clone()) {
         Deref @ Tree::NODE { .. } => height(var_field!((*inNode).left, Tree::NODE).clone()) - height(var_field!((*inNode).right, Tree::NODE).clone()),
         Deref @ Tree::LEAF { .. } => 0,
@@ -183,8 +183,8 @@ fn calculateBalance(mut inNode: Arc<Tree>) -> i32 {
 
 pub fn hasKey(mut inTree: Arc<Tree>, mut inKey: Key) -> Result<bool> {
     let mut comp: bool = false;
-    let mut key: Key = Arc::new(DAE::ComponentRef::WILD);
-    let mut key_comp: i32 = 0;
+    let mut key: Key;
+    let mut key_comp: i32;
     let mut tree: Arc<Tree> = Arc::new(Tree::EMPTY);
     key = (::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::NODE { .. } => var_field!((*inTree).key, Tree::NODE).clone(),
@@ -213,7 +213,7 @@ pub fn hasKey(mut inTree: Arc<Tree>, mut inKey: Key) -> Result<bool> {
 }
 
 fn height(mut inNode: Arc<Tree>) -> i32 {
-    let mut outHeight: i32 = 0;
+    let mut outHeight: i32;
     outHeight = (::match_deref::match_deref! { match &(inNode.clone()) {
         Deref @ Tree::NODE { .. } => var_field!((*inNode).height, Tree::NODE).clone(),
         Deref @ Tree::LEAF { .. } => 1,
@@ -227,11 +227,11 @@ pub fn intersection(mut tree1: Arc<Tree>, mut tree2: Arc<Tree>) -> Result<(Arc<T
     let mut intersect: Arc<Tree> = crate::AvlSetCR::Tree::interned_EMPTY();
     let mut rest1: Arc<Tree> = crate::AvlSetCR::Tree::interned_EMPTY();
     let mut rest2: Arc<Tree> = crate::AvlSetCR::Tree::interned_EMPTY();
-    let mut keylist1: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
-    let mut keylist2: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
-    let mut k1: Key = Arc::new(DAE::ComponentRef::WILD);
-    let mut k2: Key = Arc::new(DAE::ComponentRef::WILD);
-    let mut key_comp: i32 = 0;
+    let mut keylist1: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
+    let mut keylist2: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
+    let mut k1: Key;
+    let mut k2: Key;
+    let mut key_comp: i32;
     if isEmpty(tree1.clone()) {
         rest2 = tree2.clone();
         return Ok((intersect.clone(), rest1.clone(), rest2.clone()));
@@ -315,7 +315,7 @@ pub fn intersection(mut tree1: Arc<Tree>, mut tree2: Arc<Tree>) -> Result<(Arc<T
 }
 
 pub fn isEmpty(mut tree: Arc<Tree>) -> bool {
-    let mut isEmpty: bool = false;
+    let mut isEmpty: bool;
     isEmpty = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::EMPTY { .. } => true,
         _ => false,
@@ -378,7 +378,7 @@ pub fn new() -> Arc<Tree> {
 }
 
 pub fn printNodeStr(mut inNode: Arc<Tree>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(inNode.clone()) {
         Deref @ Tree::NODE { .. } => keyStr(var_field!((*inNode).key, Tree::NODE).clone())?,
         Deref @ Tree::LEAF { .. } => keyStr(var_field!((*inNode).key, Tree::LEAF).clone())?,
@@ -388,7 +388,7 @@ pub fn printNodeStr(mut inNode: Arc<Tree>) -> Result<ArcStr> {
 }
 
 pub fn printTreeStr(mut inTree: Arc<Tree>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     let mut left: Arc<Tree> = Arc::new(Tree::EMPTY);
     let mut right: Arc<Tree> = Arc::new(Tree::EMPTY);
     outString = ((::match_deref::match_deref! { match &(inTree.clone()) {
@@ -405,9 +405,9 @@ pub fn printTreeStr(mut inTree: Arc<Tree>) -> Result<ArcStr> {
 }
 
 fn printTreeStr2(mut inTree: Arc<Tree>, mut isLeft: bool, mut inIndent: ArcStr) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
-    let mut left: Option<Arc<Tree>> = None;
-    let mut right: Option<Arc<Tree>> = None;
+    let mut outString: ArcStr;
+    let mut left: Option<Arc<Tree>>;
+    let mut right: Option<Arc<Tree>>;
     outString = ((::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::NODE { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*printTreeStr2(var_field!((*inTree).left, Tree::NODE).clone(), true, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft.clone()) {literal!("     ")} else {literal!(" │   ")}); ArcStr::from(__mm_s) }).clone())?); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft.clone()) {literal!(" ┌")} else {literal!(" └")}); __mm_s.push_str(&*literal!("────")); __mm_s.push_str(&*printNodeStr(inTree.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*printTreeStr2(var_field!((*inTree).right, Tree::NODE).clone(), false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft.clone()) {literal!(" │   ")} else {literal!("     ")}); ArcStr::from(__mm_s) }).clone())?); ArcStr::from(__mm_s) },
         Deref @ Tree::LEAF { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft.clone()) {literal!(" ┌")} else {literal!(" └")}); __mm_s.push_str(&*literal!("────")); __mm_s.push_str(&*printNodeStr(inTree.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) },
@@ -418,7 +418,7 @@ fn printTreeStr2(mut inTree: Arc<Tree>, mut isLeft: bool, mut inIndent: ArcStr) 
 }
 
 fn referenceEqOrEmpty(mut t1: Arc<Tree>, mut t2: Arc<Tree>) -> bool {
-    let mut b: bool = false;
+    let mut b: bool;
     b = (::match_deref::match_deref! { match &((t1.clone(), t2.clone())) {
         (Deref @ Tree::EMPTY { .. }, Deref @ Tree::EMPTY { .. }) => true,
         _ => referenceEq(&*(t1.clone()),&*(t2.clone())),
@@ -470,7 +470,7 @@ fn rotateRight(mut inNode: Arc<Tree>) -> Result<Arc<Tree>> {
 }
 
 pub fn setTreeLeftRight(mut orig: Arc<Tree>, mut left: Arc<Tree>, mut right: Arc<Tree>) -> Result<Arc<Tree>> {
-    let mut res: Arc<Tree> = Arc::new(Tree::EMPTY);
+    let mut res: Arc<Tree>;
     res = (::match_deref::match_deref! { match &((orig.clone(), left.clone(), right.clone())) {
         (Deref @ Tree::NODE { .. }, Deref @ Tree::EMPTY { .. }, Deref @ Tree::EMPTY { .. }) => Arc::new(Tree::LEAF { key: var_field!((*orig).key, Tree::NODE).clone() }),
         (Deref @ Tree::LEAF { .. }, Deref @ Tree::EMPTY { .. }, Deref @ Tree::EMPTY { .. }) => orig.clone(),

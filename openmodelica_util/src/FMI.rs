@@ -231,7 +231,7 @@ pub type FMIIMPORT = FmiImport;
 
 
 pub fn getFMIModelIdentifier(mut inFMIInfo: Info) -> Result<ArcStr> {
-    let mut fmiModelIdentifier: ArcStr = arcstr::literal!("");
+    let mut fmiModelIdentifier: ArcStr;
     fmiModelIdentifier = ((match inFMIInfo.clone() {
         Info { fmiModelIdentifier: mut modelIdentifier, .. } => {
             modelIdentifier.clone()
@@ -241,7 +241,7 @@ pub fn getFMIModelIdentifier(mut inFMIInfo: Info) -> Result<ArcStr> {
 }
 
 pub fn getFMIType(mut inFMIInfo: Info) -> Result<ArcStr> {
-    let mut fmiType: ArcStr = arcstr::literal!("");
+    let mut fmiType: ArcStr;
     fmiType = ((::match_deref::match_deref! { match &(inFMIInfo.clone()) {
         Info { fmiVersion: Deref @ "1.0", fmiType: 0, .. } => literal!("me"),
         Info { fmiVersion: Deref @ "1.0", fmiType: 1, .. } => literal!("cs_st"),
@@ -255,7 +255,7 @@ pub fn getFMIType(mut inFMIInfo: Info) -> Result<ArcStr> {
 }
 
 pub fn getFMIVersion(mut inFMIInfo: Info) -> Result<ArcStr> {
-    let mut fmiVersion: ArcStr = arcstr::literal!("");
+    let mut fmiVersion: ArcStr;
     fmiVersion = ((match inFMIInfo.clone() {
         Info { fmiVersion: mut version, .. } => {
             version.clone()
@@ -265,7 +265,7 @@ pub fn getFMIVersion(mut inFMIInfo: Info) -> Result<ArcStr> {
 }
 
 pub fn checkFMIVersion(mut inFMIVersion: ArcStr) -> bool {
-    let mut success: bool = false;
+    let mut success: bool;
     success = (::match_deref::match_deref! { match &(inFMIVersion.clone()) {
         Deref @ "1.0" => true,
         Deref @ "2.0" => true,
@@ -276,7 +276,7 @@ pub fn checkFMIVersion(mut inFMIVersion: ArcStr) -> bool {
 }
 
 pub fn isFMIVersion10(mut inFMUVersion: ArcStr) -> bool {
-    let mut success: bool = false;
+    let mut success: bool;
     success = (::match_deref::match_deref! { match &(inFMUVersion.clone()) {
         Deref @ "1.0" => true,
         _ => false,
@@ -286,7 +286,7 @@ pub fn isFMIVersion10(mut inFMUVersion: ArcStr) -> bool {
 }
 
 pub fn isFMIVersion20(mut inFMUVersion: ArcStr) -> Result<bool> {
-    let mut success: bool = false;
+    let mut success: bool;
     success = (::match_deref::match_deref! { match &(inFMUVersion.clone()) {
         Deref @ "2.0" => true,
         _ => false,
@@ -301,7 +301,7 @@ pub fn getFMIVersionString() -> Result<ArcStr> {
 }
 
 pub fn checkFMIType(mut inFMIType: ArcStr) -> bool {
-    let mut success: bool = false;
+    let mut success: bool;
     success = (::match_deref::match_deref! { match &(inFMIType.clone()) {
         Deref @ "me" => true,
         Deref @ "cs" => true,
@@ -313,7 +313,7 @@ pub fn checkFMIType(mut inFMIType: ArcStr) -> bool {
 }
 
 pub fn canExportFMU(mut inFMUVersion: ArcStr, mut inFMIType: ArcStr) -> bool {
-    let mut success: bool = false;
+    let mut success: bool;
     success = (::match_deref::match_deref! { match &((inFMUVersion.clone(), inFMIType.clone())) {
         (Deref @ "1.0", Deref @ "me") => true,
         (Deref @ "2.0", Deref @ "me") => true,
@@ -326,7 +326,7 @@ pub fn canExportFMU(mut inFMUVersion: ArcStr, mut inFMIType: ArcStr) -> bool {
 }
 
 pub fn isFMIMEType(mut inFMIType: ArcStr) -> bool {
-    let mut success: bool = false;
+    let mut success: bool;
     success = (::match_deref::match_deref! { match &(inFMIType.clone()) {
         Deref @ "me" => true,
         Deref @ "me_cs" => true,
@@ -337,7 +337,7 @@ pub fn isFMIMEType(mut inFMIType: ArcStr) -> bool {
 }
 
 pub fn isFMICSType(mut inFMIType: ArcStr) -> bool {
-    let mut success: bool = false;
+    let mut success: bool;
     success = (::match_deref::match_deref! { match &(inFMIType.clone()) {
         Deref @ "cs" => true,
         Deref @ "me_cs" => true,
@@ -366,13 +366,13 @@ pub fn getEnumerationTypeFromTypes(mut inTypeDefinitionsList: Arc<metamodelica::
 }
 
 pub fn filterModelVariables(mut inModelVariables: Arc<metamodelica::List<ModelVariables>>, mut tipe: ArcStr, mut variableCausality: ArcStr) -> Result<Arc<metamodelica::List<ModelVariables>>> {
-    let mut outModelVariables: Arc<metamodelica::List<ModelVariables>> = metamodelica::nil();
+    let mut outModelVariables: Arc<metamodelica::List<ModelVariables>>;
     outModelVariables = List::filter2OnTrue(inModelVariables.clone(), (std::sync::Arc::new(fnptr!(filterModelVariable, ModelVariables, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ModelVariables, ArcStr, ArcStr) -> Result<bool> + 'static>), (tipe.clone()).clone(), (variableCausality.clone()).clone())?;
     Ok(outModelVariables)
 }
 
 fn filterModelVariable(mut modelVar: ModelVariables, mut tipe: ArcStr, mut variableCausality: ArcStr) -> bool {
-    let mut result: bool = false;
+    let mut result: bool;
     result = (match modelVar.clone() {
         ModelVariables::REALVARIABLE { causality: mut causality, .. } if (tipe.clone() == literal!("real") && causality.clone() == variableCausality.clone()) => {
             true

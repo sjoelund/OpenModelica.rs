@@ -75,13 +75,13 @@ pub mod ConstantsSetImpl {
     pub type Key = Arc<ComponentRef::NFComponentRef>;
 
     pub fn keyStr(mut inKey: Key) -> Result<ArcStr> {
-        let mut outString: ArcStr = arcstr::literal!("");
+        let mut outString: ArcStr;
         outString = (ComponentRef::toString(inKey.clone())?).clone();
         Ok(outString)
     }
 
     pub fn keyCompare(mut inKey1: Key, mut inKey2: Key) -> Result<i32> {
-        let mut outResult: i32 = 0;
+        let mut outResult: i32;
         outResult = ComponentRef::compare(inKey1.clone(), inKey2.clone())?;
         Ok(outResult)
     }
@@ -196,7 +196,7 @@ pub mod ConstantsSetImpl {
     }
 
     fn calculateBalance(mut inNode: Arc<Tree>) -> i32 {
-        let mut outBalance: i32 = 0;
+        let mut outBalance: i32;
         outBalance = (::match_deref::match_deref! { match &(inNode.clone()) {
         Deref @ Tree::NODE { .. } => height(var_field!((*inNode).left, Tree::NODE).clone()) - height(var_field!((*inNode).right, Tree::NODE).clone()),
         Deref @ Tree::LEAF { .. } => 0,
@@ -208,8 +208,8 @@ pub mod ConstantsSetImpl {
 
     pub fn hasKey(mut inTree: Arc<Tree>, mut inKey: Key) -> Result<bool> {
         let mut comp: bool = false;
-        let mut key: Key = Arc::new(ComponentRef::EMPTY);
-        let mut key_comp: i32 = 0;
+        let mut key: Key;
+        let mut key_comp: i32;
         let mut tree: Arc<Tree> = Arc::new(Tree::EMPTY);
         key = (::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::NODE { .. } => var_field!((*inTree).key, Tree::NODE).clone(),
@@ -238,7 +238,7 @@ pub mod ConstantsSetImpl {
     }
 
     fn height(mut inNode: Arc<Tree>) -> i32 {
-        let mut outHeight: i32 = 0;
+        let mut outHeight: i32;
         outHeight = (::match_deref::match_deref! { match &(inNode.clone()) {
         Deref @ Tree::NODE { .. } => var_field!((*inNode).height, Tree::NODE).clone(),
         Deref @ Tree::LEAF { .. } => 1,
@@ -252,11 +252,11 @@ pub mod ConstantsSetImpl {
         let mut intersect: Arc<Tree> = crate::NFPackage::ConstantsSetImpl::Tree::interned_EMPTY();
         let mut rest1: Arc<Tree> = crate::NFPackage::ConstantsSetImpl::Tree::interned_EMPTY();
         let mut rest2: Arc<Tree> = crate::NFPackage::ConstantsSetImpl::Tree::interned_EMPTY();
-        let mut keylist1: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-        let mut keylist2: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-        let mut k1: Key = Arc::new(ComponentRef::EMPTY);
-        let mut k2: Key = Arc::new(ComponentRef::EMPTY);
-        let mut key_comp: i32 = 0;
+        let mut keylist1: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
+        let mut keylist2: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
+        let mut k1: Key;
+        let mut k2: Key;
+        let mut key_comp: i32;
         if isEmpty(tree1.clone()) {
             rest2 = tree2.clone();
             return Ok((intersect.clone(), rest1.clone(), rest2.clone()));
@@ -340,7 +340,7 @@ pub mod ConstantsSetImpl {
     }
 
     pub fn isEmpty(mut tree: Arc<Tree>) -> bool {
-        let mut isEmpty: bool = false;
+        let mut isEmpty: bool;
         isEmpty = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::EMPTY { .. } => true,
         _ => false,
@@ -403,7 +403,7 @@ pub mod ConstantsSetImpl {
     }
 
     pub fn printNodeStr(mut inNode: Arc<Tree>) -> Result<ArcStr> {
-        let mut outString: ArcStr = arcstr::literal!("");
+        let mut outString: ArcStr;
         outString = ((::match_deref::match_deref! { match &(inNode.clone()) {
         Deref @ Tree::NODE { .. } => keyStr(var_field!((*inNode).key, Tree::NODE).clone())?,
         Deref @ Tree::LEAF { .. } => keyStr(var_field!((*inNode).key, Tree::LEAF).clone())?,
@@ -413,7 +413,7 @@ pub mod ConstantsSetImpl {
     }
 
     pub fn printTreeStr(mut inTree: Arc<Tree>) -> Result<ArcStr> {
-        let mut outString: ArcStr = arcstr::literal!("");
+        let mut outString: ArcStr;
         let mut left: Arc<Tree> = Arc::new(Tree::EMPTY);
         let mut right: Arc<Tree> = Arc::new(Tree::EMPTY);
         outString = ((::match_deref::match_deref! { match &(inTree.clone()) {
@@ -430,9 +430,9 @@ pub mod ConstantsSetImpl {
     }
 
     fn printTreeStr2(mut inTree: Arc<Tree>, mut isLeft: bool, mut inIndent: ArcStr) -> Result<ArcStr> {
-        let mut outString: ArcStr = arcstr::literal!("");
-        let mut left: Option<Arc<Tree>> = None;
-        let mut right: Option<Arc<Tree>> = None;
+        let mut outString: ArcStr;
+        let mut left: Option<Arc<Tree>>;
+        let mut right: Option<Arc<Tree>>;
         outString = ((::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::NODE { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*printTreeStr2(var_field!((*inTree).left, Tree::NODE).clone(), true, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft.clone()) {literal!("     ")} else {literal!(" │   ")}); ArcStr::from(__mm_s) }).clone())?); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft.clone()) {literal!(" ┌")} else {literal!(" └")}); __mm_s.push_str(&*literal!("────")); __mm_s.push_str(&*printNodeStr(inTree.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*printTreeStr2(var_field!((*inTree).right, Tree::NODE).clone(), false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft.clone()) {literal!(" │   ")} else {literal!("     ")}); ArcStr::from(__mm_s) }).clone())?); ArcStr::from(__mm_s) },
         Deref @ Tree::LEAF { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft.clone()) {literal!(" ┌")} else {literal!(" └")}); __mm_s.push_str(&*literal!("────")); __mm_s.push_str(&*printNodeStr(inTree.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) },
@@ -443,7 +443,7 @@ pub mod ConstantsSetImpl {
     }
 
     fn referenceEqOrEmpty(mut t1: Arc<Tree>, mut t2: Arc<Tree>) -> bool {
-        let mut b: bool = false;
+        let mut b: bool;
         b = (::match_deref::match_deref! { match &((t1.clone(), t2.clone())) {
         (Deref @ Tree::EMPTY { .. }, Deref @ Tree::EMPTY { .. }) => true,
         _ => referenceEq(&*(t1.clone()),&*(t2.clone())),
@@ -495,7 +495,7 @@ pub mod ConstantsSetImpl {
     }
 
     pub fn setTreeLeftRight(mut orig: Arc<Tree>, mut left: Arc<Tree>, mut right: Arc<Tree>) -> Result<Arc<Tree>> {
-        let mut res: Arc<Tree> = Arc::new(Tree::EMPTY);
+        let mut res: Arc<Tree>;
         res = (::match_deref::match_deref! { match &((orig.clone(), left.clone(), right.clone())) {
         (Deref @ Tree::NODE { .. }, Deref @ Tree::EMPTY { .. }, Deref @ Tree::EMPTY { .. }) => Arc::new(Tree::LEAF { key: var_field!((*orig).key, Tree::NODE).clone() }),
         (Deref @ Tree::LEAF { .. }, Deref @ Tree::EMPTY { .. }, Deref @ Tree::EMPTY { .. }) => orig.clone(),
@@ -521,8 +521,8 @@ pub mod ConstantsSetImpl {
 
 pub fn collectConstants(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<Arc<FlatModel::NFFlatModel>> {
     let mut flatModel: Arc<FlatModel::NFFlatModel> = flatModel;
-    let mut vars: Arc<metamodelica::List<Arc<Variable::NFVariable>>> = metamodelica::nil();
-    let mut constants: Constants = Arc::new(ConstantsSetImpl::Tree::EMPTY);
+    let mut vars: Arc<metamodelica::List<Arc<Variable::NFVariable>>>;
+    let mut constants: Constants;
     constants = ConstantsSetImpl::new();
     constants = List::fold(flatModel.variables.clone(), (std::sync::Arc::new(collectVariableConstants) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Variable::NFVariable>, Arc<ConstantsSetImpl::Tree>) -> Result<Arc<ConstantsSetImpl::Tree>> + 'static>), constants.clone())?;
     constants = Equation::foldExpList(flatModel.equations.clone(), (std::sync::Arc::new(collectExpConstants) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<ConstantsSetImpl::Tree>) -> Result<Arc<ConstantsSetImpl::Tree>> + 'static>), constants.clone())?;
@@ -613,7 +613,7 @@ pub fn collectExpConstants_traverser(mut exp: Arc<Expression::NFExpression>, mut
 }
 
 pub fn getPackageConstantBinding(mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<Arc<Binding::NFBinding>> {
-    let mut binding: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);
+    let mut binding: Arc<Binding::NFBinding>;
     let mut cr_node: Arc<InstNode::InstNode> = ComponentRef::node(cref.clone())?;
     Typing::typeComponentBinding(cr_node.clone(), InstContext::CLASS.clone(), true)?;
     binding = Component::getImplicitBinding(InstNode::component(cr_node.clone())?, InstNode::instanceParent(cr_node.clone())?);
@@ -625,9 +625,9 @@ pub fn getPackageConstantBinding(mut cref: Arc<ComponentRef::NFComponentRef>) ->
 }
 
 pub fn getPackageConstantBinding2(mut fieldNode: Arc<InstNode::InstNode>, mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<Arc<Binding::NFBinding>> {
-    let mut binding: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);
-    let mut cr_node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
-    let mut is_record: bool = false;
+    let mut binding: Arc<Binding::NFBinding>;
+    let mut cr_node: Arc<InstNode::InstNode>;
+    let mut is_record: bool;
     if !(ComponentRef::isCref(cref.clone())) {
         binding = Binding::EMPTY_BINDING().clone();
         return Ok(binding.clone());
@@ -651,7 +651,7 @@ pub fn getPackageConstantBinding2(mut fieldNode: Arc<InstNode::InstNode>, mut cr
 
 pub fn collectFuncConstants(mut name: Arc<Absyn::Path>, mut func: Arc<Function::Function>, mut constants: Constants) -> Result<Constants> {
     let mut constants: Constants = constants;
-    let mut cls: Arc<Class::NFClass> = Arc::new(Class::NOT_INSTANTIATED);
+    let mut cls: Arc<Class::NFClass>;
     let mut comps: metamodelica::Array<Arc<InstNode::InstNode>> = Default::default();
     let mut sections: Arc<Sections::NFSections> = Arc::new(Sections::EMPTY);
     cls = InstNode::getClass(func.node.clone())?;
@@ -688,7 +688,7 @@ pub fn collectFuncConstants(mut name: Arc<Absyn::Path>, mut func: Arc<Function::
 
 pub fn replaceVariableConstants(mut var: Arc<Variable::NFVariable>) -> Result<Arc<Variable::NFVariable>> {
     let mut var: Arc<Variable::NFVariable> = var;
-    let mut binding: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);
+    let mut binding: Arc<Binding::NFBinding>;
     binding = replaceBindingConstants(var.binding.clone())?;
     if !(referenceEq(&*(binding.clone()),&*(var.binding.clone()))) {
         assign_field!(var.binding = binding.clone());
@@ -731,7 +731,7 @@ pub fn replaceExpConstants_traverser(mut exp: Arc<Expression::NFExpression>) -> 
 
 pub fn replaceFuncConstants(mut name: Arc<Absyn::Path>, mut func: Arc<Function::Function>) -> Result<Arc<Function::Function>> {
     let mut func: Arc<Function::Function> = func;
-    let mut cls: Arc<Class::NFClass> = Arc::new(Class::NOT_INSTANTIATED);
+    let mut cls: Arc<Class::NFClass>;
     let mut comps: metamodelica::Array<Arc<InstNode::InstNode>> = Default::default();
     let mut sections: Arc<Sections::NFSections> = Arc::new(Sections::EMPTY);
     let mut comp: Arc<Component::NFComponent> = Arc::new(Component::WILD);

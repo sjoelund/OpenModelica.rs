@@ -76,7 +76,7 @@ pub mod Stages {
     pub type STAGES = Stages;
 
     pub fn convert(mut stages: Arc<Stages>) -> OldBackendDAE::EvaluationStages {
-        let mut oldEvalStages: OldBackendDAE::EvaluationStages = <OldBackendDAE::EvaluationStages as ::std::default::Default>::default();
+        let mut oldEvalStages: OldBackendDAE::EvaluationStages;
         oldEvalStages = OldBackendDAE::EvaluationStages { dynamicEval: stages.dynamicEval.clone(), algebraicEval: stages.algebraicEval.clone(), zerocrossEval: stages.zerocrossEval.clone(), discreteEval: stages.discreteEval.clone() };
         oldEvalStages
     }

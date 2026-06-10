@@ -118,7 +118,7 @@ pub mod BackendInfo {
     pub type BACKEND_INFO = BackendInfo;
 
     pub fn toString(mut backendInfo: Arc<BackendInfo>) -> Result<ArcStr> {
-        let mut r#str: ArcStr = arcstr::literal!("");
+        let mut r#str: ArcStr;
         r#str = (VariableAttributes::toString(backendInfo.attributes.clone())?).clone();
         r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*VariableKind::toString(backendInfo.varKind.clone())); __mm_s.push_str(&*if (r#str.clone() == literal!("")) {literal!("")} else {{ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*r#str.clone()); ArcStr::from(__mm_s) }}); ArcStr::from(__mm_s) }).clone();
         Ok(r#str)
@@ -212,7 +212,7 @@ pub mod BackendInfo {
     }
 
     pub fn scalarize(mut binfo: Arc<BackendInfo>, mut length: i32) -> Result<Arc<metamodelica::List<Arc<BackendInfo>>>> {
-        let mut binfo_list: Arc<metamodelica::List<Arc<BackendInfo>>> = metamodelica::nil();
+        let mut binfo_list: Arc<metamodelica::List<Arc<BackendInfo>>>;
         binfo_list = (::match_deref::match_deref! { match &(binfo.varKind.clone()) {
         Deref @ VariableKind::FRONTEND_DUMMY => {
             List::fill(binfo.clone(), length.clone())
@@ -490,7 +490,7 @@ pub mod VariableKind {
     }
     pub use self::VariableKind::{TIME,ALGEBRAIC,STATE,STATE_DER,DUMMY_DER,DUMMY_STATE,DISCRETE,DISCRETE_STATE,PREVIOUS,CLOCK,CLOCKED,PARAMETER,CONSTANT,ITERATOR,RECORD,START,EXTOBJ,JAC_VAR,JAC_TMP_VAR,SEED_VAR,OPT_CONSTR,OPT_FCONSTR,OPT_INPUT_WITH_DER,OPT_INPUT_DER,OPT_TGRID,OPT_LOOP_INPUT,ALG_STATE,ALG_STATE_OLD,RESIDUAL_VAR,DAE_AUX_VAR,LOOP_ITERATION,LOOP_SOLVED,FRONTEND_DUMMY};
     pub fn toString(mut varKind: Arc<VariableKind>) -> ArcStr {
-        let mut r#str: ArcStr = arcstr::literal!("");
+        let mut r#str: ArcStr;
         r#str = ((::match_deref::match_deref! { match &(varKind.clone()) {
         Deref @ TIME { .. } => literal!("[TIME]"),
         Deref @ ALGEBRAIC { .. } => literal!("[ALGB]"),
@@ -531,7 +531,7 @@ pub mod VariableKind {
     }
 
     pub fn isTimeDependent(mut varKind: Arc<VariableKind>) -> bool {
-        let mut b: bool = false;
+        let mut b: bool;
         b = (::match_deref::match_deref! { match &(varKind.clone()) {
         Deref @ PARAMETER { .. } => false,
         Deref @ CONSTANT { .. } => false,
@@ -544,8 +544,8 @@ pub mod VariableKind {
     }
 
     pub fn fromType(mut ty: Arc<Type::NFType>, mut makeParam: bool) -> Result<Arc<VariableKind>> {
-        let mut varKind: Arc<VariableKind> = Arc::new(VariableKind::ALGEBRAIC);
-        let mut variability: Variability = Variability::CONSTANT;
+        let mut varKind: Arc<VariableKind>;
+        let mut variability: Variability;
         if Type::isRecord(Type::arrayElementType(ty.clone())) {
             variability = if (makeParam.clone()) {Variability::PARAMETER.clone()} else {Variability::CONTINUOUS.clone()};
             varKind = Arc::new(VariableKind::RECORD { children: metamodelica::nil(), min_var: variability.clone(), max_var: variability.clone() });
@@ -728,17 +728,17 @@ pub mod VariableAttributes {
     }
 
     pub fn recordString(mut attr_tpl: (ArcStr, i32), mut childrenAttr: metamodelica::Array<Arc<VariableAttributes>>) -> Result<ArcStr> {
-        let mut r#str: ArcStr = arcstr::literal!("");
-        let mut name: ArcStr = arcstr::literal!("");
-        let mut index: i32 = 0;
+        let mut r#str: ArcStr;
+        let mut name: ArcStr;
+        let mut index: i32;
         (name, index) = attr_tpl.clone();
         r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*toString(({let __elt = childrenAttr.borrow()[(index.clone()-1) as usize].clone(); __elt}))?); ArcStr::from(__mm_s) }).clone();
         Ok(r#str)
     }
 
     pub fn create(mut attrs: Arc<metamodelica::List<(ArcStr, Arc<Binding::NFBinding>)>>, mut ty: Arc<Type::NFType>, mut compAttrs: Arc<Attributes::NFAttributes>, mut children: Arc<metamodelica::List<Arc<Variable::NFVariable>>>, mut comment: Arc<SCode::Comment>) -> Result<Arc<VariableAttributes>> {
-        let mut attributes: Arc<VariableAttributes> = Arc::new(<VariableAttributes as ::std::default::Default>::default());
-        let mut is_final: bool = false;
+        let mut attributes: Arc<VariableAttributes>;
+        let mut is_final: bool;
         let mut complexTy: Arc<ComplexType::NFComplexType> = Arc::new(ComplexType::CLASS);
         is_final = compAttrs.isFinal.clone() || compAttrs.variability.clone() == Variability::STRUCTURAL_PARAMETER.clone();
         attributes = (::match_deref::match_deref! { match &(Type::arrayElementType(ty.clone())) {
@@ -841,12 +841,12 @@ pub mod VariableAttributes {
 
     pub fn setFixed(mut attributes: Arc<VariableAttributes>, mut ty: Arc<Type::NFType>, mut b: bool, mut overwrite: bool) -> Result<Arc<VariableAttributes>> {
         let mut attributes: Arc<VariableAttributes> = attributes;
-        let mut sizes: Arc<metamodelica::List<i32>> = metamodelica::nil();
-        let mut start: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-        let mut iter_range: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+        let mut sizes: Arc<metamodelica::List<i32>>;
+        let mut start: Arc<Expression::NFExpression>;
+        let mut iter_range: Arc<Expression::NFExpression>;
         let mut binding: Arc<Expression::NFExpression> = Arc::new(Expression::NFExpression::BOOLEAN { value: b.clone() });
-        let mut step: Option<Arc<Expression::NFExpression>> = None;
-        let mut iter_name: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
+        let mut step: Option<Arc<Expression::NFExpression>>;
+        let mut iter_name: Arc<InstNode::InstNode>;
         let mut iterators: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>> = metamodelica::nil();
         if Type::isArray(ty.clone()) {
             sizes = ({
@@ -895,7 +895,7 @@ pub mod VariableAttributes {
     }
 
     pub fn isFixed(mut attributes: Arc<VariableAttributes>) -> bool {
-        let mut fixed: bool = false;
+        let mut fixed: bool;
         fixed = (::match_deref::match_deref! { match &(attributes.clone()) {
         Deref @ VAR_ATTR_REAL { fixed: Some(Deref @ Expression::BOOLEAN { value: true }), .. } => true,
         Deref @ VAR_ATTR_INT { fixed: Some(Deref @ Expression::BOOLEAN { value: true }), .. } => true,
@@ -938,7 +938,7 @@ pub mod VariableAttributes {
     }
 
     pub fn getStartAttribute(mut attributes: Arc<VariableAttributes>) -> Option<Arc<Expression::NFExpression>> {
-        let mut start: Option<Arc<Expression::NFExpression>> = None;
+        let mut start: Option<Arc<Expression::NFExpression>>;
         start = (::match_deref::match_deref! { match &(attributes.clone()) {
         Deref @ VAR_ATTR_REAL { .. } => var_field!((*attributes).start, VariableAttributes::VAR_ATTR_REAL).clone(),
         Deref @ VAR_ATTR_INT { .. } => var_field!((*attributes).start, VariableAttributes::VAR_ATTR_INT).clone(),
@@ -1046,7 +1046,7 @@ pub mod VariableAttributes {
     }
 
     pub fn getNominal(mut attr: Arc<VariableAttributes>) -> Option<Arc<Expression::NFExpression>> {
-        let mut nominal: Option<Arc<Expression::NFExpression>> = None;
+        let mut nominal: Option<Arc<Expression::NFExpression>>;
         nominal = (::match_deref::match_deref! { match &(attr.clone()) {
         Deref @ VAR_ATTR_REAL { .. } => var_field!((*attr).nominal, VariableAttributes::VAR_ATTR_REAL).clone(),
         _ => None,
@@ -1057,16 +1057,16 @@ pub mod VariableAttributes {
 
     pub fn scalarizeReal(mut quantity_iter: Arc<ExpressionIterator::NFExpressionIterator>, mut unit_iter: Arc<ExpressionIterator::NFExpressionIterator>, mut displayUnit_iter: Arc<ExpressionIterator::NFExpressionIterator>, mut min_iter: Arc<ExpressionIterator::NFExpressionIterator>, mut max_iter: Arc<ExpressionIterator::NFExpressionIterator>, mut start_iter: Arc<ExpressionIterator::NFExpressionIterator>, mut fixed_iter: Arc<ExpressionIterator::NFExpressionIterator>, mut nominal_iter: Arc<ExpressionIterator::NFExpressionIterator>, mut stateSelect: Option<StateSelect>, mut tearingSelect: Option<TearingSelect>, mut uncertainty: Option<Uncertainty>, mut distribution: Option<Arc<Distribution>>, mut binding_iter: Arc<ExpressionIterator::NFExpressionIterator>, mut isProtected: Option<bool>, mut finalPrefix: Option<bool>, mut startOrigin_iter: Arc<ExpressionIterator::NFExpressionIterator>, mut length: i32) -> Result<Arc<metamodelica::List<Arc<VariableAttributes>>>> {
         let mut scalar_attributes: Arc<metamodelica::List<Arc<VariableAttributes>>> = metamodelica::nil();
-        let mut quantity: Option<Arc<Expression::NFExpression>> = None;
-        let mut unit: Option<Arc<Expression::NFExpression>> = None;
-        let mut displayUnit: Option<Arc<Expression::NFExpression>> = None;
-        let mut min: Option<Arc<Expression::NFExpression>> = None;
-        let mut max: Option<Arc<Expression::NFExpression>> = None;
-        let mut start: Option<Arc<Expression::NFExpression>> = None;
-        let mut fixed: Option<Arc<Expression::NFExpression>> = None;
-        let mut nominal: Option<Arc<Expression::NFExpression>> = None;
-        let mut binding: Option<Arc<Expression::NFExpression>> = None;
-        let mut startOrigin: Option<Arc<Expression::NFExpression>> = None;
+        let mut quantity: Option<Arc<Expression::NFExpression>>;
+        let mut unit: Option<Arc<Expression::NFExpression>>;
+        let mut displayUnit: Option<Arc<Expression::NFExpression>>;
+        let mut min: Option<Arc<Expression::NFExpression>>;
+        let mut max: Option<Arc<Expression::NFExpression>>;
+        let mut start: Option<Arc<Expression::NFExpression>>;
+        let mut fixed: Option<Arc<Expression::NFExpression>>;
+        let mut nominal: Option<Arc<Expression::NFExpression>>;
+        let mut binding: Option<Arc<Expression::NFExpression>>;
+        let mut startOrigin: Option<Arc<Expression::NFExpression>>;
         let mut quantity_loc: Arc<ExpressionIterator::NFExpressionIterator> = quantity_iter.clone();
         let mut unit_loc: Arc<ExpressionIterator::NFExpressionIterator> = unit_iter.clone();
         let mut displayUnit_loc: Arc<ExpressionIterator::NFExpressionIterator> = displayUnit_iter.clone();
@@ -1096,13 +1096,13 @@ pub mod VariableAttributes {
 
     pub fn scalarizeInt(mut quantity_iter: Arc<ExpressionIterator::NFExpressionIterator>, mut min_iter: Arc<ExpressionIterator::NFExpressionIterator>, mut max_iter: Arc<ExpressionIterator::NFExpressionIterator>, mut start_iter: Arc<ExpressionIterator::NFExpressionIterator>, mut fixed_iter: Arc<ExpressionIterator::NFExpressionIterator>, mut uncertainty: Option<Uncertainty>, mut distribution: Option<Arc<Distribution>>, mut binding_iter: Arc<ExpressionIterator::NFExpressionIterator>, mut isProtected: Option<bool>, mut finalPrefix: Option<bool>, mut startOrigin_iter: Arc<ExpressionIterator::NFExpressionIterator>, mut length: i32) -> Result<Arc<metamodelica::List<Arc<VariableAttributes>>>> {
         let mut scalar_attributes: Arc<metamodelica::List<Arc<VariableAttributes>>> = metamodelica::nil();
-        let mut quantity: Option<Arc<Expression::NFExpression>> = None;
-        let mut min: Option<Arc<Expression::NFExpression>> = None;
-        let mut max: Option<Arc<Expression::NFExpression>> = None;
-        let mut start: Option<Arc<Expression::NFExpression>> = None;
-        let mut fixed: Option<Arc<Expression::NFExpression>> = None;
-        let mut binding: Option<Arc<Expression::NFExpression>> = None;
-        let mut startOrigin: Option<Arc<Expression::NFExpression>> = None;
+        let mut quantity: Option<Arc<Expression::NFExpression>>;
+        let mut min: Option<Arc<Expression::NFExpression>>;
+        let mut max: Option<Arc<Expression::NFExpression>>;
+        let mut start: Option<Arc<Expression::NFExpression>>;
+        let mut fixed: Option<Arc<Expression::NFExpression>>;
+        let mut binding: Option<Arc<Expression::NFExpression>>;
+        let mut startOrigin: Option<Arc<Expression::NFExpression>>;
         let mut quantity_loc: Arc<ExpressionIterator::NFExpressionIterator> = quantity_iter.clone();
         let mut min_loc: Arc<ExpressionIterator::NFExpressionIterator> = min_iter.clone();
         let mut max_loc: Arc<ExpressionIterator::NFExpressionIterator> = max_iter.clone();
@@ -1126,11 +1126,11 @@ pub mod VariableAttributes {
 
     pub fn scalarizeBool(mut quantity_iter: Arc<ExpressionIterator::NFExpressionIterator>, mut start_iter: Arc<ExpressionIterator::NFExpressionIterator>, mut fixed_iter: Arc<ExpressionIterator::NFExpressionIterator>, mut binding_iter: Arc<ExpressionIterator::NFExpressionIterator>, mut isProtected: Option<bool>, mut finalPrefix: Option<bool>, mut startOrigin_iter: Arc<ExpressionIterator::NFExpressionIterator>, mut length: i32) -> Result<Arc<metamodelica::List<Arc<VariableAttributes>>>> {
         let mut scalar_attributes: Arc<metamodelica::List<Arc<VariableAttributes>>> = metamodelica::nil();
-        let mut quantity: Option<Arc<Expression::NFExpression>> = None;
-        let mut start: Option<Arc<Expression::NFExpression>> = None;
-        let mut fixed: Option<Arc<Expression::NFExpression>> = None;
-        let mut binding: Option<Arc<Expression::NFExpression>> = None;
-        let mut startOrigin: Option<Arc<Expression::NFExpression>> = None;
+        let mut quantity: Option<Arc<Expression::NFExpression>>;
+        let mut start: Option<Arc<Expression::NFExpression>>;
+        let mut fixed: Option<Arc<Expression::NFExpression>>;
+        let mut binding: Option<Arc<Expression::NFExpression>>;
+        let mut startOrigin: Option<Arc<Expression::NFExpression>>;
         let mut quantity_loc: Arc<ExpressionIterator::NFExpressionIterator> = quantity_iter.clone();
         let mut start_loc: Arc<ExpressionIterator::NFExpressionIterator> = start_iter.clone();
         let mut fixed_loc: Arc<ExpressionIterator::NFExpressionIterator> = fixed_iter.clone();
@@ -1155,11 +1155,11 @@ pub mod VariableAttributes {
 
     pub fn scalarizeString(mut quantity_iter: Arc<ExpressionIterator::NFExpressionIterator>, mut start_iter: Arc<ExpressionIterator::NFExpressionIterator>, mut fixed_iter: Arc<ExpressionIterator::NFExpressionIterator>, mut binding_iter: Arc<ExpressionIterator::NFExpressionIterator>, mut isProtected: Option<bool>, mut finalPrefix: Option<bool>, mut startOrigin_iter: Arc<ExpressionIterator::NFExpressionIterator>, mut length: i32) -> Result<Arc<metamodelica::List<Arc<VariableAttributes>>>> {
         let mut scalar_attributes: Arc<metamodelica::List<Arc<VariableAttributes>>> = metamodelica::nil();
-        let mut quantity: Option<Arc<Expression::NFExpression>> = None;
-        let mut start: Option<Arc<Expression::NFExpression>> = None;
-        let mut fixed: Option<Arc<Expression::NFExpression>> = None;
-        let mut binding: Option<Arc<Expression::NFExpression>> = None;
-        let mut startOrigin: Option<Arc<Expression::NFExpression>> = None;
+        let mut quantity: Option<Arc<Expression::NFExpression>>;
+        let mut start: Option<Arc<Expression::NFExpression>>;
+        let mut fixed: Option<Arc<Expression::NFExpression>>;
+        let mut binding: Option<Arc<Expression::NFExpression>>;
+        let mut startOrigin: Option<Arc<Expression::NFExpression>>;
         let mut quantity_loc: Arc<ExpressionIterator::NFExpressionIterator> = quantity_iter.clone();
         let mut start_loc: Arc<ExpressionIterator::NFExpressionIterator> = start_iter.clone();
         let mut fixed_loc: Arc<ExpressionIterator::NFExpressionIterator> = fixed_iter.clone();
@@ -1179,13 +1179,13 @@ pub mod VariableAttributes {
 
     pub fn scalarizeEnumeration(mut quantity_iter: Arc<ExpressionIterator::NFExpressionIterator>, mut min_iter: Arc<ExpressionIterator::NFExpressionIterator>, mut max_iter: Arc<ExpressionIterator::NFExpressionIterator>, mut start_iter: Arc<ExpressionIterator::NFExpressionIterator>, mut fixed_iter: Arc<ExpressionIterator::NFExpressionIterator>, mut binding_iter: Arc<ExpressionIterator::NFExpressionIterator>, mut isProtected: Option<bool>, mut finalPrefix: Option<bool>, mut startOrigin_iter: Arc<ExpressionIterator::NFExpressionIterator>, mut length: i32) -> Result<Arc<metamodelica::List<Arc<VariableAttributes>>>> {
         let mut scalar_attributes: Arc<metamodelica::List<Arc<VariableAttributes>>> = metamodelica::nil();
-        let mut quantity: Option<Arc<Expression::NFExpression>> = None;
-        let mut min: Option<Arc<Expression::NFExpression>> = None;
-        let mut max: Option<Arc<Expression::NFExpression>> = None;
-        let mut start: Option<Arc<Expression::NFExpression>> = None;
-        let mut fixed: Option<Arc<Expression::NFExpression>> = None;
-        let mut binding: Option<Arc<Expression::NFExpression>> = None;
-        let mut startOrigin: Option<Arc<Expression::NFExpression>> = None;
+        let mut quantity: Option<Arc<Expression::NFExpression>>;
+        let mut min: Option<Arc<Expression::NFExpression>>;
+        let mut max: Option<Arc<Expression::NFExpression>>;
+        let mut start: Option<Arc<Expression::NFExpression>>;
+        let mut fixed: Option<Arc<Expression::NFExpression>>;
+        let mut binding: Option<Arc<Expression::NFExpression>>;
+        let mut startOrigin: Option<Arc<Expression::NFExpression>>;
         let mut quantity_loc: Arc<ExpressionIterator::NFExpressionIterator> = quantity_iter.clone();
         let mut min_loc: Arc<ExpressionIterator::NFExpressionIterator> = min_iter.clone();
         let mut max_loc: Arc<ExpressionIterator::NFExpressionIterator> = max_iter.clone();
@@ -1227,7 +1227,7 @@ pub mod VariableAttributes {
     }
 
     pub fn elemType(mut attr: Arc<VariableAttributes>) -> Result<Arc<Type::NFType>> {
-        let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
+        let mut ty: Arc<Type::NFType>;
         ty = (::match_deref::match_deref! { match &(attr.clone()) {
         Deref @ VAR_ATTR_REAL { .. } => crate::NFType::interned_REAL(),
         Deref @ VAR_ATTR_INT { .. } => crate::NFType::interned_INTEGER(),
@@ -1246,7 +1246,7 @@ pub mod VariableAttributes {
     pub fn attributesToString(mut tpl_list: Arc<metamodelica::List<(ArcStr, Option<Arc<Expression::NFExpression>>)>>, mut stateSelect: Option<StateSelect>, mut tearingSelect: Option<TearingSelect>) -> Result<ArcStr> {
         let mut r#str: ArcStr = literal!("");
         let mut buffer: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-        let mut name: ArcStr = arcstr::literal!("");
+        let mut name: ArcStr;
         for mut tpl in &*tpl_list.clone() {
             let mut tpl = tpl.clone();
             buffer = attributeToString(tpl.clone(), buffer.clone())?;
@@ -1272,9 +1272,9 @@ pub mod VariableAttributes {
 
     pub fn attributeToString(mut tpl: (ArcStr, Option<Arc<Expression::NFExpression>>), mut buffer: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<ArcStr>>> {
         let mut buffer: Arc<metamodelica::List<ArcStr>> = buffer;
-        let mut name: ArcStr = arcstr::literal!("");
-        let mut optAttr: Option<Arc<Expression::NFExpression>> = None;
-        let mut attr: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+        let mut name: ArcStr;
+        let mut optAttr: Option<Arc<Expression::NFExpression>>;
+        let mut attr: Arc<Expression::NFExpression>;
         (name, optAttr) = tpl.clone();
         if isSome(optAttr.clone()) {
             let __pa0 = ::match_deref::match_deref! { match &(optAttr.clone()) {
@@ -1288,7 +1288,7 @@ pub mod VariableAttributes {
     }
 
     pub fn stateSelectString(mut stateSelect: StateSelect) -> Result<ArcStr> {
-        let mut r#str: ArcStr = arcstr::literal!("");
+        let mut r#str: ArcStr;
         r#str = ((match stateSelect.clone() {
         StateSelect::NEVER => literal!("StateSelect = never"),
         StateSelect::AVOID => literal!("StateSelect = avoid"),
@@ -1300,7 +1300,7 @@ pub mod VariableAttributes {
     }
 
     pub fn tearingSelectString(mut tearingSelect: TearingSelect) -> Result<ArcStr> {
-        let mut r#str: ArcStr = arcstr::literal!("");
+        let mut r#str: ArcStr;
         r#str = ((match tearingSelect.clone() {
         TearingSelect::NEVER => literal!("TearingSelect = never"),
         TearingSelect::AVOID => literal!("TearingSelect = avoid"),
@@ -1313,7 +1313,7 @@ pub mod VariableAttributes {
 
     pub fn stateSelectStringBuffer(mut optStateSelect: Option<StateSelect>, mut buffer: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<ArcStr>>> {
         let mut buffer: Arc<metamodelica::List<ArcStr>> = buffer;
-        let mut stateSelect: StateSelect = StateSelect::NEVER;
+        let mut stateSelect: StateSelect;
         if isSome(optStateSelect.clone()) {
             let __pa0 = ::match_deref::match_deref! { match &(optStateSelect.clone()) {
                 Some(__pa0) => __pa0.clone(),
@@ -1327,7 +1327,7 @@ pub mod VariableAttributes {
 
     pub fn tearingSelectStringBuffer(mut optTearingSelect: Option<TearingSelect>, mut buffer: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<ArcStr>>> {
         let mut buffer: Arc<metamodelica::List<ArcStr>> = buffer;
-        let mut tearingSelect: TearingSelect = TearingSelect::NEVER;
+        let mut tearingSelect: TearingSelect;
         if isSome(optTearingSelect.clone()) {
             let __pa0 = ::match_deref::match_deref! { match &(optTearingSelect.clone()) {
                 Some(__pa0) => __pa0.clone(),
@@ -1340,9 +1340,9 @@ pub mod VariableAttributes {
     }
 
     fn createReal(mut attrs: Arc<metamodelica::List<(ArcStr, Arc<Binding::NFBinding>)>>, mut isFinal: bool, mut comment: Arc<SCode::Comment>) -> Result<Arc<VariableAttributes>> {
-        let mut attributes: Arc<VariableAttributes> = Arc::new(<VariableAttributes as ::std::default::Default>::default());
-        let mut name: ArcStr = arcstr::literal!("");
-        let mut b: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);
+        let mut attributes: Arc<VariableAttributes>;
+        let mut name: ArcStr;
+        let mut b: Arc<Binding::NFBinding>;
         let mut quantity: Option<Arc<Expression::NFExpression>> = None;
         let mut unit: Option<Arc<Expression::NFExpression>> = None;
         let mut displayUnit: Option<Arc<Expression::NFExpression>> = None;
@@ -1407,9 +1407,9 @@ pub mod VariableAttributes {
     }
 
     fn createInt(mut attrs: Arc<metamodelica::List<(ArcStr, Arc<Binding::NFBinding>)>>, mut isFinal: bool) -> Result<Arc<VariableAttributes>> {
-        let mut attributes: Arc<VariableAttributes> = Arc::new(<VariableAttributes as ::std::default::Default>::default());
-        let mut name: ArcStr = arcstr::literal!("");
-        let mut b: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);
+        let mut attributes: Arc<VariableAttributes>;
+        let mut name: ArcStr;
+        let mut b: Arc<Binding::NFBinding>;
         let mut quantity: Option<Arc<Expression::NFExpression>> = None;
         let mut min: Option<Arc<Expression::NFExpression>> = None;
         let mut max: Option<Arc<Expression::NFExpression>> = None;
@@ -1455,9 +1455,9 @@ pub mod VariableAttributes {
     }
 
     fn createBool(mut attrs: Arc<metamodelica::List<(ArcStr, Arc<Binding::NFBinding>)>>, mut isFinal: bool) -> Result<Arc<VariableAttributes>> {
-        let mut attributes: Arc<VariableAttributes> = Arc::new(<VariableAttributes as ::std::default::Default>::default());
-        let mut name: ArcStr = arcstr::literal!("");
-        let mut b: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);
+        let mut attributes: Arc<VariableAttributes>;
+        let mut name: ArcStr;
+        let mut b: Arc<Binding::NFBinding>;
         let mut quantity: Option<Arc<Expression::NFExpression>> = None;
         let mut start: Option<Arc<Expression::NFExpression>> = None;
         let mut fixed: Option<Arc<Expression::NFExpression>> = None;
@@ -1493,9 +1493,9 @@ pub mod VariableAttributes {
     }
 
     fn createString(mut attrs: Arc<metamodelica::List<(ArcStr, Arc<Binding::NFBinding>)>>, mut isFinal: bool) -> Result<Arc<VariableAttributes>> {
-        let mut attributes: Arc<VariableAttributes> = Arc::new(<VariableAttributes as ::std::default::Default>::default());
-        let mut name: ArcStr = arcstr::literal!("");
-        let mut b: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);
+        let mut attributes: Arc<VariableAttributes>;
+        let mut name: ArcStr;
+        let mut b: Arc<Binding::NFBinding>;
         let mut quantity: Option<Arc<Expression::NFExpression>> = None;
         let mut start: Option<Arc<Expression::NFExpression>> = None;
         let mut fixed: Option<Arc<Expression::NFExpression>> = None;
@@ -1531,9 +1531,9 @@ pub mod VariableAttributes {
     }
 
     fn createEnum(mut attrs: Arc<metamodelica::List<(ArcStr, Arc<Binding::NFBinding>)>>, mut isFinal: bool) -> Result<Arc<VariableAttributes>> {
-        let mut attributes: Arc<VariableAttributes> = Arc::new(<VariableAttributes as ::std::default::Default>::default());
-        let mut name: ArcStr = arcstr::literal!("");
-        let mut b: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);
+        let mut attributes: Arc<VariableAttributes>;
+        let mut name: ArcStr;
+        let mut b: Arc<Binding::NFBinding>;
         let mut quantity: Option<Arc<Expression::NFExpression>> = None;
         let mut min: Option<Arc<Expression::NFExpression>> = None;
         let mut max: Option<Arc<Expression::NFExpression>> = None;
@@ -1584,7 +1584,7 @@ pub mod VariableAttributes {
     }
 
     fn createRecord(mut attrs: Arc<metamodelica::List<(ArcStr, Arc<Binding::NFBinding>)>>, mut indexMap: Arc<UnorderedMap::UnorderedMap<ArcStr, i32>>, mut children: Arc<metamodelica::List<Arc<Variable::NFVariable>>>, mut isFinal: bool) -> Result<Arc<VariableAttributes>> {
-        let mut attributes: Arc<VariableAttributes> = Arc::new(<VariableAttributes as ::std::default::Default>::default());
+        let mut attributes: Arc<VariableAttributes>;
         let mut childrenAttr: metamodelica::Array<Arc<VariableAttributes>> = arrayCreate((children.clone().len() as i32), EMPTY_VAR_ATTR_REAL().clone());
         let mut index: i32 = 0;
         for mut var in &*children.clone() {
@@ -1612,9 +1612,9 @@ pub mod VariableAttributes {
     }
 
     fn createStateSelect(mut binding: Arc<Binding::NFBinding>) -> Result<Option<StateSelect>> {
-        let mut stateSelect: Option<StateSelect> = None;
+        let mut stateSelect: Option<StateSelect>;
         let mut exp: Arc<Expression::NFExpression> = Binding::getTypedExp(binding.clone())?;
-        let mut name: ArcStr = arcstr::literal!("");
+        let mut name: ArcStr;
         name = (getStateSelectName(exp.clone())?).clone();
         stateSelect = Some(lookupStateSelectMember((name.clone()).clone())?);
         Ok(stateSelect)
@@ -1663,7 +1663,7 @@ pub mod VariableAttributes {
     }
 
     fn lookupStateSelectMember(mut name: ArcStr) -> Result<StateSelect> {
-        let mut stateSelect: StateSelect = StateSelect::NEVER;
+        let mut stateSelect: StateSelect;
         stateSelect = (::match_deref::match_deref! { match &(name.clone()) {
         Deref @ "never" => StateSelect::NEVER.clone(),
         Deref @ "avoid" => StateSelect::AVOID.clone(),
@@ -1681,13 +1681,13 @@ pub mod VariableAttributes {
 
     fn createTearingSelect(mut cmt: Arc<SCode::Comment>) -> Result<Option<TearingSelect>> {
         let mut tearingSelect: Option<TearingSelect> = None;
-        let mut opt_anno: Option<Arc<SCode::Annotation>> = None;
-        let mut anno: Arc<SCode::Annotation> = Arc::new(<SCode::Annotation as ::std::default::Default>::default());
-        let mut r#mod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
-        let mut opt_val: Option<Arc<Absyn::Exp>> = None;
-        let mut val: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
-        let mut name: ArcStr = arcstr::literal!("");
-        let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
+        let mut opt_anno: Option<Arc<SCode::Annotation>>;
+        let mut anno: Arc<SCode::Annotation>;
+        let mut r#mod: Arc<SCode::Mod>;
+        let mut opt_val: Option<Arc<Absyn::Exp>>;
+        let mut val: Arc<Absyn::Exp>;
+        let mut name: ArcStr;
+        let mut info: SourceInfo;
         opt_anno = SCodeUtil::commentAnnotation(cmt.clone());
         if isNone(opt_anno.clone()) {
             return Ok(tearingSelect.clone());
@@ -1741,7 +1741,7 @@ pub mod VariableAttributes {
     }
 
     fn lookupTearingSelectMember(mut name: ArcStr) -> Option<TearingSelect> {
-        let mut tearingSelect: Option<TearingSelect> = None;
+        let mut tearingSelect: Option<TearingSelect>;
         tearingSelect = (::match_deref::match_deref! { match &(name.clone()) {
         Deref @ "never" => Some(TearingSelect::NEVER.clone()),
         Deref @ "avoid" => Some(TearingSelect::AVOID.clone()),

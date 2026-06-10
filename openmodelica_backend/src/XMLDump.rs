@@ -529,7 +529,7 @@ pub const MathMLLn: &'static str = "ln";
 pub const MathMLLog: &'static str = "log";
 
 fn binopSymbol(mut inOperator: DAE::Operator) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((match inOperator.clone() {
         mut op => {
             let mut s: ArcStr = arcstr::literal!("");
@@ -541,7 +541,7 @@ fn binopSymbol(mut inOperator: DAE::Operator) -> Result<ArcStr> {
 }
 
 fn binopSymbol2(mut inOperator: DAE::Operator) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((match inOperator.clone() {
         DAE::Operator::ADD { .. } => {
             arcstr::literal!(MathMLPlus)
@@ -715,12 +715,12 @@ fn dumpComponents(mut dae: Arc<BackendDAE::BackendDAE>) -> Result<()> {
 }
 
 fn dumpComponentsWork(mut syst: Arc<BackendDAE::EqSystem>, mut shared: Arc<BackendDAE::Shared>, mut inOffset: (i32, i32)) -> Result<(i32, i32)> {
-    let mut outOffset: (i32, i32) = (0, 0);
-    let mut v1: metamodelica::Array<i32> = Default::default();
-    let mut v2: metamodelica::Array<i32> = Default::default();
-    let mut comps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>> = metamodelica::nil();
-    let mut voffset: i32 = 0;
-    let mut eoffset: i32 = 0;
+    let mut outOffset: (i32, i32);
+    let mut v1: metamodelica::Array<i32>;
+    let mut v2: metamodelica::Array<i32>;
+    let mut comps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>;
+    let mut voffset: i32;
+    let mut eoffset: i32;
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(syst.clone()) {
         Deref @ BackendDAE::EqSystem { matching: Deref @ BackendDAE::Matching::MATCHING { ass1: __pa0, ass2: __pa1, comps: __pa2 }, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
@@ -883,7 +883,7 @@ fn dumpDAEInstDims2(mut arry_Dim: Arc<metamodelica::List<Arc<DAE::Dimension>>>) 
 
 pub fn dumpDAEXML(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut outDAE: Arc<BackendDAE::BackendDAE> = inDAE.clone();
-    let mut fileNamePrefix: ArcStr = arcstr::literal!("");
+    let mut fileNamePrefix: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(inDAE.clone()) {
         Deref @ BackendDAE::BackendDAE { shared: Deref @ BackendDAE::Shared { info: BackendDAE::ExtraInfo { fileNamePrefix: __pa0, .. }, .. }, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
@@ -1013,26 +1013,26 @@ fn dumpEventInfo(mut inEventInfo: BackendDAE::EventInfo, mut addMML: bool) -> Re
 }
 
 fn getOrderedVars(mut syst: Arc<BackendDAE::EqSystem>, mut inVars: Arc<metamodelica::List<BackendDAE::Var>>) -> Result<Arc<metamodelica::List<BackendDAE::Var>>> {
-    let mut outVars: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
-    let mut vars: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
+    let mut outVars: Arc<metamodelica::List<BackendDAE::Var>>;
+    let mut vars: Arc<metamodelica::List<BackendDAE::Var>>;
     vars = BackendVariable::varList(BackendVariable::daeVars(syst.clone()))?;
     outVars = listAppend(inVars.clone(), vars.clone());
     Ok(outVars)
 }
 
 fn getEqsList(mut syst: Arc<BackendDAE::EqSystem>, mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) -> Result<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>> {
-    let mut outEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
-    let mut eqnsl: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
+    let mut outEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
+    let mut eqnsl: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
     eqnsl = BackendEquation::equationList(BackendEquation::getEqnsFromEqSystem(syst.clone()))?;
     outEqns = listAppend(inEqns.clone(), eqnsl.clone());
     Ok(outEqns)
 }
 
 fn getOrderedEqsandVars(mut syst: Arc<BackendDAE::EqSystem>, mut inEqnsVars: Arc<metamodelica::List<(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>)>>) -> Result<Arc<metamodelica::List<(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>)>>> {
-    let mut outEqnsVars: Arc<metamodelica::List<(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>)>> = metamodelica::nil();
-    let mut comps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>> = metamodelica::nil();
-    let mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
-    let mut vars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
+    let mut outEqnsVars: Arc<metamodelica::List<(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>)>>;
+    let mut comps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>;
+    let mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>;
+    let mut vars: BackendDAE::Variables;
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(syst.clone()) {
         Deref @ BackendDAE::EqSystem { orderedEqs: __pa0, orderedVars: __pa1, matching: Deref @ BackendDAE::Matching::MATCHING { comps: __pa2, .. }, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
@@ -1283,7 +1283,7 @@ fn dumpDAEVariableAttributes(mut dae_var_attr: Option<Arc<DAE::VariableAttribute
 }
 
 fn dumpDirectionStr(mut inVarDirection: DAE::VarDirection) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((match inVarDirection.clone() {
         DAE::VarDirection::INPUT { .. } => {
             arcstr::literal!(VARDIR_INPUT)
@@ -2187,7 +2187,7 @@ fn dumpExtObjCls2(mut cls: Arc<metamodelica::List<BackendDAE::ExternalObjectClas
 }
 
 fn dumpFlowStr(mut inVarFlow: Arc<DAE::ConnectorType>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(inVarFlow.clone()) {
         Deref @ DAE::ConnectorType::FLOW { .. } => arcstr::literal!(VAR_FLOW_FLOW),
         Deref @ DAE::ConnectorType::POTENTIAL { .. } => arcstr::literal!(VAR_FLOW_NONFLOW),
@@ -2289,9 +2289,9 @@ fn dumpAdjacencyMatrix(mut dae: Arc<BackendDAE::BackendDAE>) -> Result<()> {
 }
 
 fn dumpAdjacencyMatrixWork(mut syst: Arc<BackendDAE::EqSystem>, mut shared: Arc<BackendDAE::Shared>, mut inOffset: i32) -> Result<i32> {
-    let mut outOffset: i32 = 0;
-    let mut m: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
-    let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
+    let mut outOffset: i32;
+    let mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut funcs: Arc<AvlTreePathFunction::Tree>;
     funcs = BackendDAEUtil::getFunctions(shared.clone())?;
     (_, m, _) = BackendDAEUtil::getAdjacencyMatrixfromOption(syst.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, Some(funcs.clone()), BackendDAEUtil::isInitializationDAE(shared.clone()))?;
     Array::fold(m.clone(), (std::sync::Arc::new(dumpAdjacencyMatrix2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, (i32, i32)) -> Result<(i32, i32)> + 'static>), (inOffset.clone(), 1))?;
@@ -2300,9 +2300,9 @@ fn dumpAdjacencyMatrixWork(mut syst: Arc<BackendDAE::EqSystem>, mut shared: Arc<
 }
 
 fn dumpAdjacencyMatrix2(mut row: Arc<metamodelica::List<i32>>, mut inTpl: (i32, i32)) -> Result<(i32, i32)> {
-    let mut outTpl: (i32, i32) = (0, 0);
-    let mut offset: i32 = 0;
-    let mut c: i32 = 0;
+    let mut outTpl: (i32, i32);
+    let mut offset: i32;
+    let mut c: i32;
     (offset, c) = inTpl.clone();
     dumpStrOpenTagAttr((arcstr::literal!(MathMLMatrixrow)).clone(), (literal!("id")).clone(), (intString(c.clone())).clone())?;
     List::map1_0(row.clone(), (std::sync::Arc::new(dumpMatrixIntegerRow) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<()> + 'static>), offset.clone())?;
@@ -2312,8 +2312,8 @@ fn dumpAdjacencyMatrix2(mut row: Arc<metamodelica::List<i32>>, mut inTpl: (i32, 
 }
 
 fn dumpMatrixIntegerRow(mut x: i32, mut offset: i32) -> Result<()> {
-    let mut e: i32 = 0;
-    let mut s: ArcStr = arcstr::literal!("");
+    let mut e: i32;
+    let mut s: ArcStr;
     e = if (intGt(x.clone(), 0)) {x.clone() + offset.clone()} else {x.clone() - offset.clone()};
     s = (intString(e.clone())).clone();
     dumpStrOpenTag((arcstr::literal!(MathMLVariable)).clone())?;
@@ -2323,7 +2323,7 @@ fn dumpMatrixIntegerRow(mut x: i32, mut offset: i32) -> Result<()> {
 }
 
 fn dumpKind(mut inVarKind: BackendDAE::VarKind) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((match inVarKind.clone() {
         BackendDAE::VarKind::VARIABLE { .. } => {
             arcstr::literal!(VARIABILITY_CONTINUOUS)
@@ -2435,7 +2435,7 @@ fn dumpListSeparator<Type_a: Clone + 'static>(mut inTypeALst: Arc<metamodelica::
 }
 
 fn printExpStr(mut e: Arc<DAE::Exp>) -> Result<ArcStr> {
-    let mut s: ArcStr = arcstr::literal!("");
+    let mut s: ArcStr;
     s = (Util::xmlEscape((ExpressionBasics::printExpStr(e.clone())?).clone())?).clone();
     Ok(s)
 }
@@ -2518,11 +2518,11 @@ fn dumpMatching(mut dae: Arc<BackendDAE::BackendDAE>) -> Result<()> {
 }
 
 fn dumpMatchingWork(mut syst: Arc<BackendDAE::EqSystem>, mut shared: Arc<BackendDAE::Shared>, mut inOffset: (i32, i32)) -> Result<(i32, i32)> {
-    let mut outOffset: (i32, i32) = (0, 0);
-    let mut v1: metamodelica::Array<i32> = Default::default();
-    let mut v2: metamodelica::Array<i32> = Default::default();
-    let mut voffset: i32 = 0;
-    let mut eoffset: i32 = 0;
+    let mut outOffset: (i32, i32);
+    let mut v1: metamodelica::Array<i32>;
+    let mut v2: metamodelica::Array<i32>;
+    let mut voffset: i32;
+    let mut eoffset: i32;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(syst.clone()) {
         Deref @ BackendDAE::EqSystem { matching: Deref @ BackendDAE::Matching::MATCHING { ass1: __pa0, ass2: __pa1, comps: _ }, .. } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
@@ -2555,12 +2555,12 @@ fn dumpMatching1(mut v: metamodelica::Array<i32>, mut voffset: i32, mut eoffset:
 }
 
 fn dumpMatching2(mut eqn: i32, mut inTpl: (i32, i32, i32)) -> Result<(i32, i32, i32)> {
-    let mut outTpl: (i32, i32, i32) = (0, 0, 0);
-    let mut v: i32 = 0;
-    let mut voffset: i32 = 0;
-    let mut eoffset: i32 = 0;
-    let mut s: ArcStr = arcstr::literal!("");
-    let mut s2: ArcStr = arcstr::literal!("");
+    let mut outTpl: (i32, i32, i32);
+    let mut v: i32;
+    let mut voffset: i32;
+    let mut eoffset: i32;
+    let mut s: ArcStr;
+    let mut s2: ArcStr;
     (v, voffset, eoffset) = inTpl.clone();
     s = (intString(v.clone() + voffset.clone())).clone();
     s2 = (intString(eqn.clone() + eoffset.clone())).clone();
@@ -2679,7 +2679,7 @@ fn dumpSolvingInfo(mut addOriginalAdjacencyMatrix: bool, mut addSolvingInfo: boo
 }
 
 fn transformModelicaIdentifierToXMLElementTag(mut modelicaIdentifier: ArcStr) -> Result<ArcStr> {
-    let mut xmlElementTag: ArcStr = arcstr::literal!("");
+    let mut xmlElementTag: ArcStr;
     xmlElementTag = (System::stringReplace((modelicaIdentifier.clone()).clone(), (literal!("$")).clone(), (literal!("_dollar_")).clone())?).clone();
     Ok(xmlElementTag)
 }
@@ -2712,7 +2712,7 @@ fn dumpStrCloseTag(mut inContent: ArcStr) -> Result<()> {
 }
 
 fn dumpStreamStr(mut inVarStream: Arc<DAE::ConnectorType>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(inVarStream.clone()) {
         Deref @ DAE::ConnectorType::STREAM { .. } => arcstr::literal!(VAR_STREAM_STREAM),
         Deref @ DAE::ConnectorType::POTENTIAL { .. } => arcstr::literal!(VAR_STREAM_NONSTREAM),
@@ -2995,7 +2995,7 @@ fn dumpDimension(mut inDimension: Arc<DAE::Dimension>) -> Result<()> {
 }
 
 fn dumpTypeStr(mut inType: Arc<DAE::Type>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(inType.clone()) {
         Deref @ DAE::Type::T_INTEGER { .. } => {
             arcstr::literal!(VARTYPE_INTEGER)
@@ -3234,7 +3234,7 @@ fn dumpVars(mut vars: Arc<metamodelica::List<BackendDAE::Var>>, mut crefIdxLstAr
 }
 
 fn getIndex(mut kind: BackendDAE::VarKind) -> ArcStr {
-    let mut diffIndex: ArcStr = arcstr::literal!("");
+    let mut diffIndex: ArcStr;
     diffIndex = ((match kind.clone() {
         BackendDAE::VarKind::STATE { index: mut di, .. } => {
             intString(di.clone())
@@ -3247,7 +3247,7 @@ fn getIndex(mut kind: BackendDAE::VarKind) -> ArcStr {
 }
 
 fn getDerName(mut kind: BackendDAE::VarKind) -> Result<ArcStr> {
-    let mut derName: ArcStr = arcstr::literal!("");
+    let mut derName: ArcStr;
     derName = ((::match_deref::match_deref! { match &(kind.clone()) {
         BackendDAE::VarKind::STATE { derName: Some(cr), .. } => {
             let mut dn: ArcStr = arcstr::literal!("");
@@ -3535,7 +3535,7 @@ fn dumpZcLst(mut inZeroCrossingLst: Arc<metamodelica::List<BackendDAE::ZeroCross
 }
 
 fn lbinopSymbol(mut inOperator: DAE::Operator) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((match inOperator.clone() {
         DAE::Operator::AND { .. } => {
             arcstr::literal!(MathMLAnd)
@@ -3555,7 +3555,7 @@ fn lbinopSymbol(mut inOperator: DAE::Operator) -> Result<ArcStr> {
 }
 
 fn lunaryopSymbol(mut inOperator: DAE::Operator) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((match inOperator.clone() {
         DAE::Operator::NOT { .. } => {
             arcstr::literal!(MathMLNot)
@@ -3572,7 +3572,7 @@ fn lunaryopSymbol(mut inOperator: DAE::Operator) -> Result<ArcStr> {
 }
 
 fn relopSymbol(mut inOperator: DAE::Operator) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((match inOperator.clone() {
         DAE::Operator::LESS { .. } => {
             arcstr::literal!(MathMLLessThan)
@@ -3839,7 +3839,7 @@ fn dumpResidual(mut inEquation: Arc<BackendDAE::Equation>, mut inIndexNumber: Ar
 }
 
 fn unaryopSymbol(mut inOperator: DAE::Operator) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((match inOperator.clone() {
         DAE::Operator::UMINUS { .. } => arcstr::literal!(MathMLMinus),
         DAE::Operator::UMINUS_ARR { .. } => arcstr::literal!(MathMLMinus),
@@ -3849,7 +3849,7 @@ fn unaryopSymbol(mut inOperator: DAE::Operator) -> Result<ArcStr> {
 }
 
 fn unparseCommentOptionNoAnnotation(mut inAbsynCommentOption: Option<Arc<SCode::Comment>>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ('mc: {
         let __mc_input = inAbsynCommentOption.clone();
         if let Ok(__v) = (|| -> Result<_> {

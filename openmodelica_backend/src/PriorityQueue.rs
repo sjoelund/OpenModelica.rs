@@ -54,9 +54,9 @@ pub type Data = Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>;
 
 /* Replaceable types */
 pub fn compareElement(mut el1: Element, mut el2: Element) -> bool {
-    let mut b: bool = false;
-    let mut p1: Priority = 0;
-    let mut p2: Priority = 0;
+    let mut b: bool;
+    let mut p1: Priority;
+    let mut p2: Priority;
     (p1, _) = el1.clone();
     (p2, _) = el2.clone();
     b = p1.clone() <= p2.clone();
@@ -74,19 +74,19 @@ pub fn empty() -> Arc<metamodelica::List<Arc<Tree>>> { __empty_TLS.with(|__t| __
 function isEmpty = listEmpty;
 */
 pub fn isEmpty(mut ts: T) -> bool {
-    let mut isEmpty: bool = false;
+    let mut isEmpty: bool;
     isEmpty = ts.clone().is_empty();
     isEmpty
 }
 
 pub fn insert(mut elt: Element, mut ts: T) -> Result<T> {
-    let mut ots: T = metamodelica::nil();
+    let mut ots: T;
     ots = ins(Arc::new(Tree { elt: elt.clone(), rank: 0, trees: metamodelica::nil() }), ts.clone())?;
     Ok(ots)
 }
 
 pub fn meld(mut its1: T, mut its2: T) -> Result<T> {
-    let mut ts: T = metamodelica::nil();
+    let mut ts: T;
     ts = (::match_deref::match_deref! { match &((its1.clone(), its2.clone())) {
         (ts1, Deref @ metamodelica::List::Nil) => {
             ts1.clone()
@@ -122,7 +122,7 @@ pub fn meld2(mut b1: bool, mut b2: bool, mut t1: Arc<Tree>, mut inTs1: T, mut t2
 }
 
 pub fn findMin(mut inTs: T) -> Result<Element> {
-    let mut elt: Element = (0, metamodelica::nil());
+    let mut elt: Element;
     elt = (::match_deref::match_deref! { match &(inTs.clone()) {
         Deref @ metamodelica::List::Cons { head: t, tail: Deref @ metamodelica::List::Nil } => {
             root(t.clone())?
@@ -140,9 +140,9 @@ pub fn findMin(mut inTs: T) -> Result<Element> {
 }
 
 pub fn deleteMin(mut ts: T) -> Result<T> {
-    let mut ots: T = metamodelica::nil();
-    let mut ts1: T = metamodelica::nil();
-    let mut ts2: T = metamodelica::nil();
+    let mut ots: T;
+    let mut ts1: T;
+    let mut ts2: T;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(getMin(ts.clone())?) {
         (Deref @ Tree { trees: __pa0, .. }, __pa1) => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
@@ -154,10 +154,10 @@ pub fn deleteMin(mut ts: T) -> Result<T> {
 }
 
 pub fn deleteAndReturnMin(mut ts: T) -> Result<(T, Element)> {
-    let mut ots: T = metamodelica::nil();
-    let mut elt: Element = (0, metamodelica::nil());
-    let mut ts1: T = metamodelica::nil();
-    let mut ts2: T = metamodelica::nil();
+    let mut ots: T;
+    let mut elt: Element;
+    let mut ts1: T;
+    let mut ts2: T;
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(getMin(ts.clone())?) {
         (Deref @ Tree { elt: __pa0, trees: __pa1, .. }, __pa2) => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
@@ -170,7 +170,7 @@ pub fn deleteAndReturnMin(mut ts: T) -> Result<(T, Element)> {
 }
 
 pub fn elements(mut ts: T) -> Result<Arc<metamodelica::List<(i32, Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>)>>> {
-    let mut elts: Arc<metamodelica::List<(i32, Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>)>> = metamodelica::nil();
+    let mut elts: Arc<metamodelica::List<(i32, Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>)>>;
     elts = elements2(ts.clone(), metamodelica::nil())?;
     Ok(elts)
 }
@@ -216,7 +216,7 @@ pub type NODE = Tree;
 
 
 fn root(mut tree: Arc<Tree>) -> Result<Element> {
-    let mut elt: Element = (0, metamodelica::nil());
+    let mut elt: Element;
     let __pa0 = ::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree { elt: __pa0, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
@@ -226,7 +226,7 @@ fn root(mut tree: Arc<Tree>) -> Result<Element> {
 }
 
 fn rank(mut tree: Arc<Tree>) -> Result<Rank> {
-    let mut rank: Rank = 0;
+    let mut rank: Rank;
     let __pa0 = ::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree { rank: __pa0, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
@@ -236,7 +236,7 @@ fn rank(mut tree: Arc<Tree>) -> Result<Rank> {
 }
 
 fn link(mut t1: Arc<Tree>, mut t2: Arc<Tree>) -> Result<Arc<Tree>> {
-    let mut t: Arc<Tree> = Arc::new(<Tree as ::std::default::Default>::default());
+    let mut t: Arc<Tree>;
     t = (::match_deref::match_deref! { match &((t1.clone(), t2.clone())) {
         (Deref @ Tree { elt: e1, rank: r1, trees: ts1 }, Deref @ Tree { elt: e2, rank: r2, trees: ts2 }) => {
             let mut r1 = (*r1).clone();
@@ -269,8 +269,8 @@ fn ins(mut t: Arc<Tree>, mut its: T) -> Result<T> {
 }
 
 fn getMin(mut ts: T) -> Result<(Arc<Tree>, T)> {
-    let mut min: Arc<Tree> = Arc::new(<Tree as ::std::default::Default>::default());
-    let mut ots: T = metamodelica::nil();
+    let mut min: Arc<Tree>;
+    let mut ots: T;
     (min, ots) = (::match_deref::match_deref! { match &(ts.clone()) {
         Deref @ metamodelica::List::Cons { head: t, tail: Deref @ metamodelica::List::Nil } => {
             (t.clone(), metamodelica::nil())

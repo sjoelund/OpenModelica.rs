@@ -71,7 +71,7 @@ impl Default for SBLinearMap {
 pub type LINEAR_MAP = SBLinearMap;
 
 pub fn new(mut gain: metamodelica::Array<metamodelica::Real>, mut offset: metamodelica::Array<metamodelica::Real>) -> Result<Arc<SBLinearMap>> {
-    let mut map: Arc<SBLinearMap> = Arc::new(<SBLinearMap as ::std::default::Default>::default());
+    let mut map: Arc<SBLinearMap>;
     if Array::any(gain.clone(), (std::sync::Arc::new(fnptr!(Util::realNegative, metamodelica::Real)) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Real) -> Result<bool> + 'static>))? {
         map = newEmpty();
     } else if metamodelica::arrayLength(gain.clone()) == metamodelica::arrayLength(offset.clone()) {
@@ -88,13 +88,13 @@ pub fn newEmpty() -> Arc<SBLinearMap> {
 }
 
 pub fn newIdentity(mut dim: i32) -> Arc<SBLinearMap> {
-    let mut map: Arc<SBLinearMap> = Arc::new(<SBLinearMap as ::std::default::Default>::default());
+    let mut map: Arc<SBLinearMap>;
     map = Arc::new(SBLinearMap { gain: arrayCreate(dim.clone(), metamodelica::OrderedFloat(1.0_f64)), offset: arrayCreate(dim.clone(), metamodelica::OrderedFloat(0.0_f64)) });
     map
 }
 
 pub fn copy(mut map: Arc<SBLinearMap>) -> Arc<SBLinearMap> {
-    let mut outMap: Arc<SBLinearMap> = Arc::new(<SBLinearMap as ::std::default::Default>::default());
+    let mut outMap: Arc<SBLinearMap>;
     outMap = Arc::new(SBLinearMap { gain: metamodelica::arrayFromVec(map.gain.clone().borrow().clone()), offset: metamodelica::arrayFromVec(map.offset.clone().borrow().clone()) });
     outMap
 }
@@ -125,27 +125,27 @@ pub fn isEmpty(mut map: Arc<SBLinearMap>) -> bool {
 }
 
 pub fn isIdentity(mut map: Arc<SBLinearMap>) -> Result<bool> {
-    let mut isIdentity: bool = false;
+    let mut isIdentity: bool;
     isIdentity = Array::all(map.gain.clone(), (std::sync::Arc::new({ let __pe_b0 = metamodelica::OrderedFloat(1.0_f64); move |__pe_a1| Ok(realEq(__pe_b0.clone(), __pe_a1)) }) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Real) -> Result<bool> + 'static>))? && Array::all(map.offset.clone(), (std::sync::Arc::new({ let __pe_b0 = metamodelica::OrderedFloat(0.0_f64); move |__pe_a1| Ok(realEq(__pe_b0.clone(), __pe_a1)) }) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Real) -> Result<bool> + 'static>))?;
     Ok(isIdentity)
 }
 
 pub fn isEqual(mut map1: Arc<SBLinearMap>, mut map2: Arc<SBLinearMap>) -> Result<bool> {
-    let mut equal: bool = false;
+    let mut equal: bool;
     equal = Array::isEqualOnTrue(map1.gain.clone(), map2.gain.clone(), (std::sync::Arc::new(fnptr!(realEq, metamodelica::Real, metamodelica::Real)) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Real, metamodelica::Real) -> Result<bool> + 'static>))? && Array::isEqualOnTrue(map1.offset.clone(), map2.offset.clone(), (std::sync::Arc::new(fnptr!(realEq, metamodelica::Real, metamodelica::Real)) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Real, metamodelica::Real) -> Result<bool> + 'static>))?;
     Ok(equal)
 }
 
 pub fn compose(mut map1: Arc<SBLinearMap>, mut map2: Arc<SBLinearMap>) -> Arc<SBLinearMap> {
-    let mut map: Arc<SBLinearMap> = Arc::new(<SBLinearMap as ::std::default::Default>::default());
-    let mut gain: metamodelica::Array<metamodelica::Real> = Default::default();
-    let mut offset: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut map: Arc<SBLinearMap>;
+    let mut gain: metamodelica::Array<metamodelica::Real>;
+    let mut offset: metamodelica::Array<metamodelica::Real>;
     let mut len1: i32 = ndim(map1.clone());
     let mut len2: i32 = ndim(map2.clone());
-    let mut g1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut g2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut o1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut o2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+    let mut g1: metamodelica::Real;
+    let mut g2: metamodelica::Real;
+    let mut o1: metamodelica::Real;
+    let mut o2: metamodelica::Real;
     if len1.clone() == len2.clone() {
         gain = metamodelica::arrayCreate(len1.clone(), metamodelica::OrderedFloat(0.0_f64));
         offset = metamodelica::arrayCreate(len1.clone(), metamodelica::OrderedFloat(0.0_f64));
@@ -165,12 +165,12 @@ pub fn compose(mut map1: Arc<SBLinearMap>, mut map2: Arc<SBLinearMap>) -> Arc<SB
 }
 
 pub fn inverse(mut map: Arc<SBLinearMap>) -> Arc<SBLinearMap> {
-    let mut inv: Arc<SBLinearMap> = Arc::new(<SBLinearMap as ::std::default::Default>::default());
-    let mut gain: metamodelica::Array<metamodelica::Real> = Default::default();
-    let mut offset: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut inv: Arc<SBLinearMap>;
+    let mut gain: metamodelica::Array<metamodelica::Real>;
+    let mut offset: metamodelica::Array<metamodelica::Real>;
     let mut len: i32 = ndim(map.clone());
-    let mut g: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut o: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+    let mut g: metamodelica::Real;
+    let mut o: metamodelica::Real;
     gain = metamodelica::arrayCreate(len.clone(), metamodelica::OrderedFloat(0.0_f64));
     offset = metamodelica::arrayCreate(len.clone(), metamodelica::OrderedFloat(0.0_f64));
     for mut i in 1..=len.clone() {
@@ -225,7 +225,7 @@ pub fn applyInterval(mut interval: Arc<SBInterval::SBInterval>, mut gain: metamo
 }
 
 pub fn toString(mut map: Arc<SBLinearMap>) -> ArcStr {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     let mut strl: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     for mut i in ({let __s=metamodelica::arrayLength(map.gain.clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
         strl = metamodelica::cons(({ let mut __mm_s = String::new(); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", metamodelica::Dangerous::arrayGetNoBoundsChecking(map.gain.clone(), i.clone())))); __mm_s.push_str(&*literal!(" * x + ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", metamodelica::Dangerous::arrayGetNoBoundsChecking(map.offset.clone(), i.clone())))); ArcStr::from(__mm_s) }).clone(), strl.clone());

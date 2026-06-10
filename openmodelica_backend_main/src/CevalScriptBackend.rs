@@ -214,23 +214,23 @@ pub fn defaultSimulationOptions() -> InteractiveTypes::SimulationOptions { __def
 pub static simulationOptionsNames: std::sync::LazyLock<Arc<metamodelica::List<ArcStr>>> = std::sync::LazyLock::new(|| { list![(literal!("startTime")).clone(), (literal!("stopTime")).clone(), (literal!("numberOfIntervals")).clone(), (literal!("tolerance")).clone(), (literal!("method")).clone(), (literal!("fileNamePrefix")).clone(), (literal!("options")).clone(), (literal!("outputFormat")).clone(), (literal!("variableFilter")).clone(), (literal!("cflags")).clone(), (literal!("simflags")).clone()] });
 
 pub fn getSimulationResultType() -> Result<Arc<DAE::Type>> {
-    let mut t: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+    let mut t: Arc<DAE::Type>;
     t = if (Testsuite::isRunning()?) {simulationResultType_rtest().clone()} else {simulationResultType_full().clone()};
     Ok(t)
 }
 
 pub fn getDrModelicaSimulationResultType() -> Result<Arc<DAE::Type>> {
-    let mut t: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+    let mut t: Arc<DAE::Type>;
     t = if (Testsuite::isRunning()?) {simulationResultType_rtest().clone()} else {simulationResultType_drModelica().clone()};
     Ok(t)
 }
 
 pub fn createSimulationResult(mut resultFile: ArcStr, mut options: ArcStr, mut message: ArcStr, mut inAddResultValues: Arc<metamodelica::List<(ArcStr, Arc<Values::Value>)>>) -> Result<Arc<Values::Value>> {
-    let mut res: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
-    let mut resultValues: Arc<metamodelica::List<(ArcStr, Arc<Values::Value>)>> = metamodelica::nil();
-    let mut vals: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-    let mut fields: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut notest: bool = false;
+    let mut res: Arc<Values::Value>;
+    let mut resultValues: Arc<metamodelica::List<(ArcStr, Arc<Values::Value>)>>;
+    let mut vals: Arc<metamodelica::List<Arc<Values::Value>>>;
+    let mut fields: Arc<metamodelica::List<ArcStr>>;
+    let mut notest: bool;
     resultValues = inAddResultValues.clone().reverse();
     notest = !(Testsuite::isRunning()?);
     fields = if (notest.clone()) {List::map(resultValues.clone(), std::sync::Arc::new(fnptr!(Util::tuple21, _)))?} else {metamodelica::nil()};
@@ -240,21 +240,21 @@ pub fn createSimulationResult(mut resultFile: ArcStr, mut options: ArcStr, mut m
 }
 
 pub fn createSimulationResultFailure(mut message: ArcStr, mut options: ArcStr) -> Result<Arc<Values::Value>> {
-    let mut res: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
+    let mut res: Arc<Values::Value>;
     res = createSimulationResult((literal!("")).clone(), (options.clone()).clone(), (message.clone()).clone(), zeroAdditionalSimulationResultValues.clone())?;
     Ok(res)
 }
 
 fn buildCurrentSimulationResultExp() -> Result<Arc<DAE::Exp>> {
-    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut cref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
+    let mut outExp: Arc<DAE::Exp>;
+    let mut cref: Arc<DAE::ComponentRef>;
     cref = ComponentReferenceBasics::makeCrefIdent((literal!("currentSimulationResult")).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), metamodelica::nil());
     outExp = Expression::makeCrefExp(cref.clone(), DAE::T_UNKNOWN_DEFAULT().clone())?;
     Ok(outExp)
 }
 
 fn cevalCurrentSimulationResultExp(mut inCache: FCore::Cache, mut env: FCore::Graph, mut inputFilename: ArcStr, mut msg: Absyn::Msg) -> Result<(FCore::Cache, ArcStr)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
+    let mut outCache: FCore::Cache;
     let mut filename: ArcStr = arcstr::literal!("");
     (outCache, filename) = (::match_deref::match_deref! { match &((inCache.clone(), inputFilename.clone())) {
         (cache, Deref @ "<default>") => {
@@ -276,7 +276,7 @@ fn cevalCurrentSimulationResultExp(mut inCache: FCore::Cache, mut env: FCore::Gr
 }
 
 pub fn convertSimulationOptionsToSimCode(mut opts: InteractiveTypes::SimulationOptions) -> Result<SimCode::SimulationSettings> {
-    let mut settings: SimCode::SimulationSettings = <SimCode::SimulationSettings as ::std::default::Default>::default();
+    let mut settings: SimCode::SimulationSettings;
     settings = (::match_deref::match_deref! { match &(opts.clone()) {
         InteractiveTypes::SimulationOptions { startTime: Deref @ DAE::Exp::RCONST { real: startTime }, stopTime: Deref @ DAE::Exp::RCONST { real: stopTime }, numberOfIntervals: Deref @ DAE::Exp::ICONST { integer: nIntervals }, stepSize: Deref @ DAE::Exp::RCONST { real: stepSize }, tolerance: Deref @ DAE::Exp::RCONST { real: tolerance }, method: Deref @ DAE::Exp::SCONST { string: method }, fileNamePrefix: _, options: _, outputFormat: Deref @ DAE::Exp::SCONST { string: format }, variableFilter: Deref @ DAE::Exp::SCONST { string: varFilter }, cflags: Deref @ DAE::Exp::SCONST { string: cflags }, simflags: Deref @ DAE::Exp::SCONST { string: simflags } } => {
             let mut options: ArcStr = arcstr::literal!("");
@@ -289,13 +289,13 @@ pub fn convertSimulationOptionsToSimCode(mut opts: InteractiveTypes::SimulationO
 }
 
 pub fn buildSimulationOptions(mut startTime: Arc<DAE::Exp>, mut stopTime: Arc<DAE::Exp>, mut numberOfIntervals: Arc<DAE::Exp>, mut stepSize: Arc<DAE::Exp>, mut tolerance: Arc<DAE::Exp>, mut method: Arc<DAE::Exp>, mut fileNamePrefix: Arc<DAE::Exp>, mut options: Arc<DAE::Exp>, mut outputFormat: Arc<DAE::Exp>, mut variableFilter: Arc<DAE::Exp>, mut cflags: Arc<DAE::Exp>, mut simflags: Arc<DAE::Exp>) -> InteractiveTypes::SimulationOptions {
-    let mut outSimulationOptions: InteractiveTypes::SimulationOptions = <InteractiveTypes::SimulationOptions as ::std::default::Default>::default();
+    let mut outSimulationOptions: InteractiveTypes::SimulationOptions;
     outSimulationOptions = InteractiveTypes::SimulationOptions { startTime: startTime.clone(), stopTime: stopTime.clone(), numberOfIntervals: numberOfIntervals.clone(), stepSize: stepSize.clone(), tolerance: tolerance.clone(), method: method.clone(), fileNamePrefix: fileNamePrefix.clone(), options: options.clone(), outputFormat: outputFormat.clone(), variableFilter: variableFilter.clone(), cflags: cflags.clone(), simflags: simflags.clone() };
     outSimulationOptions
 }
 
 pub fn getSimulationOption(mut inSimOpt: InteractiveTypes::SimulationOptions, mut optionName: ArcStr) -> Result<Arc<DAE::Exp>> {
-    let mut outOptionValue: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut outOptionValue: Arc<DAE::Exp>;
     outOptionValue = (::match_deref::match_deref! { match &((inSimOpt.clone(), optionName.clone())) {
         (InteractiveTypes::SimulationOptions { startTime: e, .. }, Deref @ "startTime") => {
             e.clone()
@@ -345,7 +345,7 @@ pub fn getSimulationOption(mut inSimOpt: InteractiveTypes::SimulationOptions, mu
 }
 
 pub fn buildSimulationOptionsFromModelExperimentAnnotation(mut inModelPath: Arc<Absyn::Path>, mut inFileNamePrefix: ArcStr, mut defaultOption: Option<InteractiveTypes::SimulationOptions>) -> Result<InteractiveTypes::SimulationOptions> {
-    let mut outSimOpt: InteractiveTypes::SimulationOptions = <InteractiveTypes::SimulationOptions as ::std::default::Default>::default();
+    let mut outSimOpt: InteractiveTypes::SimulationOptions;
     outSimOpt = 'mc: {
         let __mc_input = defaultOption.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -382,19 +382,19 @@ pub fn buildSimulationOptionsFromModelExperimentAnnotation(mut inModelPath: Arc<
 }
 
 fn setFileNamePrefixInSimulationOptions(mut inSimOpt: InteractiveTypes::SimulationOptions, mut inFileNamePrefix: ArcStr) -> Result<InteractiveTypes::SimulationOptions> {
-    let mut outSimOpt: InteractiveTypes::SimulationOptions = <InteractiveTypes::SimulationOptions as ::std::default::Default>::default();
-    let mut startTime: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut stopTime: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut numberOfIntervals: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut stepSize: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut tolerance: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut method: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut options: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outputFormat: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut variableFilter: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut cflags: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut simflags: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut UseOtimica: bool = false;
+    let mut outSimOpt: InteractiveTypes::SimulationOptions;
+    let mut startTime: Arc<DAE::Exp>;
+    let mut stopTime: Arc<DAE::Exp>;
+    let mut numberOfIntervals: Arc<DAE::Exp>;
+    let mut stepSize: Arc<DAE::Exp>;
+    let mut tolerance: Arc<DAE::Exp>;
+    let mut method: Arc<DAE::Exp>;
+    let mut options: Arc<DAE::Exp>;
+    let mut outputFormat: Arc<DAE::Exp>;
+    let mut variableFilter: Arc<DAE::Exp>;
+    let mut cflags: Arc<DAE::Exp>;
+    let mut simflags: Arc<DAE::Exp>;
+    let mut UseOtimica: bool;
     UseOtimica = Config::acceptOptimicaGrammar()? || Flags::getConfigBool(Flags::GENERATE_DYN_OPTIMIZATION_PROBLEM.clone())?;
     let InteractiveTypes::SIMULATION_OPTIONS { startTime: __pa0, stopTime: __pa1, numberOfIntervals: __pa2, stepSize: __pa3, tolerance: __pa4, method: __pa5, fileNamePrefix: _, options: __pa6, outputFormat: __pa7, variableFilter: __pa8, cflags: __pa9, simflags: __pa10 } = (inSimOpt.clone()) else { bail!("pattern mismatch") };
     startTime = __pa0.clone();
@@ -419,7 +419,7 @@ fn setFileNamePrefixInSimulationOptions(mut inSimOpt: InteractiveTypes::Simulati
 }
 
 fn getConst(mut inAbsynExp: Arc<Absyn::Exp>, mut inExpType: Arc<DAE::Type>) -> Result<Arc<DAE::Exp>> {
-    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut outExp: Arc<DAE::Exp>;
     outExp = 'mc: {
         let __mc_input = (inAbsynExp.clone(), inExpType.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -498,8 +498,8 @@ fn getConst(mut inAbsynExp: Arc<Absyn::Exp>, mut inExpType: Arc<DAE::Type>) -> R
 
 fn populateSimulationOptions(mut options: InteractiveTypes::SimulationOptions, mut args: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>) -> Result<InteractiveTypes::SimulationOptions> {
     let mut options: InteractiveTypes::SimulationOptions = options;
-    let mut name: ArcStr = arcstr::literal!("");
-    let mut value: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
+    let mut name: ArcStr;
+    let mut value: Arc<Absyn::Exp>;
     let mut interval: Option<Arc<DAE::Exp>> = None;
     for mut arg in &*args.clone() {
         let mut arg = arg.clone();
@@ -549,8 +549,8 @@ fn populateSimulationOptions(mut options: InteractiveTypes::SimulationOptions, m
 
 fn setSimulationOptionsInterval(mut options: InteractiveTypes::SimulationOptions, mut interval: metamodelica::Real) -> Result<InteractiveTypes::SimulationOptions> {
     let mut options: InteractiveTypes::SimulationOptions = options;
-    let mut start_time: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut stop_time: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+    let mut start_time: metamodelica::Real;
+    let mut stop_time: metamodelica::Real;
     start_time = Expression::toReal(options.startTime.clone())?;
     stop_time = Expression::toReal(options.stopTime.clone())?;
     options.stepSize = Arc::new(DAE::Exp::RCONST { real: interval.clone() });
@@ -601,11 +601,11 @@ fn diffSanityCheckEqual(mut s1: ArcStr, mut s2: ArcStr) -> Result<bool> {
     use openmodelica_backend::LexerModelicaDiff::modelicaDiffTokenWhitespace;
     use openmodelica_backend::LexerModelicaDiff::scanString;
     use openmodelica_backend::LexerModelicaDiff::tokenContent;
-    let mut b: bool = false;
-    let mut ts1: Arc<metamodelica::List<Token>> = metamodelica::nil();
-    let mut ts2: Arc<metamodelica::List<Token>> = metamodelica::nil();
-    let mut comments1: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut comments2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+    let mut b: bool;
+    let mut ts1: Arc<metamodelica::List<Token>>;
+    let mut ts2: Arc<metamodelica::List<Token>>;
+    let mut comments1: Arc<metamodelica::List<ArcStr>>;
+    let mut comments2: Arc<metamodelica::List<ArcStr>>;
     (ts1, _) = scanString((s1.clone()).clone(), (literal!("<StringSource>")).clone())?;
     (ts2, _) = scanString((s2.clone()).clone(), (literal!("<StringSource>")).clone())?;
     if stringAppendList(({
@@ -654,7 +654,7 @@ fn diffSanityCheckCommentStr(mut t: LexerModelicaDiff::Token) -> Result<ArcStr> 
     use openmodelica_backend::LexerModelicaDiff::blockCommentCanonical;
     use openmodelica_backend::LexerModelicaDiff::isBlockComment;
     use openmodelica_backend::LexerModelicaDiff::tokenContent;
-    let mut s: ArcStr = arcstr::literal!("");
+    let mut s: ArcStr;
     s = (if (isBlockComment(t.clone())) {stringDelimitList(blockCommentCanonical(t.clone())?, (literal!("\n")).clone())} else {tokenContent(t.clone())?}).clone();
     Ok(s)
 }
@@ -674,7 +674,7 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
     use openmodelica_backend::LexerModelicaDiff::scanString;
     use openmodelica_backend::LexerModelicaDiff::tokenContent;
     let mut outCache: FCore::Cache = inCache.clone();
-    let mut outValue: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
+    let mut outValue: Arc<Values::Value>;
     outValue = 'mc: {
         let __mc_input = (inFunctionName.clone(), inVals.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -2468,7 +2468,7 @@ pub fn cevalInteractiveFunctions4(mut inCache: FCore::Cache, mut inEnv: FCore::G
     use openmodelica_backend::LexerModelicaDiff::scanString;
     use openmodelica_backend::LexerModelicaDiff::tokenContent;
     let mut outCache: FCore::Cache = inCache.clone();
-    let mut outValue: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
+    let mut outValue: Arc<Values::Value>;
     outValue = 'mc: {
         let __mc_input = (inFunctionName.clone(), inVals.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -4779,6 +4779,30 @@ pub fn cevalInteractiveFunctions4(mut inCache: FCore::Cache, mut inEnv: FCore::G
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
+                (Deref @ "getModelInstanceReference", Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_TYPENAME { path: classpath } }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_TYPENAME { path } }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: r#str }, tail: Deref @ metamodelica::List::Nil } } }) => {
+                    Ok(NFApi::getModelInstanceReference(classpath.clone(), path.clone(), (r#str.clone()).clone())?)
+                }
+                _ => bail!("nomatch"),
+            }}
+        })() { break 'mc __v; }
+        if let Ok(__v) = (|| -> Result<_> {
+            ::match_deref::match_deref! { match &__mc_input {
+                (Deref @ "getModelInstanceAnnotationReference", Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_TYPENAME { path: classpath } }, tail: Deref @ metamodelica::List::Cons { head: v @ Deref @ Values::Value::ARRAY { .. }, tail: Deref @ metamodelica::List::Nil } }) => {
+                    Ok(NFApi::getModelInstanceAnnotationReference(classpath.clone(), ValuesUtil::arrayValueStrings(v.clone())?)?)
+                }
+                _ => bail!("nomatch"),
+            }}
+        })() { break 'mc __v; }
+        if let Ok(__v) = (|| -> Result<_> {
+            ::match_deref::match_deref! { match &__mc_input {
+                (Deref @ "releaseModelInstanceReference", Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { integer: i }, tail: Deref @ metamodelica::List::Nil }) => {
+                    Ok(NFApi::releaseModelInstanceReference(i.clone()))
+                }
+                _ => bail!("nomatch"),
+            }}
+        })() { break 'mc __v; }
+        if let Ok(__v) = (|| -> Result<_> {
+            ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "modifierToJSON", Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: r#str }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: b }, tail: Deref @ metamodelica::List::Nil } }) => {
                     Ok(NFApi::modifierToJSON((r#str.clone()).clone(), b.clone())?)
                 }
@@ -5384,7 +5408,7 @@ pub fn cevalInteractiveFunctions4(mut inCache: FCore::Cache, mut inEnv: FCore::G
 }
 
 fn getSimulationExtension(mut inString: ArcStr, mut inString2: ArcStr) -> ArcStr {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &((inString.clone(), inString2.clone())) {
         (Deref @ "C", Deref @ "WIN64") => literal!(".bat"),
         (Deref @ "C", Deref @ "WIN32") => literal!(".bat"),
@@ -5401,9 +5425,9 @@ fn getSimulationExtension(mut inString: ArcStr, mut inString2: ArcStr) -> ArcStr
 }
 
 pub fn getAdjacencyMatrix(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut className: Arc<Absyn::Path>, mut inMsg: Absyn::Msg, mut filenameprefix: ArcStr) -> Result<(FCore::Cache, Arc<Values::Value>, ArcStr)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outValue: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outCache: FCore::Cache;
+    let mut outValue: Arc<Values::Value>;
+    let mut outString: ArcStr;
     (outCache, outValue, outString) = (match (inCache.clone(), inEnv.clone()) {
         (mut cache, mut env) => {
             let mut filename: ArcStr = arcstr::literal!("");
@@ -5447,8 +5471,8 @@ pub fn runFrontEnd(mut cache: FCore::Cache, mut env: FCore::Graph, mut className
     let mut env: FCore::Graph = env;
     let mut odae: Option<DAE::DAElist> = None;
     let mut flatString: ArcStr = literal!("");
-    let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-    let mut b: bool = false;
+    let mut dae: DAE::DAElist;
+    let mut b: bool;
     FlagsUtil::setConfigBool(Flags::BUILDING_MODEL.clone(), true)?;
     if '__try0: {
         b = unwrap_break_err!(loadProgram(className.clone()), '__try0);
@@ -5474,9 +5498,9 @@ pub fn runFrontEnd(mut cache: FCore::Cache, mut env: FCore::Graph, mut className
 }
 
 pub fn runFrontEndNF(mut className: Arc<Absyn::Path>, mut relaxedFrontEnd: bool, mut dumpFlat: bool) -> Result<(Arc<NFFlatModel::NFFlatModel>, Arc<NFFlatten::FunctionTreeImpl::Tree>, ArcStr)> {
-    let mut flatModel: Arc<NFFlatModel::NFFlatModel> = Arc::new(<NFFlatModel::NFFlatModel as ::std::default::Default>::default());
-    let mut functions: Arc<NFFlatten::FunctionTreeImpl::Tree> = Arc::new(NFFlatten::FunctionTreeImpl::Tree::EMPTY);
-    let mut flatString: ArcStr = arcstr::literal!("");
+    let mut flatModel: Arc<NFFlatModel::NFFlatModel>;
+    let mut functions: Arc<NFFlatten::FunctionTreeImpl::Tree>;
+    let mut flatString: ArcStr;
     let true = (loadProgram(className.clone())?) else { bail!("pattern mismatch") };
     (flatModel, functions, flatString) = runFrontEndWorkNF(className.clone(), relaxedFrontEnd.clone(), dumpFlat.clone())?;
     Ok((flatModel, functions, flatString))
@@ -5484,9 +5508,9 @@ pub fn runFrontEndNF(mut className: Arc<Absyn::Path>, mut relaxedFrontEnd: bool,
 
 fn loadProgram(mut className: Arc<Absyn::Path>) -> Result<bool> {
     let mut success: bool = false;
-    let mut lib_name: ArcStr = arcstr::literal!("");
-    let mut p: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
-    let mut b: bool = false;
+    let mut lib_name: ArcStr;
+    let mut p: Absyn::Program;
+    let mut b: bool;
     p = SymbolTable::getAbsyn();
     lib_name = (AbsynUtil::pathFirstIdent(className.clone())?).clone();
     if '__try0: {
@@ -5509,9 +5533,9 @@ fn runFrontEndWork(mut cache: FCore::Cache, mut env: FCore::Graph, mut className
     let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
     let mut flatString: ArcStr = literal!("");
     let mut numError: i32 = Error::getNumErrorMessages();
-    let mut graph_inst: bool = false;
-    let mut nf_inst: bool = false;
-    let mut nf_inst_actual: bool = false;
+    let mut graph_inst: bool;
+    let mut nf_inst: bool;
+    let mut nf_inst_actual: bool;
     let mut scodeP: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
     let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
     let mut flat_model: Arc<NFFlatModel::NFFlatModel> = Arc::new(<NFFlatModel::NFFlatModel as ::std::default::Default>::default());
@@ -5579,14 +5603,14 @@ pub fn runFrontEndWorkNF(mut className: Arc<Absyn::Path>, mut relaxedFrontend: b
     let mut flatModel: Arc<NFFlatModel::NFFlatModel> = Arc::new(<NFFlatModel::NFFlatModel as ::std::default::Default>::default());
     let mut functions: Arc<NFFlatten::FunctionTreeImpl::Tree> = Arc::new(NFFlatten::FunctionTreeImpl::Tree::EMPTY);
     let mut flatString: ArcStr = arcstr::literal!("");
-    let mut builtin_p: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
-    let mut scode_p: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
-    let mut annotation_p: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
-    let mut nf_api: bool = false;
-    let mut inst_failed: bool = false;
+    let mut builtin_p: Arc<metamodelica::List<Arc<SCode::Element>>>;
+    let mut scode_p: Arc<metamodelica::List<Arc<SCode::Element>>>;
+    let mut annotation_p: Arc<metamodelica::List<Arc<SCode::Element>>>;
+    let mut nf_api: bool;
+    let mut inst_failed: bool;
     let mut cls_name: Arc<Absyn::Path> = className.clone();
-    let mut obfuscate_map: Arc<UnorderedMap::UnorderedMap<ArcStr, ArcStr>> = <Arc<UnorderedMap::UnorderedMap<ArcStr, ArcStr>> as ::std::default::Default>::default();
-    let mut obfuscate_mode: ArcStr = arcstr::literal!("");
+    let mut obfuscate_map: Arc<UnorderedMap::UnorderedMap<ArcStr, ArcStr>>;
+    let mut obfuscate_mode: ArcStr;
     (_, builtin_p) = FBuiltin::getInitialFunctions()?;
     scode_p = SymbolTable::getSCode()?;
     obfuscate_mode = (Flags::getConfigString(Flags::OBFUSCATE.clone())?).clone();
@@ -5616,14 +5640,14 @@ pub fn runFrontEndWorkNF(mut className: Arc<Absyn::Path>, mut relaxedFrontend: b
 }
 
 pub fn translateModel(mut cache: FCore::Cache, mut env: FCore::Graph, mut className: Arc<Absyn::Path>, mut fileNamePrefix: ArcStr, mut runBackend: bool, mut runSilent: bool, mut simSettingsOpt: Option<SimCode::SimulationSettings>) -> Result<(bool, FCore::Cache, Arc<metamodelica::List<ArcStr>>, ArcStr, Arc<metamodelica::List<(ArcStr, Arc<Values::Value>)>>)> {
-    let mut success: bool = false;
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outLibs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut outFileDir: ArcStr = arcstr::literal!("");
-    let mut resultValues: Arc<metamodelica::List<(ArcStr, Arc<Values::Value>)>> = metamodelica::nil();
-    let mut flags: Flags::Flag = Flags::Flag::NO_FLAGS;
-    let mut defaultSimOpt: InteractiveTypes::SimulationOptions = <InteractiveTypes::SimulationOptions as ::std::default::Default>::default();
-    let mut simSettings: Option<SimCode::SimulationSettings> = None;
+    let mut success: bool;
+    let mut outCache: FCore::Cache;
+    let mut outLibs: Arc<metamodelica::List<ArcStr>>;
+    let mut outFileDir: ArcStr;
+    let mut resultValues: Arc<metamodelica::List<(ArcStr, Arc<Values::Value>)>>;
+    let mut flags: Flags::Flag;
+    let mut defaultSimOpt: InteractiveTypes::SimulationOptions;
+    let mut simSettings: Option<SimCode::SimulationSettings>;
     if isSome(simSettingsOpt.clone()) {
         simSettings = simSettingsOpt.clone();
     } else {
@@ -5652,9 +5676,9 @@ pub fn translateModel(mut cache: FCore::Cache, mut env: FCore::Graph, mut classN
 }
 
 fn getProcsStr(mut isMake: bool) -> Result<ArcStr> {
-    let mut s: ArcStr = arcstr::literal!("");
-    let mut n: i32 = 0;
-    let mut sn: ArcStr = arcstr::literal!("");
+    let mut s: ArcStr;
+    let mut n: i32;
+    let mut sn: ArcStr;
     n = Flags::getConfigInt(Flags::NUM_PROC.clone())?;
     sn = (intString(n.clone())).clone();
     s = (if (n.clone() == 0) {literal!("")} else {if (isMake.clone()) {sn.clone()} else {stringAppend((literal!("-j")).clone(), (sn.clone()).clone())}}).clone();
@@ -5662,14 +5686,14 @@ fn getProcsStr(mut isMake: bool) -> Result<ArcStr> {
 }
 
 fn configureFMU_cmake(mut platform: ArcStr, mut fmutmp: ArcStr, mut fmuTargetName: ArcStr, mut logfile: ArcStr, mut externalLibLocations: Arc<metamodelica::List<ArcStr>>, mut isWindows: bool) -> Result<()> {
-    let mut fmuSourceDir: ArcStr = arcstr::literal!("");
+    let mut fmuSourceDir: ArcStr;
     let mut CMAKE_GENERATOR: ArcStr = literal!("");
-    let mut CMAKE_BUILD_TYPE: ArcStr = arcstr::literal!("");
-    let mut quote: ArcStr = arcstr::literal!("");
-    let mut dquote: ArcStr = arcstr::literal!("");
-    let mut defaultFmiIncludeDirectoy: ArcStr = arcstr::literal!("");
-    let mut CC: ArcStr = arcstr::literal!("");
-    let mut makefileParams: SimCodeFunction::MakefileParams = <SimCodeFunction::MakefileParams as ::std::default::Default>::default();
+    let mut CMAKE_BUILD_TYPE: ArcStr;
+    let mut quote: ArcStr;
+    let mut dquote: ArcStr;
+    let mut defaultFmiIncludeDirectoy: ArcStr;
+    let mut CC: ArcStr;
+    let mut makefileParams: SimCodeFunction::MakefileParams;
     makefileParams = SimCodeFunctionUtil::createMakefileParams(metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), false, true)?;
     fmuSourceDir = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*fmutmp.clone()); __mm_s.push_str(&*literal!("/sources/")); ArcStr::from(__mm_s) }).clone();
     quote = (literal!("'")).clone();
@@ -5819,24 +5843,24 @@ fn runDockerCmd(mut cmd: ArcStr, mut logfile: ArcStr, mut cleanup: bool, mut vol
 }
 
 fn configureFMU(mut platform: ArcStr, mut fmutmp: ArcStr, mut logfile: ArcStr, mut isWindows: bool, mut needs3rdPartyLibs: bool) -> Result<()> {
-    let mut CC: ArcStr = arcstr::literal!("");
-    let mut CFLAGS: ArcStr = arcstr::literal!("");
-    let mut CPPFLAGS: ArcStr = arcstr::literal!("");
-    let mut LDFLAGS: ArcStr = arcstr::literal!("");
-    let mut SUNDIALS: ArcStr = arcstr::literal!("");
+    let mut CC: ArcStr;
+    let mut CFLAGS: ArcStr;
+    let mut CPPFLAGS: ArcStr;
+    let mut LDFLAGS: ArcStr;
+    let mut SUNDIALS: ArcStr;
     let mut makefileStr: ArcStr = arcstr::literal!("");
     let mut host: ArcStr = arcstr::literal!("");
-    let mut nozip: ArcStr = arcstr::literal!("");
+    let mut nozip: ArcStr;
     let mut dir: ArcStr = { let mut __mm_s = String::new(); __mm_s.push_str(&*fmutmp.clone()); __mm_s.push_str(&*literal!("/sources/")); ArcStr::from(__mm_s) };
     let mut cmd: ArcStr = literal!("");
     let mut quote: ArcStr = literal!("'");
     let mut dquote: ArcStr = if (isWindows.clone()) {literal!("\"")} else {literal!("'")};
-    let mut includeDefaultFmi: ArcStr = arcstr::literal!("");
+    let mut includeDefaultFmi: ArcStr;
     let mut volumeID: ArcStr = arcstr::literal!("");
     let mut cidFile: ArcStr = arcstr::literal!("");
     let mut containerID: ArcStr = arcstr::literal!("");
     let mut rest: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut finishedBuild: bool = false;
+    let mut finishedBuild: bool;
     let mut uid: i32 = 0;
     let mut verbose: bool = false;
     includeDefaultFmi = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*dquote.clone()); __mm_s.push_str(&*Settings::getInstallationDirectoryPath()?); __mm_s.push_str(&*literal!("/include/omc/c/fmi")); __mm_s.push_str(&*dquote.clone()); ArcStr::from(__mm_s) }).clone();
@@ -6005,9 +6029,9 @@ fn configureFMU(mut platform: ArcStr, mut fmutmp: ArcStr, mut logfile: ArcStr, m
 
 fn translateModelFMU(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut className: Arc<Absyn::Path>, mut FMUVersion: ArcStr, mut inFMUType: ArcStr, mut inFileNamePrefix: ArcStr, mut addDummy: bool, mut platforms: Arc<metamodelica::List<ArcStr>>, mut inSimSettings: Option<SimCode::SimulationSettings>) -> Result<(bool, FCore::Cache, Arc<Values::Value>)> {
     let mut success: bool = false;
-    let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outValue: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
-    let mut flags: Flags::Flag = Flags::Flag::NO_FLAGS;
+    let mut cache: FCore::Cache;
+    let mut outValue: Arc<Values::Value>;
+    let mut flags: Flags::Flag;
     if isProtectedContentAccess(className.clone())? {
         cache = inCache.clone();
         outValue = Arc::new(Values::Value::STRING { string: (literal!("")).clone() });
@@ -6033,14 +6057,14 @@ fn translateModelFMU(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut cla
 }
 
 fn callTranslateModelFMU(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut className: Arc<Absyn::Path>, mut FMUVersion: ArcStr, mut inFMUType: ArcStr, mut inFileNamePrefix: ArcStr, mut addDummy: bool, mut platforms: Arc<metamodelica::List<ArcStr>>, mut inSimSettings: Option<SimCode::SimulationSettings>) -> Result<(bool, FCore::Cache, Arc<Values::Value>)> {
-    let mut success: bool = false;
-    let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outValue: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
-    let mut filenameprefix: ArcStr = arcstr::literal!("");
-    let mut fmuTargetName: ArcStr = arcstr::literal!("");
-    let mut defaultSimOpt: InteractiveTypes::SimulationOptions = <InteractiveTypes::SimulationOptions as ::std::default::Default>::default();
-    let mut simSettings: SimCode::SimulationSettings = <SimCode::SimulationSettings as ::std::default::Default>::default();
-    let mut libs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+    let mut success: bool;
+    let mut cache: FCore::Cache;
+    let mut outValue: Arc<Values::Value>;
+    let mut filenameprefix: ArcStr;
+    let mut fmuTargetName: ArcStr;
+    let mut defaultSimOpt: InteractiveTypes::SimulationOptions;
+    let mut simSettings: SimCode::SimulationSettings;
+    let mut libs: Arc<metamodelica::List<ArcStr>>;
     let mut FMUType: ArcStr = inFMUType.clone();
     cache = inCache.clone();
     if !(FMI::checkFMIVersion((FMUVersion.clone()).clone())) {
@@ -6104,9 +6128,9 @@ fn callTranslateModelFMU(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut
 }
 
 fn buildModelFMU(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut className: Arc<Absyn::Path>, mut FMUVersion: ArcStr, mut inFMUType: ArcStr, mut inFileNamePrefix: ArcStr, mut addDummy: bool, mut platforms: Arc<metamodelica::List<ArcStr>>, mut inSimSettings: Option<SimCode::SimulationSettings>) -> Result<(FCore::Cache, Arc<Values::Value>)> {
-    let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outValue: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
-    let mut flags: Flags::Flag = Flags::Flag::NO_FLAGS;
+    let mut cache: FCore::Cache;
+    let mut outValue: Arc<Values::Value>;
+    let mut flags: Flags::Flag;
     if isProtectedContentAccess(className.clone())? {
         cache = inCache.clone();
         outValue = Arc::new(Values::Value::STRING { string: (literal!("")).clone() });
@@ -6131,21 +6155,21 @@ fn buildModelFMU(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut classNa
 }
 
 fn callBuildModelFMU(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut className: Arc<Absyn::Path>, mut FMUVersion: ArcStr, mut inFMUType: ArcStr, mut inFileNamePrefix: ArcStr, mut addDummy: bool, mut platforms: Arc<metamodelica::List<ArcStr>>, mut inSimSettings: Option<SimCode::SimulationSettings>) -> Result<(FCore::Cache, Arc<Values::Value>)> {
-    let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outValue: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
-    let mut success: bool = false;
-    let mut filenameprefix: ArcStr = arcstr::literal!("");
-    let mut fmutmp: ArcStr = arcstr::literal!("");
-    let mut logfile: ArcStr = arcstr::literal!("");
-    let mut configureLogFile: ArcStr = arcstr::literal!("");
-    let mut dir: ArcStr = arcstr::literal!("");
-    let mut cmd: ArcStr = arcstr::literal!("");
-    let mut fmuTargetName: ArcStr = arcstr::literal!("");
-    let mut defaultSimOpt: InteractiveTypes::SimulationOptions = <InteractiveTypes::SimulationOptions as ::std::default::Default>::default();
-    let mut simSettings: SimCode::SimulationSettings = <SimCode::SimulationSettings as ::std::default::Default>::default();
-    let mut libs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut isWindows: bool = false;
-    let mut needs3rdPartyLibs: bool = false;
+    let mut cache: FCore::Cache;
+    let mut outValue: Arc<Values::Value>;
+    let mut success: bool;
+    let mut filenameprefix: ArcStr;
+    let mut fmutmp: ArcStr;
+    let mut logfile: ArcStr;
+    let mut configureLogFile: ArcStr;
+    let mut dir: ArcStr;
+    let mut cmd: ArcStr;
+    let mut fmuTargetName: ArcStr;
+    let mut defaultSimOpt: InteractiveTypes::SimulationOptions;
+    let mut simSettings: SimCode::SimulationSettings;
+    let mut libs: Arc<metamodelica::List<ArcStr>>;
+    let mut isWindows: bool;
+    let mut needs3rdPartyLibs: bool;
     let mut FMUType: ArcStr = inFMUType.clone();
     cache = inCache.clone();
     if !(FMI::checkFMIVersion((FMUVersion.clone()).clone())) {
@@ -6278,23 +6302,23 @@ fn callBuildModelFMU(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut cla
 
 fn buildEncryptedPackage(mut className: Arc<Absyn::Path>, mut encrypt: bool, mut inProgram: Absyn::Program) -> Result<bool> {
     let mut success: bool = false;
-    let mut cls: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
-    let mut fileName: ArcStr = arcstr::literal!("");
-    let mut logFile: ArcStr = arcstr::literal!("");
-    let mut omhome: ArcStr = arcstr::literal!("");
-    let mut pd: ArcStr = arcstr::literal!("");
-    let mut ext: ArcStr = arcstr::literal!("");
-    let mut packageTool: ArcStr = arcstr::literal!("");
-    let mut packageToolArgs: ArcStr = arcstr::literal!("");
+    let mut cls: Arc<Absyn::Class>;
+    let mut fileName: ArcStr;
+    let mut logFile: ArcStr;
+    let mut omhome: ArcStr;
+    let mut pd: ArcStr;
+    let mut ext: ArcStr;
+    let mut packageTool: ArcStr;
+    let mut packageToolArgs: ArcStr;
     let mut command: ArcStr = arcstr::literal!("");
-    let mut runCommand: bool = false;
-    let mut molName: ArcStr = arcstr::literal!("");
-    let mut dirPath: ArcStr = arcstr::literal!("");
-    let mut rmCommand: ArcStr = arcstr::literal!("");
-    let mut cdCommand: ArcStr = arcstr::literal!("");
-    let mut mvCommand: ArcStr = arcstr::literal!("");
-    let mut dirOrFileName: ArcStr = arcstr::literal!("");
-    let mut zipCommand: ArcStr = arcstr::literal!("");
+    let mut runCommand: bool;
+    let mut molName: ArcStr;
+    let mut dirPath: ArcStr;
+    let mut rmCommand: ArcStr;
+    let mut cdCommand: ArcStr;
+    let mut mvCommand: ArcStr;
+    let mut dirOrFileName: ArcStr;
+    let mut zipCommand: ArcStr;
     cls = ProgramUtil::getPathedClassInProgram(className.clone(), inProgram.clone(), false, false)?;
     fileName = (AbsynUtil::classFilename(cls.clone())?).clone();
     logFile = (literal!("buildEncryptedPackage.log")).clone();
@@ -6347,8 +6371,8 @@ fn buildEncryptedPackage(mut className: Arc<Absyn::Path>, mut encrypt: bool, mut
 
 fn translateModelXML(mut cache: FCore::Cache, mut env: FCore::Graph, mut className: Arc<Absyn::Path>, mut fileNamePrefix: ArcStr, mut addDummy: bool, mut inSimSettingsOpt: Option<SimCode::SimulationSettings>) -> Result<(FCore::Cache, Arc<Values::Value>)> {
     let mut cache: FCore::Cache = cache;
-    let mut outValue: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
-    let mut success: bool = false;
+    let mut outValue: Arc<Values::Value>;
+    let mut success: bool;
     if isProtectedContentAccess(className.clone())? {
         outValue = Arc::new(Values::Value::STRING { string: (literal!("")).clone() });
     } else {
@@ -6359,7 +6383,7 @@ fn translateModelXML(mut cache: FCore::Cache, mut env: FCore::Graph, mut classNa
 }
 
 pub fn translateGraphics(mut className: Arc<Absyn::Path>, mut inMsg: Absyn::Msg) -> Result<Arc<Values::Value>> {
-    let mut outValue: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
+    let mut outValue: Arc<Values::Value>;
     outValue = 'mc: {
         let __mc_input = inMsg.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -6394,7 +6418,7 @@ pub fn translateGraphics(mut className: Arc<Absyn::Path>, mut inMsg: Absyn::Msg)
 }
 
 fn calculateSimulationSettings(mut inCache: FCore::Cache, mut vals: Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<(FCore::Cache, SimCode::SimulationSettings)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
+    let mut outCache: FCore::Cache;
     let mut outSimSettings: SimCode::SimulationSettings = <SimCode::SimulationSettings as ::std::default::Default>::default();
     (outCache, outSimSettings) = (::match_deref::match_deref! { match &((inCache.clone(), vals.clone())) {
         (cache, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_TYPENAME { path: _ } }, tail: Deref @ metamodelica::List::Cons { head: starttime_v, tail: Deref @ metamodelica::List::Cons { head: stoptime_v, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { integer: interval_i }, tail: Deref @ metamodelica::List::Cons { head: tolerance_v, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: method_str }, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: options_str }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: outputFormat_str }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: variableFilter_str }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: cflags }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: simflags }, tail: Deref @ metamodelica::List::Nil } } } } } } } } } } } }) => {
@@ -6417,8 +6441,8 @@ fn calculateSimulationSettings(mut inCache: FCore::Cache, mut vals: Arc<metamode
 }
 
 fn getListFirstShowError(mut inValues: Arc<metamodelica::List<Arc<Values::Value>>>, mut errorMessage: ArcStr) -> Result<(Arc<Values::Value>, Arc<metamodelica::List<Arc<Values::Value>>>)> {
-    let mut outValue: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
-    let mut restValues: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
+    let mut outValue: Arc<Values::Value>;
+    let mut restValues: Arc<metamodelica::List<Arc<Values::Value>>>;
     (outValue, restValues) = (::match_deref::match_deref! { match &(inValues.clone()) {
         Deref @ metamodelica::List::Cons { head: v, tail: rest } => {
             (v.clone(), rest.clone())
@@ -6433,7 +6457,7 @@ fn getListFirstShowError(mut inValues: Arc<metamodelica::List<Arc<Values::Value>
 }
 
 fn getListNthShowError(mut inValues: Arc<metamodelica::List<Arc<Values::Value>>>, mut errorMessage: ArcStr, mut currentElement: i32, mut nthElement: i32) -> Result<Arc<Values::Value>> {
-    let mut outValue: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
+    let mut outValue: Arc<Values::Value>;
     outValue = 'mc: {
         let __mc_input = (inValues.clone(), currentElement.clone(), nthElement.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -6465,10 +6489,10 @@ fn getListNthShowError(mut inValues: Arc<metamodelica::List<Arc<Values::Value>>>
 }
 
 fn moveClass(mut inClassName: Arc<Absyn::Path>, mut inOffset: i32, mut inProgram: Absyn::Program) -> (Absyn::Program, bool) {
-    let mut outProgram: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
-    let mut outSuccess: bool = false;
-    let mut parent_cls: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-    let mut cls_name: ArcStr = arcstr::literal!("");
+    let mut outProgram: Absyn::Program;
+    let mut outSuccess: bool;
+    let mut parent_cls: Arc<Absyn::Path>;
+    let mut cls_name: ArcStr;
     if inOffset.clone() == 0 {
         outProgram = inProgram.clone();
         outSuccess = true;
@@ -6503,9 +6527,9 @@ fn moveClass(mut inClassName: Arc<Absyn::Path>, mut inOffset: i32, mut inProgram
 
 fn moveClassToTop(mut inClassName: Arc<Absyn::Path>, mut inProgram: Absyn::Program) -> (Absyn::Program, bool) {
     let mut outProgram: Absyn::Program = inProgram.clone();
-    let mut outSuccess: bool = false;
-    let mut parent_cls: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-    let mut cls_name: ArcStr = arcstr::literal!("");
+    let mut outSuccess: bool;
+    let mut parent_cls: Arc<Absyn::Path>;
+    let mut cls_name: ArcStr;
     match '__try0: {
         if AbsynUtil::pathIsIdent(inClassName.clone()) {
             outProgram = (match outProgram.clone() {
@@ -6546,9 +6570,9 @@ fn moveClassToTop(mut inClassName: Arc<Absyn::Path>, mut inProgram: Absyn::Progr
 
 fn moveClassToBottom(mut inClassName: Arc<Absyn::Path>, mut inProgram: Absyn::Program) -> (Absyn::Program, bool) {
     let mut outProgram: Absyn::Program = inProgram.clone();
-    let mut outSuccess: bool = false;
-    let mut parent_cls: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-    let mut cls_name: ArcStr = arcstr::literal!("");
+    let mut outSuccess: bool;
+    let mut parent_cls: Arc<Absyn::Path>;
+    let mut cls_name: ArcStr;
     match '__try0: {
         if AbsynUtil::pathIsIdent(inClassName.clone()) {
             outProgram = (match outProgram.clone() {
@@ -6599,12 +6623,12 @@ fn moveClassInProgram(mut inName: ArcStr, mut inOffset: i32, mut inProgram: Absy
 }
 
 fn moveClassInClassList(mut inName: ArcStr, mut inOffset: i32, mut inClasses: Arc<metamodelica::List<Arc<Absyn::Class>>>) -> Result<Arc<metamodelica::List<Arc<Absyn::Class>>>> {
-    let mut outClasses: Arc<metamodelica::List<Arc<Absyn::Class>>> = metamodelica::nil();
+    let mut outClasses: Arc<metamodelica::List<Arc<Absyn::Class>>>;
     let mut cls: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
     let mut acc: Arc<metamodelica::List<Arc<Absyn::Class>>> = metamodelica::nil();
     let mut rest: Arc<metamodelica::List<Arc<Absyn::Class>>> = inClasses.clone();
-    let mut name: ArcStr = arcstr::literal!("");
-    let mut offset: i32 = 0;
+    let mut name: ArcStr;
+    let mut offset: i32;
     loop {
         let (__pa1, __pa0, __pa2) = ::match_deref::match_deref! { match &(rest.clone()) {
             Deref @ metamodelica::List::Cons { head: __pa1 @ Deref @ Absyn::Class { name: __pa0, .. }, tail: __pa2 } => (__pa1.clone(), __pa0.clone(), __pa2.clone()),
@@ -6637,8 +6661,8 @@ fn moveClassInClassList(mut inName: ArcStr, mut inOffset: i32, mut inClasses: Ar
 }
 
 fn moveClassInClass(mut inName: ArcStr, mut inOffset: i32, mut inClass: Arc<Absyn::Class>) -> Result<Arc<Absyn::Class>> {
-    let mut outClass: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
-    let mut body: Arc<Absyn::ClassDef> = Arc::new(<Absyn::ClassDef as ::std::default::Default>::default());
+    let mut outClass: Arc<Absyn::Class>;
+    let mut body: Arc<Absyn::ClassDef>;
     let __pa0 = ::match_deref::match_deref! { match &(inClass.clone()) {
         Deref @ Absyn::Class { body: __pa0, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
@@ -6664,11 +6688,11 @@ fn moveClassInClassParts(mut inName: ArcStr, mut inOffset: i32, mut inClassParts
     let mut part: Arc<Absyn::ClassPart> = Arc::new(<Absyn::ClassPart as ::std::default::Default>::default());
     let mut acc: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
     let mut rest: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = inClassParts.clone();
-    let mut parts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
+    let mut parts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>;
     let mut cls: Option<Arc<Absyn::ElementItem>> = None;
     let mut offset: i32 = 0;
     let mut is_public: bool = false;
-    let mut is_empty: bool = false;
+    let mut is_empty: bool;
     loop {
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(rest.clone()) {
             Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
@@ -6712,7 +6736,7 @@ fn moveClassInClassParts(mut inName: ArcStr, mut inOffset: i32, mut inClassParts
 }
 
 fn mergeClassPartWithList(mut inClassPart: Arc<Absyn::ClassPart>, mut inClassParts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Arc<metamodelica::List<Arc<Absyn::ClassPart>>> {
-    let mut outClassParts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
+    let mut outClassParts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>;
     let mut part: Arc<Absyn::ClassPart> = Arc::new(<Absyn::ClassPart as ::std::default::Default>::default());
     let mut rest: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
     outClassParts = (::match_deref::match_deref! { match &((inClassPart.clone(), inClassParts.clone())) {
@@ -6733,13 +6757,13 @@ fn mergeClassPartWithList(mut inClassPart: Arc<Absyn::ClassPart>, mut inClassPar
 }
 
 fn moveClassInClassParts2(mut inClass: Arc<Absyn::ElementItem>, mut inOffset: i32, mut inIsPublic: bool, mut inClassParts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<Arc<metamodelica::List<Arc<Absyn::ClassPart>>>> {
-    let mut outClassParts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
-    let mut part: Arc<Absyn::ClassPart> = Arc::new(<Absyn::ClassPart as ::std::default::Default>::default());
+    let mut outClassParts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>;
+    let mut part: Arc<Absyn::ClassPart>;
     let mut rest: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = inClassParts.clone();
-    let mut parts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
+    let mut parts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>;
     let mut acc: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
     let mut offset: i32 = inOffset.clone();
-    let mut moved: bool = false;
+    let mut moved: bool;
     while offset.clone() != 0 {
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(rest.clone()) {
             Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
@@ -6769,7 +6793,7 @@ fn moveClassInClassParts2(mut inClass: Arc<Absyn::ElementItem>, mut inOffset: i3
 }
 
 fn moveClassInClassParts3(mut inClass: Arc<Absyn::ElementItem>, mut inPositiveOffset: bool, mut inIsPublic: bool, mut inClassPart: Arc<Absyn::ClassPart>, mut inClassParts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<Arc<metamodelica::List<Arc<Absyn::ClassPart>>>> {
-    let mut outClassParts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
+    let mut outClassParts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>;
     outClassParts = (::match_deref::match_deref! { match &((inPositiveOffset.clone(), inIsPublic.clone(), inClassPart.clone())) {
         (true, true, Deref @ Absyn::ClassPart::PUBLIC { .. }) => metamodelica::cons(Arc::new(Absyn::ClassPart::PUBLIC { contents: metamodelica::cons(inClass.clone(), var_field!((*inClassPart).contents, Absyn::ClassPart::PUBLIC).clone()) }), inClassParts.clone()),
         (true, false, Deref @ Absyn::ClassPart::PROTECTED { .. }) => metamodelica::cons(Arc::new(Absyn::ClassPart::PROTECTED { contents: metamodelica::cons(inClass.clone(), var_field!((*inClassPart).contents, Absyn::ClassPart::PROTECTED).clone()) }), inClassParts.clone()),
@@ -6786,7 +6810,7 @@ fn moveClassInClassPart(mut inName: ArcStr, mut inOffset: i32, mut inClassPart: 
     let mut outClassPart: Arc<Absyn::ClassPart> = inClassPart.clone();
     let mut outClass: Option<Arc<Absyn::ElementItem>> = None;
     let mut outRemainingOffset: i32 = 0;
-    let mut outIsPublic: bool = false;
+    let mut outIsPublic: bool;
     let mut elements: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
     (outClassPart, outClass, outRemainingOffset, outIsPublic) = (::match_deref::match_deref! { match &(outClassPart.clone()) {
         Deref @ Absyn::ClassPart::PUBLIC { .. } => {
@@ -6806,9 +6830,9 @@ fn moveClassInClassPart(mut inName: ArcStr, mut inOffset: i32, mut inClassPart: 
 }
 
 fn moveClassInClassPart2(mut inName: ArcStr, mut inOffset: i32, mut inElements: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>) -> Result<(Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, Option<Arc<Absyn::ElementItem>>, i32)> {
-    let mut outElements: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
+    let mut outElements: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>;
     let mut outClass: Option<Arc<Absyn::ElementItem>> = None;
-    let mut outRemainingOffset: i32 = 0;
+    let mut outRemainingOffset: i32;
     let mut e: Arc<Absyn::ElementItem> = Arc::new(<Absyn::ElementItem as ::std::default::Default>::default());
     let mut elements: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = inElements.clone();
     let mut acc: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
@@ -6845,14 +6869,14 @@ fn makeClassPart(mut inElements: Arc<metamodelica::List<Arc<Absyn::ElementItem>>
 }
 
 fn moveClassInClassPart3(mut inClass: Arc<Absyn::ElementItem>, mut inOffset: i32, mut inIsPublic: bool, mut inClassPart: Arc<Absyn::ClassPart>) -> Result<(Arc<metamodelica::List<Arc<Absyn::ClassPart>>>, i32, bool)> {
-    let mut outClassParts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
-    let mut outRemainingOffset: i32 = 0;
+    let mut outClassParts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>;
+    let mut outRemainingOffset: i32;
     let mut outMoved: bool = false;
-    let mut same_part_type: bool = false;
-    let mut reached_end: bool = false;
-    let mut elems_before: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
-    let mut elems_after: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
-    let mut elems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
+    let mut same_part_type: bool;
+    let mut reached_end: bool;
+    let mut elems_before: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>;
+    let mut elems_after: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>;
+    let mut elems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>;
     (elems, same_part_type) = (::match_deref::match_deref! { match &(inClassPart.clone()) {
         Deref @ Absyn::ClassPart::PUBLIC { .. } => (var_field!((*inClassPart).contents, Absyn::ClassPart::PUBLIC).clone(), inIsPublic.clone()),
         Deref @ Absyn::ClassPart::PROTECTED { .. } => (var_field!((*inClassPart).contents, Absyn::ClassPart::PROTECTED).clone(), !(inIsPublic.clone())),
@@ -6891,8 +6915,8 @@ fn moveClassInSplitClassPart(mut inOffset: i32, mut inElementsBefore: Arc<metamo
     let mut outElementsBefore: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = inElementsBefore.clone();
     let mut outElementsAfter: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = inElementsAfter.clone();
     let mut outRemainingOffset: i32 = inOffset.clone();
-    let mut outReachedEnd: bool = false;
-    let mut e: Arc<Absyn::ElementItem> = Arc::new(<Absyn::ElementItem as ::std::default::Default>::default());
+    let mut outReachedEnd: bool;
+    let mut e: Arc<Absyn::ElementItem>;
     if inOffset.clone() > 0 {
         while outRemainingOffset.clone() > 0 {
             if outElementsAfter.clone().is_empty() {
@@ -6955,8 +6979,8 @@ fn deleteClassInClassPart(mut inName: ArcStr, mut inClassPart: Arc<Absyn::ClassP
 }
 
 fn moveClassToTopInClass(mut inName: ArcStr, mut inClass: Arc<Absyn::Class>) -> Result<Arc<Absyn::Class>> {
-    let mut outClass: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
-    let mut body: Arc<Absyn::ClassDef> = Arc::new(<Absyn::ClassDef as ::std::default::Default>::default());
+    let mut outClass: Arc<Absyn::Class>;
+    let mut body: Arc<Absyn::ClassDef>;
     let __pa0 = ::match_deref::match_deref! { match &(inClass.clone()) {
         Deref @ Absyn::Class { body: __pa0, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
@@ -6980,11 +7004,11 @@ fn moveClassToTopInClass(mut inName: ArcStr, mut inClass: Arc<Absyn::Class>) -> 
 fn moveClassToTopInClassParts(mut inName: ArcStr, mut inClassParts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<Arc<metamodelica::List<Arc<Absyn::ClassPart>>>> {
     let mut outClassParts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
     let mut part: Arc<Absyn::ClassPart> = Arc::new(<Absyn::ClassPart as ::std::default::Default>::default());
-    let mut first: Arc<Absyn::ClassPart> = Arc::new(<Absyn::ClassPart as ::std::default::Default>::default());
+    let mut first: Arc<Absyn::ClassPart>;
     let mut acc: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
     let mut rest: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = inClassParts.clone();
     let mut ocls: Option<Arc<Absyn::ElementItem>> = None;
-    let mut cls: Arc<Absyn::ElementItem> = Arc::new(<Absyn::ElementItem as ::std::default::Default>::default());
+    let mut cls: Arc<Absyn::ElementItem>;
     loop {
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(rest.clone()) {
             Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
@@ -7031,8 +7055,8 @@ fn moveClassToTopInClassParts(mut inName: ArcStr, mut inClassParts: Arc<metamode
 }
 
 fn moveClassToBottomInClass(mut inName: ArcStr, mut inClass: Arc<Absyn::Class>) -> Result<Arc<Absyn::Class>> {
-    let mut outClass: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
-    let mut body: Arc<Absyn::ClassDef> = Arc::new(<Absyn::ClassDef as ::std::default::Default>::default());
+    let mut outClass: Arc<Absyn::Class>;
+    let mut body: Arc<Absyn::ClassDef>;
     let __pa0 = ::match_deref::match_deref! { match &(inClass.clone()) {
         Deref @ Absyn::Class { body: __pa0, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
@@ -7054,13 +7078,13 @@ fn moveClassToBottomInClass(mut inName: ArcStr, mut inClass: Arc<Absyn::Class>) 
 }
 
 fn moveClassToBottomInClassParts(mut inName: ArcStr, mut inClassParts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<Arc<metamodelica::List<Arc<Absyn::ClassPart>>>> {
-    let mut outClassParts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
+    let mut outClassParts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>;
     let mut part: Arc<Absyn::ClassPart> = Arc::new(<Absyn::ClassPart as ::std::default::Default>::default());
-    let mut last: Arc<Absyn::ClassPart> = Arc::new(<Absyn::ClassPart as ::std::default::Default>::default());
+    let mut last: Arc<Absyn::ClassPart>;
     let mut acc: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
     let mut rest: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = inClassParts.clone();
     let mut ocls: Option<Arc<Absyn::ElementItem>> = None;
-    let mut cls: Arc<Absyn::ElementItem> = Arc::new(<Absyn::ElementItem as ::std::default::Default>::default());
+    let mut cls: Arc<Absyn::ElementItem>;
     loop {
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(rest.clone()) {
             Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
@@ -7107,9 +7131,9 @@ fn moveClassToBottomInClassParts(mut inName: ArcStr, mut inClassParts: Arc<metam
 }
 
 fn copyClass(mut inClass: Arc<Absyn::Class>, mut inName: ArcStr, mut inWithin: Absyn::Within, mut inClassPath: Arc<Absyn::Path>, mut inProg: Absyn::Program) -> Result<Absyn::Program> {
-    let mut outProg: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
-    let mut cls: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
-    let mut orig_file: ArcStr = arcstr::literal!("");
+    let mut outProg: Absyn::Program;
+    let mut cls: Arc<Absyn::Class>;
+    let mut orig_file: ArcStr;
     let mut dst_path: ArcStr = arcstr::literal!("");
     let __pa0 = ::match_deref::match_deref! { match &(inClass.clone()) {
         Deref @ Absyn::Class { info: SourceInfo { fileName: __pa0, .. }, .. } => __pa0.clone(),
@@ -7250,7 +7274,7 @@ fn moveClassDefInfo(mut inClassDef: Arc<Absyn::ClassDef>, mut dstPath: ArcStr) -
 }
 
 fn moveClassPartInfo(mut inPart: Arc<Absyn::ClassPart>, mut dstPath: ArcStr) -> Result<Arc<Absyn::ClassPart>> {
-    let mut outPart: Arc<Absyn::ClassPart> = Arc::new(<Absyn::ClassPart as ::std::default::Default>::default());
+    let mut outPart: Arc<Absyn::ClassPart>;
     outPart = (::match_deref::match_deref! { match &(inPart.clone()) {
         Deref @ Absyn::ClassPart::PUBLIC { contents: el } => {
             Arc::new(Absyn::ClassPart::PUBLIC { contents: ({
@@ -7328,7 +7352,7 @@ fn moveClassPartInfo(mut inPart: Arc<Absyn::ClassPart>, mut dstPath: ArcStr) -> 
 }
 
 fn moveAnnotationOptInfo(mut inAnnotation: Option<Arc<Absyn::Annotation>>, mut dstPath: ArcStr) -> Result<Option<Arc<Absyn::Annotation>>> {
-    let mut outAnnotation: Option<Arc<Absyn::Annotation>> = None;
+    let mut outAnnotation: Option<Arc<Absyn::Annotation>>;
     outAnnotation = (::match_deref::match_deref! { match &(inAnnotation.clone()) {
         Some(a) => {
             Some(moveAnnotationInfo(a.clone(), (dstPath.clone()).clone())?)
@@ -7355,7 +7379,7 @@ fn moveAnnotationInfo(mut inAnnotation: Arc<Absyn::Annotation>, mut dstPath: Arc
 }
 
 fn moveElementItemInfo(mut inElement: Arc<Absyn::ElementItem>, mut dstPath: ArcStr) -> Result<Arc<Absyn::ElementItem>> {
-    let mut outElement: Arc<Absyn::ElementItem> = Arc::new(<Absyn::ElementItem as ::std::default::Default>::default());
+    let mut outElement: Arc<Absyn::ElementItem>;
     outElement = (::match_deref::match_deref! { match &(inElement.clone()) {
         Deref @ Absyn::ElementItem::ELEMENTITEM { .. } => Arc::new(Absyn::ElementItem::ELEMENTITEM { element: moveElementInfo(var_field!((*inElement).element, Absyn::ElementItem::ELEMENTITEM).clone(), (dstPath.clone()).clone())? }),
         _ => inElement.clone(),
@@ -7410,7 +7434,7 @@ fn moveElementArgInfo(mut inArg: Arc<Absyn::ElementArg>, mut dstPath: ArcStr) ->
 }
 
 fn moveModificationInfo(mut inMod: Option<Arc<Absyn::Modification>>, mut dstPath: ArcStr) -> Result<Option<Arc<Absyn::Modification>>> {
-    let mut outMod: Option<Arc<Absyn::Modification>> = None;
+    let mut outMod: Option<Arc<Absyn::Modification>>;
     outMod = (::match_deref::match_deref! { match &(inMod.clone()) {
         Some(Deref @ Absyn::Modification { elementArgLst: el, eqMod: eq }) => {
             let mut el = (*el).clone();
@@ -7435,7 +7459,7 @@ fn moveModificationInfo(mut inMod: Option<Arc<Absyn::Modification>>, mut dstPath
 }
 
 fn moveEqModInfo(mut inEqMod: Arc<Absyn::EqMod>, mut dstPath: ArcStr) -> Result<Arc<Absyn::EqMod>> {
-    let mut outEqMod: Arc<Absyn::EqMod> = Arc::new(Absyn::EqMod::NOMOD);
+    let mut outEqMod: Arc<Absyn::EqMod>;
     outEqMod = (::match_deref::match_deref! { match &(inEqMod.clone()) {
         Deref @ Absyn::EqMod::EQMOD { .. } => Arc::new(Absyn::EqMod::EQMOD { exp: var_field!((*inEqMod).exp, Absyn::EqMod::EQMOD).clone(), info: moveSourceInfo(var_field!((*inEqMod).info, Absyn::EqMod::EQMOD).clone(), (dstPath.clone()).clone())? }),
         _ => inEqMod.clone(),
@@ -7445,7 +7469,7 @@ fn moveEqModInfo(mut inEqMod: Arc<Absyn::EqMod>, mut dstPath: ArcStr) -> Result<
 }
 
 fn moveConstrainClassInfo(mut inCC: Option<Arc<Absyn::ConstrainClass>>, mut dstPath: ArcStr) -> Result<Option<Arc<Absyn::ConstrainClass>>> {
-    let mut outCC: Option<Arc<Absyn::ConstrainClass>> = None;
+    let mut outCC: Option<Arc<Absyn::ConstrainClass>>;
     outCC = (::match_deref::match_deref! { match &(inCC.clone()) {
         Some(Deref @ Absyn::ConstrainClass { elementSpec: spec, comment: cmt }) => {
             let mut spec = (*spec).clone();
@@ -7463,7 +7487,7 @@ fn moveConstrainClassInfo(mut inCC: Option<Arc<Absyn::ConstrainClass>>, mut dstP
 }
 
 fn moveCommentInfo(mut inComment: Option<Arc<Absyn::Comment>>, mut dstPath: ArcStr) -> Result<Option<Arc<Absyn::Comment>>> {
-    let mut outComment: Option<Arc<Absyn::Comment>> = None;
+    let mut outComment: Option<Arc<Absyn::Comment>>;
     outComment = (::match_deref::match_deref! { match &(inComment.clone()) {
         Some(Deref @ Absyn::Comment { annotation_: Some(a), comment: c }) => {
             let mut a = (*a).clone();
@@ -7479,7 +7503,7 @@ fn moveCommentInfo(mut inComment: Option<Arc<Absyn::Comment>>, mut dstPath: ArcS
 }
 
 fn moveEquationItemInfo(mut inEquation: Arc<Absyn::EquationItem>, mut dstPath: ArcStr) -> Result<Arc<Absyn::EquationItem>> {
-    let mut outEquation: Arc<Absyn::EquationItem> = Arc::new(<Absyn::EquationItem as ::std::default::Default>::default());
+    let mut outEquation: Arc<Absyn::EquationItem>;
     outEquation = (::match_deref::match_deref! { match &(inEquation.clone()) {
         Deref @ Absyn::EquationItem::EQUATIONITEM { equation_: eq, comment: cmt, info } => {
             let mut cmt = (*cmt).clone();
@@ -7497,7 +7521,7 @@ fn moveEquationItemInfo(mut inEquation: Arc<Absyn::EquationItem>, mut dstPath: A
 }
 
 fn moveAlgorithmItemInfo(mut inAlgorithm: Arc<Absyn::AlgorithmItem>, mut dstPath: ArcStr) -> Result<Arc<Absyn::AlgorithmItem>> {
-    let mut outAlgorithm: Arc<Absyn::AlgorithmItem> = Arc::new(<Absyn::AlgorithmItem as ::std::default::Default>::default());
+    let mut outAlgorithm: Arc<Absyn::AlgorithmItem>;
     outAlgorithm = (::match_deref::match_deref! { match &(inAlgorithm.clone()) {
         Deref @ Absyn::AlgorithmItem::ALGORITHMITEM { algorithm_: alg, comment: cmt, info } => {
             let mut cmt = (*cmt).clone();
@@ -7560,10 +7584,10 @@ fn moveElementSpecInfo(mut inSpec: Arc<Absyn::ElementSpec>, mut dstPath: ArcStr)
 }
 
 fn moveComponentItemInfo(mut inComponent: Arc<Absyn::ComponentItem>, mut dstPath: ArcStr) -> Result<Arc<Absyn::ComponentItem>> {
-    let mut outComponent: Arc<Absyn::ComponentItem> = Arc::new(<Absyn::ComponentItem as ::std::default::Default>::default());
-    let mut comp: Absyn::Component = <Absyn::Component as ::std::default::Default>::default();
-    let mut cond: Option<Arc<Absyn::Exp>> = None;
-    let mut cmt: Option<Arc<Absyn::Comment>> = None;
+    let mut outComponent: Arc<Absyn::ComponentItem>;
+    let mut comp: Absyn::Component;
+    let mut cond: Option<Arc<Absyn::Exp>>;
+    let mut cmt: Option<Arc<Absyn::Comment>>;
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(inComponent.clone()) {
         Deref @ Absyn::ComponentItem { component: __pa0, condition: __pa1, comment: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
@@ -7591,16 +7615,16 @@ fn moveExternalDeclInfo(mut inExtDecl: Arc<Absyn::ExternalDecl>, mut dstPath: Ar
 
 fn buildModel(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inValues: Arc<metamodelica::List<Arc<Values::Value>>>, mut inMsg: Absyn::Msg) -> Result<(bool, FCore::Cache, ArcStr, ArcStr, ArcStr, ArcStr, ArcStr, ArcStr, Arc<metamodelica::List<(ArcStr, Arc<Values::Value>)>>, Arc<metamodelica::List<Arc<Values::Value>>>, Arc<metamodelica::List<ArcStr>>)> {
     let mut success: bool = false;
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
+    let mut outCache: FCore::Cache;
     let mut compileDir: ArcStr = arcstr::literal!("");
-    let mut outString1: ArcStr = arcstr::literal!("");
-    let mut outString2: ArcStr = arcstr::literal!("");
+    let mut outString1: ArcStr;
+    let mut outString2: ArcStr;
     let mut outputFormat_str: ArcStr = arcstr::literal!("");
-    let mut outInitFileName: ArcStr = arcstr::literal!("");
-    let mut outSimFlags: ArcStr = arcstr::literal!("");
+    let mut outInitFileName: ArcStr;
+    let mut outSimFlags: ArcStr;
     let mut resultValues: Arc<metamodelica::List<(ArcStr, Arc<Values::Value>)>> = metamodelica::nil();
-    let mut outArgs: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-    let mut outLibsAndLibDirs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+    let mut outArgs: Arc<metamodelica::List<Arc<Values::Value>>>;
+    let mut outLibsAndLibDirs: Arc<metamodelica::List<ArcStr>>;
     (outCache, compileDir, outString1, outString2, outputFormat_str, outInitFileName, outSimFlags, resultValues, outArgs, outLibsAndLibDirs) = 'mc: {
         let __mc_input = (inCache.clone(), inEnv.clone(), inValues.clone());
         if let Ok((__v, __wb0, __wb1, __wb2, __wb3)) = (|| -> Result<_> {
@@ -7706,7 +7730,7 @@ fn buildModel(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inValues: 
 }
 
 fn formatSimulationFlagsString(mut r#mod: Option<Arc<Absyn::Modification>>) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     r#str = ((::match_deref::match_deref! { match &(r#mod.clone()) {
         Some(Deref @ Absyn::Modification { elementArgLst: args, .. }) => {
             List::toString(args.clone(), (std::sync::Arc::new(formatSimulationFlagString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::ElementArg>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("-")).clone(), (literal!(" -")).clone(), (literal!("")).clone(), false, 0)?
@@ -7720,7 +7744,7 @@ fn formatSimulationFlagsString(mut r#mod: Option<Arc<Absyn::Modification>>) -> R
 }
 
 fn formatSimulationFlagString(mut arg: Arc<Absyn::ElementArg>) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     r#str = ((::match_deref::match_deref! { match &(arg.clone()) {
         Deref @ Absyn::ElementArg::MODIFICATION { modification: Some(Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::EQMOD { exp, .. }, .. }), .. } => {
             (::match_deref::match_deref! { match &(exp.clone()) {
@@ -7738,8 +7762,8 @@ fn formatSimulationFlagString(mut arg: Arc<Absyn::ElementArg>) -> Result<ArcStr>
 }
 
 fn createSimulationResultFromcallModelExecutable(mut buildSuccess: bool, mut callRet: i32, mut timeTotal: metamodelica::Real, mut timeSimulation: metamodelica::Real, mut resultValues: Arc<metamodelica::List<(ArcStr, Arc<Values::Value>)>>, mut inCache: FCore::Cache, mut className: Arc<Absyn::Path>, mut inVals: Arc<metamodelica::List<Arc<Values::Value>>>, mut result_file: ArcStr, mut logFile: ArcStr) -> Result<(FCore::Cache, Arc<Values::Value>)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outValue: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
+    let mut outCache: FCore::Cache;
+    let mut outValue: Arc<Values::Value>;
     (outCache, outValue) = 'mc: {
         let __mc_input = (buildSuccess.clone(), callRet.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -7773,7 +7797,7 @@ fn createSimulationResultFromcallModelExecutable(mut buildSuccess: bool, mut cal
 
 pub fn checkModel(mut cache: FCore::Cache, mut env: FCore::Graph, mut className: Arc<Absyn::Path>, mut inMsg: Absyn::Msg) -> Result<(FCore::Cache, Arc<Values::Value>)> {
     let mut cache: FCore::Cache = cache;
-    let mut outValue: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
+    let mut outValue: Arc<Values::Value>;
     outValue = 'mc: {
         let __mc_input = ();
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
@@ -7835,7 +7859,7 @@ pub fn checkModel(mut cache: FCore::Cache, mut env: FCore::Graph, mut className:
 }
 
 fn getWithinStatement(mut ip: Arc<Absyn::Path>) -> Result<Absyn::Within> {
-    let mut op: Absyn::Within = Absyn::Within::TOP;
+    let mut op: Absyn::Within;
     op = 'mc: {
         let __mc_input = ip.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -7862,7 +7886,7 @@ fn getWithinStatement(mut ip: Arc<Absyn::Path>) -> Result<Absyn::Within> {
 }
 
 fn dumpXMLDAE(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut vals: Arc<metamodelica::List<Arc<Values::Value>>>, mut inMsg: Absyn::Msg) -> Result<(FCore::Cache, ArcStr)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
+    let mut outCache: FCore::Cache;
     let mut xml_filename: ArcStr = arcstr::literal!("");
     (outCache, xml_filename) = 'mc: {
         let __mc_input = (inCache.clone(), inEnv.clone(), vals.clone());
@@ -8086,7 +8110,7 @@ fn applyRewriteRulesOnBackend(mut inBackendDAE: Arc<BackendDAE::BackendDAE>) -> 
 }
 
 fn getClassnamesInClassList(mut inPath: Arc<Absyn::Path>, mut inProgram: Absyn::Program, mut inClass: Arc<Absyn::Class>, mut inShowProtected: bool) -> Result<Arc<metamodelica::List<ArcStr>>> {
-    let mut outStrings: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+    let mut outStrings: Arc<metamodelica::List<ArcStr>>;
     outStrings = (::match_deref::match_deref! { match &((inClass.clone(), inShowProtected.clone())) {
         (Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::PARTS { classParts: parts, .. }, .. }, b) => {
             let mut strlist: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -8116,7 +8140,7 @@ fn getClassnamesInClassList(mut inPath: Arc<Absyn::Path>, mut inProgram: Absyn::
 }
 
 fn joinPaths(mut child: ArcStr, mut parent: Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> {
-    let mut outPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+    let mut outPath: Arc<Absyn::Path>;
     outPath = (::match_deref::match_deref! { match &((child.clone(), parent.clone())) {
         (c, r) => {
             let mut res: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
@@ -8129,7 +8153,7 @@ fn joinPaths(mut child: ArcStr, mut parent: Arc<Absyn::Path>) -> Result<Arc<Absy
 }
 
 fn getAllClassPathsRecursive(mut inPath: Arc<Absyn::Path>, mut inCheckProtected: bool, mut inProgram: Absyn::Program) -> Result<Arc<metamodelica::List<Arc<Absyn::Path>>>> {
-    let mut outPaths: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
+    let mut outPaths: Arc<metamodelica::List<Arc<Absyn::Path>>>;
     outPaths = 'mc: {
         let __mc_input = (inCheckProtected.clone(), inProgram.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -8160,8 +8184,8 @@ fn getAllClassPathsRecursive(mut inPath: Arc<Absyn::Path>, mut inCheckProtected:
 }
 
 pub fn checkAllModelsRecursive(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut className: Arc<Absyn::Path>, mut inCheckProtected: bool, mut inMsg: Absyn::Msg) -> Result<(FCore::Cache, Arc<Values::Value>)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outValue: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
+    let mut outCache: FCore::Cache;
+    let mut outValue: Arc<Values::Value>;
     (outCache, outValue) = 'mc: {
         let __mc_input = (inCache.clone(), inEnv.clone(), inCheckProtected.clone(), inMsg.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -8187,7 +8211,7 @@ pub fn checkAllModelsRecursive(mut inCache: FCore::Cache, mut inEnv: FCore::Grap
 }
 
 pub fn failOrSuccess(mut inStr: ArcStr) -> Result<(ArcStr, bool)> {
-    let mut outStr: ArcStr = arcstr::literal!("");
+    let mut outStr: ArcStr;
     let mut failed: bool = false;
     outStr = ('mc: {
         let __mc_input = inStr.clone();
@@ -8213,7 +8237,7 @@ pub fn failOrSuccess(mut inStr: ArcStr) -> Result<(ArcStr, bool)> {
 
 pub fn checkAll(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut allClasses: Arc<metamodelica::List<Arc<Absyn::Path>>>, mut inMsg: Absyn::Msg, mut reportTimes: bool, mut failed: i32) -> Result<i32> {
     let mut failed: i32 = failed;
-    let mut p: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
+    let mut p: Absyn::Program;
     let mut rest: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
     let mut className: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     let mut r#str: ArcStr = arcstr::literal!("");
@@ -8303,7 +8327,7 @@ pub fn checkAll(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut allClass
 }
 
 fn getAlgorithms(mut inClass: Arc<Absyn::Class>) -> Result<Arc<metamodelica::List<Arc<Absyn::ClassPart>>>> {
-    let mut outList: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
+    let mut outList: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>;
     outList = (::match_deref::match_deref! { match &(inClass.clone()) {
         Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::PARTS { classParts: parts, .. }, .. } => {
             let mut algsList: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
@@ -8324,7 +8348,7 @@ fn getAlgorithms(mut inClass: Arc<Absyn::Class>) -> Result<Arc<metamodelica::Lis
 }
 
 fn getAlgorithmsInClassParts(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<Arc<metamodelica::List<Arc<Absyn::ClassPart>>>> {
-    let mut outList: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
+    let mut outList: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>;
     outList = 'mc: {
         let __mc_input = inAbsynClassPartLst.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -8361,15 +8385,15 @@ fn getAlgorithmsInClassParts(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc
 }
 
 fn getNthAlgorithm(mut inClass: Arc<Absyn::Class>, mut inInteger: i32) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
-    let mut algsList: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
+    let mut outString: ArcStr;
+    let mut algsList: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>;
     algsList = getAlgorithms(inClass.clone())?;
     outString = (getNthAlgorithmInClass((algsList.clone()).get(inInteger.clone())?)?).clone();
     Ok(outString)
 }
 
 fn getNthAlgorithmInClass(mut inClassPart: Arc<Absyn::ClassPart>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(inClassPart.clone()) {
         Deref @ Absyn::ClassPart::ALGORITHMS { contents: algs } => {
             let mut r#str: ArcStr = arcstr::literal!("");
@@ -8382,7 +8406,7 @@ fn getNthAlgorithmInClass(mut inClassPart: Arc<Absyn::ClassPart>) -> Result<ArcS
 }
 
 fn getInitialAlgorithms(mut inClass: Arc<Absyn::Class>) -> Result<Arc<metamodelica::List<Arc<Absyn::ClassPart>>>> {
-    let mut outList: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
+    let mut outList: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>;
     outList = (::match_deref::match_deref! { match &(inClass.clone()) {
         Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::PARTS { classParts: parts, .. }, .. } => {
             let mut algsList: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
@@ -8403,7 +8427,7 @@ fn getInitialAlgorithms(mut inClass: Arc<Absyn::Class>) -> Result<Arc<metamodeli
 }
 
 fn getInitialAlgorithmsInClassParts(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<Arc<metamodelica::List<Arc<Absyn::ClassPart>>>> {
-    let mut outList: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
+    let mut outList: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>;
     outList = 'mc: {
         let __mc_input = inAbsynClassPartLst.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -8440,15 +8464,15 @@ fn getInitialAlgorithmsInClassParts(mut inAbsynClassPartLst: Arc<metamodelica::L
 }
 
 fn getNthInitialAlgorithm(mut inClass: Arc<Absyn::Class>, mut inInteger: i32) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
-    let mut algsList: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
+    let mut outString: ArcStr;
+    let mut algsList: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>;
     algsList = getInitialAlgorithms(inClass.clone())?;
     outString = (getNthInitialAlgorithmInClass((algsList.clone()).get(inInteger.clone())?)?).clone();
     Ok(outString)
 }
 
 fn getNthInitialAlgorithmInClass(mut inClassPart: Arc<Absyn::ClassPart>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(inClassPart.clone()) {
         Deref @ Absyn::ClassPart::INITIALALGORITHMS { contents: algs } => {
             let mut r#str: ArcStr = arcstr::literal!("");
@@ -8461,7 +8485,7 @@ fn getNthInitialAlgorithmInClass(mut inClassPart: Arc<Absyn::ClassPart>) -> Resu
 }
 
 fn getAlgorithmItemsCount(mut inClass: Arc<Absyn::Class>) -> Result<i32> {
-    let mut outInteger: i32 = 0;
+    let mut outInteger: i32;
     outInteger = (::match_deref::match_deref! { match &(inClass.clone()) {
         Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::PARTS { classParts: parts, .. }, .. } => {
             let mut count: i32 = 0;
@@ -8482,7 +8506,7 @@ fn getAlgorithmItemsCount(mut inClass: Arc<Absyn::Class>) -> Result<i32> {
 }
 
 fn getAlgorithmItemsCountInClassParts(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<i32> {
-    let mut outInteger: i32 = 0;
+    let mut outInteger: i32;
     outInteger = 'mc: {
         let __mc_input = inAbsynClassPartLst.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -8521,7 +8545,7 @@ fn getAlgorithmItemsCountInClassParts(mut inAbsynClassPartLst: Arc<metamodelica:
 }
 
 fn getAlgorithmItemsCountInAlgorithmItems(mut inAbsynAlgorithmItemLst: Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>) -> Result<i32> {
-    let mut outInteger: i32 = 0;
+    let mut outInteger: i32;
     outInteger = 'mc: {
         let __mc_input = inAbsynAlgorithmItemLst.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -8558,7 +8582,7 @@ fn getAlgorithmItemsCountInAlgorithmItems(mut inAbsynAlgorithmItemLst: Arc<metam
 }
 
 fn getNthAlgorithmItem(mut inClass: Arc<Absyn::Class>, mut inInteger: i32) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     let mut parts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
     outString = ((::match_deref::match_deref! { match &(inClass.clone()) {
         Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::PARTS { classParts: __esc_parts, .. }, .. } => {
@@ -8575,7 +8599,7 @@ fn getNthAlgorithmItem(mut inClass: Arc<Absyn::Class>, mut inInteger: i32) -> Re
 }
 
 fn getNthAlgorithmItemInClassParts(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>, mut inInteger: i32) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ('mc: {
         let __mc_input = (inAbsynClassPartLst.clone(), inInteger.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -8618,7 +8642,7 @@ fn getNthAlgorithmItemInClassParts(mut inAbsynClassPartLst: Arc<metamodelica::Li
 }
 
 fn getNthAlgorithmItemInAlgorithms(mut inAbsynAlgorithmItemLst: Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>, mut inInteger: i32) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ('mc: {
         let __mc_input = (inAbsynAlgorithmItemLst.clone(), inInteger.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -8657,7 +8681,7 @@ fn getNthAlgorithmItemInAlgorithms(mut inAbsynAlgorithmItemLst: Arc<metamodelica
 }
 
 fn getInitialAlgorithmItemsCount(mut inClass: Arc<Absyn::Class>) -> Result<i32> {
-    let mut outInteger: i32 = 0;
+    let mut outInteger: i32;
     outInteger = (::match_deref::match_deref! { match &(inClass.clone()) {
         Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::PARTS { classParts: parts, .. }, .. } => {
             let mut count: i32 = 0;
@@ -8678,7 +8702,7 @@ fn getInitialAlgorithmItemsCount(mut inClass: Arc<Absyn::Class>) -> Result<i32> 
 }
 
 fn getInitialAlgorithmItemsCountInClassParts(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<i32> {
-    let mut outInteger: i32 = 0;
+    let mut outInteger: i32;
     outInteger = 'mc: {
         let __mc_input = inAbsynClassPartLst.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -8717,7 +8741,7 @@ fn getInitialAlgorithmItemsCountInClassParts(mut inAbsynClassPartLst: Arc<metamo
 }
 
 fn getNthInitialAlgorithmItem(mut inClass: Arc<Absyn::Class>, mut inInteger: i32) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &((inClass.clone(), inInteger.clone())) {
         (Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::PARTS { classParts: parts, .. }, .. }, n) => {
             let mut r#str: ArcStr = arcstr::literal!("");
@@ -8735,7 +8759,7 @@ fn getNthInitialAlgorithmItem(mut inClass: Arc<Absyn::Class>, mut inInteger: i32
 }
 
 fn getNthInitialAlgorithmItemInClassParts(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>, mut inInteger: i32) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ('mc: {
         let __mc_input = (inAbsynClassPartLst.clone(), inInteger.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -8778,7 +8802,7 @@ fn getNthInitialAlgorithmItemInClassParts(mut inAbsynClassPartLst: Arc<metamodel
 }
 
 fn getEquations(mut inClass: Arc<Absyn::Class>) -> Result<Arc<metamodelica::List<Arc<Absyn::ClassPart>>>> {
-    let mut outList: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
+    let mut outList: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>;
     outList = (::match_deref::match_deref! { match &(inClass.clone()) {
         Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::PARTS { classParts: parts, .. }, .. } => {
             let mut eqsList: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
@@ -8799,7 +8823,7 @@ fn getEquations(mut inClass: Arc<Absyn::Class>) -> Result<Arc<metamodelica::List
 }
 
 fn getEquationsInClassParts(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<Arc<metamodelica::List<Arc<Absyn::ClassPart>>>> {
-    let mut outList: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
+    let mut outList: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>;
     outList = 'mc: {
         let __mc_input = inAbsynClassPartLst.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -8836,15 +8860,15 @@ fn getEquationsInClassParts(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<
 }
 
 fn getNthEquation(mut inClass: Arc<Absyn::Class>, mut inInteger: i32) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
-    let mut eqsList: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
+    let mut outString: ArcStr;
+    let mut eqsList: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>;
     eqsList = getEquations(inClass.clone())?;
     outString = (getNthEquationInClass((eqsList.clone()).get(inInteger.clone())?)?).clone();
     Ok(outString)
 }
 
 fn getNthEquationInClass(mut inClassPart: Arc<Absyn::ClassPart>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(inClassPart.clone()) {
         Deref @ Absyn::ClassPart::EQUATIONS { contents: eqs } => {
             let mut r#str: ArcStr = arcstr::literal!("");
@@ -8857,7 +8881,7 @@ fn getNthEquationInClass(mut inClassPart: Arc<Absyn::ClassPart>) -> Result<ArcSt
 }
 
 fn getInitialEquations(mut inClass: Arc<Absyn::Class>) -> Result<Arc<metamodelica::List<Arc<Absyn::ClassPart>>>> {
-    let mut outList: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
+    let mut outList: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>;
     outList = (::match_deref::match_deref! { match &(inClass.clone()) {
         Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::PARTS { classParts: parts, .. }, .. } => {
             let mut eqsList: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
@@ -8878,7 +8902,7 @@ fn getInitialEquations(mut inClass: Arc<Absyn::Class>) -> Result<Arc<metamodelic
 }
 
 fn getInitialEquationsInClassParts(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<Arc<metamodelica::List<Arc<Absyn::ClassPart>>>> {
-    let mut outList: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
+    let mut outList: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>;
     outList = 'mc: {
         let __mc_input = inAbsynClassPartLst.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -8915,15 +8939,15 @@ fn getInitialEquationsInClassParts(mut inAbsynClassPartLst: Arc<metamodelica::Li
 }
 
 fn getNthInitialEquation(mut inClass: Arc<Absyn::Class>, mut inInteger: i32) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
-    let mut eqsList: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
+    let mut outString: ArcStr;
+    let mut eqsList: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>;
     eqsList = getInitialEquations(inClass.clone())?;
     outString = (getNthInitialEquationInClass((eqsList.clone()).get(inInteger.clone())?)?).clone();
     Ok(outString)
 }
 
 fn getNthInitialEquationInClass(mut inClassPart: Arc<Absyn::ClassPart>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(inClassPart.clone()) {
         Deref @ Absyn::ClassPart::INITIALEQUATIONS { contents: eqs } => {
             let mut r#str: ArcStr = arcstr::literal!("");
@@ -8936,7 +8960,7 @@ fn getNthInitialEquationInClass(mut inClassPart: Arc<Absyn::ClassPart>) -> Resul
 }
 
 fn getEquationItemsCount(mut inClass: Arc<Absyn::Class>) -> Result<i32> {
-    let mut outInteger: i32 = 0;
+    let mut outInteger: i32;
     outInteger = (::match_deref::match_deref! { match &(inClass.clone()) {
         Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::PARTS { classParts: parts, .. }, .. } => {
             let mut count: i32 = 0;
@@ -8957,7 +8981,7 @@ fn getEquationItemsCount(mut inClass: Arc<Absyn::Class>) -> Result<i32> {
 }
 
 fn getEquationItemsCountInClassParts(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<i32> {
-    let mut outInteger: i32 = 0;
+    let mut outInteger: i32;
     outInteger = 'mc: {
         let __mc_input = inAbsynClassPartLst.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -8996,7 +9020,7 @@ fn getEquationItemsCountInClassParts(mut inAbsynClassPartLst: Arc<metamodelica::
 }
 
 fn getEquationItemsCountInEquationItems(mut inAbsynEquationItemLst: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>) -> Result<i32> {
-    let mut outInteger: i32 = 0;
+    let mut outInteger: i32;
     outInteger = 'mc: {
         let __mc_input = inAbsynEquationItemLst.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -9033,7 +9057,7 @@ fn getEquationItemsCountInEquationItems(mut inAbsynEquationItemLst: Arc<metamode
 }
 
 fn getNthEquationItem(mut inClass: Arc<Absyn::Class>, mut inInteger: i32) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &((inClass.clone(), inInteger.clone())) {
         (Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::PARTS { classParts: parts, .. }, .. }, n) => {
             let mut r#str: ArcStr = arcstr::literal!("");
@@ -9051,7 +9075,7 @@ fn getNthEquationItem(mut inClass: Arc<Absyn::Class>, mut inInteger: i32) -> Res
 }
 
 fn getNthEquationItemInClassParts(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>, mut inInteger: i32) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ('mc: {
         let __mc_input = (inAbsynClassPartLst.clone(), inInteger.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -9094,7 +9118,7 @@ fn getNthEquationItemInClassParts(mut inAbsynClassPartLst: Arc<metamodelica::Lis
 }
 
 fn getNthEquationItemInEquations(mut inAbsynEquationItemLst: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, mut inInteger: i32) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ('mc: {
         let __mc_input = (inAbsynEquationItemLst.clone(), inInteger.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -9135,7 +9159,7 @@ fn getNthEquationItemInEquations(mut inAbsynEquationItemLst: Arc<metamodelica::L
 }
 
 fn getInitialEquationItemsCount(mut inClass: Arc<Absyn::Class>) -> Result<i32> {
-    let mut outInteger: i32 = 0;
+    let mut outInteger: i32;
     outInteger = (::match_deref::match_deref! { match &(inClass.clone()) {
         Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::PARTS { classParts: parts, .. }, .. } => {
             let mut count: i32 = 0;
@@ -9156,7 +9180,7 @@ fn getInitialEquationItemsCount(mut inClass: Arc<Absyn::Class>) -> Result<i32> {
 }
 
 fn getInitialEquationItemsCountInClassParts(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<i32> {
-    let mut outInteger: i32 = 0;
+    let mut outInteger: i32;
     outInteger = 'mc: {
         let __mc_input = inAbsynClassPartLst.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -9195,7 +9219,7 @@ fn getInitialEquationItemsCountInClassParts(mut inAbsynClassPartLst: Arc<metamod
 }
 
 fn getNthInitialEquationItem(mut inClass: Arc<Absyn::Class>, mut inInteger: i32) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     let mut parts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
     outString = ((::match_deref::match_deref! { match &(inClass.clone()) {
         Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::PARTS { classParts: __esc_parts, .. }, .. } => {
@@ -9212,7 +9236,7 @@ fn getNthInitialEquationItem(mut inClass: Arc<Absyn::Class>, mut inInteger: i32)
 }
 
 fn getNthInitialEquationItemInClassParts(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>, mut inInteger: i32) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ('mc: {
         let __mc_input = inAbsynClassPartLst.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -9249,7 +9273,7 @@ fn getNthInitialEquationItemInClassParts(mut inAbsynClassPartLst: Arc<metamodeli
 }
 
 fn getAnnotationCount(mut inClass: Arc<Absyn::Class>) -> Result<i32> {
-    let mut outInteger: i32 = 0;
+    let mut outInteger: i32;
     outInteger = (::match_deref::match_deref! { match &(inClass.clone()) {
         Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::PARTS { ann, .. }, .. } => {
             (ann.clone().len() as i32)
@@ -9266,7 +9290,7 @@ fn getAnnotationCount(mut inClass: Arc<Absyn::Class>) -> Result<i32> {
 }
 
 fn getNthAnnotationString(mut inClass: Arc<Absyn::Class>, mut inInteger: i32) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &((inClass.clone(), inInteger.clone())) {
         (Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::PARTS { ann: anns, .. }, .. }, n) => {
             let mut ann: Arc<Absyn::Annotation> = Arc::new(<Absyn::Annotation as ::std::default::Default>::default());
@@ -9292,25 +9316,25 @@ fn getNthAnnotationString(mut inClass: Arc<Absyn::Class>, mut inInteger: i32) ->
 }
 
 fn getImportCount(mut inClass: Arc<Absyn::Class>) -> i32 {
-    let mut outInteger: i32 = 0;
-    let mut pub_imports_list: Arc<metamodelica::List<Absyn::Import>> = metamodelica::nil();
-    let mut pro_imports_list: Arc<metamodelica::List<Absyn::Import>> = metamodelica::nil();
+    let mut outInteger: i32;
+    let mut pub_imports_list: Arc<metamodelica::List<Absyn::Import>>;
+    let mut pro_imports_list: Arc<metamodelica::List<Absyn::Import>>;
     (pub_imports_list, pro_imports_list) = CevalScript::getImportList(inClass.clone(), metamodelica::nil(), metamodelica::nil());
     outInteger = (pub_imports_list.clone().len() as i32) + (pro_imports_list.clone().len() as i32);
     outInteger
 }
 
 fn getNthImport(mut inClass: Arc<Absyn::Class>, mut inInteger: i32) -> Result<Arc<metamodelica::List<Arc<Values::Value>>>> {
-    let mut outValue: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-    let mut pub_imports_list: Arc<metamodelica::List<Absyn::Import>> = metamodelica::nil();
-    let mut pro_imports_list: Arc<metamodelica::List<Absyn::Import>> = metamodelica::nil();
+    let mut outValue: Arc<metamodelica::List<Arc<Values::Value>>>;
+    let mut pub_imports_list: Arc<metamodelica::List<Absyn::Import>>;
+    let mut pro_imports_list: Arc<metamodelica::List<Absyn::Import>>;
     (pub_imports_list, pro_imports_list) = CevalScript::getImportList(inClass.clone(), metamodelica::nil(), metamodelica::nil());
     outValue = unparseNthImport((pub_imports_list.clone()).get(inInteger.clone())?)?;
     Ok(outValue)
 }
 
 fn unparseNthImport(mut inImport: Absyn::Import) -> Result<Arc<metamodelica::List<Arc<Values::Value>>>> {
-    let mut outValue: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
+    let mut outValue: Arc<metamodelica::List<Arc<Values::Value>>>;
     outValue = (match inImport.clone() {
         Absyn::Import::NAMED_IMPORT { name: mut id, path: mut path } => {
             let mut vals: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
@@ -9349,7 +9373,7 @@ fn unparseNthImport(mut inImport: Absyn::Import) -> Result<Arc<metamodelica::Lis
 }
 
 fn unparseGroupImport(mut inAbsynGroupImportLst: Arc<metamodelica::List<Absyn::GroupImport>>) -> Result<Arc<metamodelica::List<ArcStr>>> {
-    let mut outList: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+    let mut outList: Arc<metamodelica::List<ArcStr>>;
     outList = 'mc: {
         let __mc_input = inAbsynGroupImportLst.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -9386,7 +9410,7 @@ fn unparseGroupImport(mut inAbsynGroupImportLst: Arc<metamodelica::List<Absyn::G
 }
 
 pub fn isShortDefinition(mut inPath: Arc<Absyn::Path>, mut inProgram: Absyn::Program) -> bool {
-    let mut outBoolean: bool = false;
+    let mut outBoolean: bool;
     match '__try0: {
         ::match_deref::match_deref! { match &(unwrap_break_err!(ProgramUtil::getPathedClassInProgram(inPath.clone(), inProgram.clone(), false, false), '__try0)) {
             Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::DERIVED { .. }, .. } => (),
@@ -9406,8 +9430,8 @@ pub fn isShortDefinition(mut inPath: Arc<Absyn::Path>, mut inProgram: Absyn::Pro
 }
 
 fn isExperiment(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> bool {
-    let mut res: bool = false;
-    let mut cdef: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
+    let mut res: bool;
+    let mut cdef: Arc<Absyn::Class>;
     match '__try0: {
         cdef = unwrap_break_err!(ProgramUtil::getPathedClassInProgram(path.clone(), program.clone(), false, false), '__try0);
         let false = (unwrap_break_err!(AbsynUtil::isPartial(cdef.clone()), '__try0)) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
@@ -9430,7 +9454,7 @@ fn isExperiment(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> bool
 }
 
 fn hasStopTime(mut r#mod: Option<Arc<Absyn::Modification>>) -> Result<bool> {
-    let mut b: bool = false;
+    let mut b: bool;
     b = (::match_deref::match_deref! { match &(r#mod.clone()) {
         Some(Deref @ Absyn::Modification { elementArgLst: arglst, .. }) => {
             List::any(arglst.clone(), (std::sync::Arc::new(fnptr!(hasStopTime2, Arc<Absyn::ElementArg>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::ElementArg>) -> Result<bool> + 'static>))?
@@ -9441,7 +9465,7 @@ fn hasStopTime(mut r#mod: Option<Arc<Absyn::Modification>>) -> Result<bool> {
 }
 
 fn hasStopTime2(mut arg: Arc<Absyn::ElementArg>) -> bool {
-    let mut b: bool = false;
+    let mut b: bool;
     b = (::match_deref::match_deref! { match &(arg.clone()) {
         Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "StopTime" }, .. } => true,
         _ => false,
@@ -9451,7 +9475,7 @@ fn hasStopTime2(mut arg: Arc<Absyn::ElementArg>) -> bool {
 }
 
 fn searchClassNames(mut inVals: Arc<metamodelica::List<Arc<Values::Value>>>, mut inSearchText: ArcStr, mut inFindInText: bool, mut inProgram: Absyn::Program) -> Result<Arc<metamodelica::List<Arc<Values::Value>>>> {
-    let mut outVals: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
+    let mut outVals: Arc<metamodelica::List<Arc<Values::Value>>>;
     outVals = 'mc: {
         let __mc_input = (inVals.clone(), inSearchText.clone(), inFindInText.clone(), inProgram.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -9513,7 +9537,7 @@ fn searchClassNames(mut inVals: Arc<metamodelica::List<Arc<Values::Value>>>, mut
 }
 
 fn makeUsesArray(mut inTpl: (Arc<Absyn::Path>, ArcStr, Arc<metamodelica::List<ArcStr>>, bool)) -> Result<Arc<Values::Value>> {
-    let mut v: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
+    let mut v: Arc<Values::Value>;
     v = (::match_deref::match_deref! { match &(inTpl.clone()) {
         (p, _, Deref @ metamodelica::List::Cons { head: ver, tail: Deref @ metamodelica::List::Nil }, _) => {
             let mut pstr: ArcStr = arcstr::literal!("");
@@ -9530,8 +9554,8 @@ fn makeUsesArray(mut inTpl: (Arc<Absyn::Path>, ArcStr, Arc<metamodelica::List<Ar
 }
 
 fn saveTotalModel(mut filename: ArcStr, mut classpath: Arc<Absyn::Path>, mut stripAnnotations: bool, mut stripComments: bool, mut obfuscate: bool) -> Result<()> {
-    let mut result: ArcStr = arcstr::literal!("");
-    let mut obfuscate_map: ArcStr = arcstr::literal!("");
+    let mut result: ArcStr;
+    let mut obfuscate_map: ArcStr;
     (result, obfuscate_map) = getTotalModel(classpath.clone(), stripAnnotations.clone(), stripComments.clone(), obfuscate.clone())?;
     if obfuscate.clone() {
         System::writeFile(({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::stripFileExtension((filename.clone()).clone())?); __mm_s.push_str(&*literal!("_mapping.json")); ArcStr::from(__mm_s) }).clone(), (obfuscate_map.clone()).clone())?;
@@ -9541,15 +9565,15 @@ fn saveTotalModel(mut filename: ArcStr, mut classpath: Arc<Absyn::Path>, mut str
 }
 
 fn getTotalModel(mut classpath: Arc<Absyn::Path>, mut stripAnnotations: bool, mut stripComments: bool, mut obfuscate: bool) -> Result<(ArcStr, ArcStr)> {
-    let mut result: ArcStr = arcstr::literal!("");
+    let mut result: ArcStr;
     let mut obfuscate_map: ArcStr = arcstr::literal!("");
-    let mut scodeP: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
-    let mut r#str: ArcStr = arcstr::literal!("");
-    let mut str1: ArcStr = arcstr::literal!("");
-    let mut str2: ArcStr = arcstr::literal!("");
-    let mut str3: ArcStr = arcstr::literal!("");
-    let mut env: Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>> = metamodelica::nil();
-    let mut cmt: Arc<SCode::Comment> = Arc::new(<SCode::Comment as ::std::default::Default>::default());
+    let mut scodeP: Arc<metamodelica::List<Arc<SCode::Element>>>;
+    let mut r#str: ArcStr;
+    let mut str1: ArcStr;
+    let mut str2: ArcStr;
+    let mut str3: ArcStr;
+    let mut env: Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>;
+    let mut cmt: Arc<SCode::Comment>;
     let mut cls_path: Arc<Absyn::Path> = classpath.clone();
     loadProgram(cls_path.clone())?;
     scodeP = SymbolTable::getSCode()?;
@@ -9578,14 +9602,14 @@ fn getTotalModel(mut classpath: Arc<Absyn::Path>, mut stripAnnotations: bool, mu
 }
 
 fn saveTotalModelDebug(mut filename: ArcStr, mut classPath: Arc<Absyn::Path>, mut stripAnnotations: bool, mut stripComments: bool, mut obfuscate: bool) -> Result<()> {
-    let mut prog: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
-    let mut r#str: ArcStr = arcstr::literal!("");
-    let mut str1: ArcStr = arcstr::literal!("");
-    let mut str2: ArcStr = arcstr::literal!("");
-    let mut str3: ArcStr = arcstr::literal!("");
+    let mut prog: Arc<metamodelica::List<Arc<SCode::Element>>>;
+    let mut r#str: ArcStr;
+    let mut str1: ArcStr;
+    let mut str2: ArcStr;
+    let mut str3: ArcStr;
     let mut cls_path: Arc<Absyn::Path> = classPath.clone();
-    let mut ocmt: Option<Arc<SCode::Comment>> = None;
-    let mut cmt: Arc<SCode::Comment> = Arc::new(<SCode::Comment as ::std::default::Default>::default());
+    let mut ocmt: Option<Arc<SCode::Comment>>;
+    let mut cmt: Arc<SCode::Comment>;
     loadProgram(cls_path.clone())?;
     prog = SymbolTable::getSCode()?;
     prog = TotalModelDebug::getTotalModel(prog.clone(), cls_path.clone())?;
@@ -9610,7 +9634,7 @@ fn saveTotalModelDebug(mut filename: ArcStr, mut classPath: Arc<Absyn::Path>, mu
 }
 
 fn getDymolaStateAnnotation(mut className: Arc<Absyn::Path>, mut p: Absyn::Program) -> Result<bool> {
-    let mut isState: bool = false;
+    let mut isState: bool;
     isState = (match p.clone() {
         _ => {
             let mut stateStr: ArcStr = arcstr::literal!("");
@@ -9649,33 +9673,33 @@ fn getDymolaStateAnnotationModStr(mut r#mod: Option<Arc<Absyn::Modification>>) -
 }
 
 fn getClassInformation(mut path: Arc<Absyn::Path>, mut p: Absyn::Program) -> Result<Arc<Values::Value>> {
-    let mut res_1: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
-    let mut name: ArcStr = arcstr::literal!("");
-    let mut file: ArcStr = arcstr::literal!("");
-    let mut res: ArcStr = arcstr::literal!("");
-    let mut cmt: ArcStr = arcstr::literal!("");
-    let mut version: ArcStr = arcstr::literal!("");
-    let mut preferredView: ArcStr = arcstr::literal!("");
-    let mut access: ArcStr = arcstr::literal!("");
-    let mut versionDate: ArcStr = arcstr::literal!("");
-    let mut versionBuild: ArcStr = arcstr::literal!("");
-    let mut dateModified: ArcStr = arcstr::literal!("");
-    let mut revisionId: ArcStr = arcstr::literal!("");
-    let mut lastIdent: ArcStr = arcstr::literal!("");
-    let mut partialPrefix: bool = false;
-    let mut finalPrefix: bool = false;
-    let mut encapsulatedPrefix: bool = false;
-    let mut isReadOnly: bool = false;
-    let mut isProtectedClass: bool = false;
-    let mut isDocClass: bool = false;
-    let mut isState: bool = false;
-    let mut restr: Absyn::Restriction = Absyn::Restriction::R_BLOCK;
-    let mut cdef: Arc<Absyn::ClassDef> = Arc::new(<Absyn::ClassDef as ::std::default::Default>::default());
-    let mut sl: i32 = 0;
-    let mut sc: i32 = 0;
-    let mut el: i32 = 0;
-    let mut ec: i32 = 0;
-    let mut classPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+    let mut res_1: Arc<Values::Value>;
+    let mut name: ArcStr;
+    let mut file: ArcStr;
+    let mut res: ArcStr;
+    let mut cmt: ArcStr;
+    let mut version: ArcStr;
+    let mut preferredView: ArcStr;
+    let mut access: ArcStr;
+    let mut versionDate: ArcStr;
+    let mut versionBuild: ArcStr;
+    let mut dateModified: ArcStr;
+    let mut revisionId: ArcStr;
+    let mut lastIdent: ArcStr;
+    let mut partialPrefix: bool;
+    let mut finalPrefix: bool;
+    let mut encapsulatedPrefix: bool;
+    let mut isReadOnly: bool;
+    let mut isProtectedClass: bool;
+    let mut isDocClass: bool;
+    let mut isState: bool;
+    let mut restr: Absyn::Restriction;
+    let mut cdef: Arc<Absyn::ClassDef>;
+    let mut sl: i32;
+    let mut sc: i32;
+    let mut el: i32;
+    let mut ec: i32;
+    let mut classPath: Arc<Absyn::Path>;
     let (__pa0, __pa1, __pa2, __pa3, __pa4, __pa5, __pa6, __pa7, __pa8, __pa9, __pa10, __pa11) = ::match_deref::match_deref! { match &(ProgramUtil::getPathedClassInProgram(path.clone(), p.clone(), false, false)?) {
         Deref @ Absyn::Class { name: __pa0, partialPrefix: __pa1, finalPrefix: __pa2, encapsulatedPrefix: __pa3, restriction: __pa4, body: __pa5, commentsBeforeClass: _, commentsBeforeEnd: _, commentsAfterEnd: _, info: SourceInfo { fileName: __pa6, isReadOnly: __pa7, lineNumberStart: __pa8, columnNumberStart: __pa9, lineNumberEnd: __pa10, columnNumberEnd: __pa11, lastModification: _ } } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone(), __pa6.clone(), __pa7.clone(), __pa8.clone(), __pa9.clone(), __pa10.clone(), __pa11.clone()),
         _ => bail!("pattern mismatch"),
@@ -9716,7 +9740,7 @@ fn getClassInformation(mut path: Arc<Absyn::Path>, mut p: Absyn::Program) -> Res
 }
 
 fn getClassDimensions(mut cdef: Arc<Absyn::ClassDef>) -> Result<Arc<Values::Value>> {
-    let mut v: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
+    let mut v: Arc<Values::Value>;
     v = (::match_deref::match_deref! { match &(cdef.clone()) {
         Deref @ Absyn::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TPATH { arrayDim: Some(ad), .. }, .. } => {
             ValuesMake::makeArray(({
@@ -9755,7 +9779,7 @@ fn getClassElementComment(mut element: Arc<Absyn::Element>) -> ArcStr {
 }
 
 fn getClassDefComment(mut inClassDef: Arc<Absyn::ClassDef>) -> ArcStr {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(inClassDef.clone()) {
         Deref @ Absyn::ClassDef::PARTS { comment: Some(r#str), .. } => {
             r#str.clone()
@@ -9784,7 +9808,7 @@ fn getClassDefComment(mut inClassDef: Arc<Absyn::ClassDef>) -> ArcStr {
 }
 
 fn getAnnotationInEquation(mut inEquationItem: Arc<Absyn::EquationItem>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(inEquationItem.clone()) {
         Deref @ Absyn::EquationItem::EQUATIONITEM { comment: Some(Deref @ Absyn::Comment { annotation_: Some(Deref @ Absyn::Annotation { elementArgs: annotations }), comment: _ }), .. } => {
             let mut annotationStr: ArcStr = arcstr::literal!("");
@@ -9802,7 +9826,7 @@ fn getAnnotationInEquation(mut inEquationItem: Arc<Absyn::EquationItem>) -> Resu
 }
 
 fn getAnnotationInEquationElArgs(mut inElArgLst: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>) -> Result<Arc<metamodelica::List<ArcStr>>> {
-    let mut outStringLst: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+    let mut outStringLst: Arc<metamodelica::List<ArcStr>>;
     outStringLst = 'mc: {
         let __mc_input = inElArgLst.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -9857,9 +9881,9 @@ fn getAnnotationInEquationElArgs(mut inElArgLst: Arc<metamodelica::List<Arc<Absy
 }
 
 fn getTransitions(mut path: Arc<Absyn::Path>, mut p: Absyn::Program) -> Result<Arc<Values::Value>> {
-    let mut res: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
-    let mut transitions: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>> = metamodelica::nil();
-    let mut cdef: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
+    let mut res: Arc<Values::Value>;
+    let mut transitions: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>;
+    let mut cdef: Arc<Absyn::Class>;
     cdef = ProgramUtil::getPathedClassInProgram(path.clone(), p.clone(), false, false)?;
     transitions = getTransitionsInClass(cdef.clone())?.reverse();
     res = ValuesMake::makeArray(List::map(transitions.clone(), (std::sync::Arc::new(ValuesMake::makeStringArray) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<ArcStr>>) -> Result<Arc<Values::Value>> + 'static>))?)?;
@@ -9867,7 +9891,7 @@ fn getTransitions(mut path: Arc<Absyn::Path>, mut p: Absyn::Program) -> Result<A
 }
 
 fn getTransitionsInClass(mut inClass: Arc<Absyn::Class>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>> {
-    let mut outTransitions: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>> = metamodelica::nil();
+    let mut outTransitions: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>;
     outTransitions = (::match_deref::match_deref! { match &(inClass.clone()) {
         Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::PARTS { classParts: parts, .. }, .. } => {
             let mut transitions: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>> = metamodelica::nil();
@@ -9888,7 +9912,7 @@ fn getTransitionsInClass(mut inClass: Arc<Absyn::Class>) -> Result<Arc<metamodel
 }
 
 fn getTransitionsInClassParts(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>> {
-    let mut outTransitions: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>> = metamodelica::nil();
+    let mut outTransitions: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>;
     outTransitions = 'mc: {
         let __mc_input = inAbsynClassPartLst.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -9949,7 +9973,7 @@ fn getTransitionsInEquations(mut inAbsynEquationItemLst: Arc<metamodelica::List<
 }
 
 fn getTransitionInEquation(mut inEquation: Arc<Absyn::Equation>) -> Result<Arc<metamodelica::List<ArcStr>>> {
-    let mut outTransition: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+    let mut outTransition: Arc<metamodelica::List<ArcStr>>;
     outTransition = (::match_deref::match_deref! { match &(inEquation.clone()) {
         Deref @ Absyn::Equation::EQ_NORETCALL { functionArgs: Deref @ Absyn::FunctionArgs::FUNCTIONARGS { args: expArgs, argNames: namedArgs }, .. } => {
             let mut transition: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -9969,9 +9993,9 @@ fn getTransitionInEquation(mut inEquation: Arc<Absyn::Equation>) -> Result<Arc<m
 }
 
 fn getInitialStates(mut path: Arc<Absyn::Path>, mut p: Absyn::Program) -> Result<Arc<Values::Value>> {
-    let mut res: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
-    let mut initialStates: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>> = metamodelica::nil();
-    let mut cdef: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
+    let mut res: Arc<Values::Value>;
+    let mut initialStates: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>;
+    let mut cdef: Arc<Absyn::Class>;
     cdef = ProgramUtil::getPathedClassInProgram(path.clone(), p.clone(), false, false)?;
     initialStates = getInitialStatesInClass(cdef.clone())?.reverse();
     res = ValuesMake::makeArray(List::map(initialStates.clone(), (std::sync::Arc::new(ValuesMake::makeStringArray) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<ArcStr>>) -> Result<Arc<Values::Value>> + 'static>))?)?;
@@ -9979,7 +10003,7 @@ fn getInitialStates(mut path: Arc<Absyn::Path>, mut p: Absyn::Program) -> Result
 }
 
 fn getInitialStatesInClass(mut inClass: Arc<Absyn::Class>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>> {
-    let mut outInitialStates: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>> = metamodelica::nil();
+    let mut outInitialStates: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>;
     outInitialStates = (::match_deref::match_deref! { match &(inClass.clone()) {
         Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::PARTS { classParts: parts, .. }, .. } => {
             let mut initialStates: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>> = metamodelica::nil();
@@ -10000,7 +10024,7 @@ fn getInitialStatesInClass(mut inClass: Arc<Absyn::Class>) -> Result<Arc<metamod
 }
 
 fn getInitialStatesInClassParts(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>> {
-    let mut outInitialStates: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>> = metamodelica::nil();
+    let mut outInitialStates: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>;
     outInitialStates = 'mc: {
         let __mc_input = inAbsynClassPartLst.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -10061,7 +10085,7 @@ fn getInitialStatesInEquations(mut inAbsynEquationItemLst: Arc<metamodelica::Lis
 }
 
 fn getInitialStateInEquation(mut inEquation: Arc<Absyn::Equation>) -> Result<Arc<metamodelica::List<ArcStr>>> {
-    let mut outInitialState: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+    let mut outInitialState: Arc<metamodelica::List<ArcStr>>;
     outInitialState = (::match_deref::match_deref! { match &(inEquation.clone()) {
         Deref @ Absyn::Equation::EQ_NORETCALL { functionArgs: Deref @ Absyn::FunctionArgs::FUNCTIONARGS { args: expArgs, .. }, .. } => {
             let mut initialState: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -10077,19 +10101,19 @@ fn getInitialStateInEquation(mut inEquation: Arc<Absyn::Equation>) -> Result<Arc
 }
 
 fn addInitialState(mut inPath: Arc<Absyn::Path>, mut state: ArcStr, mut inAbsynNamedArgLst: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inProgram: Absyn::Program) -> Result<(bool, Absyn::Program)> {
-    let mut b: bool = false;
-    let mut outProgram: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
+    let mut b: bool;
+    let mut outProgram: Absyn::Program;
     (b, outProgram) = addInitialStateWithAnnotation(inPath.clone(), (state.clone()).clone(), InteractiveUtil::annotationListToAbsyn(inAbsynNamedArgLst.clone())?, inProgram.clone());
     Ok((b, outProgram))
 }
 
 fn addInitialStateWithAnnotation(mut inPath: Arc<Absyn::Path>, mut state: ArcStr, mut inAnnotation: Arc<Absyn::Annotation>, mut inProgram: Absyn::Program) -> (bool, Absyn::Program) {
-    let mut b: bool = false;
+    let mut b: bool;
     let mut outProgram: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
-    let mut package_: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-    let mut cdef: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
-    let mut newcdef: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
-    let mut cmt: Option<Arc<Absyn::Comment>> = None;
+    let mut package_: Arc<Absyn::Path>;
+    let mut cdef: Arc<Absyn::Class>;
+    let mut newcdef: Arc<Absyn::Class>;
+    let mut cmt: Option<Arc<Absyn::Comment>>;
     match '__try0: {
         cdef = unwrap_break_err!(ProgramUtil::getPathedClassInProgram(inPath.clone(), inProgram.clone(), false, false), '__try0);
         cmt = Some(Arc::new(Absyn::Comment { annotation_: Some(inAnnotation.clone()), comment: None }));
@@ -10114,8 +10138,8 @@ fn addInitialStateWithAnnotation(mut inPath: Arc<Absyn::Path>, mut state: ArcStr
 }
 
 fn deleteInitialState(mut inPath: Arc<Absyn::Path>, mut state: ArcStr, mut inProgram: Absyn::Program) -> Result<(bool, Absyn::Program)> {
-    let mut b: bool = false;
-    let mut outProgram: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
+    let mut b: bool;
+    let mut outProgram: Absyn::Program;
     (b, outProgram) = 'mc: {
         let __mc_input = (inPath.clone(), state.clone(), inProgram.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -10183,7 +10207,7 @@ fn deleteInitialStateInClass(mut inClass: Arc<Absyn::Class>, mut state: ArcStr) 
 
 fn deleteInitialStateInEqlist(mut inEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, mut state: ArcStr) -> Result<Arc<metamodelica::List<Arc<Absyn::EquationItem>>>> {
     fn is_matching_initial_state(mut item: Arc<Absyn::EquationItem>, mut state: ArcStr) -> Result<bool> {
-        let mut isMatch: bool = false;
+        let mut isMatch: bool;
         let mut name: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
         let mut args: Arc<metamodelica::List<Arc<Absyn::Exp>>> = metamodelica::nil();
         isMatch = (::match_deref::match_deref! { match &(item.clone()) {
@@ -10197,7 +10221,7 @@ fn deleteInitialStateInEqlist(mut inEqs: Arc<metamodelica::List<Arc<Absyn::Equat
         Ok(isMatch)
     }
 
-    let mut outEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
+    let mut outEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>;
     outEqs = ({
         let mut __acc: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
         for mut e in (inEqs.clone()).into_iter().cloned() {
@@ -10278,7 +10302,7 @@ fn getComponentInfo(mut comp: Arc<Absyn::Element>, mut inEnv: Interactive::Graph
 }
 
 fn makeGetComponentsRecord(mut className: ArcStr, mut name: ArcStr, mut comment: ArcStr, mut isProtected: bool, mut isFinal: bool, mut isFlow: bool, mut isStream: bool, mut isReplaceable: bool, mut variability: ArcStr, mut innerOuter: ArcStr, mut inputOutput: ArcStr, mut dimensions: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<Values::Value>> {
-    let mut v: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
+    let mut v: Arc<Values::Value>;
     v = Arc::new(Values::Value::RECORD { record_: Arc::new(Absyn::Path::QUALIFIED { name: (literal!("OpenModelica")).clone(), path: Arc::new(Absyn::Path::QUALIFIED { name: (literal!("Scripting")).clone(), path: Arc::new(Absyn::Path::QUALIFIED { name: (literal!("getComponentsTest")).clone(), path: Arc::new(Absyn::Path::IDENT { name: (literal!("Component")).clone() }) }) }) }), orderd: list![Arc::new(Values::Value::STRING { string: (className.clone()).clone() }), Arc::new(Values::Value::STRING { string: (name.clone()).clone() }), Arc::new(Values::Value::STRING { string: (comment.clone()).clone() }), Arc::new(Values::Value::BOOL { boolean: isProtected.clone() }), Arc::new(Values::Value::BOOL { boolean: isFinal.clone() }), Arc::new(Values::Value::BOOL { boolean: isFlow.clone() }), Arc::new(Values::Value::BOOL { boolean: isStream.clone() }), Arc::new(Values::Value::BOOL { boolean: isReplaceable.clone() }), Arc::new(Values::Value::STRING { string: (variability.clone()).clone() }), Arc::new(Values::Value::STRING { string: (innerOuter.clone()).clone() }), Arc::new(Values::Value::STRING { string: (inputOutput.clone()).clone() }), ValuesMake::makeArray(({
         let mut __acc: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
         for mut s in (dimensions.clone()).into_iter().cloned() {
@@ -10291,7 +10315,7 @@ fn makeGetComponentsRecord(mut className: ArcStr, mut name: ArcStr, mut comment:
 }
 
 fn attrVariabilityStr(mut inElementAttributes: Absyn::ElementAttributes) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((match inElementAttributes.clone() {
         Absyn::ElementAttributes { variability: Absyn::Variability::VAR { .. }, .. } => literal!(""),
         Absyn::ElementAttributes { variability: Absyn::Variability::DISCRETE { .. }, .. } => literal!("discrete"),
@@ -10303,7 +10327,7 @@ fn attrVariabilityStr(mut inElementAttributes: Absyn::ElementAttributes) -> Resu
 }
 
 fn attrDirectionStr(mut inElementAttributes: Absyn::ElementAttributes) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((match inElementAttributes.clone() {
         Absyn::ElementAttributes { direction: Absyn::Direction::INPUT { .. }, .. } => literal!("input"),
         Absyn::ElementAttributes { direction: Absyn::Direction::OUTPUT { .. }, .. } => literal!("output"),
@@ -10314,8 +10338,8 @@ fn attrDirectionStr(mut inElementAttributes: Absyn::ElementAttributes) -> Result
 }
 
 fn getComponentitemsName(mut ci: Arc<Absyn::ComponentItem>) -> Result<(ArcStr, ArcStr)> {
-    let mut name: ArcStr = arcstr::literal!("");
-    let mut comment: ArcStr = arcstr::literal!("");
+    let mut name: ArcStr;
+    let mut comment: ArcStr;
     (name, comment) = (::match_deref::match_deref! { match &(ci.clone()) {
         Deref @ Absyn::ComponentItem { component: Absyn::Component { name: c1, .. }, comment: Some(Deref @ Absyn::Comment { annotation_: _, comment: Some(s2) }), .. } => {
             (c1.clone(), s2.clone())
@@ -10333,7 +10357,7 @@ fn getComponentitemsName(mut ci: Arc<Absyn::ComponentItem>) -> Result<(ArcStr, A
 
 fn getAnnotationNamedModifiers(mut classPath: Arc<Absyn::Path>, mut annotationName: ArcStr, mut program: Absyn::Program) -> Result<Arc<Values::Value>> {
     fn get_names(mut r#mod: Option<Arc<Absyn::Modification>>) -> Result<Arc<metamodelica::List<ArcStr>>> {
-        let mut names: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+        let mut names: Arc<metamodelica::List<ArcStr>>;
         let mut m: Arc<Absyn::Modification> = Arc::new(<Absyn::Modification as ::std::default::Default>::default());
         let mut paths: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
         names = (::match_deref::match_deref! { match &(r#mod.clone()) {
@@ -10363,9 +10387,9 @@ fn getAnnotationNamedModifiers(mut classPath: Arc<Absyn::Path>, mut annotationNa
         Ok(names)
     }
 
-    let mut result: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
-    let mut cls: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
-    let mut names: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+    let mut result: Arc<Values::Value>;
+    let mut cls: Arc<Absyn::Class>;
+    let mut names: Arc<metamodelica::List<ArcStr>>;
     cls = ProgramUtil::getPathedClassInProgram(classPath.clone(), program.clone(), false, false)?;
     let __pa0 = ::match_deref::match_deref! { match &(AbsynUtil::getNamedAnnotationInClass(cls.clone(), Arc::new(Absyn::Path::IDENT { name: (annotationName.clone()).clone() }), (std::sync::Arc::new(get_names) as std::sync::Arc<dyn ::std::ops::Fn(Option<Arc<Absyn::Modification>>) -> Result<Arc<metamodelica::List<ArcStr>>> + 'static>))?) {
         Some(__pa0) => __pa0.clone(),
@@ -10377,9 +10401,9 @@ fn getAnnotationNamedModifiers(mut classPath: Arc<Absyn::Path>, mut annotationNa
 }
 
 fn getOptModifierValue(mut modifier: Option<Arc<Absyn::Modification>>) -> Result<Arc<Values::Value>> {
-    let mut value: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
-    let mut r#mod: Arc<Absyn::Modification> = Arc::new(<Absyn::Modification as ::std::default::Default>::default());
-    let mut exp: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
+    let mut value: Arc<Values::Value>;
+    let mut r#mod: Arc<Absyn::Modification>;
+    let mut exp: Arc<Absyn::Exp>;
     let __pa0 = ::match_deref::match_deref! { match &(modifier.clone()) {
         Some(__pa0) => __pa0.clone(),
         _ => bail!("pattern mismatch"),
@@ -10395,8 +10419,8 @@ fn getOptModifierValue(mut modifier: Option<Arc<Absyn::Modification>>) -> Result
 }
 
 fn getAnnotationModifierValue(mut classPath: Arc<Absyn::Path>, mut annotationName: ArcStr, mut modifierName: ArcStr, mut program: Absyn::Program) -> Result<Arc<Values::Value>> {
-    let mut result: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
-    let mut cls: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
+    let mut result: Arc<Values::Value>;
+    let mut cls: Arc<Absyn::Class>;
     cls = ProgramUtil::getPathedClassInProgram(classPath.clone(), program.clone(), false, false)?;
     let __pa0 = ::match_deref::match_deref! { match &(AbsynUtil::getNamedAnnotationInClass(cls.clone(), Arc::new(Absyn::Path::QUALIFIED { name: (annotationName.clone()).clone(), path: Arc::new(Absyn::Path::IDENT { name: (modifierName.clone()).clone() }) }), (std::sync::Arc::new(getOptModifierValue) as std::sync::Arc<dyn ::std::ops::Fn(Option<Arc<Absyn::Modification>>) -> Result<Arc<Values::Value>> + 'static>))?) {
         Some(__pa0) => __pa0.clone(),
@@ -10407,7 +10431,7 @@ fn getAnnotationModifierValue(mut classPath: Arc<Absyn::Path>, mut annotationNam
 }
 
 fn makeLoadLibrariesEntryAbsyn(mut cl: Arc<Absyn::Class>, mut acc: Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<Arc<metamodelica::List<Arc<Values::Value>>>> {
-    let mut out: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
+    let mut out: Arc<metamodelica::List<Arc<Values::Value>>>;
     out = (::match_deref::match_deref! { match &(cl.clone()) {
         Deref @ Absyn::Class { info: SourceInfo { fileName: Deref @ "<interactive>", .. }, .. } => {
             acc.clone()
@@ -10430,7 +10454,7 @@ fn makeLoadLibrariesEntryAbsyn(mut cl: Arc<Absyn::Class>, mut acc: Arc<metamodel
 
 fn selectResultFile(mut resultFile: ArcStr, mut simflags: ArcStr) -> Result<ArcStr> {
     let mut resultFile: ArcStr = resultFile;
-    let mut nm: i32 = 0;
+    let mut nm: i32;
     let mut f: ArcStr = literal!("");
     if System::stringFind((simflags.clone()).clone(), (literal!("-r")).clone())? < 0 {
         return Ok(resultFile.clone());
@@ -10504,7 +10528,7 @@ fn selectResultFile(mut resultFile: ArcStr, mut simflags: ArcStr) -> Result<ArcS
 
 fn instantiateModel(mut cache: FCore::Cache, mut env: FCore::Graph, mut path: Arc<Absyn::Path>) -> Result<(FCore::Cache, Arc<Values::Value>)> {
     let mut cache: FCore::Cache = cache;
-    let mut result: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
+    let mut result: Arc<Values::Value>;
     let mut r#str: ArcStr = arcstr::literal!("");
     let mut odae: Option<DAE::DAElist> = None;
     let mut flags: Flags::Flag = Flags::Flag::NO_FLAGS;
@@ -10571,10 +10595,10 @@ fn instantiateModel(mut cache: FCore::Cache, mut env: FCore::Graph, mut path: Ar
 }
 
 fn getConnectionList(mut className: Arc<Absyn::Path>) -> Result<Arc<Values::Value>> {
-    let mut valList: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
-    let mut sp: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
-    let mut annotation_sp: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
-    let mut connList: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>> = metamodelica::nil();
+    let mut valList: Arc<Values::Value>;
+    let mut sp: Arc<metamodelica::List<Arc<SCode::Element>>>;
+    let mut annotation_sp: Arc<metamodelica::List<Arc<SCode::Element>>>;
+    let mut connList: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>;
     annotation_sp = AbsynToSCode::translateAbsyn2SCode(InteractiveUtil::modelicaAnnotationProgram((Config::getAnnotationVersion()?).clone())?)?;
     (_, sp) = FBuiltin::getInitialFunctions()?;
     sp = listAppend(SymbolTable::getSCode()?, sp.clone());
@@ -10591,10 +10615,10 @@ fn getConnectionList(mut className: Arc<Absyn::Path>) -> Result<Arc<Values::Valu
 }
 
 fn runConversionScript(mut clsPath: Arc<Absyn::Path>, mut scriptFile: ArcStr) -> Arc<Values::Value> {
-    let mut res: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
-    let mut p: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
-    let mut cls: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
-    let mut wi: Absyn::Within = Absyn::Within::TOP;
+    let mut res: Arc<Values::Value>;
+    let mut p: Absyn::Program;
+    let mut cls: Arc<Absyn::Class>;
+    let mut wi: Absyn::Within;
     match '__try0: {
         p = SymbolTable::getAbsyn();
         cls = unwrap_break_err!(ProgramUtil::getPathedClassInProgram(clsPath.clone(), p.clone(), false, true), '__try0);
@@ -10616,18 +10640,18 @@ fn runConversionScript(mut clsPath: Arc<Absyn::Path>, mut scriptFile: ArcStr) ->
 }
 
 fn convertPackageToLibrary(mut clsPath: Arc<Absyn::Path>, mut libPath: Arc<Absyn::Path>, mut libVersion: ArcStr) -> Arc<Values::Value> {
-    let mut res: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
-    let mut p: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
-    let mut lib_program: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
-    let mut cls: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
-    let mut lib_cls: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
-    let mut wi: Absyn::Within = Absyn::Within::TOP;
-    let mut uses_version: Option<ArcStr> = None;
-    let mut lib_version: SemanticVersion::Version = <SemanticVersion::Version as ::std::default::Default>::default();
-    let mut lib_version_used: SemanticVersion::Version = <SemanticVersion::Version as ::std::default::Default>::default();
-    let mut conversions: Arc<metamodelica::List<(ArcStr, Option<ArcStr>, Option<ArcStr>)>> = metamodelica::nil();
-    let mut scripts: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut lib_name: ArcStr = arcstr::literal!("");
+    let mut res: Arc<Values::Value>;
+    let mut p: Absyn::Program;
+    let mut lib_program: Absyn::Program;
+    let mut cls: Arc<Absyn::Class>;
+    let mut lib_cls: Arc<Absyn::Class>;
+    let mut wi: Absyn::Within;
+    let mut uses_version: Option<ArcStr>;
+    let mut lib_version: SemanticVersion::Version;
+    let mut lib_version_used: SemanticVersion::Version;
+    let mut conversions: Arc<metamodelica::List<(ArcStr, Option<ArcStr>, Option<ArcStr>)>>;
+    let mut scripts: Arc<metamodelica::List<ArcStr>>;
+    let mut lib_name: ArcStr;
     match '__try0: {
         p = SymbolTable::getAbsyn();
         cls = unwrap_break_err!(ProgramUtil::getPathedClassInProgram(clsPath.clone(), p.clone(), false, true), '__try0);
@@ -10683,7 +10707,7 @@ fn convertPackageToLibrary(mut clsPath: Arc<Absyn::Path>, mut libPath: Arc<Absyn
 fn findConversionPaths(mut conversions: Arc<metamodelica::List<(ArcStr, Option<ArcStr>, Option<ArcStr>)>>, mut libVersion: SemanticVersion::Version, mut libVersionUsed: SemanticVersion::Version, mut depth: i32) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut scripts: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     let mut paths: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>> = metamodelica::nil();
-    let mut path_len: i32 = 0;
+    let mut path_len: i32;
     let mut path_min: i32 = 100;
     if depth.clone() > 100 {
         return Ok(scripts.clone());
@@ -10705,11 +10729,11 @@ fn findConversionPaths(mut conversions: Arc<metamodelica::List<(ArcStr, Option<A
 
 fn findConversionPath(mut conversion: (ArcStr, Option<ArcStr>, Option<ArcStr>), mut libVersion: SemanticVersion::Version, mut libVersionUsed: SemanticVersion::Version, mut conversions: Arc<metamodelica::List<(ArcStr, Option<ArcStr>, Option<ArcStr>)>>, mut depth: i32) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut scripts: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut from: ArcStr = arcstr::literal!("");
-    let mut to: Option<ArcStr> = None;
-    let mut script: Option<ArcStr> = None;
-    let mut from_version: SemanticVersion::Version = <SemanticVersion::Version as ::std::default::Default>::default();
-    let mut to_version: SemanticVersion::Version = <SemanticVersion::Version as ::std::default::Default>::default();
+    let mut from: ArcStr;
+    let mut to: Option<ArcStr>;
+    let mut script: Option<ArcStr>;
+    let mut from_version: SemanticVersion::Version;
+    let mut to_version: SemanticVersion::Version;
     (from, to, script) = conversion.clone();
     if isNone(script.clone()) {
         return Ok(scripts.clone());
@@ -10728,9 +10752,9 @@ fn findConversionPath(mut conversion: (ArcStr, Option<ArcStr>, Option<ArcStr>), 
 }
 
 pub fn loadCommandLineOptionsFromModel(mut className: Arc<Absyn::Path>) -> Result<Flags::Flag> {
-    let mut oldFlags: Flags::Flag = Flags::Flag::NO_FLAGS;
-    let mut opts: ArcStr = arcstr::literal!("");
-    let mut args: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+    let mut oldFlags: Flags::Flag;
+    let mut opts: ArcStr;
+    let mut args: Arc<metamodelica::List<ArcStr>>;
     if Config::ignoreCommandLineOptionsAnnotation()? {
         oldFlags = FlagsUtil::loadFlags(true)?;
         return Ok(oldFlags.clone());
@@ -10752,7 +10776,7 @@ pub fn loadCommandLineOptionsFromModel(mut className: Arc<Absyn::Path>) -> Resul
 }
 
 pub fn isProtectedContentAccess(mut className: Arc<Absyn::Path>) -> Result<bool> {
-    let mut restricted: bool = false;
+    let mut restricted: bool;
     loadProgram(className.clone())?;
     restricted = Interactive::astContainsEncryptedClass(SymbolTable::getAbsyn())?;
     if restricted.clone() {

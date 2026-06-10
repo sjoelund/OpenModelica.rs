@@ -107,7 +107,7 @@ pub fn isEqual<T: Clone + 'static>(mut slice1: Arc<NBSlice<T>>, mut slice2: Arc<
 }
 
 pub fn toString<T: Clone + 'static>(mut slice: Arc<NBSlice<T>>, mut func: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>, mut maxLength: i32) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     r#str = (func(slice.t.clone())?).clone();
     if maxLength.clone() > 0 && !(slice.indices.clone().is_empty()) {
         r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\n\tslice: ")); __mm_s.push_str(&*List::toString(slice.indices.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, maxLength.clone())?); ArcStr::from(__mm_s) }).clone();
@@ -128,7 +128,7 @@ pub fn isFull<T: Clone + 'static>(mut slice: Arc<NBSlice<T>>) -> bool {
 }
 
 pub fn size<T: Clone + 'static>(mut slice: Arc<NBSlice<T>>, mut func: Arc<dyn ::std::ops::Fn(T) -> Result<i32> + 'static>) -> Result<i32> {
-    let mut s: i32 = 0;
+    let mut s: i32;
     if slice.indices.clone().is_empty() {
         s = func(slice.t.clone())?;
     } else {
@@ -155,7 +155,7 @@ pub fn addToSliceMap<T: Clone + 'static>(mut t: T, mut i: i32, mut map: Arc<Unor
 pub fn fromTpl<T: Clone + 'static>(mut tpl: (T, Arc<metamodelica::List<i32>>)) -> Arc<NBSlice<T>> {
     let mut slice: Arc<NBSlice<T>>;
     let mut t: T;
-    let mut lst: IntLst = metamodelica::nil();
+    let mut lst: IntLst;
     (t, lst) = tpl.clone();
     slice = Arc::new(NBSlice { t: t.clone(), indices: lst.clone() });
     slice
@@ -251,9 +251,9 @@ pub fn getSliceCandidates(mut cref: Arc<ComponentRef::NFComponentRef>, mut acc: 
 
 pub fn getDependentCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut acc: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut pseudo: bool) -> Result<Arc<ComponentRef::NFComponentRef>> {
     let mut cref: Arc<ComponentRef::NFComponentRef> = cref;
-    let mut checkCref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    let mut childCref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    let mut record_children: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
+    let mut checkCref: Arc<ComponentRef::NFComponentRef>;
+    let mut childCref: Arc<ComponentRef::NFComponentRef>;
+    let mut record_children: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>;
     checkCref = if (pseudo.clone()) {ComponentRef::stripSubscriptsAll(cref.clone())} else {cref.clone()};
     record_children = BVariable::getRecordChildren(BVariable::getVarPointer(checkCref.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBSlice.mo"))?);
     if record_children.clone().is_empty() {
@@ -274,9 +274,9 @@ pub fn getDependentCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut acc: Ar
 
 pub fn getDependentCrefCausalized(mut cref: Arc<ComponentRef::NFComponentRef>, mut acc: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<ComponentRef::NFComponentRef>> {
     let mut cref: Arc<ComponentRef::NFComponentRef> = cref;
-    let mut checkCref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    let mut childCref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    let mut record_children: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
+    let mut checkCref: Arc<ComponentRef::NFComponentRef>;
+    let mut childCref: Arc<ComponentRef::NFComponentRef>;
+    let mut record_children: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>;
     checkCref = ComponentRef::stripSubscriptsAll(cref.clone());
     record_children = BVariable::getRecordChildren(BVariable::getVarPointer(checkCref.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBSlice.mo"))?);
     if record_children.clone().is_empty() {
@@ -317,12 +317,12 @@ pub fn getDependentCrefIndicesPseudoScalar(mut dependencies: Arc<metamodelica::L
         }
         __acc.reverse()
     }))?;
-    let mut stripped: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    let mut var_arr_idx: i32 = 0;
-    let mut var_start: i32 = 0;
-    let mut var_scal_idx: i32 = 0;
-    let mut sizes: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut int_subs: Arc<metamodelica::List<i32>> = metamodelica::nil();
+    let mut stripped: Arc<ComponentRef::NFComponentRef>;
+    let mut var_arr_idx: i32;
+    let mut var_start: i32;
+    let mut var_scal_idx: i32;
+    let mut sizes: Arc<metamodelica::List<i32>>;
+    let mut int_subs: Arc<metamodelica::List<i32>>;
     for mut cref in &*scalarized_dependencies.clone() {
         let mut cref = cref.clone();
         stripped = ComponentRef::stripSubscriptsAll(cref.clone());
@@ -347,8 +347,8 @@ pub fn getDependentCrefIndicesPseudoScalar(mut dependencies: Arc<metamodelica::L
 }
 
 pub fn getDependentCrefIndicesPseudoFull(mut dependencies: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut mapping: Arc<Mapping::Mapping>, mut eqn_arr_idx: i32) -> Result<(metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<metamodelica::Array<i32>>)> {
-    let mut indices: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
-    let mut mode_to_var: metamodelica::Array<metamodelica::Array<i32>> = Default::default();
+    let mut indices: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut mode_to_var: metamodelica::Array<metamodelica::Array<i32>>;
     let mut scalarized_dependencies: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = List::flatten(({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>> = metamodelica::nil();
         for mut dep in (dependencies.clone()).into_iter().cloned() {
@@ -357,18 +357,18 @@ pub fn getDependentCrefIndicesPseudoFull(mut dependencies: Arc<metamodelica::Lis
         }
         __acc.reverse()
     }))?;
-    let mut stripped: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    let mut eqn_start: i32 = 0;
-    let mut eqn_size: i32 = 0;
-    let mut var_arr_idx: i32 = 0;
+    let mut stripped: Arc<ComponentRef::NFComponentRef>;
+    let mut eqn_start: i32;
+    let mut eqn_size: i32;
+    let mut var_arr_idx: i32;
     let mut var_scal_idx: i32 = 0;
     let mut mode: i32 = 1;
-    let mut scal_lst: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut idx: i32 = 0;
-    let mut mode_to_var_row: metamodelica::Array<i32> = Default::default();
-    let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
-    let mut dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>> = metamodelica::nil();
-    let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
+    let mut scal_lst: Arc<metamodelica::List<i32>>;
+    let mut idx: i32;
+    let mut mode_to_var_row: metamodelica::Array<i32>;
+    let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>;
+    let mut dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>>;
+    let mut ty: Arc<Type::NFType>;
     (eqn_start, eqn_size) = ({let __elt = mapping.eqn_AtS.borrow()[(eqn_arr_idx.clone()-1) as usize].clone(); __elt});
     indices = arrayCreate(eqn_size.clone(), metamodelica::nil());
     mode_to_var = arrayCreate(eqn_size.clone(), arrayCreate(0, 0));
@@ -419,14 +419,14 @@ pub fn getDependentCrefIndicesPseudoFull(mut dependencies: Arc<metamodelica::Lis
 }
 
 pub fn getDependentCrefIndicesPseudoFor(mut dependencies: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut mapping: Arc<Mapping::Mapping>, mut eqn_arr_idx: i32, mut iter: Arc<Iterator::Iterator>) -> Result<(metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<metamodelica::Array<i32>>)> {
-    let mut indices: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
-    let mut mode_to_var: metamodelica::Array<metamodelica::Array<i32>> = Default::default();
-    let mut names: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-    let mut ranges: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-    let mut maps: Arc<metamodelica::List<Option<Arc<Iterator::Iterator>>>> = metamodelica::nil();
-    let mut frames: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)>> = metamodelica::nil();
-    let mut eqn_size: i32 = 0;
-    let mut iter_size: i32 = 0;
+    let mut indices: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut mode_to_var: metamodelica::Array<metamodelica::Array<i32>>;
+    let mut names: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
+    let mut ranges: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
+    let mut maps: Arc<metamodelica::List<Option<Arc<Iterator::Iterator>>>>;
+    let mut frames: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)>>;
+    let mut eqn_size: i32;
+    let mut iter_size: i32;
     let mut body_size: i32 = 0;
     let mut mode: i32 = 1;
     let mut func: updateDependencies;
@@ -465,22 +465,22 @@ pub fn getDependentCrefIndicesPseudoFor(mut dependencies: Arc<metamodelica::List
 }
 
 pub fn getDependentCrefsPseudoForCausalized(mut row_cref: Arc<ComponentRef::NFComponentRef>, mut dependencies: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>, mut var_rep: Arc<VariablePointers::VariablePointers>, mut eqn_rep: Arc<VariablePointers::VariablePointers>, mut var_rep_mapping: Arc<Mapping::Mapping>, mut eqn_rep_mapping: Arc<Mapping::Mapping>, mut iter: Arc<Iterator::Iterator>, mut eqn_size: i32, mut slice: Arc<metamodelica::List<i32>>, mut implicit: bool) -> Result<Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>)>>> {
-    let mut tpl_lst: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>)>> = metamodelica::nil();
-    let mut names: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-    let mut ranges: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-    let mut maps: Arc<metamodelica::List<Option<Arc<Iterator::Iterator>>>> = metamodelica::nil();
-    let mut frames: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)>> = metamodelica::nil();
-    let mut iter_size: i32 = 0;
+    let mut tpl_lst: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>)>>;
+    let mut names: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
+    let mut ranges: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
+    let mut maps: Arc<metamodelica::List<Option<Arc<Iterator::Iterator>>>>;
+    let mut frames: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)>>;
+    let mut iter_size: i32;
     let mut body_size: i32 = 0;
-    let mut var_arr_idx: i32 = 0;
-    let mut row_crefs: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-    let mut row_scal_lst: Arc<metamodelica::List<i32>> = metamodelica::nil();
+    let mut var_arr_idx: i32;
+    let mut row_crefs: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
+    let mut row_scal_lst: Arc<metamodelica::List<i32>>;
     let mut accum_row_lst: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
-    let mut accum_dep_arr: metamodelica::Array<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>> = Default::default();
-    let mut accum_dep_lst: Arc<metamodelica::List<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>> = metamodelica::nil();
+    let mut accum_dep_arr: metamodelica::Array<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>;
+    let mut accum_dep_lst: Arc<metamodelica::List<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>>;
     let mut func_var: updateDependencies;
     let mut func_eqn: updateDependencies;
-    let mut final_dep: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
+    let mut final_dep: Arc<ComponentRef::NFComponentRef>;
     accum_dep_arr = arrayCreate(eqn_size.clone(), metamodelica::nil());
     iter_size = Iterator::size(iter.clone(), false)?;
     (names, ranges, maps) = Iterator::getFrames(iter.clone())?;
@@ -529,11 +529,11 @@ pub fn getDependentCrefsPseudoForCausalized(mut row_cref: Arc<ComponentRef::NFCo
 
 pub fn fillDependencyArray(mut dep: Arc<ComponentRef::NFComponentRef>, mut body_size: i32, mut frames: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)>>, mut mapping: Arc<Mapping::Mapping>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut func: Arc<dyn ::std::ops::Fn(i32, i32, i32) -> Result<i32> + 'static>, mut var_arr_idx: i32, mut resize: bool) -> Result<()> {
     let mut scal_cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    let mut scal_length: i32 = 0;
-    let mut body_repeat: i32 = 0;
-    let mut element_repeat: i32 = 0;
-    let mut eqn_idx: i32 = 0;
-    let mut scal_lst: Arc<metamodelica::List<i32>> = metamodelica::nil();
+    let mut scal_length: i32;
+    let mut body_repeat: i32;
+    let mut element_repeat: i32;
+    let mut eqn_idx: i32;
+    let mut scal_lst: Arc<metamodelica::List<i32>>;
     let mut scal_tpl_lst: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<i32>>)>> = metamodelica::nil();
     for mut scal_cref in &*ComponentRef::scalarizeAll(dep.clone(), true)? {
         let mut scal_cref = scal_cref.clone();
@@ -582,7 +582,7 @@ pub fn updateDependenciesCref(mut eqn_idx: i32, mut var_idx: i32, mut var_arr_id
 
 pub fn updateDependenciesInteger(mut eqn_idx: i32, mut var_idx: i32, mut var_arr_idx: i32, mut mode: i32, mut mode_to_var: metamodelica::Array<metamodelica::Array<i32>>, mut indices: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<i32> {
     let mut eqn_idx: i32 = eqn_idx;
-    let mut mode_to_var_row: metamodelica::Array<i32> = Default::default();
+    let mut mode_to_var_row: metamodelica::Array<i32>;
     mode_to_var_row = ({let __elt = mode_to_var.borrow()[(eqn_idx.clone()-1) as usize].clone(); __elt});
     metamodelica::arrayUpdate(mode_to_var_row.clone(), mode.clone(), var_idx.clone())?;
     metamodelica::arrayUpdate(indices.clone(), eqn_idx.clone(), metamodelica::cons(var_idx.clone(), ({let __elt = indices.borrow()[(eqn_idx.clone()-1) as usize].clone(); __elt})))?;
@@ -608,11 +608,11 @@ pub fn getDependentCrefsPseudoArrayCausalized(mut row_cref: Arc<ComponentRef::NF
         Ok(single_dep)
     }
 
-    let mut tpl_lst: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>)>> = metamodelica::nil();
-    let mut row_cref_scal: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-    let mut dependencies_resizable: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-    let mut row_size: i32 = 0;
-    let mut dependencies_scal: Arc<metamodelica::List<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>> = metamodelica::nil();
+    let mut tpl_lst: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>)>>;
+    let mut row_cref_scal: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
+    let mut dependencies_resizable: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
+    let mut row_size: i32;
+    let mut dependencies_scal: Arc<metamodelica::List<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>>;
     let mut full_deps: Pointer::Pointer<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>> = Pointer::create(metamodelica::nil());
     row_cref_scal = ComponentRef::scalarizeSlice(row_cref.clone(), slice.clone(), false)?;
     row_size = (row_cref_scal.clone().len() as i32);
@@ -679,8 +679,8 @@ pub fn getDependentCrefsPseudoArrayCausalized(mut row_cref: Arc<ComponentRef::NF
 pub fn locationToIndex(mut sizes: Arc<metamodelica::List<i32>>, mut values: Arc<metamodelica::List<i32>>, mut index: i32) -> Result<i32> {
     let mut index: i32 = index;
     let mut factor: i32 = 1;
-    let mut val: i32 = 0;
-    let mut siz: i32 = 0;
+    let mut val: i32;
+    let mut siz: i32;
     let mut val_trav: Arc<metamodelica::List<i32>> = values.clone();
     let mut siz_trav: Arc<metamodelica::List<i32>> = sizes.clone();
     while !(val_trav.clone().is_empty() || siz_trav.clone().is_empty()) {
@@ -727,10 +727,10 @@ pub fn indexToLocation(mut index: i32, mut sizes: Arc<metamodelica::List<i32>>) 
 }
 
 pub fn transposeLocations(mut locations: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut out_size: i32) -> Arc<metamodelica::List<metamodelica::Array<i32>>> {
-    let mut locations_transposed: Arc<metamodelica::List<metamodelica::Array<i32>>> = metamodelica::nil();
+    let mut locations_transposed: Arc<metamodelica::List<metamodelica::Array<i32>>>;
     let mut lT_tmp: metamodelica::Array<Arc<metamodelica::List<i32>>> = arrayCreate(out_size.clone(), metamodelica::nil());
     let mut lT_tmp2: metamodelica::Array<metamodelica::Array<i32>> = arrayCreate(out_size.clone(), arrayCreate(0, 0));
-    let mut idx: i32 = 0;
+    let mut idx: i32;
     for mut location in &*locations.clone() {
         let mut location = location.clone();
         idx = 1;
@@ -758,8 +758,8 @@ pub fn transposeLocations(mut locations: Arc<metamodelica::List<Arc<metamodelica
 pub fn orderTransposedFrameLocations(mut frame_locations_transposed: Arc<metamodelica::List<(metamodelica::Array<i32>, (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>))>>) -> Result<(Arc<metamodelica::List<(metamodelica::Array<i32>, (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>))>>, Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>, FrameOrderingStatus)> {
     let mut frame_locations_transposed: Arc<metamodelica::List<(metamodelica::Array<i32>, (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>))>> = frame_locations_transposed;
     let mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
-    let mut status: FrameOrderingStatus = FrameOrderingStatus::UNCHANGED;
-    let mut frame_inertia_lst: Arc<metamodelica::List<(i32, (metamodelica::Array<i32>, (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)))>> = metamodelica::nil();
+    let mut status: FrameOrderingStatus;
+    let mut frame_inertia_lst: Arc<metamodelica::List<(i32, (metamodelica::Array<i32>, (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)))>>;
     frame_inertia_lst = ({
         let mut __acc: Arc<metamodelica::List<(i32, (metamodelica::Array<i32>, (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)))>> = metamodelica::nil();
         for mut frame in (frame_locations_transposed.clone()).into_iter().cloned() {
@@ -783,7 +783,7 @@ pub fn orderTransposedFrameLocations(mut frame_locations_transposed: Arc<metamod
 
 fn frameLocationInertia(mut frameLocation: (metamodelica::Array<i32>, (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>))) -> i32 {
     let mut inertia: i32 = 1;
-    let mut dim: metamodelica::Array<i32> = Default::default();
+    let mut dim: metamodelica::Array<i32>;
     dim = Util::tuple21(frameLocation.clone());
     while inertia.clone() < metamodelica::arrayLength(dim.clone()) && ({let __elt = dim.borrow()[(inertia.clone()-1) as usize].clone(); __elt}) == ({let __elt = dim.borrow()[(inertia.clone() + 1-1) as usize].clone(); __elt}) {
         inertia = inertia.clone() + 1;
@@ -794,9 +794,9 @@ fn frameLocationInertia(mut frameLocation: (metamodelica::Array<i32>, (Arc<Compo
 fn resolveEqualInertia(mut frame_inertia_lst: Arc<metamodelica::List<(i32, (metamodelica::Array<i32>, (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)))>>, mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>) -> Result<(Arc<metamodelica::List<(i32, (metamodelica::Array<i32>, (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)))>>, FrameOrderingStatus)> {
     let mut resolved: Arc<metamodelica::List<(i32, (metamodelica::Array<i32>, (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)))>> = metamodelica::nil();
     let mut status: FrameOrderingStatus = FrameOrderingStatus::UNCHANGED.clone();
-    let mut tpl1: (i32, (metamodelica::Array<i32>, (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>))) = (0, (Default::default(), (Arc::new(ComponentRef::EMPTY), Arc::new(Expression::END), None)));
-    let mut tpl2: (i32, (metamodelica::Array<i32>, (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>))) = (0, (Default::default(), (Arc::new(ComponentRef::EMPTY), Arc::new(Expression::END), None)));
-    let mut rest: Arc<metamodelica::List<(i32, (metamodelica::Array<i32>, (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)))>> = metamodelica::nil();
+    let mut tpl1: (i32, (metamodelica::Array<i32>, (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)));
+    let mut tpl2: (i32, (metamodelica::Array<i32>, (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)));
+    let mut rest: Arc<metamodelica::List<(i32, (metamodelica::Array<i32>, (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)))>>;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(frame_inertia_lst.clone()) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
@@ -865,30 +865,30 @@ fn resolveEqualInertia(mut frame_inertia_lst: Arc<metamodelica::List<(i32, (meta
 pub fn recollectRangesHeuristic(mut frame_locations_transposed: Arc<metamodelica::List<(metamodelica::Array<i32>, (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>))>>) -> Result<(Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)>>, Option<Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>>, RecollectStatus)> {
     let mut frames: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)>> = metamodelica::nil();
     let mut removed_diagonal: Option<Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>> = None;
-    let mut status: RecollectStatus = RecollectStatus::SUCCESS;
-    let mut dim: metamodelica::Array<i32> = Default::default();
-    let mut frame: (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>) = (Arc::new(ComponentRef::EMPTY), Arc::new(Expression::END), None);
-    let mut check_shift: i32 = 0;
-    let mut pre_shift: i32 = 0;
+    let mut status: RecollectStatus;
+    let mut dim: metamodelica::Array<i32>;
+    let mut frame: (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>);
+    let mut check_shift: i32;
+    let mut pre_shift: i32;
     let mut shift: i32 = 1;
-    let mut start: i32 = 0;
-    let mut step: i32 = 0;
-    let mut stop: i32 = 0;
-    let mut max_size: i32 = 0;
-    let mut new_step: i32 = 0;
-    let mut new_stop: i32 = 0;
-    let mut check_stop: i32 = 0;
-    let mut fail_: bool = false;
+    let mut start: i32;
+    let mut step: i32;
+    let mut stop: i32;
+    let mut max_size: i32;
+    let mut new_step: i32;
+    let mut new_stop: i32;
+    let mut check_stop: i32;
+    let mut fail_: bool;
     let mut starts: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut stops: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut steps: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut shifts: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut failed: Arc<metamodelica::List<bool>> = metamodelica::nil();
-    let mut min_dim: i32 = 0;
-    let mut max_dim: i32 = 0;
-    let mut diagonal: Arc<metamodelica::List<(metamodelica::Array<i32>, (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>))>> = metamodelica::nil();
-    let mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> as ::std::default::Default>::default();
-    let mut fos: FrameOrderingStatus = FrameOrderingStatus::UNCHANGED;
+    let mut min_dim: i32;
+    let mut max_dim: i32;
+    let mut diagonal: Arc<metamodelica::List<(metamodelica::Array<i32>, (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>))>>;
+    let mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>;
+    let mut fos: FrameOrderingStatus;
     for mut tpl in &*frame_locations_transposed.clone() {
         let mut tpl = tpl.clone();
         fail_ = false;
@@ -992,20 +992,20 @@ pub fn recollectRangesHeuristic(mut frame_locations_transposed: Arc<metamodelica
 
 pub fn reconstructDiagonal(mut frame_locations_transposed: Arc<metamodelica::List<(metamodelica::Array<i32>, (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>))>>, mut starts: Arc<metamodelica::List<i32>>, mut steps: Arc<metamodelica::List<i32>>, mut stops: Arc<metamodelica::List<i32>>, mut shifts: Arc<metamodelica::List<i32>>, mut failed: Arc<metamodelica::List<bool>>) -> Result<Arc<metamodelica::List<(metamodelica::Array<i32>, (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>))>>> {
     let mut diagonal: Arc<metamodelica::List<(metamodelica::Array<i32>, (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>))>> = metamodelica::nil();
-    let mut start: i32 = 0;
-    let mut step: i32 = 0;
-    let mut stop: i32 = 0;
-    let mut pos: i32 = 0;
+    let mut start: i32;
+    let mut step: i32;
+    let mut stop: i32;
+    let mut pos: i32;
     let mut shift: i32 = 1;
-    let mut fail_: bool = false;
+    let mut fail_: bool;
     let mut start_rest: Arc<metamodelica::List<i32>> = starts.clone();
     let mut step_rest: Arc<metamodelica::List<i32>> = steps.clone();
     let mut stop_rest: Arc<metamodelica::List<i32>> = stops.clone();
     let mut shift_rest: Arc<metamodelica::List<i32>> = shifts.clone();
     let mut fail_rest: Arc<metamodelica::List<bool>> = failed.clone();
-    let mut dim: metamodelica::Array<i32> = Default::default();
-    let mut missing_dims: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut frame: (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>) = (Arc::new(ComponentRef::EMPTY), Arc::new(Expression::END), None);
+    let mut dim: metamodelica::Array<i32>;
+    let mut missing_dims: Arc<metamodelica::List<i32>>;
+    let mut frame: (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>);
     for mut tpl in &*frame_locations_transposed.clone() {
         let mut tpl = tpl.clone();
         (dim, frame) = tpl.clone();
@@ -1073,8 +1073,8 @@ pub fn reconstructDiagonal(mut frame_locations_transposed: Arc<metamodelica::Lis
 
 pub fn naiveSeparation(mut indices: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>> {
     let mut index_clusters: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
-    let mut i: i32 = 0;
-    let mut rest: Arc<metamodelica::List<i32>> = metamodelica::nil();
+    let mut i: i32;
+    let mut rest: Arc<metamodelica::List<i32>>;
     let mut current: Arc<metamodelica::List<i32>> = metamodelica::nil();
     if !(indices.clone().is_empty()) {
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(indices.clone().reverse()) {
@@ -1109,13 +1109,13 @@ pub fn upgradeRowFull(mut dependencies: Arc<metamodelica::List<Arc<ComponentRef:
         }
         __acc.reverse()
     }))?;
-    let mut replaced: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    let mut stripped: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    let mut var_arr_idx: i32 = 0;
-    let mut var_start: i32 = 0;
-    let mut var_scal_idx: i32 = 0;
-    let mut sizes: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut int_subs: Arc<metamodelica::List<i32>> = metamodelica::nil();
+    let mut replaced: Arc<ComponentRef::NFComponentRef>;
+    let mut stripped: Arc<ComponentRef::NFComponentRef>;
+    let mut var_arr_idx: i32;
+    let mut var_start: i32;
+    let mut var_scal_idx: i32;
+    let mut sizes: Arc<metamodelica::List<i32>>;
+    let mut int_subs: Arc<metamodelica::List<i32>>;
     for mut cref in &*scalarized_dependencies.clone() {
         let mut cref = cref.clone();
         replaced = ComponentRef::mapExp(cref.clone(), (std::sync::Arc::new(Expression::replaceResizableParameter) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
@@ -1142,8 +1142,8 @@ pub fn upgradeRow(mut eqn_name: Arc<ComponentRef::NFComponentRef>, mut eqn_arr_i
 fn resolveSkipsLst(mut index: i32, mut ty: Arc<Type::NFType>, mut skips: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut cref: Arc<ComponentRef::NFComponentRef>, mut fullmap: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>) -> Result<Arc<metamodelica::List<(i32, Arc<Type::NFType>)>>> {
     let mut skip_lst: Arc<metamodelica::List<(i32, Arc<Type::NFType>)>> = metamodelica::nil();
     let mut combinations: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = List::combination(skips.clone());
-    let mut sub_idx: i32 = 0;
-    let mut sub_ty: Arc<Type::NFType> = Arc::new(Type::ANY);
+    let mut sub_idx: i32;
+    let mut sub_ty: Arc<Type::NFType>;
     if combinations.clone().is_empty() {
         skip_lst = list![(index.clone(), ty.clone())];
     } else {
@@ -1323,20 +1323,20 @@ fn val1String(mut val: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>
 }
 
 fn resolveDependency(mut original_cref: Arc<ComponentRef::NFComponentRef>, mut eqn_name: Arc<ComponentRef::NFComponentRef>, mut eqn_arr_idx: i32, mut iter: Arc<Iterator::Iterator>, mut ty: Arc<Type::NFType>, mut dep: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Dependency::Dependency>>>, mut rep: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut fullmap: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mapping: Arc<Mapping::Mapping>, mut modes: Arc<UnorderedMap::UnorderedMap<(i32, i32), Arc<Mode::Mode>>>) -> Result<()> {
-    let mut d: Arc<Dependency::Dependency> = Arc::new(<Dependency::Dependency as ::std::default::Default>::default());
-    let mut skip_lst: Arc<metamodelica::List<(i32, Arc<Type::NFType>)>> = metamodelica::nil();
-    let mut skip_ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut skip_idx: i32 = 0;
-    let mut start: i32 = 0;
-    let mut size: i32 = 0;
-    let mut body_size: i32 = 0;
-    let mut iter_size: i32 = 0;
-    let mut names: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-    let mut ranges: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-    let mut maps: Arc<metamodelica::List<Option<Arc<Iterator::Iterator>>>> = metamodelica::nil();
-    let mut frames: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)>> = metamodelica::nil();
-    let mut regulars: Arc<metamodelica::List<bool>> = metamodelica::nil();
-    let mut cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
+    let mut d: Arc<Dependency::Dependency>;
+    let mut skip_lst: Arc<metamodelica::List<(i32, Arc<Type::NFType>)>>;
+    let mut skip_ty: Arc<Type::NFType>;
+    let mut skip_idx: i32;
+    let mut start: i32;
+    let mut size: i32;
+    let mut body_size: i32;
+    let mut iter_size: i32;
+    let mut names: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
+    let mut ranges: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
+    let mut maps: Arc<metamodelica::List<Option<Arc<Iterator::Iterator>>>>;
+    let mut frames: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)>>;
+    let mut regulars: Arc<metamodelica::List<bool>>;
+    let mut cref: Arc<ComponentRef::NFComponentRef>;
     match '__try0: {
         cref = unwrap_break_err!(ComponentRef::mapExp(original_cref.clone(), (std::sync::Arc::new(Expression::replaceResizableParameter) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)), '__try0);
         cref = unwrap_break_err!(ComponentRef::simplifySubscripts(cref.clone(), false), '__try0);
@@ -1381,11 +1381,11 @@ fn resolveDependency(mut original_cref: Arc<ComponentRef::NFComponentRef>, mut e
 }
 
 fn resolveAllRegular(mut cref: Arc<ComponentRef::NFComponentRef>, mut original_cref: Arc<ComponentRef::NFComponentRef>, mut eqn_name: Arc<ComponentRef::NFComponentRef>, mut skip_idx: i32, mut size: i32, mut iter_size: i32, mut frames: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)>>, mut rep: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mapping: Arc<Mapping::Mapping>, mut modes: Arc<UnorderedMap::UnorderedMap<(i32, i32), Arc<Mode::Mode>>>) -> Result<()> {
-    let mut mode: Arc<Mode::Mode> = Arc::new(<Mode::Mode as ::std::default::Default>::default());
-    let mut scalarized: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-    let mut map3: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<i32>>>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<i32>>>> as ::std::default::Default>::default();
-    let mut scal_size: i32 = 0;
-    let mut shift: i32 = 0;
+    let mut mode: Arc<Mode::Mode>;
+    let mut scalarized: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
+    let mut map3: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<i32>>>>;
+    let mut scal_size: i32;
+    let mut shift: i32;
     mode = Mode::create(eqn_name.clone(), list![original_cref.clone()], false)?;
     scalarized = ComponentRef::scalarizeAll(cref.clone(), true)?.reverse();
     map3 = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
@@ -1413,18 +1413,18 @@ fn resolveAllRegular(mut cref: Arc<ComponentRef::NFComponentRef>, mut original_c
 }
 
 fn resolveMixed(mut cref: Arc<ComponentRef::NFComponentRef>, mut original_cref: Arc<ComponentRef::NFComponentRef>, mut eqn_name: Arc<ComponentRef::NFComponentRef>, mut skip_idx: i32, mut ty: Arc<Type::NFType>, mut frames: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)>>, mut regulars: Arc<metamodelica::List<bool>>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mapping: Arc<Mapping::Mapping>, mut modes: Arc<UnorderedMap::UnorderedMap<(i32, i32), Arc<Mode::Mode>>>) -> Result<()> {
-    let mut stripped: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
-    let mut dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>> = metamodelica::nil();
-    let mut eq_dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>> = metamodelica::nil();
-    let mut key: metamodelica::Array<i32> = Default::default();
-    let mut map1: Arc<UnorderedMap::UnorderedMap<Arc<metamodelica::List<i32>>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>> = <Arc<UnorderedMap::UnorderedMap<Arc<metamodelica::List<i32>>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>> as ::std::default::Default>::default();
-    let mut map2: Arc<UnorderedMap::UnorderedMap<Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>>> = <Arc<UnorderedMap::UnorderedMap<Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>>> as ::std::default::Default>::default();
-    let mut scalarized: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-    let mut scal_lst: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut size_comp: i32 = 0;
-    let mut eq_reg: Arc<metamodelica::List<bool>> = metamodelica::nil();
-    let mut lst: Arc<metamodelica::List<(Arc<Dimension::NFDimension>, bool)>> = metamodelica::nil();
+    let mut stripped: Arc<ComponentRef::NFComponentRef>;
+    let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>;
+    let mut dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>>;
+    let mut eq_dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>>;
+    let mut key: metamodelica::Array<i32>;
+    let mut map1: Arc<UnorderedMap::UnorderedMap<Arc<metamodelica::List<i32>>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>>;
+    let mut map2: Arc<UnorderedMap::UnorderedMap<Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>>>;
+    let mut scalarized: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
+    let mut scal_lst: Arc<metamodelica::List<i32>>;
+    let mut size_comp: i32;
+    let mut eq_reg: Arc<metamodelica::List<bool>>;
+    let mut lst: Arc<metamodelica::List<(Arc<Dimension::NFDimension>, bool)>>;
     subs = ComponentRef::subscriptsAllWithWholeFlat(cref.clone())?;
     dims = Type::arrayDims(ComponentRef::getSubscriptedType(cref.clone(), false)?);
     eq_dims = Type::arrayDims(ty.clone());
@@ -1483,10 +1483,10 @@ fn resolveMixedDimensions(mut eq_dims: Arc<metamodelica::List<Arc<Dimension::NFD
 }
 
 fn resolveAllReduced(mut cref: Arc<ComponentRef::NFComponentRef>, mut original_cref: Arc<ComponentRef::NFComponentRef>, mut eqn_name: Arc<ComponentRef::NFComponentRef>, mut skip_idx: i32, mut size: i32, mut iter_size: i32, mut frames: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)>>, mut rep: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mapping: Arc<Mapping::Mapping>, mut modes: Arc<UnorderedMap::UnorderedMap<(i32, i32), Arc<Mode::Mode>>>) -> Result<()> {
-    let mut repeated: bool = false;
-    let mut scalarized: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-    let mut map3: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<i32>>>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<i32>>>> as ::std::default::Default>::default();
-    let mut shift: i32 = 0;
+    let mut repeated: bool;
+    let mut scalarized: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
+    let mut map3: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<i32>>>>;
+    let mut shift: i32;
     let mut mode: Arc<Mode::Mode> = Arc::new(<Mode::Mode as ::std::default::Default>::default());
     repeated = UnorderedSet::contains(cref.clone(), rep.clone())?;
     scalarized = ComponentRef::scalarizeAll(cref.clone(), true)?.reverse();
@@ -1682,10 +1682,10 @@ fn combineFrames2Indices(mut first: i32, mut sizes: Arc<metamodelica::List<i32>>
 }
 
 fn getCrefInFrameIndices(mut cref: Arc<ComponentRef::NFComponentRef>, mut frames: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)>>, mut mapping: Arc<Mapping::Mapping>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut resize: bool) -> Result<Arc<metamodelica::List<i32>>> {
-    let mut scal_lst: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut final_cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    let mut var_arr_idx: i32 = 0;
-    let mut var_start: i32 = 0;
+    let mut scal_lst: Arc<metamodelica::List<i32>>;
+    let mut final_cref: Arc<ComponentRef::NFComponentRef>;
+    let mut var_arr_idx: i32;
+    let mut var_start: i32;
     (final_cref, var_arr_idx) = getVarArrIdx(cref.clone(), mapping.clone(), map.clone())?;
     (var_start, _) = ({let __elt = mapping.var_AtS.borrow()[(var_arr_idx.clone()-1) as usize].clone(); __elt});
     scal_lst = getCrefInFrameIndicesLocal(cref.clone(), final_cref.clone(), frames.clone(), var_start.clone(), resize.clone())?;
@@ -1710,9 +1710,9 @@ fn getVarArrIdx(mut cref: Arc<ComponentRef::NFComponentRef>, mut mapping: Arc<Ma
 
 pub fn getCrefInFrameIndicesLocal(mut subscripted_cref: Arc<ComponentRef::NFComponentRef>, mut stripped_cref: Arc<ComponentRef::NFComponentRef>, mut frames: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)>>, mut var_start: i32, mut resize: bool) -> Result<Arc<metamodelica::List<i32>>> {
     let mut scal_lst: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut sizes: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut subs: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-    let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
+    let mut sizes: Arc<metamodelica::List<i32>>;
+    let mut subs: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
+    let mut ty: Arc<Type::NFType>;
     let mut complex_size: i32 = 0;
     sizes = ComponentRef::sizes(stripped_cref.clone(), false, resize.clone(), metamodelica::nil())?;
     subs = ComponentRef::subscriptsToExpression(subscripted_cref.clone(), true)?;
@@ -1732,8 +1732,8 @@ pub fn getCrefInFrameIndicesLocal(mut subscripted_cref: Arc<ComponentRef::NFComp
 }
 
 fn resolveDimensionsSubscripts(mut sizes: Arc<metamodelica::List<i32>>, mut subs: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>, mut resize: bool) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>> {
-    let mut values: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
-    let mut replaced: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
+    let mut values: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>;
+    let mut replaced: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
     replaced = ({
         let mut __acc: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
         for mut sub in (subs.clone()).into_iter().cloned() {
@@ -1765,8 +1765,8 @@ fn resolveDimensionsSubscripts(mut sizes: Arc<metamodelica::List<i32>>, mut subs
 }
 
 fn resolveDimensionsSubscript(mut replaced: Arc<Expression::NFExpression>, mut size: i32, mut resize: bool) -> Result<Arc<metamodelica::List<i32>>> {
-    let mut res: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut rep: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut res: Arc<metamodelica::List<i32>>;
+    let mut rep: Arc<Expression::NFExpression>;
     rep = SimplifyExp::simplifyDump(replaced.clone(), true, literal!("NBSlice.resolveDimensionsSubscript"), (literal!("")).clone())?;
     res = (::match_deref::match_deref! { match &(rep.clone()) {
         Deref @ Expression::INTEGER { .. } => {

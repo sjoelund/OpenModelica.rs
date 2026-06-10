@@ -50,7 +50,7 @@ use openmodelica_util_datatypes_basic::Array;
 use openmodelica_util_datatypes_basic::List;
 
 pub fn copyAdjacencyMatrix(mut inAdjacencyMatrix: Option<metamodelica::Array<Arc<metamodelica::List<i32>>>>) -> Option<metamodelica::Array<Arc<metamodelica::List<i32>>>> {
-    let mut outAdjacencyMatrix: Option<metamodelica::Array<Arc<metamodelica::List<i32>>>> = None;
+    let mut outAdjacencyMatrix: Option<metamodelica::Array<Arc<metamodelica::List<i32>>>>;
     outAdjacencyMatrix = (match inAdjacencyMatrix.clone() {
         Some(mut m) => {
             m = metamodelica::arrayFromVec(m.clone().borrow().clone());
@@ -68,7 +68,7 @@ pub use copyAdjacencyMatrix as copyAdjacencyMatrixT;
 pub fn traverseAdjacencyMatrix<T: Clone + 'static>(mut inM: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, i32, T) -> Result<(Arc<metamodelica::List<i32>>, T)> + 'static>, mut inTypeA: T) -> Result<(metamodelica::Array<Arc<metamodelica::List<i32>>>, T)> {
     pub type FuncType<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, i32, T) -> Result<(Arc<metamodelica::List<i32>>, T)> + 'static>;
 
-    let mut outM: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut outM: metamodelica::Array<Arc<metamodelica::List<i32>>>;
     let mut outTypeA: T;
     (outM, outTypeA) = traverseAdjacencyMatrix1(inM.clone(), func.clone(), 1, metamodelica::arrayLength(inM.clone()), inTypeA.clone())?;
     Ok((outM, outTypeA))
@@ -77,7 +77,7 @@ pub fn traverseAdjacencyMatrix<T: Clone + 'static>(mut inM: metamodelica::Array<
 fn traverseAdjacencyMatrix1<T: Clone + 'static>(mut inM: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, i32, T) -> Result<(Arc<metamodelica::List<i32>>, T)> + 'static>, mut pos: i32, mut len: i32, mut inTypeA: T) -> Result<(metamodelica::Array<Arc<metamodelica::List<i32>>>, T)> {
     pub type FuncType<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, i32, T) -> Result<(Arc<metamodelica::List<i32>>, T)> + 'static>;
 
-    let mut outM: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut outM: metamodelica::Array<Arc<metamodelica::List<i32>>>;
     let mut outTypeA: T;
     (outM, outTypeA) = traverseAdjacencyMatrix2(inM.clone(), func.clone(), pos.clone(), len.clone(), intGt(pos.clone(), len.clone()), inTypeA.clone())?;
     Ok((outM, outTypeA))
@@ -111,7 +111,7 @@ fn traverseAdjacencyMatrix2<T: Clone + 'static>(mut inM: metamodelica::Array<Arc
 fn traverseAdjacencyMatrixList<T: Clone + 'static>(mut inLst: Arc<metamodelica::List<i32>>, mut inM: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, i32, T) -> Result<(Arc<metamodelica::List<i32>>, T)> + 'static>, mut len: i32, mut maxpos: i32, mut inTypeA: T) -> Result<(metamodelica::Array<Arc<metamodelica::List<i32>>>, T)> {
     pub type FuncType<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, i32, T) -> Result<(Arc<metamodelica::List<i32>>, T)> + 'static>;
 
-    let mut outM: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut outM: metamodelica::Array<Arc<metamodelica::List<i32>>>;
     let mut outTypeA: T;
     (outM, outTypeA) = 'mc: {
         let __mc_input = inLst.clone();
@@ -199,13 +199,13 @@ pub fn getOtherEqSysAdjacencyMatrix(mut m: metamodelica::Array<Arc<metamodelica:
 }
 
 fn isAssigned(mut ass: metamodelica::Array<i32>, mut i: i32) -> bool {
-    let mut b: bool = false;
+    let mut b: bool;
     b = intGt(({let __elt = ass.borrow()[(i.clone()-1) as usize].clone(); __elt}), 0);
     b
 }
 
 pub fn transposeAdjacencyMatrix(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut nRowsMt: i32) -> Result<metamodelica::Array<Arc<metamodelica::List<i32>>>> {
-    let mut mt: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut mt: metamodelica::Array<Arc<metamodelica::List<i32>>>;
     let mut i: i32 = 1;
     mt = arrayCreate(nRowsMt.clone(), metamodelica::nil());
     let __range0 = m.clone().borrow().iter().cloned().collect::<Vec<_>>();
@@ -239,9 +239,9 @@ fn transposeRow(mut row: Arc<metamodelica::List<i32>>, mut mt: metamodelica::Arr
 }
 
 pub fn absAdjacencyMatrix(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<i32>>>> {
-    let mut res: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut res: metamodelica::Array<Arc<metamodelica::List<i32>>>;
     let mut i: i32 = 1;
-    let mut minn: i32 = 0;
+    let mut minn: i32;
     res = metamodelica::arrayCreate(metamodelica::arrayLength(m.clone()), metamodelica::nil());
     let __range0 = m.clone().borrow().iter().cloned().collect::<Vec<_>>();
     for mut v in __range0 {

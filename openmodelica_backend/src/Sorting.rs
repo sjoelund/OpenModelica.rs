@@ -52,10 +52,10 @@ pub fn Tarjan(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut ass1
     let mut outComponents: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
     let mut index: i32 = 0;
     let mut stack: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut number: metamodelica::Array<i32> = Default::default();
-    let mut lowlink: metamodelica::Array<i32> = Default::default();
-    let mut onStack: metamodelica::Array<bool> = Default::default();
-    let mut eqn: i32 = 0;
+    let mut number: metamodelica::Array<i32>;
+    let mut lowlink: metamodelica::Array<i32>;
+    let mut onStack: metamodelica::Array<bool>;
+    let mut eqn: i32;
     number = arrayCreate(N.clone(), -1);
     lowlink = arrayCreate(N.clone(), -1);
     onStack = arrayCreate(N.clone(), false);
@@ -76,7 +76,7 @@ fn StrongConnect(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut a
     let mut outStack: Arc<metamodelica::List<i32>> = stack.clone();
     let mut outIndex: i32 = index.clone();
     let mut outComponents: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = inComponents.clone();
-    let mut SCC: Arc<metamodelica::List<i32>> = metamodelica::nil();
+    let mut SCC: Arc<metamodelica::List<i32>>;
     let mut eqn2: i32 = 0;
     metamodelica::arrayUpdate(number.clone(), eqn.clone(), outIndex.clone())?;
     metamodelica::arrayUpdate(lowlink.clone(), eqn.clone(), outIndex.clone())?;
@@ -120,9 +120,9 @@ pub fn TarjanTransposed(mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>
     let mut outComponents: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
     let mut index: i32 = 0;
     let mut stack: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut number: metamodelica::Array<i32> = Default::default();
-    let mut lowlink: metamodelica::Array<i32> = Default::default();
-    let mut onStack: metamodelica::Array<bool> = Default::default();
+    let mut number: metamodelica::Array<i32>;
+    let mut lowlink: metamodelica::Array<i32>;
+    let mut onStack: metamodelica::Array<bool>;
     let mut N: i32 = metamodelica::arrayLength(ass2.clone());
     number = arrayCreate(N.clone(), -1);
     lowlink = arrayCreate(N.clone(), -1);
@@ -139,8 +139,8 @@ fn StrongConnectTransposed(mut mT: metamodelica::Array<Arc<metamodelica::List<i3
     let mut outStack: Arc<metamodelica::List<i32>> = stack.clone();
     let mut outIndex: i32 = index.clone();
     let mut outComponents: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = inComponents.clone();
-    let mut SCC: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut var: i32 = 0;
+    let mut SCC: Arc<metamodelica::List<i32>>;
+    let mut var: i32;
     let mut eqn2: i32 = 0;
     metamodelica::arrayUpdate(number.clone(), eqn.clone(), outIndex.clone())?;
     metamodelica::arrayUpdate(lowlink.clone(), eqn.clone(), outIndex.clone())?;

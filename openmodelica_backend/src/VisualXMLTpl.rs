@@ -18,8 +18,8 @@ use openmodelica_susan::Tpl;
 use openmodelica_util::Util;
 
 pub fn dumpVisXML(mut txt: Tpl::Text, mut a_vis: metamodelica::Array<VisualXML::Visualization>, mut a_fileName: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
+    let mut txt_0: Tpl::Text;
     txt_0 = dumpVisXML1(Tpl::emptyTxt.clone(), a_vis.clone())?;
     Tpl::textFile(txt_0.clone(), (a_fileName.clone()).clone())?;
     out_txt = txt.clone();
@@ -42,9 +42,9 @@ fn lm_9(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<VisualXML::Visuali
 }
 
 pub fn dumpVisXML1(mut txt: Tpl::Text, mut a_visArr: metamodelica::Array<VisualXML::Visualization>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    let mut ret_1: Arc<metamodelica::List<VisualXML::Visualization>> = metamodelica::nil();
-    let mut l_visDump: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
+    let mut ret_1: Arc<metamodelica::List<VisualXML::Visualization>>;
+    let mut l_visDump: Tpl::Text;
     ret_1 = Arc::new(a_visArr.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>());
     l_visDump = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
     l_visDump = lm_9(l_visDump.clone(), ret_1.clone())?;
@@ -105,7 +105,7 @@ fn lm_13(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<metamodelica:
 }
 
 pub fn dumpVisualization(mut in_txt: Tpl::Text, mut in_a_vis: VisualXML::Visualization) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_vis.clone())) {
         (txt, VisualXML::Visualization::SHAPE { shapeType: Deref @ DAE::Exp::SCONST { string: i_svalue }, T: i_T, r: i_r, r_shape: i_r__shape, lengthDir: i_lengthDir, widthDir: i_widthDir, color: i_color, ident: i_ident, length: i_length, width: i_width, height: i_height, extra: i_extra, specularCoeff: i_specularCoeff }) => {
             let mut ret_12: ArcStr = arcstr::literal!("");
@@ -326,8 +326,8 @@ fn lm_15(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>) 
 }
 
 pub fn dumpVecExp(mut txt: Tpl::Text, mut a_vector: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    let mut l_vecDump: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
+    let mut l_vecDump: Tpl::Text;
     l_vecDump = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
     l_vecDump = lm_15(l_vecDump.clone(), a_vector.clone())?;
     l_vecDump = Tpl::popIter(l_vecDump.clone())?;
@@ -352,7 +352,7 @@ fn lm_17(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>) 
 }
 
 pub fn dumpExp(mut in_txt: Tpl::Text, mut in_a_expIn: Arc<DAE::Exp>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_expIn.clone())) {
         (txt, Deref @ DAE::Exp::ENUM_LITERAL { index: i_index, .. }) => {
             let mut ret_0: ArcStr = arcstr::literal!("");
@@ -501,7 +501,7 @@ pub fn dumpExp(mut in_txt: Tpl::Text, mut in_a_expIn: Arc<DAE::Exp>) -> Result<T
 }
 
 pub fn dumpOperator(mut in_txt: Tpl::Text, mut in_a_op: DAE::Operator) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_op.clone()) {
         (mut txt, DAE::Operator::ADD { ty: _ }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("add")).clone() }))?;

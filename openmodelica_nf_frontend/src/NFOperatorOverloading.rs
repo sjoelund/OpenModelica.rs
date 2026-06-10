@@ -63,9 +63,9 @@ use openmodelica_util::Error;
 pub fn instConstructor(mut path: Arc<Absyn::Path>, mut recordNode: Arc<InstNode::InstNode>, mut context: i32, mut info: SourceInfo) -> Result<Arc<InstNode::InstNode>> {
     let mut recordNode: Arc<InstNode::InstNode> = recordNode;
     let mut ctor_ref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    let mut ctor_path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-    let mut ctor_overloaded: bool = false;
-    let mut ctor_node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
+    let mut ctor_path: Arc<Absyn::Path>;
+    let mut ctor_overloaded: bool;
+    let mut ctor_node: Arc<InstNode::InstNode>;
     match '__try0: {
         ctor_ref = unwrap_break_err!(Function::lookupFunctionSimple((literal!("'constructor'")).clone(), recordNode.clone(), context.clone()), '__try0);
         ctor_overloaded = true;
@@ -93,7 +93,7 @@ pub fn instConstructor(mut path: Arc<Absyn::Path>, mut recordNode: Arc<InstNode:
 
 pub fn instOperatorFunctions(mut node: Arc<InstNode::InstNode>, mut context: i32, mut info: SourceInfo) -> Result<Arc<InstNode::InstNode>> {
     let mut node: Arc<InstNode::InstNode> = node;
-    let mut tree: Arc<ClassTree::ClassTree> = Arc::new(ClassTree::EMPTY_TREE);
+    let mut tree: Arc<ClassTree::ClassTree>;
     let mut mclss: metamodelica::Array<Arc<InstNode::InstNode>> = Default::default();
     let mut allfuncs: Arc<metamodelica::List<Arc<Function::Function>>> = metamodelica::nil();
     let mut funcs: Arc<metamodelica::List<Arc<Function::Function>>> = metamodelica::nil();
@@ -167,9 +167,9 @@ pub fn lookupOperatorFunctionsInType(mut operatorName: ArcStr, mut ty: Arc<Type:
 
 pub fn patchOperatorRecordConstructorBinding(mut r#fn: Arc<Function::Function>) -> Result<Arc<Function::Function>> {
     let mut r#fn: Arc<Function::Function> = r#fn;
-    let mut output_node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
-    let mut output_comp: Arc<Component::NFComponent> = Arc::new(Component::WILD);
-    let mut output_binding: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);
+    let mut output_node: Arc<InstNode::InstNode>;
+    let mut output_comp: Arc<Component::NFComponent>;
+    let mut output_binding: Arc<Binding::NFBinding>;
     if (r#fn.outputs.clone().len() as i32) != 1 {
         return Ok(r#fn.clone());
     }
@@ -186,8 +186,8 @@ pub fn patchOperatorRecordConstructorBinding(mut r#fn: Arc<Function::Function>) 
 }
 
 fn checkOperatorConstructorOutput(mut r#fn: Arc<Function::Function>, mut recordNode: Arc<InstNode::InstNode>, mut path: Arc<Absyn::Path>, mut info: SourceInfo) -> Result<()> {
-    let mut output_node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
-    let mut output_ty: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
+    let mut output_node: Arc<InstNode::InstNode>;
+    let mut output_ty: Arc<InstNode::InstNode>;
     if (r#fn.outputs.clone().len() as i32) != 1 {
         Error::addSourceMessage(Error::OPERATOR_OVERLOADING_ONE_OUTPUT_ERROR.clone(), list![(AbsynUtil::pathString(path.clone(), (literal!(".")).clone(), true, false)?).clone()], info.clone())?;
         bail!("fail");
@@ -202,7 +202,7 @@ fn checkOperatorConstructorOutput(mut r#fn: Arc<Function::Function>, mut recordN
 }
 
 fn patchOperatorRecordConstructorBinding_traverser(mut exp: Arc<Expression::NFExpression>, mut constructorFn: Arc<Function::Function>) -> Arc<Expression::NFExpression> {
-    let mut outExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut outExp: Arc<Expression::NFExpression>;
     let mut r#fn: Arc<Function::Function> = Arc::new(<Function::Function as ::std::default::Default>::default());
     let mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);

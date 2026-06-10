@@ -71,7 +71,7 @@ pub type InstanceHierarchy = Arc<metamodelica::List<InnerOuter::TopInstance>>;
 
 //import Util;
 pub fn printComponentPrefixStr(mut pre: Arc<DAE::ComponentPrefix>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(pre.clone()) {
         Deref @ DAE::ComponentPrefix::NOCOMPPRE { .. } => literal!("<Prefix.NOCOMPPRE()>"),
         Deref @ DAE::ComponentPrefix::PRE { next: Deref @ DAE::ComponentPrefix::NOCOMPPRE { .. }, subscripts: Deref @ metamodelica::List::Nil, .. } => var_field!((*pre).prefix, DAE::ComponentPrefix::PRE).clone(),
@@ -84,7 +84,7 @@ pub fn printComponentPrefixStr(mut pre: Arc<DAE::ComponentPrefix>) -> Result<Arc
 }
 
 pub fn printPrefixStr(mut inPrefix: DAE::Prefix) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ('mc: {
         let __mc_input = inPrefix.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -157,7 +157,7 @@ pub fn printPrefixStr(mut inPrefix: DAE::Prefix) -> Result<ArcStr> {
 }
 
 pub fn printPrefixStr2(mut inPrefix: DAE::Prefix) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(inPrefix.clone()) {
         DAE::Prefix::NOPRE { .. } => {
             literal!("")
@@ -174,7 +174,7 @@ pub fn printPrefixStr2(mut inPrefix: DAE::Prefix) -> Result<ArcStr> {
 }
 
 pub fn printPrefixStr3(mut inPrefix: DAE::Prefix) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(inPrefix.clone()) {
         DAE::Prefix::NOPRE { .. } => {
             literal!("<NO COMPONENT>")
@@ -191,7 +191,7 @@ pub fn printPrefixStr3(mut inPrefix: DAE::Prefix) -> Result<ArcStr> {
 }
 
 pub fn printPrefixStrIgnoreNoPre(mut inPrefix: DAE::Prefix) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(inPrefix.clone()) {
         DAE::Prefix::NOPRE { .. } => {
             literal!("")
@@ -208,14 +208,14 @@ pub fn printPrefixStrIgnoreNoPre(mut inPrefix: DAE::Prefix) -> Result<ArcStr> {
 }
 
 pub fn printPrefix(mut p: DAE::Prefix) -> Result<()> {
-    let mut s: ArcStr = arcstr::literal!("");
+    let mut s: ArcStr;
     s = (printPrefixStr(p.clone())?).clone();
     Print::printBuf((s.clone()).clone())?;
     Ok(())
 }
 
 pub fn prefixAdd(mut inIdent: ArcStr, mut inType: Arc<metamodelica::List<Arc<DAE::Dimension>>>, mut inIntegerLst: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut inPrefix: DAE::Prefix, mut vt: SCode::Variability, mut ci_state: ClassInf::State, mut inInfo: SourceInfo) -> Result<DAE::Prefix> {
-    let mut outPrefix: DAE::Prefix = DAE::Prefix::NOPRE;
+    let mut outPrefix: DAE::Prefix;
     outPrefix = (::match_deref::match_deref! { match &((inIdent.clone(), inIntegerLst.clone(), inPrefix.clone())) {
         (i, s, DAE::Prefix::PREFIX { compPre: p, classPre: _ }) => {
             DAE::Prefix::PREFIX { compPre: Arc::new(DAE::ComponentPrefix::PRE { prefix: (i.clone()).clone(), dimensions: inType.clone(), subscripts: s.clone(), next: p.clone(), ci_state: ci_state.clone(), info: inInfo.clone() }), classPre: DAE::ClassPrefix { variability: vt.clone() } }
@@ -229,7 +229,7 @@ pub fn prefixAdd(mut inIdent: ArcStr, mut inType: Arc<metamodelica::List<Arc<DAE
 }
 
 pub fn prefixFirst(mut inPrefix: DAE::Prefix) -> Result<DAE::Prefix> {
-    let mut outPrefix: DAE::Prefix = DAE::Prefix::NOPRE;
+    let mut outPrefix: DAE::Prefix;
     outPrefix = (::match_deref::match_deref! { match &(inPrefix.clone()) {
         DAE::Prefix::PREFIX { compPre: Deref @ DAE::ComponentPrefix::PRE { prefix: a, dimensions: pdims, subscripts: b, ci_state, info, .. }, classPre: cp } => {
             DAE::Prefix::PREFIX { compPre: Arc::new(DAE::ComponentPrefix::PRE { prefix: (a.clone()).clone(), dimensions: pdims.clone(), subscripts: b.clone(), next: openmodelica_frontend_types::DAE::ComponentPrefix::interned_NOCOMPPRE(), ci_state: ci_state.clone(), info: info.clone() }), classPre: cp.clone() }
@@ -240,9 +240,9 @@ pub fn prefixFirst(mut inPrefix: DAE::Prefix) -> Result<DAE::Prefix> {
 }
 
 pub fn prefixFirstCref(mut inPrefix: DAE::Prefix) -> Result<Arc<DAE::ComponentRef>> {
-    let mut outCref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-    let mut name: ArcStr = arcstr::literal!("");
-    let mut subs: Arc<metamodelica::List<Arc<DAE::Subscript>>> = metamodelica::nil();
+    let mut outCref: Arc<DAE::ComponentRef>;
+    let mut name: ArcStr;
+    let mut subs: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inPrefix.clone()) {
         DAE::Prefix::PREFIX { compPre: Deref @ DAE::ComponentPrefix::PRE { prefix: __pa0, subscripts: __pa1, .. }, .. } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
@@ -254,7 +254,7 @@ pub fn prefixFirstCref(mut inPrefix: DAE::Prefix) -> Result<Arc<DAE::ComponentRe
 }
 
 pub fn prefixLast(mut inPrefix: DAE::Prefix) -> Result<DAE::Prefix> {
-    let mut outPrefix: DAE::Prefix = DAE::Prefix::NOPRE;
+    let mut outPrefix: DAE::Prefix;
     outPrefix = 'mc: {
         let __mc_input = inPrefix.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -281,7 +281,7 @@ pub fn prefixLast(mut inPrefix: DAE::Prefix) -> Result<DAE::Prefix> {
 }
 
 pub fn prefixStripLast(mut inPrefix: DAE::Prefix) -> Result<DAE::Prefix> {
-    let mut outPrefix: DAE::Prefix = DAE::Prefix::NOPRE;
+    let mut outPrefix: DAE::Prefix;
     outPrefix = (match inPrefix.clone() {
         DAE::Prefix::NOPRE { .. } => {
             openmodelica_frontend_types::DAE::Prefix::NOPRE
@@ -296,7 +296,7 @@ pub fn prefixStripLast(mut inPrefix: DAE::Prefix) -> Result<DAE::Prefix> {
 }
 
 fn compPreStripLast(mut inCompPrefix: Arc<DAE::ComponentPrefix>) -> Result<Arc<DAE::ComponentPrefix>> {
-    let mut outCompPrefix: Arc<DAE::ComponentPrefix> = Arc::new(DAE::ComponentPrefix::NOCOMPPRE);
+    let mut outCompPrefix: Arc<DAE::ComponentPrefix>;
     outCompPrefix = (::match_deref::match_deref! { match &(inCompPrefix.clone()) {
         Deref @ DAE::ComponentPrefix::NOCOMPPRE { .. } => {
             openmodelica_frontend_types::DAE::ComponentPrefix::interned_NOCOMPPRE()
@@ -329,7 +329,7 @@ pub fn prefixPath(mut inPath: Arc<Absyn::Path>, mut inPrefix: DAE::Prefix) -> Re
 }
 
 pub fn prefixToPath(mut inPrefix: DAE::Prefix) -> Result<Arc<Absyn::Path>> {
-    let mut outPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+    let mut outPath: Arc<Absyn::Path>;
     outPath = (match inPrefix.clone() {
         DAE::Prefix::PREFIX { compPre: ref ss, classPre: _ } => {
             componentPrefixToPath(ss.clone())?
@@ -340,13 +340,13 @@ pub fn prefixToPath(mut inPrefix: DAE::Prefix) -> Result<Arc<Absyn::Path>> {
 }
 
 pub fn identAndPrefixToPath(mut ident: ArcStr, mut inPrefix: DAE::Prefix) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     r#str = (AbsynUtil::pathString(prefixPath(Arc::new(Absyn::Path::IDENT { name: (ident.clone()).clone() }), inPrefix.clone())?, (literal!(".")).clone(), true, false)?).clone();
     Ok(r#str)
 }
 
 pub fn componentPrefixToPath(mut pre: Arc<DAE::ComponentPrefix>) -> Result<Arc<Absyn::Path>> {
-    let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+    let mut path: Arc<Absyn::Path>;
     path = (::match_deref::match_deref! { match &(pre.clone()) {
         Deref @ DAE::ComponentPrefix::PRE { prefix: s, next: Deref @ DAE::ComponentPrefix::NOCOMPPRE { .. }, .. } => {
             Arc::new(Absyn::Path::IDENT { name: (s.clone()).clone() })
@@ -360,20 +360,20 @@ pub fn componentPrefixToPath(mut pre: Arc<DAE::ComponentPrefix>) -> Result<Arc<A
 }
 
 pub fn prefixCref(mut cache: FCore::Cache, mut env: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut pre: DAE::Prefix, mut cref: Arc<DAE::ComponentRef>) -> Result<(FCore::Cache, Arc<DAE::ComponentRef>)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut cref_1: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
+    let mut outCache: FCore::Cache;
+    let mut cref_1: Arc<DAE::ComponentRef>;
     (outCache, cref_1) = prefixToCref2(cache.clone(), env.clone(), inIH.clone(), pre.clone(), Some(cref.clone()))?;
     Ok((outCache, cref_1))
 }
 
 pub fn prefixCrefNoContext(mut inPre: DAE::Prefix, mut inCref: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> {
-    let mut outCref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
+    let mut outCref: Arc<DAE::ComponentRef>;
     (_, outCref) = prefixToCref2(FCore::noCache(), FGraph::empty(), InnerOuter::emptyInstHierarchy().clone(), inPre.clone(), Some(inCref.clone()))?;
     Ok(outCref)
 }
 
 pub fn prefixToCref(mut pre: DAE::Prefix) -> Result<Arc<DAE::ComponentRef>> {
-    let mut cref_1: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
+    let mut cref_1: Arc<DAE::ComponentRef>;
     (_, cref_1) = prefixToCref2(FCore::noCache(), FGraph::empty(), InnerOuter::emptyInstHierarchy().clone(), pre.clone(), None)?;
     Ok(cref_1)
 }
@@ -419,7 +419,7 @@ fn prefixToCref2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: I
 }
 
 pub fn prefixToCrefOpt(mut pre: DAE::Prefix) -> Result<Option<Arc<DAE::ComponentRef>>> {
-    let mut cref_1: Option<Arc<DAE::ComponentRef>> = None;
+    let mut cref_1: Option<Arc<DAE::ComponentRef>>;
     cref_1 = prefixToCrefOpt2(pre.clone(), None)?;
     Ok(cref_1)
 }
@@ -454,7 +454,7 @@ pub fn prefixToCrefOpt2(mut inPrefix: DAE::Prefix, mut inExpComponentRefOption: 
 }
 
 pub fn makeCrefFromPrefixNoFail(mut pre: DAE::Prefix) -> Result<Arc<DAE::ComponentRef>> {
-    let mut cref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
+    let mut cref: Arc<DAE::ComponentRef>;
     cref = 'mc: {
         let __mc_input = pre.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -493,8 +493,8 @@ pub fn makeCrefFromPrefixNoFail(mut pre: DAE::Prefix) -> Result<Arc<DAE::Compone
 }
 
 fn prefixSubscriptsInCref(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: InstanceHierarchy, mut pre: DAE::Prefix, mut inCr: Arc<DAE::ComponentRef>) -> Result<(FCore::Cache, Arc<DAE::ComponentRef>)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outCr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
+    let mut outCache: FCore::Cache;
+    let mut outCr: Arc<DAE::ComponentRef>;
     (outCache, outCr) = prefixSubscriptsInCrefWork(inCache.clone(), inEnv.clone(), inIH.clone(), pre.clone(), inCr.clone(), metamodelica::nil())?;
     Ok((outCache, outCr))
 }
@@ -528,8 +528,8 @@ fn prefixSubscriptsInCrefWork(mut inCache: FCore::Cache, mut inEnv: FCore::Graph
 }
 
 fn prefixSubscripts(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: InstanceHierarchy, mut pre: DAE::Prefix, mut inSubs: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<(FCore::Cache, Arc<metamodelica::List<Arc<DAE::Subscript>>>)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outSubs: Arc<metamodelica::List<Arc<DAE::Subscript>>> = metamodelica::nil();
+    let mut outCache: FCore::Cache;
+    let mut outSubs: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
     (outCache, outSubs) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inSubs.clone())) {
         (cache, _, Deref @ metamodelica::List::Nil) => {
             (cache.clone(), metamodelica::nil())
@@ -548,8 +548,8 @@ fn prefixSubscripts(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH
 }
 
 fn prefixSubscript(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: InstanceHierarchy, mut pre: DAE::Prefix, mut sub: Arc<DAE::Subscript>) -> Result<(FCore::Cache, Arc<DAE::Subscript>)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outSub: Arc<DAE::Subscript> = Arc::new(DAE::Subscript::WHOLEDIM);
+    let mut outCache: FCore::Cache;
+    let mut outSub: Arc<DAE::Subscript>;
     (outCache, outSub) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), sub.clone())) {
         (cache, _, Deref @ DAE::Subscript::WHOLEDIM { .. }) => {
             (cache.clone(), openmodelica_frontend_types::DAE::Subscript::interned_WHOLEDIM())
@@ -578,8 +578,8 @@ fn prefixSubscript(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH:
 }
 
 pub fn prefixCrefInnerOuter(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inCref: Arc<DAE::ComponentRef>, mut inPrefix: DAE::Prefix) -> Result<(FCore::Cache, Arc<DAE::ComponentRef>)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outCref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
+    let mut outCache: FCore::Cache;
+    let mut outCref: Arc<DAE::ComponentRef>;
     (outCache, outCref) = (::match_deref::match_deref! { match &((inCache.clone(), inIH.clone(), inCref.clone(), inPrefix.clone())) {
         (cache, ih, cref, pre) => {
             let mut newCref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
@@ -863,11 +863,11 @@ fn prefixExpWork(mut cache: FCore::Cache, mut env: FCore::Graph, mut ih: Arc<met
 }
 
 fn prefixExpCref(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: InstanceHierarchy, mut inCref: Arc<DAE::Exp>, mut inPrefix: DAE::Prefix) -> Result<(FCore::Cache, Arc<DAE::Exp>)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outCref: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut is_iter: Option<bool> = None;
-    let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
+    let mut outCache: FCore::Cache;
+    let mut outCref: Arc<DAE::Exp>;
+    let mut is_iter: Option<bool>;
+    let mut cache: FCore::Cache;
+    let mut cr: Arc<DAE::ComponentRef>;
     let __pa0 = ::match_deref::match_deref! { match &(inCref.clone()) {
         Deref @ DAE::Exp::CREF { componentRef: __pa0, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
@@ -879,8 +879,8 @@ fn prefixExpCref(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: I
 }
 
 fn prefixExpCref2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: InstanceHierarchy, mut inIsIter: Option<bool>, mut inCref: Arc<DAE::Exp>, mut inPrefix: DAE::Prefix) -> Result<(FCore::Cache, Arc<DAE::Exp>)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outCref: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut outCache: FCore::Cache;
+    let mut outCref: Arc<DAE::Exp>;
     (outCache, outCref) = (::match_deref::match_deref! { match &((inCache.clone(), inIsIter.clone(), inCref.clone())) {
         (cache, Some(false), Deref @ DAE::Exp::CREF { componentRef: cr, ty }) => {
             let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -911,8 +911,8 @@ fn prefixExpCref2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: 
 }
 
 fn prefixIterators(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut ih: InstanceHierarchy, mut inIters: Arc<metamodelica::List<Arc<DAE::ReductionIterator>>>, mut pre: DAE::Prefix) -> Result<(FCore::Cache, Arc<metamodelica::List<Arc<DAE::ReductionIterator>>>)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outIters: Arc<metamodelica::List<Arc<DAE::ReductionIterator>>> = metamodelica::nil();
+    let mut outCache: FCore::Cache;
+    let mut outIters: Arc<metamodelica::List<Arc<DAE::ReductionIterator>>>;
     (outCache, outIters) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inIters.clone())) {
         (cache, _, Deref @ metamodelica::List::Nil) => {
             (cache.clone(), metamodelica::nil())
@@ -947,7 +947,7 @@ fn prefixIterators(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut ih: I
 pub fn prefixExpList(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inExpExpLst: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inPrefix: DAE::Prefix) -> Result<(FCore::Cache, Arc<metamodelica::List<Arc<DAE::Exp>>>)> {
     let mut outCache: FCore::Cache = inCache.clone();
     let mut outExpExpLst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-    let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut e_1: Arc<DAE::Exp>;
     for mut e in &*inExpExpLst.clone() {
         let mut e = e.clone();
         (outCache, e_1) = prefixExpWork(outCache.clone(), inEnv.clone(), inIH.clone(), e.clone(), inPrefix.clone())?;
@@ -1067,8 +1067,8 @@ fn prefixStatements(mut cache: FCore::Cache, mut env: FCore::Graph, mut inIH: In
 }
 
 fn prefixElse(mut cache: FCore::Cache, mut env: FCore::Graph, mut inIH: InstanceHierarchy, mut elseBranch: Arc<DAE::Else>, mut p: DAE::Prefix) -> Result<(FCore::Cache, Arc<DAE::Else>)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outElse: Arc<DAE::Else> = Arc::new(DAE::Else::NOELSE);
+    let mut outCache: FCore::Cache;
+    let mut outElse: Arc<DAE::Else>;
     (outCache, outElse) = (::match_deref::match_deref! { match &((cache.clone(), env.clone(), inIH.clone(), elseBranch.clone(), p.clone())) {
         (localCache, _, _, Deref @ DAE::Else::NOELSE { .. }, _) => {
             (localCache.clone(), openmodelica_frontend_types::DAE::Else::interned_NOELSE())
@@ -1151,7 +1151,7 @@ pub fn prefixExpressionsInType(mut inCache: FCore::Cache, mut inEnv: FCore::Grap
 
 fn prefixArrayDimensions(mut ty: Arc<DAE::Type>, mut tpl: (FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::Prefix)) -> Result<(Arc<DAE::Type>, (FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::Prefix))> {
     let mut oty: Arc<DAE::Type> = ty.clone();
-    let mut otpl: (FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::Prefix) = (FCore::Cache::NO_CACHE, <FCore::Graph as ::std::default::Default>::default(), metamodelica::nil(), DAE::Prefix::NOPRE);
+    let mut otpl: (FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::Prefix);
     (oty, otpl) = (::match_deref::match_deref! { match &((oty.clone(), tpl.clone())) {
         (Deref @ DAE::Type::T_ARRAY { .. }, (cache, env, ih, pre)) => {
             let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
@@ -1169,8 +1169,8 @@ fn prefixArrayDimensions(mut ty: Arc<DAE::Type>, mut tpl: (FCore::Cache, FCore::
 }
 
 pub fn prefixDimensions(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inPre: DAE::Prefix, mut inDims: Arc<metamodelica::List<Arc<DAE::Dimension>>>) -> Result<(FCore::Cache, Arc<metamodelica::List<Arc<DAE::Dimension>>>)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outDims: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
+    let mut outCache: FCore::Cache;
+    let mut outDims: Arc<metamodelica::List<Arc<DAE::Dimension>>>;
     (outCache, outDims) = 'mc: {
         let __mc_input = inDims.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -1211,7 +1211,7 @@ pub fn prefixDimensions(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut 
 }
 
 pub fn isPrefix(mut prefix: DAE::Prefix) -> bool {
-    let mut isPrefix: bool = false;
+    let mut isPrefix: bool;
     isPrefix = (match prefix.clone() {
         DAE::Prefix::PREFIX { .. } => true,
         _ => false,
@@ -1220,7 +1220,7 @@ pub fn isPrefix(mut prefix: DAE::Prefix) -> bool {
 }
 
 pub fn isNoPrefix(mut inPrefix: DAE::Prefix) -> bool {
-    let mut outIsEmpty: bool = false;
+    let mut outIsEmpty: bool;
     outIsEmpty = (match inPrefix.clone() {
         DAE::Prefix::NOPRE { .. } => true,
         _ => false,
@@ -1229,8 +1229,8 @@ pub fn isNoPrefix(mut inPrefix: DAE::Prefix) -> bool {
 }
 
 pub fn prefixClockKind(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inClkKind: Arc<DAE::ClockKind>, mut inPrefix: DAE::Prefix) -> Result<(FCore::Cache, Arc<DAE::ClockKind>)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outClkKind: Arc<DAE::ClockKind> = Arc::new(DAE::ClockKind::INFERRED_CLOCK);
+    let mut outCache: FCore::Cache;
+    let mut outClkKind: Arc<DAE::ClockKind>;
     (outCache, outClkKind) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inIH.clone(), inClkKind.clone(), inPrefix.clone())) {
         (cache, _, _, Deref @ DAE::ClockKind::INFERRED_CLOCK { .. }, _) => {
             (cache.clone(), inClkKind.clone())
@@ -1313,7 +1313,7 @@ pub fn componentPrefixPathEqual(mut pre1: Arc<DAE::ComponentPrefix>, mut pre2: A
 }
 
 pub fn componentPrefix(mut inPrefix: DAE::Prefix) -> Arc<DAE::ComponentPrefix> {
-    let mut outPrefix: Arc<DAE::ComponentPrefix> = Arc::new(DAE::ComponentPrefix::NOCOMPPRE);
+    let mut outPrefix: Arc<DAE::ComponentPrefix>;
     outPrefix = (match inPrefix.clone() {
         DAE::Prefix::PREFIX { .. } => var_field!(inPrefix.compPre, DAE::Prefix::PREFIX).clone(),
         _ => openmodelica_frontend_types::DAE::ComponentPrefix::interned_NOCOMPPRE(),
@@ -1352,14 +1352,14 @@ pub fn hasSubs(mut pre: Arc<DAE::ComponentPrefix>) -> bool {
 }
 
 pub fn removeCompPrefixFromExps(mut inExp: Arc<DAE::Exp>, mut inCompPref: Arc<DAE::ComponentPrefix>) -> Result<Arc<DAE::Exp>> {
-    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut outExp: Arc<DAE::Exp>;
     (outExp, _) = Expression::traverseExpBottomUp(inExp.clone(), (std::sync::Arc::new({ let __pe_b2 = inCompPref.clone(); move |__pe_a0, __pe_a1| removeCompPrefixFromCrefExp(__pe_a0, __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, bool) -> Result<(Arc<DAE::Exp>, bool)> + 'static>), false)?;
     Ok(outExp)
 }
 
 fn removeCompPrefixFromCrefExp(mut inExp: Arc<DAE::Exp>, mut inB: bool, mut inCompPref: Arc<DAE::ComponentPrefix>) -> Result<(Arc<DAE::Exp>, bool)> {
-    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut b: bool = false;
+    let mut outExp: Arc<DAE::Exp>;
+    let mut b: bool;
     (outExp, b) = (::match_deref::match_deref! { match &(inExp.clone()) {
         exp @ Deref @ DAE::Exp::CREF { componentRef: Deref @ DAE::ComponentRef::CREF_QUAL { .. }, .. } => {
             let mut cref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);

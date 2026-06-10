@@ -62,18 +62,18 @@ use openmodelica_util::Util;
 use openmodelica_util_datatypes_basic::List;
 
 pub fn serializeParMod(mut code: SimCode::SimCode, mut withOperations: bool) -> Result<ArcStr> {
-    let mut fileName: ArcStr = arcstr::literal!("");
+    let mut fileName: ArcStr;
     let (true, __pa0) = (serializeParModWork(code.clone(), withOperations.clone())?) else { bail!("pattern mismatch") };
     fileName = __pa0.clone();
     Ok(fileName)
 }
 
 fn serializeParModWork(mut code: SimCode::SimCode, mut withOperations: bool) -> Result<(bool, ArcStr)> {
-    let mut success: bool = false;
+    let mut success: bool;
     let mut fileName: ArcStr = arcstr::literal!("");
     let mut file: File::File = File::File(File::noReference())?;
-    let mut mi: SimCode::ModelInfo = <SimCode::ModelInfo as ::std::default::Default>::default();
-    let mut vars: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
+    let mut mi: SimCode::ModelInfo;
+    let mut vars: SimCodeVar::SimVars;
     match '__try0: {
         let SimCode::SIMCODE { modelInfo: ref __pa2 @ SimCode::MODELINFO { vars: ref __pa1, .. }, .. } = (code.clone()) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
         vars = __pa1.clone();
@@ -106,7 +106,7 @@ fn serializeParModWork(mut code: SimCode::SimCode, mut withOperations: bool) -> 
 }
 
 fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mut section: ArcStr, mut withOperations: bool, mut parent: i32, mut first: bool, mut assign_type: i32) -> Result<bool> {
-    let mut success: bool = false;
+    let mut success: bool;
     if !(first.clone()) {
         File::write(file.clone(), (literal!(",")).clone());
     }
@@ -958,8 +958,8 @@ fn serializeEquationIndex(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem
 }
 
 fn serializeIfBranch(mut file: File::File, mut branch: (Arc<DAE::Exp>, Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>)) -> Result<()> {
-    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut eqs: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
+    let mut exp: Arc<DAE::Exp>;
+    let mut eqs: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>;
     (exp, eqs) = branch.clone();
     File::write(file.clone(), (literal!("[")).clone());
     serializeExp(file.clone(), exp.clone())?;

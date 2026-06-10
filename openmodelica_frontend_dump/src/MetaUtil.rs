@@ -118,7 +118,7 @@ fn createMetaClasses(mut inClass: Arc<Absyn::Class>) -> Result<(Arc<Absyn::Class
 }
 
 fn createMetaClassesFromClassParts(mut inClassParts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<Arc<metamodelica::List<Arc<Absyn::ClassPart>>>> {
-    let mut outClassParts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
+    let mut outClassParts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>;
     outClassParts = ({
         let mut __acc: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
         for mut p in (inClassParts.clone()).into_iter().cloned() {
@@ -191,7 +191,7 @@ fn setElementItemClass(mut inElementItem: Arc<Absyn::ElementItem>, mut inClass: 
 }
 
 fn convertElementToClass(mut inElementItem: Arc<Absyn::ElementItem>) -> Result<Arc<Absyn::Class>> {
-    let mut outClass: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
+    let mut outClass: Arc<Absyn::Class>;
     let __pa0 = ::match_deref::match_deref! { match &(inElementItem.clone()) {
         Deref @ Absyn::ElementItem::ELEMENTITEM { element: Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::CLASSDEF { class_: __pa0, .. }, .. } } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
@@ -201,7 +201,7 @@ fn convertElementToClass(mut inElementItem: Arc<Absyn::ElementItem>) -> Result<A
 }
 
 fn fixClassParts(mut inClassParts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>, mut inClassName: ArcStr, mut typeVars: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<metamodelica::List<Arc<Absyn::ClassPart>>>, Arc<metamodelica::List<Arc<Absyn::Class>>>)> {
-    let mut outClassParts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
+    let mut outClassParts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>;
     let mut outMetaClasses: Arc<metamodelica::List<Arc<Absyn::Class>>> = metamodelica::nil();
     let mut meta_classes: Arc<metamodelica::List<Arc<Absyn::Class>>> = metamodelica::nil();
     let mut els: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
@@ -232,7 +232,7 @@ fn fixClassParts(mut inClassParts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>
 }
 
 fn fixElementItems(mut inElementItems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut inName: ArcStr, mut typeVars: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, Arc<metamodelica::List<Arc<Absyn::Class>>>)> {
-    let mut outElementItems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
+    let mut outElementItems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>;
     let mut outMetaClasses: Arc<metamodelica::List<Arc<Absyn::Class>>> = metamodelica::nil();
     let mut index: i32 = 0;
     let mut singleton: bool = ({
@@ -282,7 +282,7 @@ fn fixElementItems(mut inElementItems: Arc<metamodelica::List<Arc<Absyn::Element
 }
 
 pub fn transformArrayNodesToListNodes(mut inList: Arc<metamodelica::List<Arc<Absyn::Exp>>>) -> Arc<metamodelica::List<Arc<Absyn::Exp>>> {
-    let mut outList: Arc<metamodelica::List<Arc<Absyn::Exp>>> = metamodelica::nil();
+    let mut outList: Arc<metamodelica::List<Arc<Absyn::Exp>>>;
     outList = ({
         let mut __acc: Arc<metamodelica::List<Arc<Absyn::Exp>>> = metamodelica::nil();
         for mut e in (inList.clone()).into_iter().cloned() {

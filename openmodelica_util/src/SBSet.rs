@@ -72,8 +72,8 @@ pub fn new(mut ss: Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::SBAtomicSet>>
         equal
     }
 
-    let mut set: Arc<SBSet> = Arc::new(<SBSet as ::std::default::Default>::default());
-    let mut dim: i32 = 0;
+    let mut set: Arc<SBSet>;
+    let mut dim: i32;
     if !(UnorderedSet::isEmpty(ss.clone())) {
         dim = SBAtomicSet::ndim(UnorderedSet::first(ss.clone())?);
         if dim.clone() != 0 && UnorderedSet::all(ss.clone(), (std::sync::Arc::new({ let __pe_b1 = dim.clone(); move |__pe_a0| Ok(is_equal_dim(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>) -> Result<bool> + 'static>))? {
@@ -88,7 +88,7 @@ pub fn new(mut ss: Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::SBAtomicSet>>
 }
 
 pub fn newEmpty() -> Arc<SBSet> {
-    let mut set: Arc<SBSet> = Arc::new(<SBSet as ::std::default::Default>::default());
+    let mut set: Arc<SBSet>;
     set = Arc::new(SBSet { asets: UnorderedSet::new((std::sync::Arc::new(fnptr!(SBAtomicSet::hash, Arc<SBAtomicSet::SBAtomicSet>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>) -> Result<i32> + 'static>), (std::sync::Arc::new(SBAtomicSet::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>, Arc<SBAtomicSet::SBAtomicSet>) -> Result<bool> + 'static>), 13), ndim: 0 });
     set
 }
@@ -120,7 +120,7 @@ pub fn asets(mut set: Arc<SBSet>) -> Arc<UnorderedSet::UnorderedSet<Arc<SBAtomic
 }
 
 pub fn contains(mut vals: metamodelica::Array<i32>, mut set: Arc<SBSet>) -> Result<bool> {
-    let mut res: bool = false;
+    let mut res: bool;
     res = UnorderedSet::all(set.asets.clone(), (std::sync::Arc::new({ let __pe_b0 = vals.clone(); move |__pe_a1| SBAtomicSet::contains(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>) -> Result<bool> + 'static>))?;
     Ok(res)
 }
@@ -146,9 +146,9 @@ pub fn addAtomicSets(mut asets: Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::
 }
 
 pub fn intersection(mut set1: Arc<SBSet>, mut set2: Arc<SBSet>) -> Result<Arc<SBSet>> {
-    let mut outSet: Arc<SBSet> = Arc::new(<SBSet as ::std::default::Default>::default());
-    let mut int_set: Arc<SBAtomicSet::SBAtomicSet> = Arc::new(<SBAtomicSet::SBAtomicSet as ::std::default::Default>::default());
-    let mut res: Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::SBAtomicSet>>> = <Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::SBAtomicSet>>> as ::std::default::Default>::default();
+    let mut outSet: Arc<SBSet>;
+    let mut int_set: Arc<SBAtomicSet::SBAtomicSet>;
+    let mut res: Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::SBAtomicSet>>>;
     if UnorderedSet::isEmpty(set1.asets.clone()) || UnorderedSet::isEmpty(set2.asets.clone()) {
         outSet = newEmpty();
         return Ok(outSet.clone());
@@ -169,11 +169,11 @@ pub fn intersection(mut set1: Arc<SBSet>, mut set2: Arc<SBSet>) -> Result<Arc<SB
 }
 
 pub fn complement(mut set1: Arc<SBSet>, mut set2: Arc<SBSet>) -> Result<Arc<SBSet>> {
-    let mut outSet: Arc<SBSet> = Arc::new(<SBSet as ::std::default::Default>::default());
-    let mut int_res: Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::SBAtomicSet>>> = <Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::SBAtomicSet>>> as ::std::default::Default>::default();
-    let mut aux: Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::SBAtomicSet>>> = <Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::SBAtomicSet>>> as ::std::default::Default>::default();
-    let mut comp_res: Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::SBAtomicSet>>> = <Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::SBAtomicSet>>> as ::std::default::Default>::default();
-    let mut new_sets: Arc<SBSet> = Arc::new(<SBSet as ::std::default::Default>::default());
+    let mut outSet: Arc<SBSet>;
+    let mut int_res: Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::SBAtomicSet>>>;
+    let mut aux: Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::SBAtomicSet>>>;
+    let mut comp_res: Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::SBAtomicSet>>>;
+    let mut new_sets: Arc<SBSet>;
     outSet = newEmpty();
     let __pa0 = ::match_deref::match_deref! { match &(intersection(set1.clone(), set2.clone())?) {
         Deref @ SBSet { asets: __pa0, .. } => __pa0.clone(),
@@ -204,8 +204,8 @@ pub fn complement(mut set1: Arc<SBSet>, mut set2: Arc<SBSet>) -> Result<Arc<SBSe
 }
 
 pub fn union(mut set1: Arc<SBSet>, mut set2: Arc<SBSet>) -> Result<Arc<SBSet>> {
-    let mut outSet: Arc<SBSet> = Arc::new(<SBSet as ::std::default::Default>::default());
-    let mut aux: Arc<SBSet> = Arc::new(<SBSet as ::std::default::Default>::default());
+    let mut outSet: Arc<SBSet>;
+    let mut aux: Arc<SBSet>;
     outSet = Arc::new(SBSet { asets: UnorderedSet::copy(set1.asets.clone()), ndim: set1.ndim.clone() });
     aux = complement(set2.clone(), outSet.clone())?;
     if !(isEmpty(aux.clone())) {
@@ -231,8 +231,8 @@ pub fn maxCardinality(mut sets: Arc<Vector::Vector<Arc<SBSet>>>) -> Result<(Arc<
         Ok((res, maxCard))
     }
 
-    let mut maxSet: Arc<SBSet> = Arc::new(<SBSet as ::std::default::Default>::default());
-    let mut index: i32 = 0;
+    let mut maxSet: Arc<SBSet>;
+    let mut index: i32;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(Vector::findFold(sets.clone(), (std::sync::Arc::new(maxCardinality_traverse) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBSet>, i32) -> Result<(bool, i32)> + 'static>), 0)) {
         Ok((Some(__pa0), __pa1, _)) => (__pa0.clone(), __pa1.clone()),
         _ => {
@@ -246,13 +246,13 @@ pub fn maxCardinality(mut sets: Arc<Vector::Vector<Arc<SBSet>>>) -> Result<(Arc<
 
 pub fn minElem(mut set: Arc<SBSet>) -> Result<metamodelica::Array<i32>> {
     fn lessFn(mut set1: metamodelica::Array<i32>, mut set2: metamodelica::Array<i32>) -> Result<bool> {
-        let mut res: bool = false;
+        let mut res: bool;
         res = Array::isLess(set1.clone(), set2.clone(), (std::sync::Arc::new(fnptr!(intLt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
         Ok(res)
     }
 
-    let mut res: metamodelica::Array<i32> = Default::default();
-    let mut min_elems: Arc<metamodelica::List<metamodelica::Array<i32>>> = metamodelica::nil();
+    let mut res: metamodelica::Array<i32>;
+    let mut min_elems: Arc<metamodelica::List<metamodelica::Array<i32>>>;
     if isEmpty(set.clone()) {
         res = metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect());
     } else {
@@ -280,7 +280,7 @@ pub fn hash(mut set: Arc<SBSet>) -> i32 {
 }
 
 pub fn toString(mut set: Arc<SBSet>) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("{")); __mm_s.push_str(&*UnorderedSet::toString(set.asets.clone(), (std::sync::Arc::new(fnptr!(SBAtomicSet::toString, Arc<SBAtomicSet::SBAtomicSet>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>) -> Result<ArcStr> + 'static>), (literal!("U")).clone())?); __mm_s.push_str(&*literal!("}")); ArcStr::from(__mm_s) }).clone();
     Ok(r#str)
 }

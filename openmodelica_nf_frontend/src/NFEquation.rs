@@ -201,7 +201,7 @@ pub mod Branch {
     }
 
     pub fn sizeOf(mut branch: Arc<Branch>) -> Result<i32> {
-        let mut size: i32 = 0;
+        let mut size: i32;
         size = (::match_deref::match_deref! { match &(branch.clone()) {
         Deref @ BRANCH { .. } => sizeOfList(var_field!((*branch).body, Branch::BRANCH).clone())?,
         _ => 0,
@@ -251,8 +251,8 @@ pub mod Branch {
     }
 
     pub fn toString(mut branch: Arc<Branch>, mut indent: ArcStr) -> Result<ArcStr> {
-        let mut r#str: ArcStr = arcstr::literal!("");
-        let mut s: IOStream::IOStream = <IOStream::IOStream as ::std::default::Default>::default();
+        let mut r#str: ArcStr;
+        let mut s: IOStream::IOStream;
         s = IOStream::create(literal!("NFEquation.Branch.toString"), openmodelica_util::IOStream::IOStreamType::LIST)?;
         s = toStream(branch.clone(), (literal!("")).clone(), false, (indent.clone()).clone(), s.clone())?;
         r#str = (IOStream::string(s.clone())?).clone();
@@ -289,15 +289,15 @@ impl Ord for ScalarizeMode {
 }
 
 pub fn makeEquality(mut lhs: Arc<Expression::NFExpression>, mut rhs: Arc<Expression::NFExpression>, mut ty: Arc<Type::NFType>, mut src: Arc<DAE::ElementSource>, mut scope: Arc<InstNode::InstNode>, mut scalarizeMode: ScalarizeMode) -> Arc<NFEquation> {
-    let mut eq: Arc<NFEquation> = Arc::new(<NFEquation as ::std::default::Default>::default());
+    let mut eq: Arc<NFEquation>;
     eq = Arc::new(NFEquation::EQUALITY { lhs: lhs.clone(), rhs: rhs.clone(), ty: ty.clone(), scope: scope.clone(), source: src.clone(), scalarizeMode: scalarizeMode.clone() });
     eq
 }
 
 pub fn makeCrefEquality(mut lhsCref: Arc<ComponentRef::NFComponentRef>, mut rhsCref: Arc<ComponentRef::NFComponentRef>, mut scope: Arc<InstNode::InstNode>, mut src: Arc<DAE::ElementSource>) -> Result<Arc<NFEquation>> {
-    let mut eq: Arc<NFEquation> = Arc::new(<NFEquation as ::std::default::Default>::default());
-    let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut eq: Arc<NFEquation>;
+    let mut e1: Arc<Expression::NFExpression>;
+    let mut e2: Arc<Expression::NFExpression>;
     e1 = Expression::fromCref(lhsCref.clone(), false)?;
     e2 = Expression::fromCref(rhsCref.clone(), false)?;
     eq = makeEquality(e1.clone(), e2.clone(), Expression::typeOf(e1.clone()), src.clone(), scope.clone(), ScalarizeMode::NO_PREFERENCE.clone());
@@ -305,19 +305,19 @@ pub fn makeCrefEquality(mut lhsCref: Arc<ComponentRef::NFComponentRef>, mut rhsC
 }
 
 pub fn makeBranch(mut condition: Arc<Expression::NFExpression>, mut body: Arc<metamodelica::List<Arc<NFEquation>>>, mut condVar: Variability) -> Arc<Branch::Branch> {
-    let mut branch: Arc<Branch::Branch> = Arc::new(<Branch::Branch as ::std::default::Default>::default());
+    let mut branch: Arc<Branch::Branch>;
     branch = Arc::new(Branch::Branch::BRANCH { condition: condition.clone(), conditionVar: condVar.clone(), body: body.clone() });
     branch
 }
 
 pub fn makeIf(mut branches: Arc<metamodelica::List<Arc<Branch::Branch>>>, mut scope: Arc<InstNode::InstNode>, mut src: Arc<DAE::ElementSource>) -> Arc<NFEquation> {
-    let mut eq: Arc<NFEquation> = Arc::new(<NFEquation as ::std::default::Default>::default());
+    let mut eq: Arc<NFEquation>;
     eq = Arc::new(NFEquation::IF { branches: branches.clone(), scope: scope.clone(), source: src.clone() });
     eq
 }
 
 pub fn source(mut eq: Arc<NFEquation>) -> Result<Arc<DAE::ElementSource>> {
-    let mut source: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
+    let mut source: Arc<DAE::ElementSource>;
     source = (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ EQUALITY { .. } => var_field!((*eq).source, NFEquation::EQUALITY).clone(),
         Deref @ CONNECT { .. } => var_field!((*eq).source, NFEquation::CONNECT).clone(),
@@ -378,7 +378,7 @@ pub fn setSource(mut source: Arc<DAE::ElementSource>, mut eq: Arc<NFEquation>) -
 }
 
 pub fn scope(mut eq: Arc<NFEquation>) -> Result<Arc<InstNode::InstNode>> {
-    let mut scope: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
+    let mut scope: Arc<InstNode::InstNode>;
     scope = (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ EQUALITY { .. } => var_field!((*eq).scope, NFEquation::EQUALITY).clone(),
         Deref @ CONNECT { .. } => var_field!((*eq).scope, NFEquation::CONNECT).clone(),
@@ -1011,7 +1011,7 @@ pub fn contains(mut eq: Arc<NFEquation>, mut func: Arc<dyn ::std::ops::Fn(Arc<NF
 pub fn containsList(mut eql: Arc<metamodelica::List<Arc<NFEquation>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFEquation>) -> Result<bool> + 'static>) -> Result<bool> {
     pub type PredFn = std::sync::Arc<dyn ::std::ops::Fn(Arc<NFEquation>) -> Result<bool> + 'static>;
 
-    let mut res: bool = false;
+    let mut res: bool;
     for mut eq in &*eql.clone() {
         let mut eq = eq.clone();
         if contains(eq.clone(), func.clone())? {
@@ -1094,7 +1094,7 @@ pub fn containsExp(mut eq: Arc<NFEquation>, mut r#fn: Arc<dyn ::std::ops::Fn(Arc
 pub fn containsExpList(mut eql: Arc<metamodelica::List<Arc<NFEquation>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>) -> Result<bool> {
     pub type Predicate = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>;
 
-    let mut res: bool = false;
+    let mut res: bool;
     for mut eq in &*eql.clone() {
         let mut eq = eq.clone();
         if containsExp(eq.clone(), func.clone())? {
@@ -1113,7 +1113,7 @@ pub fn replaceIteratorList(mut eql: Arc<metamodelica::List<Arc<NFEquation>>>, mu
 }
 
 pub fn isArrayEquality(mut eq: Arc<NFEquation>) -> bool {
-    let mut isArray: bool = false;
+    let mut isArray: bool;
     isArray = (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ EQUALITY { .. } => Type::isArray(var_field!((*eq).ty, NFEquation::EQUALITY).clone()),
         _ => false,
@@ -1123,7 +1123,7 @@ pub fn isArrayEquality(mut eq: Arc<NFEquation>) -> bool {
 }
 
 pub fn isConnect(mut eq: Arc<NFEquation>) -> bool {
-    let mut isConnect: bool = false;
+    let mut isConnect: bool;
     isConnect = (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ CONNECT { .. } => true,
         _ => false,
@@ -1133,7 +1133,7 @@ pub fn isConnect(mut eq: Arc<NFEquation>) -> bool {
 }
 
 pub fn isConnection(mut eq: Arc<NFEquation>) -> Result<bool> {
-    let mut res: bool = false;
+    let mut res: bool;
     let mut call: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
     res = (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ CONNECT { .. } => true,
@@ -1216,8 +1216,8 @@ pub fn sizeOf(mut eq: Arc<NFEquation>) -> Result<i32> {
 }
 
 pub fn toString(mut eq: Arc<NFEquation>, mut indent: ArcStr) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
-    let mut s: IOStream::IOStream = <IOStream::IOStream as ::std::default::Default>::default();
+    let mut r#str: ArcStr;
+    let mut s: IOStream::IOStream;
     s = IOStream::create(literal!("NFEquation.toString"), openmodelica_util::IOStream::IOStreamType::LIST)?;
     s = toStream(eq.clone(), (indent.clone()).clone(), s.clone())?;
     r#str = (IOStream::string(s.clone())?).clone();
@@ -1226,8 +1226,8 @@ pub fn toString(mut eq: Arc<NFEquation>, mut indent: ArcStr) -> Result<ArcStr> {
 }
 
 pub fn toStringList(mut eql: Arc<metamodelica::List<Arc<NFEquation>>>, mut indent: ArcStr) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
-    let mut s: IOStream::IOStream = <IOStream::IOStream as ::std::default::Default>::default();
+    let mut r#str: ArcStr;
+    let mut s: IOStream::IOStream;
     s = IOStream::create(literal!("NFEquation.toStringList"), openmodelica_util::IOStream::IOStreamType::LIST)?;
     s = toStreamList(eql.clone(), (indent.clone()).clone(), s.clone())?;
     r#str = (IOStream::string(s.clone())?).clone();
@@ -1335,7 +1335,7 @@ pub fn toStream(mut eq: Arc<NFEquation>, mut indent: ArcStr, mut s: IOStream::IO
 pub fn toStreamList(mut eql: Arc<metamodelica::List<Arc<NFEquation>>>, mut indent: ArcStr, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut s: IOStream::IOStream = s;
     let mut prev_multi_line: bool = false;
-    let mut multi_line: bool = false;
+    let mut multi_line: bool;
     let mut first: bool = true;
     for mut eq in &*eql.clone() {
         let mut eq = eq.clone();
@@ -1453,7 +1453,7 @@ pub fn toFlatStream(mut eq: Arc<NFEquation>, mut format: BaseModelica::OutputFor
 pub fn toFlatStreamList(mut eql: Arc<metamodelica::List<Arc<NFEquation>>>, mut format: BaseModelica::OutputFormat, mut indent: ArcStr, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut s: IOStream::IOStream = s;
     let mut prev_multi_line: bool = false;
-    let mut multi_line: bool = false;
+    let mut multi_line: bool;
     let mut first: bool = true;
     for mut eq in &*eql.clone() {
         let mut eq = eq.clone();
@@ -1471,7 +1471,7 @@ pub fn toFlatStreamList(mut eql: Arc<metamodelica::List<Arc<NFEquation>>>, mut f
 }
 
 pub fn isMultiLine(mut eq: Arc<NFEquation>) -> bool {
-    let mut singleLine: bool = false;
+    let mut singleLine: bool;
     singleLine = (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ FOR { .. } => true,
         Deref @ IF { .. } => true,

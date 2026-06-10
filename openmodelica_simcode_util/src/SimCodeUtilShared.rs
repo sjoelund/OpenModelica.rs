@@ -63,22 +63,22 @@ use openmodelica_util::Util;
 use openmodelica_util_datatypes_basic::List;
 
 fn simulationFindLiterals(mut fns: Arc<metamodelica::List<DAE::Function>>) -> Result<(Arc<metamodelica::List<DAE::Function>>, (i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), Arc<metamodelica::List<Arc<DAE::Exp>>>))> {
-    let mut ofns: Arc<metamodelica::List<DAE::Function>> = metamodelica::nil();
+    let mut ofns: Arc<metamodelica::List<DAE::Function>>;
     let mut literals: (i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (HashTableExpToIndex::FuncHashCref, HashTableExpToIndex::FuncCrefEqual, HashTableExpToIndex::FuncCrefStr, HashTableExpToIndex::FuncExpStr)), Arc<metamodelica::List<Arc<DAE::Exp>>>);
     (ofns, literals) = DAEUtil::traverseDAEFunctions(fns.clone(), (std::sync::Arc::new(SimCodeFunctionUtil::findLiteralsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), Arc<metamodelica::List<Arc<DAE::Exp>>>)) -> Result<(Arc<DAE::Exp>, (i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), Arc<metamodelica::List<Arc<DAE::Exp>>>))> + 'static>), (0, HashTableExpToIndex::emptyHashTableSized(BaseHashTable::bigBucketSize.clone()), metamodelica::nil()))?;
     Ok((ofns, literals))
 }
 
 pub fn createFunctions(mut inProgram: Absyn::Program, mut functionTree: Arc<AvlTreePathFunction::Tree>) -> Result<(Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<SimCodeFunction::RecordDeclaration>>, Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>>, (i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), Arc<metamodelica::List<Arc<DAE::Exp>>>))> {
-    let mut outLibs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut outLibPaths: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut outIncludes: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut outIncludeDirs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut outRecordDecls: Arc<metamodelica::List<SimCodeFunction::RecordDeclaration>> = metamodelica::nil();
-    let mut outFunctions: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>> = metamodelica::nil();
+    let mut outLibs: Arc<metamodelica::List<ArcStr>>;
+    let mut outLibPaths: Arc<metamodelica::List<ArcStr>>;
+    let mut outIncludes: Arc<metamodelica::List<ArcStr>>;
+    let mut outIncludeDirs: Arc<metamodelica::List<ArcStr>>;
+    let mut outRecordDecls: Arc<metamodelica::List<SimCodeFunction::RecordDeclaration>>;
+    let mut outFunctions: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>>;
     let mut outLiterals: (i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (HashTableExpToIndex::FuncHashCref, HashTableExpToIndex::FuncCrefEqual, HashTableExpToIndex::FuncCrefStr, HashTableExpToIndex::FuncExpStr)), Arc<metamodelica::List<Arc<DAE::Exp>>>);
-    let mut funcelems: Arc<metamodelica::List<DAE::Function>> = metamodelica::nil();
-    let mut lits: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
+    let mut funcelems: Arc<metamodelica::List<DAE::Function>>;
+    let mut lits: Arc<metamodelica::List<Arc<DAE::Exp>>>;
     match '__try0: {
         funcelems = unwrap_break_err!(DAEUtil::getFunctionList(functionTree.clone(), false), '__try0);
         funcelems = unwrap_break_err!(Inline::inlineCallsInFunctions(funcelems.clone(), (None, list![openmodelica_frontend_types::DAE::InlineType::NORM_INLINE, openmodelica_frontend_types::DAE::InlineType::AFTER_INDEX_RED_INLINE])), '__try0);
@@ -111,12 +111,12 @@ pub fn createFunctions(mut inProgram: Absyn::Program, mut functionTree: Arc<AvlT
 pub fn createVarToArrayIndexMapping(mut iModelInfo: SimCode::ModelInfo) -> Result<((metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>))>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn((Arc<metamodelica::List<i32>>, metamodelica::Array<i32>)) -> Result<ArcStr> + 'static>)), (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<i32>>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>) -> Result<ArcStr> + 'static>)))> {
     let mut oVarToArrayIndexMapping: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>))>>), i32, (HashTableCrIListArray::FuncHashCref, HashTableCrIListArray::FuncCrefEqual, HashTableCrIListArray::FuncCrefStr, HashTableCrIListArray::FuncExpStr));
     let mut oVarToIndexMapping: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<i32>>)>>), i32, (HashTableCrILst::FuncHashCref, HashTableCrILst::FuncCrefEqual, HashTableCrILst::FuncCrefStr, HashTableCrILst::FuncExpStr));
-    let mut sim_vars: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-    let mut vars: Arc<metamodelica::List<(Arc<metamodelica::List<SimCodeVar::SimVar>>, i32)>> = metamodelica::nil();
+    let mut sim_vars: SimCodeVar::SimVars;
+    let mut vars: Arc<metamodelica::List<(Arc<metamodelica::List<SimCodeVar::SimVar>>, i32)>>;
     let mut table_size: i32 = 0;
-    let mut var_lst: Arc<metamodelica::List<SimCodeVar::SimVar>> = metamodelica::nil();
-    let mut var_type: i32 = 0;
-    let mut currentVarIndices: metamodelica::Array<i32> = Default::default();
+    let mut var_lst: Arc<metamodelica::List<SimCodeVar::SimVar>>;
+    let mut var_type: i32;
+    let mut currentVarIndices: metamodelica::Array<i32>;
     sim_vars = iModelInfo.vars.clone();
     vars = list![(sim_vars.stateVars.clone(), 1), (sim_vars.derivativeVars.clone(), 1), (sim_vars.algVars.clone(), 1), (sim_vars.discreteAlgVars.clone(), 1), (sim_vars.intAlgVars.clone(), 2), (sim_vars.boolAlgVars.clone(), 3), (sim_vars.stringAlgVars.clone(), 4), (sim_vars.paramVars.clone(), 1), (sim_vars.intParamVars.clone(), 2), (sim_vars.boolParamVars.clone(), 3), (sim_vars.stringParamVars.clone(), 4), (sim_vars.constVars.clone(), 1), (sim_vars.intConstVars.clone(), 2), (sim_vars.boolConstVars.clone(), 3), (sim_vars.stringConstVars.clone(), 4), (sim_vars.realOptimizeConstraintsVars.clone(), 1), (sim_vars.realOptimizeFinalConstraintsVars.clone(), 1), (sim_vars.aliasVars.clone(), 1), (sim_vars.intAliasVars.clone(), 2), (sim_vars.boolAliasVars.clone(), 3), (sim_vars.stringAliasVars.clone(), 4)];
     for mut vl in &*vars.clone() {
@@ -228,9 +228,9 @@ fn checkIfSubscriptsContainsUnhandlableIndices(mut iSubscripts: Arc<metamodelica
 
 fn getArrayIdxByVar(mut iVar: SimCodeVar::SimVar, mut iVarType: i32, mut iVarToIndexMapping: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<i32>>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>) -> Result<ArcStr> + 'static>)), mut iCurrentVarIndices: metamodelica::Array<i32>) -> Result<(metamodelica::Array<i32>, i32)> {
     let mut iCurrentVarIndices: metamodelica::Array<i32> = iCurrentVarIndices;
-    let mut oVarIndex: i32 = 0;
+    let mut oVarIndex: i32;
     let mut varName: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-    let mut name: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
+    let mut name: Arc<DAE::ComponentRef>;
     let mut varIdx: i32 = 0;
     let mut tmpCurrentVarIndices: metamodelica::Array<i32> = Default::default();
     oVarIndex = (match (iVar.clone(), iCurrentVarIndices.clone()) {
@@ -281,7 +281,7 @@ fn getArrayIdxByVar(mut iVar: SimCodeVar::SimVar, mut iVarType: i32, mut iVarToI
 }
 
 fn getVarToArrayIndexByType(mut iVar: SimCodeVar::SimVar, mut iVarType: i32, mut iCurrentVarIndices: metamodelica::Array<i32>) -> Result<(i32, metamodelica::Array<i32>)> {
-    let mut oVarIdx: i32 = 0;
+    let mut oVarIdx: i32;
     let mut iCurrentVarIndices: metamodelica::Array<i32> = iCurrentVarIndices;
     match '__try0: {
         oVarIdx = unwrap_break_err!(metamodelica::arrayGet(iCurrentVarIndices.clone(), iVarType.clone()), '__try0);
@@ -300,9 +300,9 @@ fn getVarToArrayIndexByType(mut iVar: SimCodeVar::SimVar, mut iVarType: i32, mut
 }
 
 pub fn getScalarElementIndex(mut arraySubscripts: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut arrayDimensions: Arc<metamodelica::List<i32>>) -> Result<i32> {
-    let mut arrayIndex: i32 = 0;
-    let mut idx: i32 = 0;
-    let mut fac: i32 = 0;
+    let mut arrayIndex: i32;
+    let mut idx: i32;
+    let mut fac: i32;
     arrayIndex = 1;
     fac = 1;
     for mut i in ({let __s=(arraySubscripts.clone().len() as i32); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
@@ -331,7 +331,7 @@ pub fn getNumElems(mut var: SimCodeVar::SimVar) -> Result<i32> {
 }
 
 pub fn isArrayVar(mut var: SimCodeVar::SimVar) -> bool {
-    let mut isArray: bool = false;
+    let mut isArray: bool;
     isArray = (::match_deref::match_deref! { match &(var.clone()) {
         SimCodeVar::SimVar { type_: Deref @ DAE::Type::T_ARRAY { .. }, .. } => true,
         _ => false,

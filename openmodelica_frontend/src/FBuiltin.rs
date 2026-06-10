@@ -218,13 +218,13 @@ pub static basicTypes: std::sync::LazyLock<Arc<metamodelica::List<Arc<SCode::Ele
 pub static basicTypesNF: std::sync::LazyLock<Arc<metamodelica::List<Arc<SCode::Element>>>> = std::sync::LazyLock::new(|| { list![rlType.clone(), intType.clone(), strType.clone(), boolType.clone(), enumType.clone(), realType.clone(), integerType.clone(), stringType.clone(), booleanType.clone()] });
 
 pub fn getBasicTypes() -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> {
-    let mut tys: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
+    let mut tys: Arc<metamodelica::List<Arc<SCode::Element>>>;
     tys = if (Flags::isSet(Flags::SCODE_INST.clone())?) {basicTypesNF.clone()} else {basicTypes.clone()};
     Ok(tys)
 }
 
 pub fn variableIsBuiltin(mut cref: Arc<DAE::ComponentRef>, mut useOptimica: bool) -> bool {
-    let mut b: bool = false;
+    let mut b: bool;
     b = (::match_deref::match_deref! { match &((cref.clone(), useOptimica.clone())) {
         (Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "time", .. }, _) => true,
         (_, false) => false,
@@ -259,13 +259,13 @@ fn mergePrograms(mut program1: Absyn::Program, mut program2: Absyn::Program) -> 
 }
 
 pub fn getInitialFunctions() -> Result<(Absyn::Program, Arc<metamodelica::List<Arc<SCode::Element>>>)> {
-    let mut initialProgram: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
-    let mut initialSCodeProgram: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
-    let mut fileModelicaNF: ArcStr = arcstr::literal!("");
-    let mut fileModelicaCF: ArcStr = arcstr::literal!("");
-    let mut fileMetaModelica: ArcStr = arcstr::literal!("");
-    let mut fileParModelica: ArcStr = arcstr::literal!("");
-    let mut filePDEModelica: ArcStr = arcstr::literal!("");
+    let mut initialProgram: Absyn::Program;
+    let mut initialSCodeProgram: Arc<metamodelica::List<Arc<SCode::Element>>>;
+    let mut fileModelicaNF: ArcStr;
+    let mut fileModelicaCF: ArcStr;
+    let mut fileMetaModelica: ArcStr;
+    let mut fileParModelica: ArcStr;
+    let mut filePDEModelica: ArcStr;
     let mut assocLst: Arc<metamodelica::List<((i32, bool), (Absyn::Program, Arc<metamodelica::List<Arc<SCode::Element>>>))>> = metamodelica::nil();
     let mut p: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
     let mut pNF: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
@@ -467,7 +467,7 @@ pub fn getInitialFunctions() -> Result<(Absyn::Program, Arc<metamodelica::List<A
 }
 
 pub fn initialGraph(mut inCache: FCore::Cache) -> Result<(FCore::Cache, FCore::Graph)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
+    let mut outCache: FCore::Cache;
     let mut graph: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
     let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
     (outCache, graph) = 'mc: {
@@ -505,7 +505,7 @@ pub fn initialGraph(mut inCache: FCore::Cache) -> Result<(FCore::Cache, FCore::G
 }
 
 fn getSetInitialGraph(mut inEnvOpt: Option<FCore::Graph>) -> Result<FCore::Graph> {
-    let mut initialEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
+    let mut initialEnv: FCore::Graph;
     initialEnv = 'mc: {
         let __mc_input = inEnvOpt.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -596,7 +596,7 @@ pub fn initialGraphOptimica(mut graph: FCore::Graph, mut mkCompNode: Arc<dyn ::s
 }
 
 pub fn getElementWithPathCheckBuiltin(mut inProgram: Arc<metamodelica::List<Arc<SCode::Element>>>, mut inPath: Arc<Absyn::Path>) -> Result<Arc<SCode::Element>> {
-    let mut outElement: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
+    let mut outElement: Arc<SCode::Element>;
     outElement = 'mc: {
         let __mc_input = inPath.clone();
         if let Ok(__v) = (|| -> Result<_> {

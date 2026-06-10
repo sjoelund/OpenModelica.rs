@@ -69,13 +69,13 @@ pub static RAT0: Rational = Rational { nom: 0, denom: 1 };
 pub static RAT1: Rational = Rational { nom: 1, denom: 1 };
 
 pub fn isGreaterThan(mut r1: Rational, mut r2: Rational) -> bool {
-    let mut b: bool = false;
+    let mut b: bool;
     b = realGt(metamodelica::OrderedFloat((r1.nom.clone()) as f64) / metamodelica::OrderedFloat((r1.denom.clone()) as f64), metamodelica::OrderedFloat((r2.nom.clone()) as f64) / metamodelica::OrderedFloat((r2.denom.clone()) as f64));
     b
 }
 
 pub fn addRational(mut r1: Rational, mut r2: Rational) -> Result<Rational> {
-    let mut r: Rational = <Rational as ::std::default::Default>::default();
+    let mut r: Rational;
     r = (match (r1.clone(), r2.clone()) {
         (Rational { nom: mut i1, denom: mut i2 }, Rational { nom: mut i3, denom: mut i4 }) => {
             let mut ri1: i32 = 0;
@@ -93,7 +93,7 @@ pub fn addRational(mut r1: Rational, mut r2: Rational) -> Result<Rational> {
 }
 
 fn normalizeZero(mut r: Rational) -> Rational {
-    let mut outR: Rational = <Rational as ::std::default::Default>::default();
+    let mut outR: Rational;
     outR = (match r.clone() {
         Rational { nom: 0, denom: _ } => Rational { nom: 0, denom: 1 },
         _ => r.clone(),
@@ -113,7 +113,7 @@ pub fn rationalString(mut r: Rational) -> Result<ArcStr> {
 }
 
 pub fn equals(mut r1: Rational, mut r2: Rational) -> Result<bool> {
-    let mut res: bool = false;
+    let mut res: bool;
     res = (match (r1.clone(), r2.clone()) {
         (Rational { nom: mut i1, denom: mut i2 }, Rational { nom: mut i3, denom: mut i4 }) => {
             i1.clone() * i4.clone() - i3.clone() * i2.clone() == 0
@@ -123,7 +123,7 @@ pub fn equals(mut r1: Rational, mut r2: Rational) -> Result<bool> {
 }
 
 pub fn subRational(mut r1: Rational, mut r2: Rational) -> Result<Rational> {
-    let mut r: Rational = <Rational as ::std::default::Default>::default();
+    let mut r: Rational;
     r = (match (r1.clone(), r2.clone()) {
         (Rational { nom: mut i1, denom: mut i2 }, Rational { nom: mut i3, denom: mut i4 }) => {
             let mut ri1: i32 = 0;
@@ -141,7 +141,7 @@ pub fn subRational(mut r1: Rational, mut r2: Rational) -> Result<Rational> {
 }
 
 pub fn multRational(mut r1: Rational, mut r2: Rational) -> Result<Rational> {
-    let mut r: Rational = <Rational as ::std::default::Default>::default();
+    let mut r: Rational;
     r = (match (r1.clone(), r2.clone()) {
         (Rational { nom: mut i1, denom: mut i2 }, Rational { nom: mut i3, denom: mut i4 }) => {
             let mut ri1: i32 = 0;
@@ -159,7 +159,7 @@ pub fn multRational(mut r1: Rational, mut r2: Rational) -> Result<Rational> {
 }
 
 pub fn divRational(mut r1: Rational, mut r2: Rational) -> Result<Rational> {
-    let mut r: Rational = <Rational as ::std::default::Default>::default();
+    let mut r: Rational;
     r = (match (r1.clone(), r2.clone()) {
         (Rational { nom: mut i1, denom: mut i2 }, Rational { nom: mut i3, denom: mut i4 }) => {
             let mut ri1: i32 = 0;

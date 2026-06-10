@@ -73,7 +73,7 @@ use openmodelica_util_datatypes_basic::List;
 use openmodelica_util_datatypes_basic::Mutable;
 
 pub fn simplifyDump(mut exp: Arc<Expression::NFExpression>, mut includeScope: bool, mut name: ArcStr, mut indent: ArcStr) -> Result<Arc<Expression::NFExpression>> {
-    let mut res: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut res: Arc<Expression::NFExpression>;
     res = simplify(exp.clone(), includeScope.clone())?;
     if Flags::isSet(Flags::DUMP_SIMPLIFY.clone())? && !(Expression::isEqual(exp.clone(), res.clone())?) {
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("### dumpSimplify | ")); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!(" ###\n")); ArcStr::from(__mm_s) }).clone());
@@ -85,8 +85,8 @@ pub fn simplifyDump(mut exp: Arc<Expression::NFExpression>, mut includeScope: bo
 
 pub fn simplify(mut exp: Arc<Expression::NFExpression>, mut includeScope: bool) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression> = exp;
-    let mut old: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut new: Arc<Type::NFType> = Arc::new(Type::ANY);
+    let mut old: Arc<Type::NFType>;
+    let mut new: Arc<Type::NFType>;
     exp = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CREF { .. } => {
             assign_variant_field!(exp => Expression::NFExpression::CREF; cref = ComponentRef::simplifySubscripts(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), false)?);
@@ -138,15 +138,15 @@ pub fn simplify(mut exp: Arc<Expression::NFExpression>, mut includeScope: bool) 
 }
 
 pub fn simplifyRange(mut range: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
-    let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut start_exp1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut stop_exp1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut start_exp2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut stop_exp2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut step_exp1: Option<Arc<Expression::NFExpression>> = None;
-    let mut step_exp2: Option<Arc<Expression::NFExpression>> = None;
-    let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut ty2: Arc<Type::NFType> = Arc::new(Type::ANY);
+    let mut exp: Arc<Expression::NFExpression>;
+    let mut start_exp1: Arc<Expression::NFExpression>;
+    let mut stop_exp1: Arc<Expression::NFExpression>;
+    let mut start_exp2: Arc<Expression::NFExpression>;
+    let mut stop_exp2: Arc<Expression::NFExpression>;
+    let mut step_exp1: Option<Arc<Expression::NFExpression>>;
+    let mut step_exp2: Option<Arc<Expression::NFExpression>>;
+    let mut ty: Arc<Type::NFType>;
+    let mut ty2: Arc<Type::NFType>;
     let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(range.clone()) {
         Deref @ Expression::RANGE { ty: __pa0, start: __pa1, step: __pa2, stop: __pa3 } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
         _ => bail!("pattern mismatch"),
@@ -174,7 +174,7 @@ pub fn simplifyRange(mut range: Arc<Expression::NFExpression>) -> Result<Arc<Exp
 
 pub fn simplifyCall(mut callExp: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
     let mut callExp: Arc<Expression::NFExpression> = callExp;
-    let mut call: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
+    let mut call: Arc<Call::NFCall>;
     let mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
     let mut builtin: bool = false;
     let mut is_pure: bool = false;
@@ -254,7 +254,7 @@ pub fn simplifyCall(mut callExp: Arc<Expression::NFExpression>) -> Result<Arc<Ex
 }
 
 pub fn simplifyCall2(mut call: Arc<Call::NFCall>) -> Result<Arc<Expression::NFExpression>> {
-    let mut outExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut outExp: Arc<Expression::NFExpression>;
     ErrorExt::setCheckpoint(literal!("NFSimplifyExp.simplifyCall2"));
     match '__try0: {
         outExp = unwrap_break_err!(Ceval::evalCall(call.clone(), Ceval::noTarget().clone()), '__try0);
@@ -319,7 +319,7 @@ pub fn simplifyBuiltinCall(mut name: Arc<Absyn::Path>, mut args: Arc<metamodelic
 }
 
 pub fn simplifyCat(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut call: Arc<Call::NFCall>) -> Result<Arc<Expression::NFExpression>> {
-    let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut exp: Arc<Expression::NFExpression>;
     let mut nonempty_args: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = ({
         let mut __acc: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
         for mut arg in (args.clone()).into_iter().cloned() {
@@ -348,11 +348,11 @@ pub fn simplifyCat(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression
 }
 
 pub fn simplifySemiLinear(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut call: Arc<Call::NFCall>) -> Result<Arc<Expression::NFExpression>> {
-    let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut x: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut m1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut m2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
+    let mut exp: Arc<Expression::NFExpression>;
+    let mut x: Arc<Expression::NFExpression>;
+    let mut m1: Arc<Expression::NFExpression>;
+    let mut m2: Arc<Expression::NFExpression>;
+    let mut ty: Arc<Type::NFType>;
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(args.clone()) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Cons { head: __pa2, tail: Deref @ metamodelica::List::Nil } } } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
@@ -372,9 +372,9 @@ pub fn simplifySemiLinear(mut args: Arc<metamodelica::List<Arc<Expression::NFExp
 }
 
 pub fn simplifyMinMax(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut call: Arc<Call::NFCall>, mut isMin: bool) -> Result<Arc<Expression::NFExpression>> {
-    let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut arg: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
+    let mut exp: Arc<Expression::NFExpression>;
+    let mut arg: Arc<Expression::NFExpression>;
+    let mut ty: Arc<Type::NFType>;
     if (args.clone().len() as i32) == 1 {
         arg = listHead(args.clone())?;
         ty = Expression::typeOf(arg.clone());
@@ -391,9 +391,9 @@ pub fn simplifyMinMax(mut args: Arc<metamodelica::List<Arc<Expression::NFExpress
 }
 
 pub fn simplifyPositiveMax(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut call: Arc<Call::NFCall>) -> Result<Arc<Expression::NFExpression>> {
-    let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut flow_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut eps: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut exp: Arc<Expression::NFExpression>;
+    let mut flow_exp: Arc<Expression::NFExpression>;
+    let mut eps: Arc<Expression::NFExpression>;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(args.clone()) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Nil } } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
@@ -411,9 +411,9 @@ pub fn simplifyPositiveMax(mut args: Arc<metamodelica::List<Arc<Expression::NFEx
 }
 
 pub fn simplifyInStreamDiv(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut call: Arc<Call::NFCall>, mut removeStream: bool) -> Result<Arc<Expression::NFExpression>> {
-    let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut stream_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut fallback: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut exp: Arc<Expression::NFExpression>;
+    let mut stream_exp: Arc<Expression::NFExpression>;
+    let mut fallback: Arc<Expression::NFExpression>;
     if (args.clone().len() as i32) == 2 {
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(args.clone()) {
             Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Nil } } => (__pa0.clone(), __pa1.clone()),
@@ -474,11 +474,11 @@ pub fn removePositiveMax(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<E
 }
 
 pub fn simplifySumProduct(mut arg: Arc<Expression::NFExpression>, mut call: Arc<Call::NFCall>, mut expand: bool, mut isSum: bool) -> Result<Arc<Expression::NFExpression>> {
-    let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut expanded: bool = false;
-    let mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-    let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut op: Arc<Operator::NFOperator> = Arc::new(<Operator::NFOperator as ::std::default::Default>::default());
+    let mut exp: Arc<Expression::NFExpression>;
+    let mut expanded: bool;
+    let mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
+    let mut ty: Arc<Type::NFType>;
+    let mut op: Arc<Operator::NFOperator>;
     if expand.clone() {
         (exp, expanded) = ExpandExp::expand(arg.clone(), false, false)?;
         if expanded.clone() {
@@ -507,7 +507,7 @@ pub fn simplifySumProduct(mut arg: Arc<Expression::NFExpression>, mut call: Arc<
 }
 
 pub fn simplifyReducedArrayConstructor(mut arg: Arc<Expression::NFExpression>, mut call: Arc<Call::NFCall>) -> Result<Arc<Expression::NFExpression>> {
-    let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut exp: Arc<Expression::NFExpression>;
     exp = (::match_deref::match_deref! { match &(arg.clone()) {
         Deref @ Expression::CALL { call: arr_call @ Deref @ Call::TYPED_ARRAY_CONSTRUCTOR { .. } } if (Type::dimensionCount(var_field!((**arr_call).ty, Call::NFCall::TYPED_ARRAY_CONSTRUCTOR).clone()) == 1) => {
             let mut r#fn: Arc<Function::Function> = Arc::new(<Function::Function as ::std::default::Default>::default());
@@ -533,8 +533,8 @@ pub fn simplifyReducedArrayConstructor(mut arg: Arc<Expression::NFExpression>, m
 }
 
 pub fn simplifyTranspose(mut arg: Arc<Expression::NFExpression>, mut call: Arc<Call::NFCall>, mut expand: bool) -> Result<Arc<Expression::NFExpression>> {
-    let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut exp: Arc<Expression::NFExpression>;
+    let mut e: Arc<Expression::NFExpression>;
     e = if (!(expand.clone()) || Expression::hasArrayCall(arg.clone())?) {arg.clone()} else {(ExpandExp::expand(arg.clone(), false, false)?).0};
     exp = (::match_deref::match_deref! { match &(e.clone()) {
         Deref @ Expression::ARRAY { .. } if (Array::all(var_field!((*e).elements, Expression::NFExpression::ARRAY).clone(), (std::sync::Arc::new(fnptr!(Expression::isArray, Arc<Expression::NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>))?) => Expression::transposeArray(e.clone())?,
@@ -545,10 +545,10 @@ pub fn simplifyTranspose(mut arg: Arc<Expression::NFExpression>, mut call: Arc<C
 }
 
 pub fn simplifyVector(mut arg: Arc<Expression::NFExpression>, mut call: Arc<Call::NFCall>) -> Result<Arc<Expression::NFExpression>> {
-    let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut expl: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-    let mut is_literal: bool = false;
-    let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
+    let mut exp: Arc<Expression::NFExpression>;
+    let mut expl: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
+    let mut is_literal: bool;
+    let mut ty: Arc<Type::NFType>;
     expl = Expression::arrayScalarElements(arg.clone());
     is_literal = Expression::isLiteral(arg.clone())?;
     if is_literal.clone() {
@@ -564,7 +564,7 @@ pub fn simplifyVector(mut arg: Arc<Expression::NFExpression>, mut call: Arc<Call
 }
 
 pub fn simplifyFill(mut fillArg: Arc<Expression::NFExpression>, mut dimArgs: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut call: Arc<Call::NFCall>, mut expand: bool) -> Result<Arc<Expression::NFExpression>> {
-    let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut exp: Arc<Expression::NFExpression>;
     if List::all(dimArgs.clone(), (std::sync::Arc::new(Expression::isLiteral) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>))? && expand.clone() {
         exp = Expression::fillArgs(fillArg.clone(), dimArgs.clone())?;
     } else {
@@ -574,7 +574,7 @@ pub fn simplifyFill(mut fillArg: Arc<Expression::NFExpression>, mut dimArgs: Arc
 }
 
 pub fn simplifyHomotopy(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut call: Arc<Call::NFCall>) -> Result<Arc<Expression::NFExpression>> {
-    let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut exp: Arc<Expression::NFExpression>;
     exp = (::match_deref::match_deref! { match &(Flags::getConfigString(Flags::REPLACE_HOMOTOPY.clone())?) {
         Deref @ "actual" => listHead(args.clone())?,
         Deref @ "simplified" => listHead(listRest(args.clone())?)?,
@@ -585,9 +585,9 @@ pub fn simplifyHomotopy(mut args: Arc<metamodelica::List<Arc<Expression::NFExpre
 }
 
 pub fn simplifyDelay(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut call: Arc<Call::NFCall>) -> Result<Arc<Expression::NFExpression>> {
-    let mut callExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut delayTime: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut callExp: Arc<Expression::NFExpression>;
+    let mut exp: Arc<Expression::NFExpression>;
+    let mut delayTime: Arc<Expression::NFExpression>;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(args.clone()) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Cons { head: __pa1, tail: _ } } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
@@ -606,7 +606,7 @@ pub fn simplifyDelay(mut args: Arc<metamodelica::List<Arc<Expression::NFExpressi
 }
 
 pub fn simplifyDer(mut arg: Arc<Expression::NFExpression>, mut call: Arc<Call::NFCall>) -> Result<Arc<Expression::NFExpression>> {
-    let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut exp: Arc<Expression::NFExpression>;
     if Call::variability(call.clone())? < Variability::DISCRETE.clone() {
         exp = Expression::makeZero(Expression::typeOf(arg.clone()))?;
     } else {
@@ -617,12 +617,12 @@ pub fn simplifyDer(mut arg: Arc<Expression::NFExpression>, mut call: Arc<Call::N
 
 pub fn simplifyArrayConstructor(mut call: Arc<Call::NFCall>) -> Result<Arc<Expression::NFExpression>> {
     let mut outExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut var: Variability = Variability::CONSTANT;
-    let mut pur: Purity = Purity::PURE;
-    let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut ty: Arc<Type::NFType>;
+    let mut var: Variability;
+    let mut pur: Purity;
+    let mut exp: Arc<Expression::NFExpression>;
     let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut iters: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>> = metamodelica::nil();
+    let mut iters: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>>;
     let mut iter: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     let mut dim: Arc<Dimension::NFDimension> = Arc::new(Dimension::BOOLEAN);
     let mut dim_size: i32 = 0;
@@ -700,7 +700,7 @@ pub fn simplifyArrayConstructor(mut call: Arc<Call::NFCall>) -> Result<Arc<Expre
 }
 
 pub fn isIteratorSubscriptedArray(mut exp: Arc<Expression::NFExpression>, mut iterator: Arc<InstNode::InstNode>) -> Result<bool> {
-    let mut res: bool = false;
+    let mut res: bool;
     res = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::SUBSCRIPTED_EXP { .. } => Expression::isArray(var_field!((*exp).exp, Expression::NFExpression::SUBSCRIPTED_EXP).clone()) && List::all(var_field!((*exp).subscripts, Expression::NFExpression::SUBSCRIPTED_EXP).clone(), (std::sync::Arc::new({ let __pe_b1 = iterator.clone(); move |__pe_a0| Subscript::equalsIterator(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Subscript::NFSubscript>) -> Result<bool> + 'static>))?,
         _ => false,
@@ -800,13 +800,13 @@ pub fn simplifyReduction(mut call: Arc<Call::NFCall>) -> Result<Arc<Expression::
 }
 
 pub fn simplifyReduction2(mut name: ArcStr, mut exp: Arc<Expression::NFExpression>, mut iterators: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>>) -> Result<Arc<Expression::NFExpression>> {
-    let mut outExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut iter: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
-    let mut range: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut default_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut outExp: Arc<Expression::NFExpression>;
+    let mut iter: Arc<InstNode::InstNode>;
+    let mut range: Arc<Expression::NFExpression>;
+    let mut default_exp: Arc<Expression::NFExpression>;
     let mut iters: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>> = metamodelica::nil();
-    let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut op: Arc<Operator::NFOperator> = Arc::new(<Operator::NFOperator as ::std::default::Default>::default());
+    let mut ty: Arc<Type::NFType>;
+    let mut op: Arc<Operator::NFOperator>;
     ty = Expression::typeOf(exp.clone());
     let false = (Type::isRecord(Type::arrayElementType(ty.clone()))) else { bail!("pattern mismatch") };
     (default_exp, op) = (::match_deref::match_deref! { match &(name.clone()) {
@@ -1017,11 +1017,11 @@ pub fn simplifyMultarySigns(mut arguments: Arc<metamodelica::List<Arc<Expression
 
 pub fn simplifyBinary(mut binaryExp: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
     let mut binaryExp: Arc<Expression::NFExpression> = binaryExp;
-    let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut se1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut se2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut op: Arc<Operator::NFOperator> = Arc::new(<Operator::NFOperator as ::std::default::Default>::default());
+    let mut e1: Arc<Expression::NFExpression>;
+    let mut e2: Arc<Expression::NFExpression>;
+    let mut se1: Arc<Expression::NFExpression>;
+    let mut se2: Arc<Expression::NFExpression>;
+    let mut op: Arc<Operator::NFOperator>;
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(binaryExp.clone()) {
         Deref @ Expression::BINARY { exp1: __pa0, operator: __pa1, exp2: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
@@ -1039,7 +1039,7 @@ pub fn simplifyBinary(mut binaryExp: Arc<Expression::NFExpression>) -> Result<Ar
 }
 
 pub fn simplifyBinaryOp(mut exp1: Arc<Expression::NFExpression>, mut op: Arc<Operator::NFOperator>, mut exp2: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
-    let mut outExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut outExp: Arc<Expression::NFExpression>;
     if Expression::isLiteral(exp1.clone())? && Expression::isLiteral(exp2.clone())? {
         outExp = Ceval::evalBinaryOp((ExpandExp::expand(exp1.clone(), false, false)?).0, op.clone(), (ExpandExp::expand(exp2.clone(), false, false)?).0, Ceval::noTarget().clone())?;
     } else if Expression::isArray(exp1.clone()) && Expression::isArray(exp2.clone()) {
@@ -1068,7 +1068,7 @@ pub fn simplifyBinaryOp(mut exp1: Arc<Expression::NFExpression>, mut op: Arc<Ope
 }
 
 pub fn simplifyBinaryAdd(mut exp1: Arc<Expression::NFExpression>, mut op: Arc<Operator::NFOperator>, mut exp2: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
-    let mut outExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut outExp: Arc<Expression::NFExpression>;
     if Expression::isZero(exp1.clone())? {
         outExp = exp2.clone();
     } else if Expression::isZero(exp2.clone())? {
@@ -1088,7 +1088,7 @@ pub fn simplifyBinaryAdd(mut exp1: Arc<Expression::NFExpression>, mut op: Arc<Op
 }
 
 pub fn simplifyBinarySub(mut exp1: Arc<Expression::NFExpression>, mut op: Arc<Operator::NFOperator>, mut exp2: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
-    let mut outExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut outExp: Arc<Expression::NFExpression>;
     if Expression::isZero(exp1.clone())? {
         outExp = Expression::negate(exp2.clone());
     } else if Expression::isZero(exp2.clone())? {
@@ -1123,7 +1123,7 @@ pub fn simplifyBinaryMul(mut exp1: Arc<Expression::NFExpression>, mut op: Arc<Op
 }
 
 pub fn simplifyBinaryDiv(mut exp1: Arc<Expression::NFExpression>, mut op: Arc<Operator::NFOperator>, mut exp2: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
-    let mut outExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut outExp: Arc<Expression::NFExpression>;
     outExp = if (Expression::isOne(exp2.clone())?) {exp1.clone()} else if (Expression::isMinusOne(exp2.clone())?) {Expression::negate(exp1.clone())} else if (Expression::isZero(exp1.clone())? && Expression::isNonZero(exp2.clone())?) {exp1.clone()} else {(match (Expression::isNegated(exp1.clone()), Expression::isNegated(exp1.clone())) {
         (true, true) => Arc::new(Expression::NFExpression::BINARY { exp1: Expression::negate(exp1.clone()), operator: op.clone(), exp2: Expression::negate(exp2.clone()) }),
         (false, true) => Expression::negate(Arc::new(Expression::NFExpression::BINARY { exp1: exp1.clone(), operator: op.clone(), exp2: Expression::negate(exp2.clone()) })),
@@ -1135,7 +1135,7 @@ pub fn simplifyBinaryDiv(mut exp1: Arc<Expression::NFExpression>, mut op: Arc<Op
 }
 
 pub fn simplifyBinaryPow(mut exp1: Arc<Expression::NFExpression>, mut op: Arc<Operator::NFOperator>, mut exp2: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
-    let mut outExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut outExp: Arc<Expression::NFExpression>;
     if Expression::isZero(exp2.clone())? {
         outExp = Expression::makeOne(Operator::typeOf(op.clone()))?;
     } else if Expression::isOne(exp2.clone())? {
@@ -1147,7 +1147,7 @@ pub fn simplifyBinaryPow(mut exp1: Arc<Expression::NFExpression>, mut op: Arc<Op
 }
 
 pub fn simplifyBinaryEW(mut exp1: Arc<Expression::NFExpression>, mut op: Arc<Operator::NFOperator>, mut exp2: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
-    let mut outExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut outExp: Arc<Expression::NFExpression>;
     outExp = Expression::makeArray(Operator::typeOf(op.clone()), Array::threadMap(Expression::arrayElements(exp1.clone())?, Expression::arrayElements(exp2.clone())?, (std::sync::Arc::new({ let __pe_b1 = Operator::stripEW(Operator::unlift(op.clone())?); move |__pe_a0, __pe_a2| simplifyBinaryOp(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?, false);
     Ok(outExp)
 }
@@ -1181,7 +1181,7 @@ pub fn simplifyUnary(mut unaryExp: Arc<Expression::NFExpression>) -> Result<Arc<
 }
 
 pub fn simplifyUnaryOp(mut exp: Arc<Expression::NFExpression>, mut op: Arc<Operator::NFOperator>) -> Result<Arc<Expression::NFExpression>> {
-    let mut outExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut outExp: Arc<Expression::NFExpression>;
     if Expression::isLiteral(exp.clone())? {
         outExp = Ceval::evalUnaryOp(exp.clone(), op.clone())?;
     } else {
@@ -1202,11 +1202,11 @@ pub fn simplifyUnarySign(mut unaryExp: Arc<Expression::NFExpression>, mut isNega
 
 pub fn simplifyLogicBinary(mut binaryExp: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
     let mut binaryExp: Arc<Expression::NFExpression> = binaryExp;
-    let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut se1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut se2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut op: Arc<Operator::NFOperator> = Arc::new(<Operator::NFOperator as ::std::default::Default>::default());
+    let mut e1: Arc<Expression::NFExpression>;
+    let mut e2: Arc<Expression::NFExpression>;
+    let mut se1: Arc<Expression::NFExpression>;
+    let mut se2: Arc<Expression::NFExpression>;
+    let mut op: Arc<Operator::NFOperator>;
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(binaryExp.clone()) {
         Deref @ Expression::LBINARY { exp1: __pa0, operator: __pa1, exp2: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
@@ -1225,7 +1225,7 @@ pub fn simplifyLogicBinary(mut binaryExp: Arc<Expression::NFExpression>) -> Resu
 }
 
 pub fn simplifyLogicBinaryAnd(mut exp1: Arc<Expression::NFExpression>, mut op: Arc<Operator::NFOperator>, mut exp2: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
-    let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut exp: Arc<Expression::NFExpression>;
     exp = (::match_deref::match_deref! { match &((exp1.clone(), exp2.clone())) {
         (Deref @ Expression::BOOLEAN { value: false }, _) => {
             exp1.clone()
@@ -1255,7 +1255,7 @@ pub fn simplifyLogicBinaryAnd(mut exp1: Arc<Expression::NFExpression>, mut op: A
 }
 
 pub fn simplifyLogicBinaryOr(mut exp1: Arc<Expression::NFExpression>, mut op: Arc<Operator::NFOperator>, mut exp2: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
-    let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut exp: Arc<Expression::NFExpression>;
     exp = (::match_deref::match_deref! { match &((exp1.clone(), exp2.clone())) {
         (Deref @ Expression::BOOLEAN { value: true }, _) => {
             exp1.clone()
@@ -1315,12 +1315,12 @@ pub fn simplifyLogicUnary(mut unaryExp: Arc<Expression::NFExpression>) -> Result
 
 pub fn simplifyRelation(mut relationExp: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
     let mut relationExp: Arc<Expression::NFExpression> = relationExp;
-    let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut se1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut se2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut op: Arc<Operator::NFOperator> = Arc::new(<Operator::NFOperator as ::std::default::Default>::default());
-    let mut index: i32 = 0;
+    let mut e1: Arc<Expression::NFExpression>;
+    let mut e2: Arc<Expression::NFExpression>;
+    let mut se1: Arc<Expression::NFExpression>;
+    let mut se2: Arc<Expression::NFExpression>;
+    let mut op: Arc<Operator::NFOperator>;
+    let mut index: i32;
     let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(relationExp.clone()) {
         Deref @ Expression::RELATION { exp1: __pa0, operator: __pa1, exp2: __pa2, index: __pa3 } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
         _ => bail!("pattern mismatch"),
@@ -1341,10 +1341,10 @@ pub fn simplifyRelation(mut relationExp: Arc<Expression::NFExpression>) -> Resul
 
 pub fn simplifyIf(mut ifExp: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
     let mut ifExp: Arc<Expression::NFExpression> = ifExp;
-    let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut cond: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut tb: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut fb: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut ty: Arc<Type::NFType>;
+    let mut cond: Arc<Expression::NFExpression>;
+    let mut tb: Arc<Expression::NFExpression>;
+    let mut fb: Arc<Expression::NFExpression>;
     let mut tb_val: bool = false;
     let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(ifExp.clone()) {
         Deref @ Expression::IF { ty: __pa0, condition: __pa1, trueBranch: __pa2, falseBranch: __pa3 } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
@@ -1380,7 +1380,7 @@ pub fn simplifyIf(mut ifExp: Arc<Expression::NFExpression>) -> Result<Arc<Expres
 }
 
 pub fn simplifyCast(mut exp: Arc<Expression::NFExpression>, mut ty: Arc<Type::NFType>) -> Result<Arc<Expression::NFExpression>> {
-    let mut castExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut castExp: Arc<Expression::NFExpression>;
     castExp = (::match_deref::match_deref! { match &((ty.clone(), exp.clone())) {
         (Deref @ Type::REAL, Deref @ Expression::INTEGER { .. }) => {
             Arc::new(Expression::NFExpression::REAL { value: intReal(var_field!((*exp).value, Expression::NFExpression::INTEGER).clone()) })
@@ -1404,10 +1404,10 @@ pub fn simplifyCast(mut exp: Arc<Expression::NFExpression>, mut ty: Arc<Type::NF
 
 pub fn simplifySubscriptedExp(mut subscriptedExp: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
     let mut subscriptedExp: Arc<Expression::NFExpression> = subscriptedExp;
-    let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
-    let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut split: bool = false;
+    let mut e: Arc<Expression::NFExpression>;
+    let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>;
+    let mut ty: Arc<Type::NFType>;
+    let mut split: bool;
     let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(subscriptedExp.clone()) {
         Deref @ Expression::SUBSCRIPTED_EXP { exp: __pa0, subscripts: __pa1, ty: __pa2, split: __pa3 } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
         _ => bail!("pattern mismatch"),
@@ -1437,9 +1437,9 @@ pub fn simplifySubscriptedExp(mut subscriptedExp: Arc<Expression::NFExpression>)
 
 pub fn simplifyTupleElement(mut tupleExp: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
     let mut tupleExp: Arc<Expression::NFExpression> = tupleExp;
-    let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut index: i32 = 0;
-    let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
+    let mut e: Arc<Expression::NFExpression>;
+    let mut index: i32;
+    let mut ty: Arc<Type::NFType>;
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(tupleExp.clone()) {
         Deref @ Expression::TUPLE_ELEMENT { tupleExp: __pa0, index: __pa1, ty: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
@@ -1454,10 +1454,10 @@ pub fn simplifyTupleElement(mut tupleExp: Arc<Expression::NFExpression>) -> Resu
 
 pub fn simplifyRecordElement(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression> = exp;
-    let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut idx: i32 = 0;
-    let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
+    let mut e: Arc<Expression::NFExpression>;
+    let mut e2: Arc<Expression::NFExpression>;
+    let mut idx: i32;
+    let mut ty: Arc<Type::NFType>;
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::RECORD_ELEMENT { recordExp: __pa0, index: __pa1, fieldName: _, ty: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
@@ -1563,9 +1563,9 @@ fn cancelTermsInMultary(mut inArguments: Arc<metamodelica::List<Arc<Expression::
 
     let mut outArguments: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
     let mut outInv_arguments: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-    let mut counter: Arc<UnorderedMap::UnorderedMap<Arc<Expression::NFExpression>, i32>> = <Arc<UnorderedMap::UnorderedMap<Arc<Expression::NFExpression>, i32>> as ::std::default::Default>::default();
+    let mut counter: Arc<UnorderedMap::UnorderedMap<Arc<Expression::NFExpression>, i32>>;
     let mut arg: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut count: i32 = 0;
+    let mut count: i32;
     if inArguments.clone().is_empty() || inInv_arguments.clone().is_empty() {
         outArguments = inArguments.clone();
         outInv_arguments = inInv_arguments.clone();
@@ -1978,7 +1978,7 @@ fn removeTrivialScalarProduct(mut exp: Arc<Expression::NFExpression>) -> Result<
 }
 
 fn simplifyURIToFilename(mut arg: Arc<Expression::NFExpression>, mut call: Arc<Call::NFCall>) -> Result<Arc<Expression::NFExpression>> {
-    let mut outExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut outExp: Arc<Expression::NFExpression>;
     if Flags::getConfigBool(Flags::BUILDING_FMU.clone())? {
         outExp = Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(NFBuiltinFuncs::FMU_LOAD_RESOURCE().clone(), list![arg.clone()], Call::variability(call.clone())?, Purity::IMPURE.clone(), NFBuiltinFuncs::FMU_LOAD_RESOURCE().returnType.clone()) });
     } else {

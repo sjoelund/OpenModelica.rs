@@ -1597,11 +1597,10 @@ pub fn generate_all(hier: &InstanceHierarchy<'_>, output_dir: &str) -> std::io::
 }
 
 fn write_if_changed(path: &str, content: &str) -> std::io::Result<()> {
-    if let Ok(existing) = std::fs::read(path) {
-        if existing == content.as_bytes() {
+    if let Ok(existing) = std::fs::read(path)
+        && existing == content.as_bytes() {
             return Ok(());
         }
-    }
     std::fs::write(path, content)
 }
 
@@ -3057,8 +3056,8 @@ fn emit_struct<'a>(out: &mut String, name: &str, node: &NameNode<'_>, c: &MM::Cl
     // declared `fn(...)` pointer type. Records without fn fields just see
     // `Default::default()` per field, semantically equivalent to the
     // `#[derive(Default)]` expansion.
-    if let Ty::RustStruct(qname) = &node.ty {
-        if ctx.defaultable_struct_qnames.contains(qname)
+    if let Ty::RustStruct(qname) = &node.ty
+        && ctx.defaultable_struct_qnames.contains(qname)
             && ctx.types_needing_default.contains(qname) {
             // Same type-parameter bound shape as the struct declaration; if
             // any field's type needs `Default` to construct, that bound
@@ -3090,7 +3089,6 @@ fn emit_struct<'a>(out: &mut String, name: &str, node: &NameNode<'_>, c: &MM::Cl
             writeln!(out, "{indent}}}").unwrap();
             writeln!(out).unwrap();
         }
-    }
 }
 
 /// Description of a single field-or-bound-pattern slot inside the
@@ -3293,7 +3291,7 @@ fn emit_dyn_field_hash(ty: &Ty, v: &str, state: &str) -> String {
 /// diagnostic only.
 fn emit_dyn_field_debug_arg(ty: &Ty, v: &str) -> String {
     if !ty_dyn_field_has_function(ty) {
-        return format!("{v}");
+        return v.to_string();
     }
     match ty {
         Ty::Function { .. } | Ty::FunctionAlias { .. } => {
@@ -4419,9 +4417,8 @@ fn case_uses_local_name(case: &typedexp::TypedCase, name: &str) -> bool {
     if stmts_read_name(&case.stmts, name) { return true; }
     for (other_name, _, default, _) in &case.locals {
         if other_name == name { continue; }
-        if let Some(d) = default {
-            if exp_reads_name(d, name) { return true; }
-        }
+        if let Some(d) = default
+            && exp_reads_name(d, name) { return true; }
     }
     let mut written: HashSet<String> = HashSet::new();
     stmts_assigned_var_names(&case.stmts, &mut written);
@@ -4882,9 +4879,7 @@ fn function_source_replacement(qname: &str) -> Option<&'static str> {
     //  * `Expression.traverseCases` — `referenceEq(cases, {})` was false for
     //    the freshly-allocated `Nil` even though MMC's `{}` is a shared
     //    singleton; the `list<T>` lowering is now List-aware (Nil == Nil).
-    match qname {
-        _ => None,
-    }
+    None
 }
 
 // ── Inherited-algorithm (`extends`) instantiation ───────────────────────────
@@ -5825,6 +5820,23 @@ fn emit_function<'a>(out: &mut String, name: &str, node: &NameNode<'_>, c: &MM::
         .collect();
     ctx.uninit_arrays.clear(); // fresh function scope — no uninitialised arrays yet
 
+    // Decide which no-default outputs/protected locals genuinely need the
+    // implicit type-default initialiser: only those read on some path before
+    // they are assigned (see `vars_needing_default`). The rest are declared
+    // `let mut x: T;` so the placeholder default (`Expression::END`, …) doesn't
+    // mask bugs or bloat the output. A variable already initialised at entry
+    // (an `= expr` modification, or an `input output` parameter) is in
+    // `pre_assigned` and never needs the synthetic default.
+    let tracked_locals: HashSet<String> = outputs.iter().chain(protected.iter())
+        .map(|(n, _, _, _)| n.clone()).collect();
+    let output_names_set: HashSet<String> = outputs.iter().map(|(n, _, _, _)| n.clone()).collect();
+    let pre_assigned_locals: HashSet<String> = outputs.iter().chain(protected.iter())
+        .filter(|(n, _, modif, _)| input_names.contains(n) || extract_default_exp(modif).is_some())
+        .map(|(n, _, _, _)| n.clone())
+        .collect();
+    let vars_need_default = vars_needing_default(
+        &typed_stmts, &tracked_locals, &output_names_set, &pre_assigned_locals);
+
     // Infallible functions drop the `Result<>` wrapper — the surrounding code
     // can then call them without `?` and use the value directly. Fallible
     // functions keep `Result<T>`, which propagates anyhow errors via `?`.
@@ -6114,14 +6126,17 @@ fn emit_function<'a>(out: &mut String, name: &str, node: &NameNode<'_>, c: &MM::
             (false, None) => {
                 if is_unknown_ty {
                     writeln!(out, "{body_indent}let mut {}; // TODO: local with unresolved type", escape_ident(n)).unwrap();
-                } else if let Some(def) = ty_default_init_with_hier(t, ctx, top_level) {
+                } else if vars_need_default.contains(n) && let Some(def) = ty_default_init_with_hier(t, ctx, top_level) {
                     // Modelica/MetaModelica gives every output and protected
                     // local an implicit initial value equal to its type's
                     // default (Boolean → false, Integer → 0, list → nil, …).
                     // Bodies that only assign the variable on some branches
                     // (a common MM idiom) then rely on that default in the
                     // remaining branches. Without the explicit initialiser
-                    // Rust rejects those uses as E0381.
+                    // Rust rejects those uses as E0381. `vars_need_default`
+                    // (a use-before-def analysis) restricts this to the
+                    // variables actually read before assignment; the rest are
+                    // declared without the placeholder default below.
                     ctx.fn_initialized_vars.insert(n.to_string());
                     writeln!(out, "{body_indent}let mut {}{ty_annot} = {def};", escape_ident(n)).unwrap();
                 } else {
@@ -7403,16 +7418,14 @@ fn emit_exp<'a>(exp: &TypedExp, is_const: bool, ctx: &mut GenCtx, top_level: &'a
             // op — when it binds equally. Without this, `(a - b) / c` would
             // re-emit as `a - b / c`, silently changing the meaning.
             let parent_prec = binop_prec(*op);
-            if let TypedExp::BinOp { op: lop, .. } = &**lhs {
-                if binop_prec(*lop) < parent_prec {
+            if let TypedExp::BinOp { op: lop, .. } = &**lhs
+                && binop_prec(*lop) < parent_prec {
                     l = format!("({l})");
                 }
-            }
-            if let TypedExp::BinOp { op: rop, .. } = &**rhs {
-                if binop_prec(*rop) <= parent_prec {
+            if let TypedExp::BinOp { op: rop, .. } = &**rhs
+                && binop_prec(*rop) <= parent_prec {
                     r = format!("({r})");
                 }
-            }
             match op {
                 BinOpKind::Eq => {
                     // String `==` in a `const` initializer can't lower to
@@ -8422,13 +8435,12 @@ fn emit_parteval<'a>(
     // `resolve_call_qname` (which also consults `ctx.current_fn_qname` and the
     // enclosing-scope walk), then follow a `function f = g;` alias to its base.
     let mut effective_sig: Ty = sig_ty.clone();
-    if !callee_is_local && !matches!(effective_sig, Ty::Function { .. } | Ty::FunctionAlias { .. }) {
-        if let Some(q) = resolve_call_qname(func, ctx, top_level)
+    if !callee_is_local && !matches!(effective_sig, Ty::Function { .. } | Ty::FunctionAlias { .. })
+        && let Some(q) = resolve_call_qname(func, ctx, top_level)
             && let Some(node) = lookup_node(&q, top_level)
         {
             effective_sig = node.ty.clone();
         }
-    }
     if let Ty::FunctionAlias { base, .. } = &effective_sig {
         let base_q = resolve_call_qname(base, ctx, top_level).unwrap_or_else(|| base.clone());
         if let Some(node) = lookup_node(&base_q, top_level)
@@ -11825,7 +11837,7 @@ fn resolve_call_formals<'a>(
                         let Some(slot) = formals.iter_mut().find(|(n, _, _)| n.as_str() == param.as_str()) else {
                             continue;
                         };
-                        let tpl = typedexp::infer_exp(&**exp, &infer_env, top_level, alias_module, &[]);
+                        let tpl = typedexp::infer_exp(exp, &infer_env, top_level, alias_module, &[]);
                         let tpl = canonicalize_call_funcs(tpl, alias_module, top_level, &formal_names);
                         slot.2 = Some(tpl);
                     }
@@ -12091,16 +12103,14 @@ fn canonicalize_call_funcs<'a>(
                         Some((start_qname, n))
                     }
                 };
-                if let Some(n) = lookup_node(head, top_level) {
-                    if let Some(r) = follow(head.clone(), n) { return Some(r); }
-                }
+                if let Some(n) = lookup_node(head, top_level)
+                    && let Some(r) = follow(head.clone(), n) { return Some(r); }
                 if !module_prefix.is_empty() {
                     let mut parts: Vec<&str> = module_prefix.split('.').collect();
                     while !parts.is_empty() {
                         let candidate = format!("{}.{head}", parts.join("."));
-                        if let Some(n) = lookup_node(&candidate, top_level) {
-                            if let Some(r) = follow(candidate, n) { return Some(r); }
-                        }
+                        if let Some(n) = lookup_node(&candidate, top_level)
+                            && let Some(r) = follow(candidate, n) { return Some(r); }
                         parts.pop();
                     }
                 }
@@ -12133,7 +12143,7 @@ fn canonicalize_call_funcs<'a>(
                     };
                 }
             }
-            return exp;
+            exp
         }
         E::Var { ref name, ref segments, ref ty }
             if !name.contains('.')
@@ -13236,11 +13246,10 @@ fn emit_match<'a>(kind: &MatchKind, input: &TypedExp, cases: &[TypedCase], as_bi
                                 // this update the codegen still believes
                                 // `n` is `&Arc<T>` and produces an extra
                                 // deref that doesn't typecheck (E0614).
-                                if let Some(shape) = ctx.variant_shapes.get_mut(n) {
-                                    if matches!(*shape, VarShape::RefArc) {
+                                if let Some(shape) = ctx.variant_shapes.get_mut(n)
+                                    && matches!(*shape, VarShape::RefArc) {
                                         *shape = VarShape::Arc;
                                     }
-                                }
                             }
                         }
                     }
@@ -13717,11 +13726,10 @@ fn emit_match<'a>(kind: &MatchKind, input: &TypedExp, cases: &[TypedCase], as_bi
                                 // MatchKind::Match path's shape downgrade —
                                 // without it the codegen keeps treating `n` as
                                 // `&Arc<T>` and emits an extra deref (E0614).
-                                if let Some(shape) = ctx.variant_shapes.get_mut(n) {
-                                    if matches!(*shape, VarShape::RefArc) {
+                                if let Some(shape) = ctx.variant_shapes.get_mut(n)
+                                    && matches!(*shape, VarShape::RefArc) {
                                         *shape = VarShape::Arc;
                                     }
-                                }
                             }
                         }
                     }
@@ -15015,7 +15023,7 @@ fn record_field_tys_from_scrutinee_ctor<'a>(
 ) -> Option<Vec<(String, Ty)>> {
     let mut bases: Vec<String> = Vec::new();
     // Peel Arc / Box / Mutable wrappers to reach the underlying enum/struct.
-    fn peel<'a>(t: &'a Ty) -> &'a Ty {
+    fn peel(t: &Ty) -> &Ty {
         match t {
             Ty::Generic(_, args) => args.first().map(peel).unwrap_or(t),
             other => other,
@@ -15679,7 +15687,7 @@ fn try_emit_reference_eq<'a>(
             let mut arms: Vec<String> = Vec::new();
             for (vname, vnode) in &node.children {
                 let NodeKind::Class(vc) = &vnode.kind else { continue };
-                if !matches!(vc.restriction, Absyn::Restriction::R_RECORD { .. }) {
+                if !matches!(vc.restriction, Absyn::Restriction::R_RECORD) {
                     continue;
                 }
                 let fields = component_fields(vc, &vnode.children);
@@ -16939,7 +16947,7 @@ fn exp_reads_assigned_state(exp: &TypedExp, base: &str, assigned: &[&str]) -> bo
         TypedExp::Reduction { body, iterators, .. } => {
             rec(body)
                 || iterators.iter().any(|it| {
-                    rec(&it.range) || it.guard.as_ref().is_some_and(|g| rec(g))
+                    rec(&it.range) || it.guard.as_ref().is_some_and(&rec)
                 })
         }
         // Matches carry whole statement lists; treat them (and Todo
@@ -17171,7 +17179,7 @@ fn plan_field_assign<'a, 's>(
         // `assign_variant_field!(.. => Parent::ONLY; ..)` produces an invalid
         // path. Skip the variant branch in that case and fall through to the
         // plain `assign_field!` lowering below, which uses the struct path.
-        let is_single_record_uniontype = uniontype_is_enum(&enum_qname, top_level) == false
+        let is_single_record_uniontype = !uniontype_is_enum(&enum_qname, top_level)
             && resolve_single_record_qname(&enum_qname, top_level).is_some();
         // Only commit to the variant path if the record actually exists.
         if !is_single_record_uniontype
@@ -17465,11 +17473,10 @@ fn record_pattern_variants_inner<'a>(
         // a downstream `var_field!` on `var` would default to VarShape::Arc
         // (from fn_env_vars storing the *value* type) and emit `(*var).f`,
         // producing the wrong number of derefs.
-        if let Some(c) = ctx {
-            if md && is_arc_wrapped(&scrut_ty, c) {
+        if let Some(c) = ctx
+            && md && is_arc_wrapped(&scrut_ty, c) {
                 shapes.insert(var.clone(), VarShape::RefArc);
             }
-        }
     }
     // (2) Scrutinee that's a bare variable narrowed by the arm's pattern.
     let inner_pat = match pat {
@@ -17925,6 +17932,284 @@ fn stmts_flow(stmts: &[typedexp::TypedStmt]) -> FlowResult {
         }
     }
     FlowResult::FallsThrough(acc)
+}
+
+// ── Definite-assignment / use-before-def analysis for default initialisers ─────
+//
+// MetaModelica gives every output and protected local an implicit default value,
+// so a body may read such a variable on a branch that never assigned it. The
+// codegen models that by emitting `let mut x: T = <type-default>;`. But the vast
+// majority of locals are assigned before they are ever read, in which case the
+// default is dead weight (and the placeholder value — `Expression::END`,
+// `Type::ANY` — obscures real bugs). [`UseBeforeDef`] computes, conservatively,
+// which of the no-default outputs/protected locals are read on some control-flow
+// path before being definitely assigned. Only those keep the explicit default;
+// the rest are declared `let mut x: T;` and rely on Rust's own definite-
+// assignment checking, exactly as a hand-written port would.
+//
+// The analysis is intentionally conservative — over-reporting a variable as
+// "needs default" only re-emits a harmless initialiser, whereas under-reporting
+// would produce E0381 (use of possibly-uninitialised). Accordingly it:
+//   * counts every syntactic read of a tracked variable as a use (including
+//     reads inside `match`/`matchcontinue` arm bodies and captured closures);
+//   * treats every output as implicitly read at each `return` and at the
+//     fall-through end of the body (the trailing `Ok((..))`/result);
+//   * never treats an assignment buried in a `match` arm, loop body, `failure`
+//     body, or only one side of an `if`/`try` as a definite assignment.
+struct UseBeforeDef<'a> {
+    /// All output + protected names of the function (the assignable locals).
+    tracked: &'a HashSet<String>,
+    /// Output names — implicitly read at every `return` and at body end.
+    outputs: &'a HashSet<String>,
+    /// Accumulated result: tracked vars read while possibly unassigned.
+    needs: HashSet<String>,
+}
+
+/// Whether a block of statements falls through to its successor or always
+/// diverges (every path ends in `return`/`break`/`continue`/`fail()`).
+#[derive(Clone, Copy, PartialEq)]
+enum UbdFlow { Falls, Diverges }
+
+impl<'a> UseBeforeDef<'a> {
+    /// The base (first-segment) name of a cref read, e.g. `x` for `x.field[i]`.
+    /// Reading any part of `x` requires `x` to be initialised, so the base is
+    /// what we test for definite assignment.
+    fn cref_base(name: &str, segments: &[CrefSegment]) -> String {
+        segments.first().map(|s| s.name.clone())
+            .unwrap_or_else(|| name.split('.').next().unwrap_or(name).to_owned())
+    }
+
+    /// Record a read of `base`: if it is a tracked variable not yet definitely
+    /// assigned, it must keep its default initialiser.
+    fn read(&mut self, base: &str, assigned: &HashSet<String>) {
+        if self.tracked.contains(base) && !assigned.contains(base) {
+            self.needs.insert(base.to_owned());
+        }
+    }
+
+    /// Walk an expression, recording every read of a tracked variable against
+    /// the current `assigned` set. Expressions never assign tracked variables
+    /// (assignment is a statement); `match` arm *bodies* may, but those writes
+    /// are conditional and never treated as definite (see [`Self::walk_stmts`]
+    /// called with a throwaway `assigned` clone).
+    fn walk_exp(&mut self, e: &TypedExp, assigned: &HashSet<String>) {
+        use TypedExp as E;
+        match e {
+            E::Lit(_) | E::Todo(_) => {}
+            E::Var { name, segments, .. } => {
+                let base = Self::cref_base(name, segments);
+                self.read(&base, assigned);
+                for seg in segments {
+                    for sub in &seg.subscripts { self.walk_exp(sub, assigned); }
+                }
+            }
+            E::BinOp { lhs, rhs, .. } => { self.walk_exp(lhs, assigned); self.walk_exp(rhs, assigned); }
+            E::UnOp { operand, .. } => self.walk_exp(operand, assigned),
+            E::Call { args, named_args, .. }
+            | E::Constructor { args, named_args, .. }
+            | E::PartEval { args, named_args, .. } => {
+                for a in args { self.walk_exp(a, assigned); }
+                for (_, a) in named_args { self.walk_exp(a, assigned); }
+            }
+            E::If { cond, then_, elseif, else_, .. } => {
+                self.walk_exp(cond, assigned);
+                self.walk_exp(then_, assigned);
+                for (g, b) in elseif { self.walk_exp(g, assigned); self.walk_exp(b, assigned); }
+                self.walk_exp(else_, assigned);
+            }
+            E::Cons { head, tail, .. } => { self.walk_exp(head, assigned); self.walk_exp(tail, assigned); }
+            E::Tuple(v) | E::Array { elems: v, .. } => for x in v { self.walk_exp(x, assigned); },
+            E::Match { input, cases, .. } => {
+                self.walk_exp(input, assigned);
+                for c in cases {
+                    if let Some(g) = &c.guard { self.walk_exp(g, assigned); }
+                    for (_, _, def, _) in &c.locals {
+                        if let Some(d) = def { self.walk_exp(d, assigned); }
+                    }
+                    // A tracked variable assigned inside an arm is threaded out
+                    // of the arm's closure (see "matchcontinue output writeback"
+                    // / "match binds outer local writeback"): the closure
+                    // prologue seeds `let mut v = v.clone();` from the *outer*
+                    // value, an implicit read of `v` before the arm runs. So any
+                    // outer var the arm writes must already be initialised.
+                    let mut arm_writes = HashSet::new();
+                    stmts_assigned_var_names(&c.stmts, &mut arm_writes);
+                    for v in &arm_writes { self.read(v, assigned); }
+                    // Arm bodies run conditionally: collect their reads against a
+                    // throwaway copy of `assigned` and discard any assignments
+                    // they make (they are never definite for the whole match).
+                    let mut arm_assigned = assigned.clone();
+                    self.walk_stmts(&c.stmts, &mut arm_assigned);
+                    self.walk_exp(&c.result, assigned);
+                }
+            }
+            E::Range { start, step, stop, .. } => {
+                self.walk_exp(start, assigned);
+                if let Some(s) = step { self.walk_exp(s, assigned); }
+                self.walk_exp(stop, assigned);
+            }
+            E::Reduction { body, iterators, .. } => {
+                for it in iterators {
+                    self.walk_exp(&it.range, assigned);
+                    if let Some(g) = &it.guard { self.walk_exp(g, assigned); }
+                }
+                self.walk_exp(body, assigned);
+            }
+        }
+    }
+
+    /// Collect the tracked names a pattern *definitely* binds (full rebinds),
+    /// while recording reads for in-place mutations (`base.field`, `base[i]`)
+    /// which require `base` to already be initialised.
+    fn pat_defs(&mut self, p: &TypedPat, assigned: &HashSet<String>, defs: &mut HashSet<String>) {
+        match p {
+            TypedPat::Var(n) => { defs.insert(n.clone()); }
+            TypedPat::As { var, pat } => { defs.insert(var.clone()); self.pat_defs(pat, assigned, defs); }
+            TypedPat::Tuple(ps) => for p in ps { self.pat_defs(p, assigned, defs); },
+            TypedPat::Cons { head, tail } => { self.pat_defs(head, assigned, defs); self.pat_defs(tail, assigned, defs); }
+            TypedPat::Constructor { fields, named_fields, .. } => {
+                for p in fields { self.pat_defs(p, assigned, defs); }
+                for (_, p) in named_fields { self.pat_defs(p, assigned, defs); }
+            }
+            TypedPat::Some_(inner) => self.pat_defs(inner, assigned, defs),
+            // `base.field := rhs` / `base[i] := rhs` mutate `base` in place — a
+            // read, not a fresh binding.
+            TypedPat::FieldAccess { base, .. } => {
+                let mut b = HashSet::new();
+                self.pat_defs(base, assigned, &mut b);
+                for n in b { self.read(&n, assigned); }
+            }
+            TypedPat::Index { base, index } => { self.walk_exp(base, assigned); self.walk_exp(index, assigned); }
+            TypedPat::Wildcard | TypedPat::Lit(_) | TypedPat::EmptyList | TypedPat::None_ | TypedPat::Todo(_) => {}
+        }
+    }
+
+    /// Walk one statement, updating `assigned`; returns whether it falls through.
+    fn walk_stmt(&mut self, s: &typedexp::TypedStmt, assigned: &mut HashSet<String>) -> UbdFlow {
+        use typedexp::TypedStmt as S;
+        match s {
+            S::Assign { lhs, rhs } => {
+                self.walk_exp(rhs, assigned);
+                if is_fail_call(rhs) { return UbdFlow::Diverges; }
+                let mut defs = HashSet::new();
+                self.pat_defs(lhs, assigned, &mut defs);
+                for d in defs { if self.tracked.contains(&d) { assigned.insert(d); } }
+                UbdFlow::Falls
+            }
+            S::NoRetCall { call } => {
+                self.walk_exp(call, assigned);
+                if is_fail_call(call) { UbdFlow::Diverges } else { UbdFlow::Falls }
+            }
+            S::If { cond, then_, elseif, else_ } => {
+                self.walk_exp(cond, assigned);
+                let mut branch_sets: Vec<Option<HashSet<String>>> = Vec::new();
+                let mut run = |this: &mut Self, body: &[typedexp::TypedStmt], guard: Option<&TypedExp>| {
+                    if let Some(g) = guard { this.walk_exp(g, assigned); }
+                    let mut b = assigned.clone();
+                    match this.walk_stmts(body, &mut b) {
+                        UbdFlow::Falls => Some(b),
+                        UbdFlow::Diverges => None,
+                    }
+                };
+                branch_sets.push(run(self, then_, None));
+                for (g, b) in elseif { branch_sets.push(run(self, b, Some(g))); }
+                branch_sets.push(run(self, else_, None));
+                self.merge(assigned, branch_sets)
+            }
+            S::Try { body, else_body } => {
+                let mut b = assigned.clone();
+                let bf = self.walk_stmts(body, &mut b);
+                let mut e = assigned.clone();
+                let ef = self.walk_stmts(else_body, &mut e);
+                self.merge(assigned, vec![
+                    (bf == UbdFlow::Falls).then_some(b),
+                    (ef == UbdFlow::Falls).then_some(e),
+                ])
+            }
+            S::For { range, body, .. } => {
+                self.walk_exp(range, assigned);
+                // The body may execute zero times, so it neither contributes
+                // definite assignments nor is guaranteed to run; reads on the
+                // first iteration see the pre-loop `assigned` set.
+                let mut b = assigned.clone();
+                self.walk_stmts(body, &mut b);
+                UbdFlow::Falls
+            }
+            S::While { cond, body } => {
+                self.walk_exp(cond, assigned);
+                let mut b = assigned.clone();
+                self.walk_stmts(body, &mut b);
+                UbdFlow::Falls
+            }
+            S::Failure { body } => {
+                let mut b = assigned.clone();
+                self.walk_stmts(body, &mut b);
+                UbdFlow::Falls
+            }
+            S::Return => {
+                // `return` yields the current values of all outputs — an
+                // implicit read of each one.
+                let outs: Vec<String> = self.outputs.iter().cloned().collect();
+                for o in outs { self.read(&o, assigned); }
+                UbdFlow::Diverges
+            }
+            S::Break | S::Continue => UbdFlow::Diverges,
+            // An untranslated statement lowers to `todo!()`, but treat it as
+            // falling through with no assignments so any later reads are still
+            // conservatively flagged.
+            S::Todo(_) => UbdFlow::Falls,
+        }
+    }
+
+    /// Merge the post-states of the falling-through branches into `assigned`
+    /// (a variable is definitely assigned after the join only if every
+    /// falling-through branch assigned it). Returns `Diverges` only if every
+    /// branch diverges.
+    fn merge(&mut self, assigned: &mut HashSet<String>, branches: Vec<Option<HashSet<String>>>) -> UbdFlow {
+        let mut acc: Option<HashSet<String>> = None;
+        for b in branches.into_iter().flatten() {
+            acc = Some(match acc {
+                None => b,
+                Some(cur) => cur.intersection(&b).cloned().collect(),
+            });
+        }
+        match acc {
+            None => UbdFlow::Diverges,
+            Some(s) => { *assigned = s; UbdFlow::Falls }
+        }
+    }
+
+    fn walk_stmts(&mut self, stmts: &[typedexp::TypedStmt], assigned: &mut HashSet<String>) -> UbdFlow {
+        for s in stmts {
+            if self.walk_stmt(s, assigned) == UbdFlow::Diverges {
+                return UbdFlow::Diverges;
+            }
+        }
+        UbdFlow::Falls
+    }
+}
+
+/// Compute the subset of `tracked` (a function's output + protected local names)
+/// that must keep an explicit default initialiser because some path reads them
+/// before any assignment. `pre_assigned` are the names already initialised at
+/// entry (outputs/protected carrying an `= expr` modification, and
+/// `input output` parameters). See [`UseBeforeDef`].
+fn vars_needing_default(
+    stmts: &[typedexp::TypedStmt],
+    tracked: &HashSet<String>,
+    outputs: &HashSet<String>,
+    pre_assigned: &HashSet<String>,
+) -> HashSet<String> {
+    let mut analysis = UseBeforeDef { tracked, outputs, needs: HashSet::new() };
+    let mut assigned = pre_assigned.clone();
+    // The body's fall-through end implicitly reads every output (the trailing
+    // result tuple). A diverging body has already accounted for output reads at
+    // each `return`.
+    if analysis.walk_stmts(stmts, &mut assigned) == UbdFlow::Falls {
+        let outs: Vec<String> = outputs.iter().cloned().collect();
+        for o in outs { analysis.read(&o, &assigned); }
+    }
+    analysis.needs
 }
 
 /// Enumeration literal names of `qname`, in declaration order (the 1-based
@@ -20263,11 +20548,11 @@ fn compute_defaultable_struct_qnames<'a>(
                 _ => {}
             }
         }
-        for (_, child) in &node.children {
+        for child in node.children.values() {
             collect_types(child, records, enums);
         }
     }
-    for (_, n) in top_level {
+    for n in top_level.values() {
         collect_types(n, &mut records, &mut enums);
     }
 
@@ -20347,7 +20632,7 @@ fn pick_default_variant_for_enum<'a>(
         };
         if !fields.iter().all(|(_, t)| is_ty_defaultable(t, defaultable_qnames, self_qname)) { continue; }
         let n_fields = fields.len();
-        if best.as_ref().map_or(true, |(best_n, _, _)| n_fields < *best_n) {
+        if best.as_ref().is_none_or(|(best_n, _, _)| n_fields < *best_n) {
             best = Some((n_fields, rec_name.clone(), fields));
         }
     }
@@ -20835,11 +21120,10 @@ fn collect_default_type_vars_for_fn(
     // that filter here so the Default-bound analysis stays consistent with
     // what gets emitted.
     for (n, _, modif, _) in outputs.iter().chain(protected.iter()) {
-        if let Some(exp) = crate::hierarchy::extract_default_exp(modif) {
-            if !is_self_ref_exp(exp, n) {
+        if let Some(exp) = crate::hierarchy::extract_default_exp(modif)
+            && !is_self_ref_exp(exp, n) {
                 ever_assigned.insert(n.clone());
             }
-        }
     }
     collect_assigned_vars_in_stmts(stmts, &mut ever_assigned);
 
@@ -20943,8 +21227,8 @@ fn collect_default_needs_in_exp(
     out: &mut std::collections::HashSet<String>,
 ) {
     use typedexp::TypedExp as E;
-    if let E::Call { func, args, ty, .. } = exp {
-        if func == "arrayCreateNoInit" {
+    if let E::Call { func, args, ty, .. } = exp
+        && func == "arrayCreateNoInit" {
             let dummy = args.get(1);
             let dummy_is_unassigned_var = matches!(
                 dummy,
@@ -20959,7 +21243,6 @@ fn collect_default_needs_in_exp(
                 }
             }
         }
-    }
     // Recurse into sub-expressions regardless.
     match exp {
         E::Lit(_) | E::Todo(_) => {}
@@ -21236,9 +21519,7 @@ fn fmt_ty(ty: &Ty, ctx: &mut GenCtx) -> String {
             let last = name.rsplit('.').next().unwrap_or(name);
             let shortened = ctx.shorten(name);
             let in_own_mod = ctx.current_path.last().map(|p| p == last).unwrap_or(false);
-            let needs_doubling = !in_own_mod && !ctx.no_mod_uniontypes.contains(name.as_str()) && (
-                (ctx.top_level_uniontype_names.contains(first) && first != ctx.top_name && first == last)
-            );
+            let needs_doubling = !in_own_mod && !ctx.no_mod_uniontypes.contains(name.as_str()) && (ctx.top_level_uniontype_names.contains(first) && first != ctx.top_name && first == last);
             let base = if needs_doubling {
                 format!("{shortened}::{last}")
             } else {

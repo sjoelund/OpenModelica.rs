@@ -109,7 +109,7 @@ pub type TypeMemoryEntryListArray = metamodelica::Array<Arc<metamodelica::List<(
 pub type InstDims = Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Dimension>>>>>;
 
 pub fn callingScopeStr(mut inCallingScope: CallingScope) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     r#str = ((match inCallingScope.clone() {
         CallingScope::TOP_CALL { .. } => literal!("topCall"),
         CallingScope::INNER_CALL { .. } => literal!("innerCall"),

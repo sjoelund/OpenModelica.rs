@@ -97,7 +97,7 @@ pub use self::Options::{NO_OPTIONS,OPTIONS};
 pub fn walk<Extra: Clone + 'static>(mut inGraph: Graph, mut inWalker: Arc<dyn ::std::ops::Fn((FCore::Graph, metamodelica::Array<FCore::Node>, Extra)) -> Result<(FCore::Graph, metamodelica::Array<FCore::Node>, Extra)> + 'static>, mut inExtra: Extra, mut inOptions: Options) -> (Graph, Extra) {
     pub type Walker<Extra: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn((FCore::Graph, metamodelica::Array<FCore::Node>, Extra)) -> Result<(FCore::Graph, metamodelica::Array<FCore::Node>, Extra)> + 'static>;
 
-    let mut outGraph: Graph = <FCore::Graph as ::std::default::Default>::default();
+    let mut outGraph: Graph;
     let mut outExtra: Extra;
     (outGraph, outExtra) = (match inOptions.clone() {
         _ => (inGraph.clone(), inExtra.clone()),

@@ -49,7 +49,7 @@ use openmodelica_frontend_types::DAE;
 use openmodelica_frontend_types::SCode;
 
 pub fn commentIsInlineFunc(mut cmt: Arc<SCode::Comment>) -> Result<DAE::InlineType> {
-    let mut outInlineType: DAE::InlineType = DAE::InlineType::AFTER_INDEX_RED_INLINE;
+    let mut outInlineType: DAE::InlineType;
     outInlineType = 'mc: {
         let __mc_input = cmt.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -74,7 +74,7 @@ pub fn commentIsInlineFunc(mut cmt: Arc<SCode::Comment>) -> Result<DAE::InlineTy
 }
 
 fn isInlineFunc2(mut inSubModList: Arc<metamodelica::List<Arc<SCode::SubMod>>>) -> DAE::InlineType {
-    let mut res: DAE::InlineType = DAE::InlineType::AFTER_INDEX_RED_INLINE;
+    let mut res: DAE::InlineType;
     let mut stop: bool = false;
     res = openmodelica_frontend_types::DAE::InlineType::DEFAULT_INLINE;
     for mut tp in &*inSubModList.clone() {
@@ -120,8 +120,8 @@ fn isInlineFunc2(mut inSubModList: Arc<metamodelica::List<Arc<SCode::SubMod>>>) 
 
 pub fn commentGenerateEvents(mut cmt: Arc<SCode::Comment>) -> bool {
     fn commentGenerateEvents2(mut inSubModList: Arc<metamodelica::List<Arc<SCode::SubMod>>>) -> bool {
-        let mut res: bool = false;
-        let mut stop: bool = false;
+        let mut res: bool;
+        let mut stop: bool;
         res = false;
         for mut tp in &*inSubModList.clone() {
             let mut tp = tp.clone();
@@ -140,7 +140,7 @@ pub fn commentGenerateEvents(mut cmt: Arc<SCode::Comment>) -> bool {
         res
     }
 
-    let mut generateEvents: bool = false;
+    let mut generateEvents: bool;
     generateEvents = (::match_deref::match_deref! { match &(cmt.clone()) {
         Deref @ SCode::Comment { annotation_: Some(Deref @ SCode::Annotation { modification: Deref @ SCode::Mod::MOD { subModLst: smlst, .. } }), .. } => {
             commentGenerateEvents2(smlst.clone())
@@ -154,7 +154,7 @@ pub fn commentGenerateEvents(mut cmt: Arc<SCode::Comment>) -> bool {
 }
 
 pub fn getFunctionRestrictionPurity(mut purity: Absyn::FunctionPurity, mut cmt: Arc<SCode::Comment>, mut newFrontend: bool) -> Result<DAE::Purity> {
-    let mut outPurity: DAE::Purity = DAE::Purity::PURE;
+    let mut outPurity: DAE::Purity;
     outPurity = (match purity.clone() {
         Absyn::FunctionPurity::PURE { .. } => DAE::Purity::PURE.clone(),
         Absyn::FunctionPurity::IMPURE { .. } => DAE::Purity::IMPURE.clone(),

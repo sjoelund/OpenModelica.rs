@@ -56,7 +56,7 @@ use openmodelica_util::Flags;
 
 pub fn fixUniontype(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inState: ClassInf::State, mut inClassDef: Arc<SCode::ClassDef>) -> Result<(FCore::Cache, Option<Arc<DAE::Type>>)> {
     let mut cache: FCore::Cache = inCache.clone();
-    let mut outType: Option<Arc<DAE::Type>> = None;
+    let mut outType: Option<Arc<DAE::Type>>;
     outType = (::match_deref::match_deref! { match &((inState.clone(), inClassDef.clone())) {
         (ClassInf::State::META_UNIONTYPE { typeVars, .. }, Deref @ SCode::ClassDef::PARTS { .. }) => {
             let mut p: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
@@ -120,11 +120,11 @@ pub fn fixUniontype(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inSt
 }
 
 fn fixUniontype2(mut arr: metamodelica::Array<(FCore::Cache, FCore::Graph, Arc<Absyn::Path>, Option<Arc<DAE::Type>>)>) -> Result<Arc<DAE::Type>> {
-    let mut singletonType: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-    let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-    let mut p: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-    let mut ot: Option<Arc<DAE::Type>> = None;
+    let mut singletonType: Arc<DAE::Type>;
+    let mut cache: FCore::Cache;
+    let mut env: FCore::Graph;
+    let mut p: Arc<Absyn::Path>;
+    let mut ot: Option<Arc<DAE::Type>>;
     (cache, env, p, ot) = metamodelica::arrayGet(arr.clone(), 1)?;
     if isNone(ot.clone()) {
         (_, singletonType, _) = Lookup::lookupType(cache.clone(), env.clone(), p.clone(), Some(metamodelica::sourceInfo!("FrontEnd/InstMeta.mo")))?;
@@ -140,7 +140,7 @@ fn fixUniontype2(mut arr: metamodelica::Array<(FCore::Cache, FCore::Graph, Arc<A
 }
 
 pub fn checkArrayType(mut inType: Arc<DAE::Type>) -> Result<()> {
-    let mut el_ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+    let mut el_ty: Arc<DAE::Type>;
     el_ty = Types::arrayElementType(inType.clone());
     let false = (!(Types::isString(el_ty.clone())) && Types::isBoxedType(el_ty.clone()) || Flags::isSet(Flags::RML.clone())?) else { bail!("pattern mismatch") };
     Ok(())

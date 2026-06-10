@@ -107,8 +107,8 @@ pub fn initializeBackendInterface(mut inFunctions: BackendInterfaceFunctions) ->
 }
 
 pub fn noRewriteRulesFrontEnd() -> Result<bool> {
-    let mut noRules: bool = false;
-    let mut functions: BackendInterfaceFunctions = <BackendInterfaceFunctions as ::std::default::Default>::default();
+    let mut noRules: bool;
+    let mut functions: BackendInterfaceFunctions;
     let mut func: partialNoRewriteRulesFrontEnd;
     functions = crate::Globals::backendInterface.with(|__root| __root.borrow().clone());
     func = functions.noRewriteRulesFrontEnd.clone();
@@ -117,9 +117,9 @@ pub fn noRewriteRulesFrontEnd() -> Result<bool> {
 }
 
 pub fn rewriteFrontEnd(mut inExp: Arc<Absyn::Exp>) -> Result<(Arc<Absyn::Exp>, bool)> {
-    let mut outExp: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
-    let mut isChanged: bool = false;
-    let mut functions: BackendInterfaceFunctions = <BackendInterfaceFunctions as ::std::default::Default>::default();
+    let mut outExp: Arc<Absyn::Exp>;
+    let mut isChanged: bool;
+    let mut functions: BackendInterfaceFunctions;
     let mut func: partialRewriteFrontEnd;
     functions = crate::Globals::backendInterface.with(|__root| __root.borrow().clone());
     func = functions.rewriteFrontEnd.clone();
@@ -128,9 +128,9 @@ pub fn rewriteFrontEnd(mut inExp: Arc<Absyn::Exp>) -> Result<(Arc<Absyn::Exp>, b
 }
 
 pub fn appendLibrary(mut modelName: Arc<Absyn::Path>, mut modelicaPath: ArcStr) -> Result<(Absyn::Program, bool)> {
-    let mut program: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
-    let mut success: bool = false;
-    let mut functions: BackendInterfaceFunctions = <BackendInterfaceFunctions as ::std::default::Default>::default();
+    let mut program: Absyn::Program;
+    let mut success: bool;
+    let mut functions: BackendInterfaceFunctions;
     let mut func: partialAppendLibrary;
     functions = crate::Globals::backendInterface.with(|__root| __root.borrow().clone());
     func = functions.appendLibrary.clone();
@@ -139,7 +139,7 @@ pub fn appendLibrary(mut modelName: Arc<Absyn::Path>, mut modelicaPath: ArcStr) 
 }
 
 pub fn initInstHashTable() -> Result<()> {
-    let mut functions: BackendInterfaceFunctions = <BackendInterfaceFunctions as ::std::default::Default>::default();
+    let mut functions: BackendInterfaceFunctions;
     let mut func: partialInitInstHashTable;
     functions = crate::Globals::backendInterface.with(|__root| __root.borrow().clone());
     func = functions.initInstHashTable.clone();

@@ -16,7 +16,7 @@ use std::sync::Arc;
 const DEFAULT_STACK_SIZE: usize = 4 * 1024 * 1024;
 
 fn run() -> i32 {
-    if Main::main(Arc::new(args().skip(1).map(|e| ArcStr::from(e)).collect())).is_err() {
+    if Main::main(Arc::new(args().skip(1).map(ArcStr::from).collect())).is_err() {
         // Mirror `rml_execution_failed()` in the generated C wrapper
         // (CodegenCFunctions.tpl): flush pending output, report on stderr
         // and exit with status 1. The MetaModelica exception carries no

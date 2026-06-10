@@ -81,13 +81,13 @@ pub type FUNCTIONUNITS = Functionargs;
 
 pub fn checkUnits(mut inDAE: DAE::DAElist, mut func: Arc<AvlTreePathFunction::Tree>) -> Result<DAE::DAElist> {
     let mut outDAE: DAE::DAElist = inDAE.clone();
-    let mut elts1: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-    let mut elts2: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-    let mut eqlist: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
-    let mut varlist: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
-    let mut newdaelist: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
-    let mut functionlist: Arc<metamodelica::List<DAE::Function>> = metamodelica::nil();
-    let mut args: Arc<metamodelica::List<Functionargs>> = metamodelica::nil();
+    let mut elts1: DAE::DAElist;
+    let mut elts2: DAE::DAElist;
+    let mut eqlist: Arc<metamodelica::List<Arc<DAE::Element>>>;
+    let mut varlist: Arc<metamodelica::List<Arc<DAE::Element>>>;
+    let mut newdaelist: Arc<metamodelica::List<Arc<DAE::Element>>>;
+    let mut functionlist: Arc<metamodelica::List<DAE::Function>>;
+    let mut args: Arc<metamodelica::List<Functionargs>>;
     let mut HtCr2U1: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (HashTableCrToUnit::FuncHashKey, HashTableCrToUnit::FuncKeyEqual, HashTableCrToUnit::FuncKeyStr, HashTableCrToUnit::FuncValueStr));
     let mut HtCr2U2: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (HashTableCrToUnit::FuncHashKey, HashTableCrToUnit::FuncKeyEqual, HashTableCrToUnit::FuncKeyStr, HashTableCrToUnit::FuncValueStr));
     let mut HtS2U: (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Unit::Unit)>>), i32, (HashTableStringToUnit::FuncHashKey, HashTableStringToUnit::FuncKeyEqual, HashTableStringToUnit::FuncKeyStr, HashTableStringToUnit::FuncValueStr));
@@ -125,14 +125,14 @@ pub fn checkUnits(mut inDAE: DAE::DAElist, mut func: Arc<AvlTreePathFunction::Tr
 }
 
 fn parseFunctionList(mut infunction: DAE::Function) -> Result<Arc<metamodelica::List<Functionargs>>> {
-    let mut outTpl: Arc<metamodelica::List<Functionargs>> = metamodelica::nil();
-    let mut inelt: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
-    let mut outelt: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
-    let mut inunits: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut outunits: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut inargs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut outargs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut s: ArcStr = arcstr::literal!("");
+    let mut outTpl: Arc<metamodelica::List<Functionargs>>;
+    let mut inelt: Arc<metamodelica::List<Arc<DAE::Element>>>;
+    let mut outelt: Arc<metamodelica::List<Arc<DAE::Element>>>;
+    let mut inunits: Arc<metamodelica::List<ArcStr>>;
+    let mut outunits: Arc<metamodelica::List<ArcStr>>;
+    let mut inargs: Arc<metamodelica::List<ArcStr>>;
+    let mut outargs: Arc<metamodelica::List<ArcStr>>;
+    let mut s: ArcStr;
     s = (getFunctionName(infunction.clone())?).clone();
     inelt = DAEUtil::getFunctionInputVars(infunction.clone())?;
     outelt = DAEUtil::getFunctionOutputVars(infunction.clone())?;
@@ -150,7 +150,7 @@ pub fn getFunctionName(mut inFunction: DAE::Function) -> Result<ArcStr> {
 }
 
 pub fn getVars(mut inElement: Arc<DAE::Element>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(inElement.clone()) {
         Deref @ DAE::Element::VAR { componentRef: cr, .. } => {
             ComponentReference::crefStr(cr.clone())?
@@ -164,7 +164,7 @@ pub fn getVars(mut inElement: Arc<DAE::Element>) -> Result<ArcStr> {
 }
 
 pub fn getUnits(mut inElement: Arc<DAE::Element>) -> ArcStr {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(inElement.clone()) {
         Deref @ DAE::Element::VAR { ty: Deref @ DAE::Type::T_REAL { .. }, variableAttributesOption: Some(Deref @ DAE::VariableAttributes::VAR_ATTR_REAL { unit: Some(Deref @ DAE::Exp::SCONST { string: unitString }), .. }), .. } if (unitString.clone() != literal!("")) => {
             unitString.clone()
@@ -178,7 +178,7 @@ pub fn getUnits(mut inElement: Arc<DAE::Element>) -> ArcStr {
 }
 
 fn updateDAElist(mut indaelist: DAE::DAElist, mut indaevarlist: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<DAE::DAElist> {
-    let mut outdaelist: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
+    let mut outdaelist: DAE::DAElist;
     outdaelist = (::match_deref::match_deref! { match &((indaelist.clone(), indaevarlist.clone())) {
         (DAE::DAElist { elementLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::COMP { ident, source: eltsrc, comment, .. }, tail: Deref @ metamodelica::List::Nil } }, varlist2) => {
             let mut outdae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
@@ -191,7 +191,7 @@ fn updateDAElist(mut indaelist: DAE::DAElist, mut indaevarlist: Arc<metamodelica
 }
 
 fn returnVar(mut inVar: Arc<DAE::Element>, mut inHtCr2U: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>)), mut inHtU2S: (metamodelica::Array<Arc<metamodelica::List<(Unit::Unit, i32)>>>, (i32, i32, metamodelica::Array<Option<(Unit::Unit, ArcStr)>>), i32, (Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit, Unit::Unit) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>))) -> Result<Arc<DAE::Element>> {
-    let mut outVar: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
+    let mut outVar: Arc<DAE::Element>;
     outVar = (::match_deref::match_deref! { match &(inVar.clone()) {
         Deref @ DAE::Element::VAR { variableAttributesOption: Some(Deref @ DAE::VariableAttributes::VAR_ATTR_REAL { unit: Some(_), .. }), .. } => {
             inVar.clone()
@@ -222,8 +222,8 @@ fn returnVar(mut inVar: Arc<DAE::Element>, mut inHtCr2U: (metamodelica::Array<Ar
 }
 
 fn notification(mut inHtCr2U1: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>)), mut inHtCr2U2: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>)), mut inHtU2S: (metamodelica::Array<Arc<metamodelica::List<(Unit::Unit, i32)>>>, (i32, i32, metamodelica::Array<Option<(Unit::Unit, ArcStr)>>), i32, (Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit, Unit::Unit) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>))) -> Result<()> {
-    let mut r#str: ArcStr = arcstr::literal!("");
-    let mut lt1: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Unit::Unit)>> = metamodelica::nil();
+    let mut r#str: ArcStr;
+    let mut lt1: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Unit::Unit)>>;
     lt1 = BaseHashTable::hashTableList(inHtCr2U1.clone())?;
     r#str = (notification2(lt1.clone(), inHtCr2U2.clone(), inHtU2S.clone())?).clone();
     if Flags::isSet(Flags::DUMP_UNIT.clone())? && r#str.clone() != literal!("") {
@@ -233,7 +233,7 @@ fn notification(mut inHtCr2U1: (metamodelica::Array<Arc<metamodelica::List<(Arc<
 }
 
 fn notification2(mut inLt1: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Unit::Unit)>>, mut inHtCr2U2: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>)), mut inHtU2S: (metamodelica::Array<Arc<metamodelica::List<(Unit::Unit, i32)>>>, (i32, i32, metamodelica::Array<Option<(Unit::Unit, ArcStr)>>), i32, (Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit, Unit::Unit) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>))) -> Result<ArcStr> {
-    let mut outS: ArcStr = arcstr::literal!("");
+    let mut outS: ArcStr;
     let mut cr1: Arc<DAE::ComponentRef> = DAE::emptyCref().clone();
     let mut factor1: metamodelica::Real = metamodelica::OrderedFloat((0) as f64);
     let mut i1: i32 = 0;
@@ -285,9 +285,9 @@ pub fn algo(mut invarlist: Arc<metamodelica::List<Arc<DAE::Element>>>, mut ineqL
     let mut HtCr2U: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (HashTableCrToUnit::FuncHashKey, HashTableCrToUnit::FuncKeyEqual, HashTableCrToUnit::FuncKeyStr, HashTableCrToUnit::FuncValueStr));
     let mut HtS2U: (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Unit::Unit)>>), i32, (HashTableStringToUnit::FuncHashKey, HashTableStringToUnit::FuncKeyEqual, HashTableStringToUnit::FuncKeyStr, HashTableStringToUnit::FuncValueStr));
     let mut HtU2S: (metamodelica::Array<Arc<metamodelica::List<(Unit::Unit, i32)>>>, (i32, i32, metamodelica::Array<Option<(Unit::Unit, ArcStr)>>), i32, (HashTableUnitToString::FuncHashKey, HashTableUnitToString::FuncKeyEqual, HashTableUnitToString::FuncKeyStr, HashTableUnitToString::FuncValueStr));
-    let mut b1: bool = false;
-    let mut b2: bool = false;
-    let mut b3: bool = false;
+    let mut b1: bool;
+    let mut b2: bool;
+    let mut b3: bool;
     (HtCr2U, b1, HtS2U, HtU2S) = List::fold(invarlist.clone(), (std::sync::Arc::new(foldBindingExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>, ((metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>)), bool, (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>)), (metamodelica::Array<Arc<metamodelica::List<(Unit::Unit, i32)>>>, (i32, i32, metamodelica::Array<Option<(Unit::Unit, ArcStr)>>), i32, (Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit, Unit::Unit) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>)))) -> Result<((metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>)), bool, (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>)), (metamodelica::Array<Arc<metamodelica::List<(Unit::Unit, i32)>>>, (i32, i32, metamodelica::Array<Option<(Unit::Unit, ArcStr)>>), i32, (Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit, Unit::Unit) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>)))> + 'static>), (inHtCr2U.clone(), true, inHtS2U.clone(), inHtU2S.clone()))?;
     (HtCr2U, b2, HtS2U, HtU2S) = List::fold1(ineqList.clone(), (std::sync::Arc::new(foldEquation) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>, Arc<metamodelica::List<Functionargs>>, ((metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>)), bool, (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>)), (metamodelica::Array<Arc<metamodelica::List<(Unit::Unit, i32)>>>, (i32, i32, metamodelica::Array<Option<(Unit::Unit, ArcStr)>>), i32, (Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit, Unit::Unit) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>)))) -> Result<((metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>)), bool, (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>)), (metamodelica::Array<Arc<metamodelica::List<(Unit::Unit, i32)>>>, (i32, i32, metamodelica::Array<Option<(Unit::Unit, ArcStr)>>), i32, (Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit, Unit::Unit) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>)))> + 'static>), inargs.clone(), (HtCr2U.clone(), true, HtS2U.clone(), HtU2S.clone()))?;
     b3 = BaseHashTable::hasKey(Unit::UPDATECREF().clone(), HtCr2U.clone())?;
@@ -326,8 +326,8 @@ fn foldEquation(mut inEq: Arc<DAE::Element>, mut inargs: Arc<metamodelica::List<
     let mut HtCr2U: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (HashTableCrToUnit::FuncHashKey, HashTableCrToUnit::FuncKeyEqual, HashTableCrToUnit::FuncKeyStr, HashTableCrToUnit::FuncValueStr));
     let mut HtS2U: (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Unit::Unit)>>), i32, (HashTableStringToUnit::FuncHashKey, HashTableStringToUnit::FuncKeyEqual, HashTableStringToUnit::FuncKeyStr, HashTableStringToUnit::FuncValueStr));
     let mut HtU2S: (metamodelica::Array<Arc<metamodelica::List<(Unit::Unit, i32)>>>, (i32, i32, metamodelica::Array<Option<(Unit::Unit, ArcStr)>>), i32, (HashTableUnitToString::FuncHashKey, HashTableUnitToString::FuncKeyEqual, HashTableUnitToString::FuncKeyStr, HashTableUnitToString::FuncValueStr));
-    let mut expListList: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<DAE::Exp>, Unit::Unit)>>>> = metamodelica::nil();
-    let mut b: bool = false;
+    let mut expListList: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<DAE::Exp>, Unit::Unit)>>>>;
+    let mut b: bool;
     (HtCr2U, b, HtS2U, HtU2S) = inTpl.clone();
     (HtCr2U, HtS2U, HtU2S, expListList) = foldEquation2(inEq.clone(), HtCr2U.clone(), HtS2U.clone(), HtU2S.clone(), inargs.clone())?;
     List::map2_0(expListList.clone(), (std::sync::Arc::new(Errorfunction) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<(Arc<DAE::Exp>, Unit::Unit)>>, Arc<DAE::Element>, (metamodelica::Array<Arc<metamodelica::List<(Unit::Unit, i32)>>>, (i32, i32, metamodelica::Array<Option<(Unit::Unit, ArcStr)>>), i32, (Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit, Unit::Unit) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>))) -> Result<()> + 'static>), inEq.clone(), HtU2S.clone())?;
@@ -583,9 +583,9 @@ fn makenewcref(mut inexp: Arc<DAE::Exp>, mut instring: ArcStr, mut instring1: Ar
 }
 
 fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>)), (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>)), (metamodelica::Array<Arc<metamodelica::List<(Unit::Unit, i32)>>>, (i32, i32, metamodelica::Array<Option<(Unit::Unit, ArcStr)>>), i32, (Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit, Unit::Unit) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>))), mut inUt: Unit::Unit, mut inargs: Arc<metamodelica::List<Functionargs>>) -> Result<(Unit::Unit, ((metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>)), (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>)), (metamodelica::Array<Arc<metamodelica::List<(Unit::Unit, i32)>>>, (i32, i32, metamodelica::Array<Option<(Unit::Unit, ArcStr)>>), i32, (Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit, Unit::Unit) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>))), Arc<metamodelica::List<Arc<metamodelica::List<(Arc<DAE::Exp>, Unit::Unit)>>>>)> {
-    let mut outUt: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
+    let mut outUt: Unit::Unit;
     let mut outTpl: ((metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (HashTableCrToUnit::FuncHashKey, HashTableCrToUnit::FuncKeyEqual, HashTableCrToUnit::FuncKeyStr, HashTableCrToUnit::FuncValueStr)), (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Unit::Unit)>>), i32, (HashTableStringToUnit::FuncHashKey, HashTableStringToUnit::FuncKeyEqual, HashTableStringToUnit::FuncKeyStr, HashTableStringToUnit::FuncValueStr)), (metamodelica::Array<Arc<metamodelica::List<(Unit::Unit, i32)>>>, (i32, i32, metamodelica::Array<Option<(Unit::Unit, ArcStr)>>), i32, (HashTableUnitToString::FuncHashKey, HashTableUnitToString::FuncKeyEqual, HashTableUnitToString::FuncKeyStr, HashTableUnitToString::FuncValueStr)));
-    let mut outexpList: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<DAE::Exp>, Unit::Unit)>>>> = metamodelica::nil();
+    let mut outexpList: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<DAE::Exp>, Unit::Unit)>>>>;
     (outUt, outTpl, outexpList) = 'mc: {
         let __mc_input = (inEq.clone(), inTpl.clone(), inUt.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -1780,8 +1780,8 @@ fn getNamedUnitlist(mut instring: ArcStr, mut inargs: Arc<metamodelica::List<Fun
 }
 
 fn UnitTypesEqual(mut inut: Unit::Unit, mut inut2: Unit::Unit, mut inHtCr2U: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>))) -> Result<(bool, Unit::Unit, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>)))> {
-    let mut b: bool = false;
-    let mut outUt: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
+    let mut b: bool;
+    let mut outUt: Unit::Unit;
     let mut outHtCr2U: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (HashTableCrToUnit::FuncHashKey, HashTableCrToUnit::FuncKeyEqual, HashTableCrToUnit::FuncKeyStr, HashTableCrToUnit::FuncValueStr));
     (b, outUt, outHtCr2U) = 'mc: {
         let __mc_input = (inut.clone(), inut2.clone());
@@ -1894,7 +1894,7 @@ fn Errorfunction(mut inexpList: Arc<metamodelica::List<(Arc<DAE::Exp>, Unit::Uni
 }
 
 fn getSourceInfo(mut inequation: Arc<DAE::Element>) -> Result<SourceInfo> {
-    let mut outinfo: SourceInfo = <SourceInfo as ::std::default::Default>::default();
+    let mut outinfo: SourceInfo;
     outinfo = (::match_deref::match_deref! { match &(inequation.clone()) {
         Deref @ DAE::Element::EQUATION { source: Deref @ DAE::ElementSource { info, .. }, .. } => {
             info.clone()
@@ -1905,7 +1905,7 @@ fn getSourceInfo(mut inequation: Arc<DAE::Element>) -> Result<SourceInfo> {
 }
 
 fn Errorfunction2(mut inexpList: Arc<metamodelica::List<(Arc<DAE::Exp>, Unit::Unit)>>, mut inHtU2S: (metamodelica::Array<Arc<metamodelica::List<(Unit::Unit, i32)>>>, (i32, i32, metamodelica::Array<Option<(Unit::Unit, ArcStr)>>), i32, (Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit, Unit::Unit) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>))) -> Result<ArcStr> {
-    let mut outS: ArcStr = arcstr::literal!("");
+    let mut outS: ArcStr;
     outS = ((::match_deref::match_deref! { match &(inexpList.clone()) {
         Deref @ metamodelica::List::Cons { head: (exp, ut), tail: Deref @ metamodelica::List::Nil } => {
             let mut s: ArcStr = arcstr::literal!("");
@@ -1931,7 +1931,7 @@ fn Errorfunction2(mut inexpList: Arc<metamodelica::List<(Arc<DAE::Exp>, Unit::Un
 }
 
 pub fn GetVarList(mut indaelist: DAE::DAElist) -> Arc<metamodelica::List<Arc<DAE::Element>>> {
-    let mut outstring: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
+    let mut outstring: Arc<metamodelica::List<Arc<DAE::Element>>>;
     let mut varlist: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
     outstring = (::match_deref::match_deref! { match &(indaelist.clone()) {
         DAE::DAElist { elementLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::COMP { dAElist: __esc_varlist, .. }, tail: Deref @ metamodelica::List::Nil } } => {
@@ -1945,7 +1945,7 @@ pub fn GetVarList(mut indaelist: DAE::DAElist) -> Arc<metamodelica::List<Arc<DAE
 }
 
 pub fn GetElementList(mut eqlist: DAE::DAElist) -> Result<Arc<metamodelica::List<Arc<DAE::Element>>>> {
-    let mut outstring: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
+    let mut outstring: Arc<metamodelica::List<Arc<DAE::Element>>>;
     let mut eq1: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
     outstring = (match eqlist.clone() {
         DAE::DAElist { elementLst: ref __esc_eq1 } => {
@@ -1961,7 +1961,7 @@ fn foldCallArg(mut inExpList: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inHtCr
     let mut outHtS2U: (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Unit::Unit)>>), i32, (HashTableStringToUnit::FuncHashKey, HashTableStringToUnit::FuncKeyEqual, HashTableStringToUnit::FuncKeyStr, HashTableStringToUnit::FuncValueStr)) = inHtS2U.clone();
     let mut outHtU2S: (metamodelica::Array<Arc<metamodelica::List<(Unit::Unit, i32)>>>, (i32, i32, metamodelica::Array<Option<(Unit::Unit, ArcStr)>>), i32, (HashTableUnitToString::FuncHashKey, HashTableUnitToString::FuncKeyEqual, HashTableUnitToString::FuncKeyStr, HashTableUnitToString::FuncValueStr)) = inHtU2S.clone();
     let mut outExpListList: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<DAE::Exp>, Unit::Unit)>>>> = metamodelica::nil();
-    let mut expListList: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<DAE::Exp>, Unit::Unit)>>>> = metamodelica::nil();
+    let mut expListList: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<DAE::Exp>, Unit::Unit)>>>>;
     for mut exp in &*inExpList.clone() {
         let mut exp = exp.clone();
         let (_, (__pa0, __pa1, __pa2), __pa3) = insertUnitInEquation(exp.clone(), (outHtCr2U.clone(), outHtS2U.clone(), outHtU2S.clone()), Unit::Unit::MASTER { varList: metamodelica::nil() }, metamodelica::nil())?;
@@ -1980,15 +1980,15 @@ fn foldCallArg1(mut inExpList: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inHtC
     let mut outHtS2U: (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Unit::Unit)>>), i32, (HashTableStringToUnit::FuncHashKey, HashTableStringToUnit::FuncKeyEqual, HashTableStringToUnit::FuncKeyStr, HashTableStringToUnit::FuncValueStr)) = inHtS2U.clone();
     let mut outHtU2S: (metamodelica::Array<Arc<metamodelica::List<(Unit::Unit, i32)>>>, (i32, i32, metamodelica::Array<Option<(Unit::Unit, ArcStr)>>), i32, (HashTableUnitToString::FuncHashKey, HashTableUnitToString::FuncKeyEqual, HashTableUnitToString::FuncKeyStr, HashTableUnitToString::FuncValueStr)) = inHtU2S.clone();
     let mut outExpListList: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<DAE::Exp>, Unit::Unit)>>>> = metamodelica::nil();
-    let mut expListList: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<DAE::Exp>, Unit::Unit)>>>> = metamodelica::nil();
-    let mut ut: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
-    let mut ut1: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
-    let mut s: ArcStr = arcstr::literal!("");
-    let mut formalarg: ArcStr = arcstr::literal!("");
-    let mut formalvar: ArcStr = arcstr::literal!("");
-    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut temp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut b: bool = false;
+    let mut expListList: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<DAE::Exp>, Unit::Unit)>>>>;
+    let mut ut: Unit::Unit;
+    let mut ut1: Unit::Unit;
+    let mut s: ArcStr;
+    let mut formalarg: ArcStr;
+    let mut formalvar: ArcStr;
+    let mut exp: Arc<DAE::Exp>;
+    let mut temp: Arc<DAE::Exp>;
+    let mut b: bool;
     for mut i in 1..=(inExpList.clone().len() as i32) {
         exp = (inExpList.clone()).get(i.clone())?;
         formalarg = ((unitlist.clone()).get(i.clone())?).clone();
@@ -2122,7 +2122,7 @@ fn parseVarList(mut invarlist: Arc<metamodelica::List<Arc<DAE::Var>>>) -> ArcStr
 }
 
 pub fn getStringFromExp(mut binding: Arc<DAE::Binding>) -> ArcStr {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     r#str = ((::match_deref::match_deref! { match &(binding.clone()) {
         Deref @ DAE::Binding::UNBOUND { .. } => {
             literal!("")
@@ -2139,7 +2139,7 @@ pub fn getStringFromExp(mut binding: Arc<DAE::Binding>) -> ArcStr {
 }
 
 fn parse(mut inUnitString: ArcStr, mut inCref: Arc<DAE::ComponentRef>, mut inHtS2U: (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>)), mut inHtU2S: (metamodelica::Array<Arc<metamodelica::List<(Unit::Unit, i32)>>>, (i32, i32, metamodelica::Array<Option<(Unit::Unit, ArcStr)>>), i32, (Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit, Unit::Unit) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>))) -> Result<(Unit::Unit, (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>)), (metamodelica::Array<Arc<metamodelica::List<(Unit::Unit, i32)>>>, (i32, i32, metamodelica::Array<Option<(Unit::Unit, ArcStr)>>), i32, (Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit, Unit::Unit) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>)))> {
-    let mut outUnit: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
+    let mut outUnit: Unit::Unit;
     let mut outHtS2U: (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Unit::Unit)>>), i32, (HashTableStringToUnit::FuncHashKey, HashTableStringToUnit::FuncKeyEqual, HashTableStringToUnit::FuncKeyStr, HashTableStringToUnit::FuncValueStr)) = inHtS2U.clone();
     let mut outHtU2S: (metamodelica::Array<Arc<metamodelica::List<(Unit::Unit, i32)>>>, (i32, i32, metamodelica::Array<Option<(Unit::Unit, ArcStr)>>), i32, (HashTableUnitToString::FuncHashKey, HashTableUnitToString::FuncKeyEqual, HashTableUnitToString::FuncKeyStr, HashTableUnitToString::FuncValueStr)) = inHtU2S.clone();
     if inUnitString.clone() == literal!("") {

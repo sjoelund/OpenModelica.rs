@@ -85,9 +85,9 @@ pub fn emptyHashTableSized(mut size: i32) -> HashTable {
 }
 
 pub fn printIntListArrayStr(mut iValue: (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>)) -> Result<ArcStr> {
-    let mut res: ArcStr = arcstr::literal!("");
-    let mut iList: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut iArray: metamodelica::Array<i32> = Default::default();
+    let mut res: ArcStr;
+    let mut iList: Arc<metamodelica::List<i32>>;
+    let mut iArray: metamodelica::Array<i32>;
     (iList, iArray) = iValue.clone();
     res = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*stringDelimitList(List::map(iList.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("] {")); __mm_s.push_str(&*stringDelimitList(List::mapArray(iArray.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("}")); ArcStr::from(__mm_s) }).clone();
     Ok(res)

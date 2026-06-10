@@ -68,7 +68,7 @@ pub static allDebugFlags: std::sync::LazyLock<Arc<metamodelica::List<Flags::Debu
 pub static allConfigFlags: std::sync::LazyLock<Arc<metamodelica::List<Flags::ConfigFlag>>> = std::sync::LazyLock::new(|| { list![Flags::DEBUG.clone(), Flags::HELP.clone(), Flags::RUNNING_TESTSUITE.clone(), Flags::SHOW_VERSION.clone(), Flags::TARGET.clone(), Flags::GRAMMAR.clone(), Flags::ANNOTATION_VERSION.clone(), Flags::LANGUAGE_STANDARD.clone(), Flags::SHOW_ERROR_MESSAGES.clone(), Flags::SHOW_ANNOTATIONS.clone(), Flags::NO_SIMPLIFY.clone(), Flags::PRE_OPT_MODULES.clone(), Flags::CHEAPMATCHING_ALGORITHM.clone(), Flags::MATCHING_ALGORITHM.clone(), Flags::INDEX_REDUCTION_METHOD.clone(), Flags::POST_OPT_MODULES.clone(), Flags::SIMCODE_TARGET.clone(), Flags::ORDER_CONNECTIONS.clone(), Flags::TYPE_INFO.clone(), Flags::KEEP_ARRAYS.clone(), Flags::MODELICA_OUTPUT.clone(), Flags::SILENT.clone(), Flags::CORBA_SESSION.clone(), Flags::NUM_PROC.clone(), Flags::INST_CLASS.clone(), Flags::VECTORIZATION_LIMIT.clone(), Flags::SIMULATION_CG.clone(), Flags::EVAL_PARAMS_IN_ANNOTATIONS.clone(), Flags::CHECK_MODEL.clone(), Flags::CEVAL_EQUATION.clone(), Flags::UNIT_CHECKING.clone(), Flags::GENERATE_LABELED_SIMCODE.clone(), Flags::REDUCE_TERMS.clone(), Flags::REDUCTION_METHOD.clone(), Flags::DEMO_MODE.clone(), Flags::LOCALE_FLAG.clone(), Flags::DEFAULT_OPENCL_DEVICE.clone(), Flags::MAXTRAVERSALS.clone(), Flags::DUMP_TARGET.clone(), Flags::DELAY_BREAK_LOOP.clone(), Flags::TEARING_METHOD.clone(), Flags::TEARING_HEURISTIC.clone(), Flags::SCALARIZE_MINMAX.clone(), Flags::STRICT.clone(), Flags::SCALARIZE_BINDINGS.clone(), Flags::CORBA_OBJECT_REFERENCE_FILE_PATH.clone(), Flags::HPCOM_SCHEDULER.clone(), Flags::HPCOM_CODE.clone(), Flags::REWRITE_RULES_FILE.clone(), Flags::REPLACE_HOMOTOPY.clone(), Flags::GENERATE_DYNAMIC_JACOBIAN.clone(), Flags::GENERATE_SYMBOLIC_LINEARIZATION.clone(), Flags::INT_ENUM_CONVERSION.clone(), Flags::PROFILING_LEVEL.clone(), Flags::RESHUFFLE.clone(), Flags::GENERATE_DYN_OPTIMIZATION_PROBLEM.clone(), Flags::MAX_SIZE_FOR_SOLVE_LINIEAR_SYSTEM.clone(), Flags::CPP_FLAGS.clone(), Flags::REMOVE_SIMPLE_EQUATIONS.clone(), Flags::DYNAMIC_TEARING.clone(), Flags::SYM_SOLVER.clone(), Flags::LOOP2CON.clone(), Flags::FORCE_TEARING.clone(), Flags::SIMPLIFY_LOOPS.clone(), Flags::RTEARING.clone(), Flags::FLOW_THRESHOLD.clone(), Flags::MATRIX_FORMAT.clone(), Flags::PARTLINTORN.clone(), Flags::INIT_OPT_MODULES.clone(), Flags::MAX_MIXED_DETERMINED_INDEX.clone(), Flags::USE_LOCAL_DIRECTION.clone(), Flags::DEFAULT_OPT_MODULES_ORDERING.clone(), Flags::PRE_OPT_MODULES_ADD.clone(), Flags::PRE_OPT_MODULES_SUB.clone(), Flags::POST_OPT_MODULES_ADD.clone(), Flags::POST_OPT_MODULES_SUB.clone(), Flags::INIT_OPT_MODULES_ADD.clone(), Flags::INIT_OPT_MODULES_SUB.clone(), Flags::PERMISSIVE.clone(), Flags::HETS.clone(), Flags::DEFAULT_CLOCK_PERIOD.clone(), Flags::INST_CACHE_SIZE.clone(), Flags::MAX_SIZE_LINEAR_TEARING.clone(), Flags::MAX_SIZE_NONLINEAR_TEARING.clone(), Flags::NO_TEARING_FOR_COMPONENT.clone(), Flags::CT_STATE_MACHINES.clone(), Flags::DAE_MODE.clone(), Flags::INLINE_METHOD.clone(), Flags::SET_TEARING_VARS.clone(), Flags::SET_RESIDUAL_EQNS.clone(), Flags::IGNORE_COMMAND_LINE_OPTIONS_ANNOTATION.clone(), Flags::CALCULATE_SENSITIVITIES.clone(), Flags::ALARM.clone(), Flags::TOTAL_TEARING.clone(), Flags::IGNORE_SIMULATION_FLAGS_ANNOTATION.clone(), Flags::DYNAMIC_TEARING_FOR_INITIALIZATION.clone(), Flags::PREFER_TVARS_WITH_START_VALUE.clone(), Flags::EQUATIONS_PER_FILE.clone(), Flags::EVALUATE_FINAL_PARAMS.clone(), Flags::EVALUATE_PROTECTED_PARAMS.clone(), Flags::REPLACE_EVALUATED_PARAMS.clone(), Flags::CONDENSE_ARRAYS.clone(), Flags::WFC_ADVANCED.clone(), Flags::GRAPHICS_EXP_MODE.clone(), Flags::TEARING_STRICTNESS.clone(), Flags::INTERACTIVE.clone(), Flags::ZEROMQ_FILE_SUFFIX.clone(), Flags::HOMOTOPY_APPROACH.clone(), Flags::IGNORE_REPLACEABLE.clone(), Flags::LABELED_REDUCTION.clone(), Flags::DISABLE_EXTRA_LABELING.clone(), Flags::LOAD_MSL_MODEL.clone(), Flags::LOAD_PACKAGE_FILE.clone(), Flags::BUILDING_FMU.clone(), Flags::BUILDING_MODEL.clone(), Flags::POST_OPT_MODULES_DAE.clone(), Flags::EVAL_LOOP_LIMIT.clone(), Flags::EVAL_RECURSION_LIMIT.clone(), Flags::SINGLE_INSTANCE_AGLSOLVER.clone(), Flags::SHOW_STRUCTURAL_ANNOTATIONS.clone(), Flags::INITIAL_STATE_SELECTION.clone(), Flags::LINEARIZATION_DUMP_LANGUAGE.clone(), Flags::NO_ASSC.clone(), Flags::FULL_ASSC.clone(), Flags::REAL_ASSC.clone(), Flags::INIT_ASSC.clone(), Flags::MAX_SIZE_ASSC.clone(), Flags::USE_ZEROMQ_IN_SIM.clone(), Flags::ZEROMQ_PUB_PORT.clone(), Flags::ZEROMQ_SUB_PORT.clone(), Flags::ZEROMQ_JOB_ID.clone(), Flags::ZEROMQ_SERVER_ID.clone(), Flags::ZEROMQ_CLIENT_ID.clone(), Flags::FMI_VERSION.clone(), Flags::BASE_MODELICA.clone(), Flags::FMI_FILTER.clone(), Flags::FMI_SOURCES.clone(), Flags::FMI_FLAGS.clone(), Flags::FMU_CMAKE_BUILD.clone(), Flags::NEW_BACKEND.clone(), Flags::PARMODAUTO.clone(), Flags::INTERACTIVE_PORT.clone(), Flags::ALLOW_NON_STANDARD_MODELICA.clone(), Flags::EXPORT_CLOCKS_IN_MODELDESCRIPTION.clone(), Flags::LINK_TYPE.clone(), Flags::TEARING_ALWAYS_DERIVATIVES.clone(), Flags::DUMP_FLAT_MODEL.clone(), Flags::SIMULATION.clone(), Flags::OBFUSCATE.clone(), Flags::FMU_RUNTIME_DEPENDS.clone(), Flags::FRONTEND_INLINE.clone(), Flags::EXPOSE_LOCAL_IOS.clone(), Flags::BASE_MODELICA_FORMAT.clone(), Flags::BASE_MODELICA_OPTIONS.clone(), Flags::DEBUG_FOLLOW_EQUATIONS.clone(), Flags::MAX_SIZE_LINEARIZATION.clone(), Flags::RESIZABLE_ARRAYS.clone(), Flags::EVALUATE_STRUCTURAL_PARAMETERS.clone(), Flags::LOAD_MISSING_LIBRARIES.clone(), Flags::CAUSALIZE_DAE_MODE.clone(), Flags::SIM_CODE_SCALARIZE.clone(), Flags::EXECUTE_COMMAND.clone(), Flags::MOO_DYNAMIC_OPTIMIZATION.clone(), Flags::FMI_EXTRA_ANNOTATIONS.clone()] });
 
 pub fn new(mut inArgs: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<ArcStr>>> {
-    let mut outArgs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+    let mut outArgs: Arc<metamodelica::List<ArcStr>>;
     loadFlags(true)?;
     outArgs = readArgs(inArgs.clone())?;
     Ok(outArgs)
@@ -80,7 +80,7 @@ pub fn saveFlags(mut inFlags: Flags::Flag) -> () {
 }
 
 pub fn createConfigFlags() -> metamodelica::Array<Flags::FlagData> {
-    let mut configFlags: metamodelica::Array<Flags::FlagData> = Default::default();
+    let mut configFlags: metamodelica::Array<Flags::FlagData>;
     configFlags = metamodelica::arrayFromVec(({
         let mut __acc: Arc<metamodelica::List<Flags::FlagData>> = metamodelica::nil();
         for mut flag in (allConfigFlags.clone()).into_iter().cloned() {
@@ -93,7 +93,7 @@ pub fn createConfigFlags() -> metamodelica::Array<Flags::FlagData> {
 }
 
 pub fn createDebugFlags() -> metamodelica::Array<bool> {
-    let mut debugFlags: metamodelica::Array<bool> = Default::default();
+    let mut debugFlags: metamodelica::Array<bool>;
     debugFlags = metamodelica::arrayFromVec(({
         let mut __acc: Arc<metamodelica::List<bool>> = metamodelica::nil();
         for mut flag in (allDebugFlags.clone()).into_iter().cloned() {
@@ -106,7 +106,7 @@ pub fn createDebugFlags() -> metamodelica::Array<bool> {
 }
 
 pub fn loadFlags(mut initialize: bool) -> Result<Flags::Flag> {
-    let mut flags: Flags::Flag = Flags::Flag::NO_FLAGS;
+    let mut flags: Flags::Flag;
     match '__try0: {
         flags = Flags::getFlags(true);
         Ok::<_, anyhow::Error>((flags.clone(),))
@@ -130,9 +130,9 @@ pub fn loadFlags(mut initialize: bool) -> Result<Flags::Flag> {
 }
 
 pub fn backupFlags() -> Result<Flags::Flag> {
-    let mut outFlags: Flags::Flag = Flags::Flag::NO_FLAGS;
-    let mut debug_flags: metamodelica::Array<bool> = Default::default();
-    let mut config_flags: metamodelica::Array<Flags::FlagData> = Default::default();
+    let mut outFlags: Flags::Flag;
+    let mut debug_flags: metamodelica::Array<bool>;
+    let mut config_flags: metamodelica::Array<Flags::FlagData>;
     let Flags::FLAGS { debugFlags: __pa0, configFlags: __pa1 } = (loadFlags(true)?) else { bail!("pattern mismatch") };
     debug_flags = __pa0.clone();
     config_flags = __pa1.clone();
@@ -141,8 +141,8 @@ pub fn backupFlags() -> Result<Flags::Flag> {
 }
 
 pub fn resetDebugFlags() -> Result<()> {
-    let mut debug_flags: metamodelica::Array<bool> = Default::default();
-    let mut config_flags: metamodelica::Array<Flags::FlagData> = Default::default();
+    let mut debug_flags: metamodelica::Array<bool>;
+    let mut config_flags: metamodelica::Array<Flags::FlagData>;
     let Flags::FLAGS { debugFlags: _, configFlags: __pa0 } = (loadFlags(true)?) else { bail!("pattern mismatch") };
     config_flags = __pa0.clone();
     debug_flags = createDebugFlags();
@@ -151,8 +151,8 @@ pub fn resetDebugFlags() -> Result<()> {
 }
 
 pub fn resetConfigFlags() -> Result<()> {
-    let mut debug_flags: metamodelica::Array<bool> = Default::default();
-    let mut config_flags: metamodelica::Array<Flags::FlagData> = Default::default();
+    let mut debug_flags: metamodelica::Array<bool>;
+    let mut config_flags: metamodelica::Array<Flags::FlagData>;
     let Flags::FLAGS { debugFlags: __pa0, configFlags: _ } = (loadFlags(true)?) else { bail!("pattern mismatch") };
     debug_flags = __pa0.clone();
     config_flags = createConfigFlags();
@@ -162,7 +162,7 @@ pub fn resetConfigFlags() -> Result<()> {
 
 fn checkDebugFlags() -> Result<()> {
     let mut index: i32 = 0;
-    let mut err_str: ArcStr = arcstr::literal!("");
+    let mut err_str: ArcStr;
     for mut flag in &*allDebugFlags.clone() {
         let mut flag = flag.clone();
         index = index.clone() + 1;
@@ -177,7 +177,7 @@ fn checkDebugFlags() -> Result<()> {
 
 fn checkConfigFlags() -> Result<()> {
     let mut index: i32 = 0;
-    let mut err_str: ArcStr = arcstr::literal!("");
+    let mut err_str: ArcStr;
     for mut flag in &*allConfigFlags.clone() {
         let mut flag = flag.clone();
         index = index.clone() + 1;
@@ -191,9 +191,9 @@ fn checkConfigFlags() -> Result<()> {
 }
 
 pub fn set(mut inFlag: Flags::DebugFlag, mut inValue: bool) -> Result<bool> {
-    let mut outOldValue: bool = false;
-    let mut debug_flags: metamodelica::Array<bool> = Default::default();
-    let mut config_flags: metamodelica::Array<Flags::FlagData> = Default::default();
+    let mut outOldValue: bool;
+    let mut debug_flags: metamodelica::Array<bool>;
+    let mut config_flags: metamodelica::Array<Flags::FlagData>;
     let Flags::FLAGS { debugFlags: __pa0, configFlags: __pa1 } = (loadFlags(true)?) else { bail!("pattern mismatch") };
     debug_flags = __pa0.clone();
     config_flags = __pa1.clone();
@@ -203,20 +203,20 @@ pub fn set(mut inFlag: Flags::DebugFlag, mut inValue: bool) -> Result<bool> {
 }
 
 pub fn enableDebug(mut inFlag: Flags::DebugFlag) -> Result<bool> {
-    let mut outOldValue: bool = false;
+    let mut outOldValue: bool;
     outOldValue = set(inFlag.clone(), true)?;
     Ok(outOldValue)
 }
 
 pub fn disableDebug(mut inFlag: Flags::DebugFlag) -> Result<bool> {
-    let mut outOldValue: bool = false;
+    let mut outOldValue: bool;
     outOldValue = set(inFlag.clone(), false)?;
     Ok(outOldValue)
 }
 
 pub fn getConfigOptionsStringList(mut inFlag: Flags::ConfigFlag) -> Result<(Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>)> {
-    let mut outOptions: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut outComments: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+    let mut outOptions: Arc<metamodelica::List<ArcStr>>;
+    let mut outComments: Arc<metamodelica::List<ArcStr>>;
     (outOptions, outComments) = (match inFlag.clone() {
         Flags::ConfigFlag { validOptions: Some(Flags::ValidOptions::STRING_DESC_OPTION { options: mut options }), .. } => {
             (List::map(options.clone(), std::sync::Arc::new(fnptr!(Util::tuple21, _)))?, List::mapMap(options.clone(), std::sync::Arc::new(fnptr!(Util::tuple22, _)), (std::sync::Arc::new(Gettext::translateContent) as std::sync::Arc<dyn ::std::ops::Fn(Gettext::TranslatableContent) -> Result<ArcStr> + 'static>))?)
@@ -230,9 +230,9 @@ pub fn getConfigOptionsStringList(mut inFlag: Flags::ConfigFlag) -> Result<(Arc<
 }
 
 fn updateDebugFlagArray(mut inFlags: metamodelica::Array<bool>, mut inValue: bool, mut inFlag: Flags::DebugFlag) -> Result<(metamodelica::Array<bool>, bool)> {
-    let mut outFlags: metamodelica::Array<bool> = Default::default();
-    let mut outOldValue: bool = false;
-    let mut index: i32 = 0;
+    let mut outFlags: metamodelica::Array<bool>;
+    let mut outOldValue: bool;
+    let mut index: i32;
     let Flags::DEBUG_FLAG { index: __pa0, .. } = (inFlag.clone()) else { bail!("pattern mismatch") };
     index = __pa0.clone();
     outOldValue = metamodelica::arrayGet(inFlags.clone(), index.clone())?;
@@ -241,8 +241,8 @@ fn updateDebugFlagArray(mut inFlags: metamodelica::Array<bool>, mut inValue: boo
 }
 
 fn updateConfigFlagArray(mut inFlags: metamodelica::Array<Flags::FlagData>, mut inValue: Flags::FlagData, mut inFlag: Flags::ConfigFlag) -> Result<metamodelica::Array<Flags::FlagData>> {
-    let mut outFlags: metamodelica::Array<Flags::FlagData> = Default::default();
-    let mut index: i32 = 0;
+    let mut outFlags: metamodelica::Array<Flags::FlagData>;
+    let mut index: i32;
     let Flags::CONFIG_FLAG { index: __pa0, .. } = (inFlag.clone()) else { bail!("pattern mismatch") };
     index = __pa0.clone();
     outFlags = metamodelica::arrayUpdate(inFlags.clone(), index.clone(), inValue.clone())?;
@@ -252,9 +252,9 @@ fn updateConfigFlagArray(mut inFlags: metamodelica::Array<Flags::FlagData>, mut 
 
 pub fn readArgs(mut inArgs: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut outArgs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut flags: Flags::Flag = Flags::Flag::NO_FLAGS;
-    let mut numError: i32 = 0;
-    let mut arg: ArcStr = arcstr::literal!("");
+    let mut flags: Flags::Flag;
+    let mut numError: i32;
+    let mut arg: ArcStr;
     let mut rest_args: Arc<metamodelica::List<ArcStr>> = inArgs.clone();
     numError = Error::getNumErrorMessages();
     flags = loadFlags(true)?;
@@ -282,8 +282,8 @@ pub fn readArgs(mut inArgs: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metam
 fn readArg(mut inArg: ArcStr, mut inFlags: Flags::Flag, mut restArgs: Arc<metamodelica::List<ArcStr>>, mut nonFlags: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>)> {
     let mut restArgs: Arc<metamodelica::List<ArcStr>> = restArgs;
     let mut nonFlags: Arc<metamodelica::List<ArcStr>> = nonFlags;
-    let mut flagtype: ArcStr = arcstr::literal!("");
-    let mut len: i32 = 0;
+    let mut flagtype: ArcStr;
+    let mut len: i32;
     flagtype = (stringGetStringChar((inArg.clone()).clone(), 1)?).clone();
     len = ((inArg.clone()).clone().len() as i32);
     if flagtype.clone() == literal!("+") {
@@ -318,10 +318,10 @@ fn readArg(mut inArg: ArcStr, mut inFlags: Flags::Flag, mut restArgs: Arc<metamo
 
 fn parseFlag(mut inFlag: ArcStr, mut inFlags: Flags::Flag, mut restArgs: Arc<metamodelica::List<ArcStr>>, mut inFlagPrefix: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut restArgs: Arc<metamodelica::List<ArcStr>> = restArgs;
-    let mut flag: ArcStr = arcstr::literal!("");
-    let mut values: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut value: ArcStr = arcstr::literal!("");
-    let mut missing_value: bool = false;
+    let mut flag: ArcStr;
+    let mut values: Arc<metamodelica::List<ArcStr>>;
+    let mut value: ArcStr;
+    let mut missing_value: bool;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(System::strtok((inFlag.clone()).clone(), (literal!("=")).clone())) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
@@ -336,8 +336,8 @@ fn parseFlag(mut inFlag: ArcStr, mut inFlags: Flags::Flag, mut restArgs: Arc<met
 
 fn parseConfigFlag(mut inFlag: ArcStr, mut inValue: ArcStr, mut inFlags: Flags::Flag, mut restArgs: Arc<metamodelica::List<ArcStr>>, mut inFlagPrefix: ArcStr, mut missingValue: bool) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut restArgs: Arc<metamodelica::List<ArcStr>> = restArgs;
-    let mut config_flag: Flags::ConfigFlag = <Flags::ConfigFlag as ::std::default::Default>::default();
-    let mut value: ArcStr = arcstr::literal!("");
+    let mut config_flag: Flags::ConfigFlag;
+    let mut value: ArcStr;
     config_flag = lookupConfigFlag((inFlag.clone()).clone(), (inFlagPrefix.clone()).clone())?;
     if missingValue.clone() && flagRequiresValue(config_flag.clone()) && !(restArgs.clone().is_empty()) && !(StringUtil::startsWith((listHead(restArgs.clone())?).clone(), (literal!("-")).clone())) {
         value = (listHead(restArgs.clone())?).clone();
@@ -350,7 +350,7 @@ fn parseConfigFlag(mut inFlag: ArcStr, mut inValue: ArcStr, mut inFlags: Flags::
 }
 
 fn lookupConfigFlag(mut inFlag: ArcStr, mut inFlagPrefix: ArcStr) -> Result<Flags::ConfigFlag> {
-    let mut outFlag: Flags::ConfigFlag = <Flags::ConfigFlag as ::std::default::Default>::default();
+    let mut outFlag: Flags::ConfigFlag;
     if let Ok(__iflet0) = List::getMemberOnTrue((inFlag.clone()).clone(), allConfigFlags.clone(), (std::sync::Arc::new(matchConfigFlag) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Flags::ConfigFlag) -> Result<bool> + 'static>)) {
         outFlag = __iflet0;
     } else {
@@ -361,7 +361,7 @@ fn lookupConfigFlag(mut inFlag: ArcStr, mut inFlagPrefix: ArcStr) -> Result<Flag
 }
 
 fn configFlagEq(mut inFlag1: Flags::ConfigFlag, mut inFlag2: Flags::ConfigFlag) -> Result<bool> {
-    let mut eq: bool = false;
+    let mut eq: bool;
     eq = (match (inFlag1.clone(), inFlag2.clone()) {
         (Flags::ConfigFlag { index: mut index1, .. }, Flags::ConfigFlag { index: mut index2, .. }) => {
             index1.clone() == index2.clone()
@@ -371,7 +371,7 @@ fn configFlagEq(mut inFlag1: Flags::ConfigFlag, mut inFlag2: Flags::ConfigFlag) 
 }
 
 fn flagRequiresValue(mut flag: Flags::ConfigFlag) -> bool {
-    let mut requiresValue: bool = false;
+    let mut requiresValue: bool;
     requiresValue = (match flag.clone() {
         Flags::ConfigFlag { defaultValue: Flags::FlagData::BOOL_FLAG { .. }, .. } => false,
         _ => true,
@@ -380,7 +380,7 @@ fn flagRequiresValue(mut flag: Flags::ConfigFlag) -> bool {
 }
 
 fn setAdditionalOptModules(mut inFlag: Flags::ConfigFlag, mut inOppositeFlag: Flags::ConfigFlag, mut inValues: Arc<metamodelica::List<ArcStr>>) -> Result<()> {
-    let mut values: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+    let mut values: Arc<metamodelica::List<ArcStr>>;
     for mut value in &*inValues.clone() {
         let mut value = value.clone();
         values = Flags::getConfigStringList(inOppositeFlag.clone())?;
@@ -441,10 +441,10 @@ fn evaluateConfigFlag(mut inFlag: Flags::ConfigFlag, mut inValue: ArcStr, mut in
 }
 
 fn setDebugFlag(mut inFlag: ArcStr, mut inFlags: metamodelica::Array<bool>) -> Result<()> {
-    let mut negated: bool = false;
-    let mut neg1: bool = false;
-    let mut neg2: bool = false;
-    let mut flag_str: ArcStr = arcstr::literal!("");
+    let mut negated: bool;
+    let mut neg1: bool;
+    let mut neg2: bool;
+    let mut flag_str: ArcStr;
     neg1 = stringEq((stringGetStringChar((inFlag.clone()).clone(), 1)?).clone(), (literal!("-")).clone());
     neg2 = System::strncmp((literal!("no")).clone(), (inFlag.clone()).clone(), 2) == 0;
     negated = neg1.clone() || neg2.clone();
@@ -475,8 +475,8 @@ fn setDebugFlag2(mut inFlag: ArcStr, mut inValue: bool, mut inFlags: metamodelic
 }
 
 fn matchDebugFlag(mut inFlagName: ArcStr, mut inFlag: Flags::DebugFlag) -> Result<bool> {
-    let mut outMatches: bool = false;
-    let mut name: ArcStr = arcstr::literal!("");
+    let mut outMatches: bool;
+    let mut name: ArcStr;
     let Flags::DEBUG_FLAG { name: __pa0, .. } = (inFlag.clone()) else { bail!("pattern mismatch") };
     name = __pa0.clone();
     outMatches = stringEq((inFlagName.clone()).clone(), (name.clone()).clone());
@@ -484,10 +484,10 @@ fn matchDebugFlag(mut inFlagName: ArcStr, mut inFlag: Flags::DebugFlag) -> Resul
 }
 
 fn matchConfigFlag(mut inFlagName: ArcStr, mut inFlag: Flags::ConfigFlag) -> Result<bool> {
-    let mut outMatches: bool = false;
-    let mut opt_shortname: Option<ArcStr> = None;
-    let mut name: ArcStr = arcstr::literal!("");
-    let mut shortname: ArcStr = arcstr::literal!("");
+    let mut outMatches: bool;
+    let mut opt_shortname: Option<ArcStr>;
+    let mut name: ArcStr;
+    let mut shortname: ArcStr;
     let Flags::CONFIG_FLAG { name: __pa0, shortname: __pa1, .. } = (inFlag.clone()) else { bail!("pattern mismatch") };
     name = __pa0.clone();
     opt_shortname = __pa1.clone();
@@ -497,10 +497,10 @@ fn matchConfigFlag(mut inFlagName: ArcStr, mut inFlag: Flags::ConfigFlag) -> Res
 }
 
 fn setConfigFlag(mut inFlag: Flags::ConfigFlag, mut inConfigData: metamodelica::Array<Flags::FlagData>, mut inValue: ArcStr) -> Result<()> {
-    let mut data: Flags::FlagData = Flags::FlagData::EMPTY_FLAG;
-    let mut default_value: Flags::FlagData = Flags::FlagData::EMPTY_FLAG;
-    let mut name: ArcStr = arcstr::literal!("");
-    let mut validOptions: Option<Flags::ValidOptions> = None;
+    let mut data: Flags::FlagData;
+    let mut default_value: Flags::FlagData;
+    let mut name: ArcStr;
+    let mut validOptions: Option<Flags::ValidOptions>;
     let Flags::CONFIG_FLAG { name: __pa0, defaultValue: __pa1, validOptions: __pa2, .. } = (inFlag.clone()) else { bail!("pattern mismatch") };
     name = __pa0.clone();
     default_value = __pa1.clone();
@@ -511,7 +511,7 @@ fn setConfigFlag(mut inFlag: Flags::ConfigFlag, mut inConfigData: metamodelica::
 }
 
 fn stringFlagData(mut inValue: ArcStr, mut inExpectedType: Flags::FlagData, mut validOptions: Option<Flags::ValidOptions>, mut inName: ArcStr) -> Result<Flags::FlagData> {
-    let mut outValue: Flags::FlagData = Flags::FlagData::EMPTY_FLAG;
+    let mut outValue: Flags::FlagData;
     outValue = 'mc: {
         let __mc_input = (inValue.clone(), inExpectedType.clone(), validOptions.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -640,7 +640,7 @@ fn stringFlagData(mut inValue: ArcStr, mut inExpectedType: Flags::FlagData, mut 
 }
 
 fn printExpectedTypeStr(mut inType: Flags::FlagData) -> Result<ArcStr> {
-    let mut outTypeStr: ArcStr = arcstr::literal!("");
+    let mut outTypeStr: ArcStr;
     outTypeStr = ((match inType.clone() {
         Flags::FlagData::BOOL_FLAG { .. } => {
             literal!("a boolean value")
@@ -668,7 +668,7 @@ fn printExpectedTypeStr(mut inType: Flags::FlagData) -> Result<ArcStr> {
 }
 
 fn printActualTypeStr(mut inType: ArcStr) -> Result<ArcStr> {
-    let mut outTypeStr: ArcStr = arcstr::literal!("");
+    let mut outTypeStr: ArcStr;
     outTypeStr = ('mc: {
         let __mc_input = inType.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -713,9 +713,9 @@ fn printActualTypeStr(mut inType: ArcStr) -> Result<ArcStr> {
 }
 
 fn configFlagsIsEqualIndex(mut inFlag1: Flags::ConfigFlag, mut inFlag2: Flags::ConfigFlag) -> Result<bool> {
-    let mut outEqualIndex: bool = false;
-    let mut index1: i32 = 0;
-    let mut index2: i32 = 0;
+    let mut outEqualIndex: bool;
+    let mut index1: i32;
+    let mut index2: i32;
     let Flags::CONFIG_FLAG { index: __pa0, .. } = (inFlag1.clone()) else { bail!("pattern mismatch") };
     index1 = __pa0.clone();
     let Flags::CONFIG_FLAG { index: __pa1, .. } = (inFlag2.clone()) else { bail!("pattern mismatch") };
@@ -725,7 +725,7 @@ fn configFlagsIsEqualIndex(mut inFlag1: Flags::ConfigFlag, mut inFlag2: Flags::C
 }
 
 fn handleDeprecatedFlags() -> Result<()> {
-    let mut remaining_flags: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+    let mut remaining_flags: Arc<metamodelica::List<ArcStr>>;
     if Flags::isSet(Flags::NF_UNITCHECK.clone())? {
         disableDebug(Flags::NF_UNITCHECK.clone())?;
         setConfigBool(Flags::UNIT_CHECKING.clone(), true)?;
@@ -817,9 +817,9 @@ fn applySideEffects(mut inFlag: Flags::ConfigFlag, mut inValue: Flags::FlagData)
 }
 
 pub fn setConfigValue(mut inFlag: Flags::ConfigFlag, mut inValue: Flags::FlagData) -> Result<()> {
-    let mut debug_flags: metamodelica::Array<bool> = Default::default();
-    let mut config_flags: metamodelica::Array<Flags::FlagData> = Default::default();
-    let mut flags: Flags::Flag = Flags::Flag::NO_FLAGS;
+    let mut debug_flags: metamodelica::Array<bool>;
+    let mut config_flags: metamodelica::Array<Flags::FlagData>;
+    let mut flags: Flags::Flag;
     flags = loadFlags(true)?;
     let Flags::FLAGS { debugFlags: __pa0, configFlags: __pa1 } = (flags.clone()) else { bail!("pattern mismatch") };
     debug_flags = __pa0.clone();
@@ -855,7 +855,7 @@ pub fn setConfigStringList(mut inFlag: Flags::ConfigFlag, mut inValue: Arc<metam
 }
 
 pub fn appendConfigStringList(mut flag: Flags::ConfigFlag, mut value: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
-    let mut oldValues: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+    let mut oldValues: Arc<metamodelica::List<ArcStr>>;
     oldValues = Flags::getConfigStringList(flag.clone())?;
     if !(listMember((value.clone()).clone(), oldValues.clone())) {
         setConfigStringList(flag.clone(), metamodelica::cons((value.clone()).clone(), oldValues.clone()))?;
@@ -864,7 +864,7 @@ pub fn appendConfigStringList(mut flag: Flags::ConfigFlag, mut value: ArcStr) ->
 }
 
 pub fn setConfigEnum(mut inFlag: Flags::ConfigFlag, mut inValue: i32) -> Result<()> {
-    let mut valid_values: Arc<metamodelica::List<(ArcStr, i32)>> = metamodelica::nil();
+    let mut valid_values: Arc<metamodelica::List<(ArcStr, i32)>>;
     let Flags::CONFIG_FLAG { defaultValue: Flags::ENUM_FLAG { validValues: __pa0, .. }, .. } = (inFlag.clone()) else { bail!("pattern mismatch") };
     valid_values = __pa0.clone();
     setConfigValue(inFlag.clone(), Flags::FlagData::ENUM_FLAG { data: inValue.clone(), validValues: valid_values.clone() })?;
@@ -1076,11 +1076,11 @@ pub fn printHelp(mut inTopics: Arc<metamodelica::List<ArcStr>>) -> Result<ArcStr
 }
 
 pub fn getValidOptionsAndDescription(mut flagName: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, ArcStr, Arc<metamodelica::List<ArcStr>>)> {
-    let mut validStrings: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut mainDescriptionStr: ArcStr = arcstr::literal!("");
-    let mut descriptions: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut validOptions: Flags::ValidOptions = <Flags::ValidOptions as ::std::default::Default>::default();
-    let mut mainDescription: Gettext::TranslatableContent = <Gettext::TranslatableContent as ::std::default::Default>::default();
+    let mut validStrings: Arc<metamodelica::List<ArcStr>>;
+    let mut mainDescriptionStr: ArcStr;
+    let mut descriptions: Arc<metamodelica::List<ArcStr>>;
+    let mut validOptions: Flags::ValidOptions;
+    let mut mainDescription: Gettext::TranslatableContent;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(List::getMemberOnTrue((flagName.clone()).clone(), allConfigFlags.clone(), (std::sync::Arc::new(matchConfigFlag) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Flags::ConfigFlag) -> Result<bool> + 'static>))?) {
         Flags::ConfigFlag { description: __pa0, validOptions: Some(__pa1), .. } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
@@ -1110,9 +1110,9 @@ fn getValidOptionsAndDescription2(mut validOptions: Flags::ValidOptions) -> Resu
 }
 
 fn compareDebugFlags(mut flag1: Flags::DebugFlag, mut flag2: Flags::DebugFlag) -> Result<bool> {
-    let mut b: bool = false;
-    let mut name1: ArcStr = arcstr::literal!("");
-    let mut name2: ArcStr = arcstr::literal!("");
+    let mut b: bool;
+    let mut name1: ArcStr;
+    let mut name2: ArcStr;
     let Flags::DEBUG_FLAG { name: __pa0, .. } = (flag1.clone()) else { bail!("pattern mismatch") };
     name1 = __pa0.clone();
     let Flags::DEBUG_FLAG { name: __pa1, .. } = (flag2.clone()) else { bail!("pattern mismatch") };
@@ -1122,9 +1122,9 @@ fn compareDebugFlags(mut flag1: Flags::DebugFlag, mut flag2: Flags::DebugFlag) -
 }
 
 fn makeTopicString(mut topic: (ArcStr, ArcStr)) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
-    let mut str1: ArcStr = arcstr::literal!("");
-    let mut str2: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
+    let mut str1: ArcStr;
+    let mut str2: ArcStr;
     (str1, str2) = topic.clone();
     str1 = (Util::stringPadRight((str1.clone()).clone(), 13, (literal!(" ")).clone())).clone();
     r#str = stringAppendList(StringUtil::wordWrap(({ let mut __mm_s = String::new(); __mm_s.push_str(&*str1.clone()); __mm_s.push_str(&*str2.clone()); ArcStr::from(__mm_s) }).clone(), System::getTerminalWidth(), (literal!("\n               ")).clone(), metamodelica::OrderedFloat(0.3_f64))?);
@@ -1132,7 +1132,7 @@ fn makeTopicString(mut topic: (ArcStr, ArcStr)) -> Result<ArcStr> {
 }
 
 pub fn printUsage() -> Result<ArcStr> {
-    let mut usage: ArcStr = arcstr::literal!("");
+    let mut usage: ArcStr;
     Print::clearBuf();
     Print::printBuf((literal!("OpenModelica Compiler ")).clone())?;
     Print::printBuf((Settings::getVersionNr()).clone())?;
@@ -1163,8 +1163,8 @@ pub fn printUsage() -> Result<ArcStr> {
 }
 
 pub fn printUsageSphinxAll() -> Result<ArcStr> {
-    let mut usage: ArcStr = arcstr::literal!("");
-    let mut s: ArcStr = arcstr::literal!("");
+    let mut usage: ArcStr;
+    let mut s: ArcStr;
     Print::clearBuf();
     s = (literal!("OpenModelica Compiler Flags")).clone();
     Print::printBuf((literal!("\n.. _openmodelica-compiler-flags :\n\n")).clone())?;
@@ -1246,13 +1246,13 @@ pub fn printUsageSphinxAll() -> Result<ArcStr> {
 }
 
 pub fn printAllConfigFlags() -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = stringAppendList(List::map(allConfigFlags.clone(), (std::sync::Arc::new(printConfigFlag) as std::sync::Arc<dyn ::std::ops::Fn(Flags::ConfigFlag) -> Result<ArcStr> + 'static>))?);
     Ok(outString)
 }
 
 fn printConfigFlag(mut inFlag: Flags::ConfigFlag) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((match inFlag.clone() {
         Flags::ConfigFlag { visibility: Flags::FlagVisibility::INTERNAL { .. }, .. } => {
             literal!("")
@@ -1278,7 +1278,7 @@ fn printConfigFlag(mut inFlag: Flags::ConfigFlag) -> Result<ArcStr> {
 }
 
 fn printConfigFlagSphinx(mut inFlag: Flags::ConfigFlag) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((match inFlag.clone() {
         Flags::ConfigFlag { visibility: Flags::FlagVisibility::INTERNAL { .. }, .. } => {
             literal!("")
@@ -1302,8 +1302,8 @@ fn printConfigFlagSphinx(mut inFlag: Flags::ConfigFlag) -> Result<ArcStr> {
 }
 
 fn printConfigFlagName(mut inFlag: Flags::ConfigFlag, mut sphinx: bool) -> Result<(ArcStr, ArcStr)> {
-    let mut outString: ArcStr = arcstr::literal!("");
-    let mut longName: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
+    let mut longName: ArcStr;
     (outString, longName) = (match inFlag.clone() {
         Flags::ConfigFlag { name: mut name, shortname: Some(mut shortname), .. } => {
             shortname = (if (sphinx.clone()) {{ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("-")); __mm_s.push_str(&*shortname.clone()); ArcStr::from(__mm_s) }} else {Util::stringPadLeft(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("-")); __mm_s.push_str(&*shortname.clone()); ArcStr::from(__mm_s) }).clone(), 4, (literal!(" ")).clone())}).clone();
@@ -1318,7 +1318,7 @@ fn printConfigFlagName(mut inFlag: Flags::ConfigFlag, mut sphinx: bool) -> Resul
 }
 
 fn printValidOptions(mut inFlag: Flags::ConfigFlag) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((match inFlag.clone() {
         Flags::ConfigFlag { validOptions: None, .. } => {
             literal!("")
@@ -1350,7 +1350,7 @@ fn printValidOptions(mut inFlag: Flags::ConfigFlag) -> Result<ArcStr> {
 }
 
 fn printValidOptionsSphinx(mut inFlag: Flags::ConfigFlag) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((match inFlag.clone() {
         Flags::ConfigFlag { validOptions: None, .. } => {
             { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*defaultFlagSphinx(inFlag.defaultValue.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }
@@ -1429,16 +1429,16 @@ fn defaultFlagSphinx(mut flag: Flags::FlagData) -> ArcStr {
 }
 
 fn printFlagOptionDescShort(mut inOption: (ArcStr, Gettext::TranslatableContent), mut sphinx: bool) -> ArcStr {
-    let mut outString: ArcStr = arcstr::literal!("");
-    let mut name: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
+    let mut name: ArcStr;
     (name, _) = inOption.clone();
     outString = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*if (sphinx.clone()) {literal!("* ")} else {{ let mut __mm_s = String::new(); __mm_s.push_str(&*arcstr::literal!(descriptionIndent)); __mm_s.push_str(&*literal!("    * ")); ArcStr::from(__mm_s) }}); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
     outString
 }
 
 fn printFlagValidOptionsDesc(mut inFlag: Flags::ConfigFlag) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
-    let mut options: Arc<metamodelica::List<(ArcStr, Gettext::TranslatableContent)>> = metamodelica::nil();
+    let mut outString: ArcStr;
+    let mut options: Arc<metamodelica::List<(ArcStr, Gettext::TranslatableContent)>>;
     let __pa0 = ::match_deref::match_deref! { match &(inFlag.clone()) {
         Flags::ConfigFlag { validOptions: Some(Flags::ValidOptions::STRING_DESC_OPTION { options: __pa0 }), .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
@@ -1457,11 +1457,11 @@ fn printFlagValidOptionsDesc(mut inFlag: Flags::ConfigFlag) -> Result<ArcStr> {
 
 fn sphinxMathMode(mut s: ArcStr) -> Result<ArcStr> {
     let mut o: ArcStr = s.clone();
-    let mut i: i32 = 0;
-    let mut strs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut s1: ArcStr = arcstr::literal!("");
-    let mut s2: ArcStr = arcstr::literal!("");
-    let mut s3: ArcStr = arcstr::literal!("");
+    let mut i: i32;
+    let mut strs: Arc<metamodelica::List<ArcStr>>;
+    let mut s1: ArcStr;
+    let mut s2: ArcStr;
+    let mut s3: ArcStr;
     (i, strs) = System::regex((o.clone()).clone(), (literal!("^(.*)[$]([^$]*)[$](.*)$")).clone(), 4, true, false);
     if i.clone() == 4 {
         let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(strs.clone()) {
@@ -1478,8 +1478,8 @@ fn sphinxMathMode(mut s: ArcStr) -> Result<ArcStr> {
 
 fn removeSphinxMathMode(mut s: ArcStr) -> Result<ArcStr> {
     let mut o: ArcStr = s.clone();
-    let mut i: i32 = 0;
-    let mut strs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+    let mut i: i32;
+    let mut strs: Arc<metamodelica::List<ArcStr>>;
     (i, strs) = System::regex((o.clone()).clone(), (literal!("^(.*):math:`([^`]*)[`](.*)$")).clone(), 4, true, false);
     if i.clone() == 4 {
         o = (removeSphinxMathMode(stringAppendList(listRest(strs.clone())?))?).clone();
@@ -1488,11 +1488,11 @@ fn removeSphinxMathMode(mut s: ArcStr) -> Result<ArcStr> {
 }
 
 fn printFlagOptionDesc(mut inOption: (ArcStr, Gettext::TranslatableContent), mut sphinx: bool) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
-    let mut desc: Gettext::TranslatableContent = <Gettext::TranslatableContent as ::std::default::Default>::default();
-    let mut name: ArcStr = arcstr::literal!("");
-    let mut desc_str: ArcStr = arcstr::literal!("");
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
+    let mut desc: Gettext::TranslatableContent;
+    let mut name: ArcStr;
+    let mut desc_str: ArcStr;
+    let mut r#str: ArcStr;
     (name, desc) = inOption.clone();
     desc_str = (Gettext::translateContent(desc.clone())?).clone();
     if sphinx.clone() {
@@ -1513,11 +1513,11 @@ fn printFlagOptionDesc(mut inOption: (ArcStr, Gettext::TranslatableContent), mut
 }
 
 fn printDebugFlag(mut inFlag: Flags::DebugFlag, mut sphinx: bool) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
-    let mut desc: Gettext::TranslatableContent = <Gettext::TranslatableContent as ::std::default::Default>::default();
-    let mut name: ArcStr = arcstr::literal!("");
-    let mut desc_str: ArcStr = arcstr::literal!("");
-    let mut default: bool = false;
+    let mut outString: ArcStr;
+    let mut desc: Gettext::TranslatableContent;
+    let mut name: ArcStr;
+    let mut desc_str: ArcStr;
+    let mut default: bool;
     let Flags::DEBUG_FLAG { default: __pa0, name: __pa1, description: __pa2, .. } = (inFlag.clone()) else { bail!("pattern mismatch") };
     default = __pa0.clone();
     name = __pa1.clone();
@@ -1541,14 +1541,14 @@ fn printDebugFlag(mut inFlag: Flags::DebugFlag, mut sphinx: bool) -> Result<ArcS
 }
 
 pub fn debugFlagName(mut inFlag: Flags::DebugFlag) -> Result<ArcStr> {
-    let mut name: ArcStr = arcstr::literal!("");
+    let mut name: ArcStr;
     let Flags::DEBUG_FLAG { name: __pa0, .. } = (inFlag.clone()) else { bail!("pattern mismatch") };
     name = __pa0.clone();
     Ok(name)
 }
 
 pub fn configFlagName(mut inFlag: Flags::ConfigFlag) -> Result<ArcStr> {
-    let mut name: ArcStr = arcstr::literal!("");
+    let mut name: ArcStr;
     let Flags::CONFIG_FLAG { name: __pa0, .. } = (inFlag.clone()) else { bail!("pattern mismatch") };
     name = __pa0.clone();
     Ok(name)
@@ -1569,7 +1569,7 @@ fn getValidStringOptions(mut inOptions: Flags::ValidOptions) -> Result<Arc<metam
 }
 
 pub fn flagDataEq(mut data1: Flags::FlagData, mut data2: Flags::FlagData) -> Result<bool> {
-    let mut eq: bool = false;
+    let mut eq: bool;
     eq = (match (data1.clone(), data2.clone()) {
         (Flags::FlagData::EMPTY_FLAG { .. }, Flags::FlagData::EMPTY_FLAG { .. }) => true,
         (Flags::FlagData::BOOL_FLAG { .. }, Flags::FlagData::BOOL_FLAG { .. }) => var_field!(data1.data, Flags::FlagData::BOOL_FLAG).clone() == var_field!(data2.data, Flags::FlagData::BOOL_FLAG).clone(),
@@ -1625,11 +1625,11 @@ pub fn flagDataString(mut flagData: Flags::FlagData) -> Result<ArcStr> {
 
 pub fn unparseFlags() -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut flagStrings: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut debug_flags: metamodelica::Array<bool> = Default::default();
-    let mut config_flags: metamodelica::Array<Flags::FlagData> = Default::default();
+    let mut debug_flags: metamodelica::Array<bool>;
+    let mut config_flags: metamodelica::Array<Flags::FlagData>;
     let mut name: ArcStr = arcstr::literal!("");
     let mut strl: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut fvalue: bool = false;
+    let mut fvalue: bool;
     if let Ok(Flags::FLAGS { debugFlags: __pa0, configFlags: __pa1 }) = loadFlags(false) {
         debug_flags = __pa0.clone();
         config_flags = __pa1.clone();

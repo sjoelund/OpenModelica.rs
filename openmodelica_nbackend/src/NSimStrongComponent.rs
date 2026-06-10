@@ -293,9 +293,9 @@ pub mod Block {
     }
 
     pub fn forTplStr(mut tpl: (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>)) -> Result<ArcStr> {
-        let mut r#str: ArcStr = arcstr::literal!("");
-        let mut name: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-        let mut range: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+        let mut r#str: ArcStr;
+        let mut name: Arc<ComponentRef::NFComponentRef>;
+        let mut range: Arc<Expression::NFExpression>;
         (name, range) = tpl.clone();
         r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*ComponentRef::toString(name.clone())?); __mm_s.push_str(&*literal!(" in ")); __mm_s.push_str(&*Expression::toString(range.clone())?); ArcStr::from(__mm_s) }).clone();
         Ok(r#str)
@@ -303,15 +303,15 @@ pub mod Block {
 
     pub fn ifTplStr(mut tpl: (Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<Block>>>), mut r#str: ArcStr) -> Result<ArcStr> {
         let mut r#str: ArcStr = r#str;
-        let mut condition: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-        let mut blcks: Arc<metamodelica::List<Arc<Block>>> = metamodelica::nil();
+        let mut condition: Arc<Expression::NFExpression>;
+        let mut blcks: Arc<metamodelica::List<Arc<Block>>>;
         (condition, blcks) = tpl.clone();
         r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("if ")); __mm_s.push_str(&*Expression::toString(condition.clone())?); __mm_s.push_str(&*literal!(" then\n  ")); __mm_s.push_str(&*List::toString(blcks.clone(), (std::sync::Arc::new({ let __pe_b1 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone(); move |__pe_a0| toString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Block>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("")).clone(), (literal!("\n")).clone(), (literal!("")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone();
         Ok(r#str)
     }
 
     pub fn getIndex(mut blck: Arc<Block>) -> Result<i32> {
-        let mut index: i32 = 0;
+        let mut index: i32;
         index = (::match_deref::match_deref! { match &(blck.clone()) {
         Deref @ RESIDUAL { .. } => var_field!((*blck).index, Block::RESIDUAL).clone(),
         Deref @ ARRAY_RESIDUAL { .. } => var_field!((*blck).index, Block::ARRAY_RESIDUAL).clone(),
@@ -339,7 +339,7 @@ pub mod Block {
     }
 
     pub fn isDiscrete(mut blck: Arc<Block>) -> bool {
-        let mut b: bool = false;
+        let mut b: bool;
         b = (::match_deref::match_deref! { match &(blck.clone()) {
         Deref @ RESIDUAL { attr, .. } => {
             attr.kind.clone() == EquationKind::DISCRETE.clone()
@@ -461,7 +461,7 @@ pub mod Block {
         let mut blcks: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Block>>>>> = metamodelica::nil();
         let mut all_blcks: Arc<metamodelica::List<Arc<Block>>> = all_blcks;
         let mut simCodeIndices: SimCodeIndices = simCodeIndices;
-        let mut tmp: Arc<metamodelica::List<Arc<Block>>> = metamodelica::nil();
+        let mut tmp: Arc<metamodelica::List<Arc<Block>>>;
         for mut partition in &*partitions.clone() {
             let mut partition = partition.clone();
             (tmp, simCodeIndices) = fromPartition(partition.clone(), simCodeIndices.clone(), simcode_map.clone(), equation_map.clone())?;
@@ -477,8 +477,8 @@ pub mod Block {
         let mut all_blcks: Arc<metamodelica::List<Arc<Block>>> = all_blcks;
         let mut event_dependencies: Arc<metamodelica::List<Arc<Block>>> = event_dependencies;
         let mut simCodeIndices: SimCodeIndices = simCodeIndices;
-        let mut tmp: Arc<metamodelica::List<Arc<Block>>> = metamodelica::nil();
-        let mut new_blcks: Arc<metamodelica::List<Arc<Block>>> = metamodelica::nil();
+        let mut tmp: Arc<metamodelica::List<Arc<Block>>>;
+        let mut new_blcks: Arc<metamodelica::List<Arc<Block>>>;
         for mut partition in &*partitions.clone() {
             let mut partition = partition.clone();
             (tmp, simCodeIndices) = fromPartition(partition.clone(), simCodeIndices.clone(), simcode_map.clone(), equation_map.clone())?;
@@ -502,9 +502,9 @@ pub mod Block {
     }
 
     pub fn createInitialBlocks(mut partitions: Arc<metamodelica::List<Arc<Partition::Partition::Partition>>>, mut simCodeIndices: SimCodeIndices, mut simcode_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<SimVar::SimVar>>>, mut equation_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Block>>>) -> Result<(Arc<metamodelica::List<Arc<Block>>>, SimCodeIndices)> {
-        let mut blcks: Arc<metamodelica::List<Arc<Block>>> = metamodelica::nil();
+        let mut blcks: Arc<metamodelica::List<Arc<Block>>>;
         let mut simCodeIndices: SimCodeIndices = simCodeIndices;
-        let mut tmp: Arc<metamodelica::List<Arc<Block>>> = metamodelica::nil();
+        let mut tmp: Arc<metamodelica::List<Arc<Block>>>;
         let mut tmp_lst: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Block>>>>> = metamodelica::nil();
         for mut partition in &*partitions.clone() {
             let mut partition = partition.clone();
@@ -521,7 +521,7 @@ pub mod Block {
         let mut simCodeIndices: SimCodeIndices = simCodeIndices;
         let mut indices_ptr: Pointer::Pointer<SimCodeIndices>;
         let mut vars_ptr: Pointer::Pointer<Arc<metamodelica::List<Arc<SimVar::SimVar>>>> = Pointer::create(metamodelica::nil());
-        let mut tmp: Arc<metamodelica::List<Arc<Block>>> = metamodelica::nil();
+        let mut tmp: Arc<metamodelica::List<Arc<Block>>>;
         for mut partition in &*partitions.clone().reverse() {
             let mut partition = partition.clone();
             indices_ptr = Pointer::create(simCodeIndices.clone());
@@ -536,18 +536,18 @@ pub mod Block {
     pub fn createClockedBlocks(mut partitions: Arc<metamodelica::List<Arc<Partition::Partition::Partition>>>, mut simCodeIndices: SimCodeIndices, mut simcode_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<SimVar::SimVar>>>, mut equation_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Block>>>, mut info: Arc<ClockedInfo::ClockedInfo>) -> Result<(Arc<metamodelica::List<Arc<SimPartition::NSimPartition>>>, Arc<metamodelica::List<Arc<Block>>>, SimCodeIndices)> {
         pub type SimPartitions = Arc<metamodelica::List<Arc<SimPartition::NSimPartition>>>;
 
-        let mut baseParts: Arc<metamodelica::List<Arc<SimPartition::NSimPartition>>> = metamodelica::nil();
-        let mut eventClocks: Arc<metamodelica::List<Arc<Block>>> = metamodelica::nil();
+        let mut baseParts: Arc<metamodelica::List<Arc<SimPartition::NSimPartition>>>;
+        let mut eventClocks: Arc<metamodelica::List<Arc<Block>>>;
         let mut simCodeIndices: SimCodeIndices = simCodeIndices;
         let mut clock_collector: Arc<UnorderedMap::UnorderedMap<Arc<BClock::BClock>, Arc<metamodelica::List<Arc<SimPartition::NSimPartition>>>>> = UnorderedMap::new((std::sync::Arc::new(Partitioning::BClock::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BClock::BClock>) -> Result<i32> + 'static>), (std::sync::Arc::new(Partitioning::BClock::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BClock::BClock>, Arc<BClock::BClock>) -> Result<bool> + 'static>), 1);
-        let mut blcks: Arc<metamodelica::List<Arc<Block>>> = metamodelica::nil();
-        let mut vars: Arc<metamodelica::List<Arc<SimVar::SimVar>>> = metamodelica::nil();
-        let mut clock: Arc<BClock::BClock> = Arc::new(<BClock::BClock as ::std::default::Default>::default());
-        let mut subClock: Arc<BClock::BClock> = Arc::new(<BClock::BClock as ::std::default::Default>::default());
-        let mut baseClock: Arc<BClock::BClock> = Arc::new(<BClock::BClock as ::std::default::Default>::default());
-        let mut holdEvents: bool = false;
-        let mut baseClock_opt: Option<Arc<BClock::BClock>> = None;
-        let mut subPart: Arc<SimPartition::NSimPartition> = Arc::new(<SimPartition::NSimPartition as ::std::default::Default>::default());
+        let mut blcks: Arc<metamodelica::List<Arc<Block>>>;
+        let mut vars: Arc<metamodelica::List<Arc<SimVar::SimVar>>>;
+        let mut clock: Arc<BClock::BClock>;
+        let mut subClock: Arc<BClock::BClock>;
+        let mut baseClock: Arc<BClock::BClock>;
+        let mut holdEvents: bool;
+        let mut baseClock_opt: Option<Arc<BClock::BClock>>;
+        let mut subPart: Arc<SimPartition::NSimPartition>;
         for mut c in &*UnorderedMap::valueList(info.baseClocks.clone()) {
             let mut c = c.clone();
             UnorderedMap::add(c.clone(), metamodelica::nil(), clock_collector.clone())?;
@@ -578,8 +578,8 @@ pub mod Block {
     pub fn createNoReturnBlocks(mut equations: Arc<EquationPointers::EquationPointers>, mut simCodeIndices: SimCodeIndices, mut kind: Partition::Kind, mut simcode_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<SimVar::SimVar>>>, mut equation_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Block>>>) -> Result<(Arc<metamodelica::List<Arc<Block>>>, SimCodeIndices)> {
         let mut blcks: Arc<metamodelica::List<Arc<Block>>> = metamodelica::nil();
         let mut simCodeIndices: SimCodeIndices = simCodeIndices;
-        let mut eqn: Arc<Equation::Equation> = Arc::new(Equation::DUMMY_EQUATION);
-        let mut tmp: Arc<Block> = Arc::new(<Block as ::std::default::Default>::default());
+        let mut eqn: Arc<Equation::Equation>;
+        let mut tmp: Arc<Block>;
         for mut i in 1..=ExpandableArray::getLastUsedIndex(equations.eqArr.clone()) {
             if ExpandableArray::occupied(i.clone(), equations.eqArr.clone()) {
                 eqn = Pointer::access(ExpandableArray::get(i.clone(), equations.eqArr.clone())?);
@@ -615,7 +615,7 @@ pub mod Block {
     }
 
     pub fn fromPartition(mut partition: Arc<Partition::Partition::Partition>, mut simCodeIndices: SimCodeIndices, mut simcode_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<SimVar::SimVar>>>, mut equation_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Block>>>) -> Result<(Arc<metamodelica::List<Arc<Block>>>, SimCodeIndices)> {
-        let mut blcks: Arc<metamodelica::List<Arc<Block>>> = metamodelica::nil();
+        let mut blcks: Arc<metamodelica::List<Arc<Block>>>;
         let mut simCodeIndices: SimCodeIndices = simCodeIndices;
         blcks = ({
         let mut result: Arc<metamodelica::List<Arc<Block>>> = metamodelica::nil();
@@ -652,9 +652,9 @@ pub mod Block {
     }
 
     pub fn fromStrongComponent(mut comp: Arc<StrongComponent::NBStrongComponent>, mut simCodeIndices: SimCodeIndices, mut kind: Partition::Kind, mut simcode_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<SimVar::SimVar>>>, mut equation_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Block>>>) -> Result<(Arc<Block>, SimCodeIndices, i32)> {
-        let mut blck: Arc<Block> = Arc::new(<Block as ::std::default::Default>::default());
+        let mut blck: Arc<Block>;
         let mut simCodeIndices: SimCodeIndices = simCodeIndices;
-        let mut index: i32 = 0;
+        let mut index: i32;
         (blck, index) = ({
         let mut eqns: Arc<metamodelica::List<Arc<Block>>> = metamodelica::nil();
         let mut crefs: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
@@ -796,7 +796,7 @@ pub mod Block {
     }
 
     pub fn createResidual(mut slice: Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>, mut simCodeIndices: SimCodeIndices, mut res_idx: i32, mut equation_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Block>>>) -> Result<(Arc<Block>, SimCodeIndices, i32)> {
-        let mut blck: Arc<Block> = Arc::new(<Block as ::std::default::Default>::default());
+        let mut blck: Arc<Block>;
         let mut simCodeIndices: SimCodeIndices = simCodeIndices;
         let mut res_idx: i32 = res_idx;
         let mut eqn: Arc<Equation::Equation> = Pointer::access(Slice::getT(slice.clone()));
@@ -851,7 +851,7 @@ pub mod Block {
     }
 
     pub fn createEquation(mut var: Arc<Variable::NFVariable>, mut eqn: Arc<Equation::Equation>, mut status: Solve::Status, mut simCodeIndices: SimCodeIndices, mut kind: Partition::Kind, mut simcode_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<SimVar::SimVar>>>, mut equation_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Block>>>) -> Result<(Arc<Block>, SimCodeIndices)> {
-        let mut blck: Arc<Block> = Arc::new(<Block as ::std::default::Default>::default());
+        let mut blck: Arc<Block>;
         let mut simCodeIndices: SimCodeIndices = simCodeIndices;
         blck = (::match_deref::match_deref! { match &((eqn.clone(), status.clone())) {
         (Deref @ BEquation::Equation::SCALAR_EQUATION { .. }, Solve::Status::EXPLICIT) => {
@@ -906,10 +906,10 @@ pub mod Block {
     }
 
     pub fn createImplicitEquation(mut var: Arc<Variable::NFVariable>, mut eqn: Arc<Equation::Equation>, mut simCodeIndices: SimCodeIndices, mut kind: Partition::Kind, mut simcode_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<SimVar::SimVar>>>, mut equation_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Block>>>) -> Result<(Arc<Block>, SimCodeIndices)> {
-        let mut blck: Arc<Block> = Arc::new(<Block as ::std::default::Default>::default());
+        let mut blck: Arc<Block>;
         let mut simCodeIndices: SimCodeIndices = simCodeIndices;
-        let mut comp: Arc<StrongComponent::NBStrongComponent> = Arc::new(<StrongComponent::NBStrongComponent as ::std::default::Default>::default());
-        let mut index: i32 = 0;
+        let mut comp: Arc<StrongComponent::NBStrongComponent>;
+        let mut index: i32;
         (comp, index) = Tearing::implicit(Arc::new(StrongComponent::NBStrongComponent::SINGLE_COMPONENT { var: Pointer::create(var.clone()), eqn: Pointer::create(eqn.clone()), status: Solve::Status::IMPLICIT.clone() }), UnorderedMap::new((std::sync::Arc::new(AbsynUtil::pathHash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(AbsynUtil::pathEqual, Arc<Absyn::Path>, Arc<Absyn::Path>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<bool> + 'static>), 1), simCodeIndices.implicitIndex.clone(), kind.clone())?;
         simCodeIndices.implicitIndex = index.clone();
         (blck, simCodeIndices, _) = fromStrongComponent(comp.clone(), simCodeIndices.clone(), kind.clone(), simcode_map.clone(), equation_map.clone())?;
@@ -917,13 +917,13 @@ pub mod Block {
     }
 
     pub fn createWhenBody(mut body: Arc<WhenEquationBody::WhenEquationBody>, mut source: Arc<DAE::ElementSource>, mut attr: Arc<EquationAttributes::EquationAttributes>, mut simCodeIndices: SimCodeIndices) -> Result<(Arc<Block>, SimCodeIndices)> {
-        let mut blck: Arc<Block> = Arc::new(<Block as ::std::default::Default>::default());
+        let mut blck: Arc<Block>;
         let mut simCodeIndices: SimCodeIndices = simCodeIndices;
-        let mut conditions: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-        let mut when_stmts: Arc<metamodelica::List<Arc<WhenStatement::WhenStatement>>> = metamodelica::nil();
-        let mut else_when: Option<Arc<WhenEquationBody::WhenEquationBody>> = None;
-        let mut tmp: Arc<Block> = Arc::new(<Block as ::std::default::Default>::default());
-        let mut else_when_block: Option<Arc<Block>> = None;
+        let mut conditions: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
+        let mut when_stmts: Arc<metamodelica::List<Arc<WhenStatement::WhenStatement>>>;
+        let mut else_when: Option<Arc<WhenEquationBody::WhenEquationBody>>;
+        let mut tmp: Arc<Block>;
+        let mut else_when_block: Option<Arc<Block>>;
         let mut index: i32 = simCodeIndices.equationIndex.clone();
         simCodeIndices.equationIndex = simCodeIndices.equationIndex.clone() + 1;
         (conditions, when_stmts, else_when) = BEquation::WhenEquationBody::getBodyAttributes(body.clone())?;
@@ -940,8 +940,8 @@ pub mod Block {
     pub fn createIfBody(mut body: Arc<IfEquationBody::IfEquationBody>, mut branches: Arc<metamodelica::List<(Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<Block>>>)>>, mut simCodeIndices: SimCodeIndices, mut kind: Partition::Kind, mut simcode_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<SimVar::SimVar>>>, mut equation_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Block>>>) -> Result<(Arc<metamodelica::List<(Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<Block>>>)>>, SimCodeIndices)> {
         let mut branches: Arc<metamodelica::List<(Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<Block>>>)>> = branches;
         let mut simCodeIndices: SimCodeIndices = simCodeIndices;
-        let mut comps: Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>> = metamodelica::nil();
-        let mut blck: Arc<Block> = Arc::new(<Block as ::std::default::Default>::default());
+        let mut comps: Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>>;
+        let mut blck: Arc<Block>;
         let mut blcks: Arc<metamodelica::List<Arc<Block>>> = metamodelica::nil();
         comps = ({
         let mut __acc: Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>> = metamodelica::nil();
@@ -964,9 +964,9 @@ pub mod Block {
     }
 
     pub fn createAlgorithm(mut eqn: Arc<Equation::Equation>, mut indices: SimCodeIndices, mut equation_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Block>>>) -> Result<(Arc<Block>, SimCodeIndices)> {
-        let mut blck: Arc<Block> = Arc::new(<Block as ::std::default::Default>::default());
+        let mut blck: Arc<Block>;
         let mut indices: SimCodeIndices = indices;
-        let mut stmts: Arc<metamodelica::List<Arc<Statement::NFStatement>>> = metamodelica::nil();
+        let mut stmts: Arc<metamodelica::List<Arc<Statement::NFStatement>>>;
         stmts = (::match_deref::match_deref! { match &(eqn.clone()) {
         Deref @ BEquation::Equation::ALGORITHM { .. } => var_field!((*eqn).alg, Equation::Equation::ALGORITHM).statements.clone(),
         _ => BEquation::Equation::toStatement(eqn.clone())?,
@@ -979,7 +979,7 @@ pub mod Block {
     }
 
     pub fn createAssignment(mut eqn: Arc<Equation::Equation>, mut simCodeIndices: SimCodeIndices) -> Result<(Arc<Block>, SimCodeIndices)> {
-        let mut blck: Arc<Block> = Arc::new(<Block as ::std::default::Default>::default());
+        let mut blck: Arc<Block>;
         let mut simCodeIndices: SimCodeIndices = simCodeIndices;
         blck = (::match_deref::match_deref! { match &(eqn.clone()) {
         qual @ Deref @ BEquation::Equation::SCALAR_EQUATION { lhs: Deref @ Expression::CREF { cref, .. }, .. } => {
@@ -1047,7 +1047,7 @@ pub mod Block {
     }
 
     pub fn convert(mut blck: Arc<Block>) -> Result<Arc<OldSimCode::SimEqSystem>> {
-        let mut oldBlck: Arc<OldSimCode::SimEqSystem> = Arc::new(<OldSimCode::SimEqSystem as ::std::default::Default>::default());
+        let mut oldBlck: Arc<OldSimCode::SimEqSystem>;
         oldBlck = ({
         let mut old_iterators: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>> = metamodelica::nil();
         let mut oldBranches: Arc<metamodelica::List<(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<OldSimCode::SimEqSystem>>>)>> = metamodelica::nil();
@@ -1320,7 +1320,7 @@ pub mod Block {
     }
 
     pub fn collectEntwinedEquations(mut blck: Arc<Block>) -> Arc<metamodelica::List<Arc<Block>>> {
-        let mut lst: Arc<metamodelica::List<Arc<Block>>> = metamodelica::nil();
+        let mut lst: Arc<metamodelica::List<Arc<Block>>>;
         lst = (::match_deref::match_deref! { match &(blck.clone()) {
         Deref @ ENTWINED_ASSIGN { .. } => var_field!((*blck).single_calls, Block::ENTWINED_ASSIGN).clone(),
         _ => metamodelica::nil(),
@@ -1342,7 +1342,7 @@ pub mod Block {
     }
 
     fn getGenericAssignIndex(mut blck: Arc<Block>) -> Result<i32> {
-        let mut index: i32 = 0;
+        let mut index: i32;
         index = (::match_deref::match_deref! { match &(blck.clone()) {
         Deref @ RESIZABLE_ASSIGN { .. } => var_field!((*blck).call_index, Block::RESIZABLE_ASSIGN).clone(),
         Deref @ GENERIC_ASSIGN { .. } => var_field!((*blck).call_index, Block::GENERIC_ASSIGN).clone(),
@@ -1356,7 +1356,7 @@ pub mod Block {
     }
 
     fn getGenericEquationName(mut comp: Arc<StrongComponent::NBStrongComponent>) -> Result<Arc<ComponentRef::NFComponentRef>> {
-        let mut name: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
+        let mut name: Arc<ComponentRef::NFComponentRef>;
         name = (::match_deref::match_deref! { match &(comp.clone()) {
         Deref @ StrongComponent::GENERIC_COMPONENT { .. } => BEquation::Equation::getEqnName(Slice::getT(var_field!((*comp).eqn, StrongComponent::NBStrongComponent::GENERIC_COMPONENT).clone()))?,
         _ => {
@@ -1473,7 +1473,7 @@ pub mod NonlinearSystem {
     }
 
     pub fn convert(mut system: Arc<NonlinearSystem>) -> Result<Arc<OldSimCode::NonlinearSystem>> {
-        let mut oldSystem: Arc<OldSimCode::NonlinearSystem> = Arc::new(<OldSimCode::NonlinearSystem as ::std::default::Default>::default());
+        let mut oldSystem: Arc<OldSimCode::NonlinearSystem>;
         let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
         for mut cref in &*system.crefs.clone() {
             let mut cref = cref.clone();

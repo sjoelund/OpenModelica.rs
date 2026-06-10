@@ -121,7 +121,7 @@ pub fn translateFile(mut inFile: ArcStr) -> Result<()> {
 
 // ********** Tests ****************
 pub fn testStringEquality(mut inStringReturned: ArcStr, mut inStringShouldBe: ArcStr, mut inPrintResult: bool, mut inPrintErrorBuffer: bool, mut inTestLabel: ArcStr, mut inNotPassedCnt: i32) -> Result<i32> {
-    let mut outNotPassedCnt: i32 = 0;
+    let mut outNotPassedCnt: i32;
     outNotPassedCnt = 'mc: {
         let __mc_input = (inStringReturned.clone(), inStringShouldBe.clone(), inPrintResult.clone(), inPrintErrorBuffer.clone(), inTestLabel.clone(), inNotPassedCnt.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -166,7 +166,7 @@ pub fn testStringEquality(mut inStringReturned: ArcStr, mut inStringShouldBe: Ar
 }
 
 pub fn testTranslateTplFile(mut inFile: ArcStr, mut inPrintResult: bool, mut inPrintErrorBuffer: bool, mut inNotPassedCnt: i32) -> Result<i32> {
-    let mut outNotPassedCnt: i32 = 0;
+    let mut outNotPassedCnt: i32;
     outNotPassedCnt = 'mc: {
         let __mc_input = (inFile.clone(), inPrintResult.clone(), inPrintErrorBuffer.clone(), inNotPassedCnt.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -632,7 +632,7 @@ pub enum Operator {
 pub use self::Operator::{PLUS,TIMES,LESS};
 
 fn lm_1(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Statement>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = 'mc: {
         let __mc_input = (in_txt.clone(), in_items.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -671,7 +671,7 @@ fn lm_1(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Statemen
 }
 
 pub fn statement(mut in_txt: Tpl::Text, mut in_i_it: Arc<Statement>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = 'mc: {
         let __mc_input = (in_txt.clone(), in_i_it.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -720,7 +720,7 @@ pub fn statement(mut in_txt: Tpl::Text, mut in_i_it: Arc<Statement>) -> Result<T
 }
 
 pub fn exp(mut in_txt: Tpl::Text, mut in_i_it: Arc<Exp>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = 'mc: {
         let __mc_input = (in_txt.clone(), in_i_it.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -773,7 +773,7 @@ pub fn exp(mut in_txt: Tpl::Text, mut in_i_it: Arc<Exp>) -> Result<Tpl::Text> {
 }
 
 pub fn oper(mut in_txt: Tpl::Text, mut in_i_it: Operator) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = 'mc: {
         let __mc_input = (in_txt.clone(), in_i_it.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -804,7 +804,7 @@ pub fn oper(mut in_txt: Tpl::Text, mut in_i_it: Operator) -> Result<Tpl::Text> {
 /* intMatrix from test.tpl */
 /* **************************/
 fn lm_54(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = 'mc: {
         let __mc_input = (in_txt.clone(), in_items.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -843,7 +843,7 @@ fn lm_54(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>) -> R
 }
 
 fn lm_55(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = 'mc: {
         let __mc_input = (in_txt.clone(), in_items.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -884,7 +884,7 @@ fn lm_55(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamod
 }
 
 pub fn intMatrix(mut txt: Tpl::Text, mut i_lstOfLst: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("[ ")).clone() }))?;
     out_txt = Tpl::pushBlock(out_txt.clone(), Arc::new(Tpl::BlockType::BT_ANCHOR { offset: 0 }))?;
     out_txt = Tpl::pushIter(out_txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(";\n")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: crate::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: crate::Tpl::StringToken::interned_ST_NEW_LINE() }))?;

@@ -96,13 +96,13 @@ pub const defaultMaxIter: i32 = 20;
 //  - differentiateExpTime
 // =============================================================================
 pub fn differentiateEquationTime(mut inEquation: Arc<BackendDAE::Equation>, mut inVariables: BackendDAE::Variables, mut inShared: Arc<BackendDAE::Shared>) -> Result<(Option<Arc<BackendDAE::Equation>>, Arc<BackendDAE::Shared>)> {
-    let mut outEquation: Option<Arc<BackendDAE::Equation>> = None;
+    let mut outEquation: Option<Arc<BackendDAE::Equation>>;
     let mut outShared: Arc<BackendDAE::Shared> = inShared.clone();
-    let mut diffData: BackendDAE::DifferentiateInputData = <BackendDAE::DifferentiateInputData as ::std::default::Default>::default();
-    let mut eqn: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
-    let mut knvars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
-    let mut source: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
-    let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
+    let mut diffData: BackendDAE::DifferentiateInputData;
+    let mut eqn: Arc<BackendDAE::Equation>;
+    let mut knvars: BackendDAE::Variables;
+    let mut source: Arc<DAE::ElementSource>;
+    let mut funcs: Arc<AvlTreePathFunction::Tree>;
     match '__try0: {
         if unwrap_break_err!(Flags::isSet(Flags::DEBUG_DIFFERENTIATION.clone()), '__try0) {
             unwrap_break_err!(BackendDump::debugStrEqnStr((literal!("### differentiateEquationTime\n")).clone(), inEquation.clone(), (literal!(" w.r.t. time\n")).clone()), '__try0);
@@ -134,12 +134,12 @@ pub fn differentiateEquationTime(mut inEquation: Arc<BackendDAE::Equation>, mut 
 }
 
 pub fn differentiateExpTime(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDAE::Variables, mut inShared: Arc<BackendDAE::Shared>) -> Result<(Arc<DAE::Exp>, Arc<BackendDAE::Shared>)> {
-    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outShared: Arc<BackendDAE::Shared> = Arc::new(<BackendDAE::Shared as ::std::default::Default>::default());
-    let mut dexp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
-    let mut diffData: BackendDAE::DifferentiateInputData = <BackendDAE::DifferentiateInputData as ::std::default::Default>::default();
-    let mut knvars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
+    let mut outExp: Arc<DAE::Exp>;
+    let mut outShared: Arc<BackendDAE::Shared>;
+    let mut dexp: Arc<DAE::Exp>;
+    let mut funcs: Arc<AvlTreePathFunction::Tree>;
+    let mut diffData: BackendDAE::DifferentiateInputData;
+    let mut knvars: BackendDAE::Variables;
     match '__try0: {
         if unwrap_break_err!(Flags::isSet(Flags::DEBUG_DIFFERENTIATION.clone()), '__try0) {
             unwrap_break_err!(BackendDump::debugStrExpStr((literal!("### differentiateExpTime\n ")).clone(), inExp.clone(), (literal!(" w.r.t. time\n")).clone()), '__try0);
@@ -176,10 +176,10 @@ pub fn differentiateExpTime(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDA
 }
 
 pub fn differentiateExpSolve(mut inExp: Arc<DAE::Exp>, mut inCref: Arc<DAE::ComponentRef>, mut functions: Option<Arc<AvlTreePathFunction::Tree>>) -> Result<Arc<DAE::Exp>> {
-    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut outExp: Arc<DAE::Exp>;
     let mut fac: Arc<metamodelica::List<Arc<DAE::Exp>>> = Expression::factors(inExp.clone())?;
-    let mut dexp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut fun: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
+    let mut dexp: Arc<DAE::Exp>;
+    let mut fun: Arc<AvlTreePathFunction::Tree>;
     ::match_deref::match_deref! { match &(List::split1OnTrue(fac.clone(), (std::sync::Arc::new(Expression::expHasCrefInIf) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>), inCref.clone())?) {
         (Deref @ metamodelica::List::Nil, _) => (),
         _ => bail!("pattern mismatch"),
@@ -220,12 +220,12 @@ pub fn differentiateExpSolve(mut inExp: Arc<DAE::Exp>, mut inCref: Arc<DAE::Comp
 }
 
 pub fn differentiateExpCrefFullJacobian(mut inExp: Arc<DAE::Exp>, mut inCref: Arc<DAE::ComponentRef>, mut inVariables: BackendDAE::Variables, mut inShared: Arc<BackendDAE::Shared>) -> Result<(Arc<DAE::Exp>, Arc<BackendDAE::Shared>)> {
-    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outShared: Arc<BackendDAE::Shared> = Arc::new(<BackendDAE::Shared as ::std::default::Default>::default());
-    let mut dexp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
-    let mut diffData: BackendDAE::DifferentiateInputData = <BackendDAE::DifferentiateInputData as ::std::default::Default>::default();
-    let mut knvars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
+    let mut outExp: Arc<DAE::Exp>;
+    let mut outShared: Arc<BackendDAE::Shared>;
+    let mut dexp: Arc<DAE::Exp>;
+    let mut funcs: Arc<AvlTreePathFunction::Tree>;
+    let mut diffData: BackendDAE::DifferentiateInputData;
+    let mut knvars: BackendDAE::Variables;
     match '__try0: {
         funcs = unwrap_break_err!(BackendDAEUtil::getFunctions(inShared.clone()), '__try0);
         knvars = unwrap_break_err!(BackendDAEUtil::getGlobalKnownVarsFromShared(inShared.clone()), '__try0);
@@ -262,8 +262,8 @@ pub fn differentiateExpCrefFullJacobian(mut inExp: Arc<DAE::Exp>, mut inCref: Ar
 //
 // =============================================================================
 pub fn differentiateEquation(mut inEquation: Arc<BackendDAE::Equation>, mut inDiffwrtCref: Arc<DAE::ComponentRef>, mut inInputData: BackendDAE::DifferentiateInputData, mut inDiffType: BackendDAE::DifferentiationType, mut inFunctionTree: Arc<AvlTreePathFunction::Tree>) -> Result<(Arc<BackendDAE::Equation>, Arc<AvlTreePathFunction::Tree>)> {
-    let mut outEquation: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
-    let mut outFunctionTree: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
+    let mut outEquation: Arc<BackendDAE::Equation>;
+    let mut outFunctionTree: Arc<AvlTreePathFunction::Tree>;
     if let Ok((__pa0, __pa1)) = differentiateEquationFragile(inEquation.clone(), inDiffwrtCref.clone(), inInputData.clone(), inDiffType.clone(), inFunctionTree.clone()) {
         outEquation = __pa0.clone();
         outFunctionTree = __pa1.clone();
@@ -275,8 +275,8 @@ pub fn differentiateEquation(mut inEquation: Arc<BackendDAE::Equation>, mut inDi
 }
 
 pub fn differentiateEquationFragile(mut inEquation: Arc<BackendDAE::Equation>, mut inDiffwrtCref: Arc<DAE::ComponentRef>, mut inInputData: BackendDAE::DifferentiateInputData, mut inDiffType: BackendDAE::DifferentiationType, mut inFunctionTree: Arc<AvlTreePathFunction::Tree>) -> Result<(Arc<BackendDAE::Equation>, Arc<AvlTreePathFunction::Tree>)> {
-    let mut outEquation: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
-    let mut outFunctionTree: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
+    let mut outEquation: Arc<BackendDAE::Equation>;
+    let mut outFunctionTree: Arc<AvlTreePathFunction::Tree>;
     if Flags::isSet(Flags::DEBUG_DIFFERENTIATION.clone())? {
         BackendDump::debugStrEqnStr((literal!("### differentiateEquation\n ")).clone(), inEquation.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" w.r.t. ")); __mm_s.push_str(&*ComponentReference::crefStr(inDiffwrtCref.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone())?;
     }
@@ -393,8 +393,8 @@ pub fn differentiateEquationFragile(mut inEquation: Arc<BackendDAE::Equation>, m
 }
 
 fn differentiateEquations(mut inEquations: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut inDiffwrtCref: Arc<DAE::ComponentRef>, mut inInputData: BackendDAE::DifferentiateInputData, mut inDiffType: BackendDAE::DifferentiationType, mut inEquationsAccum: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut inFunctionTree: Arc<AvlTreePathFunction::Tree>) -> Result<(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<AvlTreePathFunction::Tree>)> {
-    let mut outEquations: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
-    let mut outFunctionTree: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
+    let mut outEquations: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
+    let mut outFunctionTree: Arc<AvlTreePathFunction::Tree>;
     (outEquations, outFunctionTree) = 'mc: {
         let __mc_input = inEquations.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -434,8 +434,8 @@ fn differentiateEquations(mut inEquations: Arc<metamodelica::List<Arc<BackendDAE
 }
 
 fn differentiateEquationsLst(mut inEquationsLst: Arc<metamodelica::List<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>>, mut inDiffwrtCref: Arc<DAE::ComponentRef>, mut inInputData: BackendDAE::DifferentiateInputData, mut inDiffType: BackendDAE::DifferentiationType, mut inEquationsLstAccum: Arc<metamodelica::List<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>>, mut inFunctionTree: Arc<AvlTreePathFunction::Tree>) -> Result<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>>, Arc<AvlTreePathFunction::Tree>)> {
-    let mut outEquationsLst: Arc<metamodelica::List<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>> = metamodelica::nil();
-    let mut outFunctionTree: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
+    let mut outEquationsLst: Arc<metamodelica::List<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>>;
+    let mut outFunctionTree: Arc<AvlTreePathFunction::Tree>;
     (outEquationsLst, outFunctionTree) = 'mc: {
         let __mc_input = inEquationsLst.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -475,15 +475,15 @@ fn differentiateEquationsLst(mut inEquationsLst: Arc<metamodelica::List<Arc<meta
 }
 
 fn differentiateWhenEquations(mut inWhenEquations: Arc<BackendDAE::WhenEquation>, mut inDiffwrtCref: Arc<DAE::ComponentRef>, mut inInputData: BackendDAE::DifferentiateInputData, mut inDiffType: BackendDAE::DifferentiationType, mut inFunctionTree: Arc<AvlTreePathFunction::Tree>) -> Result<(Arc<BackendDAE::WhenEquation>, Arc<AvlTreePathFunction::Tree>)> {
-    let mut outWhenEquations: Arc<BackendDAE::WhenEquation> = Arc::new(<BackendDAE::WhenEquation as ::std::default::Default>::default());
-    let mut outFunctionTree: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
-    let mut elsewhenPart: Arc<BackendDAE::WhenEquation> = Arc::new(<BackendDAE::WhenEquation as ::std::default::Default>::default());
-    let mut delsewhenPart: Arc<BackendDAE::WhenEquation> = Arc::new(<BackendDAE::WhenEquation as ::std::default::Default>::default());
-    let mut oelsepart: Option<Arc<BackendDAE::WhenEquation>> = None;
-    let mut whenStmtLst: Arc<metamodelica::List<BackendDAE::WhenOperator>> = metamodelica::nil();
-    let mut stmtLst: Arc<metamodelica::List<BackendDAE::WhenOperator>> = metamodelica::nil();
-    let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
-    let mut condition: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut outWhenEquations: Arc<BackendDAE::WhenEquation>;
+    let mut outFunctionTree: Arc<AvlTreePathFunction::Tree>;
+    let mut elsewhenPart: Arc<BackendDAE::WhenEquation>;
+    let mut delsewhenPart: Arc<BackendDAE::WhenEquation>;
+    let mut oelsepart: Option<Arc<BackendDAE::WhenEquation>>;
+    let mut whenStmtLst: Arc<metamodelica::List<BackendDAE::WhenOperator>>;
+    let mut stmtLst: Arc<metamodelica::List<BackendDAE::WhenOperator>>;
+    let mut funcs: Arc<AvlTreePathFunction::Tree>;
+    let mut condition: Arc<DAE::Exp>;
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(inWhenEquations.clone()) {
         Deref @ BackendDAE::WhenEquation { condition: __pa0, whenStmtLst: __pa1, elsewhenPart: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
@@ -532,8 +532,8 @@ fn differentiateWhenEquations(mut inWhenEquations: Arc<BackendDAE::WhenEquation>
 //
 // =============================================================================
 fn differentiateExp(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::ComponentRef>, mut inInputData: BackendDAE::DifferentiateInputData, mut inDiffType: BackendDAE::DifferentiationType, mut inFunctionTree: Arc<AvlTreePathFunction::Tree>, mut maxIter: i32) -> Result<(Arc<DAE::Exp>, Arc<AvlTreePathFunction::Tree>)> {
-    let mut outDiffedExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outFunctionTree: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
+    let mut outDiffedExp: Arc<DAE::Exp>;
+    let mut outFunctionTree: Arc<AvlTreePathFunction::Tree>;
     let debug: bool = false;
     if debug.clone() {
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nDifferentiate Exp: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!(" w.r.t. ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(inDiffwrtCref.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
@@ -793,8 +793,8 @@ fn differentiateExp(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Compon
 }
 
 fn differentiateStatements(mut inStmts: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut inDiffwrtCref: Arc<DAE::ComponentRef>, mut inInputData: BackendDAE::DifferentiateInputData, mut inDiffType: BackendDAE::DifferentiationType, mut inStmtsAccum: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut inFunctionTree: Arc<AvlTreePathFunction::Tree>, mut maxIter: i32) -> Result<(Arc<metamodelica::List<Arc<DAE::Statement>>>, Arc<AvlTreePathFunction::Tree>)> {
-    let mut outDiffedStmts: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
-    let mut outFunctionTree: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
+    let mut outDiffedStmts: Arc<metamodelica::List<Arc<DAE::Statement>>>;
+    let mut outFunctionTree: Arc<AvlTreePathFunction::Tree>;
     (outDiffedStmts, outFunctionTree) = 'mc: {
         let __mc_input = inStmts.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -1145,7 +1145,7 @@ fn differentiateStatements(mut inStmts: Arc<metamodelica::List<Arc<DAE::Statemen
 }
 
 fn isDiscreteAssignStatment(mut inStmt: Arc<DAE::Statement>) -> bool {
-    let mut out: bool = false;
+    let mut out: bool;
     out = (::match_deref::match_deref! { match &(inStmt.clone()) {
         Deref @ DAE::Statement::STMT_ASSIGN { type_: tp, .. } => {
             Types::isDiscreteType(tp.clone())
@@ -1165,7 +1165,7 @@ fn isDiscreteAssignStatment(mut inStmt: Arc<DAE::Statement>) -> bool {
 }
 
 fn makeAssignmentfromTuple(mut inTpl: (Arc<DAE::Exp>, Arc<DAE::Exp>), mut source: Arc<DAE::ElementSource>, mut inFunctionTree: Arc<AvlTreePathFunction::Tree>) -> Result<Option<Arc<DAE::Statement>>> {
-    let mut outStmt: Option<Arc<DAE::Statement>> = None;
+    let mut outStmt: Option<Arc<DAE::Statement>>;
     outStmt = (::match_deref::match_deref! { match &(inTpl.clone()) {
         (e1 @ Deref @ DAE::Exp::CREF { ty: tp, .. }, e2) => {
             Some(Arc::new(DAE::Statement::STMT_ASSIGN { type_: tp.clone(), exp1: e1.clone(), exp: e2.clone(), source: source.clone() }))
@@ -1191,7 +1191,7 @@ fn makeAssignmentfromTuple(mut inTpl: (Arc<DAE::Exp>, Arc<DAE::Exp>), mut source
 //
 // =============================================================================
 fn differentiateCrefs(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::ComponentRef>, mut inInputData: BackendDAE::DifferentiateInputData, mut inDiffType: BackendDAE::DifferentiationType, mut inFunctionTree: Arc<AvlTreePathFunction::Tree>, mut maxIter: i32) -> Result<(Arc<DAE::Exp>, Arc<AvlTreePathFunction::Tree>)> {
-    let mut outDiffedExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut outDiffedExp: Arc<DAE::Exp>;
     let mut outFunctionTree: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
     let debug: bool = false;
     if debug.clone() {
@@ -1519,8 +1519,8 @@ fn differentiateCrefs(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Comp
 }
 
 pub fn createDiffedCrefName(mut inCref: Arc<DAE::ComponentRef>, mut inMatrixName: ArcStr) -> Result<Arc<DAE::ComponentRef>> {
-    let mut outCref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-    let mut subs: Arc<metamodelica::List<Arc<DAE::Subscript>>> = metamodelica::nil();
+    let mut outCref: Arc<DAE::ComponentRef>;
+    let mut subs: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
     subs = ComponentReference::crefLastSubs(inCref.clone())?;
     outCref = ComponentReferenceBasics::crefStripLastSubs(inCref.clone())?;
     outCref = ComponentReference::prependStringCref((arcstr::literal!(BackendDAE::functionDerivativeNamePrefix)).clone(), outCref.clone())?;
@@ -1531,8 +1531,8 @@ pub fn createDiffedCrefName(mut inCref: Arc<DAE::ComponentRef>, mut inMatrixName
 }
 
 pub fn createSeedCrefName(mut inCref: Arc<DAE::ComponentRef>, mut inMatrixName: ArcStr) -> Result<Arc<DAE::ComponentRef>> {
-    let mut outCref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-    let mut subs: Arc<metamodelica::List<Arc<DAE::Subscript>>> = metamodelica::nil();
+    let mut outCref: Arc<DAE::ComponentRef>;
+    let mut subs: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
     let debug: bool = false;
     if debug.clone() {
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("inCref: ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(inCref.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
@@ -1567,8 +1567,8 @@ pub fn isSeedCref(mut cr: Arc<DAE::ComponentRef>) -> bool {
 }
 
 fn differentiateCalls(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::ComponentRef>, mut inInputData: BackendDAE::DifferentiateInputData, mut inDiffType: BackendDAE::DifferentiationType, mut inFunctionTree: Arc<AvlTreePathFunction::Tree>, mut maxIter: i32) -> Result<(Arc<DAE::Exp>, Arc<AvlTreePathFunction::Tree>)> {
-    let mut outDiffedExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outFunctionTree: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
+    let mut outDiffedExp: Arc<DAE::Exp>;
+    let mut outFunctionTree: Arc<AvlTreePathFunction::Tree>;
     let debug: bool = false;
     if debug.clone() {
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nDifferentiate Exp-Call: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!(" w.r.t. ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(inDiffwrtCref.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
@@ -1680,8 +1680,8 @@ fn differentiateCalls(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Comp
 }
 
 fn differentiateCallExp1Arg(mut name: ArcStr, mut exp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::ComponentRef>, mut inInputData: BackendDAE::DifferentiateInputData, mut inDiffType: BackendDAE::DifferentiationType, mut inFuncs: Arc<AvlTreePathFunction::Tree>, mut maxIter: i32) -> Result<(Arc<DAE::Exp>, Arc<AvlTreePathFunction::Tree>)> {
-    let mut outDiffedExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outFunctionTree: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
+    let mut outDiffedExp: Arc<DAE::Exp>;
+    let mut outFunctionTree: Arc<AvlTreePathFunction::Tree>;
     (outDiffedExp, outFunctionTree) = (::match_deref::match_deref! { match &((name.clone(), exp.clone())) {
         (Deref @ "pre", _) => {
             let mut exp_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -1919,10 +1919,10 @@ fn differentiateCallExp1Arg(mut name: ArcStr, mut exp: Arc<DAE::Exp>, mut inDiff
 }
 
 fn createFromNCall2ArgsCall(mut funcName: ArcStr, mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut tp: Arc<DAE::Type>) -> Result<Arc<DAE::Exp>> {
-    let mut result: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut rest: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
+    let mut result: Arc<DAE::Exp>;
+    let mut e1: Arc<DAE::Exp>;
+    let mut e2: Arc<DAE::Exp>;
+    let mut rest: Arc<metamodelica::List<Arc<DAE::Exp>>>;
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(expl.clone()) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Cons { head: __pa1, tail: __pa2 } } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
@@ -1939,8 +1939,8 @@ fn createFromNCall2ArgsCall(mut funcName: ArcStr, mut expl: Arc<metamodelica::Li
 }
 
 fn differentiateCallExpNArg(mut name: ArcStr, mut inExpl: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inAttr: Arc<DAE::CallAttributes>, mut inDiffwrtCref: Arc<DAE::ComponentRef>, mut inInputData: BackendDAE::DifferentiateInputData, mut inDiffType: BackendDAE::DifferentiationType, mut inFunctionTree: Arc<AvlTreePathFunction::Tree>, mut maxIter: i32) -> Result<(Arc<DAE::Exp>, Arc<AvlTreePathFunction::Tree>)> {
-    let mut outDiffedExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outFunctionTree: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
+    let mut outDiffedExp: Arc<DAE::Exp>;
+    let mut outFunctionTree: Arc<AvlTreePathFunction::Tree>;
     (outDiffedExp, outFunctionTree) = (::match_deref::match_deref! { match &((name.clone(), inExpl.clone(), inAttr.clone())) {
         (Deref @ "smooth", Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::ICONST { integer: i }, tail: Deref @ metamodelica::List::Cons { head: e2, tail: Deref @ metamodelica::List::Nil } }, Deref @ DAE::CallAttributes { ty: tp, .. }) => {
             let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -2079,8 +2079,8 @@ fn differentiateCallExpNArg(mut name: ArcStr, mut inExpl: Arc<metamodelica::List
 }
 
 fn differentiateBinary(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::ComponentRef>, mut inInputData: BackendDAE::DifferentiateInputData, mut inDiffType: BackendDAE::DifferentiationType, mut inFunctionTree: Arc<AvlTreePathFunction::Tree>, mut maxIter: i32) -> Result<(Arc<DAE::Exp>, Arc<AvlTreePathFunction::Tree>)> {
-    let mut outDiffedExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outFunctionTree: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
+    let mut outDiffedExp: Arc<DAE::Exp>;
+    let mut outFunctionTree: Arc<AvlTreePathFunction::Tree>;
     (outDiffedExp, outFunctionTree) = (::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::ADD { ty: tp }, exp2: e2 } => {
             let mut de1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -2295,7 +2295,7 @@ fn differentiateBinary(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Com
 // functions to generate derivative of a function
 // =============================================================================
 fn differentiateFunctionCall(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::ComponentRef>, mut inInputData: BackendDAE::DifferentiateInputData, mut inDiffType: BackendDAE::DifferentiationType, mut inFunctionTree: Arc<AvlTreePathFunction::Tree>, mut maxIter: i32) -> Result<(Arc<DAE::Exp>, Arc<AvlTreePathFunction::Tree>)> {
-    let mut outDiffedExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut outDiffedExp: Arc<DAE::Exp>;
     let mut outFunctionTree: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
     (outDiffedExp, outFunctionTree) = 'mc: {
         let __mc_input = (inExp.clone(), inDiffType.clone());
@@ -2460,8 +2460,8 @@ fn differentiateFunctionCall(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DA
 }
 
 fn differentiateFunctionCallPartial(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::ComponentRef>, mut inInputData: BackendDAE::DifferentiateInputData, mut inDiffType: BackendDAE::DifferentiationType, mut inFunctionTree: Arc<AvlTreePathFunction::Tree>, mut maxIter: i32) -> Result<(Arc<DAE::Exp>, Arc<AvlTreePathFunction::Tree>)> {
-    let mut outDiffedExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outFunctionTree: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
+    let mut outDiffedExp: Arc<DAE::Exp>;
+    let mut outFunctionTree: Arc<AvlTreePathFunction::Tree>;
     (outDiffedExp, outFunctionTree) = 'mc: {
         let __mc_input = inExp.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -2692,7 +2692,7 @@ fn addFunctionConstantsAndParameters(mut knownVars_opt: Option<BackendDAE::Varia
 fn tryZeroDiff(mut explist: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut functions: Arc<AvlTreePathFunction::Tree>, mut maxIter: i32) -> (Arc<metamodelica::List<Arc<DAE::Exp>>>, Arc<AvlTreePathFunction::Tree>, bool) {
     let mut explist: Arc<metamodelica::List<Arc<DAE::Exp>>> = explist;
     let mut functions: Arc<AvlTreePathFunction::Tree> = functions;
-    let mut success: bool = false;
+    let mut success: bool;
     match '__try0: {
         (explist, functions) = unwrap_break_err!(List::map3Fold(explist.clone(), (std::sync::Arc::new({ let __pe_b5 = maxIter.clone(); move |__pe_a0, __pe_a1, __pe_a2, __pe_a3, __pe_a4| differentiateExp(__pe_a0, __pe_a1, __pe_a2, __pe_a3, __pe_a4, __pe_b5.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::ComponentRef>, BackendDAE::DifferentiateInputData, BackendDAE::DifferentiationType, Arc<AvlTreePathFunction::Tree>) -> Result<(Arc<DAE::Exp>, Arc<AvlTreePathFunction::Tree>)> + 'static>), Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (literal!("$")).clone(), identType: DAE::T_REAL_DEFAULT().clone(), subscriptLst: metamodelica::nil() }), BackendDAE::emptyInputData().clone(), BackendDAE::DifferentiationType::GENERIC_GRADIENT { daeMode: false }, functions.clone()), '__try0);
         success = true;
@@ -2711,7 +2711,7 @@ fn tryZeroDiff(mut explist: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut function
 }
 
 fn createPartialArguments(mut outputType: Arc<DAE::Type>, mut inArgs: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inDiffedArgs: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inOrginalExpl: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inCall: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
-    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut outExp: Arc<DAE::Exp>;
     outExp = 'mc: {
         let __mc_input = (outputType.clone(), inCall.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -2788,7 +2788,7 @@ fn createPartialArguments(mut outputType: Arc<DAE::Type>, mut inArgs: Arc<metamo
 }
 
 fn createPartialArgumentsTuple(mut inTypesLst: Arc<metamodelica::List<Arc<DAE::Type>>>, mut inArgs: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inDiffedArgs: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inOrginalExpl: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inCall: Arc<DAE::Exp>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> {
-    let mut outExpLst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
+    let mut outExpLst: Arc<metamodelica::List<Arc<DAE::Exp>>>;
     outExpLst = ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
         let __thr_src0 = inTypesLst.clone();
@@ -2810,7 +2810,7 @@ fn createPartialArgumentsTuple(mut inTypesLst: Arc<metamodelica::List<Arc<DAE::T
 }
 
 fn createPartialArgumentsRecord(mut inTypesLst: Arc<metamodelica::List<Arc<DAE::Type>>>, mut inVarNames: Arc<metamodelica::List<ArcStr>>, mut inArgs: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inDiffedArgs: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inOrginalExpl: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inCall: Arc<DAE::Exp>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> {
-    let mut outExpLst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
+    let mut outExpLst: Arc<metamodelica::List<Arc<DAE::Exp>>>;
     outExpLst = ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
         let __thr_src0 = inTypesLst.clone();
@@ -2894,8 +2894,8 @@ fn createPartialDifferentiatedExp(mut inDiffExpl: Arc<metamodelica::List<Arc<DAE
 fn createPartialSum(mut inArgsLst: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>>, mut inDiff: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inCall: Arc<DAE::Exp>, mut inAccum: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
     let mut outExp: Arc<DAE::Exp> = inAccum.clone();
     let mut restDiff: Arc<metamodelica::List<Arc<DAE::Exp>>> = inDiff.clone();
-    let mut de: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut de: Arc<DAE::Exp>;
+    let mut res: Arc<DAE::Exp>;
     for mut expLst in &*inArgsLst.clone() {
         let mut expLst = expLst.clone();
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(restDiff.clone()) {
@@ -2947,9 +2947,9 @@ fn prepareArgumentsExplArray(mut inWorkLst: Arc<metamodelica::List<Arc<DAE::Exp>
 }
 
 fn differentiatePartialFunction(mut inFunction: DAE::Function, mut inDiffwrtCref: Arc<DAE::ComponentRef>, mut inInputData: BackendDAE::DifferentiateInputData, mut inDiffType: BackendDAE::DifferentiationType, mut inFunctionTree: Arc<AvlTreePathFunction::Tree>, mut maxIter: i32) -> Result<(DAE::Function, Arc<AvlTreePathFunction::Tree>, Arc<metamodelica::List<bool>>)> {
-    let mut outDerFunction: DAE::Function = <DAE::Function as ::std::default::Default>::default();
-    let mut outFunctionTree: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
-    let mut outBooleanlst: Arc<metamodelica::List<bool>> = metamodelica::nil();
+    let mut outDerFunction: DAE::Function;
+    let mut outFunctionTree: Arc<AvlTreePathFunction::Tree>;
+    let mut outBooleanlst: Arc<metamodelica::List<bool>>;
     (outDerFunction, outFunctionTree, outBooleanlst) = 'mc: {
         let __mc_input = inFunction.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -3038,8 +3038,8 @@ fn differentiatePartialFunction(mut inFunction: DAE::Function, mut inDiffwrtCref
 }
 
 fn getDiffedTypeandName(mut inFunction: DAE::Function, mut inputVarsDer: Arc<metamodelica::List<Arc<DAE::Element>>>, mut outputVarsDer: Arc<metamodelica::List<Arc<DAE::Element>>>, mut blst: Arc<metamodelica::List<bool>>) -> Result<(Arc<Absyn::Path>, Arc<DAE::Type>)> {
-    let mut diffedName: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-    let mut diffedType: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+    let mut diffedName: Arc<Absyn::Path>;
+    let mut diffedType: Arc<DAE::Type>;
     diffedType = Types::extendsFunctionTypeArgs(DAEUtil::getFunctionType(inFunction.clone())?, inputVarsDer.clone(), outputVarsDer.clone(), blst.clone())?;
     diffedName = AbsynUtil::stringPath(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("$DER")); __mm_s.push_str(&*BackendUtil::modelicaStringToCStr((AbsynUtil::pathString(DAEUtil::functionName(inFunction.clone())?, (literal!(".")).clone(), true, false)?).clone(), false)?); ArcStr::from(__mm_s) }).clone())?;
     Ok((diffedName, diffedType))
@@ -3047,14 +3047,14 @@ fn getDiffedTypeandName(mut inFunction: DAE::Function, mut inputVarsDer: Arc<met
 
 fn getFunctionInOutVars(mut inFunction: DAE::Function, mut inFunctionTree: Arc<AvlTreePathFunction::Tree>, mut inDiffwrtCref: Arc<DAE::ComponentRef>, mut maxIter: i32) -> Result<(Arc<AvlTreePathFunction::Tree>, Arc<metamodelica::List<Arc<DAE::Element>>>, Arc<metamodelica::List<Arc<DAE::Element>>>, Arc<metamodelica::List<Arc<DAE::Element>>>, Arc<metamodelica::List<Arc<DAE::Element>>>, Arc<metamodelica::List<bool>>)> {
     let mut functions: Arc<AvlTreePathFunction::Tree> = inFunctionTree.clone();
-    let mut inputVarsDer: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
-    let mut inputVarsNoDer: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
-    let mut outputVarsDer: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
-    let mut outputVarsNoDer: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
-    let mut blst: Arc<metamodelica::List<bool>> = metamodelica::nil();
-    let mut inputVars: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
-    let mut outputVars: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
-    let mut diffData: BackendDAE::DifferentiateInputData = <BackendDAE::DifferentiateInputData as ::std::default::Default>::default();
+    let mut inputVarsDer: Arc<metamodelica::List<Arc<DAE::Element>>>;
+    let mut inputVarsNoDer: Arc<metamodelica::List<Arc<DAE::Element>>>;
+    let mut outputVarsDer: Arc<metamodelica::List<Arc<DAE::Element>>>;
+    let mut outputVarsNoDer: Arc<metamodelica::List<Arc<DAE::Element>>>;
+    let mut blst: Arc<metamodelica::List<bool>>;
+    let mut inputVars: Arc<metamodelica::List<Arc<DAE::Element>>>;
+    let mut outputVars: Arc<metamodelica::List<Arc<DAE::Element>>>;
+    let mut diffData: BackendDAE::DifferentiateInputData;
     inputVars = DAEUtil::getFunctionInputVars(inFunction.clone())?;
     outputVars = DAEUtil::getFunctionOutputVars(inFunction.clone())?;
     diffData = BackendDAE::emptyInputData().clone();
@@ -3065,10 +3065,10 @@ fn getFunctionInOutVars(mut inFunction: DAE::Function, mut inFunctionTree: Arc<A
 }
 
 fn differentiateElementVars(mut inElements: Arc<metamodelica::List<Arc<DAE::Element>>>, mut inDiffwrtCref: Arc<DAE::ComponentRef>, mut inInputData: BackendDAE::DifferentiateInputData, mut inDiffType: BackendDAE::DifferentiationType, mut inFunctionTree: Arc<AvlTreePathFunction::Tree>, mut inElementsDer: Arc<metamodelica::List<Arc<DAE::Element>>>, mut inElementsNoDer: Arc<metamodelica::List<Arc<DAE::Element>>>, mut inBooleanLst: Arc<metamodelica::List<bool>>, mut maxIter: i32, mut elementListInputs: bool) -> Result<(Arc<metamodelica::List<Arc<DAE::Element>>>, Arc<AvlTreePathFunction::Tree>, Arc<metamodelica::List<Arc<DAE::Element>>>, Arc<metamodelica::List<bool>>)> {
-    let mut outElements: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
-    let mut outFunctionTree: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
-    let mut outElementsNoDer: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
-    let mut outBooleanLst: Arc<metamodelica::List<bool>> = metamodelica::nil();
+    let mut outElements: Arc<metamodelica::List<Arc<DAE::Element>>>;
+    let mut outFunctionTree: Arc<AvlTreePathFunction::Tree>;
+    let mut outElementsNoDer: Arc<metamodelica::List<Arc<DAE::Element>>>;
+    let mut outBooleanLst: Arc<metamodelica::List<bool>>;
     (outElements, outFunctionTree, outElementsNoDer, outBooleanLst) = 'mc: {
         let __mc_input = (inElements.clone(), inInputData.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -3215,7 +3215,7 @@ fn differentiateElementVars(mut inElements: Arc<metamodelica::List<Arc<DAE::Elem
 }
 
 fn differentiateFunction1(mut inFuncName: Arc<Absyn::Path>, mut inMapper: DAE::FunctionDefinition, mut inTp: Arc<DAE::Type>, mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inDiffArgs: (Arc<DAE::ComponentRef>, BackendDAE::DifferentiateInputData, BackendDAE::DifferentiationType, Arc<AvlTreePathFunction::Tree>)) -> Result<(Arc<Absyn::Path>, Arc<metamodelica::List<bool>>)> {
-    let mut outFuncName: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+    let mut outFuncName: Arc<Absyn::Path>;
     let mut blst: Arc<metamodelica::List<bool>> = metamodelica::nil();
     (outFuncName, blst) = 'mc: {
         let __mc_input = (inMapper.clone(), inTp.clone(), inDiffArgs.clone());
@@ -3272,8 +3272,8 @@ fn differentiateFunction1(mut inFuncName: Arc<Absyn::Path>, mut inMapper: DAE::F
 }
 
 fn checkDerivativeFunctionInputs(mut blst: Arc<metamodelica::List<bool>>, mut tp: Arc<DAE::Type>, mut dtp: Arc<DAE::Type>) -> Result<(bool, Arc<metamodelica::List<Arc<DAE::Type>>>)> {
-    let mut outBoolean: bool = false;
-    let mut outExpectedTypeLst: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
+    let mut outBoolean: bool;
+    let mut outExpectedTypeLst: Arc<metamodelica::List<Arc<DAE::Type>>>;
     (outBoolean, outExpectedTypeLst) = 'mc: {
         let __mc_input = (tp.clone(), dtp.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -3310,17 +3310,17 @@ fn checkDerivativeFunctionInputs(mut blst: Arc<metamodelica::List<bool>>, mut tp
 }
 
 fn checkDerFunctionConds(mut inbarr: metamodelica::Array<bool>, mut icrlst: Arc<metamodelica::List<(i32, DAE::derivativeCond)>>, mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inDiffArgs: (Arc<DAE::ComponentRef>, BackendDAE::DifferentiateInputData, BackendDAE::DifferentiationType, Arc<AvlTreePathFunction::Tree>)) -> Result<Arc<metamodelica::List<bool>>> {
-    let mut outblst: Arc<metamodelica::List<bool>> = metamodelica::nil();
-    let mut i: i32 = 0;
-    let mut dc: DAE::derivativeCond = DAE::derivativeCond::ZERO_DERIVATIVE;
+    let mut outblst: Arc<metamodelica::List<bool>>;
+    let mut i: i32;
+    let mut dc: DAE::derivativeCond;
     let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut p1: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     let mut p2: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     let mut ba: metamodelica::Array<bool> = inbarr.clone();
-    let mut diffwrtCref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-    let mut inputData: BackendDAE::DifferentiateInputData = <BackendDAE::DifferentiateInputData as ::std::default::Default>::default();
-    let mut diffType: BackendDAE::DifferentiationType = BackendDAE::DifferentiationType::DIFFERENTIATION_FUNCTION;
-    let mut functionTree: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
+    let mut diffwrtCref: Arc<DAE::ComponentRef>;
+    let mut inputData: BackendDAE::DifferentiateInputData;
+    let mut diffType: BackendDAE::DifferentiationType;
+    let mut functionTree: Arc<AvlTreePathFunction::Tree>;
     (diffwrtCref, inputData, diffType, functionTree) = inDiffArgs.clone();
     for mut tpl in &*icrlst.clone() {
         let mut tpl = tpl.clone();
@@ -3382,7 +3382,7 @@ fn checkDerFunctionConds(mut inbarr: metamodelica::Array<bool>, mut icrlst: Arc<
 }
 
 fn getlowerOrderDerivative(mut fname: Arc<Absyn::Path>, mut functions: Arc<AvlTreePathFunction::Tree>) -> Result<Arc<Absyn::Path>> {
-    let mut outFName: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+    let mut outFName: Arc<Absyn::Path>;
     outFName = (::match_deref::match_deref! { match &(functions.clone()) {
         _ => {
             let mut flst: Arc<metamodelica::List<DAE::FunctionDefinition>> = metamodelica::nil();
@@ -3404,8 +3404,8 @@ fn getlowerOrderDerivative(mut fname: Arc<Absyn::Path>, mut functions: Arc<AvlTr
 }
 
 pub fn getFunctionMapper(mut fname: Arc<Absyn::Path>, mut functions: Arc<AvlTreePathFunction::Tree>) -> Result<(DAE::FunctionDefinition, Arc<DAE::Type>)> {
-    let mut mapper: DAE::FunctionDefinition = <DAE::FunctionDefinition as ::std::default::Default>::default();
-    let mut tp: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+    let mut mapper: DAE::FunctionDefinition;
+    let mut tp: Arc<DAE::Type>;
     (mapper, tp) = 'mc: {
         let __mc_input = functions.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -3445,7 +3445,7 @@ pub fn getFunctionMapper(mut fname: Arc<Absyn::Path>, mut functions: Arc<AvlTree
 }
 
 fn getFunctionMapper1(mut inFuncDefs: Arc<metamodelica::List<DAE::FunctionDefinition>>) -> Result<DAE::FunctionDefinition> {
-    let mut mapper: DAE::FunctionDefinition = <DAE::FunctionDefinition as ::std::default::Default>::default();
+    let mut mapper: DAE::FunctionDefinition;
     mapper = 'mc: {
         let __mc_input = inFuncDefs.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -3491,7 +3491,7 @@ fn diffableTypes(mut inType: Arc<DAE::Type>) -> Result<bool> {
 //
 fn addDependentVars(mut inVarsLst: Arc<metamodelica::List<BackendDAE::Var>>, mut inDiffData: BackendDAE::DifferentiateInputData) -> Result<BackendDAE::DifferentiateInputData> {
     let mut outDiffData: BackendDAE::DifferentiateInputData = inDiffData.clone();
-    let mut depVars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
+    let mut depVars: BackendDAE::Variables;
     if isSome(outDiffData.dependenentVars.clone()) {
         depVars = BackendVariable::addVars(inVarsLst.clone(), Util::getOption(outDiffData.dependenentVars.clone())?)?;
     } else {
@@ -3503,7 +3503,7 @@ fn addDependentVars(mut inVarsLst: Arc<metamodelica::List<BackendDAE::Var>>, mut
 
 fn addAllVars(mut inVarsLst: Arc<metamodelica::List<BackendDAE::Var>>, mut inDiffData: BackendDAE::DifferentiateInputData) -> Result<BackendDAE::DifferentiateInputData> {
     let mut outDiffData: BackendDAE::DifferentiateInputData = inDiffData.clone();
-    let mut allVars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
+    let mut allVars: BackendDAE::Variables;
     if isSome(outDiffData.allVars.clone()) {
         allVars = BackendVariable::addVars(inVarsLst.clone(), Util::getOption(outDiffData.allVars.clone())?)?;
     } else {
@@ -3515,7 +3515,7 @@ fn addAllVars(mut inVarsLst: Arc<metamodelica::List<BackendDAE::Var>>, mut inDif
 
 fn addGlobalVars(mut inVarsLst: Arc<metamodelica::List<BackendDAE::Var>>, mut inDiffData: BackendDAE::DifferentiateInputData) -> Result<BackendDAE::DifferentiateInputData> {
     let mut outDiffData: BackendDAE::DifferentiateInputData = inDiffData.clone();
-    let mut glVars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
+    let mut glVars: BackendDAE::Variables;
     if isSome(outDiffData.knownVars.clone()) {
         glVars = BackendVariable::addVars(inVarsLst.clone(), Util::getOption(outDiffData.knownVars.clone())?)?;
     } else {
@@ -3529,9 +3529,9 @@ fn lowerVarsElementVars(mut inElementLstVars: Arc<metamodelica::List<Arc<DAE::El
     let mut varsLst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
     let mut eqnsLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
     let mut reqnsLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
-    let mut vars: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
-    let mut knvars: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
-    let mut exvars: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
+    let mut vars: Arc<metamodelica::List<BackendDAE::Var>>;
+    let mut knvars: Arc<metamodelica::List<BackendDAE::Var>>;
+    let mut exvars: Arc<metamodelica::List<BackendDAE::Var>>;
     if '__try0: {
         (vars, knvars, exvars, eqnsLst, reqnsLst) = unwrap_break_err!(BackendDAECreate::lowerVars(inElementLstVars.clone(), functions.clone(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil()), '__try0);
         varsLst = listAppend(exvars.clone(), listAppend(vars.clone(), knvars.clone()));
@@ -3544,9 +3544,9 @@ fn lowerVarsElementVars(mut inElementLstVars: Arc<metamodelica::List<Arc<DAE::El
 }
 
 fn addElementVars2Dep(mut inElementLstVars: Arc<metamodelica::List<Arc<DAE::Element>>>, mut inFunctions: Arc<AvlTreePathFunction::Tree>, mut inDiffData: BackendDAE::DifferentiateInputData) -> Result<(BackendDAE::DifferentiateInputData, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>)> {
-    let mut outDiffData: BackendDAE::DifferentiateInputData = <BackendDAE::DifferentiateInputData as ::std::default::Default>::default();
-    let mut outEqnsLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
-    let mut varsLst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
+    let mut outDiffData: BackendDAE::DifferentiateInputData;
+    let mut outEqnsLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
+    let mut varsLst: Arc<metamodelica::List<BackendDAE::Var>>;
     match '__try0: {
         (varsLst, outEqnsLst, _) = unwrap_break_err!(lowerVarsElementVars(inElementLstVars.clone(), inFunctions.clone()), '__try0);
         outDiffData = unwrap_break_err!(addDependentVars(varsLst.clone(), inDiffData.clone()), '__try0);
@@ -3566,13 +3566,13 @@ fn addElementVars2Dep(mut inElementLstVars: Arc<metamodelica::List<Arc<DAE::Elem
 }
 
 fn dumpInputData(mut inDiffData: BackendDAE::DifferentiateInputData) -> Result<()> {
-    let mut independenentVars: Option<BackendDAE::Variables> = None;
-    let mut dependenentVars: Option<BackendDAE::Variables> = None;
-    let mut knownVars: Option<BackendDAE::Variables> = None;
-    let mut allVars: Option<BackendDAE::Variables> = None;
-    let mut controlVars: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
-    let mut diffCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
-    let mut matrixName: Option<ArcStr> = None;
+    let mut independenentVars: Option<BackendDAE::Variables>;
+    let mut dependenentVars: Option<BackendDAE::Variables>;
+    let mut knownVars: Option<BackendDAE::Variables>;
+    let mut allVars: Option<BackendDAE::Variables>;
+    let mut controlVars: Arc<metamodelica::List<BackendDAE::Var>>;
+    let mut diffCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
+    let mut matrixName: Option<ArcStr>;
     metamodelica::print((literal!("### dumpInputData ###\n")).clone());
     if isSome(inDiffData.matrixName.clone()) {
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("### for ")); __mm_s.push_str(&*Util::getOption(inDiffData.matrixName.clone())?); __mm_s.push_str(&*literal!(" ###\n")); ArcStr::from(__mm_s) }).clone());

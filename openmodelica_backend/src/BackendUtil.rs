@@ -91,7 +91,7 @@ pub fn modelicaStringToCStr(mut r#str: ArcStr, mut changeDerCall: bool) -> Resul
 }
 
 fn modelicaStringToCStr1(mut inString: ArcStr, mut inReplacePatternLst: Arc<metamodelica::List<ReplacePattern>>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ('mc: {
         let __mc_input = (inString.clone(), inReplacePatternLst.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -129,7 +129,7 @@ fn modelicaStringToCStr1(mut inString: ArcStr, mut inReplacePatternLst: Arc<meta
 }
 
 fn modelicaStringToCStr2(mut inDerName: ArcStr) -> Result<ArcStr> {
-    let mut outDerName: ArcStr = arcstr::literal!("");
+    let mut outDerName: ArcStr;
     outDerName = ('mc: {
         let __mc_input = inDerName.clone();
         if let Ok(__v) = (|| -> Result<_> {

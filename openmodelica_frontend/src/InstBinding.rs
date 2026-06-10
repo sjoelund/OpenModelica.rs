@@ -91,7 +91,7 @@ thread_local! { static __distributionType_TLS: Arc<DAE::Type> = Arc::new(DAE::Ty
 pub fn distributionType() -> Arc<DAE::Type> { __distributionType_TLS.with(|__t| __t.clone()) }
 
 fn instBinding(mut inMod: Arc<DAE::Mod>, mut inVarLst: Arc<metamodelica::List<Arc<DAE::Var>>>, mut inType: Arc<DAE::Type>, mut inIntegerLst: Arc<metamodelica::List<i32>>, mut inString: ArcStr, mut useConstValue: bool) -> Result<Option<Arc<DAE::Exp>>> {
-    let mut outExpExpOption: Option<Arc<DAE::Exp>> = None;
+    let mut outExpExpOption: Option<Arc<DAE::Exp>>;
     outExpExpOption = 'mc: {
         let __mc_input = (inMod.clone(), inVarLst.clone(), inType.clone(), inIntegerLst.clone(), inString.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -172,7 +172,7 @@ fn instBinding(mut inMod: Arc<DAE::Mod>, mut inVarLst: Arc<metamodelica::List<Ar
 }
 
 fn instBinding2(mut inMod: Arc<DAE::Mod>, mut inType: Arc<DAE::Type>, mut inIntegerLst: Arc<metamodelica::List<i32>>, mut inString: ArcStr, mut useConstValue: bool) -> Result<Option<Arc<DAE::Exp>>> {
-    let mut outExpExpOption: Option<Arc<DAE::Exp>> = None;
+    let mut outExpExpOption: Option<Arc<DAE::Exp>>;
     outExpExpOption = (::match_deref::match_deref! { match &((inMod.clone(), inType.clone(), inIntegerLst.clone(), inString.clone())) {
         (r#mod, etype, Deref @ metamodelica::List::Cons { head: index, tail: Deref @ metamodelica::List::Nil }, _) => {
             let mut mod2: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
@@ -219,7 +219,7 @@ fn instBinding2(mut inMod: Arc<DAE::Mod>, mut inType: Arc<DAE::Type>, mut inInte
 }
 
 pub fn instStartBindingExp(mut inMod: Arc<DAE::Mod>, mut inExpectedType: Arc<DAE::Type>, mut inVariability: SCode::Variability) -> Result<Option<Arc<DAE::Exp>>> {
-    let mut outStartValue: Option<Arc<DAE::Exp>> = None;
+    let mut outStartValue: Option<Arc<DAE::Exp>>;
     if SCodeUtil::isConstant(inVariability.clone()) {
         outStartValue = None;
     } else {
@@ -229,7 +229,7 @@ pub fn instStartBindingExp(mut inMod: Arc<DAE::Mod>, mut inExpectedType: Arc<DAE
 }
 
 fn instStartOrigin(mut inMod: Arc<DAE::Mod>, mut inVarLst: Arc<metamodelica::List<Arc<DAE::Var>>>, mut inString: ArcStr) -> Result<Option<Arc<DAE::Exp>>> {
-    let mut outExpExpOption: Option<Arc<DAE::Exp>> = None;
+    let mut outExpExpOption: Option<Arc<DAE::Exp>>;
     outExpExpOption = 'mc: {
         let __mc_input = (inMod.clone(), inVarLst.clone(), inString.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -277,8 +277,8 @@ fn instStartOrigin(mut inMod: Arc<DAE::Mod>, mut inVarLst: Arc<metamodelica::Lis
 }
 
 pub fn instDaeVariableAttributes(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inMod: Arc<DAE::Mod>, mut inType: Arc<DAE::Type>, mut inIntegerLst: Arc<metamodelica::List<i32>>) -> Result<(FCore::Cache, Option<Arc<DAE::VariableAttributes>>)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outDAEVariableAttributesOption: Option<Arc<DAE::VariableAttributes>> = None;
+    let mut outCache: FCore::Cache;
+    let mut outDAEVariableAttributesOption: Option<Arc<DAE::VariableAttributes>>;
     (outCache, outDAEVariableAttributesOption) = 'mc: {
         let __mc_input = (inCache.clone(), inMod.clone(), inType.clone(), inIntegerLst.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -428,7 +428,7 @@ fn instEnumerationBinding(mut inMod: Arc<DAE::Mod>, mut varLst: Arc<metamodelica
 }
 
 fn instDistributionBinding(mut inMod: Arc<DAE::Mod>, mut varLst: Arc<metamodelica::List<Arc<DAE::Var>>>, mut inIntegerLst: Arc<metamodelica::List<i32>>, mut inString: ArcStr, mut useConstValue: bool) -> Result<Option<Arc<DAE::Distribution>>> {
-    let mut out: Option<Arc<DAE::Distribution>> = None;
+    let mut out: Option<Arc<DAE::Distribution>>;
     out = 'mc: {
         let __mc_input = (inMod.clone(), inIntegerLst.clone(), inString.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -520,7 +520,7 @@ fn instDistributionBinding(mut inMod: Arc<DAE::Mod>, mut varLst: Arc<metamodelic
 }
 
 fn getUncertainFromExpOption(mut expOption: Option<Arc<DAE::Exp>>) -> Option<DAE::Uncertainty> {
-    let mut out: Option<DAE::Uncertainty> = None;
+    let mut out: Option<DAE::Uncertainty>;
     out = (::match_deref::match_deref! { match &(expOption.clone()) {
         Some(Deref @ DAE::Exp::ENUM_LITERAL { name: Deref @ Absyn::Path::QUALIFIED { name: Deref @ "Uncertainty", path: Deref @ Absyn::Path::IDENT { name: Deref @ "given" } }, .. }) => Some(openmodelica_frontend_types::DAE::Uncertainty::GIVEN),
         Some(Deref @ DAE::Exp::ENUM_LITERAL { name: Deref @ Absyn::Path::QUALIFIED { name: Deref @ "Uncertainty", path: Deref @ Absyn::Path::IDENT { name: Deref @ "sought" } }, .. }) => Some(openmodelica_frontend_types::DAE::Uncertainty::SOUGHT),
@@ -533,7 +533,7 @@ fn getUncertainFromExpOption(mut expOption: Option<Arc<DAE::Exp>>) -> Option<DAE
 }
 
 pub fn instModEquation(mut inComponentRef: Arc<DAE::ComponentRef>, mut inType: Arc<DAE::Type>, mut inMod: Arc<DAE::Mod>, mut inSource: Arc<DAE::ElementSource>, mut inImpl: bool) -> Result<DAE::DAElist> {
-    let mut outDae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
+    let mut outDae: DAE::DAElist;
     outDae = 'mc: {
         let __mc_input = (inType.clone(), inMod.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -623,8 +623,8 @@ pub fn instModEquation(mut inComponentRef: Arc<DAE::ComponentRef>, mut inType: A
 }
 
 pub fn makeBinding(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inAttributes: SCode::Attributes, mut inMod: Arc<DAE::Mod>, mut inType: Arc<DAE::Type>, mut inPrefix: DAE::Prefix, mut componentName: ArcStr, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Binding>)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outBinding: Arc<DAE::Binding> = Arc::new(DAE::Binding::UNBOUND);
+    let mut outCache: FCore::Cache;
+    let mut outBinding: Arc<DAE::Binding>;
     (outCache, outBinding) = 'mc: {
         let __mc_input = (inCache.clone(), inAttributes.clone(), inMod.clone(), inType.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -785,21 +785,21 @@ pub fn makeBinding(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inAtt
 }
 
 pub fn makeRecordBinding(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inRecordName: Arc<Absyn::Path>, mut inRecordType: Arc<DAE::Type>, mut inRecordVars: Arc<metamodelica::List<Arc<DAE::Var>>>, mut inMods: Arc<metamodelica::List<Arc<DAE::SubMod>>>, mut inInfo: SourceInfo) -> Result<Arc<DAE::Binding>> {
-    let mut outBinding: Arc<DAE::Binding> = Arc::new(DAE::Binding::UNBOUND);
+    let mut outBinding: Arc<DAE::Binding>;
     let mut accum_exps: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
     let mut accum_vals: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
     let mut accum_names: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     let mut mods: Arc<metamodelica::List<Arc<DAE::SubMod>>> = inMods.clone();
-    let mut opt_mod: Option<Arc<DAE::SubMod>> = None;
+    let mut opt_mod: Option<Arc<DAE::SubMod>>;
     let mut name: ArcStr = literal!("");
-    let mut scope: ArcStr = arcstr::literal!("");
-    let mut ty_str: ArcStr = arcstr::literal!("");
-    let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-    let mut ety: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-    let mut binding: Arc<DAE::Binding> = Arc::new(DAE::Binding::UNBOUND);
-    let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
-    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut val: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
+    let mut scope: ArcStr;
+    let mut ty_str: ArcStr;
+    let mut ty: Arc<DAE::Type>;
+    let mut ety: Arc<DAE::Type>;
+    let mut binding: Arc<DAE::Binding>;
+    let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>;
+    let mut exp: Arc<DAE::Exp>;
+    let mut val: Arc<Values::Value>;
     dims = TypesDump::getDimensions(inRecordType.clone());
     match '__try0: {
         for mut var in &*inRecordVars.clone() {
@@ -858,8 +858,8 @@ pub fn makeRecordBinding(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut
 }
 
 fn makeRecordBinding3(mut inSubMod: Option<Arc<DAE::SubMod>>, mut inType: Arc<DAE::Type>, mut inInfo: SourceInfo) -> Result<(Arc<DAE::Exp>, Arc<Values::Value>)> {
-    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outValue: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
+    let mut outExp: Arc<DAE::Exp>;
+    let mut outValue: Arc<Values::Value>;
     (outExp, outValue) = 'mc: {
         let __mc_input = inSubMod.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -914,16 +914,16 @@ fn makeRecordBinding3(mut inSubMod: Option<Arc<DAE::SubMod>>, mut inType: Arc<DA
 }
 
 pub fn makeVariableBinding(mut inType: Arc<DAE::Type>, mut inMod: Arc<DAE::Mod>, mut inConst: DAE::Const, mut inPrefix: DAE::Prefix, mut inName: ArcStr) -> Result<Option<Arc<DAE::Exp>>> {
-    let mut outBinding: Option<Arc<DAE::Exp>> = None;
+    let mut outBinding: Option<Arc<DAE::Exp>>;
     let mut oeq_mod: Option<DAE::EqMod> = Mod::modEquation(inMod.clone())?;
-    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut p: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
-    let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
-    let mut c: DAE::Const = DAE::Const::C_CONST;
-    let mut e_str: ArcStr = arcstr::literal!("");
-    let mut et_str: ArcStr = arcstr::literal!("");
-    let mut bt_str: ArcStr = arcstr::literal!("");
+    let mut e: Arc<DAE::Exp>;
+    let mut e2: Arc<DAE::Exp>;
+    let mut p: DAE::Properties;
+    let mut info: SourceInfo;
+    let mut c: DAE::Const;
+    let mut e_str: ArcStr;
+    let mut et_str: ArcStr;
+    let mut bt_str: ArcStr;
     if isNone(oeq_mod.clone()) {
         outBinding = None;
         return Ok(outBinding.clone());

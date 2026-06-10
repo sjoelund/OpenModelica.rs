@@ -51,7 +51,7 @@ use openmodelica_frontend_types::SCode;
 use openmodelica_util_datatypes_basic::List;
 
 fn constantBindingOrNone(mut inBinding: Option<Arc<Absyn::Exp>>) -> Result<Option<Arc<Absyn::Exp>>> {
-    let mut outBinding: Option<Arc<Absyn::Exp>> = None;
+    let mut outBinding: Option<Arc<Absyn::Exp>>;
     outBinding = (::match_deref::match_deref! { match &(inBinding.clone()) {
         Some(e) => {
             if (AbsynUtil::getCrefFromExp(e.clone(), true, true)?.is_empty()) {inBinding.clone()} else {None}
@@ -65,7 +65,7 @@ fn constantBindingOrNone(mut inBinding: Option<Arc<Absyn::Exp>>) -> Result<Optio
 }
 
 pub fn removeNonConstantBindingsKeepRedeclares(mut inMod: Arc<SCode::Mod>, mut onlyRedeclares: bool) -> Result<Arc<SCode::Mod>> {
-    let mut outMod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
+    let mut outMod: Arc<SCode::Mod>;
     outMod = (::match_deref::match_deref! { match &(inMod.clone()) {
         Deref @ SCode::Mod::MOD { finalPrefix: fp, eachPrefix: ep, subModLst: sl, binding, comment: cmt, info: i } => {
             let mut sl = (*sl).clone();
@@ -86,7 +86,7 @@ pub fn removeNonConstantBindingsKeepRedeclares(mut inMod: Arc<SCode::Mod>, mut o
 }
 
 fn removeNonConstantBindingsKeepRedeclaresFromSubMod(mut inSl: Arc<metamodelica::List<Arc<SCode::SubMod>>>, mut onlyRedeclares: bool) -> Result<Arc<metamodelica::List<Arc<SCode::SubMod>>>> {
-    let mut outSl: Arc<metamodelica::List<Arc<SCode::SubMod>>> = metamodelica::nil();
+    let mut outSl: Arc<metamodelica::List<Arc<SCode::SubMod>>>;
     outSl = (::match_deref::match_deref! { match &(inSl.clone()) {
         Deref @ metamodelica::List::Nil => {
             metamodelica::nil()
@@ -104,7 +104,7 @@ fn removeNonConstantBindingsKeepRedeclaresFromSubMod(mut inSl: Arc<metamodelica:
 }
 
 pub fn addRedeclareAsElementsToExtends(mut inElements: Arc<metamodelica::List<Arc<SCode::Element>>>, mut redeclareElements: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> {
-    let mut outExtendsElements: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
+    let mut outExtendsElements: Arc<metamodelica::List<Arc<SCode::Element>>>;
     outExtendsElements = (::match_deref::match_deref! { match &((inElements.clone(), redeclareElements.clone())) {
         (_, Deref @ metamodelica::List::Nil) => {
             inElements.clone()
@@ -165,7 +165,7 @@ fn makeElementsIntoSubMods(mut inFinal: SCode::Final, mut inEach: SCode::Each, m
 }
 
 fn removeReferenceInBinding(mut inBinding: Option<Arc<Absyn::Exp>>, mut inCref: Arc<Absyn::ComponentRef>) -> Result<Option<Arc<Absyn::Exp>>> {
-    let mut outBinding: Option<Arc<Absyn::Exp>> = None;
+    let mut outBinding: Option<Arc<Absyn::Exp>>;
     outBinding = (::match_deref::match_deref! { match &(inBinding.clone()) {
         Some(e) => {
             let mut crlst1: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
@@ -183,7 +183,7 @@ fn removeReferenceInBinding(mut inBinding: Option<Arc<Absyn::Exp>>, mut inCref: 
 }
 
 pub fn removeSelfReferenceFromMod(mut inMod: Arc<SCode::Mod>, mut inCref: Arc<Absyn::ComponentRef>) -> Result<Arc<SCode::Mod>> {
-    let mut outMod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
+    let mut outMod: Arc<SCode::Mod>;
     outMod = (::match_deref::match_deref! { match &(inMod.clone()) {
         Deref @ SCode::Mod::MOD { finalPrefix: fp, eachPrefix: ep, subModLst: sl, binding, comment: cmt, info: i } => {
             let mut sl = (*sl).clone();
@@ -204,7 +204,7 @@ pub fn removeSelfReferenceFromMod(mut inMod: Arc<SCode::Mod>, mut inCref: Arc<Ab
 }
 
 fn removeSelfReferenceFromSubMod(mut inSl: Arc<metamodelica::List<Arc<SCode::SubMod>>>, mut inCref: Arc<Absyn::ComponentRef>) -> Result<Arc<metamodelica::List<Arc<SCode::SubMod>>>> {
-    let mut outSl: Arc<metamodelica::List<Arc<SCode::SubMod>>> = metamodelica::nil();
+    let mut outSl: Arc<metamodelica::List<Arc<SCode::SubMod>>>;
     outSl = (::match_deref::match_deref! { match &(inSl.clone()) {
         Deref @ metamodelica::List::Nil => {
             metamodelica::nil()
@@ -222,8 +222,8 @@ fn removeSelfReferenceFromSubMod(mut inSl: Arc<metamodelica::List<Arc<SCode::Sub
 }
 
 fn expandEnumerationSubMod(mut inSubMod: Arc<SCode::SubMod>, mut inChanged: bool) -> Result<(Arc<SCode::SubMod>, bool)> {
-    let mut outSubMod: Arc<SCode::SubMod> = Arc::new(<SCode::SubMod as ::std::default::Default>::default());
-    let mut outChanged: bool = false;
+    let mut outSubMod: Arc<SCode::SubMod>;
+    let mut outChanged: bool;
     (outSubMod, outChanged) = (::match_deref::match_deref! { match &(inSubMod.clone()) {
         Deref @ SCode::SubMod { ident, r#mod } => {
             let mut mod1: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
@@ -239,7 +239,7 @@ fn expandEnumerationSubMod(mut inSubMod: Arc<SCode::SubMod>, mut inChanged: bool
 }
 
 pub fn expandEnumerationMod(mut inMod: Arc<SCode::Mod>) -> Result<Arc<SCode::Mod>> {
-    let mut outMod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
+    let mut outMod: Arc<SCode::Mod>;
     let mut f: SCode::Final = SCode::Final::FINAL;
     let mut e: SCode::Each = SCode::Each::EACH;
     let mut el: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
@@ -274,7 +274,7 @@ pub fn expandEnumerationMod(mut inMod: Arc<SCode::Mod>) -> Result<Arc<SCode::Mod
 }
 
 pub fn expandEnumerationClass(mut inElement: Arc<SCode::Element>) -> Result<Arc<SCode::Element>> {
-    let mut outElement: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
+    let mut outElement: Arc<SCode::Element>;
     outElement = (::match_deref::match_deref! { match &(inElement.clone()) {
         Deref @ SCode::Element::CLASS { name: n, restriction: SCode::Restriction::R_TYPE { .. }, prefixes, classDef: Deref @ SCode::ClassDef::ENUMERATION { enumLst: l }, cmt, info, .. } => {
             let mut c: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
@@ -295,19 +295,19 @@ pub fn expandEnumerationClass(mut inElement: Arc<SCode::Element>) -> Result<Arc<
 }
 
 pub fn expandEnumeration(mut n: ArcStr, mut l: Arc<metamodelica::List<Arc<SCode::Enum>>>, mut prefixes: Arc<SCode::Prefixes>, mut cmt: Arc<SCode::Comment>, mut info: SourceInfo) -> Result<Arc<SCode::Element>> {
-    let mut outClass: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
+    let mut outClass: Arc<SCode::Element>;
     outClass = Arc::new(SCode::Element::CLASS { name: (n.clone()).clone(), prefixes: prefixes.clone(), encapsulatedPrefix: openmodelica_frontend_types::SCode::Encapsulated::NOT_ENCAPSULATED, partialPrefix: openmodelica_frontend_types::SCode::Partial::NOT_PARTIAL, restriction: openmodelica_frontend_types::SCode::Restriction::R_ENUMERATION, classDef: makeEnumParts(l.clone(), info.clone())?, cmt: cmt.clone(), info: info.clone() });
     Ok(outClass)
 }
 
 fn makeEnumParts(mut inEnumLst: Arc<metamodelica::List<Arc<SCode::Enum>>>, mut info: SourceInfo) -> Result<Arc<SCode::ClassDef>> {
-    let mut classDef: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
+    let mut classDef: Arc<SCode::ClassDef>;
     classDef = Arc::new(SCode::ClassDef::PARTS { elementLst: makeEnumComponents(inEnumLst.clone(), info.clone())?, normalEquationLst: metamodelica::nil(), initialEquationLst: metamodelica::nil(), normalAlgorithmLst: metamodelica::nil(), initialAlgorithmLst: metamodelica::nil(), constraintLst: metamodelica::nil(), clsattrs: metamodelica::nil(), externalDecl: None });
     Ok(classDef)
 }
 
 fn makeEnumComponents(mut inEnumLst: Arc<metamodelica::List<Arc<SCode::Enum>>>, mut info: SourceInfo) -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> {
-    let mut outSCodeElementLst: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
+    let mut outSCodeElementLst: Arc<metamodelica::List<Arc<SCode::Element>>>;
     outSCodeElementLst = ({
         let mut __acc: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
         for mut e in (inEnumLst.clone()).into_iter().cloned() {

@@ -75,7 +75,7 @@ impl<T: Clone> Default for ExpandableArray<T> {
 pub type EXPANDABLE_ARRAY<T> = ExpandableArray<T>;
 
 pub fn new<T: Clone + 'static>(mut capacity: i32, mut dummy: T) -> Arc<ExpandableArray<T>> {
-    let mut exarray: Arc<ExpandableArray<T>> = <Arc<ExpandableArray<T>> as ::std::default::Default>::default();
+    let mut exarray: Arc<ExpandableArray<T>>;
     exarray = Arc::new(ExpandableArray { numberOfElements: Mutable::create(0), lastUsedIndex: Mutable::create(0), capacity: Mutable::create(capacity.clone()), data: Mutable::create(arrayCreate(capacity.clone(), None)) });
     exarray
 }
@@ -100,7 +100,7 @@ pub fn clear<T: Clone + 'static>(mut exarray: Arc<ExpandableArray<T>>) -> Arc<Ex
 }
 
 pub fn copy<T: Clone + 'static>(mut inExarray: Arc<ExpandableArray<T>>, mut dummy: T) -> Arc<ExpandableArray<T>> {
-    let mut outExarray: Arc<ExpandableArray<T>> = <Arc<ExpandableArray<T>> as ::std::default::Default>::default();
+    let mut outExarray: Arc<ExpandableArray<T>>;
     outExarray = new(Mutable::access(inExarray.capacity.clone()), dummy.clone());
     assign_field!(
         outExarray.numberOfElements = Mutable::create(Mutable::access(inExarray.numberOfElements.clone())),
@@ -112,7 +112,7 @@ pub fn copy<T: Clone + 'static>(mut inExarray: Arc<ExpandableArray<T>>, mut dumm
 }
 
 pub fn occupied<T: Clone + 'static>(mut index: i32, mut exarray: Arc<ExpandableArray<T>>) -> bool {
-    let mut b: bool = false;
+    let mut b: bool;
     let mut lastUsedIndex: i32 = Mutable::access(exarray.lastUsedIndex.clone());
     let mut data: metamodelica::Array<Option<T>> = Mutable::access(exarray.data.clone());
     b = index.clone() >= 1 && index.clone() <= lastUsedIndex.clone() && isSome(metamodelica::Dangerous::arrayGetNoBoundsChecking(data.clone(), index.clone()));
@@ -171,7 +171,7 @@ pub fn set<T: Clone + 'static>(mut index: i32, mut value: T, mut exarray: Arc<Ex
 
 pub fn add<T: Clone + 'static>(mut value: T, mut exarray: Arc<ExpandableArray<T>>) -> Result<(Arc<ExpandableArray<T>>, i32)> {
     let mut exarray: Arc<ExpandableArray<T>> = exarray;
-    let mut index: i32 = 0;
+    let mut index: i32;
     let mut lastUsedIndex: i32 = Mutable::access(exarray.lastUsedIndex.clone());
     index = lastUsedIndex.clone() + 1;
     exarray = set(index.clone(), value.clone(), exarray.clone())?;
@@ -259,7 +259,7 @@ pub fn shrink<T: Clone + 'static>(mut exarray: Arc<ExpandableArray<T>>) -> Arc<E
     let mut exarray: Arc<ExpandableArray<T>> = exarray;
     let mut numberOfElements: i32 = Mutable::access(exarray.numberOfElements.clone());
     let mut data: metamodelica::Array<Option<T>> = Mutable::access(exarray.data.clone());
-    let mut newData: metamodelica::Array<Option<T>> = Default::default();
+    let mut newData: metamodelica::Array<Option<T>>;
     exarray = compress(exarray.clone());
     Mutable::update(exarray.capacity.clone(), numberOfElements.clone());
     newData = metamodelica::arrayCreate(numberOfElements.clone(), metamodelica::Dangerous::arrayGetNoBoundsChecking(data.clone(), 1));
@@ -273,7 +273,7 @@ pub fn shrink<T: Clone + 'static>(mut exarray: Arc<ExpandableArray<T>>) -> Arc<E
 pub fn toString<T: Clone + 'static>(mut exarray: Arc<ExpandableArray<T>>, mut header: ArcStr, mut func: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>, mut debug: bool) -> Result<ArcStr> {
     pub type PrintFunction<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>;
 
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     let mut numberOfElements: i32 = Mutable::access(exarray.numberOfElements.clone());
     let mut capacity: i32 = Mutable::access(exarray.capacity.clone());
     let mut value: T;

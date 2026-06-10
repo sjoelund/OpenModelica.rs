@@ -417,11 +417,10 @@ pub(crate) fn walk_dotted_with_imports<'a>(
             // The local name to match against the import is the *last segment* of
             // what we just looked up (e.g. `TOKEN` from `LexerModelicaDiff.filterModelicaDiff.TOKEN`).
             let local = qname.rsplit('.').next().unwrap_or(&qname);
-            if let Some(target) = import_target_for_local(&m.import, local) {
-                if let Some(r) = walk_dotted_with_imports(&target, top_level, depth + 1) {
+            if let Some(target) = import_target_for_local(&m.import, local)
+                && let Some(r) = walk_dotted_with_imports(&target, top_level, depth + 1) {
                     return Some(r);
                 }
-            }
         }
         return Some((qname, node));
     }
@@ -3386,7 +3385,7 @@ fn infer_stmt_into<'a>(
         && comment_has_boolean_named_annotation(comment, "__OpenModelica_stackOverflowCheckpoint")
     {
         for it in (&**body).into_iter() {
-            infer_stmt_into(out, &**it, env, top_level, pkg_prefix, type_vars);
+            infer_stmt_into(out, it, env, top_level, pkg_prefix, type_vars);
         }
         return;
     }
@@ -3406,7 +3405,7 @@ pub fn infer_stmts<'a>(
 ) -> Vec<TypedStmt> {
     let mut out = Vec::new();
     for it in items {
-        infer_stmt_into(&mut out, &**it, env, top_level, pkg_prefix, type_vars);
+        infer_stmt_into(&mut out, it, env, top_level, pkg_prefix, type_vars);
     }
     out
 }
@@ -3576,7 +3575,7 @@ fn infer_stmts_list<'a>(
 ) -> Vec<TypedStmt> {
     let mut out = Vec::new();
     for it in (&**items).into_iter() {
-        infer_stmt_into(&mut out, &**it, env, top_level, pkg_prefix, type_vars);
+        infer_stmt_into(&mut out, it, env, top_level, pkg_prefix, type_vars);
     }
     out
 }

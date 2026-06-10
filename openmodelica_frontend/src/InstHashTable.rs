@@ -91,7 +91,7 @@ pub fn release() -> Result<()> {
 }
 
 pub fn get(mut k: Key) -> Result<Value> {
-    let mut v: Value = metamodelica::nil();
+    let mut v: Value;
     let mut ht: HashTable;
     ht = crate::Globals::instHashIndex.with(|__root| __root.borrow().clone());
     v = BaseHashTable::get(k.clone(), ht.clone())?;
@@ -193,7 +193,7 @@ type FuncKeyStr = std::sync::Arc<dyn ::std::ops::Fn(Key) -> Result<ArcStr> + 'st
 type FuncValueStr = std::sync::Arc<dyn ::std::ops::Fn(Value) -> Result<ArcStr> + 'static>;
 
 fn opaqVal(mut v: Value) -> ArcStr {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     r#str = (literal!("OPAQUE_VALUE")).clone();
     r#str
 }

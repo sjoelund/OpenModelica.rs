@@ -101,10 +101,10 @@ pub fn obfuscateProgram(mut program: Arc<metamodelica::List<Arc<SCode::Element>>
     let mut program: Arc<metamodelica::List<Arc<SCode::Element>>> = program;
     let mut classPath: Arc<Absyn::Path> = classPath;
     let mut classComment: Arc<SCode::Comment> = classComment;
-    let mut mapStr: ArcStr = arcstr::literal!("");
-    let mut mapping: Mapping = <Arc<UnorderedMap::UnorderedMap<ArcStr, ArcStr>> as ::std::default::Default>::default();
-    let mut builtins: Builtins = <Arc<UnorderedMap::UnorderedMap<ArcStr, ElementType>> as ::std::default::Default>::default();
-    let mut env: Env = <Env as ::std::default::Default>::default();
+    let mut mapStr: ArcStr;
+    let mut mapping: Mapping;
+    let mut builtins: Builtins;
+    let mut env: Env;
     mapping = UnorderedMap::new((std::sync::Arc::new(fnptr!(stringHashDjb2, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(stringEqual, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), 1);
     builtins = makeBuiltins()?;
     env = Env { mapping: mapping.clone(), builtins: builtins.clone() };
@@ -123,9 +123,9 @@ pub fn obfuscateProgram(mut program: Arc<metamodelica::List<Arc<SCode::Element>>
 }
 
 pub fn makeBuiltins() -> Result<Builtins> {
-    let mut builtins: Builtins = <Arc<UnorderedMap::UnorderedMap<ArcStr, ElementType>> as ::std::default::Default>::default();
-    let mut builtin_scode: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
-    let mut etype: ElementType = ElementType::TYPE;
+    let mut builtins: Builtins;
+    let mut builtin_scode: Arc<metamodelica::List<Arc<SCode::Element>>>;
+    let mut etype: ElementType;
     builtins = UnorderedMap::new((std::sync::Arc::new(fnptr!(stringHashDjb2, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(stringEqual, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), 1);
     (_, builtin_scode) = FBuiltin::getInitialFunctions()?;
     for mut b in &*builtin_scode.clone() {
@@ -513,11 +513,11 @@ pub fn obfuscatePath(mut path: Arc<Absyn::Path>, mut env: Env, mut etype: Elemen
 }
 
 pub fn obfuscateIdentifier(mut id: ArcStr, mut env: Env, mut etype: ElementType) -> Result<(ArcStr, ElementType)> {
-    let mut outId: ArcStr = arcstr::literal!("");
-    let mut foundType: ElementType = ElementType::TYPE;
+    let mut outId: ArcStr;
+    let mut foundType: ElementType;
     let mut builtins: Builtins = env.builtins.clone();
     let mut mapping: Mapping = env.mapping.clone();
-    let mut opt_ety: Option<ElementType> = None;
+    let mut opt_ety: Option<ElementType>;
     opt_ety = UnorderedMap::get((id.clone()).clone(), builtins.clone())?;
     if isSome(opt_ety.clone()) {
         let __pa0 = ::match_deref::match_deref! { match &(opt_ety.clone()) {
@@ -537,7 +537,7 @@ pub fn obfuscateIdentifier(mut id: ArcStr, mut env: Env, mut etype: ElementType)
 }
 
 pub fn isBuiltinInContext(mut expectedType: ElementType, mut actualType: ElementType) -> bool {
-    let mut res: bool = false;
+    let mut res: bool;
     res = (match (expectedType.clone(), actualType.clone()) {
         (ElementType::TYPE { .. }, ElementType::TYPE { .. }) => true,
         (ElementType::TYPE { .. }, ElementType::TYPE_AND_FUNCTION) => true,
@@ -554,7 +554,7 @@ pub fn isBuiltinInContext(mut expectedType: ElementType, mut actualType: Element
 }
 
 pub fn makeId(mut oldId: Option<ArcStr>, mut index: i32) -> Result<ArcStr> {
-    let mut id: ArcStr = arcstr::literal!("");
+    let mut id: ArcStr;
     if isSome(oldId.clone()) {
         let __pa0 = ::match_deref::match_deref! { match &(oldId.clone()) {
             Some(__pa0) => __pa0.clone(),
@@ -613,7 +613,7 @@ pub fn obfuscateAnnotationMod(mut r#mod: Arc<SCode::Mod>, mut env: Env, mut obfu
 }
 
 pub fn isAllowedAnnotation(mut r#mod: Arc<SCode::SubMod>) -> bool {
-    let mut allowed: bool = false;
+    let mut allowed: bool;
     allowed = (::match_deref::match_deref! { match &(r#mod.ident.clone()) {
         Deref @ "Icon" => false,
         Deref @ "Diagram" => false,
@@ -638,8 +638,8 @@ pub fn isAllowedAnnotation(mut r#mod: Arc<SCode::SubMod>) -> bool {
 
 pub fn obfuscateAnnotationSubMod(mut r#mod: Arc<SCode::SubMod>, mut env: Env, mut obfuscateName: bool) -> Result<Arc<SCode::SubMod>> {
     let mut r#mod: Arc<SCode::SubMod> = r#mod;
-    let mut obfuscate_name: bool = false;
-    let mut obfuscate_binding: bool = false;
+    let mut obfuscate_name: bool;
+    let mut obfuscate_binding: bool;
     if obfuscateName.clone() {
         assign_field!(r#mod.ident = obfuscateIdentifier((r#mod.ident.clone()).clone(), env.clone(), ElementType::OTHER.clone())?.0);
     }
@@ -956,7 +956,7 @@ pub fn obfuscateEquation(mut eq: Arc<SCode::Equation>, mut env: Env) -> Result<A
 
 pub fn obfuscateMessage(mut message: Arc<Absyn::Exp>, mut fnName: ArcStr) -> Result<Arc<Absyn::Exp>> {
     let mut message: Arc<Absyn::Exp> = message;
-    let mut msg_str: ArcStr = arcstr::literal!("");
+    let mut msg_str: ArcStr;
     msg_str = ((::match_deref::match_deref! { match &(message.clone()) {
         Deref @ Absyn::Exp::STRING { .. } => var_field!((*message).value, Absyn::Exp::STRING).clone(),
         _ => Dump::printExpStr(message.clone())?,
@@ -1101,9 +1101,9 @@ pub fn obfuscateStatement(mut stmt: Arc<SCode::Statement>, mut env: Env) -> Resu
 }
 
 pub fn isBuiltinCall(mut callName: Arc<Absyn::ComponentRef>, mut env: Env) -> Result<bool> {
-    let mut res: bool = false;
-    let mut name: ArcStr = arcstr::literal!("");
-    let mut ety: ElementType = ElementType::TYPE;
+    let mut res: bool;
+    let mut name: ArcStr;
+    let mut ety: ElementType;
     name = (AbsynUtil::crefFirstIdent(callName.clone())?).clone();
     ety = UnorderedMap::getOrDefault((name.clone()).clone(), env.builtins.clone(), ElementType::OTHER.clone())?;
     res = ety.clone() == ElementType::FUNCTION.clone() || ety.clone() == ElementType::TYPE_AND_FUNCTION.clone();

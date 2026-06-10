@@ -115,16 +115,16 @@ impl Default for NFVariable {
 pub type VARIABLE = NFVariable;
 
 pub fn fromCref(mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<Arc<NFVariable>> {
-    let mut variable: Arc<NFVariable> = Arc::new(<NFVariable as ::std::default::Default>::default());
-    let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
+    let mut variable: Arc<NFVariable>;
+    let mut node: Arc<InstNode::InstNode>;
     let mut class_node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
-    let mut comp: Arc<Component::NFComponent> = Arc::new(Component::WILD);
-    let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut binding: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);
-    let mut vis: Visibility = Visibility::PUBLIC;
-    let mut attr: Arc<Attributes::NFAttributes> = Arc::new(<Attributes::NFAttributes as ::std::default::Default>::default());
-    let mut cmt: Arc<SCode::Comment> = Arc::new(<SCode::Comment as ::std::default::Default>::default());
-    let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
+    let mut comp: Arc<Component::NFComponent>;
+    let mut ty: Arc<Type::NFType>;
+    let mut binding: Arc<Binding::NFBinding>;
+    let mut vis: Visibility;
+    let mut attr: Arc<Attributes::NFAttributes>;
+    let mut cmt: Arc<SCode::Comment>;
+    let mut info: SourceInfo;
     let mut binfo: Arc<BackendInfo::BackendInfo> = NFBackendExtension::DUMMY_BACKEND_INFO().clone();
     let mut child_nodes: metamodelica::Array<Arc<InstNode::InstNode>> = Default::default();
     let mut children: Arc<metamodelica::List<Arc<NFVariable>>> = metamodelica::nil();
@@ -185,17 +185,17 @@ pub fn equalName(mut var1: Arc<NFVariable>, mut var2: Arc<NFVariable>) -> Result
 }
 
 pub fn expand(mut var: Arc<NFVariable>, mut backend: bool) -> Result<Arc<metamodelica::List<Arc<NFVariable>>>> {
-    let mut vars: Arc<metamodelica::List<Arc<NFVariable>>> = metamodelica::nil();
-    let mut crefs: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-    let mut v: Arc<NFVariable> = Arc::new(<NFVariable as ::std::default::Default>::default());
-    let mut binding: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);
-    let mut bind_var: Variability = Variability::CONSTANT;
-    let mut bind_src: Binding::Source = Binding::Source::BINDING;
-    let mut bind_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut expl: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-    let mut crefs_len: i32 = 0;
-    let mut expl_len: i32 = 0;
+    let mut vars: Arc<metamodelica::List<Arc<NFVariable>>>;
+    let mut crefs: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
+    let mut v: Arc<NFVariable>;
+    let mut binding: Arc<Binding::NFBinding>;
+    let mut bind_var: Variability;
+    let mut bind_src: Binding::Source;
+    let mut bind_exp: Arc<Expression::NFExpression>;
+    let mut exp: Arc<Expression::NFExpression>;
+    let mut expl: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
+    let mut crefs_len: i32;
+    let mut expl_len: i32;
     if Type::isArray(var.ty.clone()) {
         exp = Expression::fromCref(var.name.clone(), false)?;
         (exp, _) = ExpandExp::expandCref(exp.clone(), backend.clone(), false)?;
@@ -252,8 +252,8 @@ pub fn expand(mut var: Arc<NFVariable>, mut backend: bool) -> Result<Arc<metamod
 }
 
 pub fn expandChildren(mut var: Arc<NFVariable>, mut arrayDims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>>, mut addDimensions: bool) -> Result<Arc<metamodelica::List<Arc<NFVariable>>>> {
-    let mut children: Arc<metamodelica::List<Arc<NFVariable>>> = metamodelica::nil();
-    let mut newArrayDims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>> = metamodelica::nil();
+    let mut children: Arc<metamodelica::List<Arc<NFVariable>>>;
+    let mut newArrayDims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>>;
     if addDimensions.clone() && !(arrayDims.clone().is_empty()) {
         assign_field!(var.ty = Type::liftArrayLeftList(var.ty.clone(), arrayDims.clone()));
     }
@@ -286,7 +286,7 @@ pub fn variability(mut variable: Arc<NFVariable>) -> Variability {
 
 pub fn setVariability(mut variable: Arc<NFVariable>, mut variability: Variability) -> Arc<NFVariable> {
     let mut variable: Arc<NFVariable> = variable;
-    let mut attr: Arc<Attributes::NFAttributes> = Arc::new(<Attributes::NFAttributes as ::std::default::Default>::default());
+    let mut attr: Arc<Attributes::NFAttributes>;
     attr = variable.attributes.clone();
     assign_field!(attr.variability = variability.clone());
     assign_field!(variable.attributes = attr.clone());
@@ -319,8 +319,8 @@ pub fn isEmptyArray(mut variable: Arc<NFVariable>) -> Result<bool> {
 }
 
 pub fn isDeleted(mut variable: Arc<NFVariable>) -> Result<bool> {
-    let mut deleted: bool = false;
-    let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
+    let mut deleted: bool;
+    let mut node: Arc<InstNode::InstNode>;
     node = ComponentRef::node(variable.name.clone())?;
     deleted = InstNode::isComponent(node.clone())? && Component::isDeleted(InstNode::component(node.clone())?)?;
     Ok(deleted)
@@ -367,9 +367,9 @@ pub fn isProtected(mut variable: Arc<NFVariable>) -> bool {
 }
 
 pub fn isEncrypted(mut variable: Arc<NFVariable>) -> Result<bool> {
-    let mut isEncrypted: bool = false;
-    let mut name: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
+    let mut isEncrypted: bool;
+    let mut name: Arc<ComponentRef::NFComponentRef>;
+    let mut info: SourceInfo;
     name = variable.name.clone();
     while ComponentRef::isCref(name.clone()) {
         info = InstNode::info(ComponentRef::node(name.clone())?)?;
@@ -384,9 +384,9 @@ pub fn isEncrypted(mut variable: Arc<NFVariable>) -> Result<bool> {
 }
 
 pub fn isAccessible(mut variable: Arc<NFVariable>) -> Result<bool> {
-    let mut isAccessible: bool = false;
-    let mut oaccess: Option<AccessLevel> = None;
-    let mut access: AccessLevel = AccessLevel::HIDE;
+    let mut isAccessible: bool;
+    let mut oaccess: Option<AccessLevel>;
+    let mut access: AccessLevel;
     oaccess = InstNode::getAccessLevel(ComponentRef::node(variable.name.clone())?)?;
     if isSome(oaccess.clone()) {
         let __pa0 = ::match_deref::match_deref! { match &(oaccess.clone()) {
@@ -408,7 +408,7 @@ pub fn isAccessible(mut variable: Arc<NFVariable>) -> Result<bool> {
 }
 
 pub fn lookupTypeAttribute(mut name: ArcStr, mut var: Arc<NFVariable>) -> Arc<Binding::NFBinding> {
-    let mut binding: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);
+    let mut binding: Arc<Binding::NFBinding>;
     for mut attr in &*var.typeAttributes.clone() {
         let mut attr = attr.clone();
         if Util::tuple21(attr.clone()) == name.clone() {
@@ -433,12 +433,12 @@ pub fn applyToType(mut var: Arc<NFVariable>, mut func: Arc<dyn ::std::ops::Fn(Ar
 
 pub fn propagateAnnotation(mut name: ArcStr, mut overwrite: bool, mut evaluate: bool, mut var: Arc<NFVariable>) -> Result<Arc<NFVariable>> {
     let mut var: Arc<NFVariable> = var;
-    let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
-    let mut r#mod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
+    let mut node: Arc<InstNode::InstNode>;
+    let mut r#mod: Arc<SCode::Mod>;
     let mut aexp: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut anno: Arc<SCode::Annotation> = Arc::new(<SCode::Annotation as ::std::default::Default>::default());
-    let mut scope: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
+    let mut anno: Arc<SCode::Annotation>;
+    let mut scope: Arc<InstNode::InstNode>;
     if ComponentRef::isCref(var.name.clone()) {
         node = ComponentRef::node(var.name.clone())?;
         if overwrite.clone() && InstNode::isComponent(node.clone())? {
@@ -483,9 +483,9 @@ pub fn propagateAnnotation(mut name: ArcStr, mut overwrite: bool, mut evaluate: 
 
 pub fn removeNonTopLevelDirection(mut var: Arc<NFVariable>) -> Result<Arc<NFVariable>> {
     let mut var: Arc<NFVariable> = var;
-    let mut rest_name: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
-    let mut attr: Arc<Attributes::NFAttributes> = Arc::new(<Attributes::NFAttributes as ::std::default::Default>::default());
+    let mut rest_name: Arc<ComponentRef::NFComponentRef>;
+    let mut node: Arc<InstNode::InstNode>;
+    let mut attr: Arc<Attributes::NFAttributes>;
     if var.attributes.direction.clone() == Direction::NONE.clone() {
         return Ok(var.clone());
     }
@@ -585,8 +585,8 @@ pub fn mapExpShallow(mut var: Arc<NFVariable>, mut r#fn: Arc<dyn ::std::ops::Fn(
 }
 
 pub fn toString(mut var: Arc<NFVariable>, mut indent: ArcStr, mut printBindingType: bool) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
-    let mut s: IOStream::IOStream = <IOStream::IOStream as ::std::default::Default>::default();
+    let mut r#str: ArcStr;
+    let mut s: IOStream::IOStream;
     s = IOStream::create(literal!("NFVariable.toString"), openmodelica_util::IOStream::IOStreamType::LIST)?;
     s = toStream(var.clone(), (indent.clone()).clone(), printBindingType.clone(), s.clone())?;
     r#str = (IOStream::string(s.clone())?).clone();
@@ -596,8 +596,8 @@ pub fn toString(mut var: Arc<NFVariable>, mut indent: ArcStr, mut printBindingTy
 
 pub fn toStream(mut var: Arc<NFVariable>, mut indent: ArcStr, mut printBindingType: bool, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut s: IOStream::IOStream = s;
-    let mut first: bool = false;
-    let mut b: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);
+    let mut first: bool;
+    let mut b: Arc<Binding::NFBinding>;
     s = IOStream::append(s.clone(), (indent.clone()).clone())?;
     if var.visibility.clone() == Visibility::PROTECTED.clone() {
         s = IOStream::append(s.clone(), (literal!("protected ")).clone())?;
@@ -640,7 +640,7 @@ pub fn toStream(mut var: Arc<NFVariable>, mut indent: ArcStr, mut printBindingTy
 
 pub fn toFlatStream(mut var: Arc<NFVariable>, mut format: BaseModelica::OutputFormat, mut indent: ArcStr, mut printBindingType: bool, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut s: IOStream::IOStream = s;
-    let mut dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>> = metamodelica::nil();
+    let mut dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>>;
     s = IOStream::append(s.clone(), (indent.clone()).clone())?;
     s = Attributes::toFlatStream(var.attributes.clone(), var.ty.clone(), s.clone(), ComponentRef::isSimple(var.name.clone()))?;
     s = IOStream::append(s.clone(), (Type::toFlatString(Type::arrayElementType(var.ty.clone()), format.clone())?).clone())?;
@@ -677,9 +677,9 @@ pub fn toFlatStreamBinding(mut binding: Arc<Binding::NFBinding>, mut printBindin
 pub fn toFlatStreamModifier(mut children: Arc<metamodelica::List<Arc<NFVariable>>>, mut overwrittenBinding: bool, mut printBindingType: bool, mut format: BaseModelica::OutputFormat, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut s: IOStream::IOStream = s;
     let mut empty: bool = true;
-    let mut overwritten_binding: bool = false;
-    let mut ss: IOStream::IOStream = <IOStream::IOStream as ::std::default::Default>::default();
-    let mut src: Binding::Source = Binding::Source::BINDING;
+    let mut overwritten_binding: bool;
+    let mut ss: IOStream::IOStream;
+    let mut src: Binding::Source;
     for mut child in &*children.clone() {
         let mut child = child.clone();
         ss = IOStream::create(literal!("NFVariable.toFlatStreamModifier"), openmodelica_util::IOStream::IOStreamType::LIST)?;
@@ -733,7 +733,7 @@ pub fn getNominal(mut var: Arc<NFVariable>) -> Option<Arc<Expression::NFExpressi
 }
 
 pub fn asBinding(mut var: Arc<NFVariable>, mut source: Binding::Source) -> Arc<Binding::NFBinding> {
-    let mut binding: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);
+    let mut binding: Arc<Binding::NFBinding>;
     binding = Binding::makeFlat(Expression::fromTypedCref(var.name.clone(), var.ty.clone()), variability(var.clone()), source.clone(), Binding::NO_CONFIDENCE.clone());
     binding
 }

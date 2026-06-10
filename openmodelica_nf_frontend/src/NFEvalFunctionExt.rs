@@ -51,34 +51,34 @@ use crate::NFType as Type;
 use openmodelica_util::Lapack;
 
 pub fn Lapack_dgeev(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<()> {
-    let mut jobvl: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut jobvr: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut n: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut a: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut lda: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut ldvl: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut ldvr: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut work: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut lwork: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut wr: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut wi: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut vl: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut vr: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut info: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut INFO: i32 = 0;
-    let mut LDA: i32 = 0;
-    let mut LDVL: i32 = 0;
-    let mut LDVR: i32 = 0;
-    let mut LWORK: i32 = 0;
-    let mut N: i32 = 0;
-    let mut JOBVL: ArcStr = arcstr::literal!("");
-    let mut JOBVR: ArcStr = arcstr::literal!("");
-    let mut A: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut VL: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut VR: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut WORK: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
-    let mut WR: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
-    let mut WI: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
+    let mut jobvl: Arc<Expression::NFExpression>;
+    let mut jobvr: Arc<Expression::NFExpression>;
+    let mut n: Arc<Expression::NFExpression>;
+    let mut a: Arc<Expression::NFExpression>;
+    let mut lda: Arc<Expression::NFExpression>;
+    let mut ldvl: Arc<Expression::NFExpression>;
+    let mut ldvr: Arc<Expression::NFExpression>;
+    let mut work: Arc<Expression::NFExpression>;
+    let mut lwork: Arc<Expression::NFExpression>;
+    let mut wr: Arc<Expression::NFExpression>;
+    let mut wi: Arc<Expression::NFExpression>;
+    let mut vl: Arc<Expression::NFExpression>;
+    let mut vr: Arc<Expression::NFExpression>;
+    let mut info: Arc<Expression::NFExpression>;
+    let mut INFO: i32;
+    let mut LDA: i32;
+    let mut LDVL: i32;
+    let mut LDVR: i32;
+    let mut LWORK: i32;
+    let mut N: i32;
+    let mut JOBVL: ArcStr;
+    let mut JOBVR: ArcStr;
+    let mut A: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>;
+    let mut VL: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>;
+    let mut VR: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>;
+    let mut WORK: Arc<metamodelica::List<metamodelica::Real>>;
+    let mut WR: Arc<metamodelica::List<metamodelica::Real>>;
+    let mut WI: Arc<metamodelica::List<metamodelica::Real>>;
     let (__pa0, __pa1, __pa2, __pa3, __pa4, __pa5, __pa6, __pa7, __pa8, __pa9, __pa10, __pa11, __pa12, __pa13) = ::match_deref::match_deref! { match &(args.clone()) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Cons { head: __pa2, tail: Deref @ metamodelica::List::Cons { head: __pa3, tail: Deref @ metamodelica::List::Cons { head: __pa4, tail: Deref @ metamodelica::List::Cons { head: __pa5, tail: Deref @ metamodelica::List::Cons { head: __pa6, tail: Deref @ metamodelica::List::Cons { head: __pa7, tail: Deref @ metamodelica::List::Cons { head: __pa8, tail: Deref @ metamodelica::List::Cons { head: __pa9, tail: Deref @ metamodelica::List::Cons { head: __pa10, tail: Deref @ metamodelica::List::Cons { head: __pa11, tail: Deref @ metamodelica::List::Cons { head: __pa12, tail: Deref @ metamodelica::List::Cons { head: __pa13, tail: Deref @ metamodelica::List::Nil } } } } } } } } } } } } } } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone(), __pa6.clone(), __pa7.clone(), __pa8.clone(), __pa9.clone(), __pa10.clone(), __pa11.clone(), __pa12.clone(), __pa13.clone()),
         _ => bail!("pattern mismatch"),
@@ -118,40 +118,40 @@ pub fn Lapack_dgeev(mut args: Arc<metamodelica::List<Arc<Expression::NFExpressio
 }
 
 pub fn Lapack_dgegv(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<()> {
-    let mut jobvl: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut jobvr: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut n: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut a: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut lda: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut b: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut ldb: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut alphar: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut alphai: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut beta: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut vl: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut ldvl: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut vr: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut ldvr: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut work: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut lwork: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut info: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut JOBVL: ArcStr = arcstr::literal!("");
-    let mut JOBVR: ArcStr = arcstr::literal!("");
-    let mut N: i32 = 0;
-    let mut LDA: i32 = 0;
-    let mut LDB: i32 = 0;
-    let mut LDVL: i32 = 0;
-    let mut LDVR: i32 = 0;
-    let mut LWORK: i32 = 0;
-    let mut INFO: i32 = 0;
-    let mut A: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut B: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut VL: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut VR: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut WORK: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
-    let mut ALPHAR: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
-    let mut ALPHAI: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
-    let mut BETA: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
+    let mut jobvl: Arc<Expression::NFExpression>;
+    let mut jobvr: Arc<Expression::NFExpression>;
+    let mut n: Arc<Expression::NFExpression>;
+    let mut a: Arc<Expression::NFExpression>;
+    let mut lda: Arc<Expression::NFExpression>;
+    let mut b: Arc<Expression::NFExpression>;
+    let mut ldb: Arc<Expression::NFExpression>;
+    let mut alphar: Arc<Expression::NFExpression>;
+    let mut alphai: Arc<Expression::NFExpression>;
+    let mut beta: Arc<Expression::NFExpression>;
+    let mut vl: Arc<Expression::NFExpression>;
+    let mut ldvl: Arc<Expression::NFExpression>;
+    let mut vr: Arc<Expression::NFExpression>;
+    let mut ldvr: Arc<Expression::NFExpression>;
+    let mut work: Arc<Expression::NFExpression>;
+    let mut lwork: Arc<Expression::NFExpression>;
+    let mut info: Arc<Expression::NFExpression>;
+    let mut JOBVL: ArcStr;
+    let mut JOBVR: ArcStr;
+    let mut N: i32;
+    let mut LDA: i32;
+    let mut LDB: i32;
+    let mut LDVL: i32;
+    let mut LDVR: i32;
+    let mut LWORK: i32;
+    let mut INFO: i32;
+    let mut A: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>;
+    let mut B: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>;
+    let mut VL: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>;
+    let mut VR: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>;
+    let mut WORK: Arc<metamodelica::List<metamodelica::Real>>;
+    let mut ALPHAR: Arc<metamodelica::List<metamodelica::Real>>;
+    let mut ALPHAI: Arc<metamodelica::List<metamodelica::Real>>;
+    let mut BETA: Arc<metamodelica::List<metamodelica::Real>>;
     let (__pa0, __pa1, __pa2, __pa3, __pa4, __pa5, __pa6, __pa7, __pa8, __pa9, __pa10, __pa11, __pa12, __pa13, __pa14, __pa15, __pa16) = ::match_deref::match_deref! { match &(args.clone()) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Cons { head: __pa2, tail: Deref @ metamodelica::List::Cons { head: __pa3, tail: Deref @ metamodelica::List::Cons { head: __pa4, tail: Deref @ metamodelica::List::Cons { head: __pa5, tail: Deref @ metamodelica::List::Cons { head: __pa6, tail: Deref @ metamodelica::List::Cons { head: __pa7, tail: Deref @ metamodelica::List::Cons { head: __pa8, tail: Deref @ metamodelica::List::Cons { head: __pa9, tail: Deref @ metamodelica::List::Cons { head: __pa10, tail: Deref @ metamodelica::List::Cons { head: __pa11, tail: Deref @ metamodelica::List::Cons { head: __pa12, tail: Deref @ metamodelica::List::Cons { head: __pa13, tail: Deref @ metamodelica::List::Cons { head: __pa14, tail: Deref @ metamodelica::List::Cons { head: __pa15, tail: Deref @ metamodelica::List::Cons { head: __pa16, tail: Deref @ metamodelica::List::Nil } } } } } } } } } } } } } } } } } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone(), __pa6.clone(), __pa7.clone(), __pa8.clone(), __pa9.clone(), __pa10.clone(), __pa11.clone(), __pa12.clone(), __pa13.clone(), __pa14.clone(), __pa15.clone(), __pa16.clone()),
         _ => bail!("pattern mismatch"),
@@ -196,28 +196,28 @@ pub fn Lapack_dgegv(mut args: Arc<metamodelica::List<Arc<Expression::NFExpressio
 }
 
 pub fn Lapack_dgels(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<()> {
-    let mut trans: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut m: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut n: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut nrhs: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut a: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut lda: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut b: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut ldb: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut work: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut lwork: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut info: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut TRANS: ArcStr = arcstr::literal!("");
-    let mut M: i32 = 0;
-    let mut N: i32 = 0;
-    let mut NRHS: i32 = 0;
-    let mut LDA: i32 = 0;
-    let mut LDB: i32 = 0;
-    let mut LWORK: i32 = 0;
-    let mut INFO: i32 = 0;
-    let mut A: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut B: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut WORK: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
+    let mut trans: Arc<Expression::NFExpression>;
+    let mut m: Arc<Expression::NFExpression>;
+    let mut n: Arc<Expression::NFExpression>;
+    let mut nrhs: Arc<Expression::NFExpression>;
+    let mut a: Arc<Expression::NFExpression>;
+    let mut lda: Arc<Expression::NFExpression>;
+    let mut b: Arc<Expression::NFExpression>;
+    let mut ldb: Arc<Expression::NFExpression>;
+    let mut work: Arc<Expression::NFExpression>;
+    let mut lwork: Arc<Expression::NFExpression>;
+    let mut info: Arc<Expression::NFExpression>;
+    let mut TRANS: ArcStr;
+    let mut M: i32;
+    let mut N: i32;
+    let mut NRHS: i32;
+    let mut LDA: i32;
+    let mut LDB: i32;
+    let mut LWORK: i32;
+    let mut INFO: i32;
+    let mut A: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>;
+    let mut B: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>;
+    let mut WORK: Arc<metamodelica::List<metamodelica::Real>>;
     let (__pa0, __pa1, __pa2, __pa3, __pa4, __pa5, __pa6, __pa7, __pa8, __pa9, __pa10) = ::match_deref::match_deref! { match &(args.clone()) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Cons { head: __pa2, tail: Deref @ metamodelica::List::Cons { head: __pa3, tail: Deref @ metamodelica::List::Cons { head: __pa4, tail: Deref @ metamodelica::List::Cons { head: __pa5, tail: Deref @ metamodelica::List::Cons { head: __pa6, tail: Deref @ metamodelica::List::Cons { head: __pa7, tail: Deref @ metamodelica::List::Cons { head: __pa8, tail: Deref @ metamodelica::List::Cons { head: __pa9, tail: Deref @ metamodelica::List::Cons { head: __pa10, tail: Deref @ metamodelica::List::Nil } } } } } } } } } } } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone(), __pa6.clone(), __pa7.clone(), __pa8.clone(), __pa9.clone(), __pa10.clone()),
         _ => bail!("pattern mismatch"),
@@ -252,30 +252,30 @@ pub fn Lapack_dgels(mut args: Arc<metamodelica::List<Arc<Expression::NFExpressio
 }
 
 pub fn Lapack_dgelsx(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<()> {
-    let mut m: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut n: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut nrhs: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut a: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut lda: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut b: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut ldb: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut jpvt: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut rcond: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut rank: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut work: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut info: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut M: i32 = 0;
-    let mut N: i32 = 0;
-    let mut NRHS: i32 = 0;
-    let mut LDA: i32 = 0;
-    let mut LDB: i32 = 0;
-    let mut RANK: i32 = 0;
-    let mut INFO: i32 = 0;
-    let mut A: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut B: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut JPVT: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut RCOND: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut WORK: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
+    let mut m: Arc<Expression::NFExpression>;
+    let mut n: Arc<Expression::NFExpression>;
+    let mut nrhs: Arc<Expression::NFExpression>;
+    let mut a: Arc<Expression::NFExpression>;
+    let mut lda: Arc<Expression::NFExpression>;
+    let mut b: Arc<Expression::NFExpression>;
+    let mut ldb: Arc<Expression::NFExpression>;
+    let mut jpvt: Arc<Expression::NFExpression>;
+    let mut rcond: Arc<Expression::NFExpression>;
+    let mut rank: Arc<Expression::NFExpression>;
+    let mut work: Arc<Expression::NFExpression>;
+    let mut info: Arc<Expression::NFExpression>;
+    let mut M: i32;
+    let mut N: i32;
+    let mut NRHS: i32;
+    let mut LDA: i32;
+    let mut LDB: i32;
+    let mut RANK: i32;
+    let mut INFO: i32;
+    let mut A: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>;
+    let mut B: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>;
+    let mut JPVT: Arc<metamodelica::List<i32>>;
+    let mut RCOND: metamodelica::Real;
+    let mut WORK: Arc<metamodelica::List<metamodelica::Real>>;
     if (args.clone().len() as i32) == 12 {
         let (__pa0, __pa1, __pa2, __pa3, __pa4, __pa5, __pa6, __pa7, __pa8, __pa9, __pa10, __pa11) = ::match_deref::match_deref! { match &(args.clone()) {
             Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Cons { head: __pa2, tail: Deref @ metamodelica::List::Cons { head: __pa3, tail: Deref @ metamodelica::List::Cons { head: __pa4, tail: Deref @ metamodelica::List::Cons { head: __pa5, tail: Deref @ metamodelica::List::Cons { head: __pa6, tail: Deref @ metamodelica::List::Cons { head: __pa7, tail: Deref @ metamodelica::List::Cons { head: __pa8, tail: Deref @ metamodelica::List::Cons { head: __pa9, tail: Deref @ metamodelica::List::Cons { head: __pa10, tail: Deref @ metamodelica::List::Cons { head: __pa11, tail: Deref @ metamodelica::List::Nil } } } } } } } } } } } } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone(), __pa6.clone(), __pa7.clone(), __pa8.clone(), __pa9.clone(), __pa10.clone(), __pa11.clone()),
@@ -331,32 +331,32 @@ pub fn Lapack_dgelsx(mut args: Arc<metamodelica::List<Arc<Expression::NFExpressi
 }
 
 pub fn Lapack_dgelsy(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<()> {
-    let mut m: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut n: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut nrhs: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut a: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut lda: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut b: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut ldb: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut jpvt: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut rcond: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut rank: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut work: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut lwork: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut info: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut M: i32 = 0;
-    let mut N: i32 = 0;
-    let mut NRHS: i32 = 0;
-    let mut LDA: i32 = 0;
-    let mut LDB: i32 = 0;
-    let mut RANK: i32 = 0;
-    let mut LWORK: i32 = 0;
-    let mut INFO: i32 = 0;
-    let mut A: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut B: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut JPVT: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut RCOND: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut WORK: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
+    let mut m: Arc<Expression::NFExpression>;
+    let mut n: Arc<Expression::NFExpression>;
+    let mut nrhs: Arc<Expression::NFExpression>;
+    let mut a: Arc<Expression::NFExpression>;
+    let mut lda: Arc<Expression::NFExpression>;
+    let mut b: Arc<Expression::NFExpression>;
+    let mut ldb: Arc<Expression::NFExpression>;
+    let mut jpvt: Arc<Expression::NFExpression>;
+    let mut rcond: Arc<Expression::NFExpression>;
+    let mut rank: Arc<Expression::NFExpression>;
+    let mut work: Arc<Expression::NFExpression>;
+    let mut lwork: Arc<Expression::NFExpression>;
+    let mut info: Arc<Expression::NFExpression>;
+    let mut M: i32;
+    let mut N: i32;
+    let mut NRHS: i32;
+    let mut LDA: i32;
+    let mut LDB: i32;
+    let mut RANK: i32;
+    let mut LWORK: i32;
+    let mut INFO: i32;
+    let mut A: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>;
+    let mut B: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>;
+    let mut JPVT: Arc<metamodelica::List<i32>>;
+    let mut RCOND: metamodelica::Real;
+    let mut WORK: Arc<metamodelica::List<metamodelica::Real>>;
     let (__pa0, __pa1, __pa2, __pa3, __pa4, __pa5, __pa6, __pa7, __pa8, __pa9, __pa10, __pa11, __pa12) = ::match_deref::match_deref! { match &(args.clone()) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Cons { head: __pa2, tail: Deref @ metamodelica::List::Cons { head: __pa3, tail: Deref @ metamodelica::List::Cons { head: __pa4, tail: Deref @ metamodelica::List::Cons { head: __pa5, tail: Deref @ metamodelica::List::Cons { head: __pa6, tail: Deref @ metamodelica::List::Cons { head: __pa7, tail: Deref @ metamodelica::List::Cons { head: __pa8, tail: Deref @ metamodelica::List::Cons { head: __pa9, tail: Deref @ metamodelica::List::Cons { head: __pa10, tail: Deref @ metamodelica::List::Cons { head: __pa11, tail: Deref @ metamodelica::List::Cons { head: __pa12, tail: Deref @ metamodelica::List::Nil } } } } } } } } } } } } } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone(), __pa6.clone(), __pa7.clone(), __pa8.clone(), __pa9.clone(), __pa10.clone(), __pa11.clone(), __pa12.clone()),
         _ => bail!("pattern mismatch"),
@@ -396,22 +396,22 @@ pub fn Lapack_dgelsy(mut args: Arc<metamodelica::List<Arc<Expression::NFExpressi
 }
 
 pub fn Lapack_dgesv(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<()> {
-    let mut n: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut nrhs: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut a: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut lda: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut ipiv: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut b: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut ldb: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut info: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut N: i32 = 0;
-    let mut NRHS: i32 = 0;
-    let mut LDA: i32 = 0;
-    let mut LDB: i32 = 0;
-    let mut INFO: i32 = 0;
-    let mut A: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut B: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut IPIV: Arc<metamodelica::List<i32>> = metamodelica::nil();
+    let mut n: Arc<Expression::NFExpression>;
+    let mut nrhs: Arc<Expression::NFExpression>;
+    let mut a: Arc<Expression::NFExpression>;
+    let mut lda: Arc<Expression::NFExpression>;
+    let mut ipiv: Arc<Expression::NFExpression>;
+    let mut b: Arc<Expression::NFExpression>;
+    let mut ldb: Arc<Expression::NFExpression>;
+    let mut info: Arc<Expression::NFExpression>;
+    let mut N: i32;
+    let mut NRHS: i32;
+    let mut LDA: i32;
+    let mut LDB: i32;
+    let mut INFO: i32;
+    let mut A: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>;
+    let mut B: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>;
+    let mut IPIV: Arc<metamodelica::List<i32>>;
     let (__pa0, __pa1, __pa2, __pa3, __pa4, __pa5, __pa6, __pa7) = ::match_deref::match_deref! { match &(args.clone()) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Cons { head: __pa2, tail: Deref @ metamodelica::List::Cons { head: __pa3, tail: Deref @ metamodelica::List::Cons { head: __pa4, tail: Deref @ metamodelica::List::Cons { head: __pa5, tail: Deref @ metamodelica::List::Cons { head: __pa6, tail: Deref @ metamodelica::List::Cons { head: __pa7, tail: Deref @ metamodelica::List::Nil } } } } } } } } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone(), __pa6.clone(), __pa7.clone()),
         _ => bail!("pattern mismatch"),
@@ -439,32 +439,32 @@ pub fn Lapack_dgesv(mut args: Arc<metamodelica::List<Arc<Expression::NFExpressio
 }
 
 pub fn Lapack_dgglse(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<()> {
-    let mut m: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut n: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut p: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut a: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut lda: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut b: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut ldb: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut c: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut d: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut x: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut work: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut lwork: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut info: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut M: i32 = 0;
-    let mut N: i32 = 0;
-    let mut P: i32 = 0;
-    let mut LDA: i32 = 0;
-    let mut LDB: i32 = 0;
-    let mut LWORK: i32 = 0;
-    let mut INFO: i32 = 0;
-    let mut A: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut B: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut C: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
-    let mut D: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
-    let mut WORK: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
-    let mut X: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
+    let mut m: Arc<Expression::NFExpression>;
+    let mut n: Arc<Expression::NFExpression>;
+    let mut p: Arc<Expression::NFExpression>;
+    let mut a: Arc<Expression::NFExpression>;
+    let mut lda: Arc<Expression::NFExpression>;
+    let mut b: Arc<Expression::NFExpression>;
+    let mut ldb: Arc<Expression::NFExpression>;
+    let mut c: Arc<Expression::NFExpression>;
+    let mut d: Arc<Expression::NFExpression>;
+    let mut x: Arc<Expression::NFExpression>;
+    let mut work: Arc<Expression::NFExpression>;
+    let mut lwork: Arc<Expression::NFExpression>;
+    let mut info: Arc<Expression::NFExpression>;
+    let mut M: i32;
+    let mut N: i32;
+    let mut P: i32;
+    let mut LDA: i32;
+    let mut LDB: i32;
+    let mut LWORK: i32;
+    let mut INFO: i32;
+    let mut A: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>;
+    let mut B: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>;
+    let mut C: Arc<metamodelica::List<metamodelica::Real>>;
+    let mut D: Arc<metamodelica::List<metamodelica::Real>>;
+    let mut WORK: Arc<metamodelica::List<metamodelica::Real>>;
+    let mut X: Arc<metamodelica::List<metamodelica::Real>>;
     let (__pa0, __pa1, __pa2, __pa3, __pa4, __pa5, __pa6, __pa7, __pa8, __pa9, __pa10, __pa11, __pa12) = ::match_deref::match_deref! { match &(args.clone()) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Cons { head: __pa2, tail: Deref @ metamodelica::List::Cons { head: __pa3, tail: Deref @ metamodelica::List::Cons { head: __pa4, tail: Deref @ metamodelica::List::Cons { head: __pa5, tail: Deref @ metamodelica::List::Cons { head: __pa6, tail: Deref @ metamodelica::List::Cons { head: __pa7, tail: Deref @ metamodelica::List::Cons { head: __pa8, tail: Deref @ metamodelica::List::Cons { head: __pa9, tail: Deref @ metamodelica::List::Cons { head: __pa10, tail: Deref @ metamodelica::List::Cons { head: __pa11, tail: Deref @ metamodelica::List::Cons { head: __pa12, tail: Deref @ metamodelica::List::Nil } } } } } } } } } } } } } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone(), __pa6.clone(), __pa7.clone(), __pa8.clone(), __pa9.clone(), __pa10.clone(), __pa11.clone(), __pa12.clone()),
         _ => bail!("pattern mismatch"),
@@ -505,22 +505,22 @@ pub fn Lapack_dgglse(mut args: Arc<metamodelica::List<Arc<Expression::NFExpressi
 }
 
 pub fn Lapack_dgtsv(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<()> {
-    let mut n: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut nrhs: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut dl: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut d: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut du: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut b: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut ldb: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut info: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut N: i32 = 0;
-    let mut NRHS: i32 = 0;
-    let mut LDB: i32 = 0;
-    let mut INFO: i32 = 0;
-    let mut DL: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
-    let mut D: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
-    let mut DU: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
-    let mut B: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
+    let mut n: Arc<Expression::NFExpression>;
+    let mut nrhs: Arc<Expression::NFExpression>;
+    let mut dl: Arc<Expression::NFExpression>;
+    let mut d: Arc<Expression::NFExpression>;
+    let mut du: Arc<Expression::NFExpression>;
+    let mut b: Arc<Expression::NFExpression>;
+    let mut ldb: Arc<Expression::NFExpression>;
+    let mut info: Arc<Expression::NFExpression>;
+    let mut N: i32;
+    let mut NRHS: i32;
+    let mut LDB: i32;
+    let mut INFO: i32;
+    let mut DL: Arc<metamodelica::List<metamodelica::Real>>;
+    let mut D: Arc<metamodelica::List<metamodelica::Real>>;
+    let mut DU: Arc<metamodelica::List<metamodelica::Real>>;
+    let mut B: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>;
     let (__pa0, __pa1, __pa2, __pa3, __pa4, __pa5, __pa6, __pa7) = ::match_deref::match_deref! { match &(args.clone()) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Cons { head: __pa2, tail: Deref @ metamodelica::List::Cons { head: __pa3, tail: Deref @ metamodelica::List::Cons { head: __pa4, tail: Deref @ metamodelica::List::Cons { head: __pa5, tail: Deref @ metamodelica::List::Cons { head: __pa6, tail: Deref @ metamodelica::List::Cons { head: __pa7, tail: Deref @ metamodelica::List::Nil } } } } } } } } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone(), __pa6.clone(), __pa7.clone()),
         _ => bail!("pattern mismatch"),
@@ -550,26 +550,26 @@ pub fn Lapack_dgtsv(mut args: Arc<metamodelica::List<Arc<Expression::NFExpressio
 }
 
 pub fn Lapack_dgbsv(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<()> {
-    let mut n: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut kl: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut ku: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut nrhs: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut ab: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut ldab: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut ipiv: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut b: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut ldb: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut info: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut N: i32 = 0;
-    let mut KL: i32 = 0;
-    let mut KU: i32 = 0;
-    let mut NRHS: i32 = 0;
-    let mut LDAB: i32 = 0;
-    let mut LDB: i32 = 0;
-    let mut INFO: i32 = 0;
-    let mut AB: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut B: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut IPIV: Arc<metamodelica::List<i32>> = metamodelica::nil();
+    let mut n: Arc<Expression::NFExpression>;
+    let mut kl: Arc<Expression::NFExpression>;
+    let mut ku: Arc<Expression::NFExpression>;
+    let mut nrhs: Arc<Expression::NFExpression>;
+    let mut ab: Arc<Expression::NFExpression>;
+    let mut ldab: Arc<Expression::NFExpression>;
+    let mut ipiv: Arc<Expression::NFExpression>;
+    let mut b: Arc<Expression::NFExpression>;
+    let mut ldb: Arc<Expression::NFExpression>;
+    let mut info: Arc<Expression::NFExpression>;
+    let mut N: i32;
+    let mut KL: i32;
+    let mut KU: i32;
+    let mut NRHS: i32;
+    let mut LDAB: i32;
+    let mut LDB: i32;
+    let mut INFO: i32;
+    let mut AB: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>;
+    let mut B: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>;
+    let mut IPIV: Arc<metamodelica::List<i32>>;
     let (__pa0, __pa1, __pa2, __pa3, __pa4, __pa5, __pa6, __pa7, __pa8, __pa9) = ::match_deref::match_deref! { match &(args.clone()) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Cons { head: __pa2, tail: Deref @ metamodelica::List::Cons { head: __pa3, tail: Deref @ metamodelica::List::Cons { head: __pa4, tail: Deref @ metamodelica::List::Cons { head: __pa5, tail: Deref @ metamodelica::List::Cons { head: __pa6, tail: Deref @ metamodelica::List::Cons { head: __pa7, tail: Deref @ metamodelica::List::Cons { head: __pa8, tail: Deref @ metamodelica::List::Cons { head: __pa9, tail: Deref @ metamodelica::List::Nil } } } } } } } } } } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone(), __pa6.clone(), __pa7.clone(), __pa8.clone(), __pa9.clone()),
         _ => bail!("pattern mismatch"),
@@ -601,34 +601,34 @@ pub fn Lapack_dgbsv(mut args: Arc<metamodelica::List<Arc<Expression::NFExpressio
 }
 
 pub fn Lapack_dgesvd(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<()> {
-    let mut jobu: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut jobvt: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut m: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut n: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut a: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut lda: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut s: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut u: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut ldu: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut vt: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut ldvt: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut work: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut lwork: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut info: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut JOBU: ArcStr = arcstr::literal!("");
-    let mut JOBVT: ArcStr = arcstr::literal!("");
-    let mut M: i32 = 0;
-    let mut N: i32 = 0;
-    let mut LDA: i32 = 0;
-    let mut LDU: i32 = 0;
-    let mut LDVT: i32 = 0;
-    let mut LWORK: i32 = 0;
-    let mut INFO: i32 = 0;
-    let mut A: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut U: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut VT: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut S: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
-    let mut WORK: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
+    let mut jobu: Arc<Expression::NFExpression>;
+    let mut jobvt: Arc<Expression::NFExpression>;
+    let mut m: Arc<Expression::NFExpression>;
+    let mut n: Arc<Expression::NFExpression>;
+    let mut a: Arc<Expression::NFExpression>;
+    let mut lda: Arc<Expression::NFExpression>;
+    let mut s: Arc<Expression::NFExpression>;
+    let mut u: Arc<Expression::NFExpression>;
+    let mut ldu: Arc<Expression::NFExpression>;
+    let mut vt: Arc<Expression::NFExpression>;
+    let mut ldvt: Arc<Expression::NFExpression>;
+    let mut work: Arc<Expression::NFExpression>;
+    let mut lwork: Arc<Expression::NFExpression>;
+    let mut info: Arc<Expression::NFExpression>;
+    let mut JOBU: ArcStr;
+    let mut JOBVT: ArcStr;
+    let mut M: i32;
+    let mut N: i32;
+    let mut LDA: i32;
+    let mut LDU: i32;
+    let mut LDVT: i32;
+    let mut LWORK: i32;
+    let mut INFO: i32;
+    let mut A: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>;
+    let mut U: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>;
+    let mut VT: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>;
+    let mut S: Arc<metamodelica::List<metamodelica::Real>>;
+    let mut WORK: Arc<metamodelica::List<metamodelica::Real>>;
     let (__pa0, __pa1, __pa2, __pa3, __pa4, __pa5, __pa6, __pa7, __pa8, __pa9, __pa10, __pa11, __pa12, __pa13) = ::match_deref::match_deref! { match &(args.clone()) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Cons { head: __pa2, tail: Deref @ metamodelica::List::Cons { head: __pa3, tail: Deref @ metamodelica::List::Cons { head: __pa4, tail: Deref @ metamodelica::List::Cons { head: __pa5, tail: Deref @ metamodelica::List::Cons { head: __pa6, tail: Deref @ metamodelica::List::Cons { head: __pa7, tail: Deref @ metamodelica::List::Cons { head: __pa8, tail: Deref @ metamodelica::List::Cons { head: __pa9, tail: Deref @ metamodelica::List::Cons { head: __pa10, tail: Deref @ metamodelica::List::Cons { head: __pa11, tail: Deref @ metamodelica::List::Cons { head: __pa12, tail: Deref @ metamodelica::List::Cons { head: __pa13, tail: Deref @ metamodelica::List::Nil } } } } } } } } } } } } } } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone(), __pa6.clone(), __pa7.clone(), __pa8.clone(), __pa9.clone(), __pa10.clone(), __pa11.clone(), __pa12.clone(), __pa13.clone()),
         _ => bail!("pattern mismatch"),
@@ -668,18 +668,18 @@ pub fn Lapack_dgesvd(mut args: Arc<metamodelica::List<Arc<Expression::NFExpressi
 }
 
 pub fn Lapack_dgetrf(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<()> {
-    let mut m: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut n: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut a: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut lda: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut ipiv: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut info: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut M: i32 = 0;
-    let mut N: i32 = 0;
-    let mut LDA: i32 = 0;
-    let mut INFO: i32 = 0;
-    let mut A: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut IPIV: Arc<metamodelica::List<i32>> = metamodelica::nil();
+    let mut m: Arc<Expression::NFExpression>;
+    let mut n: Arc<Expression::NFExpression>;
+    let mut a: Arc<Expression::NFExpression>;
+    let mut lda: Arc<Expression::NFExpression>;
+    let mut ipiv: Arc<Expression::NFExpression>;
+    let mut info: Arc<Expression::NFExpression>;
+    let mut M: i32;
+    let mut N: i32;
+    let mut LDA: i32;
+    let mut INFO: i32;
+    let mut A: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>;
+    let mut IPIV: Arc<metamodelica::List<i32>>;
     let (__pa0, __pa1, __pa2, __pa3, __pa4, __pa5) = ::match_deref::match_deref! { match &(args.clone()) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Cons { head: __pa2, tail: Deref @ metamodelica::List::Cons { head: __pa3, tail: Deref @ metamodelica::List::Cons { head: __pa4, tail: Deref @ metamodelica::List::Cons { head: __pa5, tail: Deref @ metamodelica::List::Nil } } } } } } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone()),
         _ => bail!("pattern mismatch"),
@@ -702,24 +702,24 @@ pub fn Lapack_dgetrf(mut args: Arc<metamodelica::List<Arc<Expression::NFExpressi
 }
 
 pub fn Lapack_dgetrs(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<()> {
-    let mut trans: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut n: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut nrhs: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut a: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut lda: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut ipiv: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut b: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut ldb: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut info: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut TRANS: ArcStr = arcstr::literal!("");
-    let mut N: i32 = 0;
-    let mut NRHS: i32 = 0;
-    let mut LDA: i32 = 0;
-    let mut LDB: i32 = 0;
-    let mut INFO: i32 = 0;
-    let mut A: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut B: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut IPIV: Arc<metamodelica::List<i32>> = metamodelica::nil();
+    let mut trans: Arc<Expression::NFExpression>;
+    let mut n: Arc<Expression::NFExpression>;
+    let mut nrhs: Arc<Expression::NFExpression>;
+    let mut a: Arc<Expression::NFExpression>;
+    let mut lda: Arc<Expression::NFExpression>;
+    let mut ipiv: Arc<Expression::NFExpression>;
+    let mut b: Arc<Expression::NFExpression>;
+    let mut ldb: Arc<Expression::NFExpression>;
+    let mut info: Arc<Expression::NFExpression>;
+    let mut TRANS: ArcStr;
+    let mut N: i32;
+    let mut NRHS: i32;
+    let mut LDA: i32;
+    let mut LDB: i32;
+    let mut INFO: i32;
+    let mut A: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>;
+    let mut B: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>;
+    let mut IPIV: Arc<metamodelica::List<i32>>;
     let (__pa0, __pa1, __pa2, __pa3, __pa4, __pa5, __pa6, __pa7, __pa8) = ::match_deref::match_deref! { match &(args.clone()) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Cons { head: __pa2, tail: Deref @ metamodelica::List::Cons { head: __pa3, tail: Deref @ metamodelica::List::Cons { head: __pa4, tail: Deref @ metamodelica::List::Cons { head: __pa5, tail: Deref @ metamodelica::List::Cons { head: __pa6, tail: Deref @ metamodelica::List::Cons { head: __pa7, tail: Deref @ metamodelica::List::Cons { head: __pa8, tail: Deref @ metamodelica::List::Nil } } } } } } } } } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone(), __pa6.clone(), __pa7.clone(), __pa8.clone()),
         _ => bail!("pattern mismatch"),
@@ -748,20 +748,20 @@ pub fn Lapack_dgetrs(mut args: Arc<metamodelica::List<Arc<Expression::NFExpressi
 }
 
 pub fn Lapack_dgetri(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<()> {
-    let mut n: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut a: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut lda: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut ipiv: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut work: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut lwork: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut info: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut N: i32 = 0;
-    let mut LDA: i32 = 0;
-    let mut LWORK: i32 = 0;
-    let mut INFO: i32 = 0;
-    let mut A: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut IPIV: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut WORK: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
+    let mut n: Arc<Expression::NFExpression>;
+    let mut a: Arc<Expression::NFExpression>;
+    let mut lda: Arc<Expression::NFExpression>;
+    let mut ipiv: Arc<Expression::NFExpression>;
+    let mut work: Arc<Expression::NFExpression>;
+    let mut lwork: Arc<Expression::NFExpression>;
+    let mut info: Arc<Expression::NFExpression>;
+    let mut N: i32;
+    let mut LDA: i32;
+    let mut LWORK: i32;
+    let mut INFO: i32;
+    let mut A: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>;
+    let mut IPIV: Arc<metamodelica::List<i32>>;
+    let mut WORK: Arc<metamodelica::List<metamodelica::Real>>;
     let (__pa0, __pa1, __pa2, __pa3, __pa4, __pa5, __pa6) = ::match_deref::match_deref! { match &(args.clone()) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Cons { head: __pa2, tail: Deref @ metamodelica::List::Cons { head: __pa3, tail: Deref @ metamodelica::List::Cons { head: __pa4, tail: Deref @ metamodelica::List::Cons { head: __pa5, tail: Deref @ metamodelica::List::Cons { head: __pa6, tail: Deref @ metamodelica::List::Nil } } } } } } } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone(), __pa6.clone()),
         _ => bail!("pattern mismatch"),
@@ -787,22 +787,22 @@ pub fn Lapack_dgetri(mut args: Arc<metamodelica::List<Arc<Expression::NFExpressi
 }
 
 pub fn Lapack_dgeqpf(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<()> {
-    let mut m: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut n: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut a: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut lda: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut jpvt: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut tau: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut work: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut info: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut M: i32 = 0;
-    let mut N: i32 = 0;
-    let mut LDA: i32 = 0;
-    let mut INFO: i32 = 0;
-    let mut A: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut JPVT: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut WORK: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
-    let mut TAU: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
+    let mut m: Arc<Expression::NFExpression>;
+    let mut n: Arc<Expression::NFExpression>;
+    let mut a: Arc<Expression::NFExpression>;
+    let mut lda: Arc<Expression::NFExpression>;
+    let mut jpvt: Arc<Expression::NFExpression>;
+    let mut tau: Arc<Expression::NFExpression>;
+    let mut work: Arc<Expression::NFExpression>;
+    let mut info: Arc<Expression::NFExpression>;
+    let mut M: i32;
+    let mut N: i32;
+    let mut LDA: i32;
+    let mut INFO: i32;
+    let mut A: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>;
+    let mut JPVT: Arc<metamodelica::List<i32>>;
+    let mut WORK: Arc<metamodelica::List<metamodelica::Real>>;
+    let mut TAU: Arc<metamodelica::List<metamodelica::Real>>;
     let (__pa0, __pa1, __pa2, __pa3, __pa4, __pa5, __pa6, __pa7) = ::match_deref::match_deref! { match &(args.clone()) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Cons { head: __pa2, tail: Deref @ metamodelica::List::Cons { head: __pa3, tail: Deref @ metamodelica::List::Cons { head: __pa4, tail: Deref @ metamodelica::List::Cons { head: __pa5, tail: Deref @ metamodelica::List::Cons { head: __pa6, tail: Deref @ metamodelica::List::Cons { head: __pa7, tail: Deref @ metamodelica::List::Nil } } } } } } } } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone(), __pa6.clone(), __pa7.clone()),
         _ => bail!("pattern mismatch"),
@@ -830,24 +830,24 @@ pub fn Lapack_dgeqpf(mut args: Arc<metamodelica::List<Arc<Expression::NFExpressi
 }
 
 pub fn Lapack_dorgqr(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<()> {
-    let mut m: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut n: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut k: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut a: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut lda: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut tau: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut work: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut lwork: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut info: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut M: i32 = 0;
-    let mut N: i32 = 0;
-    let mut K: i32 = 0;
-    let mut LDA: i32 = 0;
-    let mut LWORK: i32 = 0;
-    let mut INFO: i32 = 0;
-    let mut A: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut TAU: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
-    let mut WORK: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
+    let mut m: Arc<Expression::NFExpression>;
+    let mut n: Arc<Expression::NFExpression>;
+    let mut k: Arc<Expression::NFExpression>;
+    let mut a: Arc<Expression::NFExpression>;
+    let mut lda: Arc<Expression::NFExpression>;
+    let mut tau: Arc<Expression::NFExpression>;
+    let mut work: Arc<Expression::NFExpression>;
+    let mut lwork: Arc<Expression::NFExpression>;
+    let mut info: Arc<Expression::NFExpression>;
+    let mut M: i32;
+    let mut N: i32;
+    let mut K: i32;
+    let mut LDA: i32;
+    let mut LWORK: i32;
+    let mut INFO: i32;
+    let mut A: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>;
+    let mut TAU: Arc<metamodelica::List<metamodelica::Real>>;
+    let mut WORK: Arc<metamodelica::List<metamodelica::Real>>;
     let (__pa0, __pa1, __pa2, __pa3, __pa4, __pa5, __pa6, __pa7, __pa8) = ::match_deref::match_deref! { match &(args.clone()) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Cons { head: __pa2, tail: Deref @ metamodelica::List::Cons { head: __pa3, tail: Deref @ metamodelica::List::Cons { head: __pa4, tail: Deref @ metamodelica::List::Cons { head: __pa5, tail: Deref @ metamodelica::List::Cons { head: __pa6, tail: Deref @ metamodelica::List::Cons { head: __pa7, tail: Deref @ metamodelica::List::Cons { head: __pa8, tail: Deref @ metamodelica::List::Nil } } } } } } } } } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone(), __pa6.clone(), __pa7.clone(), __pa8.clone()),
         _ => bail!("pattern mismatch"),
@@ -877,34 +877,34 @@ pub fn Lapack_dorgqr(mut args: Arc<metamodelica::List<Arc<Expression::NFExpressi
 }
 
 pub fn Lapack_dhseqr(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<()> {
-    let mut job: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut compz: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut n: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut ilo: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut ihi: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut h: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut ldh: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut wr: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut wi: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut z: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut ldz: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut work: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut lwork: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut info: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut N: i32 = 0;
-    let mut ILO: i32 = 0;
-    let mut IHI: i32 = 0;
-    let mut LDH: i32 = 0;
-    let mut LDZ: i32 = 0;
-    let mut LWORK: i32 = 0;
-    let mut INFO: i32 = 0;
-    let mut JOB: ArcStr = arcstr::literal!("");
-    let mut COMPZ: ArcStr = arcstr::literal!("");
-    let mut H: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut Z: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut WR: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
-    let mut WI: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
-    let mut WORK: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
+    let mut job: Arc<Expression::NFExpression>;
+    let mut compz: Arc<Expression::NFExpression>;
+    let mut n: Arc<Expression::NFExpression>;
+    let mut ilo: Arc<Expression::NFExpression>;
+    let mut ihi: Arc<Expression::NFExpression>;
+    let mut h: Arc<Expression::NFExpression>;
+    let mut ldh: Arc<Expression::NFExpression>;
+    let mut wr: Arc<Expression::NFExpression>;
+    let mut wi: Arc<Expression::NFExpression>;
+    let mut z: Arc<Expression::NFExpression>;
+    let mut ldz: Arc<Expression::NFExpression>;
+    let mut work: Arc<Expression::NFExpression>;
+    let mut lwork: Arc<Expression::NFExpression>;
+    let mut info: Arc<Expression::NFExpression>;
+    let mut N: i32;
+    let mut ILO: i32;
+    let mut IHI: i32;
+    let mut LDH: i32;
+    let mut LDZ: i32;
+    let mut LWORK: i32;
+    let mut INFO: i32;
+    let mut JOB: ArcStr;
+    let mut COMPZ: ArcStr;
+    let mut H: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>;
+    let mut Z: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>;
+    let mut WR: Arc<metamodelica::List<metamodelica::Real>>;
+    let mut WI: Arc<metamodelica::List<metamodelica::Real>>;
+    let mut WORK: Arc<metamodelica::List<metamodelica::Real>>;
     let (__pa0, __pa1, __pa2, __pa3, __pa4, __pa5, __pa6, __pa7, __pa8, __pa9, __pa10, __pa11, __pa12, __pa13) = ::match_deref::match_deref! { match &(args.clone()) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Cons { head: __pa2, tail: Deref @ metamodelica::List::Cons { head: __pa3, tail: Deref @ metamodelica::List::Cons { head: __pa4, tail: Deref @ metamodelica::List::Cons { head: __pa5, tail: Deref @ metamodelica::List::Cons { head: __pa6, tail: Deref @ metamodelica::List::Cons { head: __pa7, tail: Deref @ metamodelica::List::Cons { head: __pa8, tail: Deref @ metamodelica::List::Cons { head: __pa9, tail: Deref @ metamodelica::List::Cons { head: __pa10, tail: Deref @ metamodelica::List::Cons { head: __pa11, tail: Deref @ metamodelica::List::Cons { head: __pa12, tail: Deref @ metamodelica::List::Cons { head: __pa13, tail: Deref @ metamodelica::List::Nil } } } } } } } } } } } } } } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone(), __pa6.clone(), __pa7.clone(), __pa8.clone(), __pa9.clone(), __pa10.clone(), __pa11.clone(), __pa12.clone(), __pa13.clone()),
         _ => bail!("pattern mismatch"),
@@ -950,7 +950,7 @@ fn evaluateExtIntArg(mut arg: Arc<Expression::NFExpression>) -> Result<i32> {
 }
 
 fn getExtIntValue(mut exp: Arc<Expression::NFExpression>) -> Result<i32> {
-    let mut value: i32 = 0;
+    let mut value: i32;
     value = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::INTEGER { .. } => var_field!((*exp).value, Expression::NFExpression::INTEGER).clone(),
         Deref @ Expression::EMPTY { .. } => 0,
@@ -965,7 +965,7 @@ fn evaluateExtRealArg(mut arg: Arc<Expression::NFExpression>) -> Result<metamode
 }
 
 fn getExtRealValue(mut exp: Arc<Expression::NFExpression>) -> Result<metamodelica::Real> {
-    let mut value: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+    let mut value: metamodelica::Real;
     value = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::REAL { .. } => var_field!((*exp).value, Expression::NFExpression::REAL).clone(),
         Deref @ Expression::EMPTY { .. } => metamodelica::OrderedFloat(0.0_f64),
@@ -980,7 +980,7 @@ fn evaluateExtStringArg(mut arg: Arc<Expression::NFExpression>) -> Result<ArcStr
 }
 
 fn getExtStringValue(mut exp: Arc<Expression::NFExpression>) -> Result<ArcStr> {
-    let mut value: ArcStr = arcstr::literal!("");
+    let mut value: ArcStr;
     value = ((::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::STRING { .. } => var_field!((*exp).value, Expression::NFExpression::STRING).clone(),
         Deref @ Expression::EMPTY { .. } => literal!(""),
@@ -990,8 +990,8 @@ fn getExtStringValue(mut exp: Arc<Expression::NFExpression>) -> Result<ArcStr> {
 }
 
 fn evaluateExtIntArrayArg(mut arg: Arc<Expression::NFExpression>) -> Result<Arc<metamodelica::List<i32>>> {
-    let mut value: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut expl: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
+    let mut value: Arc<metamodelica::List<i32>>;
+    let mut expl: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
     expl = Expression::arrayElementList(Ceval::evalExp(arg.clone(), Ceval::noTarget().clone())?)?;
     value = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -1005,8 +1005,8 @@ fn evaluateExtIntArrayArg(mut arg: Arc<Expression::NFExpression>) -> Result<Arc<
 }
 
 fn evaluateExtRealArrayArg(mut arg: Arc<Expression::NFExpression>) -> Result<Arc<metamodelica::List<metamodelica::Real>>> {
-    let mut value: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
-    let mut expl: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
+    let mut value: Arc<metamodelica::List<metamodelica::Real>>;
+    let mut expl: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
     expl = Expression::arrayElementList(Ceval::evalExp(arg.clone(), Ceval::noTarget().clone())?)?;
     value = ({
         let mut __acc: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
@@ -1020,9 +1020,9 @@ fn evaluateExtRealArrayArg(mut arg: Arc<Expression::NFExpression>) -> Result<Arc
 }
 
 fn evaluateExtRealMatrixArg(mut arg: Arc<Expression::NFExpression>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>> {
-    let mut value: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut expl: metamodelica::Array<Arc<Expression::NFExpression>> = Default::default();
-    let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
+    let mut value: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>;
+    let mut expl: metamodelica::Array<Arc<Expression::NFExpression>>;
+    let mut ty: Arc<Type::NFType>;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(Ceval::evalExp(arg.clone(), Ceval::noTarget().clone())?) {
         Deref @ Expression::ARRAY { ty: __pa0, elements: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
@@ -1059,7 +1059,7 @@ fn evaluateExtRealMatrixArg(mut arg: Arc<Expression::NFExpression>) -> Result<Ar
 }
 
 fn assignVariableExt(mut variable: Arc<Expression::NFExpression>, mut value: Arc<Expression::NFExpression>) -> Result<()> {
-    let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut exp: Arc<Expression::NFExpression>;
     exp = (::match_deref::match_deref! { match &((Expression::typeOf(variable.clone()), value.clone())) {
         (Deref @ Type::ARRAY { dimensions: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil }, .. }, Deref @ Expression::ARRAY { ty: Deref @ Type::ARRAY { dimensions: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil } }, .. }, .. }) => Expression::makeArray(Type::unliftArray(var_field!((*value).ty, Expression::NFExpression::ARRAY).clone())?, metamodelica::arrayFromVec(({
         let mut __acc: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();

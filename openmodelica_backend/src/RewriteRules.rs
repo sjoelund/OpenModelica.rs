@@ -99,7 +99,7 @@ pub type Binds = Arc<metamodelica::List<Bind>>;
 // ----------------------
 pub fn rewriteFrontEnd(mut inExp: Arc<Absyn::Exp>) -> Result<(Arc<Absyn::Exp>, bool)> {
     let mut outExp: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
-    let mut isChanged: bool = false;
+    let mut isChanged: bool;
     (outExp, isChanged) = (::match_deref::match_deref! { match &(inExp.clone()) {
         _ => {
             let mut rules: Rules = metamodelica::nil();
@@ -115,7 +115,7 @@ pub fn rewriteFrontEnd(mut inExp: Arc<Absyn::Exp>) -> Result<(Arc<Absyn::Exp>, b
 
 pub fn matchAndRewriteExpFrontEnd(mut inExp: Arc<Absyn::Exp>, mut inRules: Rules) -> Result<(Arc<Absyn::Exp>, bool)> {
     let mut outExp: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
-    let mut changed: bool = false;
+    let mut changed: bool;
     (outExp, changed) = 'mc: {
         let __mc_input = inRules.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -162,14 +162,14 @@ pub fn matchAndRewriteExpFrontEnd(mut inExp: Arc<Absyn::Exp>, mut inRules: Rules
 }
 
 pub fn rewriteExpFrontEnd(mut inExp: Arc<Absyn::Exp>, mut inBinds: Binds) -> Result<Arc<Absyn::Exp>> {
-    let mut outExp: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
+    let mut outExp: Arc<Absyn::Exp>;
     (outExp, _) = AbsynUtil::traverseExp(inExp.clone(), (std::sync::Arc::new(replaceBindsFrontEnd) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arc<metamodelica::List<Bind>>) -> Result<(Arc<Absyn::Exp>, Arc<metamodelica::List<Bind>>)> + 'static>), inBinds.clone())?;
     Ok(outExp)
 }
 
 pub fn replaceBindsFrontEnd(mut inExp: Arc<Absyn::Exp>, mut inBinds: Binds) -> Result<(Arc<Absyn::Exp>, Binds)> {
-    let mut outExp: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
-    let mut outBinds: Binds = metamodelica::nil();
+    let mut outExp: Arc<Absyn::Exp>;
+    let mut outBinds: Binds;
     (outExp, outBinds) = (::match_deref::match_deref! { match &((inExp.clone(), inBinds.clone())) {
         (e1 @ Deref @ Absyn::Exp::CREF { componentRef: _ }, bnds) => {
             let mut e2: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
@@ -185,8 +185,8 @@ pub fn replaceBindsFrontEnd(mut inExp: Arc<Absyn::Exp>, mut inBinds: Binds) -> R
 }
 
 pub fn replaceBindFrontEnd(mut inExp: Arc<Absyn::Exp>, mut inBinds: Binds) -> Result<Arc<Absyn::Exp>> {
-    let mut outExp: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
-    let mut e: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
+    let mut outExp: Arc<Absyn::Exp>;
+    let mut e: Arc<Absyn::Exp>;
     for mut bind in &*inBinds.clone() {
         let mut bind = bind.clone();
         let Bind::FRONTEND_BIND { slot: __pa0, value: __pa1 } = (bind.clone()) else { bail!("pattern mismatch") };
@@ -508,15 +508,15 @@ pub fn matchesFargsFrontEnd(mut inFargs1: Arc<Absyn::FunctionArgs>, mut inFargs2
 }
 
 pub fn sortNargsFrontEnd(mut inNargs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>) -> Result<Arc<metamodelica::List<Arc<Absyn::NamedArg>>>> {
-    let mut outNargs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>> = metamodelica::nil();
+    let mut outNargs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>;
     outNargs = List::sort(inNargs.clone(), (std::sync::Arc::new(inNargComp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::NamedArg>, Arc<Absyn::NamedArg>) -> Result<bool> + 'static>))?;
     Ok(outNargs)
 }
 
 pub fn inNargComp(mut inNarg1: Arc<Absyn::NamedArg>, mut inNarg2: Arc<Absyn::NamedArg>) -> Result<bool> {
-    let mut isGreater: bool = false;
-    let mut id1: ArcStr = arcstr::literal!("");
-    let mut id2: ArcStr = arcstr::literal!("");
+    let mut isGreater: bool;
+    let mut id1: ArcStr;
+    let mut id2: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(inNarg1.clone()) {
         Deref @ Absyn::NamedArg { argName: __pa0, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
@@ -565,7 +565,7 @@ pub fn matchesExpLstLstFrontEnd(mut inExps1: Arc<metamodelica::List<Arc<metamode
 }
 
 pub fn isPlaceHolderFrontEnd(mut inExp: Arc<Absyn::Exp>) -> Result<bool> {
-    let mut isHolder: bool = false;
+    let mut isHolder: bool;
     isHolder = (::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ Absyn::Exp::CREF { componentRef: Deref @ Absyn::ComponentRef::CREF_IDENT { name, subscripts: _ } } => {
             let mut b: bool = false;
@@ -584,7 +584,7 @@ pub fn isPlaceHolderFrontEnd(mut inExp: Arc<Absyn::Exp>) -> Result<bool> {
 // ----------------------
 pub fn rewriteBackEnd(mut inExp: Arc<DAE::Exp>) -> Result<(Arc<DAE::Exp>, bool)> {
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut isChanged: bool = false;
+    let mut isChanged: bool;
     (outExp, isChanged) = (::match_deref::match_deref! { match &(inExp.clone()) {
         _ => {
             let mut rules: Rules = metamodelica::nil();
@@ -600,7 +600,7 @@ pub fn rewriteBackEnd(mut inExp: Arc<DAE::Exp>) -> Result<(Arc<DAE::Exp>, bool)>
 
 pub fn matchAndRewriteExpBackEnd(mut inExp: Arc<DAE::Exp>, mut inRules: Rules) -> Result<(Arc<DAE::Exp>, bool)> {
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut changed: bool = false;
+    let mut changed: bool;
     (outExp, changed) = 'mc: {
         let __mc_input = inRules.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -651,14 +651,14 @@ pub fn matchAndRewriteExpBackEnd(mut inExp: Arc<DAE::Exp>, mut inRules: Rules) -
 }
 
 pub fn rewriteExpBackEnd(mut inExp: Arc<DAE::Exp>, mut inBinds: Binds) -> Result<Arc<DAE::Exp>> {
-    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut outExp: Arc<DAE::Exp>;
     (outExp, _) = Expression::traverseExpBottomUp(inExp.clone(), (std::sync::Arc::new(replaceBindsBackEnd) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<metamodelica::List<Bind>>) -> Result<(Arc<DAE::Exp>, Arc<metamodelica::List<Bind>>)> + 'static>), inBinds.clone())?;
     Ok(outExp)
 }
 
 pub fn replaceBindsBackEnd(mut inExp: Arc<DAE::Exp>, mut inBinds: Binds) -> Result<(Arc<DAE::Exp>, Binds)> {
-    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outBinds: Binds = metamodelica::nil();
+    let mut outExp: Arc<DAE::Exp>;
+    let mut outBinds: Binds;
     (outExp, outBinds) = (::match_deref::match_deref! { match &((inExp.clone(), inBinds.clone())) {
         (e1 @ Deref @ DAE::Exp::CREF { componentRef: _, ty: _ }, bnds) => {
             let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -674,9 +674,9 @@ pub fn replaceBindsBackEnd(mut inExp: Arc<DAE::Exp>, mut inBinds: Binds) -> Resu
 }
 
 pub fn replaceBindBackEnd(mut inExp: Arc<DAE::Exp>, mut inBinds: Binds) -> Result<Arc<DAE::Exp>> {
-    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut to: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut outExp: Arc<DAE::Exp>;
+    let mut e: Arc<DAE::Exp>;
+    let mut to: Arc<DAE::Exp>;
     for mut bind in &*inBinds.clone() {
         let mut bind = bind.clone();
         let Bind::BACKEND_BIND { slot: __pa0, value: __pa1 } = (bind.clone()) else { bail!("pattern mismatch") };
@@ -970,7 +970,7 @@ pub fn matchesExpLstLstBackEnd(mut inExps1: Arc<metamodelica::List<Arc<metamodel
 }
 
 pub fn isPlaceHolderBackEnd(mut inExp: Arc<DAE::Exp>) -> Result<bool> {
-    let mut isHolder: bool = false;
+    let mut isHolder: bool;
     isHolder = (::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ DAE::Exp::CREF { componentRef: Deref @ DAE::ComponentRef::CREF_IDENT { ident: name, .. }, ty: _ } => {
             let mut b: bool = false;
@@ -986,7 +986,7 @@ pub fn isPlaceHolderBackEnd(mut inExp: Arc<DAE::Exp>) -> Result<bool> {
 }
 
 fn expEqual(mut e1: Arc<DAE::Exp>, mut e2: Arc<DAE::Exp>) -> Result<bool> {
-    let mut isEqual: bool = false;
+    let mut isEqual: bool;
     isEqual = 'mc: {
         let __mc_input = (e1.clone(), e2.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -1021,7 +1021,7 @@ fn expEqual(mut e1: Arc<DAE::Exp>, mut e2: Arc<DAE::Exp>) -> Result<bool> {
 }
 
 fn operatorMatches(mut op1: DAE::Operator, mut op2: DAE::Operator) -> Result<bool> {
-    let mut b: bool = false;
+    let mut b: bool;
     b = 'mc: {
         let __mc_input = (op1.clone(), op2.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -1110,7 +1110,7 @@ pub fn loadRules() -> Result<()> {
 }
 
 pub fn noRewriteRules() -> Result<bool> {
-    let mut noRules: bool = false;
+    let mut noRules: bool;
     noRules = 'mc: {
         let __mc_input = ();
         if let Ok(__v) = (|| -> Result<_> {
@@ -1131,7 +1131,7 @@ pub fn noRewriteRules() -> Result<bool> {
 }
 
 pub fn noRewriteRulesFrontEnd() -> Result<bool> {
-    let mut noRules: bool = false;
+    let mut noRules: bool;
     noRules = 'mc: {
         let __mc_input = ();
         if let Ok(__v) = (|| -> Result<_> {
@@ -1160,7 +1160,7 @@ pub fn noRewriteRulesFrontEnd() -> Result<bool> {
 }
 
 pub fn noRewriteRulesBackEnd() -> Result<bool> {
-    let mut noRules: bool = false;
+    let mut noRules: bool;
     noRules = 'mc: {
         let __mc_input = ();
         if let Ok(__v) = (|| -> Result<_> {
@@ -1251,8 +1251,8 @@ pub fn clearRules() -> () {
 }
 
 pub fn getAllRules() -> Result<Rules> {
-    let mut outRules: Rules = metamodelica::nil();
-    let mut orules: Option<Arc<metamodelica::List<Rule>>> = None;
+    let mut outRules: Rules;
+    let mut orules: Option<Arc<metamodelica::List<Rule>>>;
     orules = crate::Globals::rewriteRulesIndex.with(|__root| __root.borrow().clone());
     let __pa0 = ::match_deref::match_deref! { match &(orules.clone()) {
         Some(__pa0) => __pa0.clone(),
@@ -1301,7 +1301,7 @@ pub fn getRulesBackEnd(mut inRules: Rules) -> Rules {
 }
 
 fn stmtsToRules(mut inStmts: Arc<metamodelica::List<GlobalScript::Statement>>, mut inAcc: Rules) -> Result<Rules> {
-    let mut outRules: Rules = metamodelica::nil();
+    let mut outRules: Rules;
     outRules = 'mc: {
         let __mc_input = inStmts.clone();
         if let Ok(__v) = (|| -> Result<_> {

@@ -88,15 +88,15 @@ pub fn emptyHashTableSized(mut size: i32) -> HashTable {
 }
 
 pub fn printTupleComponentRefEqListStr(mut cr_eq_lst: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)>>) -> Result<ArcStr> {
-    let mut res: ArcStr = arcstr::literal!("");
+    let mut res: ArcStr;
     res = stringDelimitList(List::map(cr_eq_lst.clone(), (std::sync::Arc::new(printTupleComponentRefEqStr) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone());
     Ok(res)
 }
 
 pub fn printTupleComponentRefEqStr(mut cr_eq: (Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)) -> Result<ArcStr> {
-    let mut res: ArcStr = arcstr::literal!("");
-    let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-    let mut eq: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
+    let mut res: ArcStr;
+    let mut cr: Arc<DAE::ComponentRef>;
+    let mut eq: Arc<BackendDAE::Equation>;
     (cr, eq) = cr_eq.clone();
     res = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("{")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(cr.clone())?); __mm_s.push_str(&*literal!(",")); __mm_s.push_str(&*BackendDump::equationString(eq.clone())?); __mm_s.push_str(&*literal!("}")); ArcStr::from(__mm_s) }).clone();
     Ok(res)

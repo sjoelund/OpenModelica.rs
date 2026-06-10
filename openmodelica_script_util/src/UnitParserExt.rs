@@ -1037,7 +1037,7 @@ static ERROR_PARSING_UNIT: ErrorTypes::Message = ErrorTypes::Message {
     message: Gettext::TranslatableContent::gettext { msgid: literal!("Error parsing unit %s: %s") },
 };
 
-pub fn initSIUnits() -> () {
+pub fn initSIUnits() {
     with_state(|s| s.parser.init_si_units());
 }
 
@@ -1052,7 +1052,7 @@ pub fn unit2str(
 ) -> ArcStr {
     let mut unit = Unit::default();
     // Base-unit exponent vector.
-    for (n, dn) in (&*noms).into_iter().zip((&*denoms).into_iter()) {
+    for (n, dn) in (&*noms).into_iter().zip(&*denoms) {
         unit.unit_vec.push(Rational::new(*n as Sint, *dn as Sint));
     }
     // Symbolic type parameters.
@@ -1108,20 +1108,20 @@ pub fn allUnitSymbols() -> Arc<List<ArcStr>> {
     with_state(|s| s.parser.all_unit_symbols())
 }
 
-pub fn addBase(name: ArcStr) -> () {
+pub fn addBase(name: ArcStr) {
     let prefix_allowed = name.as_str() != "kg";
     with_state(|s| s.parser.add_base("", "", name.as_str(), prefix_allowed));
 }
 
-pub fn registerWeight(name: ArcStr, weight: Real) -> () {
+pub fn registerWeight(name: ArcStr, weight: Real) {
     with_state(|s| s.parser.accumulate_weight(name.as_str(), weight.into_inner()));
 }
 
-pub fn addDerived(name: ArcStr, exp: ArcStr) -> () {
+pub fn addDerived(name: ArcStr, exp: ArcStr) {
     addDerivedWeight(name, exp, OrderedFloat(1.0));
 }
 
-pub fn addDerivedWeight(name: ArcStr, exp: ArcStr, weight: Real) -> () {
+pub fn addDerivedWeight(name: ArcStr, exp: ArcStr, weight: Real) {
     let info = DerivedInfo {
         quantity_name: name.as_str().to_string(),
         unit_name: name.as_str().to_string(),
@@ -1136,25 +1136,25 @@ pub fn addDerivedWeight(name: ArcStr, exp: ArcStr, weight: Real) -> () {
     with_state(|s| s.parser.add_derived(info));
 }
 
-pub fn checkpoint() -> () {
+pub fn checkpoint() {
     with_state(|s| {
         let snapshot = s.parser.clone();
         s.rollback.push(snapshot);
     });
 }
 
-pub fn rollback() -> () {
+pub fn rollback() {
     with_state(|s| match s.rollback.pop() {
         Some(old) => s.parser = old,
         None => eprintln!("Error, rollback on empty stack"),
     });
 }
 
-pub fn clear() -> () {
+pub fn clear() {
     with_state(|s| s.parser = UnitParser::new());
 }
 
-pub fn commit() -> () {
+pub fn commit() {
     with_state(|s| {
         let _ = s.parser.commit();
     });

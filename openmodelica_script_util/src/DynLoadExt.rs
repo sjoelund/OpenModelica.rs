@@ -307,7 +307,7 @@ fn array_element_tag(values: &List<Arc<Values::Value>>) -> Result<i32> {
         Some(Values::Value::REAL { .. }) => Ok(TD_REAL_ARRAY),
         Some(Values::Value::BOOL { .. }) => Ok(TD_BOOL_ARRAY),
         Some(Values::Value::STRING { .. }) => Ok(TD_STRING_ARRAY),
-        Some(Values::Value::ARRAY { valueLst, .. }) => array_element_tag(&**valueLst),
+        Some(Values::Value::ARRAY { valueLst, .. }) => array_element_tag(valueLst),
         Some(other) => bail!("DynLoad.executeFunction: array argument of {other:?} not supported"),
     }
 }
@@ -342,8 +342,14 @@ fn array_to_desc(rt: &MmcAlloc, values: &List<Arc<Values::Value>>, dim_lst: &Lis
         TD_INT_ARRAY => {
             let mut buf: Vec<i64> = Vec::new();
             flatten_array(rt, values, ndims, &mut |v| match v {
-                Values::Value::INTEGER { integer } => Ok(buf.push(*integer as i64)),
-                Values::Value::ENUM_LITERAL { index, .. } => Ok(buf.push(*index as i64)),
+                Values::Value::INTEGER { integer } => {
+                    buf.push(*integer as i64);
+                    Ok(())
+                },
+                Values::Value::ENUM_LITERAL { index, .. } => {
+                    buf.push(*index as i64);
+                    Ok(())
+                },
                 other => bail!("DynLoad.executeFunction: expected Integer array element, got {other:?}"),
             })?;
             let buf = buf.into_boxed_slice();
@@ -354,7 +360,10 @@ fn array_to_desc(rt: &MmcAlloc, values: &List<Arc<Values::Value>>, dim_lst: &Lis
         TD_REAL_ARRAY => {
             let mut buf: Vec<f64> = Vec::new();
             flatten_array(rt, values, ndims, &mut |v| match v {
-                Values::Value::REAL { real } => Ok(buf.push(real.into_inner())),
+                Values::Value::REAL { real } => {
+                    buf.push(real.into_inner());
+                    Ok(())
+                },
                 other => bail!("DynLoad.executeFunction: expected Real array element, got {other:?}"),
             })?;
             let buf = buf.into_boxed_slice();
@@ -365,7 +374,10 @@ fn array_to_desc(rt: &MmcAlloc, values: &List<Arc<Values::Value>>, dim_lst: &Lis
         TD_BOOL_ARRAY => {
             let mut buf: Vec<i32> = Vec::new();
             flatten_array(rt, values, ndims, &mut |v| match v {
-                Values::Value::BOOL { boolean } => Ok(buf.push(*boolean as i32)),
+                Values::Value::BOOL { boolean } => {
+                    buf.push(*boolean as i32);
+                    Ok(())
+                },
                 other => bail!("DynLoad.executeFunction: expected Boolean array element, got {other:?}"),
             })?;
             let buf = buf.into_boxed_slice();
@@ -376,7 +388,10 @@ fn array_to_desc(rt: &MmcAlloc, values: &List<Arc<Values::Value>>, dim_lst: &Lis
         TD_STRING_ARRAY => {
             let mut buf: Vec<usize> = Vec::new();
             flatten_array(rt, values, ndims, &mut |v| match v {
-                Values::Value::STRING { string } => Ok(buf.push(make_c_string(string)?)),
+                Values::Value::STRING { string } => {
+                    buf.push(make_c_string(string)?);
+                    Ok(())
+                },
                 other => bail!("DynLoad.executeFunction: expected String array element, got {other:?}"),
             })?;
             let buf = buf.into_boxed_slice();

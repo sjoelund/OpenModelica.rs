@@ -54,7 +54,7 @@ pub type UseTable = Arc<UnorderedSet::UnorderedSet<ArcStr>>;
 
 pub fn getTotalModel(mut program: Arc<metamodelica::List<Arc<SCode::Element>>>, mut classPath: Arc<Absyn::Path>) -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> {
     let mut program: Arc<metamodelica::List<Arc<SCode::Element>>> = program;
-    let mut used: UseTable = <Arc<UnorderedSet::UnorderedSet<ArcStr>> as ::std::default::Default>::default();
+    let mut used: UseTable;
     let mut prev_size: i32 = 0;
     used = UnorderedSet::new((std::sync::Arc::new(fnptr!(stringHashDjb2, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), 13);
     analysePath(classPath.clone(), used.clone())?;

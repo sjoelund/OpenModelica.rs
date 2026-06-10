@@ -47,8 +47,8 @@ use crate::NBEquation::EquationPointers;
 use crate::NBVariable::VariablePointers;
 
 pub fn main(mut eqns: Arc<EquationPointers::EquationPointers>, mut vars: Arc<VariablePointers::VariablePointers>) -> () {
-    let mut indices: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
-    let mut values: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut indices: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut values: metamodelica::Array<Arc<metamodelica::List<i32>>>;
     indices = arrayCreate(3, metamodelica::nil());
     values = arrayCreate(3, metamodelica::nil());
     {

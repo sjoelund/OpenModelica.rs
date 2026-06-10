@@ -67,18 +67,18 @@ pub type LIST<T> = MutableList<T>;
 
 
 pub fn new<T: Clone + 'static>(mut first: T) -> MutableList<T> {
-    let mut delst: MutableList<T> = <MutableList<T> as ::std::default::Default>::default();
+    let mut delst: MutableList<T>;
     let mut lst: Arc<metamodelica::List<T>> = list![first.clone()];
     delst = MutableList { length: Mutable::create(1), front: Mutable::create(lst.clone()), back: Mutable::create(lst.clone()) };
     delst
 }
 
 pub fn fromList<T: Clone + 'static>(mut lst: Arc<metamodelica::List<T>>) -> Result<MutableList<T>> {
-    let mut delst: MutableList<T> = <MutableList<T> as ::std::default::Default>::default();
-    let mut head: Arc<metamodelica::List<T>> = metamodelica::nil();
-    let mut tail: Arc<metamodelica::List<T>> = metamodelica::nil();
-    let mut tmp: Arc<metamodelica::List<T>> = metamodelica::nil();
-    let mut length: i32 = 0;
+    let mut delst: MutableList<T>;
+    let mut head: Arc<metamodelica::List<T>>;
+    let mut tail: Arc<metamodelica::List<T>>;
+    let mut tmp: Arc<metamodelica::List<T>>;
+    let mut length: i32;
     let mut t: T;
     if lst.clone().is_empty() {
         delst = MutableList { length: Mutable::create(0), front: Mutable::create(metamodelica::nil()), back: Mutable::create(metamodelica::nil()) };
@@ -105,13 +105,13 @@ pub fn fromList<T: Clone + 'static>(mut lst: Arc<metamodelica::List<T>>) -> Resu
 }
 
 pub fn empty<T: Clone + 'static>(mut dummy: T) -> MutableList<T> {
-    let mut delst: MutableList<T> = <MutableList<T> as ::std::default::Default>::default();
+    let mut delst: MutableList<T>;
     delst = MutableList { length: Mutable::create(0), front: Mutable::create(metamodelica::nil()), back: Mutable::create(metamodelica::nil()) };
     delst
 }
 
 pub fn length<T: Clone + 'static>(mut delst: MutableList<T>) -> i32 {
-    let mut length: i32 = 0;
+    let mut length: i32;
     length = Mutable::access(delst.length.clone());
     length
 }
@@ -119,7 +119,7 @@ pub fn length<T: Clone + 'static>(mut delst: MutableList<T>) -> i32 {
 pub fn pop_front<T: Clone + 'static>(mut delst: MutableList<T>) -> Result<T> {
     let mut elt: T;
     let mut length: i32 = Mutable::access(delst.length.clone());
-    let mut lst: Arc<metamodelica::List<T>> = metamodelica::nil();
+    let mut lst: Arc<metamodelica::List<T>>;
     let true = (length.clone() > 0) else { bail!("pattern mismatch") };
     Mutable::update(delst.length.clone(), length.clone() - 1);
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(Mutable::access(delst.front.clone())) {
@@ -138,14 +138,14 @@ pub fn pop_front<T: Clone + 'static>(mut delst: MutableList<T>) -> Result<T> {
 }
 
 pub fn currentBackCell<T: Clone + 'static>(mut delst: MutableList<T>) -> Arc<metamodelica::List<T>> {
-    let mut last: Arc<metamodelica::List<T>> = metamodelica::nil();
+    let mut last: Arc<metamodelica::List<T>>;
     last = Mutable::access(delst.back.clone());
     last
 }
 
 pub fn push_front<T: Clone + 'static>(mut delst: MutableList<T>, mut elt: T) -> () {
     let mut length: i32 = Mutable::access(delst.length.clone());
-    let mut lst: Arc<metamodelica::List<T>> = metamodelica::nil();
+    let mut lst: Arc<metamodelica::List<T>>;
     Mutable::update(delst.length.clone(), length.clone() + 1);
     if length.clone() == 0 {
         lst = list![elt.clone()];
@@ -160,11 +160,11 @@ pub fn push_front<T: Clone + 'static>(mut delst: MutableList<T>, mut elt: T) -> 
 
 pub fn push_list_front<T: Clone + 'static>(mut delst: MutableList<T>, mut lst: Arc<metamodelica::List<T>>) -> Result<()> {
     let mut length: i32 = Mutable::access(delst.length.clone());
-    let mut lstLength: i32 = 0;
-    let mut work: Arc<metamodelica::List<T>> = metamodelica::nil();
-    let mut oldHead: Arc<metamodelica::List<T>> = metamodelica::nil();
-    let mut tmp: Arc<metamodelica::List<T>> = metamodelica::nil();
-    let mut head: Arc<metamodelica::List<T>> = metamodelica::nil();
+    let mut lstLength: i32;
+    let mut work: Arc<metamodelica::List<T>>;
+    let mut oldHead: Arc<metamodelica::List<T>>;
+    let mut tmp: Arc<metamodelica::List<T>>;
+    let mut head: Arc<metamodelica::List<T>>;
     let mut t: T;
     lstLength = (lst.clone().len() as i32);
     if lstLength.clone() == 0 {
@@ -196,7 +196,7 @@ pub fn push_list_front<T: Clone + 'static>(mut delst: MutableList<T>, mut lst: A
 
 pub fn push_back<T: Clone + 'static>(mut delst: MutableList<T>, mut elt: T) -> () {
     let mut length: i32 = Mutable::access(delst.length.clone());
-    let mut lst: Arc<metamodelica::List<T>> = metamodelica::nil();
+    let mut lst: Arc<metamodelica::List<T>>;
     Mutable::update(delst.length.clone(), length.clone() + 1);
     if length.clone() == 0 {
         lst = list![elt.clone()];
@@ -212,9 +212,9 @@ pub fn push_back<T: Clone + 'static>(mut delst: MutableList<T>, mut elt: T) -> (
 
 pub fn push_list_back<T: Clone + 'static>(mut delst: MutableList<T>, mut lst: Arc<metamodelica::List<T>>) -> Result<()> {
     let mut length: i32 = Mutable::access(delst.length.clone());
-    let mut lstLength: i32 = 0;
-    let mut tail: Arc<metamodelica::List<T>> = metamodelica::nil();
-    let mut tmp: Arc<metamodelica::List<T>> = metamodelica::nil();
+    let mut lstLength: i32;
+    let mut tail: Arc<metamodelica::List<T>>;
+    let mut tmp: Arc<metamodelica::List<T>>;
     let mut t: T;
     lstLength = (lst.clone().len() as i32);
     if lstLength.clone() == 0 {
@@ -240,7 +240,7 @@ pub fn push_list_back<T: Clone + 'static>(mut delst: MutableList<T>, mut lst: Ar
 }
 
 pub fn toListAndClear<T: Clone + 'static>(mut delst: MutableList<T>, mut prependToList: Arc<metamodelica::List<T>>) -> Arc<metamodelica::List<T>> {
-    let mut res: Arc<metamodelica::List<T>> = metamodelica::nil();
+    let mut res: Arc<metamodelica::List<T>>;
     if Mutable::access(delst.length.clone()) == 0 {
         res = prependToList.clone();
         return res.clone();
@@ -256,13 +256,13 @@ pub fn toListAndClear<T: Clone + 'static>(mut delst: MutableList<T>, mut prepend
 }
 
 pub fn toListNoCopyNoClear<T: Clone + 'static>(mut delst: MutableList<T>) -> Arc<metamodelica::List<T>> {
-    let mut res: Arc<metamodelica::List<T>> = metamodelica::nil();
+    let mut res: Arc<metamodelica::List<T>>;
     res = Mutable::access(delst.front.clone());
     res
 }
 
 pub fn clear<T: Clone + 'static>(mut delst: MutableList<T>) -> () {
-    let mut lst: Arc<metamodelica::List<T>> = metamodelica::nil();
+    let mut lst: Arc<metamodelica::List<T>>;
     lst = Mutable::access(delst.front.clone());
     Mutable::update(delst.back.clone(), metamodelica::nil());
     Mutable::update(delst.front.clone(), metamodelica::nil());

@@ -68,13 +68,13 @@ pub fn diff<T: Clone + 'static>(mut seq1: Arc<metamodelica::List<T>>, mut seq2: 
 
     pub type ToString<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>;
 
-    let mut out: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>> = metamodelica::nil();
-    let mut start1: i32 = 0;
-    let mut end1: i32 = 0;
-    let mut start2: i32 = 0;
-    let mut end2: i32 = 0;
-    let mut arr1: metamodelica::Array<T> = Default::default();
-    let mut arr2: metamodelica::Array<T> = Default::default();
+    let mut out: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>;
+    let mut start1: i32;
+    let mut end1: i32;
+    let mut start2: i32;
+    let mut end2: i32;
+    let mut arr1: metamodelica::Array<T>;
+    let mut arr2: metamodelica::Array<T>;
     arr1 = metamodelica::arrayFromVec(seq1.clone().into_iter().cloned().collect());
     arr2 = metamodelica::arrayFromVec(seq2.clone().into_iter().cloned().collect());
     start1 = 1;
@@ -88,12 +88,12 @@ pub fn diff<T: Clone + 'static>(mut seq1: Arc<metamodelica::List<T>>, mut seq2: 
 pub type partialPrintDiff<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>, fn(T) -> Result<ArcStr>) -> Result<ArcStr> + 'static>;
 
 pub fn printDiffTerminalColor<T: Clone + 'static>(mut seq: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>, mut toString: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>) -> ArcStr {
-    let mut res: ArcStr = arcstr::literal!("");
-    let mut open: ArcStr = arcstr::literal!("");
-    let mut close: ArcStr = arcstr::literal!("");
+    let mut res: ArcStr;
+    let mut open: ArcStr;
+    let mut close: ArcStr;
     let mut ts: Arc<metamodelica::List<T>> = metamodelica::nil();
-    let mut b: bool = false;
-    let mut i: i32 = 0;
+    let mut b: bool;
+    let mut i: i32;
     i = Print::saveAndClearBuf().unwrap();
     for mut d in &*seq.clone() {
         let mut d = d.clone();
@@ -127,12 +127,12 @@ pub fn printDiffTerminalColor<T: Clone + 'static>(mut seq: Arc<metamodelica::Lis
 }
 
 pub fn printDiffXml<T: Clone + 'static>(mut seq: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>, mut toString: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>) -> ArcStr {
-    let mut res: ArcStr = arcstr::literal!("");
-    let mut open: ArcStr = arcstr::literal!("");
-    let mut close: ArcStr = arcstr::literal!("");
+    let mut res: ArcStr;
+    let mut open: ArcStr;
+    let mut close: ArcStr;
     let mut ts: Arc<metamodelica::List<T>> = metamodelica::nil();
-    let mut b: bool = false;
-    let mut i: i32 = 0;
+    let mut b: bool;
+    let mut i: i32;
     i = Print::saveAndClearBuf().unwrap();
     for mut d in &*seq.clone() {
         let mut d = d.clone();
@@ -166,12 +166,12 @@ pub fn printDiffXml<T: Clone + 'static>(mut seq: Arc<metamodelica::List<(Diff, A
 }
 
 pub fn printActual<T: Clone + 'static>(mut seq: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>, mut toString: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>) -> ArcStr {
-    let mut res: ArcStr = arcstr::literal!("");
-    let mut open: ArcStr = arcstr::literal!("");
-    let mut close: ArcStr = arcstr::literal!("");
+    let mut res: ArcStr;
+    let mut open: ArcStr;
+    let mut close: ArcStr;
     let mut ts: Arc<metamodelica::List<T>> = metamodelica::nil();
-    let mut b: bool = false;
-    let mut i: i32 = 0;
+    let mut b: bool;
+    let mut i: i32;
     i = Print::saveAndClearBuf().unwrap();
     for mut d in &*seq.clone() {
         let mut d = d.clone();
@@ -211,13 +211,13 @@ fn diffSeq<T: Clone + 'static>(mut arr1: metamodelica::Array<T>, mut arr2: metam
 
     pub type ToString<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>;
 
-    let mut out: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>> = metamodelica::nil();
+    let mut out: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>;
     let mut start1: i32 = inStart1.clone();
     let mut end1: i32 = inEnd1.clone();
     let mut start2: i32 = inStart2.clone();
     let mut end2: i32 = inEnd2.clone();
-    let mut len1: i32 = 0;
-    let mut len2: i32 = 0;
+    let mut len1: i32;
+    let mut len2: i32;
     let mut prefixes: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>> = inPrefixes.clone();
     let mut suffixes: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>> = inSuffixes.clone();
     len1 = end1.clone() - start1.clone() + 1;
@@ -323,7 +323,7 @@ fn onlyAdditions<T: Clone + 'static>(mut arr1: metamodelica::Array<T>, mut arr2:
 
     pub type ToString<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>;
 
-    let mut out: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>> = metamodelica::nil();
+    let mut out: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>;
     let mut x: i32 = 0;
     let mut y: i32 = 0;
     let mut d: Diff = Diff::Equal.clone();
@@ -370,7 +370,7 @@ fn onlyRemovals<T: Clone + 'static>(mut arr1: metamodelica::Array<T>, mut arr2: 
 
     pub type ToString<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>;
 
-    let mut out: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>> = metamodelica::nil();
+    let mut out: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>;
     let mut x: i32 = 0;
     let mut y: i32 = 0;
     let mut d: Diff = Diff::Equal.clone();
@@ -413,17 +413,17 @@ fn onlyRemovals<T: Clone + 'static>(mut arr1: metamodelica::Array<T>, mut arr2: 
 fn myersGreedyDiff<T: Clone + 'static>(mut arr1: metamodelica::Array<T>, mut arr2: metamodelica::Array<T>, mut equals: Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>, mut start1: i32, mut end1: i32, mut start2: i32, mut end2: i32) -> Result<Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>> {
     pub type FunEquals<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>;
 
-    let mut out: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>> = metamodelica::nil();
-    let mut len1: i32 = 0;
-    let mut len2: i32 = 0;
-    let mut maxIter: i32 = 0;
-    let mut sz: i32 = 0;
-    let mut middle: i32 = 0;
-    let mut x: i32 = 0;
-    let mut y: i32 = 0;
-    let mut V: metamodelica::Array<i32> = Default::default();
-    let mut paths: metamodelica::Array<Arc<metamodelica::List<(i32, i32)>>> = Default::default();
-    let mut prevPath: Arc<metamodelica::List<(i32, i32)>> = metamodelica::nil();
+    let mut out: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>;
+    let mut len1: i32;
+    let mut len2: i32;
+    let mut maxIter: i32;
+    let mut sz: i32;
+    let mut middle: i32;
+    let mut x: i32;
+    let mut y: i32;
+    let mut V: metamodelica::Array<i32>;
+    let mut paths: metamodelica::Array<Arc<metamodelica::List<(i32, i32)>>>;
+    let mut prevPath: Arc<metamodelica::List<(i32, i32)>>;
     len1 = end1.clone() - start1.clone() + 1;
     len2 = end2.clone() - start2.clone() + 1;
     maxIter = len1.clone() + len2.clone();
@@ -473,10 +473,10 @@ fn myersGreedyDiff<T: Clone + 'static>(mut arr1: metamodelica::Array<T>, mut arr
 
 fn myersGreedyPathToDiff<T: Clone + 'static>(mut arr1: metamodelica::Array<T>, mut arr2: metamodelica::Array<T>, mut start1: i32, mut start2: i32, mut paths: Arc<metamodelica::List<(i32, i32)>>) -> Result<Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>> {
     let mut out: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>> = metamodelica::nil();
-    let mut x1: i32 = 0;
-    let mut x2: i32 = 0;
-    let mut y1: i32 = 0;
-    let mut y2: i32 = 0;
+    let mut x1: i32;
+    let mut x2: i32;
+    let mut y1: i32;
+    let mut y2: i32;
     let mut d1: Diff = Diff::Equal.clone();
     let mut d2: Diff = Diff::Equal.clone();
     let mut lst: Arc<metamodelica::List<T>> = metamodelica::nil();
@@ -584,7 +584,7 @@ fn trimCommonSuffix<T: Clone + 'static>(mut arr1: metamodelica::Array<T>, mut st
 fn printStartToEnd<T: Clone + 'static>(mut arr: metamodelica::Array<T>, mut startIndex: i32, mut endIndex: i32, mut toString: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>) -> Result<ArcStr> {
     pub type ToString<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>;
 
-    let mut res: ArcStr = arcstr::literal!("");
+    let mut res: ArcStr;
     res = stringAppendList(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut index in (startIndex.clone()..=endIndex.clone()).into_iter() {

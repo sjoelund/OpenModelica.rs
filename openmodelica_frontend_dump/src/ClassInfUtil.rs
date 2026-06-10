@@ -56,7 +56,7 @@ use openmodelica_util::Flags;
 use openmodelica_util::Print;
 
 pub fn printStateStr(mut inState: ClassInf::State) -> ArcStr {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((match inState.clone() {
         ClassInf::State::UNKNOWN { .. } => {
             literal!("unknown")
@@ -229,7 +229,7 @@ pub fn printState(mut inState: ClassInf::State) -> Result<()> {
 }
 
 pub fn getStateName(mut inState: ClassInf::State) -> Arc<Absyn::Path> {
-    let mut outPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+    let mut outPath: Arc<Absyn::Path>;
     outPath = (match inState.clone() {
         ClassInf::State::UNKNOWN { path: ref p } => {
             p.clone()
@@ -314,7 +314,7 @@ pub fn getStateName(mut inState: ClassInf::State) -> Arc<Absyn::Path> {
 }
 
 fn printEventStr(mut inEvent: ClassInf::Event) -> ArcStr {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     r#str = ((match inEvent.clone() {
         ClassInf::Event::FOUND_EQUATION { .. } => {
             literal!("equation")
@@ -339,14 +339,14 @@ fn printEventStr(mut inEvent: ClassInf::Event) -> ArcStr {
 }
 
 pub fn start(mut inRestriction: SCode::Restriction, mut inPath: Arc<Absyn::Path>) -> Result<ClassInf::State> {
-    let mut outState: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
+    let mut outState: ClassInf::State;
     outState = start_dispatch(inRestriction.clone(), AbsynUtil::makeFullyQualified(inPath.clone()))?;
     Ok(outState)
 }
 
 // Transitions
 fn start_dispatch(mut inRestriction: SCode::Restriction, mut inPath: Arc<Absyn::Path>) -> Result<ClassInf::State> {
-    let mut outState: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
+    let mut outState: ClassInf::State;
     outState = (::match_deref::match_deref! { match &((inRestriction.clone(), inPath.clone())) {
         (SCode::Restriction::R_CLASS { .. }, p) => {
             ClassInf::State::UNKNOWN { path: p.clone() }
@@ -412,7 +412,7 @@ fn start_dispatch(mut inRestriction: SCode::Restriction, mut inPath: Arc<Absyn::
 }
 
 pub fn trans(mut inState: ClassInf::State, mut inEvent: ClassInf::Event) -> Result<ClassInf::State> {
-    let mut outState: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
+    let mut outState: ClassInf::State;
     outState = (match (inState.clone(), inEvent.clone()) {
         (ClassInf::State::UNKNOWN { path: ref p }, ClassInf::Event::NEWDEF { .. }) => {
             ClassInf::State::HAS_RESTRICTIONS { path: p.clone(), hasEquations: false, hasAlgorithms: false, hasConstraints: false }
@@ -658,7 +658,7 @@ pub fn assertValid(mut inState: ClassInf::State, mut inRestriction: SCode::Restr
 }
 
 pub fn assertTrans(mut inState: ClassInf::State, mut event: ClassInf::Event, mut info: SourceInfo) -> Result<ClassInf::State> {
-    let mut outState: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
+    let mut outState: ClassInf::State;
     outState = 'mc: {
         let __mc_input = inState.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -742,7 +742,7 @@ pub fn matchingState(mut inState: ClassInf::State, mut inStateLst: Arc<metamodel
 }
 
 pub fn isFunction(mut inState: ClassInf::State) -> bool {
-    let mut b: bool = false;
+    let mut b: bool;
     b = (match inState.clone() {
         ClassInf::State::FUNCTION { .. } => true,
         _ => false,
@@ -751,7 +751,7 @@ pub fn isFunction(mut inState: ClassInf::State) -> bool {
 }
 
 pub fn isFunctionOrRecord(mut inState: ClassInf::State) -> bool {
-    let mut b: bool = false;
+    let mut b: bool;
     b = (match inState.clone() {
         ClassInf::State::FUNCTION { .. } => true,
         ClassInf::State::RECORD { .. } => true,
@@ -771,13 +771,13 @@ pub fn isConnector(mut inState: ClassInf::State) -> Result<()> {
 pub static basicTypeMods: std::sync::LazyLock<Arc<metamodelica::List<ArcStr>>> = std::sync::LazyLock::new(|| { list![(literal!("quantity")).clone(), (literal!("unit")).clone(), (literal!("displayUnit")).clone(), (literal!("min")).clone(), (literal!("max")).clone(), (literal!("start")).clone(), (literal!("fixed")).clone(), (literal!("nominal")).clone(), (literal!("stateSelect")).clone(), (literal!("uncertain")).clone(), (literal!("distribution")).clone()] });
 
 pub fn isBasicTypeComponentName(mut name: ArcStr) -> bool {
-    let mut res: bool = false;
+    let mut res: bool;
     res = listMember((name.clone()).clone(), basicTypeMods.clone());
     res
 }
 
 pub fn isTypeOrRecord(mut inState: ClassInf::State) -> bool {
-    let mut outIsTypeOrRecord: bool = false;
+    let mut outIsTypeOrRecord: bool;
     outIsTypeOrRecord = (match inState.clone() {
         ClassInf::State::TYPE { .. } => true,
         ClassInf::State::RECORD { .. } => true,
@@ -787,7 +787,7 @@ pub fn isTypeOrRecord(mut inState: ClassInf::State) -> bool {
 }
 
 pub fn isRecord(mut inState: ClassInf::State) -> bool {
-    let mut outIsRecord: bool = false;
+    let mut outIsRecord: bool;
     outIsRecord = (match inState.clone() {
         ClassInf::State::RECORD { .. } => true,
         _ => false,
@@ -796,7 +796,7 @@ pub fn isRecord(mut inState: ClassInf::State) -> bool {
 }
 
 pub fn isMetaRecord(mut inState: ClassInf::State) -> bool {
-    let mut outIsRecord: bool = false;
+    let mut outIsRecord: bool;
     outIsRecord = (match inState.clone() {
         ClassInf::State::META_RECORD { .. } => true,
         _ => false,

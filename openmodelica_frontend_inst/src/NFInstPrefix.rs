@@ -75,31 +75,31 @@ thread_local! { static __functionPrefix_TLS: Arc<Prefix> = Arc::new(Prefix::EMPT
 pub fn functionPrefix() -> Arc<Prefix> { __functionPrefix_TLS.with(|__t| __t.clone()) }
 
 pub fn makePrefix(mut inName: ArcStr, mut inDims: Arc<metamodelica::List<Arc<DAE::Dimension>>>) -> Arc<Prefix> {
-    let mut outPrefix: Arc<Prefix> = Arc::new(<Prefix as ::std::default::Default>::default());
+    let mut outPrefix: Arc<Prefix>;
     outPrefix = Arc::new(Prefix::PREFIX { name: (inName.clone()).clone(), dims: inDims.clone(), restPrefix: emptyPrefix().clone() });
     outPrefix
 }
 
 pub fn makeEmptyPrefix(mut inClassPath: Arc<Absyn::Path>) -> Arc<Prefix> {
-    let mut outPrefix: Arc<Prefix> = Arc::new(<Prefix as ::std::default::Default>::default());
+    let mut outPrefix: Arc<Prefix>;
     outPrefix = Arc::new(Prefix::EMPTY_PREFIX { classPath: Some(inClassPath.clone()) });
     outPrefix
 }
 
 pub fn add(mut inName: ArcStr, mut inDimensions: Arc<metamodelica::List<Arc<DAE::Dimension>>>, mut inPrefix: Arc<Prefix>) -> Arc<Prefix> {
-    let mut outPrefix: Arc<Prefix> = Arc::new(<Prefix as ::std::default::Default>::default());
+    let mut outPrefix: Arc<Prefix>;
     outPrefix = Arc::new(Prefix::PREFIX { name: (inName.clone()).clone(), dims: inDimensions.clone(), restPrefix: inPrefix.clone() });
     outPrefix
 }
 
 pub fn addPath(mut inPath: Arc<Absyn::Path>, mut inPrefix: Arc<Prefix>) -> Result<Arc<Prefix>> {
-    let mut outPrefix: Arc<Prefix> = Arc::new(<Prefix as ::std::default::Default>::default());
+    let mut outPrefix: Arc<Prefix>;
     outPrefix = fromPath2(inPath.clone(), inPrefix.clone())?;
     Ok(outPrefix)
 }
 
 pub fn addOptPath(mut inOptPath: Option<Arc<Absyn::Path>>, mut inPrefix: Arc<Prefix>) -> Result<Arc<Prefix>> {
-    let mut outPrefix: Arc<Prefix> = Arc::new(<Prefix as ::std::default::Default>::default());
+    let mut outPrefix: Arc<Prefix>;
     outPrefix = (::match_deref::match_deref! { match &(inOptPath.clone()) {
         None => {
             inPrefix.clone()
@@ -113,19 +113,19 @@ pub fn addOptPath(mut inOptPath: Option<Arc<Absyn::Path>>, mut inPrefix: Arc<Pre
 }
 
 pub fn addString(mut inName: ArcStr, mut inPrefix: Arc<Prefix>) -> Arc<Prefix> {
-    let mut outPrefix: Arc<Prefix> = Arc::new(<Prefix as ::std::default::Default>::default());
+    let mut outPrefix: Arc<Prefix>;
     outPrefix = Arc::new(Prefix::PREFIX { name: (inName.clone()).clone(), dims: metamodelica::nil(), restPrefix: inPrefix.clone() });
     outPrefix
 }
 
 pub fn addStringList(mut inStrings: Arc<metamodelica::List<ArcStr>>, mut inPrefix: Arc<Prefix>) -> Arc<Prefix> {
-    let mut outPrefix: Arc<Prefix> = Arc::new(<Prefix as ::std::default::Default>::default());
+    let mut outPrefix: Arc<Prefix>;
     outPrefix = fromStringList2(inStrings.clone(), inPrefix.clone());
     outPrefix
 }
 
 pub fn restPrefix(mut inPrefix: Arc<Prefix>) -> Result<Arc<Prefix>> {
-    let mut outRestPrefix: Arc<Prefix> = Arc::new(<Prefix as ::std::default::Default>::default());
+    let mut outRestPrefix: Arc<Prefix>;
     let __pa0 = ::match_deref::match_deref! { match &(inPrefix.clone()) {
         Deref @ Prefix::PREFIX { restPrefix: __pa0, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
@@ -135,7 +135,7 @@ pub fn restPrefix(mut inPrefix: Arc<Prefix>) -> Result<Arc<Prefix>> {
 }
 
 pub fn firstName(mut inPrefix: Arc<Prefix>) -> Result<ArcStr> {
-    let mut outStr: ArcStr = arcstr::literal!("");
+    let mut outStr: ArcStr;
     outStr = ((::match_deref::match_deref! { match &(inPrefix.clone()) {
         Deref @ Prefix::EMPTY_PREFIX { .. } => {
             literal!("")
@@ -181,7 +181,7 @@ pub fn prefixPath(mut inPath: Arc<Absyn::Path>, mut inPrefix: Arc<Prefix>) -> Re
 }
 
 pub fn prefixStr(mut inString: ArcStr, mut inPrefix: Arc<Prefix>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(inPrefix.clone()) {
         Deref @ Prefix::EMPTY_PREFIX { .. } => {
             inString.clone()
@@ -198,7 +198,7 @@ pub fn prefixStr(mut inString: ArcStr, mut inPrefix: Arc<Prefix>) -> Result<ArcS
 }
 
 pub fn toCref(mut inPrefix: Arc<Prefix>) -> Result<Arc<DAE::ComponentRef>> {
-    let mut outCref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
+    let mut outCref: Arc<DAE::ComponentRef>;
     outCref = (::match_deref::match_deref! { match &(inPrefix.clone()) {
         Deref @ Prefix::PREFIX { name, restPrefix: Deref @ Prefix::EMPTY_PREFIX { .. }, .. } => {
             Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (name.clone()).clone(), identType: DAE::T_UNKNOWN_DEFAULT().clone(), subscriptLst: metamodelica::nil() })
@@ -214,7 +214,7 @@ pub fn toCref(mut inPrefix: Arc<Prefix>) -> Result<Arc<DAE::ComponentRef>> {
 }
 
 pub fn toPath(mut inPrefix: Arc<Prefix>) -> Result<Arc<Absyn::Path>> {
-    let mut outPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+    let mut outPath: Arc<Absyn::Path>;
     outPath = (::match_deref::match_deref! { match &(inPrefix.clone()) {
         Deref @ Prefix::PREFIX { name, restPrefix: Deref @ Prefix::EMPTY_PREFIX { .. }, .. } => {
             Arc::new(Absyn::Path::IDENT { name: (name.clone()).clone() })
@@ -230,7 +230,7 @@ pub fn toPath(mut inPrefix: Arc<Prefix>) -> Result<Arc<Absyn::Path>> {
 }
 
 pub fn fromPath(mut inPath: Arc<Absyn::Path>) -> Result<Arc<Prefix>> {
-    let mut outPrefix: Arc<Prefix> = Arc::new(<Prefix as ::std::default::Default>::default());
+    let mut outPrefix: Arc<Prefix>;
     outPrefix = fromPath2(inPath.clone(), emptyPrefix().clone())?;
     Ok(outPrefix)
 }
@@ -253,7 +253,7 @@ fn fromPath2(mut inPath: Arc<Absyn::Path>, mut inPrefix: Arc<Prefix>) -> Result<
 }
 
 pub fn fromStringList(mut inStrings: Arc<metamodelica::List<ArcStr>>) -> Arc<Prefix> {
-    let mut outPrefix: Arc<Prefix> = Arc::new(<Prefix as ::std::default::Default>::default());
+    let mut outPrefix: Arc<Prefix>;
     outPrefix = fromStringList2(inStrings.clone(), emptyPrefix().clone());
     outPrefix
 }
@@ -273,7 +273,7 @@ fn fromStringList2(mut inStrings: Arc<metamodelica::List<ArcStr>>, mut inPrefix:
 }
 
 pub fn toStr(mut inPrefix: Arc<Prefix>) -> Result<ArcStr> {
-    let mut outStr: ArcStr = arcstr::literal!("");
+    let mut outStr: ArcStr;
     outStr = ((::match_deref::match_deref! { match &(inPrefix.clone()) {
         Deref @ Prefix::EMPTY_PREFIX { .. } => {
             literal!("")
@@ -292,7 +292,7 @@ pub fn toStr(mut inPrefix: Arc<Prefix>) -> Result<ArcStr> {
 }
 
 pub fn toStrWithEmpty(mut inPrefix: Arc<Prefix>) -> Result<ArcStr> {
-    let mut outStr: ArcStr = arcstr::literal!("");
+    let mut outStr: ArcStr;
     outStr = ((::match_deref::match_deref! { match &(inPrefix.clone()) {
         Deref @ Prefix::EMPTY_PREFIX { classPath: None } => {
             literal!("E()")
@@ -330,7 +330,7 @@ pub fn isPackagePrefix(mut inPrefix: Arc<Prefix>) -> bool {
 }
 
 pub fn toPackagePrefix(mut inPrefix: Arc<Prefix>) -> Result<Arc<Prefix>> {
-    let mut outPrefix: Arc<Prefix> = Arc::new(<Prefix as ::std::default::Default>::default());
+    let mut outPrefix: Arc<Prefix>;
     outPrefix = (::match_deref::match_deref! { match &(inPrefix.clone()) {
         Deref @ Prefix::PREFIX { name, dims, restPrefix: rest_prefix } => {
             let mut rest_prefix = (*rest_prefix).clone();

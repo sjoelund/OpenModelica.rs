@@ -164,7 +164,7 @@ pub fn functionInlineable(mut r#fn: Arc<Function::Function>) -> Result<bool> {
 }
 
 pub fn inlineRecordSliceEquation(mut slice: Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>, mut variables: Arc<VariablePointers::VariablePointers>, mut set: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>>, mut index: Pointer::Pointer<i32>, mut inlineSimple: bool) -> Result<Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>>> {
-    let mut slices: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>> = metamodelica::nil();
+    let mut slices: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>>;
     let mut record_eqns: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>> = Pointer::create(metamodelica::nil());
     inlineRecordTupleArrayEquation(Pointer::access(Slice::getT(slice.clone())), crate::NBEquation::Iterator::interned_EMPTY(), variables.clone(), record_eqns.clone(), set.clone(), index.clone(), inlineSimple.clone())?;
     slices = ({
@@ -222,11 +222,11 @@ pub fn inlineArrayConstructorSingle(mut eqn: Arc<Equation::Equation>, mut iter: 
 fn inline(mut eqData: Arc<EqData::EqData>, mut varData: Arc<VarData::VarData>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Absyn::Path>, Arc<Function::Function>>>, mut inline_types: Arc<metamodelica::List<DAE::InlineType>>, mut init: bool) -> Result<(Arc<EqData::EqData>, Arc<VarData::VarData>)> {
     let mut eqData: Arc<EqData::EqData> = eqData;
     let mut varData: Arc<VarData::VarData> = varData;
-    let mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<Absyn::Path>, Arc<Function::Function>>> = <Arc<UnorderedMap::UnorderedMap<Arc<Absyn::Path>, Arc<Function::Function>>> as ::std::default::Default>::default();
-    let mut set: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>> = <Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>> as ::std::default::Default>::default();
+    let mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<Absyn::Path>, Arc<Function::Function>>>;
+    let mut set: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>>;
     let mut variables: Arc<VariablePointers::VariablePointers> = BVariable::VarData::getVariables(varData.clone())?;
-    let mut key: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-    let mut value: Arc<Function::Function> = Arc::new(<Function::Function as ::std::default::Default>::default());
+    let mut key: Arc<Absyn::Path>;
+    let mut value: Arc<Function::Function>;
     let mut func_map: Arc<UnorderedMap::UnorderedMap<Arc<Function::Function>, Arc<InlineRating::InlineRating>>> = UnorderedMap::new((std::sync::Arc::new(Function::nameHash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Function::Function>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(Function::nameEqual, Arc<Function::Function>, Arc<Function::Function>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Function::Function>, Arc<Function::Function>) -> Result<bool> + 'static>), 1);
     replacements = UnorderedMap::new((std::sync::Arc::new(AbsynUtil::pathHash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(AbsynUtil::pathEqual, Arc<Absyn::Path>, Arc<Absyn::Path>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<bool> + 'static>), 1);
     for mut tpl in &*UnorderedMap::toList(funcMap.clone()) {
@@ -370,8 +370,8 @@ pub fn inlineRecordTupleArrayEquation(mut eqn: Arc<Equation::Equation>, mut iter
 
 fn inlineRecordTupleArrayIfEquation(mut eqn: Arc<Equation::Equation>, mut body: Arc<IfEquationBody::IfEquationBody>, mut iter: Arc<Iterator::Iterator>, mut variables: Arc<VariablePointers::VariablePointers>, mut new_eqns: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>>, mut set: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>>, mut index: Pointer::Pointer<i32>, mut inlineSimple: bool) -> Result<Arc<Equation::Equation>> {
     let mut eqn: Arc<Equation::Equation> = eqn;
-    let mut eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
-    let mut new_body: Arc<IfEquationBody::IfEquationBody> = Arc::new(<IfEquationBody::IfEquationBody as ::std::default::Default>::default());
+    let mut eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>;
+    let mut new_body: Arc<IfEquationBody::IfEquationBody>;
     let mut new_eqn: Pointer::Pointer<Arc<Equation::Equation>>;
     eqns = Pointer::access(new_eqns.clone());
     new_body = inlineRecordTupleArrayIfBody(body.clone(), iter.clone(), variables.clone(), set.clone(), index.clone(), inlineSimple.clone())?;
@@ -408,9 +408,9 @@ fn inlineRecordTupleArrayIfBody(mut body: Arc<IfEquationBody::IfEquationBody>, m
 
 fn inlineRecordEquation(mut eqn: Arc<Equation::Equation>, mut lhs: Arc<Expression::NFExpression>, mut rhs: Arc<Expression::NFExpression>, mut iter: Arc<Iterator::Iterator>, mut attr: Arc<EquationAttributes::EquationAttributes>, mut recordSize: i32, mut variables: Arc<VariablePointers::VariablePointers>, mut new_eqns: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>>, mut set: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>>, mut index: Pointer::Pointer<i32>, mut inlineSimple: bool) -> Result<Arc<Equation::Equation>> {
     let mut eqn: Arc<Equation::Equation> = eqn;
-    let mut new_lhs: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut new_rhs: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
+    let mut new_lhs: Arc<Expression::NFExpression>;
+    let mut new_rhs: Arc<Expression::NFExpression>;
+    let mut eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>;
     if Flags::isSet(Flags::DUMPBACKENDINLINE.clone())? {
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n[")); __mm_s.push_str(&*literal!("NBInline.inlineRecordEquation")); __mm_s.push_str(&*literal!("] Inlining: ")); ArcStr::from(__mm_s) }).clone());
         if !(BEquation::Iterator::isEmpty(iter.clone())) {
@@ -431,11 +431,11 @@ fn inlineRecordEquation(mut eqn: Arc<Equation::Equation>, mut lhs: Arc<Expressio
 
 fn inlineTupleEquation(mut eqn: Arc<Equation::Equation>, mut LHS: Arc<Expression::NFExpression>, mut RHS: Arc<Expression::NFExpression>, mut attr: Arc<EquationAttributes::EquationAttributes>, mut iter: Arc<Iterator::Iterator>, mut variables: Arc<VariablePointers::VariablePointers>, mut new_eqns: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>>, mut set: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>>, mut index: Pointer::Pointer<i32>) -> Result<Arc<Equation::Equation>> {
     let mut eqn: Arc<Equation::Equation> = eqn;
-    let mut eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
-    let mut lhs_elems: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-    let mut rhs_elems: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-    let mut lhs: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut rhs: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>;
+    let mut lhs_elems: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
+    let mut rhs_elems: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
+    let mut lhs: Arc<Expression::NFExpression>;
+    let mut rhs: Arc<Expression::NFExpression>;
     lhs_elems = getElementList(LHS.clone())?;
     rhs_elems = getElementList(RHS.clone())?;
     if !(lhs_elems.clone().is_empty()) && List::compareLength(lhs_elems.clone(), rhs_elems.clone())? == 0 {
@@ -462,7 +462,7 @@ fn inlineTupleEquation(mut eqn: Arc<Equation::Equation>, mut LHS: Arc<Expression
 
 fn inlineArrayEquation(mut eqn: Arc<Equation::Equation>, mut lhs_elements: metamodelica::Array<Arc<Expression::NFExpression>>, mut rhs_elements: metamodelica::Array<Arc<Expression::NFExpression>>, mut attr: Arc<EquationAttributes::EquationAttributes>, mut iter: Arc<Iterator::Iterator>, mut variables: Arc<VariablePointers::VariablePointers>, mut new_eqns: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>>, mut set: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>>, mut index: Pointer::Pointer<i32>) -> Result<Arc<Equation::Equation>> {
     let mut eqn: Arc<Equation::Equation> = eqn;
-    let mut eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
+    let mut eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>;
     if Flags::isSet(Flags::DUMPBACKENDINLINE.clone())? {
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n[")); __mm_s.push_str(&*literal!("NBInline.inlineArrayEquation")); __mm_s.push_str(&*literal!("] Inlining: ")); ArcStr::from(__mm_s) }).clone());
         if !(BEquation::Iterator::isEmpty(iter.clone())) {
@@ -481,13 +481,13 @@ fn inlineArrayEquation(mut eqn: Arc<Equation::Equation>, mut lhs_elements: metam
 
 fn inlineArrayConstructor(mut eqn: Arc<Equation::Equation>, mut cref: Arc<ComponentRef::NFComponentRef>, mut rhs: Arc<Expression::NFExpression>, mut iters: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>>, mut attr: Arc<EquationAttributes::EquationAttributes>, mut iter: Arc<Iterator::Iterator>, mut variables: Arc<VariablePointers::VariablePointers>, mut new_eqns: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>>, mut set: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>>, mut index: Pointer::Pointer<i32>) -> Result<Arc<Equation::Equation>> {
     let mut eqn: Arc<Equation::Equation> = eqn;
-    let mut frames: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)>> = metamodelica::nil();
-    let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
-    let mut cref_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut new_rhs: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut frames: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)>>;
+    let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>;
+    let mut cref_exp: Arc<Expression::NFExpression>;
+    let mut new_rhs: Arc<Expression::NFExpression>;
     let mut local_set: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>> = UnorderedSet::new((std::sync::Arc::new(BVariable::hash) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<i32> + 'static>), (std::sync::Arc::new(BVariable::equalName) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), 13);
-    let mut local_it: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
-    let mut eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
+    let mut local_it: Arc<VariablePointers::VariablePointers>;
+    let mut eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>;
     if Flags::isSet(Flags::DUMPBACKENDINLINE.clone())? {
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n[")); __mm_s.push_str(&*literal!("NBInline.inlineArrayConstructor")); __mm_s.push_str(&*literal!("] Inlining: ")); ArcStr::from(__mm_s) }).clone());
         if !(BEquation::Iterator::isEmpty(iter.clone())) {
@@ -518,8 +518,8 @@ fn inlineArrayConstructor(mut eqn: Arc<Equation::Equation>, mut cref: Arc<Compon
 
 fn inlinePromoteCall(mut eqn: Arc<Equation::Equation>, mut cref: Arc<ComponentRef::NFComponentRef>, mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut attr: Arc<EquationAttributes::EquationAttributes>, mut iter: Arc<Iterator::Iterator>, mut variables: Arc<VariablePointers::VariablePointers>, mut new_eqns: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>>, mut set: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>>, mut index: Pointer::Pointer<i32>) -> Result<Arc<Equation::Equation>> {
     let mut eqn: Arc<Equation::Equation> = eqn;
-    let mut arg: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut n: i32 = 0;
+    let mut arg: Arc<Expression::NFExpression>;
+    let mut n: i32;
     let mut dim_count: i32 = 0;
     let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
     let mut lhs: Arc<Expression::NFExpression> = Arc::new(Expression::END);
@@ -560,23 +560,23 @@ fn inlinePromoteCall(mut eqn: Arc<Equation::Equation>, mut cref: Arc<ComponentRe
 
 fn inlineCatCall(mut eqn: Arc<Equation::Equation>, mut cref: Arc<ComponentRef::NFComponentRef>, mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut attr: Arc<EquationAttributes::EquationAttributes>, mut iter: Arc<Iterator::Iterator>, mut variables: Arc<VariablePointers::VariablePointers>, mut new_eqns: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>>, mut set: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>>, mut index: Pointer::Pointer<i32>) -> Result<Arc<Equation::Equation>> {
     let mut eqn: Arc<Equation::Equation> = eqn;
-    let mut n: i32 = 0;
+    let mut n: i32;
     let mut sz: i32 = 0;
-    let mut rest: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-    let mut eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
+    let mut rest: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
+    let mut eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>;
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     let mut dim: Arc<Dimension::NFDimension> = Arc::new(Dimension::BOOLEAN);
-    let mut iterator_name: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
+    let mut iterator_name: Arc<ComponentRef::NFComponentRef>;
     let mut lhs: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
     let mut rhs: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
     let mut iterator_var: Pointer::Pointer<Arc<Variable::NFVariable>>;
-    let mut update_vars: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
+    let mut update_vars: Arc<VariablePointers::VariablePointers>;
     let mut range: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut subscript_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut subscript_exp: Arc<Expression::NFExpression>;
     let mut lhs_sub: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut lhs_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut rhs_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut shift: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut shift: Arc<Expression::NFExpression>;
     let mut new_size: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut local_iter: Arc<Iterator::Iterator> = Arc::new(Iterator::EMPTY);
     let mut new_eqn: Pointer::Pointer<Arc<Equation::Equation>>;
@@ -724,7 +724,7 @@ fn bumpShift(mut shift: Arc<Expression::NFExpression>, mut new_size: Arc<Express
 fn createInlinedEquation(mut eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>, mut lhs: Arc<Expression::NFExpression>, mut rhs: Arc<Expression::NFExpression>, mut attr: Arc<EquationAttributes::EquationAttributes>, mut iter: Arc<Iterator::Iterator>, mut variables: Arc<VariablePointers::VariablePointers>, mut set: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>>, mut index: Pointer::Pointer<i32>) -> Result<Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>> {
     let mut eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = eqns;
     let mut tmp_eqns: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>> = Pointer::create(metamodelica::nil());
-    let mut inlined: Arc<Equation::Equation> = Arc::new(Equation::DUMMY_EQUATION);
+    let mut inlined: Arc<Equation::Equation>;
     let mut new_eqn: Pointer::Pointer<Arc<Equation::Equation>>;
     new_eqn = BEquation::Equation::makeAssignment(lhs.clone(), rhs.clone(), index.clone(), (arcstr::literal!(BEquation::SIMULATION_STR)).clone(), iter.clone(), attr.clone())?;
     inlined = inlineRecordTupleArrayEquation(Pointer::access(new_eqn.clone()), iter.clone(), variables.clone(), tmp_eqns.clone(), set.clone(), index.clone(), false)?;
@@ -772,7 +772,7 @@ fn inlineRecordConstructorElements(mut exp: Arc<Expression::NFExpression>) -> Re
 }
 
 fn getElementList(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<metamodelica::List<Arc<Expression::NFExpression>>>> {
-    let mut elements: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
+    let mut elements: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
     elements = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::TUPLE { .. } => {
             var_field!((*exp).elements, Expression::NFExpression::TUPLE).clone()
@@ -796,7 +796,7 @@ fn getElementList(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<metamode
 }
 
 fn checkInline(mut func: Arc<Function::Function>, mut inline_types: Arc<metamodelica::List<DAE::InlineType>>, mut func_map: Arc<UnorderedMap::UnorderedMap<Arc<Function::Function>, Arc<InlineRating::InlineRating>>>) -> Result<bool> {
-    let mut b: bool = false;
+    let mut b: bool;
     let mut it: DAE::InlineType = Function::inlineBuiltin(func.clone());
     b = List::contains(inline_types.clone(), it.clone(), (std::sync::Arc::new(fnptr!(DAEUtil::inlineTypeEqual, DAE::InlineType, DAE::InlineType)) as std::sync::Arc<dyn ::std::ops::Fn(DAE::InlineType, DAE::InlineType) -> Result<bool> + 'static>))? && functionInlineable(func.clone())?;
     if b.clone() && DAEUtil::inlineTypeEqual(it.clone(), openmodelica_frontend_types::DAE::InlineType::DEFAULT_INLINE) {
@@ -808,7 +808,7 @@ fn checkInline(mut func: Arc<Function::Function>, mut inline_types: Arc<metamode
 pub const HEURISTIC_THRESHOLD: i32 = 10;
 
 fn defaultHeuristic(mut r#fn: Arc<Function::Function>, mut func_map: Arc<UnorderedMap::UnorderedMap<Arc<Function::Function>, Arc<InlineRating::InlineRating>>>) -> Result<bool> {
-    let mut b: bool = false;
+    let mut b: bool;
     b = InlineRating::resolve(InlineRating::fromFunction(r#fn.clone(), func_map.clone())?) < metamodelica::OrderedFloat((HEURISTIC_THRESHOLD.clone()) as f64);
     Ok(b)
 }
@@ -836,7 +836,7 @@ pub mod InlineRating {
     pub type INLINE_RATING = InlineRating;
 
     pub fn toString(mut ir: Arc<InlineRating>) -> Result<ArcStr> {
-        let mut r#str: ArcStr = arcstr::literal!("");
+        let mut r#str: ArcStr;
         r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("{resolved: ")); __mm_s.push_str(&*realString(resolve(ir.clone()))); __mm_s.push_str(&*literal!(" | input: ")); __mm_s.push_str(&*Array::toString(ir.input_rating.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("[")).clone(), (literal!(", ")).clone(), (literal!("]")).clone(), true, 0)?); __mm_s.push_str(&*literal!(" | constant: ")); __mm_s.push_str(&*intString(ir.constant_rating.clone())); __mm_s.push_str(&*literal!("}")); ArcStr::from(__mm_s) }).clone();
         Ok(r#str)
     }
@@ -927,12 +927,12 @@ pub mod InlineRating {
     }
 
     pub fn fromFunction(mut r#fn: Arc<Function::Function>, mut func_map: Arc<UnorderedMap::UnorderedMap<Arc<Function::Function>, Arc<InlineRating>>>) -> Result<Arc<InlineRating>> {
-        let mut ir: Arc<InlineRating> = Arc::new(<InlineRating as ::std::default::Default>::default());
+        let mut ir: Arc<InlineRating>;
         let mut irp: Pointer::Pointer<Arc<InlineRating>>;
-        let mut lir: Arc<InlineRating> = Arc::new(<InlineRating as ::std::default::Default>::default());
+        let mut lir: Arc<InlineRating>;
         let mut idx: i32 = 1;
         let mut num_inp: i32 = (r#fn.inputs.clone().len() as i32);
-        let mut tmp: Arc<InlineRating> = Arc::new(<InlineRating as ::std::default::Default>::default());
+        let mut tmp: Arc<InlineRating>;
         let mut local_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<InlineRating>>> = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
         for mut inp in &*r#fn.inputs.clone() {
             let mut inp = inp.clone();

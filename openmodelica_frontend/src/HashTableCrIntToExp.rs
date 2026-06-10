@@ -75,13 +75,13 @@ pub type FuncCrefStr = std::sync::Arc<dyn ::std::ops::Fn(Key) -> Result<ArcStr> 
 pub type FuncExpStr = std::sync::Arc<dyn ::std::ops::Fn(Value) -> Result<ArcStr> + 'static>;
 
 fn hashFunc(mut tpl: Key) -> Result<i32> {
-    let mut res: i32 = 0;
+    let mut res: i32;
     res = ComponentReferenceBasics::hashComponentRef(Util::tuple21(tpl.clone()))? + Util::tuple22(tpl.clone());
     Ok(res)
 }
 
 fn keyEqual(mut tpl1: Key, mut tpl2: Key) -> Result<bool> {
-    let mut res: bool = false;
+    let mut res: bool;
     res = 'mc: {
         let __mc_input = (tpl1.clone(), tpl2.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -107,7 +107,7 @@ fn keyEqual(mut tpl1: Key, mut tpl2: Key) -> Result<bool> {
 }
 
 fn printKey(mut tpl: Key) -> Result<ArcStr> {
-    let mut res: ArcStr = arcstr::literal!("");
+    let mut res: ArcStr;
     res = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(Util::tuple21(tpl.clone()))?); __mm_s.push_str(&*literal!(",")); __mm_s.push_str(&*intString(Util::tuple22(tpl.clone()))); ArcStr::from(__mm_s) }).clone();
     Ok(res)
 }

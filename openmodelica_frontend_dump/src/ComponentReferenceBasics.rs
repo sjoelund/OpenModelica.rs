@@ -53,7 +53,7 @@ use openmodelica_util_datatypes_basic::List;
 // public imports
 // protected imports
 pub fn crefDims(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<Arc<metamodelica::List<Arc<DAE::Dimension>>>> {
-    let mut outDimensionLst: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
+    let mut outDimensionLst: Arc<metamodelica::List<Arc<DAE::Dimension>>>;
     outDimensionLst = (::match_deref::match_deref! { match &(inComponentRef.clone()) {
         Deref @ DAE::ComponentRef::CREF_IDENT { identType: idType, .. } => {
             TypesDump::getDimensions(idType.clone())
@@ -72,7 +72,7 @@ pub fn crefDims(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<Arc<metamo
 }
 
 pub fn crefSubs(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<Arc<metamodelica::List<Arc<DAE::Subscript>>>> {
-    let mut outSubscriptLst: Arc<metamodelica::List<Arc<DAE::Subscript>>> = metamodelica::nil();
+    let mut outSubscriptLst: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
     outSubscriptLst = (::match_deref::match_deref! { match &(inComponentRef.clone()) {
         Deref @ DAE::ComponentRef::CREF_IDENT { subscriptLst: subs, .. } => {
             subs.clone()
@@ -92,9 +92,9 @@ pub fn crefSubs(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<Arc<metamo
 /* Compare  */
 /* **************************************************/
 pub fn crefLastIdentEqual(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::ComponentRef>) -> Result<bool> {
-    let mut equal: bool = false;
-    let mut id1: ArcStr = arcstr::literal!("");
-    let mut id2: ArcStr = arcstr::literal!("");
+    let mut equal: bool;
+    let mut id1: ArcStr;
+    let mut id2: ArcStr;
     id1 = (crefLastIdent(cr1.clone())?).clone();
     id2 = (crefLastIdent(cr2.clone())?).clone();
     equal = stringEq((id1.clone()).clone(), (id2.clone()).clone());
@@ -102,9 +102,9 @@ pub fn crefLastIdentEqual(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::Com
 }
 
 pub fn crefFirstCrefEqual(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::ComponentRef>) -> Result<bool> {
-    let mut equal: bool = false;
-    let mut pcr1: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-    let mut pcr2: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
+    let mut equal: bool;
+    let mut pcr1: Arc<DAE::ComponentRef>;
+    let mut pcr2: Arc<DAE::ComponentRef>;
     pcr1 = crefFirstCref(cr1.clone())?;
     pcr2 = crefFirstCref(cr2.clone())?;
     equal = crefEqual(pcr1.clone(), pcr2.clone())?;
@@ -112,9 +112,9 @@ pub fn crefFirstCrefEqual(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::Com
 }
 
 pub fn crefFirstCrefLastCrefEqual(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::ComponentRef>) -> Result<bool> {
-    let mut equal: bool = false;
-    let mut pcr1: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-    let mut pcr2: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
+    let mut equal: bool;
+    let mut pcr1: Arc<DAE::ComponentRef>;
+    let mut pcr2: Arc<DAE::ComponentRef>;
     pcr1 = crefFirstCref(cr1.clone())?;
     pcr2 = crefLastCref(cr2.clone())?;
     equal = crefEqual(pcr1.clone(), pcr2.clone())?;
@@ -122,7 +122,7 @@ pub fn crefFirstCrefLastCrefEqual(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<
 }
 
 pub fn crefFirstCref(mut inCr: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> {
-    let mut outCr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
+    let mut outCr: Arc<DAE::ComponentRef>;
     outCr = (::match_deref::match_deref! { match &(inCr.clone()) {
         Deref @ DAE::ComponentRef::CREF_QUAL { ident: id, identType: t2, subscriptLst: subs, componentRef: _ } => {
             makeCrefIdent((id.clone()).clone(), t2.clone(), subs.clone())
@@ -166,9 +166,9 @@ pub fn crefLastCref(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<Arc<DA
 }
 
 pub fn crefFirstIdentEqual(mut inCref1: Arc<DAE::ComponentRef>, mut inCref2: Arc<DAE::ComponentRef>) -> Result<bool> {
-    let mut outEqual: bool = false;
-    let mut id1: ArcStr = arcstr::literal!("");
-    let mut id2: ArcStr = arcstr::literal!("");
+    let mut outEqual: bool;
+    let mut id1: ArcStr;
+    let mut id2: ArcStr;
     id1 = (crefFirstIdent(inCref1.clone())?).clone();
     id2 = (crefFirstIdent(inCref2.clone())?).clone();
     outEqual = stringEq((id1.clone()).clone(), (id2.clone()).clone());
@@ -176,7 +176,7 @@ pub fn crefFirstIdentEqual(mut inCref1: Arc<DAE::ComponentRef>, mut inCref2: Arc
 }
 
 pub fn crefFirstIdent(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<ArcStr> {
-    let mut outIdent: ArcStr = arcstr::literal!("");
+    let mut outIdent: ArcStr;
     outIdent = ((::match_deref::match_deref! { match &(inComponentRef.clone()) {
         Deref @ DAE::ComponentRef::CREF_IDENT { ident: id, .. } => {
             id.clone()
@@ -265,9 +265,9 @@ pub mod CompareWithGenericSubscript {
     pub fn compareSubs(mut ss1: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut ss2: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<i32> {
         let mut res: i32 = 0;
         let mut ss: Arc<metamodelica::List<Arc<DAE::Subscript>>> = ss2.clone();
-        let mut s2: Arc<DAE::Subscript> = Arc::new(DAE::Subscript::WHOLEDIM);
-        let mut i1: i32 = 0;
-        let mut i2: i32 = 0;
+        let mut s2: Arc<DAE::Subscript>;
+        let mut i1: i32;
+        let mut i2: i32;
         for mut s1 in &*ss1.clone() {
             let mut s1 = s1.clone();
             if ss.clone().is_empty() {
@@ -360,9 +360,9 @@ pub mod CompareWithGenericSubscriptNotAlphabetic {
     pub fn compareSubs(mut ss1: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut ss2: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<i32> {
         let mut res: i32 = 0;
         let mut ss: Arc<metamodelica::List<Arc<DAE::Subscript>>> = ss2.clone();
-        let mut s2: Arc<DAE::Subscript> = Arc::new(DAE::Subscript::WHOLEDIM);
-        let mut i1: i32 = 0;
-        let mut i2: i32 = 0;
+        let mut s2: Arc<DAE::Subscript>;
+        let mut i1: i32;
+        let mut i2: i32;
         for mut s1 in &*ss1.clone() {
             let mut s1 = s1.clone();
             if ss.clone().is_empty() {
@@ -457,9 +457,9 @@ pub mod CompareWithoutSubscripts {
     pub fn compareSubs(mut ss1: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut ss2: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<i32> {
         let mut res: i32 = 0;
         let mut ss: Arc<metamodelica::List<Arc<DAE::Subscript>>> = ss2.clone();
-        let mut s2: Arc<DAE::Subscript> = Arc::new(DAE::Subscript::WHOLEDIM);
-        let mut i1: i32 = 0;
-        let mut i2: i32 = 0;
+        let mut s2: Arc<DAE::Subscript>;
+        let mut i1: i32;
+        let mut i2: i32;
         for mut s1 in &*ss1.clone() {
             let mut s1 = s1.clone();
             if ss.clone().is_empty() {
@@ -554,9 +554,9 @@ pub mod CompareWithIntSubscript {
     pub fn compareSubs(mut ss1: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut ss2: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<i32> {
         let mut res: i32 = 0;
         let mut ss: Arc<metamodelica::List<Arc<DAE::Subscript>>> = ss2.clone();
-        let mut s2: Arc<DAE::Subscript> = Arc::new(DAE::Subscript::WHOLEDIM);
-        let mut i1: i32 = 0;
-        let mut i2: i32 = 0;
+        let mut s2: Arc<DAE::Subscript>;
+        let mut i1: i32;
+        let mut i2: i32;
         for mut s1 in &*ss1.clone() {
             let mut s1 = s1.clone();
             if ss.clone().is_empty() {
@@ -593,39 +593,39 @@ pub mod CompareWithIntSubscript {
 }
 
 pub fn crefSortFunc(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::ComponentRef>) -> Result<bool> {
-    let mut greaterThan: bool = false;
+    let mut greaterThan: bool;
     greaterThan = CompareWithGenericSubscript::compare(cr1.clone(), cr2.clone())? > 0;
     Ok(greaterThan)
 }
 
 pub fn crefCompareGeneric(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::ComponentRef>) -> Result<i32> {
-    let mut comp: i32 = 0;
+    let mut comp: i32;
     comp = CompareWithGenericSubscript::compare(cr1.clone(), cr2.clone())?;
     Ok(comp)
 }
 
 pub fn crefCompareIntSubscript(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::ComponentRef>) -> Result<i32> {
-    let mut comp: i32 = 0;
+    let mut comp: i32;
     comp = CompareWithIntSubscript::compare(cr1.clone(), cr2.clone())?;
     Ok(comp)
 }
 
 pub fn crefCompareGenericNotAlphabetic(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::ComponentRef>) -> Result<i32> {
-    let mut comp: i32 = 0;
+    let mut comp: i32;
     comp = CompareWithGenericSubscriptNotAlphabetic::compare(cr1.clone(), cr2.clone())?;
     Ok(comp)
 }
 
 pub fn crefLexicalGreaterSubsAtEnd(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::ComponentRef>) -> Result<bool> {
-    let mut isGreater: bool = false;
+    let mut isGreater: bool;
     isGreater = crefLexicalCompareSubsAtEnd(cr1.clone(), cr2.clone())? > 0;
     Ok(isGreater)
 }
 
 pub fn crefLexicalCompareSubsAtEnd(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::ComponentRef>) -> Result<i32> {
-    let mut res: i32 = 0;
-    let mut subs1: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut subs2: Arc<metamodelica::List<i32>> = metamodelica::nil();
+    let mut res: i32;
+    let mut subs1: Arc<metamodelica::List<i32>>;
+    let mut subs2: Arc<metamodelica::List<i32>>;
     res = CompareWithoutSubscripts::compare(cr1.clone(), cr2.clone())?;
     if res.clone() != 0 {
         return Ok(res.clone());
@@ -656,7 +656,7 @@ fn crefLexicalCompareSubsAtEnd2(mut inSubs1: Arc<metamodelica::List<i32>>, mut i
 }
 
 pub fn crefContainedIn(mut containerCref: Arc<DAE::ComponentRef>, mut containedCref: Arc<DAE::ComponentRef>) -> Result<bool> {
-    let mut outBoolean: bool = false;
+    let mut outBoolean: bool;
     outBoolean = 'mc: {
         let __mc_input = (containerCref.clone(), containedCref.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -701,7 +701,7 @@ pub fn crefContainedIn(mut containerCref: Arc<DAE::ComponentRef>, mut containedC
 }
 
 pub fn crefPrefixOf(mut prefixCref: Arc<DAE::ComponentRef>, mut fullCref: Arc<DAE::ComponentRef>) -> Result<bool> {
-    let mut outPrefixOf: bool = false;
+    let mut outPrefixOf: bool;
     outPrefixOf = (::match_deref::match_deref! { match &((prefixCref.clone(), fullCref.clone())) {
         (Deref @ DAE::ComponentRef::CREF_QUAL { .. }, Deref @ DAE::ComponentRef::CREF_QUAL { .. }) => var_field!((*prefixCref).ident, DAE::ComponentRef::CREF_QUAL).clone() == var_field!((*fullCref).ident, DAE::ComponentRef::CREF_QUAL).clone() && ExpressionBasics::subscriptEqual(var_field!((*prefixCref).subscriptLst, DAE::ComponentRef::CREF_QUAL).clone(), var_field!((*fullCref).subscriptLst, DAE::ComponentRef::CREF_QUAL).clone())? && crefPrefixOf(var_field!((*prefixCref).componentRef, DAE::ComponentRef::CREF_QUAL).clone(), var_field!((*fullCref).componentRef, DAE::ComponentRef::CREF_QUAL).clone())?,
         (Deref @ DAE::ComponentRef::CREF_IDENT { subscriptLst: Deref @ metamodelica::List::Nil, .. }, Deref @ DAE::ComponentRef::CREF_QUAL { .. }) => var_field!((*prefixCref).ident, DAE::ComponentRef::CREF_IDENT).clone() == var_field!((*fullCref).ident, DAE::ComponentRef::CREF_QUAL).clone(),
@@ -715,7 +715,7 @@ pub fn crefPrefixOf(mut prefixCref: Arc<DAE::ComponentRef>, mut fullCref: Arc<DA
 }
 
 pub fn crefPrefixOfIgnoreSubscripts(mut prefixCref: Arc<DAE::ComponentRef>, mut fullCref: Arc<DAE::ComponentRef>) -> bool {
-    let mut outPrefixOf: bool = false;
+    let mut outPrefixOf: bool;
     outPrefixOf = (::match_deref::match_deref! { match &((prefixCref.clone(), fullCref.clone())) {
         (Deref @ DAE::ComponentRef::CREF_QUAL { .. }, Deref @ DAE::ComponentRef::CREF_QUAL { .. }) => var_field!((*prefixCref).ident, DAE::ComponentRef::CREF_QUAL).clone() == var_field!((*fullCref).ident, DAE::ComponentRef::CREF_QUAL).clone() && crefPrefixOfIgnoreSubscripts(var_field!((*prefixCref).componentRef, DAE::ComponentRef::CREF_QUAL).clone(), var_field!((*fullCref).componentRef, DAE::ComponentRef::CREF_QUAL).clone()),
         (Deref @ DAE::ComponentRef::CREF_IDENT { .. }, Deref @ DAE::ComponentRef::CREF_QUAL { .. }) => var_field!((*prefixCref).ident, DAE::ComponentRef::CREF_IDENT).clone() == var_field!((*fullCref).ident, DAE::ComponentRef::CREF_QUAL).clone(),
@@ -727,7 +727,7 @@ pub fn crefPrefixOfIgnoreSubscripts(mut prefixCref: Arc<DAE::ComponentRef>, mut 
 }
 
 pub fn crefNotPrefixOf(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::ComponentRef>) -> Result<bool> {
-    let mut outBoolean: bool = false;
+    let mut outBoolean: bool;
     outBoolean = (::match_deref::match_deref! { match &((cr1.clone(), cr2.clone())) {
         (Deref @ DAE::ComponentRef::CREF_QUAL { .. }, Deref @ DAE::ComponentRef::CREF_IDENT { .. }) => true,
         _ => !(crefPrefixOf(cr1.clone(), cr2.clone())?),
@@ -737,25 +737,25 @@ pub fn crefNotPrefixOf(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::Compon
 }
 
 pub fn crefEqual(mut inComponentRef1: Arc<DAE::ComponentRef>, mut inComponentRef2: Arc<DAE::ComponentRef>) -> Result<bool> {
-    let mut outBoolean: bool = false;
+    let mut outBoolean: bool;
     outBoolean = crefEqualNoStringCompare(inComponentRef1.clone(), inComponentRef2.clone())?;
     Ok(outBoolean)
 }
 
 pub fn crefInLst(mut cref: Arc<DAE::ComponentRef>, mut lst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<bool> {
-    let mut b: bool = false;
+    let mut b: bool;
     b = List::isMemberOnTrue(cref.clone(), lst.clone(), (std::sync::Arc::new(crefEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>))?;
     Ok(b)
 }
 
 pub fn crefNotInLst(mut cref: Arc<DAE::ComponentRef>, mut lst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<bool> {
-    let mut b: bool = false;
+    let mut b: bool;
     b = !(List::isMemberOnTrue(cref.clone(), lst.clone(), (std::sync::Arc::new(crefEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>))?);
     Ok(b)
 }
 
 pub fn crefEqualVerySlowStringCompareDoNotUse(mut inComponentRef1: Arc<DAE::ComponentRef>, mut inComponentRef2: Arc<DAE::ComponentRef>) -> Result<bool> {
-    let mut outBoolean: bool = false;
+    let mut outBoolean: bool;
     outBoolean = 'mc: {
         let __mc_input = (inComponentRef1.clone(), inComponentRef2.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -863,7 +863,7 @@ pub fn crefEqualVerySlowStringCompareDoNotUse(mut inComponentRef1: Arc<DAE::Comp
 }
 
 pub fn crefEqualNoStringCompare(mut inCref1: Arc<DAE::ComponentRef>, mut inCref2: Arc<DAE::ComponentRef>) -> Result<bool> {
-    let mut outEqual: bool = false;
+    let mut outEqual: bool;
     if referenceEq(&*(inCref1.clone()),&*(inCref2.clone())) {
         outEqual = true;
         return Ok(outEqual.clone());
@@ -878,20 +878,20 @@ pub fn crefEqualNoStringCompare(mut inCref1: Arc<DAE::ComponentRef>, mut inCref2
 }
 
 pub fn crefEqualReturn(mut cr: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> {
-    let mut ocr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
+    let mut ocr: Arc<DAE::ComponentRef>;
     let true = (crefEqualNoStringCompare(cr.clone(), cr2.clone())?) else { bail!("pattern mismatch") };
     ocr = cr.clone();
     Ok(ocr)
 }
 
 pub fn crefEqualWithoutLastSubs(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::ComponentRef>) -> Result<bool> {
-    let mut res: bool = false;
+    let mut res: bool;
     res = crefEqualNoStringCompare(crefStripLastSubs(cr1.clone())?, crefStripLastSubs(cr2.clone())?)?;
     Ok(res)
 }
 
 pub fn crefEqualWithoutSubs(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::ComponentRef>) -> bool {
-    let mut res: bool = false;
+    let mut res: bool;
     res = crefEqualWithoutSubs2(referenceEq(&*(cr1.clone()),&*(cr2.clone())), cr1.clone(), cr2.clone());
     res
 }
@@ -919,7 +919,7 @@ fn crefEqualWithoutSubs2(mut refEq: bool, mut icr1: Arc<DAE::ComponentRef>, mut 
 }
 
 pub fn crefStripLastSubs(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> {
-    let mut outComponentRef: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
+    let mut outComponentRef: Arc<DAE::ComponentRef>;
     outComponentRef = (::match_deref::match_deref! { match &(inComponentRef.clone()) {
         Deref @ DAE::ComponentRef::CREF_IDENT { ident: id, identType: t2, .. } => {
             makeCrefIdent((id.clone()).clone(), t2.clone(), metamodelica::nil())
@@ -935,19 +935,19 @@ pub fn crefStripLastSubs(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<A
 }
 
 pub fn makeCrefIdent(mut ident: ArcStr, mut identType: Arc<DAE::Type>, mut subscriptLst: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Arc<DAE::ComponentRef> {
-    let mut outCrefIdent: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
+    let mut outCrefIdent: Arc<DAE::ComponentRef>;
     outCrefIdent = Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (ident.clone()).clone(), identType: identType.clone(), subscriptLst: subscriptLst.clone() });
     outCrefIdent
 }
 
 pub fn makeCrefQual(mut ident: ArcStr, mut identType: Arc<DAE::Type>, mut subscriptLst: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut componentRef: Arc<DAE::ComponentRef>) -> Arc<DAE::ComponentRef> {
-    let mut outCrefQual: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
+    let mut outCrefQual: Arc<DAE::ComponentRef>;
     outCrefQual = Arc::new(DAE::ComponentRef::CREF_QUAL { ident: (ident.clone()).clone(), identType: identType.clone(), subscriptLst: subscriptLst.clone(), componentRef: componentRef.clone() });
     outCrefQual
 }
 
 pub fn printComponentRefStr(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(inComponentRef.clone()) {
         Deref @ DAE::ComponentRef::CREF_IDENT { ident: s, subscriptLst: Deref @ metamodelica::List::Nil, .. } => {
             s.clone()
@@ -978,7 +978,7 @@ pub fn printComponentRefStr(mut inComponentRef: Arc<DAE::ComponentRef>) -> Resul
 }
 
 pub fn printComponentRef2Str(mut inIdent: ArcStr, mut inSubscriptLst: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &((inIdent.clone(), inSubscriptLst.clone())) {
         (s, Deref @ metamodelica::List::Nil) => {
             s.clone()
@@ -1000,13 +1000,13 @@ pub fn printComponentRef2Str(mut inIdent: ArcStr, mut inSubscriptLst: Arc<metamo
 }
 
 pub fn printComponentRefListStr(mut crs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<ArcStr> {
-    let mut res: ArcStr = arcstr::literal!("");
+    let mut res: ArcStr;
     res = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("{")); __mm_s.push_str(&*stringDelimitList(List::map(crs.clone(), (std::sync::Arc::new(printComponentRefStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("}")); ArcStr::from(__mm_s) }).clone();
     Ok(res)
 }
 
 pub fn hashComponentRef(mut cr: Arc<DAE::ComponentRef>) -> Result<i32> {
-    let mut hash: i32 = 0;
+    let mut hash: i32;
     hash = (::match_deref::match_deref! { match &(cr.clone()) {
         Deref @ DAE::ComponentRef::CREF_IDENT { ident: id, identType: tp, subscriptLst: subs } => {
             stringHashDjb2((id.clone()).clone()) + hashSubscripts(tp.clone(), subs.clone())?
@@ -1023,7 +1023,7 @@ pub fn hashComponentRef(mut cr: Arc<DAE::ComponentRef>) -> Result<i32> {
 }
 
 fn hashSubscripts(mut tp: Arc<DAE::Type>, mut subs: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<i32> {
-    let mut hash: i32 = 0;
+    let mut hash: i32;
     hash = (::match_deref::match_deref! { match &(subs.clone()) {
         Deref @ metamodelica::List::Nil => 0,
         _ => hashSubscripts2(List::fill(1, (subs.clone().len() as i32)), subs.clone(), 1)?,
@@ -1033,7 +1033,7 @@ fn hashSubscripts(mut tp: Arc<DAE::Type>, mut subs: Arc<metamodelica::List<Arc<D
 }
 
 fn hashSubscripts2(mut dims: Arc<metamodelica::List<i32>>, mut subs: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut factor: i32) -> Result<i32> {
-    let mut hash: i32 = 0;
+    let mut hash: i32;
     hash = (::match_deref::match_deref! { match &((dims.clone(), subs.clone())) {
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => {
             0
@@ -1047,7 +1047,7 @@ fn hashSubscripts2(mut dims: Arc<metamodelica::List<i32>>, mut subs: Arc<metamod
 }
 
 fn hashSubscript(mut sub: Arc<DAE::Subscript>) -> Result<i32> {
-    let mut hash: i32 = 0;
+    let mut hash: i32;
     hash = (::match_deref::match_deref! { match &(sub.clone()) {
         Deref @ DAE::Subscript::WHOLEDIM { .. } => {
             0

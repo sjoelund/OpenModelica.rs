@@ -337,6 +337,6 @@ pub fn checkLVEToolFeature(_lveInstance: Option<i32>, _feature: ArcStr) -> bool 
     false
 }
 
-pub fn stopLibraryVendorExecutable(_lveInstance: Option<i32>) -> () {
-    ()
+pub fn stopLibraryVendorExecutable(_lveInstance: Option<i32>) {
+    
 }

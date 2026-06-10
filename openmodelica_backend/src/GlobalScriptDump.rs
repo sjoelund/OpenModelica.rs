@@ -51,7 +51,7 @@ use openmodelica_frontend_dump::Dump;
 use openmodelica_util_datatypes_basic::List;
 
 pub fn printIstmtsStr(mut inStatements: GlobalScript::Statements) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((match inStatements.clone() {
         GlobalScript::Statements { interactiveStmtLst: ref stmts, .. } => {
             stringDelimitList(List::map(stmts.clone(), (std::sync::Arc::new(printIstmtStr) as std::sync::Arc<dyn ::std::ops::Fn(GlobalScript::Statement) -> Result<ArcStr> + 'static>))?, (literal!("; ")).clone())
@@ -64,7 +64,7 @@ pub fn printIstmtsStr(mut inStatements: GlobalScript::Statements) -> Result<ArcS
 }
 
 pub fn printIstmtStr(mut inStatement: GlobalScript::Statement) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((match inStatement.clone() {
         GlobalScript::Statement::IALG { algItem: ref alg } => {
             Dump::unparseAlgorithmStr(alg.clone())?
@@ -82,8 +82,8 @@ pub fn printIstmtStr(mut inStatement: GlobalScript::Statement) -> Result<ArcStr>
 pub fn printAST(mut pr: Absyn::Program) -> Result<()> {
     let mut s: ArcStr = literal!("");
     let mut class_: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
-    let mut classes: Arc<metamodelica::List<Arc<Absyn::Class>>> = metamodelica::nil();
-    let mut within_: Absyn::Within = Absyn::Within::TOP;
+    let mut classes: Arc<metamodelica::List<Arc<Absyn::Class>>>;
+    let mut within_: Absyn::Within;
     let Absyn::PROGRAM { classes: __pa0, within_: __pa1 } = (pr.clone()) else { bail!("pattern mismatch") };
     classes = __pa0.clone();
     within_ = __pa1.clone();
@@ -102,8 +102,8 @@ pub fn printGlobalScript(mut st: Arc<SymbolTable::SymbolTable>) -> Result<()> {
 }
 
 fn classString(mut cl: Arc<Absyn::Class>) -> Result<ArcStr> {
-    let mut s: ArcStr = arcstr::literal!("");
-    let mut id: ArcStr = arcstr::literal!("");
+    let mut s: ArcStr;
+    let mut id: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(cl.clone()) {
         Deref @ Absyn::Class { name: __pa0, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),

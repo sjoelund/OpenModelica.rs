@@ -107,8 +107,8 @@ pub static ignoreParentsAndImports: Options = Options { ignoreImports: true, ign
 pub static ignoreAll: Options = Options { ignoreImports: true, ignoreExtends: true, ignoreParents: true };
 
 pub fn id(mut inGraph: Graph, mut inRef: Ref, mut inName: Name, mut inOptions: Options, mut inMsg: Msg) -> Result<(Graph, Ref)> {
-    let mut outGraph: Graph = <FCore::Graph as ::std::default::Default>::default();
-    let mut outRef: Ref = Default::default();
+    let mut outGraph: Graph;
+    let mut outRef: Ref;
     (outGraph, outRef) = 'mc: {
         let __mc_input = (inGraph.clone(), inOptions.clone(), inMsg.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -186,8 +186,8 @@ pub fn id(mut inGraph: Graph, mut inRef: Ref, mut inName: Name, mut inOptions: O
 }
 
 pub fn search(mut inGraph: Graph, mut inRefs: Refs, mut inName: Name, mut inOptions: Options, mut inMsg: Msg) -> Result<(Graph, Ref)> {
-    let mut outGraph: Graph = <FCore::Graph as ::std::default::Default>::default();
-    let mut outRef: Ref = Default::default();
+    let mut outGraph: Graph;
+    let mut outRef: Ref;
     (outGraph, outRef) = 'mc: {
         let __mc_input = (inGraph.clone(), inRefs.clone(), inMsg.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -235,8 +235,8 @@ pub fn search(mut inGraph: Graph, mut inRefs: Refs, mut inName: Name, mut inOpti
 }
 
 pub fn name(mut inGraph: Graph, mut inRef: Ref, mut inPath: Arc<Absyn::Path>, mut inOptions: Options, mut inMsg: Msg) -> Result<(Graph, Ref)> {
-    let mut outGraph: Graph = <FCore::Graph as ::std::default::Default>::default();
-    let mut outRef: Ref = Default::default();
+    let mut outGraph: Graph;
+    let mut outRef: Ref;
     (outGraph, outRef) = 'mc: {
         let __mc_input = (inGraph.clone(), inPath.clone(), inMsg.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -307,8 +307,8 @@ pub fn name(mut inGraph: Graph, mut inRef: Ref, mut inPath: Arc<Absyn::Path>, mu
 }
 
 pub fn ext(mut inGraph: Graph, mut inRef: Ref, mut inName: Name, mut inOptions: Options, mut inMsg: Msg) -> Result<(Graph, Ref)> {
-    let mut outGraph: Graph = <FCore::Graph as ::std::default::Default>::default();
-    let mut outRef: Ref = Default::default();
+    let mut outGraph: Graph;
+    let mut outRef: Ref;
     (outGraph, outRef) = 'mc: {
         let __mc_input = inGraph.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -344,8 +344,8 @@ pub fn ext(mut inGraph: Graph, mut inRef: Ref, mut inName: Name, mut inOptions: 
 }
 
 pub fn imp(mut inGraph: Graph, mut inRef: Ref, mut inName: Name, mut inOptions: Options, mut inMsg: Msg) -> Result<(Graph, Ref)> {
-    let mut outGraph: Graph = <FCore::Graph as ::std::default::Default>::default();
-    let mut outRef: Ref = Default::default();
+    let mut outGraph: Graph;
+    let mut outRef: Ref;
     (outGraph, outRef) = 'mc: {
         let __mc_input = inGraph.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -372,8 +372,8 @@ pub fn imp(mut inGraph: Graph, mut inRef: Ref, mut inName: Name, mut inOptions: 
 }
 
 fn imp_qual(mut inGraph: Graph, mut inRef: Ref, mut inName: Name, mut inImports: Arc<metamodelica::List<Absyn::Import>>, mut inOptions: Options, mut inMsg: Msg) -> Result<(Graph, Ref)> {
-    let mut outGraph: Graph = <FCore::Graph as ::std::default::Default>::default();
-    let mut outRef: Ref = Default::default();
+    let mut outGraph: Graph;
+    let mut outRef: Ref;
     (outGraph, outRef) = 'mc: {
         let __mc_input = (inGraph.clone(), inImports.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -415,8 +415,8 @@ fn imp_qual(mut inGraph: Graph, mut inRef: Ref, mut inName: Name, mut inImports:
 }
 
 pub fn imp_unqual(mut inGraph: Graph, mut inRef: Ref, mut inName: Name, mut inImports: Arc<metamodelica::List<Absyn::Import>>, mut inOptions: Options, mut inMsg: Msg) -> Result<(Graph, Ref)> {
-    let mut outGraph: Graph = <FCore::Graph as ::std::default::Default>::default();
-    let mut outRef: Ref = Default::default();
+    let mut outGraph: Graph;
+    let mut outRef: Ref;
     (outGraph, outRef) = 'mc: {
         let __mc_input = (inGraph.clone(), inImports.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -448,15 +448,15 @@ pub fn imp_unqual(mut inGraph: Graph, mut inRef: Ref, mut inName: Name, mut inIm
 }
 
 pub fn fq(mut inGraph: Graph, mut inName: Arc<Absyn::Path>, mut inOptions: Options, mut inMsg: Msg) -> Result<(Graph, Ref)> {
-    let mut outGraph: Graph = <FCore::Graph as ::std::default::Default>::default();
-    let mut outRef: Ref = Default::default();
+    let mut outGraph: Graph;
+    let mut outRef: Ref;
     (outGraph, outRef) = name(inGraph.clone(), FGraph::top(inGraph.clone())?, inName.clone(), inOptions.clone(), inMsg.clone())?;
     Ok((outGraph, outRef))
 }
 
 pub fn cr(mut inGraph: Graph, mut inRef: Ref, mut inCref: Arc<Absyn::ComponentRef>, mut inOptions: Options, mut inMsg: Msg) -> Result<(Graph, Ref)> {
-    let mut outGraph: Graph = <FCore::Graph as ::std::default::Default>::default();
-    let mut outRef: Ref = Default::default();
+    let mut outGraph: Graph;
+    let mut outRef: Ref;
     (outGraph, outRef) = 'mc: {
         let __mc_input = (inGraph.clone(), inCref.clone(), inMsg.clone());
         if let Ok(__v) = (|| -> Result<_> {

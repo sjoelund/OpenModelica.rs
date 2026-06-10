@@ -354,7 +354,7 @@ pub fn isClock(mut ty: Arc<NFType>) -> Result<bool> {
 }
 
 pub fn isContinuous(mut ty: Arc<NFType>) -> Result<bool> {
-    let mut b: bool = false;
+    let mut b: bool;
     b = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ COMPLEX { complexTy: ct @ Deref @ ComplexType::RECORD { .. }, .. } => {
             List::all(({
@@ -375,7 +375,7 @@ pub fn isContinuous(mut ty: Arc<NFType>) -> Result<bool> {
 }
 
 pub fn isScalar(mut ty: Arc<NFType>) -> bool {
-    let mut isScalar: bool = false;
+    let mut isScalar: bool;
     isScalar = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ ARRAY { .. } => false,
         Deref @ CONDITIONAL_ARRAY { .. } => false,
@@ -386,7 +386,7 @@ pub fn isScalar(mut ty: Arc<NFType>) -> bool {
 }
 
 pub fn isArray(mut ty: Arc<NFType>) -> bool {
-    let mut isArray: bool = false;
+    let mut isArray: bool;
     isArray = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ ARRAY { .. } => true,
         Deref @ CONDITIONAL_ARRAY { .. } => true,
@@ -397,7 +397,7 @@ pub fn isArray(mut ty: Arc<NFType>) -> bool {
 }
 
 pub fn isConditionalArray(mut ty: Arc<NFType>) -> bool {
-    let mut isConditionalArray: bool = false;
+    let mut isConditionalArray: bool;
     isConditionalArray = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ CONDITIONAL_ARRAY { .. } => true,
         _ => false,
@@ -417,7 +417,7 @@ pub fn sizeKnown(mut ty: Arc<NFType>) -> Result<bool> {
 }
 
 pub fn isAny(mut ty: Arc<NFType>) -> bool {
-    let mut b: bool = false;
+    let mut b: bool;
     b = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ ANY => true,
         _ => false,
@@ -427,8 +427,8 @@ pub fn isAny(mut ty: Arc<NFType>) -> bool {
 }
 
 pub fn setConditionalArrayTypes(mut condType: Arc<NFType>, mut trueType: Arc<NFType>, mut falseType: Arc<NFType>) -> Result<Arc<NFType>> {
-    let mut outType: Arc<NFType> = Arc::new(NFType::ANY);
-    let mut matched_branch: Branch = Branch::NONE;
+    let mut outType: Arc<NFType>;
+    let mut matched_branch: Branch;
     let __pa0 = ::match_deref::match_deref! { match &(condType.clone()) {
         Deref @ CONDITIONAL_ARRAY { matchedBranch: __pa0, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
@@ -466,7 +466,7 @@ pub fn removeSizeOneArraysAndRecords(mut ty: Arc<NFType>) -> Result<Arc<NFType>>
 
 pub fn isMatchedBranch(mut condition: bool, mut condType: Arc<NFType>) -> Result<bool> {
     let mut isMatched: bool = true;
-    let mut matched_branch: Branch = Branch::NONE;
+    let mut matched_branch: Branch;
     let __pa0 = ::match_deref::match_deref! { match &(condType.clone()) {
         Deref @ CONDITIONAL_ARRAY { matchedBranch: __pa0, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
@@ -479,7 +479,7 @@ pub fn isMatchedBranch(mut condition: bool, mut condType: Arc<NFType>) -> Result
 }
 
 pub fn simplifyConditionalArray(mut ty: Arc<NFType>) -> Arc<NFType> {
-    let mut outType: Arc<NFType> = Arc::new(NFType::ANY);
+    let mut outType: Arc<NFType>;
     outType = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ CONDITIONAL_ARRAY { .. } => (match var_field!((*ty).matchedBranch, NFType::CONDITIONAL_ARRAY).clone() {
         Branch::TRUE => var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone(),
@@ -543,7 +543,7 @@ pub fn isEmptyArray(mut ty: Arc<NFType>) -> Result<bool> {
 }
 
 pub fn isSingleElementArray(mut ty: Arc<NFType>) -> Result<bool> {
-    let mut isSingleElement: bool = false;
+    let mut isSingleElement: bool;
     isSingleElement = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ ARRAY { dimensions: Deref @ metamodelica::List::Cons { head: d, tail: Deref @ metamodelica::List::Nil }, .. } => {
             Dimension::isKnown(d.clone(), false) && Dimension::size(d.clone(), false)? == 1
@@ -557,7 +557,7 @@ pub fn isSingleElementArray(mut ty: Arc<NFType>) -> Result<bool> {
 }
 
 pub fn isEnumeration(mut ty: Arc<NFType>) -> bool {
-    let mut isEnum: bool = false;
+    let mut isEnum: bool;
     isEnum = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ ENUMERATION { .. } => true,
         _ => false,
@@ -567,7 +567,7 @@ pub fn isEnumeration(mut ty: Arc<NFType>) -> bool {
 }
 
 pub fn isBuiltinEnumeration(mut ty: Arc<NFType>) -> bool {
-    let mut isBuiltin: bool = false;
+    let mut isBuiltin: bool;
     let mut name: ArcStr = arcstr::literal!("");
     isBuiltin = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ ENUMERATION { typePath: Deref @ Absyn::Path::IDENT { name: __esc_name }, .. } => {
@@ -586,7 +586,7 @@ pub fn isBuiltinEnumeration(mut ty: Arc<NFType>) -> bool {
 }
 
 pub fn isUnspecifiedEnumeration(mut ty: Arc<NFType>) -> bool {
-    let mut res: bool = false;
+    let mut res: bool;
     res = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ ENUMERATION { literals: Deref @ metamodelica::List::Nil, .. } => true,
         _ => false,
@@ -596,7 +596,7 @@ pub fn isUnspecifiedEnumeration(mut ty: Arc<NFType>) -> bool {
 }
 
 pub fn isComplex(mut ty: Arc<NFType>) -> bool {
-    let mut isComplex: bool = false;
+    let mut isComplex: bool;
     isComplex = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ COMPLEX { .. } => true,
         _ => false,
@@ -606,7 +606,7 @@ pub fn isComplex(mut ty: Arc<NFType>) -> bool {
 }
 
 pub fn isComplexArray(mut ty: Arc<NFType>) -> Result<bool> {
-    let mut isComplex: bool = false;
+    let mut isComplex: bool;
     isComplex = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ ARRAY { .. } => self::isComplex(var_field!((*ty).elementType, NFType::ARRAY).clone()),
         _ => false,
@@ -616,7 +616,7 @@ pub fn isComplexArray(mut ty: Arc<NFType>) -> Result<bool> {
 }
 
 pub fn complexNode(mut ty: Arc<NFType>) -> Result<Arc<InstNode::InstNode>> {
-    let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
+    let mut node: Arc<InstNode::InstNode>;
     let __pa0 = ::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ COMPLEX { cls: __pa0, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
@@ -626,13 +626,13 @@ pub fn complexNode(mut ty: Arc<NFType>) -> Result<Arc<InstNode::InstNode>> {
 }
 
 pub fn complexComponents(mut ty: Arc<NFType>) -> Result<metamodelica::Array<Arc<InstNode::InstNode>>> {
-    let mut comps: metamodelica::Array<Arc<InstNode::InstNode>> = Default::default();
+    let mut comps: metamodelica::Array<Arc<InstNode::InstNode>>;
     comps = ClassTree::getComponents(Class::classTree(InstNode::getClass(complexNode(ty.clone())?)?)?)?;
     Ok(comps)
 }
 
 pub fn isConnector(mut ty: Arc<NFType>) -> bool {
-    let mut isConnector: bool = false;
+    let mut isConnector: bool;
     isConnector = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ COMPLEX { complexTy: Deref @ ComplexType::CONNECTOR { .. }, .. } => true,
         _ => false,
@@ -642,7 +642,7 @@ pub fn isConnector(mut ty: Arc<NFType>) -> bool {
 }
 
 pub fn isStreamConnector(mut ty: Arc<NFType>) -> bool {
-    let mut isStreamConnector: bool = false;
+    let mut isStreamConnector: bool;
     isStreamConnector = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ COMPLEX { complexTy: Deref @ ComplexType::CONNECTOR { streams: Deref @ metamodelica::List::Cons { head: _, tail: _ }, .. }, .. } => true,
         _ => false,
@@ -652,7 +652,7 @@ pub fn isStreamConnector(mut ty: Arc<NFType>) -> bool {
 }
 
 pub fn isExpandableConnector(mut ty: Arc<NFType>) -> bool {
-    let mut isExpandable: bool = false;
+    let mut isExpandable: bool;
     isExpandable = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ COMPLEX { complexTy: Deref @ ComplexType::EXPANDABLE_CONNECTOR { .. }, .. } => true,
         _ => false,
@@ -662,7 +662,7 @@ pub fn isExpandableConnector(mut ty: Arc<NFType>) -> bool {
 }
 
 pub fn isExternalObject(mut ty: Arc<NFType>) -> bool {
-    let mut isEO: bool = false;
+    let mut isEO: bool;
     isEO = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ COMPLEX { complexTy: Deref @ ComplexType::EXTERNAL_OBJECT { .. }, .. } => true,
         _ => false,
@@ -672,7 +672,7 @@ pub fn isExternalObject(mut ty: Arc<NFType>) -> bool {
 }
 
 pub fn isRecord(mut ty: Arc<NFType>) -> bool {
-    let mut isRecord: bool = false;
+    let mut isRecord: bool;
     isRecord = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ COMPLEX { complexTy: Deref @ ComplexType::RECORD { .. }, .. } => true,
         _ => false,
@@ -698,7 +698,7 @@ pub fn isBasic(mut ty: Arc<NFType>) -> bool {
 }
 
 pub fn isBasicNumeric(mut ty: Arc<NFType>) -> bool {
-    let mut isNumeric: bool = false;
+    let mut isNumeric: bool;
     isNumeric = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ REAL { .. } => true,
         Deref @ INTEGER { .. } => true,
@@ -736,7 +736,7 @@ pub fn isScalarBuiltin(mut ty: Arc<NFType>) -> Result<bool> {
 }
 
 pub fn isTuple(mut ty: Arc<NFType>) -> bool {
-    let mut isTuple: bool = false;
+    let mut isTuple: bool;
     isTuple = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ TUPLE { .. } => true,
         _ => false,
@@ -746,7 +746,7 @@ pub fn isTuple(mut ty: Arc<NFType>) -> bool {
 }
 
 pub fn isUnknown(mut ty: Arc<NFType>) -> bool {
-    let mut isUnknown: bool = false;
+    let mut isUnknown: bool;
     isUnknown = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ UNKNOWN { .. } => true,
         _ => false,
@@ -756,7 +756,7 @@ pub fn isUnknown(mut ty: Arc<NFType>) -> bool {
 }
 
 pub fn isKnown(mut ty: Arc<NFType>) -> bool {
-    let mut isKnown: bool = false;
+    let mut isKnown: bool;
     isKnown = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ UNKNOWN { .. } => false,
         Deref @ UNTYPED { .. } => false,
@@ -767,7 +767,7 @@ pub fn isKnown(mut ty: Arc<NFType>) -> bool {
 }
 
 pub fn isPolymorphic(mut ty: Arc<NFType>) -> bool {
-    let mut isPolymorphic: bool = false;
+    let mut isPolymorphic: bool;
     isPolymorphic = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ POLYMORPHIC { .. } => true,
         _ => false,
@@ -777,7 +777,7 @@ pub fn isPolymorphic(mut ty: Arc<NFType>) -> bool {
 }
 
 pub fn isPolymorphicNamed(mut ty: Arc<NFType>, mut name: ArcStr) -> bool {
-    let mut res: bool = false;
+    let mut res: bool;
     res = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ POLYMORPHIC { .. } => name.clone() == var_field!((*ty).name, NFType::POLYMORPHIC).clone(),
         _ => false,
@@ -787,7 +787,7 @@ pub fn isPolymorphicNamed(mut ty: Arc<NFType>, mut name: ArcStr) -> bool {
 }
 
 pub fn firstTupleType(mut ty: Arc<NFType>) -> Result<Arc<NFType>> {
-    let mut outTy: Arc<NFType> = Arc::new(NFType::ANY);
+    let mut outTy: Arc<NFType>;
     outTy = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ TUPLE { .. } => listHead(var_field!((*ty).types, NFType::TUPLE).clone())?,
         Deref @ ARRAY { .. } => Arc::new(NFType::ARRAY { elementType: firstTupleType(var_field!((*ty).elementType, NFType::ARRAY).clone())?, dimensions: var_field!((*ty).dimensions, NFType::ARRAY).clone() }),
@@ -798,7 +798,7 @@ pub fn firstTupleType(mut ty: Arc<NFType>) -> Result<Arc<NFType>> {
 }
 
 pub fn nthTupleType(mut ty: Arc<NFType>, mut n: i32) -> Result<Arc<NFType>> {
-    let mut outTy: Arc<NFType> = Arc::new(NFType::ANY);
+    let mut outTy: Arc<NFType>;
     outTy = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ TUPLE { .. } => (var_field!((*ty).types, NFType::TUPLE).clone()).get(n.clone())?,
         Deref @ ARRAY { .. } => Arc::new(NFType::ARRAY { elementType: nthTupleType(var_field!((*ty).elementType, NFType::ARRAY).clone(), n.clone())?, dimensions: var_field!((*ty).dimensions, NFType::ARRAY).clone() }),
@@ -821,7 +821,7 @@ pub fn arrayElementType(mut ty: Arc<NFType>) -> Arc<NFType> {
 }
 
 pub fn setArrayElementType(mut arrayTy: Arc<NFType>, mut elementTy: Arc<NFType>) -> Arc<NFType> {
-    let mut ty: Arc<NFType> = Arc::new(NFType::ANY);
+    let mut ty: Arc<NFType>;
     ty = (::match_deref::match_deref! { match &(arrayTy.clone()) {
         Deref @ ARRAY { .. } => liftArrayLeftList(elementTy.clone(), var_field!((*arrayTy).dimensions, NFType::ARRAY).clone()),
         Deref @ CONDITIONAL_ARRAY { .. } => Arc::new(NFType::CONDITIONAL_ARRAY { trueType: setArrayElementType(var_field!((*arrayTy).trueType, NFType::CONDITIONAL_ARRAY).clone(), elementTy.clone()), falseType: setArrayElementType(var_field!((*arrayTy).falseType, NFType::CONDITIONAL_ARRAY).clone(), elementTy.clone()), matchedBranch: var_field!((*arrayTy).matchedBranch, NFType::CONDITIONAL_ARRAY).clone() }),
@@ -844,7 +844,7 @@ pub fn elementType(mut ty: Arc<NFType>) -> Arc<NFType> {
 }
 
 pub fn copyElementType(mut dstType: Arc<NFType>, mut srcType: Arc<NFType>) -> Arc<NFType> {
-    let mut ty: Arc<NFType> = Arc::new(NFType::ANY);
+    let mut ty: Arc<NFType>;
     ty = setArrayElementType(dstType.clone(), arrayElementType(srcType.clone()));
     ty
 }
@@ -864,7 +864,7 @@ pub fn arrayDims(mut ty: Arc<NFType>) -> Arc<metamodelica::List<Arc<Dimension::N
 }
 
 pub fn copyDims(mut srcType: Arc<NFType>, mut dstType: Arc<NFType>) -> Arc<NFType> {
-    let mut ty: Arc<NFType> = Arc::new(NFType::ANY);
+    let mut ty: Arc<NFType>;
     if arrayDims(srcType.clone()).is_empty() {
         ty = arrayElementType(dstType.clone());
     } else {
@@ -964,7 +964,7 @@ pub fn hasKnownSize(mut ty: Arc<NFType>) -> Result<bool> {
 }
 
 pub fn hasZeroDimension(mut ty: Arc<NFType>) -> Result<bool> {
-    let mut hasZero: bool = false;
+    let mut hasZero: bool;
     hasZero = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ ARRAY { .. } => List::any(var_field!((*ty).dimensions, NFType::ARRAY).clone(), (std::sync::Arc::new(Dimension::isZero) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<bool> + 'static>))?,
         Deref @ CONDITIONAL_ARRAY { .. } => hasZeroDimension(var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone())? && hasZeroDimension(var_field!((*ty).falseType, NFType::CONDITIONAL_ARRAY).clone())?,
@@ -1040,8 +1040,8 @@ pub fn foldDims<ArgT: Clone + 'static>(mut ty: Arc<NFType>, mut func: Arc<dyn ::
 }
 
 pub fn nthEnumLiteral(mut ty: Arc<NFType>, mut index: i32) -> Result<ArcStr> {
-    let mut literal: ArcStr = arcstr::literal!("");
-    let mut literals: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+    let mut literal: ArcStr;
+    let mut literals: Arc<metamodelica::List<ArcStr>>;
     let __pa0 = ::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ ENUMERATION { literals: __pa0, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
@@ -1110,7 +1110,7 @@ pub fn toFlatString(mut ty: Arc<NFType>, mut format: BaseModelica::OutputFormat)
 }
 
 pub fn dimensionsToFlatString(mut ty: Arc<NFType>, mut format: BaseModelica::OutputFormat) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     r#str = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ ARRAY { .. } => stringDelimitList(List::map(var_field!((*ty).dimensions, NFType::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b1 = format.clone(); move |__pe_a0| Dimension::toFlatString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone()),
         _ => {
@@ -1127,8 +1127,8 @@ pub fn toFlatDeclarationStream(mut ty: Arc<NFType>, mut format: BaseModelica::Ou
     let mut name: ArcStr = arcstr::literal!("");
     let mut complexTy: Arc<ComplexType::NFComplexType> = Arc::new(ComplexType::CLASS);
     let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-    let mut constructor: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
-    let mut destructor: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
+    let mut constructor: Arc<InstNode::InstNode>;
+    let mut destructor: Arc<InstNode::InstNode>;
     let mut f: Arc<Function::Function> = Arc::new(<Function::Function as ::std::default::Default>::default());
     s = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ ENUMERATION { .. } => {
@@ -1181,7 +1181,7 @@ pub fn toFlatDeclarationStream(mut ty: Arc<NFType>, mut format: BaseModelica::Ou
 }
 
 pub fn typenameString(mut ty: Arc<NFType>) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     r#str = ((::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ ENUMERATION { .. } => AbsynUtil::pathString(var_field!((*ty).typePath, NFType::ENUMERATION).clone(), (literal!(".")).clone(), true, false)?,
         _ => toString(ty.clone())?,
@@ -1191,7 +1191,7 @@ pub fn typenameString(mut ty: Arc<NFType>) -> Result<ArcStr> {
 }
 
 pub fn toDAE(mut ty: Arc<NFType>, mut makeTypeVars: bool) -> Result<Arc<DAE::Type>> {
-    let mut daeTy: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+    let mut daeTy: Arc<DAE::Type>;
     daeTy = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ INTEGER => DAE::T_INTEGER_DEFAULT().clone(),
         Deref @ REAL => DAE::T_REAL_DEFAULT().clone(),
@@ -1287,7 +1287,7 @@ pub fn subscript(mut ty: Arc<NFType>, mut subs: Arc<metamodelica::List<Arc<Subsc
 }
 
 pub fn isEqual(mut ty1: Arc<NFType>, mut ty2: Arc<NFType>) -> Result<bool> {
-    let mut equal: bool = false;
+    let mut equal: bool;
     if referenceEq(&*(ty1.clone()),&*(ty2.clone())) {
         equal = true;
         return Ok(equal.clone());
@@ -1420,7 +1420,7 @@ pub fn isDiscrete(mut ty: Arc<NFType>) -> Result<bool> {
 }
 
 pub fn lookupRecordFieldType(mut name: ArcStr, mut recordType: Arc<NFType>) -> Result<Arc<NFType>> {
-    let mut fieldType: Arc<NFType> = Arc::new(NFType::ANY);
+    let mut fieldType: Arc<NFType>;
     fieldType = (::match_deref::match_deref! { match &(recordType.clone()) {
         Deref @ COMPLEX { .. } => InstNode::getType((Class::lookupElement((name.clone()).clone(), InstNode::getClass(var_field!((*recordType).cls, NFType::COMPLEX).clone())?)?).0)?,
         Deref @ ARRAY { .. } => liftArrayLeftList(lookupRecordFieldType((name.clone()).clone(), var_field!((*recordType).elementType, NFType::ARRAY).clone())?, var_field!((*recordType).dimensions, NFType::ARRAY).clone()),
@@ -1431,7 +1431,7 @@ pub fn lookupRecordFieldType(mut name: ArcStr, mut recordType: Arc<NFType>) -> R
 }
 
 pub fn recordFieldCount(mut recordType: Arc<NFType>) -> i32 {
-    let mut fieldCount: i32 = 0;
+    let mut fieldCount: i32;
     let mut fields: metamodelica::Array<Arc<Record::Field::Field>> = Default::default();
     fieldCount = (::match_deref::match_deref! { match &(recordType.clone()) {
         Deref @ COMPLEX { complexTy: Deref @ ComplexType::RECORD { fields: __esc_fields, .. }, .. } => {
@@ -1445,7 +1445,7 @@ pub fn recordFieldCount(mut recordType: Arc<NFType>) -> i32 {
 }
 
 pub fn recordFields(mut recordType: Arc<NFType>) -> Arc<metamodelica::List<Arc<Record::Field::Field>>> {
-    let mut field_lst: Arc<metamodelica::List<Arc<Record::Field::Field>>> = metamodelica::nil();
+    let mut field_lst: Arc<metamodelica::List<Arc<Record::Field::Field>>>;
     field_lst = (::match_deref::match_deref! { match &(recordType.clone()) {
         Deref @ COMPLEX { complexTy: Deref @ ComplexType::RECORD { fields, .. }, .. } => {
             Arc::new(fields.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>())
@@ -1486,7 +1486,7 @@ pub fn updateRecordFieldsIndexMap(mut fields: metamodelica::Array<Arc<Record::Fi
 }
 
 pub fn tupleFieldCount(mut tupleType: Arc<NFType>) -> i32 {
-    let mut fieldCount: i32 = 0;
+    let mut fieldCount: i32;
     fieldCount = (::match_deref::match_deref! { match &(tupleType.clone()) {
         Deref @ TUPLE { .. } => (var_field!((*tupleType).types, NFType::TUPLE).clone().len() as i32),
         _ => 0,
@@ -1496,7 +1496,7 @@ pub fn tupleFieldCount(mut tupleType: Arc<NFType>) -> i32 {
 }
 
 pub fn enumName(mut ty: Arc<NFType>) -> Result<Arc<Absyn::Path>> {
-    let mut name: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+    let mut name: Arc<Absyn::Path>;
     let __pa0 = ::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ ENUMERATION { typePath: __pa0, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
@@ -1506,8 +1506,8 @@ pub fn enumName(mut ty: Arc<NFType>) -> Result<Arc<Absyn::Path>> {
 }
 
 pub fn enumSize(mut ty: Arc<NFType>) -> Result<i32> {
-    let mut size: i32 = 0;
-    let mut literals: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+    let mut size: i32;
+    let mut literals: Arc<metamodelica::List<ArcStr>>;
     let __pa0 = ::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ ENUMERATION { literals: __pa0, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
@@ -1518,7 +1518,7 @@ pub fn enumSize(mut ty: Arc<NFType>) -> Result<i32> {
 }
 
 pub fn r#box(mut ty: Arc<NFType>) -> Arc<NFType> {
-    let mut boxedType: Arc<NFType> = Arc::new(NFType::ANY);
+    let mut boxedType: Arc<NFType>;
     boxedType = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ STRING { .. } => ty.clone(),
         Deref @ TUPLE { .. } => Arc::new(NFType::TUPLE { types: ({
@@ -1541,7 +1541,7 @@ pub fn r#box(mut ty: Arc<NFType>) -> Arc<NFType> {
 }
 
 pub fn unbox(mut ty: Arc<NFType>) -> Arc<NFType> {
-    let mut unboxedType: Arc<NFType> = Arc::new(NFType::ANY);
+    let mut unboxedType: Arc<NFType>;
     unboxedType = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ METABOXED { .. } => var_field!((*ty).ty, NFType::METABOXED).clone(),
         _ => ty.clone(),
@@ -1551,7 +1551,7 @@ pub fn unbox(mut ty: Arc<NFType>) -> Arc<NFType> {
 }
 
 pub fn isBoxed(mut ty: Arc<NFType>) -> bool {
-    let mut isBoxed: bool = false;
+    let mut isBoxed: bool;
     isBoxed = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ METABOXED { .. } => true,
         _ => false,
@@ -1561,7 +1561,7 @@ pub fn isBoxed(mut ty: Arc<NFType>) -> bool {
 }
 
 pub fn sizeType(mut arrayTy: Arc<NFType>) -> Arc<NFType> {
-    let mut sizeTy: Arc<NFType> = Arc::new(NFType::ANY);
+    let mut sizeTy: Arc<NFType>;
     if isUnknown(arrayTy.clone()) {
         sizeTy = crate::NFType::interned_UNKNOWN();
     } else {
@@ -1596,7 +1596,7 @@ pub fn sizeOf(mut ty: Arc<NFType>, mut resize: bool) -> Result<i32> {
         Ok(outSize)
     }
 
-    let mut sz: i32 = 0;
+    let mut sz: i32;
     sz = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ INTEGER { .. } => 1,
         Deref @ REAL { .. } => 1,

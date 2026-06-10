@@ -132,17 +132,17 @@ pub use self::Visualization::{SHAPE,VECTOR,SURFACE};
 // dump visualization xml
 //-------------------------
 pub fn visualizationInfoXML(mut daeIn: Arc<BackendDAE::BackendDAE>, mut fileName: ArcStr, mut program: Absyn::Program) -> Result<Arc<BackendDAE::BackendDAE>> {
-    let mut daeOut: Arc<BackendDAE::BackendDAE> = Arc::new(<BackendDAE::BackendDAE as ::std::default::Default>::default());
-    let mut eqs: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>> = metamodelica::nil();
-    let mut eqs0: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>> = metamodelica::nil();
-    let mut shared: Arc<BackendDAE::Shared> = Arc::new(<BackendDAE::Shared as ::std::default::Default>::default());
-    let mut globalKnownVars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
-    let mut aliasVars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
-    let mut globalKnownVarLst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
-    let mut allVarLst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
-    let mut aliasVarLst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
-    let mut visuals: Arc<metamodelica::List<Visualization>> = metamodelica::nil();
-    let mut allVisuals: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, ArcStr)>> = metamodelica::nil();
+    let mut daeOut: Arc<BackendDAE::BackendDAE>;
+    let mut eqs: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>>;
+    let mut eqs0: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>>;
+    let mut shared: Arc<BackendDAE::Shared>;
+    let mut globalKnownVars: BackendDAE::Variables;
+    let mut aliasVars: BackendDAE::Variables;
+    let mut globalKnownVarLst: Arc<metamodelica::List<BackendDAE::Var>>;
+    let mut allVarLst: Arc<metamodelica::List<BackendDAE::Var>>;
+    let mut aliasVarLst: Arc<metamodelica::List<BackendDAE::Var>>;
+    let mut visuals: Arc<metamodelica::List<Visualization>>;
+    let mut allVisuals: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, ArcStr)>>;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(daeIn.clone()) {
         Deref @ BackendDAE::BackendDAE { eqs: __pa0, shared: __pa1 } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
@@ -218,8 +218,8 @@ fn replaceVisualBinding(mut vis: Visualization, mut varArray: BackendDAE::Variab
 
 fn getConstCrefBinding(mut cr: Arc<DAE::ComponentRef>, mut vars: BackendDAE::Variables) -> Result<Arc<DAE::Exp>> {
     let mut eOut: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut var: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
+    let mut e: Arc<DAE::Exp>;
+    let mut var: BackendDAE::Var;
     if '__try0: {
         let __pa1 = ::match_deref::match_deref! { match &(unwrap_break_err!(BackendVariable::getVar(cr.clone(), vars.clone()), '__try0)) {
             (Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Nil }, _) => __pa1.clone(),
@@ -274,8 +274,8 @@ fn setVisVarsPublic(mut inVar: BackendDAE::Var, mut dummyArgIn: ArcStr) -> Resul
 }
 
 fn makeVarPublicHideResultFalse(mut inVar: BackendDAE::Var) -> Result<BackendDAE::Var> {
-    let mut outVar: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
-    let mut vals: Option<Arc<DAE::VariableAttributes>> = None;
+    let mut outVar: BackendDAE::Var;
+    let mut vals: Option<Arc<DAE::VariableAttributes>>;
     vals = inVar.values.clone();
     vals = DAEUtil::setProtectedAttr(vals.clone(), false)?;
     outVar = BackendVariable::setVarAttributes(inVar.clone(), vals.clone());
@@ -284,10 +284,10 @@ fn makeVarPublicHideResultFalse(mut inVar: BackendDAE::Var) -> Result<BackendDAE
 }
 
 fn setBindingForProtectedVars(mut eqSysIn: Arc<BackendDAE::EqSystem>) -> Arc<BackendDAE::EqSystem> {
-    let mut eqSysOut: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
-    let mut ass1: metamodelica::Array<i32> = Default::default();
-    let mut vars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
-    let mut eqs: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
+    let mut eqSysOut: Arc<BackendDAE::EqSystem>;
+    let mut ass1: metamodelica::Array<i32>;
+    let mut vars: BackendDAE::Variables;
+    let mut eqs: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>;
     if '__try0: {
         let (__pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(eqSysIn.clone()) {
             Deref @ BackendDAE::EqSystem { orderedEqs: __pa1, orderedVars: __pa2, matching: Deref @ BackendDAE::Matching::MATCHING { ass1: __pa3, .. }, .. } => (__pa1.clone(), __pa2.clone(), __pa3.clone()),
@@ -305,8 +305,8 @@ fn setBindingForProtectedVars(mut eqSysIn: Arc<BackendDAE::EqSystem>) -> Arc<Bac
 }
 
 fn setBindingForProtectedVars1(mut varIn: BackendDAE::Var, mut tplIn: (i32, metamodelica::Array<i32>, Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>)) -> Result<(BackendDAE::Var, (i32, metamodelica::Array<i32>, Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>))> {
-    let mut varOut: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
-    let mut tplOut: (i32, metamodelica::Array<i32>, Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>) = (0, Default::default(), <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default());
+    let mut varOut: BackendDAE::Var;
+    let mut tplOut: (i32, metamodelica::Array<i32>, Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>);
     (varOut, tplOut) = 'mc: {
         let __mc_input = (varIn.clone(), tplIn.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -352,12 +352,12 @@ fn setBindingForProtectedVars1(mut varIn: BackendDAE::Var, mut tplIn: (i32, meta
 }
 
 fn fillVisualizationObjects(mut visVar: (Arc<DAE::ComponentRef>, ArcStr), mut allVarsIn: Arc<metamodelica::List<BackendDAE::Var>>, mut programIn: Absyn::Program) -> Result<(Visualization, Arc<metamodelica::List<BackendDAE::Var>>, Absyn::Program)> {
-    let mut visOut: Visualization = <Visualization as ::std::default::Default>::default();
+    let mut visOut: Visualization;
     let mut allVarsOut: Arc<metamodelica::List<BackendDAE::Var>> = allVarsIn.clone();
     let mut programOut: Absyn::Program = programIn.clone();
-    let mut cref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-    let mut vis_name: ArcStr = arcstr::literal!("");
-    let mut vis: Visualization = <Visualization as ::std::default::Default>::default();
+    let mut cref: Arc<DAE::ComponentRef>;
+    let mut vis_name: ArcStr;
+    let mut vis: Visualization;
     match '__try0: {
         (cref, vis_name) = visVar.clone();
         vis = unwrap_break_err!(newVisualizer(cref.clone(), (vis_name.clone()).clone()), '__try0);
@@ -379,7 +379,7 @@ fn fillVisualizationObjects(mut visVar: (Arc<DAE::ComponentRef>, ArcStr), mut al
 }
 
 fn newVisualizer(mut cref: Arc<DAE::ComponentRef>, mut visualizerName: ArcStr) -> Result<Visualization> {
-    let mut vis: Visualization = <Visualization as ::std::default::Default>::default();
+    let mut vis: Visualization;
     vis = (::match_deref::match_deref! { match &(visualizerName.clone()) {
         Deref @ "Shape" => Visualization::SHAPE { ident: cref.clone(), shapeType: Arc::new(DAE::Exp::SCONST { string: (literal!("DUMMY")).clone() }), T: arrayCreate(3, list![Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) }), Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) }), Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) })]), r: arrayCreate(3, Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) })), r_shape: arrayCreate(3, Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) })), lengthDir: arrayCreate(3, Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) })), widthDir: arrayCreate(3, Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) })), length: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) }), width: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) }), height: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) }), extra: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) }), color: arrayCreate(3, Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) })), specularCoeff: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) }) },
         Deref @ "Vector" => Visualization::VECTOR { ident: cref.clone(), T: arrayCreate(3, list![Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) }), Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) }), Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) })]), r: arrayCreate(3, Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) })), coordinates: arrayCreate(3, Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) })), color: arrayCreate(3, Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) })), specularCoeff: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) }), quantity: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) }), headAtOrigin: Arc::new(DAE::Exp::BCONST { bool: false }), twoHeadedArrow: Arc::new(DAE::Exp::BCONST { bool: false }) },
@@ -394,10 +394,10 @@ fn newVisualizer(mut cref: Arc<DAE::ComponentRef>, mut visualizerName: ArcStr) -
 }
 
 fn makeCrefQualFromString(mut s: ArcStr) -> Result<Arc<DAE::ComponentRef>> {
-    let mut crefOut: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-    let mut sLst: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut cref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-    let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
+    let mut crefOut: Arc<DAE::ComponentRef>;
+    let mut sLst: Arc<metamodelica::List<ArcStr>>;
+    let mut cref: Arc<DAE::ComponentRef>;
+    let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
     sLst = Util::stringSplitAtChar((s.clone()).clone(), (literal!(".")).clone())?;
     crefs = List::map2(sLst.clone(), (std::sync::Arc::new(fnptr!(ComponentReferenceBasics::makeCrefIdent, ArcStr, Arc<DAE::Type>, Arc<metamodelica::List<Arc<DAE::Subscript>>>)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<DAE::Type>, Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<Arc<DAE::ComponentRef>> + 'static>), DAE::T_REAL_DEFAULT().clone(), metamodelica::nil())?;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(crefs.clone()) {
@@ -411,8 +411,8 @@ fn makeCrefQualFromString(mut s: ArcStr) -> Result<Arc<DAE::ComponentRef>> {
 }
 
 fn splitCrefAfter(mut crefIn: Arc<DAE::ComponentRef>, mut crefCut: Arc<DAE::ComponentRef>) -> Result<(Arc<DAE::ComponentRef>, bool)> {
-    let mut crefOut: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-    let mut wasCut: bool = false;
+    let mut crefOut: Arc<DAE::ComponentRef>;
+    let mut wasCut: bool;
     (crefOut, wasCut) = 'mc: {
         let __mc_input = (crefIn.clone(), crefCut.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -456,7 +456,7 @@ fn splitCrefAfter(mut crefIn: Arc<DAE::ComponentRef>, mut crefCut: Arc<DAE::Comp
 }
 
 fn fillVisualizationObjects1(mut varIn: BackendDAE::Var, mut storeProtectedCrefs: bool, mut program: Absyn::Program, mut tplIn: (Arc<metamodelica::List<BackendDAE::Var>>, Visualization)) -> Result<(Arc<metamodelica::List<BackendDAE::Var>>, Visualization)> {
-    let mut tplOut: (Arc<metamodelica::List<BackendDAE::Var>>, Visualization) = (metamodelica::nil(), <Visualization as ::std::default::Default>::default());
+    let mut tplOut: (Arc<metamodelica::List<BackendDAE::Var>>, Visualization);
     tplOut = 'mc: {
         let __mc_input = (varIn.clone(), tplIn.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -525,7 +525,7 @@ fn fillVisualizationObjects1(mut varIn: BackendDAE::Var, mut storeProtectedCrefs
 
 fn getFullCADFilePath(mut sIn: ArcStr, mut program: Absyn::Program) -> Result<ArcStr> {
     let mut sOut: ArcStr = sIn.clone();
-    let mut chars: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+    let mut chars: Arc<metamodelica::List<ArcStr>>;
     chars = stringListStringChar((sIn.clone()).clone());
     if (chars.clone().len() as i32) > 11 && stringEqual(stringDelimitList(List::firstN(chars.clone(), 11)?, (literal!("")).clone()), (literal!("modelica://")).clone()) {
         sOut = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("file://")); __mm_s.push_str(&*ProgramUtil::getFullPathFromUri(program.clone(), (sIn.clone()).clone(), true)?); ArcStr::from(__mm_s) }).clone();
@@ -950,8 +950,8 @@ fn fillSurfaceObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var,
 }
 
 fn getVariableBinding(mut var: BackendDAE::Var, mut storeProtectedCrefs: bool) -> Result<Arc<DAE::Exp>> {
-    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut binding: Option<Arc<DAE::Exp>> = None;
+    let mut exp: Arc<DAE::Exp>;
+    let mut binding: Option<Arc<DAE::Exp>>;
     let BackendDAE::VAR { bindExp: __pa0, .. } = (var.clone()) else { bail!("pattern mismatch") };
     binding = __pa0.clone();
     if isSome(binding.clone()) {
@@ -970,7 +970,7 @@ fn getVariableBinding(mut var: BackendDAE::Var, mut storeProtectedCrefs: bool) -
 }
 
 fn printVisualization(mut vis: Visualization) -> Result<ArcStr> {
-    let mut s: ArcStr = arcstr::literal!("");
+    let mut s: ArcStr;
     s = ((match vis.clone() {
         Visualization::SHAPE { ident: mut ident, shapeType: mut shapeType, color: mut color, r: mut r, lengthDir: mut lengthDir, widthDir: mut widthDir, T: mut T, length: mut length, width: mut width, height: mut height, extra: mut extra, .. } => {
             { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SHAPE ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(ident.clone())?); __mm_s.push_str(&*literal!(" '")); __mm_s.push_str(&*ExpressionBasics::printExpStr(shapeType.clone())?); __mm_s.push_str(&*literal!("'\n r{")); __mm_s.push_str(&*stringDelimitList(({
@@ -990,7 +990,7 @@ fn printVisualization(mut vis: Visualization) -> Result<ArcStr> {
 }
 
 fn isVisualizationVar(mut var: BackendDAE::Var) -> Result<bool> {
-    let mut isVisVar: bool = false;
+    let mut isVisVar: bool;
     isVisVar = 'mc: {
         let __mc_input = var.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -1011,7 +1011,7 @@ fn isVisualizationVar(mut var: BackendDAE::Var) -> Result<bool> {
 }
 
 fn isVisualizationVarFold(mut var: BackendDAE::Var, mut tplIn: (Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, ArcStr)>>)) -> Result<(Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, ArcStr)>>)> {
-    let mut tplOut: (Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, ArcStr)>>) = (metamodelica::nil(), metamodelica::nil());
+    let mut tplOut: (Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, ArcStr)>>);
     tplOut = 'mc: {
         let __mc_input = (var.clone(), tplIn.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -1046,8 +1046,8 @@ fn isVisualizationVarFold(mut var: BackendDAE::Var, mut tplIn: (Arc<metamodelica
 }
 
 fn hasVisPath(mut pathsIn: Arc<metamodelica::List<Arc<Absyn::Path>>>, mut numIn: i32) -> Result<(ArcStr, i32)> {
-    let mut visPath: ArcStr = arcstr::literal!("");
-    let mut numOut: i32 = 0;
+    let mut visPath: ArcStr;
+    let mut numOut: i32;
     (visPath, numOut) = 'mc: {
         let __mc_input = pathsIn.clone();
         if let Ok(__v) = (|| -> Result<_> {

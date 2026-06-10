@@ -83,17 +83,17 @@ pub type ForArgType = (Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Exp>>>, Ar
 // $whenConditions = whenConditions
 // =============================================================================
 pub fn encapsulateWhenConditions(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
-    let mut outDAE: Arc<BackendDAE::BackendDAE> = Arc::new(<BackendDAE::BackendDAE as ::std::default::Default>::default());
-    let mut systs: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>> = metamodelica::nil();
-    let mut syst: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
-    let mut shared: Arc<BackendDAE::Shared> = Arc::new(<BackendDAE::Shared as ::std::default::Default>::default());
-    let mut index: i32 = 0;
+    let mut outDAE: Arc<BackendDAE::BackendDAE>;
+    let mut systs: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>>;
+    let mut syst: Arc<BackendDAE::EqSystem>;
+    let mut shared: Arc<BackendDAE::Shared>;
+    let mut index: i32;
     let mut ht: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (HashTableExpToIndex::FuncHashCref, HashTableExpToIndex::FuncCrefEqual, HashTableExpToIndex::FuncCrefStr, HashTableExpToIndex::FuncExpStr));
-    let mut vars: DoubleEnded::MutableList<BackendDAE::Var> = <DoubleEnded::MutableList<BackendDAE::Var> as ::std::default::Default>::default();
-    let mut eqns: DoubleEnded::MutableList<Arc<BackendDAE::Equation>> = <DoubleEnded::MutableList<Arc<BackendDAE::Equation>> as ::std::default::Default>::default();
-    let mut vars_: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
-    let mut eqns_: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
-    let mut removedEqs: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
+    let mut vars: DoubleEnded::MutableList<BackendDAE::Var>;
+    let mut eqns: DoubleEnded::MutableList<Arc<BackendDAE::Equation>>;
+    let mut vars_: BackendDAE::Variables;
+    let mut eqns_: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>;
+    let mut removedEqs: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inDAE.clone()) {
         Deref @ BackendDAE::BackendDAE { eqs: __pa0, shared: __pa1 } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
@@ -119,7 +119,7 @@ pub fn encapsulateWhenConditions(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Resu
 }
 
 fn encapsulateWhenConditions_EqSystem(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inIndex: i32, mut inHT: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))) -> Result<(Arc<BackendDAE::EqSystem>, i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)))> {
-    let mut outEqSystem: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
+    let mut outEqSystem: Arc<BackendDAE::EqSystem>;
     let mut outIndex: i32 = 0;
     let mut outHT: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (HashTableExpToIndex::FuncHashCref, HashTableExpToIndex::FuncCrefEqual, HashTableExpToIndex::FuncCrefStr, HashTableExpToIndex::FuncExpStr));
     outEqSystem = (::match_deref::match_deref! { match &(inEqSystem.clone()) {
@@ -144,7 +144,7 @@ fn encapsulateWhenConditions_EqSystem(mut inEqSystem: Arc<BackendDAE::EqSystem>,
 }
 
 fn encapsulateWhenConditions_Equation(mut inEq: Arc<BackendDAE::Equation>, mut inTpl: (Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, DoubleEnded::MutableList<BackendDAE::Var>, DoubleEnded::MutableList<Arc<BackendDAE::Equation>>, i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)))) -> Result<(Arc<BackendDAE::Equation>, (Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, DoubleEnded::MutableList<BackendDAE::Var>, DoubleEnded::MutableList<Arc<BackendDAE::Equation>>, i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))))> {
-    let mut outEq: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
+    let mut outEq: Arc<BackendDAE::Equation>;
     let mut outTpl: (Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, DoubleEnded::MutableList<BackendDAE::Var>, DoubleEnded::MutableList<Arc<BackendDAE::Equation>>, i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (HashTableExpToIndex::FuncHashCref, HashTableExpToIndex::FuncCrefEqual, HashTableExpToIndex::FuncCrefStr, HashTableExpToIndex::FuncExpStr)));
     (outEq, outTpl) = (::match_deref::match_deref! { match &((inEq.clone(), inTpl.clone())) {
         (Deref @ BackendDAE::Equation::WHEN_EQUATION { size, whenEquation, source, attr }, (equationArray, vars, eqns, index, ht)) => {
@@ -234,10 +234,10 @@ fn encapsulateWhenConditions_Equation(mut inEq: Arc<BackendDAE::Equation>, mut i
 }
 
 fn encapsulateWhenConditions_Equations(mut inWhenEquation: Arc<BackendDAE::WhenEquation>, mut inSource: Arc<DAE::ElementSource>, mut inIndex: i32, mut inHT: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))) -> Result<(Arc<BackendDAE::WhenEquation>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)))> {
-    let mut outWhenEquation: Arc<BackendDAE::WhenEquation> = Arc::new(<BackendDAE::WhenEquation as ::std::default::Default>::default());
-    let mut outVars: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
-    let mut outEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
-    let mut outIndex: i32 = 0;
+    let mut outWhenEquation: Arc<BackendDAE::WhenEquation>;
+    let mut outVars: Arc<metamodelica::List<BackendDAE::Var>>;
+    let mut outEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
+    let mut outIndex: i32;
     let mut outHT: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (HashTableExpToIndex::FuncHashCref, HashTableExpToIndex::FuncCrefEqual, HashTableExpToIndex::FuncCrefStr, HashTableExpToIndex::FuncExpStr));
     (outWhenEquation, outVars, outEqns, outIndex, outHT) = (::match_deref::match_deref! { match &(inWhenEquation.clone()) {
         Deref @ BackendDAE::WhenEquation { condition, whenStmtLst, elsewhenPart: None } => {
@@ -278,10 +278,10 @@ fn encapsulateWhenConditions_Equations(mut inWhenEquation: Arc<BackendDAE::WhenE
 }
 
 fn encapsulateWhenConditions_Equations1(mut inCondition: Arc<DAE::Exp>, mut inSource: Arc<DAE::ElementSource>, mut inIndex: i32, mut inHT: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))) -> Result<(Arc<DAE::Exp>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)))> {
-    let mut outCondition: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outVars: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
-    let mut outEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
-    let mut outIndex: i32 = 0;
+    let mut outCondition: Arc<DAE::Exp>;
+    let mut outVars: Arc<metamodelica::List<BackendDAE::Var>>;
+    let mut outEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
+    let mut outIndex: i32;
     let mut outHT: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (HashTableExpToIndex::FuncHashCref, HashTableExpToIndex::FuncCrefEqual, HashTableExpToIndex::FuncCrefStr, HashTableExpToIndex::FuncExpStr));
     (outCondition, outVars, outEqns, outIndex, outHT) = (::match_deref::match_deref! { match &(inCondition.clone()) {
         Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "initial" }, .. } => {
@@ -333,8 +333,8 @@ fn encapsulateWhenConditions_EquationsWithArrayConditions(mut inConditionList: A
     let mut outEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
     let mut outIndex: i32 = inIndex.clone();
     let mut outHT: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (HashTableExpToIndex::FuncHashCref, HashTableExpToIndex::FuncCrefEqual, HashTableExpToIndex::FuncCrefStr, HashTableExpToIndex::FuncExpStr)) = inHT.clone();
-    let mut vars1: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
-    let mut eqns1: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
+    let mut vars1: Arc<metamodelica::List<BackendDAE::Var>>;
+    let mut eqns1: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
     for mut condition in &*inConditionList.clone() {
         let mut condition = condition.clone();
         (condition, vars1, eqns1, outIndex, outHT) = encapsulateWhenConditions_Equations1(condition.clone(), inSource.clone(), outIndex.clone(), outHT.clone())?;
@@ -349,9 +349,9 @@ fn encapsulateWhenConditions_EquationsWithArrayConditions(mut inConditionList: A
 }
 
 fn encapsulateWhenConditions_Algorithms(mut inStmts: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut vars: DoubleEnded::MutableList<BackendDAE::Var>, mut inIndex: i32) -> Result<(Arc<metamodelica::List<Arc<DAE::Statement>>>, Arc<metamodelica::List<Arc<DAE::Statement>>>, i32)> {
-    let mut outStmts: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
-    let mut outPreStmts: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
-    let mut outIndex: i32 = 0;
+    let mut outStmts: Arc<metamodelica::List<Arc<DAE::Statement>>>;
+    let mut outPreStmts: Arc<metamodelica::List<Arc<DAE::Statement>>>;
+    let mut outIndex: i32;
     (outStmts, outPreStmts, outIndex) = (::match_deref::match_deref! { match &(inStmts.clone()) {
         Deref @ metamodelica::List::Nil => {
             (metamodelica::nil(), metamodelica::nil(), inIndex.clone())
@@ -438,10 +438,10 @@ fn encapsulateWhenConditions_Algorithms(mut inStmts: Arc<metamodelica::List<Arc<
 }
 
 fn encapsulateWhenConditions_Algorithms1(mut inCondition: Arc<DAE::Exp>, mut inSource: Arc<DAE::ElementSource>, mut inIndex: i32) -> Result<(Arc<DAE::Exp>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<Arc<DAE::Statement>>>, i32)> {
-    let mut outCondition: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outVars: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
-    let mut outStmts: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
-    let mut outIndex: i32 = 0;
+    let mut outCondition: Arc<DAE::Exp>;
+    let mut outVars: Arc<metamodelica::List<BackendDAE::Var>>;
+    let mut outStmts: Arc<metamodelica::List<Arc<DAE::Statement>>>;
+    let mut outIndex: i32;
     (outCondition, outVars, outStmts, outIndex) = (::match_deref::match_deref! { match &(inCondition.clone()) {
         Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "initial" }, .. } => {
             (inCondition.clone(), metamodelica::nil(), metamodelica::nil(), inIndex.clone())
@@ -496,8 +496,8 @@ fn encapsulateWhenConditions_AlgorithmsWithArrayConditions(mut inConditionList: 
     let mut outVars: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
     let mut outStmts: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
     let mut outIndex: i32 = inIndex.clone();
-    let mut vars1: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
-    let mut stmt1: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
+    let mut vars1: Arc<metamodelica::List<BackendDAE::Var>>;
+    let mut stmt1: Arc<metamodelica::List<Arc<DAE::Statement>>>;
     for mut condition in &*inConditionList.clone() {
         let mut condition = condition.clone();
         (condition, vars1, stmt1, outIndex) = encapsulateWhenConditions_Algorithms1(condition.clone(), inSource.clone(), outIndex.clone())?;
@@ -518,20 +518,20 @@ fn encapsulateWhenConditions_AlgorithmsWithArrayConditions(mut inConditionList: 
 // BackendDAE.
 // =============================================================================
 pub fn findZeroCrossings(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
-    let mut outDAE: Arc<BackendDAE::BackendDAE> = Arc::new(<BackendDAE::BackendDAE as ::std::default::Default>::default());
+    let mut outDAE: Arc<BackendDAE::BackendDAE>;
     outDAE = BackendDAEUtil::mapEqSystem(inDAE.clone(), (std::sync::Arc::new(findZeroCrossings1) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>) -> Result<(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>)> + 'static>))?;
     Ok(outDAE)
 }
 
 fn findZeroCrossings1(mut inSyst: Arc<BackendDAE::EqSystem>, mut inShared: Arc<BackendDAE::Shared>) -> Result<(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>)> {
     let mut outSyst: Arc<BackendDAE::EqSystem> = inSyst.clone();
-    let mut outShared: Arc<BackendDAE::Shared> = Arc::new(<BackendDAE::Shared as ::std::default::Default>::default());
-    let mut vars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
-    let mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
+    let mut outShared: Arc<BackendDAE::Shared>;
+    let mut vars: BackendDAE::Variables;
+    let mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>;
     let mut comps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>> = metamodelica::nil();
     let mut ass1: metamodelica::Array<i32> = Default::default();
     let mut ass2: metamodelica::Array<i32> = Default::default();
-    let mut matching: Arc<BackendDAE::Matching> = Arc::new(BackendDAE::Matching::NO_MATCHING);
+    let mut matching: Arc<BackendDAE::Matching>;
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(inSyst.clone()) {
         Deref @ BackendDAE::EqSystem { orderedVars: __pa0, orderedEqs: __pa1, matching: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
@@ -753,11 +753,11 @@ fn findZeroCrossings2(mut inVariables1: BackendDAE::Variables, mut globalKnownVa
 }
 
 fn findZeroCrossingsWhenEqns(mut inWhenEqn: Arc<BackendDAE::WhenEquation>, mut inZeroCrossings: BackendDAE::ZeroCrossingSet, mut inrelationsinZC: DoubleEnded::MutableList<BackendDAE::ZeroCrossing>, mut inSamplesLst: BackendDAE::ZeroCrossingSet, mut incountMathFunctions: i32, mut counteq: i32, mut countwc: i32, mut vars: BackendDAE::Variables, mut globalKnownVars: BackendDAE::Variables) -> Result<(Arc<BackendDAE::WhenEquation>, i32, BackendDAE::ZeroCrossingSet, DoubleEnded::MutableList<BackendDAE::ZeroCrossing>, BackendDAE::ZeroCrossingSet)> {
-    let mut oWhenEqn: Arc<BackendDAE::WhenEquation> = Arc::new(<BackendDAE::WhenEquation as ::std::default::Default>::default());
-    let mut outCountMathFunctions: i32 = 0;
-    let mut outZeroCrossings: BackendDAE::ZeroCrossingSet = <BackendDAE::ZeroCrossingSet as ::std::default::Default>::default();
-    let mut outrelationsinZC: DoubleEnded::MutableList<BackendDAE::ZeroCrossing> = <DoubleEnded::MutableList<BackendDAE::ZeroCrossing> as ::std::default::Default>::default();
-    let mut outSamplesLst: BackendDAE::ZeroCrossingSet = <BackendDAE::ZeroCrossingSet as ::std::default::Default>::default();
+    let mut oWhenEqn: Arc<BackendDAE::WhenEquation>;
+    let mut outCountMathFunctions: i32;
+    let mut outZeroCrossings: BackendDAE::ZeroCrossingSet;
+    let mut outrelationsinZC: DoubleEnded::MutableList<BackendDAE::ZeroCrossing>;
+    let mut outSamplesLst: BackendDAE::ZeroCrossingSet;
     (oWhenEqn, outCountMathFunctions, outZeroCrossings, outrelationsinZC, outSamplesLst) = (::match_deref::match_deref! { match &(inWhenEqn.clone()) {
         Deref @ BackendDAE::WhenEquation { condition: cond, whenStmtLst, elsewhenPart: oweelse } => {
             let mut we: Arc<BackendDAE::WhenEquation> = Arc::new(<BackendDAE::WhenEquation as ::std::default::Default>::default());
@@ -790,11 +790,11 @@ fn findZeroCrossingsWhenEqns(mut inWhenEqn: Arc<BackendDAE::WhenEquation>, mut i
 }
 
 fn findZeroCrossingsIfEqns(mut inIfEqn: Arc<BackendDAE::Equation>, mut inZeroCrossings: BackendDAE::ZeroCrossingSet, mut inrelationsinZC: DoubleEnded::MutableList<BackendDAE::ZeroCrossing>, mut inSamplesLst: BackendDAE::ZeroCrossingSet, mut incountMathFunctions: i32, mut counteq: i32, mut countwc: i32, mut vars: BackendDAE::Variables, mut globalKnownVars: BackendDAE::Variables) -> Result<(Arc<BackendDAE::Equation>, i32, BackendDAE::ZeroCrossingSet, DoubleEnded::MutableList<BackendDAE::ZeroCrossing>, BackendDAE::ZeroCrossingSet)> {
-    let mut outIfEqn: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
-    let mut outCountMathFunctions: i32 = 0;
-    let mut outZeroCrossings: BackendDAE::ZeroCrossingSet = <BackendDAE::ZeroCrossingSet as ::std::default::Default>::default();
-    let mut outrelationsinZC: DoubleEnded::MutableList<BackendDAE::ZeroCrossing> = <DoubleEnded::MutableList<BackendDAE::ZeroCrossing> as ::std::default::Default>::default();
-    let mut outSamplesLst: BackendDAE::ZeroCrossingSet = <BackendDAE::ZeroCrossingSet as ::std::default::Default>::default();
+    let mut outIfEqn: Arc<BackendDAE::Equation>;
+    let mut outCountMathFunctions: i32;
+    let mut outZeroCrossings: BackendDAE::ZeroCrossingSet;
+    let mut outrelationsinZC: DoubleEnded::MutableList<BackendDAE::ZeroCrossing>;
+    let mut outSamplesLst: BackendDAE::ZeroCrossingSet;
     (outIfEqn, outCountMathFunctions, outZeroCrossings, outrelationsinZC, outSamplesLst) = (::match_deref::match_deref! { match &(inIfEqn.clone()) {
         Deref @ BackendDAE::Equation::IF_EQUATION { conditions: Deref @ metamodelica::List::Nil, eqnstrue: Deref @ metamodelica::List::Nil, eqnsfalse: elseeqns, source: source_, attr: eqAttr } => {
             let mut zc: BackendDAE::ZeroCrossingSet = <BackendDAE::ZeroCrossingSet as ::std::default::Default>::default();
@@ -845,7 +845,7 @@ fn findZeroCrossingsIfEqns(mut inIfEqn: Arc<BackendDAE::Equation>, mut inZeroCro
 
 fn findZeroCrossingsinJacobians(mut inStrongComponents: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, mut zeroCrossingLst: BackendDAE::ZeroCrossingSet, mut relationsLst: DoubleEnded::MutableList<BackendDAE::ZeroCrossing>, mut samplesLst: BackendDAE::ZeroCrossingSet, mut allVariables: BackendDAE::Variables, mut globalKnownVars: BackendDAE::Variables) -> Result<Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>> {
     let mut strongComponents: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>> = metamodelica::nil();
-    let mut outComponent: Arc<BackendDAE::StrongComponent> = Arc::new(<BackendDAE::StrongComponent as ::std::default::Default>::default());
+    let mut outComponent: Arc<BackendDAE::StrongComponent>;
     for mut component in &*inStrongComponents.clone() {
         let mut component = component.clone();
         outComponent = 'mc: {
@@ -905,12 +905,12 @@ fn findZeroCrossingsinJacobians(mut inStrongComponents: Arc<metamodelica::List<A
 }
 
 fn replaceZCExpinFullJacobian(mut fullJac: Option<Arc<metamodelica::List<(i32, i32, Arc<BackendDAE::Equation>)>>>, mut zeroCrossingLst: BackendDAE::ZeroCrossingSet, mut relationsLst: DoubleEnded::MutableList<BackendDAE::ZeroCrossing>, mut samplesLst: BackendDAE::ZeroCrossingSet, mut allVariables: BackendDAE::Variables, mut globalKnownVars: BackendDAE::Variables) -> Result<Option<Arc<metamodelica::List<(i32, i32, Arc<BackendDAE::Equation>)>>>> {
-    let mut outFullJac: Option<Arc<metamodelica::List<(i32, i32, Arc<BackendDAE::Equation>)>>> = None;
-    let mut jac: Arc<metamodelica::List<(i32, i32, Arc<BackendDAE::Equation>)>> = metamodelica::nil();
+    let mut outFullJac: Option<Arc<metamodelica::List<(i32, i32, Arc<BackendDAE::Equation>)>>>;
+    let mut jac: Arc<metamodelica::List<(i32, i32, Arc<BackendDAE::Equation>)>>;
     let mut outJac: Arc<metamodelica::List<(i32, i32, Arc<BackendDAE::Equation>)>> = metamodelica::nil();
-    let mut i: i32 = 0;
-    let mut j: i32 = 0;
-    let mut eqn: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
+    let mut i: i32;
+    let mut j: i32;
+    let mut eqn: Arc<BackendDAE::Equation>;
     let mut element: (i32, i32, Arc<BackendDAE::Equation>) = (0, 0, Arc::new(BackendDAE::Equation::DUMMY_EQUATION));
     jac = Util::getOption(fullJac.clone())?;
     for mut element in &*jac.clone() {
@@ -929,13 +929,13 @@ fn replaceZCExpinFullJacobian(mut fullJac: Option<Arc<metamodelica::List<(i32, i
 }
 
 fn replaceZCExpinSymJacobian(mut symJac: (Arc<BackendDAE::BackendDAE>, ArcStr, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>), mut zeroCrossingLst: BackendDAE::ZeroCrossingSet, mut relationsLst: DoubleEnded::MutableList<BackendDAE::ZeroCrossing>, mut samplesLst: BackendDAE::ZeroCrossingSet, mut allVariables: BackendDAE::Variables, mut globalKnownVars: BackendDAE::Variables) -> Result<(Arc<BackendDAE::BackendDAE>, ArcStr, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)> {
-    let mut outSymJac: (Arc<BackendDAE::BackendDAE>, ArcStr, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) = (Arc::new(<BackendDAE::BackendDAE as ::std::default::Default>::default()), arcstr::literal!(""), metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil());
-    let mut jacBDAE: Arc<BackendDAE::BackendDAE> = Arc::new(<BackendDAE::BackendDAE as ::std::default::Default>::default());
-    let mut name: ArcStr = arcstr::literal!("");
-    let mut seedVars: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
-    let mut tmpVars: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
-    let mut resultVars: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
-    let mut depCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
+    let mut outSymJac: (Arc<BackendDAE::BackendDAE>, ArcStr, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>);
+    let mut jacBDAE: Arc<BackendDAE::BackendDAE>;
+    let mut name: ArcStr;
+    let mut seedVars: Arc<metamodelica::List<BackendDAE::Var>>;
+    let mut tmpVars: Arc<metamodelica::List<BackendDAE::Var>>;
+    let mut resultVars: Arc<metamodelica::List<BackendDAE::Var>>;
+    let mut depCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
     (jacBDAE, name, seedVars, tmpVars, resultVars, depCrefs) = symJac.clone();
     jacBDAE = replaceZeroCrossingsJacBackend(jacBDAE.clone(), zeroCrossingLst.clone(), relationsLst.clone(), samplesLst.clone(), allVariables.clone(), globalKnownVars.clone())?;
     outSymJac = (jacBDAE.clone(), name.clone(), seedVars.clone(), tmpVars.clone(), resultVars.clone(), depCrefs.clone());
@@ -943,16 +943,16 @@ fn replaceZCExpinSymJacobian(mut symJac: (Arc<BackendDAE::BackendDAE>, ArcStr, A
 }
 
 fn replaceZeroCrossingsJacBackend(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut zeroCrossingLst: BackendDAE::ZeroCrossingSet, mut relationsLst: DoubleEnded::MutableList<BackendDAE::ZeroCrossing>, mut samplesLst: BackendDAE::ZeroCrossingSet, mut allVariables: BackendDAE::Variables, mut globalKnownVars: BackendDAE::Variables) -> Result<Arc<BackendDAE::BackendDAE>> {
-    let mut outBackendDAE: Arc<BackendDAE::BackendDAE> = Arc::new(<BackendDAE::BackendDAE as ::std::default::Default>::default());
-    let mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
-    let mut eqs: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>> = metamodelica::nil();
+    let mut outBackendDAE: Arc<BackendDAE::BackendDAE>;
+    let mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>;
+    let mut eqs: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>>;
     let mut outEqs: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>> = metamodelica::nil();
-    let mut eqs_lst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
-    let mut shared: Arc<BackendDAE::Shared> = Arc::new(<BackendDAE::Shared as ::std::default::Default>::default());
-    let mut comps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>> = metamodelica::nil();
-    let mut ass1: metamodelica::Array<i32> = Default::default();
-    let mut ass2: metamodelica::Array<i32> = Default::default();
-    let mut matching: Arc<BackendDAE::Matching> = Arc::new(BackendDAE::Matching::NO_MATCHING);
+    let mut eqs_lst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
+    let mut shared: Arc<BackendDAE::Shared>;
+    let mut comps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>;
+    let mut ass1: metamodelica::Array<i32>;
+    let mut ass2: metamodelica::Array<i32>;
+    let mut matching: Arc<BackendDAE::Matching>;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inBackendDAE.clone()) {
         Deref @ BackendDAE::BackendDAE { eqs: __pa0, shared: __pa1 } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
@@ -983,11 +983,11 @@ fn replaceZeroCrossingsJacBackend(mut inBackendDAE: Arc<BackendDAE::BackendDAE>,
 }
 
 fn findZeroCrossings3(mut e: Arc<DAE::Exp>, mut inZeroCrossings: BackendDAE::ZeroCrossingSet, mut inrelationsinZC: DoubleEnded::MutableList<BackendDAE::ZeroCrossing>, mut inSamplesLst: BackendDAE::ZeroCrossingSet, mut incountMathFunctions: i32, mut counteq: i32, mut countwc: i32, mut vars: BackendDAE::Variables, mut globalKnownVars: BackendDAE::Variables) -> Result<(Arc<DAE::Exp>, i32, BackendDAE::ZeroCrossingSet, DoubleEnded::MutableList<BackendDAE::ZeroCrossing>, BackendDAE::ZeroCrossingSet)> {
-    let mut eres: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outCountMathFunctions: i32 = 0;
-    let mut outZeroCrossings: BackendDAE::ZeroCrossingSet = <BackendDAE::ZeroCrossingSet as ::std::default::Default>::default();
-    let mut outrelationsinZC: DoubleEnded::MutableList<BackendDAE::ZeroCrossing> = <DoubleEnded::MutableList<BackendDAE::ZeroCrossing> as ::std::default::Default>::default();
-    let mut outSamplesLst: BackendDAE::ZeroCrossingSet = <BackendDAE::ZeroCrossingSet as ::std::default::Default>::default();
+    let mut eres: Arc<DAE::Exp>;
+    let mut outCountMathFunctions: i32;
+    let mut outZeroCrossings: BackendDAE::ZeroCrossingSet;
+    let mut outrelationsinZC: DoubleEnded::MutableList<BackendDAE::ZeroCrossing>;
+    let mut outSamplesLst: BackendDAE::ZeroCrossingSet;
     if Flags::isSet(Flags::RELIDX.clone())? {
         BackendDump::debugStrExpStr((literal!("start: ")).clone(), e.clone(), (literal!("\n")).clone())?;
     }
@@ -1003,7 +1003,7 @@ fn findZeroCrossings3(mut e: Arc<DAE::Exp>, mut inZeroCrossings: BackendDAE::Zer
 fn collectZC(mut inExp: Arc<DAE::Exp>, mut inTpl: ZCArgType) -> Result<(Arc<DAE::Exp>, bool, ZCArgType)> {
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut cont: bool = false;
-    let mut outTpl: ZCArgType = ((<BackendDAE::ZeroCrossingSet as ::std::default::Default>::default(), <DoubleEnded::MutableList<BackendDAE::ZeroCrossing> as ::std::default::Default>::default(), <BackendDAE::ZeroCrossingSet as ::std::default::Default>::default(), 0), (0, <BackendDAE::Variables as ::std::default::Default>::default(), <BackendDAE::Variables as ::std::default::Default>::default()), None);
+    let mut outTpl: ZCArgType;
     (outExp, cont, outTpl) = (::match_deref::match_deref! { match &((inExp.clone(), inTpl.clone(), Config::simCodeTarget()?)) {
         (Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "noEvent" }, .. }, _, _) => {
             (inExp.clone(), false, inTpl.clone())
@@ -1387,9 +1387,9 @@ fn collectZC(mut inExp: Arc<DAE::Exp>, mut inTpl: ZCArgType) -> Result<(Arc<DAE:
 }
 
 fn collectZCAlgsFor(mut inExp: Arc<DAE::Exp>, mut inTpl: ForArgType) -> Result<(Arc<DAE::Exp>, bool, ForArgType)> {
-    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut outExp: Arc<DAE::Exp>;
     let mut cont: bool = false;
-    let mut outTpl: ForArgType = (Arc::new(<DAE::Exp as ::std::default::Default>::default()), metamodelica::nil(), Arc::new(<DAE::Exp as ::std::default::Default>::default()), (<BackendDAE::ZeroCrossingSet as ::std::default::Default>::default(), <DoubleEnded::MutableList<BackendDAE::ZeroCrossing> as ::std::default::Default>::default(), <BackendDAE::ZeroCrossingSet as ::std::default::Default>::default(), 0), (0, <BackendDAE::Variables as ::std::default::Default>::default(), <BackendDAE::Variables as ::std::default::Default>::default()));
+    let mut outTpl: ForArgType;
     (outExp, cont, outTpl) = (::match_deref::match_deref! { match &((inExp.clone(), inTpl.clone())) {
         (Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "noEvent" }, .. }, _) => {
             (inExp.clone(), false, inTpl.clone())
@@ -1691,8 +1691,8 @@ fn collectZCAlgsFor(mut inExp: Arc<DAE::Exp>, mut inTpl: ForArgType) -> Result<(
 }
 
 fn replaceIteratorWithStaticValues(mut inExp: Arc<DAE::Exp>, mut inIterator: Arc<DAE::Exp>, mut inExpLst: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inIndex: i32) -> Result<(Arc<metamodelica::List<Arc<DAE::Exp>>>, i32)> {
-    let mut outZeroCrossings: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-    let mut outIndex: i32 = 0;
+    let mut outZeroCrossings: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+    let mut outIndex: i32;
     (outZeroCrossings, outIndex) = (::match_deref::match_deref! { match &((inExp.clone(), inExpLst.clone())) {
         (_, Deref @ metamodelica::List::Nil) => {
             (metamodelica::nil(), inIndex.clone())
@@ -1774,7 +1774,7 @@ fn zcIndexRelation(mut relation: Arc<DAE::Exp>, mut zeroCrossings: DoubleEnded::
     let mut relation: Arc<DAE::Exp> = relation;
     let mut zeroCrossings: DoubleEnded::MutableList<BackendDAE::ZeroCrossing> = zeroCrossings;
     let mut index: i32 = index;
-    let mut duplicate: Arc<metamodelica::List<BackendDAE::ZeroCrossing>> = metamodelica::nil();
+    let mut duplicate: Arc<metamodelica::List<BackendDAE::ZeroCrossing>>;
     duplicate = List::select1(DoubleEnded::toListNoCopyNoClear(zeroCrossings.clone()), (std::sync::Arc::new(ZeroCrossings::equals) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::ZeroCrossing, BackendDAE::ZeroCrossing) -> Result<bool> + 'static>), zc.clone())?;
     (relation, index) = (::match_deref::match_deref! { match &((relation.clone(), duplicate.clone())) {
         (Deref @ DAE::Exp::RELATION { .. }, Deref @ metamodelica::List::Nil) => {
@@ -1811,19 +1811,19 @@ fn mergeZeroCrossings(mut newZc: BackendDAE::ZeroCrossing, mut zcs: BackendDAE::
 }
 
 fn mergeZeroCrossingIfEqual(mut zc1: BackendDAE::ZeroCrossing, mut zc2: BackendDAE::ZeroCrossing) -> Result<BackendDAE::ZeroCrossing> {
-    let mut zc: BackendDAE::ZeroCrossing = <BackendDAE::ZeroCrossing as ::std::default::Default>::default();
+    let mut zc: BackendDAE::ZeroCrossing;
     zc = if (ZeroCrossings::equals(zc1.clone(), zc2.clone())?) {mergeZeroCrossing(zc1.clone(), zc2.clone())?} else {zc1.clone()};
     Ok(zc)
 }
 
 fn mergeZeroCrossing(mut inZeroCrossing1: BackendDAE::ZeroCrossing, mut inZeroCrossing2: BackendDAE::ZeroCrossing) -> Result<BackendDAE::ZeroCrossing> {
-    let mut outZeroCrossing: BackendDAE::ZeroCrossing = <BackendDAE::ZeroCrossing as ::std::default::Default>::default();
-    let mut eq: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut eq1: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut eq2: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut outZeroCrossing: BackendDAE::ZeroCrossing;
+    let mut eq: Arc<metamodelica::List<i32>>;
+    let mut eq1: Arc<metamodelica::List<i32>>;
+    let mut eq2: Arc<metamodelica::List<i32>>;
+    let mut e1: Arc<DAE::Exp>;
+    let mut e2: Arc<DAE::Exp>;
+    let mut res: Arc<DAE::Exp>;
     let BackendDAE::ZERO_CROSSING { relation_: __pa0, occurEquLst: __pa1, .. } = (inZeroCrossing1.clone()) else { bail!("pattern mismatch") };
     e1 = __pa0.clone();
     eq1 = __pa1.clone();
@@ -1837,7 +1837,7 @@ fn mergeZeroCrossing(mut inZeroCrossing1: BackendDAE::ZeroCrossing, mut inZeroCr
 }
 
 fn getMinZeroCrossings(mut inZCexp1: Arc<DAE::Exp>, mut inZCexp2: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
-    let mut outMinZC: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut outMinZC: Arc<DAE::Exp>;
     outMinZC = (::match_deref::match_deref! { match &((inZCexp1.clone(), inZCexp2.clone())) {
         (Deref @ DAE::Exp::RELATION { index: index1, .. }, Deref @ DAE::Exp::RELATION { index: index2, .. }) => {
             let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -2042,8 +2042,8 @@ fn traverseStmtsExps(mut inStmts: Arc<metamodelica::List<Arc<DAE::Statement>>>, 
 }
 
 fn traverseStmtsElseExps(mut inElse: Arc<DAE::Else>, mut inExtraArg: ForArgType, mut inKnvars: BackendDAE::Variables) -> Result<(Arc<DAE::Else>, ForArgType)> {
-    let mut outElse: Arc<DAE::Else> = Arc::new(DAE::Else::NOELSE);
-    let mut outTplStmtTypeA: ForArgType = (Arc::new(<DAE::Exp as ::std::default::Default>::default()), metamodelica::nil(), Arc::new(<DAE::Exp as ::std::default::Default>::default()), (<BackendDAE::ZeroCrossingSet as ::std::default::Default>::default(), <DoubleEnded::MutableList<BackendDAE::ZeroCrossing> as ::std::default::Default>::default(), <BackendDAE::ZeroCrossingSet as ::std::default::Default>::default(), 0), (0, <BackendDAE::Variables as ::std::default::Default>::default(), <BackendDAE::Variables as ::std::default::Default>::default()));
+    let mut outElse: Arc<DAE::Else>;
+    let mut outTplStmtTypeA: ForArgType;
     (outElse, outTplStmtTypeA) = (::match_deref::match_deref! { match &(inElse.clone()) {
         Deref @ DAE::Else::NOELSE { .. } => {
             (openmodelica_frontend_types::DAE::Else::interned_NOELSE(), inExtraArg.clone())
@@ -2070,8 +2070,8 @@ fn traverseStmtsElseExps(mut inElse: Arc<DAE::Else>, mut inExtraArg: ForArgType,
 }
 
 fn traverseStmtsForExps(mut inIteratorExp: Arc<DAE::Exp>, mut inExplst: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inRange: Arc<DAE::Exp>, mut inStmts: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut inKnvars: BackendDAE::Variables, mut inExtraArg: ForArgType) -> Result<(Arc<metamodelica::List<Arc<DAE::Statement>>>, ForArgType)> {
-    let mut outStatements: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
-    let mut outTpl: ForArgType = (Arc::new(<DAE::Exp as ::std::default::Default>::default()), metamodelica::nil(), Arc::new(<DAE::Exp as ::std::default::Default>::default()), (<BackendDAE::ZeroCrossingSet as ::std::default::Default>::default(), <DoubleEnded::MutableList<BackendDAE::ZeroCrossing> as ::std::default::Default>::default(), <BackendDAE::ZeroCrossingSet as ::std::default::Default>::default(), 0), (0, <BackendDAE::Variables as ::std::default::Default>::default(), <BackendDAE::Variables as ::std::default::Default>::default()));
+    let mut outStatements: Arc<metamodelica::List<Arc<DAE::Statement>>>;
+    let mut outTpl: ForArgType;
     (outStatements, outTpl) = (::match_deref::match_deref! { match &((inExplst.clone(), inExtraArg.clone())) {
         (Deref @ metamodelica::List::Nil, _) => {
             (inStmts.clone(), inExtraArg.clone())
@@ -2092,13 +2092,13 @@ fn traverseStmtsForExps(mut inIteratorExp: Arc<DAE::Exp>, mut inExplst: Arc<meta
 }
 
 fn createZeroCrossings(mut inExpExpLst1: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inOccurEquLst: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<BackendDAE::ZeroCrossing>>> {
-    let mut outZeroCrossingLst: Arc<metamodelica::List<BackendDAE::ZeroCrossing>> = metamodelica::nil();
+    let mut outZeroCrossingLst: Arc<metamodelica::List<BackendDAE::ZeroCrossing>>;
     outZeroCrossingLst = List::map1(inExpExpLst1.clone(), (std::sync::Arc::new({ let __pe_b2 = None; move |__pe_a0, __pe_a1| Ok(createZeroCrossing(__pe_a0, __pe_a1, __pe_b2.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<metamodelica::List<i32>>) -> Result<BackendDAE::ZeroCrossing> + 'static>), inOccurEquLst.clone())?;
     Ok(outZeroCrossingLst)
 }
 
 fn createZeroCrossing(mut inRelation: Arc<DAE::Exp>, mut inOccurEquLst: Arc<metamodelica::List<i32>>, mut iters: Option<Arc<metamodelica::List<BackendDAE::SimIterator>>>) -> BackendDAE::ZeroCrossing {
-    let mut outZeroCrossing: BackendDAE::ZeroCrossing = <BackendDAE::ZeroCrossing as ::std::default::Default>::default();
+    let mut outZeroCrossing: BackendDAE::ZeroCrossing;
     outZeroCrossing = (::match_deref::match_deref! { match &(inOccurEquLst.clone()) {
         Deref @ metamodelica::List::Cons { head: (-1), tail: Deref @ metamodelica::List::Nil } => BackendDAE::ZeroCrossing { index: 0, relation_: inRelation.clone(), occurEquLst: metamodelica::nil(), iter: iters.clone() },
         _ => BackendDAE::ZeroCrossing { index: 0, relation_: inRelation.clone(), occurEquLst: inOccurEquLst.clone(), iter: iters.clone() },
@@ -2108,7 +2108,7 @@ fn createZeroCrossing(mut inRelation: Arc<DAE::Exp>, mut inOccurEquLst: Arc<meta
 }
 
 fn createIterator(mut red_iter: Arc<DAE::ReductionIterator>) -> Result<BackendDAE::SimIterator> {
-    let mut iter: BackendDAE::SimIterator = <BackendDAE::SimIterator as ::std::default::Default>::default();
+    let mut iter: BackendDAE::SimIterator;
     iter = (::match_deref::match_deref! { match &(red_iter.exp.clone()) {
         exp @ Deref @ DAE::Exp::RANGE { .. } => {
             let mut step: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());

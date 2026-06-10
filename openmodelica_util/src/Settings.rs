@@ -191,8 +191,8 @@ pub fn getInstallationDirectoryPath() -> Result<ArcStr> {
         .map_err(|e| anyhow::anyhow!("failed to determine executable path: {e}"))
         .map(|p| convert_to_forward_slashes(&p.to_string_lossy()));
 
-    if let Ok(exe) = &exe {
-        if let Some((dir, _)) = exe.rsplit_once('/') {
+    if let Ok(exe) = &exe
+        && let Some((dir, _)) = exe.rsplit_once('/') {
             let parent_component = dir.rsplit('/').next().unwrap_or("");
             if parent_component == "bin" || parent_component == "lib" {
                 let path = ArcStr::from(format!("{dir}/.."));
@@ -202,16 +202,14 @@ pub fn getInstallationDirectoryPath() -> Result<ArcStr> {
                 return Ok(path);
             }
         }
-    }
 
-    if let Ok(env) = std::env::var("OPENMODELICAHOME") {
-        if !env.is_empty() {
+    if let Ok(env) = std::env::var("OPENMODELICAHOME")
+        && !env.is_empty() {
             let path = convert_to_forward_slashes(&env);
             let mut state = STATE.lock().unwrap();
             state.installation_path = Some(path.clone());
             return Ok(path);
         }
-    }
 
     let path = strip_bin_path(&exe?)?;
 

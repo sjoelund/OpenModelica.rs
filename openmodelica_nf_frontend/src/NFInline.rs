@@ -62,7 +62,7 @@ use openmodelica_util::Error;
 use openmodelica_util::Flags;
 
 pub fn inlineCallExp(mut callExp: Arc<Expression::NFExpression>, mut forceInline: bool) -> Result<Arc<Expression::NFExpression>> {
-    let mut result: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut result: Arc<Expression::NFExpression>;
     result = (::match_deref::match_deref! { match &(callExp.clone()) {
         Deref @ Expression::CALL { call: call @ Deref @ Call::TYPED_CALL { .. } } => {
             let mut shouldInline: bool = false;
@@ -84,7 +84,7 @@ pub fn inlineCallExp(mut callExp: Arc<Expression::NFExpression>, mut forceInline
 
 pub fn inlineCall(mut callExp: Arc<Expression::NFExpression>, mut forceInline: bool) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut call: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
+    let mut call: Arc<Call::NFCall>;
     let mut r#fn: Arc<Function::Function> = Arc::new(<Function::Function as ::std::default::Default>::default());
     let mut arg: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
@@ -181,8 +181,8 @@ pub fn inlineCall(mut callExp: Arc<Expression::NFExpression>, mut forceInline: b
 
 fn replaceCrefNode(mut exp: Arc<Expression::NFExpression>, mut node: Arc<InstNode::InstNode>, mut value: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression> = exp;
-    let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut repl_ty: Arc<Type::NFType> = Arc::new(Type::ANY);
+    let mut ty: Arc<Type::NFType>;
+    let mut repl_ty: Arc<Type::NFType>;
     exp = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CREF { .. } if (InstNode::refEqual(ComponentRef::node(ComponentRef::firstNonScope(var_field!((*exp).cref, Expression::NFExpression::CREF).clone())?)?, node.clone())) => replaceCrefNode2(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), node.clone(), value.clone())?,
         _ => exp.clone(),
@@ -231,7 +231,7 @@ fn removeDeadCode(mut body: Arc<metamodelica::List<Arc<Statement::NFStatement>>>
 }
 
 fn convertToAssignment(mut stmt: Arc<Statement::NFStatement>) -> Result<Arc<Statement::NFStatement>> {
-    let mut outStmt: Arc<Statement::NFStatement> = Arc::new(<Statement::NFStatement as ::std::default::Default>::default());
+    let mut outStmt: Arc<Statement::NFStatement>;
     outStmt = (::match_deref::match_deref! { match &(stmt.clone()) {
         Deref @ Statement::IF { .. } => convertIfToAssignment(stmt.clone())?,
         _ => stmt.clone(),
@@ -242,16 +242,16 @@ fn convertToAssignment(mut stmt: Arc<Statement::NFStatement>) -> Result<Arc<Stat
 
 fn convertIfToAssignment(mut stmt: Arc<Statement::NFStatement>) -> Result<Arc<Statement::NFStatement>> {
     let mut stmt: Arc<Statement::NFStatement> = stmt;
-    let mut branches: Arc<metamodelica::List<(Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<Statement::NFStatement>>>)>> = metamodelica::nil();
-    let mut cond: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut if_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut output_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut lhs: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut rhs: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut branches: Arc<metamodelica::List<(Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<Statement::NFStatement>>>)>>;
+    let mut cond: Arc<Expression::NFExpression>;
+    let mut if_exp: Arc<Expression::NFExpression>;
+    let mut output_exp: Arc<Expression::NFExpression>;
+    let mut lhs: Arc<Expression::NFExpression>;
+    let mut rhs: Arc<Expression::NFExpression>;
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut body: Arc<metamodelica::List<Arc<Statement::NFStatement>>> = metamodelica::nil();
-    let mut s: Arc<Statement::NFStatement> = Arc::new(<Statement::NFStatement as ::std::default::Default>::default());
-    let mut source: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
+    let mut body: Arc<metamodelica::List<Arc<Statement::NFStatement>>>;
+    let mut s: Arc<Statement::NFStatement>;
+    let mut source: Arc<DAE::ElementSource>;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(stmt.clone()) {
         Deref @ Statement::IF { branches: __pa0, source: __pa1 } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
@@ -314,10 +314,10 @@ fn convertIfToAssignment(mut stmt: Arc<Statement::NFStatement>) -> Result<Arc<St
 }
 
 fn makeOutputStatement(mut outputNode: Arc<InstNode::InstNode>) -> Result<Arc<Statement::NFStatement>> {
-    let mut stmt: Arc<Statement::NFStatement> = Arc::new(<Statement::NFStatement as ::std::default::Default>::default());
-    let mut binding: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);
-    let mut cref_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut binding_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut stmt: Arc<Statement::NFStatement>;
+    let mut binding: Arc<Binding::NFBinding>;
+    let mut cref_exp: Arc<Expression::NFExpression>;
+    let mut binding_exp: Arc<Expression::NFExpression>;
     binding = Component::getImplicitBinding(InstNode::component(outputNode.clone())?, InstNode::instanceParent(outputNode.clone())?);
     if Binding::isBound(binding.clone()) {
         cref_exp = Expression::fromCref(ComponentRef::fromNode(outputNode.clone(), crate::NFType::interned_UNKNOWN(), metamodelica::nil(), ComponentRef::Origin::CREF.clone()), false)?;
@@ -330,7 +330,7 @@ fn makeOutputStatement(mut outputNode: Arc<InstNode::InstNode>) -> Result<Arc<St
 }
 
 fn getOutputExp(mut stmt: Arc<Statement::NFStatement>, mut outputNode: Arc<InstNode::InstNode>, mut call: Arc<Call::NFCall>) -> Arc<Expression::NFExpression> {
-    let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut exp: Arc<Expression::NFExpression>;
     exp = (::match_deref::match_deref! { match &(stmt.clone()) {
         Deref @ Statement::ASSIGNMENT { lhs: Deref @ Expression::CREF { cref: Deref @ ComponentRef::CREF { node: cr_node, subscripts: Deref @ metamodelica::List::Nil, restCref: rest_cr, .. }, .. }, .. } if (InstNode::refEqual(outputNode.clone(), cr_node.clone()) && !(ComponentRef::isFromCref(rest_cr.clone()))) => {
             var_field!((*stmt).rhs, Statement::NFStatement::ASSIGNMENT).clone()

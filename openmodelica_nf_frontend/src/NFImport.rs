@@ -82,7 +82,7 @@ impl Default for NFImport {
 }
 pub use self::NFImport::{UNRESOLVED_IMPORT,RESOLVED_IMPORT,CONFLICTING_IMPORT};
 pub fn name(mut imp: Arc<NFImport>) -> Result<ArcStr> {
-    let mut name: ArcStr = arcstr::literal!("");
+    let mut name: ArcStr;
     name = ((::match_deref::match_deref! { match &(imp.clone()) {
         Deref @ UNRESOLVED_IMPORT { .. } => AbsynUtil::importName(var_field!((*imp).imp, NFImport::UNRESOLVED_IMPORT).clone())?,
         Deref @ RESOLVED_IMPORT { .. } => InstNode::name(var_field!((*imp).node, NFImport::RESOLVED_IMPORT).clone())?,
@@ -92,7 +92,7 @@ pub fn name(mut imp: Arc<NFImport>) -> Result<ArcStr> {
 }
 
 pub fn info(mut imp: Arc<NFImport>) -> Result<SourceInfo> {
-    let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
+    let mut info: SourceInfo;
     info = (::match_deref::match_deref! { match &(imp.clone()) {
         Deref @ UNRESOLVED_IMPORT { .. } => var_field!((*imp).info, NFImport::UNRESOLVED_IMPORT).clone(),
         Deref @ RESOLVED_IMPORT { .. } => var_field!((*imp).info, NFImport::RESOLVED_IMPORT).clone(),
@@ -103,7 +103,7 @@ pub fn info(mut imp: Arc<NFImport>) -> Result<SourceInfo> {
 
 pub fn resolve(mut imp: Arc<NFImport>) -> Result<(Arc<InstNode::InstNode>, bool, Arc<NFImport>)> {
     let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
-    let mut changed: bool = false;
+    let mut changed: bool;
     let mut outImport: Arc<NFImport> = Arc::new(<NFImport as ::std::default::Default>::default());
     (outImport, node, changed) = (::match_deref::match_deref! { match &(imp.clone()) {
         Deref @ UNRESOLVED_IMPORT { .. } => {
@@ -139,9 +139,9 @@ pub fn resolveList(mut imps: metamodelica::Array<Arc<NFImport>>) -> Arc<metamode
 }
 
 pub fn instQualified(mut imp: Absyn::Import, mut scope: Arc<InstNode::InstNode>, mut info: SourceInfo) -> Result<(Arc<NFImport>, Arc<InstNode::InstNode>)> {
-    let mut outImport: Arc<NFImport> = Arc::new(<NFImport as ::std::default::Default>::default());
-    let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
-    let mut short_name: ArcStr = arcstr::literal!("");
+    let mut outImport: Arc<NFImport>;
+    let mut node: Arc<InstNode::InstNode>;
+    let mut short_name: ArcStr;
     node = (match imp.clone() {
         Absyn::Import::NAMED_IMPORT { .. } => Lookup::lookupImport(var_field!(imp.path, Absyn::Import::NAMED_IMPORT).clone(), scope.clone(), info.clone())?,
         Absyn::Import::QUAL_IMPORT { .. } => Lookup::lookupImport(var_field!(imp.path, Absyn::Import::QUAL_IMPORT).clone(), scope.clone(), info.clone())?,
@@ -157,11 +157,11 @@ pub fn instQualified(mut imp: Absyn::Import, mut scope: Arc<InstNode::InstNode>,
 
 pub fn instUnqualified(mut imp: Arc<NFImport>, mut imps: Arc<metamodelica::List<Arc<NFImport>>>) -> Result<Arc<metamodelica::List<Arc<NFImport>>>> {
     let mut imps: Arc<metamodelica::List<Arc<NFImport>>> = imps;
-    let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-    let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
-    let mut scope: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
-    let mut tree: Arc<ClassTree::ClassTree> = Arc::new(ClassTree::EMPTY_TREE);
-    let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
+    let mut path: Arc<Absyn::Path>;
+    let mut node: Arc<InstNode::InstNode>;
+    let mut scope: Arc<InstNode::InstNode>;
+    let mut tree: Arc<ClassTree::ClassTree>;
+    let mut info: SourceInfo;
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(imp.clone()) {
         Deref @ UNRESOLVED_IMPORT { imp: Absyn::Import::UNQUAL_IMPORT { path: __pa0 }, scope: __pa1, info: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
@@ -194,7 +194,7 @@ pub fn instUnqualified(mut imp: Arc<NFImport>, mut imps: Arc<metamodelica::List<
 }
 
 pub fn printImportError(mut imp1: Arc<NFImport>, mut imp2: Arc<NFImport>) -> Result<()> {
-    let mut err_msg: ErrorTypes::Message = <ErrorTypes::Message as ::std::default::Default>::default();
+    let mut err_msg: ErrorTypes::Message;
     Error::addSourceMessage(Error::ERROR_FROM_HERE.clone(), metamodelica::nil(), info(imp1.clone())?)?;
     err_msg = (::match_deref::match_deref! { match &(imp2.clone()) {
         Deref @ UNRESOLVED_IMPORT { .. } => Error::MULTIPLE_QUALIFIED_IMPORTS_WITH_SAME_NAME.clone(),

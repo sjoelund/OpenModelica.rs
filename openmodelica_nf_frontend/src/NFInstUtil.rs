@@ -129,8 +129,8 @@ pub fn combineSubscriptsExp(mut exp: Arc<Expression::NFExpression>) -> Result<Ar
 }
 
 pub fn printStructuralParameters(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<()> {
-    let mut params: Arc<metamodelica::List<Arc<Variable::NFVariable>>> = metamodelica::nil();
-    let mut names: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+    let mut params: Arc<metamodelica::List<Arc<Variable::NFVariable>>>;
+    let mut names: Arc<metamodelica::List<ArcStr>>;
     if Flags::isSet(Flags::PRINT_STRUCTURAL.clone())? {
         params = ({
         let mut __acc: Arc<metamodelica::List<Arc<Variable::NFVariable>>> = metamodelica::nil();
@@ -157,8 +157,8 @@ pub fn printStructuralParameters(mut flatModel: Arc<FlatModel::NFFlatModel>) -> 
 }
 
 pub fn dumpFlatModel(mut flatModel: Arc<FlatModel::NFFlatModel>, mut functions: Arc<NFFlatten::FunctionTreeImpl::Tree>) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
-    let mut flat_model: Arc<FlatModel::NFFlatModel> = Arc::new(<FlatModel::NFFlatModel as ::std::default::Default>::default());
+    let mut r#str: ArcStr;
+    let mut flat_model: Arc<FlatModel::NFFlatModel>;
     flat_model = combineSubscripts(flatModel.clone())?;
     r#str = (FlatModel::toFlatString(flat_model.clone(), functions.clone(), false)?).clone();
     Ok(r#str)
@@ -250,9 +250,9 @@ pub fn expandSlicedCrefsExp(mut exp: Arc<Expression::NFExpression>) -> Result<Ar
 }
 
 pub fn expandSlicedCrefsExp2(mut cref: Arc<ComponentRef::NFComponentRef>, mut ty: Arc<Type::NFType>) -> Result<Arc<Expression::NFExpression>> {
-    let mut outExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut cr: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    let mut iterators: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>> = metamodelica::nil();
+    let mut outExp: Arc<Expression::NFExpression>;
+    let mut cr: Arc<ComponentRef::NFComponentRef>;
+    let mut iterators: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>>;
     (cr, iterators) = ComponentRef::iterate(cref.clone())?;
     outExp = Arc::new(Expression::NFExpression::CALL { call: Arc::new(Call::NFCall::TYPED_ARRAY_CONSTRUCTOR { ty: ty.clone(), var: ComponentRef::variability(cref.clone())?, purity: ComponentRef::purity(cref.clone())?, exp: Expression::fromCref(cr.clone(), false)?, iters: iterators.clone() }) });
     Ok(outExp)
@@ -336,7 +336,7 @@ pub fn makeMergeNameMap() -> MergeNameMap {
 
 pub fn mergeScalars(mut node: Arc<InstNode::InstNode>, mut classPath: Arc<Absyn::Path>, mut isRootClass: bool, mut nameMap: MergeNameMap) -> Result<Arc<InstNode::InstNode>> {
     let mut node: Arc<InstNode::InstNode> = node;
-    let mut elem: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
+    let mut elem: Arc<SCode::Element>;
     if !(Flags::isSet(Flags::MERGE_COMPONENTS.clone())?) {
         return Ok(node.clone());
     }
@@ -383,11 +383,11 @@ pub fn mergeScalars2(mut cls: Arc<SCode::Element>, mut classPath: Arc<Absyn::Pat
 }
 
 pub fn mergeScalars3(mut elements: Arc<metamodelica::List<Arc<SCode::Element>>>, mut nameMap: MergeNameMap) -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> {
-    let mut outElements: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
-    let mut mergeable: Arc<metamodelica::List<Arc<metamodelica::List<Arc<SCode::Element>>>>> = metamodelica::nil();
-    let mut merged_e: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
+    let mut outElements: Arc<metamodelica::List<Arc<SCode::Element>>>;
+    let mut mergeable: Arc<metamodelica::List<Arc<metamodelica::List<Arc<SCode::Element>>>>>;
+    let mut merged_e: Arc<SCode::Element>;
     let mut i: i32 = UnorderedMap::size(nameMap.clone()) + 1;
-    let mut prefix: ArcStr = arcstr::literal!("");
+    let mut prefix: ArcStr;
     (mergeable, outElements) = makeMergeMap(elements.clone())?;
     for mut el in &*mergeable.clone() {
         let mut el = el.clone();
@@ -404,7 +404,7 @@ pub fn makeMergeMap(mut elements: Arc<metamodelica::List<Arc<SCode::Element>>>) 
     pub type ElementList = Arc<metamodelica::List<Arc<SCode::Element>>>;
 
     fn append_merge(mut oldValue: Option<Arc<metamodelica::List<Arc<SCode::Element>>>>, mut elem: Arc<SCode::Element>) -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> {
-        let mut newValue: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
+        let mut newValue: Arc<metamodelica::List<Arc<SCode::Element>>>;
         if isSome(oldValue.clone()) {
             let __pa0 = ::match_deref::match_deref! { match &(oldValue.clone()) {
                 Some(__pa0) => __pa0.clone(),
@@ -420,8 +420,8 @@ pub fn makeMergeMap(mut elements: Arc<metamodelica::List<Arc<SCode::Element>>>) 
 
     let mut mergeable: Arc<metamodelica::List<Arc<metamodelica::List<Arc<SCode::Element>>>>> = metamodelica::nil();
     let mut unmergeable: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
-    let mut merge_map: Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<metamodelica::List<Arc<SCode::Element>>>>> = <Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<metamodelica::List<Arc<SCode::Element>>>>> as ::std::default::Default>::default();
-    let mut grouped_elems: Arc<metamodelica::List<Arc<metamodelica::List<Arc<SCode::Element>>>>> = metamodelica::nil();
+    let mut merge_map: Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<metamodelica::List<Arc<SCode::Element>>>>>;
+    let mut grouped_elems: Arc<metamodelica::List<Arc<metamodelica::List<Arc<SCode::Element>>>>>;
     merge_map = UnorderedMap::new((std::sync::Arc::new(fnptr!(stringHashDjb2, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), 1);
     for mut e in &*elements.clone() {
         let mut e = e.clone();
@@ -450,7 +450,7 @@ pub fn makeMergeMap(mut elements: Arc<metamodelica::List<Arc<SCode::Element>>>) 
 }
 
 pub fn isMergeableComponent(mut element: Arc<SCode::Element>) -> bool {
-    let mut isMergeable: bool = false;
+    let mut isMergeable: bool;
     isMergeable = (::match_deref::match_deref! { match &(element.clone()) {
         Deref @ SCode::Element::COMPONENT { attributes: SCode::Attributes { arrayDims: Deref @ metamodelica::List::Nil, .. }, prefixes: Deref @ SCode::Prefixes { redeclarePrefix: SCode::Redeclare::NOT_REDECLARE { .. }, innerOuter: Absyn::InnerOuter::NOT_INNER_OUTER { .. }, replaceablePrefix: Deref @ SCode::Replaceable::NOT_REPLACEABLE { .. }, .. }, condition: None, .. } => isMergeableType(var_field!((*element).typeSpec, SCode::Element::COMPONENT).clone()) && isMergeableMod(var_field!((*element).modifications, SCode::Element::COMPONENT).clone()),
         _ => false,
@@ -480,7 +480,7 @@ pub fn isMergeableMod(mut r#mod: Arc<SCode::Mod>) -> bool {
 }
 
 pub fn isMergeableType(mut ty: Arc<Absyn::TypeSpec>) -> bool {
-    let mut mergeable: bool = false;
+    let mut mergeable: bool;
     mergeable = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ Absyn::TypeSpec::TPATH { arrayDim: None, .. } => true,
         _ => false,
@@ -490,11 +490,11 @@ pub fn isMergeableType(mut ty: Arc<Absyn::TypeSpec>) -> bool {
 }
 
 pub fn getComponentSignature(mut element: Arc<SCode::Element>) -> Result<ArcStr> {
-    let mut signature: ArcStr = arcstr::literal!("");
-    let mut prefs: Arc<SCode::Prefixes> = Arc::new(<SCode::Prefixes as ::std::default::Default>::default());
-    let mut attrs: SCode::Attributes = <SCode::Attributes as ::std::default::Default>::default();
-    let mut ty: Arc<Absyn::TypeSpec> = Arc::new(<Absyn::TypeSpec as ::std::default::Default>::default());
-    let mut r#mod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
+    let mut signature: ArcStr;
+    let mut prefs: Arc<SCode::Prefixes>;
+    let mut attrs: SCode::Attributes;
+    let mut ty: Arc<Absyn::TypeSpec>;
+    let mut r#mod: Arc<SCode::Mod>;
     let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(element.clone()) {
         Deref @ SCode::Element::COMPONENT { prefixes: __pa0, attributes: __pa1, typeSpec: __pa2, modifications: __pa3, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
         _ => bail!("pattern mismatch"),
@@ -513,7 +513,7 @@ pub fn getModSignature(mut r#mod: Arc<SCode::Mod>, mut name: ArcStr) -> Result<A
         res
     }
 
-    let mut signature: ArcStr = arcstr::literal!("");
+    let mut signature: ArcStr;
     let mut strl: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     let mut has_binding: bool = false;
     let mut has_submods: bool = false;
@@ -551,15 +551,15 @@ pub fn getModSignature(mut r#mod: Arc<SCode::Mod>, mut name: ArcStr) -> Result<A
 }
 
 pub fn mergeComponents(mut components: Arc<metamodelica::List<Arc<SCode::Element>>>, mut prefix: ArcStr, mut nameMap: MergeNameMap) -> Result<Arc<SCode::Element>> {
-    let mut mergedComponent: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
-    let mut ty: Arc<Absyn::TypeSpec> = Arc::new(<Absyn::TypeSpec as ::std::default::Default>::default());
-    let mut prefs: Arc<SCode::Prefixes> = Arc::new(<SCode::Prefixes as ::std::default::Default>::default());
-    let mut attrs: SCode::Attributes = <SCode::Attributes as ::std::default::Default>::default();
-    let mut r#mod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
+    let mut mergedComponent: Arc<SCode::Element>;
+    let mut ty: Arc<Absyn::TypeSpec>;
+    let mut prefs: Arc<SCode::Prefixes>;
+    let mut attrs: SCode::Attributes;
+    let mut r#mod: Arc<SCode::Mod>;
     let mut i: i32 = 1;
-    let mut name: ArcStr = arcstr::literal!("");
-    let mut cref: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
-    let mut mods: Arc<metamodelica::List<Arc<SCode::Mod>>> = metamodelica::nil();
+    let mut name: ArcStr;
+    let mut cref: Arc<Absyn::ComponentRef>;
+    let mut mods: Arc<metamodelica::List<Arc<SCode::Mod>>>;
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(listHead(components.clone())?) {
         Deref @ SCode::Element::COMPONENT { typeSpec: __pa0, prefixes: __pa1, attributes: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
@@ -593,10 +593,10 @@ pub fn mergeComponents(mut components: Arc<metamodelica::List<Arc<SCode::Element
 }
 
 pub fn mergeMods(mut mods: Arc<metamodelica::List<Arc<SCode::Mod>>>) -> Result<Arc<SCode::Mod>> {
-    let mut r#mod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
-    let mut names: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
-    let mut bindings: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Absyn::Exp>>>>> = metamodelica::nil();
-    let mut binding_map: Arc<UnorderedMap::UnorderedMap<Arc<Absyn::Path>, Arc<Absyn::Exp>>> = <Arc<UnorderedMap::UnorderedMap<Arc<Absyn::Path>, Arc<Absyn::Exp>>> as ::std::default::Default>::default();
+    let mut r#mod: Arc<SCode::Mod>;
+    let mut names: Arc<metamodelica::List<Arc<Absyn::Path>>>;
+    let mut bindings: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Absyn::Exp>>>>>;
+    let mut binding_map: Arc<UnorderedMap::UnorderedMap<Arc<Absyn::Path>, Arc<Absyn::Exp>>>;
     if mods.clone().is_empty() {
         r#mod = openmodelica_frontend_types::SCode::Mod::interned_NOMOD();
         return Ok(r#mod.clone());
@@ -640,7 +640,7 @@ pub fn getModNames(mut r#mod: Arc<SCode::Mod>, mut name: Arc<metamodelica::List<
 }
 
 pub fn makeModPath(mut name: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<Absyn::Path>> {
-    let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+    let mut path: Arc<Absyn::Path>;
     if name.clone().is_empty() {
         path = Arc::new(Absyn::Path::IDENT { name: (literal!("$")).clone() });
     } else {
@@ -704,7 +704,7 @@ pub fn getModBindings(mut r#mod: Arc<SCode::Mod>, mut names: Arc<metamodelica::L
 }
 
 pub fn lookupModBinding(mut name: Arc<Absyn::Path>, mut r#mod: Arc<SCode::Mod>) -> Result<Arc<Absyn::Exp>> {
-    let mut binding: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
+    let mut binding: Arc<Absyn::Exp>;
     let __pa0 = ::match_deref::match_deref! { match &(lookupMod(name.clone(), r#mod.clone())?) {
         Deref @ SCode::Mod::MOD { binding: Some(__pa0), .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
@@ -817,9 +817,9 @@ pub fn mergeScalarsExp(mut exp: Arc<Absyn::Exp>, mut nameMap: MergeNameMap) -> R
 
 pub fn mergeScalarsCref(mut cref: Arc<Absyn::ComponentRef>, mut nameMap: MergeNameMap) -> Result<Arc<Absyn::ComponentRef>> {
     let mut cref: Arc<Absyn::ComponentRef> = cref;
-    let mut repl_ocr: Option<Arc<Absyn::ComponentRef>> = None;
-    let mut repl_cr: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
-    let mut subs: Arc<metamodelica::List<Arc<Absyn::Subscript>>> = metamodelica::nil();
+    let mut repl_ocr: Option<Arc<Absyn::ComponentRef>>;
+    let mut repl_cr: Arc<Absyn::ComponentRef>;
+    let mut subs: Arc<metamodelica::List<Arc<Absyn::Subscript>>>;
     repl_ocr = UnorderedMap::get((AbsynUtil::crefFirstIdent(cref.clone())?).clone(), nameMap.clone())?;
     if isSome(repl_ocr.clone()) {
         let __pa0 = ::match_deref::match_deref! { match &(repl_ocr.clone()) {
@@ -857,8 +857,8 @@ pub fn mergeScalarsStmt(mut stmt: Arc<SCode::Statement>, mut nameMap: MergeNameM
 }
 
 pub fn mergeScalarsComponentBindings(mut node: Arc<InstNode::InstNode>, mut nameMap: MergeNameMap) -> Result<()> {
-    let mut cls: Arc<Class::NFClass> = Arc::new(Class::NOT_INSTANTIATED);
-    let mut cls_tree: Arc<ClassTree::ClassTree> = Arc::new(ClassTree::EMPTY_TREE);
+    let mut cls: Arc<Class::NFClass>;
+    let mut cls_tree: Arc<ClassTree::ClassTree>;
     cls = InstNode::getClass(node.clone())?;
     cls_tree = Class::classTree(cls.clone())?;
     ClassTree::applyComponents(cls_tree.clone(), (std::sync::Arc::new({ let __pe_b1 = nameMap.clone(); move |__pe_a0| mergeScalarsComponentBinding(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<()> + 'static>))?;
@@ -868,7 +868,7 @@ pub fn mergeScalarsComponentBindings(mut node: Arc<InstNode::InstNode>, mut name
 }
 
 pub fn mergeScalarsComponentBinding(mut node: Arc<InstNode::InstNode>, mut nameMap: MergeNameMap) -> Result<()> {
-    let mut comp: Arc<Component::NFComponent> = Arc::new(Component::WILD);
+    let mut comp: Arc<Component::NFComponent>;
     if !(InstNode::isComponent(node.clone())?) {
         return Ok(());
     }
@@ -888,14 +888,14 @@ pub fn mergeScalarsComponentBinding(mut node: Arc<InstNode::InstNode>, mut nameM
 pub fn createExtractorModel(mut flatModel: Arc<FlatModel::NFFlatModel>, mut funcs: Arc<NFFlatten::FunctionTreeImpl::Tree>) -> Result<(Arc<FlatModel::NFFlatModel>, Arc<NFFlatten::FunctionTreeImpl::Tree>)> {
     let mut extractorModel: Arc<FlatModel::NFFlatModel> = flatModel.clone();
     let mut outFuncs: Arc<NFFlatten::FunctionTreeImpl::Tree> = funcs.clone();
-    let mut top_level_connectors: Arc<metamodelica::List<Arc<Variable::NFVariable>>> = metamodelica::nil();
-    let mut flows: Arc<metamodelica::List<Arc<Variable::NFVariable>>> = metamodelica::nil();
-    let mut inputs: Arc<metamodelica::List<Arc<Variable::NFVariable>>> = metamodelica::nil();
-    let mut fn_template: Arc<Function::Function> = Arc::new(<Function::Function as ::std::default::Default>::default());
+    let mut top_level_connectors: Arc<metamodelica::List<Arc<Variable::NFVariable>>>;
+    let mut flows: Arc<metamodelica::List<Arc<Variable::NFVariable>>>;
+    let mut inputs: Arc<metamodelica::List<Arc<Variable::NFVariable>>>;
+    let mut fn_template: Arc<Function::Function>;
     let mut index: i32 = 0;
     let mut eqs: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = metamodelica::nil();
-    let mut eq: Arc<Equation::NFEquation> = Arc::new(<Equation::NFEquation as ::std::default::Default>::default());
-    let mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
+    let mut eq: Arc<Equation::NFEquation>;
+    let mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
     (top_level_connectors, flows, inputs) = collectExtractorModelVariables(flatModel.variables.clone())?;
     fn_template = createExtractorModelDummyFn(top_level_connectors.clone())?;
     args = ({
@@ -925,7 +925,7 @@ pub fn collectExtractorModelVariables(mut vars: Arc<metamodelica::List<Arc<Varia
     let mut topLevelConnectorVars: Arc<metamodelica::List<Arc<Variable::NFVariable>>> = metamodelica::nil();
     let mut flowVars: Arc<metamodelica::List<Arc<Variable::NFVariable>>> = metamodelica::nil();
     let mut inputVars: Arc<metamodelica::List<Arc<Variable::NFVariable>>> = metamodelica::nil();
-    let mut top_node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
+    let mut top_node: Arc<InstNode::InstNode>;
     for mut var in &*vars.clone().reverse() {
         let mut var = var.clone();
         if !(ComponentRef::isSimple(var.name.clone())) {
@@ -946,14 +946,14 @@ pub fn collectExtractorModelVariables(mut vars: Arc<metamodelica::List<Arc<Varia
 pub static REAL_TYPE_SPEC: std::sync::LazyLock<Arc<Absyn::TypeSpec>> = std::sync::LazyLock::new(|| { Arc::new(Absyn::TypeSpec::TPATH { path: Arc::new(Absyn::Path::IDENT { name: (literal!("Real")).clone() }), arrayDim: None }) });
 
 pub fn createExtractorModelDummyFn(mut connectors: Arc<metamodelica::List<Arc<Variable::NFVariable>>>) -> Result<Arc<Function::Function>> {
-    let mut r#fn: Arc<Function::Function> = Arc::new(<Function::Function as ::std::default::Default>::default());
-    let mut cdef: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
-    let mut output_param: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
-    let mut elem: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
-    let mut fn_node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
-    let mut params: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
-    let mut output_binding: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
-    let mut cmt: Arc<SCode::Comment> = Arc::new(<SCode::Comment as ::std::default::Default>::default());
+    let mut r#fn: Arc<Function::Function>;
+    let mut cdef: Arc<SCode::ClassDef>;
+    let mut output_param: Arc<SCode::Element>;
+    let mut elem: Arc<SCode::Element>;
+    let mut fn_node: Arc<InstNode::InstNode>;
+    let mut params: Arc<metamodelica::List<Arc<SCode::Element>>>;
+    let mut output_binding: Arc<SCode::Mod>;
+    let mut cmt: Arc<SCode::Comment>;
     output_binding = SCodeUtil::makeMod(false, false, metamodelica::nil(), Some(Arc::new(Absyn::Exp::INTEGER { value: 0 })), None, Absyn::dummyInfo.clone());
     output_param = Arc::new(SCode::Element::COMPONENT { name: (literal!("dummy")).clone(), prefixes: SCode::defaultPrefixes.clone(), attributes: SCode::defaultOutputAttr.clone(), typeSpec: REAL_TYPE_SPEC.clone(), modifications: output_binding.clone(), comment: SCode::noComment.clone(), condition: None, info: Absyn::dummyInfo.clone() });
     params = listAppend(({
@@ -978,19 +978,19 @@ pub fn createExtractorModelDummyFn(mut connectors: Arc<metamodelica::List<Arc<Va
 }
 
 pub fn createExtractorModelDummyFnInput(mut var: Arc<Variable::NFVariable>) -> Result<Arc<SCode::Element>> {
-    let mut inputElem: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
+    let mut inputElem: Arc<SCode::Element>;
     inputElem = Arc::new(SCode::Element::COMPONENT { name: (ComponentRef::toFlatString(var.name.clone(), BaseModelica::defaultFormat.clone())?).clone(), prefixes: SCode::defaultPrefixes.clone(), attributes: SCode::defaultInputAttr.clone(), typeSpec: REAL_TYPE_SPEC.clone(), modifications: openmodelica_frontend_types::SCode::Mod::interned_NOMOD(), comment: SCode::noComment.clone(), condition: None, info: Absyn::dummyInfo.clone() });
     Ok(inputElem)
 }
 
 pub fn createExtractorModelDummyEq(mut var: Arc<Variable::NFVariable>, mut varType: ArcStr, mut r#fn: Arc<Function::Function>, mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut funcs: Arc<NFFlatten::FunctionTreeImpl::Tree>, mut index: i32) -> Result<(Arc<Equation::NFEquation>, Arc<NFFlatten::FunctionTreeImpl::Tree>, i32)> {
-    let mut eq: Arc<Equation::NFEquation> = Arc::new(<Equation::NFEquation as ::std::default::Default>::default());
+    let mut eq: Arc<Equation::NFEquation>;
     let mut funcs: Arc<NFFlatten::FunctionTreeImpl::Tree> = funcs;
     let mut index: i32 = index;
-    let mut indexed_fn: Arc<Function::Function> = Arc::new(<Function::Function as ::std::default::Default>::default());
+    let mut indexed_fn: Arc<Function::Function>;
     let mut fn_name: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     let mut src: Arc<DAE::ElementSource> = DAE::emptyElementSource().clone();
-    let mut var_name: ArcStr = arcstr::literal!("");
+    let mut var_name: ArcStr;
     loop {
         index = index.clone() + 1;
         fn_name = Arc::new(Absyn::Path::IDENT { name: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("f")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", index.clone()))); ArcStr::from(__mm_s) }).clone() });

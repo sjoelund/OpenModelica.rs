@@ -373,24 +373,24 @@ pub use self::AttributeTarget::{TARGET_NODE,TARGET_EDGE,TARGET_GRAPH};
 // Logic
 // -------------------------
 pub fn createGraphInfo() -> GraphInfo {
-    let mut oGraphInfo: GraphInfo = <GraphInfo as ::std::default::Default>::default();
+    let mut oGraphInfo: GraphInfo;
     oGraphInfo = GraphInfo::GRAPHINFO { graphs: metamodelica::nil(), graphCount: 0, nodes: metamodelica::nil(), nodeCount: 0, edges: metamodelica::nil(), edgeCount: 0, attributes: metamodelica::nil(), graphNodeKey: (literal!("gi1")).clone(), graphEdgeKey: (literal!("gi2")).clone() };
     oGraphInfo
 }
 
 pub fn addGraph(mut id: ArcStr, mut directed: bool, mut iGraphInfo: GraphInfo) -> Result<(GraphInfo, (Graph, i32))> {
-    let mut oGraphInfo: GraphInfo = <GraphInfo as ::std::default::Default>::default();
-    let mut oGraph: (Graph, i32) = (<Graph as ::std::default::Default>::default(), 0);
-    let mut tmpGraph: Graph = <Graph as ::std::default::Default>::default();
-    let mut graphs: Arc<metamodelica::List<Graph>> = metamodelica::nil();
-    let mut graphCount: i32 = 0;
-    let mut nodes: Arc<metamodelica::List<Node>> = metamodelica::nil();
-    let mut nodeCount: i32 = 0;
-    let mut edges: Arc<metamodelica::List<Edge>> = metamodelica::nil();
-    let mut edgeCount: i32 = 0;
-    let mut attributes: Arc<metamodelica::List<Attribute>> = metamodelica::nil();
-    let mut graphNodeKey: ArcStr = arcstr::literal!("");
-    let mut graphEdgeKey: ArcStr = arcstr::literal!("");
+    let mut oGraphInfo: GraphInfo;
+    let mut oGraph: (Graph, i32);
+    let mut tmpGraph: Graph;
+    let mut graphs: Arc<metamodelica::List<Graph>>;
+    let mut graphCount: i32;
+    let mut nodes: Arc<metamodelica::List<Node>>;
+    let mut nodeCount: i32;
+    let mut edges: Arc<metamodelica::List<Edge>>;
+    let mut edgeCount: i32;
+    let mut attributes: Arc<metamodelica::List<Attribute>>;
+    let mut graphNodeKey: ArcStr;
+    let mut graphEdgeKey: ArcStr;
     let GraphInfo::GRAPHINFO { graphs: __pa0, graphCount: __pa1, nodes: __pa2, nodeCount: __pa3, edges: __pa4, edgeCount: __pa5, attributes: __pa6, graphNodeKey: __pa7, graphEdgeKey: __pa8 } = (iGraphInfo.clone()) else { bail!("pattern mismatch") };
     graphs = __pa0.clone();
     graphCount = __pa1.clone();
@@ -410,23 +410,23 @@ pub fn addGraph(mut id: ArcStr, mut directed: bool, mut iGraphInfo: GraphInfo) -
 }
 
 pub fn addNode(mut id: ArcStr, mut backgroundColor: ArcStr, mut borderWidth: metamodelica::Real, mut nodeLabels: Arc<metamodelica::List<NodeLabel>>, mut shapeType: ShapeType, mut optDesc: Option<ArcStr>, mut attValues: Arc<metamodelica::List<(i32, ArcStr)>>, mut iGraphIdx: i32, mut iGraphInfo: GraphInfo) -> Result<(GraphInfo, (Node, i32))> {
-    let mut oGraphInfo: GraphInfo = <GraphInfo as ::std::default::Default>::default();
-    let mut oNode: (Node, i32) = (<Node as ::std::default::Default>::default(), 0);
-    let mut tmpNode: Node = <Node as ::std::default::Default>::default();
-    let mut graphs: Arc<metamodelica::List<Graph>> = metamodelica::nil();
-    let mut graphCount: i32 = 0;
-    let mut nodes: Arc<metamodelica::List<Node>> = metamodelica::nil();
-    let mut nodeCount: i32 = 0;
-    let mut edges: Arc<metamodelica::List<Edge>> = metamodelica::nil();
-    let mut edgeCount: i32 = 0;
-    let mut attributes: Arc<metamodelica::List<Attribute>> = metamodelica::nil();
-    let mut graphNodeKey: ArcStr = arcstr::literal!("");
-    let mut graphEdgeKey: ArcStr = arcstr::literal!("");
-    let mut iGraph: Graph = <Graph as ::std::default::Default>::default();
-    let mut gid: ArcStr = arcstr::literal!("");
-    let mut directed: bool = false;
-    let mut nodeIdc: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut gAttValues: Arc<metamodelica::List<(i32, ArcStr)>> = metamodelica::nil();
+    let mut oGraphInfo: GraphInfo;
+    let mut oNode: (Node, i32);
+    let mut tmpNode: Node;
+    let mut graphs: Arc<metamodelica::List<Graph>>;
+    let mut graphCount: i32;
+    let mut nodes: Arc<metamodelica::List<Node>>;
+    let mut nodeCount: i32;
+    let mut edges: Arc<metamodelica::List<Edge>>;
+    let mut edgeCount: i32;
+    let mut attributes: Arc<metamodelica::List<Attribute>>;
+    let mut graphNodeKey: ArcStr;
+    let mut graphEdgeKey: ArcStr;
+    let mut iGraph: Graph;
+    let mut gid: ArcStr;
+    let mut directed: bool;
+    let mut nodeIdc: Arc<metamodelica::List<i32>>;
+    let mut gAttValues: Arc<metamodelica::List<(i32, ArcStr)>>;
     let GraphInfo::GRAPHINFO { graphs: __pa0, graphCount: __pa1, nodes: __pa2, nodeCount: __pa3, edges: __pa4, edgeCount: __pa5, attributes: __pa6, graphNodeKey: __pa7, graphEdgeKey: __pa8 } = (iGraphInfo.clone()) else { bail!("pattern mismatch") };
     graphs = __pa0.clone();
     graphCount = __pa1.clone();
@@ -455,27 +455,27 @@ pub fn addNode(mut id: ArcStr, mut backgroundColor: ArcStr, mut borderWidth: met
 }
 
 pub fn addGroupNode(mut id: ArcStr, mut iGraphIdx: i32, mut isFolded: bool, mut iHeader: ArcStr, mut iGraphInfo: GraphInfo) -> Result<(GraphInfo, (Node, i32), (Graph, i32))> {
-    let mut oGraphInfo: GraphInfo = <GraphInfo as ::std::default::Default>::default();
-    let mut oNode: (Node, i32) = (<Node as ::std::default::Default>::default(), 0);
-    let mut oGraph: (Graph, i32) = (<Graph as ::std::default::Default>::default(), 0);
-    let mut tmpGraphInfo: GraphInfo = <GraphInfo as ::std::default::Default>::default();
-    let mut tmpNode: Node = <Node as ::std::default::Default>::default();
-    let mut graphs: Arc<metamodelica::List<Graph>> = metamodelica::nil();
-    let mut graphCount: i32 = 0;
-    let mut nodes: Arc<metamodelica::List<Node>> = metamodelica::nil();
-    let mut nodeCount: i32 = 0;
-    let mut edges: Arc<metamodelica::List<Edge>> = metamodelica::nil();
-    let mut edgeCount: i32 = 0;
-    let mut attributes: Arc<metamodelica::List<Attribute>> = metamodelica::nil();
-    let mut graphNodeKey: ArcStr = arcstr::literal!("");
-    let mut graphEdgeKey: ArcStr = arcstr::literal!("");
-    let mut iGraph: Graph = <Graph as ::std::default::Default>::default();
-    let mut newGraph: Graph = <Graph as ::std::default::Default>::default();
-    let mut gid: ArcStr = arcstr::literal!("");
-    let mut directed: bool = false;
-    let mut newGraphIdx: i32 = 0;
-    let mut nodeIdc: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut attValues: Arc<metamodelica::List<(i32, ArcStr)>> = metamodelica::nil();
+    let mut oGraphInfo: GraphInfo;
+    let mut oNode: (Node, i32);
+    let mut oGraph: (Graph, i32);
+    let mut tmpGraphInfo: GraphInfo;
+    let mut tmpNode: Node;
+    let mut graphs: Arc<metamodelica::List<Graph>>;
+    let mut graphCount: i32;
+    let mut nodes: Arc<metamodelica::List<Node>>;
+    let mut nodeCount: i32;
+    let mut edges: Arc<metamodelica::List<Edge>>;
+    let mut edgeCount: i32;
+    let mut attributes: Arc<metamodelica::List<Attribute>>;
+    let mut graphNodeKey: ArcStr;
+    let mut graphEdgeKey: ArcStr;
+    let mut iGraph: Graph;
+    let mut newGraph: Graph;
+    let mut gid: ArcStr;
+    let mut directed: bool;
+    let mut newGraphIdx: i32;
+    let mut nodeIdc: Arc<metamodelica::List<i32>>;
+    let mut attValues: Arc<metamodelica::List<(i32, ArcStr)>>;
     let GraphInfo::GRAPHINFO { graphs: __pa0, graphCount: __pa1, nodes: __pa2, nodeCount: __pa3, edges: __pa4, edgeCount: __pa5, attributes: __pa6, graphNodeKey: __pa7, graphEdgeKey: __pa8 } = (iGraphInfo.clone()) else { bail!("pattern mismatch") };
     graphs = __pa0.clone();
     graphCount = __pa1.clone();
@@ -519,18 +519,18 @@ pub fn addGroupNode(mut id: ArcStr, mut iGraphIdx: i32, mut isFolded: bool, mut 
 }
 
 pub fn addEdge(mut id: ArcStr, mut target: ArcStr, mut source: ArcStr, mut color: ArcStr, mut lineType: LineType, mut lineWidth: metamodelica::Real, mut smooth: bool, mut labels: Arc<metamodelica::List<EdgeLabel>>, mut arrows: (ArrowType, ArrowType), mut attValues: Arc<metamodelica::List<(i32, ArcStr)>>, mut iGraphInfo: GraphInfo) -> Result<(GraphInfo, (Edge, i32))> {
-    let mut oGraphInfo: GraphInfo = <GraphInfo as ::std::default::Default>::default();
-    let mut oEdge: (Edge, i32) = (<Edge as ::std::default::Default>::default(), 0);
-    let mut tmpEdge: Edge = <Edge as ::std::default::Default>::default();
-    let mut graphs: Arc<metamodelica::List<Graph>> = metamodelica::nil();
-    let mut graphCount: i32 = 0;
-    let mut nodes: Arc<metamodelica::List<Node>> = metamodelica::nil();
-    let mut nodeCount: i32 = 0;
-    let mut edges: Arc<metamodelica::List<Edge>> = metamodelica::nil();
-    let mut edgeCount: i32 = 0;
-    let mut attributes: Arc<metamodelica::List<Attribute>> = metamodelica::nil();
-    let mut graphNodeKey: ArcStr = arcstr::literal!("");
-    let mut graphEdgeKey: ArcStr = arcstr::literal!("");
+    let mut oGraphInfo: GraphInfo;
+    let mut oEdge: (Edge, i32);
+    let mut tmpEdge: Edge;
+    let mut graphs: Arc<metamodelica::List<Graph>>;
+    let mut graphCount: i32;
+    let mut nodes: Arc<metamodelica::List<Node>>;
+    let mut nodeCount: i32;
+    let mut edges: Arc<metamodelica::List<Edge>>;
+    let mut edgeCount: i32;
+    let mut attributes: Arc<metamodelica::List<Attribute>>;
+    let mut graphNodeKey: ArcStr;
+    let mut graphEdgeKey: ArcStr;
     let GraphInfo::GRAPHINFO { graphs: __pa0, graphCount: __pa1, nodes: __pa2, nodeCount: __pa3, edges: __pa4, edgeCount: __pa5, attributes: __pa6, graphNodeKey: __pa7, graphEdgeKey: __pa8 } = (iGraphInfo.clone()) else { bail!("pattern mismatch") };
     graphs = __pa0.clone();
     graphCount = __pa1.clone();
@@ -550,19 +550,19 @@ pub fn addEdge(mut id: ArcStr, mut target: ArcStr, mut source: ArcStr, mut color
 }
 
 pub fn addAttribute(mut defaultValue: ArcStr, mut name: ArcStr, mut attType: AttributeType, mut attTarget: AttributeTarget, mut iGraphInfo: GraphInfo) -> Result<(GraphInfo, (Attribute, i32))> {
-    let mut oGraphInfo: GraphInfo = <GraphInfo as ::std::default::Default>::default();
-    let mut oAttribute: (Attribute, i32) = (<Attribute as ::std::default::Default>::default(), 0);
-    let mut tmpAttribute: Attribute = <Attribute as ::std::default::Default>::default();
-    let mut attIdx: i32 = 0;
-    let mut graphs: Arc<metamodelica::List<Graph>> = metamodelica::nil();
-    let mut graphCount: i32 = 0;
-    let mut nodes: Arc<metamodelica::List<Node>> = metamodelica::nil();
-    let mut nodeCount: i32 = 0;
-    let mut edges: Arc<metamodelica::List<Edge>> = metamodelica::nil();
-    let mut edgeCount: i32 = 0;
-    let mut attributes: Arc<metamodelica::List<Attribute>> = metamodelica::nil();
-    let mut graphNodeKey: ArcStr = arcstr::literal!("");
-    let mut graphEdgeKey: ArcStr = arcstr::literal!("");
+    let mut oGraphInfo: GraphInfo;
+    let mut oAttribute: (Attribute, i32);
+    let mut tmpAttribute: Attribute;
+    let mut attIdx: i32;
+    let mut graphs: Arc<metamodelica::List<Graph>>;
+    let mut graphCount: i32;
+    let mut nodes: Arc<metamodelica::List<Node>>;
+    let mut nodeCount: i32;
+    let mut edges: Arc<metamodelica::List<Edge>>;
+    let mut edgeCount: i32;
+    let mut attributes: Arc<metamodelica::List<Attribute>>;
+    let mut graphNodeKey: ArcStr;
+    let mut graphEdgeKey: ArcStr;
     let GraphInfo::GRAPHINFO { graphs: __pa0, graphCount: __pa1, nodes: __pa2, nodeCount: __pa3, edges: __pa4, edgeCount: __pa5, attributes: __pa6, graphNodeKey: __pa7, graphEdgeKey: __pa8 } = (iGraphInfo.clone()) else { bail!("pattern mismatch") };
     graphs = __pa0.clone();
     graphCount = __pa1.clone();
@@ -582,21 +582,21 @@ pub fn addAttribute(mut defaultValue: ArcStr, mut name: ArcStr, mut attType: Att
 }
 
 pub fn addGraphAttributeValue(mut iValue: (i32, ArcStr), mut iGraphIdx: i32, mut iGraphInfo: GraphInfo) -> Result<GraphInfo> {
-    let mut oGraphInfo: GraphInfo = <GraphInfo as ::std::default::Default>::default();
-    let mut graphs: Arc<metamodelica::List<Graph>> = metamodelica::nil();
-    let mut graphCount: i32 = 0;
-    let mut nodes: Arc<metamodelica::List<Node>> = metamodelica::nil();
-    let mut nodeCount: i32 = 0;
-    let mut edges: Arc<metamodelica::List<Edge>> = metamodelica::nil();
-    let mut edgeCount: i32 = 0;
-    let mut attributes: Arc<metamodelica::List<Attribute>> = metamodelica::nil();
-    let mut graphNodeKey: ArcStr = arcstr::literal!("");
-    let mut graphEdgeKey: ArcStr = arcstr::literal!("");
-    let mut iGraph: Graph = <Graph as ::std::default::Default>::default();
-    let mut gid: ArcStr = arcstr::literal!("");
-    let mut directed: bool = false;
-    let mut nodeIdc: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut attValues: Arc<metamodelica::List<(i32, ArcStr)>> = metamodelica::nil();
+    let mut oGraphInfo: GraphInfo;
+    let mut graphs: Arc<metamodelica::List<Graph>>;
+    let mut graphCount: i32;
+    let mut nodes: Arc<metamodelica::List<Node>>;
+    let mut nodeCount: i32;
+    let mut edges: Arc<metamodelica::List<Edge>>;
+    let mut edgeCount: i32;
+    let mut attributes: Arc<metamodelica::List<Attribute>>;
+    let mut graphNodeKey: ArcStr;
+    let mut graphEdgeKey: ArcStr;
+    let mut iGraph: Graph;
+    let mut gid: ArcStr;
+    let mut directed: bool;
+    let mut nodeIdc: Arc<metamodelica::List<i32>>;
+    let mut attValues: Arc<metamodelica::List<(i32, ArcStr)>>;
     let GraphInfo::GRAPHINFO { graphs: __pa0, graphCount: __pa1, nodes: __pa2, nodeCount: __pa3, edges: __pa4, edgeCount: __pa5, attributes: __pa6, graphNodeKey: __pa7, graphEdgeKey: __pa8 } = (iGraphInfo.clone()) else { bail!("pattern mismatch") };
     graphs = __pa0.clone();
     graphCount = __pa1.clone();
@@ -624,7 +624,7 @@ pub fn addGraphAttributeValue(mut iValue: (i32, ArcStr), mut iGraphIdx: i32, mut
 // Helper
 // -------------------------
 pub fn getMainGraph(mut iGraphInfo: GraphInfo) -> Result<Option<(i32, Graph)>> {
-    let mut oGraph: Option<(i32, Graph)> = None;
+    let mut oGraph: Option<(i32, Graph)>;
     let mut graphs: Arc<metamodelica::List<Graph>> = metamodelica::nil();
     let mut firstGraph: Graph = <Graph as ::std::default::Default>::default();
     oGraph = (match iGraphInfo.clone() {
@@ -640,7 +640,7 @@ pub fn getMainGraph(mut iGraphInfo: GraphInfo) -> Result<Option<(i32, Graph)>> {
 }
 
 pub fn getAttributeByNameAndTarget(mut iAttributeName: ArcStr, mut iAttributeTarget: AttributeTarget, mut iGraphInfo: GraphInfo) -> Result<Option<(Attribute, i32)>> {
-    let mut oAttribute: Option<(Attribute, i32)> = None;
+    let mut oAttribute: Option<(Attribute, i32)>;
     let mut attributes: Arc<metamodelica::List<Attribute>> = metamodelica::nil();
     let mut tmpRes: Option<(Attribute, i32)> = None;
     oAttribute = (match iGraphInfo.clone() {
@@ -660,7 +660,7 @@ pub fn getAttributeByNameAndTarget(mut iAttributeName: ArcStr, mut iAttributeTar
 }
 
 fn getAttributeByNameAndTargetTail(mut iList: Arc<metamodelica::List<Attribute>>, mut iAttributeName: ArcStr, mut iAttributeTarget: AttributeTarget) -> Result<Option<(Attribute, i32)>> {
-    let mut oAttribute: Option<(Attribute, i32)> = None;
+    let mut oAttribute: Option<(Attribute, i32)>;
     let mut rest: Arc<metamodelica::List<Attribute>> = metamodelica::nil();
     let mut attIdx: i32 = 0;
     let mut name: ArcStr = arcstr::literal!("");
@@ -703,9 +703,9 @@ fn getAttributeByNameAndTargetTail(mut iList: Arc<metamodelica::List<Attribute>>
 }
 
 fn compareAttributeTargets(mut iTarget1: AttributeTarget, mut iTarget2: AttributeTarget) -> Result<bool> {
-    let mut oEqual: bool = false;
-    let mut tarInt1: i32 = 0;
-    let mut tarInt2: i32 = 0;
+    let mut oEqual: bool;
+    let mut tarInt1: i32;
+    let mut tarInt2: i32;
     tarInt1 = compareAttributeTarget0(iTarget1.clone())?;
     tarInt2 = compareAttributeTarget0(iTarget2.clone())?;
     oEqual = intEq(tarInt1.clone(), tarInt2.clone());
@@ -713,7 +713,7 @@ fn compareAttributeTargets(mut iTarget1: AttributeTarget, mut iTarget2: Attribut
 }
 
 fn compareAttributeTarget0(mut iTarget: AttributeTarget) -> Result<i32> {
-    let mut oCodec: i32 = 0;
+    let mut oCodec: i32;
     oCodec = (match iTarget.clone() {
         AttributeTarget::TARGET_NODE { .. } => 0,
         AttributeTarget::TARGET_EDGE { .. } => 1,
@@ -726,26 +726,26 @@ fn compareAttributeTarget0(mut iTarget: AttributeTarget) -> Result<i32> {
 // Dump
 // -------------------------
 pub fn dumpGraph(mut iGraphInfo: GraphInfo, mut iFileName: ArcStr) -> Result<()> {
-    let mut iGraphInfoArr: GraphInfo = <GraphInfo as ::std::default::Default>::default();
+    let mut iGraphInfoArr: GraphInfo;
     iGraphInfoArr = convertToGraphInfoArr(iGraphInfo.clone())?;
     Tpl::tplNoret2((std::sync::Arc::new(GraphMLDumpTpl::dumpGraphInfo) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, GraphInfo, ArcStr) -> Result<Tpl::Text> + 'static>), iGraphInfoArr.clone(), (iFileName.clone()).clone())?;
     Ok(())
 }
 
 fn convertToGraphInfoArr(mut iGraphInfo: GraphInfo) -> Result<GraphInfo> {
-    let mut oGraphInfo: GraphInfo = <GraphInfo as ::std::default::Default>::default();
-    let mut graphs: Arc<metamodelica::List<Graph>> = metamodelica::nil();
-    let mut graphsArr: metamodelica::Array<Graph> = Default::default();
-    let mut graphCount: i32 = 0;
-    let mut nodes: Arc<metamodelica::List<Node>> = metamodelica::nil();
-    let mut nodesArr: metamodelica::Array<Node> = Default::default();
-    let mut nodeCount: i32 = 0;
-    let mut edges: Arc<metamodelica::List<Edge>> = metamodelica::nil();
-    let mut edgeCount: i32 = 0;
-    let mut attributes: Arc<metamodelica::List<Attribute>> = metamodelica::nil();
-    let mut attributesArr: metamodelica::Array<Attribute> = Default::default();
-    let mut graphNodeKey: ArcStr = arcstr::literal!("");
-    let mut graphEdgeKey: ArcStr = arcstr::literal!("");
+    let mut oGraphInfo: GraphInfo;
+    let mut graphs: Arc<metamodelica::List<Graph>>;
+    let mut graphsArr: metamodelica::Array<Graph>;
+    let mut graphCount: i32;
+    let mut nodes: Arc<metamodelica::List<Node>>;
+    let mut nodesArr: metamodelica::Array<Node>;
+    let mut nodeCount: i32;
+    let mut edges: Arc<metamodelica::List<Edge>>;
+    let mut edgeCount: i32;
+    let mut attributes: Arc<metamodelica::List<Attribute>>;
+    let mut attributesArr: metamodelica::Array<Attribute>;
+    let mut graphNodeKey: ArcStr;
+    let mut graphEdgeKey: ArcStr;
     let GraphInfo::GRAPHINFO { graphs: __pa0, graphCount: __pa1, nodes: __pa2, nodeCount: __pa3, edges: __pa4, edgeCount: __pa5, attributes: __pa6, graphNodeKey: __pa7, graphEdgeKey: __pa8 } = (iGraphInfo.clone()) else { bail!("pattern mismatch") };
     graphs = __pa0.clone();
     graphCount = __pa1.clone();
@@ -767,13 +767,13 @@ fn convertToGraphInfoArr(mut iGraphInfo: GraphInfo) -> Result<GraphInfo> {
 // debug prints
 // -------------------------
 pub fn printGraphInfo(mut iGraphInfo: GraphInfo) -> Result<()> {
-    let mut graphs: Arc<metamodelica::List<Graph>> = metamodelica::nil();
-    let mut graphCount: i32 = 0;
-    let mut nodes: Arc<metamodelica::List<Node>> = metamodelica::nil();
-    let mut nodeCount: i32 = 0;
-    let mut attributes: Arc<metamodelica::List<Attribute>> = metamodelica::nil();
-    let mut graphNodeKey: ArcStr = arcstr::literal!("");
-    let mut graphEdgeKey: ArcStr = arcstr::literal!("");
+    let mut graphs: Arc<metamodelica::List<Graph>>;
+    let mut graphCount: i32;
+    let mut nodes: Arc<metamodelica::List<Node>>;
+    let mut nodeCount: i32;
+    let mut attributes: Arc<metamodelica::List<Attribute>>;
+    let mut graphNodeKey: ArcStr;
+    let mut graphEdgeKey: ArcStr;
     let GraphInfo::GRAPHINFO { graphs: __pa0, graphCount: __pa1, nodes: __pa2, nodeCount: __pa3, attributes: __pa4, graphNodeKey: __pa5, graphEdgeKey: __pa6, .. } = (iGraphInfo.clone()) else { bail!("pattern mismatch") };
     graphs = __pa0.clone();
     graphCount = __pa1.clone();
@@ -789,10 +789,10 @@ pub fn printGraphInfo(mut iGraphInfo: GraphInfo) -> Result<()> {
 }
 
 fn printNode(mut node: Node) -> Result<()> {
-    let mut id: ArcStr = arcstr::literal!("");
-    let mut atts: ArcStr = arcstr::literal!("");
-    let mut optDesc: Option<ArcStr> = None;
-    let mut attValues: Arc<metamodelica::List<(i32, ArcStr)>> = metamodelica::nil();
+    let mut id: ArcStr;
+    let mut atts: ArcStr;
+    let mut optDesc: Option<ArcStr>;
+    let mut attValues: Arc<metamodelica::List<(i32, ArcStr)>>;
     let Node::NODE { id: __pa0, optDesc: __pa1, attValues: __pa2, .. } = (node.clone()) else { bail!("pattern mismatch") };
     id = __pa0.clone();
     optDesc = __pa1.clone();

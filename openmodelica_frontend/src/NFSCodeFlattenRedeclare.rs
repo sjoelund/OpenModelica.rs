@@ -94,13 +94,13 @@ pub type Replacements = Arc<metamodelica::List<Replacement>>;
 pub static emptyReplacements: std::sync::LazyLock<Arc<metamodelica::List<Replacement>>> = std::sync::LazyLock::new(|| { metamodelica::nil() });
 
 pub fn addElementRedeclarationsToEnv(mut inRedeclares: Arc<metamodelica::List<Arc<SCode::Element>>>, mut inEnv: Env) -> Result<Env> {
-    let mut outEnv: Env = metamodelica::nil();
+    let mut outEnv: Env;
     outEnv = List::fold(inRedeclares.clone(), (std::sync::Arc::new(addElementRedeclarationsToEnv2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>) -> Result<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>> + 'static>), inEnv.clone())?;
     Ok(outEnv)
 }
 
 fn addElementRedeclarationsToEnv2(mut inRedeclare: Arc<SCode::Element>, mut inEnv: Env) -> Result<Env> {
-    let mut outEnv: Env = metamodelica::nil();
+    let mut outEnv: Env;
     outEnv = 'mc: {
         let __mc_input = inEnv.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -139,7 +139,7 @@ fn addElementRedeclarationsToEnv2(mut inRedeclare: Arc<SCode::Element>, mut inEn
 }
 
 fn lookupElementRedeclaration(mut inName: ArcStr, mut inEnv: Env, mut inInfo: SourceInfo) -> Result<Arc<metamodelica::List<Arc<Absyn::Path>>>> {
-    let mut outPaths: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
+    let mut outPaths: Arc<metamodelica::List<Arc<Absyn::Path>>>;
     outPaths = 'mc: {
         let __mc_input = inInfo.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -159,10 +159,10 @@ fn lookupElementRedeclaration(mut inName: ArcStr, mut inEnv: Env, mut inInfo: So
 }
 
 fn addRedeclareToEnvExtendsTable(mut inRedeclaredElement: Item, mut inBaseClasses: Arc<metamodelica::List<Arc<Absyn::Path>>>, mut inEnv: Env, mut inInfo: SourceInfo) -> Result<Env> {
-    let mut outEnv: Env = metamodelica::nil();
-    let mut bcl: Arc<metamodelica::List<Arc<NFSCodeEnv::Extends>>> = metamodelica::nil();
-    let mut re: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
-    let mut cei: Option<Arc<SCode::Element>> = None;
+    let mut outEnv: Env;
+    let mut bcl: Arc<metamodelica::List<Arc<NFSCodeEnv::Extends>>>;
+    let mut re: Arc<metamodelica::List<Arc<SCode::Element>>>;
+    let mut cei: Option<Arc<SCode::Element>>;
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(NFSCodeEnv::getEnvExtendsTable(inEnv.clone())?) {
         Deref @ NFSCodeEnv::ExtendsTable { baseClasses: __pa0, redeclaredElements: __pa1, classExtendsInfo: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
@@ -176,7 +176,7 @@ fn addRedeclareToEnvExtendsTable(mut inRedeclaredElement: Item, mut inBaseClasse
 }
 
 fn addRedeclareToEnvExtendsTable2(mut inRedeclaredElement: Item, mut inBaseClasses: Arc<metamodelica::List<Arc<Absyn::Path>>>, mut inExtends: Arc<metamodelica::List<Arc<NFSCodeEnv::Extends>>>) -> Result<Arc<metamodelica::List<Arc<NFSCodeEnv::Extends>>>> {
-    let mut outExtends: Arc<metamodelica::List<Arc<NFSCodeEnv::Extends>>> = metamodelica::nil();
+    let mut outExtends: Arc<metamodelica::List<Arc<NFSCodeEnv::Extends>>>;
     outExtends = 'mc: {
         let __mc_input = (inBaseClasses.clone(), inExtends.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -219,7 +219,7 @@ fn addRedeclareToEnvExtendsTable2(mut inRedeclaredElement: Item, mut inBaseClass
 }
 
 pub fn processRedeclare(mut inRedeclare: Arc<NFSCodeEnv::Redeclaration>, mut inEnv: Env, mut inPrefix: Arc<NFInstPrefix::Prefix>) -> Result<Arc<NFSCodeEnv::Redeclaration>> {
-    let mut outRedeclare: Arc<NFSCodeEnv::Redeclaration> = Arc::new(<NFSCodeEnv::Redeclaration as ::std::default::Default>::default());
+    let mut outRedeclare: Arc<NFSCodeEnv::Redeclaration>;
     outRedeclare = 'mc: {
         let __mc_input = inRedeclare.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -272,8 +272,8 @@ pub fn processRedeclare(mut inRedeclare: Arc<NFSCodeEnv::Redeclaration>, mut inE
 }
 
 pub fn replaceRedeclares(mut inRedeclares: Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>>, mut inClassItem: Item, mut inClassEnv: Env, mut inElementEnv: Env, mut inReplaceRedeclares: NFSCodeLookup::RedeclareReplaceStrategy) -> Result<(Option<Arc<NFSCodeEnv::Item>>, Option<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>>)> {
-    let mut outItem: Option<Arc<NFSCodeEnv::Item>> = None;
-    let mut outEnv: Option<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>> = None;
+    let mut outItem: Option<Arc<NFSCodeEnv::Item>>;
+    let mut outEnv: Option<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>>;
     (outItem, outEnv) = 'mc: {
         let __mc_input = inReplaceRedeclares.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -297,9 +297,9 @@ pub fn replaceRedeclares(mut inRedeclares: Arc<metamodelica::List<Arc<NFSCodeEnv
 }
 
 pub fn replaceRedeclaredElementsInEnv(mut inRedeclares: Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>>, mut inItem: Item, mut inTypeEnv: Env, mut inElementEnv: Env, mut inPrefix: Arc<NFInstPrefix::Prefix>) -> Result<(Item, Env, Replacements)> {
-    let mut outItem: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
-    let mut outEnv: Env = metamodelica::nil();
-    let mut outReplacements: Replacements = metamodelica::nil();
+    let mut outItem: Item;
+    let mut outEnv: Env;
+    let mut outReplacements: Replacements;
     (outItem, outEnv, outReplacements) = 'mc: {
         let __mc_input = (inRedeclares.clone(), inItem.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -348,7 +348,7 @@ pub fn replaceRedeclaredElementsInEnv(mut inRedeclares: Arc<metamodelica::List<A
 }
 
 pub fn extractRedeclaresFromModifier(mut inMod: Arc<SCode::Mod>) -> Result<Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>>> {
-    let mut outRedeclares: Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>> = metamodelica::nil();
+    let mut outRedeclares: Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>>;
     outRedeclares = (::match_deref::match_deref! { match &(inMod.clone()) {
         Deref @ SCode::Mod::MOD { subModLst: sub_mods, .. } => {
             let mut redeclares: Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>> = metamodelica::nil();
@@ -364,7 +364,7 @@ pub fn extractRedeclaresFromModifier(mut inMod: Arc<SCode::Mod>) -> Result<Arc<m
 }
 
 fn extractRedeclareFromSubMod(mut inMod: Arc<SCode::SubMod>, mut inRedeclares: Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>>) -> Result<Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>>> {
-    let mut outRedeclares: Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>> = metamodelica::nil();
+    let mut outRedeclares: Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>>;
     outRedeclares = (::match_deref::match_deref! { match &(inMod.clone()) {
         Deref @ SCode::SubMod { r#mod: Deref @ SCode::Mod::REDECL { element: el, .. }, .. } => {
             let mut redecl: Arc<NFSCodeEnv::Redeclaration> = Arc::new(<NFSCodeEnv::Redeclaration as ::std::default::Default>::default());
@@ -381,7 +381,7 @@ fn extractRedeclareFromSubMod(mut inMod: Arc<SCode::SubMod>, mut inRedeclares: A
 }
 
 fn replaceRedeclaredElementInEnv(mut inRedeclare: Arc<NFSCodeEnv::Redeclaration>, mut inEnv: (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, Arc<metamodelica::List<Replacement>>)) -> Result<(Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, Arc<metamodelica::List<Replacement>>)> {
-    let mut outEnv: (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, Arc<metamodelica::List<Replacement>>) = (metamodelica::nil(), metamodelica::nil());
+    let mut outEnv: (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, Arc<metamodelica::List<Replacement>>);
     outEnv = 'mc: {
         let __mc_input = inRedeclare.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -429,7 +429,7 @@ fn replaceRedeclaredElementInEnv(mut inRedeclare: Arc<NFSCodeEnv::Redeclaration>
 }
 
 fn pushRedeclareIntoExtendsNoFail(mut inName: ArcStr, mut inRedeclare: Item, mut inEnv: (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, Arc<metamodelica::List<Replacement>>)) -> Result<(Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, Arc<metamodelica::List<Replacement>>)> {
-    let mut outEnv: (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, Arc<metamodelica::List<Replacement>>) = (metamodelica::nil(), metamodelica::nil());
+    let mut outEnv: (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, Arc<metamodelica::List<Replacement>>);
     outEnv = 'mc: {
         let __mc_input = inEnv.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -458,14 +458,14 @@ fn pushRedeclareIntoExtendsNoFail(mut inName: ArcStr, mut inRedeclare: Item, mut
 }
 
 fn pushRedeclareIntoExtends(mut inName: ArcStr, mut inRedeclare: Item, mut inBaseClasses: Arc<metamodelica::List<Arc<Absyn::Path>>>, mut inEnv: (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, Arc<metamodelica::List<Replacement>>)) -> Result<(Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, Arc<metamodelica::List<Replacement>>)> {
-    let mut outEnv: (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, Arc<metamodelica::List<Replacement>>) = (metamodelica::nil(), metamodelica::nil());
-    let mut exts: Arc<metamodelica::List<Arc<NFSCodeEnv::Extends>>> = metamodelica::nil();
-    let mut re: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
-    let mut cei: Option<Arc<SCode::Element>> = None;
-    let mut etNew: Arc<NFSCodeEnv::ExtendsTable> = Arc::new(<NFSCodeEnv::ExtendsTable as ::std::default::Default>::default());
-    let mut etOld: Arc<NFSCodeEnv::ExtendsTable> = Arc::new(<NFSCodeEnv::ExtendsTable as ::std::default::Default>::default());
-    let mut env: Env = metamodelica::nil();
-    let mut repl: Replacements = metamodelica::nil();
+    let mut outEnv: (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, Arc<metamodelica::List<Replacement>>);
+    let mut exts: Arc<metamodelica::List<Arc<NFSCodeEnv::Extends>>>;
+    let mut re: Arc<metamodelica::List<Arc<SCode::Element>>>;
+    let mut cei: Option<Arc<SCode::Element>>;
+    let mut etNew: Arc<NFSCodeEnv::ExtendsTable>;
+    let mut etOld: Arc<NFSCodeEnv::ExtendsTable>;
+    let mut env: Env;
+    let mut repl: Replacements;
     (env, repl) = inEnv.clone();
     let (__pa3, __pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(env.clone()) {
         Deref @ metamodelica::List::Cons { head: Deref @ NFSCodeEnv::Frame { extendsTable: __pa3 @ Deref @ NFSCodeEnv::ExtendsTable { baseClasses: __pa0, redeclaredElements: __pa1, classExtendsInfo: __pa2 }, .. }, tail: _ } => (__pa3.clone(), __pa0.clone(), __pa1.clone(), __pa2.clone()),
@@ -484,7 +484,7 @@ fn pushRedeclareIntoExtends(mut inName: ArcStr, mut inRedeclare: Item, mut inBas
 }
 
 fn pushRedeclareIntoExtends2(mut inName: ArcStr, mut inRedeclare: Item, mut inBaseClasses: Arc<metamodelica::List<Arc<Absyn::Path>>>, mut inExtends: Arc<metamodelica::List<Arc<NFSCodeEnv::Extends>>>) -> Result<Arc<metamodelica::List<Arc<NFSCodeEnv::Extends>>>> {
-    let mut outExtends: Arc<metamodelica::List<Arc<NFSCodeEnv::Extends>>> = metamodelica::nil();
+    let mut outExtends: Arc<metamodelica::List<Arc<NFSCodeEnv::Extends>>>;
     outExtends = (::match_deref::match_deref! { match &((inBaseClasses.clone(), inExtends.clone())) {
         (Deref @ metamodelica::List::Cons { head: bc1, tail: rest_bc }, Deref @ metamodelica::List::Cons { head: Deref @ NFSCodeEnv::Extends { baseClass: bc2, redeclareModifiers: redecls, index, info }, tail: rest_exts }) if (AbsynUtil::pathEqual(bc1.clone(), bc2.clone())) => {
             let mut redecls = (*redecls).clone();
@@ -541,7 +541,7 @@ fn pushRedeclareIntoExtends3(mut inRedeclare: Item, mut inName: ArcStr, mut inRe
 }
 
 pub fn replaceElementInScope(mut inElementName: ArcStr, mut inElement: Item, mut inEnv: (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, Arc<metamodelica::List<Replacement>>)) -> Result<(Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, Arc<metamodelica::List<Replacement>>)> {
-    let mut outEnv: (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, Arc<metamodelica::List<Replacement>>) = (metamodelica::nil(), metamodelica::nil());
+    let mut outEnv: (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, Arc<metamodelica::List<Replacement>>);
     outEnv = (::match_deref::match_deref! { match &(inEnv.clone()) {
         (env @ Deref @ metamodelica::List::Cons { head: Deref @ NFSCodeEnv::Frame { clsAndVars: tree, .. }, tail: _ }, repl) => {
             let mut old_item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
@@ -599,17 +599,17 @@ fn propagateItemPrefixes(mut inOriginalItem: Item, mut inNewItem: Item) -> Resul
 }
 
 pub fn propagateAttributesVar(mut inOriginalVar: Arc<SCode::Element>, mut inNewVar: Arc<SCode::Element>) -> Result<Arc<SCode::Element>> {
-    let mut outNewVar: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
-    let mut name: ArcStr = arcstr::literal!("");
-    let mut pref1: Arc<SCode::Prefixes> = Arc::new(<SCode::Prefixes as ::std::default::Default>::default());
-    let mut pref2: Arc<SCode::Prefixes> = Arc::new(<SCode::Prefixes as ::std::default::Default>::default());
-    let mut attr1: SCode::Attributes = <SCode::Attributes as ::std::default::Default>::default();
-    let mut attr2: SCode::Attributes = <SCode::Attributes as ::std::default::Default>::default();
-    let mut ty: Arc<Absyn::TypeSpec> = Arc::new(<Absyn::TypeSpec as ::std::default::Default>::default());
-    let mut r#mod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
-    let mut cmt: Arc<SCode::Comment> = Arc::new(<SCode::Comment as ::std::default::Default>::default());
-    let mut cond: Option<Arc<Absyn::Exp>> = None;
-    let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
+    let mut outNewVar: Arc<SCode::Element>;
+    let mut name: ArcStr;
+    let mut pref1: Arc<SCode::Prefixes>;
+    let mut pref2: Arc<SCode::Prefixes>;
+    let mut attr1: SCode::Attributes;
+    let mut attr2: SCode::Attributes;
+    let mut ty: Arc<Absyn::TypeSpec>;
+    let mut r#mod: Arc<SCode::Mod>;
+    let mut cmt: Arc<SCode::Comment>;
+    let mut cond: Option<Arc<Absyn::Exp>>;
+    let mut info: SourceInfo;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inOriginalVar.clone()) {
         Deref @ SCode::Element::COMPONENT { prefixes: __pa0, attributes: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
@@ -635,16 +635,16 @@ pub fn propagateAttributesVar(mut inOriginalVar: Arc<SCode::Element>, mut inNewV
 }
 
 pub fn propagateAttributesClass(mut inOriginalClass: Arc<SCode::Element>, mut inNewClass: Arc<SCode::Element>) -> Result<Arc<SCode::Element>> {
-    let mut outNewClass: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
-    let mut name: ArcStr = arcstr::literal!("");
-    let mut pref1: Arc<SCode::Prefixes> = Arc::new(<SCode::Prefixes as ::std::default::Default>::default());
-    let mut pref2: Arc<SCode::Prefixes> = Arc::new(<SCode::Prefixes as ::std::default::Default>::default());
-    let mut ep: SCode::Encapsulated = SCode::Encapsulated::ENCAPSULATED;
-    let mut pp: SCode::Partial = SCode::Partial::NOT_PARTIAL;
-    let mut res: SCode::Restriction = SCode::Restriction::R_BLOCK;
-    let mut cdef: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
-    let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
-    let mut cmt: Arc<SCode::Comment> = Arc::new(<SCode::Comment as ::std::default::Default>::default());
+    let mut outNewClass: Arc<SCode::Element>;
+    let mut name: ArcStr;
+    let mut pref1: Arc<SCode::Prefixes>;
+    let mut pref2: Arc<SCode::Prefixes>;
+    let mut ep: SCode::Encapsulated;
+    let mut pp: SCode::Partial;
+    let mut res: SCode::Restriction;
+    let mut cdef: Arc<SCode::ClassDef>;
+    let mut info: SourceInfo;
+    let mut cmt: Arc<SCode::Comment>;
     let __pa0 = ::match_deref::match_deref! { match &(inOriginalClass.clone()) {
         Deref @ SCode::Element::CLASS { prefixes: __pa0, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
@@ -668,14 +668,14 @@ pub fn propagateAttributesClass(mut inOriginalClass: Arc<SCode::Element>, mut in
 }
 
 fn propagatePrefixes(mut inOriginalPrefixes: Arc<SCode::Prefixes>, mut inNewPrefixes: Arc<SCode::Prefixes>) -> Result<Arc<SCode::Prefixes>> {
-    let mut outNewPrefixes: Arc<SCode::Prefixes> = Arc::new(<SCode::Prefixes as ::std::default::Default>::default());
-    let mut vis1: SCode::Visibility = SCode::Visibility::PROTECTED;
-    let mut vis2: SCode::Visibility = SCode::Visibility::PROTECTED;
-    let mut io1: Absyn::InnerOuter = Absyn::InnerOuter::INNER;
-    let mut io2: Absyn::InnerOuter = Absyn::InnerOuter::INNER;
-    let mut rdp: SCode::Redeclare = SCode::Redeclare::NOT_REDECLARE;
-    let mut fp: SCode::Final = SCode::Final::FINAL;
-    let mut rpp: Arc<SCode::Replaceable> = Arc::new(SCode::Replaceable::NOT_REPLACEABLE);
+    let mut outNewPrefixes: Arc<SCode::Prefixes>;
+    let mut vis1: SCode::Visibility;
+    let mut vis2: SCode::Visibility;
+    let mut io1: Absyn::InnerOuter;
+    let mut io2: Absyn::InnerOuter;
+    let mut rdp: SCode::Redeclare;
+    let mut fp: SCode::Final;
+    let mut rpp: Arc<SCode::Replaceable>;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inOriginalPrefixes.clone()) {
         Deref @ SCode::Prefixes { visibility: __pa0, innerOuter: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
@@ -697,7 +697,7 @@ fn propagatePrefixes(mut inOriginalPrefixes: Arc<SCode::Prefixes>, mut inNewPref
 }
 
 fn propagatePrefixInnerOuter(mut inOriginalIO: Absyn::InnerOuter, mut inIO: Absyn::InnerOuter) -> Absyn::InnerOuter {
-    let mut outIO: Absyn::InnerOuter = Absyn::InnerOuter::INNER;
+    let mut outIO: Absyn::InnerOuter;
     outIO = (match inIO.clone() {
         Absyn::InnerOuter::NOT_INNER_OUTER { .. } => inOriginalIO.clone(),
         _ => inIO.clone(),
@@ -706,19 +706,19 @@ fn propagatePrefixInnerOuter(mut inOriginalIO: Absyn::InnerOuter, mut inIO: Absy
 }
 
 fn propagateAttributes(mut inOriginalAttributes: SCode::Attributes, mut inNewAttributes: SCode::Attributes) -> Result<SCode::Attributes> {
-    let mut outNewAttributes: SCode::Attributes = <SCode::Attributes as ::std::default::Default>::default();
-    let mut dims1: Arc<metamodelica::List<Arc<Absyn::Subscript>>> = metamodelica::nil();
-    let mut dims2: Arc<metamodelica::List<Arc<Absyn::Subscript>>> = metamodelica::nil();
-    let mut ct1: SCode::ConnectorType = SCode::ConnectorType::FLOW;
-    let mut ct2: SCode::ConnectorType = SCode::ConnectorType::FLOW;
-    let mut prl1: SCode::Parallelism = SCode::Parallelism::NON_PARALLEL;
-    let mut prl2: SCode::Parallelism = SCode::Parallelism::NON_PARALLEL;
-    let mut var1: SCode::Variability = SCode::Variability::CONST;
-    let mut var2: SCode::Variability = SCode::Variability::CONST;
-    let mut dir1: Absyn::Direction = Absyn::Direction::BIDIR;
-    let mut dir2: Absyn::Direction = Absyn::Direction::BIDIR;
-    let mut isf1: Absyn::IsField = Absyn::IsField::FIELD;
-    let mut isf2: Absyn::IsField = Absyn::IsField::FIELD;
+    let mut outNewAttributes: SCode::Attributes;
+    let mut dims1: Arc<metamodelica::List<Arc<Absyn::Subscript>>>;
+    let mut dims2: Arc<metamodelica::List<Arc<Absyn::Subscript>>>;
+    let mut ct1: SCode::ConnectorType;
+    let mut ct2: SCode::ConnectorType;
+    let mut prl1: SCode::Parallelism;
+    let mut prl2: SCode::Parallelism;
+    let mut var1: SCode::Variability;
+    let mut var2: SCode::Variability;
+    let mut dir1: Absyn::Direction;
+    let mut dir2: Absyn::Direction;
+    let mut isf1: Absyn::IsField;
+    let mut isf2: Absyn::IsField;
     let SCode::ATTR { arrayDims: __pa0, connectorType: __pa1, parallelism: __pa2, variability: __pa3, direction: __pa4, isField: __pa5 } = (inOriginalAttributes.clone()) else { bail!("pattern mismatch") };
     dims1 = __pa0.clone();
     ct1 = __pa1.clone();
@@ -744,7 +744,7 @@ fn propagateAttributes(mut inOriginalAttributes: SCode::Attributes, mut inNewAtt
 }
 
 fn propagateArrayDimensions(mut inOriginalDims: Arc<metamodelica::List<Arc<Absyn::Subscript>>>, mut inNewDims: Arc<metamodelica::List<Arc<Absyn::Subscript>>>) -> Arc<metamodelica::List<Arc<Absyn::Subscript>>> {
-    let mut outNewDims: Arc<metamodelica::List<Arc<Absyn::Subscript>>> = metamodelica::nil();
+    let mut outNewDims: Arc<metamodelica::List<Arc<Absyn::Subscript>>>;
     outNewDims = (::match_deref::match_deref! { match &(inNewDims.clone()) {
         Deref @ metamodelica::List::Nil => inOriginalDims.clone(),
         _ => inNewDims.clone(),
@@ -754,7 +754,7 @@ fn propagateArrayDimensions(mut inOriginalDims: Arc<metamodelica::List<Arc<Absyn
 }
 
 fn propagateConnectorType(mut inOriginalConnectorType: SCode::ConnectorType, mut inNewConnectorType: SCode::ConnectorType) -> SCode::ConnectorType {
-    let mut outNewConnectorType: SCode::ConnectorType = SCode::ConnectorType::FLOW;
+    let mut outNewConnectorType: SCode::ConnectorType;
     outNewConnectorType = (match inNewConnectorType.clone() {
         SCode::ConnectorType::POTENTIAL { .. } => inOriginalConnectorType.clone(),
         _ => inNewConnectorType.clone(),
@@ -763,7 +763,7 @@ fn propagateConnectorType(mut inOriginalConnectorType: SCode::ConnectorType, mut
 }
 
 fn propagateParallelism(mut inOriginalParallelism: SCode::Parallelism, mut inNewParallelism: SCode::Parallelism) -> SCode::Parallelism {
-    let mut outNewParallelism: SCode::Parallelism = SCode::Parallelism::NON_PARALLEL;
+    let mut outNewParallelism: SCode::Parallelism;
     outNewParallelism = (match inNewParallelism.clone() {
         SCode::Parallelism::NON_PARALLEL { .. } => inOriginalParallelism.clone(),
         _ => inNewParallelism.clone(),
@@ -772,7 +772,7 @@ fn propagateParallelism(mut inOriginalParallelism: SCode::Parallelism, mut inNew
 }
 
 fn propagateVariability(mut inOriginalVariability: SCode::Variability, mut inNewVariability: SCode::Variability) -> SCode::Variability {
-    let mut outNewVariability: SCode::Variability = SCode::Variability::CONST;
+    let mut outNewVariability: SCode::Variability;
     outNewVariability = (match inNewVariability.clone() {
         SCode::Variability::VAR { .. } => inOriginalVariability.clone(),
         _ => inNewVariability.clone(),
@@ -781,7 +781,7 @@ fn propagateVariability(mut inOriginalVariability: SCode::Variability, mut inNew
 }
 
 fn propagateDirection(mut inOriginalDirection: Absyn::Direction, mut inNewDirection: Absyn::Direction) -> Absyn::Direction {
-    let mut outNewDirection: Absyn::Direction = Absyn::Direction::BIDIR;
+    let mut outNewDirection: Absyn::Direction;
     outNewDirection = (match inNewDirection.clone() {
         Absyn::Direction::BIDIR { .. } => inOriginalDirection.clone(),
         _ => inNewDirection.clone(),
@@ -790,7 +790,7 @@ fn propagateDirection(mut inOriginalDirection: Absyn::Direction, mut inNewDirect
 }
 
 fn propagateIsField(mut inOriginalIsField: Absyn::IsField, mut inNewIsField: Absyn::IsField) -> Absyn::IsField {
-    let mut outNewIsField: Absyn::IsField = Absyn::IsField::FIELD;
+    let mut outNewIsField: Absyn::IsField;
     outNewIsField = (match inNewIsField.clone() {
         Absyn::IsField::NONFIELD { .. } => inOriginalIsField.clone(),
         _ => inNewIsField.clone(),

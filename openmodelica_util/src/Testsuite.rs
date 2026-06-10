@@ -48,19 +48,19 @@ use crate::Flags;
 use crate::System;
 
 pub fn isRunning() -> Result<bool> {
-    let mut runningTestsuite: bool = false;
+    let mut runningTestsuite: bool;
     runningTestsuite = !(stringEq((Flags::getConfigString(Flags::RUNNING_TESTSUITE.clone())?).clone(), (literal!("")).clone()));
     Ok(runningTestsuite)
 }
 
 pub fn getTempFilesFile() -> Result<ArcStr> {
-    let mut tempFile: ArcStr = arcstr::literal!("");
+    let mut tempFile: ArcStr;
     tempFile = (Flags::getConfigString(Flags::RUNNING_TESTSUITE.clone())?).clone();
     Ok(tempFile)
 }
 
 pub fn friendly(mut name: ArcStr) -> Result<ArcStr> {
-    let mut friendly: ArcStr = arcstr::literal!("");
+    let mut friendly: ArcStr;
     friendly = (friendly2(isRunning()?, (name.clone()).clone())?).clone();
     Ok(friendly)
 }
@@ -89,7 +89,7 @@ fn friendly2(mut cond: bool, mut name: ArcStr) -> Result<ArcStr> {
 }
 
 pub fn friendlyPath(mut inPath: ArcStr) -> Result<ArcStr> {
-    let mut outPath: ArcStr = arcstr::literal!("");
+    let mut outPath: ArcStr;
     outPath = ('mc: {
         let __mc_input = ();
         if let Ok(__v) = (|| -> Result<_> {

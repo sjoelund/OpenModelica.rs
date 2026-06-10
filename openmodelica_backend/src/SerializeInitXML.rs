@@ -79,11 +79,11 @@ pub fn simulationInitFile(mut simCode: SIMCODE, mut guid: ArcStr) -> Result<()> 
 
 pub fn simulationInitFileReturnBool(mut simCode: SIMCODE, mut guid: ArcStr) -> bool {
     let mut success: bool = false;
-    let mut vi: VarInfo = <VarInfo as ::std::default::Default>::default();
-    let mut s: SimulationSettings = <SimulationSettings as ::std::default::Default>::default();
+    let mut vi: VarInfo;
+    let mut s: SimulationSettings;
     let mut file: File::File = File::File(File::noReference()).unwrap();
-    let mut fileName: ArcStr = arcstr::literal!("");
-    let mut FMUType: ArcStr = arcstr::literal!("");
+    let mut fileName: ArcStr;
+    let mut FMUType: ArcStr;
     if '__try0: {
         fileName = ((::match_deref::match_deref! { match &(unwrap_break_err!(Config::simCodeTarget(), '__try0)) {
         Deref @ "omsic" => { let mut __mm_s = String::new(); __mm_s.push_str(&*simCode.fullPathPrefix.clone()); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*simCode.fileNamePrefix.clone()); __mm_s.push_str(&*literal!("_init.xml")); ArcStr::from(__mm_s) },
@@ -222,7 +222,7 @@ pub fn simulationInitFileReturnBool(mut simCode: SIMCODE, mut guid: ArcStr) -> b
 }
 
 fn modelVariables(mut file: File::File, mut vars: SimCodeVar::SimVars) -> Result<()> {
-    let mut vr: i32 = 0;
+    let mut vr: i32;
     let mut ix: i32 = 0;
     vr = (::match_deref::match_deref! { match &(Config::simCodeTarget()?) {
         Deref @ "omsic" => 0,
@@ -426,7 +426,7 @@ fn scalarVariableTypeFixedAttribute(mut file: File::File, mut isFixed: bool) -> 
 }
 
 fn scalarVariableTypeAttribute(mut file: File::File, mut attr: Option<Arc<Exp>>, mut name: ArcStr) -> () {
-    let mut expStr: ArcStr = arcstr::literal!("");
+    let mut expStr: ArcStr;
     if '__try0: {
         expStr = (unwrap_break_err!(expString(unwrap_break_err!(Util::getOption(attr.clone()), '__try0)), '__try0)).clone();
         File::write(file.clone(), (literal!(" ")).clone());
@@ -453,7 +453,7 @@ fn scalarVariableTypeStringAttribute(mut file: File::File, mut attr: ArcStr, mut
 }
 
 fn getCausality(mut c: Option<Causality>) -> ArcStr {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     r#str = ((match c.clone() {
         Some(SimCodeVar::Causality::NONECAUS) => literal!("none"),
         Some(SimCodeVar::Causality::OUTPUT) => literal!("output"),
@@ -467,7 +467,7 @@ fn getCausality(mut c: Option<Causality>) -> ArcStr {
 }
 
 fn getVariablity(mut varKind: VarKind) -> ArcStr {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     r#str = ((match varKind.clone() {
         VarKind::DISCRETE => literal!("discrete"),
         VarKind::PARAM => literal!("parameter"),

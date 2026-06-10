@@ -181,15 +181,15 @@ pub fn foldExpList<ArgT: Clone + 'static>(mut algs: Arc<metamodelica::List<Arc<N
 }
 
 pub fn toString(mut alg: Arc<NFAlgorithm>, mut indent: ArcStr) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     r#str = (Statement::toStringList(alg.statements.clone(), (indent.clone()).clone())?).clone();
     Ok(r#str)
 }
 
 pub fn setInputsOutputs(mut alg: Arc<NFAlgorithm>) -> Result<Arc<NFAlgorithm>> {
     let mut alg: Arc<NFAlgorithm> = alg;
-    let mut inputs: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-    let mut outputs: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
+    let mut inputs: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
+    let mut outputs: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
     (inputs, outputs) = getInputsOutputs(alg.statements.clone())?;
     assign_field!(
         alg.inputs = inputs.clone(),
@@ -218,7 +218,7 @@ pub fn getInputsOutputs(mut statements: Arc<metamodelica::List<Arc<Statement::NF
 }
 
 pub fn isEqual(mut alg1: Arc<NFAlgorithm>, mut alg2: Arc<NFAlgorithm>) -> Result<bool> {
-    let mut b: bool = false;
+    let mut b: bool;
     b = List::isEqualOnTrue(alg1.inputs.clone(), alg2.inputs.clone(), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))? && List::isEqualOnTrue(alg1.outputs.clone(), alg2.outputs.clone(), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))? && List::isEqualOnTrue(alg1.statements.clone(), alg2.statements.clone(), (std::sync::Arc::new(Statement::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Statement::NFStatement>, Arc<Statement::NFStatement>) -> Result<bool> + 'static>))?;
     Ok(b)
 }
@@ -229,7 +229,7 @@ pub fn isEmpty(mut alg: Arc<NFAlgorithm>) -> bool {
 }
 
 pub fn isDiscrete(mut alg: Arc<NFAlgorithm>) -> Result<bool> {
-    let mut b: bool = false;
+    let mut b: bool;
     b = List::any(alg.outputs.clone(), (std::sync::Arc::new(ComponentRef::isDiscrete) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))?;
     b = if (b.clone()) {b.clone()} else {List::any(alg.statements.clone(), (std::sync::Arc::new(Statement::isDiscrete) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Statement::NFStatement>) -> Result<bool> + 'static>))?};
     Ok(b)

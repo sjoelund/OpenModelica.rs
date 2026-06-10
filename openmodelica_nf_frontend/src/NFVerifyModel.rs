@@ -130,10 +130,10 @@ fn verifyEquation(mut eq: Arc<Equation::NFEquation>, mut isPartial: bool) -> Res
 }
 
 fn verifyWhenEquation(mut branches: Arc<metamodelica::List<Arc<Equation::Branch::Branch>>>, mut source: Arc<DAE::ElementSource>) -> Result<()> {
-    let mut crefs1: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-    let mut crefs2: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-    let mut rest_branches: Arc<metamodelica::List<Arc<Equation::Branch::Branch>>> = metamodelica::nil();
-    let mut body: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = metamodelica::nil();
+    let mut crefs1: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
+    let mut crefs2: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
+    let mut rest_branches: Arc<metamodelica::List<Arc<Equation::Branch::Branch>>>;
+    let mut body: Arc<metamodelica::List<Arc<Equation::NFEquation>>>;
     if List::hasOneElement(branches.clone()) {
         return Ok(());
     }
@@ -185,10 +185,10 @@ fn whenEquationEqualityCrefs(mut lhsExp: Arc<Expression::NFExpression>, mut cref
 
 fn whenEquationIfCrefs(mut branches: Arc<metamodelica::List<Arc<Equation::Branch::Branch>>>, mut source: Arc<DAE::ElementSource>, mut crefs: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>> {
     let mut crefs: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = crefs;
-    let mut crefs1: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-    let mut crefs2: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-    let mut rest_branches: Arc<metamodelica::List<Arc<Equation::Branch::Branch>>> = metamodelica::nil();
-    let mut body: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = metamodelica::nil();
+    let mut crefs1: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
+    let mut crefs2: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
+    let mut rest_branches: Arc<metamodelica::List<Arc<Equation::Branch::Branch>>>;
+    let mut body: Arc<metamodelica::List<Arc<Equation::NFEquation>>>;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(branches.clone()) {
         Deref @ metamodelica::List::Cons { head: Deref @ Equation::Branch::BRANCH { body: __pa0, .. }, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
@@ -224,8 +224,8 @@ fn checkCrefSetEquality(mut crefs1: Arc<metamodelica::List<Arc<ComponentRef::NFC
 
 fn expandCrefSet(mut crefs: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>> {
     let mut outCrefs: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-    let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut expl: metamodelica::Array<Arc<Expression::NFExpression>> = Default::default();
+    let mut exp: Arc<Expression::NFExpression>;
+    let mut expl: metamodelica::Array<Arc<Expression::NFExpression>>;
     for mut cref in &*crefs.clone() {
         let mut cref = cref.clone();
         exp = Expression::fromCref(cref.clone(), false)?;
@@ -315,7 +315,7 @@ fn checkSubscriptBoundsCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut isP
 }
 
 fn checkDiscreteReal(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<()> {
-    let mut discrete_reals: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
+    let mut discrete_reals: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
     let mut illegal_discrete_vars: Arc<metamodelica::List<Arc<Variable::NFVariable>>> = metamodelica::nil();
     discrete_reals = UnorderedSet::new((std::sync::Arc::new(ComponentRef::hashStrip) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqualStrip) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
     for mut eqn in &*flatModel.equations.clone() {
@@ -467,8 +467,8 @@ fn checkDiscreteRealExp(mut exp: Arc<Expression::NFExpression>, mut discreteReal
 }
 
 fn checkDiscreteRealRecord(mut cref: Arc<ComponentRef::NFComponentRef>, mut cls: Arc<InstNode::InstNode>, mut discreteReals: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<()> {
-    let mut element: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    let mut inputs: Arc<metamodelica::List<Arc<InstNode::InstNode>>> = metamodelica::nil();
+    let mut element: Arc<ComponentRef::NFComponentRef>;
+    let mut inputs: Arc<metamodelica::List<Arc<InstNode::InstNode>>>;
     UnorderedSet::add(cref.clone(), discreteReals.clone())?;
     (inputs, _, _) = Record::collectRecordParams(cls.clone())?;
     for mut node in &*inputs.clone() {

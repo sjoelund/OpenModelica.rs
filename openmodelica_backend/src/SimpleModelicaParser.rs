@@ -87,8 +87,8 @@ impl Default for ParseTree {
 pub use self::ParseTree::{EMPTY,NODE,LEAF};
 
 pub fn parseTreeStr(mut trees: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
-    let mut i: i32 = 0;
+    let mut r#str: ArcStr;
+    let mut i: i32;
     i = Print::saveAndClearBuf()?;
     match '__try0: {
         for mut tree in &*trees.clone() {
@@ -111,11 +111,11 @@ pub fn parseTreeStr(mut trees: Arc<metamodelica::List<Arc<ParseTree>>>) -> Resul
 }
 
 pub fn treeDiff(mut t1: Arc<metamodelica::List<Arc<ParseTree>>>, mut t2: Arc<metamodelica::List<Arc<ParseTree>>>, mut nTokens: i32) -> Result<Arc<metamodelica::List<(Diff, Arc<metamodelica::List<Arc<ParseTree>>>)>>> {
-    let mut res: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<Arc<ParseTree>>>)>> = metamodelica::nil();
-    let mut within1: Arc<ParseTree> = Arc::new(ParseTree::EMPTY);
-    let mut within2: Arc<ParseTree> = Arc::new(ParseTree::EMPTY);
-    let mut t1_updated: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut t2_updated: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut res: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<Arc<ParseTree>>>)>>;
+    let mut within1: Arc<ParseTree>;
+    let mut within2: Arc<ParseTree>;
+    let mut t1_updated: Arc<metamodelica::List<Arc<ParseTree>>>;
+    let mut t2_updated: Arc<metamodelica::List<Arc<ParseTree>>>;
     within1 = findWithin(t1.clone())?;
     within2 = findWithin(t2.clone())?;
     (t1_updated, t2_updated) = (::match_deref::match_deref! { match &((within1.clone(), within2.clone())) {
@@ -132,8 +132,8 @@ pub fn treeDiff(mut t1: Arc<metamodelica::List<Arc<ParseTree>>>, mut t2: Arc<met
 pub type CmpParseTreeFunc = std::sync::Arc<dyn ::std::ops::Fn(Arc<ParseTree>, Arc<ParseTree>) -> Result<bool> + 'static>;
 
 pub fn parseTreeNodeStr(mut tree: Arc<ParseTree>) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
-    let mut i: i32 = 0;
+    let mut r#str: ArcStr;
+    let mut i: i32;
     i = Print::saveAndClearBuf()?;
     match '__try0: {
         unwrap_break_err!(parseTreeStrWork(tree.clone()), '__try0);
@@ -156,9 +156,9 @@ pub type partialParser = std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::Lis
 
 pub fn stored_definition(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut b: bool = false;
+    let mut b: bool;
     (tokens, tree, b) = scanOpt(tokens.clone(), tree.clone(), TokenId::WITHIN.clone())?;
     if b.clone() {
         (tokens, tree, b) = LA1(tokens.clone(), tree.clone(), First::name.clone(), false)?;
@@ -190,8 +190,8 @@ pub fn stored_definition(mut inTokens: Arc<metamodelica::List<Token>>, mut inTre
 
 fn class_definition(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>, Arc<ParseTree>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut nodeName: Arc<ParseTree> = Arc::new(ParseTree::EMPTY);
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
+    let mut nodeName: Arc<ParseTree>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
     tree = metamodelica::nil();
     (tokens, tree, _) = scanOpt(tokens.clone(), tree.clone(), TokenId::ENCAPSULATED.clone())?;
@@ -203,9 +203,9 @@ fn class_definition(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Ar
 
 fn class_prefixes(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut id: TokenId = TokenId::_NO_TOKEN;
+    let mut id: TokenId;
     let mut b: bool = false;
     (tokens, tree, _) = scanOpt(tokens.clone(), tree.clone(), TokenId::PARTIAL.clone())?;
     (tokens, tree, id) = peek(tokens.clone(), tree.clone())?;
@@ -237,10 +237,10 @@ fn class_prefixes(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<
 
 fn class_specifier(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>, Arc<ParseTree>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut nodeName: Arc<ParseTree> = Arc::new(ParseTree::EMPTY);
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
+    let mut nodeName: Arc<ParseTree>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut b: bool = false;
+    let mut b: bool;
     tree = inTree.clone();
     (tokens, tree, b) = scanOpt(tokens.clone(), tree.clone(), TokenId::IDENT.clone())?;
     let __pa0 = ::match_deref::match_deref! { match &(tree.clone()) {
@@ -294,9 +294,9 @@ fn class_specifier(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc
 
 fn short_class_specifier1(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut b: bool = false;
+    let mut b: bool;
     (tokens, tree, b) = scanOpt(tokens.clone(), tree.clone(), TokenId::ENUMERATION.clone())?;
     if b.clone() {
         (tokens, tree) = scan(tokens.clone(), tree.clone(), TokenId::LPAR.clone())?;
@@ -330,7 +330,7 @@ fn short_class_specifier1(mut inTokens: Arc<metamodelica::List<Token>>, mut inTr
 
 fn enumeration_literal(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
     (tokens, tree) = scan(tokens.clone(), tree.clone(), TokenId::IDENT.clone())?;
     (tokens, tree) = comment(tokens.clone(), tree.clone())?;
@@ -340,10 +340,10 @@ fn enumeration_literal(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree:
 
 fn composition(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut id: TokenId = TokenId::_NO_TOKEN;
-    let mut b: bool = false;
+    let mut id: TokenId;
+    let mut b: bool;
     (tokens, tree) = element_list(tokens.clone(), tree.clone())?;
     loop {
         (tokens, tree, b) = LA1(tokens.clone(), tree.clone(), list![TokenId::PROTECTED.clone(), TokenId::PUBLIC.clone(), TokenId::INITIAL.clone(), TokenId::EQUATION.clone(), TokenId::ALGORITHM.clone()], false)?;
@@ -390,9 +390,9 @@ fn composition(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<met
 
 fn external_function_call(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut b: bool = false;
+    let mut b: bool;
     (tokens, tree, b) = LAk(tokens.clone(), tree.clone(), list![list![TokenId::IDENT.clone()], list![TokenId::LPAR.clone()]])?;
     if !(b.clone()) {
         (tokens, tree) = component_reference(tokens.clone(), tree.clone())?;
@@ -406,7 +406,7 @@ fn external_function_call(mut inTokens: Arc<metamodelica::List<Token>>, mut inTr
 
 fn algorithm_section(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
     (tokens, tree, _) = scanOpt(tokens.clone(), tree.clone(), TokenId::INITIAL.clone())?;
     (tokens, tree) = scan(tokens.clone(), tree.clone(), TokenId::ALGORITHM.clone())?;
@@ -417,11 +417,11 @@ fn algorithm_section(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: A
 
 fn statement(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>, ArcStr)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut label: ArcStr = literal!("$statement");
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut id: TokenId = TokenId::_NO_TOKEN;
-    let mut b: bool = false;
+    let mut id: TokenId;
+    let mut b: bool;
     (tokens, tree, id) = peek(tokens.clone(), tree.clone())?;
     if id.clone() == TokenId::BREAK.clone() || id.clone() == TokenId::RETURN.clone() {
         (tokens, tree) = consume(tokens.clone(), tree.clone())?;
@@ -505,10 +505,10 @@ fn statement(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metam
 
 fn statement_list(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut b: bool = false;
-    let mut label: ArcStr = arcstr::literal!("");
+    let mut b: bool;
+    let mut label: ArcStr;
     outTree = metamodelica::nil();
     loop {
         (tokens, tree, b) = LA1(tokens.clone(), tree.clone(), Follow::statement_equation.clone(), false)?;
@@ -526,7 +526,7 @@ fn statement_list(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<
 
 fn equation_section(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
     (tokens, tree, _) = scanOpt(tokens.clone(), tree.clone(), TokenId::INITIAL.clone())?;
     (tokens, tree) = scan(tokens.clone(), tree.clone(), TokenId::EQUATION.clone())?;
@@ -537,11 +537,11 @@ fn equation_section(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Ar
 
 fn _equation(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>, ArcStr)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut label: ArcStr = literal!("$equation");
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut id: TokenId = TokenId::_NO_TOKEN;
-    let mut b: bool = false;
+    let mut id: TokenId;
+    let mut b: bool;
     (tokens, tree, id) = peek(tokens.clone(), tree.clone())?;
     if id.clone() == TokenId::IF.clone() {
         (tokens, tree) = consume(tokens.clone(), tree.clone())?;
@@ -614,10 +614,10 @@ fn _equation(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metam
 
 fn equation_list(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut b: bool = false;
-    let mut label: ArcStr = arcstr::literal!("");
+    let mut b: bool;
+    let mut label: ArcStr;
     outTree = metamodelica::nil();
     loop {
         (tokens, tree, b) = LA1(tokens.clone(), tree.clone(), Follow::statement_equation.clone(), false)?;
@@ -635,11 +635,11 @@ fn equation_list(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<m
 
 fn element_list(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut b: bool = false;
-    let mut isAnnotation: bool = false;
-    let mut nodeName: Arc<ParseTree> = Arc::new(ParseTree::EMPTY);
+    let mut b: bool;
+    let mut isAnnotation: bool;
+    let mut nodeName: Arc<ParseTree>;
     outTree = metamodelica::nil();
     loop {
         (tokens, tree, b) = LA1(tokens.clone(), tree.clone(), First::element.clone(), false)?;
@@ -659,11 +659,11 @@ fn element_list(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<me
 
 fn element(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>, Arc<ParseTree>, bool)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut nodeName: Arc<ParseTree> = Arc::new(ParseTree::LEAF { token: makeToken(TokenId::IDENT.clone(), (literal!("$element")).clone()) });
     let mut isAnnotation: bool = false;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut id: TokenId = TokenId::_NO_TOKEN;
+    let mut id: TokenId;
     let mut b: bool = false;
     let mut b1: bool = false;
     (tokens, tree, id) = peek(tokens.clone(), tree.clone())?;
@@ -709,9 +709,9 @@ fn element(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamod
 
 fn constraining_clause(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut b: bool = false;
+    let mut b: bool;
     (tokens, tree) = scan(tokens.clone(), tree.clone(), TokenId::CONSTRAINEDBY.clone())?;
     (tokens, tree) = name(tokens.clone(), tree.clone())?;
     (tokens, tree, b) = LA1(tokens.clone(), tree.clone(), First::class_modification.clone(), false)?;
@@ -724,11 +724,11 @@ fn constraining_clause(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree:
 
 fn component_clause(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>, Arc<ParseTree>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut nodeName: Arc<ParseTree> = Arc::new(ParseTree::EMPTY);
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
+    let mut nodeName: Arc<ParseTree>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut b: bool = false;
-    let mut nodeNames: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut b: bool;
+    let mut nodeNames: Arc<metamodelica::List<Arc<ParseTree>>>;
     (tokens, tree) = type_prefix(tokens.clone(), tree.clone())?;
     (tokens, tree) = type_specifier(tokens.clone(), tree.clone())?;
     (tokens, tree, b) = LA1(tokens.clone(), tree.clone(), list![TokenId::LBRACK.clone()], false)?;
@@ -751,9 +751,9 @@ fn component_clause(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Ar
 
 fn import_clause(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut b: bool = false;
+    let mut b: bool;
     (tokens, tree) = scan(tokens.clone(), tree.clone(), TokenId::IMPORT.clone())?;
     (tokens, tree, b) = LAk(tokens.clone(), tree.clone(), list![list![TokenId::IDENT.clone()], list![TokenId::EQUALS.clone()]])?;
     if b.clone() {
@@ -790,7 +790,7 @@ use type_prefix as base_prefix;
 
 fn type_prefix(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
     (tokens, tree, _) = LA1(tokens.clone(), tree.clone(), list![TokenId::FLOW.clone(), TokenId::STREAM.clone()], true)?;
     (tokens, tree, _) = LA1(tokens.clone(), tree.clone(), list![TokenId::DISCRETE.clone(), TokenId::PARAMETER.clone(), TokenId::CONSTANT.clone()], true)?;
@@ -801,9 +801,9 @@ fn type_prefix(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<met
 
 fn array_subscripts(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut b: bool = false;
+    let mut b: bool;
     (tokens, tree) = scan(tokens.clone(), tree.clone(), TokenId::LBRACK.clone())?;
     (tokens, tree) = subscript(tokens.clone(), tree.clone())?;
     loop {
@@ -820,9 +820,9 @@ fn array_subscripts(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Ar
 
 fn subscript(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut b: bool = false;
+    let mut b: bool;
     (tokens, tree, b) = scanOpt(tokens.clone(), tree.clone(), TokenId::COLON.clone())?;
     if !(b.clone()) {
         (tokens, tree) = expression(tokens.clone(), tree.clone())?;
@@ -833,11 +833,11 @@ fn subscript(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metam
 
 fn component_list(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut nodeNames: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut b: bool = false;
-    let mut nodeName: Arc<ParseTree> = Arc::new(ParseTree::EMPTY);
+    let mut b: bool;
+    let mut nodeName: Arc<ParseTree>;
     (tokens, tree, nodeName) = component_declaration(tokens.clone(), tree.clone())?;
     nodeNames = metamodelica::cons(nodeName.clone(), nodeNames.clone());
     loop {
@@ -854,10 +854,10 @@ fn component_list(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<
 
 fn component_declaration(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>, Arc<ParseTree>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut nodeName: Arc<ParseTree> = Arc::new(ParseTree::EMPTY);
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
+    let mut nodeName: Arc<ParseTree>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut b: bool = false;
+    let mut b: bool;
     (tokens, tree, nodeName) = declaration(tokens.clone(), tree.clone())?;
     (tokens, tree, b) = scanOpt(tokens.clone(), tree.clone(), TokenId::IF.clone())?;
     if b.clone() {
@@ -870,10 +870,10 @@ fn component_declaration(mut inTokens: Arc<metamodelica::List<Token>>, mut inTre
 
 fn declaration(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>, Arc<ParseTree>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut nodeName: Arc<ParseTree> = Arc::new(ParseTree::EMPTY);
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
+    let mut nodeName: Arc<ParseTree>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut b: bool = false;
+    let mut b: bool;
     (tokens, tree) = scan(tokens.clone(), tree.clone(), TokenId::IDENT.clone())?;
     let __pa0 = ::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: _ } => __pa0.clone(),
@@ -895,8 +895,8 @@ fn declaration(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<met
 
 fn component_clause1(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>, Arc<ParseTree>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut nodeName: Arc<ParseTree> = Arc::new(ParseTree::EMPTY);
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
+    let mut nodeName: Arc<ParseTree>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
     (tokens, tree) = type_prefix(tokens.clone(), tree.clone())?;
     (tokens, tree) = type_specifier(tokens.clone(), tree.clone())?;
@@ -907,8 +907,8 @@ fn component_clause1(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: A
 
 fn component_declaration1(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>, Arc<ParseTree>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut nodeName: Arc<ParseTree> = Arc::new(ParseTree::EMPTY);
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
+    let mut nodeName: Arc<ParseTree>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
     (tokens, tree, nodeName) = declaration(tokens.clone(), tree.clone())?;
     (tokens, tree) = comment(tokens.clone(), tree.clone())?;
@@ -918,9 +918,9 @@ fn component_declaration1(mut inTokens: Arc<metamodelica::List<Token>>, mut inTr
 
 fn extends_clause(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut b: bool = false;
+    let mut b: bool;
     (tokens, tree) = scan(tokens.clone(), tree.clone(), TokenId::EXTENDS.clone())?;
     (tokens, tree) = name(tokens.clone(), tree.clone())?;
     (tokens, tree, b) = LA1(tokens.clone(), tree.clone(), First::class_modification.clone(), false)?;
@@ -937,9 +937,9 @@ fn extends_clause(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<
 
 fn class_modification(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut b: bool = false;
+    let mut b: bool;
     (tokens, tree) = scan(tokens.clone(), tree.clone(), TokenId::LPAR.clone())?;
     (tokens, tree, b) = LA1(tokens.clone(), tree.clone(), First::argument.clone(), false)?;
     if b.clone() {
@@ -952,10 +952,10 @@ fn class_modification(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: 
 
 fn argument_list(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut b: bool = false;
-    let mut nodeName: Arc<ParseTree> = Arc::new(ParseTree::EMPTY);
+    let mut b: bool;
+    let mut nodeName: Arc<ParseTree>;
     (tokens, tree, nodeName) = argument(tokens.clone(), tree.clone())?;
     b = true;
     while b.clone() {
@@ -970,11 +970,11 @@ fn argument_list(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<m
 
 fn argument(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>, Arc<ParseTree>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut nodeName: Arc<ParseTree> = Arc::new(ParseTree::EMPTY);
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
+    let mut nodeName: Arc<ParseTree>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut b: bool = false;
-    let mut node: Arc<ParseTree> = Arc::new(ParseTree::EMPTY);
+    let mut b: bool;
+    let mut node: Arc<ParseTree>;
     (tokens, tree, b) = LA1(tokens.clone(), tree.clone(), list![TokenId::REDECLARE.clone()], false)?;
     if b.clone() {
         (tokens, tree, nodeName) = element_redeclaration(tokens.clone(), tree.clone())?;
@@ -988,10 +988,10 @@ fn argument(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamo
 
 fn element_redeclaration(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>, Arc<ParseTree>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut nodeName: Arc<ParseTree> = Arc::new(ParseTree::EMPTY);
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
+    let mut nodeName: Arc<ParseTree>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut b: bool = false;
+    let mut b: bool;
     (tokens, tree) = scan(tokens.clone(), tree.clone(), TokenId::REDECLARE.clone())?;
     (tokens, tree, _) = scanOpt(tokens.clone(), tree.clone(), TokenId::EACH.clone())?;
     (tokens, tree, _) = scanOpt(tokens.clone(), tree.clone(), TokenId::FINAL.clone())?;
@@ -1012,8 +1012,8 @@ fn element_redeclaration(mut inTokens: Arc<metamodelica::List<Token>>, mut inTre
 
 fn short_class_definition(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>, Arc<ParseTree>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut nodeName: Arc<ParseTree> = Arc::new(ParseTree::EMPTY);
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
+    let mut nodeName: Arc<ParseTree>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
     (tokens, tree) = class_prefixes(tokens.clone(), tree.clone())?;
     (tokens, tree) = scan(tokens.clone(), tree.clone(), TokenId::IDENT.clone())?;
@@ -1031,10 +1031,10 @@ fn short_class_definition(mut inTokens: Arc<metamodelica::List<Token>>, mut inTr
 
 fn element_modification_or_replaceable(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>, Arc<ParseTree>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut nodeName: Arc<ParseTree> = Arc::new(ParseTree::EMPTY);
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
+    let mut nodeName: Arc<ParseTree>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut b: bool = false;
+    let mut b: bool;
     (tokens, tree, _) = scanOpt(tokens.clone(), tree.clone(), TokenId::EACH.clone())?;
     (tokens, tree, _) = scanOpt(tokens.clone(), tree.clone(), TokenId::FINAL.clone())?;
     (tokens, tree, b) = LA1(tokens.clone(), tree.clone(), list![TokenId::REPLACEABLE.clone()], false)?;
@@ -1049,10 +1049,10 @@ fn element_modification_or_replaceable(mut inTokens: Arc<metamodelica::List<Toke
 
 fn element_replaceable(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>, Arc<ParseTree>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut nodeName: Arc<ParseTree> = Arc::new(ParseTree::EMPTY);
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
+    let mut nodeName: Arc<ParseTree>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut b: bool = false;
+    let mut b: bool;
     (tokens, tree) = scan(tokens.clone(), tree.clone(), TokenId::REPLACEABLE.clone())?;
     (tokens, tree, b) = LA1(tokens.clone(), tree.clone(), First::component_clause.clone(), false)?;
     if b.clone() {
@@ -1071,10 +1071,10 @@ fn element_replaceable(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree:
 
 fn element_modification(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>, Arc<ParseTree>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut nodeName: Arc<ParseTree> = Arc::new(ParseTree::EMPTY);
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
+    let mut nodeName: Arc<ParseTree>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut b: bool = false;
+    let mut b: bool;
     (tokens, tree) = name(tokens.clone(), tree.clone())?;
     let __pa0 = ::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: _ } => __pa0.clone(),
@@ -1093,9 +1093,9 @@ fn element_modification(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree
 
 fn modification(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut b: bool = false;
+    let mut b: bool;
     (tokens, tree, b) = LA1(tokens.clone(), tree.clone(), First::class_modification.clone(), false)?;
     if b.clone() {
         (tokens, tree) = class_modification(tokens.clone(), tree.clone())?;
@@ -1117,9 +1117,9 @@ fn modification(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<me
 
 fn expression_list(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut b: bool = false;
+    let mut b: bool;
     loop {
         (tokens, tree) = expression(tokens.clone(), tree.clone())?;
         (tokens, tree, b) = scanOpt(tokens.clone(), tree.clone(), TokenId::COMMA.clone())?;
@@ -1133,9 +1133,9 @@ fn expression_list(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc
 
 fn expression(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut b: bool = false;
+    let mut b: bool;
     let mut ifTrees: Arc<metamodelica::List<Arc<ParseTree>>> = inTree.clone();
     (tokens, tree, b) = scanOpt(tokens.clone(), tree.clone(), TokenId::IF.clone())?;
     if b.clone() {
@@ -1171,9 +1171,9 @@ fn expression(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<meta
 
 fn simple_expression(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut b: bool = false;
+    let mut b: bool;
     (tokens, tree) = logical_expression(tokens.clone(), tree.clone())?;
     (tokens, tree, b) = scanOpt(tokens.clone(), tree.clone(), TokenId::COLON.clone())?;
     if b.clone() {
@@ -1189,9 +1189,9 @@ fn simple_expression(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: A
 
 fn logical_expression(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut b: bool = false;
+    let mut b: bool;
     (tokens, tree) = logical_term(tokens.clone(), tree.clone())?;
     loop {
         (tokens, tree, b) = scanOpt(tokens.clone(), tree.clone(), TokenId::OR.clone())?;
@@ -1206,9 +1206,9 @@ fn logical_expression(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: 
 
 fn logical_term(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut b: bool = false;
+    let mut b: bool;
     (tokens, tree) = logical_factor(tokens.clone(), tree.clone())?;
     loop {
         (tokens, tree, b) = scanOpt(tokens.clone(), tree.clone(), TokenId::AND.clone())?;
@@ -1223,9 +1223,9 @@ fn logical_term(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<me
 
 fn logical_factor(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut b: bool = false;
+    let mut b: bool;
     (tokens, tree, b) = scanOpt(tokens.clone(), tree.clone(), TokenId::NOT.clone())?;
     (tokens, tree) = relation(tokens.clone(), tree.clone())?;
     outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY());
@@ -1234,9 +1234,9 @@ fn logical_factor(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<
 
 fn relation(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut b: bool = false;
+    let mut b: bool;
     let rel_op: Arc<metamodelica::List<TokenId>> = list![TokenId::LESS.clone(), TokenId::LESSEQ.clone(), TokenId::GREATER.clone(), TokenId::GREATEREQ.clone(), TokenId::EQEQ.clone(), TokenId::LESSGT.clone()];
     (tokens, tree) = arithmetic_expression(tokens.clone(), tree.clone())?;
     loop {
@@ -1252,9 +1252,9 @@ fn relation(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamo
 
 fn arithmetic_expression(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut b: bool = false;
+    let mut b: bool;
     let add_op: Arc<metamodelica::List<TokenId>> = list![TokenId::PLUS.clone(), TokenId::MINUS.clone(), TokenId::PLUS_EW.clone(), TokenId::MINUS_EW.clone()];
     (tokens, tree, _) = LA1(tokens.clone(), tree.clone(), add_op.clone(), true)?;
     (tokens, tree) = term(tokens.clone(), tree.clone())?;
@@ -1271,9 +1271,9 @@ fn arithmetic_expression(mut inTokens: Arc<metamodelica::List<Token>>, mut inTre
 
 fn term(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut b: bool = false;
+    let mut b: bool;
     let mul_op: Arc<metamodelica::List<TokenId>> = list![TokenId::STAR.clone(), TokenId::STAR_EW.clone(), TokenId::SLASH.clone(), TokenId::SLASH_EW.clone()];
     (tokens, tree) = factor(tokens.clone(), tree.clone())?;
     loop {
@@ -1289,9 +1289,9 @@ fn term(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodeli
 
 fn factor(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut b: bool = false;
+    let mut b: bool;
     let pow_op: Arc<metamodelica::List<TokenId>> = list![TokenId::POWER.clone(), TokenId::POWER_EW.clone()];
     (tokens, tree) = primary(tokens.clone(), tree.clone())?;
     loop {
@@ -1307,10 +1307,10 @@ fn factor(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamode
 
 fn primary(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut id: TokenId = TokenId::_NO_TOKEN;
-    let mut b: bool = false;
+    let mut id: TokenId;
+    let mut b: bool;
     let mut label: ArcStr = literal!("expression");
     (tokens, tree, b) = LA1(tokens.clone(), tree.clone(), list![TokenId::UNSIGNED_INTEGER.clone(), TokenId::UNSIGNED_REAL.clone(), TokenId::FALSE.clone(), TokenId::TRUE.clone(), TokenId::END.clone(), TokenId::STRING.clone()], false)?;
     if b.clone() {
@@ -1368,9 +1368,9 @@ fn primary(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamod
 
 fn function_call_args(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut b: bool = false;
+    let mut b: bool;
     (tokens, tree) = scan(tokens.clone(), tree.clone(), TokenId::LPAR.clone())?;
     (tokens, tree, b) = scanOpt(tokens.clone(), tree.clone(), TokenId::RPAR.clone())?;
     (tokens, tree) = eatWhitespace(tokens.clone(), tree.clone())?;
@@ -1385,11 +1385,11 @@ fn function_call_args(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: 
 
 fn function_arguments(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut b: bool = false;
-    let mut tree2: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut trees: Arc<metamodelica::List<Arc<metamodelica::List<Arc<ParseTree>>>>> = metamodelica::nil();
+    let mut b: bool;
+    let mut tree2: Arc<metamodelica::List<Arc<ParseTree>>>;
+    let mut trees: Arc<metamodelica::List<Arc<metamodelica::List<Arc<ParseTree>>>>>;
     trees = metamodelica::nil();
     loop {
         (tokens, tree, b) = LAk(tokens.clone(), tree.clone(), list![list![TokenId::IDENT.clone()], list![TokenId::EQUALS.clone()]])?;
@@ -1427,9 +1427,9 @@ fn function_arguments(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: 
 
 fn function_argument(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut b: bool = false;
+    let mut b: bool;
     (tokens, tree, b) = scanOpt(tokens.clone(), tree.clone(), TokenId::FUNCTION.clone())?;
     if b.clone() {
         (tokens, tree) = name(tokens.clone(), tree.clone())?;
@@ -1448,9 +1448,9 @@ fn function_argument(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: A
 
 fn named_arguments(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut b: bool = false;
+    let mut b: bool;
     (tokens, tree) = named_argument(tokens.clone(), tree.clone())?;
     loop {
         (tokens, tree, b) = scanOpt(tokens.clone(), tree.clone(), TokenId::COMMA.clone())?;
@@ -1465,9 +1465,9 @@ fn named_arguments(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc
 
 fn named_argument(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut label: Arc<ParseTree> = Arc::new(ParseTree::EMPTY);
+    let mut label: Arc<ParseTree>;
     (tokens, tree) = scan(tokens.clone(), tree.clone(), TokenId::IDENT.clone())?;
     label = listHead(tree.clone())?;
     (tokens, tree) = scan(tokens.clone(), tree.clone(), TokenId::EQUALS.clone())?;
@@ -1478,9 +1478,9 @@ fn named_argument(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<
 
 fn for_indices(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut b: bool = false;
+    let mut b: bool;
     (tokens, tree) = for_index(tokens.clone(), tree.clone())?;
     loop {
         (tokens, tree, b) = scanOpt(tokens.clone(), tree.clone(), TokenId::COMMA.clone())?;
@@ -1495,9 +1495,9 @@ fn for_indices(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<met
 
 fn for_index(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut b: bool = false;
+    let mut b: bool;
     (tokens, tree) = scan(tokens.clone(), tree.clone(), TokenId::IDENT.clone())?;
     (tokens, tree, b) = scanOpt(tokens.clone(), tree.clone(), TokenId::IN.clone())?;
     if b.clone() {
@@ -1509,9 +1509,9 @@ fn for_index(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metam
 
 fn string_comment(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut b: bool = false;
+    let mut b: bool;
     (tokens, tree, b) = scanOpt(tokens.clone(), tree.clone(), TokenId::STRING.clone())?;
     while b.clone() {
         (tokens, tree, b) = scanOpt(tokens.clone(), tree.clone(), TokenId::PLUS.clone())?;
@@ -1525,10 +1525,10 @@ fn string_comment(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<
 
 fn output_expression_list(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut b1: bool = false;
-    let mut b2: bool = false;
+    let mut b1: bool;
+    let mut b2: bool;
     (tokens, tree) = scan(tokens.clone(), tree.clone(), TokenId::LPAR.clone())?;
     loop {
         (tokens, tree, b1) = scanOpt(tokens.clone(), tree.clone(), TokenId::COMMA.clone())?;
@@ -1546,9 +1546,9 @@ fn output_expression_list(mut inTokens: Arc<metamodelica::List<Token>>, mut inTr
 
 fn name(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut b: bool = false;
+    let mut b: bool;
     (tokens, tree, _) = scanOpt(tokens.clone(), tree.clone(), TokenId::DOT.clone())?;
     (tokens, tree) = scan(tokens.clone(), tree.clone(), TokenId::IDENT.clone())?;
     loop {
@@ -1565,9 +1565,9 @@ fn name(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodeli
 
 fn component_reference(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut b: bool = false;
+    let mut b: bool;
     (tokens, tree, _) = scanOpt(tokens.clone(), tree.clone(), TokenId::DOT.clone())?;
     loop {
         (tokens, tree) = scan(tokens.clone(), tree.clone(), TokenId::IDENT.clone())?;
@@ -1586,9 +1586,9 @@ fn component_reference(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree:
 
 fn comment(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut b: bool = false;
+    let mut b: bool;
     (tokens, tree) = string_comment(tokens.clone(), tree.clone())?;
     (tokens, tree, b) = LA1(tokens.clone(), tree.clone(), First::_annotation.clone(), false)?;
     if b.clone() {
@@ -1600,7 +1600,7 @@ fn comment(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamod
 
 fn _annotation(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
     tree = metamodelica::nil();
     (tokens, tree) = scan(tokens.clone(), tree.clone(), TokenId::ANNOTATION.clone())?;
@@ -1613,8 +1613,8 @@ fn findWithin(mut tree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<Arc<P
     let mut w: Arc<ParseTree> = crate::SimpleModelicaParser::ParseTree::interned_EMPTY();
     let mut tok: Token = <Token as ::std::default::Default>::default();
     let mut tok2: Token = <Token as ::std::default::Default>::default();
-    let mut rest: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut rest2: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut rest: Arc<metamodelica::List<Arc<ParseTree>>>;
+    let mut rest2: Arc<metamodelica::List<Arc<ParseTree>>>;
     w = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ metamodelica::List::Cons { head: Deref @ ParseTree::NODE { label: Deref @ ParseTree::LEAF { token: tok }, nodes: Deref @ metamodelica::List::Cons { head: __esc_w @ Deref @ ParseTree::NODE { label: Deref @ ParseTree::LEAF { token: tok2 }, .. }, tail: __esc_rest } }, tail: __esc_rest2 } if (tokenContent(tok.clone())? == literal!("$program") && tokenContent(tok2.clone())? == literal!("$within")) => {
             w = (*__esc_w).clone();
@@ -1630,14 +1630,14 @@ fn findWithin(mut tree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<Arc<P
 
 fn moveComments(mut t1: Arc<metamodelica::List<Arc<ParseTree>>>, mut t2: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<Arc<metamodelica::List<Arc<ParseTree>>>> {
     let mut t2: Arc<metamodelica::List<Arc<ParseTree>>> = t2;
-    let mut c1: Arc<metamodelica::List<(Token, Arc<metamodelica::List<Arc<ParseTree>>>, ArcStr)>> = metamodelica::nil();
-    let mut c2: Arc<metamodelica::List<(Token, Arc<metamodelica::List<Arc<ParseTree>>>, ArcStr)>> = metamodelica::nil();
-    let mut tok: Token = <Token as ::std::default::Default>::default();
-    let mut str1: ArcStr = arcstr::literal!("");
-    let mut str2: ArcStr = arcstr::literal!("");
-    let mut path1: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut path2: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut tempTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut c1: Arc<metamodelica::List<(Token, Arc<metamodelica::List<Arc<ParseTree>>>, ArcStr)>>;
+    let mut c2: Arc<metamodelica::List<(Token, Arc<metamodelica::List<Arc<ParseTree>>>, ArcStr)>>;
+    let mut tok: Token;
+    let mut str1: ArcStr;
+    let mut str2: ArcStr;
+    let mut path1: Arc<metamodelica::List<Arc<ParseTree>>>;
+    let mut path2: Arc<metamodelica::List<Arc<ParseTree>>>;
+    let mut tempTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     c1 = findCommentsWithLabels(t1.clone(), metamodelica::nil(), metamodelica::nil())?;
     c2 = findCommentsWithLabels(t2.clone(), metamodelica::nil(), metamodelica::nil())?;
     (_, c1, c2) = List::intersection1OnTrue(c1.clone(), c2.clone(), (std::sync::Arc::new(foundCommentEqual) as std::sync::Arc<dyn ::std::ops::Fn((Token, Arc<metamodelica::List<Arc<ParseTree>>>, ArcStr), (Token, Arc<metamodelica::List<Arc<ParseTree>>>, ArcStr)) -> Result<bool> + 'static>))?;
@@ -1676,10 +1676,10 @@ fn moveCommentsAfterDiff(mut res: Arc<metamodelica::List<(Diff, Arc<metamodelica
     let mut before: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
     let mut after: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
     let mut acc2: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut comments: Arc<AvlSetString::Tree> = Arc::new(AvlSetString::Tree::EMPTY);
-    let mut acc: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<Arc<ParseTree>>>)>> = metamodelica::nil();
-    let mut lst: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<Arc<ParseTree>>>)>> = metamodelica::nil();
-    let mut diff: (Diff, Arc<metamodelica::List<Arc<ParseTree>>>) = (Diff::Add, metamodelica::nil());
+    let mut comments: Arc<AvlSetString::Tree>;
+    let mut acc: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<Arc<ParseTree>>>)>>;
+    let mut lst: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<Arc<ParseTree>>>)>>;
+    let mut diff: (Diff, Arc<metamodelica::List<Arc<ParseTree>>>);
     let mut found: bool = false;
     comments = findAddedComments(res.clone())?;
     acc = metamodelica::nil();
@@ -1728,7 +1728,7 @@ fn moveCommentsAfterDiff(mut res: Arc<metamodelica::List<(Diff, Arc<metamodelica
 
 fn findAddedComments(mut tree: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<Arc<ParseTree>>>)>>) -> Result<Arc<AvlSetString::Tree>> {
     let mut comments: Arc<AvlSetString::Tree> = openmodelica_util::AvlSetString::Tree::interned_EMPTY();
-    let mut addedTrees: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut addedTrees: Arc<metamodelica::List<Arc<ParseTree>>>;
     (addedTrees, _) = extractAdditionsDeletions(tree.clone())?;
     for mut t in &*addedTrees.clone() {
         let mut t = t.clone();
@@ -1758,9 +1758,9 @@ fn findAddedComments2(mut tree: Arc<ParseTree>, mut comments: Arc<AvlSetString::
 
 fn removeAddedCommentFromDiff(mut tree: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<Arc<ParseTree>>>)>>, mut comment: ArcStr) -> Result<Arc<metamodelica::List<(Diff, Arc<metamodelica::List<Arc<ParseTree>>>)>>> {
     let mut tree: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<Arc<ParseTree>>>)>> = tree;
-    let mut acc: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<Arc<ParseTree>>>)>> = metamodelica::nil();
-    let mut lst: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<Arc<ParseTree>>>)>> = metamodelica::nil();
-    let mut diff: (Diff, Arc<metamodelica::List<Arc<ParseTree>>>) = (Diff::Add, metamodelica::nil());
+    let mut acc: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<Arc<ParseTree>>>)>>;
+    let mut lst: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<Arc<ParseTree>>>)>>;
+    let mut diff: (Diff, Arc<metamodelica::List<Arc<ParseTree>>>);
     let mut lst2: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
     let mut b: bool = false;
     lst = tree.clone();
@@ -1794,10 +1794,10 @@ fn removeAddedCommentFromDiff(mut tree: Arc<metamodelica::List<(Diff, Arc<metamo
 fn removeAddedCommentFromDiff2(mut trees: Arc<metamodelica::List<Arc<ParseTree>>>, mut comment: ArcStr) -> Result<(bool, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut removed: bool = false;
     let mut trees: Arc<metamodelica::List<Arc<ParseTree>>> = trees;
-    let mut acc: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut lst: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut acc: Arc<metamodelica::List<Arc<ParseTree>>>;
+    let mut lst: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut nodes: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut tree: Arc<ParseTree> = Arc::new(ParseTree::EMPTY);
+    let mut tree: Arc<ParseTree>;
     let mut content: ArcStr = arcstr::literal!("");
     acc = metamodelica::nil();
     lst = trees.clone();
@@ -1888,14 +1888,14 @@ fn fixDeletedComments(mut tree: Arc<ParseTree>, mut addedComments: Arc<AvlSetStr
 fn addCommentAtLabelPath(mut tree: Arc<metamodelica::List<Arc<ParseTree>>>, mut tok: Token, mut path: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Arc<ParseTree>>>, bool)> {
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = tree;
     let mut success: bool = false;
-    let mut n: Arc<ParseTree> = Arc::new(ParseTree::EMPTY);
+    let mut n: Arc<ParseTree>;
     let mut n2: Arc<ParseTree> = Arc::new(ParseTree::EMPTY);
     let mut label: Arc<ParseTree> = Arc::new(ParseTree::EMPTY);
     let mut pathFirst: Arc<ParseTree> = Arc::new(ParseTree::EMPTY);
-    let mut rest: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut rest: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut nodes: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
     let mut pathRest: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut delst: DoubleEnded::MutableList<Arc<ParseTree>> = <DoubleEnded::MutableList<Arc<ParseTree>> as ::std::default::Default>::default();
+    let mut delst: DoubleEnded::MutableList<Arc<ParseTree>>;
     let mut b: bool = false;
     if path.clone().is_empty() {
         success = true;
@@ -1947,14 +1947,14 @@ fn addCommentAtLabelPath(mut tree: Arc<metamodelica::List<Arc<ParseTree>>>, mut 
 fn removeCommentAtLabelPath(mut tree: Arc<metamodelica::List<Arc<ParseTree>>>, mut tok: Token, mut path: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Arc<ParseTree>>>, bool)> {
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = tree;
     let mut success: bool = false;
-    let mut n: Arc<ParseTree> = Arc::new(ParseTree::EMPTY);
+    let mut n: Arc<ParseTree>;
     let mut n2: Arc<ParseTree> = Arc::new(ParseTree::EMPTY);
     let mut label: Arc<ParseTree> = Arc::new(ParseTree::EMPTY);
     let mut pathFirst: Arc<ParseTree> = Arc::new(ParseTree::EMPTY);
-    let mut rest: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut rest: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut nodes: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
     let mut pathRest: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut delst: DoubleEnded::MutableList<Arc<ParseTree>> = <DoubleEnded::MutableList<Arc<ParseTree>> as ::std::default::Default>::default();
+    let mut delst: DoubleEnded::MutableList<Arc<ParseTree>>;
     let mut b: bool = false;
     if path.clone().is_empty() {
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(removeCommentAtThisLabel(tree.clone(), tok.clone())?) {
@@ -2010,10 +2010,10 @@ fn removeCommentAtLabelPath(mut tree: Arc<metamodelica::List<Arc<ParseTree>>>, m
 fn removeCommentAtThisLabel(mut tree: Arc<metamodelica::List<Arc<ParseTree>>>, mut tok: Token) -> Result<(Arc<metamodelica::List<Arc<ParseTree>>>, bool)> {
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = tree;
     let mut success: bool = false;
-    let mut delst: DoubleEnded::MutableList<Arc<ParseTree>> = <DoubleEnded::MutableList<Arc<ParseTree>> as ::std::default::Default>::default();
+    let mut delst: DoubleEnded::MutableList<Arc<ParseTree>>;
     let mut rest: Arc<metamodelica::List<Arc<ParseTree>>> = tree.clone();
     let mut nodes: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut n: Arc<ParseTree> = Arc::new(ParseTree::EMPTY);
+    let mut n: Arc<ParseTree>;
     delst = DoubleEnded::fromList(metamodelica::nil())?;
     while !(rest.clone().is_empty()) {
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(rest.clone()) {
@@ -2050,7 +2050,7 @@ fn findCommentsWithLabels(mut t1: Arc<metamodelica::List<Arc<ParseTree>>>, mut l
     let mut acc: Arc<metamodelica::List<(Token, Arc<metamodelica::List<Arc<ParseTree>>>, ArcStr)>> = acc;
     let mut nodes: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
     let mut tok: Token = <Token as ::std::default::Default>::default();
-    let mut id: TokenId = TokenId::_NO_TOKEN;
+    let mut id: TokenId;
     let mut pathStr: ArcStr = arcstr::literal!("");
     for mut n in &*t1.clone() {
         let mut n = n.clone();
@@ -2081,11 +2081,11 @@ fn findCommentsWithLabels(mut t1: Arc<metamodelica::List<Arc<ParseTree>>>, mut l
 }
 
 fn foundCommentEqual(mut c1: (Token, Arc<metamodelica::List<Arc<ParseTree>>>, ArcStr), mut c2: (Token, Arc<metamodelica::List<Arc<ParseTree>>>, ArcStr)) -> Result<bool> {
-    let mut eq: bool = false;
-    let mut tok1: Token = <Token as ::std::default::Default>::default();
-    let mut tok2: Token = <Token as ::std::default::Default>::default();
-    let mut s1: ArcStr = arcstr::literal!("");
-    let mut s2: ArcStr = arcstr::literal!("");
+    let mut eq: bool;
+    let mut tok1: Token;
+    let mut tok2: Token;
+    let mut s1: ArcStr;
+    let mut s2: ArcStr;
     (tok1, _, s1) = c1.clone();
     (tok2, _, s2) = c2.clone();
     eq = modelicaDiffTokenEq(tok1.clone(), tok2.clone())?;
@@ -2097,9 +2097,9 @@ fn foundCommentEqual(mut c1: (Token, Arc<metamodelica::List<Arc<ParseTree>>>, Ar
 }
 
 fn foundCommentTokenEqual(mut c1: (Token, Arc<metamodelica::List<Arc<ParseTree>>>, ArcStr), mut c2: (Token, Arc<metamodelica::List<Arc<ParseTree>>>, ArcStr)) -> Result<bool> {
-    let mut eq: bool = false;
-    let mut tok1: Token = <Token as ::std::default::Default>::default();
-    let mut tok2: Token = <Token as ::std::default::Default>::default();
+    let mut eq: bool;
+    let mut tok1: Token;
+    let mut tok2: Token;
     (tok1, _, _) = c1.clone();
     (tok2, _, _) = c2.clone();
     eq = modelicaDiffTokenEq(tok1.clone(), tok2.clone())?;
@@ -2107,7 +2107,7 @@ fn foundCommentTokenEqual(mut c1: (Token, Arc<metamodelica::List<Arc<ParseTree>>
 }
 
 fn labelPathStr(mut labelPath: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     r#str = stringDelimitList(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut t in (labelPath.clone()).into_iter().cloned() {
@@ -2120,9 +2120,9 @@ fn labelPathStr(mut labelPath: Arc<metamodelica::List<Arc<ParseTree>>>) -> Resul
 }
 
 fn treeDiffWork1(mut t1: Arc<metamodelica::List<Arc<ParseTree>>>, mut t2: Arc<metamodelica::List<Arc<ParseTree>>>, mut nTokens: i32) -> Result<Arc<metamodelica::List<(Diff, Arc<metamodelica::List<Arc<ParseTree>>>)>>> {
-    let mut res: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<Arc<ParseTree>>>)>> = metamodelica::nil();
-    let mut diffSubtreeWorkArray1: metamodelica::Array<Token> = Default::default();
-    let mut diffSubtreeWorkArray2: metamodelica::Array<Token> = Default::default();
+    let mut res: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<Arc<ParseTree>>>)>>;
+    let mut diffSubtreeWorkArray1: metamodelica::Array<Token>;
+    let mut diffSubtreeWorkArray2: metamodelica::Array<Token>;
     if t1.clone().is_empty() {
         res = list![(Diff::Add.clone(), t2.clone())];
         return Ok(res.clone());
@@ -2143,27 +2143,27 @@ fn treeDiffWork1(mut t1: Arc<metamodelica::List<Arc<ParseTree>>>, mut t2: Arc<me
 fn treeDiffWork(mut t1: Arc<metamodelica::List<Arc<ParseTree>>>, mut t2: Arc<metamodelica::List<Arc<ParseTree>>>, mut depth: i32, mut compare: Arc<dyn ::std::ops::Fn(Arc<ParseTree>, Arc<ParseTree>) -> Result<bool> + 'static>) -> Result<(Arc<metamodelica::List<(Diff, Arc<metamodelica::List<Arc<ParseTree>>>)>>, Arc<metamodelica::List<(Diff, Arc<metamodelica::List<Arc<ParseTree>>>)>>)> {
     let mut res: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<Arc<ParseTree>>>)>> = metamodelica::nil();
     let mut resLocal: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<Arc<ParseTree>>>)>> = metamodelica::nil();
-    let mut t2_strip: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut t2_strip: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut before: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut middle: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut middle: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut after: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut addedTrees: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut deletedTrees: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut ts: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut addedTrees: Arc<metamodelica::List<Arc<ParseTree>>>;
+    let mut deletedTrees: Arc<metamodelica::List<Arc<ParseTree>>>;
+    let mut ts: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut addList: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     let mut delList: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut nadd: i32 = 0;
-    let mut ndel: i32 = 0;
-    let mut addedTree: Arc<ParseTree> = Arc::new(ParseTree::EMPTY);
-    let mut deletedTree: Arc<ParseTree> = Arc::new(ParseTree::EMPTY);
+    let mut nadd: i32;
+    let mut ndel: i32;
+    let mut addedTree: Arc<ParseTree>;
+    let mut deletedTree: Arc<ParseTree>;
     let mut deleted: Arc<ParseTree> = Arc::new(ParseTree::EMPTY);
-    let mut addedBeforeDeleted: bool = false;
-    let mut joinTrees: bool = false;
-    let mut tryFind: bool = false;
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut addedBeforeDeleted: bool;
+    let mut joinTrees: bool;
+    let mut tryFind: bool;
+    let mut r#str: ArcStr;
     let mut debugString1: ArcStr = literal!("");
     let mut debugString2: ArcStr = literal!("");
-    let mut d: Diff = Diff::Add;
+    let mut d: Diff;
     let () = (::match_deref::match_deref! { match &((t1.clone(), t2.clone())) {
         (Deref @ metamodelica::List::Cons { head: Deref @ ParseTree::NODE { nodes: __esc_before, .. }, tail: Deref @ metamodelica::List::Nil }, Deref @ metamodelica::List::Cons { head: Deref @ ParseTree::NODE { nodes: __esc_after, .. }, tail: Deref @ metamodelica::List::Nil }) => {
             before = (*__esc_before).clone();
@@ -2388,19 +2388,19 @@ fn treeDiffWork(mut t1: Arc<metamodelica::List<Arc<ParseTree>>>, mut t2: Arc<met
 }
 
 fn compareNodeLabels(mut t1: Arc<ParseTree>, mut t2: Arc<ParseTree>, mut compare: Arc<dyn ::std::ops::Fn(Arc<ParseTree>, Arc<ParseTree>) -> Result<bool> + 'static>) -> Result<bool> {
-    let mut b: bool = false;
+    let mut b: bool;
     b = compare(nodeLabel(t1.clone()), nodeLabel(t2.clone()))?;
     Ok(b)
 }
 
 fn compareNodeLabelsSpecial(mut t1: Arc<ParseTree>, mut t2: Arc<ParseTree>, mut compare: Arc<dyn ::std::ops::Fn(Arc<ParseTree>, Arc<ParseTree>) -> Result<bool> + 'static>, mut delList: Arc<metamodelica::List<ArcStr>>) -> Result<bool> {
-    let mut b: bool = false;
+    let mut b: bool;
     b = nodeLabelIsComponent(t1.clone()) && nodeLabelIsComponent(t2.clone()) && !(listMember((parseTreeStr(metamodelica::cons(nodeLabel(t1.clone()), metamodelica::nil()))?).clone(), delList.clone()));
     Ok(b)
 }
 
 fn nodeLabelIsComponent(mut t1: Arc<ParseTree>) -> bool {
-    let mut b: bool = false;
+    let mut b: bool;
     let mut contents: ArcStr = arcstr::literal!("");
     b = (::match_deref::match_deref! { match &(nodeLabel(t1.clone())) {
         Deref @ ParseTree::LEAF { token: Token { id: TokenId::IDENT { .. }, fileContents: __esc_contents, .. } } => {
@@ -2414,22 +2414,22 @@ fn nodeLabelIsComponent(mut t1: Arc<ParseTree>) -> bool {
 }
 
 fn filterDiffWhitespace(mut inDiff: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<Arc<ParseTree>>>)>>) -> Result<Arc<metamodelica::List<(Diff, Arc<metamodelica::List<Arc<ParseTree>>>)>>> {
-    let mut diff: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<Arc<ParseTree>>>)>> = metamodelica::nil();
+    let mut diff: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<Arc<ParseTree>>>)>>;
     let mut diffLocal: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<Arc<ParseTree>>>)>> = inDiff.clone();
     let mut diff1: (Diff, Arc<metamodelica::List<Arc<ParseTree>>>) = (Diff::Add, metamodelica::nil());
     let mut diff2: (Diff, Arc<metamodelica::List<Arc<ParseTree>>>) = (Diff::Add, metamodelica::nil());
     let mut diff3: (Diff, Arc<metamodelica::List<Arc<ParseTree>>>) = (Diff::Add, metamodelica::nil());
     let mut diff4: (Diff, Arc<metamodelica::List<Arc<ParseTree>>>) = (Diff::Add, metamodelica::nil());
-    let mut firstIter: bool = false;
-    let mut lastTokenNewline: bool = false;
-    let mut hasAddedWS: bool = false;
+    let mut firstIter: bool;
+    let mut lastTokenNewline: bool;
+    let mut hasAddedWS: bool;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
     let mut treeLocal: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
     let mut tree1: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
     let mut tree2: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
     let mut tree3: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
     let mut tree4: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut treeLast: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut treeLast: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut tree4First: Arc<ParseTree> = Arc::new(ParseTree::EMPTY);
     let mut t1: Arc<ParseTree> = Arc::new(ParseTree::EMPTY);
     let mut t2: Arc<ParseTree> = Arc::new(ParseTree::EMPTY);
@@ -2437,12 +2437,12 @@ fn filterDiffWhitespace(mut inDiff: Arc<metamodelica::List<(Diff, Arc<metamodeli
     let mut firstTreeSecondLast: Arc<ParseTree> = Arc::new(ParseTree::EMPTY);
     let mut firstTreeLast: Arc<ParseTree> = Arc::new(ParseTree::EMPTY);
     let mut length: i32 = 0;
-    let mut level: i32 = 0;
-    let mut indentation: Arc<metamodelica::List<i32>> = metamodelica::nil();
+    let mut level: i32;
+    let mut indentation: Arc<metamodelica::List<i32>>;
     let mut diffEnum: Diff = Diff::Add;
     let mut diffEnum1: Diff = Diff::Add;
     let mut diffEnum2: Diff = Diff::Add;
-    let mut indentationStr: ArcStr = arcstr::literal!("");
+    let mut indentationStr: ArcStr;
     let mut tok: Token = <Token as ::std::default::Default>::default();
     diff = metamodelica::nil();
     firstIter = true;
@@ -2871,10 +2871,10 @@ fn filterDiffWhitespace(mut inDiff: Arc<metamodelica::List<(Diff, Arc<metamodeli
 }
 
 fn labelOrderDidNotChange(mut addList: Arc<metamodelica::List<ArcStr>>, mut delList: Arc<metamodelica::List<ArcStr>>) -> Result<bool> {
-    let mut b: bool = false;
+    let mut b: bool;
     let mut acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     let mut del: Arc<metamodelica::List<ArcStr>> = delList.clone();
-    let mut s: ArcStr = arcstr::literal!("");
+    let mut s: ArcStr;
     b = false;
     for mut item in &*addList.clone() {
         let mut item = item.clone();
@@ -2910,7 +2910,7 @@ fn labelOrderDidNotChange(mut addList: Arc<metamodelica::List<ArcStr>>, mut delL
 }
 
 fn makeToken(mut id: TokenId, mut r#str: ArcStr) -> Token {
-    let mut token: Token = <Token as ::std::default::Default>::default();
+    let mut token: Token;
     token = Token { fileName: (literal!("<dummy>")).clone(), id: id.clone(), fileContents: (r#str.clone()).clone(), byteOffset: 1, length: ((r#str.clone()).clone().len() as i32), lineNumberStart: 0, columnNumberStart: 0, lineNumberEnd: 0, columnNumberEnd: 0 };
     token
 }
@@ -3013,7 +3013,7 @@ fn replaceLabeledDiff(mut inDiff: Arc<metamodelica::List<(Diff, Arc<metamodelica
 }
 
 fn isEmpty(mut tree: Arc<ParseTree>) -> bool {
-    let mut b: bool = false;
+    let mut b: bool;
     b = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ ParseTree::EMPTY { .. } => true,
         _ => false,
@@ -3023,7 +3023,7 @@ fn isEmpty(mut tree: Arc<ParseTree>) -> bool {
 }
 
 fn isLabeledNode(mut tree: Arc<ParseTree>) -> bool {
-    let mut b: bool = false;
+    let mut b: bool;
     b = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ ParseTree::NODE { label: Deref @ ParseTree::EMPTY { .. }, .. } => false,
         Deref @ ParseTree::NODE { .. } => true,
@@ -3034,7 +3034,7 @@ fn isLabeledNode(mut tree: Arc<ParseTree>) -> bool {
 }
 
 fn nodeLabel(mut tree: Arc<ParseTree>) -> Arc<ParseTree> {
-    let mut label: Arc<ParseTree> = Arc::new(ParseTree::EMPTY);
+    let mut label: Arc<ParseTree>;
     label = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ ParseTree::NODE { .. } => var_field!((*tree).label, ParseTree::NODE).clone(),
         _ => crate::SimpleModelicaParser::ParseTree::interned_EMPTY(),
@@ -3044,11 +3044,11 @@ fn nodeLabel(mut tree: Arc<ParseTree>) -> Arc<ParseTree> {
 }
 
 fn parseTreeEq(mut t1: Arc<ParseTree>, mut t2: Arc<ParseTree>, mut diffSubtreeWorkArray1: metamodelica::Array<Token>, mut diffSubtreeWorkArray2: metamodelica::Array<Token>) -> Result<bool> {
-    let mut b: bool = false;
-    let mut len1: i32 = 0;
-    let mut len2: i32 = 0;
-    let mut commentLen1: i32 = 0;
-    let mut commentLen2: i32 = 0;
+    let mut b: bool;
+    let mut len1: i32;
+    let mut len2: i32;
+    let mut commentLen1: i32;
+    let mut commentLen2: i32;
     (len1, commentLen1) = findTokens(t1.clone(), diffSubtreeWorkArray1.clone(), 0, 0)?;
     (len2, commentLen2) = findTokens(t2.clone(), diffSubtreeWorkArray2.clone(), 0, 0)?;
     b = false;
@@ -3099,7 +3099,7 @@ fn findTokens(mut t: Arc<ParseTree>, mut work: metamodelica::Array<Token>, mut i
 }
 
 fn replaceFirstTokensInTree(mut t: Arc<ParseTree>, mut tokens: Arc<metamodelica::List<Token>>) -> Result<Arc<ParseTree>> {
-    let mut tree: Arc<ParseTree> = Arc::new(ParseTree::EMPTY);
+    let mut tree: Arc<ParseTree>;
     let __pa0 = ::match_deref::match_deref! { match &(replaceFirstTokensInTreeWork(t.clone(), tokens.clone())?) {
         (__pa0, Deref @ metamodelica::List::Nil) => __pa0.clone(),
         _ => bail!("pattern mismatch"),
@@ -3220,7 +3220,7 @@ fn removeLastTokenInTree(mut t: Arc<ParseTree>) -> Result<Arc<ParseTree>> {
 
 fn removeLastTokenInTrees(mut ts: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<Arc<metamodelica::List<Arc<ParseTree>>>> {
     let mut ts: Arc<metamodelica::List<Arc<ParseTree>>> = ts;
-    let mut t: Arc<ParseTree> = Arc::new(ParseTree::EMPTY);
+    let mut t: Arc<ParseTree>;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(ts.clone().reverse()) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
@@ -3347,13 +3347,13 @@ fn makeNode(mut nodes: Arc<metamodelica::List<Arc<ParseTree>>>, mut label: Arc<P
 }
 
 fn makeNodePrependTree(mut nodes: Arc<metamodelica::List<Arc<ParseTree>>>, mut tree: Arc<metamodelica::List<Arc<ParseTree>>>, mut label: Arc<ParseTree>) -> Arc<metamodelica::List<Arc<ParseTree>>> {
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     outTree = if (!(nodes.clone().is_empty())) {metamodelica::cons(makeNode(nodes.clone(), label.clone()), tree.clone())} else {tree.clone()};
     outTree
 }
 
 fn isLeaf(mut t: Arc<ParseTree>) -> bool {
-    let mut b: bool = false;
+    let mut b: bool;
     b = (::match_deref::match_deref! { match &(t.clone()) {
         Deref @ ParseTree::LEAF { .. } => true,
         _ => false,
@@ -3381,15 +3381,15 @@ fn firstToken(mut t: Arc<metamodelica::List<Arc<ParseTree>>>) -> Token {
 }
 
 fn firstTokenDebugStr(mut t: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
-    let mut l: Arc<metamodelica::List<Token>> = metamodelica::nil();
+    let mut r#str: ArcStr;
+    let mut l: Arc<metamodelica::List<Token>>;
     l = metamodelica::cons(firstToken(t.clone()), metamodelica::nil());
     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*Error::infoStr(topTokenSourceInfo(l.clone())?)?); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*topTokenStr(l.clone())?); ArcStr::from(__mm_s) }).clone();
     Ok(r#str)
 }
 
 fn getNodes(mut t: Arc<ParseTree>) -> Arc<metamodelica::List<Arc<ParseTree>>> {
-    let mut nodes: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut nodes: Arc<metamodelica::List<Arc<ParseTree>>>;
     nodes = (::match_deref::match_deref! { match &(t.clone()) {
         Deref @ ParseTree::NODE { .. } => var_field!((*t).nodes, ParseTree::NODE).clone(),
         _ => list![t.clone()],
@@ -3403,7 +3403,7 @@ fn extractSingleAddDiffBeforeAndAfter(mut diffs: Arc<metamodelica::List<(Diff, A
     let mut deletedTree: Arc<ParseTree> = Arc::new(ParseTree::EMPTY);
     let mut before: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
     let mut middle: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut after: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut after: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut addedBeforeDeleted: bool = false;
     let mut foundAdded: bool = false;
     let mut foundDeleted: bool = false;
@@ -3487,8 +3487,8 @@ fn extractSingleAddDiffBeforeAndAfter(mut diffs: Arc<metamodelica::List<(Diff, A
 }
 
 fn extractAdditionsDeletions(mut diffs: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<Arc<ParseTree>>>)>>) -> Result<(Arc<metamodelica::List<Arc<ParseTree>>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
-    let mut addedTrees: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut deletedTrees: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut addedTrees: Arc<metamodelica::List<Arc<ParseTree>>>;
+    let mut deletedTrees: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut addedTreesAcc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<ParseTree>>>>> = metamodelica::nil();
     let mut deletedTreesAcc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<ParseTree>>>>> = metamodelica::nil();
     let mut lst: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
@@ -3517,8 +3517,8 @@ fn extractAdditionsDeletions(mut diffs: Arc<metamodelica::List<(Diff, Arc<metamo
 fn countDiffAddDelete(mut diffs: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<Arc<ParseTree>>>)>>) -> (i32, i32) {
     let mut nadd: i32 = 0;
     let mut ndel: i32 = 0;
-    let mut d: Diff = Diff::Add;
-    let mut l: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut d: Diff;
+    let mut l: Arc<metamodelica::List<Arc<ParseTree>>>;
     for mut diff in &*diffs.clone() {
         let mut diff = diff.clone();
         (d, l) = diff.clone();
@@ -3552,8 +3552,8 @@ pub static whiteSpaceTokenIdsNotComment: std::sync::LazyLock<Arc<metamodelica::L
 pub static tokenIdsComment: std::sync::LazyLock<Arc<metamodelica::List<TokenId>>> = std::sync::LazyLock::new(|| { list![TokenId::LINE_COMMENT.clone(), TokenId::BLOCK_COMMENT.clone()] });
 
 fn parseTreeIsWhitespace(mut t1: Arc<ParseTree>) -> bool {
-    let mut b: bool = false;
-    let mut id: TokenId = TokenId::_NO_TOKEN;
+    let mut b: bool;
+    let mut id: TokenId;
     b = (::match_deref::match_deref! { match &(t1.clone()) {
         Deref @ ParseTree::LEAF { .. } => listMember(var_field!((*t1).token, ParseTree::LEAF).id.clone(), whiteSpaceTokenIds.clone()),
         _ => false,
@@ -3563,8 +3563,8 @@ fn parseTreeIsWhitespace(mut t1: Arc<ParseTree>) -> bool {
 }
 
 fn parseTreeIsNewLine(mut t1: Arc<ParseTree>) -> bool {
-    let mut b: bool = false;
-    let mut id: TokenId = TokenId::_NO_TOKEN;
+    let mut b: bool;
+    let mut id: TokenId;
     b = (::match_deref::match_deref! { match &(t1.clone()) {
         Deref @ ParseTree::LEAF { .. } => var_field!((*t1).token, ParseTree::LEAF).id.clone() == TokenId::NEWLINE.clone(),
         _ => false,
@@ -3574,8 +3574,8 @@ fn parseTreeIsNewLine(mut t1: Arc<ParseTree>) -> bool {
 }
 
 fn parseTreeIsWhitespaceNotComment(mut t1: Arc<ParseTree>) -> bool {
-    let mut b: bool = false;
-    let mut id: TokenId = TokenId::_NO_TOKEN;
+    let mut b: bool;
+    let mut id: TokenId;
     b = (::match_deref::match_deref! { match &(t1.clone()) {
         Deref @ ParseTree::LEAF { .. } => listMember(var_field!((*t1).token, ParseTree::LEAF).id.clone(), whiteSpaceTokenIdsNotComment.clone()),
         _ => false,
@@ -3585,8 +3585,8 @@ fn parseTreeIsWhitespaceNotComment(mut t1: Arc<ParseTree>) -> bool {
 }
 
 fn parseTreeIsWhitespaceNotCommentOrNewline(mut t1: Arc<ParseTree>) -> bool {
-    let mut b: bool = false;
-    let mut id: TokenId = TokenId::_NO_TOKEN;
+    let mut b: bool;
+    let mut id: TokenId;
     b = (::match_deref::match_deref! { match &(t1.clone()) {
         Deref @ ParseTree::LEAF { .. } => var_field!((*t1).token, ParseTree::LEAF).id.clone() == TokenId::WHITESPACE.clone(),
         _ => false,
@@ -3596,8 +3596,8 @@ fn parseTreeIsWhitespaceNotCommentOrNewline(mut t1: Arc<ParseTree>) -> bool {
 }
 
 fn parseTreeIsComment(mut t1: Arc<ParseTree>) -> bool {
-    let mut b: bool = false;
-    let mut id: TokenId = TokenId::_NO_TOKEN;
+    let mut b: bool;
+    let mut id: TokenId;
     b = (::match_deref::match_deref! { match &(t1.clone()) {
         Deref @ ParseTree::LEAF { .. } => listMember(var_field!((*t1).token, ParseTree::LEAF).id.clone(), tokenIdsComment.clone()),
         _ => false,
@@ -3607,8 +3607,8 @@ fn parseTreeIsComment(mut t1: Arc<ParseTree>) -> bool {
 }
 
 fn parseTreeIsLineComment(mut t1: Arc<ParseTree>) -> bool {
-    let mut b: bool = false;
-    let mut id: TokenId = TokenId::_NO_TOKEN;
+    let mut b: bool;
+    let mut id: TokenId;
     b = (::match_deref::match_deref! { match &(t1.clone()) {
         Deref @ ParseTree::LEAF { .. } => var_field!((*t1).token, ParseTree::LEAF).id.clone() == TokenId::LINE_COMMENT.clone(),
         _ => false,
@@ -3618,8 +3618,8 @@ fn parseTreeIsLineComment(mut t1: Arc<ParseTree>) -> bool {
 }
 
 fn parseTreeIsOnlyIdent(mut t1: Arc<ParseTree>) -> bool {
-    let mut b: bool = false;
-    let mut id: TokenId = TokenId::_NO_TOKEN;
+    let mut b: bool;
+    let mut id: TokenId;
     b = (::match_deref::match_deref! { match &(t1.clone()) {
         Deref @ ParseTree::LEAF { .. } => var_field!((*t1).token, ParseTree::LEAF).id.clone() == TokenId::IDENT.clone(),
         _ => false,
@@ -3629,8 +3629,8 @@ fn parseTreeIsOnlyIdent(mut t1: Arc<ParseTree>) -> bool {
 }
 
 fn parseTreeIsOnlyEnd(mut t1: Arc<ParseTree>) -> bool {
-    let mut b: bool = false;
-    let mut id: TokenId = TokenId::_NO_TOKEN;
+    let mut b: bool;
+    let mut id: TokenId;
     b = (::match_deref::match_deref! { match &(t1.clone()) {
         Deref @ ParseTree::LEAF { .. } => var_field!((*t1).token, ParseTree::LEAF).id.clone() == TokenId::END.clone(),
         _ => false,
@@ -3641,7 +3641,7 @@ fn parseTreeIsOnlyEnd(mut t1: Arc<ParseTree>) -> bool {
 
 fn parseTreeFilterWhitespace(mut t: Arc<ParseTree>) -> Arc<ParseTree> {
     let mut t: Arc<ParseTree> = t;
-    let mut id: TokenId = TokenId::_NO_TOKEN;
+    let mut id: TokenId;
     let mut changed: bool = false;
     let mut n2: Arc<ParseTree> = Arc::new(ParseTree::EMPTY);
     let mut nodes: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
@@ -3670,10 +3670,10 @@ fn parseTreeFilterWhitespace(mut t: Arc<ParseTree>) -> Arc<ParseTree> {
 
 fn eatWhitespace(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
     let mut id: TokenId = TokenId::_NO_TOKEN;
-    let mut t: Token = <Token as ::std::default::Default>::default();
+    let mut t: Token;
     tree = inTree.clone();
     while (::match_deref::match_deref! { match &(tokens.clone()) {
         Deref @ metamodelica::List::Cons { head: Token { id: __esc_id, .. }, tail: _ } => {
@@ -3697,8 +3697,8 @@ fn eatWhitespace(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<m
 
 fn scanOpt(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>, mut id: TokenId) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>, bool)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut found: bool = false;
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
+    let mut found: bool;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
     let mut id2: TokenId = TokenId::_NO_TOKEN;
     let mut t: Token = <Token as ::std::default::Default>::default();
@@ -3724,9 +3724,9 @@ fn scanOpt(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamod
 
 fn scan(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>, mut id: TokenId) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut found: bool = false;
+    let mut found: bool;
     tree = inTree.clone();
     (tokens, tree, found) = scanOpt(tokens.clone(), tree.clone(), id.clone())?;
     if !(found.clone()) {
@@ -3738,9 +3738,9 @@ fn scan(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodeli
 
 fn scanOneOf(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>, mut ids: Arc<metamodelica::List<TokenId>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut found: bool = false;
+    let mut found: bool;
     tree = inTree.clone();
     (tokens, tree, found) = LA1(tokens.clone(), tree.clone(), ids.clone(), true)?;
     if !(found.clone()) {
@@ -3751,11 +3751,11 @@ fn scanOneOf(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metam
 }
 
 fn error(mut tokens: Arc<metamodelica::List<Token>>, mut tree: Arc<metamodelica::List<Arc<ParseTree>>>, mut expected: Arc<metamodelica::List<TokenId>>) -> Result<()> {
-    let mut i: i32 = 0;
+    let mut i: i32;
     let mut s: ArcStr = arcstr::literal!("");
-    let mut strs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut res: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
+    let mut strs: Arc<metamodelica::List<ArcStr>>;
+    let mut res: Arc<metamodelica::List<ArcStr>>;
+    let mut info: SourceInfo;
     info = topTokenSourceInfo(tokens.clone())?;
     res = metamodelica::cons(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to scan top of input: ")); __mm_s.push_str(&*if (debug.clone()) {debugTokenStr(tokens.clone())?} else {topTokenStr(tokens.clone())?}); __mm_s.push_str(&*literal!("\n  Expected one of: ")); __mm_s.push_str(&*if (expected.clone().is_empty()) {literal!("<EOF>")} else {stringDelimitList(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -3791,7 +3791,7 @@ fn tokenIdStr(mut id: TokenId) -> ArcStr {
 
 fn peek(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>, TokenId)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut id: TokenId = TokenId::_NO_TOKEN;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
     tree = inTree.clone();
@@ -3810,9 +3810,9 @@ fn peek(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodeli
 
 fn consume(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut t: Token = <Token as ::std::default::Default>::default();
+    let mut t: Token;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(tokens.clone()) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
@@ -3825,8 +3825,8 @@ fn consume(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamod
 
 fn LA1(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>, mut ids: Arc<metamodelica::List<TokenId>>, mut consume: bool) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>, bool)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut found: bool = false;
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
+    let mut found: bool;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
     let mut id: TokenId = TokenId::_NO_TOKEN;
     tree = inTree.clone();
@@ -3853,11 +3853,11 @@ fn LA1(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelic
 
 fn LAk(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodelica::List<Arc<ParseTree>>>, mut idsLst: Arc<metamodelica::List<Arc<metamodelica::List<TokenId>>>>) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Arc<ParseTree>>>, bool)> {
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
-    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
+    let mut outTree: Arc<metamodelica::List<Arc<ParseTree>>>;
     let mut found: bool = true;
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
     let mut id: TokenId = TokenId::_NO_TOKEN;
-    let mut tmp: Arc<metamodelica::List<Token>> = metamodelica::nil();
+    let mut tmp: Arc<metamodelica::List<Token>>;
     tree = inTree.clone();
     (tokens, tree) = eatWhitespace(tokens.clone(), tree.clone())?;
     outTree = tree.clone();
@@ -3901,7 +3901,7 @@ fn parseTreeStrWork(mut tree: Arc<ParseTree>) -> Result<()> {
 }
 
 fn topTokenStr(mut tokens: Arc<metamodelica::List<Token>>) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     let mut id: TokenId = TokenId::_NO_TOKEN;
     let mut t: Token = <Token as ::std::default::Default>::default();
     r#str = ((::match_deref::match_deref! { match &(tokens.clone()) {
@@ -3917,7 +3917,7 @@ fn topTokenStr(mut tokens: Arc<metamodelica::List<Token>>) -> Result<ArcStr> {
 }
 
 fn debugTokenStr(mut tokens: Arc<metamodelica::List<Token>>) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     r#str = stringDelimitList(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut t in (tokens.clone()).into_iter().cloned() {
@@ -3930,7 +3930,7 @@ fn debugTokenStr(mut tokens: Arc<metamodelica::List<Token>>) -> Result<ArcStr> {
 }
 
 fn topTokenSourceInfo(mut tokens: Arc<metamodelica::List<Token>>) -> Result<SourceInfo> {
-    let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
+    let mut info: SourceInfo;
     let mut t: Token = <Token as ::std::default::Default>::default();
     info = (::match_deref::match_deref! { match &(tokens.clone()) {
         Deref @ metamodelica::List::Cons { head: __esc_t, tail: _ } => {
@@ -3944,7 +3944,7 @@ fn topTokenSourceInfo(mut tokens: Arc<metamodelica::List<Token>>) -> Result<Sour
 }
 
 fn needsWhitespaceBetweenTokens(mut first: Token, mut last: Token) -> Result<bool> {
-    let mut b: bool = false;
+    let mut b: bool;
     let notident: Arc<metamodelica::List<TokenId>> = list![TokenId::ASSIGN.clone(), TokenId::BLOCK_COMMENT.clone(), TokenId::COLON.clone(), TokenId::COLONCOLON.clone(), TokenId::COMMA.clone(), TokenId::DOT.clone(), TokenId::EQEQ.clone(), TokenId::EQUALS.clone(), TokenId::GREATER.clone(), TokenId::GREATEREQ.clone(), TokenId::LBRACE.clone(), TokenId::LBRACK.clone(), TokenId::LESS.clone(), TokenId::LESSEQ.clone(), TokenId::LESSGT.clone(), TokenId::LINE_COMMENT.clone(), TokenId::LPAR.clone(), TokenId::MINUS.clone(), TokenId::MINUS_EW.clone(), TokenId::NEWLINE.clone(), TokenId::OPERATOR.clone(), TokenId::PLUS.clone(), TokenId::PLUS_EW.clone(), TokenId::POWER.clone(), TokenId::POWER_EW.clone(), TokenId::RBRACE.clone(), TokenId::RBRACK.clone(), TokenId::RPAR.clone(), TokenId::SEMICOLON.clone(), TokenId::SLASH.clone(), TokenId::SLASH_EW.clone(), TokenId::STAR.clone(), TokenId::STAR_EW.clone(), TokenId::UNSIGNED_INTEGER.clone(), TokenId::UNSIGNED_REAL.clone(), TokenId::WHITESPACE.clone()];
     if listMember(tokenId(first.clone())?, notident.clone()) || listMember(tokenId(last.clone())?, notident.clone()) {
         b = false;
@@ -3955,7 +3955,7 @@ fn needsWhitespaceBetweenTokens(mut first: Token, mut last: Token) -> Result<boo
 }
 
 fn tokenId(mut t: Token) -> Result<TokenId> {
-    let mut id: TokenId = TokenId::_NO_TOKEN;
+    let mut id: TokenId;
     let LexerModelicaDiff::TOKEN { id: __pa0, .. } = (t.clone()) else { bail!("pattern mismatch") };
     id = __pa0.clone();
     Ok(id)

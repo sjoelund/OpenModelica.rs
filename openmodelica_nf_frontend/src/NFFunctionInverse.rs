@@ -81,8 +81,8 @@ impl Default for NFFunctionInverse {
 pub type FUNCTION_INV = NFFunctionInverse;
 
 pub fn instInverses(mut fnNode: Arc<InstNode::InstNode>, mut r#fn: Arc<Function::Function>) -> Result<metamodelica::Array<Arc<NFFunctionInverse>>> {
-    let mut inverses: metamodelica::Array<Arc<NFFunctionInverse>> = Default::default();
-    let mut inv_mods: Arc<metamodelica::List<Arc<SCode::Mod>>> = metamodelica::nil();
+    let mut inverses: metamodelica::Array<Arc<NFFunctionInverse>>;
+    let mut inv_mods: Arc<metamodelica::List<Arc<SCode::Mod>>>;
     let mut invs: Arc<metamodelica::List<Arc<NFFunctionInverse>>> = metamodelica::nil();
     inv_mods = getInverseAnnotations(InstNode::definition(fnNode.clone())?)?;
     if !(inv_mods.clone().is_empty()) && !((r#fn.outputs.clone().len() as i32) == 1) {
@@ -107,15 +107,15 @@ pub fn typeInverse(mut fnInv: Arc<NFFunctionInverse>) -> Result<Arc<NFFunctionIn
 }
 
 pub fn toDAE(mut fnInv: Arc<NFFunctionInverse>) -> Result<DAE::FunctionDefinition> {
-    let mut invDef: DAE::FunctionDefinition = <DAE::FunctionDefinition as ::std::default::Default>::default();
+    let mut invDef: DAE::FunctionDefinition;
     invDef = DAE::FunctionDefinition::FUNCTION_INVERSE { inputParam: ComponentRef::toDAE(fnInv.inputParam.clone())?, inverseCall: Expression::toDAE(fnInv.inverseCall.clone(), false)? };
     Ok(invDef)
 }
 
 pub fn toSubMod(mut fnInv: Arc<NFFunctionInverse>) -> Result<Arc<SCode::SubMod>> {
-    let mut subMod: Arc<SCode::SubMod> = Arc::new(<SCode::SubMod as ::std::default::Default>::default());
-    let mut inv_mod: Arc<SCode::SubMod> = Arc::new(<SCode::SubMod as ::std::default::Default>::default());
-    let mut call_exp: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
+    let mut subMod: Arc<SCode::SubMod>;
+    let mut inv_mod: Arc<SCode::SubMod>;
+    let mut call_exp: Arc<Absyn::Exp>;
     call_exp = Expression::toAbsyn(fnInv.inverseCall.clone())?;
     inv_mod = Arc::new(SCode::SubMod { ident: (ComponentRef::firstName(fnInv.inputParam.clone(), false)?).clone(), r#mod: Arc::new(SCode::Mod::MOD { finalPrefix: openmodelica_frontend_types::SCode::Final::NOT_FINAL, eachPrefix: openmodelica_frontend_types::SCode::Each::NOT_EACH, subModLst: metamodelica::nil(), binding: Some(call_exp.clone()), comment: None, info: fnInv.info.clone() }) });
     subMod = Arc::new(SCode::SubMod { ident: (literal!("inverse")).clone(), r#mod: Arc::new(SCode::Mod::MOD { finalPrefix: openmodelica_frontend_types::SCode::Final::NOT_FINAL, eachPrefix: openmodelica_frontend_types::SCode::Each::NOT_EACH, subModLst: list![inv_mod.clone()], binding: None, comment: None, info: fnInv.info.clone() }) });
@@ -123,8 +123,8 @@ pub fn toSubMod(mut fnInv: Arc<NFFunctionInverse>) -> Result<Arc<SCode::SubMod>>
 }
 
 pub fn getFunction(mut fnInv: Arc<NFFunctionInverse>) -> Result<Arc<Function::Function>> {
-    let mut r#fn: Arc<Function::Function> = Arc::new(<Function::Function as ::std::default::Default>::default());
-    let mut call: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
+    let mut r#fn: Arc<Function::Function>;
+    let mut call: Arc<Call::NFCall>;
     let __pa0 = ::match_deref::match_deref! { match &(fnInv.inverseCall.clone()) {
         Deref @ Expression::CALL { call: __pa0 } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
@@ -135,7 +135,7 @@ pub fn getFunction(mut fnInv: Arc<NFFunctionInverse>) -> Result<Arc<Function::Fu
 }
 
 fn getInverseAnnotations(mut definition: Arc<SCode::Element>) -> Result<Arc<metamodelica::List<Arc<SCode::Mod>>>> {
-    let mut invMods: Arc<metamodelica::List<Arc<SCode::Mod>>> = metamodelica::nil();
+    let mut invMods: Arc<metamodelica::List<Arc<SCode::Mod>>>;
     invMods = (::match_deref::match_deref! { match &(definition.clone()) {
         Deref @ SCode::Element::CLASS { cmt: Deref @ SCode::Comment { annotation_: Some(ann), .. }, .. } => {
             SCodeUtil::lookupAnnotations(ann.clone(), (literal!("inverse")).clone())?

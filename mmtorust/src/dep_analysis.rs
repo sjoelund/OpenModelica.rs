@@ -79,8 +79,8 @@ struct TarjanState<'a> {
     sccs: Vec<Vec<String>>,
 }
 
-fn tarjan_scc<'a>(
-    nodes: &[&'a str],
+fn tarjan_scc(
+    nodes: &[&str],
     adj: &BTreeMap<String, BTreeSet<String>>,
 ) -> Vec<Vec<String>> {
     let mut state = TarjanState {
@@ -194,14 +194,13 @@ pub fn print_report(analysis: &DepAnalysis) {
     for (pkg, imports) in package_imports {
         let src_crate = &package_to_crate[pkg];
         for imported_pkg in imports {
-            if let Some(dst_crate) = package_to_crate.get(imported_pkg.as_str()) {
-                if dst_crate != src_crate {
+            if let Some(dst_crate) = package_to_crate.get(imported_pkg.as_str())
+                && dst_crate != src_crate {
                     crate_deps
                         .entry(src_crate.clone())
                         .or_default()
                         .insert(dst_crate.clone());
                 }
-            }
         }
     }
 
@@ -386,14 +385,13 @@ pub fn write_crate_dot(analysis: &DepAnalysis, path: &str) -> std::io::Result<()
     for (pkg, imports) in package_imports {
         let src_crate = &package_to_crate[pkg];
         for imported_pkg in imports {
-            if let Some(dst_crate) = package_to_crate.get(imported_pkg.as_str()) {
-                if dst_crate != src_crate {
+            if let Some(dst_crate) = package_to_crate.get(imported_pkg.as_str())
+                && dst_crate != src_crate {
                     crate_deps
                         .entry(src_crate.clone())
                         .or_default()
                         .insert(dst_crate.clone());
                 }
-            }
         }
     }
 

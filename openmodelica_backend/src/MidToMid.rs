@@ -72,18 +72,18 @@ Some SSA variables and purity marked functions perhaps.
 
 */
 pub fn longJmpGoto(mut oldFunction: MidCode::Function) -> Result<MidCode::Function> {
-    let mut newFunction: MidCode::Function = <MidCode::Function as ::std::default::Default>::default();
-    let mut newBody: Arc<metamodelica::List<MidCode::Block>> = metamodelica::nil();
-    let mut oldBody: Arc<metamodelica::List<MidCode::Block>> = metamodelica::nil();
-    let mut newBlock: MidCode::Block = <MidCode::Block as ::std::default::Default>::default();
-    let mut oldBlock: MidCode::Block = <MidCode::Block as ::std::default::Default>::default();
-    let mut node: i32 = 0;
-    let mut jump: i32 = 0;
-    let mut jumps: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut nodes_tmp: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut checkedNodes: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut tasks: Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, i32)>> = metamodelica::nil();
-    let mut tasks_tmp: Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, i32)>> = metamodelica::nil();
+    let mut newFunction: MidCode::Function;
+    let mut newBody: Arc<metamodelica::List<MidCode::Block>>;
+    let mut oldBody: Arc<metamodelica::List<MidCode::Block>>;
+    let mut newBlock: MidCode::Block;
+    let mut oldBlock: MidCode::Block;
+    let mut node: i32;
+    let mut jump: i32;
+    let mut jumps: Arc<metamodelica::List<i32>>;
+    let mut nodes_tmp: Arc<metamodelica::List<i32>>;
+    let mut checkedNodes: Arc<metamodelica::List<i32>>;
+    let mut tasks: Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, i32)>>;
+    let mut tasks_tmp: Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, i32)>>;
     oldBody = oldFunction.body.clone();
     newBody = metamodelica::nil();
     checkedNodes = list![oldFunction.entryId.clone()];
@@ -148,7 +148,7 @@ pub fn lookupId(mut blocks: Arc<metamodelica::List<MidCode::Block>>, mut id: i32
 }
 
 fn getSuccessors(mut block_: MidCode::Block) -> Result<Arc<metamodelica::List<i32>>> {
-    let mut neighbours: Arc<metamodelica::List<i32>> = metamodelica::nil();
+    let mut neighbours: Arc<metamodelica::List<i32>>;
     let mut l0: i32 = 0;
     let mut l1: i32 = 0;
     let mut switchList: Arc<metamodelica::List<(i32, i32)>> = metamodelica::nil();
@@ -193,13 +193,13 @@ fn getSuccessors(mut block_: MidCode::Block) -> Result<Arc<metamodelica::List<i3
 }
 
 fn tupleSnd(mut t: (i32, i32)) -> i32 {
-    let mut i: i32 = 0;
+    let mut i: i32;
     (_, i) = t.clone();
     i
 }
 
 fn isLongJmp(mut t: MidCode::Terminator) -> bool {
-    let mut b: bool = false;
+    let mut b: bool;
     b = (match t.clone() {
         MidCode::Terminator::LONGJMP { .. } => true,
         _ => false,
@@ -208,7 +208,7 @@ fn isLongJmp(mut t: MidCode::Terminator) -> bool {
 }
 
 fn isPushJmp(mut t: MidCode::Terminator) -> bool {
-    let mut b: bool = false;
+    let mut b: bool;
     b = (match t.clone() {
         MidCode::Terminator::PUSHJMP { old_buf: _, new_buf: _, next: _ } => true,
         _ => false,
@@ -217,7 +217,7 @@ fn isPushJmp(mut t: MidCode::Terminator) -> bool {
 }
 
 fn isPopJmp(mut t: MidCode::Terminator) -> bool {
-    let mut b: bool = false;
+    let mut b: bool;
     b = (match t.clone() {
         MidCode::Terminator::POPJMP { old_buf: _, next: _ } => true,
         _ => false,

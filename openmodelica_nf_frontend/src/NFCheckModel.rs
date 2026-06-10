@@ -78,10 +78,10 @@ pub fn checkModel(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<(i32, i3
 pub fn countVariableSize(mut var: Arc<Variable::NFVariable>, mut variables: i32, mut equations: i32) -> Result<(i32, i32)> {
     let mut variables: i32 = variables;
     let mut equations: i32 = equations;
-    let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut binding: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);
-    let mut attr: Arc<Attributes::NFAttributes> = Arc::new(<Attributes::NFAttributes as ::std::default::Default>::default());
-    let mut var_size: i32 = 0;
+    let mut ty: Arc<Type::NFType>;
+    let mut binding: Arc<Binding::NFBinding>;
+    let mut attr: Arc<Attributes::NFAttributes>;
+    let mut var_size: i32;
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(var.clone()) {
         Deref @ Variable::VARIABLE { ty: __pa0, binding: __pa1, attributes: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
@@ -107,7 +107,7 @@ pub fn countVariableSize(mut var: Arc<Variable::NFVariable>, mut variables: i32,
 
 pub fn countAlgorithmSize(mut alg: Arc<Algorithm::NFAlgorithm>) -> Result<i32> {
     let mut equations: i32 = 0;
-    let mut crefs: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
+    let mut crefs: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
     crefs = UnorderedSet::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
     crefs = List::fold(alg.statements.clone(), (std::sync::Arc::new(statementOutputs) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Statement::NFStatement>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>> + 'static>), crefs.clone())?;
     equations = equations.clone() + UnorderedSet::size(crefs.clone());

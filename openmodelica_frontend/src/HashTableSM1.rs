@@ -81,12 +81,12 @@ pub fn emptyHashTableSized(mut size: i32) -> HashTable {
 }
 
 pub fn modeStr(mut mode: InstStateMachineUtil::SMNode) -> Result<ArcStr> {
-    let mut s: ArcStr = arcstr::literal!("");
-    let mut componentRef: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-    let mut isInitial: bool = false;
+    let mut s: ArcStr;
+    let mut componentRef: Arc<DAE::ComponentRef>;
+    let mut isInitial: bool;
     let mut edges: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr));
-    let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
-    let mut paths: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+    let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
+    let mut paths: Arc<metamodelica::List<ArcStr>>;
     let InstStateMachineUtil::SMNODE { componentRef: __pa0, isInitial: __pa1, edges: __pa2 } = (mode.clone()) else { bail!("pattern mismatch") };
     componentRef = __pa0.clone();
     isInitial = __pa1.clone();

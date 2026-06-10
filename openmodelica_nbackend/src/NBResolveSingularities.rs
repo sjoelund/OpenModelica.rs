@@ -93,41 +93,41 @@ pub fn indexReduction(mut adj: Arc<Adjacency::Matrix::Matrix>, mut full: Arc<Adj
     let mut equations: Arc<EquationPointers::EquationPointers> = equations;
     let mut varData: Arc<VarData::VarData> = varData;
     let mut eqData: Arc<EqData::EqData> = eqData;
-    let mut changed: bool = false;
+    let mut changed: bool;
     let mut mapping: Arc<Adjacency::Mapping::Mapping> = Arc::new(<Adjacency::Mapping::Mapping as ::std::default::Default>::default());
-    let mut excluded_eqns: metamodelica::Array<bool> = Default::default();
-    let mut msss: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
-    let mut marked_eqns: Arc<metamodelica::List<i32>> = metamodelica::nil();
+    let mut excluded_eqns: metamodelica::Array<bool>;
+    let mut msss: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut marked_eqns: Arc<metamodelica::List<i32>>;
     let mut constraint: Pointer::Pointer<Arc<Equation::Equation>>;
     let mut diffed_eqn: Pointer::Pointer<Arc<Equation::Equation>>;
-    let mut states: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Variable::NFVariable>>>>>> = metamodelica::nil();
-    let mut dummy_states: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Variable::NFVariable>>>>>> = metamodelica::nil();
+    let mut states: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Variable::NFVariable>>>>>>;
+    let mut dummy_states: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Variable::NFVariable>>>>>>;
     let mut sliced_dummies: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Variable::NFVariable>>>>>> = metamodelica::nil();
-    let mut sliced_states: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
-    let mut sliced_dummy_states: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
-    let mut state_derivatives: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
+    let mut sliced_states: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>;
+    let mut sliced_dummy_states: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>;
+    let mut state_derivatives: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>;
     let mut dummy_derivatives: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
-    let mut dummy_slice_vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
-    let mut current_candidates: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
-    let mut rest_candidates: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
-    let mut constraint_eqns: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>> = metamodelica::nil();
-    let mut matched_eqns: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>> = metamodelica::nil();
-    let mut unmatched_eqns: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>> = metamodelica::nil();
+    let mut dummy_slice_vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>;
+    let mut current_candidates: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>;
+    let mut rest_candidates: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>;
+    let mut constraint_eqns: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>>;
+    let mut matched_eqns: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>>;
+    let mut unmatched_eqns: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>>;
     let mut new_eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
-    let mut diffArguments: Arc<Differentiate::DifferentiationArguments::DifferentiationArguments> = Arc::new(<Differentiate::DifferentiationArguments::DifferentiationArguments as ::std::default::Default>::default());
+    let mut diffArguments: Arc<Differentiate::DifferentiationArguments::DifferentiationArguments>;
     let mut diffArguments_ptr: Pointer::Pointer<Arc<Differentiate::DifferentiationArguments::DifferentiationArguments>>;
-    let mut candidate_ptrs: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
-    let mut constraint_ptrs: Arc<EquationPointers::EquationPointers> = Arc::new(<EquationPointers::EquationPointers as ::std::default::Default>::default());
-    let mut set_adj: Arc<Adjacency::Matrix::Matrix> = Arc::new(<Adjacency::Matrix::Matrix as ::std::default::Default>::default());
-    let mut full_local: Arc<Adjacency::Matrix::Matrix> = Arc::new(<Adjacency::Matrix::Matrix as ::std::default::Default>::default());
-    let mut set_matching: Arc<Matching::NBMatching> = Arc::new(<Matching::NBMatching as ::std::default::Default>::default());
-    let mut vo: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> as ::std::default::Default>::default();
-    let mut vn: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> as ::std::default::Default>::default();
-    let mut eo: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> as ::std::default::Default>::default();
-    let mut en: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> as ::std::default::Default>::default();
-    let mut stages: Arc<metamodelica::List<(ArcStr, BVariable::checkVar)>> = metamodelica::nil();
+    let mut candidate_ptrs: Arc<VariablePointers::VariablePointers>;
+    let mut constraint_ptrs: Arc<EquationPointers::EquationPointers>;
+    let mut set_adj: Arc<Adjacency::Matrix::Matrix>;
+    let mut full_local: Arc<Adjacency::Matrix::Matrix>;
+    let mut set_matching: Arc<Matching::NBMatching>;
+    let mut vo: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>;
+    let mut vn: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>;
+    let mut eo: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>;
+    let mut en: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>;
+    let mut stages: Arc<metamodelica::List<(ArcStr, BVariable::checkVar)>>;
     let mut stageFunc: BVariable::checkVar;
-    let mut stageStr: ArcStr = arcstr::literal!("");
+    let mut stageStr: ArcStr;
     let mut slice_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<UnorderedSet::UnorderedSet<i32>>>> = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
     let mut dummy_slice_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = UnorderedSet::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
     let mut debug: bool = false;
@@ -322,22 +322,22 @@ pub fn balanceInitialization(mut adj: Arc<Adjacency::Matrix::Matrix>, mut full: 
     let mut equations: Arc<EquationPointers::EquationPointers> = equations;
     let mut varData: Arc<VarData::VarData> = varData;
     let mut eqData: Arc<EqData::EqData> = eqData;
-    let mut changed: bool = false;
-    let mut unmatched_vars: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Variable::NFVariable>>>>>> = metamodelica::nil();
-    let mut unmatched_eqns: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>> = metamodelica::nil();
-    let mut start_vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
+    let mut changed: bool;
+    let mut unmatched_vars: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Variable::NFVariable>>>>>>;
+    let mut unmatched_eqns: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>>;
+    let mut start_vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>;
     let mut failed_vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
-    let mut sliced_eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
-    let mut start_eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
+    let mut sliced_eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>;
+    let mut start_eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>;
     let mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>;
     let mut ptr_start_vars: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>> = Pointer::create(metamodelica::nil());
     let mut ptr_start_eqns: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>> = Pointer::create(metamodelica::nil());
     let mut idx: Pointer::Pointer<i32>;
-    let mut error_msg: ArcStr = arcstr::literal!("");
-    let mut vo: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> as ::std::default::Default>::default();
-    let mut vn: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> as ::std::default::Default>::default();
-    let mut eo: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> as ::std::default::Default>::default();
-    let mut en: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> as ::std::default::Default>::default();
+    let mut error_msg: ArcStr;
+    let mut vo: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>;
+    let mut vn: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>;
+    let mut eo: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>;
+    let mut en: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>;
     (_, unmatched_vars, _, unmatched_eqns) = Matching::getMatches(matching.clone(), mapping_opt.clone(), variables.clone(), equations.clone())?;
     if Flags::isSet(Flags::INITIALIZATION.clone())? {
         metamodelica::print((toStringUnmatched(unmatched_vars.clone(), unmatched_eqns.clone())?).clone());
@@ -411,9 +411,9 @@ pub fn balanceInitialization(mut adj: Arc<Adjacency::Matrix::Matrix>, mut full: 
 }
 
 fn getMSSS(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut matching: Arc<Matching::NBMatching>, mut excluded_eqns: metamodelica::Array<bool>, mut mapping: Arc<Adjacency::Mapping::Mapping>) -> Result<metamodelica::Array<Arc<metamodelica::List<i32>>>> {
-    let mut msss: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut msss: metamodelica::Array<Arc<metamodelica::List<i32>>>;
     let mut eqn_candidates: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut color_clustering: metamodelica::Array<i32> = Default::default();
+    let mut color_clustering: metamodelica::Array<i32>;
     let mut eqn_coloring: metamodelica::Array<i32> = arrayCreate(metamodelica::arrayLength(m.clone()), -1);
     let mut var_coloring: metamodelica::Array<i32> = arrayCreate(metamodelica::arrayLength(mT.clone()), -1);
     let mut color: i32 = 0;
@@ -495,7 +495,7 @@ fn colorClustering(mut old_color: i32, mut new_color: i32, mut color_clustering:
 }
 
 fn resolveClustering(mut color_clustering: metamodelica::Array<i32>) -> Result<()> {
-    let mut color: i32 = 0;
+    let mut color: i32;
     for mut i in 1..=metamodelica::arrayLength(color_clustering.clone()) {
         color = i.clone();
         while ({let __elt = color_clustering.borrow()[(color.clone()-1) as usize].clone(); __elt}) != color.clone() {
@@ -565,7 +565,7 @@ fn getStateCandidate(mut cref: Arc<ComponentRef::NFComponentRef>, mut acc: Arc<U
 }
 
 fn candidatePriority(mut candidate: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<i32> {
-    let mut prio: i32 = 0;
+    let mut prio: i32;
     prio = (::match_deref::match_deref! { match &(Pointer::access(candidate.clone())) {
         Deref @ Variable::VARIABLE { backendinfo: Deref @ BackendInfo::BACKEND_INFO { attributes, .. }, .. } => {
             (match VariableAttributes::getStateSelect(attributes.clone()) {
@@ -600,7 +600,7 @@ fn sortCandidates(mut candidates: Arc<metamodelica::List<Pointer::Pointer<Arc<Va
 fn resolveSlicedUnmatched(mut old_unmatched: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>>, mut slice_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<UnorderedSet::UnorderedSet<i32>>>>) -> Result<Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>>> {
     pub fn resolveSlicedUnmatchedSingle(mut eq: Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>, mut acc: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>>, mut slice_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<UnorderedSet::UnorderedSet<i32>>>>) -> Result<Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>>> {
         let mut acc: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>> = acc;
-        let mut relevant_indices: Arc<UnorderedSet::UnorderedSet<i32>> = <Arc<UnorderedSet::UnorderedSet<i32>> as ::std::default::Default>::default();
+        let mut relevant_indices: Arc<UnorderedSet::UnorderedSet<i32>>;
         relevant_indices = UnorderedMap::getSafe(Equation::getEqnName(Slice::getT(eq.clone()))?, slice_map.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/1_Main/NBResolveSingularities.mo"))?;
         if UnorderedSet::isEmpty(relevant_indices.clone()) {
             acc = metamodelica::cons(eq.clone(), acc.clone());
@@ -631,7 +631,7 @@ fn resolveSlicedUnmatched(mut old_unmatched: Arc<metamodelica::List<Arc<Slice::N
 
 fn removeSlicedDerivatives(mut derivative: Pointer::Pointer<Arc<Equation::Equation>>, mut slice_set: Arc<UnorderedSet::UnorderedSet<i32>>, mut dummy_slice_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut aux_index: Pointer::Pointer<i32>) -> Result<Pointer::Pointer<Arc<Equation::Equation>>> {
     let mut derivative: Pointer::Pointer<Arc<Equation::Equation>> = derivative;
-    let mut eqn: Arc<Equation::Equation> = Arc::new(Equation::DUMMY_EQUATION);
+    let mut eqn: Arc<Equation::Equation>;
     if !(UnorderedSet::isEmpty(slice_set.clone())) {
         eqn = removeSlicedDerivateEqn(Pointer::access(derivative.clone()), crate::NBEquation::Iterator::interned_EMPTY(), dummy_slice_set.clone(), aux_index.clone())?;
         Pointer::update(derivative.clone(), eqn.clone());
@@ -642,7 +642,7 @@ fn removeSlicedDerivatives(mut derivative: Pointer::Pointer<Arc<Equation::Equati
 fn removeSlicedDerivateEqn(mut eqn: Arc<Equation::Equation>, mut iter: Arc<Iterator::Iterator>, mut dummy_slice_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut aux_index: Pointer::Pointer<i32>) -> Result<Arc<Equation::Equation>> {
     fn replaceTupleLiterals(mut exp: Arc<Expression::NFExpression>, mut iter: Arc<Iterator::Iterator>, mut dummy_slice_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut aux_index: Pointer::Pointer<i32>) -> Result<Arc<Expression::NFExpression>> {
         let mut exp: Arc<Expression::NFExpression> = exp;
-        let mut aux: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
+        let mut aux: Arc<ComponentRef::NFComponentRef>;
         if Expression::isLiteral(exp.clone())? {
             aux = Call_Aux::createName(Expression::typeOf(exp.clone()), iter.clone(), aux_index.clone(), (arcstr::literal!(BVariable::DERIVATIVE_STR)).clone(), false)?;
             exp = Arc::new(Expression::NFExpression::CREF { ty: ComponentRef::getSubscriptedType(aux.clone(), false)?, cref: aux.clone() });
@@ -686,23 +686,23 @@ fn removeSlicedDerivateEqn(mut eqn: Arc<Equation::Equation>, mut iter: Arc<Itera
 }
 
 fn toStringCandidatesConstraints(mut state_candidates: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Variable::NFVariable>>>>>>, mut constraint_eqns: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>>) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_1((literal!("Index Reduction")).clone())); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*intString((state_candidates.clone().len() as i32))); __mm_s.push_str(&*literal!(") Sorted State Candidates")); ArcStr::from(__mm_s) }).clone())); __mm_s.push_str(&*Slice::lstToString(state_candidates.clone(), (std::sync::Arc::new(BVariable::pointerToString) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<ArcStr> + 'static>), 10)?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*intString((constraint_eqns.clone().len() as i32))); __mm_s.push_str(&*literal!(") Constraint Equations")); ArcStr::from(__mm_s) }).clone())); __mm_s.push_str(&*Slice::lstToString(constraint_eqns.clone(), (std::sync::Arc::new({ let __pe_b1 = (literal!("")).clone(); move |__pe_a0| Equation::pointerToString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<ArcStr> + 'static>), 10)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
     Ok(r#str)
 }
 
 fn toStringDynamicSelect(mut dummy_states: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Variable::NFVariable>>>>>>, mut unmatched_eqns: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>>) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_2((literal!("\t  DYNAMIC STATE SELECTION\n\t(some unmatched equations)")).clone())); __mm_s.push_str(&*StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*intString((dummy_states.clone().len() as i32))); __mm_s.push_str(&*literal!(") Remaining State Candidates")); ArcStr::from(__mm_s) }).clone())); __mm_s.push_str(&*Slice::lstToString(dummy_states.clone(), (std::sync::Arc::new(BVariable::pointerToString) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<ArcStr> + 'static>), 10)?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*intString((unmatched_eqns.clone().len() as i32))); __mm_s.push_str(&*literal!(") Remaining Equations")); ArcStr::from(__mm_s) }).clone())); __mm_s.push_str(&*Slice::lstToString(unmatched_eqns.clone(), (std::sync::Arc::new({ let __pe_b1 = (literal!("")).clone(); move |__pe_a0| Equation::pointerToString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<ArcStr> + 'static>), 10)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
     Ok(r#str)
 }
 
 fn toStringUnmatched(mut unmatched_vars: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Variable::NFVariable>>>>>>, mut unmatched_eqns: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>>) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
-    let mut s1: ArcStr = arcstr::literal!("");
-    let mut s2: ArcStr = arcstr::literal!("");
-    let mut s3: ArcStr = arcstr::literal!("");
-    let mut s4: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
+    let mut s1: ArcStr;
+    let mut s2: ArcStr;
+    let mut s3: ArcStr;
+    let mut s4: ArcStr;
     if unmatched_vars.clone().is_empty() {
         s1 = (StringUtil::headline_4((literal!("Not underdetermined.")).clone())).clone();
         s3 = (literal!("")).clone();

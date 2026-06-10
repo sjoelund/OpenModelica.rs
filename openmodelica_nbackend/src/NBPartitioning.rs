@@ -44,7 +44,7 @@ use const_str;
 use arcstr::{ArcStr, literal, format};
 
 use crate::NBAdjacency;
-use crate::NBBackendUtil::Rational;
+use crate::NBBackendUtil;
 use crate::NBCausalize as Causalize;
 use crate::NBEquation as BEquation;
 use crate::NBEquation::EqData;
@@ -81,6 +81,7 @@ use openmodelica_nf_frontend::NFVariable as Variable;
 use openmodelica_util::Error;
 use openmodelica_util::ExpandableArray;
 use openmodelica_util::Flags;
+use openmodelica_util::Rational;
 use openmodelica_util::StringUtil;
 use openmodelica_util::UnorderedMap;
 use openmodelica_util::UnorderedSet;
@@ -118,7 +119,7 @@ pub mod BClock {
     }
     pub use self::BClock::{BASE_CLOCK,SUB_CLOCK,INFERRED_CLOCK};
     pub fn toString(mut clock: Arc<BClock>) -> Result<ArcStr> {
-        let mut r#str: ArcStr = arcstr::literal!("");
+        let mut r#str: ArcStr;
         r#str = ((::match_deref::match_deref! { match &(clock.clone()) {
         Deref @ BASE_CLOCK { .. } => ClockKind::toDebugString(var_field!((*clock).clock, BClock::BASE_CLOCK).clone())?,
         Deref @ SUB_CLOCK { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SUB_CLOCK(")); __mm_s.push_str(&*Rational::toString(var_field!((*clock).factor, BClock::SUB_CLOCK).clone())); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*Rational::toString(var_field!((*clock).shift, BClock::SUB_CLOCK).clone())); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) },
@@ -135,7 +136,7 @@ pub mod BClock {
     }
 
     pub fn isEqual(mut clock1: Arc<BClock>, mut clock2: Arc<BClock>) -> Result<bool> {
-        let mut b: bool = false;
+        let mut b: bool;
         b = (::match_deref::match_deref! { match &((clock1.clone(), clock2.clone())) {
         (Deref @ BASE_CLOCK { .. }, Deref @ BASE_CLOCK { .. }) => ClockKind::compare(var_field!((*clock1).clock, BClock::BASE_CLOCK).clone(), var_field!((*clock2).clock, BClock::BASE_CLOCK).clone())? == 0,
         (Deref @ SUB_CLOCK { .. }, Deref @ SUB_CLOCK { .. }) => Rational::isEqual(var_field!((*clock1).factor, BClock::SUB_CLOCK).clone(), var_field!((*clock2).factor, BClock::SUB_CLOCK).clone()) && Rational::isEqual(var_field!((*clock1).shift, BClock::SUB_CLOCK).clone(), var_field!((*clock2).shift, BClock::SUB_CLOCK).clone()) && Util::optionEqual(var_field!((*clock1).solver, BClock::SUB_CLOCK).clone(), var_field!((*clock2).solver, BClock::SUB_CLOCK).clone(), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>))?,
@@ -165,7 +166,7 @@ pub mod BClock {
     }
 
     pub fn isBaseClock(mut clock: Arc<BClock>) -> bool {
-        let mut b: bool = false;
+        let mut b: bool;
         b = (::match_deref::match_deref! { match &(clock.clone()) {
         Deref @ BASE_CLOCK { .. } => true,
         _ => false,
@@ -175,7 +176,7 @@ pub mod BClock {
     }
 
     pub fn isInferredClock(mut clock: Arc<BClock>) -> bool {
-        let mut b: bool = false;
+        let mut b: bool;
         b = (::match_deref::match_deref! { match &(clock.clone()) {
         Deref @ BASE_CLOCK { clock: Deref @ ClockKind::INFERRED_CLOCK { .. } } => true,
         Deref @ INFERRED_CLOCK { .. } => true,
@@ -186,7 +187,7 @@ pub mod BClock {
     }
 
     pub fn isEventClock(mut clock: Arc<BClock>) -> bool {
-        let mut b: bool = false;
+        let mut b: bool;
         b = (::match_deref::match_deref! { match &(clock.clone()) {
         Deref @ BASE_CLOCK { clock: Deref @ ClockKind::EVENT_CLOCK { .. } } => true,
         _ => false,
@@ -215,7 +216,7 @@ pub mod BClock {
     }
 
     pub fn convertBase(mut clock: Arc<BClock>) -> Result<Arc<OldDAE::ClockKind>> {
-        let mut oldClock: Arc<OldDAE::ClockKind> = Arc::new(OldDAE::ClockKind::INFERRED_CLOCK);
+        let mut oldClock: Arc<OldDAE::ClockKind>;
         oldClock = (::match_deref::match_deref! { match &(clock.clone()) {
         Deref @ BASE_CLOCK { .. } => ClockKind::toDAE(var_field!((*clock).clock, BClock::BASE_CLOCK).clone())?,
         _ => {
@@ -228,9 +229,9 @@ pub mod BClock {
     }
 
     pub fn convertSub(mut clock: Arc<BClock>) -> Result<OldBackendDAE::SubClock> {
-        let mut oldClock: OldBackendDAE::SubClock = OldBackendDAE::SubClock::INFERED_SUBCLOCK;
+        let mut oldClock: OldBackendDAE::SubClock;
         oldClock = (::match_deref::match_deref! { match &(clock.clone()) {
-        Deref @ SUB_CLOCK { .. } => OldBackendDAE::SubClock::SUBCLOCK { factor: Rational::convert(var_field!((*clock).factor, BClock::SUB_CLOCK).clone()), shift: Rational::convert(var_field!((*clock).shift, BClock::SUB_CLOCK).clone()), solver: var_field!((*clock).solver, BClock::SUB_CLOCK).clone() },
+        Deref @ SUB_CLOCK { .. } => OldBackendDAE::SubClock::SUBCLOCK { factor: NBBackendUtil::convertRational(var_field!((*clock).factor, BClock::SUB_CLOCK).clone()), shift: NBBackendUtil::convertRational(var_field!((*clock).shift, BClock::SUB_CLOCK).clone()), solver: var_field!((*clock).solver, BClock::SUB_CLOCK).clone() },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBPartitioning.BClock.convertSub")); __mm_s.push_str(&*literal!(" failed for non-sub clock: ")); __mm_s.push_str(&*toString(clock.clone())?); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")
@@ -241,7 +242,7 @@ pub mod BClock {
     }
 
     pub fn toExp(mut clock: Arc<BClock>) -> Result<Arc<Expression::NFExpression>> {
-        let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+        let mut exp: Arc<Expression::NFExpression>;
         exp = (::match_deref::match_deref! { match &(clock.clone()) {
         Deref @ BASE_CLOCK { .. } => Arc::new(Expression::NFExpression::CLKCONST { clk: var_field!((*clock).clock, BClock::BASE_CLOCK).clone() }),
         _ => {
@@ -254,8 +255,8 @@ pub mod BClock {
     }
 
     fn create(mut clock_name: Arc<ComponentRef::NFComponentRef>, mut exp: Arc<Expression::NFExpression>, mut info: Arc<ClockedInfo::ClockedInfo>) -> Result<()> {
-        let mut clock: Arc<BClock> = Arc::new(<BClock as ::std::default::Default>::default());
-        let mut baseClock: Option<Arc<ComponentRef::NFComponentRef>> = None;
+        let mut clock: Arc<BClock>;
+        let mut baseClock: Option<Arc<ComponentRef::NFComponentRef>>;
         let mut clock_var: Pointer::Pointer<Arc<Variable::NFVariable>>;
         match '__try0: {
             (clock, baseClock) = unwrap_break_err!(fromExp(exp.clone()), '__try0);
@@ -302,32 +303,32 @@ pub mod BClock {
         },
         (Deref @ "subSample", Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Cons { head: Deref @ Expression::INTEGER { value: i1 }, tail: Deref @ metamodelica::List::Nil } }) => {
             (subClock, baseClock) = fromExp(e.clone())?;
-            subClock = updateSubClock(subClock.clone(), Arc::new(BClock::SUB_CLOCK { factor: Arc::new(Rational::Rational { n: i1.clone(), d: 1 }), shift: Arc::new(Rational::Rational { n: 0, d: 1 }), solver: None }))?;
+            subClock = updateSubClock(subClock.clone(), Arc::new(BClock::SUB_CLOCK { factor: Arc::new(Rational::Rational { n: i1.clone(), d: 1 }), shift: Rational::ZERO.clone(), solver: None }))?;
             (baseClock.clone(), subClock.clone())
         },
         (Deref @ "superSample", Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Cons { head: Deref @ Expression::INTEGER { value: i1 }, tail: Deref @ metamodelica::List::Nil } }) => {
             (subClock, baseClock) = fromExp(e.clone())?;
-            subClock = updateSubClock(subClock.clone(), Arc::new(BClock::SUB_CLOCK { factor: Arc::new(Rational::Rational { n: 1, d: i1.clone() }), shift: Arc::new(Rational::Rational { n: 0, d: 1 }), solver: None }))?;
+            subClock = updateSubClock(subClock.clone(), Arc::new(BClock::SUB_CLOCK { factor: Arc::new(Rational::Rational { n: 1, d: i1.clone() }), shift: Rational::ZERO.clone(), solver: None }))?;
             (baseClock.clone(), subClock.clone())
         },
         (Deref @ "shiftSample", Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Cons { head: Deref @ Expression::INTEGER { value: i1 }, tail: Deref @ metamodelica::List::Nil } }) => {
             (subClock, baseClock) = fromExp(e.clone())?;
-            subClock = updateSubClock(subClock.clone(), Arc::new(BClock::SUB_CLOCK { factor: Arc::new(Rational::Rational { n: 1, d: 1 }), shift: Arc::new(Rational::Rational { n: i1.clone(), d: 1 }), solver: None }))?;
+            subClock = updateSubClock(subClock.clone(), Arc::new(BClock::SUB_CLOCK { factor: Rational::ONE.clone(), shift: Arc::new(Rational::Rational { n: i1.clone(), d: 1 }), solver: None }))?;
             (baseClock.clone(), subClock.clone())
         },
         (Deref @ "shiftSample", Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Cons { head: Deref @ Expression::INTEGER { value: i1 }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Expression::INTEGER { value: i2 }, tail: Deref @ metamodelica::List::Nil } } }) => {
             (subClock, baseClock) = fromExp(e.clone())?;
-            subClock = updateSubClock(subClock.clone(), Arc::new(BClock::SUB_CLOCK { factor: Arc::new(Rational::Rational { n: 1, d: 1 }), shift: Arc::new(Rational::Rational { n: i1.clone(), d: i2.clone() }), solver: None }))?;
+            subClock = updateSubClock(subClock.clone(), Arc::new(BClock::SUB_CLOCK { factor: Rational::ONE.clone(), shift: Arc::new(Rational::Rational { n: i1.clone(), d: i2.clone() }), solver: None }))?;
             (baseClock.clone(), subClock.clone())
         },
         (Deref @ "backSample", Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Cons { head: Deref @ Expression::INTEGER { value: i1 }, tail: Deref @ metamodelica::List::Nil } }) => {
             (subClock, baseClock) = fromExp(e.clone())?;
-            subClock = updateSubClock(subClock.clone(), Arc::new(BClock::SUB_CLOCK { factor: Arc::new(Rational::Rational { n: 1, d: 1 }), shift: Arc::new(Rational::Rational { n: -(i1.clone()), d: 1 }), solver: None }))?;
+            subClock = updateSubClock(subClock.clone(), Arc::new(BClock::SUB_CLOCK { factor: Rational::ONE.clone(), shift: Arc::new(Rational::Rational { n: -(i1.clone()), d: 1 }), solver: None }))?;
             (baseClock.clone(), subClock.clone())
         },
         (Deref @ "backSample", Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Cons { head: Deref @ Expression::INTEGER { value: i1 }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Expression::INTEGER { value: i2 }, tail: Deref @ metamodelica::List::Nil } } }) => {
             (subClock, baseClock) = fromExp(e.clone())?;
-            subClock = updateSubClock(subClock.clone(), Arc::new(BClock::SUB_CLOCK { factor: Arc::new(Rational::Rational { n: 1, d: 1 }), shift: Arc::new(Rational::Rational { n: -(i1.clone()), d: i2.clone() }), solver: None }))?;
+            subClock = updateSubClock(subClock.clone(), Arc::new(BClock::SUB_CLOCK { factor: Rational::ONE.clone(), shift: Arc::new(Rational::Rational { n: -(i1.clone()), d: i2.clone() }), solver: None }))?;
             (baseClock.clone(), subClock.clone())
         },
         _ => {
@@ -352,8 +353,8 @@ pub mod BClock {
         dest = (::match_deref::match_deref! { match &((dest.clone(), src.clone())) {
         (Deref @ SUB_CLOCK { .. }, Deref @ SUB_CLOCK { .. }) => {
             assign_variant_field!(dest => BClock::SUB_CLOCK;
-                shift = Rational::add(var_field!((*dest).shift, BClock::SUB_CLOCK).clone(), Rational::multiply(var_field!((*src).shift, BClock::SUB_CLOCK).clone(), var_field!((*dest).factor, BClock::SUB_CLOCK).clone())),
-                factor = Rational::multiply(var_field!((*dest).factor, BClock::SUB_CLOCK).clone(), var_field!((*src).factor, BClock::SUB_CLOCK).clone())
+                shift = Rational::add(var_field!((*dest).shift, BClock::SUB_CLOCK).clone(), Rational::mul(var_field!((*src).shift, BClock::SUB_CLOCK).clone(), var_field!((*dest).factor, BClock::SUB_CLOCK).clone())),
+                factor = Rational::mul(var_field!((*dest).factor, BClock::SUB_CLOCK).clone(), var_field!((*src).factor, BClock::SUB_CLOCK).clone())
             );
             dest.clone()
         },
@@ -371,7 +372,7 @@ pub mod BClock {
 thread_local! { static __DEFAULT_BASE_CLOCK_TLS: Arc<BClock::BClock> = Arc::new(BClock::BClock::BASE_CLOCK { clock: Arc::new(ClockKind::NFClockKind::REAL_CLOCK { interval: Arc::new(Expression::NFExpression::REAL { value: metamodelica::OrderedFloat(1.0_f64) }) }) }); }
 pub fn DEFAULT_BASE_CLOCK() -> Arc<BClock::BClock> { __DEFAULT_BASE_CLOCK_TLS.with(|__t| __t.clone()) }
 
-thread_local! { static __DEFAULT_SUB_CLOCK_TLS: Arc<BClock::BClock> = Arc::new(BClock::BClock::SUB_CLOCK { factor: Arc::new(Rational::Rational { n: 1, d: 1 }), shift: Arc::new(Rational::Rational { n: 0, d: 1 }), solver: None }); }
+thread_local! { static __DEFAULT_SUB_CLOCK_TLS: Arc<BClock::BClock> = Arc::new(BClock::BClock::SUB_CLOCK { factor: Rational::ONE.clone(), shift: Rational::ZERO.clone(), solver: None }); }
 pub fn DEFAULT_SUB_CLOCK() -> Arc<BClock::BClock> { __DEFAULT_SUB_CLOCK_TLS.with(|__t| __t.clone()) }
 
 pub type CrefLst = Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
@@ -452,12 +453,12 @@ pub mod ClockedInfo {
     }
 
     fn resolveSubClock(mut clock_name: Arc<ComponentRef::NFComponentRef>, mut info: Arc<ClockedInfo>, mut clock_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<ComponentRef::NFComponentRef>> {
-        let mut base_clock: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-        let mut implicit_clock: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
+        let mut base_clock: Arc<ComponentRef::NFComponentRef>;
+        let mut implicit_clock: Arc<ComponentRef::NFComponentRef>;
         let mut parent_clock: Arc<ComponentRef::NFComponentRef> = UnorderedMap::getSafe(clock_name.clone(), info.subToBase.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/1_Main/NBPartitioning.mo"))?;
         let mut implicit_clock_opt: Option<Arc<ComponentRef::NFComponentRef>> = None;
-        let mut dest: Arc<BClock::BClock> = Arc::new(<BClock::BClock as ::std::default::Default>::default());
-        let mut src: Arc<BClock::BClock> = Arc::new(<BClock::BClock as ::std::default::Default>::default());
+        let mut dest: Arc<BClock::BClock>;
+        let mut src: Arc<BClock::BClock>;
         if UnorderedMap::contains(parent_clock.clone(), info.baseClocks.clone())? {
             base_clock = parent_clock.clone();
         } else {
@@ -485,7 +486,7 @@ pub mod ClockedInfo {
 
     fn addSubClock(mut clock_name: Arc<ComponentRef::NFComponentRef>, mut info: Arc<ClockedInfo>) -> Result<()> {
         let mut base_clock: Arc<ComponentRef::NFComponentRef> = UnorderedMap::getSafe(clock_name.clone(), info.subToBase.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/1_Main/NBPartitioning.mo"))?;
-        let mut current_clocks: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
+        let mut current_clocks: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
         current_clocks = UnorderedMap::getOrDefault(base_clock.clone(), info.baseToSub.clone(), metamodelica::nil())?;
         UnorderedMap::add(base_clock.clone(), metamodelica::cons(clock_name.clone(), current_clocks.clone()), info.baseToSub.clone())?;
         Ok(())
@@ -687,7 +688,7 @@ pub mod Cluster {
     pub type CLUSTER = Cluster;
 
     pub fn toString(mut cluster: Arc<Cluster>) -> Result<ArcStr> {
-        let mut r#str: ArcStr = arcstr::literal!("");
+        let mut r#str: ArcStr;
         r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("### Cluster Variables:\n")); __mm_s.push_str(&*UnorderedSet::toString(cluster.variables.clone(), (std::sync::Arc::new(ComponentRef::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<ArcStr> + 'static>), (literal!("\n")).clone())?); __mm_s.push_str(&*literal!("\n### Cluster Equation Identifiers:\n")); __mm_s.push_str(&*UnorderedSet::toString(cluster.eqn_idnts.clone(), (std::sync::Arc::new(ComponentRef::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<ArcStr> + 'static>), (literal!("\n")).clone())?); ArcStr::from(__mm_s) }).clone();
         Ok(r#str)
     }
@@ -738,7 +739,7 @@ pub mod Cluster {
 
         let mut clock_ptr: Pointer::Pointer<Option<Arc<ComponentRef::NFComponentRef>>> = Pointer::create(None);
         let mut clock_opt: Option<Arc<ComponentRef::NFComponentRef>> = None;
-        let mut clock: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
+        let mut clock: Arc<ComponentRef::NFComponentRef>;
         for mut eqn_name in &*UnorderedSet::toList(cluster.eqn_idnts.clone()) {
             let mut eqn_name = eqn_name.clone();
             BEquation::Equation::map(Pointer::access(BEquation::EquationPointers::getEqnByName(equations.clone(), eqn_name.clone())?), (std::sync::Arc::new({ let __pe_b1 = info.clone(); let __pe_b2 = clock_ptr.clone(); move |__pe_a0| findClock(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>), None, (std::sync::Arc::new(Expression::fakeMap) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
@@ -762,15 +763,15 @@ pub mod Cluster {
     }
 
     pub fn toPartition(mut cluster: Arc<Cluster>, mut variables: Arc<VariablePointers::VariablePointers>, mut equations: Arc<EquationPointers::EquationPointers>, mut kind: Partition::Kind, mut info: Arc<ClockedInfo::ClockedInfo>, mut held_crefs: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut infer_del: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<Partition::Partition::Partition>> {
-        let mut partition: Arc<Partition::Partition::Partition> = Arc::new(<Partition::Partition::Partition as ::std::default::Default>::default());
+        let mut partition: Arc<Partition::Partition::Partition>;
         let mut cvars: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = UnorderedSet::toList(cluster.variables.clone());
         let mut cidnt: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = UnorderedSet::toList(cluster.eqn_idnts.clone());
-        let mut association: Arc<Partition::Association::Association> = Arc::new(<Partition::Association::Association as ::std::default::Default>::default());
-        let mut var_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
-        let mut filtered_vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
-        let mut eqn_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
-        let mut partVariables: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
-        let mut partEquations: Arc<EquationPointers::EquationPointers> = Arc::new(<EquationPointers::EquationPointers as ::std::default::Default>::default());
+        let mut association: Arc<Partition::Association::Association>;
+        let mut var_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>;
+        let mut filtered_vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>;
+        let mut eqn_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>;
+        let mut partVariables: Arc<VariablePointers::VariablePointers>;
+        let mut partEquations: Arc<EquationPointers::EquationPointers>;
         let mut inferred_clocks: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = UnorderedSet::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
         var_lst = ({
         let mut __acc: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
@@ -823,7 +824,7 @@ pub mod Cluster {
     }
 
     fn removeInferredClock(mut eqn: Pointer::Pointer<Arc<Equation::Equation>>, mut inferred_clocks: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<bool> {
-        let mut delete: bool = false;
+        let mut delete: bool;
         delete = (::match_deref::match_deref! { match &(Pointer::access(eqn.clone())) {
         Deref @ BEquation::Equation::SCALAR_EQUATION { lhs: Deref @ Expression::CREF { cref: lhs, .. }, .. } => {
             UnorderedSet::contains(lhs.clone(), inferred_clocks.clone())?
@@ -860,7 +861,7 @@ pub mod DisjointSetForest {
     pub type FOREST = DisjointSetForest;
 
     pub fn new(mut n: i32) -> Arc<DisjointSetForest> {
-        let mut dsf: Arc<DisjointSetForest> = Arc::new(<DisjointSetForest as ::std::default::Default>::default());
+        let mut dsf: Arc<DisjointSetForest>;
         dsf = Arc::new(DisjointSetForest { parent: Pointer::create(metamodelica::arrayFromVec(({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut i in (1..=n.clone()).into_iter() {
@@ -888,7 +889,7 @@ pub mod DisjointSetForest {
     }
 
     pub fn unite(mut dsf: Arc<DisjointSetForest>, mut indices: Arc<metamodelica::List<i32>>) -> Result<i32> {
-        let mut root: i32 = 0;
+        let mut root: i32;
         let mut roots: Arc<metamodelica::List<i32>> = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut i in (indices.clone()).into_iter().cloned() {
@@ -899,7 +900,7 @@ pub mod DisjointSetForest {
     });
         let mut parent: metamodelica::Array<i32> = Pointer::access(dsf.parent.clone());
         let mut rank: metamodelica::Array<i32> = Pointer::access(dsf.rank.clone());
-        let mut maxRank: i32 = 0;
+        let mut maxRank: i32;
         let mut tied: bool = false;
         root = listHead(roots.clone())?;
         maxRank = ({let __elt = rank.borrow()[(root.clone()-1) as usize].clone(); __elt});
@@ -938,9 +939,9 @@ pub mod DisjointSetForest {
 }
 
 fn partitioningNone(mut kind: Partition::Kind, mut variables: Arc<VariablePointers::VariablePointers>, mut equations: Arc<EquationPointers::EquationPointers>, mut clocks: Arc<VariablePointers::VariablePointers>, mut clocked: Arc<EquationPointers::EquationPointers>, mut info: Arc<ClockedInfo::ClockedInfo>) -> Result<Arc<metamodelica::List<Arc<Partition::Partition::Partition>>>> {
-    let mut partitions: Arc<metamodelica::List<Arc<Partition::Partition::Partition>>> = metamodelica::nil();
-    let mut clone_vars: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
-    let mut clone_eqns: Arc<EquationPointers::EquationPointers> = Arc::new(<EquationPointers::EquationPointers as ::std::default::Default>::default());
+    let mut partitions: Arc<metamodelica::List<Arc<Partition::Partition::Partition>>>;
+    let mut clone_vars: Arc<VariablePointers::VariablePointers>;
+    let mut clone_eqns: Arc<EquationPointers::EquationPointers>;
     clone_vars = BVariable::VariablePointers::clone(variables.clone(), true)?;
     clone_eqns = BEquation::EquationPointers::clone(equations.clone(), true)?;
     partitions = list![Arc::new(Partition::Partition::Partition { index: 1, association: Arc::new(Partition::Association::Association::CONTINUOUS { kind: kind.clone(), jacobian: None, jacobianAdjoint: None, LFG_jacobian: None, MRF_jacobian: None, R0_jacobian: None }), unknowns: clone_vars.clone(), daeUnknowns: None, equations: clone_eqns.clone(), adjacencyMatrix: None, matching: None, strongComponents: None })];
@@ -948,18 +949,18 @@ fn partitioningNone(mut kind: Partition::Kind, mut variables: Arc<VariablePointe
 }
 
 fn partitioningClocked(mut kind: Partition::Kind, mut variables: Arc<VariablePointers::VariablePointers>, mut equations: Arc<EquationPointers::EquationPointers>, mut clocks: Arc<VariablePointers::VariablePointers>, mut clocked: Arc<EquationPointers::EquationPointers>, mut info: Arc<ClockedInfo::ClockedInfo>) -> Result<Arc<metamodelica::List<Arc<Partition::Partition::Partition>>>> {
-    let mut partitions: Arc<metamodelica::List<Arc<Partition::Partition::Partition>>> = metamodelica::nil();
+    let mut partitions: Arc<metamodelica::List<Arc<Partition::Partition::Partition>>>;
     let mut eqn_dsf: Arc<DisjointSetForest::DisjointSetForest> = DisjointSetForest::new(ExpandableArray::getLastUsedIndex(equations.eqArr.clone()));
     let mut var_map: metamodelica::Array<i32> = arrayCreate(ExpandableArray::getLastUsedIndex(variables.varArr.clone()), -1);
     let mut eqn: Pointer::Pointer<Arc<Equation::Equation>>;
     let mut var: Pointer::Pointer<Arc<Variable::NFVariable>>;
-    let mut var_crefs: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
-    let mut var_indices: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut part_idx: i32 = 0;
+    let mut var_crefs: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
+    let mut var_indices: Arc<metamodelica::List<i32>>;
+    let mut part_idx: i32;
     let mut cluster_map: Arc<UnorderedMap::UnorderedMap<i32, Arc<Cluster::Cluster>>> = UnorderedMap::new(std::sync::Arc::new(fnptr!(Util::id, _)), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), 1);
-    let mut name_cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    let mut marked_vars: metamodelica::Array<bool> = Default::default();
-    let mut single_vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
+    let mut name_cref: Arc<ComponentRef::NFComponentRef>;
+    let mut marked_vars: metamodelica::Array<bool>;
+    let mut single_vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>;
     let mut held_crefs: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = UnorderedSet::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
     let mut clock_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>>> = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
     let mut infer_del: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = UnorderedSet::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
@@ -1105,15 +1106,15 @@ fn sortAndMergeClockedPartitions(mut partitions: Arc<metamodelica::List<Arc<Part
     pub type SubMap = Arc<UnorderedMap::UnorderedMap<Arc<BClock::BClock>, Arc<Partition::Partition::Partition>>>;
 
     let mut partitions: Arc<metamodelica::List<Arc<Partition::Partition::Partition>>> = partitions;
-    let mut clocked_partitions: Arc<metamodelica::List<Arc<Partition::Partition::Partition>>> = metamodelica::nil();
+    let mut clocked_partitions: Arc<metamodelica::List<Arc<Partition::Partition::Partition>>>;
     let mut new_clocked: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Partition::Partition::Partition>>>>> = metamodelica::nil();
     let mut clock_collector: Arc<UnorderedMap::UnorderedMap<Arc<BClock::BClock>, Arc<UnorderedMap::UnorderedMap<Arc<BClock::BClock>, Arc<Partition::Partition::Partition>>>>> = UnorderedMap::new((std::sync::Arc::new(BClock::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BClock::BClock>) -> Result<i32> + 'static>), (std::sync::Arc::new(BClock::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BClock::BClock>, Arc<BClock::BClock>) -> Result<bool> + 'static>), 1);
     let mut base_clock_inferrence: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<BClock::BClock>>> = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
-    let mut clock: Arc<BClock::BClock> = Arc::new(<BClock::BClock as ::std::default::Default>::default());
+    let mut clock: Arc<BClock::BClock>;
     let mut baseClock: Arc<BClock::BClock> = Arc::new(<BClock::BClock as ::std::default::Default>::default());
-    let mut subClock: Arc<BClock::BClock> = Arc::new(<BClock::BClock as ::std::default::Default>::default());
-    let mut baseClock_opt: Option<Arc<BClock::BClock>> = None;
-    let mut subClockMap: Arc<UnorderedMap::UnorderedMap<Arc<BClock::BClock>, Arc<Partition::Partition::Partition>>> = <Arc<UnorderedMap::UnorderedMap<Arc<BClock::BClock>, Arc<Partition::Partition::Partition>>> as ::std::default::Default>::default();
+    let mut subClock: Arc<BClock::BClock>;
+    let mut baseClock_opt: Option<Arc<BClock::BClock>>;
+    let mut subClockMap: Arc<UnorderedMap::UnorderedMap<Arc<BClock::BClock>, Arc<Partition::Partition::Partition>>>;
     let mut new_part: Arc<Partition::Partition::Partition> = Arc::new(<Partition::Partition::Partition as ::std::default::Default>::default());
     (clocked_partitions, partitions) = List::splitOnTrue(partitions.clone(), (std::sync::Arc::new(fnptr!(Partition::Partition::isClocked, Arc<Partition::Partition::Partition>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Partition::Partition::Partition>) -> Result<bool> + 'static>))?;
     for mut baseClock in &*UnorderedMap::valueList(info.baseClocks.clone()) {
@@ -1186,7 +1187,7 @@ fn sortClockedPartitions(mut unsorted: Arc<metamodelica::List<Arc<Partition::Par
     let mut m: metamodelica::Array<Arc<metamodelica::List<i32>>> = arrayCreate(n.clone(), metamodelica::nil());
     let mut matching: Arc<Matching::NBMatching> = Matching::trivial(n.clone());
     let mut index_map: Arc<UnorderedMap::UnorderedMap<Arc<BClock::BClock>, i32>> = UnorderedMap::new((std::sync::Arc::new(BClock::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BClock::BClock>) -> Result<i32> + 'static>), (std::sync::Arc::new(BClock::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BClock::BClock>, Arc<BClock::BClock>) -> Result<bool> + 'static>), 1);
-    let mut partition_order: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
+    let mut partition_order: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>;
     let mut j: i32 = 0;
     for mut i in 1..=n.clone() {
         UnorderedMap::add((Partition::Partition::getClocks(({let __elt = partitions.borrow()[(i.clone()-1) as usize].clone(); __elt}))?).0, i.clone(), index_map.clone())?;
@@ -1466,7 +1467,7 @@ fn replaceClockedFunctions(mut exp: Arc<Expression::NFExpression>, mut held_cref
 
 fn replaceClockedFunctionExp(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression> = exp;
-    let mut func: Arc<Function::Function> = Arc::new(<Function::Function as ::std::default::Default>::default());
+    let mut func: Arc<Function::Function>;
     func = (::match_deref::match_deref! { match &(Expression::typeOf(exp.clone())) {
         Deref @ Type::REAL => NFBuiltinFuncs::GET_PART_REAL().clone(),
         Deref @ Type::INTEGER => NFBuiltinFuncs::GET_PART_INT().clone(),

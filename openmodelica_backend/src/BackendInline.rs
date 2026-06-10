@@ -75,7 +75,7 @@ use openmodelica_util_datatypes_basic::List;
 //
 // =============================================================================
 pub fn lateInlineFunction(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
-    let mut outDAE: Arc<BackendDAE::BackendDAE> = Arc::new(<BackendDAE::BackendDAE as ::std::default::Default>::default());
+    let mut outDAE: Arc<BackendDAE::BackendDAE>;
     outDAE = inlineCalls(list![openmodelica_frontend_types::DAE::InlineType::NORM_INLINE, openmodelica_frontend_types::DAE::InlineType::AFTER_INDEX_RED_INLINE], inDAE.clone())?;
     Ok(outDAE)
 }
@@ -85,7 +85,7 @@ pub fn lateInlineFunction(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<
 //
 // =============================================================================
 pub fn normalInlineFunction(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
-    let mut outDAE: Arc<BackendDAE::BackendDAE> = Arc::new(<BackendDAE::BackendDAE as ::std::default::Default>::default());
+    let mut outDAE: Arc<BackendDAE::BackendDAE>;
     if Flags::getConfigEnum(Flags::INLINE_METHOD.clone())? == 1 {
         outDAE = inlineCalls(list![openmodelica_frontend_types::DAE::InlineType::NORM_INLINE], inDAE.clone())?;
     } else {
@@ -99,10 +99,10 @@ pub fn normalInlineFunction(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Ar
 //
 // =============================================================================
 fn inlineCalls(mut inITLst: Arc<metamodelica::List<DAE::InlineType>>, mut inBackendDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
-    let mut outBackendDAE: Arc<BackendDAE::BackendDAE> = Arc::new(<BackendDAE::BackendDAE as ::std::default::Default>::default());
-    let mut tpl: (Option<Arc<AvlTreePathFunction::Tree>>, Arc<metamodelica::List<DAE::InlineType>>) = (None, metamodelica::nil());
-    let mut eqs: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>> = metamodelica::nil();
-    let mut shared: Arc<BackendDAE::Shared> = Arc::new(<BackendDAE::Shared as ::std::default::Default>::default());
+    let mut outBackendDAE: Arc<BackendDAE::BackendDAE>;
+    let mut tpl: (Option<Arc<AvlTreePathFunction::Tree>>, Arc<metamodelica::List<DAE::InlineType>>);
+    let mut eqs: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>>;
+    let mut shared: Arc<BackendDAE::Shared>;
     match '__try0: {
         shared = inBackendDAE.shared.clone();
         eqs = inBackendDAE.eqs.clone();
@@ -144,7 +144,7 @@ fn inlineEquationSystem(mut eqs: Arc<BackendDAE::EqSystem>, mut tpl: (Option<Arc
 
 fn inlineEquationArray(mut inEquationArray: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut inElementList: (Option<Arc<AvlTreePathFunction::Tree>>, Arc<metamodelica::List<DAE::InlineType>>)) -> Result<(Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, bool)> {
     let mut outEquationArray: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = inEquationArray.clone();
-    let mut oInlined: bool = false;
+    let mut oInlined: bool;
     if let Ok(__iflet0) = inlineEquationOptArray(outEquationArray.clone(), inElementList.clone()) {
         oInlined = __iflet0;
     } else {
@@ -158,8 +158,8 @@ fn inlineEquationArray(mut inEquationArray: Arc<ExpandableArray::ExpandableArray
 
 fn inlineEquationOptArray(mut inEqnArray: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut fns: (Option<Arc<AvlTreePathFunction::Tree>>, Arc<metamodelica::List<DAE::InlineType>>)) -> Result<bool> {
     let mut oInlined: bool = false;
-    let mut eqn: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
-    let mut inlined: bool = false;
+    let mut eqn: Arc<BackendDAE::Equation>;
+    let mut inlined: bool;
     for mut i in 1..=ExpandableArray::getLastUsedIndex(inEqnArray.clone()) {
         if ExpandableArray::occupied(i.clone(), inEqnArray.clone()) {
             (eqn, inlined) = inlineEq(ExpandableArray::get(i.clone(), inEqnArray.clone())?, fns.clone())?;
@@ -173,8 +173,8 @@ fn inlineEquationOptArray(mut inEqnArray: Arc<ExpandableArray::ExpandableArray<A
 }
 
 pub fn inlineEq(mut inEquation: Arc<BackendDAE::Equation>, mut fns: (Option<Arc<AvlTreePathFunction::Tree>>, Arc<metamodelica::List<DAE::InlineType>>)) -> Result<(Arc<BackendDAE::Equation>, bool)> {
-    let mut outEquation: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
-    let mut inlined: bool = false;
+    let mut outEquation: Arc<BackendDAE::Equation>;
+    let mut inlined: bool;
     (outEquation, inlined) = 'mc: {
         let __mc_input = inEquation.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -378,9 +378,9 @@ pub fn inlineEqs(mut inEqnsList: Arc<metamodelica::List<Arc<BackendDAE::Equation
 }
 
 fn inlineWhenEq(mut inWhenEquation: Arc<BackendDAE::WhenEquation>, mut fns: (Option<Arc<AvlTreePathFunction::Tree>>, Arc<metamodelica::List<DAE::InlineType>>), mut inSource: Arc<DAE::ElementSource>) -> Result<(Arc<BackendDAE::WhenEquation>, Arc<DAE::ElementSource>, bool)> {
-    let mut outWhenEquation: Arc<BackendDAE::WhenEquation> = Arc::new(<BackendDAE::WhenEquation as ::std::default::Default>::default());
-    let mut outSource: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
-    let mut inlined: bool = false;
+    let mut outWhenEquation: Arc<BackendDAE::WhenEquation>;
+    let mut outSource: Arc<DAE::ElementSource>;
+    let mut inlined: bool;
     (outWhenEquation, outSource, inlined) = (::match_deref::match_deref! { match &(inWhenEquation.clone()) {
         Deref @ BackendDAE::WhenEquation { condition: cond, whenStmtLst, elsewhenPart: oelsewe } => {
             let mut source: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
@@ -472,7 +472,7 @@ fn inlineWhenOps(mut inWhenOps: Arc<metamodelica::List<BackendDAE::WhenOperator>
 }
 
 fn inlineVariables(mut inVariables: BackendDAE::Variables, mut inElementList: (Option<Arc<AvlTreePathFunction::Tree>>, Arc<metamodelica::List<DAE::InlineType>>)) -> Result<(BackendDAE::Variables, bool)> {
-    let mut outVariables: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
+    let mut outVariables: BackendDAE::Variables;
     let mut inlined: bool = false;
     (outVariables, inlined) = 'mc: {
         let __mc_input = (inVariables.clone(), inElementList.clone());
@@ -503,8 +503,8 @@ fn inlineVariables(mut inVariables: BackendDAE::Variables, mut inElementList: (O
 
 fn inlineVarOptArray(mut inVarArray: metamodelica::Array<Option<BackendDAE::Var>>, mut fns: (Option<Arc<AvlTreePathFunction::Tree>>, Arc<metamodelica::List<DAE::InlineType>>)) -> Result<bool> {
     let mut oInlined: bool = false;
-    let mut b: bool = false;
-    let mut var: Option<BackendDAE::Var> = None;
+    let mut b: bool;
+    let mut var: Option<BackendDAE::Var>;
     for mut index in 1..=metamodelica::arrayLength(inVarArray.clone()) {
         var = ({let __elt = inVarArray.borrow()[(index.clone()-1) as usize].clone(); __elt});
         (var, b) = inlineVarOpt(var.clone(), fns.clone())?;
@@ -517,8 +517,8 @@ fn inlineVarOptArray(mut inVarArray: metamodelica::Array<Option<BackendDAE::Var>
 }
 
 fn inlineVarOpt(mut inVarOption: Option<BackendDAE::Var>, mut fns: (Option<Arc<AvlTreePathFunction::Tree>>, Arc<metamodelica::List<DAE::InlineType>>)) -> Result<(Option<BackendDAE::Var>, bool)> {
-    let mut outVarOption: Option<BackendDAE::Var> = None;
-    let mut inlined: bool = false;
+    let mut outVarOption: Option<BackendDAE::Var>;
+    let mut inlined: bool;
     (outVarOption, inlined) = (match inVarOption.clone() {
         None => {
             (None, false)
@@ -534,8 +534,8 @@ fn inlineVarOpt(mut inVarOption: Option<BackendDAE::Var>, mut fns: (Option<Arc<A
 }
 
 fn inlineVar(mut inVar: BackendDAE::Var, mut inElementList: (Option<Arc<AvlTreePathFunction::Tree>>, Arc<metamodelica::List<DAE::InlineType>>)) -> Result<(BackendDAE::Var, bool)> {
-    let mut outVar: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
-    let mut inlined: bool = false;
+    let mut outVar: BackendDAE::Var;
+    let mut inlined: bool;
     (outVar, inlined) = (match inVar.clone() {
         BackendDAE::Var { varName: mut varName, varKind: mut varKind, varDirection: mut varDirection, varParallelism: mut varParallelism, varType: mut varType, bindExp: mut bind, tplExp: mut tplExp, arryDim: ref arrayDim, source: mut source, values: mut values, tearingSelectOption: mut ts, hideResult: mut hideResult, comment: mut comment, connectorType: ref ct, innerOuter: mut io, unreplaceable: mut unreplaceable, initNonlinear: _, encrypted: mut e } => {
             let mut values1: Option<Arc<DAE::VariableAttributes>> = None;
@@ -598,10 +598,10 @@ fn inlineZeroCrossing(mut zc: BackendDAE::ZeroCrossing, mut fns: (Option<Arc<Avl
 //
 // =============================================================================
 fn inlineCallsBDAE(mut inITLst: Arc<metamodelica::List<DAE::InlineType>>, mut inBackendDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
-    let mut outBackendDAE: Arc<BackendDAE::BackendDAE> = Arc::new(<BackendDAE::BackendDAE as ::std::default::Default>::default());
-    let mut tpl: (Option<Arc<AvlTreePathFunction::Tree>>, Arc<metamodelica::List<DAE::InlineType>>) = (None, metamodelica::nil());
-    let mut eqs: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>> = metamodelica::nil();
-    let mut shared: Arc<BackendDAE::Shared> = Arc::new(<BackendDAE::Shared as ::std::default::Default>::default());
+    let mut outBackendDAE: Arc<BackendDAE::BackendDAE>;
+    let mut tpl: (Option<Arc<AvlTreePathFunction::Tree>>, Arc<metamodelica::List<DAE::InlineType>>);
+    let mut eqs: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>>;
+    let mut shared: Arc<BackendDAE::Shared>;
     match '__try0: {
         if unwrap_break_err!(Flags::isSet(Flags::DUMPBACKENDINLINE.clone()), '__try0) {
             if unwrap_break_err!(Flags::getConfigEnum(Flags::INLINE_METHOD.clone()), '__try0) == 1 {
@@ -650,9 +650,9 @@ fn inlineCallsBDAE(mut inITLst: Arc<metamodelica::List<DAE::InlineType>>, mut in
 fn inlineEquationSystemAppend(mut eqs: Arc<BackendDAE::EqSystem>, mut tpl: (Option<Arc<AvlTreePathFunction::Tree>>, Arc<metamodelica::List<DAE::InlineType>>), mut ishared: Arc<BackendDAE::Shared>) -> Result<Arc<BackendDAE::EqSystem>> {
     let mut oeqs: Arc<BackendDAE::EqSystem> = eqs.clone();
     let mut shared: Arc<BackendDAE::Shared> = ishared.clone();
-    let mut new: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
+    let mut new: Arc<BackendDAE::EqSystem>;
     let mut inlined: bool = true;
-    let mut eqnsArray: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
+    let mut eqnsArray: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>;
     (eqnsArray, new, inlined, shared) = inlineEquationArrayAppend(oeqs.orderedEqs.clone(), tpl.clone(), shared.clone())?;
     if inlined.clone() {
         assign_field!(oeqs.orderedEqs = eqnsArray.clone());
@@ -664,8 +664,8 @@ fn inlineEquationSystemAppend(mut eqs: Arc<BackendDAE::EqSystem>, mut tpl: (Opti
 
 fn inlineEquationArrayAppend(mut inEquationArray: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut fns: (Option<Arc<AvlTreePathFunction::Tree>>, Arc<metamodelica::List<DAE::InlineType>>), mut iShared: Arc<BackendDAE::Shared>) -> Result<(Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, Arc<BackendDAE::EqSystem>, bool, Arc<BackendDAE::Shared>)> {
     let mut outEquationArray: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = inEquationArray.clone();
-    let mut outEqs: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
-    let mut oInlined: bool = false;
+    let mut outEqs: Arc<BackendDAE::EqSystem>;
+    let mut oInlined: bool;
     let mut shared: Arc<BackendDAE::Shared> = iShared.clone();
     match '__try0: {
         (outEqs, oInlined, shared) = unwrap_break_err!(inlineEquationOptArrayAppend(outEquationArray.clone(), fns.clone(), shared.clone()), '__try0);
@@ -687,12 +687,12 @@ fn inlineEquationArrayAppend(mut inEquationArray: Arc<ExpandableArray::Expandabl
 }
 
 fn inlineEquationOptArrayAppend(mut inEqnArray: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut fns: (Option<Arc<AvlTreePathFunction::Tree>>, Arc<metamodelica::List<DAE::InlineType>>), mut iShared: Arc<BackendDAE::Shared>) -> Result<(Arc<BackendDAE::EqSystem>, bool, Arc<BackendDAE::Shared>)> {
-    let mut outEqs: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
+    let mut outEqs: Arc<BackendDAE::EqSystem>;
     let mut oInlined: bool = false;
     let mut shared: Arc<BackendDAE::Shared> = iShared.clone();
-    let mut eqn: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
-    let mut inlined: bool = false;
-    let mut tmpEqs: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
+    let mut eqn: Arc<BackendDAE::Equation>;
+    let mut inlined: bool;
+    let mut tmpEqs: Arc<BackendDAE::EqSystem>;
     outEqs = BackendDAEUtil::createEqSystem(BackendVariable::listVar(metamodelica::nil())?, BackendEquation::listEquation(metamodelica::nil())?, metamodelica::nil(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
     for mut i in 1..=ExpandableArray::getLastUsedIndex(inEqnArray.clone()) {
         if ExpandableArray::occupied(i.clone(), inEqnArray.clone()) {
@@ -708,9 +708,9 @@ fn inlineEquationOptArrayAppend(mut inEqnArray: Arc<ExpandableArray::ExpandableA
 }
 
 pub fn inlineEqAppend_debug(mut inEquationOption: Arc<BackendDAE::Equation>, mut inElementList: (Option<Arc<AvlTreePathFunction::Tree>>, Arc<metamodelica::List<DAE::InlineType>>), mut iShared: Arc<BackendDAE::Shared>) -> Result<(Arc<BackendDAE::Equation>, Arc<BackendDAE::EqSystem>, bool, Arc<BackendDAE::Shared>)> {
-    let mut outEquationOption: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
-    let mut outEqs: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
-    let mut inlined: bool = false;
+    let mut outEquationOption: Arc<BackendDAE::Equation>;
+    let mut outEqs: Arc<BackendDAE::EqSystem>;
+    let mut inlined: bool;
     let mut shared: Arc<BackendDAE::Shared> = iShared.clone();
     outEqs = BackendDAEUtil::createEqSystem(BackendVariable::listVar(metamodelica::nil())?, BackendEquation::listEquation(metamodelica::nil())?, metamodelica::nil(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
     (outEquationOption, outEqs, inlined, shared) = inlineEqAppend(inEquationOption.clone(), inElementList.clone(), outEqs.clone(), shared.clone())?;
@@ -722,9 +722,9 @@ pub fn inlineEqAppend_debug(mut inEquationOption: Arc<BackendDAE::Equation>, mut
 }
 
 fn inlineEqAppend(mut inEquation: Arc<BackendDAE::Equation>, mut fns: (Option<Arc<AvlTreePathFunction::Tree>>, Arc<metamodelica::List<DAE::InlineType>>), mut inEqs: Arc<BackendDAE::EqSystem>, mut iShared: Arc<BackendDAE::Shared>) -> Result<(Arc<BackendDAE::Equation>, Arc<BackendDAE::EqSystem>, bool, Arc<BackendDAE::Shared>)> {
-    let mut outEquation: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
+    let mut outEquation: Arc<BackendDAE::Equation>;
     let mut outEqs: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
-    let mut inlined: bool = false;
+    let mut inlined: bool;
     let mut shared: Arc<BackendDAE::Shared> = iShared.clone();
     (outEquation, outEqs, inlined) = 'mc: {
         let __mc_input = inEquation.clone();
@@ -884,10 +884,10 @@ fn inlineEqAppend(mut inEquation: Arc<BackendDAE::Equation>, mut fns: (Option<Ar
 }
 
 fn inlineCallsAppend(mut inExp: Arc<DAE::Exp>, mut fns: (Option<Arc<AvlTreePathFunction::Tree>>, Arc<metamodelica::List<DAE::InlineType>>), mut inSource: Arc<DAE::ElementSource>, mut inEqs: Arc<BackendDAE::EqSystem>, mut iShared: Arc<BackendDAE::Shared>) -> Result<(Arc<DAE::Exp>, Arc<DAE::ElementSource>, Arc<BackendDAE::EqSystem>, bool, Arc<BackendDAE::Shared>)> {
-    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outSource: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
+    let mut outExp: Arc<DAE::Exp>;
+    let mut outSource: Arc<DAE::ElementSource>;
     let mut outEqs: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
-    let mut inlined: bool = false;
+    let mut inlined: bool;
     let mut shared: Arc<BackendDAE::Shared> = iShared.clone();
     (outExp, outSource, outEqs, inlined) = 'mc: {
         let __mc_input = inExp.clone();
@@ -928,8 +928,8 @@ fn inlineCallsAppend(mut inExp: Arc<DAE::Exp>, mut fns: (Option<Arc<AvlTreePathF
 }
 
 fn inlineCallsWork(mut inExp: Arc<DAE::Exp>, mut inTuple: ((Option<Arc<AvlTreePathFunction::Tree>>, Arc<metamodelica::List<DAE::InlineType>>), Arc<BackendDAE::EqSystem>, bool, bool)) -> Result<(Arc<DAE::Exp>, ((Option<Arc<AvlTreePathFunction::Tree>>, Arc<metamodelica::List<DAE::InlineType>>), Arc<BackendDAE::EqSystem>, bool, bool))> {
-    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outTuple: ((Option<Arc<AvlTreePathFunction::Tree>>, Arc<metamodelica::List<DAE::InlineType>>), Arc<BackendDAE::EqSystem>, bool, bool) = ((None, metamodelica::nil()), Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default()), false, false);
+    let mut outExp: Arc<DAE::Exp>;
+    let mut outTuple: ((Option<Arc<AvlTreePathFunction::Tree>>, Arc<metamodelica::List<DAE::InlineType>>), Arc<BackendDAE::EqSystem>, bool, bool);
     (outExp, outTuple) = 'mc: {
         let __mc_input = (inExp.clone(), inTuple.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -1016,7 +1016,7 @@ fn inlineCallsWork(mut inExp: Arc<DAE::Exp>, mut inTuple: ((Option<Arc<AvlTreePa
 }
 
 fn addNoEvent(mut inExp: Arc<DAE::Exp>, mut inB: bool) -> Result<(Arc<DAE::Exp>, bool)> {
-    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut outExp: Arc<DAE::Exp>;
     let mut outB: bool = inB.clone();
     outExp = Expression::addNoEventToRelationsAndConds(inExp.clone())?;
     outExp = Expression::addNoEventToEventTriggeringFunctions(outExp.clone())?;
@@ -1024,16 +1024,16 @@ fn addNoEvent(mut inExp: Arc<DAE::Exp>, mut inB: bool) -> Result<(Arc<DAE::Exp>,
 }
 
 fn createReplacementVariables(mut inCref: Arc<DAE::ComponentRef>, mut funcName: ArcStr, mut inRepls: BackendVarTransform::VariableReplacements) -> Result<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<BackendDAE::Var>>, BackendVarTransform::VariableReplacements)> {
-    let mut crVar: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
+    let mut crVar: Arc<DAE::ComponentRef>;
     let mut outVars: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
     let mut outRepls: BackendVarTransform::VariableReplacements = inRepls.clone();
-    let mut eVar: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut arrExp: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-    let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
-    let mut crefs1: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
-    let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-    let mut var: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
+    let mut eVar: Arc<DAE::Exp>;
+    let mut e: Arc<DAE::Exp>;
+    let mut arrExp: Arc<metamodelica::List<Arc<DAE::Exp>>>;
+    let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
+    let mut crefs1: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
+    let mut cr: Arc<DAE::ComponentRef>;
+    let mut var: BackendDAE::Var;
     var = BackendVariable::createTmpVar(inCref.clone(), (funcName.clone()).clone())?;
     crVar = BackendVariable::varCref(var.clone())?;
     eVar = Expression::crefExp(crVar.clone())?;
@@ -1082,11 +1082,11 @@ fn createReplacementVariables(mut inCref: Arc<DAE::ComponentRef>, mut funcName: 
 
 fn createEqnSysfromFunction(mut fns: Arc<metamodelica::List<Arc<DAE::Element>>>, mut inArgs: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut funcname: ArcStr) -> Result<(Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<BackendDAE::EqSystem>)> {
     let mut oOutput: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
-    let mut outEqs: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
+    let mut outEqs: Arc<BackendDAE::EqSystem>;
     let mut args: Arc<metamodelica::List<Arc<DAE::Exp>>> = inArgs.clone();
-    let mut repl: BackendVarTransform::VariableReplacements = <BackendVarTransform::VariableReplacements as ::std::default::Default>::default();
+    let mut repl: BackendVarTransform::VariableReplacements;
     let mut fnInputs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
-    let mut argmap: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>> = metamodelica::nil();
+    let mut argmap: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>;
     let mut checkcr: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>)>>), i32, (HashTableCG::FuncHashCref, HashTableCG::FuncCrefEqual, HashTableCG::FuncCrefStr, HashTableCG::FuncExpStr));
     let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut eqlst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
@@ -1184,7 +1184,7 @@ fn createEqnSysfromFunction(mut fns: Arc<metamodelica::List<Arc<DAE::Element>>>,
 }
 
 fn addReplacement(mut iCr: Arc<DAE::ComponentRef>, mut iExp: Arc<DAE::Exp>, mut iRepl: BackendVarTransform::VariableReplacements) -> Result<BackendVarTransform::VariableReplacements> {
-    let mut oRepl: BackendVarTransform::VariableReplacements = <BackendVarTransform::VariableReplacements as ::std::default::Default>::default();
+    let mut oRepl: BackendVarTransform::VariableReplacements;
     oRepl = (::match_deref::match_deref! { match &(iCr.clone()) {
         Deref @ DAE::ComponentRef::CREF_IDENT { identType: tp, .. } if (!(Expression::isRecordType(tp.clone())) && !(Expression::isArrayType(tp.clone()))) => {
             BackendVarTransform::addReplacement(iRepl.clone(), iCr.clone(), iExp.clone(), None)?
@@ -1218,7 +1218,7 @@ fn addReplacement(mut iCr: Arc<DAE::ComponentRef>, mut iExp: Arc<DAE::Exp>, mut 
 }
 
 fn replaceArgs(mut inExp: Arc<DAE::Exp>, mut inTuple: (Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)), bool)) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)), bool))> {
-    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut outExp: Arc<DAE::Exp>;
     let mut outTuple: (Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>)>>), i32, (HashTableCG::FuncHashCref, HashTableCG::FuncCrefEqual, HashTableCG::FuncCrefStr, HashTableCG::FuncExpStr)), bool);
     (outExp, outTuple) = Expression::traverseExpBottomUp(inExp.clone(), (std::sync::Arc::new(Inline::replaceArgs) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)), bool)) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)), bool))> + 'static>), inTuple.clone())?;
     if !(Util::tuple33(outTuple.clone())) {

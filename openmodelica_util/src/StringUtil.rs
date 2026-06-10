@@ -56,25 +56,25 @@ pub const CHAR_DASH: i32 = 45;
 pub const CHAR_DOT: i32 = 46;
 
 pub fn headline_1(mut title: ArcStr) -> ArcStr {
-    let mut header: ArcStr = arcstr::literal!("");
+    let mut header: ArcStr;
     header = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*repeat((literal!("#")).clone(), ((title.clone()).clone().len() as i32) + 8)); __mm_s.push_str(&*literal!("\n\n    ")); __mm_s.push_str(&*title.clone()); __mm_s.push_str(&*literal!("\n\n")); __mm_s.push_str(&*repeat((literal!("#")).clone(), ((title.clone()).clone().len() as i32) + 8)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
     header
 }
 
 pub fn headline_2(mut title: ArcStr) -> ArcStr {
-    let mut header: ArcStr = arcstr::literal!("");
+    let mut header: ArcStr;
     header = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*repeat((literal!("=")).clone(), ((title.clone()).clone().len() as i32) + 4)); __mm_s.push_str(&*literal!("\n  ")); __mm_s.push_str(&*title.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*repeat((literal!("=")).clone(), ((title.clone()).clone().len() as i32) + 4)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
     header
 }
 
 pub fn headline_3(mut title: ArcStr) -> ArcStr {
-    let mut header: ArcStr = arcstr::literal!("");
+    let mut header: ArcStr;
     header = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*title.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*repeat((literal!("-")).clone(), ((title.clone()).clone().len() as i32) + 2)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
     header
 }
 
 pub fn headline_4(mut title: ArcStr) -> ArcStr {
-    let mut header: ArcStr = arcstr::literal!("");
+    let mut header: ArcStr;
     header = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*title.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*repeat((literal!("*")).clone(), ((title.clone()).clone().len() as i32) + 2)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
     header
 }
@@ -82,8 +82,8 @@ pub fn headline_4(mut title: ArcStr) -> ArcStr {
 pub fn findChar(mut inString: ArcStr, mut inChar: i32, mut inStartPos: i32, mut inEndPos: i32) -> i32 {
     let mut outIndex: i32 = NO_POS.clone();
     let len: i32 = ((inString.clone()).clone().len() as i32);
-    let mut start_pos: i32 = 0;
-    let mut end_pos: i32 = 0;
+    let mut start_pos: i32;
+    let mut end_pos: i32;
     start_pos = std::cmp::max(inStartPos.clone(), 1);
     end_pos = if (inEndPos.clone() > 0) {std::cmp::min(inEndPos.clone(), len.clone())} else {len.clone()};
     for mut i in start_pos.clone()..=end_pos.clone() {
@@ -98,8 +98,8 @@ pub fn findChar(mut inString: ArcStr, mut inChar: i32, mut inStartPos: i32, mut 
 pub fn rfindChar(mut inString: ArcStr, mut inChar: i32, mut inStartPos: i32, mut inEndPos: i32) -> i32 {
     let mut outIndex: i32 = NO_POS.clone();
     let len: i32 = ((inString.clone()).clone().len() as i32);
-    let mut start_pos: i32 = 0;
-    let mut end_pos: i32 = 0;
+    let mut start_pos: i32;
+    let mut end_pos: i32;
     start_pos = if (inStartPos.clone() > 0) {std::cmp::min(inStartPos.clone(), len.clone())} else {len.clone()};
     end_pos = std::cmp::max(inEndPos.clone(), 1);
     for mut i in ({let __s=start_pos.clone(); let __e=end_pos.clone(); (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
@@ -114,8 +114,8 @@ pub fn rfindChar(mut inString: ArcStr, mut inChar: i32, mut inStartPos: i32, mut
 pub fn findCharNot(mut inString: ArcStr, mut inChar: i32, mut inStartPos: i32, mut inEndPos: i32) -> i32 {
     let mut outIndex: i32 = NO_POS.clone();
     let len: i32 = ((inString.clone()).clone().len() as i32);
-    let mut start_pos: i32 = 0;
-    let mut end_pos: i32 = 0;
+    let mut start_pos: i32;
+    let mut end_pos: i32;
     start_pos = std::cmp::max(inStartPos.clone(), 1);
     end_pos = if (inEndPos.clone() > 0) {std::cmp::min(inEndPos.clone(), len.clone())} else {len.clone()};
     for mut i in start_pos.clone()..=end_pos.clone() {
@@ -130,8 +130,8 @@ pub fn findCharNot(mut inString: ArcStr, mut inChar: i32, mut inStartPos: i32, m
 pub fn rfindCharNot(mut inString: ArcStr, mut inChar: i32, mut inStartPos: i32, mut inEndPos: i32) -> i32 {
     let mut outIndex: i32 = NO_POS.clone();
     let len: i32 = ((inString.clone()).clone().len() as i32);
-    let mut start_pos: i32 = 0;
-    let mut end_pos: i32 = 0;
+    let mut start_pos: i32;
+    let mut end_pos: i32;
     start_pos = if (inStartPos.clone() > 0) {std::cmp::min(inStartPos.clone(), len.clone())} else {len.clone()};
     end_pos = std::cmp::max(inEndPos.clone(), 1);
     for mut i in ({let __s=start_pos.clone(); let __e=end_pos.clone(); (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
@@ -152,14 +152,14 @@ pub fn wordWrap(mut inString: ArcStr, mut inWrapLength: i32, mut inDelimiter: Ar
     let mut outStrings: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     let mut start_pos: i32 = 1;
     let mut end_pos: i32 = inWrapLength.clone();
-    let mut line_len: i32 = 0;
-    let mut pos: i32 = 0;
-    let mut next_char: i32 = 0;
-    let mut char: i32 = 0;
-    let mut gap_size: i32 = 0;
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut line_len: i32;
+    let mut pos: i32;
+    let mut next_char: i32;
+    let mut char: i32;
+    let mut gap_size: i32;
+    let mut r#str: ArcStr;
     let mut delim: ArcStr = literal!("");
-    let mut lines: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+    let mut lines: Arc<metamodelica::List<ArcStr>>;
     if ((inDelimiter.clone()).clone().len() as i32) >= inWrapLength.clone() - 1 {
         outStrings = list![(inString.clone()).clone()];
         return Ok(outStrings.clone());
@@ -227,7 +227,7 @@ pub fn quote(mut inString: ArcStr) -> ArcStr {
 }
 
 pub fn equalIgnoreSpace(mut s1: ArcStr, mut s2: ArcStr) -> Result<bool> {
-    let mut b: bool = false;
+    let mut b: bool;
     let mut j: i32 = 1;
     b = true;
     for mut i in 1..=((s1.clone()).clone().len() as i32) {
@@ -258,7 +258,7 @@ pub fn equalIgnoreSpace(mut s1: ArcStr, mut s2: ArcStr) -> Result<bool> {
 }
 
 pub fn bytesToReadableUnit(mut bytes: metamodelica::Real, mut significantDigits: i32, mut maxSizeInUnit: metamodelica::Real) -> ArcStr {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     let TB: metamodelica::Real = (metamodelica::OrderedFloat((1024) as f64)).powf(metamodelica::OrderedFloat((4) as f64));
     let GB: metamodelica::Real = (metamodelica::OrderedFloat((1024) as f64)).powf(metamodelica::OrderedFloat((3) as f64));
     let MB: metamodelica::Real = (metamodelica::OrderedFloat((1024) as f64)).powf(metamodelica::OrderedFloat((2) as f64));
@@ -293,14 +293,14 @@ pub fn endsWith(mut r#str: ArcStr, mut suffix: ArcStr) -> bool {
 }
 
 pub fn endsWithNewline(mut r#str: ArcStr) -> bool {
-    let mut b: bool = false;
+    let mut b: bool;
     b = CHAR_NEWLINE.clone() == metamodelica::Dangerous::stringGetNoBoundsChecking((r#str.clone()).clone(), ((r#str.clone()).clone().len() as i32));
     b
 }
 
 pub fn convertCharNonAsciiToHex(mut s: ArcStr) -> Result<ArcStr> {
     let mut s: ArcStr = s;
-    let mut i: i32 = 0;
+    let mut i: i32;
     let hex: metamodelica::Array<ArcStr> = metamodelica::Dangerous::listArray(list![(literal!("0")).clone(), (literal!("1")).clone(), (literal!("2")).clone(), (literal!("3")).clone(), (literal!("4")).clone(), (literal!("5")).clone(), (literal!("6")).clone(), (literal!("7")).clone(), (literal!("8")).clone(), (literal!("9")).clone(), (literal!("A")).clone(), (literal!("B")).clone(), (literal!("C")).clone(), (literal!("D")).clone(), (literal!("E")).clone(), (literal!("F")).clone()]);
     i = stringCharInt((s.clone()).clone())?;
     if i.clone() < 128 {
@@ -325,7 +325,7 @@ pub fn stripBOM(mut s: ArcStr) -> Result<(ArcStr, ArcStr)> {
 
 pub fn stripFileExtension(mut filename: ArcStr) -> Result<ArcStr> {
     let mut filename: ArcStr = filename;
-    let mut pos: i32 = 0;
+    let mut pos: i32;
     pos = rfindChar((filename.clone()).clone(), CHAR_DOT.clone(), 0, 1);
     if pos.clone() != NO_POS.clone() {
         filename = substring((filename.clone()).clone(), 1, pos.clone() - 1)?;
@@ -334,7 +334,7 @@ pub fn stripFileExtension(mut filename: ArcStr) -> Result<ArcStr> {
 }
 
 pub fn rest(mut r#str: ArcStr) -> Result<ArcStr> {
-    let mut rest: ArcStr = arcstr::literal!("");
+    let mut rest: ArcStr;
     rest = (if (((r#str.clone()).clone().len() as i32) == 1) {literal!("")} else {substring((r#str.clone()).clone(), 2, ((r#str.clone()).clone().len() as i32))?}).clone();
     Ok(rest)
 }

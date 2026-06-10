@@ -104,13 +104,13 @@ pub fn newEntry(mut lentry: Arc<NFLookupTree::Entry::Entry>) -> Arc<Entry> {
 }
 
 pub fn idExistsInEntry(mut id: Arc<NFLookupTree::Entry::Entry>, mut entry: Arc<Entry>) -> Result<bool> {
-    let mut exists: bool = false;
+    let mut exists: bool;
     exists = NFLookupTree::Entry::isEqual(id.clone(), entry.entry.clone())? || List::any(entry.children.clone(), (std::sync::Arc::new({ let __pe_b0 = id.clone(); move |__pe_a1| idExistsInEntry(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Entry>) -> Result<bool> + 'static>))?;
     Ok(exists)
 }
 
 pub fn getLookupEntries(mut entry: Arc<Entry>) -> Arc<metamodelica::List<Arc<NFLookupTree::Entry::Entry>>> {
-    let mut entries: Arc<metamodelica::List<Arc<NFLookupTree::Entry::Entry>>> = metamodelica::nil();
+    let mut entries: Arc<metamodelica::List<Arc<NFLookupTree::Entry::Entry>>>;
     entries = metamodelica::cons(entry.entry.clone(), ({
         let mut __acc: Arc<metamodelica::List<Arc<NFLookupTree::Entry::Entry>>> = metamodelica::nil();
         for mut c in (entry.children.clone()).into_iter().cloned() {
@@ -123,7 +123,7 @@ pub fn getLookupEntries(mut entry: Arc<Entry>) -> Arc<metamodelica::List<Arc<NFL
 }
 
 pub fn entryToList(mut entry: Arc<Entry>) -> Arc<metamodelica::List<Arc<Entry>>> {
-    let mut entries: Arc<metamodelica::List<Arc<Entry>>> = metamodelica::nil();
+    let mut entries: Arc<metamodelica::List<Arc<Entry>>>;
     entries = metamodelica::cons(entry.clone(), ({
         let mut __acc: Arc<metamodelica::List<Arc<Entry>>> = metamodelica::nil();
         for mut c in (entry.children.clone()).into_iter().cloned() {
@@ -136,19 +136,19 @@ pub fn entryToList(mut entry: Arc<Entry>) -> Arc<metamodelica::List<Arc<Entry>>>
 }
 
 pub fn keyStr(mut inKey: Key) -> ArcStr {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = (inKey.clone()).clone();
     outString
 }
 
 pub fn valueStr(mut inValue: Value) -> ArcStr {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = (literal!("")).clone();
     outString
 }
 
 pub fn keyCompare(mut inKey1: Key, mut inKey2: Key) -> i32 {
-    let mut outResult: i32 = 0;
+    let mut outResult: i32;
     outResult = stringCompare((inKey1.clone()).clone(), (inKey2.clone()).clone());
     outResult
 }
@@ -244,7 +244,7 @@ pub fn add(mut inTree: Arc<Tree>, mut inKey: Key, mut inValue: Value, mut confli
 pub use addConflictFail as addConflictDefault;
 
 pub fn addConflictFail(mut newValue: Value, mut oldValue: Value, mut key: Key) -> Result<Value> {
-    let mut value: Value = Arc::new(<Entry as ::std::default::Default>::default());
+    let mut value: Value;
     bail!("fail");
     Ok(value)
 }
@@ -261,8 +261,8 @@ pub fn addConflictReplace(mut newValue: Value, mut oldValue: Value, mut key: Key
 
 pub fn addList(mut tree: Arc<Tree>, mut inValues: Arc<metamodelica::List<(ArcStr, Arc<Entry>)>>, mut conflictFunc: Arc<dyn ::std::ops::Fn(Arc<Entry>, Arc<Entry>, ArcStr) -> Result<Arc<Entry>> + 'static>) -> Result<Arc<Tree>> {
     let mut tree: Arc<Tree> = tree;
-    let mut key: Key = arcstr::literal!("");
-    let mut value: Value = Arc::new(<Entry as ::std::default::Default>::default());
+    let mut key: Key;
+    let mut value: Value;
     for mut t in &*inValues.clone() {
         let mut t = t.clone();
         (key, value) = t.clone();
@@ -339,7 +339,7 @@ fn balance(mut inTree: Arc<Tree>) -> Result<Arc<Tree>> {
 }
 
 fn calculateBalance(mut inNode: Arc<Tree>) -> i32 {
-    let mut outBalance: i32 = 0;
+    let mut outBalance: i32;
     outBalance = (::match_deref::match_deref! { match &(inNode.clone()) {
         Deref @ Tree::NODE { .. } => height(var_field!((*inNode).left, Tree::NODE).clone()) - height(var_field!((*inNode).right, Tree::NODE).clone()),
         Deref @ Tree::LEAF { .. } => 0,
@@ -443,8 +443,8 @@ pub fn forEach(mut tree: Arc<Tree>, mut func: Arc<dyn ::std::ops::Fn(ArcStr, Arc
 
 pub fn fromList(mut inValues: Arc<metamodelica::List<(ArcStr, Arc<Entry>)>>, mut conflictFunc: Arc<dyn ::std::ops::Fn(Arc<Entry>, Arc<Entry>, ArcStr) -> Result<Arc<Entry>> + 'static>) -> Result<Arc<Tree>> {
     let mut tree: Arc<Tree> = crate::NFDuplicateTree::Tree::interned_EMPTY();
-    let mut key: Key = arcstr::literal!("");
-    let mut value: Value = Arc::new(<Entry as ::std::default::Default>::default());
+    let mut key: Key;
+    let mut value: Value;
     for mut t in &*inValues.clone() {
         let mut t = t.clone();
         (key, value) = t.clone();
@@ -454,8 +454,8 @@ pub fn fromList(mut inValues: Arc<metamodelica::List<(ArcStr, Arc<Entry>)>>, mut
 }
 
 pub fn get(mut tree: Arc<Tree>, mut key: Key) -> Result<Value> {
-    let mut value: Value = Arc::new(<Entry as ::std::default::Default>::default());
-    let mut k: Key = arcstr::literal!("");
+    let mut value: Value;
+    let mut k: Key;
     k = ((::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { .. } => var_field!((*tree).key, Tree::NODE).clone(),
         Deref @ Tree::LEAF { .. } => var_field!((*tree).key, Tree::LEAF).clone(),
@@ -473,7 +473,7 @@ pub fn get(mut tree: Arc<Tree>, mut key: Key) -> Result<Value> {
 
 pub fn getOpt(mut tree: Arc<Tree>, mut key: Key) -> Option<Arc<Entry>> {
     '__tco: loop {
-        let mut k: Key = arcstr::literal!("");
+        let mut k: Key;
         k = ((::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { .. } => var_field!((*tree).key, Tree::NODE).clone(),
         Deref @ Tree::LEAF { .. } => var_field!((*tree).key, Tree::LEAF).clone(),
@@ -493,8 +493,8 @@ pub fn getOpt(mut tree: Arc<Tree>, mut key: Key) -> Option<Arc<Entry>> {
 
 pub fn hasKey(mut inTree: Arc<Tree>, mut inKey: Key) -> Result<bool> {
     let mut comp: bool = false;
-    let mut key: Key = arcstr::literal!("");
-    let mut key_comp: i32 = 0;
+    let mut key: Key;
+    let mut key_comp: i32;
     let mut tree: Arc<Tree> = Arc::new(Tree::EMPTY);
     key = ((::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::NODE { .. } => var_field!((*inTree).key, Tree::NODE).clone(),
@@ -523,7 +523,7 @@ pub fn hasKey(mut inTree: Arc<Tree>, mut inKey: Key) -> Result<bool> {
 }
 
 fn height(mut inNode: Arc<Tree>) -> i32 {
-    let mut outHeight: i32 = 0;
+    let mut outHeight: i32;
     outHeight = (::match_deref::match_deref! { match &(inNode.clone()) {
         Deref @ Tree::NODE { .. } => var_field!((*inNode).height, Tree::NODE).clone(),
         Deref @ Tree::LEAF { .. } => 1,
@@ -539,7 +539,7 @@ pub fn intersection() -> Result<()> {
 }
 
 pub fn isEmpty(mut tree: Arc<Tree>) -> bool {
-    let mut isEmpty: bool = false;
+    let mut isEmpty: bool;
     isEmpty = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::EMPTY { .. } => true,
         _ => false,
@@ -693,7 +693,7 @@ pub fn new() -> Arc<Tree> {
 }
 
 pub fn printNodeStr(mut inNode: Arc<Tree>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(inNode.clone()) {
         Deref @ Tree::NODE { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*keyStr((var_field!((*inNode).key, Tree::NODE).clone()).clone())); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*valueStr(var_field!((*inNode).value, Tree::NODE).clone())); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) },
         Deref @ Tree::LEAF { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*keyStr((var_field!((*inNode).key, Tree::LEAF).clone()).clone())); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*valueStr(var_field!((*inNode).value, Tree::LEAF).clone())); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) },
@@ -703,7 +703,7 @@ pub fn printNodeStr(mut inNode: Arc<Tree>) -> Result<ArcStr> {
 }
 
 pub fn printTreeStr(mut inTree: Arc<Tree>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     let mut left: Arc<Tree> = Arc::new(Tree::EMPTY);
     let mut right: Arc<Tree> = Arc::new(Tree::EMPTY);
     outString = ((::match_deref::match_deref! { match &(inTree.clone()) {
@@ -720,9 +720,9 @@ pub fn printTreeStr(mut inTree: Arc<Tree>) -> Result<ArcStr> {
 }
 
 fn printTreeStr2(mut inTree: Arc<Tree>, mut isLeft: bool, mut inIndent: ArcStr) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
-    let mut left: Option<Arc<Tree>> = None;
-    let mut right: Option<Arc<Tree>> = None;
+    let mut outString: ArcStr;
+    let mut left: Option<Arc<Tree>>;
+    let mut right: Option<Arc<Tree>>;
     outString = ((::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::NODE { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*printTreeStr2(var_field!((*inTree).left, Tree::NODE).clone(), true, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft.clone()) {literal!("     ")} else {literal!(" │   ")}); ArcStr::from(__mm_s) }).clone())?); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft.clone()) {literal!(" ┌")} else {literal!(" └")}); __mm_s.push_str(&*literal!("────")); __mm_s.push_str(&*printNodeStr(inTree.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*printTreeStr2(var_field!((*inTree).right, Tree::NODE).clone(), false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft.clone()) {literal!(" │   ")} else {literal!("     ")}); ArcStr::from(__mm_s) }).clone())?); ArcStr::from(__mm_s) },
         Deref @ Tree::LEAF { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft.clone()) {literal!(" ┌")} else {literal!(" └")}); __mm_s.push_str(&*literal!("────")); __mm_s.push_str(&*printNodeStr(inTree.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) },
@@ -733,7 +733,7 @@ fn printTreeStr2(mut inTree: Arc<Tree>, mut isLeft: bool, mut inIndent: ArcStr) 
 }
 
 fn referenceEqOrEmpty(mut t1: Arc<Tree>, mut t2: Arc<Tree>) -> bool {
-    let mut b: bool = false;
+    let mut b: bool;
     b = (::match_deref::match_deref! { match &((t1.clone(), t2.clone())) {
         (Deref @ Tree::EMPTY { .. }, Deref @ Tree::EMPTY { .. }) => true,
         _ => referenceEq(&*(t1.clone()),&*(t2.clone())),
@@ -785,7 +785,7 @@ fn rotateRight(mut inNode: Arc<Tree>) -> Result<Arc<Tree>> {
 }
 
 pub fn setTreeLeftRight(mut orig: Arc<Tree>, mut left: Arc<Tree>, mut right: Arc<Tree>) -> Result<Arc<Tree>> {
-    let mut res: Arc<Tree> = Arc::new(Tree::EMPTY);
+    let mut res: Arc<Tree>;
     res = (::match_deref::match_deref! { match &((orig.clone(), left.clone(), right.clone())) {
         (Deref @ Tree::NODE { .. }, Deref @ Tree::EMPTY { .. }, Deref @ Tree::EMPTY { .. }) => Arc::new(Tree::LEAF { key: (var_field!((*orig).key, Tree::NODE).clone()).clone(), value: var_field!((*orig).value, Tree::NODE).clone() }),
         (Deref @ Tree::LEAF { .. }, Deref @ Tree::EMPTY { .. }, Deref @ Tree::EMPTY { .. }) => orig.clone(),

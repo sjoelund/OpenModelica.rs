@@ -61,21 +61,21 @@ pub mod ZeroCrossingTree {
     pub type Value = Arc<metamodelica::List<ZeroCrossing>>;
 
     pub fn keyStr(mut inKey: Key) -> Result<ArcStr> {
-        let mut outString: ArcStr = arcstr::literal!("");
+        let mut outString: ArcStr;
         outString = (ExpressionBasics::printExpStr(inKey.relation_.clone())?).clone();
         Ok(outString)
     }
 
     pub fn valueStr(mut inValue: Value) -> Result<ArcStr> {
-        let mut outString: ArcStr = arcstr::literal!("");
-        let mut zc: ZeroCrossing = <ZeroCrossing as ::std::default::Default>::default();
+        let mut outString: ArcStr;
+        let mut zc: ZeroCrossing;
         zc = (inValue.clone()).get(1)?;
         outString = (ExpressionBasics::printExpStr(zc.relation_.clone())?).clone();
         Ok(outString)
     }
 
     pub fn keyCompare(mut inKey1: Key, mut inKey2: Key) -> Result<i32> {
-        let mut outResult: i32 = 0;
+        let mut outResult: i32;
         outResult = compare(inKey1.clone(), inKey2.clone())?;
         Ok(outResult)
     }
@@ -167,7 +167,7 @@ pub mod ZeroCrossingTree {
     pub use addConflictFail as addConflictDefault;
 
     pub fn addConflictFail(mut newValue: Value, mut oldValue: Value, mut key: Key) -> Result<Value> {
-        let mut value: Value = metamodelica::nil();
+        let mut value: Value;
         bail!("fail");
         Ok(value)
     }
@@ -184,8 +184,8 @@ pub mod ZeroCrossingTree {
 
     pub fn addList(mut tree: Arc<Tree>, mut inValues: Arc<metamodelica::List<(ZeroCrossing, Arc<metamodelica::List<ZeroCrossing>>)>>, mut conflictFunc: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<ZeroCrossing>>, Arc<metamodelica::List<ZeroCrossing>>, ZeroCrossing) -> Result<Arc<metamodelica::List<ZeroCrossing>>> + 'static>) -> Result<Arc<Tree>> {
         let mut tree: Arc<Tree> = tree;
-        let mut key: Key = <ZeroCrossing as ::std::default::Default>::default();
-        let mut value: Value = metamodelica::nil();
+        let mut key: Key;
+        let mut value: Value;
         for mut t in &*inValues.clone() {
             let mut t = t.clone();
             (key, value) = t.clone();
@@ -262,7 +262,7 @@ pub mod ZeroCrossingTree {
     }
 
     fn calculateBalance(mut inNode: Arc<Tree>) -> i32 {
-        let mut outBalance: i32 = 0;
+        let mut outBalance: i32;
         outBalance = (::match_deref::match_deref! { match &(inNode.clone()) {
         Deref @ Tree::NODE { .. } => height(var_field!((*inNode).left, Tree::NODE).clone()) - height(var_field!((*inNode).right, Tree::NODE).clone()),
         Deref @ Tree::LEAF { .. } => 0,
@@ -366,8 +366,8 @@ pub mod ZeroCrossingTree {
 
     pub fn fromList(mut inValues: Arc<metamodelica::List<(ZeroCrossing, Arc<metamodelica::List<ZeroCrossing>>)>>, mut conflictFunc: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<ZeroCrossing>>, Arc<metamodelica::List<ZeroCrossing>>, ZeroCrossing) -> Result<Arc<metamodelica::List<ZeroCrossing>>> + 'static>) -> Result<Arc<Tree>> {
         let mut tree: Arc<Tree> = crate::ZeroCrossings::ZeroCrossingTree::Tree::interned_EMPTY();
-        let mut key: Key = <ZeroCrossing as ::std::default::Default>::default();
-        let mut value: Value = metamodelica::nil();
+        let mut key: Key;
+        let mut value: Value;
         for mut t in &*inValues.clone() {
             let mut t = t.clone();
             (key, value) = t.clone();
@@ -377,8 +377,8 @@ pub mod ZeroCrossingTree {
     }
 
     pub fn get(mut tree: Arc<Tree>, mut key: Key) -> Result<Value> {
-        let mut value: Value = metamodelica::nil();
-        let mut k: Key = <ZeroCrossing as ::std::default::Default>::default();
+        let mut value: Value;
+        let mut k: Key;
         k = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { .. } => var_field!((*tree).key, Tree::NODE).clone(),
         Deref @ Tree::LEAF { .. } => var_field!((*tree).key, Tree::LEAF).clone(),
@@ -396,7 +396,7 @@ pub mod ZeroCrossingTree {
 
     pub fn getOpt(mut tree: Arc<Tree>, mut key: Key) -> Result<Option<Arc<metamodelica::List<ZeroCrossing>>>> {
         '__tco: loop {
-            let mut k: Key = <ZeroCrossing as ::std::default::Default>::default();
+            let mut k: Key;
             k = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { .. } => var_field!((*tree).key, Tree::NODE).clone(),
         Deref @ Tree::LEAF { .. } => var_field!((*tree).key, Tree::LEAF).clone(),
@@ -416,8 +416,8 @@ pub mod ZeroCrossingTree {
 
     pub fn hasKey(mut inTree: Arc<Tree>, mut inKey: Key) -> Result<bool> {
         let mut comp: bool = false;
-        let mut key: Key = <ZeroCrossing as ::std::default::Default>::default();
-        let mut key_comp: i32 = 0;
+        let mut key: Key;
+        let mut key_comp: i32;
         let mut tree: Arc<Tree> = Arc::new(Tree::EMPTY);
         key = (::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::NODE { .. } => var_field!((*inTree).key, Tree::NODE).clone(),
@@ -446,7 +446,7 @@ pub mod ZeroCrossingTree {
     }
 
     fn height(mut inNode: Arc<Tree>) -> i32 {
-        let mut outHeight: i32 = 0;
+        let mut outHeight: i32;
         outHeight = (::match_deref::match_deref! { match &(inNode.clone()) {
         Deref @ Tree::NODE { .. } => var_field!((*inNode).height, Tree::NODE).clone(),
         Deref @ Tree::LEAF { .. } => 1,
@@ -462,7 +462,7 @@ pub mod ZeroCrossingTree {
     }
 
     pub fn isEmpty(mut tree: Arc<Tree>) -> bool {
-        let mut isEmpty: bool = false;
+        let mut isEmpty: bool;
         isEmpty = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::EMPTY { .. } => true,
         _ => false,
@@ -616,7 +616,7 @@ pub mod ZeroCrossingTree {
     }
 
     pub fn printNodeStr(mut inNode: Arc<Tree>) -> Result<ArcStr> {
-        let mut outString: ArcStr = arcstr::literal!("");
+        let mut outString: ArcStr;
         outString = ((::match_deref::match_deref! { match &(inNode.clone()) {
         Deref @ Tree::NODE { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*keyStr(var_field!((*inNode).key, Tree::NODE).clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*valueStr(var_field!((*inNode).value, Tree::NODE).clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) },
         Deref @ Tree::LEAF { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*keyStr(var_field!((*inNode).key, Tree::LEAF).clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*valueStr(var_field!((*inNode).value, Tree::LEAF).clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) },
@@ -626,7 +626,7 @@ pub mod ZeroCrossingTree {
     }
 
     pub fn printTreeStr(mut inTree: Arc<Tree>) -> Result<ArcStr> {
-        let mut outString: ArcStr = arcstr::literal!("");
+        let mut outString: ArcStr;
         let mut left: Arc<Tree> = Arc::new(Tree::EMPTY);
         let mut right: Arc<Tree> = Arc::new(Tree::EMPTY);
         outString = ((::match_deref::match_deref! { match &(inTree.clone()) {
@@ -643,9 +643,9 @@ pub mod ZeroCrossingTree {
     }
 
     fn printTreeStr2(mut inTree: Arc<Tree>, mut isLeft: bool, mut inIndent: ArcStr) -> Result<ArcStr> {
-        let mut outString: ArcStr = arcstr::literal!("");
-        let mut left: Option<Arc<Tree>> = None;
-        let mut right: Option<Arc<Tree>> = None;
+        let mut outString: ArcStr;
+        let mut left: Option<Arc<Tree>>;
+        let mut right: Option<Arc<Tree>>;
         outString = ((::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::NODE { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*printTreeStr2(var_field!((*inTree).left, Tree::NODE).clone(), true, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft.clone()) {literal!("     ")} else {literal!(" │   ")}); ArcStr::from(__mm_s) }).clone())?); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft.clone()) {literal!(" ┌")} else {literal!(" └")}); __mm_s.push_str(&*literal!("────")); __mm_s.push_str(&*printNodeStr(inTree.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*printTreeStr2(var_field!((*inTree).right, Tree::NODE).clone(), false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft.clone()) {literal!(" │   ")} else {literal!("     ")}); ArcStr::from(__mm_s) }).clone())?); ArcStr::from(__mm_s) },
         Deref @ Tree::LEAF { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*if (isLeft.clone()) {literal!(" ┌")} else {literal!(" └")}); __mm_s.push_str(&*literal!("────")); __mm_s.push_str(&*printNodeStr(inTree.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) },
@@ -656,7 +656,7 @@ pub mod ZeroCrossingTree {
     }
 
     fn referenceEqOrEmpty(mut t1: Arc<Tree>, mut t2: Arc<Tree>) -> bool {
-        let mut b: bool = false;
+        let mut b: bool;
         b = (::match_deref::match_deref! { match &((t1.clone(), t2.clone())) {
         (Deref @ Tree::EMPTY { .. }, Deref @ Tree::EMPTY { .. }) => true,
         _ => referenceEq(&*(t1.clone()),&*(t2.clone())),
@@ -708,7 +708,7 @@ pub mod ZeroCrossingTree {
     }
 
     pub fn setTreeLeftRight(mut orig: Arc<Tree>, mut left: Arc<Tree>, mut right: Arc<Tree>) -> Result<Arc<Tree>> {
-        let mut res: Arc<Tree> = Arc::new(Tree::EMPTY);
+        let mut res: Arc<Tree>;
         res = (::match_deref::match_deref! { match &((orig.clone(), left.clone(), right.clone())) {
         (Deref @ Tree::NODE { .. }, Deref @ Tree::EMPTY { .. }, Deref @ Tree::EMPTY { .. }) => Arc::new(Tree::LEAF { key: var_field!((*orig).key, Tree::NODE).clone(), value: var_field!((*orig).value, Tree::NODE).clone() }),
         (Deref @ Tree::LEAF { .. }, Deref @ Tree::EMPTY { .. }, Deref @ Tree::EMPTY { .. }) => orig.clone(),
@@ -758,13 +758,13 @@ pub mod ZeroCrossingTree {
 }
 
 pub fn new() -> Result<ZeroCrossingSet> {
-    let mut zc_set: ZeroCrossingSet = <ZeroCrossingSet as ::std::default::Default>::default();
+    let mut zc_set: ZeroCrossingSet;
     zc_set = ZeroCrossingSet { zc: DoubleEnded::fromList(metamodelica::nil())?, tree: arrayCreate(1, ZeroCrossingTree::new()) };
     Ok(zc_set)
 }
 
 pub fn length(mut zc_set: ZeroCrossingSet) -> Result<i32> {
-    let mut i: i32 = 0;
+    let mut i: i32;
     let mut zcs: Arc<metamodelica::List<ZeroCrossing>> = DoubleEnded::toListNoCopyNoClear(zc_set.zc.clone());
     i = ({
         let mut __acc: i32 = 0;
@@ -778,7 +778,7 @@ pub fn length(mut zc_set: ZeroCrossingSet) -> Result<i32> {
 }
 
 pub fn zeroCrossingSize(mut zc: ZeroCrossing) -> Result<i32> {
-    let mut s: i32 = 0;
+    let mut s: i32;
     s = (::match_deref::match_deref! { match &(zc.iter.clone()) {
         Some(iter) => {
             BackendDAE::getSimIteratorSize(iter.clone())?
@@ -792,7 +792,7 @@ pub fn zeroCrossingSize(mut zc: ZeroCrossing) -> Result<i32> {
 }
 
 pub fn add(mut zc_set: ZeroCrossingSet, mut zc: ZeroCrossing) -> Result<()> {
-    let mut addedCell: Arc<metamodelica::List<ZeroCrossing>> = metamodelica::nil();
+    let mut addedCell: Arc<metamodelica::List<ZeroCrossing>>;
     if !(contains(zc_set.clone(), zc.clone())?) {
         DoubleEnded::push_back(zc_set.zc.clone(), zc.clone());
         addedCell = DoubleEnded::currentBackCell(zc_set.zc.clone());
@@ -829,13 +829,13 @@ pub fn updateIndices(mut ilst: Arc<metamodelica::List<ZeroCrossing>>) -> Arc<met
 }
 
 pub fn contains(mut zc_set: ZeroCrossingSet, mut zc: ZeroCrossing) -> Result<bool> {
-    let mut matches: bool = false;
+    let mut matches: bool;
     matches = ZeroCrossingTree::hasKey(metamodelica::arrayGet(zc_set.tree.clone(), 1)?, zc.clone())?;
     Ok(matches)
 }
 
 pub fn get(mut zc_set: ZeroCrossingSet, mut zc: ZeroCrossing) -> Result<ZeroCrossing> {
-    let mut outZc: ZeroCrossing = <ZeroCrossing as ::std::default::Default>::default();
+    let mut outZc: ZeroCrossing;
     let __pa0 = ::match_deref::match_deref! { match &(ZeroCrossingTree::get(metamodelica::arrayGet(zc_set.tree.clone(), 1)?, zc.clone())?) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: _ } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
@@ -845,7 +845,7 @@ pub fn get(mut zc_set: ZeroCrossingSet, mut zc: ZeroCrossing) -> Result<ZeroCros
 }
 
 pub fn equals(mut zc1: ZeroCrossing, mut zc2: ZeroCrossing) -> Result<bool> {
-    let mut outBoolean: bool = false;
+    let mut outBoolean: bool;
     outBoolean = 0 == compare(zc1.clone(), zc2.clone())?;
     Ok(outBoolean)
 }

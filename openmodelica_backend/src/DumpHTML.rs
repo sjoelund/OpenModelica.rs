@@ -133,87 +133,87 @@ pub type DOCUMENT = Document;
 pub static emptyDocument: std::sync::LazyLock<Document> = std::sync::LazyLock::new(|| { Document { docType: (literal!("")).clone(), head: metamodelica::nil(), body: metamodelica::nil() } });
 
 fn emptyDocumentWithToggleFunktion() -> Result<Document> {
-    let mut outDoc: Document = <Document as ::std::default::Default>::default();
+    let mut outDoc: Document;
     outDoc = addScript((literal!("text/Javascript")).clone(), (literal!("function toggle(name) {\n   var element = document.getElementById(name);\n   if (element.style.display == \"none\") {\n      // show the div\n      element.style.display = \"block\";   \n   } else {\n      // hide the div\n      element.style.display = \"none\";\n      // reset element\n      element.reset();\n   }\n}\n\nfunction show(name) {\n   var element = document.getElementById(name);\n   if (element.style.display == \"none\") {\n      // show the div\n      element.style.display = \"block\";   \n   }\n   return true;\n}\n\n    ")).clone(), emptyDocument.clone())?;
     Ok(outDoc)
 }
 
 fn addScript(mut type_: ArcStr, mut script: ArcStr, mut inDoc: Document) -> Result<Document> {
-    let mut outDoc: Document = <Document as ::std::default::Default>::default();
+    let mut outDoc: Document;
     outDoc = addHeadTag(Arc::new(Tag::SCRIPT { type_: (type_.clone()).clone(), text: (script.clone()).clone() }), inDoc.clone())?;
     Ok(outDoc)
 }
 
 fn addScriptBody(mut type_: ArcStr, mut script: ArcStr, mut inDoc: Document) -> Result<Document> {
-    let mut outDoc: Document = <Document as ::std::default::Default>::default();
+    let mut outDoc: Document;
     outDoc = addBodyTag(Arc::new(Tag::SCRIPT_BODY { type_: (type_.clone()).clone(), text: (script.clone()).clone() }), inDoc.clone())?;
     Ok(outDoc)
 }
 
 fn addHeading(mut stage: i32, mut text: ArcStr, mut inDoc: Document) -> Result<Document> {
-    let mut outDoc: Document = <Document as ::std::default::Default>::default();
+    let mut outDoc: Document;
     outDoc = addBodyTag(Arc::new(Tag::HEADING { stage: stage.clone(), text: (text.clone()).clone() }), inDoc.clone())?;
     Ok(outDoc)
 }
 
 fn addHeadingTag(mut stage: i32, mut text: ArcStr, mut inTags: Arc<metamodelica::List<Arc<Tag>>>) -> Arc<metamodelica::List<Arc<Tag>>> {
-    let mut outTags: Arc<metamodelica::List<Arc<Tag>>> = metamodelica::nil();
+    let mut outTags: Arc<metamodelica::List<Arc<Tag>>>;
     outTags = metamodelica::cons(Arc::new(Tag::HEADING { stage: stage.clone(), text: (text.clone()).clone() }), inTags.clone());
     outTags
 }
 
 fn addHyperLink(mut href: ArcStr, mut title: ArcStr, mut text: ArcStr, mut inDoc: Document) -> Result<Document> {
-    let mut outDoc: Document = <Document as ::std::default::Default>::default();
+    let mut outDoc: Document;
     outDoc = addBodyTag(Arc::new(Tag::HYPERLINK { href: (href.clone()).clone(), title: (title.clone()).clone(), text: (text.clone()).clone() }), inDoc.clone())?;
     Ok(outDoc)
 }
 
 fn addHyperLinkTag(mut href: ArcStr, mut title: ArcStr, mut text: ArcStr, mut inTags: Arc<metamodelica::List<Arc<Tag>>>) -> Arc<metamodelica::List<Arc<Tag>>> {
-    let mut outTags: Arc<metamodelica::List<Arc<Tag>>> = metamodelica::nil();
+    let mut outTags: Arc<metamodelica::List<Arc<Tag>>>;
     outTags = metamodelica::cons(Arc::new(Tag::HYPERLINK { href: (href.clone()).clone(), title: (title.clone()).clone(), text: (text.clone()).clone() }), inTags.clone());
     outTags
 }
 
 fn addAnkerTag(mut name: ArcStr, mut inTags: Arc<metamodelica::List<Arc<Tag>>>) -> Arc<metamodelica::List<Arc<Tag>>> {
-    let mut outTags: Arc<metamodelica::List<Arc<Tag>>> = metamodelica::nil();
+    let mut outTags: Arc<metamodelica::List<Arc<Tag>>>;
     outTags = metamodelica::cons(Arc::new(Tag::ANKER { name: (name.clone()).clone() }), inTags.clone());
     outTags
 }
 
 fn addLine(mut text: ArcStr, mut inDoc: Document) -> Result<Document> {
-    let mut outDoc: Document = <Document as ::std::default::Default>::default();
+    let mut outDoc: Document;
     outDoc = addBodyTag(Arc::new(Tag::LINE { text: (text.clone()).clone() }), inDoc.clone())?;
     Ok(outDoc)
 }
 
 fn addLineTag(mut text: ArcStr, mut inTags: Arc<metamodelica::List<Arc<Tag>>>) -> Arc<metamodelica::List<Arc<Tag>>> {
-    let mut outTags: Arc<metamodelica::List<Arc<Tag>>> = metamodelica::nil();
+    let mut outTags: Arc<metamodelica::List<Arc<Tag>>>;
     outTags = metamodelica::cons(Arc::new(Tag::LINE { text: (text.clone()).clone() }), inTags.clone());
     outTags
 }
 
 fn addDivision(mut id: ArcStr, mut style: Arc<metamodelica::List<Style>>, mut tags: Arc<metamodelica::List<Arc<Tag>>>, mut inDoc: Document) -> Result<Document> {
-    let mut outDoc: Document = <Document as ::std::default::Default>::default();
-    let mut t: Arc<metamodelica::List<Arc<Tag>>> = metamodelica::nil();
+    let mut outDoc: Document;
+    let mut t: Arc<metamodelica::List<Arc<Tag>>>;
     t = tags.clone().reverse();
     outDoc = addBodyTag(Arc::new(Tag::DIVISION { id: (id.clone()).clone(), style: style.clone(), tags: t.clone() }), inDoc.clone())?;
     Ok(outDoc)
 }
 
 fn addDivisionTag(mut id: ArcStr, mut style: Arc<metamodelica::List<Style>>, mut tags: Arc<metamodelica::List<Arc<Tag>>>, mut inTags: Arc<metamodelica::List<Arc<Tag>>>) -> Arc<metamodelica::List<Arc<Tag>>> {
-    let mut outTags: Arc<metamodelica::List<Arc<Tag>>> = metamodelica::nil();
-    let mut t: Arc<metamodelica::List<Arc<Tag>>> = metamodelica::nil();
+    let mut outTags: Arc<metamodelica::List<Arc<Tag>>>;
+    let mut t: Arc<metamodelica::List<Arc<Tag>>>;
     t = tags.clone().reverse();
     outTags = metamodelica::cons(Arc::new(Tag::DIVISION { id: (id.clone()).clone(), style: style.clone(), tags: t.clone() }), inTags.clone());
     outTags
 }
 
 fn addBodyTags(mut tags: Arc<metamodelica::List<Arc<Tag>>>, mut inDoc: Document) -> Result<Document> {
-    let mut outDoc: Document = <Document as ::std::default::Default>::default();
-    let mut docType: ArcStr = arcstr::literal!("");
-    let mut head: Arc<metamodelica::List<Arc<Tag>>> = metamodelica::nil();
-    let mut body: Arc<metamodelica::List<Arc<Tag>>> = metamodelica::nil();
-    let mut t: Arc<metamodelica::List<Arc<Tag>>> = metamodelica::nil();
+    let mut outDoc: Document;
+    let mut docType: ArcStr;
+    let mut head: Arc<metamodelica::List<Arc<Tag>>>;
+    let mut body: Arc<metamodelica::List<Arc<Tag>>>;
+    let mut t: Arc<metamodelica::List<Arc<Tag>>>;
     t = tags.clone().reverse();
     let Document { docType: __pa0, head: __pa1, body: __pa2 } = (inDoc.clone()) else { bail!("pattern mismatch") };
     docType = __pa0.clone();
@@ -224,9 +224,9 @@ fn addBodyTags(mut tags: Arc<metamodelica::List<Arc<Tag>>>, mut inDoc: Document)
 }
 
 fn dumpDocument(mut inDoc: Document, mut name: ArcStr) -> Result<()> {
-    let mut r#str: ArcStr = arcstr::literal!("");
-    let mut head: Arc<metamodelica::List<Arc<Tag>>> = metamodelica::nil();
-    let mut body: Arc<metamodelica::List<Arc<Tag>>> = metamodelica::nil();
+    let mut r#str: ArcStr;
+    let mut head: Arc<metamodelica::List<Arc<Tag>>>;
+    let mut body: Arc<metamodelica::List<Arc<Tag>>>;
     let Document { docType: __pa0, head: __pa1, body: __pa2 } = (inDoc.clone()) else { bail!("pattern mismatch") };
     r#str = __pa0.clone();
     head = __pa1.clone();
@@ -242,10 +242,10 @@ fn dumpDocument(mut inDoc: Document, mut name: ArcStr) -> Result<()> {
 }
 
 fn addHeadTag(mut tag: Arc<Tag>, mut inDoc: Document) -> Result<Document> {
-    let mut outDoc: Document = <Document as ::std::default::Default>::default();
-    let mut docType: ArcStr = arcstr::literal!("");
-    let mut head: Arc<metamodelica::List<Arc<Tag>>> = metamodelica::nil();
-    let mut body: Arc<metamodelica::List<Arc<Tag>>> = metamodelica::nil();
+    let mut outDoc: Document;
+    let mut docType: ArcStr;
+    let mut head: Arc<metamodelica::List<Arc<Tag>>>;
+    let mut body: Arc<metamodelica::List<Arc<Tag>>>;
     let Document { docType: __pa0, head: __pa1, body: __pa2 } = (inDoc.clone()) else { bail!("pattern mismatch") };
     docType = __pa0.clone();
     head = __pa1.clone();
@@ -255,10 +255,10 @@ fn addHeadTag(mut tag: Arc<Tag>, mut inDoc: Document) -> Result<Document> {
 }
 
 fn addBodyTag(mut tag: Arc<Tag>, mut inDoc: Document) -> Result<Document> {
-    let mut outDoc: Document = <Document as ::std::default::Default>::default();
-    let mut docType: ArcStr = arcstr::literal!("");
-    let mut head: Arc<metamodelica::List<Arc<Tag>>> = metamodelica::nil();
-    let mut body: Arc<metamodelica::List<Arc<Tag>>> = metamodelica::nil();
+    let mut outDoc: Document;
+    let mut docType: ArcStr;
+    let mut head: Arc<metamodelica::List<Arc<Tag>>>;
+    let mut body: Arc<metamodelica::List<Arc<Tag>>>;
     let Document { docType: __pa0, head: __pa1, body: __pa2 } = (inDoc.clone()) else { bail!("pattern mismatch") };
     docType = __pa0.clone();
     head = __pa1.clone();
@@ -268,7 +268,7 @@ fn addBodyTag(mut tag: Arc<Tag>, mut inDoc: Document) -> Result<Document> {
 }
 
 fn dumpTag(mut tag: Arc<Tag>, mut iBuffer: ArcStr) -> Result<ArcStr> {
-    let mut oBuffer: ArcStr = arcstr::literal!("");
+    let mut oBuffer: ArcStr;
     oBuffer = ((::match_deref::match_deref! { match &(tag.clone()) {
         Deref @ Tag::HEADING { stage: i, text: t } => {
             let mut r#str: ArcStr = arcstr::literal!("");
@@ -322,9 +322,9 @@ fn dumpTag(mut tag: Arc<Tag>, mut iBuffer: ArcStr) -> Result<ArcStr> {
 }
 
 fn dumpStyle(mut inStyle: Style) -> Result<ArcStr> {
-    let mut outBuffer: ArcStr = arcstr::literal!("");
-    let mut name: ArcStr = arcstr::literal!("");
-    let mut value: ArcStr = arcstr::literal!("");
+    let mut outBuffer: ArcStr;
+    let mut name: ArcStr;
+    let mut value: ArcStr;
     let Style { name: __pa0, value: __pa1 } = (inStyle.clone()) else { bail!("pattern mismatch") };
     name = __pa0.clone();
     value = __pa1.clone();
@@ -333,9 +333,9 @@ fn dumpStyle(mut inStyle: Style) -> Result<ArcStr> {
 }
 
 pub fn dumpDAE(mut inDAE: Arc<BackendDAE::BackendDAE>, mut inHeader: ArcStr, mut inFilename: ArcStr) -> Result<()> {
-    let mut doc: Document = <Document as ::std::default::Default>::default();
-    let mut r#str: ArcStr = arcstr::literal!("");
-    let mut eqs: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>> = metamodelica::nil();
+    let mut doc: Document;
+    let mut r#str: ArcStr;
+    let mut eqs: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>>;
     let __pa0 = ::match_deref::match_deref! { match &(inDAE.clone()) {
         Deref @ BackendDAE::BackendDAE { eqs: __pa0, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
@@ -350,20 +350,20 @@ pub fn dumpDAE(mut inDAE: Arc<BackendDAE::BackendDAE>, mut inHeader: ArcStr, mut
 }
 
 fn dumpEqSystem(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inPrefixIdstr: ArcStr, mut inTpl: (Document, i32)) -> Result<(Document, i32)> {
-    let mut outTpl: (Document, i32) = (<Document as ::std::default::Default>::default(), 0);
-    let mut vars: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
-    let mut i: i32 = 0;
-    let mut varlen_str: ArcStr = arcstr::literal!("");
-    let mut eqnlen_str: ArcStr = arcstr::literal!("");
-    let mut prefixId: ArcStr = arcstr::literal!("");
-    let mut eqnsl: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
-    let mut vars1: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
-    let mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
-    let mut m: Option<metamodelica::Array<Arc<metamodelica::List<i32>>>> = None;
-    let mut mT: Option<metamodelica::Array<Arc<metamodelica::List<i32>>>> = None;
-    let mut matching: Arc<BackendDAE::Matching> = Arc::new(BackendDAE::Matching::NO_MATCHING);
-    let mut doc: Document = <Document as ::std::default::Default>::default();
-    let mut tags: Arc<metamodelica::List<Arc<Tag>>> = metamodelica::nil();
+    let mut outTpl: (Document, i32);
+    let mut vars: Arc<metamodelica::List<BackendDAE::Var>>;
+    let mut i: i32;
+    let mut varlen_str: ArcStr;
+    let mut eqnlen_str: ArcStr;
+    let mut prefixId: ArcStr;
+    let mut eqnsl: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
+    let mut vars1: BackendDAE::Variables;
+    let mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>;
+    let mut m: Option<metamodelica::Array<Arc<metamodelica::List<i32>>>>;
+    let mut mT: Option<metamodelica::Array<Arc<metamodelica::List<i32>>>>;
+    let mut matching: Arc<BackendDAE::Matching>;
+    let mut doc: Document;
+    let mut tags: Arc<metamodelica::List<Arc<Tag>>>;
     let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(inEqSystem.clone()) {
         Deref @ BackendDAE::EqSystem { orderedVars: __pa0, orderedEqs: __pa1, m: __pa2, mT: __pa3, matching: __pa4, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
         _ => bail!("pattern mismatch"),
@@ -392,8 +392,8 @@ fn dumpEqSystem(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inPrefixIdstr: Ar
 }
 
 fn printVarList(mut vars: Arc<metamodelica::List<BackendDAE::Var>>, mut prefixId: ArcStr, mut inTags: Arc<metamodelica::List<Arc<Tag>>>) -> Result<Arc<metamodelica::List<Arc<Tag>>>> {
-    let mut outTags: Arc<metamodelica::List<Arc<Tag>>> = metamodelica::nil();
-    let mut tags: Arc<metamodelica::List<Arc<Tag>>> = metamodelica::nil();
+    let mut outTags: Arc<metamodelica::List<Arc<Tag>>>;
+    let mut tags: Arc<metamodelica::List<Arc<Tag>>>;
     (tags, _) = List::fold1(vars.clone(), (std::sync::Arc::new(dumpVar) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, ArcStr, (Arc<metamodelica::List<Arc<Tag>>>, i32)) -> Result<(Arc<metamodelica::List<Arc<Tag>>>, i32)> + 'static>), (prefixId.clone()).clone(), (metamodelica::nil(), 1))?;
     outTags = addHyperLinkTag(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("javascript:toggle('")); __mm_s.push_str(&*prefixId.clone()); __mm_s.push_str(&*literal!("variables')")); ArcStr::from(__mm_s) }).clone(), (literal!("show variables")).clone(), (literal!("show/hide variables")).clone(), inTags.clone());
     outTags = addDivisionTag(({ let mut __mm_s = String::new(); __mm_s.push_str(&*prefixId.clone()); __mm_s.push_str(&*literal!("variables")); ArcStr::from(__mm_s) }).clone(), list![Style { name: (literal!("background")).clone(), value: (literal!("#FFFFCC")).clone() }, Style { name: (literal!("display")).clone(), value: (literal!("none")).clone() }], tags.clone(), outTags.clone());
@@ -401,11 +401,11 @@ fn printVarList(mut vars: Arc<metamodelica::List<BackendDAE::Var>>, mut prefixId
 }
 
 fn dumpVar(mut inVar: BackendDAE::Var, mut prefixId: ArcStr, mut inTpl: (Arc<metamodelica::List<Arc<Tag>>>, i32)) -> Result<(Arc<metamodelica::List<Arc<Tag>>>, i32)> {
-    let mut oTpl: (Arc<metamodelica::List<Arc<Tag>>>, i32) = (metamodelica::nil(), 0);
-    let mut tags: Arc<metamodelica::List<Arc<Tag>>> = metamodelica::nil();
-    let mut i: i32 = 0;
-    let mut ln: ArcStr = arcstr::literal!("");
-    let mut istr: ArcStr = arcstr::literal!("");
+    let mut oTpl: (Arc<metamodelica::List<Arc<Tag>>>, i32);
+    let mut tags: Arc<metamodelica::List<Arc<Tag>>>;
+    let mut i: i32;
+    let mut ln: ArcStr;
+    let mut istr: ArcStr;
     (tags, i) = inTpl.clone();
     istr = (intString(i.clone())).clone();
     ln = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*prefixId.clone()); __mm_s.push_str(&*literal!("varanker")); __mm_s.push_str(&*istr.clone()); ArcStr::from(__mm_s) }).clone();
@@ -417,8 +417,8 @@ fn dumpVar(mut inVar: BackendDAE::Var, mut prefixId: ArcStr, mut inTpl: (Arc<met
 }
 
 fn dumpEqns(mut eqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut prefixId: ArcStr, mut inTags: Arc<metamodelica::List<Arc<Tag>>>) -> Result<Arc<metamodelica::List<Arc<Tag>>>> {
-    let mut outTags: Arc<metamodelica::List<Arc<Tag>>> = metamodelica::nil();
-    let mut tags: Arc<metamodelica::List<Arc<Tag>>> = metamodelica::nil();
+    let mut outTags: Arc<metamodelica::List<Arc<Tag>>>;
+    let mut tags: Arc<metamodelica::List<Arc<Tag>>>;
     (tags, _) = List::fold1(eqns.clone(), (std::sync::Arc::new(dumpEqn) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>, ArcStr, (Arc<metamodelica::List<Arc<Tag>>>, i32)) -> Result<(Arc<metamodelica::List<Arc<Tag>>>, i32)> + 'static>), (prefixId.clone()).clone(), (metamodelica::nil(), 1))?;
     outTags = addHyperLinkTag(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("javascript:toggle('")); __mm_s.push_str(&*prefixId.clone()); __mm_s.push_str(&*literal!("equations')")); ArcStr::from(__mm_s) }).clone(), (literal!("show equations")).clone(), (literal!("show/hide equations")).clone(), inTags.clone());
     outTags = addDivisionTag(({ let mut __mm_s = String::new(); __mm_s.push_str(&*prefixId.clone()); __mm_s.push_str(&*literal!("equations")); ArcStr::from(__mm_s) }).clone(), list![Style { name: (literal!("background")).clone(), value: (literal!("#C0C0C0")).clone() }, Style { name: (literal!("display")).clone(), value: (literal!("none")).clone() }], tags.clone(), outTags.clone());
@@ -426,11 +426,11 @@ fn dumpEqns(mut eqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut pr
 }
 
 fn dumpEqn(mut inEquation: Arc<BackendDAE::Equation>, mut prefixId: ArcStr, mut inTpl: (Arc<metamodelica::List<Arc<Tag>>>, i32)) -> Result<(Arc<metamodelica::List<Arc<Tag>>>, i32)> {
-    let mut oTpl: (Arc<metamodelica::List<Arc<Tag>>>, i32) = (metamodelica::nil(), 0);
-    let mut tags: Arc<metamodelica::List<Arc<Tag>>> = metamodelica::nil();
-    let mut i: i32 = 0;
-    let mut ln: ArcStr = arcstr::literal!("");
-    let mut istr: ArcStr = arcstr::literal!("");
+    let mut oTpl: (Arc<metamodelica::List<Arc<Tag>>>, i32);
+    let mut tags: Arc<metamodelica::List<Arc<Tag>>>;
+    let mut i: i32;
+    let mut ln: ArcStr;
+    let mut istr: ArcStr;
     (tags, i) = inTpl.clone();
     istr = (intString(i.clone())).clone();
     ln = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*prefixId.clone()); __mm_s.push_str(&*literal!("eqanker")); __mm_s.push_str(&*istr.clone()); ArcStr::from(__mm_s) }).clone();
@@ -442,7 +442,7 @@ fn dumpEqn(mut inEquation: Arc<BackendDAE::Equation>, mut prefixId: ArcStr, mut 
 }
 
 fn dumpFullMatching(mut inMatch: Arc<BackendDAE::Matching>, mut prefixId: ArcStr, mut inTags: Arc<metamodelica::List<Arc<Tag>>>) -> Result<Arc<metamodelica::List<Arc<Tag>>>> {
-    let mut outTags: Arc<metamodelica::List<Arc<Tag>>> = metamodelica::nil();
+    let mut outTags: Arc<metamodelica::List<Arc<Tag>>>;
     outTags = (::match_deref::match_deref! { match &(inMatch.clone()) {
         Deref @ BackendDAE::Matching::NO_MATCHING { .. } => {
             inTags.clone()
@@ -458,10 +458,10 @@ fn dumpFullMatching(mut inMatch: Arc<BackendDAE::Matching>, mut prefixId: ArcStr
 }
 
 fn dumpMatching(mut v: metamodelica::Array<i32>, mut prefixId: ArcStr, mut inTags: Arc<metamodelica::List<Arc<Tag>>>) -> Arc<metamodelica::List<Arc<Tag>>> {
-    let mut outTags: Arc<metamodelica::List<Arc<Tag>>> = metamodelica::nil();
-    let mut len: i32 = 0;
-    let mut len_str: ArcStr = arcstr::literal!("");
-    let mut tags: Arc<metamodelica::List<Arc<Tag>>> = metamodelica::nil();
+    let mut outTags: Arc<metamodelica::List<Arc<Tag>>>;
+    let mut len: i32;
+    let mut len_str: ArcStr;
+    let mut tags: Arc<metamodelica::List<Arc<Tag>>>;
     outTags = addHeadingTag(2, (literal!("Matching")).clone(), inTags.clone());
     len = metamodelica::arrayLength(v.clone());
     len_str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(len.clone())); __mm_s.push_str(&*literal!(" variables and equations\n")); ArcStr::from(__mm_s) }).clone();
@@ -473,10 +473,10 @@ fn dumpMatching(mut v: metamodelica::Array<i32>, mut prefixId: ArcStr, mut inTag
 }
 
 fn dumpMatching2(mut v: metamodelica::Array<i32>, mut i: i32, mut len: i32, mut prefixId: ArcStr, mut inTags: Arc<metamodelica::List<Arc<Tag>>>) -> Arc<metamodelica::List<Arc<Tag>>> {
-    let mut outTags: Arc<metamodelica::List<Arc<Tag>>> = metamodelica::nil();
-    let mut eqn: i32 = 0;
-    let mut s: ArcStr = arcstr::literal!("");
-    let mut s2: ArcStr = arcstr::literal!("");
+    let mut outTags: Arc<metamodelica::List<Arc<Tag>>>;
+    let mut eqn: i32;
+    let mut s: ArcStr;
+    let mut s2: ArcStr;
     match '__try0: {
         let true = (intLe(i.clone(), len.clone())) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
         s = (intString(i.clone())).clone();
@@ -497,20 +497,20 @@ fn dumpMatching2(mut v: metamodelica::Array<i32>, mut i: i32, mut len: i32, mut 
 }
 
 pub fn dumpMatrixHTML(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut rowNames: Arc<metamodelica::List<ArcStr>>, mut columNames: Arc<metamodelica::List<ArcStr>>, mut fileName: ArcStr) -> Result<()> {
-    let mut size: i32 = 0;
+    let mut size: i32;
     let mut rowIdx: i32 = 0;
     let mut colIdx: i32 = 0;
-    let mut matrixMargin: i32 = 0;
-    let mut blockSize: i32 = 0;
-    let mut row: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut blockDraw: ArcStr = arcstr::literal!("");
-    let mut rowLabelDraw: ArcStr = arcstr::literal!("");
-    let mut colLabelDraw: ArcStr = arcstr::literal!("");
-    let mut scripts: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut rowLabelScripts: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut colLabelScripts: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut doc: Document = <Document as ::std::default::Default>::default();
-    let mut canvas: Arc<Tag> = Arc::new(<Tag as ::std::default::Default>::default());
+    let mut matrixMargin: i32;
+    let mut blockSize: i32;
+    let mut row: Arc<metamodelica::List<i32>>;
+    let mut blockDraw: ArcStr;
+    let mut rowLabelDraw: ArcStr;
+    let mut colLabelDraw: ArcStr;
+    let mut scripts: Arc<metamodelica::List<ArcStr>>;
+    let mut rowLabelScripts: Arc<metamodelica::List<ArcStr>>;
+    let mut colLabelScripts: Arc<metamodelica::List<ArcStr>>;
+    let mut doc: Document;
+    let mut canvas: Arc<Tag>;
     matrixMargin = 100;
     blockSize = 20;
     scripts = metamodelica::nil();
@@ -550,7 +550,7 @@ pub fn dumpMatrixHTML(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, 
 }
 
 fn intAbsGt(mut i1: i32, mut i2: i32) -> bool {
-    let mut out: bool = false;
+    let mut out: bool;
     out = intGt(intAbs(i1.clone()), intAbs(i2.clone()));
     out
 }

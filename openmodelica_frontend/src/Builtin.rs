@@ -56,7 +56,7 @@ use openmodelica_util::Global;
 use openmodelica_util::Util;
 
 pub fn variableIsBuiltin(mut cref: Arc<DAE::ComponentRef>) -> Result<bool> {
-    let mut b: bool = false;
+    let mut b: bool;
     b = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ DAE::ComponentRef::CREF_IDENT { ident: id, .. } => {
             variableNameIsBuiltin((id.clone()).clone())?
@@ -70,7 +70,7 @@ pub fn variableIsBuiltin(mut cref: Arc<DAE::ComponentRef>) -> Result<bool> {
 }
 
 pub fn variableNameIsBuiltin(mut name: ArcStr) -> Result<bool> {
-    let mut b: bool = false;
+    let mut b: bool;
     b = (::match_deref::match_deref! { match &(name.clone()) {
         Deref @ "time" => true,
         Deref @ "startTime" => Config::acceptOptimicaGrammar()?,
@@ -98,7 +98,7 @@ pub fn isDer(mut inPath: Arc<Absyn::Path>) -> Result<()> {
 }
 
 pub fn initialGraph(mut inCache: FCore::Cache) -> Result<(FCore::Cache, FCore::Graph)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
+    let mut outCache: FCore::Cache;
     let mut graph: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
     let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
     (outCache, graph) = 'mc: {
@@ -138,7 +138,7 @@ pub fn initialGraph(mut inCache: FCore::Cache) -> Result<(FCore::Cache, FCore::G
 }
 
 fn getSetInitialGraph(mut inEnvOpt: Option<FCore::Graph>) -> Result<FCore::Graph> {
-    let mut initialEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
+    let mut initialEnv: FCore::Graph;
     initialEnv = 'mc: {
         let __mc_input = inEnvOpt.clone();
         if let Ok(__v) = (|| -> Result<_> {

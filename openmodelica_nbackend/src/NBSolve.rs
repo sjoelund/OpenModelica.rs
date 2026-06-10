@@ -126,7 +126,7 @@ impl Ord for RelationInversion {
 }
 
 pub fn statusString(mut status: Status) -> ArcStr {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     r#str = ((match status.clone() {
         Status::UNPROCESSED => literal!("Solve.UNPROCESSED"),
         Status::EXPLICIT => literal!("Solve.EXPLICIT"),
@@ -236,8 +236,8 @@ pub fn solvePartition(mut partition: Arc<Partition::Partition>, mut funcMap: Arc
     let mut implicit_index: i32 = Pointer::access(implicit_index_ptr.clone());
     let mut sliced_idx: Pointer::Pointer<i32>;
     let mut comp_idx: Pointer::Pointer<i32> = Pointer::create(1);
-    let mut name: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    let mut sliced_eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
+    let mut name: Arc<ComponentRef::NFComponentRef>;
+    let mut sliced_eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>;
     if isSome(partition.strongComponents.clone()) {
         let __range0 = Util::getOption(partition.strongComponents.clone())?.borrow().iter().cloned().collect::<Vec<_>>();
         for mut comp in __range0 {
@@ -285,7 +285,7 @@ pub fn solveStrongComponent(mut comp: Arc<StrongComponent::NBStrongComponent>, m
     let mut solved_comps: Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>> = metamodelica::nil();
     let mut implicit_index: i32 = implicit_index;
     let mut solve_status: Status = Status::UNPROCESSED;
-    let mut implicit_comp: Arc<StrongComponent::NBStrongComponent> = Arc::new(<StrongComponent::NBStrongComponent as ::std::default::Default>::default());
+    let mut implicit_comp: Arc<StrongComponent::NBStrongComponent>;
     match '__try0: {
         (solved_comps, solve_status) = ({
         let mut entwined_slices: Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>> = metamodelica::nil();
@@ -585,13 +585,13 @@ pub fn solveGenericEquation(mut comp: Arc<StrongComponent::NBStrongComponent>, m
 }
 
 pub fn solveGenericEquationSlice(mut var_slice: Arc<Slice::NBSlice<Pointer::Pointer<Arc<Variable::NFVariable>>>>, mut eqn_slice: Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>, mut cref: Arc<ComponentRef::NFComponentRef>, mut functions: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, mut kind: BPartition::Kind, mut implicit_index: i32, mut slicing_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>>>, mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqData::EqData>) -> Result<(Arc<StrongComponent::NBStrongComponent>, Status, i32)> {
-    let mut comp: Arc<StrongComponent::NBStrongComponent> = Arc::new(<StrongComponent::NBStrongComponent as ::std::default::Default>::default());
-    let mut solve_status: Status = Status::UNPROCESSED;
+    let mut comp: Arc<StrongComponent::NBStrongComponent>;
+    let mut solve_status: Status;
     let mut implicit_index: i32 = implicit_index;
     let mut eqn_ptr: Pointer::Pointer<Arc<Equation::Equation>> = Slice::getT(eqn_slice.clone());
-    let mut eqn: Arc<Equation::Equation> = Arc::new(Equation::DUMMY_EQUATION);
+    let mut eqn: Arc<Equation::Equation>;
     let mut solved_slice: Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>;
-    let mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> as ::std::default::Default>::default();
+    let mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>;
     if List::hasOneElement(eqn_slice.indices.clone()) {
         replacements = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
         (eqn, solve_status) = Equation::singleSlice(eqn_ptr.clone(), listHead(eqn_slice.indices.clone())?, Equation::sizes(eqn_ptr.clone(), false)?, cref.clone(), replacements.clone(), functions.clone())?;
@@ -613,9 +613,9 @@ pub fn solveGenericEquationSlice(mut var_slice: Arc<Slice::NBSlice<Pointer::Poin
 
 pub fn solveSingleStrongComponent(mut eqn: Arc<Equation::Equation>, mut var: Arc<Variable::NFVariable>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, mut kind: BPartition::Kind, mut implicit_index: i32, mut slicing_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>>>, mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqData::EqData>) -> Result<(Arc<Equation::Equation>, Status, i32)> {
     let mut eqn: Arc<Equation::Equation> = eqn;
-    let mut status: Status = Status::UNPROCESSED;
+    let mut status: Status;
     let mut implicit_index: i32 = implicit_index;
-    let mut var_cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
+    let mut var_cref: Arc<ComponentRef::NFComponentRef>;
     if ComponentRef::isEmpty(var.name.clone()) {
         (eqn, status) = (eqn.clone(), Status::EXPLICIT.clone());
     } else {
@@ -762,13 +762,13 @@ pub fn solveEquation(mut eqn: Arc<Equation::Equation>, mut cref: Arc<ComponentRe
 
 pub fn solveBody(mut eqn: Arc<Equation::Equation>, mut cref: Arc<ComponentRef::NFComponentRef>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>) -> Result<(Arc<Equation::Equation>, Status, RelationInversion)> {
     let mut eqn: Arc<Equation::Equation> = eqn;
-    let mut status: Status = Status::UNPROCESSED;
-    let mut invertRelation: RelationInversion = RelationInversion::TRUE;
-    let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut fixed_cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    let mut residual: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut derivative: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut diffArgs: Arc<Differentiate::DifferentiationArguments::DifferentiationArguments> = Arc::new(<Differentiate::DifferentiationArguments::DifferentiationArguments as ::std::default::Default>::default());
+    let mut status: Status;
+    let mut invertRelation: RelationInversion;
+    let mut ty: Arc<Type::NFType>;
+    let mut fixed_cref: Arc<ComponentRef::NFComponentRef>;
+    let mut residual: Arc<Expression::NFExpression>;
+    let mut derivative: Arc<Expression::NFExpression>;
+    let mut diffArgs: Arc<Differentiate::DifferentiationArguments::DifferentiationArguments>;
     fixed_cref = ComponentRef::stripSubscriptsAll(cref.clone());
     ty = ComponentRef::getSubscriptedType(fixed_cref.clone(), true)?;
     if Type::isArray(ty.clone()) && Type::sizeOf(ty.clone(), false)? == 1 {
@@ -813,11 +813,11 @@ pub fn solveBody(mut eqn: Arc<Equation::Equation>, mut cref: Arc<ComponentRef::N
 
 pub fn solveIfBody(mut body: Arc<IfEquationBody::IfEquationBody>, mut vars: Arc<VariablePointers::VariablePointers>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, mut kind: BPartition::Kind, mut implicit_index: i32, mut slicing_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>>>, mut iter: Arc<Iterator::Iterator>, mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqData::EqData>) -> Result<(Arc<IfEquationBody::IfEquationBody>, Status, i32)> {
     let mut body: Arc<IfEquationBody::IfEquationBody> = body;
-    let mut status: Status = Status::UNPROCESSED;
+    let mut status: Status;
     let mut implicit_index: i32 = implicit_index;
-    let mut else_if: Arc<IfEquationBody::IfEquationBody> = Arc::new(<IfEquationBody::IfEquationBody as ::std::default::Default>::default());
-    let mut comps: Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>> = metamodelica::nil();
-    let mut solved_comps: Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>> = metamodelica::nil();
+    let mut else_if: Arc<IfEquationBody::IfEquationBody>;
+    let mut comps: Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>>;
+    let mut solved_comps: Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>>;
     let mut new_then_eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
     (_, comps) = Causalize::simple(vars.clone(), EquationPointers::fromList(body.then_eqns.clone())?, kind.clone(), NBAdjacency::MatrixStrictness::MATCHING.clone(), iter.clone())?;
     for mut comp in &*comps.clone() {
@@ -885,8 +885,8 @@ pub fn solveSimple(mut eqn: Arc<Equation::Equation>, mut cref: Arc<ComponentRef:
 
 fn solveSimpleLhsRhs(mut lhs: Arc<Expression::NFExpression>, mut rhs: Arc<Expression::NFExpression>, mut cref: Arc<ComponentRef::NFComponentRef>, mut eqn: Arc<Equation::Equation>) -> Result<(Arc<Equation::Equation>, Status, RelationInversion)> {
     let mut eqn: Arc<Equation::Equation> = eqn;
-    let mut status: Status = Status::UNPROCESSED;
-    let mut invertRelation: RelationInversion = RelationInversion::TRUE;
+    let mut status: Status;
+    let mut invertRelation: RelationInversion;
     (eqn, status, invertRelation) = (::match_deref::match_deref! { match &((lhs.clone(), rhs.clone())) {
         (Deref @ Expression::CREF { cref: checkCref, .. }, exp) if (ComponentRef::isEqual(cref.clone(), checkCref.clone())? && !(Expression::containsCref(exp.clone(), cref.clone())?)) => {
             (eqn.clone(), Status::EXPLICIT.clone(), RelationInversion::FALSE.clone())
@@ -946,8 +946,8 @@ fn solveSimpleIf(mut body: Arc<IfEquationBody::IfEquationBody>, mut cref: Arc<Co
     let mut body: Arc<IfEquationBody::IfEquationBody> = body;
     let mut status: Status = Status::EXPLICIT.clone();
     let mut invertRelation: RelationInversion = RelationInversion::FALSE.clone();
-    let mut else_if: Arc<IfEquationBody::IfEquationBody> = Arc::new(<IfEquationBody::IfEquationBody as ::std::default::Default>::default());
-    let mut eqn: Arc<Equation::Equation> = Arc::new(Equation::DUMMY_EQUATION);
+    let mut else_if: Arc<IfEquationBody::IfEquationBody>;
+    let mut eqn: Arc<Equation::Equation>;
     if isSome(body.else_if.clone()) {
         (else_if, status, _) = solveSimpleIf(Util::getOption(body.else_if.clone())?, cref.clone())?;
         if status.clone() == Status::EXPLICIT.clone() {
@@ -968,11 +968,11 @@ fn solveSimpleIf(mut body: Arc<IfEquationBody::IfEquationBody>, mut cref: Arc<Co
 
 fn solveLinear(mut eqn: Arc<Equation::Equation>, mut residual: Arc<Expression::NFExpression>, mut derivative: Arc<Expression::NFExpression>, mut diffArgs: Arc<Differentiate::DifferentiationArguments::DifferentiationArguments>, mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<Arc<Equation::Equation>> {
     let mut eqn: Arc<Equation::Equation> = eqn;
-    let mut crefExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut numerator: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut mulOp: Arc<Operator::NFOperator> = Arc::new(<Operator::NFOperator as ::std::default::Default>::default());
-    let mut uminOp: Arc<Operator::NFOperator> = Arc::new(<Operator::NFOperator as ::std::default::Default>::default());
-    let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
+    let mut crefExp: Arc<Expression::NFExpression>;
+    let mut numerator: Arc<Expression::NFExpression>;
+    let mut mulOp: Arc<Operator::NFOperator>;
+    let mut uminOp: Arc<Operator::NFOperator>;
+    let mut ty: Arc<Type::NFType>;
     crefExp = Expression::fromCref(cref.clone(), false)?;
     ty = ComponentRef::getSubscriptedType(cref.clone(), true)?;
     numerator = Replacements::single(residual.clone(), crefExp.clone(), Expression::makeZero(ty.clone())?)?;
@@ -985,10 +985,10 @@ fn solveLinear(mut eqn: Arc<Equation::Equation>, mut residual: Arc<Expression::N
 
 fn solveUnique(mut eqn: Arc<Equation::Equation>, mut residual: Arc<Expression::NFExpression>, mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<(Arc<Equation::Equation>, Status)> {
     let mut eqn: Arc<Equation::Equation> = eqn;
-    let mut status: Status = Status::UNPROCESSED;
+    let mut status: Status;
     let mut crefExp: Arc<Expression::NFExpression> = Expression::fromCref(cref.clone(), false)?;
     let mut solvedRHS: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut crefFound: bool = false;
+    let mut crefFound: bool;
     let mut inverseInstructions: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
     let mut ty: Arc<Type::NFType> = ComponentRef::getSubscriptedType(cref.clone(), true)?;
     (crefFound, inverseInstructions, status) = solveUniqueFindInstructions(residual.clone(), cref.clone(), false, inverseInstructions.clone())?;
@@ -1018,7 +1018,7 @@ fn solveUniqueFindInstructions(mut exp: Arc<Expression::NFExpression>, mut cref:
     let mut status: Status = Status::EXPLICIT.clone();
     let mut substExp: Arc<Expression::NFExpression> = BVariable::toExpression(Pointer::create(BVariable::SUBST_VARIABLE().clone()))?;
     let mut ty: Arc<Type::NFType> = ComponentRef::getSubscriptedType(cref.clone(), true)?;
-    let mut call: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
+    let mut call: Arc<Call::NFCall>;
     if crefFound.clone() {
         if Expression::containsCref(exp.clone(), cref.clone())? {
             status = Status::IMPLICIT.clone();
@@ -1451,7 +1451,7 @@ fn solveUniqueExpressionNoCref(mut exp: Arc<Expression::NFExpression>, mut cref:
         Ok(exp)
     }
 
-    let mut b: bool = false;
+    let mut b: bool;
     let mut res: Pointer::Pointer<bool> = Pointer::create(false);
     Expression::fakeMap(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = cref.clone(); let __pe_b2 = res.clone(); move |__pe_a0| solveUniqueExpressionNoCrefTraverse(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
     b = Pointer::access(res.clone());
@@ -1574,7 +1574,7 @@ fn tupleSolvable(mut tuple_exps: Arc<metamodelica::List<Arc<Expression::NFExpres
         }
         __acc.reverse()
     });
-    let mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, bool>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, bool>> as ::std::default::Default>::default();
+    let mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, bool>>;
     if List::compareLength(filtered_exps.clone(), vars.clone())? == 0 {
         map = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
         for mut var in &*vars.clone() {
@@ -1602,9 +1602,9 @@ fn tupleSolvable(mut tuple_exps: Arc<metamodelica::List<Arc<Expression::NFExpres
 
 fn getVarSlice(mut var_cref: Arc<ComponentRef::NFComponentRef>, mut eqn: Arc<Equation::Equation>) -> Result<(Arc<ComponentRef::NFComponentRef>, Status)> {
     let mut var_cref: Arc<ComponentRef::NFComponentRef> = var_cref;
-    let mut solve_status: Status = Status::UNPROCESSED;
-    let mut slices_lst: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-    let mut record_parent: Option<Pointer::Pointer<Arc<Variable::NFVariable>>> = None;
+    let mut solve_status: Status;
+    let mut slices_lst: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
+    let mut record_parent: Option<Pointer::Pointer<Arc<Variable::NFVariable>>>;
     slices_lst = Equation::collectCrefs(eqn.clone(), (std::sync::Arc::new({ let __pe_b2 = var_cref.clone(); move |__pe_a0, __pe_a1| Slice::getSliceCandidates(__pe_a0, __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<ComponentRef::NFComponentRef>> + 'static>), (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
     if List::hasOneElement(slices_lst.clone()) {
         var_cref = listHead(slices_lst.clone())?;
@@ -1623,9 +1623,9 @@ fn getVarSlice(mut var_cref: Arc<ComponentRef::NFComponentRef>, mut eqn: Arc<Equ
 fn solveForVarSlice(mut eqn_slice: Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>, mut var_slice: Arc<Slice::NBSlice<Pointer::Pointer<Arc<Variable::NFVariable>>>>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, mut kind: BPartition::Kind, mut implicit_index: i32, mut slicing_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>>>, mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqData::EqData>) -> Result<(Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>, i32, Status)> {
     let mut eqn_slice: Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>> = eqn_slice;
     let mut implicit_index: i32 = implicit_index;
-    let mut solve_status: Status = Status::UNPROCESSED;
-    let mut eqn: Arc<Equation::Equation> = Arc::new(Equation::DUMMY_EQUATION);
-    let mut var_cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
+    let mut solve_status: Status;
+    let mut eqn: Arc<Equation::Equation>;
+    let mut var_cref: Arc<ComponentRef::NFComponentRef>;
     eqn = Pointer::access(Slice::getT(eqn_slice.clone()));
     (var_cref, solve_status) = getVarSlice(BVariable::getVarName(Slice::getT(var_slice.clone())), eqn.clone())?;
     if solve_status.clone() < Status::UNSOLVABLE.clone() {

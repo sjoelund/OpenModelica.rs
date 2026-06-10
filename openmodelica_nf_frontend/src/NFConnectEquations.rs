@@ -94,12 +94,12 @@ pub fn generateEquations(mut sets: metamodelica::Array<Arc<metamodelica::List<Ar
     type potFunc = std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Connector::NFConnector>>>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<(Arc<metamodelica::List<Arc<Equation::NFEquation>>>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>)> + 'static>;
 
     let mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = metamodelica::nil();
-    let mut connectedLocalIOs: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
+    let mut connectedLocalIOs: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
     let mut unhandledStreamSets: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Connector::NFConnector>>>>> = metamodelica::nil();
-    let mut set_eql: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = metamodelica::nil();
+    let mut set_eql: Arc<metamodelica::List<Arc<Equation::NFEquation>>>;
     let mut potfunc: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Connector::NFConnector>>>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<(Arc<metamodelica::List<Arc<Equation::NFEquation>>>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>)> + 'static>;
-    let mut flowThreshold: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut cty: i32 = 0;
+    let mut flowThreshold: Arc<Expression::NFExpression>;
+    let mut cty: i32;
     let mut flow_alias_elim: bool = Flags::isSet(Flags::FLOW_ALIAS_ELIMINATION.clone())?;
     { let __v = None; openmodelica_util::Globals::isInStream.with(|__root| *__root.borrow_mut() = __v) };
     connectedLocalIOs = UnorderedSet::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
@@ -166,7 +166,7 @@ pub fn evaluateOperators(mut exp: Arc<Expression::NFExpression>, mut sets: Conne
 }
 
 fn getSetType(mut set: Arc<metamodelica::List<Arc<Connector::NFConnector>>>) -> Result<i32> {
-    let mut cty: i32 = 0;
+    let mut cty: i32;
     let __pa0 = ::match_deref::match_deref! { match &(set.clone()) {
         Deref @ metamodelica::List::Cons { head: Deref @ Connector::CONNECTOR { cty: __pa0, .. }, tail: _ } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
@@ -176,9 +176,9 @@ fn getSetType(mut set: Arc<metamodelica::List<Arc<Connector::NFConnector>>>) -> 
 }
 
 fn generatePotentialEquations(mut elements: Arc<metamodelica::List<Arc<Connector::NFConnector>>>, mut connectedLocalIOs: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<(Arc<metamodelica::List<Arc<Equation::NFEquation>>>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>)> {
-    let mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = metamodelica::nil();
+    let mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>>;
     let mut connectedLocalIOs: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = connectedLocalIOs;
-    let mut c1: Arc<Connector::NFConnector> = Arc::new(<Connector::NFConnector as ::std::default::Default>::default());
+    let mut c1: Arc<Connector::NFConnector>;
     c1 = listHead(elements.clone())?;
     if Connector::variability(c1.clone())? > Variability::PARAMETER.clone() {
         equations = ({
@@ -252,24 +252,24 @@ fn generatePotentialEquations(mut elements: Arc<metamodelica::List<Arc<Connector
 //  end for;
 //end generatePotentialEquationsOrdered;
 fn makeEqualityEquation(mut lhsCref: Arc<ComponentRef::NFComponentRef>, mut lhsSource: Arc<DAE::ElementSource>, mut rhsCref: Arc<ComponentRef::NFComponentRef>, mut rhsSource: Arc<DAE::ElementSource>) -> Result<Arc<Equation::NFEquation>> {
-    let mut equalityEq: Arc<Equation::NFEquation> = Arc::new(<Equation::NFEquation as ::std::default::Default>::default());
-    let mut source: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
+    let mut equalityEq: Arc<Equation::NFEquation>;
+    let mut source: Arc<DAE::ElementSource>;
     source = ElementSource::mergeSources(lhsSource.clone(), rhsSource.clone())?;
     equalityEq = Equation::makeCrefEquality(lhsCref.clone(), rhsCref.clone(), crate::NFInstNode::InstNode::interned_EMPTY_NODE(), source.clone())?;
     Ok(equalityEq)
 }
 
 fn makeEqualityAssert(mut lhsCref: Arc<ComponentRef::NFComponentRef>, mut lhsSource: Arc<DAE::ElementSource>, mut rhsCref: Arc<ComponentRef::NFComponentRef>, mut rhsSource: Arc<DAE::ElementSource>) -> Result<Arc<Equation::NFEquation>> {
-    let mut equalityAssert: Arc<Equation::NFEquation> = Arc::new(<Equation::NFEquation as ::std::default::Default>::default());
-    let mut source: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
-    let mut lhs_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut rhs_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut elem_ty: Arc<Type::NFType> = Arc::new(Type::ANY);
+    let mut equalityAssert: Arc<Equation::NFEquation>;
+    let mut source: Arc<DAE::ElementSource>;
+    let mut lhs_exp: Arc<Expression::NFExpression>;
+    let mut rhs_exp: Arc<Expression::NFExpression>;
+    let mut exp: Arc<Expression::NFExpression>;
+    let mut ty: Arc<Type::NFType>;
+    let mut elem_ty: Arc<Type::NFType>;
     let mut iterators: Arc<metamodelica::List<Arc<InstNode::InstNode>>> = metamodelica::nil();
     let mut ranges: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-    let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
+    let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>;
     source = ElementSource::mergeSources(lhsSource.clone(), rhsSource.clone())?;
     ty = ComponentRef::getSubscriptedType(lhsCref.clone(), false)?;
     if Type::isArray(ty.clone()) {
@@ -319,11 +319,11 @@ fn makeEqualityAssert(mut lhsCref: Arc<ComponentRef::NFComponentRef>, mut lhsSou
 //  end match;
 //end shouldFlipPotentialEquation;
 fn generateFlowEquations(mut elements: Arc<metamodelica::List<Arc<Connector::NFConnector>>>) -> Result<Arc<metamodelica::List<Arc<Equation::NFEquation>>>> {
-    let mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = metamodelica::nil();
-    let mut c: Arc<Connector::NFConnector> = Arc::new(<Connector::NFConnector as ::std::default::Default>::default());
-    let mut c_rest: Arc<metamodelica::List<Arc<Connector::NFConnector>>> = metamodelica::nil();
-    let mut src: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
-    let mut sum: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>>;
+    let mut c: Arc<Connector::NFConnector>;
+    let mut c_rest: Arc<metamodelica::List<Arc<Connector::NFConnector>>>;
+    let mut src: Arc<DAE::ElementSource>;
+    let mut sum: Arc<Expression::NFExpression>;
     let mut iterators: Arc<metamodelica::List<Arc<InstNode::InstNode>>> = metamodelica::nil();
     let mut ranges: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
     let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
@@ -371,8 +371,8 @@ fn generateFlowEquations(mut elements: Arc<metamodelica::List<Arc<Connector::NFC
 }
 
 fn makeFlowExp(mut element: Arc<Connector::NFConnector>) -> Result<Arc<Expression::NFExpression>> {
-    let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut face: Face = Face::INSIDE;
+    let mut exp: Arc<Expression::NFExpression>;
+    let mut face: Face;
     exp = Expression::fromCref(element.name.clone(), false)?;
     face = element.face.clone();
     if face.clone() == Face::OUTSIDE.clone() {
@@ -382,7 +382,7 @@ fn makeFlowExp(mut element: Arc<Connector::NFConnector>) -> Result<Arc<Expressio
 }
 
 fn generateStreamEquations(mut elements: Arc<metamodelica::List<Arc<Connector::NFConnector>>>, mut flowThreshold: Arc<Expression::NFExpression>, mut variables: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Variable::NFVariable>>>) -> Result<Arc<metamodelica::List<Arc<Equation::NFEquation>>>> {
-    let mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = metamodelica::nil();
+    let mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>>;
     let mut cr1: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
     let mut cr2: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
     let mut src: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
@@ -392,8 +392,8 @@ fn generateStreamEquations(mut elements: Arc<metamodelica::List<Arc<Connector::N
     let mut cref2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut inside: Arc<metamodelica::List<Arc<Connector::NFConnector>>> = metamodelica::nil();
-    let mut outside: Arc<metamodelica::List<Arc<Connector::NFConnector>>> = metamodelica::nil();
+    let mut inside: Arc<metamodelica::List<Arc<Connector::NFConnector>>>;
+    let mut outside: Arc<metamodelica::List<Arc<Connector::NFConnector>>>;
     (outside, inside) = List::splitOnTrue(elements.clone(), (std::sync::Arc::new(fnptr!(Connector::isOutside, Arc<Connector::NFConnector>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>) -> Result<bool> + 'static>))?;
     inside = ({
         let mut __acc: Arc<metamodelica::List<Arc<Connector::NFConnector>>> = metamodelica::nil();
@@ -435,11 +435,11 @@ fn generateStreamEquations(mut elements: Arc<metamodelica::List<Arc<Connector::N
 
 fn streamEquationGeneral(mut outsideElements: Arc<metamodelica::List<Arc<Connector::NFConnector>>>, mut insideElements: Arc<metamodelica::List<Arc<Connector::NFConnector>>>, mut flowThreshold: Arc<Expression::NFExpression>, mut variables: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Variable::NFVariable>>>) -> Result<Arc<metamodelica::List<Arc<Equation::NFEquation>>>> {
     let mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = metamodelica::nil();
-    let mut reduced_outside: Arc<metamodelica::List<Arc<Connector::NFConnector>>> = metamodelica::nil();
-    let mut outside: Arc<metamodelica::List<Arc<Connector::NFConnector>>> = metamodelica::nil();
-    let mut cref_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut res: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut src: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
+    let mut reduced_outside: Arc<metamodelica::List<Arc<Connector::NFConnector>>>;
+    let mut outside: Arc<metamodelica::List<Arc<Connector::NFConnector>>>;
+    let mut cref_exp: Arc<Expression::NFExpression>;
+    let mut res: Arc<Expression::NFExpression>;
+    let mut src: Arc<DAE::ElementSource>;
     reduced_outside = ({
         let mut __acc: Arc<metamodelica::List<Arc<Connector::NFConnector>>> = metamodelica::nil();
         for mut s in (outsideElements.clone()).into_iter().cloned() {
@@ -496,7 +496,7 @@ fn streamSumEquationExp(mut outsideElements: Arc<metamodelica::List<Arc<Connecto
 fn sumMap(mut elements: Arc<metamodelica::List<Arc<Connector::NFConnector>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>, Arc<Expression::NFExpression>, Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Variable::NFVariable>>>) -> Result<Arc<Expression::NFExpression>> + 'static>, mut flowThreshold: Arc<Expression::NFExpression>, mut variables: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Variable::NFVariable>>>) -> Result<Arc<Expression::NFExpression>> {
     pub type FuncType = std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>, Arc<Expression::NFExpression>, Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Variable::NFVariable>>>) -> Result<Arc<Expression::NFExpression>> + 'static>;
 
-    let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut exp: Arc<Expression::NFExpression>;
     exp = func(listHead(elements.clone())?, flowThreshold.clone(), variables.clone())?;
     for mut e in &*listRest(elements.clone())? {
         let mut e = e.clone();
@@ -506,9 +506,9 @@ fn sumMap(mut elements: Arc<metamodelica::List<Arc<Connector::NFConnector>>>, mu
 }
 
 fn streamFlowExp(mut element: Arc<Connector::NFConnector>) -> Result<(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>)> {
-    let mut streamExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut flowExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut stream_cr: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
+    let mut streamExp: Arc<Expression::NFExpression>;
+    let mut flowExp: Arc<Expression::NFExpression>;
+    let mut stream_cr: Arc<ComponentRef::NFComponentRef>;
     stream_cr = Connector::name(element.clone());
     streamExp = Expression::fromCref(stream_cr.clone(), false)?;
     flowExp = Expression::fromCref(associatedFlowCref(stream_cr.clone())?, false)?;
@@ -516,26 +516,26 @@ fn streamFlowExp(mut element: Arc<Connector::NFConnector>) -> Result<(Arc<Expres
 }
 
 fn flowExp(mut element: Arc<Connector::NFConnector>) -> Result<Arc<Expression::NFExpression>> {
-    let mut flowExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut flow_cr: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
+    let mut flowExp: Arc<Expression::NFExpression>;
+    let mut flow_cr: Arc<ComponentRef::NFComponentRef>;
     flow_cr = associatedFlowCref(Connector::name(element.clone()))?;
     flowExp = Expression::fromCref(flow_cr.clone(), false)?;
     Ok(flowExp)
 }
 
 fn sumOutside1(mut element: Arc<Connector::NFConnector>, mut flowThreshold: Arc<Expression::NFExpression>, mut variables: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Variable::NFVariable>>>) -> Result<Arc<Expression::NFExpression>> {
-    let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut stream_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut flow_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut exp: Arc<Expression::NFExpression>;
+    let mut stream_exp: Arc<Expression::NFExpression>;
+    let mut flow_exp: Arc<Expression::NFExpression>;
     (stream_exp, flow_exp) = streamFlowExp(element.clone())?;
     exp = Arc::new(Expression::NFExpression::BINARY { exp1: makePositiveMaxCall(flow_exp.clone(), stream_exp.clone(), element.clone(), flowThreshold.clone(), variables.clone())?, operator: Operator::makeMul(crate::NFType::interned_REAL()), exp2: makeInStreamCall(stream_exp.clone())? });
     Ok(exp)
 }
 
 fn sumInside1(mut element: Arc<Connector::NFConnector>, mut flowThreshold: Arc<Expression::NFExpression>, mut variables: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Variable::NFVariable>>>) -> Result<Arc<Expression::NFExpression>> {
-    let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut stream_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut flow_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut exp: Arc<Expression::NFExpression>;
+    let mut stream_exp: Arc<Expression::NFExpression>;
+    let mut flow_exp: Arc<Expression::NFExpression>;
     (stream_exp, flow_exp) = streamFlowExp(element.clone())?;
     flow_exp = Arc::new(Expression::NFExpression::UNARY { operator: Operator::makeUMinus(crate::NFType::interned_REAL()), exp: flow_exp.clone() });
     exp = Arc::new(Expression::NFExpression::BINARY { exp1: makePositiveMaxCall(flow_exp.clone(), stream_exp.clone(), element.clone(), flowThreshold.clone(), variables.clone())?, operator: Operator::makeMul(crate::NFType::interned_REAL()), exp2: stream_exp.clone() });
@@ -543,18 +543,18 @@ fn sumInside1(mut element: Arc<Connector::NFConnector>, mut flowThreshold: Arc<E
 }
 
 fn sumOutside2(mut element: Arc<Connector::NFConnector>, mut flowThreshold: Arc<Expression::NFExpression>, mut variables: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Variable::NFVariable>>>) -> Result<Arc<Expression::NFExpression>> {
-    let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut flow_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut stream_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut exp: Arc<Expression::NFExpression>;
+    let mut flow_exp: Arc<Expression::NFExpression>;
+    let mut stream_exp: Arc<Expression::NFExpression>;
     (stream_exp, flow_exp) = streamFlowExp(element.clone())?;
     exp = makePositiveMaxCall(flow_exp.clone(), stream_exp.clone(), element.clone(), flowThreshold.clone(), variables.clone())?;
     Ok(exp)
 }
 
 fn sumInside2(mut element: Arc<Connector::NFConnector>, mut flowThreshold: Arc<Expression::NFExpression>, mut variables: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Variable::NFVariable>>>) -> Result<Arc<Expression::NFExpression>> {
-    let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut flow_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut stream_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut exp: Arc<Expression::NFExpression>;
+    let mut flow_exp: Arc<Expression::NFExpression>;
+    let mut stream_exp: Arc<Expression::NFExpression>;
     (stream_exp, flow_exp) = streamFlowExp(element.clone())?;
     flow_exp = Arc::new(Expression::NFExpression::UNARY { operator: Operator::makeUMinus(crate::NFType::interned_REAL()), exp: flow_exp.clone() });
     exp = makePositiveMaxCall(flow_exp.clone(), stream_exp.clone(), element.clone(), flowThreshold.clone(), variables.clone())?;
@@ -562,19 +562,19 @@ fn sumInside2(mut element: Arc<Connector::NFConnector>, mut flowThreshold: Arc<E
 }
 
 fn makeInStreamCall(mut streamExp: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
-    let mut inStreamCall: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut inStreamCall: Arc<Expression::NFExpression>;
     inStreamCall = Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(NFBuiltinFuncs::IN_STREAM().clone(), list![streamExp.clone()], Expression::variability(streamExp.clone())?, Purity::PURE.clone(), NFBuiltinFuncs::IN_STREAM().returnType.clone()) });
     Ok(inStreamCall)
 }
 
 fn makePositiveMaxCall(mut flowExp: Arc<Expression::NFExpression>, mut streamExp: Arc<Expression::NFExpression>, mut element: Arc<Connector::NFConnector>, mut flowThreshold: Arc<Expression::NFExpression>, mut variables: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Variable::NFVariable>>>) -> Result<Arc<Expression::NFExpression>> {
-    let mut positiveMaxCall: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut flow_name: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    let mut nominal_oexp: Option<Arc<Expression::NFExpression>> = None;
-    let mut nominal_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut flow_threshold: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut fn_node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
-    let mut r#fn: Arc<Function::Function> = Arc::new(<Function::Function as ::std::default::Default>::default());
+    let mut positiveMaxCall: Arc<Expression::NFExpression>;
+    let mut flow_name: Arc<ComponentRef::NFComponentRef>;
+    let mut nominal_oexp: Option<Arc<Expression::NFExpression>>;
+    let mut nominal_exp: Arc<Expression::NFExpression>;
+    let mut flow_threshold: Arc<Expression::NFExpression>;
+    let mut fn_node: Arc<InstNode::InstNode>;
+    let mut r#fn: Arc<Function::Function>;
     flow_name = associatedFlowCref(Connector::name(element.clone()))?;
     nominal_oexp = lookupVarAttr(flow_name.clone(), (literal!("nominal")).clone(), variables.clone())?;
     if isSome(nominal_oexp.clone()) {
@@ -604,7 +604,7 @@ fn makePositiveMaxCall(mut flowExp: Arc<Expression::NFExpression>, mut streamExp
 }
 
 fn makeInStreamDivCall(mut sum_exp: Arc<Expression::NFExpression>, mut fallback: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
-    let mut inStreamDivCall: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut inStreamDivCall: Arc<Expression::NFExpression>;
     if Flags::getConfigBool(Flags::BASE_MODELICA.clone())? {
         inStreamDivCall = sum_exp.clone();
     } else {
@@ -614,7 +614,7 @@ fn makeInStreamDivCall(mut sum_exp: Arc<Expression::NFExpression>, mut fallback:
 }
 
 fn isStreamCall(mut exp: Arc<Expression::NFExpression>) -> Result<bool> {
-    let mut streamCall: bool = false;
+    let mut streamCall: bool;
     streamCall = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CALL { .. } => {
             (::match_deref::match_deref! { match &(Function::name(Call::typedFunction(var_field!((*exp).call, Expression::NFExpression::CALL).clone())?)) {
@@ -633,9 +633,9 @@ fn isStreamCall(mut exp: Arc<Expression::NFExpression>) -> Result<bool> {
 }
 
 fn evaluateOperatorReductionExp(mut exp: Arc<Expression::NFExpression>, mut sets: ConnectionSets::Sets, mut setsArray: metamodelica::Array<Arc<metamodelica::List<Arc<Connector::NFConnector>>>>, mut variables: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Variable::NFVariable>>>, mut ctable: Arc<UnorderedMap::UnorderedMap<ArcStr, i32>>) -> Result<Arc<Expression::NFExpression>> {
-    let mut evalExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut evalExp: Arc<Expression::NFExpression>;
     let mut call: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
-    let mut r#fn: Arc<Function::Function> = Arc::new(<Function::Function as ::std::default::Default>::default());
+    let mut r#fn: Arc<Function::Function>;
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     let mut arg: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut iter_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
@@ -667,8 +667,8 @@ fn evaluateOperatorReductionExp(mut exp: Arc<Expression::NFExpression>, mut sets
 }
 
 fn evaluateOperatorArrayConstructorExp(mut exp: Arc<Expression::NFExpression>, mut sets: ConnectionSets::Sets, mut setsArray: metamodelica::Array<Arc<metamodelica::List<Arc<Connector::NFConnector>>>>, mut variables: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Variable::NFVariable>>>, mut ctable: Arc<UnorderedMap::UnorderedMap<ArcStr, i32>>) -> Result<Arc<Expression::NFExpression>> {
-    let mut evalExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut expanded: bool = false;
+    let mut evalExp: Arc<Expression::NFExpression>;
+    let mut expanded: bool;
     (evalExp, expanded) = ExpandExp::expand(exp.clone(), false, false)?;
     if !(expanded.clone()) {
         Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConnectEquations.evaluateOperatorArrayConstructorExp")); __mm_s.push_str(&*literal!(" failed to expand call containing stream operator: ")); __mm_s.push_str(&*Expression::toString(exp.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFConnectEquations.mo"))?;
@@ -678,11 +678,11 @@ fn evaluateOperatorArrayConstructorExp(mut exp: Arc<Expression::NFExpression>, m
 }
 
 fn evaluateInStream(mut cref: Arc<ComponentRef::NFComponentRef>, mut sets: ConnectionSets::Sets, mut setsArray: metamodelica::Array<Arc<metamodelica::List<Arc<Connector::NFConnector>>>>, mut variables: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Variable::NFVariable>>>, mut ctable: Arc<UnorderedMap::UnorderedMap<ArcStr, i32>>) -> Result<Arc<Expression::NFExpression>> {
-    let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut c: Arc<Connector::NFConnector> = Arc::new(<Connector::NFConnector as ::std::default::Default>::default());
-    let mut sl: Arc<metamodelica::List<Arc<Connector::NFConnector>>> = metamodelica::nil();
-    let mut set: i32 = 0;
-    let mut cr: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
+    let mut exp: Arc<Expression::NFExpression>;
+    let mut c: Arc<Connector::NFConnector>;
+    let mut sl: Arc<metamodelica::List<Arc<Connector::NFConnector>>>;
+    let mut set: i32;
+    let mut cr: Arc<ComponentRef::NFComponentRef>;
     cr = ComponentRef::evaluateSubscripts(cref.clone())?;
     c = Arc::new(Connector::NFConnector { name: cr.clone(), ty: crate::NFType::interned_UNKNOWN(), face: Face::INSIDE.clone(), cty: ConnectorType::STREAM.clone(), source: DAE::emptyElementSource().clone() });
     match '__try0: {
@@ -703,7 +703,7 @@ fn evaluateInStream(mut cref: Arc<ComponentRef::NFComponentRef>, mut sets: Conne
 
 fn generateInStreamExp(mut streamCref: Arc<ComponentRef::NFComponentRef>, mut streams: Arc<metamodelica::List<Arc<Connector::NFConnector>>>, mut sets: ConnectionSets::Sets, mut setsArray: metamodelica::Array<Arc<metamodelica::List<Arc<Connector::NFConnector>>>>, mut variables: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Variable::NFVariable>>>, mut ctable: Arc<UnorderedMap::UnorderedMap<ArcStr, i32>>, mut flowThreshold: metamodelica::Real) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut reducedStreams: Arc<metamodelica::List<Arc<Connector::NFConnector>>> = metamodelica::nil();
+    let mut reducedStreams: Arc<metamodelica::List<Arc<Connector::NFConnector>>>;
     let mut inside: Arc<metamodelica::List<Arc<Connector::NFConnector>>> = metamodelica::nil();
     let mut outside: Arc<metamodelica::List<Arc<Connector::NFConnector>>> = metamodelica::nil();
     let mut cr: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
@@ -749,7 +749,7 @@ fn generateInStreamExp(mut streamCref: Arc<ComponentRef::NFComponentRef>, mut st
 }
 
 fn isNoFlowMinMax(mut conn: Arc<Connector::NFConnector>, mut streamCref: Arc<ComponentRef::NFComponentRef>, mut variables: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Variable::NFVariable>>>) -> Result<bool> {
-    let mut noFlow: bool = false;
+    let mut noFlow: bool;
     if ComponentRef::isEqual(streamCref.clone(), conn.name.clone())? {
         noFlow = false;
     } else if Connector::isOutside(conn.clone()) {
@@ -761,13 +761,13 @@ fn isNoFlowMinMax(mut conn: Arc<Connector::NFConnector>, mut streamCref: Arc<Com
 }
 
 fn isNoFlowOutside(mut conn: Arc<Connector::NFConnector>, mut variables: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Variable::NFVariable>>>) -> Result<bool> {
-    let mut noFlow: bool = false;
+    let mut noFlow: bool;
     noFlow = isNoFlow(conn.clone(), (literal!("max")).clone(), (std::sync::Arc::new(Expression::isNonPositive) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>), variables.clone())?;
     Ok(noFlow)
 }
 
 fn isNoFlowInside(mut conn: Arc<Connector::NFConnector>, mut variables: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Variable::NFVariable>>>) -> Result<bool> {
-    let mut noFlow: bool = false;
+    let mut noFlow: bool;
     noFlow = isNoFlow(conn.clone(), (literal!("min")).clone(), (std::sync::Arc::new(Expression::isNonNegative) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>), variables.clone())?;
     Ok(noFlow)
 }
@@ -775,11 +775,11 @@ fn isNoFlowInside(mut conn: Arc<Connector::NFConnector>, mut variables: Arc<Unor
 fn isNoFlow(mut element: Arc<Connector::NFConnector>, mut attr: ArcStr, mut pred: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>, mut variables: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Variable::NFVariable>>>) -> Result<bool> {
     pub type FlowPred = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>;
 
-    let mut noFlow: bool = false;
-    let mut flow_name: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    let mut attr_oexp: Option<Arc<Expression::NFExpression>> = None;
-    let mut attr_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut var: Variability = Variability::CONSTANT;
+    let mut noFlow: bool;
+    let mut flow_name: Arc<ComponentRef::NFComponentRef>;
+    let mut attr_oexp: Option<Arc<Expression::NFExpression>>;
+    let mut attr_exp: Arc<Expression::NFExpression>;
+    let mut var: Variability;
     flow_name = Expression::toCref(flowExp(element.clone())?)?;
     attr_oexp = lookupVarAttr(flow_name.clone(), (attr.clone()).clone(), variables.clone())?;
     if isSome(attr_oexp.clone()) {
@@ -804,14 +804,14 @@ fn isNoFlow(mut element: Arc<Connector::NFConnector>, mut attr: ArcStr, mut pred
 }
 
 fn evaluateActualStream(mut streamCref: Arc<ComponentRef::NFComponentRef>, mut sets: ConnectionSets::Sets, mut setsArray: metamodelica::Array<Arc<metamodelica::List<Arc<Connector::NFConnector>>>>, mut variables: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Variable::NFVariable>>>, mut ctable: Arc<UnorderedMap::UnorderedMap<ArcStr, i32>>) -> Result<(Arc<Expression::NFExpression>, Arc<ComponentRef::NFComponentRef>)> {
-    let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut flowCref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    let mut stream_cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    let mut flow_dir: i32 = 0;
-    let mut flow_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut stream_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut instream_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut op: Arc<Operator::NFOperator> = Arc::new(<Operator::NFOperator as ::std::default::Default>::default());
+    let mut exp: Arc<Expression::NFExpression>;
+    let mut flowCref: Arc<ComponentRef::NFComponentRef>;
+    let mut stream_cref: Arc<ComponentRef::NFComponentRef>;
+    let mut flow_dir: i32;
+    let mut flow_exp: Arc<Expression::NFExpression>;
+    let mut stream_exp: Arc<Expression::NFExpression>;
+    let mut instream_exp: Arc<Expression::NFExpression>;
+    let mut op: Arc<Operator::NFOperator>;
     stream_cref = ComponentRef::evaluateSubscripts(streamCref.clone())?;
     flowCref = associatedFlowCref(stream_cref.clone())?;
     flow_dir = evaluateFlowDirection(flowCref.clone(), variables.clone())?;
@@ -830,11 +830,11 @@ fn evaluateActualStream(mut streamCref: Arc<ComponentRef::NFComponentRef>, mut s
 }
 
 fn evaluateActualStreamMul(mut crefExp: Arc<Expression::NFExpression>, mut actualStreamArg: Arc<Expression::NFExpression>, mut op: Arc<Operator::NFOperator>, mut sets: ConnectionSets::Sets, mut setsArray: metamodelica::Array<Arc<metamodelica::List<Arc<Connector::NFConnector>>>>, mut variables: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Variable::NFVariable>>>, mut ctable: Arc<UnorderedMap::UnorderedMap<ArcStr, i32>>) -> Result<Arc<Expression::NFExpression>> {
-    let mut outExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut cr: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    let mut flow_cr: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
+    let mut outExp: Arc<Expression::NFExpression>;
+    let mut e1: Arc<Expression::NFExpression>;
+    let mut e2: Arc<Expression::NFExpression>;
+    let mut cr: Arc<ComponentRef::NFComponentRef>;
+    let mut flow_cr: Arc<ComponentRef::NFComponentRef>;
     let (__pa1, __pa0) = ::match_deref::match_deref! { match &(evaluateOperators(crefExp.clone(), sets.clone(), setsArray.clone(), variables.clone(), ctable.clone())?) {
         __pa1 @ Deref @ Expression::CREF { cref: __pa0, .. } => (__pa1.clone(), __pa0.clone()),
         _ => bail!("pattern mismatch"),
@@ -853,8 +853,8 @@ fn evaluateActualStreamMul(mut crefExp: Arc<Expression::NFExpression>, mut actua
 
 fn evaluateFlowDirection(mut flowCref: Arc<ComponentRef::NFComponentRef>, mut variables: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Variable::NFVariable>>>) -> Result<i32> {
     let mut direction: i32 = 0;
-    let mut omin: Option<Arc<Expression::NFExpression>> = None;
-    let mut omax: Option<Arc<Expression::NFExpression>> = None;
+    let mut omin: Option<Arc<Expression::NFExpression>>;
+    let mut omax: Option<Arc<Expression::NFExpression>>;
     let mut min_val: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     let mut max_val: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     omin = lookupVarAttr(flowCref.clone(), (literal!("min")).clone(), variables.clone())?;
@@ -883,7 +883,7 @@ fn evaluateFlowDirection(mut flowCref: Arc<ComponentRef::NFComponentRef>, mut va
 }
 
 fn makeSmoothCall(mut arg: Arc<Expression::NFExpression>, mut order: i32) -> Result<Arc<Expression::NFExpression>> {
-    let mut callExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut callExp: Arc<Expression::NFExpression>;
     callExp = Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(NFBuiltinFuncs::SMOOTH().clone(), list![Arc::new(Expression::NFExpression::INTEGER { value: order.clone() }), arg.clone()], Expression::variability(arg.clone())?, Purity::PURE.clone(), NFBuiltinFuncs::SMOOTH().returnType.clone()) });
     Ok(callExp)
 }
@@ -895,15 +895,15 @@ fn removeStreamSetElement(mut cref: Arc<ComponentRef::NFComponentRef>, mut eleme
 }
 
 fn compareCrefStreamSet(mut cref: Arc<ComponentRef::NFComponentRef>, mut element: Arc<Connector::NFConnector>) -> Result<bool> {
-    let mut matches: bool = false;
+    let mut matches: bool;
     matches = ComponentRef::isEqual(cref.clone(), element.name.clone())?;
     Ok(matches)
 }
 
 fn associatedFlowCref(mut streamCref: Arc<ComponentRef::NFComponentRef>) -> Result<Arc<ComponentRef::NFComponentRef>> {
     '__tco: loop {
-        let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-        let mut rest_cr: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
+        let mut ty: Arc<Type::NFType>;
+        let mut rest_cr: Arc<ComponentRef::NFComponentRef>;
         let mut flow_node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(streamCref.clone()) {
             Deref @ ComponentRef::CREF { ty: __pa0, restCref: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
@@ -923,10 +923,10 @@ fn associatedFlowCref(mut streamCref: Arc<ComponentRef::NFComponentRef>) -> Resu
 }
 
 fn lookupVarAttr(mut varName: Arc<ComponentRef::NFComponentRef>, mut attrName: ArcStr, mut variables: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Variable::NFVariable>>>) -> Result<Option<Arc<Expression::NFExpression>>> {
-    let mut attrValue: Option<Arc<Expression::NFExpression>> = None;
-    let mut ovar: Option<Arc<Variable::NFVariable>> = None;
-    let mut var: Arc<Variable::NFVariable> = Arc::new(<Variable::NFVariable as ::std::default::Default>::default());
-    let mut binding: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);
+    let mut attrValue: Option<Arc<Expression::NFExpression>>;
+    let mut ovar: Option<Arc<Variable::NFVariable>>;
+    let mut var: Arc<Variable::NFVariable>;
+    let mut binding: Arc<Binding::NFBinding>;
     ovar = UnorderedMap::get(varName.clone(), variables.clone())?;
     if isNone(ovar.clone()) {
         ovar = UnorderedMap::get(ComponentRef::stripSubscriptsAll(varName.clone()), variables.clone())?;

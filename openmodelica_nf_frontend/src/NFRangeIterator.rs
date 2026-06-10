@@ -83,7 +83,7 @@ impl Default for NFRangeIterator {
 }
 pub use self::NFRangeIterator::{INT_RANGE,INT_STEP_RANGE,REAL_RANGE,ARRAY_RANGE,INVALID_RANGE};
 pub fn isValid(mut iterator: Arc<NFRangeIterator>) -> bool {
-    let mut isValid: bool = false;
+    let mut isValid: bool;
     isValid = (::match_deref::match_deref! { match &(iterator.clone()) {
         Deref @ INVALID_RANGE { .. } => false,
         _ => true,
@@ -93,7 +93,7 @@ pub fn isValid(mut iterator: Arc<NFRangeIterator>) -> bool {
 }
 
 pub fn fromExp(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<NFRangeIterator>> {
-    let mut iterator: Arc<NFRangeIterator> = Arc::new(<NFRangeIterator as ::std::default::Default>::default());
+    let mut iterator: Arc<NFRangeIterator>;
     iterator = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::ARRAY { .. } => {
             Arc::new(NFRangeIterator::ARRAY_RANGE { values: var_field!((*exp).elements, Expression::NFExpression::ARRAY).clone(), index: 1 })
@@ -162,7 +162,7 @@ pub fn fromExp(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<NFRangeIter
 }
 
 pub fn fromDim(mut dim: Arc<Dimension::NFDimension>, mut resizable: bool) -> Result<Arc<NFRangeIterator>> {
-    let mut iterator: Arc<NFRangeIterator> = Arc::new(<NFRangeIterator as ::std::default::Default>::default());
+    let mut iterator: Arc<NFRangeIterator>;
     iterator = (::match_deref::match_deref! { match &(dim.clone()) {
         Deref @ Dimension::INTEGER { .. } => {
             Arc::new(NFRangeIterator::INT_RANGE { current: 1, last: var_field!((*dim).size, Dimension::NFDimension::INTEGER).clone() })
@@ -222,7 +222,7 @@ pub fn next(mut iterator: Arc<NFRangeIterator>) -> Result<(Arc<NFRangeIterator>,
 }
 
 pub fn hasNext(mut iterator: Arc<NFRangeIterator>) -> Result<bool> {
-    let mut hasNext: bool = false;
+    let mut hasNext: bool;
     hasNext = (::match_deref::match_deref! { match &(iterator.clone()) {
         Deref @ INT_RANGE { .. } => var_field!((*iterator).current, NFRangeIterator::INT_RANGE).clone() <= var_field!((*iterator).last, NFRangeIterator::INT_RANGE).clone(),
         Deref @ INT_STEP_RANGE { .. } => if (var_field!((*iterator).stepsize, NFRangeIterator::INT_STEP_RANGE).clone() > 0) {var_field!((*iterator).current, NFRangeIterator::INT_STEP_RANGE).clone() <= var_field!((*iterator).last, NFRangeIterator::INT_STEP_RANGE).clone()} else {var_field!((*iterator).current, NFRangeIterator::INT_STEP_RANGE).clone() >= var_field!((*iterator).last, NFRangeIterator::INT_STEP_RANGE).clone()},
@@ -245,7 +245,7 @@ pub fn toList(mut iterator: Arc<NFRangeIterator>) -> Result<Arc<metamodelica::Li
 pub fn toListReverse(mut iterator: Arc<NFRangeIterator>) -> Result<Arc<metamodelica::List<Arc<Expression::NFExpression>>>> {
     let mut expl: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
     let mut iter: Arc<NFRangeIterator> = iterator.clone();
-    let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut exp: Arc<Expression::NFExpression>;
     while hasNext(iter.clone())? {
         (iter, exp) = next(iter.clone())?;
         expl = metamodelica::cons(exp.clone(), expl.clone());
@@ -258,7 +258,7 @@ pub fn map<T: Clone + 'static>(mut iterator: Arc<NFRangeIterator>, mut func: Arc
 
     let mut lst: Arc<metamodelica::List<T>> = metamodelica::nil();
     let mut iter: Arc<NFRangeIterator> = iterator.clone();
-    let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut exp: Arc<Expression::NFExpression>;
     while hasNext(iter.clone())? {
         (iter, exp) = next(iter.clone())?;
         lst = metamodelica::cons(func(exp.clone())?, lst.clone());
@@ -272,7 +272,7 @@ pub fn fold<ArgT: Clone + 'static>(mut iterator: Arc<NFRangeIterator>, mut func:
 
     let mut arg: ArgT = arg;
     let mut iter: Arc<NFRangeIterator> = iterator.clone();
-    let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut exp: Arc<Expression::NFExpression>;
     while hasNext(iter.clone())? {
         (iter, exp) = next(iter.clone())?;
         arg = func(exp.clone(), arg.clone())?;

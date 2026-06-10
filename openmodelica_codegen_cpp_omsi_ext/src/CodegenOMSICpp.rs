@@ -22,7 +22,7 @@ use openmodelica_util::Testsuite;
 use openmodelica_util::Util;
 
 fn fun_49(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_simCode.clone()) {
         (mut txt, ref i_simCode @ SimCode::SimCode { modelInfo: SimCode::ModelInfo { name: ref i_modelInfo_name, .. }, .. }) => {
             let mut txt_3: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -45,13 +45,13 @@ fn fun_49(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -> Result<T
 }
 
 pub fn translateModel(mut txt: Tpl::Text, mut a_simCode: SimCode::SimCode, mut a_FMUVersion: ArcStr, mut a_FMUType: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = fun_49(txt.clone(), a_simCode.clone())?;
     Ok(out_txt)
 }
 
 fn fun_51(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_settings_method: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_simCode.clone(), in_a_settings_method.clone()) {
         (mut txt, SimCode::SimCode { daeModeData: None, .. }, mut a_settings_method) => {
             txt = Tpl::writeStr(txt.clone(), (a_settings_method.clone()).clone())?;
@@ -66,7 +66,7 @@ fn fun_51(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_se
 }
 
 fn fun_52(mut in_txt: Tpl::Text, mut in_a_makefileParams_platform: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_makefileParams_platform.clone())) {
         (txt, Deref @ "i386-pc-linux") => {
             let mut txt = (*txt).clone();
@@ -89,7 +89,7 @@ fn fun_52(mut in_txt: Tpl::Text, mut in_a_makefileParams_platform: ArcStr) -> Re
 }
 
 fn fun_53(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone()) {
         (mut txt, false) => {
             txt.clone()
@@ -118,7 +118,7 @@ fn lm_54(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<ArcStr>>) -> Resu
 }
 
 fn fun_55(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone()) {
         (mut txt, false) => {
             txt.clone()
@@ -151,7 +151,7 @@ fn fun_55(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
 }
 
 fn fun_56(mut in_txt: Tpl::Text, mut in_a_makefileParams_platform: ArcStr, mut in_a_preRunCommandWindows: ArcStr, mut in_a_libPaths: Tpl::Text, mut in_a_libFolder: Tpl::Text, mut in_a_outputParameter: Tpl::Text, mut in_a_zermMQParams: Tpl::Text, mut in_a_execParameters: Tpl::Text, mut in_a_binFolder: Tpl::Text, mut in_a_execCommandLinux: ArcStr, mut in_a_preRunCommandLinux: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_makefileParams_platform.clone(), in_a_preRunCommandWindows.clone(), in_a_libPaths.clone(), in_a_libFolder.clone(), in_a_outputParameter.clone(), in_a_zermMQParams.clone(), in_a_execParameters.clone(), in_a_binFolder.clone(), in_a_execCommandLinux.clone(), in_a_preRunCommandLinux.clone())) {
         (txt, Deref @ "linux32", _, _, _, a_outputParameter, a_zermMQParams, a_execParameters, a_binFolder, a_execCommandLinux, a_preRunCommandLinux) => {
             let mut txt = (*txt).clone();
@@ -238,10 +238,10 @@ fn fun_56(mut in_txt: Tpl::Text, mut in_a_makefileParams_platform: ArcStr, mut i
 }
 
 pub fn simulationOMSUCPPMainRunScript(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_extraFuncs: Tpl::Text, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncsNamespace: Tpl::Text, mut in_a_preRunCommandLinux: ArcStr, mut in_a_preRunCommandWindows: ArcStr, mut in_a_execCommandLinux: ArcStr) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
+    let mut out_a_extraFuncs: Tpl::Text;
+    let mut out_a_extraFuncsDecl: Tpl::Text;
+    let mut out_a_extraFuncsNamespace: Tpl::Text;
     (out_txt, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace) = (match (in_txt.clone(), in_a_simCode.clone(), in_a_extraFuncs.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncsNamespace.clone(), in_a_preRunCommandLinux.clone(), in_a_preRunCommandWindows.clone(), in_a_execCommandLinux.clone()) {
         (mut txt, ref i_simCode @ SimCode::SimCode { modelInfo: SimCode::ModelInfo { name: ref i_modelInfo_name, .. }, makefileParams: SimCodeFunction::MakefileParams { compileDir: ref i_makefileParams_compileDir, omhome: ref i_makefileParams_omhome, platform: ref i_makefileParams_platform, libPaths: ref i_makefileParams_libPaths, .. }, simulationSettingsOpt: Some(SimCode::SimulationSettings { startTime: ref i_settings_startTime, stopTime: ref i_settings_stopTime, stepSize: ref i_settings_stepSize, numberOfIntervals: ref i_settings_numberOfIntervals, tolerance: ref i_settings_tolerance, method: ref i_settings_method, outputFormat: ref i_settings_outputFormat, .. }), fileNamePrefix: ref i_fileNamePrefix, .. }, mut a_extraFuncs, mut a_extraFuncsDecl, mut a_extraFuncsNamespace, mut a_preRunCommandLinux, mut a_preRunCommandWindows, mut a_execCommandLinux) => {
             let mut ret_23: bool = false;

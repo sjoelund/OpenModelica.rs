@@ -94,7 +94,7 @@ pub mod Field {
     }
     pub use self::Field::{INPUT,LOCAL};
     pub fn isInput(mut field: Arc<Field>) -> bool {
-        let mut isInput: bool = false;
+        let mut isInput: bool;
         isInput = (::match_deref::match_deref! { match &(field.clone()) {
         Deref @ INPUT { .. } => true,
         _ => false,
@@ -104,7 +104,7 @@ pub mod Field {
     }
 
     pub fn name(mut field: Arc<Field>) -> Result<ArcStr> {
-        let mut name: ArcStr = arcstr::literal!("");
+        let mut name: ArcStr;
         name = ((::match_deref::match_deref! { match &(field.clone()) {
         Deref @ INPUT { .. } => var_field!((*field).name, Field::INPUT).clone(),
         Deref @ LOCAL { .. } => var_field!((*field).name, Field::LOCAL).clone(),
@@ -116,8 +116,8 @@ pub mod Field {
 }
 
 pub fn instRecord(mut node: Arc<InstNode::InstNode>, mut context: i32) -> Result<Arc<InstNode::InstNode>> {
-    let mut recordNode: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
-    let mut next_context: i32 = 0;
+    let mut recordNode: Arc<InstNode::InstNode>;
+    let mut next_context: i32;
     match '__try0: {
         (recordNode, _) = unwrap_break_err!(Lookup::lookupLocalSimpleName((unwrap_break_err!(InstNode::name(node.clone()), '__try0)).clone(), InstNode::classScope(InstNode::parent(node.clone()))), '__try0);
         let true = (referenceEq(&*(unwrap_break_err!(InstNode::definition(node.clone()), '__try0)),&*(unwrap_break_err!(InstNode::definition(recordNode.clone()), '__try0)))) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
@@ -140,15 +140,15 @@ pub fn instRecord(mut node: Arc<InstNode::InstNode>, mut context: i32) -> Result
 
 pub fn instDefaultConstructor(mut path: Arc<Absyn::Path>, mut node: Arc<InstNode::InstNode>, mut context: i32, mut info: SourceInfo) -> Result<Arc<InstNode::InstNode>> {
     let mut node: Arc<InstNode::InstNode> = node;
-    let mut inputs: Arc<metamodelica::List<Arc<InstNode::InstNode>>> = metamodelica::nil();
-    let mut locals: Arc<metamodelica::List<Arc<InstNode::InstNode>>> = metamodelica::nil();
-    let mut all_params: Arc<metamodelica::List<Arc<InstNode::InstNode>>> = metamodelica::nil();
-    let mut attr: DAE::FunctionAttributes = <DAE::FunctionAttributes as ::std::default::Default>::default();
+    let mut inputs: Arc<metamodelica::List<Arc<InstNode::InstNode>>>;
+    let mut locals: Arc<metamodelica::List<Arc<InstNode::InstNode>>>;
+    let mut all_params: Arc<metamodelica::List<Arc<InstNode::InstNode>>>;
+    let mut attr: DAE::FunctionAttributes;
     let mut status: Pointer::Pointer<FunctionStatus>;
-    let mut ctor_node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
-    let mut out_rec: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
-    let mut out_comp: Arc<Component::NFComponent> = Arc::new(Component::WILD);
-    let mut ctor_cls: Arc<Class::NFClass> = Arc::new(Class::NOT_INSTANTIATED);
+    let mut ctor_node: Arc<InstNode::InstNode>;
+    let mut out_rec: Arc<InstNode::InstNode>;
+    let mut out_comp: Arc<Component::NFComponent>;
+    let mut ctor_cls: Arc<Class::NFClass>;
     ctor_node = instRecord(node.clone(), context.clone())?;
     (inputs, locals, all_params) = collectRecordParams(ctor_node.clone())?;
     out_comp = Arc::new(Component::NFComponent::COMPONENT { classInst: ctor_node.clone(), ty: Arc::new(Type::NFType::UNTYPED { typeNode: node.clone(), dimensions: metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect()) }), binding: Binding::EMPTY_BINDING().clone(), condition: Binding::EMPTY_BINDING().clone(), attributes: Attributes::OUTPUT_ATTR().clone(), comment: SCode::noComment.clone(), state: ComponentState::FullyInstantiated.clone(), info: Absyn::dummyInfo.clone() });
@@ -163,10 +163,10 @@ pub fn instDefaultConstructor(mut path: Arc<Absyn::Path>, mut node: Arc<InstNode
 }
 
 pub fn checkLocalFieldOrder(mut locals: Arc<metamodelica::List<Arc<InstNode::InstNode>>>, mut recNode: Arc<InstNode::InstNode>, mut info: SourceInfo) -> Result<()> {
-    let mut locals_set: Arc<UnorderedSet::UnorderedSet<Arc<InstNode::InstNode>>> = <Arc<UnorderedSet::UnorderedSet<Arc<InstNode::InstNode>>> as ::std::default::Default>::default();
-    let mut locs: Arc<metamodelica::List<Arc<InstNode::InstNode>>> = metamodelica::nil();
-    let mut deps: Arc<metamodelica::List<Arc<InstNode::InstNode>>> = metamodelica::nil();
-    let mut loc: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
+    let mut locals_set: Arc<UnorderedSet::UnorderedSet<Arc<InstNode::InstNode>>>;
+    let mut locs: Arc<metamodelica::List<Arc<InstNode::InstNode>>>;
+    let mut deps: Arc<metamodelica::List<Arc<InstNode::InstNode>>>;
+    let mut loc: Arc<InstNode::InstNode>;
     if (locals.clone().len() as i32) <= 1 {
         return Ok(());
     }
@@ -196,7 +196,7 @@ pub fn collectRecordParams(mut recNode: Arc<InstNode::InstNode>) -> Result<(Arc<
     let mut comp: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     let mut comps: metamodelica::Array<Arc<InstNode::InstNode>> = Default::default();
     let mut pcomps: metamodelica::Array<Mutable::Mutable<Arc<InstNode::InstNode>>> = Default::default();
-    let mut tree: Arc<ClassTree::ClassTree> = Arc::new(ClassTree::EMPTY_TREE);
+    let mut tree: Arc<ClassTree::ClassTree>;
     tree = Class::classTree(InstNode::getClass(recNode.clone())?)?;
     let () = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ ClassTree::FLAT_TREE { components: __esc_comps, .. } => {
@@ -229,7 +229,7 @@ pub fn collectRecordParams(mut recNode: Arc<InstNode::InstNode>) -> Result<(Arc<
 pub fn collectRecordParam(mut component: Arc<InstNode::InstNode>, mut inputs: Arc<metamodelica::List<Arc<InstNode::InstNode>>>, mut locals: Arc<metamodelica::List<Arc<InstNode::InstNode>>>) -> Result<(Arc<metamodelica::List<Arc<InstNode::InstNode>>>, Arc<metamodelica::List<Arc<InstNode::InstNode>>>)> {
     let mut inputs: Arc<metamodelica::List<Arc<InstNode::InstNode>>> = inputs;
     let mut locals: Arc<metamodelica::List<Arc<InstNode::InstNode>>> = locals;
-    let mut comp: Arc<Component::NFComponent> = Arc::new(Component::WILD);
+    let mut comp: Arc<Component::NFComponent>;
     let mut comp_node: Arc<InstNode::InstNode> = InstNode::resolveInner(component.clone());
     if InstNode::isProtected(comp_node.clone()) {
         locals = metamodelica::cons(comp_node.clone(), locals.clone());
@@ -253,10 +253,10 @@ pub fn setFieldDirection(mut field: Arc<InstNode::InstNode>, mut direction: Dire
 }
 
 pub fn collectRecordFields(mut recNode: Arc<InstNode::InstNode>) -> Result<(metamodelica::Array<Arc<Field::Field>>, Arc<UnorderedMap::UnorderedMap<ArcStr, i32>>)> {
-    let mut fields: metamodelica::Array<Arc<Field::Field>> = Default::default();
-    let mut indexMap: Arc<UnorderedMap::UnorderedMap<ArcStr, i32>> = <Arc<UnorderedMap::UnorderedMap<ArcStr, i32>> as ::std::default::Default>::default();
-    let mut field_lst: Arc<metamodelica::List<Arc<Field::Field>>> = metamodelica::nil();
-    let mut tree: Arc<ClassTree::ClassTree> = Arc::new(ClassTree::EMPTY_TREE);
+    let mut fields: metamodelica::Array<Arc<Field::Field>>;
+    let mut indexMap: Arc<UnorderedMap::UnorderedMap<ArcStr, i32>>;
+    let mut field_lst: Arc<metamodelica::List<Arc<Field::Field>>>;
+    let mut tree: Arc<ClassTree::ClassTree>;
     tree = Class::classTree(InstNode::getClass(recNode.clone())?)?;
     field_lst = ClassTree::foldComponents(tree.clone(), (std::sync::Arc::new(collectRecordField) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, Arc<metamodelica::List<Arc<Field::Field>>>) -> Result<Arc<metamodelica::List<Arc<Field::Field>>>> + 'static>), metamodelica::nil())?;
     fields = metamodelica::arrayFromVec(metamodelica::Dangerous::listReverseInPlace(field_lst.clone()).into_iter().cloned().collect());
@@ -268,7 +268,7 @@ pub fn collectRecordFields(mut recNode: Arc<InstNode::InstNode>) -> Result<(meta
 pub fn collectRecordField(mut component: Arc<InstNode::InstNode>, mut fields: Arc<metamodelica::List<Arc<Field::Field>>>) -> Result<Arc<metamodelica::List<Arc<Field::Field>>>> {
     let mut fields: Arc<metamodelica::List<Arc<Field::Field>>> = fields;
     let mut comp_node: Arc<InstNode::InstNode> = InstNode::resolveInner(component.clone());
-    let mut comp: Arc<Component::NFComponent> = Arc::new(Component::WILD);
+    let mut comp: Arc<Component::NFComponent>;
     if InstNode::isProtected(comp_node.clone()) {
         fields = metamodelica::cons(Arc::new(Field::Field::LOCAL { name: (InstNode::name(comp_node.clone())?).clone() }), fields.clone());
     } else {
@@ -321,7 +321,7 @@ pub fn foldInputFields<T: Clone + 'static, ArgT: Clone + 'static>(mut fields: Ar
 
 pub fn toDeclarationStream(mut recordNode: Arc<InstNode::InstNode>, mut indent: ArcStr, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut s: IOStream::IOStream = s;
-    let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
+    let mut node: Arc<InstNode::InstNode>;
     node = getDeclarationNode(recordNode.clone(), false)?;
     s = IOStream::append(s.clone(), (indent.clone()).clone())?;
     s = IOStream::append(s.clone(), (InstNode::toString(node.clone())?).clone())?;
@@ -330,15 +330,15 @@ pub fn toDeclarationStream(mut recordNode: Arc<InstNode::InstNode>, mut indent: 
 
 pub fn toFlatDeclarationStream(mut recordNode: Arc<InstNode::InstNode>, mut format: BaseModelica::OutputFormat, mut indent: ArcStr, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut s: IOStream::IOStream = s;
-    let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
+    let mut node: Arc<InstNode::InstNode>;
     node = getDeclarationNode(recordNode.clone(), true)?;
     s = IOStream::append(s.clone(), (InstNode::toFlatString(node.clone(), format.clone(), (indent.clone()).clone())?).clone())?;
     Ok(s)
 }
 
 pub fn getDeclarationNode(mut recordNode: Arc<InstNode::InstNode>, mut evaluate: bool) -> Result<Arc<InstNode::InstNode>> {
-    let mut declNode: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
-    let mut node_ty: Arc<InstNodeType> = Arc::new(InstNodeType::BUILTIN_CLASS);
+    let mut declNode: Arc<InstNode::InstNode>;
+    let mut node_ty: Arc<InstNodeType>;
     node_ty = InstNode::nodeType(recordNode.clone())?;
     declNode = instRecord(recordNode.clone(), InstContext::NO_CONTEXT.clone())?;
     Typing::typeClass(declNode.clone(), InstContext::RELAXED.clone())?;

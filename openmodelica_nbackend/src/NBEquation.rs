@@ -219,7 +219,7 @@ pub mod Iterator {
     }
     pub use self::Iterator::{SINGLE,NESTED,EMPTY};
     pub fn createFrame(mut iter: (Arc<InstNode::InstNode>, Arc<Expression::NFExpression>), mut set: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>>) -> Result<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator>>)> {
-        let mut frame: (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator>>) = (Arc::new(ComponentRef::EMPTY), Arc::new(Expression::END), None);
+        let mut frame: (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator>>);
         frame = (::match_deref::match_deref! { match &(iter.clone()) {
         (node, range @ Deref @ Expression::RANGE { .. }) => {
             (ComponentRef::makeIterator(node.clone(), openmodelica_nf_frontend::NFType::interned_INTEGER())?, range.clone(), None)
@@ -249,10 +249,10 @@ pub mod Iterator {
     }
 
     pub fn fromFrames(mut frames: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator>>)>>) -> Arc<Iterator> {
-        let mut iter: Arc<Iterator> = Arc::new(Iterator::EMPTY);
-        let mut names: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-        let mut ranges: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-        let mut maps: Arc<metamodelica::List<Option<Arc<Iterator>>>> = metamodelica::nil();
+        let mut iter: Arc<Iterator>;
+        let mut names: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
+        let mut ranges: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
+        let mut maps: Arc<metamodelica::List<Option<Arc<Iterator>>>>;
         let mut name: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
         let mut range: Arc<Expression::NFExpression> = Arc::new(Expression::END);
         let mut map: Option<Arc<Iterator>> = None;
@@ -276,12 +276,12 @@ pub mod Iterator {
 
     pub fn addFrames(mut iter: Arc<Iterator>, mut frames: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator>>)>>) -> Result<Arc<Iterator>> {
         let mut iter: Arc<Iterator> = iter;
-        let mut names1: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-        let mut names2: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-        let mut ranges1: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-        let mut ranges2: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-        let mut maps1: Arc<metamodelica::List<Option<Arc<Iterator>>>> = metamodelica::nil();
-        let mut maps2: Arc<metamodelica::List<Option<Arc<Iterator>>>> = metamodelica::nil();
+        let mut names1: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
+        let mut names2: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
+        let mut ranges1: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
+        let mut ranges2: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
+        let mut maps1: Arc<metamodelica::List<Option<Arc<Iterator>>>>;
+        let mut maps2: Arc<metamodelica::List<Option<Arc<Iterator>>>>;
         if !(frames.clone().is_empty()) {
             (names1, ranges1, maps1) = getFrames(iter.clone())?;
             (names2, ranges2, maps2) = List::unzip3(frames.clone());
@@ -291,9 +291,9 @@ pub mod Iterator {
     }
 
     pub fn getFrames(mut iter: Arc<Iterator>) -> Result<(Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>, Arc<metamodelica::List<Arc<Expression::NFExpression>>>, Arc<metamodelica::List<Option<Arc<Iterator>>>>)> {
-        let mut names: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-        let mut ranges: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-        let mut maps: Arc<metamodelica::List<Option<Arc<Iterator>>>> = metamodelica::nil();
+        let mut names: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
+        let mut ranges: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
+        let mut maps: Arc<metamodelica::List<Option<Arc<Iterator>>>>;
         (names, ranges, maps) = (::match_deref::match_deref! { match &(iter.clone()) {
         Deref @ SINGLE { .. } => (list![var_field!((*iter).name, Iterator::SINGLE).clone()], list![var_field!((*iter).range, Iterator::SINGLE).clone()], list![var_field!((*iter).map, Iterator::SINGLE).clone()]),
         Deref @ NESTED { .. } => (Arc::new(var_field!((*iter).names, Iterator::NESTED).clone().borrow().iter().cloned().collect::<metamodelica::List<_>>()), Arc::new(var_field!((*iter).ranges, Iterator::NESTED).clone().borrow().iter().cloned().collect::<metamodelica::List<_>>()), Arc::new(var_field!((*iter).maps, Iterator::NESTED).clone().borrow().iter().cloned().collect::<metamodelica::List<_>>())),
@@ -304,12 +304,12 @@ pub mod Iterator {
     }
 
     pub fn merge(mut iterators: Arc<metamodelica::List<Arc<Iterator>>>) -> Result<Arc<Iterator>> {
-        let mut result: Arc<Iterator> = Arc::new(Iterator::EMPTY);
-        let mut tmp_names: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
+        let mut result: Arc<Iterator>;
+        let mut tmp_names: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
         let mut names: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-        let mut tmp_ranges: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
+        let mut tmp_ranges: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
         let mut ranges: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-        let mut tmp_maps: Arc<metamodelica::List<Option<Arc<Iterator>>>> = metamodelica::nil();
+        let mut tmp_maps: Arc<metamodelica::List<Option<Arc<Iterator>>>>;
         let mut maps: Arc<metamodelica::List<Option<Arc<Iterator>>>> = metamodelica::nil();
         if List::hasOneElement(iterators.clone()) {
             result = listHead(iterators.clone())?;
@@ -328,9 +328,9 @@ pub mod Iterator {
 
     pub fn split(mut iterator: Arc<Iterator>) -> Result<Arc<metamodelica::List<Arc<Iterator>>>> {
         let mut result: Arc<metamodelica::List<Arc<Iterator>>> = metamodelica::nil();
-        let mut names: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-        let mut ranges: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-        let mut maps: Arc<metamodelica::List<Option<Arc<Iterator>>>> = metamodelica::nil();
+        let mut names: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
+        let mut ranges: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
+        let mut maps: Arc<metamodelica::List<Option<Arc<Iterator>>>>;
         (names, ranges, maps) = getFrames(iterator.clone())?;
         for mut tpl in &*List::zip3(names.clone(), ranges.clone(), maps.clone()) {
             let mut tpl = tpl.clone();
@@ -398,7 +398,7 @@ pub mod Iterator {
     }
 
     pub fn isEmpty(mut iter: Arc<Iterator>) -> bool {
-        let mut b: bool = false;
+        let mut b: bool;
         b = (::match_deref::match_deref! { match &(iter.clone()) {
         Deref @ EMPTY { .. } => true,
         _ => false,
@@ -408,7 +408,7 @@ pub mod Iterator {
     }
 
     pub fn isResizable(mut iter: Arc<Iterator>) -> Result<bool> {
-        let mut b: bool = false;
+        let mut b: bool;
         b = List::any(types(iter.clone())?, (std::sync::Arc::new(Type::isResizable) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Type::NFType>) -> Result<bool> + 'static>))?;
         Ok(b)
     }
@@ -443,9 +443,9 @@ pub mod Iterator {
     }
 
     pub fn intersectRest(mut name: Arc<ComponentRef::NFComponentRef>, mut start: i32, mut step: i32, mut stop: i32, mut start_max: i32, mut stop_min: i32, mut map: Option<Arc<Iterator>>) -> Result<(Arc<Iterator>, Arc<Iterator>)> {
-        let mut rest: (Arc<Iterator>, Arc<Iterator>) = (Arc::new(Iterator::EMPTY), Arc::new(Iterator::EMPTY));
-        let mut rest_left: Arc<Iterator> = Arc::new(Iterator::EMPTY);
-        let mut rest_right: Arc<Iterator> = Arc::new(Iterator::EMPTY);
+        let mut rest: (Arc<Iterator>, Arc<Iterator>);
+        let mut rest_left: Arc<Iterator>;
+        let mut rest_right: Arc<Iterator>;
         if start.clone() > start_max.clone() {
             rest_left = crate::NBEquation::Iterator::interned_EMPTY();
         } else {
@@ -461,7 +461,7 @@ pub mod Iterator {
     }
 
     pub fn types(mut iter: Arc<Iterator>) -> Result<Arc<metamodelica::List<Arc<Type::NFType>>>> {
-        let mut t: Arc<metamodelica::List<Arc<Type::NFType>>> = metamodelica::nil();
+        let mut t: Arc<metamodelica::List<Arc<Type::NFType>>>;
         t = (::match_deref::match_deref! { match &(iter.clone()) {
         Deref @ SINGLE { .. } => list![Expression::typeOf(var_field!((*iter).range, Iterator::SINGLE).clone())],
         Deref @ NESTED { .. } => ({
@@ -483,7 +483,7 @@ pub mod Iterator {
     }
 
     pub fn sizes(mut iter: Arc<Iterator>, mut resize: bool) -> Result<Arc<metamodelica::List<i32>>> {
-        let mut sizes: Arc<metamodelica::List<i32>> = metamodelica::nil();
+        let mut sizes: Arc<metamodelica::List<i32>>;
         sizes = (::match_deref::match_deref! { match &(iter.clone()) {
         Deref @ SINGLE { .. } => list![Expression::rangeSize(var_field!((*iter).range, Iterator::SINGLE).clone(), resize.clone())?],
         Deref @ NESTED { .. } => ({
@@ -529,7 +529,7 @@ pub mod Iterator {
     }
 
     pub fn numDimensions(mut iter: Arc<Iterator>) -> i32 {
-        let mut num: i32 = 0;
+        let mut num: i32;
         num = (::match_deref::match_deref! { match &(iter.clone()) {
         Deref @ SINGLE { .. } => 1,
         Deref @ NESTED { .. } => metamodelica::arrayLength(var_field!((*iter).names, Iterator::NESTED).clone()),
@@ -552,9 +552,9 @@ pub mod Iterator {
         }
 
         let mut iter: Arc<Iterator> = iter;
-        let mut names: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-        let mut ranges: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-        let mut maps: Arc<metamodelica::List<Option<Arc<Iterator>>>> = metamodelica::nil();
+        let mut names: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
+        let mut ranges: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
+        let mut maps: Arc<metamodelica::List<Option<Arc<Iterator>>>>;
         (names, ranges, maps) = getFrames(iter.clone())?;
         ranges = ({
         let mut __acc: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
@@ -648,13 +648,13 @@ pub mod Iterator {
         }
 
         let mut failed: bool = false;
-        let mut or_start: i32 = 0;
-        let mut or_step: i32 = 0;
-        let mut or_stop: i32 = 0;
-        let mut ee_start: i32 = 0;
-        let mut ee_step: i32 = 0;
-        let mut ee_stop: i32 = 0;
-        let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+        let mut or_start: i32;
+        let mut or_step: i32;
+        let mut or_stop: i32;
+        let mut ee_start: i32;
+        let mut ee_step: i32;
+        let mut ee_stop: i32;
+        let mut exp: Arc<Expression::NFExpression>;
         (or_start, or_step, or_stop) = Expression::getIntegerRange(replacor_range.clone(), true)?;
         (ee_start, ee_step, ee_stop) = Expression::getIntegerRange(replacee_range.clone(), true)?;
         if rangeLength(or_start.clone(), or_step.clone(), or_stop.clone()) == rangeLength(ee_start.clone(), ee_step.clone(), ee_stop.clone()) {
@@ -707,7 +707,7 @@ pub mod Iterator {
     }
 
     pub fn extract(mut exp: Arc<Expression::NFExpression>, mut new_iters: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>>, mut dims_map: Arc<UnorderedMap::UnorderedMap<Arc<metamodelica::List<Arc<Dimension::NFDimension>>>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>>) -> Result<(Arc<Iterator>, Arc<Expression::NFExpression>)> {
-        let mut iter: Arc<Iterator> = Arc::new(Iterator::EMPTY);
+        let mut iter: Arc<Iterator>;
         let mut exp: Arc<Expression::NFExpression> = exp;
         let mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
         (exp, iter) = extractFromCall(exp.clone(), crate::NBEquation::Iterator::interned_EMPTY(), replacements.clone(), new_iters.clone(), dims_map.clone())?;
@@ -764,7 +764,7 @@ pub mod Iterator {
     }
 
     pub fn extractFromCallIfException(mut exp: Arc<Expression::NFExpression>) -> bool {
-        let mut b: bool = false;
+        let mut b: bool;
         b = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CALL { call: Deref @ Call::TYPED_ARRAY_CONSTRUCTOR { .. } } => false,
         Deref @ Expression::IF { .. } => extractFromCallIfException(var_field!((*exp).trueBranch, Expression::NFExpression::IF).clone()) || extractFromCallIfException(var_field!((*exp).falseBranch, Expression::NFExpression::IF).clone()),
@@ -775,9 +775,9 @@ pub mod Iterator {
     }
 
     pub fn normalizedSubscripts(mut iter: Arc<Iterator>, mut iter_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Subscript::NFSubscript>>>) -> Result<Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>> {
-        let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
-        let mut names: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-        let mut ranges: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
+        let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>;
+        let mut names: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
+        let mut ranges: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
         (names, ranges, _) = getFrames(iter.clone())?;
         subs = ({
         let mut __acc: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
@@ -801,7 +801,7 @@ pub mod Iterator {
     }
 
     pub fn normalizedSubscript(mut iter_name: Arc<ComponentRef::NFComponentRef>, mut range: Arc<Expression::NFExpression>, mut iter_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Subscript::NFSubscript>>>) -> Result<Arc<Subscript::NFSubscript>> {
-        let mut sub: Arc<Subscript::NFSubscript> = Arc::new(Subscript::WHOLE);
+        let mut sub: Arc<Subscript::NFSubscript>;
         let mut step: Arc<Expression::NFExpression> = Arc::new(Expression::END);
         let mut sub_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
         sub = (::match_deref::match_deref! { match &(range.clone()) {
@@ -914,7 +914,7 @@ pub mod Iterator {
         let mut start: i32 = 0;
         let mut step: i32 = 0;
         let mut stop: i32 = 0;
-        let mut within_range: bool = false;
+        let mut within_range: bool;
         (thresh, start, step, stop) = (::match_deref::match_deref! { match &((rhs.clone(), range.clone())) {
         (Deref @ Expression::INTEGER { value: __esc_thresh }, __esc_range @ Deref @ Expression::RANGE { start: Deref @ Expression::INTEGER { value: __esc_start }, step: Some(Deref @ Expression::INTEGER { value: __esc_step }), stop: Deref @ Expression::INTEGER { value: __esc_stop }, .. }) => {
             range = (*__esc_range).clone();
@@ -985,7 +985,7 @@ pub mod Iterator {
     pub fn adaptArray(mut array: Arc<Expression::NFExpression>, mut rhs: Arc<Expression::NFExpression>, mut operator: Arc<Operator::NFOperator>) -> Result<Arc<Expression::NFExpression>> {
         let mut array: Arc<Expression::NFExpression> = array;
         let mut thresh: i32 = 0;
-        let mut elems: Arc<metamodelica::List<i32>> = metamodelica::nil();
+        let mut elems: Arc<metamodelica::List<i32>>;
         (thresh, elems) = (::match_deref::match_deref! { match &((rhs.clone(), array.clone())) {
         (Deref @ Expression::INTEGER { value: __esc_thresh }, Deref @ Expression::ARRAY { literal: true, .. }) => {
             thresh = (*__esc_thresh).clone();
@@ -1148,7 +1148,7 @@ pub mod Iterator {
     pub fn toString(mut iter: Arc<Iterator>) -> Result<ArcStr> {
         fn singleStr(mut name: Arc<ComponentRef::NFComponentRef>, mut range: Arc<Expression::NFExpression>, mut map: Option<Arc<Iterator>>) -> Result<ArcStr> {
             let mut r#str: ArcStr = { let mut __mm_s = String::new(); __mm_s.push_str(&*ComponentRef::toString(name.clone())?); __mm_s.push_str(&*literal!(" in ")); __mm_s.push_str(&*Expression::toString(range.clone())?); ArcStr::from(__mm_s) };
-            let mut names: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
+            let mut names: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
             if isSome(map.clone()) {
                 (names, _, _) = getFrames(Util::getOption(map.clone())?)?;
                 r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!(" (")); __mm_s.push_str(&*ComponentRef::toString(listHead(names.clone())?)?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
@@ -1363,7 +1363,7 @@ pub mod Equation {
     }
 
     pub fn source(mut eq: Arc<Equation>) -> Result<Arc<DAE::ElementSource>> {
-        let mut src: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
+        let mut src: Arc<DAE::ElementSource>;
         src = (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ SCALAR_EQUATION { .. } => var_field!((*eq).source, Equation::SCALAR_EQUATION).clone(),
         Deref @ ARRAY_EQUATION { .. } => var_field!((*eq).source, Equation::ARRAY_EQUATION).clone(),
@@ -1387,8 +1387,8 @@ pub mod Equation {
     }
 
     pub fn size(mut eqn_ptr: Pointer::Pointer<Arc<Equation>>, mut resize: bool) -> Result<i32> {
-        let mut s: i32 = 0;
-        let mut eqn: Arc<Equation> = Arc::new(Equation::DUMMY_EQUATION);
+        let mut s: i32;
+        let mut eqn: Arc<Equation>;
         eqn = Pointer::access(eqn_ptr.clone());
         s = (::match_deref::match_deref! { match &(eqn.clone()) {
         Deref @ SCALAR_EQUATION { .. } => {
@@ -1428,8 +1428,8 @@ pub mod Equation {
     }
 
     pub fn sizes(mut eqn_ptr: Pointer::Pointer<Arc<Equation>>, mut resize: bool) -> Result<Arc<metamodelica::List<i32>>> {
-        let mut size_lst: Arc<metamodelica::List<i32>> = metamodelica::nil();
-        let mut eqn: Arc<Equation> = Arc::new(Equation::DUMMY_EQUATION);
+        let mut size_lst: Arc<metamodelica::List<i32>>;
+        let mut eqn: Arc<Equation>;
         eqn = Pointer::access(eqn_ptr.clone());
         size_lst = (::match_deref::match_deref! { match &(eqn.clone()) {
         Deref @ SCALAR_EQUATION { .. } => list![1],
@@ -1487,7 +1487,7 @@ pub mod Equation {
     }
 
     pub fn isEqualPtrTpl(mut tpl: (Pointer::Pointer<Arc<Equation>>, Pointer::Pointer<Arc<Equation>>)) -> Result<bool> {
-        let mut b: bool = false;
+        let mut b: bool;
         let mut eqn1: Pointer::Pointer<Arc<Equation>>;
         let mut eqn2: Pointer::Pointer<Arc<Equation>>;
         (eqn1, eqn2) = tpl.clone();
@@ -1501,16 +1501,16 @@ pub mod Equation {
     }
 
     pub fn isEqualTpl(mut tpl: (Arc<Equation>, Arc<Equation>)) -> Result<bool> {
-        let mut b: bool = false;
-        let mut eqn1: Arc<Equation> = Arc::new(Equation::DUMMY_EQUATION);
-        let mut eqn2: Arc<Equation> = Arc::new(Equation::DUMMY_EQUATION);
+        let mut b: bool;
+        let mut eqn1: Arc<Equation>;
+        let mut eqn2: Arc<Equation>;
         (eqn1, eqn2) = tpl.clone();
         b = isEqual(eqn1.clone(), eqn2.clone())?;
         Ok(b)
     }
 
     pub fn isEqual(mut eqn1: Arc<Equation>, mut eqn2: Arc<Equation>) -> Result<bool> {
-        let mut b: bool = false;
+        let mut b: bool;
         b = (::match_deref::match_deref! { match &((eqn1.clone(), eqn2.clone())) {
         (Deref @ SCALAR_EQUATION { .. }, Deref @ SCALAR_EQUATION { .. }) => Expression::isEqual(var_field!((*eqn1).lhs, Equation::SCALAR_EQUATION).clone(), var_field!((*eqn2).lhs, Equation::SCALAR_EQUATION).clone())? && Expression::isEqual(var_field!((*eqn1).rhs, Equation::SCALAR_EQUATION).clone(), var_field!((*eqn2).rhs, Equation::SCALAR_EQUATION).clone())?,
         (Deref @ ARRAY_EQUATION { .. }, Deref @ ARRAY_EQUATION { .. }) => Expression::isEqual(var_field!((*eqn1).lhs, Equation::ARRAY_EQUATION).clone(), var_field!((*eqn2).lhs, Equation::ARRAY_EQUATION).clone())? && Expression::isEqual(var_field!((*eqn1).rhs, Equation::ARRAY_EQUATION).clone(), var_field!((*eqn2).rhs, Equation::ARRAY_EQUATION).clone())?,
@@ -1545,7 +1545,7 @@ pub mod Equation {
     }
 
     pub fn getEqnName(mut eqn: Pointer::Pointer<Arc<Equation>>) -> Result<Arc<ComponentRef::NFComponentRef>> {
-        let mut name: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
+        let mut name: Arc<ComponentRef::NFComponentRef>;
         let mut residualVar: Pointer::Pointer<Arc<Variable::NFVariable>>;
         if isDummy(Pointer::access(eqn.clone())) {
             name = openmodelica_nf_frontend::NFComponentRef::interned_EMPTY();
@@ -1568,7 +1568,7 @@ pub mod Equation {
     }
 
     pub fn getSolvedVar(mut eqn: Arc<Equation>) -> Result<Arc<Variable::NFVariable>> {
-        let mut var: Arc<Variable::NFVariable> = Arc::new(<Variable::NFVariable as ::std::default::Default>::default());
+        let mut var: Arc<Variable::NFVariable>;
         var = (::match_deref::match_deref! { match &(eqn.clone()) {
         Deref @ SCALAR_EQUATION { lhs: Deref @ Expression::CREF { cref, .. }, .. } => {
             BVariable::getVar(cref.clone(), metamodelica::sourceInfo!("NBackEnd/Classes/NBEquation.mo"))?
@@ -1589,7 +1589,7 @@ pub mod Equation {
 
     pub fn makeAssignment(mut lhs: Arc<Expression::NFExpression>, mut rhs: Arc<Expression::NFExpression>, mut idx: Pointer::Pointer<i32>, mut r#str: ArcStr, mut iter: Arc<Iterator::Iterator>, mut attr: Arc<EquationAttributes::EquationAttributes>) -> Result<Pointer::Pointer<Arc<Equation>>> {
         let mut eq: Pointer::Pointer<Arc<Equation>>;
-        let mut e: Arc<Equation> = Arc::new(Equation::DUMMY_EQUATION);
+        let mut e: Arc<Equation>;
         e = makeAssignmentEqn(lhs.clone(), rhs.clone(), iter.clone(), attr.clone())?;
         eq = Pointer::create(e.clone());
         createName(eq.clone(), idx.clone(), (r#str.clone()).clone())?;
@@ -1605,7 +1605,7 @@ pub mod Equation {
     }
 
     pub fn makeAssignmentEqn(mut lhs: Arc<Expression::NFExpression>, mut rhs: Arc<Expression::NFExpression>, mut iter: Arc<Iterator::Iterator>, mut attr: Arc<EquationAttributes::EquationAttributes>) -> Result<Arc<Equation>> {
-        let mut e: Arc<Equation> = Arc::new(Equation::DUMMY_EQUATION);
+        let mut e: Arc<Equation>;
         let mut ty: Arc<Type::NFType> = Expression::typeOf(lhs.clone());
         e = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ Type::ARRAY { .. } => {
@@ -1631,7 +1631,7 @@ pub mod Equation {
 
     pub fn makeAlgorithm(mut stmts: Arc<metamodelica::List<Arc<Statement::NFStatement>>>, mut init: bool) -> Result<Pointer::Pointer<Arc<Equation>>> {
         let mut eqn: Pointer::Pointer<Arc<Equation>>;
-        let mut alg: Arc<Algorithm::NFAlgorithm> = Arc::new(<Algorithm::NFAlgorithm as ::std::default::Default>::default());
+        let mut alg: Arc<Algorithm::NFAlgorithm>;
         alg = Arc::new(Algorithm::NFAlgorithm { statements: stmts.clone(), inputs: metamodelica::nil(), outputs: metamodelica::nil(), stmtDiffInfo: None, scope: openmodelica_nf_frontend::NFInstNode::InstNode::interned_EMPTY_NODE(), source: DAE::emptyElementSource().clone() });
         alg = Algorithm::setInputsOutputs(alg.clone())?;
         eqn = BackendDAE::lowerAlgorithm(alg.clone(), init.clone())?;
@@ -1802,7 +1802,7 @@ pub mod Equation {
 
     pub fn setDerivative(mut eq: Arc<Equation>, mut derivative: Pointer::Pointer<Arc<Equation>>) -> Result<Arc<Equation>> {
         let mut eq: Arc<Equation> = eq;
-        let mut attr: Arc<EquationAttributes::EquationAttributes> = Arc::new(<EquationAttributes::EquationAttributes as ::std::default::Default>::default());
+        let mut attr: Arc<EquationAttributes::EquationAttributes>;
         attr = getAttributes(eq.clone());
         assign_field!(attr.derivative = Some(derivative.clone()));
         eq = setAttributes(eq.clone(), attr.clone())?;
@@ -1958,7 +1958,7 @@ pub mod Equation {
     }
 
     pub fn collectCrefs(mut eq: Arc<Equation>, mut filter: Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<ComponentRef::NFComponentRef>> + 'static>, mut mapFunc: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>> {
-        let mut cref_lst: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
+        let mut cref_lst: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
         let mut acc: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = UnorderedSet::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
         map(eq.clone(), (std::sync::Arc::new({ let __pe_b1 = filter.clone(); let __pe_b2 = acc.clone(); move |__pe_a0| Slice::filterExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>), Some((std::sync::Arc::new({ let __pe_b1 = acc.clone(); move |__pe_a0| filter(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<Arc<ComponentRef::NFComponentRef>> + 'static>)), mapFunc.clone())?;
         cref_lst = UnorderedSet::toList(acc.clone());
@@ -2082,10 +2082,10 @@ pub mod Equation {
 
     pub fn updateLHSandRHS(mut eqn: Arc<Equation>, mut lhs: Arc<Expression::NFExpression>, mut rhs: Arc<Expression::NFExpression>) -> Result<Arc<Equation>> {
         let mut eqn: Arc<Equation> = eqn;
-        let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
+        let mut ty: Arc<Type::NFType>;
         let mut attr: Arc<EquationAttributes::EquationAttributes> = getAttributes(eqn.clone());
         let mut src: Arc<DAE::ElementSource> = source(eqn.clone())?;
-        let mut opt_rec_size: Option<i32> = None;
+        let mut opt_rec_size: Option<i32>;
         let mut rec_size: i32 = 0;
         ty = Expression::typeOf(lhs.clone());
         opt_rec_size = Type::complexSize(ty.clone(), false)?;
@@ -2150,7 +2150,7 @@ pub mod Equation {
         }
 
         let mut eq: Arc<Equation> = eq;
-        let mut old_eq: Arc<Equation> = Arc::new(Equation::DUMMY_EQUATION);
+        let mut old_eq: Arc<Equation>;
         if Flags::isSet(Flags::DUMP_SIMPLIFY.clone())? && !(stringEqual((indent.clone()).clone(), (literal!("")).clone())) {
             metamodelica::print((literal!("\n")).clone());
         }
@@ -2416,7 +2416,7 @@ pub mod Equation {
     pub fn createResidual(mut eqn_ptr: Pointer::Pointer<Arc<Equation>>, mut residualCref_opt: Option<Arc<ComponentRef::NFComponentRef>>, mut new: bool, mut allowFail: bool) -> Result<Pointer::Pointer<Arc<Equation>>> {
         let mut eqn_ptr: Pointer::Pointer<Arc<Equation>> = eqn_ptr;
         let mut eqn: Arc<Equation> = Pointer::access(eqn_ptr.clone());
-        let mut attr: Arc<EquationAttributes::EquationAttributes> = Arc::new(<EquationAttributes::EquationAttributes as ::std::default::Default>::default());
+        let mut attr: Arc<EquationAttributes::EquationAttributes>;
         let mut residualCref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
         let mut lhs: Arc<Expression::NFExpression> = Arc::new(Expression::END);
         let mut rhs: Arc<Expression::NFExpression> = Arc::new(Expression::END);
@@ -2495,7 +2495,7 @@ pub mod Equation {
     }
 
     pub fn getResidualExp(mut eqn: Arc<Equation>, mut throwOnFail: bool) -> Result<Arc<Expression::NFExpression>> {
-        let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+        let mut exp: Arc<Expression::NFExpression>;
         exp = (::match_deref::match_deref! { match &(eqn.clone()) {
         Deref @ SCALAR_EQUATION { .. } => {
             let mut operator: Arc<Operator::NFOperator> = Arc::new(<Operator::NFOperator as ::std::default::Default>::default());
@@ -2560,7 +2560,7 @@ pub mod Equation {
     }
 
     pub fn getForIterator(mut eqn: Arc<Equation>) -> Arc<Iterator::Iterator> {
-        let mut iterator: Arc<Iterator::Iterator> = Arc::new(Iterator::EMPTY);
+        let mut iterator: Arc<Iterator::Iterator>;
         iterator = (::match_deref::match_deref! { match &(eqn.clone()) {
         Deref @ FOR_EQUATION { .. } => var_field!((*eqn).iter, Equation::FOR_EQUATION).clone(),
         _ => crate::NBEquation::Iterator::interned_EMPTY(),
@@ -2570,7 +2570,7 @@ pub mod Equation {
     }
 
     pub fn getForFrames(mut eqn: Arc<Equation>) -> Result<Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)>>> {
-        let mut frames: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)>> = metamodelica::nil();
+        let mut frames: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)>>;
         frames = (::match_deref::match_deref! { match &(eqn.clone()) {
         Deref @ FOR_EQUATION { .. } => {
             let mut names: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
@@ -2601,7 +2601,7 @@ pub mod Equation {
     }
 
     pub fn isDummy(mut eqn: Arc<Equation>) -> bool {
-        let mut b: bool = false;
+        let mut b: bool;
         b = (::match_deref::match_deref! { match &(eqn.clone()) {
         Deref @ DUMMY_EQUATION { .. } => true,
         _ => false,
@@ -2611,37 +2611,37 @@ pub mod Equation {
     }
 
     pub fn isResidual(mut eqn_ptr: Pointer::Pointer<Arc<Equation>>) -> bool {
-        let mut b: bool = false;
-        let mut attr: Arc<EquationAttributes::EquationAttributes> = Arc::new(<EquationAttributes::EquationAttributes as ::std::default::Default>::default());
+        let mut b: bool;
+        let mut attr: Arc<EquationAttributes::EquationAttributes>;
         attr = getAttributes(Pointer::access(eqn_ptr.clone()));
         b = attr.residual.clone();
         b
     }
 
     pub fn isDiscrete(mut eqn_ptr: Pointer::Pointer<Arc<Equation>>) -> bool {
-        let mut b: bool = false;
-        let mut attr: Arc<EquationAttributes::EquationAttributes> = Arc::new(<EquationAttributes::EquationAttributes as ::std::default::Default>::default());
+        let mut b: bool;
+        let mut attr: Arc<EquationAttributes::EquationAttributes>;
         attr = getAttributes(Pointer::access(eqn_ptr.clone()));
         b = attr.kind.clone() == EquationKind::DISCRETE.clone();
         b
     }
 
     pub fn isContinuous(mut eqn_ptr: Pointer::Pointer<Arc<Equation>>) -> bool {
-        let mut b: bool = false;
-        let mut attr: Arc<EquationAttributes::EquationAttributes> = Arc::new(<EquationAttributes::EquationAttributes as ::std::default::Default>::default());
+        let mut b: bool;
+        let mut attr: Arc<EquationAttributes::EquationAttributes>;
         attr = getAttributes(Pointer::access(eqn_ptr.clone()));
         b = attr.kind.clone() == EquationKind::CONTINUOUS.clone();
         b
     }
 
     pub fn isDiscontinuous(mut eqn_ptr: Pointer::Pointer<Arc<Equation>>) -> bool {
-        let mut b: bool = false;
+        let mut b: bool;
         b = !(isContinuous(eqn_ptr.clone()));
         b
     }
 
     pub fn isContinousRecordAware(mut eqn_ptr: Pointer::Pointer<Arc<Equation>>) -> Result<bool> {
-        let mut b: bool = false;
+        let mut b: bool;
         let mut eqn: Arc<Equation> = Pointer::access(eqn_ptr.clone());
         b = (::match_deref::match_deref! { match &(eqn.clone()) {
         Deref @ RECORD_EQUATION { .. } => Type::isContinuous(var_field!((*eqn).ty, Equation::RECORD_EQUATION).clone())?,
@@ -2652,15 +2652,15 @@ pub mod Equation {
     }
 
     pub fn isInitial(mut eqn_ptr: Pointer::Pointer<Arc<Equation>>) -> bool {
-        let mut b: bool = false;
-        let mut attr: Arc<EquationAttributes::EquationAttributes> = Arc::new(<EquationAttributes::EquationAttributes as ::std::default::Default>::default());
+        let mut b: bool;
+        let mut attr: Arc<EquationAttributes::EquationAttributes>;
         attr = getAttributes(Pointer::access(eqn_ptr.clone()));
         b = attr.exclusively_initial.clone();
         b
     }
 
     pub fn isWhenEquation(mut eqn_ptr: Pointer::Pointer<Arc<Equation>>) -> Result<bool> {
-        let mut b: bool = false;
+        let mut b: bool;
         let mut eqn: Arc<Equation> = Pointer::access(eqn_ptr.clone());
         b = (::match_deref::match_deref! { match &(eqn.clone()) {
         Deref @ WHEN_EQUATION { .. } => true,
@@ -2679,7 +2679,7 @@ pub mod Equation {
     }
 
     pub fn isIfEquation(mut eqn_ptr: Pointer::Pointer<Arc<Equation>>) -> bool {
-        let mut b: bool = false;
+        let mut b: bool;
         b = (::match_deref::match_deref! { match &(Pointer::access(eqn_ptr.clone())) {
         Deref @ IF_EQUATION { .. } => true,
         _ => false,
@@ -2689,7 +2689,7 @@ pub mod Equation {
     }
 
     pub fn isForEquation(mut eqn_ptr: Pointer::Pointer<Arc<Equation>>) -> bool {
-        let mut b: bool = false;
+        let mut b: bool;
         b = (::match_deref::match_deref! { match &(Pointer::access(eqn_ptr.clone())) {
         Deref @ FOR_EQUATION { .. } => true,
         _ => false,
@@ -2699,7 +2699,7 @@ pub mod Equation {
     }
 
     pub fn isArrayEquation(mut eqn_ptr: Pointer::Pointer<Arc<Equation>>) -> bool {
-        let mut b: bool = false;
+        let mut b: bool;
         b = (::match_deref::match_deref! { match &(Pointer::access(eqn_ptr.clone())) {
         Deref @ ARRAY_EQUATION { .. } => true,
         _ => false,
@@ -2709,7 +2709,7 @@ pub mod Equation {
     }
 
     pub fn isRecordOrTupleEquation(mut eqn_ptr: Pointer::Pointer<Arc<Equation>>) -> Result<bool> {
-        let mut b: bool = false;
+        let mut b: bool;
         b = (::match_deref::match_deref! { match &(Pointer::access(eqn_ptr.clone())) {
         Deref @ RECORD_EQUATION { .. } => {
             true
@@ -2732,7 +2732,7 @@ pub mod Equation {
     }
 
     pub fn isRecordEquation(mut eqn_ptr: Pointer::Pointer<Arc<Equation>>) -> bool {
-        let mut b: bool = false;
+        let mut b: bool;
         b = (::match_deref::match_deref! { match &(Pointer::access(eqn_ptr.clone())) {
         e @ Deref @ RECORD_EQUATION { .. } => {
             !(Type::isTuple(var_field!((**e).ty, Equation::RECORD_EQUATION).clone()))
@@ -2749,7 +2749,7 @@ pub mod Equation {
     }
 
     pub fn isTupleEquation(mut eqn_ptr: Pointer::Pointer<Arc<Equation>>) -> bool {
-        let mut b: bool = false;
+        let mut b: bool;
         b = (::match_deref::match_deref! { match &(Pointer::access(eqn_ptr.clone())) {
         e @ Deref @ RECORD_EQUATION { .. } => {
             Type::isTuple(var_field!((**e).ty, Equation::RECORD_EQUATION).clone())
@@ -2763,7 +2763,7 @@ pub mod Equation {
     }
 
     pub fn isAlgorithm(mut eqn_ptr: Pointer::Pointer<Arc<Equation>>) -> bool {
-        let mut b: bool = false;
+        let mut b: bool;
         b = (::match_deref::match_deref! { match &(Pointer::access(eqn_ptr.clone())) {
         Deref @ ALGORITHM { .. } => true,
         _ => false,
@@ -2781,7 +2781,7 @@ pub mod Equation {
     }
 
     pub fn isClocked(mut eqn_ptr: Pointer::Pointer<Arc<Equation>>) -> bool {
-        let mut b: bool = false;
+        let mut b: bool;
         b = (::match_deref::match_deref! { match &(getAttributes(Pointer::access(eqn_ptr.clone()))) {
         Deref @ EquationAttributes::EQUATION_ATTRIBUTES { kind: EquationKind::CLOCKED { .. }, .. } => true,
         _ => false,
@@ -2791,7 +2791,7 @@ pub mod Equation {
     }
 
     pub fn isTypeClock(mut eqn_ptr: Pointer::Pointer<Arc<Equation>>) -> Result<bool> {
-        let mut b: bool = false;
+        let mut b: bool;
         let mut eq: Arc<Equation> = Pointer::access(eqn_ptr.clone());
         b = (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ SCALAR_EQUATION { .. } => Type::isClock(var_field!((*eq).ty, Equation::SCALAR_EQUATION).clone())?,
@@ -2802,7 +2802,7 @@ pub mod Equation {
     }
 
     pub fn isCompound(mut eqn_ptr: Pointer::Pointer<Arc<Equation>>) -> bool {
-        let mut b: bool = false;
+        let mut b: bool;
         b = (::match_deref::match_deref! { match &(Pointer::access(eqn_ptr.clone())) {
         Deref @ ALGORITHM { .. } => true,
         Deref @ IF_EQUATION { .. } => true,
@@ -2814,13 +2814,13 @@ pub mod Equation {
     }
 
     pub fn isResizable(mut eqn_ptr: Pointer::Pointer<Arc<Equation>>) -> Result<bool> {
-        let mut b: bool = false;
+        let mut b: bool;
         b = Type::isResizable(getType(Pointer::access(eqn_ptr.clone()), false)?)?;
         Ok(b)
     }
 
     pub fn hasDerivative(mut eqn_ptr: Pointer::Pointer<Arc<Equation>>) -> bool {
-        let mut b: bool = false;
+        let mut b: bool;
         b = (::match_deref::match_deref! { match &(getAttributes(Pointer::access(eqn_ptr.clone()))) {
         Deref @ EquationAttributes::EQUATION_ATTRIBUTES { derivative: Some(_), .. } => true,
         _ => false,
@@ -2859,12 +2859,12 @@ pub mod Equation {
     pub fn generateBindingEquation(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut idx: Pointer::Pointer<i32>, mut initial_: bool, mut new_iters: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>>) -> Result<Pointer::Pointer<Arc<Equation>>> {
         let mut eqn: Pointer::Pointer<Arc<Equation>>;
         let mut context: ArcStr = literal!("BND");
-        let mut var: Arc<Variable::NFVariable> = Arc::new(<Variable::NFVariable as ::std::default::Default>::default());
-        let mut lhs: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-        let mut rhs: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-        let mut eqnAttr: Arc<EquationAttributes::EquationAttributes> = Arc::new(<EquationAttributes::EquationAttributes as ::std::default::Default>::default());
-        let mut iter: Arc<Iterator::Iterator> = Arc::new(Iterator::EMPTY);
-        let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
+        let mut var: Arc<Variable::NFVariable>;
+        let mut lhs: Arc<Expression::NFExpression>;
+        let mut rhs: Arc<Expression::NFExpression>;
+        let mut eqnAttr: Arc<EquationAttributes::EquationAttributes>;
+        let mut iter: Arc<Iterator::Iterator>;
+        let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>;
         let mut dims_map: Arc<UnorderedMap::UnorderedMap<Arc<metamodelica::List<Arc<Dimension::NFDimension>>>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>> = UnorderedMap::new((std::sync::Arc::new(Dimension::hashList) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Dimension::NFDimension>>>) -> Result<i32> + 'static>), (std::sync::Arc::new({ let __pe_b2: Arc<dyn ::std::ops::Fn(_, _) -> Result<bool> + 'static> = (std::sync::Arc::new(Dimension::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>, Arc<Dimension::NFDimension>) -> Result<bool> + 'static>); move |__pe_a0, __pe_a1| List::isEqualOnTrue(__pe_a0, __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(_, _) -> Result<bool> + 'static>), 1);
         let mut iter_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Subscript::NFSubscript>>> = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
         var = Pointer::access(var_ptr.clone());
@@ -2989,10 +2989,10 @@ pub mod Equation {
 
     pub fn entwine(mut eqn_lst: Arc<metamodelica::List<Arc<Equation>>>, mut nesting_level: i32) -> Result<Arc<metamodelica::List<Arc<Equation>>>> {
         let mut entwined: Arc<metamodelica::List<Arc<Equation>>> = metamodelica::nil();
-        let mut eqn1: Arc<Equation> = Arc::new(Equation::DUMMY_EQUATION);
-        let mut eqn2: Arc<Equation> = Arc::new(Equation::DUMMY_EQUATION);
+        let mut eqn1: Arc<Equation>;
+        let mut eqn2: Arc<Equation>;
         let mut next: Arc<Equation> = Arc::new(Equation::DUMMY_EQUATION);
-        let mut rest: Arc<metamodelica::List<Arc<Equation>>> = metamodelica::nil();
+        let mut rest: Arc<metamodelica::List<Arc<Equation>>>;
         let mut tmp: Arc<metamodelica::List<Arc<Equation>>> = metamodelica::nil();
         let mut intersection: Arc<Iterator::Iterator> = Arc::new(Iterator::EMPTY);
         let mut rest1_left: Arc<Iterator::Iterator> = Arc::new(Iterator::EMPTY);
@@ -3070,7 +3070,7 @@ pub mod Equation {
     pub fn slice(mut eqn_ptr: Pointer::Pointer<Arc<Equation>>, mut indices: Arc<metamodelica::List<i32>>) -> Result<(Arc<metamodelica::List<Pointer::Pointer<Arc<Equation>>>>, SlicingStatus)> {
         let mut sliced_eqn: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation>>>> = metamodelica::nil();
         let mut slicing_status: SlicingStatus = SlicingStatus::UNCHANGED;
-        let mut eqn: Arc<Equation> = Arc::new(Equation::DUMMY_EQUATION);
+        let mut eqn: Arc<Equation>;
         let mut dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>> = metamodelica::nil();
         let mut sizes: Arc<metamodelica::List<i32>> = metamodelica::nil();
         eqn = Pointer::access(eqn_ptr.clone());
@@ -3110,19 +3110,19 @@ pub mod Equation {
     }
 
     pub fn sliceFor(mut body: Arc<Equation>, mut iter: Arc<Iterator::Iterator>, mut sizes: Arc<metamodelica::List<i32>>, mut frames: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)>>, mut indices: Arc<metamodelica::List<i32>>, mut naive: bool) -> Result<Arc<metamodelica::List<Pointer::Pointer<Arc<Equation>>>>> {
-        let mut result: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation>>>> = metamodelica::nil();
-        let mut location: Arc<metamodelica::List<i32>> = metamodelica::nil();
-        let mut new_frames: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)>> = metamodelica::nil();
-        let mut locations: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
-        let mut locations_T: Arc<metamodelica::List<metamodelica::Array<i32>>> = metamodelica::nil();
-        let mut frame_locations: Arc<metamodelica::List<(metamodelica::Array<i32>, (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>))>> = metamodelica::nil();
-        let mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> as ::std::default::Default>::default();
-        let mut frame_status: FrameOrderingStatus = FrameOrderingStatus::UNCHANGED;
-        let mut recollect_status: RecollectStatus = RecollectStatus::SUCCESS;
-        let mut tmp: Arc<Equation> = Arc::new(Equation::DUMMY_EQUATION);
-        let mut removed_diagonals_opt: Option<Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>> = None;
-        let mut size: i32 = 0;
-        let mut new_iter: Arc<Iterator::Iterator> = Arc::new(Iterator::EMPTY);
+        let mut result: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation>>>>;
+        let mut location: Arc<metamodelica::List<i32>>;
+        let mut new_frames: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)>>;
+        let mut locations: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>;
+        let mut locations_T: Arc<metamodelica::List<metamodelica::Array<i32>>>;
+        let mut frame_locations: Arc<metamodelica::List<(metamodelica::Array<i32>, (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>))>>;
+        let mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>;
+        let mut frame_status: FrameOrderingStatus;
+        let mut recollect_status: RecollectStatus;
+        let mut tmp: Arc<Equation>;
+        let mut removed_diagonals_opt: Option<Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>>;
+        let mut size: i32;
+        let mut new_iter: Arc<Iterator::Iterator>;
         if List::hasOneElement(indices.clone()) {
             location = Slice::indexToLocation(listHead(indices.clone())?, sizes.clone());
             replacements = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
@@ -3198,7 +3198,7 @@ pub mod Equation {
     pub fn singleSlice(mut eqn_ptr: Pointer::Pointer<Arc<Equation>>, mut scal_idx: i32, mut sizes: Arc<metamodelica::List<i32>>, mut cref_to_solve: Arc<ComponentRef::NFComponentRef>, mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>) -> Result<(Arc<Equation>, Solve::Status)> {
         let mut sliced_eqn: Arc<Equation> = Arc::new(Equation::DUMMY_EQUATION);
         let mut solve_status: Solve::Status = Solve::Status::UNPROCESSED;
-        let mut eqn: Arc<Equation> = Arc::new(Equation::DUMMY_EQUATION);
+        let mut eqn: Arc<Equation>;
         let mut location: Arc<metamodelica::List<i32>> = metamodelica::nil();
         eqn = Pointer::access(eqn_ptr.clone());
         (sliced_eqn, solve_status) = (::match_deref::match_deref! { match &(eqn.clone()) {
@@ -3218,9 +3218,9 @@ pub mod Equation {
     }
 
     fn makeInequality(mut tpl: (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>)) -> Result<Arc<Expression::NFExpression>> {
-        let mut equality_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-        let mut cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-        let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+        let mut equality_exp: Arc<Expression::NFExpression>;
+        let mut cref: Arc<ComponentRef::NFComponentRef>;
+        let mut exp: Arc<Expression::NFExpression>;
         (cref, exp) = tpl.clone();
         equality_exp = Arc::new(Expression::NFExpression::RELATION { exp1: Expression::fromCref(cref.clone(), false)?, operator: Arc::new(Operator::NFOperator { ty: ComponentRef::nodeType(cref.clone())?, op: Operator::Op::NEQUAL.clone() }), exp2: SimplifyExp::simplifyDump(exp.clone(), true, literal!("NBEquation.Equation.makeInequality"), (literal!("")).clone())?, index: -1 });
         Ok(equality_exp)
@@ -3332,11 +3332,11 @@ pub mod IfEquationBody {
 
     pub fn toEquation(mut body: Arc<IfEquationBody>, mut source: Arc<DAE::ElementSource>, mut init: bool) -> Result<Pointer::Pointer<Arc<Equation::Equation>>> {
         let mut eqn: Pointer::Pointer<Arc<Equation::Equation>>;
-        let mut attr: Arc<EquationAttributes::EquationAttributes> = Arc::new(<EquationAttributes::EquationAttributes as ::std::default::Default>::default());
-        let mut isAlgorithm: bool = false;
-        let mut e: Arc<Equation::Equation> = Arc::new(Equation::DUMMY_EQUATION);
-        let mut alg: Arc<Algorithm::NFAlgorithm> = Arc::new(<Algorithm::NFAlgorithm as ::std::default::Default>::default());
-        let mut size: i32 = 0;
+        let mut attr: Arc<EquationAttributes::EquationAttributes>;
+        let mut isAlgorithm: bool;
+        let mut e: Arc<Equation::Equation>;
+        let mut alg: Arc<Algorithm::NFAlgorithm>;
+        let mut size: i32;
         (attr, isAlgorithm) = (::match_deref::match_deref! { match &(body.then_eqns.clone()) {
         Deref @ metamodelica::List::Cons { head: then_eqn, tail: Deref @ metamodelica::List::Nil } => {
             (if (Equation::isDiscrete(then_eqn.clone())) {default(EquationKind::DISCRETE.clone(), init.clone(), None, None)} else {default(EquationKind::CONTINUOUS.clone(), init.clone(), None, None)}, Equation::isAlgorithm(then_eqn.clone()))
@@ -3370,7 +3370,7 @@ pub mod IfEquationBody {
 
     pub fn makeIfEquation(mut body: Arc<IfEquationBody>, mut idx: Pointer::Pointer<i32>, mut r#str: ArcStr, mut iter: Arc<Iterator::Iterator>, mut source: Arc<DAE::ElementSource>, mut attr: Arc<EquationAttributes::EquationAttributes>) -> Result<Pointer::Pointer<Arc<Equation::Equation>>> {
         let mut eq: Pointer::Pointer<Arc<Equation::Equation>>;
-        let mut e: Arc<Equation::Equation> = Arc::new(Equation::DUMMY_EQUATION);
+        let mut e: Arc<Equation::Equation>;
         e = makeIfEquationEqn(body.clone(), iter.clone(), source.clone(), attr.clone())?;
         eq = Pointer::create(e.clone());
         Equation::createName(eq.clone(), idx.clone(), (r#str.clone()).clone())?;
@@ -3378,7 +3378,7 @@ pub mod IfEquationBody {
     }
 
     fn makeIfEquationEqn(mut body: Arc<IfEquationBody>, mut iter: Arc<Iterator::Iterator>, mut source: Arc<DAE::ElementSource>, mut attr: Arc<EquationAttributes::EquationAttributes>) -> Result<Arc<Equation::Equation>> {
-        let mut e: Arc<Equation::Equation> = Arc::new(Equation::DUMMY_EQUATION);
+        let mut e: Arc<Equation::Equation>;
         e = Arc::new(Equation::Equation::IF_EQUATION { size: size(body.clone(), false)?, body: body.clone(), source: source.clone(), attr: attr.clone() });
         if !(Iterator::isEmpty(iter.clone())) {
             e = Arc::new(Equation::Equation::FOR_EQUATION { size: size(body.clone(), false)? * Iterator::size(iter.clone(), false)?, iter: iter.clone(), body: list![e.clone()], source: source.clone(), attr: attr.clone() });
@@ -3388,7 +3388,7 @@ pub mod IfEquationBody {
     }
 
     pub fn toString(mut body: Arc<IfEquationBody>, mut indent: ArcStr, mut elseStr: ArcStr, mut selfCall: bool) -> Result<ArcStr> {
-        let mut r#str: ArcStr = arcstr::literal!("");
+        let mut r#str: ArcStr;
         r#str = (elseStr.clone()).clone();
         if !(selfCall.clone()) {
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*indent.clone()); ArcStr::from(__mm_s) }).clone();
@@ -3419,7 +3419,7 @@ pub mod IfEquationBody {
 
     pub fn mapCondition(mut ifBody: Arc<IfEquationBody>, mut funcExp: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>, mut funcCrefOpt: Option<Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<Arc<ComponentRef::NFComponentRef>> + 'static>>, mut mapFunc: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<IfEquationBody>> {
         let mut ifBody: Arc<IfEquationBody> = ifBody;
-        let mut condition: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+        let mut condition: Arc<Expression::NFExpression>;
         condition = mapFunc(ifBody.condition.clone(), funcExp.clone())?;
         if !(referenceEq(&*(condition.clone()),&*(ifBody.condition.clone()))) {
             assign_field!(ifBody.condition = condition.clone());
@@ -3430,9 +3430,9 @@ pub mod IfEquationBody {
 
     pub fn mapEqnExpCref(mut ifBody: Arc<IfEquationBody>, mut func: Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<Pointer::Pointer<Arc<Equation::Equation>>> + 'static>, mut funcExp: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>, mut funcCrefOpt: Option<Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<Arc<ComponentRef::NFComponentRef>> + 'static>>, mut mapFunc: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<IfEquationBody>> {
         let mut ifBody: Arc<IfEquationBody> = ifBody;
-        let mut condition: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-        let mut else_if: Arc<IfEquationBody> = Arc::new(<IfEquationBody as ::std::default::Default>::default());
-        let mut old_else_if: Arc<IfEquationBody> = Arc::new(<IfEquationBody as ::std::default::Default>::default());
+        let mut condition: Arc<Expression::NFExpression>;
+        let mut else_if: Arc<IfEquationBody>;
+        let mut old_else_if: Arc<IfEquationBody>;
         condition = mapFunc(ifBody.condition.clone(), funcExp.clone())?;
         if !(referenceEq(&*(condition.clone()),&*(ifBody.condition.clone()))) {
             assign_field!(ifBody.condition = condition.clone());
@@ -3461,7 +3461,7 @@ pub mod IfEquationBody {
     }
 
     pub fn isEqual(mut body1: Arc<IfEquationBody>, mut body2: Arc<IfEquationBody>) -> Result<bool> {
-        let mut b: bool = false;
+        let mut b: bool;
         b = List::all(({
         let mut __acc: Arc<metamodelica::List<bool>> = metamodelica::nil();
         let __thr_src0 = body1.then_eqns.clone();
@@ -3495,8 +3495,8 @@ pub mod IfEquationBody {
     }
 
     pub fn toStatement(mut body: Arc<IfEquationBody>) -> Result<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<Statement::NFStatement>>>)>>> {
-        let mut stmts: Arc<metamodelica::List<(Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<Statement::NFStatement>>>)>> = metamodelica::nil();
-        let mut stmt: (Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<Statement::NFStatement>>>) = (Arc::new(Expression::END), metamodelica::nil());
+        let mut stmts: Arc<metamodelica::List<(Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<Statement::NFStatement>>>)>>;
+        let mut stmt: (Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<Statement::NFStatement>>>);
         let mut condition: Arc<Expression::NFExpression> = if (Expression::isEnd(body.condition.clone())) {Arc::new(Expression::NFExpression::BOOLEAN { value: true })} else {body.condition.clone()};
         stmt = (condition.clone(), List::flatten(({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Statement::NFStatement>>>>> = metamodelica::nil();
@@ -3515,7 +3515,7 @@ pub mod IfEquationBody {
     }
 
     pub fn createResidual(mut body: Arc<IfEquationBody>, mut res: Arc<ComponentRef::NFComponentRef>, mut new: bool, mut allowFail: bool) -> Result<Arc<IfEquationBody>> {
-        let mut body_res: Arc<IfEquationBody> = Arc::new(<IfEquationBody as ::std::default::Default>::default());
+        let mut body_res: Arc<IfEquationBody>;
         let mut eqn_ptr: Pointer::Pointer<Arc<Equation::Equation>>;
         body_res = Arc::new(IfEquationBody { condition: body.condition.clone(), then_eqns: metamodelica::nil(), else_if: Util::applyOption(body.else_if.clone(), (std::sync::Arc::new({ let __pe_b1 = res.clone(); let __pe_b2 = new.clone(); let __pe_b3 = allowFail.clone(); move |__pe_a0| createResidual(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<IfEquationBody>) -> Result<Arc<IfEquationBody>> + 'static>))? });
         body_res = (::match_deref::match_deref! { match &(body.then_eqns.clone()) {
@@ -3535,9 +3535,9 @@ pub mod IfEquationBody {
 
     pub fn inline(mut body: Arc<IfEquationBody>, mut eqn: Arc<Equation::Equation>) -> Result<Arc<Equation::Equation>> {
         let mut eqn: Arc<Equation::Equation> = eqn;
-        let mut lhs: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-        let mut rhs: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-        let mut success: bool = false;
+        let mut lhs: Arc<Expression::NFExpression>;
+        let mut rhs: Arc<Expression::NFExpression>;
+        let mut success: bool;
         (lhs, success) = getLHS(body.clone(), openmodelica_nf_frontend::NFExpression::interned_END())?;
         if success.clone() {
             rhs = SimplifyExp::simplify(getRHS(body.clone())?, false)?;
@@ -3581,7 +3581,7 @@ pub mod IfEquationBody {
     }
 
     pub fn getRHS(mut body: Arc<IfEquationBody>) -> Result<Arc<Expression::NFExpression>> {
-        let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+        let mut exp: Arc<Expression::NFExpression>;
         let mut eqn_ptr: Pointer::Pointer<Arc<Equation::Equation>>;
         let mut new_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
         exp = (::match_deref::match_deref! { match &(body.then_eqns.clone()) {
@@ -3610,9 +3610,9 @@ pub mod IfEquationBody {
         let mut bodies: Arc<metamodelica::List<Arc<IfEquationBody>>> = metamodelica::nil();
         let mut conditions: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
         let mut then_eqns: metamodelica::Array<Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>> = arrayCreate((body.then_eqns.clone().len() as i32), metamodelica::nil());
-        let mut condition: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+        let mut condition: Arc<Expression::NFExpression>;
         let mut eqn: Pointer::Pointer<Arc<Equation::Equation>>;
-        let mut tmp: Option<Arc<IfEquationBody>> = None;
+        let mut tmp: Option<Arc<IfEquationBody>>;
         (conditions, then_eqns) = splitCollect(sortForSplit(body.clone())?, conditions.clone(), then_eqns.clone())?;
         for mut i in 1..=metamodelica::arrayLength(then_eqns.clone()) {
             tmp = None;
@@ -3656,7 +3656,7 @@ pub mod IfEquationBody {
     }
 
     pub fn isRecordOrTupleEquation(mut body: Arc<IfEquationBody>) -> Result<bool> {
-        let mut b: bool = false;
+        let mut b: bool;
         b = (::match_deref::match_deref! { match &(body.then_eqns.clone()) {
         Deref @ metamodelica::List::Cons { head: eqn_ptr, tail: Deref @ metamodelica::List::Nil } => {
             Equation::isRecordOrTupleEquation(eqn_ptr.clone())?
@@ -3673,8 +3673,8 @@ pub mod IfEquationBody {
     }
 
     pub fn getType(mut body: Arc<IfEquationBody>) -> Result<Arc<Type::NFType>> {
-        let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-        let mut body_types: Arc<metamodelica::List<Arc<Type::NFType>>> = metamodelica::nil();
+        let mut ty: Arc<Type::NFType>;
+        let mut body_types: Arc<metamodelica::List<Arc<Type::NFType>>>;
         body_types = ({
         let mut __acc: Arc<metamodelica::List<Arc<Type::NFType>>> = metamodelica::nil();
         for mut b in (body.then_eqns.clone()).into_iter().cloned() {
@@ -3694,8 +3694,8 @@ pub mod IfEquationBody {
         }
 
         let mut body: Arc<IfEquationBody> = body;
-        let mut discretes: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
-        let mut continuous: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
+        let mut discretes: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>;
+        let mut continuous: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>;
         (discretes, continuous) = List::splitOnTrue(body.then_eqns.clone(), (std::sync::Arc::new(fnptr!(Equation::isDiscrete, Pointer::Pointer<Arc<Equation::Equation>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<bool> + 'static>))?;
         discretes = List::sort(discretes.clone(), (std::sync::Arc::new(compareLHS) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>, Pointer::Pointer<Arc<Equation::Equation>>) -> Result<bool> + 'static>))?;
         continuous = List::sort(continuous.clone(), (std::sync::Arc::new(compareLHS) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>, Pointer::Pointer<Arc<Equation::Equation>>) -> Result<bool> + 'static>))?;
@@ -3768,7 +3768,7 @@ pub mod WhenEquationBody {
     }
 
     pub fn toString(mut body: Arc<WhenEquationBody>, mut indent: ArcStr, mut elseStr: ArcStr, mut selfCall: bool) -> Result<ArcStr> {
-        let mut r#str: ArcStr = arcstr::literal!("");
+        let mut r#str: ArcStr;
         r#str = (elseStr.clone()).clone();
         if !(selfCall.clone()) {
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*indent.clone()); ArcStr::from(__mm_s) }).clone();
@@ -3800,7 +3800,7 @@ pub mod WhenEquationBody {
     }
 
     pub fn getType(mut body: Arc<WhenEquationBody>) -> Result<Arc<Type::NFType>> {
-        let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
+        let mut ty: Arc<Type::NFType>;
         ty = (::match_deref::match_deref! { match &(body.when_stmts.clone()) {
         Deref @ metamodelica::List::Cons { head: stmt, tail: Deref @ metamodelica::List::Nil } => {
             WhenStatement::getType(stmt.clone())
@@ -3825,7 +3825,7 @@ pub mod WhenEquationBody {
     }
 
     pub fn isEqual(mut body1: Arc<WhenEquationBody>, mut body2: Arc<WhenEquationBody>) -> Result<bool> {
-        let mut b: bool = false;
+        let mut b: bool;
         b = Expression::isEqual(body1.condition.clone(), body2.condition.clone())? && List::all(({
         let mut __acc: Arc<metamodelica::List<bool>> = metamodelica::nil();
         let __thr_src0 = body1.when_stmts.clone();
@@ -3849,7 +3849,7 @@ pub mod WhenEquationBody {
 
     pub fn getBodyAttributes(mut body: Arc<WhenEquationBody>) -> Result<(Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>, Arc<metamodelica::List<Arc<WhenStatement::WhenStatement>>>, Option<Arc<WhenEquationBody>>)> {
         fn getConditions(mut cond: Arc<Expression::NFExpression>) -> Result<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>> {
-            let mut conditions: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
+            let mut conditions: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
             conditions = (::match_deref::match_deref! { match &(cond.clone()) {
         Deref @ Expression::CREF { cref, .. } => {
             list![cref.clone()]
@@ -3876,7 +3876,7 @@ pub mod WhenEquationBody {
             Ok(conditions)
         }
 
-        let mut conditions: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
+        let mut conditions: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
         let mut when_stmts: Arc<metamodelica::List<Arc<WhenStatement::WhenStatement>>> = body.when_stmts.clone();
         let mut else_when: Option<Arc<WhenEquationBody>> = body.else_when.clone();
         conditions = getConditions(body.condition.clone())?;
@@ -3884,8 +3884,8 @@ pub mod WhenEquationBody {
     }
 
     pub fn toStatement(mut body: Arc<WhenEquationBody>) -> Result<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<Statement::NFStatement>>>)>>> {
-        let mut stmts: Arc<metamodelica::List<(Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<Statement::NFStatement>>>)>> = metamodelica::nil();
-        let mut stmt: (Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<Statement::NFStatement>>>) = (Arc::new(Expression::END), metamodelica::nil());
+        let mut stmts: Arc<metamodelica::List<(Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<Statement::NFStatement>>>)>>;
+        let mut stmt: (Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<Statement::NFStatement>>>);
         stmt = (body.condition.clone(), ({
         let mut __acc: Arc<metamodelica::List<Arc<Statement::NFStatement>>> = metamodelica::nil();
         for mut st in (body.when_stmts.clone()).into_iter().cloned() {
@@ -3904,7 +3904,7 @@ pub mod WhenEquationBody {
 
     pub fn map(mut whenBody: Arc<WhenEquationBody>, mut funcExp: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>, mut funcCrefOpt: Option<Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<Arc<ComponentRef::NFComponentRef>> + 'static>>, mut mapFunc: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<WhenEquationBody>> {
         let mut whenBody: Arc<WhenEquationBody> = whenBody;
-        let mut condition: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+        let mut condition: Arc<Expression::NFExpression>;
         condition = mapFunc(whenBody.condition.clone(), funcExp.clone())?;
         if !(referenceEq(&*(condition.clone()),&*(whenBody.condition.clone()))) {
             assign_field!(whenBody.condition = condition.clone());
@@ -3918,7 +3918,7 @@ pub mod WhenEquationBody {
 
     pub fn mapCondition(mut whenBody: Arc<WhenEquationBody>, mut funcExp: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>, mut funcCrefOpt: Option<Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<Arc<ComponentRef::NFComponentRef>> + 'static>>, mut mapFunc: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<WhenEquationBody>> {
         let mut whenBody: Arc<WhenEquationBody> = whenBody;
-        let mut condition: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+        let mut condition: Arc<Expression::NFExpression>;
         condition = mapFunc(whenBody.condition.clone(), funcExp.clone())?;
         if !(referenceEq(&*(condition.clone()),&*(whenBody.condition.clone()))) {
             assign_field!(whenBody.condition = condition.clone());
@@ -3932,17 +3932,17 @@ pub mod WhenEquationBody {
         let mut discr_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>>> = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
         let mut state_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = UnorderedSet::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
         let mut discr_marks: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = UnorderedSet::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
-        let mut flat_when: Arc<metamodelica::List<(Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<WhenStatement::WhenStatement>>>)>> = metamodelica::nil();
-        let mut flat_new: Arc<metamodelica::List<(Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<WhenStatement::WhenStatement>>>)>> = metamodelica::nil();
-        let mut discretes: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-        let mut states: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-        let mut set: CrefSet = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
-        let mut condition: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+        let mut flat_when: Arc<metamodelica::List<(Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<WhenStatement::WhenStatement>>>)>>;
+        let mut flat_new: Arc<metamodelica::List<(Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<WhenStatement::WhenStatement>>>)>>;
+        let mut discretes: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
+        let mut states: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
+        let mut set: CrefSet;
+        let mut condition: Arc<Expression::NFExpression>;
         let mut acc_condition: Arc<Expression::NFExpression> = Arc::new(Expression::NFExpression::EMPTY { ty: openmodelica_nf_frontend::NFType::interned_INTEGER() });
-        let mut stmts: Arc<metamodelica::List<Arc<WhenStatement::WhenStatement>>> = metamodelica::nil();
-        let mut assigns: Arc<metamodelica::List<Arc<WhenStatement::WhenStatement>>> = metamodelica::nil();
+        let mut stmts: Arc<metamodelica::List<Arc<WhenStatement::WhenStatement>>>;
+        let mut assigns: Arc<metamodelica::List<Arc<WhenStatement::WhenStatement>>>;
         let mut stmt: Option<Arc<WhenStatement::WhenStatement>> = None;
-        let mut new_body: Option<Arc<WhenEquationBody>> = None;
+        let mut new_body: Option<Arc<WhenEquationBody>>;
         flat_when = collectForSplit(Some(body.clone()), discr_map.clone(), state_set.clone())?;
         discretes = UnorderedMap::keyList(discr_map.clone());
         states = UnorderedSet::toList(state_set.clone());
@@ -4089,7 +4089,7 @@ pub mod WhenEquationBody {
     }
 
     pub fn isRecordOrTupleEquation(mut body: Arc<WhenEquationBody>) -> Result<bool> {
-        let mut b: bool = false;
+        let mut b: bool;
         b = (::match_deref::match_deref! { match &(body.when_stmts.clone()) {
         Deref @ metamodelica::List::Cons { head: Deref @ WhenStatement::ASSIGN { lhs: Deref @ Expression::TUPLE { .. }, .. }, tail: Deref @ metamodelica::List::Nil } => {
             true
@@ -4114,8 +4114,8 @@ pub mod WhenEquationBody {
     pub type CrefSet = Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
 
     fn collectForSplit(mut body_opt: Option<Arc<WhenEquationBody>>, mut discr_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>>>, mut state_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<WhenStatement::WhenStatement>>>)>>> {
-        let mut flat_when: Arc<metamodelica::List<(Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<WhenStatement::WhenStatement>>>)>> = metamodelica::nil();
-        let mut body: Arc<WhenEquationBody> = Arc::new(<WhenEquationBody as ::std::default::Default>::default());
+        let mut flat_when: Arc<metamodelica::List<(Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<WhenStatement::WhenStatement>>>)>>;
+        let mut body: Arc<WhenEquationBody>;
         if isSome(body_opt.clone()) {
             body = Util::getOption(body_opt.clone())?;
             for mut stmt in &*body.when_stmts.clone() {
@@ -4151,7 +4151,7 @@ pub mod WhenEquationBody {
     }
 
     fn addCrefsMap(mut discr_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>>>, mut crefs: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>) -> Result<()> {
-        let mut set_new: CrefSet = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
+        let mut set_new: CrefSet;
         let mut set: CrefSet = UnorderedSet::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
         for mut c in &*crefs.clone() {
             let mut c = c.clone();
@@ -4310,16 +4310,16 @@ pub mod WhenStatement {
     }
 
     pub fn isEqualTpl(mut tpl: (Arc<WhenStatement>, Arc<WhenStatement>)) -> Result<bool> {
-        let mut b: bool = false;
-        let mut stmt1: Arc<WhenStatement> = Arc::new(<WhenStatement as ::std::default::Default>::default());
-        let mut stmt2: Arc<WhenStatement> = Arc::new(<WhenStatement as ::std::default::Default>::default());
+        let mut b: bool;
+        let mut stmt1: Arc<WhenStatement>;
+        let mut stmt2: Arc<WhenStatement>;
         (stmt1, stmt2) = tpl.clone();
         b = isEqual(stmt1.clone(), stmt2.clone())?;
         Ok(b)
     }
 
     pub fn isEqual(mut stmt1: Arc<WhenStatement>, mut stmt2: Arc<WhenStatement>) -> Result<bool> {
-        let mut b: bool = false;
+        let mut b: bool;
         b = (::match_deref::match_deref! { match &((stmt1.clone(), stmt2.clone())) {
         (Deref @ ASSIGN { .. }, Deref @ ASSIGN { .. }) => Expression::isEqual(var_field!((*stmt1).lhs, WhenStatement::ASSIGN).clone(), var_field!((*stmt2).lhs, WhenStatement::ASSIGN).clone())? && Expression::isEqual(var_field!((*stmt1).rhs, WhenStatement::ASSIGN).clone(), var_field!((*stmt2).rhs, WhenStatement::ASSIGN).clone())?,
         (Deref @ REINIT { .. }, Deref @ REINIT { .. }) => ComponentRef::isEqual(var_field!((*stmt1).stateVar, WhenStatement::REINIT).clone(), var_field!((*stmt2).stateVar, WhenStatement::REINIT).clone())? && Expression::isEqual(var_field!((*stmt1).value, WhenStatement::REINIT).clone(), var_field!((*stmt2).value, WhenStatement::REINIT).clone())?,
@@ -4333,7 +4333,7 @@ pub mod WhenStatement {
     }
 
     pub fn toStatement(mut wstmt: Arc<WhenStatement>) -> Result<Arc<Statement::NFStatement>> {
-        let mut stmt: Arc<Statement::NFStatement> = Arc::new(<Statement::NFStatement as ::std::default::Default>::default());
+        let mut stmt: Arc<Statement::NFStatement>;
         stmt = (::match_deref::match_deref! { match &(wstmt.clone()) {
         Deref @ ASSIGN { .. } => Arc::new(Statement::NFStatement::ASSIGNMENT { lhs: var_field!((*wstmt).lhs, WhenStatement::ASSIGN).clone(), rhs: var_field!((*wstmt).rhs, WhenStatement::ASSIGN).clone(), ty: Expression::typeOf(var_field!((*wstmt).lhs, WhenStatement::ASSIGN).clone()), source: var_field!((*wstmt).source, WhenStatement::ASSIGN).clone() }),
         Deref @ REINIT { .. } => Arc::new(Statement::NFStatement::REINIT { cref: Expression::fromCref(var_field!((*wstmt).stateVar, WhenStatement::REINIT).clone(), false)?, reinitExp: var_field!((*wstmt).value, WhenStatement::REINIT).clone(), source: var_field!((*wstmt).source, WhenStatement::REINIT).clone() }),
@@ -4350,7 +4350,7 @@ pub mod WhenStatement {
     }
 
     pub fn toEquation(mut stmt: Arc<WhenStatement>, mut attr: Arc<EquationAttributes::EquationAttributes>, mut init: bool) -> Result<Arc<Equation::Equation>> {
-        let mut eqn: Arc<Equation::Equation> = Arc::new(Equation::DUMMY_EQUATION);
+        let mut eqn: Arc<Equation::Equation>;
         eqn = (::match_deref::match_deref! { match &(stmt.clone()) {
         Deref @ ASSIGN { .. } => Equation::makeAssignmentEqn(var_field!((*stmt).lhs, WhenStatement::ASSIGN).clone(), var_field!((*stmt).rhs, WhenStatement::ASSIGN).clone(), crate::NBEquation::Iterator::interned_EMPTY(), attr.clone())?,
         _ => Equation::setAttributes(Pointer::access(Equation::makeAlgorithm(list![toStatement(stmt.clone())?], init.clone())?), attr.clone())?,
@@ -4360,7 +4360,7 @@ pub mod WhenStatement {
     }
 
     pub fn size(mut stmt: Arc<WhenStatement>, mut resize: bool) -> Result<i32> {
-        let mut s: i32 = 0;
+        let mut s: i32;
         s = (::match_deref::match_deref! { match &(stmt.clone()) {
         Deref @ ASSIGN { .. } => Type::sizeOf(Expression::typeOf(var_field!((*stmt).lhs, WhenStatement::ASSIGN).clone()), resize.clone())?,
         _ => 0,
@@ -4370,7 +4370,7 @@ pub mod WhenStatement {
     }
 
     pub fn isAssign(mut stmt: Arc<WhenStatement>) -> bool {
-        let mut b: bool = false;
+        let mut b: bool;
         b = (::match_deref::match_deref! { match &(stmt.clone()) {
         Deref @ ASSIGN { .. } => true,
         _ => false,
@@ -4380,7 +4380,7 @@ pub mod WhenStatement {
     }
 
     pub fn isAssignOrReinit(mut stmt: Arc<WhenStatement>) -> bool {
-        let mut b: bool = false;
+        let mut b: bool;
         b = (::match_deref::match_deref! { match &(stmt.clone()) {
         Deref @ ASSIGN { .. } => true,
         Deref @ REINIT { .. } => true,
@@ -4391,7 +4391,7 @@ pub mod WhenStatement {
     }
 
     pub fn getType(mut stmt: Arc<WhenStatement>) -> Arc<Type::NFType> {
-        let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
+        let mut ty: Arc<Type::NFType>;
         ty = (::match_deref::match_deref! { match &(stmt.clone()) {
         Deref @ ASSIGN { .. } => Expression::typeOf(var_field!((*stmt).lhs, WhenStatement::ASSIGN).clone()),
         _ => openmodelica_nf_frontend::NFType::interned_ANY(),
@@ -4470,7 +4470,7 @@ pub mod WhenStatement {
     }
 
     pub fn convert(mut stmt: Arc<WhenStatement>) -> Result<OldBackendDAE::WhenOperator> {
-        let mut oldStmt: OldBackendDAE::WhenOperator = <OldBackendDAE::WhenOperator as ::std::default::Default>::default();
+        let mut oldStmt: OldBackendDAE::WhenOperator;
         oldStmt = (::match_deref::match_deref! { match &(stmt.clone()) {
         Deref @ ASSIGN { .. } => OldBackendDAE::WhenOperator::ASSIGN { left: Expression::toDAE(var_field!((*stmt).lhs, WhenStatement::ASSIGN).clone(), false)?, right: Expression::toDAE(var_field!((*stmt).rhs, WhenStatement::ASSIGN).clone(), false)?, source: var_field!((*stmt).source, WhenStatement::ASSIGN).clone() },
         Deref @ REINIT { .. } => OldBackendDAE::WhenOperator::REINIT { stateVar: ComponentRef::toDAE(var_field!((*stmt).stateVar, WhenStatement::REINIT).clone())?, value: Expression::toDAE(var_field!((*stmt).value, WhenStatement::REINIT).clone(), false)?, source: var_field!((*stmt).source, WhenStatement::REINIT).clone() },
@@ -4528,7 +4528,7 @@ pub mod EquationAttributes {
     pub type EQUATION_ATTRIBUTES = EquationAttributes;
 
     pub fn toString(mut attr: Arc<EquationAttributes>, mut indent: ArcStr) -> Result<ArcStr> {
-        let mut r#str: ArcStr = arcstr::literal!("");
+        let mut r#str: ArcStr;
         r#str = ((::match_deref::match_deref! { match &(attr.clone()) {
         Deref @ EquationAttributes { residualVar: Some(residualVar), .. } => {
             { let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*ComponentRef::toString(BVariable::getVarName(residualVar.clone()))?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }
@@ -4578,7 +4578,7 @@ pub mod EquationAttributes {
     }
 
     pub fn convert(mut attributes: Arc<EquationAttributes>) -> Result<OldBackendDAE::EquationAttributes> {
-        let mut oldAttributes: OldBackendDAE::EquationAttributes = <OldBackendDAE::EquationAttributes as ::std::default::Default>::default();
+        let mut oldAttributes: OldBackendDAE::EquationAttributes;
         oldAttributes = OldBackendDAE::EquationAttributes { differentiated: isSome(attributes.derivative.clone()), kind: convertEquationKind(attributes.kind.clone(), attributes.clock_idx.clone(), attributes.exclusively_initial.clone())?, evalStages: Evaluation::Stages::convert(attributes.evalStages.clone()) };
         Ok(oldAttributes)
     }
@@ -4586,7 +4586,7 @@ pub mod EquationAttributes {
 }
 
 pub fn default(mut kind: EquationKind, mut exclusively_initial: bool, mut clock_idx: Option<i32>, mut optimizerExpression: Option<OptimizerExpression>) -> Arc<EquationAttributes::EquationAttributes> {
-    let mut attr: Arc<EquationAttributes::EquationAttributes> = Arc::new(<EquationAttributes::EquationAttributes as ::std::default::Default>::default());
+    let mut attr: Arc<EquationAttributes::EquationAttributes>;
     attr = Arc::new(EquationAttributes::EquationAttributes { derivative: None, residualVar: None, clock_idx: clock_idx.clone(), residual: false, exclusively_initial: exclusively_initial.clone(), evalStages: Evaluation::DEFAULT_STAGES.clone(), kind: kind.clone(), optimizerExpression: optimizerExpression.clone() });
     attr
 }
@@ -4611,7 +4611,7 @@ impl Default for EquationKind {
 }
 
 pub fn convertEquationKind(mut eqKind: EquationKind, mut clock_idx: Option<i32>, mut exclusively_initial: bool) -> Result<OldBackendDAE::EquationKind> {
-    let mut oldEqKind: OldBackendDAE::EquationKind = OldBackendDAE::EquationKind::AUX_EQUATION;
+    let mut oldEqKind: OldBackendDAE::EquationKind;
     oldEqKind = (match (eqKind.clone(), clock_idx.clone()) {
         (_, _) if (exclusively_initial.clone()) => {
             openmodelica_backend_types::BackendDAE::EquationKind::INITIAL_EQUATION
@@ -4648,7 +4648,7 @@ pub fn convertEquationKind(mut eqKind: EquationKind, mut clock_idx: Option<i32>,
 }
 
 pub fn equationKindString(mut eqKind: EquationKind, mut clock_idx: Option<i32>, mut exclusively_initial: bool) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     r#str = ((match eqKind.clone() {
         EquationKind::CONTINUOUS { .. } => literal!("[CONT"),
         EquationKind::CLOCKED { .. } => literal!("[CLCK"),
@@ -4688,10 +4688,10 @@ pub mod EquationPointers {
     pub fn toString(mut equations: Arc<EquationPointers>, mut r#str: ArcStr, mut mapping_opt: Option<metamodelica::Array<(i32, i32)>>, mut printEmpty: bool, mut filter_opt: Option<Arc<UnorderedSet::UnorderedSet<ArcStr>>>) -> Result<ArcStr> {
         let mut r#str: ArcStr = r#str;
         let mut luI: i32 = lastUsedIndex(equations.clone());
-        let mut length: i32 = 0;
-        let mut scal_start: i32 = 0;
+        let mut length: i32;
+        let mut scal_start: i32;
         let mut current_index: i32 = 1;
-        let mut index: ArcStr = arcstr::literal!("");
+        let mut index: ArcStr;
         let mut useMapping: bool = isSome(mapping_opt.clone());
         let mut filterEqs: bool = isSome(filter_opt.clone());
         let mut mapping: metamodelica::Array<(i32, i32)> = Default::default();
@@ -4733,9 +4733,9 @@ pub mod EquationPointers {
     }
 
     pub fn empty(mut size: i32) -> Arc<EquationPointers> {
-        let mut equationPointers: Arc<EquationPointers> = Arc::new(<EquationPointers as ::std::default::Default>::default());
-        let mut arr_size: i32 = 0;
-        let mut bucketSize: i32 = 0;
+        let mut equationPointers: Arc<EquationPointers>;
+        let mut arr_size: i32;
+        let mut bucketSize: i32;
         arr_size = std::cmp::max(size.clone(), BaseHashTable::lowBucketSize.clone());
         bucketSize = Util::nextPrime(arr_size.clone());
         equationPointers = Arc::new(EquationPointers { map: UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), bucketSize.clone()), eqArr: ExpandableArray::new(arr_size.clone(), Pointer::create(crate::NBEquation::Equation::interned_DUMMY_EQUATION())) });
@@ -4743,7 +4743,7 @@ pub mod EquationPointers {
     }
 
     pub fn clone(mut equations: Arc<EquationPointers>, mut shallow: bool) -> Result<Arc<EquationPointers>> {
-        let mut new: Arc<EquationPointers> = Arc::new(<EquationPointers as ::std::default::Default>::default());
+        let mut new: Arc<EquationPointers>;
         if shallow.clone() {
             new = fromList(toList(equations.clone())?)?;
         } else {
@@ -4779,13 +4779,13 @@ pub mod EquationPointers {
     }
 
     pub fn toList(mut equations: Arc<EquationPointers>) -> Result<Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>> {
-        let mut eqn_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
+        let mut eqn_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>;
         eqn_lst = ExpandableArray::toList(equations.eqArr.clone())?;
         Ok(eqn_lst)
     }
 
     pub fn fromList(mut eq_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>) -> Result<Arc<EquationPointers>> {
-        let mut equations: Arc<EquationPointers> = Arc::new(<EquationPointers as ::std::default::Default>::default());
+        let mut equations: Arc<EquationPointers>;
         equations = empty((eq_lst.clone().len() as i32));
         equations = addList(eq_lst.clone(), equations.clone())?;
         Ok(equations)
@@ -4806,7 +4806,7 @@ pub mod EquationPointers {
 
     pub fn removeCheck(mut equations: Arc<EquationPointers>, mut func: Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<bool> + 'static>) -> Result<Arc<EquationPointers>> {
         let mut equations: Arc<EquationPointers> = equations;
-        let mut eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
+        let mut eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>;
         eqns = ({
         let mut __acc: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
         for mut eqn in (toList(equations.clone())?).into_iter().cloned() {
@@ -4822,7 +4822,7 @@ pub mod EquationPointers {
 
     pub fn add(mut eqn: Pointer::Pointer<Arc<Equation::Equation>>, mut equations: Arc<EquationPointers>) -> Result<Arc<EquationPointers>> {
         let mut equations: Arc<EquationPointers> = equations;
-        let mut name: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
+        let mut name: Arc<ComponentRef::NFComponentRef>;
         let mut index: i32 = 0;
         name = Equation::getEqnName(eqn.clone())?;
         let () = (match UnorderedMap::get(name.clone(), equations.map.clone())? {
@@ -4841,7 +4841,7 @@ pub mod EquationPointers {
 
     pub fn remove(mut eqn: Pointer::Pointer<Arc<Equation::Equation>>, mut equations: Arc<EquationPointers>) -> Result<Arc<EquationPointers>> {
         let mut equations: Arc<EquationPointers> = equations;
-        let mut name: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
+        let mut name: Arc<ComponentRef::NFComponentRef>;
         let mut index: i32 = 0;
         name = Equation::getEqnName(eqn.clone())?;
         let () = (match UnorderedMap::get(name.clone(), equations.map.clone())? {
@@ -4858,8 +4858,8 @@ pub mod EquationPointers {
     pub fn map(mut equations: Arc<EquationPointers>, mut func: Arc<dyn ::std::ops::Fn(Arc<Equation::Equation>) -> Result<Arc<Equation::Equation>> + 'static>) -> Result<Arc<EquationPointers>> {
         let mut equations: Arc<EquationPointers> = equations;
         let mut eq_ptr: Pointer::Pointer<Arc<Equation::Equation>>;
-        let mut eq: Arc<Equation::Equation> = Arc::new(Equation::DUMMY_EQUATION);
-        let mut new_eq: Arc<Equation::Equation> = Arc::new(Equation::DUMMY_EQUATION);
+        let mut eq: Arc<Equation::Equation>;
+        let mut new_eq: Arc<Equation::Equation>;
         let mut followEquations: Arc<metamodelica::List<ArcStr>> = Flags::getConfigStringList(Flags::DEBUG_FOLLOW_EQUATIONS.clone())?;
         let mut debug: bool = !(followEquations.clone().is_empty());
         let mut debug_eqns: Arc<UnorderedSet::UnorderedSet<ArcStr>> = <Arc<UnorderedSet::UnorderedSet<ArcStr>> as ::std::default::Default>::default();
@@ -4894,8 +4894,8 @@ pub mod EquationPointers {
     pub fn mapExp(mut equations: Arc<EquationPointers>, mut funcExp: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>, mut funcCrefOpt: Option<Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<Arc<ComponentRef::NFComponentRef>> + 'static>>, mut mapFunc: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<EquationPointers>> {
         let mut equations: Arc<EquationPointers> = equations;
         let mut eq_ptr: Pointer::Pointer<Arc<Equation::Equation>>;
-        let mut eq: Arc<Equation::Equation> = Arc::new(Equation::DUMMY_EQUATION);
-        let mut new_eq: Arc<Equation::Equation> = Arc::new(Equation::DUMMY_EQUATION);
+        let mut eq: Arc<Equation::Equation>;
+        let mut new_eq: Arc<Equation::Equation>;
         for mut i in 1..=ExpandableArray::getLastUsedIndex(equations.eqArr.clone()) {
             if ExpandableArray::occupied(i.clone(), equations.eqArr.clone()) {
                 eq_ptr = ExpandableArray::get(i.clone(), equations.eqArr.clone())?;
@@ -4965,7 +4965,7 @@ pub mod EquationPointers {
         let mut equations: Arc<EquationPointers> = equations;
         let mut extArg: T = extArg;
         let mut eq_ptr: Pointer::Pointer<Arc<Equation::Equation>>;
-        let mut delete: bool = false;
+        let mut delete: bool;
         for mut i in 1..=ExpandableArray::getLastUsedIndex(equations.eqArr.clone()) {
             if ExpandableArray::occupied(i.clone(), equations.eqArr.clone()) {
                 eq_ptr = ExpandableArray::get(i.clone(), equations.eqArr.clone())?;
@@ -5036,8 +5036,8 @@ pub mod EquationPointers {
 
     pub fn sort(mut equations: Arc<EquationPointers>) -> Result<Arc<EquationPointers>> {
         let mut equations: Arc<EquationPointers> = equations;
-        let mut size: i32 = 0;
-        let mut hash_lst: Arc<metamodelica::List<(i32, Pointer::Pointer<Arc<Equation::Equation>>)>> = metamodelica::nil();
+        let mut size: i32;
+        let mut hash_lst: Arc<metamodelica::List<(i32, Pointer::Pointer<Arc<Equation::Equation>>)>>;
         let mut hash_lst_ptr: Pointer::Pointer<Arc<metamodelica::List<(i32, Pointer::Pointer<Arc<Equation::Equation>>)>>> = Pointer::create(metamodelica::nil());
         let mut eqn_ptr: Pointer::Pointer<Arc<Equation::Equation>>;
         size = ExpandableArray::getNumberOfElements(equations.eqArr.clone());
@@ -5053,7 +5053,7 @@ pub mod EquationPointers {
     }
 
     pub fn getResiduals(mut equations: Arc<EquationPointers>) -> Result<Arc<VariablePointers::VariablePointers>> {
-        let mut residuals: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
+        let mut residuals: Arc<VariablePointers::VariablePointers>;
         residuals = BVariable::VariablePointers::fromList(({
         let mut __acc: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
         for mut eqn in (toList(equations.clone())?).into_iter().cloned() {
@@ -5067,8 +5067,8 @@ pub mod EquationPointers {
 
     fn createSortHashTpl(mut eqn_ptr: Pointer::Pointer<Arc<Equation::Equation>>, mut r#mod: i32, mut hash_lst_ptr: Pointer::Pointer<Arc<metamodelica::List<(i32, Pointer::Pointer<Arc<Equation::Equation>>)>>>) -> Result<Pointer::Pointer<Arc<Equation::Equation>>> {
         let mut eqn_ptr: Pointer::Pointer<Arc<Equation::Equation>> = eqn_ptr;
-        let mut eqn: Arc<Equation::Equation> = Arc::new(Equation::DUMMY_EQUATION);
-        let mut hash: i32 = 0;
+        let mut eqn: Arc<Equation::Equation>;
+        let mut hash: i32;
         eqn = Pointer::access(eqn_ptr.clone());
         hash = BackendUtil::noNameHashEq(eqn.clone(), r#mod.clone())?;
         Pointer::update(hash_lst_ptr.clone(), metamodelica::cons((hash.clone(), eqn_ptr.clone()), Pointer::access(hash_lst_ptr.clone())));
@@ -5145,7 +5145,7 @@ pub mod EqData {
     }
     pub use self::EqData::{EQ_DATA_SIM,EQ_DATA_JAC,EQ_DATA_HES,EQ_DATA_EMPTY};
     pub fn size(mut eqData: Arc<EqData>) -> Result<i32> {
-        let mut s: i32 = 0;
+        let mut s: i32;
         s = (::match_deref::match_deref! { match &(eqData.clone()) {
         Deref @ EQ_DATA_SIM { .. } => EquationPointers::size(var_field!((*eqData).simulation, EqData::EQ_DATA_SIM).clone()),
         Deref @ EQ_DATA_JAC { .. } => EquationPointers::size(var_field!((*eqData).equations, EqData::EQ_DATA_JAC).clone()),
@@ -5156,7 +5156,7 @@ pub mod EqData {
     }
 
     pub fn scalarSize(mut eqData: Arc<EqData>, mut resize: bool) -> Result<i32> {
-        let mut s: i32 = 0;
+        let mut s: i32;
         s = (::match_deref::match_deref! { match &(eqData.clone()) {
         Deref @ EQ_DATA_SIM { .. } => EquationPointers::scalarSize(var_field!((*eqData).simulation, EqData::EQ_DATA_SIM).clone(), resize.clone())?,
         Deref @ EQ_DATA_JAC { .. } => EquationPointers::scalarSize(var_field!((*eqData).equations, EqData::EQ_DATA_JAC).clone(), resize.clone())?,
@@ -5240,7 +5240,7 @@ pub mod EqData {
     }
 
     pub fn toString(mut eqData: Arc<EqData>, mut level: i32, mut filter_opt: Option<Arc<UnorderedSet::UnorderedSet<ArcStr>>>) -> Result<ArcStr> {
-        let mut r#str: ArcStr = arcstr::literal!("");
+        let mut r#str: ArcStr;
         r#str = ((::match_deref::match_deref! { match &(eqData.clone()) {
         Deref @ EQ_DATA_SIM { .. } => {
             let mut tmp: ArcStr = arcstr::literal!("");
@@ -5298,7 +5298,7 @@ pub mod EqData {
     }
 
     pub fn getEquations(mut eqData: Arc<EqData>) -> Result<Arc<EquationPointers::EquationPointers>> {
-        let mut equations: Arc<EquationPointers::EquationPointers> = Arc::new(<EquationPointers::EquationPointers as ::std::default::Default>::default());
+        let mut equations: Arc<EquationPointers::EquationPointers>;
         equations = (::match_deref::match_deref! { match &(eqData.clone()) {
         Deref @ EQ_DATA_SIM { .. } => var_field!((*eqData).equations, EqData::EQ_DATA_SIM).clone(),
         Deref @ EQ_DATA_JAC { .. } => var_field!((*eqData).equations, EqData::EQ_DATA_JAC).clone(),

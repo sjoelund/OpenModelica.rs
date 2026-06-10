@@ -91,7 +91,7 @@ pub type Graph = FCore::Graph;
 pub type Msg = Option<SourceInfo>;
 
 pub fn ext(mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
-    let mut og: Graph = <FCore::Graph as ::std::default::Default>::default();
+    let mut og: Graph;
     og = (match ig.clone() {
         mut g => {
             g = FNode::apply1(inRef.clone(), (std::sync::Arc::new(ext_one) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<FCore::Node>, FCore::Graph) -> Result<FCore::Graph> + 'static>), g.clone())?;
@@ -102,7 +102,7 @@ pub fn ext(mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
 }
 
 pub fn ext_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
-    let mut og: Graph = <FCore::Graph as ::std::default::Default>::default();
+    let mut og: Graph;
     og = 'mc: {
         let __mc_input = (inRef.clone(), ig.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -153,7 +153,7 @@ pub fn ext_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
 }
 
 pub fn derived(mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
-    let mut og: Graph = <FCore::Graph as ::std::default::Default>::default();
+    let mut og: Graph;
     og = (match ig.clone() {
         mut g => {
             g = FNode::apply1(inRef.clone(), (std::sync::Arc::new(derived_one) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<FCore::Node>, FCore::Graph) -> Result<FCore::Graph> + 'static>), g.clone())?;
@@ -164,7 +164,7 @@ pub fn derived(mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
 }
 
 pub fn derived_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
-    let mut og: Graph = <FCore::Graph as ::std::default::Default>::default();
+    let mut og: Graph;
     og = 'mc: {
         let __mc_input = (inRef.clone(), ig.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -214,7 +214,7 @@ pub fn derived_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Result<Grap
 }
 
 pub fn ty(mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
-    let mut og: Graph = <FCore::Graph as ::std::default::Default>::default();
+    let mut og: Graph;
     og = (match ig.clone() {
         mut g => {
             g = FNode::apply1(inRef.clone(), (std::sync::Arc::new(ty_one) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<FCore::Node>, FCore::Graph) -> Result<FCore::Graph> + 'static>), g.clone())?;
@@ -225,7 +225,7 @@ pub fn ty(mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
 }
 
 pub fn ty_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
-    let mut og: Graph = <FCore::Graph as ::std::default::Default>::default();
+    let mut og: Graph;
     og = 'mc: {
         let __mc_input = (inRef.clone(), ig.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -273,7 +273,7 @@ pub fn ty_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
 }
 
 pub fn cc(mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
-    let mut og: Graph = <FCore::Graph as ::std::default::Default>::default();
+    let mut og: Graph;
     og = (match ig.clone() {
         mut g => {
             g = FNode::apply1(inRef.clone(), (std::sync::Arc::new(cc_one) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<FCore::Node>, FCore::Graph) -> Result<FCore::Graph> + 'static>), g.clone())?;
@@ -284,7 +284,7 @@ pub fn cc(mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
 }
 
 pub fn cc_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
-    let mut og: Graph = <FCore::Graph as ::std::default::Default>::default();
+    let mut og: Graph;
     og = 'mc: {
         let __mc_input = (inRef.clone(), ig.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -334,7 +334,7 @@ pub fn cc_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
 }
 
 pub fn clsext(mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
-    let mut og: Graph = <FCore::Graph as ::std::default::Default>::default();
+    let mut og: Graph;
     og = (match ig.clone() {
         mut g => {
             g = FNode::apply1(inRef.clone(), (std::sync::Arc::new(clsext_one) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<FCore::Node>, FCore::Graph) -> Result<FCore::Graph> + 'static>), g.clone())?;
@@ -345,7 +345,7 @@ pub fn clsext(mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
 }
 
 pub fn clsext_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
-    let mut og: Graph = <FCore::Graph as ::std::default::Default>::default();
+    let mut og: Graph;
     og = 'mc: {
         let __mc_input = (inRef.clone(), ig.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -408,7 +408,7 @@ pub fn clsext_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Result<Graph
 }
 
 pub fn cr(mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
-    let mut og: Graph = <FCore::Graph as ::std::default::Default>::default();
+    let mut og: Graph;
     og = (match ig.clone() {
         mut g => {
             g = FNode::apply1(inRef.clone(), (std::sync::Arc::new(cr_one) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<FCore::Node>, FCore::Graph) -> Result<FCore::Graph> + 'static>), g.clone())?;
@@ -419,7 +419,7 @@ pub fn cr(mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
 }
 
 pub fn cr_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
-    let mut og: Graph = <FCore::Graph as ::std::default::Default>::default();
+    let mut og: Graph;
     og = 'mc: {
         let __mc_input = (inRef.clone(), ig.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -463,7 +463,7 @@ pub fn cr_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
 }
 
 pub fn r#mod(mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
-    let mut og: Graph = <FCore::Graph as ::std::default::Default>::default();
+    let mut og: Graph;
     og = (match ig.clone() {
         mut g => {
             g = FNode::apply1(inRef.clone(), (std::sync::Arc::new(mod_one) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<FCore::Node>, FCore::Graph) -> Result<FCore::Graph> + 'static>), g.clone())?;
@@ -474,7 +474,7 @@ pub fn r#mod(mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
 }
 
 pub fn mod_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
-    let mut og: Graph = <FCore::Graph as ::std::default::Default>::default();
+    let mut og: Graph;
     og = 'mc: {
         let __mc_input = (inRef.clone(), ig.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -516,7 +516,7 @@ pub fn mod_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
 }
 
 pub fn elred(mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
-    let mut og: Graph = <FCore::Graph as ::std::default::Default>::default();
+    let mut og: Graph;
     og = (match ig.clone() {
         mut g => {
             g = FNode::apply1(inRef.clone(), (std::sync::Arc::new(elred_one) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<FCore::Node>, FCore::Graph) -> Result<FCore::Graph> + 'static>), g.clone())?;
@@ -527,7 +527,7 @@ pub fn elred(mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
 }
 
 pub fn elred_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
-    let mut og: Graph = <FCore::Graph as ::std::default::Default>::default();
+    let mut og: Graph;
     og = 'mc: {
         let __mc_input = (inRef.clone(), ig.clone());
         if let Ok(__v) = (|| -> Result<_> {

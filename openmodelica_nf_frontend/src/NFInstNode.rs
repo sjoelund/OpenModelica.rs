@@ -218,7 +218,7 @@ pub mod CachedData {
     }
 
     pub fn initFunc(mut caches: metamodelica::Array<Arc<CachedData>>) -> Result<()> {
-        let mut func_cache: Arc<CachedData> = Arc::new(CachedData::NO_CACHE);
+        let mut func_cache: Arc<CachedData>;
         func_cache = getFuncCache(caches.clone())?;
         func_cache = (::match_deref::match_deref! { match &(func_cache.clone()) {
         Deref @ NO_CACHE { .. } => Arc::new(CachedData::FUNCTION { funcs: metamodelica::nil(), typed: false, specialBuiltin: false }),
@@ -230,7 +230,7 @@ pub mod CachedData {
     }
 
     pub fn addFunc(mut r#fn: Arc<Function::Function>, mut specialBuiltin: bool, mut caches: metamodelica::Array<Arc<CachedData>>) -> Result<()> {
-        let mut func_cache: Arc<CachedData> = Arc::new(CachedData::NO_CACHE);
+        let mut func_cache: Arc<CachedData>;
         func_cache = getFuncCache(caches.clone())?;
         func_cache = (::match_deref::match_deref! { match &(func_cache.clone()) {
         Deref @ NO_CACHE { .. } => Arc::new(CachedData::FUNCTION { funcs: list![r#fn.clone()], typed: false, specialBuiltin: specialBuiltin.clone() }),
@@ -335,7 +335,7 @@ pub mod InstNode {
     }
     pub use self::InstNode::{CLASS_NODE,COMPONENT_NODE,INNER_OUTER_NODE,REF_NODE,NAME_NODE,IMPLICIT_SCOPE,ITERATOR_NODE,VAR_NODE,EMPTY_NODE};
     pub fn new(mut definition: Arc<SCode::Element>, mut parent: Arc<InstNode>) -> Result<Arc<InstNode>> {
-        let mut node: Arc<InstNode> = Arc::new(InstNode::EMPTY_NODE);
+        let mut node: Arc<InstNode>;
         node = (::match_deref::match_deref! { match &(definition.clone()) {
         Deref @ SCode::Element::CLASS { .. } => newClass(definition.clone(), parent.clone(), crate::NFInstNode::InstNodeType::interned_NORMAL_CLASS())?,
         Deref @ SCode::Element::COMPONENT { .. } => newComponent(definition.clone(), parent.clone())?,
@@ -345,9 +345,9 @@ pub mod InstNode {
     }
 
     pub fn newClass(mut definition: Arc<SCode::Element>, mut parent: Arc<InstNode>, mut nodeType: Arc<InstNodeType>) -> Result<Arc<InstNode>> {
-        let mut node: Arc<InstNode> = Arc::new(InstNode::EMPTY_NODE);
-        let mut name: ArcStr = arcstr::literal!("");
-        let mut vis: SCode::Visibility = SCode::Visibility::PROTECTED;
+        let mut node: Arc<InstNode>;
+        let mut name: ArcStr;
+        let mut vis: SCode::Visibility;
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(definition.clone()) {
             Deref @ SCode::Element::CLASS { name: __pa0, prefixes: Deref @ SCode::Prefixes { visibility: __pa1, .. }, .. } => (__pa0.clone(), __pa1.clone()),
             _ => bail!("pattern mismatch"),
@@ -359,9 +359,9 @@ pub mod InstNode {
     }
 
     pub fn newComponent(mut definition: Arc<SCode::Element>, mut parent: Arc<InstNode>) -> Result<Arc<InstNode>> {
-        let mut node: Arc<InstNode> = Arc::new(InstNode::EMPTY_NODE);
-        let mut name: ArcStr = arcstr::literal!("");
-        let mut vis: SCode::Visibility = SCode::Visibility::PROTECTED;
+        let mut node: Arc<InstNode>;
+        let mut name: ArcStr;
+        let mut vis: SCode::Visibility;
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(definition.clone()) {
             Deref @ SCode::Element::COMPONENT { name: __pa0, prefixes: Deref @ SCode::Prefixes { visibility: __pa1, .. }, .. } => (__pa0.clone(), __pa1.clone()),
             _ => bail!("pattern mismatch"),
@@ -373,10 +373,10 @@ pub mod InstNode {
     }
 
     pub fn newExtends(mut definition: Arc<SCode::Element>, mut parent: Arc<InstNode>) -> Result<Arc<InstNode>> {
-        let mut node: Arc<InstNode> = Arc::new(InstNode::EMPTY_NODE);
-        let mut base_path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-        let mut name: ArcStr = arcstr::literal!("");
-        let mut vis: SCode::Visibility = SCode::Visibility::PROTECTED;
+        let mut node: Arc<InstNode>;
+        let mut base_path: Arc<Absyn::Path>;
+        let mut name: ArcStr;
+        let mut vis: SCode::Visibility;
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(definition.clone()) {
             Deref @ SCode::Element::EXTENDS { baseClassPath: __pa0, visibility: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
             _ => bail!("pattern mismatch"),
@@ -389,25 +389,25 @@ pub mod InstNode {
     }
 
     pub fn newIterator(mut name: ArcStr, mut ty: Arc<Type::NFType>, mut info: SourceInfo) -> Arc<InstNode> {
-        let mut iterator: Arc<InstNode> = Arc::new(InstNode::EMPTY_NODE);
+        let mut iterator: Arc<InstNode>;
         iterator = fromComponent((name.clone()).clone(), Component::newIterator(ty.clone(), info.clone()), crate::NFInstNode::InstNode::interned_EMPTY_NODE());
         iterator
     }
 
     pub fn newUniqueIterator(mut info: SourceInfo, mut ty: Arc<Type::NFType>) -> Arc<InstNode> {
-        let mut iterator: Arc<InstNode> = Arc::new(InstNode::EMPTY_NODE);
+        let mut iterator: Arc<InstNode>;
         iterator = newIterator(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("$i")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", System::tmpTickIndex(Global::iteratorIndex.clone())))); ArcStr::from(__mm_s) }).clone(), ty.clone(), info.clone());
         iterator
     }
 
     pub fn newIndexedIterator(mut index: i32, mut name: ArcStr, mut info: SourceInfo, mut ty: Arc<Type::NFType>) -> Arc<InstNode> {
-        let mut iterator: Arc<InstNode> = Arc::new(InstNode::EMPTY_NODE);
+        let mut iterator: Arc<InstNode>;
         iterator = newIterator(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("$")); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", index.clone()))); ArcStr::from(__mm_s) }).clone(), ty.clone(), info.clone());
         iterator
     }
 
     pub fn fromComponent(mut name: ArcStr, mut component: Arc<Component::NFComponent>, mut parent: Arc<InstNode>) -> Arc<InstNode> {
-        let mut node: Arc<InstNode> = Arc::new(InstNode::EMPTY_NODE);
+        let mut node: Arc<InstNode>;
         node = Arc::new(InstNode::COMPONENT_NODE { name: (name.clone()).clone(), definition: None, visibility: Visibility::PUBLIC.clone(), component: Pointer::create(component.clone()), parent: parent.clone(), nodeType: crate::NFInstNode::InstNodeType::interned_NORMAL_COMP() });
         node
     }
@@ -424,7 +424,7 @@ pub mod InstNode {
     }
 
     pub fn isBaseClass(mut node: Arc<InstNode>) -> bool {
-        let mut isBaseClass: bool = false;
+        let mut isBaseClass: bool;
         isBaseClass = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { nodeType: Deref @ InstNodeType::BASE_CLASS { .. }, .. } => true,
         _ => false,
@@ -455,7 +455,7 @@ pub mod InstNode {
     }
 
     pub fn isDerivedClass(mut node: Arc<InstNode>) -> bool {
-        let mut isDerived: bool = false;
+        let mut isDerived: bool;
         isDerived = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { nodeType: Deref @ InstNodeType::DERIVED_CLASS { .. }, .. } => true,
         _ => false,
@@ -471,7 +471,7 @@ pub mod InstNode {
     }
 
     pub fn isRootClass(mut node: Arc<InstNode>) -> bool {
-        let mut res: bool = false;
+        let mut res: bool;
         res = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { nodeType: Deref @ InstNodeType::ROOT_CLASS { .. }, .. } => true,
         _ => false,
@@ -494,7 +494,7 @@ pub mod InstNode {
     }
 
     pub fn isFunction(mut node: Arc<InstNode>) -> Result<bool> {
-        let mut isFunc: bool = false;
+        let mut isFunc: bool;
         isFunc = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { .. } => Class::isFunction(Pointer::access(var_field!((*node).cls, InstNode::CLASS_NODE).clone())),
         Deref @ COMPONENT_NODE { .. } => Class::isFunction(getClass(node.clone())?),
@@ -516,7 +516,7 @@ pub mod InstNode {
     }
 
     pub fn isRef(mut node: Arc<InstNode>) -> bool {
-        let mut isRef: bool = false;
+        let mut isRef: bool;
         isRef = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ REF_NODE { .. } => true,
         _ => false,
@@ -526,7 +526,7 @@ pub mod InstNode {
     }
 
     pub fn isEmpty(mut node: Arc<InstNode>) -> bool {
-        let mut isEmpty: bool = false;
+        let mut isEmpty: bool;
         isEmpty = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ EMPTY_NODE { .. } => true,
         _ => false,
@@ -536,7 +536,7 @@ pub mod InstNode {
     }
 
     pub fn isImplicit(mut node: Arc<InstNode>) -> bool {
-        let mut isImplicit: bool = false;
+        let mut isImplicit: bool;
         isImplicit = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ IMPLICIT_SCOPE { .. } => true,
         _ => false,
@@ -546,7 +546,7 @@ pub mod InstNode {
     }
 
     pub fn isName(mut node: Arc<InstNode>) -> bool {
-        let mut isName: bool = false;
+        let mut isName: bool;
         isName = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ NAME_NODE { .. } => true,
         _ => false,
@@ -556,7 +556,7 @@ pub mod InstNode {
     }
 
     pub fn isConnector(mut node: Arc<InstNode>) -> Result<bool> {
-        let mut isConnector: bool = false;
+        let mut isConnector: bool;
         isConnector = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ COMPONENT_NODE { .. } => Component::isConnector(component(node.clone())?),
         Deref @ NAME_NODE { .. } => true,
@@ -567,7 +567,7 @@ pub mod InstNode {
     }
 
     pub fn isExpandableConnector(mut node: Arc<InstNode>) -> Result<bool> {
-        let mut isConnector: bool = false;
+        let mut isConnector: bool;
         isConnector = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ COMPONENT_NODE { .. } => Component::isExpandableConnector(component(node.clone())?),
         _ => false,
@@ -578,7 +578,7 @@ pub mod InstNode {
 
     pub fn hasParentExpandableConnector(mut node: Arc<InstNode>) -> Result<bool> {
         let mut b: bool = isExpandableConnector(node.clone())?;
-        let mut p: Arc<InstNode> = Arc::new(InstNode::EMPTY_NODE);
+        let mut p: Arc<InstNode>;
         p = node.clone();
         while !(isEmpty(p.clone())) {
             p = parent(p.clone());
@@ -633,7 +633,7 @@ pub mod InstNode {
     }
 
     pub fn className(mut node: Arc<InstNode>) -> Result<ArcStr> {
-        let mut name: ArcStr = arcstr::literal!("");
+        let mut name: ArcStr;
         let __pa0 = ::match_deref::match_deref! { match &(node.clone()) {
             Deref @ CLASS_NODE { name: __pa0, .. } => __pa0.clone(),
             _ => bail!("pattern mismatch"),
@@ -688,7 +688,7 @@ pub mod InstNode {
     }
 
     pub fn parent(mut node: Arc<InstNode>) -> Arc<InstNode> {
-        let mut parent: Arc<InstNode> = Arc::new(InstNode::EMPTY_NODE);
+        let mut parent: Arc<InstNode>;
         parent = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { .. } => var_field!((*node).parentScope, InstNode::CLASS_NODE).clone(),
         Deref @ COMPONENT_NODE { .. } => var_field!((*node).parent, InstNode::COMPONENT_NODE).clone(),
@@ -705,7 +705,7 @@ pub mod InstNode {
     }
 
     pub fn classParent(mut node: Arc<InstNode>) -> Result<Arc<InstNode>> {
-        let mut parent: Arc<InstNode> = Arc::new(InstNode::EMPTY_NODE);
+        let mut parent: Arc<InstNode>;
         let __pa0 = ::match_deref::match_deref! { match &(node.clone()) {
             Deref @ CLASS_NODE { parentScope: __pa0, .. } => __pa0.clone(),
             _ => bail!("pattern mismatch"),
@@ -731,7 +731,7 @@ pub mod InstNode {
     }
 
     pub fn rootParent(mut node: Arc<InstNode>) -> Result<Arc<InstNode>> {
-        let mut parent: Arc<InstNode> = Arc::new(InstNode::EMPTY_NODE);
+        let mut parent: Arc<InstNode>;
         parent = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { .. } => rootTypeParent(var_field!((*node).nodeType, InstNode::CLASS_NODE).clone(), node.clone())?,
         _ => self::parent(node.clone()),
@@ -776,7 +776,7 @@ pub mod InstNode {
     }
 
     pub fn enclosingScopePath(mut node: Arc<InstNode>, mut ignoreRedeclare: bool, mut ignoreBaseClass: bool) -> Result<Arc<Absyn::Path>> {
-        let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+        let mut path: Arc<Absyn::Path>;
         path = AbsynUtil::stringListPath(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut n in (enclosingScopeList(node.clone(), ignoreRedeclare.clone(), ignoreBaseClass.clone())?).into_iter().cloned() {
@@ -823,7 +823,7 @@ pub mod InstNode {
     }
 
     pub fn classScope(mut node: Arc<InstNode>) -> Arc<InstNode> {
-        let mut scope: Arc<InstNode> = Arc::new(InstNode::EMPTY_NODE);
+        let mut scope: Arc<InstNode>;
         scope = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ COMPONENT_NODE { .. } => Component::classInstance(Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone())),
         _ => node.clone(),
@@ -866,7 +866,7 @@ pub mod InstNode {
     }
 
     pub fn isTopScope(mut node: Arc<InstNode>) -> bool {
-        let mut res: bool = false;
+        let mut res: bool;
         res = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { nodeType: Deref @ InstNodeType::TOP_SCOPE { .. }, .. } => true,
         _ => false,
@@ -933,7 +933,7 @@ pub mod InstNode {
     }
 
     pub fn getDerivedClass(mut node: Arc<InstNode>) -> Result<Arc<Class::NFClass>> {
-        let mut cls: Arc<Class::NFClass> = Arc::new(Class::NOT_INSTANTIATED);
+        let mut cls: Arc<Class::NFClass>;
         cls = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { .. } => getClass(getDerivedNode(node.clone(), true))?,
         Deref @ COMPONENT_NODE { .. } => getClass(getDerivedNode(Component::classInstance(Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone())), true))?,
@@ -943,7 +943,7 @@ pub mod InstNode {
     }
 
     pub fn getDerivedNode(mut node: Arc<InstNode>, mut recursive: bool) -> Arc<InstNode> {
-        let mut derived: Arc<InstNode> = Arc::new(InstNode::EMPTY_NODE);
+        let mut derived: Arc<InstNode>;
         derived = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { .. } => getDerivedNode2(node.clone(), var_field!((*node).nodeType, InstNode::CLASS_NODE).clone(), recursive.clone()),
         _ => node.clone(),
@@ -976,7 +976,7 @@ pub mod InstNode {
     }
 
     pub fn component(mut node: Arc<InstNode>) -> Result<Arc<Component::NFComponent>> {
-        let mut component: Arc<Component::NFComponent> = Arc::new(Component::WILD);
+        let mut component: Arc<Component::NFComponent>;
         component = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ COMPONENT_NODE { .. } => Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone()),
         Deref @ VAR_NODE { .. } => crate::NFComponent::interned_WILD(),
@@ -1023,7 +1023,7 @@ pub mod InstNode {
     }
 
     pub fn nodeType(mut node: Arc<InstNode>) -> Result<Arc<InstNodeType>> {
-        let mut nodeType: Arc<InstNodeType> = Arc::new(InstNodeType::BUILTIN_CLASS);
+        let mut nodeType: Arc<InstNodeType>;
         nodeType = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { .. } => var_field!((*node).nodeType, InstNode::CLASS_NODE).clone(),
         Deref @ COMPONENT_NODE { .. } => var_field!((*node).nodeType, InstNode::COMPONENT_NODE).clone(),
@@ -1094,8 +1094,8 @@ pub mod InstNode {
     }
 
     pub fn extendsDefinition(mut node: Arc<InstNode>) -> Result<Option<Arc<SCode::Element>>> {
-        let mut definition: Option<Arc<SCode::Element>> = None;
-        let mut ty: Arc<InstNodeType> = Arc::new(InstNodeType::BUILTIN_CLASS);
+        let mut definition: Option<Arc<SCode::Element>>;
+        let mut ty: Arc<InstNodeType>;
         ty = derivedNodeType(node.clone())?;
         definition = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ InstNodeType::BASE_CLASS { .. } => Some(var_field!((*ty).definition, InstNodeType::BASE_CLASS).clone()),
@@ -1138,7 +1138,7 @@ pub mod InstNode {
     }
 
     pub fn info(mut node: Arc<InstNode>) -> Result<SourceInfo> {
-        let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
+        let mut info: SourceInfo;
         info = 'mc: {
         let __mc_input = node.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -1187,7 +1187,7 @@ pub mod InstNode {
     }
 
     pub fn getType(mut node: Arc<InstNode>) -> Result<Arc<Type::NFType>> {
-        let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
+        let mut ty: Arc<Type::NFType>;
         let mut var: Arc<Variable::NFVariable> = Arc::new(<Variable::NFVariable as ::std::default::Default>::default());
         ty = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { .. } => Class::getType(Pointer::access(var_field!((*node).cls, InstNode::CLASS_NODE).clone()), node.clone())?,
@@ -1277,9 +1277,9 @@ pub mod InstNode {
     }
 
     pub fn getAnnotation(mut name: ArcStr, mut node: Arc<InstNode>) -> Result<(Arc<SCode::Mod>, Arc<InstNode>)> {
-        let mut r#mod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
+        let mut r#mod: Arc<SCode::Mod>;
         let mut scope: Arc<InstNode> = node.clone();
-        let mut ann: Option<Arc<SCode::Annotation>> = None;
+        let mut ann: Option<Arc<SCode::Annotation>>;
         while isComponent(scope.clone())? {
             ann = SCodeUtil::commentAnnotation(Component::comment(component(scope.clone())?)?);
             if isSome(ann.clone()) {
@@ -1378,7 +1378,7 @@ pub mod InstNode {
     }
 
     pub fn isInput(mut node: Arc<InstNode>) -> bool {
-        let mut isInput: bool = false;
+        let mut isInput: bool;
         isInput = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ COMPONENT_NODE { .. } => Component::isInput(Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone())),
         _ => false,
@@ -1388,7 +1388,7 @@ pub mod InstNode {
     }
 
     pub fn isOutput(mut node: Arc<InstNode>) -> bool {
-        let mut isOutput: bool = false;
+        let mut isOutput: bool;
         isOutput = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ COMPONENT_NODE { .. } => Component::isOutput(Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone())),
         _ => false,
@@ -1434,7 +1434,7 @@ pub mod InstNode {
     }
 
     pub fn isInnerOuterNode(mut node: Arc<InstNode>) -> bool {
-        let mut isIO: bool = false;
+        let mut isIO: bool;
         isIO = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ INNER_OUTER_NODE { .. } => true,
         _ => false,
@@ -1444,7 +1444,7 @@ pub mod InstNode {
     }
 
     pub fn isGeneratedInner(mut node: Arc<InstNode>) -> bool {
-        let mut isInner: bool = false;
+        let mut isInner: bool;
         isInner = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { nodeType: Deref @ InstNodeType::GENERATED_INNER, .. } => true,
         Deref @ COMPONENT_NODE { nodeType: Deref @ InstNodeType::GENERATED_INNER, .. } => true,
@@ -1455,7 +1455,7 @@ pub mod InstNode {
     }
 
     pub fn resolveInner(mut node: Arc<InstNode>) -> Arc<InstNode> {
-        let mut innerNode: Arc<InstNode> = Arc::new(InstNode::EMPTY_NODE);
+        let mut innerNode: Arc<InstNode>;
         innerNode = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ INNER_OUTER_NODE { .. } => var_field!((*node).innerNode, InstNode::INNER_OUTER_NODE).clone(),
         _ => node.clone(),
@@ -1465,7 +1465,7 @@ pub mod InstNode {
     }
 
     pub fn resolveOuter(mut node: Arc<InstNode>) -> Arc<InstNode> {
-        let mut outerNode: Arc<InstNode> = Arc::new(InstNode::EMPTY_NODE);
+        let mut outerNode: Arc<InstNode>;
         outerNode = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ INNER_OUTER_NODE { .. } => var_field!((*node).outerNode, InstNode::INNER_OUTER_NODE).clone(),
         _ => node.clone(),
@@ -1523,7 +1523,7 @@ pub mod InstNode {
     }
 
     pub fn getFuncCache(mut inNode: Arc<InstNode>) -> Result<Arc<CachedData::CachedData>> {
-        let mut func_cache: Arc<CachedData::CachedData> = Arc::new(CachedData::NO_CACHE);
+        let mut func_cache: Arc<CachedData::CachedData>;
         func_cache = (::match_deref::match_deref! { match &(inNode.clone()) {
         Deref @ CLASS_NODE { .. } => CachedData::getFuncCache(var_field!((*inNode).caches, InstNode::CLASS_NODE).clone())?,
         _ => {
@@ -1552,7 +1552,7 @@ pub mod InstNode {
     }
 
     pub fn getPackageCache(mut inNode: Arc<InstNode>) -> Result<Arc<CachedData::CachedData>> {
-        let mut pack_cache: Arc<CachedData::CachedData> = Arc::new(CachedData::NO_CACHE);
+        let mut pack_cache: Arc<CachedData::CachedData>;
         pack_cache = (::match_deref::match_deref! { match &(inNode.clone()) {
         Deref @ CLASS_NODE { .. } => CachedData::getPackageCache(var_field!((*inNode).caches, InstNode::CLASS_NODE).clone())?,
         _ => {
@@ -1626,7 +1626,7 @@ pub mod InstNode {
     }
 
     pub fn refEqual(mut node1: Arc<InstNode>, mut node2: Arc<InstNode>) -> bool {
-        let mut refEqual: bool = false;
+        let mut refEqual: bool;
         refEqual = (::match_deref::match_deref! { match &((node1.clone(), node2.clone())) {
         (Deref @ CLASS_NODE { .. }, Deref @ CLASS_NODE { .. }) => referenceEq(&*(Pointer::access(var_field!((*node1).cls, InstNode::CLASS_NODE).clone())),&*(Pointer::access(var_field!((*node2).cls, InstNode::CLASS_NODE).clone()))),
         (Deref @ COMPONENT_NODE { .. }, Deref @ COMPONENT_NODE { .. }) => referenceEq(&*(Pointer::access(var_field!((*node1).component, InstNode::COMPONENT_NODE).clone())),&*(Pointer::access(var_field!((*node2).component, InstNode::COMPONENT_NODE).clone()))),
@@ -1638,7 +1638,7 @@ pub mod InstNode {
     }
 
     pub fn refCompare(mut node1: Arc<InstNode>, mut node2: Arc<InstNode>) -> Result<i32> {
-        let mut res: i32 = 0;
+        let mut res: i32;
         res = (::match_deref::match_deref! { match &((node1.clone(), node2.clone())) {
         (Deref @ CLASS_NODE { .. }, Deref @ CLASS_NODE { .. }) => Util::referenceCompare(Pointer::access(var_field!((*node1).cls, InstNode::CLASS_NODE).clone()), Pointer::access(var_field!((*node2).cls, InstNode::CLASS_NODE).clone())),
         (Deref @ COMPONENT_NODE { .. }, Deref @ COMPONENT_NODE { .. }) => Util::referenceCompare(Pointer::access(var_field!((*node1).component, InstNode::COMPONENT_NODE).clone()), Pointer::access(var_field!((*node2).component, InstNode::COMPONENT_NODE).clone())),
@@ -1717,7 +1717,7 @@ pub mod InstNode {
     }
 
     pub fn toString(mut node: Arc<InstNode>) -> Result<ArcStr> {
-        let mut name: ArcStr = arcstr::literal!("");
+        let mut name: ArcStr;
         name = ((::match_deref::match_deref! { match &(node.clone()) {
         Deref @ COMPONENT_NODE { .. } => Component::toString((var_field!((*node).name, InstNode::COMPONENT_NODE).clone()).clone(), Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone()))?,
         Deref @ CLASS_NODE { .. } => SCodeDump::unparseElementStr(var_field!((*node).definition, InstNode::CLASS_NODE).clone(), SCodeDump::defaultOptions.clone())?,
@@ -1728,7 +1728,7 @@ pub mod InstNode {
     }
 
     pub fn toFlatString(mut node: Arc<InstNode>, mut format: BaseModelica::OutputFormat, mut indent: ArcStr) -> Result<ArcStr> {
-        let mut name: ArcStr = arcstr::literal!("");
+        let mut name: ArcStr;
         name = ((::match_deref::match_deref! { match &(node.clone()) {
         Deref @ COMPONENT_NODE { .. } => Component::toFlatString((var_field!((*node).name, InstNode::COMPONENT_NODE).clone()).clone(), Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone()), format.clone(), (indent.clone()).clone())?,
         Deref @ CLASS_NODE { .. } => Class::toFlatString(Pointer::access(var_field!((*node).cls, InstNode::CLASS_NODE).clone()), node.clone(), format.clone(), (indent.clone()).clone())?,
@@ -1750,7 +1750,7 @@ pub mod InstNode {
     }
 
     pub fn isRedeclare(mut node: Arc<InstNode>) -> Result<bool> {
-        let mut isRedeclare: bool = false;
+        let mut isRedeclare: bool;
         isRedeclare = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { .. } => SCodeUtil::isElementRedeclare(definition(node.clone())?)?,
         Deref @ COMPONENT_NODE { .. } => Component::isRedeclare(Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone()))?,
@@ -1761,7 +1761,7 @@ pub mod InstNode {
     }
 
     pub fn isRedeclared(mut node: Arc<InstNode>) -> Result<bool> {
-        let mut redeclared: bool = false;
+        let mut redeclared: bool;
         redeclared = (::match_deref::match_deref! { match &(nodeType(node.clone())?) {
         Deref @ InstNodeType::REDECLARED_COMP { .. } => true,
         Deref @ InstNodeType::REDECLARED_CLASS { .. } => true,
@@ -1785,7 +1785,7 @@ pub mod InstNode {
     }
 
     pub fn isReplaceable(mut node: Arc<InstNode>) -> Result<bool> {
-        let mut repl: bool = false;
+        let mut repl: bool;
         let mut elem: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
         repl = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { .. } => SCodeUtil::isElementReplaceable(var_field!((*node).definition, InstNode::CLASS_NODE).clone())?,
@@ -1800,7 +1800,7 @@ pub mod InstNode {
     }
 
     pub fn isProtectedBaseClass(mut node: Arc<InstNode>) -> bool {
-        let mut isProtected: bool = false;
+        let mut isProtected: bool;
         isProtected = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { nodeType: Deref @ InstNodeType::BASE_CLASS { definition: Deref @ SCode::Element::EXTENDS { visibility: SCode::Visibility::PROTECTED { .. }, .. }, .. }, .. } => true,
         _ => false,
@@ -1810,7 +1810,7 @@ pub mod InstNode {
     }
 
     pub fn visibility(mut node: Arc<InstNode>) -> Visibility {
-        let mut vis: Visibility = Visibility::PUBLIC;
+        let mut vis: Visibility;
         vis = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { .. } => var_field!((*node).visibility, InstNode::CLASS_NODE).clone(),
         Deref @ COMPONENT_NODE { .. } => var_field!((*node).visibility, InstNode::COMPONENT_NODE).clone(),
@@ -1821,7 +1821,7 @@ pub mod InstNode {
     }
 
     pub fn isProtected(mut node: Arc<InstNode>) -> bool {
-        let mut isProtected: bool = false;
+        let mut isProtected: bool;
         isProtected = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { visibility: Prefixes::Visibility::PROTECTED { .. }, .. } => true,
         Deref @ COMPONENT_NODE { visibility: Prefixes::Visibility::PROTECTED { .. }, .. } => true,
@@ -1880,7 +1880,7 @@ pub mod InstNode {
     }
 
     pub fn isEncapsulated(mut node: Arc<InstNode>) -> Result<bool> {
-        let mut enc: bool = false;
+        let mut enc: bool;
         enc = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { .. } => Class::isEncapsulated(Pointer::access(var_field!((*node).cls, InstNode::CLASS_NODE).clone()))?,
         Deref @ COMPONENT_NODE { .. } => Class::isEncapsulated(getClass(node.clone())?)?,
@@ -1891,7 +1891,7 @@ pub mod InstNode {
     }
 
     pub fn getModifier(mut node: Arc<InstNode>) -> Arc<Modifier::Modifier> {
-        let mut r#mod: Arc<Modifier::Modifier> = Arc::new(Modifier::NOMOD);
+        let mut r#mod: Arc<Modifier::Modifier>;
         r#mod = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { .. } => Class::getModifier(Pointer::access(var_field!((*node).cls, InstNode::CLASS_NODE).clone())),
         Deref @ COMPONENT_NODE { .. } => Component::getModifier(Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone())),
@@ -1936,7 +1936,7 @@ pub mod InstNode {
     }
 
     pub fn toPartialDAEType(mut clsNode: Arc<InstNode>) -> Result<Arc<DAE::Type>> {
-        let mut outType: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+        let mut outType: Arc<DAE::Type>;
         outType = (::match_deref::match_deref! { match &(clsNode.clone()) {
         Deref @ CLASS_NODE { .. } => {
             let mut cls: Arc<Class::NFClass> = Arc::new(Class::NOT_INSTANTIATED);
@@ -1999,7 +1999,7 @@ pub mod InstNode {
     }
 
     pub fn isBuiltin(mut node: Arc<InstNode>) -> bool {
-        let mut isBuiltin: bool = false;
+        let mut isBuiltin: bool;
         isBuiltin = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { .. } => isBuiltinNodeType(var_field!((*node).nodeType, InstNode::CLASS_NODE).clone()),
         _ => false,
@@ -2020,7 +2020,7 @@ pub mod InstNode {
     }
 
     pub fn isPartial(mut node: Arc<InstNode>) -> Result<bool> {
-        let mut isPartial: bool = false;
+        let mut isPartial: bool;
         isPartial = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { .. } => Class::isPartial(Pointer::access(var_field!((*node).cls, InstNode::CLASS_NODE).clone()))?,
         _ => false,
@@ -2058,7 +2058,7 @@ pub mod InstNode {
     }
 
     pub fn cloneComponent(mut component: Arc<InstNode>, mut newParent: Arc<InstNode>) -> Result<Arc<InstNode>> {
-        let mut outComponent: Arc<InstNode> = Arc::new(InstNode::EMPTY_NODE);
+        let mut outComponent: Arc<InstNode>;
         outComponent = (::match_deref::match_deref! { match &(component.clone()) {
         Deref @ COMPONENT_NODE { .. } => Arc::new(InstNode::COMPONENT_NODE { name: (var_field!((*component).name, InstNode::COMPONENT_NODE).clone()).clone(), definition: var_field!((*component).definition, InstNode::COMPONENT_NODE).clone(), visibility: var_field!((*component).visibility, InstNode::COMPONENT_NODE).clone(), component: Pointer::create(Pointer::access(var_field!((*component).component, InstNode::COMPONENT_NODE).clone())), parent: newParent.clone(), nodeType: var_field!((*component).nodeType, InstNode::COMPONENT_NODE).clone() }),
         _ => bail!("match: no arm matched"),
@@ -2067,7 +2067,7 @@ pub mod InstNode {
     }
 
     pub fn getComments(mut node: Arc<InstNode>, mut accumCmts: Arc<metamodelica::List<Arc<SCode::Comment>>>) -> Arc<metamodelica::List<Arc<SCode::Comment>>> {
-        let mut cmts: Arc<metamodelica::List<Arc<SCode::Comment>>> = metamodelica::nil();
+        let mut cmts: Arc<metamodelica::List<Arc<SCode::Comment>>>;
         cmts = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { definition: Deref @ SCode::Element::CLASS { cmt, .. }, .. } => {
             metamodelica::cons(cmt.clone(), Class::getDerivedComments(Pointer::access(var_field!((*node).cls, InstNode::CLASS_NODE).clone()), accumCmts.clone()))
@@ -2124,7 +2124,7 @@ pub mod InstNode {
     }
 
     pub fn hasBinding(mut node: Arc<InstNode>) -> Result<bool> {
-        let mut hasBinding: bool = false;
+        let mut hasBinding: bool;
         hasBinding = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ COMPONENT_NODE { .. } => Component::hasBinding(Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone()), crate::NFInstNode::InstNode::interned_EMPTY_NODE())? || self::hasBinding(instanceParent(node.clone())?)?,
         _ => false,
@@ -2192,7 +2192,7 @@ pub mod InstNode {
     }
 
     pub fn dimensionCount(mut node: Arc<InstNode>) -> i32 {
-        let mut count: i32 = 0;
+        let mut count: i32;
         count = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ COMPONENT_NODE { .. } => Component::dimensionCount(Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone())),
         Deref @ CLASS_NODE { .. } => Class::dimensionCount(Pointer::access(var_field!((*node).cls, InstNode::CLASS_NODE).clone())),
@@ -2203,7 +2203,7 @@ pub mod InstNode {
     }
 
     pub fn isClockType(mut node: Arc<InstNode>) -> bool {
-        let mut clock: bool = false;
+        let mut clock: bool;
         clock = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { name: Deref @ "Clock", nodeType: Deref @ InstNodeType::BUILTIN_CLASS, .. } => true,
         _ => false,
@@ -2225,7 +2225,7 @@ pub mod InstNode {
     }
 
     pub fn isExtends(mut node: Arc<InstNode>) -> bool {
-        let mut res: bool = false;
+        let mut res: bool;
         res = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { definition: Deref @ SCode::Element::EXTENDS { .. }, .. } => true,
         Deref @ CLASS_NODE { nodeType: Deref @ InstNodeType::BASE_CLASS { definition: Deref @ SCode::Element::EXTENDS { .. }, .. }, .. } => true,
@@ -2237,8 +2237,8 @@ pub mod InstNode {
 
     pub fn isDiscreteClass(mut clsNode: Arc<InstNode>) -> Result<bool> {
         '__tco: loop {
-            let mut base_node: Arc<InstNode> = Arc::new(InstNode::EMPTY_NODE);
-            let mut cls: Arc<Class::NFClass> = Arc::new(Class::NOT_INSTANTIATED);
+            let mut base_node: Arc<InstNode>;
+            let mut cls: Arc<Class::NFClass>;
             let mut exts: metamodelica::Array<Arc<InstNode>> = Default::default();
             base_node = Class::lastBaseClass(clsNode.clone())?;
             cls = getClass(base_node.clone())?;
@@ -2254,7 +2254,7 @@ pub mod InstNode {
     }
 
     pub fn clearGeneratedInners(mut node: Arc<InstNode>) -> Result<()> {
-        let mut inners: Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<InstNode>>> = <Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<InstNode>>> as ::std::default::Default>::default();
+        let mut inners: Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<InstNode>>>;
         let __pa0 = ::match_deref::match_deref! { match &(nodeType(topScope(node.clone())?)?) {
             Deref @ InstNodeType::TOP_SCOPE { generatedInners: __pa0, .. } => __pa0.clone(),
             _ => bail!("pattern mismatch"),
@@ -2266,9 +2266,9 @@ pub mod InstNode {
 
     pub fn getAccessLevel(mut node: Arc<InstNode>) -> Result<Option<AccessLevel>> {
         let mut access: Option<AccessLevel> = None;
-        let mut scope: Arc<InstNode> = Arc::new(InstNode::EMPTY_NODE);
-        let mut access_mod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
-        let mut access_exp: Option<Arc<Absyn::Exp>> = None;
+        let mut scope: Arc<InstNode>;
+        let mut access_mod: Arc<SCode::Mod>;
+        let mut access_exp: Option<Arc<Absyn::Exp>>;
         scope = classScope(parent(resolveInner(node.clone())));
         while isClass(scope.clone())? {
             access_mod = SCodeUtil::lookupElementAnnotation(definition(scope.clone())?, (literal!("Protection")).clone())?;

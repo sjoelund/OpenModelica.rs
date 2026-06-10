@@ -659,11 +659,10 @@ pub fn subDirectories(inString: ArcStr) -> Arc<List<ArcStr>> {
     if let Ok(rd) = fs::read_dir(inString.as_str()) {
         for ent in rd.flatten() {
             let p = ent.path();
-            if p.is_dir() {
-                if let Some(name) = p.file_name() {
+            if p.is_dir()
+                && let Some(name) = p.file_name() {
                     out.push(ArcStr::from(name.to_string_lossy().as_ref()));
                 }
-            }
         }
     }
     list_from_vec(out)
@@ -1208,7 +1207,7 @@ pub fn getuid() -> i32 {
 
 // ───────────────────────────────── realtime stopwatches ──────────────────────
 
-fn rt_slot_mut<'a>(s: &'a mut SysState, idx: i32) -> &'a mut RtSlot {
+fn rt_slot_mut(s: &mut SysState, idx: i32) -> &mut RtSlot {
     s.rt.entry(idx).or_insert(RtSlot::Stopped { accumulated_ns: 0, ntick: 0 })
 }
 
@@ -1925,7 +1924,7 @@ fn next_rand(s: &mut SysState) -> u64 {
 }
 
 pub fn realRand() -> metamodelica::Real {
-    let r = with(|s| next_rand(s));
+    let r = with(next_rand);
     // 53-bit mantissa worth of randomness so the result is uniform in [0,1).
     let v = (r >> 11) as f64 / ((1u64 << 53) as f64);
     metamodelica::OrderedFloat(v)
@@ -1933,7 +1932,7 @@ pub fn realRand() -> metamodelica::Real {
 
 pub fn intRand(n: i32) -> i32 {
     if n <= 0 { return 0; }
-    let r = with(|s| next_rand(s));
+    let r = with(next_rand);
     (r % n as u64) as i32
 }
 

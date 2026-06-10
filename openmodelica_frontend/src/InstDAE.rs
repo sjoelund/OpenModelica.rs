@@ -77,7 +77,7 @@ pub type InstanceHierarchy = Arc<metamodelica::List<InnerOuter::TopInstance>>;
 pub type InstDims = Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Dimension>>>>>;
 
 pub fn daeDeclare(mut inCache: FCore::Cache, mut inParentEnv: FCore::Graph, mut inClassEnv: FCore::Graph, mut inComponentRef: Arc<DAE::ComponentRef>, mut inState: ClassInf::State, mut inType: Arc<DAE::Type>, mut inAttributes: SCode::Attributes, mut visibility: SCode::Visibility, mut inBinding: Option<Arc<DAE::Exp>>, mut inInstDims: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Dimension>>>>>, mut inStartValue: Option<Arc<DAE::Exp>>, mut inVarAttr: Option<Arc<DAE::VariableAttributes>>, mut inComment: Option<Arc<SCode::Comment>>, mut io: Absyn::InnerOuter, mut finalPrefix: SCode::Final, mut source: Arc<DAE::ElementSource>, mut declareComplexVars: bool) -> Result<DAE::DAElist> {
-    let mut outDae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
+    let mut outDae: DAE::DAElist;
     outDae = 'mc: {
         let __mc_input = (inComponentRef.clone(), inState.clone(), inType.clone(), inAttributes.clone(), visibility.clone(), inBinding.clone(), inInstDims.clone(), inStartValue.clone(), inVarAttr.clone(), inComment.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -165,7 +165,7 @@ fn showDAE(mut inCache: FCore::Cache, mut inParentEnv: FCore::Graph, mut inClass
 }
 
 fn daeDeclare2(mut inComponentRef: Arc<DAE::ComponentRef>, mut inType: Arc<DAE::Type>, mut inConnectorType: Arc<DAE::ConnectorType>, mut inVarKind: DAE::VarKind, mut inVarDirection: DAE::VarDirection, mut inParallelism: DAE::VarParallelism, mut protection: DAE::VarVisibility, mut inExpExpOption: Option<Arc<DAE::Exp>>, mut inInstDims: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Dimension>>>>>, mut inStartValue: Option<Arc<DAE::Exp>>, mut inAttr: Option<Arc<DAE::VariableAttributes>>, mut inComment: Option<Arc<SCode::Comment>>, mut io: Absyn::InnerOuter, mut source: Arc<DAE::ElementSource>, mut declareComplexVars: bool) -> Result<DAE::DAElist> {
-    let mut outDAe: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
+    let mut outDAe: DAE::DAElist;
     outDAe = 'mc: {
         let __mc_input = (inComponentRef.clone(), inType.clone(), inConnectorType.clone(), inVarKind.clone(), inVarDirection.clone(), inParallelism.clone(), protection.clone(), inExpExpOption.clone(), inInstDims.clone(), inStartValue.clone(), inAttr.clone(), inComment.clone(), declareComplexVars.clone());
         if let Ok(__v) = (|| -> Result<_> {

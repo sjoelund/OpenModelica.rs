@@ -109,7 +109,7 @@ thread_local! { static __AUGMENTED_ATTR_TLS: Arc<NFAttributes> = Arc::new(NFAttr
 pub fn AUGMENTED_ATTR() -> Arc<NFAttributes> { __AUGMENTED_ATTR_TLS.with(|__t| __t.clone()) }
 
 pub fn fromSCode(mut compAttr: SCode::Attributes, mut compPrefs: Arc<SCode::Prefixes>) -> Result<Arc<NFAttributes>> {
-    let mut attributes: Arc<NFAttributes> = Arc::new(<NFAttributes as ::std::default::Default>::default());
+    let mut attributes: Arc<NFAttributes>;
     let mut cty: i32 = 0;
     let mut par: Prefixes::Parallelism = Prefixes::Parallelism::NON_PARALLEL;
     let mut var: Prefixes::Variability = Prefixes::Variability::CONSTANT;
@@ -137,7 +137,7 @@ pub fn fromSCode(mut compAttr: SCode::Attributes, mut compPrefs: Arc<SCode::Pref
 }
 
 pub fn fromDerivedSCode(mut scodeAttr: SCode::Attributes) -> Result<Arc<NFAttributes>> {
-    let mut attributes: Arc<NFAttributes> = Arc::new(<NFAttributes as ::std::default::Default>::default());
+    let mut attributes: Arc<NFAttributes>;
     let mut cty: i32 = 0;
     let mut var: Prefixes::Variability = Prefixes::Variability::CONSTANT;
     let mut dir: Prefixes::Direction = Prefixes::Direction::NONE;
@@ -154,15 +154,15 @@ pub fn fromDerivedSCode(mut scodeAttr: SCode::Attributes) -> Result<Arc<NFAttrib
 }
 
 pub fn mergeComponentAttributes(mut outerAttr: Arc<NFAttributes>, mut innerAttr: Arc<NFAttributes>, mut node: Arc<InstNode::InstNode>, mut parentRestriction: Arc<Restriction::NFRestriction>) -> Result<Arc<NFAttributes>> {
-    let mut attr: Arc<NFAttributes> = Arc::new(<NFAttributes as ::std::default::Default>::default());
-    let mut cty: i32 = 0;
-    let mut par: Prefixes::Parallelism = Prefixes::Parallelism::NON_PARALLEL;
-    let mut var: Prefixes::Variability = Prefixes::Variability::CONSTANT;
-    let mut dir: Prefixes::Direction = Prefixes::Direction::NONE;
-    let mut fin: bool = false;
-    let mut redecl: bool = false;
-    let mut resize: bool = false;
-    let mut repl: Prefixes::Replaceable = Prefixes::Replaceable::NOT_REPLACEABLE;
+    let mut attr: Arc<NFAttributes>;
+    let mut cty: i32;
+    let mut par: Prefixes::Parallelism;
+    let mut var: Prefixes::Variability;
+    let mut dir: Prefixes::Direction;
+    let mut fin: bool;
+    let mut redecl: bool;
+    let mut resize: bool;
+    let mut repl: Prefixes::Replaceable;
     if referenceEq(&*(outerAttr.clone()),&*(DEFAULT_ATTR().clone())) && innerAttr.connectorType.clone() == 0 {
         attr = innerAttr.clone();
     } else if referenceEq(&*(innerAttr.clone()),&*(DEFAULT_ATTR().clone())) {
@@ -187,16 +187,16 @@ pub fn mergeComponentAttributes(mut outerAttr: Arc<NFAttributes>, mut innerAttr:
 }
 
 pub fn mergeDerivedAttributes(mut outerAttr: Arc<NFAttributes>, mut innerAttr: Arc<NFAttributes>, mut node: Arc<InstNode::InstNode>) -> Result<Arc<NFAttributes>> {
-    let mut attr: Arc<NFAttributes> = Arc::new(<NFAttributes as ::std::default::Default>::default());
-    let mut cty: i32 = 0;
-    let mut par: Prefixes::Parallelism = Prefixes::Parallelism::NON_PARALLEL;
-    let mut var: Prefixes::Variability = Prefixes::Variability::CONSTANT;
-    let mut dir: Prefixes::Direction = Prefixes::Direction::NONE;
-    let mut io: Prefixes::InnerOuter = Prefixes::InnerOuter::NOT_INNER_OUTER;
-    let mut fin: bool = false;
-    let mut redecl: bool = false;
-    let mut resize: bool = false;
-    let mut repl: Prefixes::Replaceable = Prefixes::Replaceable::NOT_REPLACEABLE;
+    let mut attr: Arc<NFAttributes>;
+    let mut cty: i32;
+    let mut par: Prefixes::Parallelism;
+    let mut var: Prefixes::Variability;
+    let mut dir: Prefixes::Direction;
+    let mut io: Prefixes::InnerOuter;
+    let mut fin: bool;
+    let mut redecl: bool;
+    let mut resize: bool;
+    let mut repl: Prefixes::Replaceable;
     if referenceEq(&*(innerAttr.clone()),&*(DEFAULT_ATTR().clone())) && outerAttr.connectorType.clone() == 0 {
         attr = outerAttr.clone();
     } else if referenceEq(&*(outerAttr.clone()),&*(DEFAULT_ATTR().clone())) && innerAttr.connectorType.clone() == 0 {
@@ -224,23 +224,23 @@ pub fn mergeDerivedAttributes(mut outerAttr: Arc<NFAttributes>, mut innerAttr: A
 }
 
 pub fn mergeRedeclaredComponentAttributes(mut origAttr: Arc<NFAttributes>, mut redeclAttr: Arc<NFAttributes>, mut node: Arc<InstNode::InstNode>) -> Result<Arc<NFAttributes>> {
-    let mut attr: Arc<NFAttributes> = Arc::new(<NFAttributes as ::std::default::Default>::default());
-    let mut cty: i32 = 0;
-    let mut rcty: i32 = 0;
-    let mut cty_fs: i32 = 0;
-    let mut rcty_fs: i32 = 0;
-    let mut par: Prefixes::Parallelism = Prefixes::Parallelism::NON_PARALLEL;
-    let mut rpar: Prefixes::Parallelism = Prefixes::Parallelism::NON_PARALLEL;
-    let mut var: Prefixes::Variability = Prefixes::Variability::CONSTANT;
-    let mut rvar: Prefixes::Variability = Prefixes::Variability::CONSTANT;
-    let mut dir: Prefixes::Direction = Prefixes::Direction::NONE;
-    let mut rdir: Prefixes::Direction = Prefixes::Direction::NONE;
-    let mut io: Prefixes::InnerOuter = Prefixes::InnerOuter::NOT_INNER_OUTER;
-    let mut rio: Prefixes::InnerOuter = Prefixes::InnerOuter::NOT_INNER_OUTER;
-    let mut fin: bool = false;
-    let mut redecl: bool = false;
-    let mut resize: bool = false;
-    let mut repl: Prefixes::Replaceable = Prefixes::Replaceable::NOT_REPLACEABLE;
+    let mut attr: Arc<NFAttributes>;
+    let mut cty: i32;
+    let mut rcty: i32;
+    let mut cty_fs: i32;
+    let mut rcty_fs: i32;
+    let mut par: Prefixes::Parallelism;
+    let mut rpar: Prefixes::Parallelism;
+    let mut var: Prefixes::Variability;
+    let mut rvar: Prefixes::Variability;
+    let mut dir: Prefixes::Direction;
+    let mut rdir: Prefixes::Direction;
+    let mut io: Prefixes::InnerOuter;
+    let mut rio: Prefixes::InnerOuter;
+    let mut fin: bool;
+    let mut redecl: bool;
+    let mut resize: bool;
+    let mut repl: Prefixes::Replaceable;
     if referenceEq(&*(origAttr.clone()),&*(DEFAULT_ATTR().clone())) {
         attr = redeclAttr.clone();
     } else if referenceEq(&*(redeclAttr.clone()),&*(DEFAULT_ATTR().clone())) {
@@ -306,13 +306,13 @@ pub fn mergeRedeclaredComponentAttributes(mut origAttr: Arc<NFAttributes>, mut r
 }
 
 pub fn mergeRedeclaredClassPrefixes(mut origPrefs: Arc<Class::Prefixes::Prefixes>, mut redeclPrefs: Arc<Class::Prefixes::Prefixes>, mut node: Arc<InstNode::InstNode>) -> Result<Arc<Class::Prefixes::Prefixes>> {
-    let mut prefs: Arc<Class::Prefixes::Prefixes> = Arc::new(<Class::Prefixes::Prefixes as ::std::default::Default>::default());
-    let mut enc: SCode::Encapsulated = SCode::Encapsulated::ENCAPSULATED;
-    let mut par: SCode::Partial = SCode::Partial::NOT_PARTIAL;
-    let mut fin: SCode::Final = SCode::Final::FINAL;
-    let mut io: Absyn::InnerOuter = Absyn::InnerOuter::INNER;
-    let mut rio: Absyn::InnerOuter = Absyn::InnerOuter::INNER;
-    let mut repl: Arc<SCode::Replaceable> = Arc::new(SCode::Replaceable::NOT_REPLACEABLE);
+    let mut prefs: Arc<Class::Prefixes::Prefixes>;
+    let mut enc: SCode::Encapsulated;
+    let mut par: SCode::Partial;
+    let mut fin: SCode::Final;
+    let mut io: Absyn::InnerOuter;
+    let mut rio: Absyn::InnerOuter;
+    let mut repl: Arc<SCode::Replaceable>;
     if referenceEq(&*(origPrefs.clone()),&*(Class::DEFAULT_PREFIXES.clone())) {
         prefs = redeclPrefs.clone();
     } else {
@@ -505,13 +505,13 @@ pub fn setReplaceable(mut repl: Prefixes::Replaceable, mut attr: Arc<NFAttribute
 }
 
 pub fn toDAE(mut ina: Arc<NFAttributes>, mut vis: Prefixes::Visibility) -> Result<Arc<DAE::Attributes>> {
-    let mut outa: Arc<DAE::Attributes> = Arc::new(<DAE::Attributes as ::std::default::Default>::default());
+    let mut outa: Arc<DAE::Attributes>;
     outa = Arc::new(DAE::Attributes { connectorType: Prefixes::ConnectorType::toDAE(ina.connectorType.clone()), parallelism: parallelismToSCode(ina.parallelism.clone())?, variability: variabilityToSCode(ina.variability.clone()), direction: directionToAbsyn(ina.direction.clone()), innerOuter: innerOuterToAbsyn(ina.innerOuter.clone())?, visibility: visibilityToSCode(vis.clone()) });
     Ok(outa)
 }
 
 pub fn toString(mut attr: Arc<NFAttributes>, mut ty: Arc<NFType::NFType>) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*if (attr.isRedeclare.clone()) {literal!("redeclare ")} else {literal!("")}); __mm_s.push_str(&*if (attr.isFinal.clone()) {literal!("final ")} else {literal!("")}); __mm_s.push_str(&*Prefixes::unparseInnerOuter(attr.innerOuter.clone())); __mm_s.push_str(&*Prefixes::unparseReplaceable(attr.isReplaceable.clone())); __mm_s.push_str(&*Prefixes::unparseParallelism(attr.parallelism.clone())); __mm_s.push_str(&*Prefixes::ConnectorType::unparse(attr.connectorType.clone())); __mm_s.push_str(&*Prefixes::unparseVariability(attr.variability.clone(), ty.clone())?); __mm_s.push_str(&*Prefixes::unparseDirection(attr.direction.clone())); ArcStr::from(__mm_s) }).clone();
     Ok(r#str)
 }

@@ -64,7 +64,7 @@ use openmodelica_util::Flags;
 pub type Ident = ArcStr;
 
 fn calculateSimulationTimes(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inAbsynExpLst: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inAbsynNamedArgLst: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inImplInst: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo, mut inSimOpt: InteractiveTypes::SimulationOptions) -> Result<(FCore::Cache, Arc<DAE::Exp>, Arc<DAE::Exp>, Arc<DAE::Exp>)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
+    let mut outCache: FCore::Cache;
     let mut startTime: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut stopTime: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut numberOfIntervals: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -129,8 +129,8 @@ fn calculateSimulationTimes(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
 }
 
 pub fn getSimulationArguments(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inAbsynExpLst: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inAbsynNamedArgLst: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inImplInst: bool, mut inPrefix: DAE::Prefix, mut callName: ArcStr, mut inInfo: SourceInfo, mut defaultOption: Option<InteractiveTypes::SimulationOptions>) -> Result<(FCore::Cache, Arc<metamodelica::List<Arc<DAE::Exp>>>)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outSimulationArguments: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
+    let mut outCache: FCore::Cache;
+    let mut outSimulationArguments: Arc<metamodelica::List<Arc<DAE::Exp>>>;
     (outCache, outSimulationArguments) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inAbsynExpLst.clone(), inAbsynNamedArgLst.clone(), inImplInst.clone(), inPrefix.clone(), inInfo.clone())) {
         (cache, env, Deref @ metamodelica::List::Cons { head: crexp, tail: Deref @ metamodelica::List::Nil }, args, r#impl, pre, info) => {
             let mut cname_str: ArcStr = arcstr::literal!("");
@@ -191,9 +191,9 @@ pub fn checkSimulationArguments(mut args: Arc<metamodelica::List<Arc<Absyn::Name
 
 pub fn elabCallInteractive(mut cache: FCore::Cache, mut env: FCore::Graph, mut r#fn: Arc<Absyn::ComponentRef>, mut args: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut nargs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut r#impl: bool, mut pre: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut cache: FCore::Cache = cache;
-    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
-    let mut handles: Arc<metamodelica::List<i32>> = metamodelica::nil();
+    let mut e: Arc<DAE::Exp>;
+    let mut prop: DAE::Properties;
+    let mut handles: Arc<metamodelica::List<i32>>;
     if Flags::getConfigBool(Flags::BUILDING_MODEL.clone())? {
         ErrorExt::delCheckpoint((literal!("elabCall_InteractiveFunction")).clone());
         bail!("fail");
@@ -221,9 +221,9 @@ pub fn elabCallInteractive(mut cache: FCore::Cache, mut env: FCore::Graph, mut r
 }
 
 fn elabCallInteractive_work(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inComponentRef: Arc<Absyn::ComponentRef>, mut inExps: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inNamedArgs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inImplInst: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+    let mut outCache: FCore::Cache;
+    let mut outExp: Arc<DAE::Exp>;
+    let mut outProperties: DAE::Properties;
     (outCache, outExp, outProperties) = 'mc: {
         let __mc_input = (inCache.clone(), inEnv.clone(), inComponentRef.clone(), inExps.clone(), inNamedArgs.clone(), inImplInst.clone(), inPrefix.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -499,17 +499,17 @@ fn elabCallInteractive_work(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
 }
 
 pub fn elabExp(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<Absyn::Exp>, mut inImplicit: bool, mut performVectorization: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+    let mut outCache: FCore::Cache;
+    let mut outExp: Arc<DAE::Exp>;
+    let mut outProperties: DAE::Properties;
     (outCache, outExp, outProperties) = elabExp2(inCache.clone(), inEnv.clone(), inExp.clone(), inImplicit.clone(), performVectorization.clone(), inPrefix.clone(), info.clone(), Error::getNumErrorMessages())?;
     Ok((outCache, outExp, outProperties))
 }
 
 fn elabExp2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<Absyn::Exp>, mut inImplicit: bool, mut performVectorization: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo, mut numErrorMessages: i32) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+    let mut outCache: FCore::Cache;
+    let mut outExp: Arc<DAE::Exp>;
+    let mut outProperties: DAE::Properties;
     (outCache, outExp, outProperties) = 'mc: {
         let __mc_input = (inCache.clone(), inEnv.clone(), inExp.clone(), inImplicit.clone(), performVectorization.clone(), inPrefix.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -543,9 +543,9 @@ fn elabExp2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<A
 }
 
 fn elabCall(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inComponentRef: Arc<Absyn::ComponentRef>, mut inAbsynExpLst: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inAbsynNamedArgLst: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inImplInst: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo, mut numErrorMessages: i32) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+    let mut outCache: FCore::Cache;
+    let mut outExp: Arc<DAE::Exp>;
+    let mut outProperties: DAE::Properties;
     (outCache, outExp, outProperties) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inComponentRef.clone(), inAbsynExpLst.clone(), inAbsynNamedArgLst.clone(), inImplInst.clone(), inPrefix.clone())) {
         (cache, env, r#fn, args, nargs, r#impl, pre) => {
             let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -560,9 +560,9 @@ fn elabCall(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inComponentR
 }
 
 pub fn elabGraphicsExp(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<Absyn::Exp>, mut inImplInst: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+    let mut outCache: FCore::Cache;
+    let mut outExp: Arc<DAE::Exp>;
+    let mut outProperties: DAE::Properties;
     (outCache, outExp, outProperties) = 'mc: {
         let __mc_input = (inCache.clone(), inEnv.clone(), inExp.clone(), inImplInst.clone(), inPrefix.clone());
         if let Ok(__v) = (|| -> Result<_> {

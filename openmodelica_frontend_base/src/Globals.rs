@@ -7,7 +7,7 @@
 //!
 //! See `openmodelica_util/src/Globals.rs` for the full design rationale.
 
-#![allow(non_snake_case, non_upper_case_globals, type_complexity)]
+#![allow(non_snake_case, non_upper_case_globals, clippy::type_complexity)]
 
 use std::cell::RefCell;
 

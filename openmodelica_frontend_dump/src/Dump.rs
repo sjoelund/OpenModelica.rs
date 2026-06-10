@@ -69,7 +69,7 @@ pub type DUMPOPTIONS = DumpOptions;
 pub static defaultDumpOptions: DumpOptions = DumpOptions { fileName: literal!("") };
 
 pub fn boolUnparseFileFromInfo(mut info: SourceInfo, mut options: DumpOptions) -> Result<bool> {
-    let mut b: bool = false;
+    let mut b: bool;
     b = (::match_deref::match_deref! { match &((options.clone(), info.clone())) {
         (DumpOptions { fileName: Deref @ "" }, _) => true,
         (DumpOptions { .. }, SourceInfo { .. }) => options.fileName.clone() == info.fileName.clone(),
@@ -79,8 +79,8 @@ pub fn boolUnparseFileFromInfo(mut info: SourceInfo, mut options: DumpOptions) -
 }
 
 pub fn unparseStr(mut inProgram: Absyn::Program, mut markup: bool, mut options: DumpOptions) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
-    let mut status: bool = false;
+    let mut outString: ArcStr;
+    let mut status: bool;
     status = Flags::getConfigBool(Flags::MODELICA_OUTPUT.clone())?;
     FlagsUtil::setConfigBool(Flags::MODELICA_OUTPUT.clone(), false)?;
     outString = (Tpl::tplString2((std::sync::Arc::new(AbsynDumpTpl::dump) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, Absyn::Program, DumpOptions) -> Result<Tpl::Text> + 'static>), inProgram.clone(), options.clone())?).clone();
@@ -89,8 +89,8 @@ pub fn unparseStr(mut inProgram: Absyn::Program, mut markup: bool, mut options: 
 }
 
 pub fn unparseClassList(mut inClasses: Arc<metamodelica::List<Arc<Absyn::Class>>>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
-    let mut status: bool = false;
+    let mut outString: ArcStr;
+    let mut status: bool;
     status = Flags::getConfigBool(Flags::MODELICA_OUTPUT.clone())?;
     FlagsUtil::setConfigBool(Flags::MODELICA_OUTPUT.clone(), false)?;
     outString = (Tpl::tplString2((std::sync::Arc::new(AbsynDumpTpl::dump) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, Absyn::Program, DumpOptions) -> Result<Tpl::Text> + 'static>), Absyn::Program { classes: inClasses.clone(), within_: openmodelica_ast::Absyn::Within::TOP }, defaultDumpOptions.clone())?).clone();
@@ -99,8 +99,8 @@ pub fn unparseClassList(mut inClasses: Arc<metamodelica::List<Arc<Absyn::Class>>
 }
 
 pub fn unparseClassStr(mut inClass: Arc<Absyn::Class>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
-    let mut status: bool = false;
+    let mut outString: ArcStr;
+    let mut status: bool;
     status = Flags::getConfigBool(Flags::MODELICA_OUTPUT.clone())?;
     FlagsUtil::setConfigBool(Flags::MODELICA_OUTPUT.clone(), false)?;
     outString = (Tpl::tplString3((std::sync::Arc::new(AbsynDumpTpl::dumpClass) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, Arc<Absyn::Class>, ArcStr, DumpOptions) -> Result<Tpl::Text> + 'static>), inClass.clone(), (literal!("")).clone(), defaultDumpOptions.clone())?).clone();
@@ -109,8 +109,8 @@ pub fn unparseClassStr(mut inClass: Arc<Absyn::Class>) -> Result<ArcStr> {
 }
 
 pub fn unparseWithin(mut inWithin: Absyn::Within) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
-    let mut status: bool = false;
+    let mut outString: ArcStr;
+    let mut status: bool;
     status = Flags::getConfigBool(Flags::MODELICA_OUTPUT.clone())?;
     FlagsUtil::setConfigBool(Flags::MODELICA_OUTPUT.clone(), false)?;
     outString = (Tpl::tplString((std::sync::Arc::new(AbsynDumpTpl::dumpWithin) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, Absyn::Within) -> Result<Tpl::Text> + 'static>), inWithin.clone())?).clone();
@@ -119,7 +119,7 @@ pub fn unparseWithin(mut inWithin: Absyn::Within) -> Result<ArcStr> {
 }
 
 pub fn unparseClassAttributesStr(mut inClass: Arc<Absyn::Class>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(inClass.clone()) {
         Deref @ Absyn::Class { partialPrefix: p, finalPrefix: f, encapsulatedPrefix: e, restriction: r, .. } => {
             let mut s1: ArcStr = arcstr::literal!("");
@@ -140,19 +140,19 @@ pub fn unparseClassAttributesStr(mut inClass: Arc<Absyn::Class>) -> Result<ArcSt
 }
 
 pub fn unparseCommentOption(mut inComment: Option<Arc<Absyn::Comment>>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = (Tpl::tplString((std::sync::Arc::new(AbsynDumpTpl::dumpCommentOpt) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, Option<Arc<Absyn::Comment>>) -> Result<Tpl::Text> + 'static>), inComment.clone())?).clone();
     Ok(outString)
 }
 
 pub fn unparseRestrictionStr(mut inRestriction: Absyn::Restriction) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = (Tpl::tplString((std::sync::Arc::new(AbsynDumpTpl::dumpRestriction) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, Absyn::Restriction) -> Result<Tpl::Text> + 'static>), inRestriction.clone())?).clone();
     Ok(outString)
 }
 
 pub fn unparseEachStr(mut inEach: Absyn::Each) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((match inEach.clone() {
         Absyn::Each::EACH { .. } => literal!("each "),
         Absyn::Each::NON_EACH { .. } => literal!(""),
@@ -161,8 +161,8 @@ pub fn unparseEachStr(mut inEach: Absyn::Each) -> Result<ArcStr> {
 }
 
 pub fn unparseElementArgStr(mut inElementArg: Arc<Absyn::ElementArg>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
-    let mut status: bool = false;
+    let mut outString: ArcStr;
+    let mut status: bool;
     status = Flags::getConfigBool(Flags::MODELICA_OUTPUT.clone())?;
     FlagsUtil::setConfigBool(Flags::MODELICA_OUTPUT.clone(), false)?;
     outString = (Tpl::tplString((std::sync::Arc::new(AbsynDumpTpl::dumpElementArg) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, Arc<Absyn::ElementArg>) -> Result<Tpl::Text> + 'static>), inElementArg.clone())?).clone();
@@ -171,10 +171,10 @@ pub fn unparseElementArgStr(mut inElementArg: Arc<Absyn::ElementArg>) -> Result<
 }
 
 pub fn shouldSeparateAfterElementArg(mut args: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>) -> Arc<metamodelica::List<(Arc<Absyn::ElementArg>, bool)>> {
-    let mut outArgs: Arc<metamodelica::List<(Arc<Absyn::ElementArg>, bool)>> = metamodelica::nil();
+    let mut outArgs: Arc<metamodelica::List<(Arc<Absyn::ElementArg>, bool)>>;
     let mut numNonComment: i32 = 0;
     let mut cur: i32 = 0;
-    let mut b: bool = false;
+    let mut b: bool;
     for mut arg in &*args.clone() {
         let mut arg = arg.clone();
         numNonComment = (::match_deref::match_deref! { match &(arg.clone()) {
@@ -201,8 +201,8 @@ pub fn shouldSeparateAfterElementArg(mut args: Arc<metamodelica::List<Arc<Absyn:
 }
 
 pub fn unparseElementItemStr(mut inElementItem: Arc<Absyn::ElementItem>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
-    let mut status: bool = false;
+    let mut outString: ArcStr;
+    let mut status: bool;
     status = Flags::getConfigBool(Flags::MODELICA_OUTPUT.clone())?;
     FlagsUtil::setConfigBool(Flags::MODELICA_OUTPUT.clone(), false)?;
     outString = (Tpl::tplString2((std::sync::Arc::new(AbsynDumpTpl::dumpElementItem) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, Arc<Absyn::ElementItem>, DumpOptions) -> Result<Tpl::Text> + 'static>), inElementItem.clone(), defaultDumpOptions.clone())?).clone();
@@ -211,8 +211,8 @@ pub fn unparseElementItemStr(mut inElementItem: Arc<Absyn::ElementItem>) -> Resu
 }
 
 pub fn unparseAnnotation(mut inAnnotation: Arc<Absyn::Annotation>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
-    let mut status: bool = false;
+    let mut outString: ArcStr;
+    let mut status: bool;
     status = Flags::getConfigBool(Flags::MODELICA_OUTPUT.clone())?;
     FlagsUtil::setConfigBool(Flags::MODELICA_OUTPUT.clone(), false)?;
     outString = (Tpl::tplString((std::sync::Arc::new(AbsynDumpTpl::dumpAnnotation) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, Arc<Absyn::Annotation>) -> Result<Tpl::Text> + 'static>), inAnnotation.clone())?).clone();
@@ -221,7 +221,7 @@ pub fn unparseAnnotation(mut inAnnotation: Arc<Absyn::Annotation>) -> Result<Arc
 }
 
 pub fn unparseAnnotationOption(mut inAbsynAnnotation: Option<Arc<Absyn::Annotation>>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(inAbsynAnnotation.clone()) {
         Some(ann) => {
             unparseAnnotation(ann.clone())?
@@ -235,7 +235,7 @@ pub fn unparseAnnotationOption(mut inAbsynAnnotation: Option<Arc<Absyn::Annotati
 }
 
 pub fn unparseInnerOuterStr(mut inInnerOuter: Absyn::InnerOuter) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((match inInnerOuter.clone() {
         Absyn::InnerOuter::INNER { .. } => literal!("inner "),
         Absyn::InnerOuter::OUTER { .. } => literal!("outer "),
@@ -246,7 +246,7 @@ pub fn unparseInnerOuterStr(mut inInnerOuter: Absyn::InnerOuter) -> Result<ArcSt
 }
 
 fn unparseGroupImport(mut gimp: Absyn::GroupImport) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     r#str = ((match gimp.clone() {
         Absyn::GroupImport::GROUP_IMPORT_NAME { name: mut name } => {
             name.clone()
@@ -259,8 +259,8 @@ fn unparseGroupImport(mut gimp: Absyn::GroupImport) -> Result<ArcStr> {
 }
 
 pub fn unparseImportStr(mut inImport: Absyn::Import) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
-    let mut status: bool = false;
+    let mut outString: ArcStr;
+    let mut status: bool;
     status = Flags::getConfigBool(Flags::MODELICA_OUTPUT.clone())?;
     FlagsUtil::setConfigBool(Flags::MODELICA_OUTPUT.clone(), false)?;
     outString = (Tpl::tplString((std::sync::Arc::new(AbsynDumpTpl::dumpImport) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, Absyn::Import) -> Result<Tpl::Text> + 'static>), inImport.clone())?).clone();
@@ -269,7 +269,7 @@ pub fn unparseImportStr(mut inImport: Absyn::Import) -> Result<ArcStr> {
 }
 
 fn unparseVariabilitySymbolStr(mut inVariability: Absyn::Variability) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((match inVariability.clone() {
         Absyn::Variability::VAR { .. } => literal!(""),
         Absyn::Variability::DISCRETE { .. } => literal!("discrete "),
@@ -280,7 +280,7 @@ fn unparseVariabilitySymbolStr(mut inVariability: Absyn::Variability) -> Result<
 }
 
 pub fn unparseDirectionSymbolStr(mut inDirection: Absyn::Direction) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((match inDirection.clone() {
         Absyn::Direction::BIDIR { .. } => literal!(""),
         Absyn::Direction::INPUT { .. } => literal!("input "),
@@ -291,7 +291,7 @@ pub fn unparseDirectionSymbolStr(mut inDirection: Absyn::Direction) -> Result<Ar
 }
 
 pub fn directionSymbol(mut inDirection: Absyn::Direction) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((match inDirection.clone() {
         Absyn::Direction::BIDIR { .. } => literal!(""),
         Absyn::Direction::INPUT { .. } => literal!("input"),
@@ -302,7 +302,7 @@ pub fn directionSymbol(mut inDirection: Absyn::Direction) -> Result<ArcStr> {
 }
 
 pub fn unparseParallelismSymbolStr(mut inParallelism: Absyn::Parallelism) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((match inParallelism.clone() {
         Absyn::Parallelism::NON_PARALLEL { .. } => literal!(""),
         Absyn::Parallelism::PARGLOBAL { .. } => literal!("parglobal "),
@@ -312,8 +312,8 @@ pub fn unparseParallelismSymbolStr(mut inParallelism: Absyn::Parallelism) -> Res
 }
 
 pub fn unparseComponentCondition(mut inComponentCondition: Option<Arc<Absyn::Exp>>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
-    let mut status: bool = false;
+    let mut outString: ArcStr;
+    let mut status: bool;
     status = Flags::getConfigBool(Flags::MODELICA_OUTPUT.clone())?;
     FlagsUtil::setConfigBool(Flags::MODELICA_OUTPUT.clone(), false)?;
     outString = (Tpl::tplString((std::sync::Arc::new(AbsynDumpTpl::dumpComponentCondition) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, Option<Arc<Absyn::Exp>>) -> Result<Tpl::Text> + 'static>), inComponentCondition.clone())?).clone();
@@ -322,13 +322,13 @@ pub fn unparseComponentCondition(mut inComponentCondition: Option<Arc<Absyn::Exp
 }
 
 pub fn printArraydimStr(mut s: Arc<metamodelica::List<Arc<Absyn::Subscript>>>) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     r#str = (printSubscriptsStr(s.clone())?).clone();
     Ok(r#str)
 }
 
 pub fn printSubscriptStr(mut inSubscript: Arc<Absyn::Subscript>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(inSubscript.clone()) {
         Deref @ Absyn::Subscript::NOSUB { .. } => {
             literal!(":")
@@ -344,8 +344,8 @@ pub fn printSubscriptStr(mut inSubscript: Arc<Absyn::Subscript>) -> Result<ArcSt
 }
 
 pub fn unparseModificationStr(mut inModification: Arc<Absyn::Modification>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
-    let mut status: bool = false;
+    let mut outString: ArcStr;
+    let mut status: bool;
     status = Flags::getConfigBool(Flags::MODELICA_OUTPUT.clone())?;
     FlagsUtil::setConfigBool(Flags::MODELICA_OUTPUT.clone(), false)?;
     outString = (Tpl::tplString((std::sync::Arc::new(AbsynDumpTpl::dumpModification) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, Arc<Absyn::Modification>) -> Result<Tpl::Text> + 'static>), inModification.clone())?).clone();
@@ -354,7 +354,7 @@ pub fn unparseModificationStr(mut inModification: Arc<Absyn::Modification>) -> R
 }
 
 pub fn equationName(mut eq: Arc<Absyn::Equation>) -> Result<ArcStr> {
-    let mut name: ArcStr = arcstr::literal!("");
+    let mut name: ArcStr;
     name = ((::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ Absyn::Equation::EQ_IF { .. } => literal!("if"),
         Deref @ Absyn::Equation::EQ_EQUALS { .. } => literal!("equals"),
@@ -369,8 +369,8 @@ pub fn equationName(mut eq: Arc<Absyn::Equation>) -> Result<ArcStr> {
 }
 
 pub fn unparseClassPart(mut classPart: Arc<Absyn::ClassPart>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
-    let mut status: bool = false;
+    let mut outString: ArcStr;
+    let mut status: bool;
     status = Flags::getConfigBool(Flags::MODELICA_OUTPUT.clone())?;
     FlagsUtil::setConfigBool(Flags::MODELICA_OUTPUT.clone(), false)?;
     outString = (Tpl::tplString3((std::sync::Arc::new(AbsynDumpTpl::dumpClassPart) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, Arc<Absyn::ClassPart>, i32, DumpOptions) -> Result<Tpl::Text> + 'static>), classPart.clone(), 0, defaultDumpOptions.clone())?).clone();
@@ -379,8 +379,8 @@ pub fn unparseClassPart(mut classPart: Arc<Absyn::ClassPart>) -> Result<ArcStr> 
 }
 
 pub fn unparseEquationStr(mut inEquation: Arc<Absyn::Equation>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
-    let mut status: bool = false;
+    let mut outString: ArcStr;
+    let mut status: bool;
     status = Flags::getConfigBool(Flags::MODELICA_OUTPUT.clone())?;
     FlagsUtil::setConfigBool(Flags::MODELICA_OUTPUT.clone(), false)?;
     outString = (Tpl::tplString((std::sync::Arc::new(AbsynDumpTpl::dumpEquation) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, Arc<Absyn::Equation>) -> Result<Tpl::Text> + 'static>), inEquation.clone())?).clone();
@@ -389,8 +389,8 @@ pub fn unparseEquationStr(mut inEquation: Arc<Absyn::Equation>) -> Result<ArcStr
 }
 
 pub fn unparseEquationItemStr(mut inEquation: Arc<Absyn::EquationItem>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
-    let mut status: bool = false;
+    let mut outString: ArcStr;
+    let mut status: bool;
     status = Flags::getConfigBool(Flags::MODELICA_OUTPUT.clone())?;
     FlagsUtil::setConfigBool(Flags::MODELICA_OUTPUT.clone(), false)?;
     outString = (Tpl::tplString((std::sync::Arc::new(AbsynDumpTpl::dumpEquationItem) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, Arc<Absyn::EquationItem>) -> Result<Tpl::Text> + 'static>), inEquation.clone())?).clone();
@@ -399,20 +399,20 @@ pub fn unparseEquationItemStr(mut inEquation: Arc<Absyn::EquationItem>) -> Resul
 }
 
 pub fn unparseEquationItemStrLst(mut inEquationItems: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, mut inSeparator: ArcStr) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = stringDelimitList(List::map(inEquationItems.clone(), (std::sync::Arc::new(unparseEquationItemStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::EquationItem>) -> Result<ArcStr> + 'static>))?, (inSeparator.clone()).clone());
     Ok(outString)
 }
 
 pub fn unparseAlgorithmStrLst(mut inAlgorithmItems: Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>, mut inSeparator: ArcStr) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = stringDelimitList(List::map(inAlgorithmItems.clone(), (std::sync::Arc::new(unparseAlgorithmStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::AlgorithmItem>) -> Result<ArcStr> + 'static>))?, (inSeparator.clone()).clone());
     Ok(outString)
 }
 
 pub fn unparseAlgorithmStr(mut inAlgorithmItem: Arc<Absyn::AlgorithmItem>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
-    let mut status: bool = false;
+    let mut outString: ArcStr;
+    let mut status: bool;
     status = Flags::getConfigBool(Flags::MODELICA_OUTPUT.clone())?;
     FlagsUtil::setConfigBool(Flags::MODELICA_OUTPUT.clone(), false)?;
     outString = (Tpl::tplString((std::sync::Arc::new(AbsynDumpTpl::dumpAlgorithmItem) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, Arc<Absyn::AlgorithmItem>) -> Result<Tpl::Text> + 'static>), inAlgorithmItem.clone())?).clone();
@@ -421,7 +421,7 @@ pub fn unparseAlgorithmStr(mut inAlgorithmItem: Arc<Absyn::AlgorithmItem>) -> Re
 }
 
 pub fn printComponentRefStr(mut inComponentRef: Arc<Absyn::ComponentRef>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(inComponentRef.clone()) {
         Deref @ Absyn::ComponentRef::CREF_IDENT { name: s, subscripts: subs } => {
             let mut subsstr: ArcStr = arcstr::literal!("");
@@ -462,7 +462,7 @@ pub fn printComponentRefStr(mut inComponentRef: Arc<Absyn::ComponentRef>) -> Res
 }
 
 pub fn printSubscriptsStr(mut inAbsynSubscriptLst: Arc<metamodelica::List<Arc<Absyn::Subscript>>>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ('mc: {
         let __mc_input = inAbsynSubscriptLst.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -493,7 +493,7 @@ pub fn printSubscriptsStr(mut inAbsynSubscriptLst: Arc<metamodelica::List<Arc<Ab
 }
 
 pub fn printFunctionArgsStr(mut inFunctionArgs: Arc<Absyn::FunctionArgs>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ('mc: {
         let __mc_input = inFunctionArgs.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -552,7 +552,7 @@ pub fn printFunctionArgsStr(mut inFunctionArgs: Arc<Absyn::FunctionArgs>) -> Res
 }
 
 pub fn printIteratorsStr(mut iterators: Arc<metamodelica::List<Arc<Absyn::ForIterator>>>) -> Result<ArcStr> {
-    let mut iteratorsStr: ArcStr = arcstr::literal!("");
+    let mut iteratorsStr: ArcStr;
     iteratorsStr = ('mc: {
         let __mc_input = iterators.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -617,7 +617,7 @@ pub fn printIteratorsStr(mut iterators: Arc<metamodelica::List<Arc<Absyn::ForIte
 }
 
 pub fn printNamedArgStr(mut inNamedArg: Arc<Absyn::NamedArg>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(inNamedArg.clone()) {
         Deref @ Absyn::NamedArg { argName: ident, argValue: e } => {
             let mut s1: ArcStr = arcstr::literal!("");
@@ -634,7 +634,7 @@ pub fn printNamedArgStr(mut inNamedArg: Arc<Absyn::NamedArg>) -> Result<ArcStr> 
 }
 
 pub fn printNamedArgValueStr(mut inNamedArg: Arc<Absyn::NamedArg>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(inNamedArg.clone()) {
         Deref @ Absyn::NamedArg { argValue: e, .. } => {
             let mut r#str: ArcStr = arcstr::literal!("");
@@ -647,7 +647,7 @@ pub fn printNamedArgValueStr(mut inNamedArg: Arc<Absyn::NamedArg>) -> Result<Arc
 }
 
 pub fn shouldParenthesize(mut inOperand: Arc<Absyn::Exp>, mut inOperator: Arc<Absyn::Exp>, mut inLhs: bool) -> Result<bool> {
-    let mut outShouldParenthesize: bool = false;
+    let mut outShouldParenthesize: bool;
     outShouldParenthesize = (::match_deref::match_deref! { match &(inOperand.clone()) {
         Deref @ Absyn::Exp::UNARY { .. } => {
             true
@@ -663,7 +663,7 @@ pub fn shouldParenthesize(mut inOperand: Arc<Absyn::Exp>, mut inOperator: Arc<Ab
 }
 
 fn shouldParenthesize2(mut inPrioDiff: i32, mut inOperand: Arc<Absyn::Exp>, mut inLhs: bool) -> bool {
-    let mut outShouldParenthesize: bool = false;
+    let mut outShouldParenthesize: bool;
     outShouldParenthesize = (match inPrioDiff.clone() {
         1 => true,
         0 => if (inLhs.clone()) {isNonAssociativeExp(inOperand.clone())} else {!(isAssociativeExp(inOperand.clone()))},
@@ -673,7 +673,7 @@ fn shouldParenthesize2(mut inPrioDiff: i32, mut inOperand: Arc<Absyn::Exp>, mut 
 }
 
 fn isAssociativeExp(mut inExp: Arc<Absyn::Exp>) -> bool {
-    let mut outIsAssociative: bool = false;
+    let mut outIsAssociative: bool;
     outIsAssociative = (::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ Absyn::Exp::BINARY { op, .. } => {
             isAssociativeOp(op.clone())
@@ -690,7 +690,7 @@ fn isAssociativeExp(mut inExp: Arc<Absyn::Exp>) -> bool {
 }
 
 fn isAssociativeOp(mut inOperator: Absyn::Operator) -> bool {
-    let mut outIsAssociative: bool = false;
+    let mut outIsAssociative: bool;
     outIsAssociative = (match inOperator.clone() {
         Absyn::Operator::ADD { .. } => true,
         Absyn::Operator::ADD_EW { .. } => true,
@@ -701,7 +701,7 @@ fn isAssociativeOp(mut inOperator: Absyn::Operator) -> bool {
 }
 
 fn isNonAssociativeExp(mut exp: Arc<Absyn::Exp>) -> bool {
-    let mut isNonAssociative: bool = false;
+    let mut isNonAssociative: bool;
     isNonAssociative = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Absyn::Exp::BINARY { .. } => isNonAssociativeOp(var_field!((*exp).op, Absyn::Exp::BINARY).clone()),
         _ => false,
@@ -711,7 +711,7 @@ fn isNonAssociativeExp(mut exp: Arc<Absyn::Exp>) -> bool {
 }
 
 fn isNonAssociativeOp(mut operator: Absyn::Operator) -> bool {
-    let mut isNonAssociative: bool = false;
+    let mut isNonAssociative: bool;
     isNonAssociative = (match operator.clone() {
         Absyn::Operator::POW { .. } => true,
         Absyn::Operator::POW_EW { .. } => true,
@@ -721,7 +721,7 @@ fn isNonAssociativeOp(mut operator: Absyn::Operator) -> bool {
 }
 
 pub fn expPriority(mut inExp: Arc<Absyn::Exp>, mut inLhs: bool) -> Result<i32> {
-    let mut outPriority: i32 = 0;
+    let mut outPriority: i32;
     outPriority = (::match_deref::match_deref! { match &((inExp.clone(), inLhs.clone())) {
         (Deref @ Absyn::Exp::BINARY { op, .. }, false) => {
             priorityBinopRhs(op.clone())?
@@ -756,7 +756,7 @@ pub fn expPriority(mut inExp: Arc<Absyn::Exp>, mut inLhs: bool) -> Result<i32> {
 }
 
 fn priorityBinopLhs(mut inOp: Absyn::Operator) -> Result<i32> {
-    let mut outPriority: i32 = 0;
+    let mut outPriority: i32;
     outPriority = (match inOp.clone() {
         Absyn::Operator::ADD { .. } => 5,
         Absyn::Operator::SUB { .. } => 5,
@@ -774,7 +774,7 @@ fn priorityBinopLhs(mut inOp: Absyn::Operator) -> Result<i32> {
 }
 
 fn priorityBinopRhs(mut inOp: Absyn::Operator) -> Result<i32> {
-    let mut outPriority: i32 = 0;
+    let mut outPriority: i32;
     outPriority = (match inOp.clone() {
         Absyn::Operator::ADD { .. } => 6,
         Absyn::Operator::SUB { .. } => 5,
@@ -792,7 +792,7 @@ fn priorityBinopRhs(mut inOp: Absyn::Operator) -> Result<i32> {
 }
 
 fn priorityLBinop(mut inOp: Absyn::Operator) -> Result<i32> {
-    let mut outPriority: i32 = 0;
+    let mut outPriority: i32;
     outPriority = (match inOp.clone() {
         Absyn::Operator::AND { .. } => 8,
         Absyn::Operator::OR { .. } => 9,
@@ -802,7 +802,7 @@ fn priorityLBinop(mut inOp: Absyn::Operator) -> Result<i32> {
 }
 
 fn printOperandStr(mut inOperand: Arc<Absyn::Exp>, mut inOperation: Arc<Absyn::Exp>, mut inLhs: bool) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ('mc: {
         let __mc_input = inLhs.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -823,14 +823,14 @@ fn printOperandStr(mut inOperand: Arc<Absyn::Exp>, mut inOperation: Arc<Absyn::E
 }
 
 pub fn printExpLstStr(mut expl: Arc<metamodelica::List<Arc<Absyn::Exp>>>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = stringDelimitList(List::map(expl.clone(), (std::sync::Arc::new(printExpStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone());
     Ok(outString)
 }
 
 pub fn printExpStr(mut inExp: Arc<Absyn::Exp>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
-    let mut status: bool = false;
+    let mut outString: ArcStr;
+    let mut status: bool;
     status = Flags::getConfigBool(Flags::MODELICA_OUTPUT.clone())?;
     FlagsUtil::setConfigBool(Flags::MODELICA_OUTPUT.clone(), false)?;
     outString = (Tpl::tplString((std::sync::Arc::new(AbsynDumpTpl::dumpExp) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, Arc<Absyn::Exp>) -> Result<Tpl::Text> + 'static>), inExp.clone())?).clone();
@@ -839,8 +839,8 @@ pub fn printExpStr(mut inExp: Arc<Absyn::Exp>) -> Result<ArcStr> {
 }
 
 pub fn printCodeStr(mut inCode: Arc<Absyn::CodeNode>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
-    let mut status: bool = false;
+    let mut outString: ArcStr;
+    let mut status: bool;
     status = Flags::getConfigBool(Flags::MODELICA_OUTPUT.clone())?;
     FlagsUtil::setConfigBool(Flags::MODELICA_OUTPUT.clone(), false)?;
     outString = (Tpl::tplString((std::sync::Arc::new(AbsynDumpTpl::dumpCodeNode) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, Arc<Absyn::CodeNode>) -> Result<Tpl::Text> + 'static>), inCode.clone())?).clone();
@@ -851,7 +851,7 @@ pub fn printCodeStr(mut inCode: Arc<Absyn::CodeNode>) -> Result<ArcStr> {
 fn printListStr<Type_a: Clone + 'static>(mut inTypeALst: Arc<metamodelica::List<Type_a>>, mut inFuncTypeTypeAToString: Arc<dyn ::std::ops::Fn(Type_a) -> Result<ArcStr> + 'static>, mut inString: ArcStr) -> Result<ArcStr> {
     pub type FuncTypeType_aToString<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Type_a) -> Result<ArcStr> + 'static>;
 
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ('mc: {
         let __mc_input = (inTypeALst.clone(), inFuncTypeTypeAToString.clone(), inString.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -894,7 +894,7 @@ fn printListStr<Type_a: Clone + 'static>(mut inTypeALst: Arc<metamodelica::List<
 }
 
 pub fn opSymbol(mut inOperator: Absyn::Operator) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((match inOperator.clone() {
         Absyn::Operator::ADD { .. } => literal!(" + "),
         Absyn::Operator::SUB { .. } => literal!(" - "),
@@ -924,7 +924,7 @@ pub fn opSymbol(mut inOperator: Absyn::Operator) -> Result<ArcStr> {
 }
 
 pub fn opSymbolCompact(mut inOperator: Absyn::Operator) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((match inOperator.clone() {
         Absyn::Operator::ADD { .. } => literal!("+"),
         Absyn::Operator::SUB { .. } => literal!("-"),
@@ -1032,8 +1032,8 @@ fn printStringCommentOption(mut inStringOption: Option<ArcStr>) -> Result<()> {
 }
 
 pub fn unparseTypeSpec(mut inTypeSpec: Arc<Absyn::TypeSpec>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
-    let mut status: bool = false;
+    let mut outString: ArcStr;
+    let mut status: bool;
     status = Flags::getConfigBool(Flags::MODELICA_OUTPUT.clone())?;
     FlagsUtil::setConfigBool(Flags::MODELICA_OUTPUT.clone(), false)?;
     outString = (Tpl::tplString((std::sync::Arc::new(AbsynDumpTpl::dumpTypeSpec) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, Arc<Absyn::TypeSpec>) -> Result<Tpl::Text> + 'static>), inTypeSpec.clone())?).clone();
@@ -1042,14 +1042,14 @@ pub fn unparseTypeSpec(mut inTypeSpec: Arc<Absyn::TypeSpec>) -> Result<ArcStr> {
 }
 
 pub fn printTypeSpec(mut typeSpec: Arc<Absyn::TypeSpec>) -> Result<()> {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     r#str = (unparseTypeSpec(typeSpec.clone())?).clone();
     metamodelica::print((r#str.clone()).clone());
     Ok(())
 }
 
 pub fn stdout() -> Result<()> {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     r#str = (Print::getString()?).clone();
     metamodelica::print((r#str.clone()).clone());
     Print::clearBuf();

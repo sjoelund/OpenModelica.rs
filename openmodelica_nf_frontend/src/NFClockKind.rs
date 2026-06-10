@@ -90,7 +90,7 @@ impl Default for NFClockKind {
 }
 pub use self::NFClockKind::{INFERRED_CLOCK,RATIONAL_CLOCK,REAL_CLOCK,EVENT_CLOCK,SOLVER_CLOCK};
 pub fn isInferred(mut ck: Arc<NFClockKind>) -> bool {
-    let mut b: bool = false;
+    let mut b: bool;
     b = (::match_deref::match_deref! { match &(ck.clone()) {
         Deref @ INFERRED_CLOCK { .. } => true,
         _ => false,
@@ -101,7 +101,7 @@ pub fn isInferred(mut ck: Arc<NFClockKind>) -> bool {
 
 pub fn compare(mut ck1: Arc<NFClockKind>, mut ck2: Arc<NFClockKind>) -> Result<i32> {
     fn compareInt(mut kind: Arc<NFClockKind>) -> i32 {
-        let mut i: i32 = 0;
+        let mut i: i32;
         i = (::match_deref::match_deref! { match &(kind.clone()) {
         Deref @ INFERRED_CLOCK { .. } => 0,
         Deref @ RATIONAL_CLOCK { .. } => 1,
@@ -154,7 +154,7 @@ pub fn compare(mut ck1: Arc<NFClockKind>, mut ck2: Arc<NFClockKind>) -> Result<i
 pub fn containsExp(mut ck: Arc<NFClockKind>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>) -> Result<bool> {
     pub type ContainsPred = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>;
 
-    let mut res: bool = false;
+    let mut res: bool;
     res = (::match_deref::match_deref! { match &(ck.clone()) {
         Deref @ RATIONAL_CLOCK { .. } => Expression::contains(var_field!((*ck).intervalCounter, NFClockKind::RATIONAL_CLOCK).clone(), func.clone())? || Expression::contains(var_field!((*ck).resolution, NFClockKind::RATIONAL_CLOCK).clone(), func.clone())?,
         Deref @ REAL_CLOCK { .. } => Expression::contains(var_field!((*ck).interval, NFClockKind::REAL_CLOCK).clone(), func.clone())?,
@@ -169,7 +169,7 @@ pub fn containsExp(mut ck: Arc<NFClockKind>, mut func: Arc<dyn ::std::ops::Fn(Ar
 pub fn containsExpShallow(mut ck: Arc<NFClockKind>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>) -> Result<bool> {
     pub type ContainsPred = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>;
 
-    let mut res: bool = false;
+    let mut res: bool;
     res = (::match_deref::match_deref! { match &(ck.clone()) {
         Deref @ RATIONAL_CLOCK { .. } => func(var_field!((*ck).intervalCounter, NFClockKind::RATIONAL_CLOCK).clone())? || func(var_field!((*ck).resolution, NFClockKind::RATIONAL_CLOCK).clone())?,
         Deref @ REAL_CLOCK { .. } => func(var_field!((*ck).interval, NFClockKind::REAL_CLOCK).clone())?,
@@ -266,7 +266,7 @@ pub fn foldExp<ArgT: Clone + 'static>(mut ck: Arc<NFClockKind>, mut func: Arc<dy
 pub fn mapExp(mut ck: Arc<NFClockKind>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<NFClockKind>> {
     pub type MapFunc = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>;
 
-    let mut outCk: Arc<NFClockKind> = Arc::new(<NFClockKind as ::std::default::Default>::default());
+    let mut outCk: Arc<NFClockKind>;
     let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut e3: Arc<Expression::NFExpression> = Arc::new(Expression::END);
@@ -307,7 +307,7 @@ pub fn mapExp(mut ck: Arc<NFClockKind>, mut func: Arc<dyn ::std::ops::Fn(Arc<Exp
 pub fn mapExpShallow(mut ck: Arc<NFClockKind>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<NFClockKind>> {
     pub type MapFunc = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>;
 
-    let mut outCk: Arc<NFClockKind> = Arc::new(<NFClockKind as ::std::default::Default>::default());
+    let mut outCk: Arc<NFClockKind>;
     let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut e3: Arc<Expression::NFExpression> = Arc::new(Expression::END);
@@ -348,7 +348,7 @@ pub fn mapExpShallow(mut ck: Arc<NFClockKind>, mut func: Arc<dyn ::std::ops::Fn(
 pub fn mapFoldExp<ArgT: Clone + 'static>(mut ck: Arc<NFClockKind>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<(Arc<Expression::NFExpression>, ArgT)> + 'static>, mut arg: ArgT) -> Result<(Arc<NFClockKind>, ArgT)> {
     pub type MapFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<(Arc<Expression::NFExpression>, ArgT)> + 'static>;
 
-    let mut outCk: Arc<NFClockKind> = Arc::new(<NFClockKind as ::std::default::Default>::default());
+    let mut outCk: Arc<NFClockKind>;
     let mut arg: ArgT = arg;
     let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
@@ -390,7 +390,7 @@ pub fn mapFoldExp<ArgT: Clone + 'static>(mut ck: Arc<NFClockKind>, mut func: Arc
 pub fn mapFoldExpShallow<ArgT: Clone + 'static>(mut ck: Arc<NFClockKind>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<(Arc<Expression::NFExpression>, ArgT)> + 'static>, mut arg: ArgT) -> Result<(Arc<NFClockKind>, ArgT)> {
     pub type MapFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<(Arc<Expression::NFExpression>, ArgT)> + 'static>;
 
-    let mut outCk: Arc<NFClockKind> = Arc::new(<NFClockKind as ::std::default::Default>::default());
+    let mut outCk: Arc<NFClockKind>;
     let mut arg: ArgT = arg;
     let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
@@ -430,8 +430,8 @@ pub fn mapFoldExpShallow<ArgT: Clone + 'static>(mut ck: Arc<NFClockKind>, mut fu
 }
 
 pub fn toAbsyn(mut clk: Arc<NFClockKind>) -> Result<Arc<Absyn::Exp>> {
-    let mut exp: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
-    let mut args: Arc<metamodelica::List<Arc<Absyn::Exp>>> = metamodelica::nil();
+    let mut exp: Arc<Absyn::Exp>;
+    let mut args: Arc<metamodelica::List<Arc<Absyn::Exp>>>;
     args = (::match_deref::match_deref! { match &(clk.clone()) {
         Deref @ INFERRED_CLOCK { .. } => metamodelica::nil(),
         Deref @ RATIONAL_CLOCK { .. } => list![Expression::toAbsyn(var_field!((*clk).intervalCounter, NFClockKind::RATIONAL_CLOCK).clone())?, Expression::toAbsyn(var_field!((*clk).resolution, NFClockKind::RATIONAL_CLOCK).clone())?],
@@ -445,7 +445,7 @@ pub fn toAbsyn(mut clk: Arc<NFClockKind>) -> Result<Arc<Absyn::Exp>> {
 }
 
 pub fn toDAE(mut ick: Arc<NFClockKind>) -> Result<Arc<DAE::ClockKind>> {
-    let mut ock: Arc<DAE::ClockKind> = Arc::new(DAE::ClockKind::INFERRED_CLOCK);
+    let mut ock: Arc<DAE::ClockKind>;
     ock = (::match_deref::match_deref! { match &(ick.clone()) {
         Deref @ INFERRED_CLOCK { .. } => {
             openmodelica_frontend_types::DAE::ClockKind::interned_INFERRED_CLOCK()
@@ -468,7 +468,7 @@ pub fn toDAE(mut ick: Arc<NFClockKind>) -> Result<Arc<DAE::ClockKind>> {
 }
 
 pub fn toDebugString(mut ick: Arc<NFClockKind>) -> Result<ArcStr> {
-    let mut ock: ArcStr = arcstr::literal!("");
+    let mut ock: ArcStr;
     ock = ((::match_deref::match_deref! { match &(ick.clone()) {
         Deref @ INFERRED_CLOCK { .. } => {
             { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("INFERRED_CLOCK(")); __mm_s.push_str(&*intString(var_field!((*ick).idx, NFClockKind::INFERRED_CLOCK).clone())); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }
@@ -491,7 +491,7 @@ pub fn toDebugString(mut ick: Arc<NFClockKind>) -> Result<ArcStr> {
 }
 
 pub fn toString(mut ck: Arc<NFClockKind>) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     r#str = ((::match_deref::match_deref! { match &(ck.clone()) {
         Deref @ INFERRED_CLOCK { .. } => {
             literal!("")
@@ -515,7 +515,7 @@ pub fn toString(mut ck: Arc<NFClockKind>) -> Result<ArcStr> {
 }
 
 pub fn toFlatString(mut ck: Arc<NFClockKind>, mut format: BaseModelica::OutputFormat) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     r#str = ((::match_deref::match_deref! { match &(ck.clone()) {
         Deref @ INFERRED_CLOCK { .. } => {
             literal!("")

@@ -28,7 +28,7 @@ use openmodelica_util::Util;
 use openmodelica_util_datatypes_basic::List;
 
 pub fn translateModel(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_FMUVersion: ArcStr, mut in_a_FMUType: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_simCode.clone(), in_a_FMUVersion.clone(), in_a_FMUType.clone()) {
         (mut txt, ref i_simCode @ SimCode::SimCode { modelInfo: ref i_modelInfo @ SimCode::ModelInfo { name: ref i_modelInfo_name, .. }, makefileParams: SimCodeFunction::MakefileParams { ccompiler: _, .. }, hpcomData: HpcOmSimCode::HpcOmData { hpcOmMemory: ref i_hpcomData_hpcOmMemory, schedules: ref i_hpcomData_schedules }, fileNamePrefix: ref i_fileNamePrefix, allEquations: ref i_allEquations, varToArrayIndexMapping: ref i_varToArrayIndexMapping, .. }, mut a_FMUVersion, mut a_FMUType) => {
             let mut txt_46: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -164,7 +164,7 @@ pub fn translateModel(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode,
 }
 
 fn fun_53(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone()) {
         (mut txt, false) => {
             txt.clone()
@@ -178,19 +178,19 @@ fn fun_53(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
 }
 
 pub fn fmuMakefile(mut txt: Tpl::Text, mut a_target: ArcStr, mut a_simCode: SimCode::SimCode, mut a_extraFuncs: Tpl::Text, mut a_extraFuncsDecl: Tpl::Text, mut a_extraFuncsNamespace: Tpl::Text, mut a_FMUVersion: ArcStr) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    let mut ret_8: bool = false;
-    let mut ret_7: bool = false;
-    let mut ret_6: bool = false;
-    let mut l_additionalLinkerFlags__MSVC: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    let mut l_additionalLinkerFlags__GCC: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    let mut l_additionalCFlags__MSVC: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    let mut l_additionalCFlags__GCC: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    let mut ret_1: ArcStr = arcstr::literal!("");
-    let mut l_type: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
+    let mut out_a_extraFuncs: Tpl::Text;
+    let mut out_a_extraFuncsDecl: Tpl::Text;
+    let mut out_a_extraFuncsNamespace: Tpl::Text;
+    let mut ret_8: bool;
+    let mut ret_7: bool;
+    let mut ret_6: bool;
+    let mut l_additionalLinkerFlags__MSVC: Tpl::Text;
+    let mut l_additionalLinkerFlags__GCC: Tpl::Text;
+    let mut l_additionalCFlags__MSVC: Tpl::Text;
+    let mut l_additionalCFlags__GCC: Tpl::Text;
+    let mut ret_1: ArcStr;
+    let mut l_type: Tpl::Text;
     ret_1 = (Flags::getConfigString(Flags::HPCOM_CODE.clone())?).clone();
     l_type = Tpl::writeStr(Tpl::emptyTxt.clone(), (ret_1.clone()).clone())?;
     l_additionalCFlags__GCC = Tpl::emptyTxt.clone();

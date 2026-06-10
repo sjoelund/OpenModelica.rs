@@ -52,15 +52,15 @@ use openmodelica_util_datatypes_basic::GCExt;
 use openmodelica_util_datatypes_basic::List;
 
 pub fn createColoring(mut sparseArray: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut sparseArrayT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut sizeVars: i32, mut sizeVarswithDep: i32) -> Result<metamodelica::Array<Arc<metamodelica::List<i32>>>> {
-    let mut coloredArray: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut coloredArray: metamodelica::Array<Arc<metamodelica::List<i32>>>;
     let debug: bool = false;
-    let mut nodesList: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut colored: metamodelica::Array<i32> = Default::default();
-    let mut forbiddenColor: metamodelica::Array<i32> = Default::default();
-    let mut sparseGraph: Arc<metamodelica::List<(i32, Arc<metamodelica::List<i32>>)>> = metamodelica::nil();
-    let mut sparseGraphT: Arc<metamodelica::List<(i32, Arc<metamodelica::List<i32>>)>> = metamodelica::nil();
-    let mut arraysparseGraph: metamodelica::Array<(i32, Arc<metamodelica::List<i32>>)> = Default::default();
-    let mut maxColor: i32 = 0;
+    let mut nodesList: Arc<metamodelica::List<i32>>;
+    let mut colored: metamodelica::Array<i32>;
+    let mut forbiddenColor: metamodelica::Array<i32>;
+    let mut sparseGraph: Arc<metamodelica::List<(i32, Arc<metamodelica::List<i32>>)>>;
+    let mut sparseGraphT: Arc<metamodelica::List<(i32, Arc<metamodelica::List<i32>>)>>;
+    let mut arraysparseGraph: metamodelica::Array<(i32, Arc<metamodelica::List<i32>>)>;
+    let mut maxColor: i32;
     match '__try0: {
         if unwrap_break_err!(Flags::isSet(Flags::DUMP_SPARSE_VERBOSE.clone()), '__try0) {
             metamodelica::print((literal!("analytical Jacobians[SPARSE] -> build sparse graph.\n")).clone());
@@ -128,7 +128,7 @@ fn createBipartiteGraph(mut inNode: i32, mut inSparsePattern: metamodelica::Arra
 }
 
 fn mapIndexColors(mut inColors: metamodelica::Array<i32>, mut inMaxIndex: i32, mut inArray: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<()> {
-    let mut index: i32 = 0;
+    let mut index: i32;
     match '__try0: {
         for mut i in 1..=inMaxIndex.clone() {
             index = unwrap_break_err!(metamodelica::arrayGet(inColors.clone(), i.clone()), '__try0);

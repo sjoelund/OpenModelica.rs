@@ -72,7 +72,7 @@ impl Default for SBPWLinearMap {
 pub type PW_LINEAR_MAP = SBPWLinearMap;
 
 pub fn new(mut dom: metamodelica::Array<Arc<SBSet::SBSet>>, mut lmap: metamodelica::Array<Arc<SBLinearMap::SBLinearMap>>) -> Result<Arc<SBPWLinearMap>> {
-    let mut map: Arc<SBPWLinearMap> = Arc::new(<SBPWLinearMap as ::std::default::Default>::default());
+    let mut map: Arc<SBPWLinearMap>;
     let mut dim: i32 = 0;
     let mut same_dims: bool = false;
     if metamodelica::arrayLength(dom.clone()) != metamodelica::arrayLength(lmap.clone()) {
@@ -92,7 +92,7 @@ pub fn new(mut dom: metamodelica::Array<Arc<SBSet::SBSet>>, mut lmap: metamodeli
 }
 
 pub fn newScalar(mut dom: Arc<SBSet::SBSet>, mut lmap: Arc<SBLinearMap::SBLinearMap>) -> Arc<SBPWLinearMap> {
-    let mut map: Arc<SBPWLinearMap> = Arc::new(<SBPWLinearMap as ::std::default::Default>::default());
+    let mut map: Arc<SBPWLinearMap>;
     if SBSet::ndim(dom.clone()) == SBLinearMap::ndim(lmap.clone()) {
         map = Arc::new(SBPWLinearMap { dom: arrayCreate(1, dom.clone()), lmap: arrayCreate(1, lmap.clone()), ndim: 1 });
     } else {
@@ -102,13 +102,13 @@ pub fn newScalar(mut dom: Arc<SBSet::SBSet>, mut lmap: Arc<SBLinearMap::SBLinear
 }
 
 pub fn newEmpty() -> Arc<SBPWLinearMap> {
-    let mut map: Arc<SBPWLinearMap> = Arc::new(<SBPWLinearMap as ::std::default::Default>::default());
+    let mut map: Arc<SBPWLinearMap>;
     map = Arc::new(SBPWLinearMap { dom: metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect()), lmap: metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect()), ndim: 0 });
     map
 }
 
 pub fn newIdentity(mut set: Arc<SBSet::SBSet>) -> Arc<SBPWLinearMap> {
-    let mut map: Arc<SBPWLinearMap> = Arc::new(<SBPWLinearMap as ::std::default::Default>::default());
+    let mut map: Arc<SBPWLinearMap>;
     let mut lmap: Arc<SBLinearMap::SBLinearMap> = SBLinearMap::newIdentity(SBSet::ndim(set.clone()));
     map = Arc::new(SBPWLinearMap { dom: arrayCreate(1, set.clone()), lmap: arrayCreate(1, lmap.clone()), ndim: 1 });
     map
@@ -146,7 +146,7 @@ pub fn isEmpty(mut map: Arc<SBPWLinearMap>) -> bool {
 pub fn image(mut map: Arc<SBPWLinearMap>, mut set: Arc<SBSet::SBSet>) -> Result<Arc<SBSet::SBSet>> {
     fn add_set(mut aset: Arc<SBAtomicSet::SBAtomicSet>, mut map: Arc<SBLinearMap::SBLinearMap>, mut set: Arc<SBSet::SBSet>) -> Result<Arc<SBSet::SBSet>> {
         let mut set: Arc<SBSet::SBSet> = set;
-        let mut aux_map: Arc<SBPWAtomicLinearMap::SBPWAtomicLinearMap> = Arc::new(<SBPWAtomicLinearMap::SBPWAtomicLinearMap as ::std::default::Default>::default());
+        let mut aux_map: Arc<SBPWAtomicLinearMap::SBPWAtomicLinearMap>;
         aux_map = SBPWAtomicLinearMap::new(aset.clone(), map.clone());
         set = SBSet::addAtomicSet(SBPWAtomicLinearMap::image(aux_map.clone(), aset.clone())?, set.clone())?;
         Ok(set)
@@ -155,8 +155,8 @@ pub fn image(mut map: Arc<SBPWLinearMap>, mut set: Arc<SBSet::SBSet>) -> Result<
     let mut outSet: Arc<SBSet::SBSet> = SBSet::newEmpty();
     let mut dom: metamodelica::Array<Arc<SBSet::SBSet>> = map.dom.clone();
     let mut lmap: metamodelica::Array<Arc<SBLinearMap::SBLinearMap>> = map.lmap.clone();
-    let mut ss: Arc<SBSet::SBSet> = Arc::new(<SBSet::SBSet as ::std::default::Default>::default());
-    let mut partial_res: Arc<SBSet::SBSet> = Arc::new(<SBSet::SBSet as ::std::default::Default>::default());
+    let mut ss: Arc<SBSet::SBSet>;
+    let mut partial_res: Arc<SBSet::SBSet>;
     for mut i in 1..=metamodelica::arrayLength(dom.clone()) {
         ss = ({let __elt = dom.borrow()[(i.clone()-1) as usize].clone(); __elt});
         ss = SBSet::intersection(ss.clone(), set.clone())?;
@@ -169,7 +169,7 @@ pub fn image(mut map: Arc<SBPWLinearMap>, mut set: Arc<SBSet::SBSet>) -> Result<
 pub fn preImage(mut map: Arc<SBPWLinearMap>, mut set: Arc<SBSet::SBSet>) -> Result<Arc<SBSet::SBSet>> {
     fn add_set(mut aset: Arc<SBAtomicSet::SBAtomicSet>, mut map: Arc<SBLinearMap::SBLinearMap>, mut sets: metamodelica::Array<Arc<SBAtomicSet::SBAtomicSet>>, mut set: Arc<SBSet::SBSet>) -> Result<Arc<SBSet::SBSet>> {
         let mut set: Arc<SBSet::SBSet> = set;
-        let mut aux_map: Arc<SBPWAtomicLinearMap::SBPWAtomicLinearMap> = Arc::new(<SBPWAtomicLinearMap::SBPWAtomicLinearMap as ::std::default::Default>::default());
+        let mut aux_map: Arc<SBPWAtomicLinearMap::SBPWAtomicLinearMap>;
         aux_map = SBPWAtomicLinearMap::new(aset.clone(), map.clone());
         let __range0 = sets.clone().borrow().iter().cloned().collect::<Vec<_>>();
         for mut as2 in __range0 {
@@ -181,9 +181,9 @@ pub fn preImage(mut map: Arc<SBPWLinearMap>, mut set: Arc<SBSet::SBSet>) -> Resu
     let mut outSet: Arc<SBSet::SBSet> = SBSet::newEmpty();
     let mut dom: metamodelica::Array<Arc<SBSet::SBSet>> = map.dom.clone();
     let mut lmap: metamodelica::Array<Arc<SBLinearMap::SBLinearMap>> = map.lmap.clone();
-    let mut ss: Arc<SBSet::SBSet> = Arc::new(<SBSet::SBSet as ::std::default::Default>::default());
-    let mut partial_res: Arc<SBSet::SBSet> = Arc::new(<SBSet::SBSet as ::std::default::Default>::default());
-    let mut sets: metamodelica::Array<Arc<SBAtomicSet::SBAtomicSet>> = Default::default();
+    let mut ss: Arc<SBSet::SBSet>;
+    let mut partial_res: Arc<SBSet::SBSet>;
+    let mut sets: metamodelica::Array<Arc<SBAtomicSet::SBAtomicSet>>;
     sets = UnorderedSet::toArray(SBSet::asets(set.clone()));
     for mut i in 1..=metamodelica::arrayLength(dom.clone()) {
         ss = ({let __elt = dom.borrow()[(i.clone()-1) as usize].clone(); __elt});
@@ -195,20 +195,20 @@ pub fn preImage(mut map: Arc<SBPWLinearMap>, mut set: Arc<SBSet::SBSet>) -> Resu
 }
 
 pub fn compPW(mut map1: Arc<SBPWLinearMap>, mut map2: Arc<SBPWLinearMap>) -> Result<Arc<SBPWLinearMap>> {
-    let mut outMap: Arc<SBPWLinearMap> = Arc::new(<SBPWLinearMap as ::std::default::Default>::default());
+    let mut outMap: Arc<SBPWLinearMap>;
     let mut dom1: metamodelica::Array<Arc<SBSet::SBSet>> = map1.dom.clone();
     let mut dom2: metamodelica::Array<Arc<SBSet::SBSet>> = map2.dom.clone();
     let mut ress: Arc<Vector::Vector<Arc<SBSet::SBSet>>>;
     let mut lmap1: metamodelica::Array<Arc<SBLinearMap::SBLinearMap>> = map1.lmap.clone();
     let mut lmap2: metamodelica::Array<Arc<SBLinearMap::SBLinearMap>> = map2.lmap.clone();
     let mut reslm: Arc<Vector::Vector<Arc<SBLinearMap::SBLinearMap>>>;
-    let mut aux_dom: Arc<SBSet::SBSet> = Arc::new(<SBSet::SBSet as ::std::default::Default>::default());
-    let mut new_dom: Arc<SBSet::SBSet> = Arc::new(<SBSet::SBSet as ::std::default::Default>::default());
-    let mut d1: Arc<SBSet::SBSet> = Arc::new(<SBSet::SBSet as ::std::default::Default>::default());
-    let mut d2: Arc<SBSet::SBSet> = Arc::new(<SBSet::SBSet as ::std::default::Default>::default());
-    let mut l1: Arc<SBLinearMap::SBLinearMap> = Arc::new(<SBLinearMap::SBLinearMap as ::std::default::Default>::default());
-    let mut l2: Arc<SBLinearMap::SBLinearMap> = Arc::new(<SBLinearMap::SBLinearMap as ::std::default::Default>::default());
-    let mut new_lm: Arc<SBLinearMap::SBLinearMap> = Arc::new(<SBLinearMap::SBLinearMap as ::std::default::Default>::default());
+    let mut aux_dom: Arc<SBSet::SBSet>;
+    let mut new_dom: Arc<SBSet::SBSet>;
+    let mut d1: Arc<SBSet::SBSet>;
+    let mut d2: Arc<SBSet::SBSet>;
+    let mut l1: Arc<SBLinearMap::SBLinearMap>;
+    let mut l2: Arc<SBLinearMap::SBLinearMap>;
+    let mut new_lm: Arc<SBLinearMap::SBLinearMap>;
     if isEmpty(map1.clone()) || isEmpty(map2.clone()) {
         outMap = newEmpty();
         return Ok(outMap.clone());
@@ -237,16 +237,16 @@ pub fn compPW(mut map1: Arc<SBPWLinearMap>, mut map2: Arc<SBPWLinearMap>) -> Res
 }
 
 pub fn minInvCompact(mut map: Arc<SBPWLinearMap>) -> Result<Arc<SBPWLinearMap>> {
-    let mut outMap: Arc<SBPWLinearMap> = Arc::new(<SBPWLinearMap as ::std::default::Default>::default());
-    let mut aux_dom: Arc<SBSet::SBSet> = Arc::new(<SBSet::SBSet as ::std::default::Default>::default());
-    let mut dom_inv: Arc<SBSet::SBSet> = Arc::new(<SBSet::SBSet as ::std::default::Default>::default());
-    let mut aux_map: Arc<SBLinearMap::SBLinearMap> = Arc::new(<SBLinearMap::SBLinearMap as ::std::default::Default>::default());
-    let mut map_inv: Arc<SBLinearMap::SBLinearMap> = Arc::new(<SBLinearMap::SBLinearMap as ::std::default::Default>::default());
-    let mut min: metamodelica::Array<i32> = Default::default();
-    let mut resg: metamodelica::Array<metamodelica::Real> = Default::default();
-    let mut reso: metamodelica::Array<metamodelica::Real> = Default::default();
-    let mut g: metamodelica::Array<metamodelica::Real> = Default::default();
-    let mut o: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut outMap: Arc<SBPWLinearMap>;
+    let mut aux_dom: Arc<SBSet::SBSet>;
+    let mut dom_inv: Arc<SBSet::SBSet>;
+    let mut aux_map: Arc<SBLinearMap::SBLinearMap>;
+    let mut map_inv: Arc<SBLinearMap::SBLinearMap>;
+    let mut min: metamodelica::Array<i32>;
+    let mut resg: metamodelica::Array<metamodelica::Real>;
+    let mut reso: metamodelica::Array<metamodelica::Real>;
+    let mut g: metamodelica::Array<metamodelica::Real>;
+    let mut o: metamodelica::Array<metamodelica::Real>;
     if metamodelica::arrayLength(map.dom.clone()) != 1 {
         outMap = newEmpty();
         return Ok(outMap.clone());
@@ -290,7 +290,7 @@ pub fn minInvCompact(mut map: Arc<SBPWLinearMap>) -> Result<Arc<SBPWLinearMap>> 
 }
 
 pub fn wholeDom(mut map: Arc<SBPWLinearMap>) -> Result<Arc<SBSet::SBSet>> {
-    let mut set: Arc<SBSet::SBSet> = Arc::new(<SBSet::SBSet as ::std::default::Default>::default());
+    let mut set: Arc<SBSet::SBSet>;
     set = SBSet::newEmpty();
     let __range0 = map.dom.clone().borrow().iter().cloned().collect::<Vec<_>>();
     for mut s in __range0 {
@@ -300,14 +300,14 @@ pub fn wholeDom(mut map: Arc<SBPWLinearMap>) -> Result<Arc<SBSet::SBSet>> {
 }
 
 pub fn combine(mut map1: Arc<SBPWLinearMap>, mut map2: Arc<SBPWLinearMap>) -> Result<Arc<SBPWLinearMap>> {
-    let mut outMap: Arc<SBPWLinearMap> = Arc::new(<SBPWLinearMap as ::std::default::Default>::default());
+    let mut outMap: Arc<SBPWLinearMap>;
     let mut sres: Arc<Vector::Vector<Arc<SBSet::SBSet>>>;
     let mut lres: Arc<Vector::Vector<Arc<SBLinearMap::SBLinearMap>>>;
-    let mut dom2: metamodelica::Array<Arc<SBSet::SBSet>> = Default::default();
-    let mut lm2: metamodelica::Array<Arc<SBLinearMap::SBLinearMap>> = Default::default();
-    let mut aux1: Arc<SBSet::SBSet> = Arc::new(<SBSet::SBSet as ::std::default::Default>::default());
-    let mut s2: Arc<SBSet::SBSet> = Arc::new(<SBSet::SBSet as ::std::default::Default>::default());
-    let mut new_dom: Arc<SBSet::SBSet> = Arc::new(<SBSet::SBSet as ::std::default::Default>::default());
+    let mut dom2: metamodelica::Array<Arc<SBSet::SBSet>>;
+    let mut lm2: metamodelica::Array<Arc<SBLinearMap::SBLinearMap>>;
+    let mut aux1: Arc<SBSet::SBSet>;
+    let mut s2: Arc<SBSet::SBSet>;
+    let mut new_dom: Arc<SBSet::SBSet>;
     if isEmpty(map1.clone()) {
         outMap = copy(map2.clone())?;
         return Ok(outMap.clone());
@@ -334,15 +334,15 @@ pub fn combine(mut map1: Arc<SBPWLinearMap>, mut map2: Arc<SBPWLinearMap>) -> Re
 }
 
 pub fn atomize(mut map: Arc<SBPWLinearMap>) -> Result<Arc<SBPWLinearMap>> {
-    let mut outMap: Arc<SBPWLinearMap> = Arc::new(<SBPWLinearMap as ::std::default::Default>::default());
+    let mut outMap: Arc<SBPWLinearMap>;
     let mut dres: Arc<metamodelica::List<Arc<SBSet::SBSet>>> = metamodelica::nil();
     let mut dom: metamodelica::Array<Arc<SBSet::SBSet>> = map.dom.clone();
     let mut lres: Arc<metamodelica::List<Arc<SBLinearMap::SBLinearMap>>> = metamodelica::nil();
     let mut lm: metamodelica::Array<Arc<SBLinearMap::SBLinearMap>> = map.lmap.clone();
-    let mut d: Arc<SBSet::SBSet> = Arc::new(<SBSet::SBSet as ::std::default::Default>::default());
-    let mut aux: Arc<SBSet::SBSet> = Arc::new(<SBSet::SBSet as ::std::default::Default>::default());
-    let mut l: Arc<SBLinearMap::SBLinearMap> = Arc::new(<SBLinearMap::SBLinearMap as ::std::default::Default>::default());
-    let mut asets: metamodelica::Array<Arc<SBAtomicSet::SBAtomicSet>> = Default::default();
+    let mut d: Arc<SBSet::SBSet>;
+    let mut aux: Arc<SBSet::SBSet>;
+    let mut l: Arc<SBLinearMap::SBLinearMap>;
+    let mut asets: metamodelica::Array<Arc<SBAtomicSet::SBAtomicSet>>;
     for mut i in 1..=metamodelica::arrayLength(dom.clone()) {
         d = ({let __elt = dom.borrow()[(i.clone()-1) as usize].clone(); __elt});
         l = ({let __elt = lm.borrow()[(i.clone()-1) as usize].clone(); __elt});
@@ -360,19 +360,19 @@ pub fn atomize(mut map: Arc<SBPWLinearMap>) -> Result<Arc<SBPWLinearMap>> {
 }
 
 pub fn isEqual(mut map1: Arc<SBPWLinearMap>, mut map2: Arc<SBPWLinearMap>) -> Result<bool> {
-    let mut equal: bool = false;
+    let mut equal: bool;
     equal = Array::isEqualOnTrue(map1.dom.clone(), map2.dom.clone(), (std::sync::Arc::new(SBSet::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBSet::SBSet>, Arc<SBSet::SBSet>) -> Result<bool> + 'static>))? && Array::isEqualOnTrue(map1.lmap.clone(), map2.lmap.clone(), (std::sync::Arc::new(SBLinearMap::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBLinearMap::SBLinearMap>, Arc<SBLinearMap::SBLinearMap>) -> Result<bool> + 'static>))?;
     Ok(equal)
 }
 
 pub fn toString(mut map: Arc<SBPWLinearMap>) -> Result<ArcStr> {
     fn helper(mut set: Arc<SBAtomicSet::SBAtomicSet>, mut lm: Arc<SBLinearMap::SBLinearMap>) -> ArcStr {
-        let mut r#str: ArcStr = arcstr::literal!("");
+        let mut r#str: ArcStr;
         r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("{")); __mm_s.push_str(&*SBPWAtomicLinearMap::toString(Arc::new(SBPWAtomicLinearMap::SBPWAtomicLinearMap { dom: set.clone(), lmap: lm.clone() }))); __mm_s.push_str(&*literal!("}")); ArcStr::from(__mm_s) }).clone();
         r#str
     }
 
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     let mut dom: metamodelica::Array<Arc<SBSet::SBSet>> = map.dom.clone();
     let mut lmap: metamodelica::Array<Arc<SBLinearMap::SBLinearMap>> = map.lmap.clone();
     let mut strl: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();

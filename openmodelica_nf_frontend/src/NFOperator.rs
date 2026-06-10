@@ -120,7 +120,7 @@ impl Default for Op {
 }
 
 pub fn compare(mut op1: Arc<NFOperator>, mut op2: Arc<NFOperator>) -> i32 {
-    let mut comp: i32 = 0;
+    let mut comp: i32;
     let mut o1: Op = op1.op.clone();
     let mut o2: Op = op2.op.clone();
     comp = Util::intCompare(((o1.clone()) as i32), ((o2.clone()) as i32));
@@ -177,7 +177,7 @@ impl Ord for TypeRestriction {
 }
 
 pub fn typeRestriction(mut ty: Arc<Type::NFType>) -> Result<TypeRestriction> {
-    let mut restriction: TypeRestriction = TypeRestriction::SCALAR;
+    let mut restriction: TypeRestriction;
     if Type::isScalar(ty.clone()) {
         restriction = TypeRestriction::SCALAR.clone();
     } else if Type::isVector(ty.clone())? {
@@ -200,10 +200,10 @@ pub fn repairMultary(mut operator: Arc<NFOperator>, mut types: Arc<metamodelica:
 
     let mut operator: Arc<NFOperator> = operator;
     let mut mc: MathClassification = getMathClassification(operator.clone())?;
-    let mut sc: SizeClassification = SizeClassification::SCALAR;
-    let mut lst: Arc<metamodelica::List<(TypeRestriction, Arc<Type::NFType>)>> = metamodelica::nil();
-    let mut min_: (TypeRestriction, Arc<Type::NFType>) = (TypeRestriction::SCALAR, Arc::new(Type::ANY));
-    let mut max_: (TypeRestriction, Arc<Type::NFType>) = (TypeRestriction::SCALAR, Arc::new(Type::ANY));
+    let mut sc: SizeClassification;
+    let mut lst: Arc<metamodelica::List<(TypeRestriction, Arc<Type::NFType>)>>;
+    let mut min_: (TypeRestriction, Arc<Type::NFType>);
+    let mut max_: (TypeRestriction, Arc<Type::NFType>);
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     lst = ({
         let mut __acc: Arc<metamodelica::List<(TypeRestriction, Arc<Type::NFType>)>> = metamodelica::nil();
@@ -253,8 +253,8 @@ pub fn repairMultary(mut operator: Arc<NFOperator>, mut types: Arc<metamodelica:
 pub fn repairBinary(mut operator: Arc<NFOperator>, mut ty1: Arc<Type::NFType>, mut ty2: Arc<Type::NFType>) -> Result<Arc<NFOperator>> {
     let mut operator: Arc<NFOperator> = operator;
     let mut mc: MathClassification = getMathClassification(operator.clone())?;
-    let mut sc: SizeClassification = SizeClassification::SCALAR;
-    let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
+    let mut sc: SizeClassification;
+    let mut ty: Arc<Type::NFType>;
     (sc, ty) = (match (typeRestriction(ty1.clone())?, typeRestriction(ty2.clone())?) {
         (TypeRestriction::SCALAR, TypeRestriction::SCALAR) => {
             (SizeClassification::SCALAR.clone(), ty1.clone())
@@ -284,7 +284,7 @@ pub fn repairBinary(mut operator: Arc<NFOperator>, mut ty1: Arc<Type::NFType>, m
 }
 
 pub fn isLogical(mut operator: Arc<NFOperator>) -> bool {
-    let mut b: bool = false;
+    let mut b: bool;
     b = (match operator.op.clone() {
         Op::AND => true,
         Op::OR => true,
@@ -295,7 +295,7 @@ pub fn isLogical(mut operator: Arc<NFOperator>) -> bool {
 }
 
 pub fn isRelational(mut operator: Arc<NFOperator>) -> bool {
-    let mut b: bool = false;
+    let mut b: bool;
     b = (match operator.op.clone() {
         Op::LESS => true,
         Op::LESSEQ => true,
@@ -309,7 +309,7 @@ pub fn isRelational(mut operator: Arc<NFOperator>) -> bool {
 }
 
 pub fn isScalarProduct(mut operator: Arc<NFOperator>) -> bool {
-    let mut b: bool = false;
+    let mut b: bool;
     b = (match operator.op.clone() {
         Op::SCALAR_PRODUCT => true,
         _ => false,
@@ -318,8 +318,8 @@ pub fn isScalarProduct(mut operator: Arc<NFOperator>) -> bool {
 }
 
 pub fn fromAbsyn(mut inOperator: Absyn::Operator) -> Result<Arc<NFOperator>> {
-    let mut outOperator: Arc<NFOperator> = Arc::new(<NFOperator as ::std::default::Default>::default());
-    let mut op: Op = Op::ADD;
+    let mut outOperator: Arc<NFOperator>;
+    let mut op: Op;
     op = (match inOperator.clone() {
         Absyn::Operator::ADD { .. } => Op::ADD.clone(),
         Absyn::Operator::SUB { .. } => Op::SUB.clone(),
@@ -350,7 +350,7 @@ pub fn fromAbsyn(mut inOperator: Absyn::Operator) -> Result<Arc<NFOperator>> {
 }
 
 pub fn toAbsyn(mut op: Arc<NFOperator>) -> Result<Absyn::Operator> {
-    let mut aop: Absyn::Operator = Absyn::Operator::ADD;
+    let mut aop: Absyn::Operator;
     aop = (match op.op.clone() {
         Op::ADD => if (Type::isArray(op.ty.clone())) {openmodelica_ast::Absyn::Operator::ADD_EW} else {openmodelica_ast::Absyn::Operator::ADD},
         Op::SUB => if (Type::isArray(op.ty.clone())) {openmodelica_ast::Absyn::Operator::SUB_EW} else {openmodelica_ast::Absyn::Operator::SUB},
@@ -395,10 +395,10 @@ pub fn toAbsyn(mut op: Arc<NFOperator>) -> Result<Absyn::Operator> {
 }
 
 pub fn toDAE(mut op: Arc<NFOperator>) -> Result<(DAE::Operator, bool, bool)> {
-    let mut daeOp: DAE::Operator = <DAE::Operator as ::std::default::Default>::default();
+    let mut daeOp: DAE::Operator;
     let mut swapArguments: bool = false;
     let mut negate: bool = false;
-    let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+    let mut ty: Arc<DAE::Type>;
     ty = Type::toDAE(op.ty.clone(), true)?;
     daeOp = (match op.op.clone() {
         Op::ADD => if (Type::isArray(op.ty.clone())) {DAE::Operator::ADD_ARR { ty: ty.clone() }} else {DAE::Operator::ADD { ty: ty.clone() }},
@@ -476,7 +476,7 @@ pub fn unlift(mut op: Arc<NFOperator>) -> Result<Arc<NFOperator>> {
 }
 
 pub fn symbol(mut op: Arc<NFOperator>, mut spacing: ArcStr) -> Result<ArcStr> {
-    let mut symbol: ArcStr = arcstr::literal!("");
+    let mut symbol: ArcStr;
     symbol = ((match op.op.clone() {
         Op::ADD => literal!("+"),
         Op::SUB => literal!("-"),
@@ -523,7 +523,7 @@ pub fn symbol(mut op: Arc<NFOperator>, mut spacing: ArcStr) -> Result<ArcStr> {
 }
 
 pub fn toJSON(mut operator: Arc<NFOperator>) -> Arc<JSON::JSON> {
-    let mut json: Arc<JSON::JSON> = Arc::new(JSON::FALSE);
+    let mut json: Arc<JSON::JSON>;
     let symbols: metamodelica::Array<Arc<JSON::JSON>> = metamodelica::Dangerous::listArray(list![Arc::new(JSON::JSON::STRING { r#str: (literal!("+")).clone() }), Arc::new(JSON::JSON::STRING { r#str: (literal!("-")).clone() }), Arc::new(JSON::JSON::STRING { r#str: (literal!("*")).clone() }), Arc::new(JSON::JSON::STRING { r#str: (literal!("/")).clone() }), Arc::new(JSON::JSON::STRING { r#str: (literal!("^")).clone() }), Arc::new(JSON::JSON::STRING { r#str: (literal!(".+")).clone() }), Arc::new(JSON::JSON::STRING { r#str: (literal!(".-")).clone() }), Arc::new(JSON::JSON::STRING { r#str: (literal!(".*")).clone() }), Arc::new(JSON::JSON::STRING { r#str: (literal!("./")).clone() }), Arc::new(JSON::JSON::STRING { r#str: (literal!(".^")).clone() }), Arc::new(JSON::JSON::STRING { r#str: (literal!(".+")).clone() }), Arc::new(JSON::JSON::STRING { r#str: (literal!(".+")).clone() }), Arc::new(JSON::JSON::STRING { r#str: (literal!(".-")).clone() }), Arc::new(JSON::JSON::STRING { r#str: (literal!(".-")).clone() }), Arc::new(JSON::JSON::STRING { r#str: (literal!("*")).clone() }), Arc::new(JSON::JSON::STRING { r#str: (literal!(".*")).clone() }), Arc::new(JSON::JSON::STRING { r#str: (literal!("*")).clone() }), Arc::new(JSON::JSON::STRING { r#str: (literal!("*")).clone() }), Arc::new(JSON::JSON::STRING { r#str: (literal!("*")).clone() }), Arc::new(JSON::JSON::STRING { r#str: (literal!("*")).clone() }), Arc::new(JSON::JSON::STRING { r#str: (literal!("./")).clone() }), Arc::new(JSON::JSON::STRING { r#str: (literal!("/")).clone() }), Arc::new(JSON::JSON::STRING { r#str: (literal!(".^")).clone() }), Arc::new(JSON::JSON::STRING { r#str: (literal!(".^")).clone() }), Arc::new(JSON::JSON::STRING { r#str: (literal!("^")).clone() }), Arc::new(JSON::JSON::STRING { r#str: (literal!("-")).clone() }), Arc::new(JSON::JSON::STRING { r#str: (literal!("and")).clone() }), Arc::new(JSON::JSON::STRING { r#str: (literal!("or")).clone() }), Arc::new(JSON::JSON::STRING { r#str: (literal!("not")).clone() }), Arc::new(JSON::JSON::STRING { r#str: (literal!("<")).clone() }), Arc::new(JSON::JSON::STRING { r#str: (literal!("<=")).clone() }), Arc::new(JSON::JSON::STRING { r#str: (literal!(">")).clone() }), Arc::new(JSON::JSON::STRING { r#str: (literal!(">=")).clone() }), Arc::new(JSON::JSON::STRING { r#str: (literal!("==")).clone() }), Arc::new(JSON::JSON::STRING { r#str: (literal!("<>")).clone() })]);
     let mut op: Op = operator.op.clone();
     json = ({let __elt = symbols.borrow()[(((op.clone()) as i32)-1) as usize].clone(); __elt});
@@ -531,7 +531,7 @@ pub fn toJSON(mut operator: Arc<NFOperator>) -> Arc<JSON::JSON> {
 }
 
 pub fn priority(mut op: Arc<NFOperator>, mut lhs: bool) -> i32 {
-    let mut priority: i32 = 0;
+    let mut priority: i32;
     priority = (match op.op.clone() {
         Op::ADD => if (lhs.clone()) {5} else {6},
         Op::SUB => 5,
@@ -566,7 +566,7 @@ pub fn priority(mut op: Arc<NFOperator>, mut lhs: bool) -> i32 {
 }
 
 pub fn isAssociative(mut op: Arc<NFOperator>) -> bool {
-    let mut isAssociative: bool = false;
+    let mut isAssociative: bool;
     isAssociative = (match op.op.clone() {
         Op::ADD => true,
         Op::ADD_EW => true,
@@ -577,7 +577,7 @@ pub fn isAssociative(mut op: Arc<NFOperator>) -> bool {
 }
 
 pub fn isNonAssociative(mut op: Arc<NFOperator>) -> bool {
-    let mut isNonAssociative: bool = false;
+    let mut isNonAssociative: bool;
     isNonAssociative = (match op.op.clone() {
         Op::POW => true,
         Op::POW_EW => true,
@@ -690,8 +690,8 @@ pub fn makeNotEqual(mut ty: Arc<Type::NFType>) -> Arc<NFOperator> {
 }
 
 pub fn makeScalarArray(mut ty: Arc<Type::NFType>, mut op: Op) -> Result<Arc<NFOperator>> {
-    let mut outOp: Arc<NFOperator> = Arc::new(<NFOperator as ::std::default::Default>::default());
-    let mut o: Op = Op::ADD;
+    let mut outOp: Arc<NFOperator>;
+    let mut o: Op;
     o = (match op.clone() {
         Op::ADD => Op::ADD_SCALAR_ARRAY.clone(),
         Op::SUB => Op::SUB_SCALAR_ARRAY.clone(),
@@ -705,8 +705,8 @@ pub fn makeScalarArray(mut ty: Arc<Type::NFType>, mut op: Op) -> Result<Arc<NFOp
 }
 
 pub fn makeArrayScalar(mut ty: Arc<Type::NFType>, mut op: Op) -> Result<Arc<NFOperator>> {
-    let mut outOp: Arc<NFOperator> = Arc::new(<NFOperator as ::std::default::Default>::default());
-    let mut o: Op = Op::ADD;
+    let mut outOp: Arc<NFOperator>;
+    let mut o: Op;
     o = (match op.clone() {
         Op::ADD => Op::ADD_ARRAY_SCALAR.clone(),
         Op::SUB => Op::SUB_ARRAY_SCALAR.clone(),
@@ -776,7 +776,7 @@ pub fn stripEW(mut op: Arc<NFOperator>) -> Arc<NFOperator> {
 }
 
 pub fn isElementWise(mut op: Arc<NFOperator>) -> bool {
-    let mut ew: bool = false;
+    let mut ew: bool;
     ew = (match op.op.clone() {
         Op::ADD_EW => true,
         Op::SUB_EW => true,
@@ -829,7 +829,7 @@ impl Ord for SizeClassification {
 pub type Classification = (MathClassification, SizeClassification);
 
 pub fn mathSymbol(mut mcl: MathClassification) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     r#str = ((match mcl.clone() {
         MathClassification::ADDITION => literal!("+"),
         MathClassification::SUBTRACTION => literal!("-"),
@@ -844,16 +844,16 @@ pub fn mathSymbol(mut mcl: MathClassification) -> Result<ArcStr> {
 }
 
 pub fn classificationString(mut cla: Classification) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
-    let mut mcl: MathClassification = MathClassification::ADDITION;
-    let mut scl: SizeClassification = SizeClassification::SCALAR;
+    let mut r#str: ArcStr;
+    let mut mcl: MathClassification;
+    let mut scl: SizeClassification;
     (mcl, scl) = cla.clone();
     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*mathClassificationString(mcl.clone())?); __mm_s.push_str(&*sizeClassificationString(scl.clone())?); ArcStr::from(__mm_s) }).clone();
     Ok(r#str)
 }
 
 pub fn mathClassificationString(mut mcl: MathClassification) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     r#str = ((match mcl.clone() {
         MathClassification::ADDITION => literal!("[ADD]"),
         MathClassification::SUBTRACTION => literal!("[SUB]"),
@@ -868,7 +868,7 @@ pub fn mathClassificationString(mut mcl: MathClassification) -> Result<ArcStr> {
 }
 
 pub fn sizeClassificationString(mut scl: SizeClassification) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     r#str = ((match scl.clone() {
         SizeClassification::SCALAR => literal!("[SCALAR]"),
         SizeClassification::ELEMENT_WISE => literal!("[ELMWIS]"),
@@ -885,7 +885,7 @@ pub fn sizeClassificationString(mut scl: SizeClassification) -> Result<ArcStr> {
 }
 
 pub fn classify(mut op: Arc<NFOperator>) -> Result<Classification> {
-    let mut cl: Classification = (MathClassification::ADDITION, SizeClassification::SCALAR);
+    let mut cl: Classification;
     cl = (match op.op.clone() {
         Op::ADD => (MathClassification::ADDITION.clone(), SizeClassification::SCALAR.clone()),
         Op::SUB => (MathClassification::SUBTRACTION.clone(), SizeClassification::SCALAR.clone()),
@@ -935,8 +935,8 @@ pub fn classifyAddition(mut op: Arc<NFOperator>) -> SizeClassification {
 }
 
 pub fn fromClassification(mut cl: Classification, mut ty: Arc<Type::NFType>) -> Result<Arc<NFOperator>> {
-    let mut result: Arc<NFOperator> = Arc::new(<NFOperator as ::std::default::Default>::default());
-    let mut op: Op = Op::ADD;
+    let mut result: Arc<NFOperator>;
+    let mut op: Op;
     op = (match cl.clone() {
         (MathClassification::ADDITION, SizeClassification::SCALAR) => Op::ADD.clone(),
         (MathClassification::SUBTRACTION, SizeClassification::SCALAR) => Op::SUB.clone(),
@@ -974,19 +974,19 @@ pub fn fromClassification(mut cl: Classification, mut ty: Arc<Type::NFType>) -> 
 }
 
 pub fn getMathClassification(mut op: Arc<NFOperator>) -> Result<MathClassification> {
-    let mut mcl: MathClassification = MathClassification::ADDITION;
+    let mut mcl: MathClassification;
     (mcl, _) = classify(op.clone())?;
     Ok(mcl)
 }
 
 pub fn getSizeClassification(mut op: Arc<NFOperator>) -> Result<SizeClassification> {
-    let mut scl: SizeClassification = SizeClassification::SCALAR;
+    let mut scl: SizeClassification;
     (_, scl) = classify(op.clone())?;
     Ok(scl)
 }
 
 pub fn combineSizeClassification(mut scl1: SizeClassification, mut scl2: SizeClassification) -> SizeClassification {
-    let mut scl: SizeClassification = SizeClassification::SCALAR;
+    let mut scl: SizeClassification;
     scl = (match (scl1.clone(), scl2.clone()) {
         (SizeClassification::ELEMENT_WISE, SizeClassification::SCALAR) => SizeClassification::ARRAY_SCALAR.clone(),
         (SizeClassification::SCALAR, SizeClassification::ELEMENT_WISE) => SizeClassification::SCALAR_ARRAY.clone(),
@@ -996,7 +996,7 @@ pub fn combineSizeClassification(mut scl1: SizeClassification, mut scl2: SizeCla
 }
 
 pub fn isDashClassification(mut mcl: MathClassification) -> bool {
-    let mut b: bool = false;
+    let mut b: bool;
     b = (match mcl.clone() {
         MathClassification::ADDITION => true,
         MathClassification::SUBTRACTION => true,
@@ -1006,7 +1006,7 @@ pub fn isDashClassification(mut mcl: MathClassification) -> bool {
 }
 
 pub fn isCommutative(mut operator: Arc<NFOperator>) -> bool {
-    let mut b: bool = false;
+    let mut b: bool;
     b = (::match_deref::match_deref! { match &(Type::arrayElementType(operator.ty.clone())) {
         Deref @ Type::INTEGER => true,
         Deref @ Type::REAL => true,
@@ -1032,7 +1032,7 @@ pub fn isCommutative(mut operator: Arc<NFOperator>) -> bool {
 }
 
 pub fn isSoftCommutative(mut operator: Arc<NFOperator>) -> bool {
-    let mut b: bool = false;
+    let mut b: bool;
     b = (match operator.op.clone() {
         Op::SUB => true,
         Op::DIV => true,
@@ -1048,7 +1048,7 @@ pub fn isSoftCommutative(mut operator: Arc<NFOperator>) -> bool {
 }
 
 pub fn repetition(mut operator: Arc<NFOperator>) -> (bool, bool) {
-    let mut b: (bool, bool) = (false, false);
+    let mut b: (bool, bool);
     b = (match operator.op.clone() {
         Op::ADD_SCALAR_ARRAY => (true, false),
         Op::ADD_ARRAY_SCALAR { .. } => (false, true),
@@ -1063,7 +1063,7 @@ pub fn repetition(mut operator: Arc<NFOperator>) -> (bool, bool) {
 }
 
 pub fn reduction(mut operator: Arc<NFOperator>) -> bool {
-    let mut b: bool = false;
+    let mut b: bool;
     b = (match operator.op.clone() {
         Op::MUL_MATRIX_VECTOR => true,
         Op::MUL_VECTOR_MATRIX => true,
@@ -1075,11 +1075,11 @@ pub fn reduction(mut operator: Arc<NFOperator>) -> bool {
 }
 
 pub fn isCombineable(mut op1: Arc<NFOperator>, mut op2: Arc<NFOperator>) -> Result<bool> {
-    let mut b: bool = false;
-    let mut mcl1: MathClassification = MathClassification::ADDITION;
-    let mut mcl2: MathClassification = MathClassification::ADDITION;
-    let mut scl1: SizeClassification = SizeClassification::SCALAR;
-    let mut scl2: SizeClassification = SizeClassification::SCALAR;
+    let mut b: bool;
+    let mut mcl1: MathClassification;
+    let mut mcl2: MathClassification;
+    let mut scl1: SizeClassification;
+    let mut scl2: SizeClassification;
     (mcl1, scl1) = classify(op1.clone())?;
     (mcl2, scl2) = classify(op2.clone())?;
     b = isCombineableMath(mcl1.clone(), mcl2.clone()) && isCombineableSize(scl1.clone(), scl2.clone());
@@ -1090,25 +1090,25 @@ pub fn isCombineable(mut op1: Arc<NFOperator>, mut op2: Arc<NFOperator>) -> Resu
 }
 
 pub fn isCombineableMath(mut mcl1: MathClassification, mut mcl2: MathClassification) -> bool {
-    let mut b: bool = false;
+    let mut b: bool;
     b = mcl1.clone() == mcl2.clone() || isDashClassification(mcl1.clone()) && isDashClassification(mcl2.clone());
     b
 }
 
 pub fn isCombineableSize(mut scl1: SizeClassification, mut scl2: SizeClassification) -> bool {
-    let mut b: bool = false;
+    let mut b: bool;
     b = scl1.clone() == scl2.clone();
     b
 }
 
 pub fn toDebugString(mut op: Arc<NFOperator>) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("OPERATOR(")); __mm_s.push_str(&*Type::toString(op.ty.clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*opToString(op.op.clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
     Ok(r#str)
 }
 
 pub fn opToString(mut op: Op) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     r#str = ((match op.clone() {
         Op::ADD => literal!("ADD"),
         Op::SUB => literal!("SUB"),

@@ -100,40 +100,40 @@ pub type InstanceHierarchy = Arc<metamodelica::List<InnerOuter::TopInstance>>;
 pub const alwaysUnroll: bool = true;
 
 pub fn instEquation(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inPrefix: DAE::Prefix, mut inSets: DAE::Connect::Sets, mut inState: ClassInf::State, mut inEquation: Arc<SCode::Equation>, mut inImpl: bool, mut unrollForLoops: bool, mut inGraph: ConnectionGraph::ConnectionGraph) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::DAElist, DAE::Connect::Sets, ClassInf::State, ConnectionGraph::ConnectionGraph)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-    let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>> = metamodelica::nil();
-    let mut outDae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-    let mut outSets: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
-    let mut outState: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
-    let mut outGraph: ConnectionGraph::ConnectionGraph = <ConnectionGraph::ConnectionGraph as ::std::default::Default>::default();
+    let mut outCache: FCore::Cache;
+    let mut outEnv: FCore::Graph;
+    let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>>;
+    let mut outDae: DAE::DAElist;
+    let mut outSets: DAE::Connect::Sets;
+    let mut outState: ClassInf::State;
+    let mut outGraph: ConnectionGraph::ConnectionGraph;
     (outCache, outEnv, outIH, outDae, outSets, outState, outGraph) = instEquationCommon(inCache.clone(), inEnv.clone(), inIH.clone(), inPrefix.clone(), inSets.clone(), inState.clone(), inEquation.clone(), openmodelica_frontend_types::SCode::Initial::NON_INITIAL, inImpl.clone(), inGraph.clone())?;
     Ok((outCache, outEnv, outIH, outDae, outSets, outState, outGraph))
 }
 
 pub fn instInitialEquation(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inPrefix: DAE::Prefix, mut inSets: DAE::Connect::Sets, mut inState: ClassInf::State, mut inEquation: Arc<SCode::Equation>, mut inImpl: bool, mut unrollForLoops: bool, mut inGraph: ConnectionGraph::ConnectionGraph) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::DAElist, DAE::Connect::Sets, ClassInf::State, ConnectionGraph::ConnectionGraph)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-    let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>> = metamodelica::nil();
-    let mut outDae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-    let mut outSets: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
-    let mut outState: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
-    let mut outGraph: ConnectionGraph::ConnectionGraph = <ConnectionGraph::ConnectionGraph as ::std::default::Default>::default();
+    let mut outCache: FCore::Cache;
+    let mut outEnv: FCore::Graph;
+    let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>>;
+    let mut outDae: DAE::DAElist;
+    let mut outSets: DAE::Connect::Sets;
+    let mut outState: ClassInf::State;
+    let mut outGraph: ConnectionGraph::ConnectionGraph;
     (outCache, outEnv, outIH, outDae, outSets, outState, outGraph) = instEquationCommon(inCache.clone(), inEnv.clone(), inIH.clone(), inPrefix.clone(), inSets.clone(), inState.clone(), inEquation.clone(), openmodelica_frontend_types::SCode::Initial::INITIAL, inImpl.clone(), inGraph.clone())?;
     Ok((outCache, outEnv, outIH, outDae, outSets, outState, outGraph))
 }
 
 fn instEquationCommon(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inPrefix: DAE::Prefix, mut inSets: DAE::Connect::Sets, mut inState: ClassInf::State, mut inEquation: Arc<SCode::Equation>, mut inInitial: SCode::Initial, mut inImpl: bool, mut inGraph: ConnectionGraph::ConnectionGraph) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::DAElist, DAE::Connect::Sets, ClassInf::State, ConnectionGraph::ConnectionGraph)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-    let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>> = metamodelica::nil();
-    let mut outDae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-    let mut outSets: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
-    let mut outState: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
-    let mut outGraph: ConnectionGraph::ConnectionGraph = <ConnectionGraph::ConnectionGraph as ::std::default::Default>::default();
+    let mut outCache: FCore::Cache;
+    let mut outEnv: FCore::Graph;
+    let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>>;
+    let mut outDae: DAE::DAElist;
+    let mut outSets: DAE::Connect::Sets;
+    let mut outState: ClassInf::State;
+    let mut outGraph: ConnectionGraph::ConnectionGraph;
     let mut errorCount: i32 = Error::getNumErrorMessages();
-    let mut s: ArcStr = arcstr::literal!("");
-    let mut state: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
+    let mut s: ArcStr;
+    let mut state: ClassInf::State;
     match '__try0: {
         state = unwrap_break_err!(ClassInfUtil::trans(inState.clone(), openmodelica_frontend_types::ClassInf::Event::FOUND_EQUATION), '__try0);
         (outCache, outEnv, outIH, outDae, outSets, outState, outGraph) = unwrap_break_err!(instEquationCommonWork(inCache.clone(), inEnv.clone(), inIH.clone(), inPrefix.clone(), inSets.clone(), state.clone(), inEquation.clone(), inInitial.clone(), inImpl.clone(), inGraph.clone(), Arc::new(DAE::SymbolicOperation::FLATTEN { scode: inEquation.clone(), dae: None })), '__try0);
@@ -535,7 +535,7 @@ fn instEquationCommonWork(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
 }
 
 fn makeEqSource(mut inInfo: SourceInfo, mut inEnv: FCore::Graph, mut inPrefix: DAE::Prefix, mut inFlattenOp: Arc<DAE::SymbolicOperation>) -> Result<Arc<DAE::ElementSource>> {
-    let mut outSource: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
+    let mut outSource: Arc<DAE::ElementSource>;
     outSource = ElementSource::createElementSource(inInfo.clone(), FGraph::getScopePath(inEnv.clone())?, inPrefix.clone(), (DAE::emptyCref().clone(), DAE::emptyCref().clone()))?;
     outSource = ElementSource::addSymbolicTransformation(outSource.clone(), inFlattenOp.clone())?;
     Ok(outSource)
@@ -576,9 +576,9 @@ fn checkIfConditionTypes(mut inAccumProp: DAE::Properties, mut inConditions: Arc
 }
 
 fn checkIfConditionBinding(mut inValues: Arc<Values::Value>, mut inInfo: SourceInfo) -> Result<bool> {
-    let mut outHasBindings: bool = false;
-    let mut empty_val: Option<Arc<Values::Value>> = None;
-    let mut name: ArcStr = arcstr::literal!("");
+    let mut outHasBindings: bool;
+    let mut empty_val: Option<Arc<Values::Value>>;
+    let mut name: ArcStr;
     empty_val = ValuesUtil::containsEmpty(inValues.clone());
     if isSome(empty_val.clone()) {
         let __pa0 = ::match_deref::match_deref! { match &(empty_val.clone()) {
@@ -595,10 +595,10 @@ fn checkIfConditionBinding(mut inValues: Arc<Values::Value>, mut inInfo: SourceI
 }
 
 fn instOperatorArg(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inPrefix: DAE::Prefix, mut inArg: Arc<Absyn::Exp>, mut inImpl: bool, mut inExpectedType: Arc<DAE::Type>, mut inOperatorName: ArcStr, mut inArgName: ArcStr, mut inArgIndex: i32, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outArg: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut props: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
-    let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+    let mut outCache: FCore::Cache;
+    let mut outArg: Arc<DAE::Exp>;
+    let mut props: DAE::Properties;
+    let mut ty: Arc<DAE::Type>;
     (outCache, outArg, props) = Static::elabExp(inCache.clone(), inEnv.clone(), inArg.clone(), inImpl.clone(), true, inPrefix.clone(), inInfo.clone())?;
     ty = Types::getPropType(props.clone())?;
     if !(Types::subtype(ty.clone(), inExpectedType.clone(), true)?) {
@@ -611,7 +611,7 @@ fn instOperatorArg(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH:
 }
 
 fn isConnectionsOperator(mut inExp: Arc<Absyn::Exp>) -> bool {
-    let mut yes: bool = false;
+    let mut yes: bool;
     yes = (::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ Absyn::Exp::CALL { function_: Deref @ Absyn::ComponentRef::CREF_QUAL { name: Deref @ "Connections", subscripts: Deref @ metamodelica::List::Nil, componentRef: Deref @ Absyn::ComponentRef::CREF_IDENT { name: id, subscripts: Deref @ metamodelica::List::Nil } }, .. } => {
             listMember((id.clone()).clone(), list![(literal!("root")).clone(), (literal!("potentialRoot")).clone(), (literal!("branch")).clone(), (literal!("uniqueRoot")).clone()])
@@ -625,13 +625,13 @@ fn isConnectionsOperator(mut inExp: Arc<Absyn::Exp>) -> bool {
 }
 
 fn handleConnectionsOperators(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inPrefix: DAE::Prefix, mut inSets: DAE::Connect::Sets, mut inState: ClassInf::State, mut inEquation: Arc<SCode::Equation>, mut inInitial: SCode::Initial, mut inImpl: bool, mut inGraph: ConnectionGraph::ConnectionGraph, mut flattenOp: Arc<DAE::SymbolicOperation>) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::DAElist, DAE::Connect::Sets, ClassInf::State, ConnectionGraph::ConnectionGraph)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-    let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>> = metamodelica::nil();
-    let mut outDae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-    let mut outSets: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
-    let mut outState: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
-    let mut outGraph: ConnectionGraph::ConnectionGraph = <ConnectionGraph::ConnectionGraph as ::std::default::Default>::default();
+    let mut outCache: FCore::Cache;
+    let mut outEnv: FCore::Graph;
+    let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>>;
+    let mut outDae: DAE::DAElist;
+    let mut outSets: DAE::Connect::Sets;
+    let mut outState: ClassInf::State;
+    let mut outGraph: ConnectionGraph::ConnectionGraph;
     (outCache, outEnv, outIH, outDae, outSets, outState, outGraph) = 'mc: {
         let __mc_input = (inCache.clone(), inEnv.clone(), inIH.clone(), inPrefix.clone(), inSets.clone(), inState.clone(), inEquation.clone(), inGraph.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -820,8 +820,8 @@ fn handleConnectionsOperators(mut inCache: FCore::Cache, mut inEnv: FCore::Graph
 }
 
 fn potentialRootArguments(mut inFunctionArgs: Arc<Absyn::FunctionArgs>, mut info: SourceInfo, mut inPrefix: DAE::Prefix, mut inEquation: Arc<SCode::Equation>) -> Result<(Arc<Absyn::ComponentRef>, i32)> {
-    let mut outCref: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
-    let mut outPriority: i32 = 0;
+    let mut outCref: Arc<Absyn::ComponentRef>;
+    let mut outPriority: i32;
     (outCref, outPriority) = 'mc: {
         let __mc_input = inFunctionArgs.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -867,8 +867,8 @@ fn potentialRootArguments(mut inFunctionArgs: Arc<Absyn::FunctionArgs>, mut info
 }
 
 fn uniqueRootArguments(mut inFunctionArgs: Arc<Absyn::FunctionArgs>, mut info: SourceInfo, mut inPrefix: DAE::Prefix, mut inEquation: Arc<SCode::Equation>) -> Result<(Arc<Absyn::ComponentRef>, Arc<Absyn::Exp>)> {
-    let mut outCref: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
-    let mut outMessage: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
+    let mut outCref: Arc<Absyn::ComponentRef>;
+    let mut outMessage: Arc<Absyn::Exp>;
     (outCref, outMessage) = 'mc: {
         let __mc_input = inFunctionArgs.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -914,7 +914,7 @@ fn uniqueRootArguments(mut inFunctionArgs: Arc<Absyn::FunctionArgs>, mut info: S
 }
 
 fn checkReinitType(mut inType: Arc<DAE::Type>, mut inProperties: DAE::Properties, mut inCref: Arc<DAE::ComponentRef>, mut inInfo: SourceInfo) -> Result<bool> {
-    let mut outSucceeded: bool = false;
+    let mut outSucceeded: bool;
     outSucceeded = 'mc: {
         let __mc_input = inProperties.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -981,7 +981,7 @@ fn checkTupleCallEquationMessage(mut left: Arc<Absyn::Exp>, mut right: Arc<Absyn
 }
 
 fn instEquationNoRetCallVectorization(mut exp: Arc<DAE::Exp>, mut initial_: SCode::Initial, mut source: Arc<DAE::ElementSource>) -> Result<DAE::DAElist> {
-    let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
+    let mut dae: DAE::DAElist;
     dae = (match initial_.clone() {
         SCode::Initial::NON_INITIAL { .. } => DAE::DAElist { elementLst: list![Arc::new(DAE::Element::NORETCALL { exp: exp.clone(), source: source.clone() })] },
         SCode::Initial::INITIAL { .. } => DAE::DAElist { elementLst: list![Arc::new(DAE::Element::INITIAL_NORETCALL { exp: exp.clone(), source: source.clone() })] },
@@ -990,7 +990,7 @@ fn instEquationNoRetCallVectorization(mut exp: Arc<DAE::Exp>, mut initial_: SCod
 }
 
 fn makeDAEArrayEqToReinitForm(mut inEq: Arc<DAE::Element>) -> Result<Arc<DAE::Element>> {
-    let mut outEqn: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
+    let mut outEqn: Arc<DAE::Element>;
     outEqn = (::match_deref::match_deref! { match &(inEq.clone()) {
         Deref @ DAE::Element::EQUATION { exp: Deref @ DAE::Exp::CREF { componentRef: cr1, .. }, scalar: e, source } => {
             Arc::new(DAE::Element::REINIT { componentRef: cr1.clone(), exp: e.clone(), source: source.clone() })
@@ -1019,10 +1019,10 @@ fn makeDAEArrayEqToReinitForm(mut inEq: Arc<DAE::Element>) -> Result<Arc<DAE::El
 }
 
 fn condenseArrayEquation(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut ie1: Arc<Absyn::Exp>, mut ie2: Arc<Absyn::Exp>, mut elabedE1: Arc<DAE::Exp>, mut elabedE2: Arc<DAE::Exp>, mut iprop: DAE::Properties, mut iprop2: DAE::Properties, mut r#impl: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, Arc<DAE::Exp>, DAE::Properties)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outE1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outE2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut oprop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+    let mut outCache: FCore::Cache;
+    let mut outE1: Arc<DAE::Exp>;
+    let mut outE2: Arc<DAE::Exp>;
+    let mut oprop: DAE::Properties;
     (outCache, outE1, outE2, oprop) = 'mc: {
         let __mc_input = (inCache.clone(), inEnv.clone(), ie1.clone(), ie2.clone(), iprop.clone(), iprop2.clone(), inPrefix.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -1066,8 +1066,8 @@ fn condenseArrayEquation(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut
 }
 
 fn expandTupleEquationWithWild(mut inExp: Arc<Absyn::Exp>, mut propCall: DAE::Properties, mut propTuple: DAE::Properties) -> Result<(Arc<Absyn::Exp>, DAE::Properties)> {
-    let mut outExp: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
-    let mut oprop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+    let mut outExp: Arc<Absyn::Exp>;
+    let mut oprop: DAE::Properties;
     (outExp, oprop) = 'mc: {
         let __mc_input = (inExp.clone(), propCall.clone(), propTuple.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -1136,7 +1136,7 @@ fn expandTupleEquationWithWild(mut inExp: Arc<Absyn::Exp>, mut propCall: DAE::Pr
 }
 
 fn instEquationCommonCiTrans(mut inState: ClassInf::State, mut inInitial: SCode::Initial) -> Result<ClassInf::State> {
-    let mut outState: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
+    let mut outState: ClassInf::State;
     outState = (match inInitial.clone() {
         SCode::Initial::NON_INITIAL { .. } => ClassInfUtil::trans(inState.clone(), openmodelica_frontend_types::ClassInf::Event::FOUND_EQUATION)?,
         _ => inState.clone(),
@@ -1146,14 +1146,14 @@ fn instEquationCommonCiTrans(mut inState: ClassInf::State, mut inInitial: SCode:
 
 fn unroll(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inPrefix: DAE::Prefix, mut inSets: DAE::Connect::Sets, mut inState: ClassInf::State, mut inIdent: Ident, mut inIteratorType: Arc<DAE::Type>, mut inValue: Arc<Values::Value>, mut inEquations: Arc<metamodelica::List<Arc<SCode::Equation>>>, mut inInitial: SCode::Initial, mut inImplicit: bool, mut inGraph: ConnectionGraph::ConnectionGraph) -> Result<(FCore::Cache, DAE::DAElist, DAE::Connect::Sets, ConnectionGraph::ConnectionGraph)> {
     let mut outCache: FCore::Cache = inCache.clone();
-    let mut outDae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
+    let mut outDae: DAE::DAElist;
     let mut outSets: DAE::Connect::Sets = inSets.clone();
     let mut outGraph: ConnectionGraph::ConnectionGraph = inGraph.clone();
-    let mut values: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-    let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
+    let mut values: Arc<metamodelica::List<Arc<Values::Value>>>;
+    let mut env: FCore::Graph;
     let mut ci_state: ClassInf::State = inState.clone();
     let mut daes: Arc<metamodelica::List<DAE::DAElist>> = metamodelica::nil();
-    let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
+    let mut dae: DAE::DAElist;
     match '__try0: {
         let __pa1 = ::match_deref::match_deref! { match &(inValue.clone()) {
             Deref @ Values::Value::ARRAY { valueLst: __pa1, .. } => __pa1.clone(),
@@ -1184,21 +1184,21 @@ fn unroll(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<meta
 }
 
 fn addForLoopScope(mut env: FCore::Graph, mut iterName: Ident, mut iterType: Arc<DAE::Type>, mut iterVariability: SCode::Variability, mut constOfForIteratorRange: Option<DAE::Const>) -> Result<FCore::Graph> {
-    let mut newEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
+    let mut newEnv: FCore::Graph;
     newEnv = FGraph::openScope(env.clone(), openmodelica_frontend_types::SCode::Encapsulated::NOT_ENCAPSULATED, (arcstr::literal!(FCore::forScopeName)).clone(), None)?;
     newEnv = FGraph::addForIterator(newEnv.clone(), (iterName.clone()).clone(), iterType.clone(), openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(), iterVariability.clone(), constOfForIteratorRange.clone())?;
     Ok(newEnv)
 }
 
 fn addParForLoopScope(mut env: FCore::Graph, mut iterName: Ident, mut iterType: Arc<DAE::Type>, mut iterVariability: SCode::Variability, mut constOfForIteratorRange: Option<DAE::Const>) -> Result<FCore::Graph> {
-    let mut newEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
+    let mut newEnv: FCore::Graph;
     newEnv = FGraph::openScope(env.clone(), openmodelica_frontend_types::SCode::Encapsulated::NOT_ENCAPSULATED, (arcstr::literal!(FCore::parForScopeName)).clone(), None)?;
     newEnv = FGraph::addForIterator(newEnv.clone(), (iterName.clone()).clone(), iterType.clone(), openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(), iterVariability.clone(), constOfForIteratorRange.clone())?;
     Ok(newEnv)
 }
 
 pub fn instEqEquation(mut inExp1: Arc<DAE::Exp>, mut inProperties2: DAE::Properties, mut inExp3: Arc<DAE::Exp>, mut inProperties4: DAE::Properties, mut source: Arc<DAE::ElementSource>, mut inInitial5: SCode::Initial, mut inImplicit: bool, mut extraInfo: SourceInfo) -> Result<DAE::DAElist> {
-    let mut outDae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
+    let mut outDae: DAE::DAElist;
     outDae = 'mc: {
         let __mc_input = (inExp1.clone(), inProperties2.clone(), inExp3.clone(), inProperties4.clone(), inInitial5.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -1381,7 +1381,7 @@ pub fn instEqEquation(mut inExp1: Arc<DAE::Exp>, mut inProperties2: DAE::Propert
 }
 
 fn instEqEquation2(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>, mut inType3: Arc<DAE::Type>, mut inConst: DAE::Const, mut source: Arc<DAE::ElementSource>, mut inInitial4: SCode::Initial) -> Result<DAE::DAElist> {
-    let mut outDae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
+    let mut outDae: DAE::DAElist;
     outDae = 'mc: {
         let __mc_input = (inExp1.clone(), inExp2.clone(), inType3.clone(), inInitial4.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -1608,7 +1608,7 @@ fn instEqEquation2List(mut inExps1: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut 
 }
 
 pub fn makeDaeEquation(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>, mut inSource: Arc<DAE::ElementSource>, mut inInitial3: SCode::Initial) -> Result<DAE::DAElist> {
-    let mut outDae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
+    let mut outDae: DAE::DAElist;
     outDae = (::match_deref::match_deref! { match &((inExp1.clone(), inExp2.clone(), inSource.clone(), inInitial3.clone())) {
         (e1, e2, source, SCode::Initial::NON_INITIAL { .. }) => {
             let mut elt: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
@@ -1630,7 +1630,7 @@ pub fn makeDaeEquation(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>, mut
 }
 
 fn makeDaeDefine(mut inComponentRef: Arc<DAE::ComponentRef>, mut inExp: Arc<DAE::Exp>, mut source: Arc<DAE::ElementSource>, mut inInitial: SCode::Initial) -> Result<DAE::DAElist> {
-    let mut outDae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
+    let mut outDae: DAE::DAElist;
     outDae = (::match_deref::match_deref! { match &((inComponentRef.clone(), inExp.clone(), inInitial.clone())) {
         (cr, e2, SCode::Initial::NON_INITIAL { .. }) => {
             DAE::DAElist { elementLst: list![Arc::new(DAE::Element::DEFINE { componentRef: cr.clone(), exp: e2.clone(), source: source.clone() })] }
@@ -1851,9 +1851,9 @@ fn instArrayEquation(mut lhs: Arc<DAE::Exp>, mut rhs: Arc<DAE::Exp>, mut tp: Arc
 
 fn instArrayElEq(mut inLhsExp: Arc<DAE::Exp>, mut inRhsExp: Arc<DAE::Exp>, mut inType: Arc<DAE::Type>, mut inConst: DAE::Const, mut inLhsIndices: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inRhsIndices: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inSource: Arc<DAE::ElementSource>, mut inInitial: SCode::Initial) -> Result<DAE::DAElist> {
     let mut outDAE: DAE::DAElist = DAE::emptyDae().clone();
-    let mut rhs_idx: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut rhs_idx: Arc<DAE::Exp>;
     let mut rhs_idxs: Arc<metamodelica::List<Arc<DAE::Exp>>> = inRhsIndices.clone().reverse();
-    let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
+    let mut dae: DAE::DAElist;
     for mut lhs_idx in &*inLhsIndices.clone().reverse() {
         let mut lhs_idx = lhs_idx.clone();
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(rhs_idxs.clone()) {
@@ -1869,12 +1869,12 @@ fn instArrayElEq(mut inLhsExp: Arc<DAE::Exp>, mut inRhsExp: Arc<DAE::Exp>, mut i
 }
 
 fn unrollForLoop(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inPrefix: DAE::Prefix, mut inState: ClassInf::State, mut inIterator: ArcStr, mut inRange: Arc<DAE::Exp>, mut inRangeProps: DAE::Properties, mut inBody: Arc<metamodelica::List<Arc<SCode::Statement>>>, mut inStatement: Arc<SCode::Statement>, mut inInfo: SourceInfo, mut inSource: Arc<DAE::ElementSource>, mut inInitial: SCode::Initial, mut inImpl: bool, mut inUnrollLoops: bool) -> Result<(FCore::Cache, Arc<metamodelica::List<Arc<DAE::Statement>>>)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outStatements: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
-    let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-    let mut c: DAE::Const = DAE::Const::C_CONST;
-    let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-    let mut val: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
+    let mut outCache: FCore::Cache;
+    let mut outStatements: Arc<metamodelica::List<Arc<DAE::Statement>>>;
+    let mut ty: Arc<DAE::Type>;
+    let mut c: DAE::Const;
+    let mut env: FCore::Graph;
+    let mut val: Arc<Values::Value>;
     match '__try0: {
         let __pa1 = ::match_deref::match_deref! { match &(unwrap_break_err!(Types::getPropType(inRangeProps.clone()), '__try0)) {
             Deref @ DAE::Type::T_ARRAY { ty: __pa1, .. } => __pa1.clone(),
@@ -1905,16 +1905,16 @@ fn unrollForLoop(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
 }
 
 fn instForStatement(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inPrefix: DAE::Prefix, mut inState: ClassInf::State, mut inForStatement: Arc<SCode::Statement>, mut inSource: Arc<DAE::ElementSource>, mut inInitial: SCode::Initial, mut inImpl: bool, mut inUnrollLoops: bool) -> Result<(FCore::Cache, Arc<metamodelica::List<Arc<DAE::Statement>>>)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outStatements: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
-    let mut iterator: ArcStr = arcstr::literal!("");
-    let mut oarange: Option<Arc<Absyn::Exp>> = None;
-    let mut arange: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
-    let mut range: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
-    let mut body: Arc<metamodelica::List<Arc<SCode::Statement>>> = metamodelica::nil();
-    let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
-    let mut iter_crefs: Arc<metamodelica::List<(Arc<Absyn::ComponentRef>, i32)>> = metamodelica::nil();
+    let mut outCache: FCore::Cache;
+    let mut outStatements: Arc<metamodelica::List<Arc<DAE::Statement>>>;
+    let mut iterator: ArcStr;
+    let mut oarange: Option<Arc<Absyn::Exp>>;
+    let mut arange: Arc<Absyn::Exp>;
+    let mut range: Arc<DAE::Exp>;
+    let mut prop: DAE::Properties;
+    let mut body: Arc<metamodelica::List<Arc<SCode::Statement>>>;
+    let mut info: SourceInfo;
+    let mut iter_crefs: Arc<metamodelica::List<(Arc<Absyn::ComponentRef>, i32)>>;
     let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(inForStatement.clone()) {
         Deref @ SCode::Statement::ALG_FOR { index: __pa0, range: __pa1, forBody: __pa2, info: __pa3, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
         _ => bail!("pattern mismatch"),
@@ -1944,12 +1944,12 @@ fn instForStatement(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH
 
 fn instForStatement_dispatch(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inPrefix: DAE::Prefix, mut inState: ClassInf::State, mut inIterator: ArcStr, mut inRange: Arc<DAE::Exp>, mut inRangeProps: DAE::Properties, mut inBody: Arc<metamodelica::List<Arc<SCode::Statement>>>, mut inInfo: SourceInfo, mut inSource: Arc<DAE::ElementSource>, mut inInitial: SCode::Initial, mut inImpl: bool, mut inUnrollLoops: bool) -> Result<(FCore::Cache, Arc<metamodelica::List<Arc<DAE::Statement>>>)> {
     let mut outCache: FCore::Cache = inCache.clone();
-    let mut outStatements: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
-    let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-    let mut c: DAE::Const = DAE::Const::C_CONST;
-    let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-    let mut source: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
-    let mut range: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut outStatements: Arc<metamodelica::List<Arc<DAE::Statement>>>;
+    let mut ty: Arc<DAE::Type>;
+    let mut c: DAE::Const;
+    let mut env: FCore::Graph;
+    let mut source: Arc<DAE::ElementSource>;
+    let mut range: Arc<DAE::Exp>;
     c = Types::getPropConst(inRangeProps.clone())?;
     if Types::isParameterOrConstant(c.clone()) {
         if '__try0: {
@@ -2015,7 +2015,7 @@ fn instComplexEquation(mut lhs: Arc<DAE::Exp>, mut rhs: Arc<DAE::Exp>, mut tp: A
 }
 
 fn makeComplexDaeEquation(mut lhs: Arc<DAE::Exp>, mut rhs: Arc<DAE::Exp>, mut source: Arc<DAE::ElementSource>, mut initial_: SCode::Initial) -> Result<DAE::DAElist> {
-    let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
+    let mut dae: DAE::DAElist;
     dae = (match initial_.clone() {
         SCode::Initial::NON_INITIAL { .. } => DAE::DAElist { elementLst: list![Arc::new(DAE::Element::COMPLEX_EQUATION { lhs: lhs.clone(), rhs: rhs.clone(), source: source.clone() })] },
         SCode::Initial::INITIAL { .. } => DAE::DAElist { elementLst: list![Arc::new(DAE::Element::INITIAL_COMPLEX_EQUATION { lhs: lhs.clone(), rhs: rhs.clone(), source: source.clone() })] },
@@ -2024,13 +2024,13 @@ fn makeComplexDaeEquation(mut lhs: Arc<DAE::Exp>, mut rhs: Arc<DAE::Exp>, mut so
 }
 
 pub fn instAlgorithm(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inPrefix: DAE::Prefix, mut inSets: DAE::Connect::Sets, mut inState: ClassInf::State, mut inAlgorithm: Arc<SCode::AlgorithmSection>, mut inImpl: bool, mut unrollForLoops: bool, mut inGraph: ConnectionGraph::ConnectionGraph) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::DAElist, DAE::Connect::Sets, ClassInf::State, ConnectionGraph::ConnectionGraph)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-    let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>> = metamodelica::nil();
-    let mut outDae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-    let mut outSets: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
-    let mut outState: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
-    let mut outGraph: ConnectionGraph::ConnectionGraph = <ConnectionGraph::ConnectionGraph as ::std::default::Default>::default();
+    let mut outCache: FCore::Cache;
+    let mut outEnv: FCore::Graph;
+    let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>>;
+    let mut outDae: DAE::DAElist;
+    let mut outSets: DAE::Connect::Sets;
+    let mut outState: ClassInf::State;
+    let mut outGraph: ConnectionGraph::ConnectionGraph;
     (outCache, outEnv, outIH, outDae, outSets, outState, outGraph) = 'mc: {
         let __mc_input = (inCache.clone(), inEnv.clone(), inIH.clone(), inPrefix.clone(), inSets.clone(), inState.clone(), inAlgorithm.clone(), inImpl.clone(), inGraph.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -2084,13 +2084,13 @@ pub fn instAlgorithm(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inI
 }
 
 pub fn instInitialAlgorithm(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inPrefix: DAE::Prefix, mut inSets: DAE::Connect::Sets, mut inState: ClassInf::State, mut inAlgorithm: Arc<SCode::AlgorithmSection>, mut inImpl: bool, mut unrollForLoops: bool, mut inGraph: ConnectionGraph::ConnectionGraph) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::DAElist, DAE::Connect::Sets, ClassInf::State, ConnectionGraph::ConnectionGraph)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-    let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>> = metamodelica::nil();
-    let mut outDae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-    let mut outSets: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
-    let mut outState: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
-    let mut outGraph: ConnectionGraph::ConnectionGraph = <ConnectionGraph::ConnectionGraph as ::std::default::Default>::default();
+    let mut outCache: FCore::Cache;
+    let mut outEnv: FCore::Graph;
+    let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>>;
+    let mut outDae: DAE::DAElist;
+    let mut outSets: DAE::Connect::Sets;
+    let mut outState: ClassInf::State;
+    let mut outGraph: ConnectionGraph::ConnectionGraph;
     (outCache, outEnv, outIH, outDae, outSets, outState, outGraph) = 'mc: {
         let __mc_input = (inCache.clone(), inEnv.clone(), inIH.clone(), inPrefix.clone(), inSets.clone(), inState.clone(), inAlgorithm.clone(), inImpl.clone(), inGraph.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -2125,10 +2125,10 @@ pub fn instInitialAlgorithm(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
 }
 
 pub fn instConstraint(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPrefix: DAE::Prefix, mut inState: ClassInf::State, mut inConstraints: SCode::ConstraintSection, mut inImpl: bool) -> Result<(FCore::Cache, FCore::Graph, DAE::DAElist, ClassInf::State)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-    let mut outDae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-    let mut outState: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
+    let mut outCache: FCore::Cache;
+    let mut outEnv: FCore::Graph;
+    let mut outDae: DAE::DAElist;
+    let mut outState: ClassInf::State;
     (outCache, outEnv, outDae, outState) = 'mc: {
         let __mc_input = (inCache.clone(), inEnv.clone(), inPrefix.clone(), inState.clone(), inConstraints.clone(), inImpl.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -2155,8 +2155,8 @@ pub fn instConstraint(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut in
 
 pub fn instStatements(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inPrefix: DAE::Prefix, mut inState: ClassInf::State, mut inStatements: Arc<metamodelica::List<Arc<SCode::Statement>>>, mut inSource: Arc<DAE::ElementSource>, mut inInitial: SCode::Initial, mut inImpl: bool, mut unrollForLoops: bool) -> Result<(FCore::Cache, Arc<metamodelica::List<Arc<DAE::Statement>>>)> {
     let mut outCache: FCore::Cache = inCache.clone();
-    let mut outStatements: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
-    let mut stmts: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
+    let mut outStatements: Arc<metamodelica::List<Arc<DAE::Statement>>>;
+    let mut stmts: Arc<metamodelica::List<Arc<DAE::Statement>>>;
     let mut stmtsl: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Statement>>>>> = metamodelica::nil();
     for mut stmt in &*inStatements.clone() {
         let mut stmt = stmt.clone();
@@ -2168,9 +2168,9 @@ pub fn instStatements(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut in
 }
 
 fn instExp(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inPrefix: DAE::Prefix, mut inExp: Arc<Absyn::Exp>, mut inImpl: bool, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+    let mut outCache: FCore::Cache;
+    let mut outExp: Arc<DAE::Exp>;
+    let mut outProperties: DAE::Properties;
     (outCache, outExp, outProperties) = Static::elabExp(inCache.clone(), inEnv.clone(), inExp.clone(), inImpl.clone(), true, inPrefix.clone(), inInfo.clone())?;
     (outCache, outExp, outProperties) = Ceval::cevalIfConstant(outCache.clone(), inEnv.clone(), outExp.clone(), outProperties.clone(), inImpl.clone(), inInfo.clone())?;
     (outCache, outExp) = PrefixUtil::prefixExp(outCache.clone(), inEnv.clone(), inIH.clone(), outExp.clone(), inPrefix.clone())?;
@@ -2362,7 +2362,7 @@ fn instStatement(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
 }
 
 fn makeAssignment(mut inLhs: Arc<DAE::Exp>, mut inLhsProps: DAE::Properties, mut inRhs: Arc<DAE::Exp>, mut inRhsProps: DAE::Properties, mut inAttributes: Arc<DAE::Attributes>, mut inInitial: SCode::Initial, mut inSource: Arc<DAE::ElementSource>) -> Result<Arc<DAE::Statement>> {
-    let mut outStatement: Arc<DAE::Statement> = Arc::new(<DAE::Statement as ::std::default::Default>::default());
+    let mut outStatement: Arc<DAE::Statement>;
     outStatement = (::match_deref::match_deref! { match &((inLhsProps.clone(), inRhs.clone(), inRhsProps.clone())) {
         (DAE::Properties::PROP { .. }, Deref @ DAE::Exp::CALL { .. }, DAE::Properties::PROP_TUPLE { .. }) => {
             let mut wild_props: Arc<metamodelica::List<DAE::Properties>> = metamodelica::nil();
@@ -2389,7 +2389,7 @@ fn makeAssignment(mut inLhs: Arc<DAE::Exp>, mut inLhsProps: DAE::Properties, mut
 }
 
 fn containsWhenStatements(mut statementList: Arc<metamodelica::List<Arc<SCode::Statement>>>) -> Result<bool> {
-    let mut hasWhenStatements: bool = false;
+    let mut hasWhenStatements: bool;
     hasWhenStatements = 'mc: {
         let __mc_input = statementList.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -2486,8 +2486,8 @@ fn containsWhenStatements(mut statementList: Arc<metamodelica::List<Arc<SCode::S
 }
 
 fn loopOverRange(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inPrefix: DAE::Prefix, mut ci_state: ClassInf::State, mut inIdent: Ident, mut inValue: Arc<Values::Value>, mut inAlgItmLst: Arc<metamodelica::List<Arc<SCode::Statement>>>, mut source: Arc<DAE::ElementSource>, mut inInitial: SCode::Initial, mut inImpl: bool, mut unrollForLoops: bool) -> Result<(FCore::Cache, Arc<metamodelica::List<Arc<DAE::Statement>>>)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outStatements: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
+    let mut outCache: FCore::Cache;
+    let mut outStatements: Arc<metamodelica::List<Arc<DAE::Statement>>>;
     (outCache, outStatements) = 'mc: {
         let __mc_input = (inCache.clone(), inEnv.clone(), inIH.clone(), inPrefix.clone(), inIdent.clone(), inValue.clone(), inAlgItmLst.clone(), inInitial.clone(), inImpl.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -2537,7 +2537,7 @@ fn loopOverRange(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
 }
 
 fn rangeExpression(mut inTuple: (Arc<Absyn::ComponentRef>, i32)) -> Arc<Absyn::Exp> {
-    let mut outExp: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
+    let mut outExp: Arc<Absyn::Exp>;
     outExp = (::match_deref::match_deref! { match &(inTuple.clone()) {
         (acref, dimNum) => {
             let mut e: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
@@ -2550,11 +2550,11 @@ fn rangeExpression(mut inTuple: (Arc<Absyn::ComponentRef>, i32)) -> Arc<Absyn::E
 }
 
 fn instIfEqBranch(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inPrefix: DAE::Prefix, mut inState: ClassInf::State, mut inEquations: Arc<metamodelica::List<Arc<SCode::Equation>>>, mut inImpl: bool) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, ClassInf::State, Arc<metamodelica::List<Arc<DAE::Element>>>)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-    let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>> = metamodelica::nil();
-    let mut outState: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
-    let mut outEquations: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
+    let mut outCache: FCore::Cache;
+    let mut outEnv: FCore::Graph;
+    let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>>;
+    let mut outState: ClassInf::State;
+    let mut outEquations: Arc<metamodelica::List<Arc<DAE::Element>>>;
     checkForConnectInIfBranch(inEquations.clone())?;
     let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(Inst::instList(inCache.clone(), inEnv.clone(), inIH.clone(), inPrefix.clone(), Connect::emptySet().clone(), inState.clone(), (std::sync::Arc::new(instEquation) as std::sync::Arc<dyn ::std::ops::Fn(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::Prefix, DAE::Connect::Sets, ClassInf::State, Arc<SCode::Equation>, bool, bool, ConnectionGraph::ConnectionGraph) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::DAElist, DAE::Connect::Sets, ClassInf::State, ConnectionGraph::ConnectionGraph)> + 'static>), inEquations.clone(), inImpl.clone(), alwaysUnroll.clone(), ConnectionGraph::EMPTY().clone())?) {
         (__pa0, __pa1, __pa2, DAE::DAElist { elementLst: __pa3 }, _, __pa4, _) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
@@ -2590,11 +2590,11 @@ fn instIfEqBranches(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH
 }
 
 fn instInitialIfEqBranch(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inPrefix: DAE::Prefix, mut inState: ClassInf::State, mut inEquations: Arc<metamodelica::List<Arc<SCode::Equation>>>, mut inImpl: bool) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, ClassInf::State, Arc<metamodelica::List<Arc<DAE::Element>>>)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-    let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>> = metamodelica::nil();
-    let mut outState: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
-    let mut outEquations: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
+    let mut outCache: FCore::Cache;
+    let mut outEnv: FCore::Graph;
+    let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>>;
+    let mut outState: ClassInf::State;
+    let mut outEquations: Arc<metamodelica::List<Arc<DAE::Element>>>;
     checkForConnectInIfBranch(inEquations.clone())?;
     let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(Inst::instList(inCache.clone(), inEnv.clone(), inIH.clone(), inPrefix.clone(), Connect::emptySet().clone(), inState.clone(), (std::sync::Arc::new(instInitialEquation) as std::sync::Arc<dyn ::std::ops::Fn(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::Prefix, DAE::Connect::Sets, ClassInf::State, Arc<SCode::Equation>, bool, bool, ConnectionGraph::ConnectionGraph) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::DAElist, DAE::Connect::Sets, ClassInf::State, ConnectionGraph::ConnectionGraph)> + 'static>), inEquations.clone(), inImpl.clone(), alwaysUnroll.clone(), ConnectionGraph::EMPTY().clone())?) {
         (__pa0, __pa1, __pa2, DAE::DAElist { elementLst: __pa3 }, _, __pa4, _) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
@@ -2657,8 +2657,8 @@ fn checkForConnectInIfBranch2(mut inEquation: Arc<SCode::Equation>) -> Result<()
 }
 
 fn instElseIfs(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inPre: DAE::Prefix, mut ci_state: ClassInf::State, mut inElseIfBranches: Arc<metamodelica::List<(Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Statement>>>)>>, mut source: Arc<DAE::ElementSource>, mut initial_: SCode::Initial, mut inImpl: bool, mut unrollForLoops: bool, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<metamodelica::List<(Arc<DAE::Exp>, DAE::Properties, Arc<metamodelica::List<Arc<DAE::Statement>>>)>>)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outElseIfBranches: Arc<metamodelica::List<(Arc<DAE::Exp>, DAE::Properties, Arc<metamodelica::List<Arc<DAE::Statement>>>)>> = metamodelica::nil();
+    let mut outCache: FCore::Cache;
+    let mut outElseIfBranches: Arc<metamodelica::List<(Arc<DAE::Exp>, DAE::Properties, Arc<metamodelica::List<Arc<DAE::Statement>>>)>>;
     (outCache, outElseIfBranches) = 'mc: {
         let __mc_input = (inCache.clone(), inEnv.clone(), inIH.clone(), inPre.clone(), inElseIfBranches.clone(), inImpl.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -2705,19 +2705,19 @@ fn instElseIfs(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc
 
 fn instWhenEqBranch(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inPrefix: DAE::Prefix, mut inSets: DAE::Connect::Sets, mut inState: ClassInf::State, mut inBranch: (Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Equation>>>), mut inImpl: bool, mut inUnrollLoops: bool, mut inGraph: ConnectionGraph::ConnectionGraph, mut info: SourceInfo) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Element>>>, ConnectionGraph::ConnectionGraph)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-    let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>> = metamodelica::nil();
-    let mut outCondition: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outEquations: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
-    let mut outGraph: ConnectionGraph::ConnectionGraph = <ConnectionGraph::ConnectionGraph as ::std::default::Default>::default();
-    let mut cond: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
-    let mut body: Arc<metamodelica::List<Arc<SCode::Equation>>> = metamodelica::nil();
+    let mut outEnv: FCore::Graph;
+    let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>>;
+    let mut outCondition: Arc<DAE::Exp>;
+    let mut outEquations: Arc<metamodelica::List<Arc<DAE::Element>>>;
+    let mut outGraph: ConnectionGraph::ConnectionGraph;
+    let mut cond: Arc<Absyn::Exp>;
+    let mut body: Arc<metamodelica::List<Arc<SCode::Equation>>>;
     let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut aexps: Arc<metamodelica::List<Arc<Absyn::Exp>>> = metamodelica::nil();
     let mut dexps: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
     let mut dexp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-    let mut isClock: bool = false;
+    let mut isClock: bool;
     (cond, body) = inBranch.clone();
     isClock = false;
     outCondition = (::match_deref::match_deref! { match &(cond.clone()) {
@@ -2762,7 +2762,7 @@ fn instWhenEqBranch(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH
 
 fn checkWhenCondition(mut exp: Arc<DAE::Exp>, mut ty: Arc<DAE::Type>, mut aexp: Arc<Absyn::Exp>, mut info: SourceInfo) -> Result<Arc<DAE::Exp>> {
     let mut exp: Arc<DAE::Exp> = exp;
-    let mut tyEl: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+    let mut tyEl: Arc<DAE::Type>;
     match '__try0: {
         if Types::isArray(ty.clone()) {
             tyEl = Types::arrayElementType(ty.clone());
@@ -2798,12 +2798,12 @@ fn checkWhenCondition(mut exp: Arc<DAE::Exp>, mut ty: Arc<DAE::Type>, mut aexp: 
 }
 
 fn instConnect(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inSets: DAE::Connect::Sets, mut inPrefix: DAE::Prefix, mut inComponentRefLeft: Arc<Absyn::ComponentRef>, mut inComponentRefRight: Arc<Absyn::ComponentRef>, mut inImplicit: bool, mut inGraph: ConnectionGraph::ConnectionGraph, mut info: SourceInfo) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::Connect::Sets, DAE::DAElist, ConnectionGraph::ConnectionGraph)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-    let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>> = metamodelica::nil();
-    let mut outSets: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
-    let mut outDae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-    let mut outGraph: ConnectionGraph::ConnectionGraph = <ConnectionGraph::ConnectionGraph as ::std::default::Default>::default();
+    let mut outCache: FCore::Cache;
+    let mut outEnv: FCore::Graph;
+    let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>>;
+    let mut outSets: DAE::Connect::Sets;
+    let mut outDae: DAE::DAElist;
+    let mut outGraph: ConnectionGraph::ConnectionGraph;
     (outCache, outEnv, outIH, outSets, outDae, outGraph) = 'mc: {
         let __mc_input = (inCache.clone(), inEnv.clone(), inIH.clone(), inSets.clone(), inPrefix.clone(), inComponentRefLeft.clone(), inComponentRefRight.clone(), inImplicit.clone(), inGraph.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -2927,16 +2927,16 @@ fn instConnect(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc
 
 fn instConnector(mut inCache: FCore::Cache, mut env: FCore::Graph, mut ih: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut connectorCref: Arc<Absyn::ComponentRef>, mut r#impl: bool, mut prefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::ComponentRef>, Arc<DAE::Attributes>, Arc<DAE::ConnectorType>, SCode::Variability, Absyn::InnerOuter, DAE::Connect::Face, Arc<DAE::Type>, bool)> {
     let mut outCache: FCore::Cache = inCache.clone();
-    let mut outCref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-    let mut outAttr: Arc<DAE::Attributes> = Arc::new(<DAE::Attributes as ::std::default::Default>::default());
-    let mut connectorType: Arc<DAE::ConnectorType> = Arc::new(DAE::ConnectorType::FLOW);
-    let mut variability: SCode::Variability = SCode::Variability::CONST;
-    let mut innerOuter: Absyn::InnerOuter = Absyn::InnerOuter::INNER;
-    let mut face: DAE::Connect::Face = DAE::Connect::Face::INSIDE;
-    let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-    let mut deleted: bool = false;
-    let mut status: FCore::Status = FCore::Status::CLS_FULL;
-    let mut is_expandable: bool = false;
+    let mut outCref: Arc<DAE::ComponentRef>;
+    let mut outAttr: Arc<DAE::Attributes>;
+    let mut connectorType: Arc<DAE::ConnectorType>;
+    let mut variability: SCode::Variability;
+    let mut innerOuter: Absyn::InnerOuter;
+    let mut face: DAE::Connect::Face;
+    let mut ty: Arc<DAE::Type>;
+    let mut deleted: bool;
+    let mut status: FCore::Status;
+    let mut is_expandable: bool;
     outCref = ComponentReference::toExpCref(connectorCref.clone())?;
     let (__pa0, __pa1, __pa2, __pa3, __pa4, __pa5) = ::match_deref::match_deref! { match &(Lookup::lookupConnectorVar(env.clone(), outCref.clone(), true)?) {
         (Deref @ DAE::Attributes { connectorType: __pa0, variability: __pa1, innerOuter: __pa2, .. }, __pa3, __pa4, __pa5) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone()),
@@ -2970,7 +2970,7 @@ fn instConnector(mut inCache: FCore::Cache, mut env: FCore::Graph, mut ih: Arc<m
 }
 
 fn sortConnectorType(mut inType: Arc<DAE::Type>) -> Result<Arc<DAE::Type>> {
-    let mut outType: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+    let mut outType: Arc<DAE::Type>;
     outType = (::match_deref::match_deref! { match &(inType.clone()) {
         Deref @ DAE::Type::T_ARRAY { ty, dims } => {
             let mut ty = (*ty).clone();
@@ -2991,9 +2991,9 @@ fn sortConnectorType(mut inType: Arc<DAE::Type>) -> Result<Arc<DAE::Type>> {
 }
 
 fn connectorCompGt(mut inVar1: Arc<DAE::Var>, mut inVar2: Arc<DAE::Var>) -> Result<bool> {
-    let mut outGt: bool = false;
-    let mut id1: ArcStr = arcstr::literal!("");
-    let mut id2: ArcStr = arcstr::literal!("");
+    let mut outGt: bool;
+    let mut id1: ArcStr;
+    let mut id2: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(inVar1.clone()) {
         Deref @ DAE::Var { name: __pa0, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
@@ -3063,12 +3063,12 @@ fn checkConstantVariability(mut inrefs: Arc<metamodelica::List<Arc<Absyn::Compon
 }
 
 fn connectExpandableConnectors(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inSets: DAE::Connect::Sets, mut inPrefix: DAE::Prefix, mut inComponentRefLeft: Arc<Absyn::ComponentRef>, mut inComponentRefRight: Arc<Absyn::ComponentRef>, mut inImpl: bool, mut inGraph: ConnectionGraph::ConnectionGraph, mut info: SourceInfo) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::Connect::Sets, DAE::DAElist, ConnectionGraph::ConnectionGraph)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-    let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>> = metamodelica::nil();
-    let mut outSets: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
-    let mut outDae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-    let mut outGraph: ConnectionGraph::ConnectionGraph = <ConnectionGraph::ConnectionGraph as ::std::default::Default>::default();
+    let mut outCache: FCore::Cache;
+    let mut outEnv: FCore::Graph;
+    let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>>;
+    let mut outSets: DAE::Connect::Sets;
+    let mut outDae: DAE::DAElist;
+    let mut outGraph: ConnectionGraph::ConnectionGraph;
     (outCache, outEnv, outIH, outSets, outDae, outGraph) = 'mc: {
         let __mc_input = (inCache.clone(), inEnv.clone(), inIH.clone(), inSets.clone(), inPrefix.clone(), inComponentRefLeft.clone(), inComponentRefRight.clone(), inImpl.clone(), inGraph.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -3416,7 +3416,7 @@ fn connectExpandableConnectors(mut inCache: FCore::Cache, mut inEnv: FCore::Grap
 }
 
 fn generateExpandableDAE(mut inCache: FCore::Cache, mut inParentEnv: FCore::Graph, mut inClassEnv: FCore::Graph, mut cref: Arc<DAE::ComponentRef>, mut state: ClassInf::State, mut ty: Arc<DAE::Type>, mut attrs: SCode::Attributes, mut vis: SCode::Visibility, mut io: Absyn::InnerOuter, mut source: Arc<DAE::ElementSource>) -> Result<DAE::DAElist> {
-    let mut outDAE: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
+    let mut outDAE: DAE::DAElist;
     outDAE = (::match_deref::match_deref! { match &(source.clone()) {
         _ => {
             let mut daeDims: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
@@ -3490,12 +3490,12 @@ fn updateEnvComponentsOnQualPath(mut inCache: FCore::Cache, mut inEnv: FCore::Gr
 }
 
 fn connectExpandableVariables(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inSets: DAE::Connect::Sets, mut inPrefix: DAE::Prefix, mut inComponentRefLeft: Arc<Absyn::ComponentRef>, mut inComponentRefRight: Arc<Absyn::ComponentRef>, mut inVariablesUnion: Arc<metamodelica::List<ArcStr>>, mut inImpl: bool, mut inGraph: ConnectionGraph::ConnectionGraph, mut info: SourceInfo) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::Connect::Sets, DAE::DAElist, ConnectionGraph::ConnectionGraph)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-    let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>> = metamodelica::nil();
-    let mut outSets: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
-    let mut outDae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-    let mut outGraph: ConnectionGraph::ConnectionGraph = <ConnectionGraph::ConnectionGraph as ::std::default::Default>::default();
+    let mut outCache: FCore::Cache;
+    let mut outEnv: FCore::Graph;
+    let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>>;
+    let mut outSets: DAE::Connect::Sets;
+    let mut outDae: DAE::DAElist;
+    let mut outGraph: ConnectionGraph::ConnectionGraph;
     (outCache, outEnv, outIH, outSets, outDae, outGraph) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inIH.clone(), inSets.clone(), inPrefix.clone(), inComponentRefLeft.clone(), inComponentRefRight.clone(), inVariablesUnion.clone(), inImpl.clone(), inGraph.clone())) {
         (cache, env, ih, sets, _, _, _, Deref @ metamodelica::List::Nil, _, graph) => {
             (cache.clone(), env.clone(), ih.clone(), sets.clone(), DAE::emptyDae().clone(), graph.clone())
@@ -3524,7 +3524,7 @@ fn connectExpandableVariables(mut inCache: FCore::Cache, mut inEnv: FCore::Graph
 }
 
 fn getStateFromType(mut ty: Arc<DAE::Type>) -> Result<ClassInf::State> {
-    let mut outState: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
+    let mut outState: ClassInf::State;
     outState = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ DAE::Type::T_COMPLEX { complexClassType: state, .. } => {
             state.clone()
@@ -3541,7 +3541,7 @@ fn getStateFromType(mut ty: Arc<DAE::Type>) -> Result<ClassInf::State> {
 }
 
 fn isConnectorType(mut ty: Arc<DAE::Type>) -> bool {
-    let mut isConnector: bool = false;
+    let mut isConnector: bool;
     isConnector = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::CONNECTOR { path: _, isExpandable: false }, .. } => true,
         Deref @ DAE::Type::T_SUBTYPE_BASIC { complexClassType: ClassInf::State::CONNECTOR { path: _, isExpandable: false }, .. } => true,
@@ -3552,7 +3552,7 @@ fn isConnectorType(mut ty: Arc<DAE::Type>) -> bool {
 }
 
 fn flipDirection(mut inDir: Absyn::Direction) -> Result<Absyn::Direction> {
-    let mut outDir: Absyn::Direction = Absyn::Direction::BIDIR;
+    let mut outDir: Absyn::Direction;
     outDir = (match inDir.clone() {
         Absyn::Direction::INPUT { .. } => openmodelica_ast::Absyn::Direction::OUTPUT,
         Absyn::Direction::OUTPUT { .. } => openmodelica_ast::Absyn::Direction::INPUT,
@@ -3684,14 +3684,14 @@ fn validConnector(mut inType: Arc<DAE::Type>, mut inCref: Arc<DAE::ComponentRef>
 }
 
 fn checkConnectTypes(mut inLhsCref: Arc<DAE::ComponentRef>, mut inLhsType: Arc<DAE::Type>, mut inLhsFace: DAE::Connect::Face, mut inLhsAttributes: Arc<DAE::Attributes>, mut inRhsCref: Arc<DAE::ComponentRef>, mut inRhsType: Arc<DAE::Type>, mut inRhsFace: DAE::Connect::Face, mut inRhsAttributes: Arc<DAE::Attributes>, mut inInfo: SourceInfo) -> Result<()> {
-    let mut lhs_ct: Arc<DAE::ConnectorType> = Arc::new(DAE::ConnectorType::FLOW);
-    let mut rhs_ct: Arc<DAE::ConnectorType> = Arc::new(DAE::ConnectorType::FLOW);
-    let mut lhs_dir: Absyn::Direction = Absyn::Direction::BIDIR;
-    let mut rhs_dir: Absyn::Direction = Absyn::Direction::BIDIR;
-    let mut lhs_io: Absyn::InnerOuter = Absyn::InnerOuter::INNER;
-    let mut rhs_io: Absyn::InnerOuter = Absyn::InnerOuter::INNER;
-    let mut lhs_vis: SCode::Visibility = SCode::Visibility::PROTECTED;
-    let mut rhs_vis: SCode::Visibility = SCode::Visibility::PROTECTED;
+    let mut lhs_ct: Arc<DAE::ConnectorType>;
+    let mut rhs_ct: Arc<DAE::ConnectorType>;
+    let mut lhs_dir: Absyn::Direction;
+    let mut rhs_dir: Absyn::Direction;
+    let mut lhs_io: Absyn::InnerOuter;
+    let mut rhs_io: Absyn::InnerOuter;
+    let mut lhs_vis: SCode::Visibility;
+    let mut rhs_vis: SCode::Visibility;
     ComponentReference::checkCrefSubscriptsBounds(inLhsCref.clone(), inInfo.clone())?;
     ComponentReference::checkCrefSubscriptsBounds(inRhsCref.clone(), inInfo.clone())?;
     let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(inLhsAttributes.clone()) {
@@ -3818,7 +3818,7 @@ fn checkConnectTypesDirection(mut inLhsDirection: Absyn::Direction, mut inLhsFac
 }
 
 fn isSignalSource(mut inDirection: Absyn::Direction, mut inFace: DAE::Connect::Face, mut inVisibility: SCode::Visibility) -> bool {
-    let mut outIsSignal: bool = false;
+    let mut outIsSignal: bool;
     outIsSignal = (match (inDirection.clone(), inFace.clone(), inVisibility.clone()) {
         (Absyn::Direction::OUTPUT { .. }, DAE::Connect::Face::INSIDE, _) => true,
         (Absyn::Direction::INPUT { .. }, DAE::Connect::Face::OUTSIDE, SCode::Visibility::PUBLIC { .. }) => true,
@@ -3845,12 +3845,12 @@ fn checkConnectTypesInnerOuter(mut inLhsIO: Absyn::InnerOuter, mut inRhsIO: Absy
 }
 
 pub fn connectComponents(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inSets: DAE::Connect::Sets, mut inPrefix3: DAE::Prefix, mut cr1: Arc<DAE::ComponentRef>, mut inFace5: DAE::Connect::Face, mut inType6: Arc<DAE::Type>, mut vt1: SCode::Variability, mut cr2: Arc<DAE::ComponentRef>, mut inFace8: DAE::Connect::Face, mut inType9: Arc<DAE::Type>, mut vt2: SCode::Variability, mut inConnectorType: Arc<DAE::ConnectorType>, mut io1: Absyn::InnerOuter, mut io2: Absyn::InnerOuter, mut inGraph: ConnectionGraph::ConnectionGraph, mut info: SourceInfo) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::Connect::Sets, DAE::DAElist, ConnectionGraph::ConnectionGraph)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-    let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>> = metamodelica::nil();
-    let mut outSets: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
-    let mut outDae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-    let mut outGraph: ConnectionGraph::ConnectionGraph = <ConnectionGraph::ConnectionGraph as ::std::default::Default>::default();
+    let mut outCache: FCore::Cache;
+    let mut outEnv: FCore::Graph;
+    let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>>;
+    let mut outSets: DAE::Connect::Sets;
+    let mut outDae: DAE::DAElist;
+    let mut outGraph: ConnectionGraph::ConnectionGraph;
     (outCache, outEnv, outIH, outSets, outDae, outGraph) = 'mc: {
         let __mc_input = (inCache.clone(), inEnv.clone(), inIH.clone(), inSets.clone(), inPrefix3.clone(), cr1.clone(), inFace5.clone(), inType6.clone(), cr2.clone(), inFace8.clone(), inType9.clone(), inConnectorType.clone(), inGraph.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -4188,8 +4188,8 @@ pub fn connectComponents(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut
 }
 
 fn generateConnectAssert(mut inLhsExp: Arc<DAE::Exp>, mut inRhsExp: Arc<DAE::Exp>, mut inSource: Arc<DAE::ElementSource>) -> Result<Arc<DAE::Element>> {
-    let mut outAssert: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
-    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut outAssert: Arc<DAE::Element>;
+    let mut exp: Arc<DAE::Exp>;
     exp = Arc::new(DAE::Exp::RELATION { exp1: inLhsExp.clone(), operator: DAE::Operator::EQUAL { ty: DAE::T_BOOL_DEFAULT().clone() }, exp2: inRhsExp.clone(), index: -1, optionExpisASUB: None });
     (exp, _) = ExpressionSimplify::simplify(exp.clone())?;
     outAssert = Arc::new(DAE::Element::ASSERT { condition: exp.clone(), message: Arc::new(DAE::Exp::SCONST { string: (literal!("automatically generated from connect")).clone() }), level: DAE::ASSERTIONLEVEL_ERROR().clone(), source: inSource.clone() });
@@ -4197,12 +4197,12 @@ fn generateConnectAssert(mut inLhsExp: Arc<DAE::Exp>, mut inRhsExp: Arc<DAE::Exp
 }
 
 fn connectArrayComponents(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inSets: DAE::Connect::Sets, mut inPrefix: DAE::Prefix, mut inLhsCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut inLhsFace: DAE::Connect::Face, mut inLhsType: Arc<DAE::Type>, mut inLhsVar: SCode::Variability, mut inLhsIO: Absyn::InnerOuter, mut inRhsCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut inRhsFace: DAE::Connect::Face, mut inRhsType: Arc<DAE::Type>, mut inRhsVar: SCode::Variability, mut inRhsIO: Absyn::InnerOuter, mut inConnectorType: Arc<DAE::ConnectorType>, mut inGraph: ConnectionGraph::ConnectionGraph, mut inInfo: SourceInfo) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::Connect::Sets, DAE::DAElist, ConnectionGraph::ConnectionGraph)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-    let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>> = metamodelica::nil();
-    let mut outSets: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
-    let mut outDae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-    let mut outGraph: ConnectionGraph::ConnectionGraph = <ConnectionGraph::ConnectionGraph as ::std::default::Default>::default();
+    let mut outCache: FCore::Cache;
+    let mut outEnv: FCore::Graph;
+    let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>>;
+    let mut outSets: DAE::Connect::Sets;
+    let mut outDae: DAE::DAElist;
+    let mut outGraph: ConnectionGraph::ConnectionGraph;
     (outCache, outEnv, outIH, outSets, outDae, outGraph) = (::match_deref::match_deref! { match &((inLhsCrefs.clone(), inRhsCrefs.clone())) {
         (Deref @ metamodelica::List::Cons { head: lhs, tail: rest_lhs }, Deref @ metamodelica::List::Cons { head: rhs, tail: rest_rhs }) => {
             let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
@@ -4226,12 +4226,12 @@ fn connectArrayComponents(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
 }
 
 fn connectVars(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inSets: DAE::Connect::Sets, mut inPrefix: DAE::Prefix, mut inComponentRef3: Arc<DAE::ComponentRef>, mut inFace4: DAE::Connect::Face, mut inTypesVarLst5: Arc<metamodelica::List<Arc<DAE::Var>>>, mut vt1: SCode::Variability, mut inComponentRef6: Arc<DAE::ComponentRef>, mut inFace7: DAE::Connect::Face, mut inTypesVarLst8: Arc<metamodelica::List<Arc<DAE::Var>>>, mut vt2: SCode::Variability, mut inConnectorType: Arc<DAE::ConnectorType>, mut io1: Absyn::InnerOuter, mut io2: Absyn::InnerOuter, mut inGraph: ConnectionGraph::ConnectionGraph, mut info: SourceInfo) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::Connect::Sets, DAE::DAElist, ConnectionGraph::ConnectionGraph)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-    let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>> = metamodelica::nil();
-    let mut outSets: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
-    let mut outDae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-    let mut outGraph: ConnectionGraph::ConnectionGraph = <ConnectionGraph::ConnectionGraph as ::std::default::Default>::default();
+    let mut outCache: FCore::Cache;
+    let mut outEnv: FCore::Graph;
+    let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>>;
+    let mut outSets: DAE::Connect::Sets;
+    let mut outDae: DAE::DAElist;
+    let mut outGraph: ConnectionGraph::ConnectionGraph;
     (outCache, outEnv, outIH, outSets, outDae, outGraph) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inIH.clone(), inSets.clone(), inComponentRef3.clone(), inFace4.clone(), inTypesVarLst5.clone(), inComponentRef6.clone(), inFace7.clone(), inTypesVarLst8.clone(), inGraph.clone())) {
         (cache, env, ih, sets, _, _, Deref @ metamodelica::List::Nil, _, _, Deref @ metamodelica::List::Nil, graph) => {
             (cache.clone(), env.clone(), ih.clone(), sets.clone(), DAE::emptyDae().clone(), graph.clone())
@@ -4265,7 +4265,7 @@ fn connectVars(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc
 }
 
 fn propagateConnectorType(mut inConnectorType: Arc<DAE::ConnectorType>, mut inSubConnectorType: Arc<DAE::ConnectorType>) -> Arc<DAE::ConnectorType> {
-    let mut outSubConnectorType: Arc<DAE::ConnectorType> = Arc::new(DAE::ConnectorType::FLOW);
+    let mut outSubConnectorType: Arc<DAE::ConnectorType>;
     outSubConnectorType = (::match_deref::match_deref! { match &(inConnectorType.clone()) {
         Deref @ DAE::ConnectorType::POTENTIAL { .. } => inSubConnectorType.clone(),
         _ => inConnectorType.clone(),
@@ -4345,13 +4345,13 @@ fn expandArrayDimension(mut inDim: Arc<DAE::Dimension>, mut inArray: Arc<DAE::Ex
 }
 
 fn makeAsubIndex(mut index: i32, mut expr: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
-    let mut asub: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut asub: Arc<DAE::Exp>;
     (asub, _) = ExpressionSimplify::simplify1(Expression::makeASUB(expr.clone(), list![Arc::new(DAE::Exp::ICONST { integer: index.clone() })])?)?;
     Ok(asub)
 }
 
 fn makeEnumLiteralIndices(mut enumTypeName: Arc<Absyn::Path>, mut enumLiterals: Arc<metamodelica::List<ArcStr>>, mut enumIndex: i32, mut expr: Arc<DAE::Exp>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> {
-    let mut enumIndices: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
+    let mut enumIndices: Arc<metamodelica::List<Arc<DAE::Exp>>>;
     enumIndices = (::match_deref::match_deref! { match &(enumLiterals.clone()) {
         Deref @ metamodelica::List::Nil => {
             metamodelica::nil()
@@ -4400,7 +4400,7 @@ fn checkWhenAlgorithm(mut inWhenAlgorithm: Arc<SCode::Statement>) -> Result<()> 
 }
 
 fn checkForReinitInWhenInitialAlg(mut inWhenAlgorithm: Arc<SCode::Statement>) -> Result<bool> {
-    let mut outOK: bool = false;
+    let mut outOK: bool;
     outOK = 'mc: {
         let __mc_input = inWhenAlgorithm.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -4428,9 +4428,9 @@ fn checkForReinitInWhenInitialAlg(mut inWhenAlgorithm: Arc<SCode::Statement>) ->
 }
 
 fn checkForNestedWhenInStatements(mut inWhenAlgorithm: Arc<SCode::Statement>) -> Result<()> {
-    let mut branches: Arc<metamodelica::List<(Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Statement>>>)>> = metamodelica::nil();
-    let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
-    let mut body: Arc<metamodelica::List<Arc<SCode::Statement>>> = metamodelica::nil();
+    let mut branches: Arc<metamodelica::List<(Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Statement>>>)>>;
+    let mut info: SourceInfo;
+    let mut body: Arc<metamodelica::List<Arc<SCode::Statement>>>;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inWhenAlgorithm.clone()) {
         Deref @ SCode::Statement::ALG_WHEN_A { branches: __pa0, info: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
@@ -4455,7 +4455,7 @@ fn checkWhenEquation(mut inWhenEq: Arc<SCode::Equation>) -> Result<()> {
 }
 
 fn checkForReinitInWhenInitialEq(mut inWhenEq: Arc<SCode::Equation>) -> Result<bool> {
-    let mut outOK: bool = false;
+    let mut outOK: bool;
     outOK = 'mc: {
         let __mc_input = inWhenEq.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -4553,7 +4553,7 @@ fn checkForNestedWhenInEq(mut inEq: Arc<SCode::Equation>) -> Result<()> {
 }
 
 fn instAssignment(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut ih: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inPre: DAE::Prefix, mut alg: Arc<SCode::Statement>, mut source: Arc<DAE::ElementSource>, mut initial_: SCode::Initial, mut r#impl: bool, mut unrollForLoops: bool, mut numError: i32) -> Result<(FCore::Cache, Arc<metamodelica::List<Arc<DAE::Statement>>>)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
+    let mut outCache: FCore::Cache;
     let mut stmts: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
     (outCache, stmts) = 'mc: {
         let __mc_input = (inCache.clone(), inEnv.clone(), inPre.clone(), alg.clone());
@@ -4595,8 +4595,8 @@ fn instAssignment(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut ih: Ar
 fn instAssignment2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inPre: DAE::Prefix, mut var: Arc<Absyn::Exp>, mut inRhs: Arc<Absyn::Exp>, mut value: Arc<DAE::Exp>, mut props: DAE::Properties, mut info: SourceInfo, mut inSource: Arc<DAE::ElementSource>, mut initial_: SCode::Initial, mut inImpl: bool, mut unrollForLoops: bool, mut numError: i32) -> Result<(FCore::Cache, Arc<metamodelica::List<Arc<DAE::Statement>>>)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut stmts: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
-    let mut varNoComment: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
-    let mut inRhsNoComment: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
+    let mut varNoComment: Arc<Absyn::Exp>;
+    let mut inRhsNoComment: Arc<Absyn::Exp>;
     varNoComment = AbsynUtil::stripCommentExpressions(var.clone(), false)?;
     inRhsNoComment = AbsynUtil::stripCommentExpressions(inRhs.clone(), false)?;
     let () = (::match_deref::match_deref! { match &(varNoComment.clone()) {
@@ -4962,7 +4962,7 @@ fn instAssignment2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH:
 }
 
 fn checkNoDuplicateAssignments(mut inExps: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut info: SourceInfo) -> Result<()> {
-    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut exp: Arc<DAE::Exp>;
     let mut exps: Arc<metamodelica::List<Arc<DAE::Exp>>> = inExps.clone();
     while !(exps.clone().is_empty()) {
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(exps.clone()) {
@@ -5018,16 +5018,16 @@ fn getIteratorType(mut ty: Arc<DAE::Type>, mut id: ArcStr, mut info: SourceInfo)
 }
 
 fn instParForStatement(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inPrefix: DAE::Prefix, mut inState: ClassInf::State, mut inForStatement: Arc<SCode::Statement>, mut inSource: Arc<DAE::ElementSource>, mut inInitial: SCode::Initial, mut inImpl: bool, mut inUnrollLoops: bool) -> Result<(FCore::Cache, Arc<metamodelica::List<Arc<DAE::Statement>>>)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outStatements: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
-    let mut iterator: ArcStr = arcstr::literal!("");
-    let mut oarange: Option<Arc<Absyn::Exp>> = None;
-    let mut arange: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
-    let mut range: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
-    let mut body: Arc<metamodelica::List<Arc<SCode::Statement>>> = metamodelica::nil();
-    let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
-    let mut iter_crefs: Arc<metamodelica::List<(Arc<Absyn::ComponentRef>, i32)>> = metamodelica::nil();
+    let mut outCache: FCore::Cache;
+    let mut outStatements: Arc<metamodelica::List<Arc<DAE::Statement>>>;
+    let mut iterator: ArcStr;
+    let mut oarange: Option<Arc<Absyn::Exp>>;
+    let mut arange: Arc<Absyn::Exp>;
+    let mut range: Arc<DAE::Exp>;
+    let mut prop: DAE::Properties;
+    let mut body: Arc<metamodelica::List<Arc<SCode::Statement>>>;
+    let mut info: SourceInfo;
+    let mut iter_crefs: Arc<metamodelica::List<(Arc<Absyn::ComponentRef>, i32)>>;
     let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(inForStatement.clone()) {
         Deref @ SCode::Statement::ALG_PARFOR { index: __pa0, range: __pa1, parforBody: __pa2, info: __pa3, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
         _ => bail!("pattern mismatch"),
@@ -5057,14 +5057,14 @@ fn instParForStatement(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut i
 
 fn instParForStatement_dispatch(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inPrefix: DAE::Prefix, mut inState: ClassInf::State, mut inIterator: ArcStr, mut inRange: Arc<DAE::Exp>, mut inRangeProps: DAE::Properties, mut inBody: Arc<metamodelica::List<Arc<SCode::Statement>>>, mut inInfo: SourceInfo, mut inSource: Arc<DAE::ElementSource>, mut inInitial: SCode::Initial, mut inImpl: bool, mut inUnrollLoops: bool) -> Result<(FCore::Cache, Arc<metamodelica::List<Arc<DAE::Statement>>>)> {
     let mut outCache: FCore::Cache = inCache.clone();
-    let mut outStatements: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
-    let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-    let mut c: DAE::Const = DAE::Const::C_CONST;
-    let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-    let mut source: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
-    let mut loop_prl_vars: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, SourceInfo)>> = metamodelica::nil();
-    let mut parfor_iter: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-    let mut range: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut outStatements: Arc<metamodelica::List<Arc<DAE::Statement>>>;
+    let mut ty: Arc<DAE::Type>;
+    let mut c: DAE::Const;
+    let mut env: FCore::Graph;
+    let mut source: Arc<DAE::ElementSource>;
+    let mut loop_prl_vars: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, SourceInfo)>>;
+    let mut parfor_iter: Arc<DAE::ComponentRef>;
+    let mut range: Arc<DAE::Exp>;
     c = Types::getPropConst(inRangeProps.clone())?;
     if Types::isParameterOrConstant(c.clone()) {
         if '__try0: {
@@ -5131,7 +5131,7 @@ fn isCrefParGlobalOrForIterator(mut inCrefInfo: (Arc<DAE::ComponentRef>, SourceI
 }
 
 fn crefInfoListCrefsEqual(mut inFoundCref: Arc<DAE::ComponentRef>, mut inCrefInfos: (Arc<DAE::ComponentRef>, SourceInfo)) -> bool {
-    let mut outBoolean: bool = false;
+    let mut outBoolean: bool;
     outBoolean = (::match_deref::match_deref! { match &(inCrefInfos.clone()) {
         (cref1, _) => {
             ComponentReferenceBasics::crefEqualWithoutSubs(cref1.clone(), inFoundCref.clone())
@@ -5142,7 +5142,7 @@ fn crefInfoListCrefsEqual(mut inFoundCref: Arc<DAE::ComponentRef>, mut inCrefInf
 }
 
 fn collectParallelVariables(mut inCrefInfos: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, SourceInfo)>>, mut inStatments: Arc<metamodelica::List<Arc<DAE::Statement>>>) -> Result<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, SourceInfo)>>> {
-    let mut outCrefInfos: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, SourceInfo)>> = metamodelica::nil();
+    let mut outCrefInfos: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, SourceInfo)>>;
     outCrefInfos = 'mc: {
         let __mc_input = (inCrefInfos.clone(), inStatments.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -5217,7 +5217,7 @@ fn collectParallelVariables(mut inCrefInfos: Arc<metamodelica::List<(Arc<DAE::Co
 }
 
 fn collectParallelVariablesinExps(mut inCrefInfos: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, SourceInfo)>>, mut inExps: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inInfo: SourceInfo) -> Result<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, SourceInfo)>>> {
-    let mut outCrefInfos: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, SourceInfo)>> = metamodelica::nil();
+    let mut outCrefInfos: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, SourceInfo)>>;
     outCrefInfos = 'mc: {
         let __mc_input = (inCrefInfos.clone(), inExps.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -5359,7 +5359,7 @@ fn collectParallelVariablesinExps(mut inCrefInfos: Arc<metamodelica::List<(Arc<D
 }
 
 fn collectParallelVariablesInSubscriptList(mut inCrefInfos: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, SourceInfo)>>, mut inSubscriptLst: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut inInfo: SourceInfo) -> Result<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, SourceInfo)>>> {
-    let mut outCrefInfos: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, SourceInfo)>> = metamodelica::nil();
+    let mut outCrefInfos: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, SourceInfo)>>;
     outCrefInfos = 'mc: {
         let __mc_input = (inCrefInfos.clone(), inSubscriptLst.clone());
         if let Ok(__v) = (|| -> Result<_> {

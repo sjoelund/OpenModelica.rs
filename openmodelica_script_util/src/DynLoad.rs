@@ -54,7 +54,7 @@ pub fn executeFunction(mut handle: i32, mut values: Arc<metamodelica::List<Arc<V
         Ok(outVal)
     }
 
-    let mut outVal: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
+    let mut outVal: Arc<Values::Value>;
     StackOverflow::clearStacktraceMessages();
     outVal = executeFunction_internal(handle.clone(), values.clone(), debug.clone())?;
     if StackOverflow::hasStacktraceMessages() {

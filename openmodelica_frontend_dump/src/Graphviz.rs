@@ -106,7 +106,7 @@ pub type Children = Arc<metamodelica::List<Arc<Node>>>;
 pub static r#box: Attribute = Attribute { name: literal!("shape"), value: literal!("box") };
 
 pub fn dump(mut node: Arc<Node>) -> Result<()> {
-    let mut nm: Label = arcstr::literal!("");
+    let mut nm: Label;
     metamodelica::print((literal!("graph AST {\n")).clone());
     nm = (dumpNode(node.clone())?).clone();
     metamodelica::print((literal!("}\n")).clone());
@@ -114,7 +114,7 @@ pub fn dump(mut node: Arc<Node>) -> Result<()> {
 }
 
 fn dumpNode(mut inNode: Arc<Node>) -> Result<Ident> {
-    let mut outIdent: Ident = arcstr::literal!("");
+    let mut outIdent: Ident;
     outIdent = ((::match_deref::match_deref! { match &(inNode.clone()) {
         Deref @ Node::NODE { type_: typ, attributes: attr, children } => {
             let mut nm: Label = arcstr::literal!("");
@@ -150,9 +150,9 @@ fn dumpNode(mut inNode: Arc<Node>) -> Result<Ident> {
 }
 
 fn makeLabel(mut sl: Arc<metamodelica::List<ArcStr>>) -> Result<ArcStr> {
-    let mut s2: ArcStr = arcstr::literal!("");
-    let mut s0: Label = arcstr::literal!("");
-    let mut s1: Label = arcstr::literal!("");
+    let mut s2: ArcStr;
+    let mut s0: Label;
+    let mut s1: Label;
     s0 = (makeLabelReq(sl.clone(), (literal!("")).clone())?).clone();
     s1 = (stringAppend((literal!("\"")).clone(), (s0.clone()).clone())).clone();
     s2 = (stringAppend((s1.clone()).clone(), (literal!("\"")).clone())).clone();
@@ -200,9 +200,9 @@ fn dumpChildren(mut inIdent: Ident, mut inChildren: Children) -> Result<()> {
 }
 
 fn nodename(mut r#str: ArcStr) -> ArcStr {
-    let mut s: ArcStr = arcstr::literal!("");
-    let mut i: i32 = 0;
-    let mut is: Label = arcstr::literal!("");
+    let mut s: ArcStr;
+    let mut i: i32;
+    let mut is: Label;
     i = tick();
     is = (intString(i.clone())).clone();
     s = (stringAppend((literal!("GVNOD")).clone(), (is.clone()).clone())).clone();
@@ -210,7 +210,7 @@ fn nodename(mut r#str: ArcStr) -> ArcStr {
 }
 
 fn printEdge(mut n1: Ident, mut n2: Ident) -> () {
-    let mut r#str: Label = arcstr::literal!("");
+    let mut r#str: Label;
     r#str = (makeEdge((n1.clone()).clone(), (n2.clone()).clone())).clone();
     metamodelica::print((r#str.clone()).clone());
     metamodelica::print((literal!(";\n")).clone());
@@ -218,17 +218,17 @@ fn printEdge(mut n1: Ident, mut n2: Ident) -> () {
 }
 
 fn makeEdge(mut n1: Ident, mut n2: Ident) -> ArcStr {
-    let mut r#str: ArcStr = arcstr::literal!("");
-    let mut s: Label = arcstr::literal!("");
+    let mut r#str: ArcStr;
+    let mut s: Label;
     s = (stringAppend((n1.clone()).clone(), (literal!(" -- ")).clone())).clone();
     r#str = (stringAppend((s.clone()).clone(), (n2.clone()).clone())).clone();
     r#str
 }
 
 fn makeNode(mut nm: Ident, mut attr: Attributes) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
-    let mut s: Label = arcstr::literal!("");
-    let mut s_1: Label = arcstr::literal!("");
+    let mut r#str: ArcStr;
+    let mut s: Label;
+    let mut s_1: Label;
     s = (makeAttr(attr.clone())?).clone();
     s_1 = (stringAppend((nm.clone()).clone(), (s.clone()).clone())).clone();
     r#str = (stringAppend((s_1.clone()).clone(), (literal!(";")).clone())).clone();
@@ -236,9 +236,9 @@ fn makeNode(mut nm: Ident, mut attr: Attributes) -> Result<ArcStr> {
 }
 
 fn makeAttr(mut l: Arc<metamodelica::List<Attribute>>) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
-    let mut res: Label = arcstr::literal!("");
-    let mut s: Label = arcstr::literal!("");
+    let mut r#str: ArcStr;
+    let mut res: Label;
+    let mut s: Label;
     res = (makeAttrReq(l.clone(), (literal!("")).clone())?).clone();
     s = (stringAppend((literal!("[")).clone(), (res.clone()).clone())).clone();
     r#str = (stringAppend((s.clone()).clone(), (literal!("]")).clone())).clone();

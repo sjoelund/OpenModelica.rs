@@ -66,9 +66,9 @@ pub type CONNECTION = NFConnection;
 
 pub fn split(mut conn: Arc<NFConnection>) -> Result<Arc<metamodelica::List<Arc<NFConnection>>>> {
     let mut conns: Arc<metamodelica::List<Arc<NFConnection>>> = metamodelica::nil();
-    let mut cls: Arc<metamodelica::List<Arc<Connector::NFConnector>>> = metamodelica::nil();
-    let mut crs: Arc<metamodelica::List<Arc<Connector::NFConnector>>> = metamodelica::nil();
-    let mut cr: Arc<Connector::NFConnector> = Arc::new(<Connector::NFConnector as ::std::default::Default>::default());
+    let mut cls: Arc<metamodelica::List<Arc<Connector::NFConnector>>>;
+    let mut crs: Arc<metamodelica::List<Arc<Connector::NFConnector>>>;
+    let mut cr: Arc<Connector::NFConnector>;
     cls = Connector::split(conn.lhs.clone())?;
     crs = Connector::split(conn.rhs.clone())?;
     checkBalance(cls.clone(), crs.clone(), conn.clone())?;
@@ -90,9 +90,9 @@ pub fn split(mut conn: Arc<NFConnection>) -> Result<Arc<metamodelica::List<Arc<N
 
 pub fn scalarize(mut conn: Arc<NFConnection>) -> Result<Arc<metamodelica::List<Arc<NFConnection>>>> {
     let mut conns: Arc<metamodelica::List<Arc<NFConnection>>> = metamodelica::nil();
-    let mut cls: Arc<metamodelica::List<Arc<Connector::NFConnector>>> = metamodelica::nil();
-    let mut crs: Arc<metamodelica::List<Arc<Connector::NFConnector>>> = metamodelica::nil();
-    let mut cr: Arc<Connector::NFConnector> = Arc::new(<Connector::NFConnector as ::std::default::Default>::default());
+    let mut cls: Arc<metamodelica::List<Arc<Connector::NFConnector>>>;
+    let mut crs: Arc<metamodelica::List<Arc<Connector::NFConnector>>>;
+    let mut cr: Arc<Connector::NFConnector>;
     if !(Connector::isArray(conn.lhs.clone())) {
         conns = list![conn.clone()];
         return Ok(conns.clone());
@@ -116,9 +116,9 @@ pub fn scalarize(mut conn: Arc<NFConnection>) -> Result<Arc<metamodelica::List<A
 
 pub fn scalarizePrefix(mut conn: Arc<NFConnection>) -> Result<Arc<metamodelica::List<Arc<NFConnection>>>> {
     let mut conns: Arc<metamodelica::List<Arc<NFConnection>>> = metamodelica::nil();
-    let mut cls: Arc<metamodelica::List<Arc<Connector::NFConnector>>> = metamodelica::nil();
-    let mut crs: Arc<metamodelica::List<Arc<Connector::NFConnector>>> = metamodelica::nil();
-    let mut cr: Arc<Connector::NFConnector> = Arc::new(<Connector::NFConnector as ::std::default::Default>::default());
+    let mut cls: Arc<metamodelica::List<Arc<Connector::NFConnector>>>;
+    let mut crs: Arc<metamodelica::List<Arc<Connector::NFConnector>>>;
+    let mut cr: Arc<Connector::NFConnector>;
     if !(Connector::isArray(conn.lhs.clone())) {
         conns = list![conn.clone()];
         return Ok(conns.clone());
@@ -141,7 +141,7 @@ pub fn scalarizePrefix(mut conn: Arc<NFConnection>) -> Result<Arc<metamodelica::
 }
 
 pub fn toString(mut conn: Arc<NFConnection>) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("connect(")); __mm_s.push_str(&*Connector::toString(conn.lhs.clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*Connector::toString(conn.rhs.clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
     Ok(r#str)
 }

@@ -74,19 +74,19 @@ use openmodelica_util_datatypes_basic::Array;
 use openmodelica_util_datatypes_basic::List;
 
 pub fn getEqSystemDAEmode(mut inDAE: Arc<BackendDAE::BackendDAE>, mut fileNamePrefix: ArcStr, mut strPreOptModules: Option<Arc<metamodelica::List<ArcStr>>>, mut strmatchingAlgorithm: Option<ArcStr>, mut strdaeHandler: Option<ArcStr>, mut strPostOptModules: Option<Arc<metamodelica::List<ArcStr>>>) -> Result<(Arc<BackendDAE::BackendDAE>, Arc<BackendDAE::BackendDAE>, Option<Arc<BackendDAE::BackendDAE>>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>)> {
-    let mut outDAEmode: Arc<BackendDAE::BackendDAE> = Arc::new(<BackendDAE::BackendDAE as ::std::default::Default>::default());
-    let mut outInitDAE: Arc<BackendDAE::BackendDAE> = Arc::new(<BackendDAE::BackendDAE as ::std::default::Default>::default());
-    let mut outInitDAE_lambda0_option: Option<Arc<BackendDAE::BackendDAE>> = None;
-    let mut outRemovedInitialEquationLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
-    let mut dae: Arc<BackendDAE::BackendDAE> = Arc::new(<BackendDAE::BackendDAE as ::std::default::Default>::default());
-    let mut simDAE: Arc<BackendDAE::BackendDAE> = Arc::new(<BackendDAE::BackendDAE as ::std::default::Default>::default());
-    let mut preOptModules: Arc<metamodelica::List<(BackendDAEFunc::optimizationModule, ArcStr)>> = metamodelica::nil();
-    let mut postOptModules: Arc<metamodelica::List<(BackendDAEFunc::optimizationModule, ArcStr)>> = metamodelica::nil();
+    let mut outDAEmode: Arc<BackendDAE::BackendDAE>;
+    let mut outInitDAE: Arc<BackendDAE::BackendDAE>;
+    let mut outInitDAE_lambda0_option: Option<Arc<BackendDAE::BackendDAE>>;
+    let mut outRemovedInitialEquationLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
+    let mut dae: Arc<BackendDAE::BackendDAE>;
+    let mut simDAE: Arc<BackendDAE::BackendDAE>;
+    let mut preOptModules: Arc<metamodelica::List<(BackendDAEFunc::optimizationModule, ArcStr)>>;
+    let mut postOptModules: Arc<metamodelica::List<(BackendDAEFunc::optimizationModule, ArcStr)>>;
     let mut daeHandler: (BackendDAEFunc::StructurallySingularSystemHandlerFunc, ArcStr, BackendDAEFunc::stateDeselectionFunc, ArcStr);
     let mut matchingAlgorithm: (BackendDAEFunc::matchingAlgorithmFunc, ArcStr);
-    let mut globalKnownVars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
-    let mut numCheckpoints: i32 = 0;
-    let mut oldSize: i32 = 0;
+    let mut globalKnownVars: BackendDAE::Variables;
+    let mut numCheckpoints: i32;
+    let mut oldSize: i32;
     numCheckpoints = ErrorExt::getNumCheckpoints();
     StackOverflow::clearStacktraceMessages();
     preOptModules = BackendDAEUtil::getPreOptModules(strPreOptModules.clone())?;
@@ -139,7 +139,7 @@ pub fn getEqSystemDAEmode(mut inDAE: Arc<BackendDAE::BackendDAE>, mut fileNamePr
 get config function
 */
 fn getPostOptModulesDAEString() -> Result<Arc<metamodelica::List<ArcStr>>> {
-    let mut strpostOptModules: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+    let mut strpostOptModules: Arc<metamodelica::List<ArcStr>>;
     strpostOptModules = Config::getPostOptModulesDAE()?;
     Ok(strpostOptModules)
 }
@@ -149,7 +149,7 @@ fn getPostOptModulesDAEString() -> Result<Arc<metamodelica::List<ArcStr>>> {
 //
 // =============================================================================
 pub fn createDAEmodeBDAE(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
-    let mut outDAE: Arc<BackendDAE::BackendDAE> = Arc::new(<BackendDAE::BackendDAE as ::std::default::Default>::default());
+    let mut outDAE: Arc<BackendDAE::BackendDAE>;
     outDAE = BackendDAEUtil::mapEqSystem(inDAE.clone(), (std::sync::Arc::new(createDAEmodeEqSystem) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>) -> Result<(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>)> + 'static>))?;
     Ok(outDAE)
 }
@@ -189,12 +189,12 @@ pub type TRAVERSER_CREATE_DAE = TraverseEqnAryFold;
 fn createDAEmodeEqSystem(mut syst: Arc<BackendDAE::EqSystem>, mut shared: Arc<BackendDAE::Shared>) -> Result<(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>)> {
     let mut syst: Arc<BackendDAE::EqSystem> = syst;
     let mut shared: Arc<BackendDAE::Shared> = shared;
-    let mut travArgs: TraverseEqnAryFold = <TraverseEqnAryFold as ::std::default::Default>::default();
-    let mut globalDAEData: BackendDAE::BackendDAEModeData = <BackendDAE::BackendDAEModeData as ::std::default::Default>::default();
-    let mut retSystem: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
-    let mut newDAEVars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
-    let mut newDAEEquations: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
-    let mut systemSize: i32 = 0;
+    let mut travArgs: TraverseEqnAryFold;
+    let mut globalDAEData: BackendDAE::BackendDAEModeData;
+    let mut retSystem: Arc<BackendDAE::EqSystem>;
+    let mut newDAEVars: BackendDAE::Variables;
+    let mut newDAEEquations: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>;
+    let mut systemSize: i32;
     let mut debug: bool = Flags::isSet(Flags::DEBUG_DAEMODE.clone())?;
     let exec: bool = false;
     globalDAEData = shared.daeModeData.clone();
@@ -239,10 +239,10 @@ fn createDAEmodeEqSystem(mut syst: Arc<BackendDAE::EqSystem>, mut shared: Arc<Ba
 fn traverserStrongComponents(mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut inVars: Arc<metamodelica::List<BackendDAE::Var>>, mut varIdxs: Arc<metamodelica::List<i32>>, mut eqnIdxs: Arc<metamodelica::List<i32>>, mut traverserArgs: TraverseEqnAryFold) -> Result<TraverseEqnAryFold> {
     let mut traverserArgs: TraverseEqnAryFold = traverserArgs;
     let mut vars: Arc<metamodelica::List<BackendDAE::Var>> = inVars.clone();
-    let mut varCrefLst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
-    let mut recursiveStrongComponentRun: bool = false;
-    let mut isStateVarInvolved: bool = false;
-    let mut isDiscrete: bool = false;
+    let mut varCrefLst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
+    let mut recursiveStrongComponentRun: bool;
+    let mut isStateVarInvolved: bool;
+    let mut isDiscrete: bool;
     varCrefLst = ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
         for mut v in (inVars.clone()).into_iter().cloned() {
@@ -623,15 +623,15 @@ fn traverserStrongComponents(mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::
 }
 
 fn getDiscAndContEqns(mut inAllVars: Arc<metamodelica::List<BackendDAE::Var>>, mut inAllEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut inDiscVars: Arc<metamodelica::List<BackendDAE::Var>>, mut inContVars: Arc<metamodelica::List<BackendDAE::Var>>, mut functionTree: Arc<AvlTreePathFunction::Tree>, mut isInitial: bool) -> Result<(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>)> {
-    let mut discEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
-    let mut contEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
-    let mut syst: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
-    let mut adjMatrix: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
-    let mut varsIndex: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut eqnIndex: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut assignVarEqn: metamodelica::Array<i32> = Default::default();
-    let mut assignEqnVar: metamodelica::Array<i32> = Default::default();
-    let mut mapEqnScalarArray: metamodelica::Array<i32> = Default::default();
+    let mut discEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
+    let mut contEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>;
+    let mut syst: Arc<BackendDAE::EqSystem>;
+    let mut adjMatrix: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut varsIndex: Arc<metamodelica::List<i32>>;
+    let mut eqnIndex: Arc<metamodelica::List<i32>>;
+    let mut assignVarEqn: metamodelica::Array<i32>;
+    let mut assignEqnVar: metamodelica::Array<i32>;
+    let mut mapEqnScalarArray: metamodelica::Array<i32>;
     let debug: bool = false;
     match '__try0: {
         syst = BackendDAEUtil::createEqSystem(unwrap_break_err!(BackendVariable::listVar1(inAllVars.clone()), '__try0), unwrap_break_err!(BackendEquation::listEquation(inAllEqns.clone()), '__try0), metamodelica::nil(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
@@ -710,7 +710,7 @@ fn getDiscAndContEqns(mut inAllVars: Arc<metamodelica::List<BackendDAE::Var>>, m
 
 fn addVarsGlobalData(mut globalDAEData: BackendDAE::BackendDAEModeData, mut inVars: Arc<metamodelica::List<BackendDAE::Var>>) -> Result<BackendDAE::BackendDAEModeData> {
     let mut globalDAEData: BackendDAE::BackendDAEModeData = globalDAEData;
-    let mut vars: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
+    let mut vars: Arc<metamodelica::List<BackendDAE::Var>>;
     vars = List::filterOnTrue(inVars.clone(), (std::sync::Arc::new(fnptr!(BackendVariable::isNonStateVar, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>))?;
     vars = ({
         let mut __acc: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();

@@ -108,8 +108,8 @@ impl Default for Condition {
 
 pub fn instDerivatives(mut fnNode: Arc<InstNode::InstNode>, mut r#fn: Arc<Function::Function>) -> Result<Arc<metamodelica::List<Arc<NFFunctionDerivative>>>> {
     let mut ders: Arc<metamodelica::List<Arc<NFFunctionDerivative>>> = metamodelica::nil();
-    let mut der_mods: Arc<metamodelica::List<Arc<SCode::Mod>>> = metamodelica::nil();
-    let mut scope: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
+    let mut der_mods: Arc<metamodelica::List<Arc<SCode::Mod>>>;
+    let mut scope: Arc<InstNode::InstNode>;
     der_mods = getDerivativeAnnotations(InstNode::definition(fnNode.clone())?)?;
     scope = InstNode::parent(fnNode.clone());
     for mut m in &*der_mods.clone() {
@@ -120,11 +120,11 @@ pub fn instDerivatives(mut fnNode: Arc<InstNode::InstNode>, mut r#fn: Arc<Functi
 }
 
 pub fn typeDerivative(mut fnDer: Arc<NFFunctionDerivative>) -> Result<()> {
-    let mut mk: MatchKind = MatchKind::EXACT;
-    let mut order: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut order_ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut var: Variability = Variability::CONSTANT;
-    let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
+    let mut mk: MatchKind;
+    let mut order: Arc<Expression::NFExpression>;
+    let mut order_ty: Arc<Type::NFType>;
+    let mut var: Variability;
+    let mut info: SourceInfo;
     Function::typeNodeCache(fnDer.derivativeFn.clone(), InstContext::FUNCTION.clone())?;
     info = InstNode::info(fnDer.derivedFn.clone())?;
     (order, order_ty, var, _) = Typing::typeExp(fnDer.order.clone(), InstContext::FUNCTION.clone(), info.clone(), false)?;
@@ -142,8 +142,8 @@ pub fn typeDerivative(mut fnDer: Arc<NFFunctionDerivative>) -> Result<()> {
 }
 
 pub fn toDAE(mut fnDer: Arc<NFFunctionDerivative>) -> Result<DAE::FunctionDefinition> {
-    let mut derDef: DAE::FunctionDefinition = <DAE::FunctionDefinition as ::std::default::Default>::default();
-    let mut order: i32 = 0;
+    let mut derDef: DAE::FunctionDefinition;
+    let mut order: i32;
     let __pa0 = ::match_deref::match_deref! { match &(fnDer.order.clone()) {
         Deref @ Expression::INTEGER { value: __pa0 } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
@@ -168,9 +168,9 @@ pub fn toDAE(mut fnDer: Arc<NFFunctionDerivative>) -> Result<DAE::FunctionDefini
 }
 
 pub fn conditionToDAE(mut cond: (i32, ArcStr, Condition)) -> Result<(i32, DAE::derivativeCond)> {
-    let mut daeCond: (i32, DAE::derivativeCond) = (0, DAE::derivativeCond::ZERO_DERIVATIVE);
-    let mut idx: i32 = 0;
-    let mut c: Condition = Condition::ZERO_DERIVATIVE;
+    let mut daeCond: (i32, DAE::derivativeCond);
+    let mut idx: i32;
+    let mut c: Condition;
     (idx, _, c) = cond.clone();
     daeCond = (match c.clone() {
         Condition::ZERO_DERIVATIVE => (idx.clone(), openmodelica_frontend_types::DAE::derivativeCond::ZERO_DERIVATIVE),
@@ -180,16 +180,16 @@ pub fn conditionToDAE(mut cond: (i32, ArcStr, Condition)) -> Result<(i32, DAE::d
 }
 
 pub fn toSubMod(mut fnDer: Arc<NFFunctionDerivative>) -> Result<Arc<SCode::SubMod>> {
-    let mut subMod: Arc<SCode::SubMod> = Arc::new(<SCode::SubMod as ::std::default::Default>::default());
+    let mut subMod: Arc<SCode::SubMod>;
     let mut tpl: (i32, Condition) = (0, Condition::ZERO_DERIVATIVE);
-    let mut condition: Condition = Condition::ZERO_DERIVATIVE;
-    let mut id: ArcStr = arcstr::literal!("");
-    let mut r#mod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
-    let mut orderMod: Arc<SCode::SubMod> = Arc::new(<SCode::SubMod as ::std::default::Default>::default());
-    let mut subMods: Arc<metamodelica::List<Arc<SCode::SubMod>>> = metamodelica::nil();
-    let mut order: i32 = 0;
-    let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
-    let mut func: Arc<Function::Function> = Arc::new(<Function::Function as ::std::default::Default>::default());
+    let mut condition: Condition;
+    let mut id: ArcStr;
+    let mut r#mod: Arc<SCode::Mod>;
+    let mut orderMod: Arc<SCode::SubMod>;
+    let mut subMods: Arc<metamodelica::List<Arc<SCode::SubMod>>>;
+    let mut order: i32;
+    let mut info: SourceInfo;
+    let mut func: Arc<Function::Function>;
     info = InstNode::info(fnDer.derivedFn.clone())?;
     let __pa0 = ::match_deref::match_deref! { match &(fnDer.order.clone()) {
         Deref @ Expression::INTEGER { value: __pa0 } => __pa0.clone(),
@@ -211,8 +211,8 @@ pub fn toSubMod(mut fnDer: Arc<NFFunctionDerivative>) -> Result<Arc<SCode::SubMo
 
 pub fn perfectFit(mut fnDer: Arc<NFFunctionDerivative>, mut interface_map: Arc<UnorderedMap::UnorderedMap<ArcStr, bool>>) -> Result<bool> {
     let mut b: bool = true;
-    let mut name: ArcStr = arcstr::literal!("");
-    let mut cond: Condition = Condition::ZERO_DERIVATIVE;
+    let mut name: ArcStr;
+    let mut cond: Condition;
     for mut condition in &*fnDer.conditions.clone() {
         let mut condition = condition.clone();
         (_, name, cond) = condition.clone();
@@ -231,8 +231,8 @@ pub fn perfectFit(mut fnDer: Arc<NFFunctionDerivative>, mut interface_map: Arc<U
 
 pub fn conditionsFromMap(mut interface_map: Arc<UnorderedMap::UnorderedMap<ArcStr, bool>>) -> Arc<metamodelica::List<(i32, ArcStr, Condition)>> {
     let mut conditions: Arc<metamodelica::List<(i32, ArcStr, Condition)>> = metamodelica::nil();
-    let mut name: ArcStr = arcstr::literal!("");
-    let mut isZeroDer: bool = false;
+    let mut name: ArcStr;
+    let mut isZeroDer: bool;
     for mut tpl in &*UnorderedMap::toList(interface_map.clone()) {
         let mut tpl = tpl.clone();
         (name, isZeroDer) = tpl.clone();
@@ -244,7 +244,7 @@ pub fn conditionsFromMap(mut interface_map: Arc<UnorderedMap::UnorderedMap<ArcSt
 }
 
 fn conditionToString(mut condition: Condition) -> ArcStr {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     r#str = ((match condition.clone() {
         Condition::NO_DERIVATIVE { .. } => literal!("noDerivative"),
         Condition::ZERO_DERIVATIVE => literal!("zeroDerivative"),
@@ -254,7 +254,7 @@ fn conditionToString(mut condition: Condition) -> ArcStr {
 }
 
 fn getDerivativeAnnotations(mut definition: Arc<SCode::Element>) -> Result<Arc<metamodelica::List<Arc<SCode::Mod>>>> {
-    let mut derMods: Arc<metamodelica::List<Arc<SCode::Mod>>> = metamodelica::nil();
+    let mut derMods: Arc<metamodelica::List<Arc<SCode::Mod>>>;
     derMods = (::match_deref::match_deref! { match &(definition.clone()) {
         Deref @ SCode::Element::CLASS { cmt: Deref @ SCode::Comment { annotation_: Some(ann), .. }, .. } => {
             SCodeUtil::lookupAnnotations(ann.clone(), (literal!("derivative")).clone())?
@@ -295,8 +295,8 @@ fn instDerivativeMod(mut r#mod: Arc<SCode::Mod>, mut fnNode: Arc<InstNode::InstN
 fn getDerivativeAttributes(mut attrs: Arc<metamodelica::List<Arc<SCode::SubMod>>>, mut r#fn: Arc<Function::Function>, mut scope: Arc<InstNode::InstNode>, mut info: SourceInfo) -> Result<(Arc<Expression::NFExpression>, Arc<metamodelica::List<(i32, ArcStr, Condition)>>)> {
     let mut order: Arc<Expression::NFExpression> = Arc::new(Expression::NFExpression::EMPTY { ty: crate::NFType::interned_UNKNOWN() });
     let mut conditions: Arc<metamodelica::List<(i32, ArcStr, Condition)>> = metamodelica::nil();
-    let mut id: ArcStr = arcstr::literal!("");
-    let mut r#mod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
+    let mut id: ArcStr;
+    let mut r#mod: Arc<SCode::Mod>;
     let mut aexp: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     let mut index: i32 = 0;
     for mut attr in &*attrs.clone() {

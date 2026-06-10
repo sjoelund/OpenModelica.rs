@@ -631,7 +631,7 @@ fn ryu_to_hr(d2s_str: &str, real_output: bool) -> String {
         }
     }
 
-    if exp > 5 || exp < -3 || (exp > 0 && exp - ndec > 3) {
+    if !(-3..=5).contains(&exp) || (exp > 0 && exp - ndec > 3) {
         return exp_repr;
     }
 
@@ -1154,8 +1154,10 @@ pub fn stringCharListString(strs: Arc<List<ArcStr>>) -> ArcStr {
 // ============================================================================
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Default)]
 pub enum List<T: Clone> {
     Cons{head: T, tail: Arc<List<T>>},
+    #[default]
     Nil,
 }
 
@@ -1164,11 +1166,6 @@ pub enum List<T: Clone> {
 // valid default for *any* element type. The spurious `T: Default` bound
 // otherwise blocks defaulting containers like `DoubleEnded.MutableList<T>`
 // (whose fields are `Mutable<Arc<List<T>>>`) at `T: Clone`.
-impl<T: Clone> Default for List<T> {
-    fn default() -> Self {
-        List::Nil
-    }
-}
 
 // Without this, dropping a list is recursive in its length (each node's
 // `Arc<List>` field drops the next node from inside its own drop call), so
@@ -2279,7 +2276,7 @@ pub mod ext {
             let mut row = Vec::new();
             // Like the C loop, walk both lists in lockstep, stopping at the
             // shorter one.
-            for (a, v) in (&*adj[i]).into_iter().zip((&*val[i]).into_iter()) {
+            for (a, v) in (&*adj[i]).into_iter().zip(&*val[i]) {
                 m.col_ids.push(*a - 1);
                 m.col_val.push(*v);
                 row.push((*a - 1, *v));

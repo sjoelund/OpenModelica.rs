@@ -122,7 +122,7 @@ impl Default for OutVar {
 pub use self::OutVar::{OUT_VAR,OUT_WILD};
 
 pub fn varString(mut var: Var) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*DAEDump::daeTypeStr(var.ty.clone())?); __mm_s.push_str(&*literal!(") ")); __mm_s.push_str(&*var.name.clone()); ArcStr::from(__mm_s) }).clone();
     Ok(r#str)
 }

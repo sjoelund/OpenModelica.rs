@@ -47,7 +47,7 @@ use openmodelica_ast::Absyn;
 use openmodelica_frontend_dump::Dump;
 
 pub fn rewriteBlockCall(mut inPg: Absyn::Program, mut inDefs: Absyn::Program) -> Result<Absyn::Program> {
-    let mut newOut: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
+    let mut newOut: Absyn::Program;
     newOut = (match inDefs.clone() {
         _ => {
             let mut pg2: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
@@ -73,7 +73,7 @@ fn parseProgram(mut inPg: Absyn::Program, mut defs: Absyn::Program) -> Result<Ab
 }
 
 pub fn parseClasses(mut classes: Arc<metamodelica::List<Arc<Absyn::Class>>>, mut defs: Absyn::Program) -> Result<Arc<metamodelica::List<Arc<Absyn::Class>>>> {
-    let mut out_classes: Arc<metamodelica::List<Arc<Absyn::Class>>> = metamodelica::nil();
+    let mut out_classes: Arc<metamodelica::List<Arc<Absyn::Class>>>;
     out_classes = (::match_deref::match_deref! { match &(classes.clone()) {
         Deref @ metamodelica::List::Nil => {
             metamodelica::nil()
@@ -104,7 +104,7 @@ pub fn parseClass(mut in_class: Arc<Absyn::Class>, mut defs: Absyn::Program) -> 
 }
 
 fn parseClassDef(mut in_def: Arc<Absyn::ClassDef>, mut defs: Absyn::Program) -> Result<Arc<Absyn::ClassDef>> {
-    let mut out_def: Arc<Absyn::ClassDef> = Arc::new(<Absyn::ClassDef as ::std::default::Default>::default());
+    let mut out_def: Arc<Absyn::ClassDef>;
     out_def = (::match_deref::match_deref! { match &(in_def.clone()) {
         Deref @ Absyn::ClassDef::PARTS { typeVars, classAttrs, classParts, ann, comment } => {
             let mut nclsp: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
@@ -119,10 +119,10 @@ fn parseClassDef(mut in_def: Arc<Absyn::ClassDef>, mut defs: Absyn::Program) -> 
 }
 
 fn parseClassParts(mut classes: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>, mut defs: Absyn::Program, mut oldEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, mut oldElems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut instNo: i32) -> Result<(Arc<metamodelica::List<Arc<Absyn::ClassPart>>>, Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, i32)> {
-    let mut out_classes: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
-    let mut eqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
-    let mut elems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
-    let mut newInstNo: i32 = 0;
+    let mut out_classes: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>;
+    let mut eqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>;
+    let mut elems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>;
+    let mut newInstNo: i32;
     (out_classes, eqs, elems, newInstNo) = (::match_deref::match_deref! { match &(classes.clone()) {
         Deref @ metamodelica::List::Nil => {
             (metamodelica::nil(), oldEqs.clone(), oldElems.clone(), instNo.clone())
@@ -146,10 +146,10 @@ fn parseClassParts(mut classes: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>, 
 }
 
 fn parseClassPart(mut in_def: Arc<Absyn::ClassPart>, mut defs: Absyn::Program, mut oldEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, mut oldElems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut instNo: i32) -> Result<(Arc<Absyn::ClassPart>, Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, i32)> {
-    let mut out_def: Arc<Absyn::ClassPart> = Arc::new(<Absyn::ClassPart as ::std::default::Default>::default());
-    let mut reqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
-    let mut relems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
-    let mut newInstNo: i32 = 0;
+    let mut out_def: Arc<Absyn::ClassPart>;
+    let mut reqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>;
+    let mut relems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>;
+    let mut newInstNo: i32;
     (out_def, reqs, relems, newInstNo) = (::match_deref::match_deref! { match &(in_def.clone()) {
         Deref @ Absyn::ClassPart::PUBLIC { contents: elems } => {
             (Arc::new(Absyn::ClassPart::PUBLIC { contents: elems.clone() }), metamodelica::nil(), metamodelica::nil(), instNo.clone())
@@ -191,10 +191,10 @@ fn parseClassPart(mut in_def: Arc<Absyn::ClassPart>, mut defs: Absyn::Program, m
 }
 
 fn parseEquations(mut classes: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, mut defs: Absyn::Program, mut oldEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, mut oldElems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut instNo: i32) -> Result<(Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, i32)> {
-    let mut out_classes: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
-    let mut eqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
-    let mut elems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
-    let mut newInstNo: i32 = 0;
+    let mut out_classes: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>;
+    let mut eqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>;
+    let mut elems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>;
+    let mut newInstNo: i32;
     (out_classes, eqs, elems, newInstNo) = (::match_deref::match_deref! { match &(classes.clone()) {
         Deref @ metamodelica::List::Nil => {
             (metamodelica::nil(), oldEqs.clone(), oldElems.clone(), instNo.clone())
@@ -226,10 +226,10 @@ fn parseEquations(mut classes: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>
 }
 
 fn parseEquation(mut in_eq: Arc<Absyn::Equation>, mut defs: Absyn::Program, mut oldEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, mut oldElems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut instNo: i32) -> Result<(Arc<Absyn::Equation>, Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, i32)> {
-    let mut out_eq: Arc<Absyn::Equation> = Arc::new(<Absyn::Equation as ::std::default::Default>::default());
-    let mut eqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
-    let mut elems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
-    let mut newInstNo: i32 = 0;
+    let mut out_eq: Arc<Absyn::Equation>;
+    let mut eqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>;
+    let mut elems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>;
+    let mut newInstNo: i32;
     (out_eq, eqs, elems, newInstNo) = (::match_deref::match_deref! { match &(in_eq.clone()) {
         Deref @ Absyn::Equation::EQ_IF { ifExp: exp1, equationTrueItems: leq1, elseIfBranches: tup1, equationElseItems: leq2 } => {
             let mut nexp1: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
@@ -305,10 +305,10 @@ fn parseEquation(mut in_eq: Arc<Absyn::Equation>, mut defs: Absyn::Program, mut 
 }
 
 fn parseExpression(mut in_eq: Arc<Absyn::Exp>, mut defs: Absyn::Program, mut oldEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, mut oldElems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut instNo: i32) -> Result<(Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, i32)> {
-    let mut out_eq: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
-    let mut eqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
-    let mut elems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
-    let mut newInstNo: i32 = 0;
+    let mut out_eq: Arc<Absyn::Exp>;
+    let mut eqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>;
+    let mut elems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>;
+    let mut newInstNo: i32;
     (out_eq, eqs, elems, newInstNo) = (::match_deref::match_deref! { match &(in_eq.clone()) {
         Deref @ Absyn::Exp::BINARY { exp1, op, exp2 } => {
             let mut nexp1: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
@@ -392,10 +392,10 @@ fn parseExpression(mut in_eq: Arc<Absyn::Exp>, mut defs: Absyn::Program, mut old
 }
 
 fn parseExpressionTuple(mut tuple_list: Arc<metamodelica::List<(Arc<Absyn::Exp>, Arc<Absyn::Exp>)>>, mut defs: Absyn::Program, mut oldEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, mut oldElems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut instNo: i32) -> Result<(Arc<metamodelica::List<(Arc<Absyn::Exp>, Arc<Absyn::Exp>)>>, Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, i32)> {
-    let mut out_tuple_list: Arc<metamodelica::List<(Arc<Absyn::Exp>, Arc<Absyn::Exp>)>> = metamodelica::nil();
-    let mut eqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
-    let mut elems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
-    let mut newInstNo: i32 = 0;
+    let mut out_tuple_list: Arc<metamodelica::List<(Arc<Absyn::Exp>, Arc<Absyn::Exp>)>>;
+    let mut eqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>;
+    let mut elems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>;
+    let mut newInstNo: i32;
     (out_tuple_list, eqs, elems, newInstNo) = (::match_deref::match_deref! { match &(tuple_list.clone()) {
         Deref @ metamodelica::List::Nil => {
             (metamodelica::nil(), oldEqs.clone(), oldElems.clone(), instNo.clone())
@@ -424,10 +424,10 @@ fn parseExpressionTuple(mut tuple_list: Arc<metamodelica::List<(Arc<Absyn::Exp>,
  When a function call is found, we check if it is in the block definitions, and if it is we replace it
  */
 fn parseCall(mut in_eq: Arc<Absyn::Exp>, mut defs: Absyn::Program, mut instNo: i32, mut oldEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, mut oldElems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>) -> Result<(Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, i32)> {
-    let mut res_expr: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
-    let mut newEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
-    let mut newElems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
-    let mut newInstNo: i32 = 0;
+    let mut res_expr: Arc<Absyn::Exp>;
+    let mut newEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>;
+    let mut newElems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>;
+    let mut newInstNo: i32;
     (res_expr, newEqs, newElems, newInstNo) = 'mc: {
         let __mc_input = in_eq.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -466,10 +466,10 @@ fn parseCall(mut in_eq: Arc<Absyn::Exp>, mut defs: Absyn::Program, mut instNo: i
 }
 
 fn getDefinition(mut id: ArcStr, mut instNo: i32, mut defs: Absyn::Program, mut fargs: Arc<Absyn::FunctionArgs>, mut oldEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, mut oldModif: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>) -> Result<(Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, bool, i32)> {
-    let mut newEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
-    let mut newModif: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
-    let mut found: bool = false;
-    let mut newInstNo: i32 = 0;
+    let mut newEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>;
+    let mut newModif: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
+    let mut found: bool;
+    let mut newInstNo: i32;
     (newEqs, newModif, found, newInstNo) = (match defs.clone() {
         Absyn::Program { .. } => parseClassesDefs((id.clone()).clone(), instNo.clone(), defs.classes.clone(), fargs.clone(), oldEqs.clone(), oldModif.clone())?,
     });
@@ -480,10 +480,10 @@ fn getDefinition(mut id: ArcStr, mut instNo: i32, mut defs: Absyn::Program, mut 
  Get the block definitions, go through all packages
  */
 fn parseClassesDefs(mut id: ArcStr, mut instNo: i32, mut classes: Arc<metamodelica::List<Arc<Absyn::Class>>>, mut fargs: Arc<Absyn::FunctionArgs>, mut oldEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, mut oldModif: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>) -> Result<(Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, bool, i32)> {
-    let mut newEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
-    let mut newModif: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
-    let mut found: bool = false;
-    let mut newInstNo: i32 = 0;
+    let mut newEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>;
+    let mut newModif: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
+    let mut found: bool;
+    let mut newInstNo: i32;
     (newEqs, newModif, found, newInstNo) = 'mc: {
         let __mc_input = classes.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -536,9 +536,9 @@ fn parseClassesDefs(mut id: ArcStr, mut instNo: i32, mut classes: Arc<metamodeli
 }
 
 fn lookThroughClasses(mut id: ArcStr, mut instNo: i32, mut fargs: Arc<Absyn::FunctionArgs>, mut classes: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>, mut oldEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, mut oldModif: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>) -> Result<(Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, bool)> {
-    let mut newEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
-    let mut newModif: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
-    let mut found: bool = false;
+    let mut newEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>;
+    let mut newModif: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
+    let mut found: bool;
     (newEqs, newModif, found) = 'mc: {
         let __mc_input = classes.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -579,9 +579,9 @@ fn lookThroughClasses(mut id: ArcStr, mut instNo: i32, mut fargs: Arc<Absyn::Fun
 }
 
 fn lookThroughElems(mut id: ArcStr, mut instNo: i32, mut fargs: Arc<Absyn::FunctionArgs>, mut elems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut oldEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, mut oldModif: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>) -> Result<(Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, bool)> {
-    let mut newEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
-    let mut newModif: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
-    let mut found: bool = false;
+    let mut newEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>;
+    let mut newModif: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
+    let mut found: bool;
     (newEqs, newModif, found) = 'mc: {
         let __mc_input = elems.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -634,8 +634,8 @@ fn lookThroughElems(mut id: ArcStr, mut instNo: i32, mut fargs: Arc<Absyn::Funct
 }
 
 fn parseArgs(mut elemId: ArcStr, mut classes: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>, mut fargs: Arc<Absyn::FunctionArgs>, mut oldEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, mut oldModif: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>) -> Result<(Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, Arc<metamodelica::List<Arc<Absyn::ElementArg>>>)> {
-    let mut eqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
-    let mut mods: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
+    let mut eqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>;
+    let mut mods: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
     (eqs, mods) = (::match_deref::match_deref! { match &(fargs.clone()) {
         Deref @ Absyn::FunctionArgs::FUNCTIONARGS { args, argNames } => {
             let mut eqs1: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
@@ -767,8 +767,8 @@ fn matchNamedArgsClass(mut elemId: ArcStr, mut nargs: Arc<metamodelica::List<Arc
 }
 
 fn matchNamedArgClass(mut elemId: ArcStr, mut argName: ArcStr, mut argValue: Arc<Absyn::Exp>, mut classes: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>, mut oldEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, mut oldModif: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>) -> Result<(Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, Arc<metamodelica::List<Arc<Absyn::ElementArg>>>)> {
-    let mut newEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
-    let mut newModif: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
+    let mut newEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>;
+    let mut newModif: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
     (newEqs, newModif) = 'mc: {
         let __mc_input = classes.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -809,9 +809,9 @@ fn matchNamedArgClass(mut elemId: ArcStr, mut argName: ArcStr, mut argValue: Arc
 }
 
 fn matchNamedArgElems(mut elemId: ArcStr, mut argName: ArcStr, mut argValue: Arc<Absyn::Exp>, mut elems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut oldEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, mut oldModif: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>) -> Result<(Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, bool)> {
-    let mut newEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
-    let mut newModif: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
-    let mut found: bool = false;
+    let mut newEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>;
+    let mut newModif: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
+    let mut found: bool;
     (newEqs, newModif, found) = 'mc: {
         let __mc_input = elems.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -864,8 +864,8 @@ fn matchNamedArgElems(mut elemId: ArcStr, mut argName: ArcStr, mut argValue: Arc
 }
 
 fn matchParamNamedArg(mut argName: ArcStr, mut argValue: Arc<Absyn::Exp>, mut comps: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, mut oldModif: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>) -> Result<(Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, bool)> {
-    let mut newModif: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
-    let mut found: bool = false;
+    let mut newModif: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>;
+    let mut found: bool;
     (newModif, found) = 'mc: {
         let __mc_input = comps.clone();
         if let Ok(__v) = (|| -> Result<_> {

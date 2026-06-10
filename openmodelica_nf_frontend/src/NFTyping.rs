@@ -125,7 +125,7 @@ pub mod TypingError {
     }
     pub use self::TypingError::{NO_ERROR,OUT_OF_BOUNDS};
     pub fn isError(mut error: Arc<TypingError>) -> bool {
-        let mut isError: bool = false;
+        let mut isError: bool;
         isError = (::match_deref::match_deref! { match &(error.clone()) {
         Deref @ NO_ERROR { .. } => false,
         _ => true,
@@ -141,7 +141,7 @@ thread_local! { static __WHOLEDIM_CREF_TLS: Arc<Expression::NFExpression> = Arc:
 pub fn WHOLEDIM_CREF() -> Arc<Expression::NFExpression> { __WHOLEDIM_CREF_TLS.with(|__t| __t.clone()) }
 
 pub fn typeClass(mut cls: Arc<InstNode::InstNode>, mut context: i32) -> Result<()> {
-    let mut next_context: i32 = 0;
+    let mut next_context: i32;
     next_context = InstContext::set(context.clone(), InstContext::CLASS.clone());
     typeClassType(cls.clone(), Binding::EMPTY_BINDING().clone(), next_context.clone(), cls.clone())?;
     typeComponents(cls.clone(), next_context.clone(), false)?;
@@ -216,7 +216,7 @@ pub fn typeComponents(mut cls: Arc<InstNode::InstNode>, mut context: i32, mut pr
 }
 
 pub fn typeStructor(mut node: Arc<InstNode::InstNode>) -> Result<()> {
-    let mut cache: Arc<CachedData::CachedData> = Arc::new(CachedData::NO_CACHE);
+    let mut cache: Arc<CachedData::CachedData>;
     let mut fnl: Arc<metamodelica::List<Arc<Function::Function>>> = metamodelica::nil();
     let mut context: i32 = 0;
     cache = InstNode::getFuncCache(node.clone())?;
@@ -251,7 +251,7 @@ pub fn typeStructor(mut node: Arc<InstNode::InstNode>) -> Result<()> {
 
 pub fn typeClassType(mut clsNode: Arc<InstNode::InstNode>, mut componentBinding: Arc<Binding::NFBinding>, mut context: i32, mut instanceNode: Arc<InstNode::InstNode>) -> Result<Arc<Type::NFType>> {
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut cls: Arc<Class::NFClass> = Arc::new(Class::NOT_INSTANTIATED);
+    let mut cls: Arc<Class::NFClass>;
     let mut ty_cls: Arc<Class::NFClass> = Arc::new(Class::NOT_INSTANTIATED);
     let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     let mut ty_node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
@@ -313,12 +313,12 @@ pub fn typeClassType(mut clsNode: Arc<InstNode::InstNode>, mut componentBinding:
 }
 
 pub fn makeConnectorType(mut ctree: Arc<ClassTree::ClassTree>, mut isExpandable: bool) -> Result<Arc<ComplexType::NFComplexType>> {
-    let mut connectorTy: Arc<ComplexType::NFComplexType> = Arc::new(ComplexType::CLASS);
+    let mut connectorTy: Arc<ComplexType::NFComplexType>;
     let mut pots: Arc<metamodelica::List<Arc<InstNode::InstNode>>> = metamodelica::nil();
     let mut flows: Arc<metamodelica::List<Arc<InstNode::InstNode>>> = metamodelica::nil();
     let mut streams: Arc<metamodelica::List<Arc<InstNode::InstNode>>> = metamodelica::nil();
     let mut exps: Arc<metamodelica::List<Arc<InstNode::InstNode>>> = metamodelica::nil();
-    let mut cty: i32 = 0;
+    let mut cty: i32;
     if isExpandable.clone() {
         for mut c in &*ClassTree::enumerateComponents(ctree.clone())? {
             let mut c = c.clone();
@@ -354,12 +354,12 @@ pub fn makeConnectorType(mut ctree: Arc<ClassTree::ClassTree>, mut isExpandable:
 }
 
 pub fn checkConnectorTypeBalance(mut component: Arc<InstNode::InstNode>) -> Result<()> {
-    let mut pots: i32 = 0;
-    let mut flows: i32 = 0;
-    let mut streams: i32 = 0;
-    let mut known_size: bool = false;
-    let mut comp: Arc<Component::NFComponent> = Arc::new(Component::WILD);
-    let mut parent: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
+    let mut pots: i32;
+    let mut flows: i32;
+    let mut streams: i32;
+    let mut known_size: bool;
+    let mut comp: Arc<Component::NFComponent>;
+    let mut parent: Arc<InstNode::InstNode>;
     comp = InstNode::component(component.clone())?;
     if !(Prefixes::ConnectorType::isConnector(Component::connectorType(comp.clone()))) {
         return Ok(());
@@ -383,8 +383,8 @@ pub fn checkConnectorTypeBalance(mut component: Arc<InstNode::InstNode>) -> Resu
 }
 
 pub fn makeRecordType(mut constructor: Arc<InstNode::InstNode>) -> Result<Arc<ComplexType::NFComplexType>> {
-    let mut recordTy: Arc<ComplexType::NFComplexType> = Arc::new(ComplexType::CLASS);
-    let mut cache: Arc<CachedData::CachedData> = Arc::new(CachedData::NO_CACHE);
+    let mut recordTy: Arc<ComplexType::NFComplexType>;
+    let mut cache: Arc<CachedData::CachedData>;
     let mut r#fn: Arc<Function::Function> = Arc::new(<Function::Function as ::std::default::Default>::default());
     let mut fields: metamodelica::Array<Arc<Record::Field::Field>> = Default::default();
     let mut indexMap: Arc<UnorderedMap::UnorderedMap<ArcStr, i32>> = <Arc<UnorderedMap::UnorderedMap<ArcStr, i32>> as ::std::default::Default>::default();
@@ -420,8 +420,8 @@ pub fn makeRecordType(mut constructor: Arc<InstNode::InstNode>) -> Result<Arc<Co
 
 pub fn typeComponent(mut component: Arc<InstNode::InstNode>, mut context: i32, mut typeChildren: bool) -> Result<Arc<Type::NFType>> {
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
-    let mut c: Arc<Component::NFComponent> = Arc::new(Component::WILD);
+    let mut node: Arc<InstNode::InstNode>;
+    let mut c: Arc<Component::NFComponent>;
     let mut is_deleted: bool = false;
     let mut dims: metamodelica::Array<Arc<Dimension::NFDimension>> = Default::default();
     if InstNode::isEmpty(component.clone()) || InstNode::isOnlyOuter(component.clone())? {
@@ -476,7 +476,7 @@ pub fn typeComponent(mut component: Arc<InstNode::InstNode>, mut context: i32, m
 }
 
 pub fn typeComponentTry(mut componentNode: Arc<InstNode::InstNode>, mut context: i32) -> Result<()> {
-    let mut comp: Arc<Component::NFComponent> = Arc::new(Component::WILD);
+    let mut comp: Arc<Component::NFComponent>;
     ErrorExt::setCheckpoint(literal!("NFTyping.typeComponentTry"));
     if '__try0: {
         unwrap_break_err!(typeComponent(componentNode.clone(), context.clone(), true), '__try0);
@@ -491,7 +491,7 @@ pub fn typeComponentTry(mut componentNode: Arc<InstNode::InstNode>, mut context:
 }
 
 pub fn checkComponentStreamAttribute(mut cty: i32, mut ty: Arc<Type::NFType>, mut component: Arc<InstNode::InstNode>) -> Result<()> {
-    let mut ety: Arc<Type::NFType> = Arc::new(Type::ANY);
+    let mut ety: Arc<Type::NFType>;
     if Prefixes::ConnectorType::isFlowOrStream(cty.clone()) {
         ety = Type::arrayElementType(ty.clone());
         if !(Type::isReal(ety.clone())? || Type::isComplex(ety.clone())) {
@@ -503,7 +503,7 @@ pub fn checkComponentStreamAttribute(mut cty: i32, mut ty: Arc<Type::NFType>, mu
 }
 
 pub fn typeIterator(mut iterator: Arc<InstNode::InstNode>, mut range: Arc<Expression::NFExpression>, mut context: i32, mut structural: bool) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>, Variability, Purity)> {
-    let mut outRange: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut outRange: Arc<Expression::NFExpression>;
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     let mut var: Variability = Variability::CONSTANT;
     let mut purity: Purity = Purity::PURE;
@@ -661,11 +661,11 @@ pub fn typeDimension(mut dimensions: metamodelica::Array<Arc<Dimension::NFDimens
 }
 
 pub fn deduceDimensionFromExp(mut exp: Arc<Expression::NFExpression>, mut ty: Option<Arc<Type::NFType>>, mut index: i32, mut parentDims: i32, mut component: Arc<InstNode::InstNode>, mut context: i32, mut info: SourceInfo) -> Result<(Arc<Dimension::NFDimension>, Arc<TypingError::TypingError>)> {
-    let mut dim: Arc<Dimension::NFDimension> = Arc::new(Dimension::BOOLEAN);
-    let mut error: Arc<TypingError::TypingError> = Arc::new(TypingError::NO_ERROR);
-    let mut oe: Option<Arc<Expression::NFExpression>> = None;
-    let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut dim_index: i32 = 0;
+    let mut dim: Arc<Dimension::NFDimension>;
+    let mut error: Arc<TypingError::TypingError>;
+    let mut oe: Option<Arc<Expression::NFExpression>>;
+    let mut e: Arc<Expression::NFExpression>;
+    let mut dim_index: i32;
     dim_index = index.clone() + parentDims.clone();
     if isSome(ty.clone()) {
         (dim, error) = nthDimensionBoundsChecked(Util::getOption(ty.clone())?, dim_index.clone(), 0)?;
@@ -687,10 +687,10 @@ pub fn deduceDimensionFromExp(mut exp: Arc<Expression::NFExpression>, mut ty: Op
 
 pub fn subscriptDimExp(mut dimExp: Arc<Expression::NFExpression>, mut component: Arc<InstNode::InstNode>) -> Result<Arc<Expression::NFExpression>> {
     let mut dimExp: Arc<Expression::NFExpression> = dimExp;
-    let mut exp_dims: i32 = 0;
-    let mut parent_dims: i32 = 0;
-    let mut parent: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
-    let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
+    let mut exp_dims: i32;
+    let mut parent_dims: i32;
+    let mut parent: Arc<InstNode::InstNode>;
+    let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>;
     exp_dims = Expression::dimensionCount(dimExp.clone())?;
     if exp_dims.clone() == 0 {
         return Ok(dimExp.clone());
@@ -714,7 +714,7 @@ pub fn subscriptDimExp(mut dimExp: Arc<Expression::NFExpression>, mut component:
 
 pub fn simplifyDimExp(mut dimExp: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
     let mut dimExp: Arc<Expression::NFExpression> = dimExp;
-    let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut exp: Arc<Expression::NFExpression>;
     dimExp = (::match_deref::match_deref! { match &(dimExp.clone()) {
         Deref @ Expression::ARRAY { .. } if (Expression::arrayAllEqual(dimExp.clone())?) => Expression::arrayFirstScalar(dimExp.clone())?,
         Deref @ Expression::SUBSCRIPTED_EXP { split: true, .. } if (Expression::isArray(var_field!((*dimExp).exp, Expression::NFExpression::SUBSCRIPTED_EXP).clone()) && Expression::arrayAllEqual(var_field!((*dimExp).exp, Expression::NFExpression::SUBSCRIPTED_EXP).clone())?) => Expression::arrayFirstScalar(var_field!((*dimExp).exp, Expression::NFExpression::SUBSCRIPTED_EXP).clone())?,
@@ -725,7 +725,7 @@ pub fn simplifyDimExp(mut dimExp: Arc<Expression::NFExpression>) -> Result<Arc<E
 }
 
 pub fn makeDimension(mut dimExp: Arc<Expression::NFExpression>, mut unevaledExp: Arc<Expression::NFExpression>, mut variability: Variability) -> Result<Arc<Dimension::NFDimension>> {
-    let mut outDimension: Arc<Dimension::NFDimension> = Arc::new(Dimension::BOOLEAN);
+    let mut outDimension: Arc<Dimension::NFDimension>;
     let mut exp: Arc<Expression::NFExpression> = dimExp.clone();
     if Expression::isArray(exp.clone()) {
         if Expression::arrayAllEqual(exp.clone())? {
@@ -737,11 +737,11 @@ pub fn makeDimension(mut dimExp: Arc<Expression::NFExpression>, mut unevaledExp:
 }
 
 pub fn getRecordElementBinding(mut component: Arc<InstNode::InstNode>, mut context: i32) -> Result<(Arc<Binding::NFBinding>, i32)> {
-    let mut binding: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);
+    let mut binding: Arc<Binding::NFBinding>;
     let mut parentDims: i32 = 0;
-    let mut parent: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
-    let mut comp: Arc<Component::NFComponent> = Arc::new(Component::WILD);
-    let mut parent_binding: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);
+    let mut parent: Arc<InstNode::InstNode>;
+    let mut comp: Arc<Component::NFComponent>;
+    let mut parent_binding: Arc<Binding::NFBinding>;
     parent = InstNode::instanceParent(component.clone())?;
     if InstNode::isComponent(parent.clone())? {
         comp = InstNode::component(parent.clone())?;
@@ -765,7 +765,7 @@ pub fn getRecordElementBinding(mut component: Arc<InstNode::InstNode>, mut conte
 }
 
 pub fn typeBindings(mut cls: Arc<InstNode::InstNode>, mut context: i32) -> Result<()> {
-    let mut c: Arc<Class::NFClass> = Arc::new(Class::NOT_INSTANTIATED);
+    let mut c: Arc<Class::NFClass>;
     let mut cls_tree: Arc<ClassTree::ClassTree> = Arc::new(ClassTree::EMPTY_TREE);
     c = InstNode::getClass(cls.clone())?;
     let () = (::match_deref::match_deref! { match &(c.clone()) {
@@ -800,13 +800,13 @@ pub fn typeBindings(mut cls: Arc<InstNode::InstNode>, mut context: i32) -> Resul
 }
 
 pub fn typeComponentBinding(mut component: Arc<InstNode::InstNode>, mut context: i32, mut typeChildren: bool) -> Result<()> {
-    let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
-    let mut c: Arc<Component::NFComponent> = Arc::new(Component::WILD);
+    let mut node: Arc<InstNode::InstNode>;
+    let mut c: Arc<Component::NFComponent>;
     let mut binding: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);
     let mut name: ArcStr = arcstr::literal!("");
     let mut comp_var: Variability = Variability::CONSTANT;
     let mut attrs: Arc<Attributes::NFAttributes> = Arc::new(<Attributes::NFAttributes as ::std::default::Default>::default());
-    let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
+    let mut ty: Arc<Type::NFType>;
     if InstNode::isEmpty(component.clone()) || InstNode::isOnlyOuter(component.clone())? {
         return Ok(());
     }
@@ -900,11 +900,11 @@ pub fn typeComponentBinding(mut component: Arc<InstNode::InstNode>, mut context:
 }
 
 pub fn checkComponentBindingVariability(mut name: ArcStr, mut component: Arc<Component::NFComponent>, mut binding: Arc<Binding::NFBinding>, mut context: i32) -> Result<Variability> {
-    let mut var: Variability = Variability::CONSTANT;
-    let mut comp_var: Variability = Variability::CONSTANT;
-    let mut comp_eff_var: Variability = Variability::CONSTANT;
-    let mut bind_var: Variability = Variability::CONSTANT;
-    let mut bind_eff_var: Variability = Variability::CONSTANT;
+    let mut var: Variability;
+    let mut comp_var: Variability;
+    let mut comp_eff_var: Variability;
+    let mut bind_var: Variability;
+    let mut bind_eff_var: Variability;
     comp_var = Component::variability(component.clone())?;
     comp_eff_var = Prefixes::effectiveVariability(comp_var.clone());
     bind_var = Binding::variability(binding.clone())?;
@@ -1214,9 +1214,9 @@ pub fn typeExpl(mut expl: Arc<metamodelica::List<Arc<Expression::NFExpression>>>
     let mut explTyped: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
     let mut tyl: Arc<metamodelica::List<Arc<Type::NFType>>> = metamodelica::nil();
     let mut varl: Arc<metamodelica::List<Variability>> = metamodelica::nil();
-    let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut var: Variability = Variability::CONSTANT;
-    let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
+    let mut exp: Arc<Expression::NFExpression>;
+    let mut var: Variability;
+    let mut ty: Arc<Type::NFType>;
     for mut e in &*expl.clone().reverse() {
         let mut e = e.clone();
         (exp, ty, var, _) = typeExp(e.clone(), context.clone(), info.clone(), false)?;
@@ -1229,15 +1229,15 @@ pub fn typeExpl(mut expl: Arc<metamodelica::List<Arc<Expression::NFExpression>>>
 
 pub fn typeRecordExp(mut exp: Arc<Expression::NFExpression>, mut context: i32, mut info: SourceInfo) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>, Variability, Purity)> {
     let mut exp: Arc<Expression::NFExpression> = exp;
-    let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
+    let mut ty: Arc<Type::NFType>;
     let mut variability: Variability = Variability::CONSTANT.clone();
     let mut purity: Purity = Purity::PURE.clone();
-    let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-    let mut elems: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
+    let mut path: Arc<Absyn::Path>;
+    let mut elems: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
     let mut ty_elems: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-    let mut var: Variability = Variability::CONSTANT;
-    let mut pur: Purity = Purity::PURE;
-    let mut next_context: i32 = 0;
+    let mut var: Variability;
+    let mut pur: Purity;
+    let mut next_context: i32;
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::RECORD { path: __pa0, ty: __pa1, elements: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
@@ -1259,15 +1259,15 @@ pub fn typeRecordExp(mut exp: Arc<Expression::NFExpression>, mut context: i32, m
 
 pub fn typeSubscriptedExp(mut exp: Arc<Expression::NFExpression>, mut context: i32, mut info: SourceInfo) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>, Variability, Purity)> {
     let mut exp: Arc<Expression::NFExpression> = exp;
-    let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut variability: Variability = Variability::CONSTANT;
-    let mut purity: Purity = Purity::PURE;
-    let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
-    let mut expanded_subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
-    let mut fill_dims: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-    let mut split: bool = false;
-    let mut subs_var: Variability = Variability::CONSTANT;
+    let mut ty: Arc<Type::NFType>;
+    let mut variability: Variability;
+    let mut purity: Purity;
+    let mut e: Arc<Expression::NFExpression>;
+    let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>;
+    let mut expanded_subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>;
+    let mut fill_dims: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
+    let mut split: bool;
+    let mut subs_var: Variability;
     let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::SUBSCRIPTED_EXP { exp: __pa0, subscripts: __pa1, ty: __pa2, split: __pa3 } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
         _ => bail!("pattern mismatch"),
@@ -1390,12 +1390,12 @@ pub fn typeSubscriptedExp2(mut exp: Arc<Expression::NFExpression>, mut splitSubs
 }
 
 pub fn typeExpDim(mut exp: Arc<Expression::NFExpression>, mut dimIndex: i32, mut context: i32, mut info: SourceInfo) -> Result<(Arc<Dimension::NFDimension>, Option<Arc<Expression::NFExpression>>, Arc<TypingError::TypingError>)> {
-    let mut dim: Arc<Dimension::NFDimension> = Arc::new(Dimension::BOOLEAN);
+    let mut dim: Arc<Dimension::NFDimension>;
     let mut typedExp: Option<Arc<Expression::NFExpression>> = None;
-    let mut error: Arc<TypingError::TypingError> = Arc::new(TypingError::NO_ERROR);
-    let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
+    let mut error: Arc<TypingError::TypingError>;
+    let mut ty: Arc<Type::NFType>;
     let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut next_context: i32 = 0;
+    let mut next_context: i32;
     ty = Expression::typeOf(exp.clone());
     if Type::isKnown(ty.clone()) {
         (dim, error) = nthDimensionBoundsChecked(ty.clone(), dimIndex.clone(), 0)?;
@@ -1451,8 +1451,8 @@ pub fn evaluateArrayIf(mut exp: Arc<Expression::NFExpression>, mut target: Arc<C
 }
 
 pub fn typeArrayDim(mut arrayExp: Arc<Expression::NFExpression>, mut dimIndex: i32) -> Result<(Arc<Dimension::NFDimension>, Arc<TypingError::TypingError>)> {
-    let mut dim: Arc<Dimension::NFDimension> = Arc::new(Dimension::BOOLEAN);
-    let mut error: Arc<TypingError::TypingError> = Arc::new(TypingError::NO_ERROR);
+    let mut dim: Arc<Dimension::NFDimension>;
+    let mut error: Arc<TypingError::TypingError>;
     if dimIndex.clone() < 1 {
         dim = crate::NFDimension::interned_UNKNOWN();
         error = Arc::new(TypingError::TypingError::OUT_OF_BOUNDS { upperBound: Expression::dimensionCount(arrayExp.clone())? });
@@ -1481,13 +1481,13 @@ pub fn typeArrayDim2(mut arrayExp: Arc<Expression::NFExpression>, mut dimIndex: 
 pub fn typeCrefDim(mut cref: Arc<ComponentRef::NFComponentRef>, mut dimIndex: i32, mut context: i32, mut info: SourceInfo) -> Result<(Arc<Dimension::NFDimension>, Arc<TypingError::TypingError>)> {
     let mut dim: Arc<Dimension::NFDimension> = Arc::new(Dimension::BOOLEAN);
     let mut error: Arc<TypingError::TypingError> = crate::NFTyping::TypingError::interned_NO_ERROR();
-    let mut crl: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-    let mut index: i32 = 0;
+    let mut crl: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
+    let mut index: i32;
     let mut dim_count: i32 = 0;
     let mut dim_total: i32 = 0;
     let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     let mut c: Arc<Component::NFComponent> = Arc::new(Component::WILD);
-    let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
+    let mut ty: Arc<Type::NFType>;
     let mut dims: metamodelica::Array<Arc<Dimension::NFDimension>> = Default::default();
     if ComponentRef::hasSubscripts(cref.clone())? {
         (_, ty, _, _) = typeCref(cref.clone(), context.clone(), info.clone())?;
@@ -1554,8 +1554,8 @@ pub fn checkCyclicDimension(mut dim: Arc<Dimension::NFDimension>, mut component:
 }
 
 pub fn nthDimensionBoundsChecked(mut ty: Arc<Type::NFType>, mut dimIndex: i32, mut offset: i32) -> Result<(Arc<Dimension::NFDimension>, Arc<TypingError::TypingError>)> {
-    let mut dim: Arc<Dimension::NFDimension> = Arc::new(Dimension::BOOLEAN);
-    let mut error: Arc<TypingError::TypingError> = Arc::new(TypingError::NO_ERROR);
+    let mut dim: Arc<Dimension::NFDimension>;
+    let mut error: Arc<TypingError::TypingError>;
     let mut dim_size: i32 = Type::dimensionCount(ty.clone());
     let mut index: i32 = dimIndex.clone() + offset.clone();
     if index.clone() < 1 || index.clone() > dim_size.clone() {
@@ -1569,13 +1569,13 @@ pub fn nthDimensionBoundsChecked(mut ty: Arc<Type::NFType>, mut dimIndex: i32, m
 }
 
 pub fn typeCrefExp(mut cref: Arc<ComponentRef::NFComponentRef>, mut context: i32, mut info: SourceInfo) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>, Variability, Purity)> {
-    let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut variability: Variability = Variability::CONSTANT;
-    let mut purity: Purity = Purity::PURE;
-    let mut cr: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    let mut node_var: Variability = Variability::CONSTANT;
-    let mut subs_var: Variability = Variability::CONSTANT;
+    let mut exp: Arc<Expression::NFExpression>;
+    let mut ty: Arc<Type::NFType>;
+    let mut variability: Variability;
+    let mut purity: Purity;
+    let mut cr: Arc<ComponentRef::NFComponentRef>;
+    let mut node_var: Variability;
+    let mut subs_var: Variability;
     (cr, ty, node_var, subs_var) = typeCref(cref.clone(), context.clone(), info.clone())?;
     exp = Arc::new(Expression::NFExpression::CREF { ty: ty.clone(), cref: cr.clone() });
     variability = Prefixes::variabilityMax(node_var.clone(), subs_var.clone());
@@ -1585,9 +1585,9 @@ pub fn typeCrefExp(mut cref: Arc<ComponentRef::NFComponentRef>, mut context: i32
 
 pub fn typeCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut context: i32, mut info: SourceInfo) -> Result<(Arc<ComponentRef::NFComponentRef>, Arc<Type::NFType>, Variability, Variability)> {
     let mut cref: Arc<ComponentRef::NFComponentRef> = cref;
-    let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut nodeVariability: Variability = Variability::CONSTANT;
-    let mut subsVariability: Variability = Variability::CONSTANT;
+    let mut ty: Arc<Type::NFType>;
+    let mut nodeVariability: Variability;
+    let mut subsVariability: Variability;
     if InstContext::inFunction(context.clone()) && ComponentRef::isTime(cref.clone())? {
         Error::addSourceMessage(Error::EXP_INVALID_IN_FUNCTION.clone(), list![(literal!("time")).clone()], info.clone())?;
         bail!("fail");
@@ -1660,14 +1660,14 @@ pub fn typeCref2(mut cref: Arc<ComponentRef::NFComponentRef>, mut context: i32, 
 }
 
 pub fn typeSubscripts(mut subscripts: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>, mut crefType: Arc<Type::NFType>, mut subscriptedExp: Arc<Expression::NFExpression>, mut context: i32, mut info: SourceInfo, mut checkSubscripts: bool) -> Result<(Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>, Variability)> {
-    let mut typedSubs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
+    let mut typedSubs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>;
     let mut variability: Variability = Variability::CONSTANT.clone();
-    let mut dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>> = metamodelica::nil();
-    let mut dim: Arc<Dimension::NFDimension> = Arc::new(Dimension::BOOLEAN);
-    let mut next_context: i32 = 0;
-    let mut i: i32 = 0;
-    let mut sub: Arc<Subscript::NFSubscript> = Arc::new(Subscript::WHOLE);
-    let mut var: Variability = Variability::CONSTANT;
+    let mut dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>>;
+    let mut dim: Arc<Dimension::NFDimension>;
+    let mut next_context: i32;
+    let mut i: i32;
+    let mut sub: Arc<Subscript::NFSubscript>;
+    let mut var: Variability;
     if subscripts.clone().is_empty() {
         typedSubs = subscripts.clone();
         return Ok((typedSubs.clone(), variability.clone()));
@@ -1759,9 +1759,9 @@ pub fn typeSubscript(mut subscript: Arc<Subscript::NFSubscript>, mut dimension: 
 
 pub fn checkSubscriptType(mut subscriptExp: Arc<Expression::NFExpression>, mut subscriptType: Arc<Type::NFType>, mut dimension: Arc<Dimension::NFDimension>, mut info: SourceInfo) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>)> {
     let mut subscriptExp: Arc<Expression::NFExpression> = subscriptExp;
-    let mut outType: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut expected_ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut mk: MatchKind = MatchKind::EXACT;
+    let mut outType: Arc<Type::NFType>;
+    let mut expected_ty: Arc<Type::NFType>;
+    let mut mk: MatchKind;
     expected_ty = Dimension::subscriptType(dimension.clone());
     (subscriptExp, outType, mk) = TypeCheck::matchTypes(subscriptType.clone(), expected_ty.clone(), subscriptExp.clone(), TypeCheck::ALLOW_UNKNOWN.clone())?;
     if TypeCheck::isIncompatibleMatch(mk.clone()) {
@@ -1772,23 +1772,23 @@ pub fn checkSubscriptType(mut subscriptExp: Arc<Expression::NFExpression>, mut s
 }
 
 pub fn typeArray(mut elements: metamodelica::Array<Arc<Expression::NFExpression>>, mut isLiteral: bool, mut ty: Arc<Type::NFType>, mut context: i32, mut info: SourceInfo) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>, Variability, Purity)> {
-    let mut arrayExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut arrayExp: Arc<Expression::NFExpression>;
     let mut arrayType: Arc<Type::NFType> = crate::NFType::interned_UNKNOWN();
     let mut variability: Variability = Variability::CONSTANT.clone();
     let mut purity: Purity = Purity::PURE.clone();
-    let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut exp: Arc<Expression::NFExpression>;
     let mut expl: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
     let mut expl2: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-    let mut var: Variability = Variability::CONSTANT;
-    let mut pur: Purity = Purity::PURE;
+    let mut var: Variability;
+    let mut pur: Purity;
     let mut ty1: Arc<Type::NFType> = crate::NFType::interned_UNKNOWN();
-    let mut ty2: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut ty3: Arc<Type::NFType> = Arc::new(Type::ANY);
+    let mut ty2: Arc<Type::NFType>;
+    let mut ty3: Arc<Type::NFType>;
     let mut tys: Arc<metamodelica::List<Arc<Type::NFType>>> = metamodelica::nil();
-    let mut mk: MatchKind = MatchKind::EXACT;
-    let mut array_len: i32 = 0;
-    let mut idx: i32 = 0;
-    let mut next_context: i32 = 0;
+    let mut mk: MatchKind;
+    let mut array_len: i32;
+    let mut idx: i32;
+    let mut next_context: i32;
     next_context = InstContext::set(context.clone(), InstContext::SUBEXPRESSION.clone());
     array_len = metamodelica::arrayLength(elements.clone());
     if array_len.clone() > 0 {
@@ -1839,15 +1839,15 @@ pub fn typeArray(mut elements: metamodelica::Array<Arc<Expression::NFExpression>
 }
 
 pub fn typeMatrix(mut elements: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Expression::NFExpression>>>>>, mut context: i32, mut info: SourceInfo) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>, Variability, Purity)> {
-    let mut arrayExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut arrayExp: Arc<Expression::NFExpression>;
     let mut arrayType: Arc<Type::NFType> = crate::NFType::interned_UNKNOWN();
     let mut variability: Variability = Variability::CONSTANT.clone();
     let mut purity: Purity = Purity::PURE.clone();
-    let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut exp: Arc<Expression::NFExpression>;
     let mut expl: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
     let mut res: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-    let mut var: Variability = Variability::CONSTANT;
-    let mut pur: Purity = Purity::PURE;
+    let mut var: Variability;
+    let mut pur: Purity;
     let mut ty: Arc<Type::NFType> = crate::NFType::interned_UNKNOWN();
     let mut tys: Arc<metamodelica::List<Arc<Type::NFType>>> = metamodelica::nil();
     let mut resTys: Arc<metamodelica::List<Arc<Type::NFType>>> = metamodelica::nil();
@@ -1886,24 +1886,24 @@ pub fn typeMatrix(mut elements: Arc<metamodelica::List<Arc<metamodelica::List<Ar
 }
 
 pub fn typeMatrixComma(mut elements: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut context: i32, mut info: SourceInfo) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>, Variability, Purity)> {
-    let mut arrayExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut arrayType: Arc<Type::NFType> = Arc::new(Type::ANY);
+    let mut arrayExp: Arc<Expression::NFExpression>;
+    let mut arrayType: Arc<Type::NFType>;
     let mut variability: Variability = Variability::CONSTANT.clone();
     let mut purity: Purity = Purity::PURE.clone();
-    let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut exp: Arc<Expression::NFExpression>;
     let mut expl: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
     let mut res: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-    let mut var: Variability = Variability::CONSTANT;
-    let mut pur: Purity = Purity::PURE;
+    let mut var: Variability;
+    let mut pur: Purity;
     let mut ty: Arc<Type::NFType> = crate::NFType::interned_UNKNOWN();
-    let mut ty1: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut ty2: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut ty3: Arc<Type::NFType> = Arc::new(Type::ANY);
+    let mut ty1: Arc<Type::NFType>;
+    let mut ty2: Arc<Type::NFType>;
+    let mut ty3: Arc<Type::NFType>;
     let mut tys: Arc<metamodelica::List<Arc<Type::NFType>>> = metamodelica::nil();
-    let mut tys2: Arc<metamodelica::List<Arc<Type::NFType>>> = metamodelica::nil();
+    let mut tys2: Arc<metamodelica::List<Arc<Type::NFType>>>;
     let mut n: i32 = 2;
-    let mut pos: i32 = 0;
-    let mut mk: MatchKind = MatchKind::EXACT;
+    let mut pos: i32;
+    let mut mk: MatchKind;
     Error::assertion(!(elements.clone().is_empty()), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFTyping.typeMatrixComma")); __mm_s.push_str(&*literal!(" expected non-empty arguments")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFTyping.mo"))?;
     if (elements.clone().len() as i32) > 1 {
         for mut e in &*elements.clone() {
@@ -1956,24 +1956,24 @@ pub fn typeMatrixComma(mut elements: Arc<metamodelica::List<Arc<Expression::NFEx
 
 pub fn typeRange(mut rangeExp: Arc<Expression::NFExpression>, mut context: i32, mut info: SourceInfo) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>, Variability, Purity)> {
     let mut rangeExp: Arc<Expression::NFExpression> = rangeExp;
-    let mut rangeType: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut variability: Variability = Variability::CONSTANT;
-    let mut purity: Purity = Purity::PURE;
-    let mut start_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut step_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut stop_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut start_ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut step_ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut stop_ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut ostep_exp: Option<Arc<Expression::NFExpression>> = None;
-    let mut ostep_ty: Option<Arc<Type::NFType>> = None;
-    let mut start_var: Variability = Variability::CONSTANT;
-    let mut step_var: Variability = Variability::CONSTANT;
-    let mut stop_var: Variability = Variability::CONSTANT;
-    let mut start_pur: Purity = Purity::PURE;
-    let mut step_pur: Purity = Purity::PURE;
-    let mut stop_pur: Purity = Purity::PURE;
-    let mut ty_match: MatchKind = MatchKind::EXACT;
+    let mut rangeType: Arc<Type::NFType>;
+    let mut variability: Variability;
+    let mut purity: Purity;
+    let mut start_exp: Arc<Expression::NFExpression>;
+    let mut step_exp: Arc<Expression::NFExpression>;
+    let mut stop_exp: Arc<Expression::NFExpression>;
+    let mut start_ty: Arc<Type::NFType>;
+    let mut step_ty: Arc<Type::NFType>;
+    let mut stop_ty: Arc<Type::NFType>;
+    let mut ostep_exp: Option<Arc<Expression::NFExpression>>;
+    let mut ostep_ty: Option<Arc<Type::NFType>>;
+    let mut start_var: Variability;
+    let mut step_var: Variability;
+    let mut stop_var: Variability;
+    let mut start_pur: Purity;
+    let mut step_pur: Purity;
+    let mut stop_pur: Purity;
+    let mut ty_match: MatchKind;
     let mut next_context: i32 = InstContext::set(context.clone(), InstContext::SUBEXPRESSION.clone());
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(rangeExp.clone()) {
         Deref @ Expression::RANGE { start: __pa0, step: __pa1, stop: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
@@ -2019,14 +2019,14 @@ pub fn typeRange(mut rangeExp: Arc<Expression::NFExpression>, mut context: i32, 
 }
 
 pub fn typeTuple(mut elements: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut context: i32, mut info: SourceInfo) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>, Variability, Purity)> {
-    let mut tupleExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut tupleType: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut variability: Variability = Variability::CONSTANT;
+    let mut tupleExp: Arc<Expression::NFExpression>;
+    let mut tupleType: Arc<Type::NFType>;
+    let mut variability: Variability;
     let mut purity: Purity = Purity::PURE.clone();
-    let mut expl: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-    let mut tyl: Arc<metamodelica::List<Arc<Type::NFType>>> = metamodelica::nil();
-    let mut valr: Arc<metamodelica::List<Variability>> = metamodelica::nil();
-    let mut next_context: i32 = 0;
+    let mut expl: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
+    let mut tyl: Arc<metamodelica::List<Arc<Type::NFType>>>;
+    let mut valr: Arc<metamodelica::List<Variability>>;
+    let mut next_context: i32;
     if !(InstContext::onLHS(context.clone())) || InstContext::inSubexpression(context.clone()) {
         Error::addSourceMessage(Error::RHS_TUPLE_EXPRESSION.clone(), list![(Expression::toString(Arc::new(Expression::NFExpression::TUPLE { ty: crate::NFType::interned_UNKNOWN(), elements: elements.clone() }))?).clone()], info.clone())?;
         bail!("fail");
@@ -2147,7 +2147,7 @@ pub fn checkSizeTypingError(mut typingError: Arc<TypingError::TypingError>, mut 
 }
 
 pub fn evaluateEnd(mut exp: Arc<Expression::NFExpression>, mut dim: Arc<Dimension::NFDimension>, mut subscriptedExp: Arc<Expression::NFExpression>, mut index: i32, mut context: i32, mut info: SourceInfo) -> Result<Arc<Expression::NFExpression>> {
-    let mut outExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut outExp: Arc<Expression::NFExpression>;
     outExp = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::END => Dimension::endExp(dim.clone(), subscriptedExp.clone(), index.clone())?,
         Deref @ Expression::CREF { .. } => exp.clone(),
@@ -2159,25 +2159,25 @@ pub fn evaluateEnd(mut exp: Arc<Expression::NFExpression>, mut dim: Arc<Dimensio
 
 pub fn typeIfExpression(mut ifExp: Arc<Expression::NFExpression>, mut context: i32, mut info: SourceInfo) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>, Variability, Purity)> {
     let mut ifExp: Arc<Expression::NFExpression> = ifExp;
-    let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut var: Variability = Variability::CONSTANT;
-    let mut purity: Purity = Purity::PURE;
-    let mut cond: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut tb: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut fb: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut tb2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut fb2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut next_context: i32 = 0;
-    let mut cond_ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut tb_ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut fb_ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut cond_var: Variability = Variability::CONSTANT;
-    let mut tb_var: Variability = Variability::CONSTANT;
-    let mut fb_var: Variability = Variability::CONSTANT;
-    let mut cond_pur: Purity = Purity::PURE;
-    let mut tb_pur: Purity = Purity::PURE;
-    let mut fb_pur: Purity = Purity::PURE;
-    let mut ty_match: MatchKind = MatchKind::EXACT;
+    let mut ty: Arc<Type::NFType>;
+    let mut var: Variability;
+    let mut purity: Purity;
+    let mut cond: Arc<Expression::NFExpression>;
+    let mut tb: Arc<Expression::NFExpression>;
+    let mut fb: Arc<Expression::NFExpression>;
+    let mut tb2: Arc<Expression::NFExpression>;
+    let mut fb2: Arc<Expression::NFExpression>;
+    let mut next_context: i32;
+    let mut cond_ty: Arc<Type::NFType>;
+    let mut tb_ty: Arc<Type::NFType>;
+    let mut fb_ty: Arc<Type::NFType>;
+    let mut cond_var: Variability;
+    let mut tb_var: Variability;
+    let mut fb_var: Variability;
+    let mut cond_pur: Purity;
+    let mut tb_pur: Purity;
+    let mut fb_pur: Purity;
+    let mut ty_match: MatchKind;
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(ifExp.clone()) {
         Deref @ Expression::IF { condition: __pa0, trueBranch: __pa1, falseBranch: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
@@ -2209,11 +2209,11 @@ pub fn typeIfExpression(mut ifExp: Arc<Expression::NFExpression>, mut context: i
 }
 
 pub fn typeClassSections(mut classNode: Arc<InstNode::InstNode>, mut context: i32) -> Result<()> {
-    let mut cls: Arc<Class::NFClass> = Arc::new(Class::NOT_INSTANTIATED);
+    let mut cls: Arc<Class::NFClass>;
     let mut typed_cls: Arc<Class::NFClass> = Arc::new(Class::NOT_INSTANTIATED);
     let mut components: metamodelica::Array<Arc<InstNode::InstNode>> = Default::default();
     let mut sections: Arc<Sections::NFSections> = Arc::new(Sections::EMPTY);
-    let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
+    let mut info: SourceInfo;
     let mut initial_context: i32 = 0;
     cls = InstNode::getClass(classNode.clone())?;
     let () = (::match_deref::match_deref! { match &(cls.clone()) {
@@ -2256,7 +2256,7 @@ pub fn typeClassSections(mut classNode: Arc<InstNode::InstNode>, mut context: i3
 }
 
 pub fn typeFunctionSections(mut classNode: Arc<InstNode::InstNode>, mut context: i32) -> Result<()> {
-    let mut cls: Arc<Class::NFClass> = Arc::new(Class::NOT_INSTANTIATED);
+    let mut cls: Arc<Class::NFClass>;
     let mut typed_cls: Arc<Class::NFClass> = Arc::new(Class::NOT_INSTANTIATED);
     let mut sections: Arc<Sections::NFSections> = Arc::new(Sections::EMPTY);
     let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
@@ -2412,7 +2412,7 @@ pub fn makeDefaultExternalCall(mut extDecl: Arc<Sections::NFSections>, mut fnNod
 }
 
 pub fn checkExternalCallResult(mut result: Arc<ComponentRef::NFComponentRef>, mut info: SourceInfo) -> Result<()> {
-    let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
+    let mut ty: Arc<Type::NFType>;
     if !(ComponentRef::isCref(result.clone())) {
         return Ok(());
     }
@@ -2429,7 +2429,7 @@ pub fn checkExternalCallResult(mut result: Arc<ComponentRef::NFComponentRef>, mu
 }
 
 pub fn typeComponentSections(mut component: Arc<InstNode::InstNode>, mut context: i32) -> Result<()> {
-    let mut comp: Arc<Component::NFComponent> = Arc::new(Component::WILD);
+    let mut comp: Arc<Component::NFComponent>;
     if InstNode::isEmpty(component.clone()) {
         return Ok(());
     }
@@ -2529,16 +2529,16 @@ pub fn typeEquation(mut eq: Arc<Equation::NFEquation>, mut context: i32) -> Resu
 }
 
 pub fn typeConnect(mut lhsConn: Arc<Expression::NFExpression>, mut rhsConn: Arc<Expression::NFExpression>, mut context: i32, mut scope: Arc<InstNode::InstNode>, mut source: Arc<DAE::ElementSource>) -> Result<Arc<Equation::NFEquation>> {
-    let mut connEq: Arc<Equation::NFEquation> = Arc::new(<Equation::NFEquation as ::std::default::Default>::default());
-    let mut lhs: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut rhs: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut lhs_ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut rhs_ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut mk: MatchKind = MatchKind::EXACT;
-    let mut next_context: i32 = 0;
-    let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
-    let mut lhs_deleted: bool = false;
-    let mut rhs_deleted: bool = false;
+    let mut connEq: Arc<Equation::NFEquation>;
+    let mut lhs: Arc<Expression::NFExpression>;
+    let mut rhs: Arc<Expression::NFExpression>;
+    let mut lhs_ty: Arc<Type::NFType>;
+    let mut rhs_ty: Arc<Type::NFType>;
+    let mut mk: MatchKind;
+    let mut next_context: i32;
+    let mut info: SourceInfo;
+    let mut lhs_deleted: bool;
+    let mut rhs_deleted: bool;
     info = ElementSource::getInfo(source.clone());
     if InstContext::inNonexpandable(context.clone()) {
         Error::addSourceMessage(Error::CONNECT_IN_IF.clone(), list![(Expression::toString(lhsConn.clone())?).clone(), (Expression::toString(rhsConn.clone())?).clone()], info.clone())?;
@@ -2560,8 +2560,8 @@ pub fn typeConnect(mut lhsConn: Arc<Expression::NFExpression>, mut rhsConn: Arc<
 
 pub fn typeConnector(mut connExp: Arc<Expression::NFExpression>, mut context: i32, mut info: SourceInfo) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>, bool)> {
     let mut connExp: Arc<Expression::NFExpression> = connExp;
-    let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut deleted: bool = false;
+    let mut ty: Arc<Type::NFType>;
+    let mut deleted: bool;
     (connExp, ty, _, _) = typeExp(connExp.clone(), context.clone(), info.clone(), false)?;
     deleted = checkConnector(connExp.clone(), info.clone())?;
     Ok((connExp, ty, deleted))
@@ -2615,7 +2615,7 @@ pub fn checkConnectorForm(mut cref: Arc<ComponentRef::NFComponentRef>, mut isCon
 }
 
 pub fn checkLhsInWhen(mut exp: Arc<Expression::NFExpression>) -> bool {
-    let mut isValid: bool = false;
+    let mut isValid: bool;
     isValid = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CREF { .. } => true,
         Deref @ Expression::TUPLE { .. } => {
@@ -2635,8 +2635,8 @@ pub fn typeAssert(mut condition: Arc<Expression::NFExpression>, mut message: Arc
     let mut condition: Arc<Expression::NFExpression> = condition;
     let mut message: Arc<Expression::NFExpression> = message;
     let mut level: Arc<Expression::NFExpression> = level;
-    let mut next_context: i32 = 0;
-    let mut level_var: Variability = Variability::CONSTANT;
+    let mut next_context: i32;
+    let mut level_var: Variability;
     next_context = InstContext::set(context.clone(), InstContext::ASSERT.clone());
     (condition, _) = typeOperatorArg(condition.clone(), crate::NFType::interned_BOOLEAN(), InstContext::set(next_context.clone(), InstContext::CONDITION.clone()), (literal!("assert")).clone(), (literal!("condition")).clone(), 1, info.clone())?;
     (message, _) = typeOperatorArg(message.clone(), crate::NFType::interned_STRING(), next_context.clone(), (literal!("assert")).clone(), (literal!("message")).clone(), 2, info.clone())?;
@@ -2899,14 +2899,14 @@ pub fn checkAssignment(mut lhsExp: Arc<Expression::NFExpression>, mut rhsExp: Ar
 }
 
 pub fn typeEqualityEquation(mut lhsExp: Arc<Expression::NFExpression>, mut rhsExp: Arc<Expression::NFExpression>, mut context: i32, mut scope: Arc<InstNode::InstNode>, mut source: Arc<DAE::ElementSource>) -> Result<Arc<Equation::NFEquation>> {
-    let mut eq: Arc<Equation::NFEquation> = Arc::new(<Equation::NFEquation as ::std::default::Default>::default());
+    let mut eq: Arc<Equation::NFEquation>;
     let mut info: SourceInfo = ElementSource::getInfo(source.clone());
-    let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut ty1: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut ty2: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut mk: MatchKind = MatchKind::EXACT;
+    let mut e1: Arc<Expression::NFExpression>;
+    let mut e2: Arc<Expression::NFExpression>;
+    let mut ty1: Arc<Type::NFType>;
+    let mut ty2: Arc<Type::NFType>;
+    let mut ty: Arc<Type::NFType>;
+    let mut mk: MatchKind;
     if InstContext::inWhen(context.clone()) && !(InstContext::inClocked(context.clone())) {
         if checkLhsInWhen(lhsExp.clone()) {
             Structural::markSubscriptsInExp(lhsExp.clone())?;
@@ -2931,10 +2931,10 @@ pub fn typeEqualityEquation(mut lhsExp: Arc<Expression::NFExpression>, mut rhsEx
 
 pub fn typeCondition(mut condition: Arc<Expression::NFExpression>, mut context: i32, mut source: Arc<DAE::ElementSource>, mut errorMsg: ErrorTypes::Message, mut allowVector: bool, mut allowClock: bool) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>, Variability)> {
     let mut condition: Arc<Expression::NFExpression> = condition;
-    let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut variability: Variability = Variability::CONSTANT;
-    let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
-    let mut ety: Arc<Type::NFType> = Arc::new(Type::ANY);
+    let mut ty: Arc<Type::NFType>;
+    let mut variability: Variability;
+    let mut info: SourceInfo;
+    let mut ety: Arc<Type::NFType>;
     info = ElementSource::getInfo(source.clone());
     (condition, ty, variability, _) = typeExp(condition.clone(), context.clone(), info.clone(), false)?;
     if allowVector.clone() && Type::isArray(ty.clone()) {
@@ -2950,11 +2950,11 @@ pub fn typeCondition(mut condition: Arc<Expression::NFExpression>, mut context: 
 }
 
 pub fn typeIfEquation(mut branches: Arc<metamodelica::List<Arc<Equation::Branch::Branch>>>, mut context: i32, mut scope: Arc<InstNode::InstNode>, mut source: Arc<DAE::ElementSource>) -> Result<Arc<Equation::NFEquation>> {
-    let mut ifEq: Arc<Equation::NFEquation> = Arc::new(<Equation::NFEquation as ::std::default::Default>::default());
-    let mut cond: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut eql: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = metamodelica::nil();
+    let mut ifEq: Arc<Equation::NFEquation>;
+    let mut cond: Arc<Expression::NFExpression>;
+    let mut eql: Arc<metamodelica::List<Arc<Equation::NFEquation>>>;
     let mut accum_var: Variability = Variability::CONSTANT.clone();
-    let mut var: Variability = Variability::CONSTANT;
+    let mut var: Variability;
     let mut bl: Arc<metamodelica::List<Arc<Equation::Branch::Branch>>> = metamodelica::nil();
     let mut bl2: Arc<metamodelica::List<Arc<Equation::Branch::Branch>>> = metamodelica::nil();
     let mut next_context: i32 = InstContext::set(context.clone(), InstContext::IF.clone());
@@ -3012,13 +3012,13 @@ pub fn typeIfEquation(mut branches: Arc<metamodelica::List<Arc<Equation::Branch:
 }
 
 pub fn typeWhenEquation(mut branches: Arc<metamodelica::List<Arc<Equation::Branch::Branch>>>, mut context: i32, mut scope: Arc<InstNode::InstNode>, mut source: Arc<DAE::ElementSource>) -> Result<Arc<Equation::NFEquation>> {
-    let mut whenEq: Arc<Equation::NFEquation> = Arc::new(<Equation::NFEquation as ::std::default::Default>::default());
+    let mut whenEq: Arc<Equation::NFEquation>;
     let mut next_context: i32 = InstContext::set(context.clone(), InstContext::WHEN.clone());
     let mut accum_branches: Arc<metamodelica::List<Arc<Equation::Branch::Branch>>> = metamodelica::nil();
-    let mut cond: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut body: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = metamodelica::nil();
-    let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut var: Variability = Variability::CONSTANT;
+    let mut cond: Arc<Expression::NFExpression>;
+    let mut body: Arc<metamodelica::List<Arc<Equation::NFEquation>>>;
+    let mut ty: Arc<Type::NFType>;
+    let mut var: Variability;
     for mut branch in &*branches.clone() {
         let mut branch = branch.clone();
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(branch.clone()) {
@@ -3055,9 +3055,9 @@ pub fn typeWhenEquation(mut branches: Arc<metamodelica::List<Arc<Equation::Branc
 }
 
 pub fn typeWhenCondition(mut condition: Arc<Expression::NFExpression>, mut context: i32, mut source: Arc<DAE::ElementSource>, mut allowClock: bool) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>, Variability)> {
-    let mut outCondition: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut variability: Variability = Variability::CONSTANT;
+    let mut outCondition: Arc<Expression::NFExpression>;
+    let mut ty: Arc<Type::NFType>;
+    let mut variability: Variability;
     (outCondition, ty, variability) = typeCondition(condition.clone(), context.clone(), source.clone(), Error::WHEN_CONDITION_TYPE_ERROR.clone(), true, allowClock.clone())?;
     if variability.clone() > Variability::IMPLICITLY_DISCRETE.clone() && !(Type::isClock(ty.clone())?) {
         Error::addSourceMessage(Error::NON_DISCRETE_WHEN_CONDITION.clone(), list![(Expression::toString(condition.clone())?).clone()], ElementSource::getInfo(source.clone()))?;
@@ -3090,9 +3090,9 @@ pub fn checkWhenInitial(mut condition: Arc<Expression::NFExpression>) -> Result<
 
 pub fn typeOperatorArg(mut arg: Arc<Expression::NFExpression>, mut expectedType: Arc<Type::NFType>, mut context: i32, mut operatorName: ArcStr, mut argName: ArcStr, mut argIndex: i32, mut info: SourceInfo) -> Result<(Arc<Expression::NFExpression>, Variability)> {
     let mut arg: Arc<Expression::NFExpression> = arg;
-    let mut var: Variability = Variability::CONSTANT;
-    let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut mk: MatchKind = MatchKind::EXACT;
+    let mut var: Variability;
+    let mut ty: Arc<Type::NFType>;
+    let mut mk: MatchKind;
     (arg, ty, var, _) = typeExp(arg.clone(), context.clone(), info.clone(), false)?;
     (arg, _, mk) = TypeCheck::matchTypes(ty.clone(), expectedType.clone(), arg.clone(), TypeCheck::DEFAULT_OPTIONS.clone())?;
     if TypeCheck::isIncompatibleMatch(mk.clone()) {
@@ -3105,11 +3105,11 @@ pub fn typeOperatorArg(mut arg: Arc<Expression::NFExpression>, mut expectedType:
 pub fn typeReinit(mut crefExp: Arc<Expression::NFExpression>, mut exp: Arc<Expression::NFExpression>, mut context: i32, mut source: Arc<DAE::ElementSource>) -> Result<(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>)> {
     let mut crefExp: Arc<Expression::NFExpression> = crefExp;
     let mut exp: Arc<Expression::NFExpression> = exp;
-    let mut mk: MatchKind = MatchKind::EXACT;
-    let mut ty1: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut ty2: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
+    let mut mk: MatchKind;
+    let mut ty1: Arc<Type::NFType>;
+    let mut ty2: Arc<Type::NFType>;
+    let mut cref: Arc<ComponentRef::NFComponentRef>;
+    let mut info: SourceInfo;
     info = ElementSource::getInfo(source.clone());
     (crefExp, ty1, _, _) = typeExp(crefExp.clone(), context.clone(), info.clone(), false)?;
     (exp, ty2, _, _) = typeExp(exp.clone(), context.clone(), info.clone(), false)?;
@@ -3145,37 +3145,37 @@ pub fn typeReinit(mut crefExp: Arc<Expression::NFExpression>, mut exp: Arc<Expre
 }
 
 pub fn deduceIterationRangeEq(mut eq: Arc<Equation::NFEquation>, mut iterator: Arc<InstNode::InstNode>, mut info: SourceInfo) -> Result<Arc<Expression::NFExpression>> {
-    let mut iterationRange: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut crefs: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, i32)>> = metamodelica::nil();
+    let mut iterationRange: Arc<Expression::NFExpression>;
+    let mut crefs: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, i32)>>;
     crefs = Equation::foldExp(eq.clone(), (std::sync::Arc::new({ let __pe_b1 = iterator.clone(); move |__pe_a0, __pe_a2| collectIteratorCrefs(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, i32)>>) -> Result<Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, i32)>>> + 'static>), metamodelica::nil())?;
     iterationRange = deduceIterationRange(crefs.clone(), iterator.clone(), info.clone())?;
     Ok(iterationRange)
 }
 
 pub fn deduceIterationRangeStmt(mut stmt: Arc<Statement::NFStatement>, mut iterator: Arc<InstNode::InstNode>, mut info: SourceInfo) -> Result<Arc<Expression::NFExpression>> {
-    let mut iterationRange: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut crefs: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, i32)>> = metamodelica::nil();
+    let mut iterationRange: Arc<Expression::NFExpression>;
+    let mut crefs: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, i32)>>;
     crefs = Statement::foldExp(stmt.clone(), (std::sync::Arc::new({ let __pe_b1 = iterator.clone(); move |__pe_a0, __pe_a2| collectIteratorCrefs(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, i32)>>) -> Result<Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, i32)>>> + 'static>), metamodelica::nil())?;
     iterationRange = deduceIterationRange(crefs.clone(), iterator.clone(), info.clone())?;
     Ok(iterationRange)
 }
 
 pub fn deduceIterationRangeExp(mut exp: Arc<Expression::NFExpression>, mut iterator: Arc<InstNode::InstNode>, mut info: SourceInfo) -> Result<Arc<Expression::NFExpression>> {
-    let mut iterationRange: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut crefs: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, i32)>> = metamodelica::nil();
+    let mut iterationRange: Arc<Expression::NFExpression>;
+    let mut crefs: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, i32)>>;
     crefs = Expression::fold(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = iterator.clone(); move |__pe_a0, __pe_a2| collectIteratorCrefs2(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, i32)>>) -> Result<Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, i32)>>> + 'static>), metamodelica::nil())?;
     iterationRange = deduceIterationRange(crefs.clone(), iterator.clone(), info.clone())?;
     Ok(iterationRange)
 }
 
 pub fn deduceIterationRange(mut crefs: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, i32)>>, mut iterator: Arc<InstNode::InstNode>, mut info: SourceInfo) -> Result<Arc<Expression::NFExpression>> {
-    let mut iterationRange: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut range_cr: (Arc<ComponentRef::NFComponentRef>, i32) = (Arc::new(ComponentRef::EMPTY), 0);
-    let mut cr: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    let mut dim_index: i32 = 0;
-    let mut dim: Arc<Dimension::NFDimension> = Arc::new(Dimension::BOOLEAN);
-    let mut start_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut stop_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut iterationRange: Arc<Expression::NFExpression>;
+    let mut range_cr: (Arc<ComponentRef::NFComponentRef>, i32);
+    let mut cr: Arc<ComponentRef::NFComponentRef>;
+    let mut dim_index: i32;
+    let mut dim: Arc<Dimension::NFDimension>;
+    let mut start_exp: Arc<Expression::NFExpression>;
+    let mut stop_exp: Arc<Expression::NFExpression>;
     if crefs.clone().is_empty() {
         Error::addSourceMessage(Error::IMPLICIT_ITERATOR_NOT_FOUND_IN_LOOP_BODY.clone(), list![(InstNode::name(iterator.clone())?).clone()], info.clone())?;
         bail!("fail");
@@ -3225,14 +3225,14 @@ pub fn collectIteratorCrefs2(mut exp: Arc<Expression::NFExpression>, mut iterato
 
 pub fn deduceIterationRange2(mut range1: (Arc<ComponentRef::NFComponentRef>, i32), mut range2: (Arc<ComponentRef::NFComponentRef>, i32), mut info: SourceInfo) -> Result<(Arc<ComponentRef::NFComponentRef>, i32)> {
     let mut range: (Arc<ComponentRef::NFComponentRef>, i32) = range2.clone();
-    let mut cref1: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    let mut cref2: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    let mut index1: i32 = 0;
-    let mut index2: i32 = 0;
-    let mut node1: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
-    let mut node2: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
-    let mut dim1: Arc<Dimension::NFDimension> = Arc::new(Dimension::BOOLEAN);
-    let mut dim2: Arc<Dimension::NFDimension> = Arc::new(Dimension::BOOLEAN);
+    let mut cref1: Arc<ComponentRef::NFComponentRef>;
+    let mut cref2: Arc<ComponentRef::NFComponentRef>;
+    let mut index1: i32;
+    let mut index2: i32;
+    let mut node1: Arc<InstNode::InstNode>;
+    let mut node2: Arc<InstNode::InstNode>;
+    let mut dim1: Arc<Dimension::NFDimension>;
+    let mut dim2: Arc<Dimension::NFDimension>;
     (cref1, index1) = range1.clone();
     (cref2, index2) = range2.clone();
     node1 = ComponentRef::node(cref1.clone())?;

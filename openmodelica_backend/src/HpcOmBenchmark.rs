@@ -47,15 +47,15 @@ use crate::HpcOmBenchmarkExt;
 use openmodelica_util::System;
 
 pub fn benchSystem() -> Result<((i32, i32), (i32, i32))> {
-    let mut oTime: ((i32, i32), (i32, i32)) = ((0, 0), (0, 0));
-    let mut comCostM: i32 = 0;
-    let mut comCostN: i32 = 0;
-    let mut opCostM: i32 = 0;
-    let mut opCostN: i32 = 0;
-    let mut opCosts: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut comCosts: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut s1: ArcStr = arcstr::literal!("");
-    let mut s2: ArcStr = arcstr::literal!("");
+    let mut oTime: ((i32, i32), (i32, i32));
+    let mut comCostM: i32;
+    let mut comCostN: i32;
+    let mut opCostM: i32;
+    let mut opCostN: i32;
+    let mut opCosts: Arc<metamodelica::List<i32>>;
+    let mut comCosts: Arc<metamodelica::List<i32>>;
+    let mut s1: ArcStr;
+    let mut s2: ArcStr;
     opCosts = HpcOmBenchmarkExt::requiredTimeForOp()?;
     let true = ((opCosts.clone().len() as i32) == 2) else { bail!("pattern mismatch") };
     opCostM = (opCosts.clone()).get(1)?;
@@ -72,7 +72,7 @@ pub fn benchSystem() -> Result<((i32, i32), (i32, i32))> {
 }
 
 pub fn readCalcTimesFromFile(mut iFileNamePrefix: ArcStr) -> Result<Arc<metamodelica::List<(i32, i32, metamodelica::Real)>>> {
-    let mut calcTimes: Arc<metamodelica::List<(i32, i32, metamodelica::Real)>> = metamodelica::nil();
+    let mut calcTimes: Arc<metamodelica::List<(i32, i32, metamodelica::Real)>>;
     let mut fullFileName: ArcStr = arcstr::literal!("");
     let mut tmpCalcTimes: Arc<metamodelica::List<(i32, i32, metamodelica::Real)>> = metamodelica::nil();
     calcTimes = 'mc: {
@@ -113,23 +113,23 @@ pub fn readCalcTimesFromFile(mut iFileNamePrefix: ArcStr) -> Result<Arc<metamode
 }
 
 fn readCalcTimesFromXml(mut fileName: ArcStr) -> Result<Arc<metamodelica::List<(i32, i32, metamodelica::Real)>>> {
-    let mut calcTimes: Arc<metamodelica::List<(i32, i32, metamodelica::Real)>> = metamodelica::nil();
-    let mut tmpResult: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
+    let mut calcTimes: Arc<metamodelica::List<(i32, i32, metamodelica::Real)>>;
+    let mut tmpResult: Arc<metamodelica::List<metamodelica::Real>>;
     tmpResult = HpcOmBenchmarkExt::readCalcTimesFromXml((fileName.clone()).clone())?;
     calcTimes = expandCalcTimes(tmpResult.clone(), metamodelica::nil())?;
     Ok(calcTimes)
 }
 
 fn readCalcTimesFromJson(mut fileName: ArcStr) -> Result<Arc<metamodelica::List<(i32, i32, metamodelica::Real)>>> {
-    let mut calcTimes: Arc<metamodelica::List<(i32, i32, metamodelica::Real)>> = metamodelica::nil();
-    let mut tmpResult: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
+    let mut calcTimes: Arc<metamodelica::List<(i32, i32, metamodelica::Real)>>;
+    let mut tmpResult: Arc<metamodelica::List<metamodelica::Real>>;
     tmpResult = HpcOmBenchmarkExt::readCalcTimesFromJson((fileName.clone()).clone())?;
     calcTimes = expandCalcTimes(tmpResult.clone(), metamodelica::nil())?;
     Ok(calcTimes)
 }
 
 fn expandCalcTimes(mut iList: Arc<metamodelica::List<metamodelica::Real>>, mut iTuples: Arc<metamodelica::List<(i32, i32, metamodelica::Real)>>) -> Result<Arc<metamodelica::List<(i32, i32, metamodelica::Real)>>> {
-    let mut oTuples: Arc<metamodelica::List<(i32, i32, metamodelica::Real)>> = metamodelica::nil();
+    let mut oTuples: Arc<metamodelica::List<(i32, i32, metamodelica::Real)>>;
     let mut eqIdx: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     let mut numOfCalcs: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     let mut calcTimeSum: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);

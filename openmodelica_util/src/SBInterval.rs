@@ -67,16 +67,16 @@ impl Default for SBInterval {
 pub type INTERVAL = SBInterval;
 
 fn euclid(mut a: i32, mut b: i32) -> (i32, i32, i32, i32) {
-    let mut d: i32 = 0;
-    let mut m: i32 = 0;
-    let mut ua: i32 = 0;
-    let mut vb: i32 = 0;
-    let mut q: i32 = 0;
+    let mut d: i32;
+    let mut m: i32;
+    let mut ua: i32;
+    let mut vb: i32;
+    let mut q: i32;
     let mut r1: i32 = a.clone();
     let mut r2: i32 = b.clone();
     let mut s1: i32 = a.clone();
     let mut s2: i32 = 0;
-    let mut tmp: i32 = 0;
+    let mut tmp: i32;
     while r2.clone() != 0 {
         q = intDiv(r1.clone(), r2.clone());
         tmp = r2.clone();
@@ -94,7 +94,7 @@ fn euclid(mut a: i32, mut b: i32) -> (i32, i32, i32, i32) {
 }
 
 pub fn new(mut lo: i32, mut step: i32, mut hi: i32) -> Arc<SBInterval> {
-    let mut int: Arc<SBInterval> = Arc::new(<SBInterval as ::std::default::Default>::default());
+    let mut int: Arc<SBInterval>;
     if lo.clone() >= 0 && step.clone() > 0 && hi.clone() >= 0 {
         if lo.clone() <= hi.clone() && hi.clone() < System::intMaxLit() {
             int = Arc::new(SBInterval { lo: lo.clone(), step: step.clone(), hi: hi.clone() - intMod(hi.clone() - lo.clone(), step.clone()) });
@@ -150,14 +150,14 @@ pub fn crop(mut int: Arc<SBInterval>) -> Arc<SBInterval> {
 }
 
 pub fn intersection(mut int1: Arc<SBInterval>, mut int2: Arc<SBInterval>) -> Arc<SBInterval> {
-    let mut int: Arc<SBInterval> = Arc::new(<SBInterval as ::std::default::Default>::default());
-    let mut new_lo: i32 = 0;
-    let mut new_step: i32 = 0;
-    let mut new_hi: i32 = 0;
-    let mut gcd_: i32 = 0;
-    let mut ua: i32 = 0;
-    let mut vb: i32 = 0;
-    let mut x: i32 = 0;
+    let mut int: Arc<SBInterval>;
+    let mut new_lo: i32;
+    let mut new_step: i32;
+    let mut new_hi: i32;
+    let mut gcd_: i32;
+    let mut ua: i32;
+    let mut vb: i32;
+    let mut x: i32;
     if int1.hi.clone() < int2.lo.clone() || int2.hi.clone() < int1.lo.clone() {
         int = newEmpty();
     } else {
@@ -183,10 +183,10 @@ pub fn intersection(mut int1: Arc<SBInterval>, mut int2: Arc<SBInterval>) -> Arc
 }
 
 pub fn complement(mut int1: Arc<SBInterval>, mut int2: Arc<SBInterval>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<SBInterval>>>> {
-    let mut ints: Arc<UnorderedSet::UnorderedSet<Arc<SBInterval>>> = <Arc<UnorderedSet::UnorderedSet<Arc<SBInterval>>> as ::std::default::Default>::default();
-    let mut i2: Arc<SBInterval> = Arc::new(<SBInterval as ::std::default::Default>::default());
-    let mut count_r: i32 = 0;
-    let mut count_s: i32 = 0;
+    let mut ints: Arc<UnorderedSet::UnorderedSet<Arc<SBInterval>>>;
+    let mut i2: Arc<SBInterval>;
+    let mut count_r: i32;
+    let mut count_s: i32;
     ints = UnorderedSet::new((std::sync::Arc::new(fnptr!(hash, Arc<SBInterval>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBInterval>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(isEqual, Arc<SBInterval>, Arc<SBInterval>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBInterval>, Arc<SBInterval>) -> Result<bool> + 'static>), 13);
     i2 = intersection(int1.clone(), int2.clone());
     if isEmpty(i2.clone()) {
@@ -220,13 +220,13 @@ pub fn complement(mut int1: Arc<SBInterval>, mut int2: Arc<SBInterval>) -> Resul
 }
 
 pub fn affine(mut int: Arc<SBInterval>, mut gain: metamodelica::Real, mut offset: i32) -> Result<Arc<SBInterval>> {
-    let mut res: Arc<SBInterval> = Arc::new(<SBInterval as ::std::default::Default>::default());
-    let mut lo: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut step: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut hi: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut ilo: i32 = 0;
-    let mut istep: i32 = 0;
-    let mut ihi: i32 = 0;
+    let mut res: Arc<SBInterval>;
+    let mut lo: metamodelica::Real;
+    let mut step: metamodelica::Real;
+    let mut hi: metamodelica::Real;
+    let mut ilo: i32;
+    let mut istep: i32;
+    let mut ihi: i32;
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(int.clone()) {
         Deref @ SBInterval { lo: __pa0, step: __pa1, hi: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
@@ -270,7 +270,7 @@ pub fn cardinality(mut int: Arc<SBInterval>) -> i32 {
 }
 
 pub fn contains(mut c: i32, mut int: Arc<SBInterval>) -> bool {
-    let mut res: bool = false;
+    let mut res: bool;
     res = !(isEmpty(int.clone())) && c.clone() >= int.lo.clone() && c.clone() <= int.hi.clone() && intMod(c.clone() - int.lo.clone(), int.step.clone()) == 0;
     res
 }
@@ -286,7 +286,7 @@ pub fn size(mut int: Arc<SBInterval>) -> i32 {
 }
 
 pub fn isEqual(mut int1: Arc<SBInterval>, mut int2: Arc<SBInterval>) -> bool {
-    let mut equal: bool = false;
+    let mut equal: bool;
     equal = int1.lo.clone() == int2.lo.clone() && int1.step.clone() == int2.step.clone() && int1.hi.clone() == int2.hi.clone();
     equal
 }
@@ -297,7 +297,7 @@ pub fn hash(mut int: Arc<SBInterval>) -> i32 {
 }
 
 pub fn toString(mut interval: Arc<SBInterval>) -> ArcStr {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", interval.lo.clone()))); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", interval.step.clone()))); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", interval.hi.clone()))); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone();
     r#str
 }

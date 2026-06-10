@@ -77,9 +77,9 @@ pub fn buildWithin(mut inPath: Arc<Absyn::Path>) -> Result<Absyn::Within> {
 }
 
 pub fn updateProgram(mut inNewProgram: Absyn::Program, mut inOldProgram: Absyn::Program, mut mergeAST: bool) -> Result<Absyn::Program> {
-    let mut outProgram: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
-    let mut cs: Arc<metamodelica::List<Arc<Absyn::Class>>> = metamodelica::nil();
-    let mut w: Absyn::Within = Absyn::Within::TOP;
+    let mut outProgram: Absyn::Program;
+    let mut cs: Arc<metamodelica::List<Arc<Absyn::Class>>>;
+    let mut w: Absyn::Within;
     let Absyn::PROGRAM { classes: __pa0, within_: __pa1 } = (inNewProgram.clone()) else { bail!("pattern mismatch") };
     cs = __pa0.clone();
     w = __pa1.clone();
@@ -114,7 +114,7 @@ pub fn updateProgram2(mut inNewClasses: Arc<metamodelica::List<Arc<Absyn::Class>
 }
 
 pub fn getClassnamesInParts(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>, mut inShowProtected: bool, mut includeConstants: bool) -> Result<Arc<metamodelica::List<ArcStr>>> {
-    let mut outStringLst: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+    let mut outStringLst: Arc<metamodelica::List<ArcStr>>;
     outStringLst = 'mc: {
         let __mc_input = (inAbsynClassPartLst.clone(), inShowProtected.clone(), includeConstants.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -169,8 +169,8 @@ pub fn getClassnamesInParts(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<
 }
 
 pub fn getClassnamesInElts(mut inAbsynElementItemLst: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut includeConstants: bool) -> Result<Arc<metamodelica::List<ArcStr>>> {
-    let mut outStringLst: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut delst: DoubleEnded::MutableList<ArcStr> = <DoubleEnded::MutableList<ArcStr> as ::std::default::Default>::default();
+    let mut outStringLst: Arc<metamodelica::List<ArcStr>>;
+    let mut delst: DoubleEnded::MutableList<ArcStr>;
     delst = DoubleEnded::fromList(metamodelica::nil())?;
     for mut elt in &*inAbsynElementItemLst.clone() {
         let mut elt = elt.clone();
@@ -216,8 +216,8 @@ pub fn getComponentItemsName(mut inComponents: Arc<metamodelica::List<Arc<Absyn:
 }
 
 pub fn replaceClassInProgram2(mut inClass: Arc<Absyn::Class>, mut inClassName: ArcStr) -> Result<bool> {
-    let mut outReplace: bool = false;
-    let mut cls_name: ArcStr = arcstr::literal!("");
+    let mut outReplace: bool;
+    let mut cls_name: ArcStr;
     let __pa0 = ::match_deref::match_deref! { match &(inClass.clone()) {
         Deref @ Absyn::Class { name: __pa0, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
@@ -228,13 +228,13 @@ pub fn replaceClassInProgram2(mut inClass: Arc<Absyn::Class>, mut inClassName: A
 }
 
 pub fn replaceClassInProgram(mut inClass: Arc<Absyn::Class>, mut inProgram: Absyn::Program, mut mergeAST: bool) -> Result<Absyn::Program> {
-    let mut outProgram: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
-    let mut cls_name1: ArcStr = arcstr::literal!("");
-    let mut clst: Arc<metamodelica::List<Arc<Absyn::Class>>> = metamodelica::nil();
-    let mut clsFilter: Arc<metamodelica::List<Arc<Absyn::Class>>> = metamodelica::nil();
-    let mut w: Absyn::Within = Absyn::Within::TOP;
-    let mut replaced: bool = false;
-    let mut cls: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
+    let mut outProgram: Absyn::Program;
+    let mut cls_name1: ArcStr;
+    let mut clst: Arc<metamodelica::List<Arc<Absyn::Class>>>;
+    let mut clsFilter: Arc<metamodelica::List<Arc<Absyn::Class>>>;
+    let mut w: Absyn::Within;
+    let mut replaced: bool;
+    let mut cls: Arc<Absyn::Class>;
     let __pa0 = ::match_deref::match_deref! { match &(inClass.clone()) {
         Deref @ Absyn::Class { name: __pa0, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
@@ -267,7 +267,7 @@ pub fn replaceClassInProgram(mut inClass: Arc<Absyn::Class>, mut inProgram: Absy
 }
 
 pub fn insertClassInProgram(mut inClass: Arc<Absyn::Class>, mut inWithin: Absyn::Within, mut inProgram: Absyn::Program, mut mergeAST: bool) -> Result<Absyn::Program> {
-    let mut outProgram: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
+    let mut outProgram: Absyn::Program;
     outProgram = 'mc: {
         let __mc_input = (inClass.clone(), inWithin.clone(), inProgram.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -334,7 +334,7 @@ pub fn insertClassInProgram(mut inClass: Arc<Absyn::Class>, mut inWithin: Absyn:
 }
 
 pub fn insertClassInClass(mut inClass1: Arc<Absyn::Class>, mut inWithin2: Absyn::Within, mut inClass3: Arc<Absyn::Class>, mut mergeAST: bool) -> Result<Arc<Absyn::Class>> {
-    let mut outClass: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
+    let mut outClass: Arc<Absyn::Class>;
     outClass = (::match_deref::match_deref! { match &((inClass1.clone(), inWithin2.clone(), inClass3.clone())) {
         (c1, Absyn::Within::WITHIN { path: Deref @ Absyn::Path::IDENT { .. } }, c2) => {
             replaceInnerClass(c1.clone(), c2.clone(), mergeAST.clone())?
@@ -482,7 +482,7 @@ pub fn replaceInnerClass(mut inClass1: Arc<Absyn::Class>, mut inClass2: Arc<Absy
 }
 
 pub fn replaceClassInElementitemlist(mut inAbsynElementItemLst: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut inClass: Arc<Absyn::Class>, mut mergeAST: bool) -> Result<(Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, bool)> {
-    let mut outAbsynElementItemLst: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
+    let mut outAbsynElementItemLst: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>;
     let mut replaced: bool = false;
     (outAbsynElementItemLst, replaced) = (::match_deref::match_deref! { match &((inAbsynElementItemLst.clone(), inClass.clone())) {
         (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementItem::ELEMENTITEM { element: Deref @ Absyn::Element::ELEMENT { finalPrefix: a, redeclareKeywords: b, innerOuter: io, specification: Deref @ Absyn::ElementSpec::CLASSDEF { replaceable_: e, class_: c1 @ Deref @ Absyn::Class { name: name1, .. } }, constrainClass: h, .. } }, tail: xs }, c2 @ Deref @ Absyn::Class { name, .. }) if (stringEq((name1.clone()).clone(), (name.clone()).clone())) => {
@@ -510,8 +510,8 @@ pub fn replaceClassInElementitemlist(mut inAbsynElementItemLst: Arc<metamodelica
 }
 
 pub fn addClassInElementitemlist(mut inAbsynElementItemLst: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut inClass: Arc<Absyn::Class>) -> Result<Arc<metamodelica::List<Arc<Absyn::ElementItem>>>> {
-    let mut outAbsynElementItemLst: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
-    let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
+    let mut outAbsynElementItemLst: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>;
+    let mut info: SourceInfo;
     let __pa0 = ::match_deref::match_deref! { match &(inClass.clone()) {
         Deref @ Absyn::Class { info: __pa0, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
@@ -522,7 +522,7 @@ pub fn addClassInElementitemlist(mut inAbsynElementItemLst: Arc<metamodelica::Li
 }
 
 pub fn getInnerClass(mut inClass: Arc<Absyn::Class>, mut inIdent: ArcStr) -> Result<Arc<Absyn::Class>> {
-    let mut outClass: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
+    let mut outClass: Arc<Absyn::Class>;
     outClass = 'mc: {
         let __mc_input = (inClass.clone(), inIdent.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -579,7 +579,7 @@ pub fn getInnerClass(mut inClass: Arc<Absyn::Class>, mut inIdent: ArcStr) -> Res
 }
 
 pub fn replacePublicList(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>, mut inAbsynElementItemLst: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>) -> Result<Arc<metamodelica::List<Arc<Absyn::ClassPart>>>> {
-    let mut outAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
+    let mut outAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>;
     outAbsynClassPartLst = (::match_deref::match_deref! { match &((inAbsynClassPartLst.clone(), inAbsynElementItemLst.clone())) {
         (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ClassPart::PUBLIC { .. }, tail: rest }, newpublst) => {
             let mut rest_1: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
@@ -600,7 +600,7 @@ pub fn replacePublicList(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Abs
 }
 
 pub fn replaceProtectedList(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>, mut inAbsynElementItemLst: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>) -> Result<Arc<metamodelica::List<Arc<Absyn::ClassPart>>>> {
-    let mut outAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
+    let mut outAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>;
     outAbsynClassPartLst = (::match_deref::match_deref! { match &((inAbsynClassPartLst.clone(), inAbsynElementItemLst.clone())) {
         (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ClassPart::PROTECTED { .. }, tail: rest }, newprotlist) => {
             let mut rest_1: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
@@ -703,8 +703,8 @@ pub fn getProtectedList(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absy
 }
 
 pub fn getClassFromElementitemlist(mut inElements: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut inIdent: ArcStr) -> Result<Arc<Absyn::Class>> {
-    let mut outClass: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
-    let mut elem: Arc<Absyn::ElementItem> = Arc::new(<Absyn::ElementItem as ::std::default::Default>::default());
+    let mut outClass: Arc<Absyn::Class>;
+    let mut elem: Arc<Absyn::ElementItem>;
     elem = List::getMemberOnTrue((inIdent.clone()).clone(), inElements.clone(), (std::sync::Arc::new(fnptr!(classElementItemIsNamed, ArcStr, Arc<Absyn::ElementItem>)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<Absyn::ElementItem>) -> Result<bool> + 'static>))?;
     let __pa0 = ::match_deref::match_deref! { match &(elem.clone()) {
         Deref @ Absyn::ElementItem::ELEMENTITEM { element: Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::CLASSDEF { class_: __pa0, .. }, .. } } => __pa0.clone(),
@@ -738,7 +738,7 @@ pub fn classInProgram(mut name: ArcStr, mut p: Absyn::Program) -> Result<bool> {
 }
 
 pub fn getPathedClassInProgram(mut inPath: Arc<Absyn::Path>, mut inProgram: Absyn::Program, mut enclOnErr: bool, mut showError: bool) -> Result<Arc<Absyn::Class>> {
-    let mut outClass: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
+    let mut outClass: Arc<Absyn::Class>;
     outClass = 'mc: {
         let __mc_input = ();
         if let Ok(__v) = (|| -> Result<_> {
@@ -781,7 +781,7 @@ pub fn getPathedClassInProgramWork(mut inPath: Arc<Absyn::Path>, mut inProgram: 
 }
 
 pub fn getPathedClassInClass(mut inPath: Arc<Absyn::Path>, mut inClass: Arc<Absyn::Class>, mut enclOnError: bool) -> Result<Arc<Absyn::Class>> {
-    let mut outClass: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
+    let mut outClass: Arc<Absyn::Class>;
     outClass = 'mc: {
         let __mc_input = inPath.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -825,7 +825,7 @@ pub fn getPathedClassInClass(mut inPath: Arc<Absyn::Path>, mut inClass: Arc<Absy
 }
 
 pub fn getClassInClass(mut name: ArcStr, mut inClass: Arc<Absyn::Class>) -> Result<Arc<Absyn::Class>> {
-    let mut outClass: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
+    let mut outClass: Arc<Absyn::Class>;
     for mut part in &*AbsynUtil::getClassPartsInClass(inClass.clone()) {
         let mut part = part.clone();
         for mut item in &*AbsynUtil::getElementItemsInClassPart(part.clone()) {
@@ -841,13 +841,13 @@ pub fn getClassInClass(mut name: ArcStr, mut inClass: Arc<Absyn::Class>) -> Resu
 }
 
 pub fn getClassInProgram(mut name: ArcStr, mut program: Absyn::Program) -> Result<Arc<Absyn::Class>> {
-    let mut cls: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
+    let mut cls: Arc<Absyn::Class>;
     cls = List::find(program.classes.clone(), (std::sync::Arc::new({ let __pe_b0 = (name.clone()).clone(); move |__pe_a1| Ok(AbsynUtil::isClassNamed(__pe_b0.clone(), __pe_a1)) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Class>) -> Result<bool> + 'static>))?;
     Ok(cls)
 }
 
 pub fn getClassnamesInClassList(mut inPath: Arc<Absyn::Path>, mut inProgram: Absyn::Program, mut inClass: Arc<Absyn::Class>, mut inShowProtected: bool, mut includeConstants: bool) -> Result<Arc<metamodelica::List<ArcStr>>> {
-    let mut outString: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+    let mut outString: Arc<metamodelica::List<ArcStr>>;
     outString = (::match_deref::match_deref! { match &((inClass.clone(), inShowProtected.clone(), includeConstants.clone())) {
         (Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::PARTS { classParts: parts, .. }, .. }, b, c) => {
             let mut strlist: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -877,8 +877,8 @@ pub fn getClassnamesInClassList(mut inPath: Arc<Absyn::Path>, mut inProgram: Abs
 }
 
 pub fn getClassNamesRecursive(mut inPath: Option<Arc<Absyn::Path>>, mut inProgram: Absyn::Program, mut inShowProtected: bool, mut includeConstants: bool, mut inAcc: Arc<metamodelica::List<Arc<Absyn::Path>>>) -> Result<(Option<Arc<Absyn::Path>>, Arc<metamodelica::List<Arc<Absyn::Path>>>)> {
-    let mut opath: Option<Arc<Absyn::Path>> = None;
-    let mut paths: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
+    let mut opath: Option<Arc<Absyn::Path>>;
+    let mut paths: Arc<metamodelica::List<Arc<Absyn::Path>>>;
     (opath, paths) = 'mc: {
         let __mc_input = (inPath.clone(), inProgram.clone(), inShowProtected.clone(), includeConstants.clone(), inAcc.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -980,7 +980,7 @@ pub fn mergeClasses(mut cNew: Arc<Absyn::Class>, mut cOld: Arc<Absyn::Class>) ->
 }
 
 pub fn mergeElement(mut inEls: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut inEl: Arc<Absyn::ElementItem>) -> Result<Arc<metamodelica::List<Arc<Absyn::ElementItem>>>> {
-    let mut outEls: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
+    let mut outEls: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>;
     outEls = 'mc: {
         let __mc_input = (inEls.clone(), inEl.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -1018,7 +1018,7 @@ pub fn mergeElement(mut inEls: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>,
 }
 
 pub fn mergeElements(mut inEls1: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut inEls2: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>) -> Result<Arc<metamodelica::List<Arc<Absyn::ElementItem>>>> {
-    let mut outEls: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
+    let mut outEls: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>;
     outEls = 'mc: {
         let __mc_input = (inEls1.clone(), inEls2.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -1078,7 +1078,7 @@ pub fn excludeElementsFromFile(mut inFile: ArcStr, mut inEls: Arc<metamodelica::
 }
 
 pub fn getClassnamesInClass(mut inPath: Arc<Absyn::Path>, mut inProgram: Absyn::Program, mut inClass: Arc<Absyn::Class>, mut inShowProtected: bool, mut includeConstants: bool) -> Result<Arc<metamodelica::List<Arc<Absyn::Path>>>> {
-    let mut paths: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
+    let mut paths: Arc<metamodelica::List<Arc<Absyn::Path>>>;
     paths = (::match_deref::match_deref! { match &((inClass.clone(), inShowProtected.clone(), includeConstants.clone())) {
         (Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::PARTS { classParts: parts, .. }, .. }, b, c) => {
             let mut strlist: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -1099,7 +1099,7 @@ pub fn getClassnamesInClass(mut inPath: Arc<Absyn::Path>, mut inProgram: Absyn::
 }
 
 pub fn classElementItemIsNamed(mut inClassName: ArcStr, mut inElement: Arc<Absyn::ElementItem>) -> bool {
-    let mut outIsNamed: bool = false;
+    let mut outIsNamed: bool;
     outIsNamed = (::match_deref::match_deref! { match &(inElement.clone()) {
         Deref @ Absyn::ElementItem::ELEMENTITEM { element: Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::CLASSDEF { class_: Deref @ Absyn::Class { name, .. }, .. }, .. } } => {
             inClassName.clone() == name.clone()
@@ -1113,7 +1113,7 @@ pub fn classElementItemIsNamed(mut inClassName: ArcStr, mut inElement: Arc<Absyn
 }
 
 pub fn joinPaths(mut child: ArcStr, mut parent: Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> {
-    let mut outPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+    let mut outPath: Arc<Absyn::Path>;
     outPath = (::match_deref::match_deref! { match &((child.clone(), parent.clone())) {
         (c, r) => {
             let mut res: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
@@ -1188,7 +1188,7 @@ pub fn getNamedAnnotationExp<T: Clone + 'static>(mut inPath: Arc<Absyn::Path>, m
 }
 
 pub fn getFileDir(mut inComponentRef: Arc<Absyn::ComponentRef>, mut inProgram: Absyn::Program) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ('mc: {
         let __mc_input = (inComponentRef.clone(), inProgram.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -1249,17 +1249,17 @@ pub fn getFileDir(mut inComponentRef: Arc<Absyn::ComponentRef>, mut inProgram: A
 }
 
 pub fn getFullPathFromUri(mut program: Absyn::Program, mut uri: ArcStr, mut printError: bool) -> Result<ArcStr> {
-    let mut path: ArcStr = arcstr::literal!("");
-    let mut str1: ArcStr = arcstr::literal!("");
-    let mut str2: ArcStr = arcstr::literal!("");
-    let mut str3: ArcStr = arcstr::literal!("");
+    let mut path: ArcStr;
+    let mut str1: ArcStr;
+    let mut str2: ArcStr;
+    let mut str3: ArcStr;
     (str1, str2, str3) = System::uriToClassAndPath((uri.clone()).clone())?;
     path = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*getBasePathFromUri((str1.clone()).clone(), (str2.clone()).clone(), program.clone(), (Settings::getModelicaPath(Testsuite::isRunning()?)?).clone(), printError.clone())?); __mm_s.push_str(&*str3.clone()); ArcStr::from(__mm_s) }).clone();
     Ok(path)
 }
 
 pub fn getBasePathFromUri(mut scheme: ArcStr, mut iname: ArcStr, mut program: Absyn::Program, mut modelicaPath: ArcStr, mut printError: bool) -> Result<ArcStr> {
-    let mut basePath: ArcStr = arcstr::literal!("");
+    let mut basePath: ArcStr;
     basePath = ('mc: {
         let __mc_input = (scheme.clone(), iname.clone(), modelicaPath.clone(), printError.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -1349,7 +1349,7 @@ pub fn getBasePathFromUri(mut scheme: ArcStr, mut iname: ArcStr, mut program: Ab
 }
 
 pub fn findModelicaPath(mut imps: Arc<metamodelica::List<ArcStr>>, mut names: Arc<metamodelica::List<ArcStr>>, mut version: ArcStr) -> Result<ArcStr> {
-    let mut basePath: ArcStr = arcstr::literal!("");
+    let mut basePath: ArcStr;
     basePath = ('mc: {
         let __mc_input = imps.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -1374,7 +1374,7 @@ pub fn findModelicaPath(mut imps: Arc<metamodelica::List<ArcStr>>, mut names: Ar
 }
 
 pub fn findModelicaPath2(mut mp: ArcStr, mut inames: Arc<metamodelica::List<ArcStr>>, mut version: ArcStr, mut b: bool) -> Result<ArcStr> {
-    let mut basePath: ArcStr = arcstr::literal!("");
+    let mut basePath: ArcStr;
     basePath = ('mc: {
         let __mc_input = (inames.clone(), b.clone());
         if let Ok(__v) = (|| -> Result<_> {

@@ -141,7 +141,7 @@ fn addNodes(mut gin: (GraphML::GraphInfo, i32), mut inRefs: Arc<metamodelica::Li
 }
 
 fn addNode(mut gin: (GraphML::GraphInfo, i32), mut node: Node) -> Result<(GraphML::GraphInfo, i32)> {
-    let mut gout: (GraphML::GraphInfo, i32) = (<GraphML::GraphInfo as ::std::default::Default>::default(), 0);
+    let mut gout: (GraphML::GraphInfo, i32);
     gout = (::match_deref::match_deref! { match &((gin.clone(), node.clone())) {
         ((gi, i), FCore::Node { parents: Deref @ metamodelica::List::Nil, children: kids, .. }) => {
             let mut nds: ArcStr = arcstr::literal!("");
@@ -223,9 +223,9 @@ fn addNode(mut gin: (GraphML::GraphInfo, i32), mut node: Node) -> Result<(GraphM
 }
 
 pub fn graphml(mut node: Node, mut escape: bool) -> Result<(ArcStr, GraphML::ShapeType, ArcStr)> {
-    let mut color: ArcStr = arcstr::literal!("");
-    let mut shape: GraphML::ShapeType = GraphML::ShapeType::DIAMOND;
-    let mut nname: ArcStr = arcstr::literal!("");
+    let mut color: ArcStr;
+    let mut shape: GraphML::ShapeType;
+    let mut nname: ArcStr;
     (color, shape, nname) = 'mc: {
         let __mc_input = node.clone();
         if let Ok(__v) = (|| -> Result<_> {

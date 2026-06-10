@@ -77,7 +77,7 @@ pub fn emptyHashTable() -> HashTable {
 }
 
 fn id(mut inStr: ArcStr) -> ArcStr {
-    let mut outStr: ArcStr = arcstr::literal!("");
+    let mut outStr: ArcStr;
     outStr = (inStr.clone()).clone();
     outStr
 }

@@ -361,7 +361,7 @@ impl Walk {
             }
         }
         for it in algorithms {
-            w.scan_algorithm_item(&**it);
+            w.scan_algorithm_item(it);
         }
         w
     }
@@ -431,7 +431,7 @@ impl Walk {
             }
             Absyn::Algorithm::ALG_NORETCALL { functionCall, functionArgs } => {
                 self.record_call(&cref_to_dotted(functionCall));
-                self.scan_function_args(&**functionArgs);
+                self.scan_function_args(functionArgs);
             }
             Absyn::Algorithm::ALG_FAILURE { equ: _ } => {
                 // `failure(body)` *succeeds* iff `body` fails, which means it
@@ -473,7 +473,7 @@ impl Walk {
             }
             CALL { function_, functionArgs, .. } => {
                 self.record_call(&cref_to_dotted(function_));
-                self.scan_function_args(&**functionArgs);
+                self.scan_function_args(functionArgs);
             }
             PARTEVALFUNCTION { function_, functionArgs } => {
                 // Partial application produces a function value rather than
@@ -482,7 +482,7 @@ impl Walk {
                 // expressions are evaluated eagerly and therefore still need
                 // to be walked.
                 let _ = function_;
-                self.scan_function_args(&**functionArgs);
+                self.scan_function_args(functionArgs);
             }
             ARRAY { arrayExp } | LIST { exps: arrayExp } => {
                 for e in &**arrayExp { self.scan_exp(e); }
@@ -512,7 +512,7 @@ impl Walk {
                 // full pattern coverage. See codegen `cases_exhaustive` for
                 // the typed-IR counterpart; the two must agree.
                 if !matches!(matchTy, Absyn::MatchType::MATCH)
-                    || !match_is_exhaustive(&**cases, &**localDecls, &self.outer_scope)
+                    || !match_is_exhaustive(cases, localDecls, &self.outer_scope)
                 {
                     self.has_match = true;
                 }
@@ -733,7 +733,7 @@ fn match_is_exhaustive(
             Absyn::Case::CASE { pattern, patternGuard, localDecls, .. } => {
                 if patternGuard.is_none() {
                     let mut scope = match_scope.clone();
-                    collect_local_decl_names(&**localDecls, &mut scope);
+                    collect_local_decl_names(localDecls, &mut scope);
                     if absyn_pat_is_irrefutable(pattern.as_ref(), &scope) {
                         return true;
                     }
@@ -748,7 +748,7 @@ fn match_is_exhaustive(
     let pats: Vec<(&Absyn::Exp, BTreeSet<String>)> = cases.into_iter().filter_map(|c| match &**c {
         Absyn::Case::CASE { pattern, patternGuard, localDecls, .. } if patternGuard.is_none() => {
             let mut scope = match_scope.clone();
-            collect_local_decl_names(&**localDecls, &mut scope);
+            collect_local_decl_names(localDecls, &mut scope);
             Some((&**pattern, scope))
         }
         _ => None,
@@ -773,7 +773,7 @@ fn match_is_exhaustive(
     let has_nil = pats.iter().any(|(p, _)| is_empty_literal(p));
     let has_full_cons = pats.iter().any(|(p, scope)| match p {
         Absyn::Exp::CONS { head, rest } =>
-            absyn_pat_is_irrefutable(&**head, scope) && absyn_pat_is_irrefutable(&**rest, scope),
+            absyn_pat_is_irrefutable(head, scope) && absyn_pat_is_irrefutable(rest, scope),
         _ => false,
     });
     if has_nil && has_full_cons { return true; }
@@ -992,11 +992,10 @@ pub fn analyze(hier: &InstanceHierarchy<'_>) -> FallibilityInfo {
                 if walks.contains_key(&target) {
                     set.insert(target);
                 }
-            } else if let Some(b) = builtin_fallibility(base) {
-                if matches!(b, Fallibility::Fallible) {
+            } else if let Some(b) = builtin_fallibility(base)
+                && matches!(b, Fallibility::Fallible) {
                     fallible.insert(qname.clone());
                 }
-            }
         }
         callees.insert(qname.clone(), set);
     }

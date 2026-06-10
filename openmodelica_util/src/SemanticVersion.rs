@@ -72,17 +72,17 @@ impl Default for Version {
 pub use self::Version::{SEMVER,NONSEMVER};
 
 pub fn parse(mut s: ArcStr, mut nonsemverAsZeroZeroZero: bool) -> Result<Version> {
-    let mut v: Version = <Version as ::std::default::Default>::default();
-    let mut n: i32 = 0;
-    let mut major: ArcStr = arcstr::literal!("");
-    let mut minor: ArcStr = arcstr::literal!("");
-    let mut patch: ArcStr = arcstr::literal!("");
-    let mut versions: ArcStr = arcstr::literal!("");
-    let mut prereleaseLst: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut metaLst: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut matches: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut split: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut versionsLst: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+    let mut v: Version;
+    let mut n: i32;
+    let mut major: ArcStr;
+    let mut minor: ArcStr;
+    let mut patch: ArcStr;
+    let mut versions: ArcStr;
+    let mut prereleaseLst: Arc<metamodelica::List<ArcStr>>;
+    let mut metaLst: Arc<metamodelica::List<ArcStr>>;
+    let mut matches: Arc<metamodelica::List<ArcStr>>;
+    let mut split: Arc<metamodelica::List<ArcStr>>;
+    let mut versionsLst: Arc<metamodelica::List<ArcStr>>;
     let semverRegex: ArcStr = literal!("^([0-9][0-9]*\\.?[0-9]*\\.?[0-9]*)([+-][0-9A-Za-z.-]*)?$");
     (n, matches) = System::regex((s.clone()).clone(), (semverRegex.clone()).clone(), 5, true, false);
     if n.clone() < 2 {
@@ -191,7 +191,7 @@ pub fn toString(mut v: Version) -> Result<ArcStr> {
 }
 
 pub fn isPrerelease(mut v: Version) -> bool {
-    let mut b: bool = false;
+    let mut b: bool;
     b = (::match_deref::match_deref! { match &(v.clone()) {
         Version::SEMVER { prerelease: Deref @ metamodelica::List::Cons { head: _, tail: _ }, .. } => true,
         _ => false,
@@ -201,7 +201,7 @@ pub fn isPrerelease(mut v: Version) -> bool {
 }
 
 pub fn hasMetaInformation(mut v: Version) -> bool {
-    let mut b: bool = false;
+    let mut b: bool;
     b = (::match_deref::match_deref! { match &(v.clone()) {
         Version::SEMVER { meta: Deref @ metamodelica::List::Nil, .. } => false,
         Version::NONSEMVER { .. } => false,
@@ -212,7 +212,7 @@ pub fn hasMetaInformation(mut v: Version) -> bool {
 }
 
 pub fn isSemVer(mut v: Version) -> bool {
-    let mut b: bool = false;
+    let mut b: bool;
     b = (match v.clone() {
         Version::SEMVER { .. } => true,
         _ => false,
@@ -221,11 +221,11 @@ pub fn isSemVer(mut v: Version) -> bool {
 }
 
 fn splitPrereleaseAndMeta(mut s: ArcStr) -> Result<(Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>)> {
-    let mut prereleaseLst: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut metaLst: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut meta: ArcStr = arcstr::literal!("");
-    let mut prerelease: ArcStr = arcstr::literal!("");
-    let mut split: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+    let mut prereleaseLst: Arc<metamodelica::List<ArcStr>>;
+    let mut metaLst: Arc<metamodelica::List<ArcStr>>;
+    let mut meta: ArcStr;
+    let mut prerelease: ArcStr;
+    let mut split: Arc<metamodelica::List<ArcStr>>;
     prereleaseLst = metamodelica::nil();
     metaLst = metamodelica::nil();
     if stringEmpty((s.clone()).clone()) {
@@ -252,9 +252,9 @@ fn splitPrereleaseAndMeta(mut s: ArcStr) -> Result<(Arc<metamodelica::List<ArcSt
 }
 
 fn compareIdentifierList(mut w1: Arc<metamodelica::List<ArcStr>>, mut w2: Arc<metamodelica::List<ArcStr>>) -> Result<i32> {
-    let mut c: i32 = 0;
-    let mut l1: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut l2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+    let mut c: i32;
+    let mut l1: Arc<metamodelica::List<ArcStr>>;
+    let mut l2: Arc<metamodelica::List<ArcStr>>;
     let mut s1: ArcStr = arcstr::literal!("");
     let mut s2: ArcStr = arcstr::literal!("");
     l1 = w1.clone();
@@ -287,7 +287,7 @@ fn compareIdentifierList(mut w1: Arc<metamodelica::List<ArcStr>>, mut w2: Arc<me
 }
 
 fn compareIdentifier(mut s1: ArcStr, mut s2: ArcStr) -> Result<i32> {
-    let mut c: i32 = 0;
+    let mut c: i32;
     if Util::isIntegerString((s1.clone()).clone()) {
         c = if (Util::isIntegerString((s2.clone()).clone())) {Util::intCompare(stringInt((s1.clone()).clone())?, stringInt((s2.clone()).clone())?)} else {-1};
         return Ok(c.clone());

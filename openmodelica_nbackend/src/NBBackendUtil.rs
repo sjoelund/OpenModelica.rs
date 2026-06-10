@@ -56,6 +56,7 @@ use openmodelica_nf_frontend::NFOperator as Operator;
 use openmodelica_nf_frontend::NFType as Type;
 use openmodelica_nf_frontend::NFVariable as Variable;
 use openmodelica_util::MMath;
+use openmodelica_util::Rational;
 use openmodelica_util::UnorderedMap;
 use openmodelica_util::Util;
 use openmodelica_util_datatypes_basic::Mutable;
@@ -65,71 +66,9 @@ use openmodelica_util_datatypes_basic::Pointer;
 // backend imports
 // Util imports
 // old imports
-pub mod Rational {
-    use super::*;
-#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-    pub struct Rational {
-        pub n: i32,
-        pub d: i32,
-    }
-
-    impl Default for Rational {
-        fn default() -> Self {
-            Self {
-                n: Default::default(),
-                d: Default::default(),
-            }
-        }
-    }
-
-    pub type RATIONAL = Rational;
-
-    pub fn toString(mut r: Arc<Rational>) -> ArcStr {
-        let mut r#str: ArcStr = { let mut __mm_s = String::new(); __mm_s.push_str(&*intString(r.n.clone())); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*intString(r.d.clone())); ArcStr::from(__mm_s) };
-        r#str
-    }
-
-    pub fn normalize(mut r: Arc<Rational>) -> Arc<Rational> {
-        let mut r: Arc<Rational> = r;
-        if r.n.clone() == 0 {
-            assign_field!(r.d = 1);
-        }
-        r
-    }
-
-    pub fn add(mut r1: Arc<Rational>, mut r2: Arc<Rational>) -> Arc<Rational> {
-        let mut r: Arc<Rational> = finalize(r1.n.clone() * r2.d.clone() + r2.n.clone() * r1.d.clone(), r1.d.clone() * r2.d.clone());
-        r
-    }
-
-    pub fn multiply(mut r1: Arc<Rational>, mut r2: Arc<Rational>) -> Arc<Rational> {
-        let mut r: Arc<Rational> = finalize(r1.n.clone() * r2.n.clone(), r1.d.clone() * r2.d.clone());
-        r
-    }
-
-    pub fn isEqual(mut r1: Arc<Rational>, mut r2: Arc<Rational>) -> bool {
-        let mut b: bool = r1.n.clone() == r2.n.clone() && r1.d.clone() == r2.d.clone();
-        b
-    }
-
-    pub fn convert(mut r: Arc<Rational>) -> MMath::Rational {
-        let mut oldR: MMath::Rational = MMath::Rational { nom: r.n.clone(), denom: r.d.clone() };
-        oldR
-    }
-
-    fn finalize(mut i1: i32, mut i2: i32) -> Arc<Rational> {
-        let mut r: Arc<Rational> = Arc::new(<Rational as ::std::default::Default>::default());
-        let mut d: i32 = intGcd(i1.clone(), i2.clone());
-        r = normalize(Arc::new(Rational { n: intDiv(i1.clone(), d.clone()), d: intDiv(i2.clone(), d.clone()) }));
-        r
-    }
-
-    fn intGcd(mut i1: i32, mut i2: i32) -> i32 {
-        '__tco: loop {
-            if (i2.clone() == 0) {return i1.clone()} else {{ (i1, i2) = (i2.clone(), intMod(i1.clone(), i2.clone())); continue '__tco; }}
-        }
-    }
-
+pub fn convertRational(mut r: Arc<Rational::Rational>) -> MMath::Rational {
+    let mut oldR: MMath::Rational = MMath::Rational { nom: r.n.clone(), denom: r.d.clone() };
+    oldR
 }
 
 pub fn findTrueIndices(mut arr: metamodelica::Array<bool>) -> Arc<metamodelica::List<i32>> {
@@ -158,9 +97,9 @@ pub fn countElem(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> i3
 }
 
 pub fn indexTplGt<T: Clone + 'static>(mut tpl1: (i32, T), mut tpl2: (i32, T)) -> bool {
-    let mut gt: bool = false;
-    let mut i1: i32 = 0;
-    let mut i2: i32 = 0;
+    let mut gt: bool;
+    let mut i1: i32;
+    let mut i2: i32;
     (i1, _) = tpl1.clone();
     (i2, _) = tpl2.clone();
     gt = i1.clone() > i2.clone();
@@ -168,7 +107,7 @@ pub fn indexTplGt<T: Clone + 'static>(mut tpl1: (i32, T), mut tpl2: (i32, T)) ->
 }
 
 pub fn noNameHashEq(mut eq: Arc<Equation::Equation>, mut r#mod: i32) -> Result<i32> {
-    let mut hash: i32 = 0;
+    let mut hash: i32;
     hash = noNameHashExp(BEquation::Equation::getResidualExp(eq.clone(), true)?, r#mod.clone())?;
     Ok(hash)
 }
@@ -347,7 +286,7 @@ pub fn noNameHashExp(mut exp: Arc<Expression::NFExpression>, mut r#mod: i32) -> 
 }
 
 pub fn isOnlyTimeDependent(mut exp: Arc<Expression::NFExpression>) -> Result<bool> {
-    let mut b: bool = false;
+    let mut b: bool;
     b = Expression::fold(exp.clone(), (std::sync::Arc::new(isOnlyTimeDependentFold) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, bool) -> Result<bool> + 'static>), true)?;
     Ok(b)
 }
@@ -365,7 +304,7 @@ pub fn isOnlyTimeDependentFold(mut exp: Arc<Expression::NFExpression>, mut b: bo
 }
 
 pub fn isContinuous(mut exp: Arc<Expression::NFExpression>, mut staticAsContinuous: bool) -> Result<bool> {
-    let mut b: bool = false;
+    let mut b: bool;
     b = Expression::fold(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = staticAsContinuous.clone(); move |__pe_a0, __pe_a2| isContinuousFold(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, bool) -> Result<bool> + 'static>), true)?;
     Ok(b)
 }
@@ -383,9 +322,9 @@ pub fn isContinuousFold(mut exp: Arc<Expression::NFExpression>, mut staticAsCont
 }
 
 pub fn getLocalSystem(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut matching: Arc<Matching::NBMatching>, mut eqn_indices: Arc<metamodelica::List<i32>>) -> Result<(metamodelica::Array<Arc<metamodelica::List<i32>>>, Arc<Matching::NBMatching>, metamodelica::Array<i32>)> {
-    let mut m_loc: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
-    let mut matching_loc: Arc<Matching::NBMatching> = Arc::new(<Matching::NBMatching as ::std::default::Default>::default());
-    let mut map_back: metamodelica::Array<i32> = Default::default();
+    let mut m_loc: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut matching_loc: Arc<Matching::NBMatching>;
+    let mut map_back: metamodelica::Array<i32>;
     let N: i32 = (eqn_indices.clone().len() as i32);
     let mut var_to_eqn: metamodelica::Array<i32> = arrayCreate(N.clone(), -1);
     let mut eqn_to_var: metamodelica::Array<i32> = arrayCreate(N.clone(), -1);

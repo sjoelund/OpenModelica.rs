@@ -91,7 +91,7 @@ pub type SETTINGS = EvalSettings;
 
 pub fn evaluate(mut flatModel: Arc<FlatModel::NFFlatModel>, mut context: i32) -> Result<Arc<FlatModel::NFFlatModel>> {
     let mut flatModel: Arc<FlatModel::NFFlatModel> = flatModel;
-    let mut settings: EvalSettings = <EvalSettings as ::std::default::Default>::default();
+    let mut settings: EvalSettings;
     settings = EvalSettings { scalarize: Flags::isSet(Flags::NF_SCALARIZE.clone())? };
     assign_field!(
         flatModel.variables = ({
@@ -113,9 +113,9 @@ pub fn evaluate(mut flatModel: Arc<FlatModel::NFFlatModel>, mut context: i32) ->
 
 pub fn evaluateVariable(mut var: Arc<Variable::NFVariable>, mut context: i32, mut settings: EvalSettings) -> Result<Arc<Variable::NFVariable>> {
     let mut var: Arc<Variable::NFVariable> = var;
-    let mut binding: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);
-    let mut structural: bool = false;
-    let mut variability: Variability = Variability::CONSTANT;
+    let mut binding: Arc<Binding::NFBinding>;
+    let mut structural: bool;
+    let mut variability: Variability;
     variability = Variable::variability(var.clone());
     structural = variability.clone() <= Variability::STRUCTURAL_PARAMETER.clone() && !(Type::isExternalObject(var.ty.clone()));
     binding = evaluateBinding(var.binding.clone(), var.name.clone(), structural.clone(), variability.clone(), context.clone())?;
@@ -145,9 +145,9 @@ pub fn evaluateVariable(mut var: Arc<Variable::NFVariable>, mut context: i32, mu
 
 pub fn evaluateBinding(mut binding: Arc<Binding::NFBinding>, mut prefix: Arc<ComponentRef::NFComponentRef>, mut structural: bool, mut variability: Variability, mut context: i32) -> Result<Arc<Binding::NFBinding>> {
     let mut binding: Arc<Binding::NFBinding> = binding;
-    let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut eexp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
+    let mut exp: Arc<Expression::NFExpression>;
+    let mut eexp: Arc<Expression::NFExpression>;
+    let mut info: SourceInfo;
     if Binding::isBound(binding.clone()) {
         exp = Binding::getTypedExp(binding.clone())?;
         if structural.clone() {
@@ -174,10 +174,10 @@ pub fn evaluateBinding(mut binding: Arc<Binding::NFBinding>, mut prefix: Arc<Com
 
 pub fn evaluateTypeAttribute(mut attribute: (ArcStr, Arc<Binding::NFBinding>), mut prefix: Arc<ComponentRef::NFComponentRef>, mut context: i32) -> Result<(ArcStr, Arc<Binding::NFBinding>)> {
     let mut attribute: (ArcStr, Arc<Binding::NFBinding>) = attribute;
-    let mut name: ArcStr = arcstr::literal!("");
-    let mut binding: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);
-    let mut sbinding: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);
-    let mut structural: bool = false;
+    let mut name: ArcStr;
+    let mut binding: Arc<Binding::NFBinding>;
+    let mut sbinding: Arc<Binding::NFBinding>;
+    let mut structural: bool;
     (name, binding) = attribute.clone();
     structural = name.clone() == literal!("fixed") || name.clone() == literal!("stateSelect");
     sbinding = evaluateBinding(binding.clone(), prefix.clone(), structural.clone(), Variability::PARAMETER.clone(), context.clone())?;
@@ -188,7 +188,7 @@ pub fn evaluateTypeAttribute(mut attribute: (ArcStr, Arc<Binding::NFBinding>), m
 }
 
 pub fn evaluateExp(mut exp: Arc<Expression::NFExpression>, mut info: SourceInfo) -> Result<Arc<Expression::NFExpression>> {
-    let mut outExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut outExp: Arc<Expression::NFExpression>;
     (outExp, _) = evaluateExpTraverser(exp.clone(), info.clone(), false)?;
     Ok(outExp)
 }
@@ -295,7 +295,7 @@ pub fn evaluateType(mut ty: Arc<Type::NFType>, mut info: SourceInfo) -> Result<A
 }
 
 pub fn evaluateDimension(mut dim: Arc<Dimension::NFDimension>, mut info: SourceInfo) -> Result<Arc<Dimension::NFDimension>> {
-    let mut outDim: Arc<Dimension::NFDimension> = Arc::new(Dimension::BOOLEAN);
+    let mut outDim: Arc<Dimension::NFDimension>;
     outDim = (::match_deref::match_deref! { match &(dim.clone()) {
         Deref @ Dimension::EXP { .. } => {
             let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
@@ -312,11 +312,11 @@ pub fn evaluateDimension(mut dim: Arc<Dimension::NFDimension>, mut info: SourceI
 
 pub fn evaluateIfExp(mut exp: Arc<Expression::NFExpression>, mut info: SourceInfo) -> Result<(Arc<Expression::NFExpression>, bool)> {
     let mut outExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut outChanged: bool = false;
-    let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut cond: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut tb: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut fb: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut outChanged: bool;
+    let mut ty: Arc<Type::NFType>;
+    let mut cond: Arc<Expression::NFExpression>;
+    let mut tb: Arc<Expression::NFExpression>;
+    let mut fb: Arc<Expression::NFExpression>;
     let mut c1: bool = false;
     let mut c2: bool = false;
     let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(exp.clone()) {
@@ -428,7 +428,7 @@ pub fn evaluateEquation(mut eq: Arc<Equation::NFEquation>) -> Result<Arc<Equatio
 }
 
 pub fn evaluateEqBranch(mut branch: Arc<Branch::Branch>, mut info: SourceInfo) -> Result<Arc<Branch::Branch>> {
-    let mut outBranch: Arc<Branch::Branch> = Arc::new(<Branch::Branch as ::std::default::Default>::default());
+    let mut outBranch: Arc<Branch::Branch>;
     outBranch = (::match_deref::match_deref! { match &(branch.clone()) {
         Deref @ Equation::Branch::BRANCH { condition, body, .. } => {
             let mut condition = (*condition).clone();
@@ -554,9 +554,9 @@ pub fn evaluateStatement(mut stmt: Arc<Statement::NFStatement>) -> Result<Arc<St
 }
 
 pub fn evaluateStmtBranch(mut branch: (Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<Statement::NFStatement>>>), mut info: SourceInfo) -> Result<(Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<Statement::NFStatement>>>)> {
-    let mut outBranch: (Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<Statement::NFStatement>>>) = (Arc::new(Expression::END), metamodelica::nil());
-    let mut cond: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut body: Arc<metamodelica::List<Arc<Statement::NFStatement>>> = metamodelica::nil();
+    let mut outBranch: (Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<Statement::NFStatement>>>);
+    let mut cond: Arc<Expression::NFExpression>;
+    let mut body: Arc<metamodelica::List<Arc<Statement::NFStatement>>>;
     (cond, body) = branch.clone();
     cond = evaluateExp(cond.clone(), info.clone())?;
     body = evaluateStatements(body.clone())?;
@@ -566,7 +566,7 @@ pub fn evaluateStmtBranch(mut branch: (Arc<Expression::NFExpression>, Arc<metamo
 
 pub fn evaluateFunction(mut func: Arc<Function::Function>) -> Result<Arc<Function::Function>> {
     let mut func: Arc<Function::Function> = func;
-    let mut is_con: bool = false;
+    let mut is_con: bool;
     if !(Function::isEvaluated(func.clone())) {
         Function::markEvaluated(func.clone());
         is_con = Function::isDefaultRecordConstructor(func.clone());
@@ -586,15 +586,15 @@ pub fn evaluateFunction(mut func: Arc<Function::Function>) -> Result<Arc<Functio
 }
 
 pub fn evaluateFuncExp(mut exp: Arc<Expression::NFExpression>, mut fnNode: Arc<InstNode::InstNode>, mut evaluateAll: bool) -> Result<Arc<Expression::NFExpression>> {
-    let mut outExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut outExp: Arc<Expression::NFExpression>;
     (outExp, _) = evaluateFuncExpTraverser(exp.clone(), fnNode.clone(), evaluateAll.clone(), false)?;
     Ok(outExp)
 }
 
 pub fn evaluateFuncExpTraverser(mut exp: Arc<Expression::NFExpression>, mut fnNode: Arc<InstNode::InstNode>, mut evaluateAll: bool, mut changed: bool) -> Result<(Arc<Expression::NFExpression>, bool)> {
     let mut outExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut outChanged: bool = false;
-    let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut outChanged: bool;
+    let mut e: Arc<Expression::NFExpression>;
     (e, outChanged) = Expression::mapFoldShallow(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = fnNode.clone(); let __pe_b2 = evaluateAll.clone(); move |__pe_a0, __pe_a3| evaluateFuncExpTraverser(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_a3) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, bool) -> Result<(Arc<Expression::NFExpression>, bool)> + 'static>), false)?;
     outExp = (::match_deref::match_deref! { match &(e.clone()) {
         Deref @ Expression::CREF { .. } => {
@@ -628,10 +628,10 @@ pub fn evaluateFuncExpTraverser(mut exp: Arc<Expression::NFExpression>, mut fnNo
 }
 
 pub fn isLocalFunctionVariable(mut cref: Arc<ComponentRef::NFComponentRef>, mut fnNode: Arc<InstNode::InstNode>) -> Result<bool> {
-    let mut res: bool = false;
-    let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
-    let mut fnl: Arc<metamodelica::List<Arc<Function::Function>>> = metamodelica::nil();
-    let mut r#fn: Arc<Function::Function> = Arc::new(<Function::Function as ::std::default::Default>::default());
+    let mut res: bool;
+    let mut node: Arc<InstNode::InstNode>;
+    let mut fnl: Arc<metamodelica::List<Arc<Function::Function>>>;
+    let mut r#fn: Arc<Function::Function>;
     if ComponentRef::isPackageConstant(cref.clone())? {
         res = false;
     } else if ComponentRef::nodeVariability(cref.clone())? <= Variability::PARAMETER.clone() && ComponentRef::isCref(cref.clone()) {
@@ -659,9 +659,9 @@ pub fn evaluateRecordDeclaration(mut recordNode: Arc<InstNode::InstNode>) -> Res
 }
 
 pub fn evaluateRecordDeclarationField(mut fieldNode: Arc<InstNode::InstNode>, mut recordNode: Arc<InstNode::InstNode>) -> Result<()> {
-    let mut comp: Arc<Component::NFComponent> = Arc::new(Component::WILD);
-    let mut binding: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);
-    let mut cls_inst: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
+    let mut comp: Arc<Component::NFComponent>;
+    let mut binding: Arc<Binding::NFBinding>;
+    let mut cls_inst: Arc<InstNode::InstNode>;
     comp = InstNode::component(fieldNode.clone())?;
     binding = Component::getBinding(comp.clone());
     if Binding::isBound(binding.clone()) {

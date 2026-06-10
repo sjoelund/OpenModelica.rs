@@ -131,7 +131,7 @@ impl RefScan {
             }
             Absyn::Algorithm::ALG_NORETCALL { functionCall, functionArgs } => {
                 self.refs.insert(cref_to_dotted(functionCall));
-                self.scan_function_args(&**functionArgs);
+                self.scan_function_args(functionArgs);
             }
             Absyn::Algorithm::ALG_FAILURE { equ } => {
                 for it in &**equ { self.scan_algorithm_item(it); }
@@ -170,11 +170,11 @@ impl RefScan {
             }
             CALL { function_, functionArgs, .. } => {
                 self.refs.insert(cref_to_dotted(function_));
-                self.scan_function_args(&**functionArgs);
+                self.scan_function_args(functionArgs);
             }
             PARTEVALFUNCTION { function_, functionArgs } => {
                 self.refs.insert(cref_to_dotted(function_));
-                self.scan_function_args(&**functionArgs);
+                self.scan_function_args(functionArgs);
             }
             ARRAY { arrayExp } | LIST { exps: arrayExp } => {
                 for e in &**arrayExp { self.scan_exp(e); }
@@ -387,11 +387,10 @@ pub fn analyze(hier: &InstanceHierarchy<'_>) -> UnusedReport {
                 }
             }
         }
-        if let Some(base) = alias_bases.get(qname) {
-            if let Some(target) = resolve_to_canonical(base, &scopes) {
+        if let Some(base) = alias_bases.get(qname)
+            && let Some(target) = resolve_to_canonical(base, &scopes) {
                 set.insert(target);
             }
-        }
         edges.insert(qname.clone(), set);
     }
     let _ = seen_class_ptrs;

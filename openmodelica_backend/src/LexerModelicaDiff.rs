@@ -54,25 +54,25 @@ pub mod LexTable {
 }
 
 pub fn scan(mut fileName: ArcStr) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Token>>)> {
-    let mut tokens: Arc<metamodelica::List<Token>> = metamodelica::nil();
-    let mut errorTokens: Arc<metamodelica::List<Token>> = metamodelica::nil();
-    let mut contents: ArcStr = arcstr::literal!("");
+    let mut tokens: Arc<metamodelica::List<Token>>;
+    let mut errorTokens: Arc<metamodelica::List<Token>>;
+    let mut contents: ArcStr;
     contents = (System::readFile((fileName.clone()).clone())?).clone();
     (tokens, errorTokens) = lex((fileName.clone()).clone(), (contents.clone()).clone())?;
     Ok((tokens, errorTokens))
 }
 
 pub fn scanString(mut fileSource: ArcStr, mut fileName: ArcStr) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Token>>)> {
-    let mut tokens: Arc<metamodelica::List<Token>> = metamodelica::nil();
-    let mut errorTokens: Arc<metamodelica::List<Token>> = metamodelica::nil();
+    let mut tokens: Arc<metamodelica::List<Token>>;
+    let mut errorTokens: Arc<metamodelica::List<Token>>;
     (tokens, errorTokens) = lex((fileName.clone()).clone(), (fileSource.clone()).clone())?;
     Ok((tokens, errorTokens))
 }
 
 pub fn action(mut act: i32, mut startSt: i32, mut mm_currSt: i32, mut mm_pos: i32, mut mm_sPos: i32, mut mm_ePos: i32, mut mm_linenr: i32, mut lineNrStart: i32, mut buffer: i32, mut fileNm: ArcStr, mut fileContents: ArcStr, mut inErrorTokens: Arc<metamodelica::List<Token>>) -> Result<(Token, i32, i32, Arc<metamodelica::List<Token>>)> {
-    let mut token: Token = <Token as ::std::default::Default>::default();
-    let mut mm_startSt: i32 = 0;
-    let mut bufferRet: i32 = 0;
+    let mut token: Token;
+    let mut mm_startSt: i32;
+    let mut bufferRet: i32;
     let mut errorTokens: Arc<metamodelica::List<Token>> = inErrorTokens.clone();
     mm_startSt = startSt.clone();
     bufferRet = 0;
@@ -806,11 +806,11 @@ pub type TOKEN = Token;
 pub static noToken: std::sync::LazyLock<Token> = std::sync::LazyLock::new(|| { Token { fileName: (literal!("<NoFile>")).clone(), id: TokenId::_NO_TOKEN.clone(), fileContents: (literal!("")).clone(), byteOffset: 0, length: 0, lineNumberStart: 0, columnNumberStart: 0, lineNumberEnd: 0, columnNumberEnd: 0 } });
 
 pub fn printToken(mut token: Token) -> Result<ArcStr> {
-    let mut strTk: ArcStr = arcstr::literal!("");
-    let mut id: TokenId = TokenId::_NO_TOKEN;
-    let mut contents: ArcStr = arcstr::literal!("");
-    let mut byteOffset: i32 = 0;
-    let mut length: i32 = 0;
+    let mut strTk: ArcStr;
+    let mut id: TokenId;
+    let mut contents: ArcStr;
+    let mut byteOffset: i32;
+    let mut length: i32;
     let Token { id: __pa0, fileContents: __pa1, byteOffset: __pa2, length: __pa3, .. } = (token.clone()) else { bail!("pattern mismatch") };
     id = __pa0.clone();
     contents = __pa1.clone();
@@ -822,9 +822,9 @@ pub fn printToken(mut token: Token) -> Result<ArcStr> {
 }
 
 pub fn tokenContent(mut token: Token) -> Result<ArcStr> {
-    let mut contents: ArcStr = arcstr::literal!("");
-    let mut byteOffset: i32 = 0;
-    let mut length: i32 = 0;
+    let mut contents: ArcStr;
+    let mut byteOffset: i32;
+    let mut length: i32;
     let Token { fileContents: __pa0, byteOffset: __pa1, length: __pa2, .. } = (token.clone()) else { bail!("pattern mismatch") };
     contents = __pa0.clone();
     byteOffset = __pa1.clone();
@@ -834,13 +834,13 @@ pub fn tokenContent(mut token: Token) -> Result<ArcStr> {
 }
 
 pub fn tokenContentEq(mut token1: Token, mut token2: Token) -> Result<bool> {
-    let mut b: bool = false;
-    let mut contents1: ArcStr = arcstr::literal!("");
-    let mut contents2: ArcStr = arcstr::literal!("");
-    let mut offset1: i32 = 0;
-    let mut length1: i32 = 0;
-    let mut offset2: i32 = 0;
-    let mut length2: i32 = 0;
+    let mut b: bool;
+    let mut contents1: ArcStr;
+    let mut contents2: ArcStr;
+    let mut offset1: i32;
+    let mut length1: i32;
+    let mut offset2: i32;
+    let mut length2: i32;
     let Token { fileContents: __pa0, byteOffset: __pa1, length: __pa2, .. } = (token1.clone()) else { bail!("pattern mismatch") };
     contents1 = __pa0.clone();
     offset1 = __pa1.clone();
@@ -854,7 +854,7 @@ pub fn tokenContentEq(mut token1: Token, mut token2: Token) -> Result<bool> {
 }
 
 pub fn tokenSourceInfo(mut token: Token) -> Result<SourceInfo> {
-    let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
+    let mut info: SourceInfo;
     info = { let mut t = token.clone(); (match t.clone() {
         Token { .. } => SourceInfo { fileName: (t.fileName.clone()).clone(), isReadOnly: false, lineNumberStart: t.lineNumberStart.clone(), columnNumberStart: t.columnNumberStart.clone(), lineNumberEnd: t.lineNumberEnd.clone(), columnNumberEnd: t.columnNumberEnd.clone(), lastModification: metamodelica::OrderedFloat(0.0_f64) },
     }) };
@@ -862,21 +862,21 @@ pub fn tokenSourceInfo(mut token: Token) -> Result<SourceInfo> {
 }
 
 fn lex(mut fileName: ArcStr, mut contents: ArcStr) -> Result<(Arc<metamodelica::List<Token>>, Arc<metamodelica::List<Token>>)> {
-    let mut tokens: Arc<metamodelica::List<Token>> = metamodelica::nil();
+    let mut tokens: Arc<metamodelica::List<Token>>;
     let mut errorTokens: Arc<metamodelica::List<Token>> = metamodelica::nil();
-    let mut startSt: i32 = 0;
-    let mut i: i32 = 0;
-    let mut cTok: i32 = 0;
-    let mut currSt: i32 = 0;
-    let mut pos: i32 = 0;
-    let mut sPos: i32 = 0;
-    let mut ePos: i32 = 0;
-    let mut linenr: i32 = 0;
-    let mut contentLen: i32 = 0;
-    let mut numBacktrack: i32 = 0;
-    let mut buffer: i32 = 0;
-    let mut lineNrStart: i32 = 0;
-    let mut states: Arc<metamodelica::List<i32>> = metamodelica::nil();
+    let mut startSt: i32;
+    let mut i: i32;
+    let mut cTok: i32;
+    let mut currSt: i32;
+    let mut pos: i32;
+    let mut sPos: i32;
+    let mut ePos: i32;
+    let mut linenr: i32;
+    let mut contentLen: i32;
+    let mut numBacktrack: i32;
+    let mut buffer: i32;
+    let mut lineNrStart: i32;
+    let mut states: Arc<metamodelica::List<i32>>;
     startSt = 1;
     currSt = 1;
     pos = 1;
@@ -907,23 +907,23 @@ fn lex(mut fileName: ArcStr, mut contents: ArcStr) -> Result<(Arc<metamodelica::
 }
 
 fn consume(mut cp: i32, mut tokens: Arc<metamodelica::List<Token>>, mut fileContents: ArcStr, mut startSt: i32, mut currSt: i32, mut pos: i32, mut sPos: i32, mut ePos: i32, mut linenr: i32, mut inLineNrStart: i32, mut inBuffer: i32, mut inStates: Arc<metamodelica::List<i32>>, mut fileName: ArcStr, mut inErrorTokens: Arc<metamodelica::List<Token>>) -> Result<(Arc<metamodelica::List<Token>>, i32, i32, i32, i32, i32, i32, i32, i32, i32, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<Token>>)> {
-    let mut resToken: Arc<metamodelica::List<Token>> = metamodelica::nil();
+    let mut resToken: Arc<metamodelica::List<Token>>;
     let mut bkBuffer: i32 = 0;
-    let mut mm_startSt: i32 = 0;
-    let mut mm_currSt: i32 = 0;
-    let mut mm_pos: i32 = 0;
-    let mut mm_sPos: i32 = 0;
-    let mut mm_ePos: i32 = 0;
-    let mut mm_linenr: i32 = 0;
-    let mut lineNrStart: i32 = 0;
-    let mut buffer: i32 = 0;
-    let mut states: Arc<metamodelica::List<i32>> = metamodelica::nil();
+    let mut mm_startSt: i32;
+    let mut mm_currSt: i32;
+    let mut mm_pos: i32;
+    let mut mm_sPos: i32;
+    let mut mm_ePos: i32;
+    let mut mm_linenr: i32;
+    let mut lineNrStart: i32;
+    let mut buffer: i32;
+    let mut states: Arc<metamodelica::List<i32>>;
     let mut errorTokens: Arc<metamodelica::List<Token>> = inErrorTokens.clone();
-    let mut tok: Token = <Token as ::std::default::Default>::default();
-    let mut act: i32 = 0;
-    let mut buffer2: i32 = 0;
-    let mut c: i32 = 0;
-    let mut baseCond: i32 = 0;
+    let mut tok: Token;
+    let mut act: i32;
+    let mut buffer2: i32;
+    let mut c: i32;
+    let mut baseCond: i32;
     mm_startSt = startSt.clone();
     mm_currSt = currSt.clone();
     mm_pos = pos.clone();
@@ -1000,19 +1000,19 @@ fn consume(mut cp: i32, mut tokens: Arc<metamodelica::List<Token>>, mut fileCont
 }
 
 fn findRule(mut fileContents: ArcStr, mut currSt: i32, mut pos: i32, mut sPos: i32, mut mm_ePos: i32, mut linenr: i32, mut inBuffer: i32, mut inBkBuffer: i32, mut inStates: Arc<metamodelica::List<i32>>) -> Result<(i32, i32, i32, i32, i32, i32, i32, Arc<metamodelica::List<i32>>)> {
-    let mut action: i32 = 0;
-    let mut mm_currSt: i32 = 0;
-    let mut mm_pos: i32 = 0;
-    let mut mm_sPos: i32 = 0;
-    let mut mm_linenr: i32 = 0;
-    let mut buffer: i32 = 0;
-    let mut bkBuffer: i32 = 0;
-    let mut states: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut lp: i32 = 0;
-    let mut lp1: i32 = 0;
-    let mut stCmp: i32 = 0;
-    let mut cp: i32 = 0;
-    let mut st: bool = false;
+    let mut action: i32;
+    let mut mm_currSt: i32;
+    let mut mm_pos: i32;
+    let mut mm_sPos: i32;
+    let mut mm_linenr: i32;
+    let mut buffer: i32;
+    let mut bkBuffer: i32;
+    let mut states: Arc<metamodelica::List<i32>>;
+    let mut lp: i32;
+    let mut lp1: i32;
+    let mut stCmp: i32;
+    let mut cp: i32;
+    let mut st: bool;
     mm_currSt = currSt.clone();
     mm_pos = pos.clone();
     mm_sPos = sPos.clone();
@@ -1053,13 +1053,13 @@ fn findRule(mut fileContents: ArcStr, mut currSt: i32, mut pos: i32, mut sPos: i
 }
 
 fn evalState(mut cState: i32, mut c: i32) -> (i32, i32) {
-    let mut new_state: i32 = 0;
-    let mut new_c: i32 = 0;
+    let mut new_state: i32;
+    let mut new_c: i32;
     let mut cState1: i32 = cState.clone();
     let mut c1: i32 = c.clone();
-    let mut val: i32 = 0;
-    let mut val2: i32 = 0;
-    let mut chk: i32 = 0;
+    let mut val: i32;
+    let mut val2: i32;
+    let mut chk: i32;
     chk = ({let __elt = LexTable::yy_base.borrow()[(cState1.clone()-1) as usize].clone(); __elt});
     chk = chk.clone() + c1.clone();
     val = ({let __elt = LexTable::yy_chk.borrow()[(chk.clone()-1) as usize].clone(); __elt});
@@ -1079,8 +1079,8 @@ fn evalState(mut cState: i32, mut c: i32) -> (i32, i32) {
 }
 
 fn checkArray<T: Clone + 'static>(mut arr: metamodelica::Array<T>, mut index: i32, mut info: SourceInfo) -> Result<()> {
-    let mut filename: ArcStr = arcstr::literal!("");
-    let mut lineStart: i32 = 0;
+    let mut filename: ArcStr;
+    let mut lineStart: i32;
     if index.clone() < 1 || index.clone() > metamodelica::arrayLength(arr.clone()) {
         let SourceInfo { fileName: __pa0, lineNumberStart: __pa1, .. } = (info.clone()) else { bail!("pattern mismatch") };
         filename = __pa0.clone();
@@ -1092,8 +1092,8 @@ fn checkArray<T: Clone + 'static>(mut arr: metamodelica::Array<T>, mut index: i3
 }
 
 fn checkArrayModelica(mut arr: metamodelica::Array<i32>, mut index: i32, mut info: SourceInfo) -> Result<()> {
-    let mut filename: ArcStr = arcstr::literal!("");
-    let mut lineStart: i32 = 0;
+    let mut filename: ArcStr;
+    let mut lineStart: i32;
     if index.clone() < 1 || index.clone() > metamodelica::arrayLength(arr.clone()) {
         let SourceInfo { fileName: __pa0, lineNumberStart: __pa1, .. } = (info.clone()) else { bail!("pattern mismatch") };
         filename = __pa0.clone();
@@ -1106,8 +1106,8 @@ fn checkArrayModelica(mut arr: metamodelica::Array<i32>, mut index: i32, mut inf
 
 pub fn modelicaDiffTokenEq(mut ta: Token, mut tb: Token) -> Result<bool> {
     let mut b: bool = false;
-    let mut ida: TokenId = TokenId::_NO_TOKEN;
-    let mut idb: TokenId = TokenId::_NO_TOKEN;
+    let mut ida: TokenId;
+    let mut idb: TokenId;
     let TOKEN { id: __pa0, .. } = (ta.clone()) else { bail!("pattern mismatch") };
     ida = __pa0.clone();
     let TOKEN { id: __pa1, .. } = (tb.clone()) else { bail!("pattern mismatch") };
@@ -1136,8 +1136,8 @@ pub fn modelicaDiffTokenEq(mut ta: Token, mut tb: Token) -> Result<bool> {
 }
 
 pub fn modelicaDiffTokenWhitespace(mut t: Token) -> Result<bool> {
-    let mut b: bool = false;
-    let mut id: TokenId = TokenId::_NO_TOKEN;
+    let mut b: bool;
+    let mut id: TokenId;
     let TOKEN { id: __pa0, .. } = (t.clone()) else { bail!("pattern mismatch") };
     id = __pa0.clone();
     b = id.clone() == TokenId::BLOCK_COMMENT.clone() || id.clone() == TokenId::LINE_COMMENT.clone() || id.clone() == TokenId::WHITESPACE.clone() || id.clone() == TokenId::NEWLINE.clone();
@@ -1147,15 +1147,15 @@ pub fn modelicaDiffTokenWhitespace(mut t: Token) -> Result<bool> {
 pub fn filterModelicaDiff(mut diffs: Arc<metamodelica::List<(DiffAlgorithm::Diff, Arc<metamodelica::List<Token>>)>>, mut removeWhitespace: bool) -> Result<Arc<metamodelica::List<(DiffAlgorithm::Diff, Arc<metamodelica::List<Token>>)>>> {
     use openmodelica_util::DiffAlgorithm::Diff;
     let mut odiffs: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<Token>>)>> = metamodelica::nil();
-    let mut addedLineComments: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut removedLineComments: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut addedBlockComments: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>> = metamodelica::nil();
-    let mut removedBlockComments: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>> = metamodelica::nil();
-    let mut simpleDiff: Arc<metamodelica::List<(Diff, Token)>> = metamodelica::nil();
-    let mut tmp: Arc<metamodelica::List<(Diff, Token)>> = metamodelica::nil();
+    let mut addedLineComments: Arc<metamodelica::List<ArcStr>>;
+    let mut removedLineComments: Arc<metamodelica::List<ArcStr>>;
+    let mut addedBlockComments: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>;
+    let mut removedBlockComments: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>;
+    let mut simpleDiff: Arc<metamodelica::List<(Diff, Token)>>;
+    let mut tmp: Arc<metamodelica::List<(Diff, Token)>>;
     let mut rest: Arc<metamodelica::List<(Diff, Token)>> = metamodelica::nil();
-    let mut lastIsNewline: bool = false;
-    let mut depth: i32 = 0;
+    let mut lastIsNewline: bool;
+    let mut depth: i32;
     let () = (::match_deref::match_deref! { match &(diffs.clone()) {
         Deref @ metamodelica::List::Cons { head: (DiffAlgorithm::Diff::Equal, _), tail: Deref @ metamodelica::List::Nil } => {
             odiffs = diffs.clone();
@@ -1399,7 +1399,7 @@ pub fn filterModelicaDiff(mut diffs: Arc<metamodelica::List<(DiffAlgorithm::Diff
 }
 
 pub fn isBlockComment(mut t: Token) -> bool {
-    let mut b: bool = false;
+    let mut b: bool;
     b = (match t.clone() {
         Token { id: TokenId::BLOCK_COMMENT, .. } => true,
         _ => false,
@@ -1408,7 +1408,7 @@ pub fn isBlockComment(mut t: Token) -> bool {
 }
 
 pub fn isLineComment(mut t: Token) -> bool {
-    let mut b: bool = false;
+    let mut b: bool;
     b = (match t.clone() {
         Token { id: TokenId::LINE_COMMENT, .. } => true,
         _ => false,
@@ -1429,7 +1429,7 @@ pub fn tuple22<A: Clone + 'static, B: Clone + 'static>(mut t: (A, B)) -> B {
 }
 
 pub fn blockCommentCanonical(mut t: Token) -> Result<Arc<metamodelica::List<ArcStr>>> {
-    let mut lines: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+    let mut lines: Arc<metamodelica::List<ArcStr>>;
     lines = ({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut s in (System::strtok((tokenContent(t.clone())?).clone(), (literal!("\n")).clone())).into_iter().cloned() {
@@ -1444,12 +1444,12 @@ pub fn blockCommentCanonical(mut t: Token) -> Result<Arc<metamodelica::List<ArcS
 pub fn deleteWhitespaceFollowedByEqualNonWhitespace(mut inRest: Arc<metamodelica::List<(DiffAlgorithm::Diff, Token)>>) -> Result<(bool, Arc<metamodelica::List<(DiffAlgorithm::Diff, Token)>>)> {
     use openmodelica_util::DiffAlgorithm::Diff;
     let mut b: bool = false;
-    let mut result: Arc<metamodelica::List<(Diff, Token)>> = metamodelica::nil();
-    let mut head: (Diff, Token) = (Diff::Add, <Token as ::std::default::Default>::default());
-    let mut diff: Diff = Diff::Add;
-    let mut t: Token = <Token as ::std::default::Default>::default();
-    let mut id: TokenId = TokenId::_NO_TOKEN;
-    let mut rest: Arc<metamodelica::List<(Diff, Token)>> = metamodelica::nil();
+    let mut result: Arc<metamodelica::List<(Diff, Token)>>;
+    let mut head: (Diff, Token);
+    let mut diff: Diff;
+    let mut t: Token;
+    let mut id: TokenId;
+    let mut rest: Arc<metamodelica::List<(Diff, Token)>>;
     let mut foundWS: bool = false;
     let mut foundNL: bool = false;
     rest = inRest.clone();
@@ -1503,7 +1503,7 @@ pub fn deleteWhitespaceFollowedByEqualNonWhitespace(mut inRest: Arc<metamodelica
 
 pub fn reportErrors(mut tokens: Arc<metamodelica::List<Token>>) -> Result<()> {
     let mut i: i32 = 0;
-    let mut content: ArcStr = arcstr::literal!("");
+    let mut content: ArcStr;
     for mut t in &*tokens.clone() {
         let mut t = t.clone();
         i = i.clone() + 1;

@@ -95,18 +95,18 @@ pub mod AttributeIterator {
     pub type ATTRIBUTE_ITERATOR = AttributeIterator;
 
     pub fn create(mut attribute: (ArcStr, Arc<Binding::NFBinding>)) -> Result<Arc<AttributeIterator>> {
-        let mut iter: Arc<AttributeIterator> = Arc::new(<AttributeIterator as ::std::default::Default>::default());
-        let mut name: ArcStr = arcstr::literal!("");
-        let mut binding: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);
+        let mut iter: Arc<AttributeIterator>;
+        let mut name: ArcStr;
+        let mut binding: Arc<Binding::NFBinding>;
         (name, binding) = attribute.clone();
         iter = Arc::new(AttributeIterator { name: (name.clone()).clone(), confidence: Binding::confidence(binding.clone()), iterator: Mutable::create(ExpressionIterator::fromBinding(binding.clone())?) });
         Ok(iter)
     }
 
     pub fn nextBinding(mut iter: Arc<AttributeIterator>) -> Result<(ArcStr, Arc<Binding::NFBinding>)> {
-        let mut binding: (ArcStr, Arc<Binding::NFBinding>) = (arcstr::literal!(""), Arc::new(Binding::UNBOUND));
-        let mut it: Arc<ExpressionIterator::NFExpressionIterator> = Arc::new(ExpressionIterator::NONE_ITERATOR);
-        let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+        let mut binding: (ArcStr, Arc<Binding::NFBinding>);
+        let mut it: Arc<ExpressionIterator::NFExpressionIterator>;
+        let mut exp: Arc<Expression::NFExpression>;
         (it, exp) = ExpressionIterator::next(Mutable::access(iter.iterator.clone()))?;
         Mutable::update(iter.iterator.clone(), it.clone());
         binding = (iter.name.clone(), Binding::makeFlat(exp.clone(), Variability::PARAMETER.clone(), Binding::Source::BINDING.clone(), iter.confidence.clone()));
@@ -160,25 +160,25 @@ pub fn scalarizeVariables(mut vars: Arc<metamodelica::List<Arc<Variable::NFVaria
 
 pub fn scalarizeVariable(mut var: Arc<Variable::NFVariable>, mut vars: Arc<metamodelica::List<Arc<Variable::NFVariable>>>, mut forceScalarize: bool) -> Result<Arc<metamodelica::List<Arc<Variable::NFVariable>>>> {
     let mut vars: Arc<metamodelica::List<Arc<Variable::NFVariable>>> = vars;
-    let mut name: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    let mut binding: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);
-    let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut elem_ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut vis: Visibility = Visibility::PUBLIC;
-    let mut attr: Arc<Attributes::NFAttributes> = Arc::new(<Attributes::NFAttributes as ::std::default::Default>::default());
-    let mut ty_attr: Arc<metamodelica::List<(ArcStr, Arc<Binding::NFBinding>)>> = metamodelica::nil();
-    let mut cmt: Arc<SCode::Comment> = Arc::new(<SCode::Comment as ::std::default::Default>::default());
-    let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
+    let mut name: Arc<ComponentRef::NFComponentRef>;
+    let mut binding: Arc<Binding::NFBinding>;
+    let mut ty: Arc<Type::NFType>;
+    let mut elem_ty: Arc<Type::NFType>;
+    let mut vis: Visibility;
+    let mut attr: Arc<Attributes::NFAttributes>;
+    let mut ty_attr: Arc<metamodelica::List<(ArcStr, Arc<Binding::NFBinding>)>>;
+    let mut cmt: Arc<SCode::Comment>;
+    let mut info: SourceInfo;
     let mut binding_iter: Arc<ExpressionIterator::NFExpressionIterator> = Arc::new(ExpressionIterator::NONE_ITERATOR);
-    let mut crefs: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-    let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut ty_attr_iters: Arc<metamodelica::List<Arc<AttributeIterator::AttributeIterator>>> = metamodelica::nil();
-    let mut backend_attributes: Arc<metamodelica::List<Arc<BackendInfo::BackendInfo>>> = metamodelica::nil();
-    let mut bind_var: Variability = Variability::CONSTANT;
-    let mut binfo: Arc<BackendInfo::BackendInfo> = Arc::new(<BackendInfo::BackendInfo as ::std::default::Default>::default());
-    let mut bind_src: Binding::Source = Binding::Source::BINDING;
-    let mut has_binding: bool = false;
-    let mut confidence: i32 = 0;
+    let mut crefs: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
+    let mut exp: Arc<Expression::NFExpression>;
+    let mut ty_attr_iters: Arc<metamodelica::List<Arc<AttributeIterator::AttributeIterator>>>;
+    let mut backend_attributes: Arc<metamodelica::List<Arc<BackendInfo::BackendInfo>>>;
+    let mut bind_var: Variability;
+    let mut binfo: Arc<BackendInfo::BackendInfo>;
+    let mut bind_src: Binding::Source;
+    let mut has_binding: bool;
+    let mut confidence: i32;
     assign_field!(var.binding = Binding::mapExp(var.binding.clone(), (std::sync::Arc::new(expandComplexCref_traverser) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?);
     if Type::isArray(var.ty.clone()) && Type::hasKnownSize(var.ty.clone())? {
         if '__try0: {
@@ -256,16 +256,16 @@ pub fn scalarizeVariable(mut var: Arc<Variable::NFVariable>, mut vars: Arc<metam
 
 pub fn scalarizeBackendVariable(mut var: Arc<Variable::NFVariable>, mut indices: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<Arc<Variable::NFVariable>>>> {
     let mut vars: Arc<metamodelica::List<Arc<Variable::NFVariable>>> = metamodelica::nil();
-    let mut crefs: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-    let mut binding_iter: Arc<ExpressionIterator::NFExpressionIterator> = Arc::new(ExpressionIterator::NONE_ITERATOR);
+    let mut crefs: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
+    let mut binding_iter: Arc<ExpressionIterator::NFExpressionIterator>;
     let mut binding: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);
-    let mut bind_var: Variability = Variability::CONSTANT;
-    let mut bind_src: Binding::Source = Binding::Source::BINDING;
+    let mut bind_var: Variability;
+    let mut bind_src: Binding::Source;
     let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut elem_ty: Arc<Type::NFType> = Arc::new(Type::ANY);
+    let mut elem_ty: Arc<Type::NFType>;
     let mut binfo: Arc<BackendInfo::BackendInfo> = Arc::new(<BackendInfo::BackendInfo as ::std::default::Default>::default());
-    let mut backend_attributes: Arc<metamodelica::List<Arc<BackendInfo::BackendInfo>>> = metamodelica::nil();
-    let mut confidence: i32 = 0;
+    let mut backend_attributes: Arc<metamodelica::List<Arc<BackendInfo::BackendInfo>>>;
+    let mut confidence: i32;
     if '__try0: {
         crefs = unwrap_break_err!(ComponentRef::scalarizeAll(ComponentRef::stripSubscriptsAll(var.name.clone()), false), '__try0).reverse();
         elem_ty = Type::arrayElementType(var.ty.clone());
@@ -443,9 +443,9 @@ pub fn scalarizeEquation(mut eq: Arc<Equation::NFEquation>, mut equations: Arc<m
 pub fn scalarizeIfEquation(mut branches: Arc<metamodelica::List<Arc<Equation::Branch::Branch>>>, mut scope: Arc<InstNode::InstNode>, mut source: Arc<DAE::ElementSource>, mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>>) -> Result<Arc<metamodelica::List<Arc<Equation::NFEquation>>>> {
     let mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = equations;
     let mut bl: Arc<metamodelica::List<Arc<Equation::Branch::Branch>>> = metamodelica::nil();
-    let mut cond: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut body: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = metamodelica::nil();
-    let mut var: Variability = Variability::CONSTANT;
+    let mut cond: Arc<Expression::NFExpression>;
+    let mut body: Arc<metamodelica::List<Arc<Equation::NFEquation>>>;
+    let mut var: Variability;
     for mut b in &*branches.clone() {
         let mut b = b.clone();
         let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(b.clone()) {
@@ -469,9 +469,9 @@ pub fn scalarizeIfEquation(mut branches: Arc<metamodelica::List<Arc<Equation::Br
 pub fn scalarizeWhenEquation(mut branches: Arc<metamodelica::List<Arc<Equation::Branch::Branch>>>, mut scope: Arc<InstNode::InstNode>, mut source: Arc<DAE::ElementSource>, mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>>) -> Result<Arc<metamodelica::List<Arc<Equation::NFEquation>>>> {
     let mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = equations;
     let mut bl: Arc<metamodelica::List<Arc<Equation::Branch::Branch>>> = metamodelica::nil();
-    let mut cond: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut body: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = metamodelica::nil();
-    let mut var: Variability = Variability::CONSTANT;
+    let mut cond: Arc<Expression::NFExpression>;
+    let mut body: Arc<metamodelica::List<Arc<Equation::NFEquation>>>;
+    let mut var: Variability;
     for mut b in &*branches.clone() {
         let mut b = b.clone();
         let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(b.clone()) {
@@ -523,8 +523,8 @@ pub fn scalarizeStatement(mut stmt: Arc<Statement::NFStatement>, mut statements:
 pub fn scalarizeIfStatement(mut branches: Arc<metamodelica::List<(Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<Statement::NFStatement>>>)>>, mut source: Arc<DAE::ElementSource>, mut statements: Arc<metamodelica::List<Arc<Statement::NFStatement>>>) -> Result<Arc<metamodelica::List<Arc<Statement::NFStatement>>>> {
     let mut statements: Arc<metamodelica::List<Arc<Statement::NFStatement>>> = statements;
     let mut bl: Arc<metamodelica::List<(Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<Statement::NFStatement>>>)>> = metamodelica::nil();
-    let mut cond: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut body: Arc<metamodelica::List<Arc<Statement::NFStatement>>> = metamodelica::nil();
+    let mut cond: Arc<Expression::NFExpression>;
+    let mut body: Arc<metamodelica::List<Arc<Statement::NFStatement>>>;
     for mut b in &*branches.clone() {
         let mut b = b.clone();
         (cond, body) = b.clone();
@@ -542,8 +542,8 @@ pub fn scalarizeIfStatement(mut branches: Arc<metamodelica::List<(Arc<Expression
 pub fn scalarizeWhenStatement(mut branches: Arc<metamodelica::List<(Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<Statement::NFStatement>>>)>>, mut source: Arc<DAE::ElementSource>, mut statements: Arc<metamodelica::List<Arc<Statement::NFStatement>>>) -> Result<Arc<metamodelica::List<Arc<Statement::NFStatement>>>> {
     let mut statements: Arc<metamodelica::List<Arc<Statement::NFStatement>>> = statements;
     let mut bl: Arc<metamodelica::List<(Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<Statement::NFStatement>>>)>> = metamodelica::nil();
-    let mut cond: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut body: Arc<metamodelica::List<Arc<Statement::NFStatement>>> = metamodelica::nil();
+    let mut cond: Arc<Expression::NFExpression>;
+    let mut body: Arc<metamodelica::List<Arc<Statement::NFStatement>>>;
     for mut b in &*branches.clone() {
         let mut b = b.clone();
         (cond, body) = b.clone();
@@ -558,7 +558,7 @@ pub fn scalarizeWhenStatement(mut branches: Arc<metamodelica::List<(Arc<Expressi
 }
 
 pub fn variableHasForcedScalarAttribute(mut var: Arc<Variable::NFVariable>) -> bool {
-    let mut res: bool = false;
+    let mut res: bool;
     for mut attribute in &*list![(literal!("min")).clone(), (literal!("max")).clone(), (literal!("nominal")).clone()] {
         let mut attribute = attribute.clone();
         if Binding::isBound(Variable::lookupTypeAttribute((attribute.clone()).clone(), var.clone())) {

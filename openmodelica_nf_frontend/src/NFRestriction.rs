@@ -141,7 +141,7 @@ impl Default for NFRestriction {
 }
 pub use self::NFRestriction::{BLOCK,CLASS,CLOCK,CONNECTOR,ENUMERATION,EXTERNAL_OBJECT,FUNCTION,MODEL,PACKAGE,OPERATOR,RECORD,RECORD_CONSTRUCTOR,TYPE,UNKNOWN};
 pub fn fromSCode(mut sres: SCode::Restriction) -> Arc<NFRestriction> {
-    let mut res: Arc<NFRestriction> = Arc::new(NFRestriction::BLOCK);
+    let mut res: Arc<NFRestriction>;
     res = (match sres.clone() {
         SCode::Restriction::R_BLOCK { .. } => crate::NFRestriction::interned_BLOCK(),
         SCode::Restriction::R_CLASS { .. } => crate::NFRestriction::interned_CLASS(),
@@ -160,7 +160,7 @@ pub fn fromSCode(mut sres: SCode::Restriction) -> Arc<NFRestriction> {
 }
 
 pub fn toDAE(mut res: Arc<NFRestriction>, mut path: Arc<Absyn::Path>) -> ClassInf::State {
-    let mut state: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
+    let mut state: ClassInf::State;
     state = (::match_deref::match_deref! { match &(res.clone()) {
         Deref @ BLOCK { .. } => ClassInf::State::BLOCK { path: path.clone() },
         Deref @ CLOCK { .. } => ClassInf::State::TYPE_CLOCK { path: path.clone() },
@@ -181,7 +181,7 @@ pub fn toDAE(mut res: Arc<NFRestriction>, mut path: Arc<Absyn::Path>) -> ClassIn
 }
 
 pub fn isConnector(mut res: Arc<NFRestriction>) -> bool {
-    let mut isConnector: bool = false;
+    let mut isConnector: bool;
     isConnector = (::match_deref::match_deref! { match &(res.clone()) {
         Deref @ CONNECTOR { .. } => true,
         _ => false,
@@ -191,7 +191,7 @@ pub fn isConnector(mut res: Arc<NFRestriction>) -> bool {
 }
 
 pub fn isExpandableConnector(mut res: Arc<NFRestriction>) -> bool {
-    let mut isConnector: bool = false;
+    let mut isConnector: bool;
     isConnector = (::match_deref::match_deref! { match &(res.clone()) {
         Deref @ CONNECTOR { .. } => var_field!((*res).isExpandable, NFRestriction::CONNECTOR).clone(),
         _ => false,
@@ -201,7 +201,7 @@ pub fn isExpandableConnector(mut res: Arc<NFRestriction>) -> bool {
 }
 
 pub fn isNonexpandableConnector(mut res: Arc<NFRestriction>) -> bool {
-    let mut isNonexpandable: bool = false;
+    let mut isNonexpandable: bool;
     isNonexpandable = (::match_deref::match_deref! { match &(res.clone()) {
         Deref @ CONNECTOR { .. } => !(var_field!((*res).isExpandable, NFRestriction::CONNECTOR).clone()),
         _ => false,
@@ -211,7 +211,7 @@ pub fn isNonexpandableConnector(mut res: Arc<NFRestriction>) -> bool {
 }
 
 pub fn isExternalObject(mut res: Arc<NFRestriction>) -> bool {
-    let mut isExternalObject: bool = false;
+    let mut isExternalObject: bool;
     isExternalObject = (::match_deref::match_deref! { match &(res.clone()) {
         Deref @ EXTERNAL_OBJECT { .. } => true,
         _ => false,
@@ -221,7 +221,7 @@ pub fn isExternalObject(mut res: Arc<NFRestriction>) -> bool {
 }
 
 pub fn isFunction(mut res: Arc<NFRestriction>) -> bool {
-    let mut isFunction: bool = false;
+    let mut isFunction: bool;
     isFunction = (::match_deref::match_deref! { match &(res.clone()) {
         Deref @ FUNCTION { .. } => true,
         _ => false,
@@ -231,7 +231,7 @@ pub fn isFunction(mut res: Arc<NFRestriction>) -> bool {
 }
 
 pub fn isRecordConstructor(mut res: Arc<NFRestriction>) -> bool {
-    let mut isConstructor: bool = false;
+    let mut isConstructor: bool;
     isConstructor = (::match_deref::match_deref! { match &(res.clone()) {
         Deref @ RECORD_CONSTRUCTOR { .. } => true,
         _ => false,
@@ -241,7 +241,7 @@ pub fn isRecordConstructor(mut res: Arc<NFRestriction>) -> bool {
 }
 
 pub fn isRecord(mut res: Arc<NFRestriction>) -> bool {
-    let mut isRecord: bool = false;
+    let mut isRecord: bool;
     isRecord = (::match_deref::match_deref! { match &(res.clone()) {
         Deref @ RECORD { .. } => true,
         _ => false,
@@ -251,7 +251,7 @@ pub fn isRecord(mut res: Arc<NFRestriction>) -> bool {
 }
 
 pub fn isExternalRecord(mut res: Arc<NFRestriction>) -> bool {
-    let mut isExtRecord: bool = false;
+    let mut isExtRecord: bool;
     isExtRecord = (::match_deref::match_deref! { match &(res.clone()) {
         Deref @ RECORD { .. } => var_field!((*res).usedExternally, NFRestriction::RECORD).clone(),
         _ => false,
@@ -274,7 +274,7 @@ pub fn setExternalRecord(mut res: Arc<NFRestriction>) -> Arc<NFRestriction> {
 }
 
 pub fn isOperatorRecord(mut res: Arc<NFRestriction>) -> bool {
-    let mut isOpRecord: bool = false;
+    let mut isOpRecord: bool;
     isOpRecord = (::match_deref::match_deref! { match &(res.clone()) {
         Deref @ RECORD { .. } => var_field!((*res).isOperator, NFRestriction::RECORD).clone(),
         _ => false,
@@ -284,7 +284,7 @@ pub fn isOperatorRecord(mut res: Arc<NFRestriction>) -> bool {
 }
 
 pub fn isOperator(mut res: Arc<NFRestriction>) -> bool {
-    let mut isOperator: bool = false;
+    let mut isOperator: bool;
     isOperator = (::match_deref::match_deref! { match &(res.clone()) {
         Deref @ OPERATOR { .. } => true,
         _ => false,
@@ -294,7 +294,7 @@ pub fn isOperator(mut res: Arc<NFRestriction>) -> bool {
 }
 
 pub fn isType(mut res: Arc<NFRestriction>) -> bool {
-    let mut isType: bool = false;
+    let mut isType: bool;
     isType = (::match_deref::match_deref! { match &(res.clone()) {
         Deref @ TYPE { .. } => true,
         _ => false,
@@ -304,7 +304,7 @@ pub fn isType(mut res: Arc<NFRestriction>) -> bool {
 }
 
 pub fn isClock(mut res: Arc<NFRestriction>) -> bool {
-    let mut isClock: bool = false;
+    let mut isClock: bool;
     isClock = (::match_deref::match_deref! { match &(res.clone()) {
         Deref @ CLOCK { .. } => true,
         _ => false,
@@ -314,7 +314,7 @@ pub fn isClock(mut res: Arc<NFRestriction>) -> bool {
 }
 
 pub fn isModel(mut res: Arc<NFRestriction>) -> bool {
-    let mut isModel: bool = false;
+    let mut isModel: bool;
     isModel = (::match_deref::match_deref! { match &(res.clone()) {
         Deref @ MODEL { .. } => true,
         _ => false,
@@ -324,7 +324,7 @@ pub fn isModel(mut res: Arc<NFRestriction>) -> bool {
 }
 
 pub fn toString(mut res: Arc<NFRestriction>) -> ArcStr {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     r#str = ((::match_deref::match_deref! { match &(res.clone()) {
         Deref @ BLOCK { .. } => literal!("block"),
         Deref @ CLASS { .. } => literal!("class"),
@@ -346,7 +346,7 @@ pub fn toString(mut res: Arc<NFRestriction>) -> ArcStr {
 }
 
 pub fn assertNoEquations(mut equations: Arc<metamodelica::List<Arc<SCode::Equation>>>, mut initialEquations: Arc<metamodelica::List<Arc<SCode::Equation>>>, mut res: Arc<NFRestriction>, mut onlyDeprecated: bool) -> Result<()> {
-    let mut eq: Arc<SCode::Equation> = Arc::new(<SCode::Equation as ::std::default::Default>::default());
+    let mut eq: Arc<SCode::Equation>;
     if equations.clone().is_empty() && initialEquations.clone().is_empty() {
         return Ok(());
     }
@@ -362,8 +362,8 @@ pub fn assertNoEquations(mut equations: Arc<metamodelica::List<Arc<SCode::Equati
 
 pub fn assertNoAlgorithms(mut algorithms: Arc<metamodelica::List<Arc<SCode::AlgorithmSection>>>, mut initialAlgorithms: Arc<metamodelica::List<Arc<SCode::AlgorithmSection>>>, mut res: Arc<NFRestriction>, mut onlyDeprecated: bool) -> Result<()> {
     let mut alg_opt: Option<Arc<SCode::AlgorithmSection>> = None;
-    let mut alg: Arc<SCode::AlgorithmSection> = Arc::new(<SCode::AlgorithmSection as ::std::default::Default>::default());
-    let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
+    let mut alg: Arc<SCode::AlgorithmSection>;
+    let mut info: SourceInfo;
     alg_opt = List::findOption(algorithms.clone(), (std::sync::Arc::new(fnptr!(SCodeUtil::isNonEmptyAlgorithm, Arc<SCode::AlgorithmSection>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::AlgorithmSection>) -> Result<bool> + 'static>))?;
     if isNone(alg_opt.clone()) {
         alg_opt = List::findOption(initialAlgorithms.clone(), (std::sync::Arc::new(fnptr!(SCodeUtil::isNonEmptyAlgorithm, Arc<SCode::AlgorithmSection>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::AlgorithmSection>) -> Result<bool> + 'static>))?;
@@ -443,7 +443,7 @@ pub fn assertOnlyFunctions(mut elements: Arc<metamodelica::List<Arc<SCode::Eleme
 }
 
 pub fn checkClass(mut node: Arc<InstNode::InstNode>, mut restriction: Arc<NFRestriction>, mut context: i32) -> Result<()> {
-    let mut cdef: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
+    let mut cdef: Arc<SCode::ClassDef>;
     if InstContext::inRelaxed(context.clone()) {
         return Ok(());
     }

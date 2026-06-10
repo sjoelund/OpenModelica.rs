@@ -107,7 +107,7 @@ fn push_block(acc: Arc<List<Real>>, id: f64, time: f64, count: f64) -> Arc<List<
 pub fn readCalcTimesFromXml(fileName: ArcStr) -> Result<Arc<List<Real>>> {
     let Ok(content) = std::fs::read_to_string(fileName.as_str()) else {
         // Mirrors the printf in HpcOmBenchmarkExtImpl__readCalcTimesFromXml.
-        print!("File '{}' does not exist\n", fileName);
+        println!("File '{}' does not exist", fileName);
         bail!("File '{}' does not exist", fileName);
     };
     let mut res: Arc<List<Real>> = metamodelica::nil();
@@ -151,7 +151,7 @@ pub fn readCalcTimesFromXml(fileName: ArcStr) -> Result<Arc<List<Real>>> {
 pub fn readCalcTimesFromJson(fileName: ArcStr) -> Result<Arc<List<Real>>> {
     let Ok(content) = std::fs::read(fileName.as_str()) else {
         // Mirrors the printf in HpcOmBenchmarkExtImpl__readCalcTimesFromJson.
-        print!("File '{}' does not exist\n", fileName);
+        println!("File '{}' does not exist", fileName);
         bail!("File '{}' does not exist", fileName);
     };
     let mut res: Arc<List<Real>> = metamodelica::nil();

@@ -153,7 +153,7 @@ pub fn applyModule(mut partitions: Arc<metamodelica::List<Arc<Partition::Partiti
     let mut new_partitions: Arc<metamodelica::List<Arc<Partition::Partition>>> = metamodelica::nil();
     let mut varData: Arc<VarData::VarData> = varData;
     let mut eqData: Arc<EqData::EqData> = eqData;
-    let mut new_partition: Arc<Partition::Partition> = Arc::new(<Partition::Partition as ::std::default::Default>::default());
+    let mut new_partition: Arc<Partition::Partition>;
     let mut violated: bool = false;
     for mut partition in &*partitions.clone() {
         let mut partition = partition.clone();
@@ -208,10 +208,10 @@ pub fn checkSystemVariabilities(mut partition: Arc<Partition::Partition>) -> Res
 }
 
 pub fn simple(mut vars: Arc<VariablePointers::VariablePointers>, mut eqns: Arc<EquationPointers::EquationPointers>, mut kind: BPartition::Kind, mut st: Adjacency::MatrixStrictness, mut iter: Arc<Iterator::Iterator>) -> Result<(Arc<Matching::NBMatching>, Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>>)> {
-    let mut matching: Arc<Matching::NBMatching> = Arc::new(<Matching::NBMatching as ::std::default::Default>::default());
-    let mut comps: Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>> = metamodelica::nil();
-    let mut full: Arc<Adjacency::Matrix::Matrix> = Arc::new(<Adjacency::Matrix::Matrix as ::std::default::Default>::default());
-    let mut adj: Arc<Adjacency::Matrix::Matrix> = Arc::new(<Adjacency::Matrix::Matrix as ::std::default::Default>::default());
+    let mut matching: Arc<Matching::NBMatching>;
+    let mut comps: Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>>;
+    let mut full: Arc<Adjacency::Matrix::Matrix>;
+    let mut adj: Arc<Adjacency::Matrix::Matrix>;
     full = Adjacency::Matrix::createFull(vars.clone(), eqns.clone(), kind.clone())?;
     adj = Adjacency::Matrix::fullToFinal(full.clone(), vars.map.clone(), eqns.map.clone(), eqns.clone(), st.clone(), iter.clone())?;
     matching = Matching::regular(Matching::EMPTY_MATCHING().clone(), adj.clone(), false, false, true)?;

@@ -69,17 +69,17 @@ impl Default for SBPWAtomicLinearMap {
 pub type PW_ATOMIC_LINEAR_MAP = SBPWAtomicLinearMap;
 
 pub fn new(mut dom: Arc<SBAtomicSet::SBAtomicSet>, mut lmap: Arc<SBLinearMap::SBLinearMap>) -> Arc<SBPWAtomicLinearMap> {
-    let mut map: Arc<SBPWAtomicLinearMap> = Arc::new(<SBPWAtomicLinearMap as ::std::default::Default>::default());
+    let mut map: Arc<SBPWAtomicLinearMap>;
     let mut compatible: bool = true;
-    let mut ints: metamodelica::Array<Arc<SBInterval::SBInterval>> = Default::default();
-    let mut g: metamodelica::Array<metamodelica::Real> = Default::default();
-    let mut o: metamodelica::Array<metamodelica::Real> = Default::default();
-    let mut i: Arc<SBInterval::SBInterval> = Arc::new(<SBInterval::SBInterval as ::std::default::Default>::default());
-    let mut gain: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut offset: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut lo: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut step: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut hi: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+    let mut ints: metamodelica::Array<Arc<SBInterval::SBInterval>>;
+    let mut g: metamodelica::Array<metamodelica::Real>;
+    let mut o: metamodelica::Array<metamodelica::Real>;
+    let mut i: Arc<SBInterval::SBInterval>;
+    let mut gain: metamodelica::Real;
+    let mut offset: metamodelica::Real;
+    let mut lo: metamodelica::Real;
+    let mut step: metamodelica::Real;
+    let mut hi: metamodelica::Real;
     if SBAtomicSet::ndim(dom.clone()) != SBLinearMap::ndim(lmap.clone()) {
         map = newEmpty();
         return map.clone();
@@ -118,7 +118,7 @@ pub fn new(mut dom: Arc<SBAtomicSet::SBAtomicSet>, mut lmap: Arc<SBLinearMap::SB
 }
 
 pub fn newEmpty() -> Arc<SBPWAtomicLinearMap> {
-    let mut map: Arc<SBPWAtomicLinearMap> = Arc::new(<SBPWAtomicLinearMap as ::std::default::Default>::default());
+    let mut map: Arc<SBPWAtomicLinearMap>;
     map = Arc::new(SBPWAtomicLinearMap { dom: SBAtomicSet::newEmpty(), lmap: SBLinearMap::newEmpty() });
     map
 }
@@ -134,33 +134,33 @@ pub fn lmap(mut map: Arc<SBPWAtomicLinearMap>) -> Arc<SBLinearMap::SBLinearMap> 
 }
 
 pub fn isEmpty(mut map: Arc<SBPWAtomicLinearMap>) -> bool {
-    let mut empty: bool = false;
+    let mut empty: bool;
     empty = SBAtomicSet::isEmpty(map.dom.clone()) && SBLinearMap::isEmpty(map.lmap.clone());
     empty
 }
 
 pub fn image(mut map: Arc<SBPWAtomicLinearMap>, mut set: Arc<SBAtomicSet::SBAtomicSet>) -> Result<Arc<SBAtomicSet::SBAtomicSet>> {
     fn crop_inf(mut v: metamodelica::Real) -> i32 {
-        let mut i: i32 = 0;
+        let mut i: i32;
         i = if (v.clone() >= intReal(System::intMaxLit())) {System::intMaxLit()} else {((v.clone()).0.floor() as i32)};
         i
     }
 
-    let mut outSet: Arc<SBAtomicSet::SBAtomicSet> = Arc::new(<SBAtomicSet::SBAtomicSet as ::std::default::Default>::default());
-    let mut inters: metamodelica::Array<Arc<SBInterval::SBInterval>> = Default::default();
-    let mut res: metamodelica::Array<Arc<SBInterval::SBInterval>> = Default::default();
-    let mut gains: metamodelica::Array<metamodelica::Real> = Default::default();
-    let mut offsets: metamodelica::Array<metamodelica::Real> = Default::default();
-    let mut set_int: Arc<SBAtomicSet::SBAtomicSet> = Arc::new(<SBAtomicSet::SBAtomicSet as ::std::default::Default>::default());
-    let mut int: Arc<SBInterval::SBInterval> = Arc::new(<SBInterval::SBInterval as ::std::default::Default>::default());
-    let mut gain: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut offset: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut new_lo: i32 = 0;
-    let mut new_step: i32 = 0;
-    let mut new_hi: i32 = 0;
-    let mut tmp_lo: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut tmp_step: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut tmp_hi: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+    let mut outSet: Arc<SBAtomicSet::SBAtomicSet>;
+    let mut inters: metamodelica::Array<Arc<SBInterval::SBInterval>>;
+    let mut res: metamodelica::Array<Arc<SBInterval::SBInterval>>;
+    let mut gains: metamodelica::Array<metamodelica::Real>;
+    let mut offsets: metamodelica::Array<metamodelica::Real>;
+    let mut set_int: Arc<SBAtomicSet::SBAtomicSet>;
+    let mut int: Arc<SBInterval::SBInterval>;
+    let mut gain: metamodelica::Real;
+    let mut offset: metamodelica::Real;
+    let mut new_lo: i32;
+    let mut new_step: i32;
+    let mut new_hi: i32;
+    let mut tmp_lo: metamodelica::Real;
+    let mut tmp_step: metamodelica::Real;
+    let mut tmp_hi: metamodelica::Real;
     if SBAtomicSet::isEmpty(map.dom.clone()) {
         outSet = SBAtomicSet::newEmpty();
         return Ok(outSet.clone());
@@ -197,11 +197,11 @@ pub fn image(mut map: Arc<SBPWAtomicLinearMap>, mut set: Arc<SBAtomicSet::SBAtom
 }
 
 pub fn preImage(mut map: Arc<SBPWAtomicLinearMap>, mut set: Arc<SBAtomicSet::SBAtomicSet>) -> Result<Arc<SBAtomicSet::SBAtomicSet>> {
-    let mut outSet: Arc<SBAtomicSet::SBAtomicSet> = Arc::new(<SBAtomicSet::SBAtomicSet as ::std::default::Default>::default());
-    let mut full_im: Arc<SBAtomicSet::SBAtomicSet> = Arc::new(<SBAtomicSet::SBAtomicSet as ::std::default::Default>::default());
-    let mut actual_im: Arc<SBAtomicSet::SBAtomicSet> = Arc::new(<SBAtomicSet::SBAtomicSet as ::std::default::Default>::default());
-    let mut aux: Arc<SBAtomicSet::SBAtomicSet> = Arc::new(<SBAtomicSet::SBAtomicSet as ::std::default::Default>::default());
-    let mut inv: Arc<SBPWAtomicLinearMap> = Arc::new(<SBPWAtomicLinearMap as ::std::default::Default>::default());
+    let mut outSet: Arc<SBAtomicSet::SBAtomicSet>;
+    let mut full_im: Arc<SBAtomicSet::SBAtomicSet>;
+    let mut actual_im: Arc<SBAtomicSet::SBAtomicSet>;
+    let mut aux: Arc<SBAtomicSet::SBAtomicSet>;
+    let mut inv: Arc<SBPWAtomicLinearMap>;
     full_im = image(map.clone(), map.dom.clone())?;
     actual_im = SBAtomicSet::intersection(full_im.clone(), set.clone())?;
     inv = new(actual_im.clone(), SBLinearMap::inverse(map.lmap.clone()));
@@ -211,17 +211,17 @@ pub fn preImage(mut map: Arc<SBPWAtomicLinearMap>, mut set: Arc<SBAtomicSet::SBA
 }
 
 pub fn isEqual(mut map1: Arc<SBPWAtomicLinearMap>, mut map2: Arc<SBPWAtomicLinearMap>) -> Result<bool> {
-    let mut equal: bool = false;
+    let mut equal: bool;
     equal = SBAtomicSet::isEqual(map1.dom.clone(), map2.dom.clone())? && SBLinearMap::isEqual(map1.lmap.clone(), map2.lmap.clone())?;
     Ok(equal)
 }
 
 pub fn toString(mut map: Arc<SBPWAtomicLinearMap>) -> ArcStr {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     let mut strl: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut g: metamodelica::Array<metamodelica::Real> = Default::default();
-    let mut o: metamodelica::Array<metamodelica::Real> = Default::default();
-    let mut ints: metamodelica::Array<Arc<SBInterval::SBInterval>> = Default::default();
+    let mut g: metamodelica::Array<metamodelica::Real>;
+    let mut o: metamodelica::Array<metamodelica::Real>;
+    let mut ints: metamodelica::Array<Arc<SBInterval::SBInterval>>;
     g = SBLinearMap::gain(map.lmap.clone());
     o = SBLinearMap::offset(map.lmap.clone());
     ints = SBMultiInterval::intervals(SBAtomicSet::aset(map.dom.clone()));

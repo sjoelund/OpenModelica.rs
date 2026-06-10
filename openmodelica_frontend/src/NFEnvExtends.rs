@@ -103,15 +103,15 @@ impl Default for ExtendsWrapper {
 pub use self::ExtendsWrapper::{UNQUALIFIED_EXTENDS,QUALIFIED_EXTENDS,NO_EXTENDS};
 
 pub fn update(mut inEnv: Env) -> Result<Env> {
-    let mut outEnv: Env = metamodelica::nil();
-    let mut env: Env = metamodelica::nil();
+    let mut outEnv: Env;
+    let mut env: Env;
     env = qualify(inEnv.clone())?;
     outEnv = update2(env.clone())?;
     Ok(outEnv)
 }
 
 pub fn qualify(mut inEnv: Env) -> Result<Env> {
-    let mut outEnv: Env = metamodelica::nil();
+    let mut outEnv: Env;
     outEnv = 'mc: {
         let __mc_input = inEnv.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -142,9 +142,9 @@ pub fn qualify(mut inEnv: Env) -> Result<Env> {
 }
 
 fn qualify2(mut inEnv: Env, mut inClassType: ClassType, mut inExtendsTable: ExtendsTableArray) -> Result<Env> {
-    let mut outEnv: Env = metamodelica::nil();
-    let mut env: Env = metamodelica::nil();
-    let mut tree: Arc<NFSCodeEnv::EnvTree::Tree> = Arc::new(NFSCodeEnv::EnvTree::Tree::EMPTY);
+    let mut outEnv: Env;
+    let mut env: Env;
+    let mut tree: Arc<NFSCodeEnv::EnvTree::Tree>;
     env = qualifyLocalScope(inEnv.clone(), inClassType.clone(), inExtendsTable.clone())?;
     let __pa0 = ::match_deref::match_deref! { match &(env.clone()) {
         Deref @ metamodelica::List::Cons { head: Deref @ NFSCodeEnv::Frame { clsAndVars: __pa0, .. }, tail: _ } => __pa0.clone(),
@@ -179,10 +179,10 @@ fn qualify3(mut name: ArcStr, mut item: Item, mut inEnv: Env, mut inExtendsTable
 }
 
 fn qualifyLocalScope(mut inEnv: Env, mut inClassType: ClassType, mut inExtendsTable: ExtendsTableArray) -> Result<Env> {
-    let mut outEnv: Env = metamodelica::nil();
-    let mut exts: Arc<metamodelica::List<Arc<NFSCodeEnv::Extends>>> = metamodelica::nil();
-    let mut re: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
-    let mut cei: Option<Arc<SCode::Element>> = None;
+    let mut outEnv: Env;
+    let mut exts: Arc<metamodelica::List<Arc<NFSCodeEnv::Extends>>>;
+    let mut re: Arc<metamodelica::List<Arc<SCode::Element>>>;
+    let mut cei: Option<Arc<SCode::Element>>;
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(NFSCodeEnv::getEnvExtendsTable(inEnv.clone())?) {
         Deref @ NFSCodeEnv::ExtendsTable { baseClasses: __pa0, redeclaredElements: __pa1, classExtendsInfo: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
@@ -196,7 +196,7 @@ fn qualifyLocalScope(mut inEnv: Env, mut inClassType: ClassType, mut inExtendsTa
 }
 
 fn qualifyExtendsList(mut inExtends: Arc<metamodelica::List<Arc<NFSCodeEnv::Extends>>>, mut inClassType: ClassType, mut inEnv: Env, mut inExtendsTable: ExtendsTableArray) -> Result<Arc<metamodelica::List<Arc<NFSCodeEnv::Extends>>>> {
-    let mut outExtends: Arc<metamodelica::List<Arc<NFSCodeEnv::Extends>>> = metamodelica::nil();
+    let mut outExtends: Arc<metamodelica::List<Arc<NFSCodeEnv::Extends>>>;
     outExtends = (::match_deref::match_deref! { match &((inExtends.clone(), inClassType.clone())) {
         (Deref @ metamodelica::List::Cons { head: ext, tail: extl }, NFSCodeEnv::ClassType::CLASS_EXTENDS { .. }) => {
             let mut extl = (*extl).clone();
@@ -214,7 +214,7 @@ fn qualifyExtendsList(mut inExtends: Arc<metamodelica::List<Arc<NFSCodeEnv::Exte
 }
 
 fn qualifyExtends(mut inExtends: Extends, mut inEnv: Env, mut inExtendsTable: ExtendsTableArray) -> Result<Extends> {
-    let mut outExtends: Extends = Arc::new(<NFSCodeEnv::Extends as ::std::default::Default>::default());
+    let mut outExtends: Extends;
     outExtends = 'mc: {
         let __mc_input = inExtends.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -256,7 +256,7 @@ fn qualifyExtends(mut inExtends: Extends, mut inEnv: Env, mut inExtendsTable: Ex
 }
 
 fn qualifyExtends2(mut inExtends: Extends, mut inEnv: Env, mut inExtendsTable: ExtendsTableArray) -> Result<Option<Arc<NFSCodeEnv::Extends>>> {
-    let mut outExtends: Option<Arc<NFSCodeEnv::Extends>> = None;
+    let mut outExtends: Option<Arc<NFSCodeEnv::Extends>>;
     outExtends = 'mc: {
         let __mc_input = inExtends.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -322,7 +322,7 @@ fn qualifyExtends3(mut inBaseClass: Arc<Absyn::Path>, mut inEnv: Env, mut inExte
 }
 
 fn makeExtendsPath(mut inFirstPath: Option<Arc<Absyn::Path>>, mut inRestPath: Option<Arc<Absyn::Path>>, mut inEnv: Env, mut inErrorPath: Option<Arc<Absyn::Path>>, mut inIsFirst: bool) -> Result<Arc<Absyn::Path>> {
-    let mut outPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+    let mut outPath: Arc<Absyn::Path>;
     outPath = (::match_deref::match_deref! { match &((inFirstPath.clone(), inRestPath.clone(), inErrorPath.clone(), inIsFirst.clone())) {
         (_, _, Some(path), _) => {
             path.clone()
@@ -349,20 +349,20 @@ fn makeExtendsPath(mut inFirstPath: Option<Arc<Absyn::Path>>, mut inRestPath: Op
 }
 
 fn qualifyExtendsPart(mut inName: ArcStr, mut inEnv: Env, mut inExtendsTable: ExtendsTableArray, mut inIsFirst: bool, mut inFullPath: Arc<Absyn::Path>, mut inInfo: SourceInfo) -> Result<(Option<Arc<Absyn::Path>>, Env, Option<Arc<Absyn::Path>>)> {
-    let mut outPath: Option<Arc<Absyn::Path>> = None;
-    let mut outEnv: Env = metamodelica::nil();
-    let mut outErrorPath: Option<Arc<Absyn::Path>> = None;
-    let mut oitem: Option<Arc<NFSCodeEnv::Item>> = None;
-    let mut oenv: Option<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>> = None;
-    let mut fe: bool = false;
+    let mut outPath: Option<Arc<Absyn::Path>>;
+    let mut outEnv: Env;
+    let mut outErrorPath: Option<Arc<Absyn::Path>>;
+    let mut oitem: Option<Arc<NFSCodeEnv::Item>>;
+    let mut oenv: Option<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>>;
+    let mut fe: bool;
     (oitem, outPath, oenv, fe) = lookupSimpleName((inName.clone()).clone(), inEnv.clone(), inExtendsTable.clone())?;
     (outEnv, outErrorPath) = qualifyExtendsPart2(Arc::new(Absyn::Path::IDENT { name: (inName.clone()).clone() }), oitem.clone(), oenv.clone(), inEnv.clone(), inIsFirst.clone(), fe.clone(), inFullPath.clone())?;
     Ok((outPath, outEnv, outErrorPath))
 }
 
 fn qualifyExtendsPart2(mut inPartName: Arc<Absyn::Path>, mut inItem: Option<Arc<NFSCodeEnv::Item>>, mut inFoundEnv: Option<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>>, mut inOriginEnv: Env, mut inIsFirst: bool, mut inFromExtends: bool, mut inFullPath: Arc<Absyn::Path>) -> Result<(Env, Option<Arc<Absyn::Path>>)> {
-    let mut outEnv: Env = metamodelica::nil();
-    let mut outErrorPath: Option<Arc<Absyn::Path>> = None;
+    let mut outEnv: Env;
+    let mut outErrorPath: Option<Arc<Absyn::Path>>;
     (outEnv, outErrorPath) = (::match_deref::match_deref! { match &((inItem.clone(), inFoundEnv.clone())) {
         (Some(item), Some(env)) => {
             let mut ep: Option<Arc<Absyn::Path>> = None;
@@ -380,7 +380,7 @@ fn qualifyExtendsPart2(mut inPartName: Arc<Absyn::Path>, mut inItem: Option<Arc<
 }
 
 fn makeExtendsError(mut inBaseClass: Arc<Absyn::Path>, mut inPart: Arc<Absyn::Path>, mut inError: ArcStr) -> Result<Option<Arc<Absyn::Path>>> {
-    let mut outError: Option<Arc<Absyn::Path>> = None;
+    let mut outError: Option<Arc<Absyn::Path>>;
     outError = (match inError.clone() {
         _ => {
             let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
@@ -393,7 +393,7 @@ fn makeExtendsError(mut inBaseClass: Arc<Absyn::Path>, mut inPart: Arc<Absyn::Pa
 }
 
 fn checkExtendsPart(mut inIsFirst: bool, mut inFromExtends: bool, mut inPartName: Arc<Absyn::Path>, mut inItem: Item, mut inBaseClass: Arc<Absyn::Path>, mut inFoundEnv: Env, mut inOriginEnv: Env) -> Result<Option<Arc<Absyn::Path>>> {
-    let mut outErrorPath: Option<Arc<Absyn::Path>> = None;
+    let mut outErrorPath: Option<Arc<Absyn::Path>>;
     outErrorPath = 'mc: {
         let __mc_input = (inIsFirst.clone(), inFromExtends.clone(), inItem.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -436,8 +436,8 @@ fn checkExtendsPart(mut inIsFirst: bool, mut inFromExtends: bool, mut inPartName
 }
 
 fn splitExtendsErrorPath(mut inPath: Arc<Absyn::Path>) -> Result<(Arc<Absyn::Path>, Arc<Absyn::Path>)> {
-    let mut outBaseClass: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-    let mut outPartPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+    let mut outBaseClass: Arc<Absyn::Path>;
+    let mut outPartPath: Arc<Absyn::Path>;
     (outBaseClass, outPartPath) = (::match_deref::match_deref! { match &(inPath.clone()) {
         Deref @ Absyn::Path::QUALIFIED { name: part_str, path: Deref @ Absyn::Path::QUALIFIED { name: Deref @ "$bc", path: bc } } => {
             (bc.clone(), Arc::new(Absyn::Path::IDENT { name: (part_str.clone()).clone() }))
@@ -620,10 +620,10 @@ fn printInheritedExtendsError(mut inName: ArcStr, mut inExtends: Arc<metamodelic
 }
 
 fn lookupSimpleName(mut inName: ArcStr, mut inEnv: Env, mut inExtendsTable: ExtendsTableArray) -> Result<(Option<Arc<NFSCodeEnv::Item>>, Option<Arc<Absyn::Path>>, Option<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>>, bool)> {
-    let mut outItem: Option<Arc<NFSCodeEnv::Item>> = None;
-    let mut outPath: Option<Arc<Absyn::Path>> = None;
-    let mut outEnv: Option<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>> = None;
-    let mut outFromExtends: bool = false;
+    let mut outItem: Option<Arc<NFSCodeEnv::Item>>;
+    let mut outPath: Option<Arc<Absyn::Path>>;
+    let mut outEnv: Option<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>>;
+    let mut outFromExtends: bool;
     (outItem, outPath, outEnv, outFromExtends) = 'mc: {
         let __mc_input = inEnv.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -666,10 +666,10 @@ fn lookupSimpleName(mut inName: ArcStr, mut inEnv: Env, mut inExtendsTable: Exte
 }
 
 fn lookupInLocalScope(mut inName: ArcStr, mut inEnv: Env, mut inExtendsTable: ExtendsTableArray) -> Result<(Option<Arc<NFSCodeEnv::Item>>, Option<Arc<Absyn::Path>>, Option<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>>, bool)> {
-    let mut outItem: Option<Arc<NFSCodeEnv::Item>> = None;
-    let mut outPath: Option<Arc<Absyn::Path>> = None;
-    let mut outEnv: Option<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>> = None;
-    let mut outFromExtends: bool = false;
+    let mut outItem: Option<Arc<NFSCodeEnv::Item>>;
+    let mut outPath: Option<Arc<Absyn::Path>>;
+    let mut outEnv: Option<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>>;
+    let mut outFromExtends: bool;
     (outItem, outPath, outEnv, outFromExtends) = 'mc: {
         let __mc_input = inEnv.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -724,8 +724,8 @@ fn lookupInLocalScope(mut inName: ArcStr, mut inEnv: Env, mut inExtendsTable: Ex
 }
 
 fn lookupInBaseClasses(mut inName: ArcStr, mut inExtends: Arc<metamodelica::List<Arc<NFSCodeEnv::Extends>>>, mut inEnv: Env, mut inExtendsTable: ExtendsTableArray) -> Result<(Option<Arc<NFSCodeEnv::Item>>, Option<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>>)> {
-    let mut outItem: Option<Arc<NFSCodeEnv::Item>> = None;
-    let mut outEnv: Option<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>> = None;
+    let mut outItem: Option<Arc<NFSCodeEnv::Item>>;
+    let mut outEnv: Option<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>>;
     (outItem, outEnv) = 'mc: {
         let __mc_input = inExtends.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -760,8 +760,8 @@ fn lookupInBaseClasses(mut inName: ArcStr, mut inExtends: Arc<metamodelica::List
 }
 
 fn lookupInBaseClasses2(mut inName: ArcStr, mut inExtends: Option<Arc<NFSCodeEnv::Extends>>, mut inEnv: Env, mut inExtendsTable: ExtendsTableArray) -> Result<(Option<Arc<NFSCodeEnv::Item>>, Option<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>>)> {
-    let mut outItem: Option<Arc<NFSCodeEnv::Item>> = None;
-    let mut outEnv: Option<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>> = None;
+    let mut outItem: Option<Arc<NFSCodeEnv::Item>>;
+    let mut outEnv: Option<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>>;
     (outItem, outEnv) = (::match_deref::match_deref! { match &(inExtends.clone()) {
         Some(Deref @ NFSCodeEnv::Extends { baseClass: Deref @ Absyn::Path::FULLYQUALIFIED { path: bc }, .. }) => {
             let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
@@ -780,9 +780,9 @@ fn lookupInBaseClasses2(mut inName: ArcStr, mut inExtends: Option<Arc<NFSCodeEnv
 }
 
 fn lookupInQualifiedImports(mut inName: ArcStr, mut inImports: Arc<metamodelica::List<Absyn::Import>>, mut inEnv: Env, mut inExtendsTable: ExtendsTableArray) -> Result<(Option<Arc<NFSCodeEnv::Item>>, Option<Arc<Absyn::Path>>, Option<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>>)> {
-    let mut outItem: Option<Arc<NFSCodeEnv::Item>> = None;
-    let mut outPath: Option<Arc<Absyn::Path>> = None;
-    let mut outEnv: Option<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>> = None;
+    let mut outItem: Option<Arc<NFSCodeEnv::Item>>;
+    let mut outPath: Option<Arc<Absyn::Path>>;
+    let mut outEnv: Option<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>>;
     (outItem, outPath, outEnv) = 'mc: {
         let __mc_input = inImports.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -828,9 +828,9 @@ fn lookupInQualifiedImports(mut inName: ArcStr, mut inImports: Arc<metamodelica:
 }
 
 fn lookupInUnqualifiedImports(mut inName: ArcStr, mut inImports: Arc<metamodelica::List<Absyn::Import>>, mut inEnv: Env, mut inExtendsTable: ExtendsTableArray) -> Result<(Option<Arc<NFSCodeEnv::Item>>, Option<Arc<Absyn::Path>>, Option<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>>)> {
-    let mut outItem: Option<Arc<NFSCodeEnv::Item>> = None;
-    let mut outPath: Option<Arc<Absyn::Path>> = None;
-    let mut outEnv: Option<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>> = None;
+    let mut outItem: Option<Arc<NFSCodeEnv::Item>>;
+    let mut outPath: Option<Arc<Absyn::Path>>;
+    let mut outEnv: Option<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>>;
     (outItem, outPath, outEnv) = 'mc: {
         let __mc_input = inImports.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -867,9 +867,9 @@ fn lookupInUnqualifiedImports(mut inName: ArcStr, mut inImports: Arc<metamodelic
 }
 
 fn lookupFullyQualified(mut inName: Arc<Absyn::Path>, mut inEnv: Env, mut inExtendsTable: ExtendsTableArray) -> Result<(Item, Env)> {
-    let mut outItem: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
-    let mut outEnv: Env = metamodelica::nil();
-    let mut env: Env = metamodelica::nil();
+    let mut outItem: Item;
+    let mut outEnv: Env;
+    let mut env: Env;
     env = NFSCodeEnv::getEnvTopScope(inEnv.clone())?;
     (outItem, outEnv) = lookupFullyQualified2(inName.clone(), env.clone(), inExtendsTable.clone())?;
     Ok((outItem, outEnv))
@@ -907,21 +907,21 @@ fn lookupFullyQualified2(mut inName: Arc<Absyn::Path>, mut inEnv: Env, mut inExt
 }
 
 fn createExtendsTable(mut inSize: i32) -> ExtendsTableArray {
-    let mut outTable: ExtendsTableArray = Default::default();
+    let mut outTable: ExtendsTableArray;
     outTable = arrayCreate(inSize.clone(), crate::NFEnvExtends::ExtendsWrapper::NO_EXTENDS);
     outTable
 }
 
 fn lookupQualifiedExtends(mut inIndex: i32, mut inExtendsTable: ExtendsTableArray) -> Result<Option<Arc<NFSCodeEnv::Extends>>> {
-    let mut outExtends: Option<Arc<NFSCodeEnv::Extends>> = None;
-    let mut ext: ExtendsWrapper = ExtendsWrapper::NO_EXTENDS;
+    let mut outExtends: Option<Arc<NFSCodeEnv::Extends>>;
+    let mut ext: ExtendsWrapper;
     ext = metamodelica::arrayGet(inExtendsTable.clone(), inIndex.clone())?;
     outExtends = lookupQualifiedExtends2(ext.clone(), inExtendsTable.clone())?;
     Ok(outExtends)
 }
 
 fn lookupQualifiedExtends2(mut inExtends: ExtendsWrapper, mut inExtendsTable: ExtendsTableArray) -> Result<Option<Arc<NFSCodeEnv::Extends>>> {
-    let mut outExtends: Option<Arc<NFSCodeEnv::Extends>> = None;
+    let mut outExtends: Option<Arc<NFSCodeEnv::Extends>>;
     outExtends = (::match_deref::match_deref! { match &(inExtends.clone()) {
         ExtendsWrapper::QUALIFIED_EXTENDS { ext } => {
             Some(ext.clone())
@@ -945,16 +945,16 @@ fn updateQualifiedInTable(mut inExtends: Extends, mut inIndex: i32, mut inExtend
 }
 
 fn update2(mut inEnv: Env) -> Result<Env> {
-    let mut outEnv: Env = metamodelica::nil();
-    let mut env: Env = metamodelica::nil();
-    let mut rest_env: Env = metamodelica::nil();
-    let mut name: Option<ArcStr> = None;
-    let mut ty: FrameType = NFSCodeEnv::FrameType::ENCAPSULATED_SCOPE;
-    let mut tree: Arc<NFSCodeEnv::EnvTree::Tree> = Arc::new(NFSCodeEnv::EnvTree::Tree::EMPTY);
-    let mut bcl: Arc<metamodelica::List<Arc<NFSCodeEnv::Extends>>> = metamodelica::nil();
-    let mut re: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
-    let mut imps: NFSCodeEnv::ImportTable = <NFSCodeEnv::ImportTable as ::std::default::Default>::default();
-    let mut iu: Option<Mutable::Mutable<bool>> = None;
+    let mut outEnv: Env;
+    let mut env: Env;
+    let mut rest_env: Env;
+    let mut name: Option<ArcStr>;
+    let mut ty: FrameType;
+    let mut tree: Arc<NFSCodeEnv::EnvTree::Tree>;
+    let mut bcl: Arc<metamodelica::List<Arc<NFSCodeEnv::Extends>>>;
+    let mut re: Arc<metamodelica::List<Arc<SCode::Element>>>;
+    let mut imps: NFSCodeEnv::ImportTable;
+    let mut iu: Option<Mutable::Mutable<bool>>;
     let (__pa0, __pa1, __pa2, __pa3, __pa4, __pa5, __pa6, __pa7) = ::match_deref::match_deref! { match &(inEnv.clone()) {
         Deref @ metamodelica::List::Cons { head: Deref @ NFSCodeEnv::Frame { name: __pa0, frameType: __pa1, clsAndVars: __pa2, extendsTable: Deref @ NFSCodeEnv::ExtendsTable { baseClasses: __pa3, redeclaredElements: __pa4, classExtendsInfo: _ }, importTable: __pa5, isUsed: __pa6 }, tail: __pa7 } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone(), __pa6.clone(), __pa7.clone()),
         _ => bail!("pattern mismatch"),
@@ -999,8 +999,8 @@ fn update3(mut name: ArcStr, mut item: Item, mut inEnv: Env) -> Result<Item> {
 }
 
 fn updateClassExtends(mut inClass: Arc<SCode::Element>, mut inEnv: Env, mut inClassType: ClassType) -> Result<(Arc<SCode::Element>, Env)> {
-    let mut outClass: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
-    let mut outEnv: Env = metamodelica::nil();
+    let mut outClass: Arc<SCode::Element>;
+    let mut outEnv: Env;
     (outClass, outEnv) = (::match_deref::match_deref! { match &((inEnv.clone(), inClassType.clone())) {
         (Deref @ metamodelica::List::Cons { head: Deref @ NFSCodeEnv::Frame { name: Some(name), extendsTable: Deref @ NFSCodeEnv::ExtendsTable { classExtendsInfo: Some(ext), .. }, .. }, tail: _ }, NFSCodeEnv::ClassType::CLASS_EXTENDS { .. }) => {
             let mut env: Env = metamodelica::nil();
@@ -1025,8 +1025,8 @@ fn updateClassExtends(mut inClass: Arc<SCode::Element>, mut inEnv: Env, mut inCl
 }
 
 fn updateClassExtends2(mut inClass: Arc<SCode::Element>, mut inName: ArcStr, mut inMods: Arc<SCode::Mod>, mut inInfo: SourceInfo, mut inEnv: Env) -> Result<(Arc<SCode::Element>, Env)> {
-    let mut outClass: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
-    let mut outEnv: Env = metamodelica::nil();
+    let mut outClass: Arc<SCode::Element>;
+    let mut outEnv: Env;
     (outClass, outEnv) = 'mc: {
         let __mc_input = inEnv.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -1063,8 +1063,8 @@ fn updateClassExtends2(mut inClass: Arc<SCode::Element>, mut inName: ArcStr, mut
 }
 
 fn lookupClassExtendsBaseClass(mut inName: ArcStr, mut inEnv: Env, mut inInfo: SourceInfo) -> Result<(Arc<Absyn::Path>, Item)> {
-    let mut outPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-    let mut outItem: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
+    let mut outPath: Arc<Absyn::Path>;
+    let mut outItem: Item;
     (outPath, outItem) = 'mc: {
         let __mc_input = inInfo.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -1096,7 +1096,7 @@ fn lookupClassExtendsBaseClass(mut inName: ArcStr, mut inEnv: Env, mut inInfo: S
 }
 
 pub fn extendEnvWithClassExtends(mut inClassExtends: Arc<SCode::Element>, mut inEnv: Env) -> Result<Env> {
-    let mut outEnv: Env = metamodelica::nil();
+    let mut outEnv: Env;
     outEnv = (::match_deref::match_deref! { match &(inClassExtends.clone()) {
         Deref @ SCode::Element::CLASS { name, prefixes, encapsulatedPrefix: ep, partialPrefix: pp, restriction: res, classDef: Deref @ SCode::ClassDef::CLASS_EXTENDS { modifications: mods, composition: cdef }, cmt, info } => {
             let mut env: Env = metamodelica::nil();
@@ -1128,7 +1128,7 @@ pub fn extendEnvWithClassExtends(mut inClassExtends: Arc<SCode::Element>, mut in
 }
 
 fn addClassExtendsInfoToEnv(mut inClassExtends: Arc<SCode::Element>, mut inEnv: Env) -> Result<Env> {
-    let mut outEnv: Env = metamodelica::nil();
+    let mut outEnv: Env;
     outEnv = 'mc: {
         let __mc_input = inEnv.clone();
         if let Ok(__v) = (|| -> Result<_> {

@@ -37,6 +37,7 @@ pub mod MMath;
 pub mod NFLookupTree;
 pub mod OMSimulatorExt;
 pub mod Print;
+pub mod Rational;
 pub mod SBAtomicSet;
 pub mod SBFunctions;
 pub mod SBGraph;

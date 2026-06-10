@@ -182,8 +182,8 @@ pub mod Prefixes {
 }
 
 pub fn fromSCode(mut elements: Arc<metamodelica::List<Arc<Element>>>, mut isClassExtends: bool, mut scope: Arc<InstNode::InstNode>, mut prefixes: Arc<Prefixes::Prefixes>) -> Result<Arc<NFClass>> {
-    let mut cls: Arc<NFClass> = Arc::new(NFClass::NOT_INSTANTIATED);
-    let mut tree: Arc<ClassTree::ClassTree> = Arc::new(ClassTree::EMPTY_TREE);
+    let mut cls: Arc<NFClass>;
+    let mut tree: Arc<ClassTree::ClassTree>;
     tree = ClassTree::fromSCode(elements.clone(), isClassExtends.clone(), scope.clone())?;
     cls = Arc::new(NFClass::PARTIAL_CLASS { elements: tree.clone(), modifier: crate::NFModifier::Modifier::interned_NOMOD(), ccMod: crate::NFModifier::Modifier::interned_NOMOD(), prefixes: prefixes.clone() });
     Ok(cls)
@@ -203,16 +203,16 @@ pub fn initImports(mut cls: Arc<NFClass>, mut parent: Arc<InstNode::InstNode>) -
 }
 
 pub fn fromEnumeration(mut literals: Arc<metamodelica::List<Arc<SCode::Enum>>>, mut enumType: Arc<Type::NFType>, mut prefixes: Arc<Prefixes::Prefixes>, mut enumClass: Arc<InstNode::InstNode>) -> Result<Arc<NFClass>> {
-    let mut cls: Arc<NFClass> = Arc::new(NFClass::NOT_INSTANTIATED);
-    let mut tree: Arc<ClassTree::ClassTree> = Arc::new(ClassTree::EMPTY_TREE);
+    let mut cls: Arc<NFClass>;
+    let mut tree: Arc<ClassTree::ClassTree>;
     tree = ClassTree::fromEnumeration(literals.clone(), enumType.clone(), enumClass.clone())?;
     cls = Arc::new(NFClass::PARTIAL_BUILTIN { ty: enumType.clone(), elements: tree.clone(), modifier: crate::NFModifier::Modifier::interned_NOMOD(), prefixes: prefixes.clone(), restriction: crate::NFRestriction::interned_ENUMERATION() });
     Ok(cls)
 }
 
 pub fn makeRecordConstructor(mut fields: Arc<metamodelica::List<Arc<InstNode::InstNode>>>, mut out: Arc<InstNode::InstNode>) -> Result<Arc<NFClass>> {
-    let mut cls: Arc<NFClass> = Arc::new(NFClass::NOT_INSTANTIATED);
-    let mut tree: Arc<ClassTree::ClassTree> = Arc::new(ClassTree::EMPTY_TREE);
+    let mut cls: Arc<NFClass>;
+    let mut tree: Arc<ClassTree::ClassTree>;
     tree = ClassTree::fromRecordConstructor(fields.clone(), out.clone())?;
     cls = Arc::new(NFClass::INSTANCED_CLASS { ty: crate::NFType::interned_UNKNOWN(), elements: tree.clone(), sections: crate::NFSections::interned_EMPTY(), prefixes: DEFAULT_PREFIXES.clone(), restriction: crate::NFRestriction::interned_RECORD_CONSTRUCTOR() });
     Ok(cls)
@@ -252,16 +252,16 @@ pub fn setSections(mut sections: Arc<Sections::NFSections>, mut cls: Arc<NFClass
 }
 
 pub fn lookupElement(mut name: ArcStr, mut cls: Arc<NFClass>) -> Result<(Arc<InstNode::InstNode>, bool)> {
-    let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
-    let mut isImport: bool = false;
+    let mut node: Arc<InstNode::InstNode>;
+    let mut isImport: bool;
     (node, isImport) = ClassTree::lookupElement((name.clone()).clone(), classTree(cls.clone())?)?;
     Ok((node, isImport))
 }
 
 pub fn tryLookupElement(mut name: ArcStr, mut cls: Arc<NFClass>) -> (Option<Arc<InstNode::InstNode>>, bool) {
-    let mut node: Option<Arc<InstNode::InstNode>> = None;
-    let mut isImport: bool = false;
-    let mut n: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
+    let mut node: Option<Arc<InstNode::InstNode>>;
+    let mut isImport: bool;
+    let mut n: Arc<InstNode::InstNode>;
     match '__try0: {
         (n, isImport) = unwrap_break_err!(ClassTree::lookupElement((name.clone()).clone(), unwrap_break_err!(classTree(cls.clone()), '__try0)), '__try0);
         node = Some(n.clone());
@@ -280,13 +280,13 @@ pub fn tryLookupElement(mut name: ArcStr, mut cls: Arc<NFClass>) -> (Option<Arc<
 }
 
 pub fn lookupComponentIndex(mut name: ArcStr, mut cls: Arc<NFClass>) -> Result<i32> {
-    let mut index: i32 = 0;
+    let mut index: i32;
     index = ClassTree::lookupComponentIndex((name.clone()).clone(), classTree(cls.clone())?)?;
     Ok(index)
 }
 
 pub fn nthComponent(mut index: i32, mut cls: Arc<NFClass>) -> Result<Arc<InstNode::InstNode>> {
-    let mut component: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
+    let mut component: Arc<InstNode::InstNode>;
     component = ClassTree::nthComponent(index.clone(), classTree(cls.clone())?)?;
     Ok(component)
 }
@@ -297,8 +297,8 @@ pub fn getComponents(mut cls: Arc<NFClass>) -> Result<metamodelica::Array<Arc<In
 }
 
 pub fn lookupAttributeBinding(mut name: ArcStr, mut cls: Arc<NFClass>) -> Arc<Binding::NFBinding> {
-    let mut binding: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);
-    let mut attr_node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
+    let mut binding: Arc<Binding::NFBinding>;
+    let mut attr_node: Arc<InstNode::InstNode>;
     match '__try0: {
         (attr_node, _) = unwrap_break_err!(ClassTree::lookupElement((name.clone()).clone(), unwrap_break_err!(classTree(cls.clone()), '__try0)), '__try0);
         binding = Component::getBinding(unwrap_break_err!(InstNode::component(attr_node.clone()), '__try0));
@@ -320,7 +320,7 @@ pub fn lookupAttributeValue(mut name: ArcStr, mut cls: Arc<NFClass>) -> Option<A
 }
 
 pub fn isOnlyBuiltin(mut cls: Arc<NFClass>) -> bool {
-    let mut builtin: bool = false;
+    let mut builtin: bool;
     builtin = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ PARTIAL_BUILTIN { .. } => true,
         Deref @ INSTANCED_BUILTIN { .. } => true,
@@ -419,7 +419,7 @@ pub fn classTreeApply(mut cls: Arc<NFClass>, mut func: Arc<dyn ::std::ops::Fn(Ar
 }
 
 pub fn getModifier(mut cls: Arc<NFClass>) -> Arc<Modifier::Modifier> {
-    let mut modifier: Arc<Modifier::Modifier> = Arc::new(Modifier::NOMOD);
+    let mut modifier: Arc<Modifier::Modifier>;
     modifier = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ PARTIAL_CLASS { .. } => var_field!((*cls).modifier, NFClass::PARTIAL_CLASS).clone(),
         Deref @ EXPANDED_CLASS { .. } => var_field!((*cls).modifier, NFClass::EXPANDED_CLASS).clone(),
@@ -432,7 +432,7 @@ pub fn getModifier(mut cls: Arc<NFClass>) -> Arc<Modifier::Modifier> {
 }
 
 pub fn getCCModifier(mut cls: Arc<NFClass>) -> Arc<Modifier::Modifier> {
-    let mut modifier: Arc<Modifier::Modifier> = Arc::new(Modifier::NOMOD);
+    let mut modifier: Arc<Modifier::Modifier>;
     modifier = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ PARTIAL_CLASS { .. } => var_field!((*cls).ccMod, NFClass::PARTIAL_CLASS).clone(),
         Deref @ EXPANDED_CLASS { .. } => var_field!((*cls).ccMod, NFClass::EXPANDED_CLASS).clone(),
@@ -520,7 +520,7 @@ pub fn isIdentical(mut cls1: Arc<NFClass>, mut cls2: Arc<NFClass>) -> Result<boo
 }
 
 pub fn hasDimensions(mut cls: Arc<NFClass>) -> Result<bool> {
-    let mut hasDims: bool = false;
+    let mut hasDims: bool;
     hasDims = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ EXPANDED_DERIVED { .. } => metamodelica::arrayLength(var_field!((*cls).dims, NFClass::EXPANDED_DERIVED).clone()) > 0 || hasDimensions(InstNode::getClass(var_field!((*cls).baseClass, NFClass::EXPANDED_DERIVED).clone())?)?,
         Deref @ TYPED_DERIVED { .. } => Type::isArray(var_field!((*cls).ty, NFClass::TYPED_DERIVED).clone()),
@@ -531,7 +531,7 @@ pub fn hasDimensions(mut cls: Arc<NFClass>) -> Result<bool> {
 }
 
 pub fn getDimensions(mut cls: Arc<NFClass>) -> Arc<metamodelica::List<Arc<Dimension::NFDimension>>> {
-    let mut dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>> = metamodelica::nil();
+    let mut dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>>;
     dims = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ INSTANCED_CLASS { .. } => Type::arrayDims(var_field!((*cls).ty, NFClass::INSTANCED_CLASS).clone()),
         Deref @ INSTANCED_BUILTIN { .. } => Type::arrayDims(var_field!((*cls).ty, NFClass::INSTANCED_BUILTIN).clone()),
@@ -543,7 +543,7 @@ pub fn getDimensions(mut cls: Arc<NFClass>) -> Arc<metamodelica::List<Arc<Dimens
 }
 
 pub fn dimensionCount(mut cls: Arc<NFClass>) -> i32 {
-    let mut count: i32 = 0;
+    let mut count: i32;
     count = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ EXPANDED_DERIVED { .. } => metamodelica::arrayLength(var_field!((*cls).dims, NFClass::EXPANDED_DERIVED).clone()),
         Deref @ INSTANCED_CLASS { .. } => Type::dimensionCount(var_field!((*cls).ty, NFClass::INSTANCED_CLASS).clone()),
@@ -556,7 +556,7 @@ pub fn dimensionCount(mut cls: Arc<NFClass>) -> i32 {
 }
 
 pub fn getAttributes(mut cls: Arc<NFClass>) -> Arc<Attributes::NFAttributes> {
-    let mut attr: Arc<Attributes::NFAttributes> = Arc::new(<Attributes::NFAttributes as ::std::default::Default>::default());
+    let mut attr: Arc<Attributes::NFAttributes>;
     attr = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ EXPANDED_DERIVED { .. } => var_field!((*cls).attributes, NFClass::EXPANDED_DERIVED).clone(),
         _ => Attributes::DEFAULT_ATTR().clone(),
@@ -567,8 +567,8 @@ pub fn getAttributes(mut cls: Arc<NFClass>) -> Arc<Attributes::NFAttributes> {
 
 pub fn getTypeAttributes(mut cls: Arc<NFClass>) -> Arc<metamodelica::List<Arc<Modifier::Modifier>>> {
     let mut attributes: Arc<metamodelica::List<Arc<Modifier::Modifier>>> = metamodelica::nil();
-    let mut comps: metamodelica::Array<Arc<InstNode::InstNode>> = Default::default();
-    let mut r#mod: Arc<Modifier::Modifier> = Arc::new(Modifier::NOMOD);
+    let mut comps: metamodelica::Array<Arc<InstNode::InstNode>>;
+    let mut r#mod: Arc<Modifier::Modifier>;
     if '__try0: {
         comps = unwrap_break_err!(ClassTree::getComponents(unwrap_break_err!(classTree(cls.clone()), '__try0)), '__try0);
         let __range1 = comps.clone().borrow().iter().cloned().collect::<Vec<_>>();
@@ -628,7 +628,7 @@ pub fn setType(mut ty: Arc<Type::NFType>, mut cls: Arc<NFClass>) -> Result<Arc<N
 }
 
 pub fn restriction(mut cls: Arc<NFClass>) -> Arc<Restriction::NFRestriction> {
-    let mut res: Arc<Restriction::NFRestriction> = Arc::new(Restriction::BLOCK);
+    let mut res: Arc<Restriction::NFRestriction>;
     res = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ PARTIAL_BUILTIN { .. } => var_field!((*cls).restriction, NFClass::PARTIAL_BUILTIN).clone(),
         Deref @ EXPANDED_CLASS { .. } => var_field!((*cls).restriction, NFClass::EXPANDED_CLASS).clone(),
@@ -729,7 +729,7 @@ pub fn isExternalFunction(mut cls: Arc<NFClass>) -> Result<bool> {
 }
 
 pub fn isOverdetermined(mut cls: Arc<NFClass>) -> bool {
-    let mut isOverdetermined: bool = false;
+    let mut isOverdetermined: bool;
     match '__try0: {
         unwrap_break_err!(lookupElement((literal!("equalityConstraint")).clone(), cls.clone()), '__try0);
         System::setHasOverconstrainedConnectors(true);
@@ -844,8 +844,8 @@ pub fn constrainingClassPath(mut clsNode: Arc<InstNode::InstNode>) -> Result<Arc
 }
 
 pub fn hasOperator(mut name: ArcStr, mut cls: Arc<NFClass>) -> bool {
-    let mut hasOperator: bool = false;
-    let mut op_node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
+    let mut hasOperator: bool;
+    let mut op_node: Arc<InstNode::InstNode>;
     if Restriction::isOperatorRecord(restriction(cls.clone())) {
         match '__try0: {
             (op_node, _) = unwrap_break_err!(lookupElement((name.clone()).clone(), cls.clone()), '__try0);
@@ -866,13 +866,13 @@ pub fn hasOperator(mut name: ArcStr, mut cls: Arc<NFClass>) -> bool {
 }
 
 pub fn makeRecordExp(mut clsNode: Arc<InstNode::InstNode>, mut scope: Arc<InstNode::InstNode>, mut typed: bool) -> Result<Arc<Expression::NFExpression>> {
-    let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut cls: Arc<NFClass> = Arc::new(NFClass::NOT_INSTANTIATED);
-    let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut ty_node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
-    let mut fields: Arc<metamodelica::List<Arc<Record::Field::Field>>> = metamodelica::nil();
-    let mut comps: metamodelica::Array<Arc<InstNode::InstNode>> = Default::default();
-    let mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
+    let mut exp: Arc<Expression::NFExpression>;
+    let mut cls: Arc<NFClass>;
+    let mut ty: Arc<Type::NFType>;
+    let mut ty_node: Arc<InstNode::InstNode>;
+    let mut fields: Arc<metamodelica::List<Arc<Record::Field::Field>>>;
+    let mut comps: metamodelica::Array<Arc<InstNode::InstNode>>;
+    let mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
     cls = InstNode::getClass(clsNode.clone())?;
     let (__pa1, __pa0) = ::match_deref::match_deref! { match &(getType(cls.clone(), clsNode.clone())?) {
         __pa1 @ Deref @ Type::COMPLEX { complexTy: Deref @ ComplexType::RECORD { constructor: __pa0, .. }, .. } => (__pa1.clone(), __pa0.clone()),
@@ -908,7 +908,7 @@ pub fn makeRecordExp(mut clsNode: Arc<InstNode::InstNode>, mut scope: Arc<InstNo
 
 pub fn toFlatStream(mut cls: Arc<NFClass>, mut clsNode: Arc<InstNode::InstNode>, mut format: BaseModelica::OutputFormat, mut indent: ArcStr, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut s: IOStream::IOStream = s;
-    let mut name: ArcStr = arcstr::literal!("");
+    let mut name: ArcStr;
     name = (Util::makeQuotedIdentifier((AbsynUtil::pathString(InstNode::scopePath(clsNode.clone(), InstNode::ScopeType::RELATIVE.clone(), false)?, (literal!(".")).clone(), true, false)?).clone())?).clone();
     s = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ INSTANCED_CLASS { .. } => {
@@ -950,8 +950,8 @@ pub fn toFlatStream(mut cls: Arc<NFClass>, mut clsNode: Arc<InstNode::InstNode>,
 }
 
 pub fn toFlatString(mut cls: Arc<NFClass>, mut clsNode: Arc<InstNode::InstNode>, mut format: BaseModelica::OutputFormat, mut indent: ArcStr) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
-    let mut s: IOStream::IOStream = <IOStream::IOStream as ::std::default::Default>::default();
+    let mut r#str: ArcStr;
+    let mut s: IOStream::IOStream;
     s = IOStream::create(literal!("NFClass.toFlatString"), openmodelica_util::IOStream::IOStreamType::LIST)?;
     s = toFlatStream(cls.clone(), clsNode.clone(), format.clone(), (indent.clone()).clone(), s.clone())?;
     r#str = (IOStream::string(s.clone())?).clone();

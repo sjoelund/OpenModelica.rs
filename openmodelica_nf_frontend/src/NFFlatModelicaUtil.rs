@@ -77,7 +77,7 @@ impl Ord for ElementType {
 
 pub fn appendElementSourceCommentString(mut source: Arc<DAE::ElementSource>, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut s: IOStream::IOStream = s;
-    let mut opt_cmt: Option<Arc<SCode::Comment>> = None;
+    let mut opt_cmt: Option<Arc<SCode::Comment>>;
     opt_cmt = ElementSource::getOptComment(source.clone())?;
     if isSome(opt_cmt.clone()) {
         s = appendCommentString(Util::getOption(opt_cmt.clone())?, s.clone())?;
@@ -87,7 +87,7 @@ pub fn appendElementSourceCommentString(mut source: Arc<DAE::ElementSource>, mut
 
 pub fn appendElementSourceCommentAnnotation(mut source: Arc<DAE::ElementSource>, mut elementType: ElementType, mut indent: ArcStr, mut ending: ArcStr, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut s: IOStream::IOStream = s;
-    let mut opt_cmt: Option<Arc<SCode::Comment>> = None;
+    let mut opt_cmt: Option<Arc<SCode::Comment>>;
     opt_cmt = ElementSource::getOptComment(source.clone())?;
     if isSome(opt_cmt.clone()) {
         s = appendCommentAnnotation(Util::getOption(opt_cmt.clone())?, elementType.clone(), (indent.clone()).clone(), (ending.clone()).clone(), s.clone())?;
@@ -159,7 +159,7 @@ pub fn appendCommentAnnotation(mut comment: Arc<SCode::Comment>, mut elementType
 
 pub fn filterRootClassAnnotations(mut r#mod: Arc<SCode::Mod>) -> Result<Arc<SCode::Mod>> {
     fn filter(mut smod: Arc<SCode::SubMod>) -> bool {
-        let mut keep: bool = false;
+        let mut keep: bool;
         keep = (::match_deref::match_deref! { match &(smod.ident.clone()) {
         Deref @ "experiment" => true,
         _ => false,
@@ -222,7 +222,7 @@ pub fn appendAnnotationSubMod(mut r#mod: Arc<SCode::SubMod>, mut s: IOStream::IO
 
 pub fn appendExp(mut exp: Arc<Absyn::Exp>, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut s: IOStream::IOStream = s;
-    let mut e: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
+    let mut e: Arc<Absyn::Exp>;
     (e, _) = AbsynUtil::traverseExp(exp.clone(), (std::sync::Arc::new(quoteCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, i32) -> Result<(Arc<Absyn::Exp>, i32)> + 'static>), 0)?;
     s = IOStream::append(s.clone(), (Dump::printExpStr(e.clone())?).clone())?;
     Ok(s)

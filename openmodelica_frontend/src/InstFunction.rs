@@ -86,11 +86,11 @@ pub type InstanceHierarchy = Arc<metamodelica::List<InnerOuter::TopInstance>>;
 pub type InstDims = Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Dimension>>>>>;
 
 pub fn instantiateExternalObject(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut els: Arc<metamodelica::List<Arc<SCode::Element>>>, mut inMod: Arc<DAE::Mod>, mut r#impl: bool, mut comment: Arc<SCode::Comment>, mut info: SourceInfo) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::DAElist, ClassInf::State)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-    let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>> = metamodelica::nil();
-    let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-    let mut ciState: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
+    let mut outCache: FCore::Cache;
+    let mut outEnv: FCore::Graph;
+    let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>>;
+    let mut dae: DAE::DAElist;
+    let mut ciState: ClassInf::State;
     (outCache, outEnv, outIH, dae, ciState) = 'mc: {
         let __mc_input = (inCache.clone(), inEnv.clone(), inIH.clone(), r#impl.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -179,8 +179,8 @@ fn checkExternalObjectMod(mut inMod: Arc<DAE::Mod>, mut inClassName: ArcStr) -> 
 }
 
 fn instantiateExternalObjectDestructor(mut inCache: FCore::Cache, mut env: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut cl: Arc<SCode::Element>) -> Result<(FCore::Cache, Arc<metamodelica::List<InnerOuter::TopInstance>>)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>> = metamodelica::nil();
+    let mut outCache: FCore::Cache;
+    let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>>;
     (outCache, outIH) = 'mc: {
         let __mc_input = (inCache.clone(), inIH.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -210,9 +210,9 @@ fn instantiateExternalObjectDestructor(mut inCache: FCore::Cache, mut env: FCore
 }
 
 fn instantiateExternalObjectConstructor(mut inCache: FCore::Cache, mut env: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut cl: Arc<SCode::Element>) -> Result<(FCore::Cache, Arc<metamodelica::List<InnerOuter::TopInstance>>, Arc<DAE::Type>)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>> = metamodelica::nil();
-    let mut outType: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+    let mut outCache: FCore::Cache;
+    let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>>;
+    let mut outType: Arc<DAE::Type>;
     (outCache, outIH, outType) = 'mc: {
         let __mc_input = (inCache.clone(), inIH.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -245,9 +245,9 @@ fn instantiateExternalObjectConstructor(mut inCache: FCore::Cache, mut env: FCor
 }
 
 pub fn implicitFunctionInstantiation(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inMod: Arc<DAE::Mod>, mut inPrefix: DAE::Prefix, mut inClass: Arc<SCode::Element>, mut inInstDims: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Dimension>>>>>) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-    let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>> = metamodelica::nil();
+    let mut outCache: FCore::Cache;
+    let mut outEnv: FCore::Graph;
+    let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>>;
     (outCache, outEnv, outIH) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inIH.clone(), inMod.clone(), inPrefix.clone(), inClass.clone(), inInstDims.clone())) {
         (cache, env, ih, r#mod, pre, c @ Deref @ SCode::Element::CLASS { name: n, restriction: SCode::Restriction::R_RECORD { isOperator: _ }, partialPrefix: pPrefix, .. }, inst_dims) => {
             let mut ty1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
@@ -299,10 +299,10 @@ pub fn implicitFunctionInstantiation(mut inCache: FCore::Cache, mut inEnv: FCore
 }
 
 fn implicitFunctionInstantiation2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inMod: Arc<DAE::Mod>, mut inPrefix: DAE::Prefix, mut inClass: Arc<SCode::Element>, mut inInstDims: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Dimension>>>>>, mut instFunctionTypeOnly: bool) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, Arc<metamodelica::List<DAE::Function>>)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-    let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>> = metamodelica::nil();
-    let mut funcs: Arc<metamodelica::List<DAE::Function>> = metamodelica::nil();
+    let mut outCache: FCore::Cache;
+    let mut outEnv: FCore::Graph;
+    let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>>;
+    let mut funcs: Arc<metamodelica::List<DAE::Function>>;
     (outCache, outEnv, outIH, funcs) = 'mc: {
         let __mc_input = (inCache.clone(), inEnv.clone(), inIH.clone(), inMod.clone(), inPrefix.clone(), inClass.clone(), inInstDims.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -450,13 +450,13 @@ fn implicitFunctionInstantiation2(mut inCache: FCore::Cache, mut inEnv: FCore::G
 }
 
 fn instantiateDerivativeFuncs(mut cache: FCore::Cache, mut env: FCore::Graph, mut ih: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut funcs: Arc<metamodelica::List<DAE::FunctionDefinition>>, mut path: Arc<Absyn::Path>, mut info: SourceInfo) -> Result<FCore::Cache> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
+    let mut outCache: FCore::Cache;
     outCache = instantiateDerivativeFuncs2(cache.clone(), env.clone(), ih.clone(), DAEUtil::getDerivativePaths(funcs.clone())?, path.clone(), info.clone())?;
     Ok(outCache)
 }
 
 fn instantiateDerivativeFuncs2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inPaths: Arc<metamodelica::List<Arc<Absyn::Path>>>, mut path: Arc<Absyn::Path>, mut info: SourceInfo) -> Result<FCore::Cache> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
+    let mut outCache: FCore::Cache;
     outCache = 'mc: {
         let __mc_input = (inCache.clone(), inEnv.clone(), inIH.clone(), inPaths.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -528,9 +528,9 @@ fn instantiateDerivativeFuncs2(mut inCache: FCore::Cache, mut inEnv: FCore::Grap
 }
 
 pub fn implicitFunctionTypeInstantiation(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inClass: Arc<SCode::Element>) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-    let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>> = metamodelica::nil();
+    let mut outCache: FCore::Cache;
+    let mut outEnv: FCore::Graph;
+    let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>>;
     (outCache, outEnv, outIH) = 'mc: {
         let __mc_input = (inCache.clone(), inEnv.clone(), inIH.clone(), inClass.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -621,10 +621,10 @@ pub fn implicitFunctionTypeInstantiation(mut inCache: FCore::Cache, mut inEnv: F
 }
 
 fn instOverloadedFunctions(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut pre: DAE::Prefix, mut inAbsynPathLst: Arc<metamodelica::List<Arc<Absyn::Path>>>, mut inInfo: SourceInfo) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, Arc<metamodelica::List<DAE::Function>>)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-    let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>> = metamodelica::nil();
-    let mut outFns: Arc<metamodelica::List<DAE::Function>> = metamodelica::nil();
+    let mut outCache: FCore::Cache;
+    let mut outEnv: FCore::Graph;
+    let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>>;
+    let mut outFns: Arc<metamodelica::List<DAE::Function>>;
     (outCache, outEnv, outIH, outFns) = 'mc: {
         let __mc_input = (inCache.clone(), inEnv.clone(), inIH.clone(), inAbsynPathLst.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -680,12 +680,12 @@ fn instOverloadedFunctions(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, m
 fn instExtDecl(mut cache: FCore::Cache, mut env: FCore::Graph, mut iH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut name: ArcStr, mut inScExtDecl: Arc<SCode::ExternalDecl>, mut inElements: Arc<metamodelica::List<Arc<DAE::Element>>>, mut funcType: Arc<DAE::Type>, mut r#impl: bool, mut pre: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::ExternalDecl)> {
     let mut cache: FCore::Cache = cache;
     let mut iH: Arc<metamodelica::List<InnerOuter::TopInstance>> = iH;
-    let mut daeextdecl: DAE::ExternalDecl = <DAE::ExternalDecl as ::std::default::Default>::default();
-    let mut fname: ArcStr = arcstr::literal!("");
-    let mut lang: ArcStr = arcstr::literal!("");
-    let mut fargs: Arc<metamodelica::List<DAE::ExtArg>> = metamodelica::nil();
-    let mut rettype: DAE::ExtArg = DAE::ExtArg::NOEXTARG;
-    let mut ann: Option<Arc<SCode::Annotation>> = None;
+    let mut daeextdecl: DAE::ExternalDecl;
+    let mut fname: ArcStr;
+    let mut lang: ArcStr;
+    let mut fargs: Arc<metamodelica::List<DAE::ExtArg>>;
+    let mut rettype: DAE::ExtArg;
+    let mut ann: Option<Arc<SCode::Annotation>>;
     let mut extdecl: Arc<SCode::ExternalDecl> = inScExtDecl.clone();
     ann = InstUtil::instExtGetAnnotation(extdecl.clone())?;
     lang = (InstUtil::instExtGetLang(extdecl.clone())?).clone();
@@ -701,10 +701,10 @@ fn instExtDecl(mut cache: FCore::Cache, mut env: FCore::Graph, mut iH: Arc<metam
 }
 
 fn instExtMakeDefaultExternalCall(mut elements: Arc<metamodelica::List<Arc<DAE::Element>>>, mut funcType: Arc<DAE::Type>, mut lang: ArcStr, mut info: SourceInfo) -> Result<(Arc<metamodelica::List<DAE::ExtArg>>, DAE::ExtArg)> {
-    let mut fargs: Arc<metamodelica::List<DAE::ExtArg>> = metamodelica::nil();
-    let mut rettype: DAE::ExtArg = DAE::ExtArg::NOEXTARG;
+    let mut fargs: Arc<metamodelica::List<DAE::ExtArg>>;
+    let mut rettype: DAE::ExtArg;
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-    let mut singleOutput: bool = false;
+    let mut singleOutput: bool;
     fargs = metamodelica::nil();
     if lang.clone() == literal!("builtin") {
         rettype = openmodelica_frontend_types::DAE::ExtArg::NOEXTARG;
@@ -753,8 +753,8 @@ fn addExtVarToCall(mut cr: Arc<DAE::ComponentRef>, mut dir: Absyn::Direction, mu
 }
 
 pub fn getRecordConstructorFunction(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPath: Arc<Absyn::Path>) -> Result<(FCore::Cache, DAE::Function)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outFunc: DAE::Function = <DAE::Function as ::std::default::Default>::default();
+    let mut outCache: FCore::Cache;
+    let mut outFunc: DAE::Function;
     (outCache, outFunc) = 'mc: {
         let __mc_input = inPath.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -840,7 +840,7 @@ pub fn getRecordConstructorFunction(mut inCache: FCore::Cache, mut inEnv: FCore:
 }
 
 pub fn addRecordConstructorFunction(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inType: Arc<DAE::Type>, mut inInfo: SourceInfo) -> Result<FCore::Cache> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
+    let mut outCache: FCore::Cache;
     outCache = 'mc: {
         let __mc_input = (inCache.clone(), inType.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -897,7 +897,7 @@ pub fn addRecordConstructorFunction(mut inCache: FCore::Cache, mut inEnv: FCore:
 }
 
 fn isElementImportantForFunction(mut elt: Arc<SCode::Element>) -> bool {
-    let mut b: bool = false;
+    let mut b: bool;
     b = (::match_deref::match_deref! { match &(elt.clone()) {
         Deref @ SCode::Element::COMPONENT { prefixes: Deref @ SCode::Prefixes { visibility: SCode::Visibility::PROTECTED { .. }, .. }, attributes: SCode::Attributes { direction: Absyn::Direction::BIDIR { .. }, variability: SCode::Variability::VAR { .. }, .. }, .. } => false,
         _ => true,

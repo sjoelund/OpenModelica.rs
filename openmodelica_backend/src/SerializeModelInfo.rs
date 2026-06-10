@@ -69,14 +69,14 @@ use openmodelica_util::Util;
 use openmodelica_util_datatypes_basic::List;
 
 pub fn serialize(mut code: SimCode::SimCode, mut withOperations: bool) -> Result<ArcStr> {
-    let mut fileName: ArcStr = arcstr::literal!("");
+    let mut fileName: ArcStr;
     let (true, __pa0) = (serializeWork(code.clone(), withOperations.clone())?) else { bail!("pattern mismatch") };
     fileName = __pa0.clone();
     Ok(fileName)
 }
 
 fn serializeWork(mut code: SimCode::SimCode, mut withOperations: bool) -> Result<(bool, ArcStr)> {
-    let mut success: bool = false;
+    let mut success: bool;
     let mut fileName: ArcStr = arcstr::literal!("");
     let mut file: File::File = File::File(File::noReference())?;
     (success, fileName) = 'mc: {
@@ -124,7 +124,7 @@ fn serializeWork(mut code: SimCode::SimCode, mut withOperations: bool) -> Result
 }
 
 fn serializeVars(mut file: File::File, mut vars: SimCodeVar::SimVars, mut withOperations: bool) -> Result<()> {
-    let mut b: bool = false;
+    let mut b: bool;
     b = serializeVarsHelp(file.clone(), vars.stateVars.clone(), withOperations.clone(), true)?;
     b = serializeVarsHelp(file.clone(), vars.derivativeVars.clone(), withOperations.clone(), b.clone())?;
     b = serializeVarsHelp(file.clone(), vars.algVars.clone(), withOperations.clone(), b.clone())?;
@@ -204,12 +204,12 @@ fn serializeTypeName(mut file: File::File, mut ty: Arc<DAE::Type>) -> () {
 }
 
 fn serializeSource(mut file: File::File, mut source: Arc<DAE::ElementSource>, mut withOperations: bool) -> Result<()> {
-    let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
-    let mut paths: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
-    let mut typeLst: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
-    let mut partOfLst: Arc<metamodelica::List<Absyn::Within>> = metamodelica::nil();
-    let mut instance: Arc<DAE::ComponentPrefix> = Arc::new(DAE::ComponentPrefix::NOCOMPPRE);
-    let mut operations: Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>> = metamodelica::nil();
+    let mut info: SourceInfo;
+    let mut paths: Arc<metamodelica::List<Arc<Absyn::Path>>>;
+    let mut typeLst: Arc<metamodelica::List<Arc<Absyn::Path>>>;
+    let mut partOfLst: Arc<metamodelica::List<Absyn::Within>>;
+    let mut instance: Arc<DAE::ComponentPrefix>;
+    let mut operations: Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>>;
     let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(source.clone()) {
         Deref @ DAE::ElementSource { typeLst: __pa0, info: __pa1, instance: __pa2, partOfLst: __pa3, operations: __pa4, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
         _ => bail!("pattern mismatch"),
@@ -417,7 +417,7 @@ impl Ord for AssignType {
 }
 
 fn tagFromAssignType(mut assignType: AssignType) -> Result<ArcStr> {
-    let mut tag: ArcStr = arcstr::literal!("");
+    let mut tag: ArcStr;
     tag = ((match assignType.clone() {
         AssignType::NORMAL => literal!("assign"),
         AssignType::TORN => literal!("torn"),
@@ -1233,7 +1233,7 @@ fn serializeLinearCell(mut file: File::File, mut cell: (i32, i32, Arc<SimCode::S
 }
 
 fn varKindString(mut varKind: BackendDAE::VarKind, mut var: SimCodeVar::SimVar) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     r#str = ((match varKind.clone() {
         BackendDAE::VarKind::VARIABLE { .. } => literal!("variable"),
         BackendDAE::VarKind::STATE { .. } => literal!("state"),
@@ -1266,7 +1266,7 @@ fn varKindString(mut varKind: BackendDAE::VarKind, mut var: SimCodeVar::SimVar) 
 }
 
 fn getWhenUses(mut conditions: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut value: Arc<DAE::Exp>) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> {
-    let mut uses: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
+    let mut uses: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
     uses = listAppend(conditions.clone(), Expression::extractCrefsFromExpDerPreStart(value.clone(), true)?);
     uses = UnorderedSet::unique_list(uses.clone(), (std::sync::Arc::new(ComponentReferenceBasics::hashComponentRef) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentReferenceBasics::crefEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>))?;
     Ok(uses)
@@ -1346,8 +1346,8 @@ fn serializeEquationIndex(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem
 }
 
 fn serializeIfBranch(mut file: File::File, mut branch: (Arc<DAE::Exp>, Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>)) -> Result<()> {
-    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut eqs: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
+    let mut exp: Arc<DAE::Exp>;
+    let mut eqs: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>;
     (exp, eqs) = branch.clone();
     File::write(file.clone(), (literal!("[")).clone());
     serializeExp(file.clone(), exp.clone())?;

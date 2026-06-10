@@ -146,37 +146,37 @@ pub const DISCRETE_SCOPE: i32 = intBitOr(WHEN, intBitOr(INITIAL, FUNCTION));
 pub const NON_EXP_FLAGS: i32 = intBitOr(GLOBAL_FLAGS, intBitOr(CLASS, FUNCTION));
 
 pub fn set(mut context: Type, mut flag: Type) -> Type {
-    let mut newOrigin: Type = 0;
+    let mut newOrigin: Type;
     newOrigin = intBitOr(context.clone(), flag.clone());
     newOrigin
 }
 
 pub fn unset(mut context: Type, mut flag: Type) -> Type {
-    let mut newOrigin: Type = 0;
+    let mut newOrigin: Type;
     newOrigin = intBitAnd(context.clone(), intBitNot(flag.clone()));
     newOrigin
 }
 
 pub fn isSet(mut context: Type, mut flag: Type) -> bool {
-    let mut set: bool = false;
+    let mut set: bool;
     set = intBitAnd(context.clone(), flag.clone()) > 0;
     set
 }
 
 pub fn isNotSet(mut context: Type, mut flag: Type) -> bool {
-    let mut notSet: bool = false;
+    let mut notSet: bool;
     notSet = intBitAnd(context.clone(), flag.clone()) == 0;
     notSet
 }
 
 pub fn clearScopeFlags(mut context: Type) -> Type {
-    let mut outContext: Type = 0;
+    let mut outContext: Type;
     outContext = intBitAnd(context.clone(), GLOBAL_FLAGS.clone());
     outContext
 }
 
 pub fn clearExpFlags(mut context: Type) -> Type {
-    let mut outContext: Type = 0;
+    let mut outContext: Type;
     outContext = intBitAnd(context.clone(), NON_EXP_FLAGS.clone());
     outContext
 }
@@ -342,9 +342,9 @@ pub fn isSingleExpression(mut context: Type) -> bool {
 }
 
 pub fn nodeContext(mut node: Arc<InstNode::InstNode>, mut currentContext: Type) -> Type {
-    let mut nodeContext: Type = 0;
-    let mut parent: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
-    let mut parent_res: Arc<Restriction::NFRestriction> = Arc::new(Restriction::BLOCK);
+    let mut nodeContext: Type;
+    let mut parent: Arc<InstNode::InstNode>;
+    let mut parent_res: Arc<Restriction::NFRestriction>;
     nodeContext = clearScopeFlags(currentContext.clone());
     parent = InstNode::explicitParent(node.clone());
     if !(InstNode::isRootClass(parent.clone())) {

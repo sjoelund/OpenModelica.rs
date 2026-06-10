@@ -111,7 +111,7 @@ impl Default for MatrixStrictness {
 }
 
 pub fn strictnessString(mut s: MatrixStrictness) -> ArcStr {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     r#str = ((match s.clone() {
         MatrixStrictness::LINEAR { .. } => literal!("linear"),
         MatrixStrictness::MATCHING { .. } => literal!("matching"),
@@ -150,9 +150,9 @@ pub mod Mapping {
     pub type MAPPING = Mapping;
 
     pub fn toString(mut mapping: Arc<Mapping>) -> ArcStr {
-        let mut r#str: ArcStr = arcstr::literal!("");
-        let mut start: i32 = 0;
-        let mut size: i32 = 0;
+        let mut r#str: ArcStr;
+        let mut start: i32;
+        let mut size: i32;
         r#str = (StringUtil::headline_4((literal!("Equation Index Mapping (ARR) -> START | SIZE")).clone())).clone();
         for mut i in 1..=metamodelica::arrayLength(mapping.eqn_AtS.clone()) {
             (start, size) = ({let __elt = mapping.eqn_AtS.borrow()[(i.clone()-1) as usize].clone(); __elt});
@@ -172,15 +172,15 @@ pub mod Mapping {
     }
 
     pub fn create(mut eqns: Arc<EquationPointers::EquationPointers>, mut vars: Arc<VariablePointers::VariablePointers>) -> Result<Arc<Mapping>> {
-        let mut mapping: Arc<Mapping> = Arc::new(<Mapping as ::std::default::Default>::default());
+        let mut mapping: Arc<Mapping>;
         let mut eqn_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = BEquation::EquationPointers::toList(eqns.clone())?;
         let mut var_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = BVariable::VariablePointers::toList(vars.clone())?;
-        let mut eqn_StA: metamodelica::Array<i32> = Default::default();
-        let mut var_StA: metamodelica::Array<i32> = Default::default();
-        let mut eqn_AtS: metamodelica::Array<(i32, i32)> = Default::default();
-        let mut var_AtS: metamodelica::Array<(i32, i32)> = Default::default();
-        let mut eqn_scalar_size: i32 = 0;
-        let mut var_scalar_size: i32 = 0;
+        let mut eqn_StA: metamodelica::Array<i32>;
+        let mut var_StA: metamodelica::Array<i32>;
+        let mut eqn_AtS: metamodelica::Array<(i32, i32)>;
+        let mut var_AtS: metamodelica::Array<(i32, i32)>;
+        let mut eqn_scalar_size: i32;
+        let mut var_scalar_size: i32;
         let mut eqn_idx_scal: i32 = 1;
         let mut eqn_idx_arr: i32 = 1;
         let mut var_idx_scal: i32 = 1;
@@ -212,10 +212,10 @@ pub mod Mapping {
 
     pub fn expand(mut mapping: Arc<Mapping>, mut eqn_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>, mut var_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>) -> Result<Arc<Mapping>> {
         let mut mapping: Arc<Mapping> = mapping;
-        let mut eqn_StA: metamodelica::Array<i32> = Default::default();
-        let mut var_StA: metamodelica::Array<i32> = Default::default();
-        let mut eqn_AtS: metamodelica::Array<(i32, i32)> = Default::default();
-        let mut var_AtS: metamodelica::Array<(i32, i32)> = Default::default();
+        let mut eqn_StA: metamodelica::Array<i32>;
+        let mut var_StA: metamodelica::Array<i32>;
+        let mut eqn_AtS: metamodelica::Array<(i32, i32)>;
+        let mut var_AtS: metamodelica::Array<(i32, i32)>;
         let mut neqn_scal: i32 = ({
         let mut __acc: i32 = 0;
         for mut eqn in (eqn_lst.clone()).into_iter().cloned() {
@@ -248,9 +248,9 @@ pub mod Mapping {
     }
 
     pub fn getEqnScalIndices(mut arr_idx: i32, mut mapping: Arc<Mapping>, mut reverse: bool) -> Arc<metamodelica::List<i32>> {
-        let mut scal_indices: Arc<metamodelica::List<i32>> = metamodelica::nil();
-        let mut start: i32 = 0;
-        let mut length: i32 = 0;
+        let mut scal_indices: Arc<metamodelica::List<i32>>;
+        let mut start: i32;
+        let mut length: i32;
         (start, length) = ({let __elt = mapping.eqn_AtS.borrow()[(arr_idx.clone()-1) as usize].clone(); __elt});
         scal_indices = if (reverse.clone()) {List::intRange2(start.clone() + length.clone() - 1, start.clone())} else {List::intRange2(start.clone(), start.clone() + length.clone() - 1)};
         scal_indices
@@ -258,7 +258,7 @@ pub mod Mapping {
 
     pub fn getVarScalIndices(mut arr_idx: i32, mut mapping: Arc<Mapping>, mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>, mut dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>>, mut reverse: bool) -> Result<Arc<metamodelica::List<i32>>> {
         fn subscriptedIndices(mut start: i32, mut length: i32, mut slice: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> {
-            let mut scal_indices: Arc<metamodelica::List<i32>> = metamodelica::nil();
+            let mut scal_indices: Arc<metamodelica::List<i32>>;
             scal_indices = List::intRange2(start.clone(), start.clone() + length.clone() - 1);
             if !(slice.clone().is_empty()) {
                 scal_indices = List::keepPositions(scal_indices.clone(), slice.clone(), false)?;
@@ -266,9 +266,9 @@ pub mod Mapping {
             Ok(scal_indices)
         }
 
-        let mut scal_indices: Arc<metamodelica::List<i32>> = metamodelica::nil();
-        let mut start: i32 = 0;
-        let mut length: i32 = 0;
+        let mut scal_indices: Arc<metamodelica::List<i32>>;
+        let mut start: i32;
+        let mut length: i32;
         (start, length) = ({let __elt = mapping.var_AtS.borrow()[(arr_idx.clone()-1) as usize].clone(); __elt});
         scal_indices = ({
         let mut slice: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -328,7 +328,7 @@ pub mod Mapping {
         let mut var_StA: metamodelica::Array<i32> = var_StA;
         let mut eqn_AtS: metamodelica::Array<(i32, i32)> = eqn_AtS;
         let mut var_AtS: metamodelica::Array<(i32, i32)> = var_AtS;
-        let mut size: i32 = 0;
+        let mut size: i32;
         let mut eqn_idx_scal: i32 = eqn_idx_scal_start.clone();
         let mut eqn_idx_arr: i32 = eqn_idx_arr_start.clone();
         let mut var_idx_scal: i32 = var_idx_scal_start.clone();
@@ -442,29 +442,29 @@ pub mod Mode {
     pub type Key = (i32, i32);
 
     pub fn keyString(mut key: Key) -> ArcStr {
-        let mut r#str: ArcStr = arcstr::literal!("");
-        let mut e: i32 = 0;
-        let mut v: i32 = 0;
+        let mut r#str: ArcStr;
+        let mut e: i32;
+        let mut v: i32;
         (e, v) = key.clone();
         r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(e.clone())); __mm_s.push_str(&*literal!(",")); __mm_s.push_str(&*intString(v.clone())); ArcStr::from(__mm_s) }).clone();
         r#str
     }
 
     pub fn keyHash(mut key: Key) -> i32 {
-        let mut hash: i32 = 0;
-        let mut e: i32 = 0;
-        let mut v: i32 = 0;
+        let mut hash: i32;
+        let mut e: i32;
+        let mut v: i32;
         (e, v) = key.clone();
         hash = e.clone() * 31 + v.clone();
         hash
     }
 
     pub fn keyEqual(mut key1: Key, mut key2: Key) -> bool {
-        let mut b: bool = false;
-        let mut e1: i32 = 0;
-        let mut e2: i32 = 0;
-        let mut v1: i32 = 0;
-        let mut v2: i32 = 0;
+        let mut b: bool;
+        let mut e1: i32;
+        let mut e2: i32;
+        let mut v1: i32;
+        let mut v2: i32;
         (e1, v1) = key1.clone();
         (e2, v2) = key2.clone();
         b = e1.clone() == e2.clone() && v1.clone() == v2.clone();
@@ -522,19 +522,19 @@ pub mod Matrix {
     }
     pub use self::Matrix::{EMPTY,FULL,FINAL,SPARSITY};
     pub fn createFull(mut vars: Arc<VariablePointers::VariablePointers>, mut eqns: Arc<EquationPointers::EquationPointers>, mut kind: Partition::Kind) -> Result<Arc<Matrix>> {
-        let mut adj: Arc<Matrix> = Arc::new(<Matrix as ::std::default::Default>::default());
-        let mut index: i32 = 0;
+        let mut adj: Arc<Matrix>;
+        let mut index: i32;
         let mut size: i32 = BEquation::EquationPointers::size(eqns.clone());
-        let mut equation_names: metamodelica::Array<Arc<ComponentRef::NFComponentRef>> = Default::default();
-        let mut occurrences: metamodelica::Array<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>> = Default::default();
-        let mut dependencies: metamodelica::Array<Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Dependency::Dependency>>>> = Default::default();
-        let mut solvabilities: metamodelica::Array<Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Solvability::Solvability>>>> = Default::default();
-        let mut repetitions: metamodelica::Array<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>> = Default::default();
-        let mut occ_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
-        let mut rep_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
-        let mut dep_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Dependency::Dependency>>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Dependency::Dependency>>> as ::std::default::Default>::default();
-        let mut sol_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Solvability::Solvability>>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Solvability::Solvability>>> as ::std::default::Default>::default();
-        let mut mapping: Arc<Mapping::Mapping> = Arc::new(<Mapping::Mapping as ::std::default::Default>::default());
+        let mut equation_names: metamodelica::Array<Arc<ComponentRef::NFComponentRef>>;
+        let mut occurrences: metamodelica::Array<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>>;
+        let mut dependencies: metamodelica::Array<Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Dependency::Dependency>>>>;
+        let mut solvabilities: metamodelica::Array<Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Solvability::Solvability>>>>;
+        let mut repetitions: metamodelica::Array<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>>;
+        let mut occ_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
+        let mut rep_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
+        let mut dep_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Dependency::Dependency>>>;
+        let mut sol_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Solvability::Solvability>>>;
+        let mut mapping: Arc<Mapping::Mapping>;
         if ExpandableArray::getNumberOfElements(vars.varArr.clone()) > 0 || ExpandableArray::getNumberOfElements(eqns.eqArr.clone()) > 0 {
             equation_names = arrayCreate(size.clone(), openmodelica_nf_frontend::NFComponentRef::interned_EMPTY());
             occurrences = arrayCreate(size.clone(), UnorderedSet::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13));
@@ -599,7 +599,7 @@ pub mod Matrix {
     pub fn fullToSparsity(mut full: Arc<Matrix>, mut comps: Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>>) -> Result<Arc<Matrix>> {
         pub type Dependencies = Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
 
-        let mut sparse: Arc<Matrix> = Arc::new(<Matrix as ::std::default::Default>::default());
+        let mut sparse: Arc<Matrix>;
         sparse = ({
         let mut index_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
         let mut inner_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>> = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
@@ -777,10 +777,10 @@ pub mod Matrix {
     pub fn expand(mut adj: Arc<Matrix>, mut full: Arc<Matrix>, mut vo: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut vn: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut eo: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut en: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut vars: Arc<VariablePointers::VariablePointers>, mut eqns: Arc<EquationPointers::EquationPointers>, mut kind: Partition::Kind) -> Result<(Arc<Matrix>, Arc<Matrix>)> {
         let mut adj: Arc<Matrix> = adj;
         let mut full: Arc<Matrix> = full;
-        let mut size_vo: i32 = 0;
-        let mut size_vn: i32 = 0;
-        let mut size_eo: i32 = 0;
-        let mut size_en: i32 = 0;
+        let mut size_vo: i32;
+        let mut size_vn: i32;
+        let mut size_eo: i32;
+        let mut size_en: i32;
         if Flags::isSet(Flags::BLT_MATRIX_DUMP.clone())? {
             size_vo = ({
         let mut __acc: i32 = 0;
@@ -1636,7 +1636,7 @@ pub mod Matrix {
     }
 
     pub fn getStrictness(mut adj: Arc<Matrix>) -> Result<MatrixStrictness> {
-        let mut st: MatrixStrictness = MatrixStrictness::LINEAR;
+        let mut st: MatrixStrictness;
         st = (::match_deref::match_deref! { match &(adj.clone()) {
         Deref @ FULL { .. } => MatrixStrictness::FULL.clone(),
         Deref @ FINAL { .. } => var_field!((*adj).st, Matrix::FINAL).clone(),
@@ -1648,7 +1648,7 @@ pub mod Matrix {
     }
 
     pub fn isEmpty(mut adj: Arc<Matrix>) -> bool {
-        let mut b: bool = false;
+        let mut b: bool;
         b = (::match_deref::match_deref! { match &(adj.clone()) {
         Deref @ EMPTY { .. } => true,
         _ => false,
@@ -1658,7 +1658,7 @@ pub mod Matrix {
     }
 
     pub fn getMappingOpt(mut adj: Arc<Matrix>) -> Option<Arc<Mapping::Mapping>> {
-        let mut mapping: Option<Arc<Mapping::Mapping>> = None;
+        let mut mapping: Option<Arc<Mapping::Mapping>>;
         mapping = (::match_deref::match_deref! { match &(adj.clone()) {
         Deref @ FULL { .. } => Some(var_field!((*adj).mapping, Matrix::FULL).clone()),
         Deref @ FINAL { .. } => Some(var_field!((*adj).mapping, Matrix::FINAL).clone()),
@@ -1669,7 +1669,7 @@ pub mod Matrix {
     }
 
     pub fn nonZeroCount(mut adj: Arc<Matrix>) -> Result<i32> {
-        let mut count: i32 = 0;
+        let mut count: i32;
         count = (::match_deref::match_deref! { match &(adj.clone()) {
         Deref @ FINAL { .. } => BackendUtil::countElem(var_field!((*adj).m, Matrix::FINAL).clone()),
         Deref @ EMPTY { .. } => 0,
@@ -1691,7 +1691,7 @@ pub mod Matrix {
     }
 
     pub fn transposeScalar(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut size: i32) -> Result<metamodelica::Array<Arc<metamodelica::List<i32>>>> {
-        let mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+        let mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
         mT = arrayCreate(size.clone(), metamodelica::nil());
         for mut row in 1..=metamodelica::arrayLength(m.clone()) {
             let __range0 = &*({let __elt = m.borrow()[(row.clone()-1) as usize].clone(); __elt});
@@ -1730,7 +1730,7 @@ pub mod Matrix {
     pub fn toStringSingle(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<ArcStr> {
         let mut r#str: ArcStr = literal!("");
         let mut skip: i32 = ((intString(metamodelica::arrayLength(m.clone()))).clone().len() as i32) + 1;
-        let mut tmp: ArcStr = arcstr::literal!("");
+        let mut tmp: ArcStr;
         for mut row in 1..=metamodelica::arrayLength(m.clone()) {
             tmp = (intString(row.clone())).clone();
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\t(")); __mm_s.push_str(&*tmp.clone()); __mm_s.push_str(&*literal!(")")); __mm_s.push_str(&*StringUtil::repeat((literal!(" ")).clone(), skip.clone() - ((tmp.clone()).clone().len() as i32))); __mm_s.push_str(&*List::toString(({let __elt = m.borrow()[(row.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
@@ -1759,7 +1759,7 @@ pub mod Matrix {
     }
 
     fn dimsString(mut dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>>) -> Result<ArcStr> {
-        let mut r#str: ArcStr = arcstr::literal!("");
+        let mut r#str: ArcStr;
         r#str = ((::match_deref::match_deref! { match &(dims.clone()) {
         Deref @ metamodelica::List::Nil => literal!("{1}"),
         _ => List::toString(({
@@ -1776,11 +1776,11 @@ pub mod Matrix {
     }
 
     fn initialize(mut mapping: Arc<Mapping::Mapping>, mut st: MatrixStrictness) -> Result<Arc<Matrix>> {
-        let mut adj: Arc<Matrix> = Arc::new(<Matrix as ::std::default::Default>::default());
-        let mut m: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
-        let mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
-        let mut eqn_scalar_size: i32 = 0;
-        let mut var_scalar_size: i32 = 0;
+        let mut adj: Arc<Matrix>;
+        let mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+        let mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+        let mut eqn_scalar_size: i32;
+        let mut var_scalar_size: i32;
         eqn_scalar_size = metamodelica::arrayLength(mapping.eqn_StA.clone());
         var_scalar_size = metamodelica::arrayLength(mapping.var_StA.clone());
         if eqn_scalar_size.clone() > 0 || var_scalar_size.clone() > 0 {
@@ -1794,15 +1794,15 @@ pub mod Matrix {
     }
 
     fn upgradeRow(mut eqn_ptr: Pointer::Pointer<Arc<Equation::Equation>>, mut eqn_arr_idx: i32, mut dependencies: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>, mut dep: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Dependency::Dependency>>>, mut rep: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut fullmap: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mapping: Arc<Mapping::Mapping>, mut modes: Arc<UnorderedMap::UnorderedMap<(i32, i32), Arc<Mode::Mode>>>, mut iter_: Arc<Iterator::Iterator>) -> Result<()> {
-        let mut eqn_scal_idx: i32 = 0;
-        let mut eqn_size: i32 = 0;
-        let mut row: Arc<metamodelica::List<i32>> = metamodelica::nil();
+        let mut eqn_scal_idx: i32;
+        let mut eqn_size: i32;
+        let mut row: Arc<metamodelica::List<i32>>;
         let mut eqn: Arc<Equation::Equation> = Pointer::access(eqn_ptr.clone());
         let mut iter: Arc<Iterator::Iterator> = BEquation::Equation::getForIterator(eqn.clone());
         let mut ty: Arc<Type::NFType> = BEquation::Equation::getType(eqn.clone(), true)?;
-        let mut names: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-        let mut ranges: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-        let mut maps: Arc<metamodelica::List<Option<Arc<Iterator::Iterator>>>> = metamodelica::nil();
+        let mut names: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
+        let mut ranges: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
+        let mut maps: Arc<metamodelica::List<Option<Arc<Iterator::Iterator>>>>;
         match '__try0: {
             if BEquation::Equation::isAlgorithm(eqn_ptr.clone()) || BEquation::Equation::isIfEquation(eqn_ptr.clone()) {
                 (eqn_scal_idx, eqn_size) = ({let __elt = mapping.eqn_AtS.borrow()[(eqn_arr_idx.clone()-1) as usize].clone(); __elt});
@@ -1874,7 +1874,7 @@ pub mod Dependency {
 
     pub fn toString(mut dep: Arc<Dependency>) -> Result<ArcStr> {
         fn kindString(mut kind: Kind) -> ArcStr {
-            let mut r#str: ArcStr = arcstr::literal!("");
+            let mut r#str: ArcStr;
             r#str = ((match kind.clone() {
         Kind::REGULAR => literal!(":"),
         _ => literal!("-"),
@@ -1882,9 +1882,9 @@ pub mod Dependency {
             r#str
         }
 
-        let mut r#str: ArcStr = arcstr::literal!("");
-        let mut str1: ArcStr = arcstr::literal!("");
-        let mut str2: ArcStr = arcstr::literal!("");
+        let mut r#str: ArcStr;
+        let mut str1: ArcStr;
+        let mut str2: ArcStr;
         str1 = (Array::toString(dep.skips.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(_) -> Result<ArcStr> + 'static> = (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>); let __pe_b2 = (literal!("")).clone(); let __pe_b3 = (literal!("{")).clone(); let __pe_b4 = (literal!(", ")).clone(); let __pe_b5 = (literal!("}")).clone(); let __pe_b6 = false; let __pe_b7 = 0; move |__pe_a0| List::toString(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_b6.clone(), __pe_b7.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("")).clone(), (literal!(", ")).clone(), (literal!("")).clone(), true, 0)?).clone();
         str2 = (List::toString(dep.kinds.clone(), (std::sync::Arc::new(fnptr!(kindString, Kind)) as std::sync::Arc<dyn ::std::ops::Fn(Kind) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("")).clone(), (literal!(", ")).clone(), (literal!("")).clone(), true, 0)?).clone();
         r#str = (if (str1.clone() == literal!("") || str2.clone() == literal!("")) {{ let mut __mm_s = String::new(); __mm_s.push_str(&*str1.clone()); __mm_s.push_str(&*str2.clone()); ArcStr::from(__mm_s) }} else {{ let mut __mm_s = String::new(); __mm_s.push_str(&*str1.clone()); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*str2.clone()); ArcStr::from(__mm_s) }}).clone();
@@ -1905,7 +1905,7 @@ pub mod Dependency {
     }
 
     pub fn create(mut sub_ty: Arc<Type::NFType>, mut depth: i32) -> Result<Arc<Dependency>> {
-        let mut dep: Arc<Dependency> = Arc::new(<Dependency as ::std::default::Default>::default());
+        let mut dep: Arc<Dependency>;
         dep = Arc::new(Dependency { skips: arrayCreate(depth.clone(), metamodelica::nil()), kinds: ({
         let mut __acc: Arc<metamodelica::List<Kind>> = metamodelica::nil();
         for mut dim in (Type::arrayDims(sub_ty.clone())).into_iter().cloned() {
@@ -1939,9 +1939,9 @@ pub mod Dependency {
         }
 
         let mut opt_dep: Option<Arc<Dependency>> = UnorderedMap::get(cref.clone(), map.clone())?;
-        let mut dep: Arc<Dependency> = Arc::new(<Dependency as ::std::default::Default>::default());
-        let mut kinds: Arc<metamodelica::List<Kind>> = metamodelica::nil();
-        let mut res: i32 = 0;
+        let mut dep: Arc<Dependency>;
+        let mut kinds: Arc<metamodelica::List<Kind>>;
+        let mut res: i32;
         if isSome(opt_dep.clone()) {
             let __pa0 = ::match_deref::match_deref! { match &(opt_dep.clone()) {
                 Some(__pa0) => __pa0.clone(),
@@ -1968,7 +1968,7 @@ pub mod Dependency {
 
     pub fn skip(mut cref: Arc<ComponentRef::NFComponentRef>, mut depth: i32, mut sk: i32, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Dependency>>>) -> Result<()> {
         let mut opt_dep: Option<Arc<Dependency>> = UnorderedMap::get(cref.clone(), map.clone())?;
-        let mut dep: Arc<Dependency> = Arc::new(<Dependency as ::std::default::Default>::default());
+        let mut dep: Arc<Dependency>;
         if isSome(opt_dep.clone()) {
             let __pa0 = ::match_deref::match_deref! { match &(opt_dep.clone()) {
                 Some(__pa0) => __pa0.clone(),
@@ -1992,10 +1992,10 @@ pub mod Dependency {
 
     pub fn removeSkips(mut cref: Arc<ComponentRef::NFComponentRef>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Dependency>>>, mut num: i32, mut reverse: bool) -> Result<()> {
         let mut opt_dep: Option<Arc<Dependency>> = UnorderedMap::get(cref.clone(), map.clone())?;
-        let mut dep: Arc<Dependency> = Arc::new(<Dependency as ::std::default::Default>::default());
+        let mut dep: Arc<Dependency>;
         let mut rest: i32 = num.clone();
         let mut i: i32 = 0;
-        let mut len: i32 = 0;
+        let mut len: i32;
         if isSome(opt_dep.clone()) {
             let __pa0 = ::match_deref::match_deref! { match &(opt_dep.clone()) {
                 Some(__pa0) => __pa0.clone(),
@@ -2077,7 +2077,7 @@ pub mod Dependency {
         let mut A: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
         let mut S: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
         let mut K: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-        let mut repeats: bool = false;
+        let mut repeats: bool;
         for mut cref in &*crefs.clone() {
             let mut cref = cref.clone();
             repeats = UnorderedSet::contains(cref.clone(), rep_set.clone())?;
@@ -2163,7 +2163,7 @@ pub mod Solvability {
     }
     pub use self::Solvability::{UNKNOWN,UNSOLVABLE,IMPLICIT,EXPLICIT_NONLINEAR,EXPLICIT_LINEAR};
     pub fn toString(mut sol: Arc<Solvability>) -> Result<ArcStr> {
-        let mut r#str: ArcStr = arcstr::literal!("");
+        let mut r#str: ArcStr;
         r#str = ((::match_deref::match_deref! { match &(sol.clone()) {
         Deref @ UNSOLVABLE { .. } => literal!("XX"),
         Deref @ IMPLICIT { .. } => literal!("II"),
@@ -2180,7 +2180,7 @@ pub mod Solvability {
     }
 
     pub fn rank(mut sol: Arc<Solvability>) -> Result<i32> {
-        let mut r: i32 = 0;
+        let mut r: i32;
         r = (::match_deref::match_deref! { match &(sol.clone()) {
         Deref @ UNSOLVABLE { .. } => 7,
         Deref @ IMPLICIT { .. } => 6,
@@ -2266,7 +2266,7 @@ pub mod Solvability {
 
     pub fn filter(mut all_occ: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Solvability>>>, mut rel: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut min: i32, mut max: i32) -> Result<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>> {
         let mut occ: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-        let mut r: i32 = 0;
+        let mut r: i32;
         for mut cref in &*all_occ.clone() {
             let mut cref = cref.clone();
             if UnorderedMap::contains(cref.clone(), rel.clone())? {
@@ -2280,7 +2280,7 @@ pub mod Solvability {
     }
 
     pub fn fromStrictness(mut st: MatrixStrictness) -> Arc<Solvability> {
-        let mut sol: Arc<Solvability> = Arc::new(Solvability::IMPLICIT);
+        let mut sol: Arc<Solvability>;
         sol = (match st.clone() {
         MatrixStrictness::LINEAR { .. } => Arc::new(Solvability::EXPLICIT_LINEAR { pars: None, vars: Some(UnorderedSet::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13)) }),
         MatrixStrictness::MATCHING { .. } => crate::NBAdjacency::Solvability::interned_IMPLICIT(),
@@ -2291,7 +2291,7 @@ pub mod Solvability {
     }
 
     pub fn isNonlinearOrImplicit(mut sol: Arc<Solvability>) -> bool {
-        let mut b: bool = false;
+        let mut b: bool;
         b = (::match_deref::match_deref! { match &(sol.clone()) {
         Deref @ EXPLICIT_NONLINEAR { .. } => true,
         Deref @ IMPLICIT { .. } => true,
@@ -2304,7 +2304,7 @@ pub mod Solvability {
 }
 
 pub fn collectDependenciesEquation(mut eqn: Arc<Equation::Equation>, mut kind: Partition::Kind, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut dep_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Dependency::Dependency>>>, mut sol_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Solvability::Solvability>>>, mut rep_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>> {
-    let mut occurrences: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
+    let mut occurrences: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
     let mut inputs: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
     let mut outputs: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
     occurrences = (::match_deref::match_deref! { match &(eqn.clone()) {
@@ -2601,10 +2601,10 @@ pub fn collectDependencies(mut exp: Arc<Expression::NFExpression>, mut depth: i3
 }
 
 pub fn collectDependenciesCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut depth: i32, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut dep_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Dependency::Dependency>>>, mut sol_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Solvability::Solvability>>>) -> Result<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>> {
-    let mut crefs: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
+    let mut crefs: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
     let mut var: Pointer::Pointer<Arc<Variable::NFVariable>>;
     let mut sk: i32 = 1;
-    let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
+    let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>;
     if UnorderedMap::contains(cref.clone(), map.clone())? {
         if !(UnorderedMap::contains(cref.clone(), dep_map.clone())?) {
             UnorderedMap::add(cref.clone(), Dependency::create(ComponentRef::getSubscriptedType(cref.clone(), false)?, depth.clone())?, dep_map.clone())?;
@@ -2669,9 +2669,9 @@ pub fn addRepetitions(mut occ: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::
 pub fn collectDependenciesIf(mut body: Arc<IfEquationBody::IfEquationBody>, mut kind: Partition::Kind, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut dep_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Dependency::Dependency>>>, mut sol_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Solvability::Solvability>>>, mut rep_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>> {
     let mut set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
     let mut sets1: Arc<metamodelica::List<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>>> = metamodelica::nil();
-    let mut set1: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
-    let mut set2: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
-    let mut diff: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
+    let mut set1: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
+    let mut set2: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
+    let mut diff: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
     if isInitialException(body.condition.clone())? {
         if isSome(body.else_if.clone()) {
             set = collectDependenciesIf(Util::getOption(body.else_if.clone())?, kind.clone(), map.clone(), dep_map.clone(), sol_map.clone(), rep_set.clone())?;
@@ -2698,13 +2698,13 @@ pub fn collectDependenciesIf(mut body: Arc<IfEquationBody::IfEquationBody>, mut 
 }
 
 pub fn collectDependenciesWhen(mut body: Arc<WhenEquationBody::WhenEquationBody>, mut kind: Partition::Kind, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut dep_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Dependency::Dependency>>>, mut sol_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Solvability::Solvability>>>, mut rep_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>> {
-    let mut set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
-    let mut set1: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
-    let mut set2: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
-    let mut diff: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
+    let mut set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
+    let mut set1: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
+    let mut set2: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
+    let mut diff: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
     let mut lst: Arc<metamodelica::List<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>>> = metamodelica::nil();
-    let mut lst1: Arc<metamodelica::List<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>>> = metamodelica::nil();
-    let mut lst2: Arc<metamodelica::List<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>>> = metamodelica::nil();
+    let mut lst1: Arc<metamodelica::List<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>>>;
+    let mut lst2: Arc<metamodelica::List<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>>>;
     let mut tpl_lst: Arc<metamodelica::List<(Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>)>> = metamodelica::nil();
     if isInitialException(body.condition.clone())? {
         if isSome(body.else_when.clone()) {
@@ -2742,7 +2742,7 @@ pub fn collectDependenciesWhen(mut body: Arc<WhenEquationBody::WhenEquationBody>
 }
 
 pub fn collectDependenciesStmt(mut stmt: Arc<WhenStatement::WhenStatement>, mut kind: Partition::Kind, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut dep_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Dependency::Dependency>>>, mut sol_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Solvability::Solvability>>>, mut rep_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<(Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>)> {
-    let mut set_tpl: (Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) = (<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default(), <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default());
+    let mut set_tpl: (Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>);
     let mut set1: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
     let mut set2: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
     set_tpl = (::match_deref::match_deref! { match &(stmt.clone()) {

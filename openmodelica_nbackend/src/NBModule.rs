@@ -75,9 +75,9 @@ use openmodelica_util_datatypes_basic::Pointer;
 pub type wrapper = std::sync::Arc<dyn ::std::ops::Fn(Arc<Jacobian::NBackendDAE>) -> Result<Arc<Jacobian::NBackendDAE>> + 'static>;
 
 pub fn moduleClockString(mut name_clock: (ArcStr, metamodelica::Real)) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
-    let mut name: ArcStr = arcstr::literal!("");
-    let mut clck: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+    let mut r#str: ArcStr;
+    let mut name: ArcStr;
+    let mut clck: metamodelica::Real;
     (name, clck) = name_clock.clone();
     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\t")); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), 50 - ((name.clone()).clone().len() as i32))); __mm_s.push_str(&*System::sprintff((literal!("%.4g")).clone(), clck.clone())?); ArcStr::from(__mm_s) }).clone();
     Ok(r#str)

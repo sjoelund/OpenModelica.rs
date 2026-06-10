@@ -27,11 +27,10 @@ use syn::{parse_macro_input, Data, DeriveInput, Fields, Index};
 /// handle). Used by [`derive_meta_cmp`] to give such fields a pointer-identity
 /// fast path.
 fn is_arc(ty: &syn::Type) -> bool {
-    if let syn::Type::Path(tp) = ty {
-        if let Some(seg) = tp.path.segments.last() {
+    if let syn::Type::Path(tp) = ty
+        && let Some(seg) = tp.path.segments.last() {
             return seg.ident == "Arc";
         }
-    }
     false
 }
 

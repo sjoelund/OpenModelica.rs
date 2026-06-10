@@ -18,7 +18,7 @@ use openmodelica_frontend_types::DAE;
 use openmodelica_susan::Tpl;
 
 pub fn dumpBackendDAE(mut in_txt: Tpl::Text, mut in_a_backendDAE: Arc<BackendDAE::BackendDAE>, mut in_a_suffix: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_backendDAE.clone(), in_a_suffix.clone())) {
         (txt, i_dae @ Deref @ BackendDAE::BackendDAE { shared: Deref @ BackendDAE::Shared { info: BackendDAE::ExtraInfo { fileNamePrefix: i_info_fileNamePrefix, .. }, .. }, .. }, a_suffix) => {
             let mut txt_3: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -44,7 +44,7 @@ pub fn dumpBackendDAE(mut in_txt: Tpl::Text, mut in_a_backendDAE: Arc<BackendDAE
 }
 
 pub fn dumpAdjacencyMatrix(mut in_txt: Tpl::Text, mut in_a_backendDAE: Arc<BackendDAE::BackendDAE>, mut in_a_suffix: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_backendDAE.clone(), in_a_suffix.clone())) {
         (txt, i_dae @ Deref @ BackendDAE::BackendDAE { shared: Deref @ BackendDAE::Shared { info: BackendDAE::ExtraInfo { fileNamePrefix: i_info_fileNamePrefix, .. }, .. }, .. }, a_suffix) => {
             let mut txt_2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -68,7 +68,7 @@ pub fn dumpAdjacencyMatrix(mut in_txt: Tpl::Text, mut in_a_backendDAE: Arc<Backe
 }
 
 fn fun_11(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_var_varName: Arc<DAE::ComponentRef>, mut in_a_varID: i32, mut in_a_clusterID: i32) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_var_varName.clone(), in_a_varID.clone(), in_a_clusterID.clone())) {
         (txt, false, a_var_varName, a_varID, a_clusterID) => {
             let mut txt = (*txt).clone();
@@ -195,7 +195,7 @@ fn lm_14(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<BackendDAE::E
 }
 
 pub fn dumpDependence(mut in_txt: Tpl::Text, mut in_a_backendDAE: Arc<BackendDAE::BackendDAE>, mut in_a_suffix: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_backendDAE.clone(), in_a_suffix.clone())) {
         (txt, Deref @ BackendDAE::BackendDAE { eqs: i_eqs, shared: Deref @ BackendDAE::Shared { info: BackendDAE::ExtraInfo { fileNamePrefix: i_info_fileNamePrefix, .. }, .. } }, a_suffix) => {
             let mut l_systems: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -225,7 +225,7 @@ pub fn dumpDependence(mut in_txt: Tpl::Text, mut in_a_backendDAE: Arc<BackendDAE
 }
 
 fn fun_16(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_eqID: i32, mut in_a_varID: i32, mut in_a_clusterID: i32) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_eqID.clone(), in_a_varID.clone(), in_a_clusterID.clone()) {
         (mut txt, false, _, _, _) => {
             txt.clone()
@@ -286,7 +286,7 @@ fn lm_18(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<metamodelica:
 }
 
 fn fun_19(mut in_txt: Tpl::Text, mut in_a_m: Option<metamodelica::Array<Arc<metamodelica::List<i32>>>>, mut in_a_clusterID: i32) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_m.clone(), in_a_clusterID.clone()) {
         (mut txt, Some(mut i_incMatrix), mut a_clusterID) => {
             let mut ret_1: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
@@ -307,13 +307,13 @@ fn fun_19(mut in_txt: Tpl::Text, mut in_a_m: Option<metamodelica::Array<Arc<meta
 }
 
 pub fn dumpDependence2(mut txt: Tpl::Text, mut a_clusterID: i32, mut a_m: Option<metamodelica::Array<Arc<metamodelica::List<i32>>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = fun_19(txt.clone(), a_m.clone(), a_clusterID.clone())?;
     Ok(out_txt)
 }
 
 fn fun_21(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_var_varName: Arc<DAE::ComponentRef>, mut in_a_varID: i32, mut in_a_clusterID: i32) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_var_varName.clone(), in_a_varID.clone(), in_a_clusterID.clone())) {
         (txt, false, a_var_varName, a_varID, a_clusterID) => {
             let mut txt = (*txt).clone();
@@ -440,7 +440,7 @@ fn lm_24(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<BackendDAE::E
 }
 
 pub fn dumpMatching(mut in_txt: Tpl::Text, mut in_a_backendDAE: Arc<BackendDAE::BackendDAE>, mut in_a_suffix: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_backendDAE.clone(), in_a_suffix.clone())) {
         (txt, Deref @ BackendDAE::BackendDAE { eqs: i_eqs, shared: Deref @ BackendDAE::Shared { info: BackendDAE::ExtraInfo { fileNamePrefix: i_info_fileNamePrefix, .. }, .. } }, a_suffix) => {
             let mut l_systems: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -470,7 +470,7 @@ pub fn dumpMatching(mut in_txt: Tpl::Text, mut in_a_backendDAE: Arc<BackendDAE::
 }
 
 fn fun_26(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_eqID: i32, mut in_a_varID: i32, mut in_a_clusterID: i32) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_eqID.clone(), in_a_varID.clone(), in_a_clusterID.clone()) {
         (mut txt, false, _, _, _) => {
             txt.clone()
@@ -492,7 +492,7 @@ fn fun_26(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_eqID: i32, mut in_a
 }
 
 fn fun_27(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_eqID: i32, mut in_a_clusterID: i32, mut in_a_varID: i32) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_eqID.clone(), in_a_clusterID.clone(), in_a_varID.clone()) {
         (mut txt, false, mut a_eqID, mut a_clusterID, mut a_varID) => {
             let mut ret_0: bool = false;
@@ -560,7 +560,7 @@ fn lm_29(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<metamodelica:
 }
 
 fn fun_30(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_eqID: i32, mut in_a_varID: i32, mut in_a_clusterID: i32) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_eqID.clone(), in_a_varID.clone(), in_a_clusterID.clone()) {
         (mut txt, false, _, _, _) => {
             txt.clone()
@@ -621,7 +621,7 @@ fn lm_32(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<metamodelica:
 }
 
 fn fun_33(mut in_txt: Tpl::Text, mut in_a_matching: Arc<BackendDAE::Matching>, mut in_a_clusterID: i32, mut in_a_incMatrix: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_matching.clone(), in_a_clusterID.clone(), in_a_incMatrix.clone())) {
         (txt, Deref @ BackendDAE::Matching::MATCHING { ass2: i_ass2, .. }, a_clusterID, a_incMatrix) => {
             let mut ret_1: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
@@ -652,7 +652,7 @@ fn fun_33(mut in_txt: Tpl::Text, mut in_a_matching: Arc<BackendDAE::Matching>, m
 }
 
 fn fun_34(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_eqID: i32, mut in_a_varID: i32, mut in_a_clusterID: i32) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_eqID.clone(), in_a_varID.clone(), in_a_clusterID.clone()) {
         (mut txt, false, _, _, _) => {
             txt.clone()
@@ -693,7 +693,7 @@ fn lm_35(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<i32>>, mut a_clus
 }
 
 fn fun_36(mut in_txt: Tpl::Text, mut in_a_matching: Arc<BackendDAE::Matching>, mut in_a_clusterID: i32) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_matching.clone(), in_a_clusterID.clone())) {
         (txt, Deref @ BackendDAE::Matching::MATCHING { ass2: i_ass2, .. }, a_clusterID) => {
             let mut ret_1: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -718,7 +718,7 @@ fn fun_36(mut in_txt: Tpl::Text, mut in_a_matching: Arc<BackendDAE::Matching>, m
 }
 
 fn fun_37(mut in_txt: Tpl::Text, mut in_a_m: Option<metamodelica::Array<Arc<metamodelica::List<i32>>>>, mut in_a_clusterID: i32, mut in_a_matching: Arc<BackendDAE::Matching>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_m.clone(), in_a_clusterID.clone(), in_a_matching.clone())) {
         (txt, Some(i_incMatrix), a_clusterID, a_matching) => {
             let mut txt = (*txt).clone();
@@ -736,7 +736,7 @@ fn fun_37(mut in_txt: Tpl::Text, mut in_a_m: Option<metamodelica::Array<Arc<meta
 }
 
 pub fn connections(mut txt: Tpl::Text, mut a_clusterID: i32, mut a_matching: Arc<BackendDAE::Matching>, mut a_m: Option<metamodelica::Array<Arc<metamodelica::List<i32>>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = fun_37(txt.clone(), a_m.clone(), a_clusterID.clone(), a_matching.clone())?;
     Ok(out_txt)
 }
@@ -840,7 +840,7 @@ fn lm_41(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<BackendDAE::E
 }
 
 pub fn dumpSorting(mut in_txt: Tpl::Text, mut in_a_backendDAE: Arc<BackendDAE::BackendDAE>, mut in_a_suffix: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_backendDAE.clone(), in_a_suffix.clone())) {
         (txt, Deref @ BackendDAE::BackendDAE { eqs: i_eqs, shared: Deref @ BackendDAE::Shared { info: BackendDAE::ExtraInfo { fileNamePrefix: i_info_fileNamePrefix, .. }, .. } }, a_suffix) => {
             let mut l_systems: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -888,7 +888,7 @@ fn lm_43(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<i32>>, mut a_clus
 }
 
 fn fun_44(mut in_txt: Tpl::Text, mut in_a_comp: Arc<BackendDAE::StrongComponent>, mut in_a_clusterID: i32) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_comp.clone(), in_a_clusterID.clone())) {
         (txt, Deref @ BackendDAE::StrongComponent::SINGLEEQUATION { var: i_c_var, .. }, a_clusterID) => {
             let mut txt = (*txt).clone();
@@ -934,7 +934,7 @@ fn lm_45(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<BackendDAE::S
 }
 
 fn fun_46(mut in_txt: Tpl::Text, mut in_a_matching: Arc<BackendDAE::Matching>, mut in_a_clusterID: i32) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_matching.clone(), in_a_clusterID.clone())) {
         (txt, Deref @ BackendDAE::Matching::MATCHING { comps: i_comps, .. }, a_clusterID) => {
             let mut l_cmpNodes: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -954,7 +954,7 @@ fn fun_46(mut in_txt: Tpl::Text, mut in_a_matching: Arc<BackendDAE::Matching>, m
 }
 
 pub fn dumpStrongComponent(mut txt: Tpl::Text, mut a_clusterID: i32, mut a_matching: Arc<BackendDAE::Matching>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = fun_46(txt.clone(), a_matching.clone(), a_clusterID.clone())?;
     Ok(out_txt)
 }

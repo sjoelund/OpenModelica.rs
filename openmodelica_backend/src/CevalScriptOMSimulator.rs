@@ -47,7 +47,7 @@ use openmodelica_frontend_types::Values;
 use openmodelica_util::OMSimulatorExt;
 
 pub fn ceval(mut inFunctionName: ArcStr, mut inVals: Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<Arc<Values::Value>> {
-    let mut outValue: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
+    let mut outValue: Arc<Values::Value>;
     outValue = (::match_deref::match_deref! { match &((inFunctionName.clone(), inVals.clone())) {
         (Deref @ "loadOMSimulator", Deref @ metamodelica::List::Nil) => {
             let mut status: i32 = 0;

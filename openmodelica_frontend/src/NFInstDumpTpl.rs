@@ -20,7 +20,7 @@ use openmodelica_frontend_types::DAE;
 use openmodelica_susan::Tpl;
 
 pub fn dumpModel(mut txt: Tpl::Text, mut a_name: ArcStr, mut a_cls: Arc<NFInstTypes::Class>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("class ")).clone() }))?;
     out_txt = Tpl::writeStr(out_txt.clone(), (a_name.clone()).clone())?;
     out_txt = Tpl::softNewLine(out_txt.clone())?;
@@ -32,7 +32,7 @@ pub fn dumpModel(mut txt: Tpl::Text, mut a_name: ArcStr, mut a_cls: Arc<NFInstTy
 }
 
 pub fn dumpComponent(mut in_txt: Tpl::Text, mut in_a_component: Arc<NFInstTypes::Component>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_component.clone())) {
         (txt, i_component @ Deref @ NFInstTypes::Component::UNTYPED_COMPONENT { name: i_name, binding: i_binding, baseType: i_baseType, .. }) => {
             let mut ret_4: ArcStr = arcstr::literal!("");
@@ -119,7 +119,7 @@ pub fn dumpComponent(mut in_txt: Tpl::Text, mut in_a_component: Arc<NFInstTypes:
 }
 
 fn fun_11(mut in_txt: Tpl::Text, mut in_a_cls__str: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cls__str.clone())) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }) => {
             txt.clone()
@@ -135,7 +135,7 @@ fn fun_11(mut in_txt: Tpl::Text, mut in_a_cls__str: Tpl::Text) -> Result<Tpl::Te
 }
 
 pub fn dumpElement(mut in_txt: Tpl::Text, mut in_a_element: Arc<NFInstTypes::Element>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_element.clone())) {
         (txt, Deref @ NFInstTypes::Element::ELEMENT { component: i_component, cls: i_cls }) => {
             let mut l_sep__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -221,7 +221,7 @@ fn lm_15(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<NFInstTypes::
 }
 
 fn fun_16(mut in_txt: Tpl::Text, mut in_a_comp__str: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_comp__str.clone())) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }) => {
             txt.clone()
@@ -239,7 +239,7 @@ fn fun_16(mut in_txt: Tpl::Text, mut in_a_comp__str: Tpl::Text) -> Result<Tpl::T
 }
 
 fn fun_17(mut in_txt: Tpl::Text, mut in_a_eq__str: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_eq__str.clone())) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }) => {
             let mut txt = (*txt).clone();
@@ -255,7 +255,7 @@ fn fun_17(mut in_txt: Tpl::Text, mut in_a_eq__str: Tpl::Text) -> Result<Tpl::Tex
 }
 
 fn fun_18(mut in_txt: Tpl::Text, mut in_a_ieq__str: Tpl::Text, mut in_a_eq__str: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ieq__str.clone(), in_a_eq__str.clone())) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }, _) => {
             txt.clone()
@@ -276,7 +276,7 @@ fn fun_18(mut in_txt: Tpl::Text, mut in_a_ieq__str: Tpl::Text, mut in_a_eq__str:
 }
 
 fn fun_19(mut in_txt: Tpl::Text, mut in_a_eq__str: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_eq__str.clone())) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }) => {
             txt.clone()
@@ -297,7 +297,7 @@ fn fun_19(mut in_txt: Tpl::Text, mut in_a_eq__str: Tpl::Text) -> Result<Tpl::Tex
 }
 
 pub fn dumpClass(mut in_txt: Tpl::Text, mut in_a_cls: Arc<NFInstTypes::Class>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cls.clone())) {
         (txt, Deref @ NFInstTypes::Class::COMPLEX_CLASS { components: i_components, initialEquations: i_initialEquations, equations: i_equations, .. }) => {
             let mut l_eq__seq__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -333,13 +333,13 @@ pub fn dumpClass(mut in_txt: Tpl::Text, mut in_a_cls: Arc<NFInstTypes::Class>) -
 }
 
 pub fn dumpExp(mut txt: Tpl::Text, mut a_exp: Arc<DAE::Exp>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = ExpressionDumpTpl::dumpExp(txt.clone(), a_exp.clone(), (literal!("\"")).clone())?;
     Ok(out_txt)
 }
 
 fn fun_22(mut in_txt: Tpl::Text, mut in_a_range: Option<Arc<DAE::Exp>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_range.clone())) {
         (txt, Some(i_range__exp)) => {
             let mut txt = (*txt).clone();
@@ -374,7 +374,7 @@ fn lm_23(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<NFInstTypes::
 }
 
 pub fn dumpEquation(mut in_txt: Tpl::Text, mut in_a_equation: Arc<NFInstTypes::Equation>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_equation.clone())) {
         (txt, Deref @ NFInstTypes::Equation::EQUALITY_EQUATION { lhs: i_lhs, rhs: i_rhs, .. }) => {
             let mut ret_5: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
@@ -482,7 +482,7 @@ pub fn dumpEquation(mut in_txt: Tpl::Text, mut in_a_equation: Arc<NFInstTypes::E
 }
 
 pub fn dumpBinding(mut in_txt: Tpl::Text, mut in_a_binding: NFInstTypes::Binding) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_binding.clone()) {
         (mut txt, NFInstTypes::Binding::RAW_BINDING { bindingExp: ref i_aexp, .. }) => {
             let mut l_exp__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -523,7 +523,7 @@ pub fn dumpBinding(mut in_txt: Tpl::Text, mut in_a_binding: NFInstTypes::Binding
 }
 
 fn fun_26(mut in_txt: Tpl::Text, mut in_a_dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_dims.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -541,7 +541,7 @@ fn fun_26(mut in_txt: Tpl::Text, mut in_a_dims: Arc<metamodelica::List<Arc<DAE::
 }
 
 fn fun_27(mut in_txt: Tpl::Text, mut in_a_rest__str: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_rest__str.clone())) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }) => {
             txt.clone()
@@ -558,7 +558,7 @@ fn fun_27(mut in_txt: Tpl::Text, mut in_a_rest__str: Tpl::Text) -> Result<Tpl::T
 }
 
 pub fn dumpPrefix(mut in_txt: Tpl::Text, mut in_a_prefix: Arc<NFInstPrefix::Prefix>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_prefix.clone())) {
         (txt, Deref @ NFInstPrefix::Prefix::PREFIX { dims: i_dims, restPrefix: i_restPrefix, name: i_name }) => {
             let mut l_pre__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -582,7 +582,7 @@ pub fn dumpPrefix(mut in_txt: Tpl::Text, mut in_a_prefix: Arc<NFInstPrefix::Pref
 }
 
 pub fn dumpDimension(mut in_txt: Tpl::Text, mut in_a_dim: NFInstTypes::Dimension) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_dim.clone()) {
         (mut txt, NFInstTypes::Dimension::UNTYPED_DIMENSION { dimension: ref i_dimension, .. }) => {
             txt = ExpressionDumpTpl::dumpDimension(txt.clone(), i_dimension.clone())?;
@@ -600,7 +600,7 @@ pub fn dumpDimension(mut in_txt: Tpl::Text, mut in_a_dim: NFInstTypes::Dimension
 }
 
 pub fn errorMsg(mut txt: Tpl::Text, mut a_errMessage: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_txt: Tpl::Text;
     Tpl::addTemplateError((a_errMessage.clone()).clone())?;
     out_txt = Tpl::writeStr(txt.clone(), (a_errMessage.clone()).clone())?;
     Ok(out_txt)

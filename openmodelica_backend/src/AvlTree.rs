@@ -149,7 +149,7 @@ pub enum Item<Key, Val> {
 pub use self::Item::{ITEM,NO_ITEM};
 
 pub fn name<Key: Clone + 'static, Val: Clone + 'static>(mut tree: Tree<Key, Val>) -> Result<ArcStr> {
-    let mut name: ArcStr = arcstr::literal!("");
+    let mut name: ArcStr;
     let Tree { name: __pa0, .. } = (tree.clone()) else { bail!("pattern mismatch") };
     name = __pa0.clone();
     Ok(name)
@@ -162,9 +162,9 @@ pub fn create<Key: Clone + 'static, Val: Clone + 'static>(mut name: ArcStr, mut 
 }
 
 pub fn hasPrintingFunctions<Key: Clone + 'static + PartialEq, Val: Clone + 'static + PartialEq>(mut tree: Tree<Key, Val>) -> Result<bool> {
-    let mut hasPrinting: bool = false;
-    let mut kf: Option<FuncTypeKeyToStr<Key>> = None;
-    let mut vf: Option<FuncTypeValToStr<Val>> = None;
+    let mut hasPrinting: bool;
+    let mut kf: Option<FuncTypeKeyToStr<Key>>;
+    let mut vf: Option<FuncTypeValToStr<Val>>;
     let Tree { keyStrFuncOpt: __pa0, valStrFuncOpt: __pa1, .. } = (tree.clone()) else { bail!("pattern mismatch") };
     kf = __pa0.clone();
     vf = __pa1.clone();
@@ -173,8 +173,8 @@ pub fn hasPrintingFunctions<Key: Clone + 'static + PartialEq, Val: Clone + 'stat
 }
 
 pub fn hasUpdateCheckFunction<Key: Clone + 'static + PartialEq, Val: Clone + 'static + PartialEq>(mut tree: Tree<Key, Val>) -> Result<bool> {
-    let mut hasUpdateCheck: bool = false;
-    let mut uf: Option<FuncTypeItemUpdateCheck<Key, Val>> = None;
+    let mut hasUpdateCheck: bool;
+    let mut uf: Option<FuncTypeItemUpdateCheck<Key, Val>>;
     let Tree { updateCheckFuncOpt: __pa0, .. } = (tree.clone()) else { bail!("pattern mismatch") };
     uf = __pa0.clone();
     hasUpdateCheck = boolNot((uf.clone()).is_none());
@@ -354,7 +354,7 @@ fn getNode<Key: Clone + 'static, Val: Clone + 'static>(mut inTree: Tree<Key, Val
     let mut outVal: Val;
     let mut rkey: Key;
     let mut keyCompareFunc: FuncTypeKeyCompare<Key>;
-    let mut order: i32 = 0;
+    let mut order: i32;
     let __pa0 = ::match_deref::match_deref! { match &(inNode.clone()) {
         Deref @ Node::NODE { item: Item::ITEM { key: __pa0, .. }, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
@@ -451,7 +451,7 @@ fn emptyNodeIfNoNode<Key: Clone + 'static, Val: Clone + 'static>(mut inNode: Arc
 
 fn balance<Key: Clone + 'static, Val: Clone + 'static>(mut inNode: Arc<Node<Key, Val>>) -> Result<Arc<Node<Key, Val>>> {
     let mut outNode: Arc<Node<Key, Val>>;
-    let mut d: i32 = 0;
+    let mut d: i32;
     d = differenceInHeight(inNode.clone())?;
     outNode = doBalance(d.clone(), inNode.clone())?;
     Ok(outNode)
@@ -556,7 +556,7 @@ fn setRight<Key: Clone + 'static, Val: Clone + 'static>(mut node: Arc<Node<Key, 
     let mut outNode: Arc<Node<Key, Val>>;
     let mut item: Item<Key, Val>;
     let mut l: Arc<Node<Key, Val>>;
-    let mut height: i32 = 0;
+    let mut height: i32;
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(node.clone()) {
         Deref @ Node::NODE { item: __pa0, height: __pa1, left: __pa2, right: _ } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
@@ -572,7 +572,7 @@ fn setLeft<Key: Clone + 'static, Val: Clone + 'static>(mut node: Arc<Node<Key, V
     let mut outNode: Arc<Node<Key, Val>>;
     let mut item: Item<Key, Val>;
     let mut r: Arc<Node<Key, Val>>;
-    let mut height: i32 = 0;
+    let mut height: i32;
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(node.clone()) {
         Deref @ Node::NODE { item: __pa0, height: __pa1, left: _, right: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
@@ -639,7 +639,7 @@ fn rotateRight<Key: Clone + 'static, Val: Clone + 'static>(mut node: Arc<Node<Ke
 }
 
 fn differenceInHeight<Key: Clone + 'static, Val: Clone + 'static>(mut node: Arc<Node<Key, Val>>) -> Result<i32> {
-    let mut diff: i32 = 0;
+    let mut diff: i32;
     let mut l: Arc<Node<Key, Val>>;
     let mut r: Arc<Node<Key, Val>>;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(node.clone()) {
@@ -657,9 +657,9 @@ fn computeHeight<Key: Clone + 'static, Val: Clone + 'static>(mut inNode: Arc<Nod
     let mut l: Arc<Node<Key, Val>>;
     let mut r: Arc<Node<Key, Val>>;
     let mut i: Item<Key, Val>;
-    let mut hl: i32 = 0;
-    let mut hr: i32 = 0;
-    let mut height: i32 = 0;
+    let mut hl: i32;
+    let mut hr: i32;
+    let mut height: i32;
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(inNode.clone()) {
         Deref @ Node::NODE { item: __pa0 @ Item::ITEM { .. }, left: __pa1, right: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
@@ -688,13 +688,13 @@ fn getHeight<Key: Clone + 'static, Val: Clone + 'static>(mut bt: Arc<Node<Key, V
 }
 
 pub fn prettyPrintTreeStr<Key: Clone + 'static + PartialEq, Val: Clone + 'static + PartialEq>(mut inTree: Tree<Key, Val>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = (prettyPrintTreeStr_dispatch(inTree.clone(), (literal!("")).clone())?).clone();
     Ok(outString)
 }
 
 fn prettyPrintTreeStr_dispatch<Key: Clone + 'static + PartialEq, Val: Clone + 'static + PartialEq>(mut inTree: Tree<Key, Val>, mut inIndent: ArcStr) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     let mut node: Arc<Node<Key, Val>>;
     if !(hasPrintingFunctions(inTree.clone())?) {
         outString = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("TreePrintError<NO_PRINTING_FUNCTIONS_ATTACHED> name[")); __mm_s.push_str(&*name(inTree.clone())?); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone();
@@ -707,7 +707,7 @@ fn prettyPrintTreeStr_dispatch<Key: Clone + 'static + PartialEq, Val: Clone + 's
 }
 
 fn prettyPrintNodeStr<Key: Clone + 'static, Val: Clone + 'static>(mut inTree: Tree<Key, Val>, mut inNode: Arc<Node<Key, Val>>, mut inIndent: ArcStr) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(inNode.clone()) {
         Deref @ Node::NO_NODE { .. } => {
             literal!("")
@@ -740,7 +740,7 @@ fn prettyPrintNodeStr<Key: Clone + 'static, Val: Clone + 'static>(mut inTree: Tr
 }
 
 pub fn printTreeStr<Key: Clone + 'static + PartialEq, Val: Clone + 'static + PartialEq>(mut inTree: Tree<Key, Val>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     let mut node: Arc<Node<Key, Val>>;
     if !(hasPrintingFunctions(inTree.clone())?) {
         outString = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("TreePrintError<NO_PRINTING_FUNCTIONS_ATTACHED> name[")); __mm_s.push_str(&*name(inTree.clone())?); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone();
@@ -753,7 +753,7 @@ pub fn printTreeStr<Key: Clone + 'static + PartialEq, Val: Clone + 'static + Par
 }
 
 fn printNodeStr<Key: Clone + 'static, Val: Clone + 'static>(mut inTree: Tree<Key, Val>, mut inNode: Arc<Node<Key, Val>>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(inNode.clone()) {
         Deref @ Node::NO_NODE { .. } => {
             literal!("")
@@ -778,7 +778,7 @@ fn printNodeStr<Key: Clone + 'static, Val: Clone + 'static>(mut inTree: Tree<Key
 }
 
 pub fn printItemStr<Key: Clone + 'static, Val: Clone + 'static>(mut inTree: Tree<Key, Val>, mut inItem: Item<Key, Val>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((match inItem.clone() {
         Item::NO_ITEM { .. } => {
             literal!("[]")

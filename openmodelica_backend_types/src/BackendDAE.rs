@@ -1258,7 +1258,7 @@ pub use self::SimIterator::{SIM_ITERATOR_RANGE,SIM_ITERATOR_LIST};
 
 pub fn getSimIteratorSize(mut iters: Arc<metamodelica::List<SimIterator>>) -> Result<i32> {
     let mut size: i32 = 1;
-    let mut local_size: i32 = 0;
+    let mut local_size: i32;
     for mut iter in &*iters.clone() {
         let mut iter = iter.clone();
         local_size = (match iter.clone() {

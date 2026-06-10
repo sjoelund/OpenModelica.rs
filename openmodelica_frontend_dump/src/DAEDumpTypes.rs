@@ -119,7 +119,7 @@ pub type FUNCTION_LIST = functionList;
 
 
 pub fn dumpCommentStr(mut inComment: Option<Arc<SCode::Comment>>) -> ArcStr {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(inComment.clone()) {
         Some(Deref @ SCode::Comment { comment: Some(cmt), .. }) => {
             let mut cmt = (*cmt).clone();
@@ -135,13 +135,13 @@ pub fn dumpCommentStr(mut inComment: Option<Arc<SCode::Comment>>) -> ArcStr {
 }
 
 pub fn dumpClassAnnotationStr(mut inComment: Option<Arc<SCode::Comment>>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = (dumpAnnotationStr(inComment.clone(), (literal!("  ")).clone(), (literal!(";\n")).clone())?).clone();
     Ok(outString)
 }
 
 pub fn dumpCommentAnnotationStr(mut inComment: Option<Arc<SCode::Comment>>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(inComment.clone()) {
         None => literal!(""),
         _ => { let mut __mm_s = String::new(); __mm_s.push_str(&*dumpCommentStr(inComment.clone())); __mm_s.push_str(&*dumpCompAnnotationStr(inComment.clone())?); ArcStr::from(__mm_s) },
@@ -151,13 +151,13 @@ pub fn dumpCommentAnnotationStr(mut inComment: Option<Arc<SCode::Comment>>) -> R
 }
 
 pub fn dumpCompAnnotationStr(mut inComment: Option<Arc<SCode::Comment>>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = (dumpAnnotationStr(inComment.clone(), (literal!(" ")).clone(), (literal!("")).clone())?).clone();
     Ok(outString)
 }
 
 fn dumpAnnotationStr(mut inComment: Option<Arc<SCode::Comment>>, mut inPrefix: ArcStr, mut inSuffix: ArcStr) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ('mc: {
         let __mc_input = inComment.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -202,7 +202,7 @@ pub fn filterStructuralMods(mut r#mod: Arc<SCode::Mod>) -> Result<Arc<SCode::Mod
 }
 
 fn filterStructuralMod(mut r#mod: Arc<SCode::SubMod>) -> bool {
-    let mut keep: bool = false;
+    let mut keep: bool;
     keep = (::match_deref::match_deref! { match &(r#mod.ident.clone()) {
         Deref @ "Evaluate" => true,
         Deref @ "Inline" => true,

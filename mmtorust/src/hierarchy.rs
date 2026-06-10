@@ -1223,7 +1223,7 @@ fn collect_extends_known<'a>(
                 {
                     let Absyn::Class { name: child_name, body, .. } = class_.as_ref();
                     if let Absyn::ClassDef::DERIVED { typeSpec, .. } = body.as_ref()
-                        && let Some(ty) = resolve_type_spec(&**typeSpec, known, &empty_aliases, &[], &qname, wctx) {
+                        && let Some(ty) = resolve_type_spec(typeSpec, known, &empty_aliases, &[], &qname, wctx) {
                             known.entry(qname.clone()).or_default().insert(child_name.to_string(), ty.clone());
                             known.entry(name.to_owned()).or_default().insert(child_name.to_string(), ty);
                         }
@@ -1925,7 +1925,7 @@ pub(crate) fn strip_exp_wrappers(mut e: &Absyn::Exp) -> &Absyn::Exp {
 pub(crate) fn extract_default_exp(modification: &Option<std::sync::Arc<Absyn::Modification>>) -> Option<&Absyn::Exp> {
     match modification {
         Some(m) => match &*m.eqMod {
-            Absyn::EqMod::EQMOD { exp, .. } => Some(strip_exp_wrappers(&**exp)),
+            Absyn::EqMod::EQMOD { exp, .. } => Some(strip_exp_wrappers(exp)),
             _ => None,
         },
         _ => None,

@@ -54,8 +54,8 @@ use openmodelica_util::System;
 use openmodelica_util_datatypes_basic::List;
 
 pub fn valString(mut inValue: Arc<Values::Value>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
-    let mut handle: i32 = 0;
+    let mut outString: ArcStr;
+    let mut handle: i32;
     handle = Print::saveAndClearBuf()?;
     valString2(inValue.clone())?;
     outString = (Print::getString()?).clone();
@@ -439,20 +439,20 @@ fn valListString(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>>) ->
 }
 
 pub fn printVal(mut v: Arc<Values::Value>) -> Result<()> {
-    let mut s: ArcStr = arcstr::literal!("");
+    let mut s: ArcStr;
     s = (valString(v.clone())?).clone();
     Print::printBuf((s.clone()).clone())?;
     Ok(())
 }
 
 pub fn printValStr(mut v: Arc<Values::Value>) -> Result<ArcStr> {
-    let mut s: ArcStr = arcstr::literal!("");
+    let mut s: ArcStr;
     s = (valString(v.clone())?).clone();
     Ok(s)
 }
 
 pub fn unparseValues(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(inValueLst.clone()) {
         Deref @ metamodelica::List::Cons { head: v, tail: vallst } => {
             let mut s1: ArcStr = arcstr::literal!("");
@@ -474,7 +474,7 @@ pub fn unparseValues(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>>
 }
 
 fn unparseValueNumbers(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(inValueLst.clone()) {
         Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::TUPLE { valueLst: lst }, tail: xs } => {
             let mut s1: ArcStr = arcstr::literal!("");
@@ -543,7 +543,7 @@ fn unparseValueNumbers(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>
 }
 
 fn unparseDescription(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(inValueLst.clone()) {
         Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { .. }, tail: xs } => {
             let mut s1: ArcStr = arcstr::literal!("");
@@ -590,15 +590,15 @@ fn unparseDescription(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>
 }
 
 fn unparseArrayDescription(mut lst: Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
-    let mut pt: ArcStr = arcstr::literal!("");
-    let mut s1: ArcStr = arcstr::literal!("");
-    let mut s2: ArcStr = arcstr::literal!("");
-    let mut s3: ArcStr = arcstr::literal!("");
-    let mut s4: ArcStr = arcstr::literal!("");
-    let mut s5: ArcStr = arcstr::literal!("");
-    let mut s6: ArcStr = arcstr::literal!("");
-    let mut i1: i32 = 0;
+    let mut r#str: ArcStr;
+    let mut pt: ArcStr;
+    let mut s1: ArcStr;
+    let mut s2: ArcStr;
+    let mut s3: ArcStr;
+    let mut s4: ArcStr;
+    let mut s5: ArcStr;
+    let mut s6: ArcStr;
+    let mut i1: i32;
     pt = (unparsePrimType(lst.clone())).clone();
     s1 = (stringAppend((literal!("# ")).clone(), (pt.clone()).clone())).clone();
     s2 = (stringAppend((s1.clone()).clone(), (literal!("[")).clone())).clone();
@@ -656,7 +656,7 @@ fn unparseNumDims(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>>, m
 }
 
 fn unparseDimSizes(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ('mc: {
         let __mc_input = inValueLst.clone();
         if let Ok(__v) = (|| -> Result<_> {

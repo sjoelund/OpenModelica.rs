@@ -88,7 +88,7 @@ pub const RT_CLOCK_NEW_BACKEND_INITIALIZATION: i32 = 30;
 pub static buildModelClocks: std::sync::LazyLock<Arc<metamodelica::List<i32>>> = std::sync::LazyLock::new(|| { list![RT_CLOCK_BUILD_MODEL.clone(), RT_CLOCK_SIMULATE_TOTAL.clone(), RT_CLOCK_TEMPLATES.clone(), RT_CLOCK_LINEARIZE.clone(), RT_CLOCK_SIMCODE.clone(), RT_CLOCK_BACKEND.clone(), RT_CLOCK_FRONTEND.clone()] });
 
 pub fn toString(mut clockIndex: i32) -> ArcStr {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     r#str = ((match clockIndex.clone() {
         RT_NO_CLOCK => literal!("NON"),
         RT_CLOCK_SIMULATE_TOTAL => literal!("STO"),

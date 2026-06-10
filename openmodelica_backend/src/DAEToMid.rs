@@ -64,7 +64,7 @@ use openmodelica_util_datatypes_basic::List;
 use openmodelica_util_datatypes_basic::Mutable;
 
 pub fn DAEFunctionsToMid(mut simfuncs: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>>) -> Result<Arc<metamodelica::List<MidCode::Function>>> {
-    let mut midfuncs: Arc<metamodelica::List<MidCode::Function>> = metamodelica::nil();
+    let mut midfuncs: Arc<metamodelica::List<MidCode::Function>>;
     midfuncs = ({
         let mut __acc: Arc<metamodelica::List<MidCode::Function>> = metamodelica::nil();
         for mut simfunc in (simfuncs.clone()).into_iter().cloned() {
@@ -139,7 +139,7 @@ pub type STATE = State;
 
 
 fn listZip<X: Clone + 'static, Y: Clone + 'static>(mut xs: Arc<metamodelica::List<X>>, mut ys: Arc<metamodelica::List<Y>>) -> Result<Arc<metamodelica::List<(X, Y)>>> {
-    let mut zs: Arc<metamodelica::List<(X, Y)>> = metamodelica::nil();
+    let mut zs: Arc<metamodelica::List<(X, Y)>>;
     let mut xs_: Arc<metamodelica::List<X>> = metamodelica::nil();
     let mut ys_: Arc<metamodelica::List<Y>> = metamodelica::nil();
     let mut x: X;
@@ -160,41 +160,41 @@ fn listZip<X: Clone + 'static, Y: Clone + 'static>(mut xs: Arc<metamodelica::Lis
 }
 
 fn GenTmpVar(mut ty: Arc<DAE::Type>, mut state: State) -> MidCode::Var {
-    let mut var: MidCode::Var = <MidCode::Var as ::std::default::Default>::default();
+    let mut var: MidCode::Var;
     var = MidCode::Var { name: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("_tmp_")); __mm_s.push_str(&*intString(System::tmpTickIndex(46))); ArcStr::from(__mm_s) }).clone(), ty: ty.clone(), volatile: false };
     DoubleEnded::push_back(state.locals.clone(), var.clone());
     var
 }
 
 fn GenTmpVarVolatile(mut ty: Arc<DAE::Type>, mut state: State) -> MidCode::Var {
-    let mut var: MidCode::Var = <MidCode::Var as ::std::default::Default>::default();
+    let mut var: MidCode::Var;
     var = MidCode::Var { name: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("_tmp_")); __mm_s.push_str(&*intString(System::tmpTickIndex(46))); ArcStr::from(__mm_s) }).clone(), ty: ty.clone(), volatile: true };
     DoubleEnded::push_back(state.locals.clone(), var.clone());
     var
 }
 
 fn GenTmpVarBuf(mut state: State) -> MidCode::VarBuf {
-    let mut var: MidCode::VarBuf = <MidCode::VarBuf as ::std::default::Default>::default();
+    let mut var: MidCode::VarBuf;
     var = MidCode::VarBuf { name: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("_jmpbuf_")); __mm_s.push_str(&*intString(System::tmpTickIndex(47))); ArcStr::from(__mm_s) }).clone() };
     DoubleEnded::push_back(state.localBufs.clone(), var.clone());
     var
 }
 
 fn GenTmpVarBufPtr(mut state: State) -> MidCode::VarBufPtr {
-    let mut var: MidCode::VarBufPtr = <MidCode::VarBufPtr as ::std::default::Default>::default();
+    let mut var: MidCode::VarBufPtr;
     var = MidCode::VarBufPtr { name: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("_tmp_")); __mm_s.push_str(&*intString(System::tmpTickIndex(46))); ArcStr::from(__mm_s) }).clone() };
     DoubleEnded::push_back(state.localBufPtrs.clone(), var.clone());
     var
 }
 
 fn GenBlockId() -> i32 {
-    let mut id: i32 = 0;
+    let mut id: i32;
     id = System::tmpTickIndex(45);
     id
 }
 
 fn ConvertSimCodeVars(mut simcodevar: Arc<SimCodeFunction::Variable::Variable>, mut state: State) -> Result<MidCode::Var> {
-    let mut var: MidCode::Var = <MidCode::Var as ::std::default::Default>::default();
+    let mut var: MidCode::Var;
     var = (::match_deref::match_deref! { match &(simcodevar.clone()) {
         Deref @ SimCodeFunction::Variable::VARIABLE { name: _, .. } => {
             let mut midcodevar: MidCode::Var = <MidCode::Var as ::std::default::Default>::default();
@@ -217,8 +217,8 @@ fn ConvertSimCodeVars(mut simcodevar: Arc<SimCodeFunction::Variable::Variable>, 
 }
 
 fn GetCrefIndexVar(mut cref: Arc<DAE::ComponentRef>, mut state: State) -> Result<Option<MidCode::Var>> {
-    let mut var: Option<MidCode::Var> = None;
-    let mut subscripts: Arc<metamodelica::List<Arc<DAE::Subscript>>> = metamodelica::nil();
+    let mut var: Option<MidCode::Var>;
+    let mut subscripts: Arc<metamodelica::List<Arc<DAE::Subscript>>>;
     subscripts = ComponentReference::crefLastSubs(cref.clone())?;
     var = (::match_deref::match_deref! { match &(subscripts.clone()) {
         Deref @ metamodelica::List::Nil => {
@@ -235,9 +235,9 @@ fn GetCrefIndexVar(mut cref: Arc<DAE::ComponentRef>, mut state: State) -> Result
 }
 
 fn CrefToMidVar(mut cref: Arc<DAE::ComponentRef>, mut state: State) -> Result<MidCode::Var> {
-    let mut var: MidCode::Var = <MidCode::Var as ::std::default::Default>::default();
-    let mut ident: ArcStr = arcstr::literal!("");
-    let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+    let mut var: MidCode::Var;
+    let mut ident: ArcStr;
+    let mut ty: Arc<DAE::Type>;
     if !(BaseHashTable::hasKey(cref.clone(), Mutable::access(state.vars.clone()))?) {
         (ident, ty) = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ DAE::ComponentRef::CREF_IDENT { ident: ident_, identType: ty_, subscriptLst: _ } => {
@@ -256,7 +256,7 @@ fn CrefToMidVar(mut cref: Arc<DAE::ComponentRef>, mut state: State) -> Result<Mi
 }
 
 fn RValueType(mut rvalue: MidCode::RValue) -> Result<Arc<DAE::Type>> {
-    let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+    let mut ty: Arc<DAE::Type>;
     ty = (match rvalue.clone() {
         MidCode::RValue::VARIABLE { src: _ } => var_field!(rvalue.src, MidCode::RValue::VARIABLE).ty.clone(),
         MidCode::RValue::BINARYOP { op: _, .. } => (match var_field!(rvalue.op, MidCode::RValue::BINARYOP).clone() {
@@ -289,7 +289,7 @@ fn RValueType(mut rvalue: MidCode::RValue) -> Result<Arc<DAE::Type>> {
 }
 
 fn RValueToVar(mut rvalue: MidCode::RValue, mut state: State) -> Result<MidCode::Var> {
-    let mut var: MidCode::Var = <MidCode::Var as ::std::default::Default>::default();
+    let mut var: MidCode::Var;
     var = (match rvalue.clone() {
         MidCode::RValue::VARIABLE { src: _ } => {
             var_field!(rvalue.src, MidCode::RValue::VARIABLE).clone()
@@ -305,7 +305,7 @@ fn RValueToVar(mut rvalue: MidCode::RValue, mut state: State) -> Result<MidCode:
 }
 
 fn DAEFunctionToMid(mut simfunc: Arc<SimCodeFunction::Function::Function>) -> Result<MidCode::Function> {
-    let mut midfunc: MidCode::Function = <MidCode::Function as ::std::default::Default>::default();
+    let mut midfunc: MidCode::Function;
     let mut state: State = <State as ::std::default::Default>::default();
     let mut inputs: DoubleEnded::MutableList<MidCode::Var> = <DoubleEnded::MutableList<MidCode::Var> as ::std::default::Default>::default();
     let mut outputs: DoubleEnded::MutableList<MidCode::Var> = <DoubleEnded::MutableList<MidCode::Var> as ::std::default::Default>::default();
@@ -522,7 +522,7 @@ fn StmtsToMid(mut daestmts: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut st
 }
 
 fn ExpToMid(mut exp: Arc<DAE::Exp>, mut state: State) -> Result<MidCode::RValue> {
-    let mut rval: MidCode::RValue = <MidCode::RValue as ::std::default::Default>::default();
+    let mut rval: MidCode::RValue;
     rval = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ DAE::Exp::ICONST { integer: _ } => {
             MidCode::RValue::LITERALINTEGER { value: var_field!((*exp).integer, DAE::Exp::ICONST).clone() }
@@ -831,12 +831,12 @@ fn CallToMid(mut call: Arc<DAE::Exp>, mut outvars: Arc<metamodelica::List<MidCod
 }
 
 fn ForToMid(mut type_: Arc<DAE::Type>, mut iter: ArcStr, mut range: Arc<DAE::Exp>, mut daestmtLst: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut state: State) -> Result<()> {
-    let mut varCref: MidCode::Var = <MidCode::Var as ::std::default::Default>::default();
-    let mut varCondition: MidCode::Var = <MidCode::Var as ::std::default::Default>::default();
-    let mut labelCondition: i32 = 0;
-    let mut labelStep: i32 = 0;
-    let mut labelBody: i32 = 0;
-    let mut labelNext: i32 = 0;
+    let mut varCref: MidCode::Var;
+    let mut varCondition: MidCode::Var;
+    let mut labelCondition: i32;
+    let mut labelStep: i32;
+    let mut labelBody: i32;
+    let mut labelNext: i32;
     varCref = CrefToMidVar(Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (iter.clone()).clone(), identType: type_.clone(), subscriptLst: metamodelica::nil() }), state.clone())?;
     DoubleEnded::push_back(state.locals.clone(), varCref.clone());
     labelCondition = GenBlockId();
@@ -939,10 +939,10 @@ fn ForToMid(mut type_: Arc<DAE::Type>, mut iter: ArcStr, mut range: Arc<DAE::Exp
 }
 
 fn IfToMid(mut exp: Arc<DAE::Exp>, mut daestmtLst: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut else_: Arc<DAE::Else>, mut state: State) -> Result<()> {
-    let mut labelBody: i32 = 0;
-    let mut labelElse: i32 = 0;
-    let mut labelNext: i32 = 0;
-    let mut var1: MidCode::Var = <MidCode::Var as ::std::default::Default>::default();
+    let mut labelBody: i32;
+    let mut labelElse: i32;
+    let mut labelNext: i32;
+    let mut var1: MidCode::Var;
     labelBody = GenBlockId();
     labelElse = GenBlockId();
     labelNext = GenBlockId();
@@ -969,7 +969,7 @@ fn IfToMid(mut exp: Arc<DAE::Exp>, mut daestmtLst: Arc<metamodelica::List<Arc<DA
 }
 
 fn stateGetCurrentLabel(mut state: State) -> i32 {
-    let mut label: i32 = 0;
+    let mut label: i32;
     label = Mutable::access(state.blockid.clone());
     label
 }
@@ -985,7 +985,7 @@ fn stateAddStmt(mut stmt: MidCode::Stmt, mut state: State) -> () {
 }
 
 fn stateTerminate(mut newLabel: i32, mut terminator: MidCode::Terminator, mut state: State) -> () {
-    let mut block_: MidCode::Block = <MidCode::Block as ::std::default::Default>::default();
+    let mut block_: MidCode::Block;
     block_ = MidCode::Block { id: stateGetCurrentLabel(state.clone()), stmts: DoubleEnded::toListAndClear(state.stmts.clone(), metamodelica::nil()), terminator: terminator.clone() };
     DoubleEnded::push_back(state.blocks.clone(), block_.clone());
     stateSetCurrentLabel(newLabel.clone(), state.clone());
@@ -994,7 +994,7 @@ fn stateTerminate(mut newLabel: i32, mut terminator: MidCode::Terminator, mut st
 
 // helper
 fn stateAddBailOnFalse(mut var: MidCode::Var, mut labelBail: i32, mut state: State) -> () {
-    let mut labelTmp: i32 = 0;
+    let mut labelTmp: i32;
     labelTmp = GenBlockId();
     stateTerminate(labelTmp.clone(), MidCode::Terminator::BRANCH { condition: var.clone(), onFalse: labelBail.clone(), onTrue: labelTmp.clone() }, state.clone());
     ()
@@ -1198,7 +1198,7 @@ fn MatchExpressionToMid(mut matchexpression: Arc<DAE::Exp>, mut outvars: Arc<met
 }
 
 fn patternToMidCode(mut matches: Arc<metamodelica::List<(MidCode::Var, Arc<DAE::Pattern>)>>, mut labelNoMatch: i32, mut state: State) -> Result<metamodelica::Array<Arc<metamodelica::List<MidCode::Stmt>>>> {
-    let mut assignBlock: metamodelica::Array<Arc<metamodelica::List<MidCode::Stmt>>> = Default::default();
+    let mut assignBlock: metamodelica::Array<Arc<metamodelica::List<MidCode::Stmt>>>;
     assignBlock = arrayCreate(1, metamodelica::nil());
     patternToMidCode2(state.clone(), matches.clone(), labelNoMatch.clone(), assignBlock.clone())?;
     for mut stmt in &*metamodelica::arrayGet(assignBlock.clone(), 1)?.reverse() {

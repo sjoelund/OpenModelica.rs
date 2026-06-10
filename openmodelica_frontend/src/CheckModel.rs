@@ -62,11 +62,11 @@ use openmodelica_util::Util;
 use openmodelica_util_datatypes_basic::List;
 
 pub fn checkModel(mut inDAELst: DAE::DAElist) -> Result<(i32, i32, i32)> {
-    let mut varSize: i32 = 0;
-    let mut eqnSize: i32 = 0;
-    let mut simpleEqnSize: i32 = 0;
-    let mut eqns: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
-    let mut lst: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
+    let mut varSize: i32;
+    let mut eqnSize: i32;
+    let mut simpleEqnSize: i32;
+    let mut eqns: Arc<metamodelica::List<Arc<DAE::Element>>>;
+    let mut lst: Arc<metamodelica::List<Arc<DAE::Element>>>;
     let mut hs: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr));
     let mut debug_dump: bool = Flags::isSet(Flags::DUMP_CHECK_MODEL.clone())?;
     let mut arg: CountVarEqnFoldArg;
@@ -332,7 +332,7 @@ fn dumpEqn(mut eqn: Arc<DAE::Element>, mut size: i32, mut dump: bool) -> Result<
 }
 
 pub fn checkAndGetAlgorithmOutputs(mut inAlgorithm: Arc<DAE::Algorithm>, mut inSource: Arc<DAE::ElementSource>, mut inCrefExpansionRule: DAE::Expand) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> {
-    let mut outCrefLst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
+    let mut outCrefLst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
     outCrefLst = 'mc: {
         let __mc_input = inSource.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -368,7 +368,7 @@ pub fn checkAndGetAlgorithmOutputs(mut inAlgorithm: Arc<DAE::Algorithm>, mut inS
 pub fn isCrefListAlgorithmOutput(mut crefList: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut inAlgorithm: Arc<DAE::Algorithm>, mut inSource: Arc<DAE::ElementSource>, mut inCrefExpansionRule: DAE::Expand) -> Result<bool> {
     let mut outResult: bool = false;
     let mut ht: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr)) = HashSet::emptyHashSet();
-    let mut algOutCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
+    let mut algOutCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
     algOutCrefs = checkAndGetAlgorithmOutputs(inAlgorithm.clone(), inSource.clone(), inCrefExpansionRule.clone())?;
     ht = List::fold(algOutCrefs.clone(), (std::sync::Arc::new(BaseHashSet::add) as std::sync::Arc<dyn ::std::ops::Fn(_, _) -> Result<_> + 'static>), ht.clone())?;
     for mut cr in &*crefList.clone() {
@@ -382,8 +382,8 @@ pub fn isCrefListAlgorithmOutput(mut crefList: Arc<metamodelica::List<Arc<DAE::C
 }
 
 fn algorithmOutputs(mut inAlgorithm: Arc<DAE::Algorithm>, mut inCrefExpansion: DAE::Expand) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> {
-    let mut outCrefLst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
-    let mut stmts: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
+    let mut outCrefLst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
+    let mut stmts: Arc<metamodelica::List<Arc<DAE::Statement>>>;
     let __pa0 = ::match_deref::match_deref! { match &(inAlgorithm.clone()) {
         Deref @ DAE::Algorithm { statementLst: __pa0 } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
@@ -394,7 +394,7 @@ fn algorithmOutputs(mut inAlgorithm: Arc<DAE::Algorithm>, mut inCrefExpansion: D
 }
 
 pub fn algorithmStatementListOutputs(mut inStmts: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut inCrefExpansion: DAE::Expand) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> {
-    let mut outCrefLst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
+    let mut outCrefLst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>;
     let mut hs: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr));
     hs = HashSet::emptyHashSet();
     hs = List::fold1(inStmts.clone(), (std::sync::Arc::new(statementOutputs) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>, DAE::Expand, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))> + 'static>), inCrefExpansion.clone(), hs.clone())?;
@@ -630,8 +630,8 @@ fn statementElseOutputs(mut inElseBranch: Arc<DAE::Else>, mut inCrefExpansion: D
 }
 
 fn statementOutputsCrefFinder(mut inExp: Arc<DAE::Exp>, mut inTpl: (DAE::Expand, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)))) -> Result<(Arc<DAE::Exp>, bool, (DAE::Expand, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))))> {
-    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut cont: bool = false;
+    let mut outExp: Arc<DAE::Exp>;
+    let mut cont: bool;
     let mut outTpl: (DAE::Expand, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr)));
     (outExp, cont, outTpl) = 'mc: {
         let __mc_input = (inExp.clone(), inTpl.clone());
@@ -762,13 +762,13 @@ fn statementOutputsCrefFinder(mut inExp: Arc<DAE::Exp>, mut inTpl: (DAE::Expand,
 }
 
 fn countSimpleEqnSize(mut inEqns: Arc<metamodelica::List<Arc<DAE::Element>>>, mut isimpleEqnSize: i32, mut ihs: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))) -> Result<i32> {
-    let mut osimpleEqnSize: i32 = 0;
+    let mut osimpleEqnSize: i32;
     osimpleEqnSize = List::applyAndFold1(inEqns.clone(), (std::sync::Arc::new(fnptr!(intAdd, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<i32> + 'static>), (std::sync::Arc::new(countSimpleEqnSizeWork) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))) -> Result<i32> + 'static>), ihs.clone(), 0)?;
     Ok(osimpleEqnSize)
 }
 
 fn countSimpleEqnSizeWork(mut inEqns: Arc<DAE::Element>, mut ihs: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))) -> Result<i32> {
-    let mut osimpleEqnSize: i32 = 0;
+    let mut osimpleEqnSize: i32;
     osimpleEqnSize = 'mc: {
         let __mc_input = inEqns.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -829,7 +829,7 @@ fn countSimpleEqnSizeWork(mut inEqns: Arc<DAE::Element>, mut ihs: (metamodelica:
 }
 
 fn simpleEquation(mut e1: Arc<DAE::Exp>, mut e2: Arc<DAE::Exp>, mut ihs: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))) -> Result<i32> {
-    let mut osimpleEqnSize: i32 = 0;
+    let mut osimpleEqnSize: i32;
     osimpleEqnSize = 'mc: {
         let __mc_input = (e1.clone(), e2.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -1222,7 +1222,7 @@ fn simpleEquation(mut e1: Arc<DAE::Exp>, mut e2: Arc<DAE::Exp>, mut ihs: (metamo
 }
 
 fn traversingComponentRefFinder(mut inExp: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)), Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)) -> Result<(Arc<DAE::Exp>, ((metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)), Arc<metamodelica::List<Arc<DAE::ComponentRef>>>))> {
-    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut outExp: Arc<DAE::Exp>;
     let mut outTpl: ((metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr)), Arc<metamodelica::List<Arc<DAE::ComponentRef>>>);
     (outExp, outTpl) = 'mc: {
         let __mc_input = (inExp.clone(), inTpl.clone());

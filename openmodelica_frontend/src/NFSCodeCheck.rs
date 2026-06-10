@@ -99,7 +99,7 @@ pub fn checkRecursiveShortDefinition(mut inTypeSpec: Arc<Absyn::TypeSpec>, mut i
 }
 
 fn isSelfReference(mut inTypeName: ArcStr, mut inTypePath: Arc<Absyn::Path>, mut inReferencedName: Arc<Absyn::Path>) -> Result<bool> {
-    let mut selfRef: bool = false;
+    let mut selfRef: bool;
     selfRef = (::match_deref::match_deref! { match &((inTypePath.clone(), inReferencedName.clone())) {
         (p1, Deref @ Absyn::Path::FULLYQUALIFIED { path: p2 }) => {
             AbsynUtil::pathEqual(AbsynUtil::joinPaths(p1.clone(), Arc::new(Absyn::Path::IDENT { name: (inTypeName.clone()).clone() }))?, p2.clone())
@@ -221,7 +221,7 @@ pub fn checkRedeclaredElementPrefix(mut inItem: Arc<NFSCodeEnv::Item>, mut inRep
 }
 
 fn checkClassRedeclarationReplaceable(mut inName: ArcStr, mut inReplaceable: Arc<SCode::Replaceable>, mut inOriginInfo: SourceInfo, mut inInfo: SourceInfo) -> Result<bool> {
-    let mut isValid: bool = false;
+    let mut isValid: bool;
     isValid = (::match_deref::match_deref! { match &(inReplaceable.clone()) {
         Deref @ SCode::Replaceable::NOT_REPLACEABLE { .. } if (!(Flags::getConfigBool(Flags::IGNORE_REPLACEABLE.clone())?)) => {
             Error::addMultiSourceMessage(Error::REDECLARE_NON_REPLACEABLE.clone(), list![(inName.clone()).clone()], list![inOriginInfo.clone(), inInfo.clone()])?;
@@ -234,7 +234,7 @@ fn checkClassRedeclarationReplaceable(mut inName: ArcStr, mut inReplaceable: Arc
 }
 
 fn checkCompRedeclarationReplaceable(mut inName: ArcStr, mut inReplaceable: Arc<SCode::Replaceable>, mut inType1: Arc<Absyn::TypeSpec>, mut inType2: Arc<Absyn::TypeSpec>, mut inOriginInfo: SourceInfo, mut inInfo: SourceInfo) -> Result<bool> {
-    let mut isValid: bool = false;
+    let mut isValid: bool;
     isValid = (::match_deref::match_deref! { match &(inReplaceable.clone()) {
         Deref @ SCode::Replaceable::NOT_REPLACEABLE { .. } if (AbsynUtil::pathEqual(AbsynUtil::typeSpecPath(inType1.clone())?, AbsynUtil::typeSpecPath(inType2.clone())?)) => true,
         Deref @ SCode::Replaceable::NOT_REPLACEABLE { .. } if (!(Flags::getConfigBool(Flags::IGNORE_REPLACEABLE.clone())?)) => {
@@ -248,7 +248,7 @@ fn checkCompRedeclarationReplaceable(mut inName: ArcStr, mut inReplaceable: Arc<
 }
 
 fn checkRedeclarationFinal(mut inName: ArcStr, mut inType: ArcStr, mut inFinal: SCode::Final, mut inOriginInfo: SourceInfo, mut inInfo: SourceInfo) -> Result<bool> {
-    let mut isValid: bool = false;
+    let mut isValid: bool;
     isValid = (match inFinal.clone() {
         SCode::Final::NOT_FINAL { .. } => true,
         SCode::Final::FINAL { .. } => {
@@ -260,7 +260,7 @@ fn checkRedeclarationFinal(mut inName: ArcStr, mut inType: ArcStr, mut inFinal: 
 }
 
 fn checkRedeclarationVariability(mut inName: ArcStr, mut inType: ArcStr, mut inVariability: SCode::Variability, mut inOriginInfo: SourceInfo, mut inInfo: SourceInfo) -> Result<bool> {
-    let mut isValid: bool = false;
+    let mut isValid: bool;
     isValid = (match inVariability.clone() {
         SCode::Variability::CONST { .. } => {
             Error::addMultiSourceMessage(Error::INVALID_REDECLARE.clone(), list![(literal!("constant")).clone(), (inType.clone()).clone(), (inName.clone()).clone()], list![inOriginInfo.clone(), inInfo.clone()])?;
@@ -272,7 +272,7 @@ fn checkRedeclarationVariability(mut inName: ArcStr, mut inType: ArcStr, mut inV
 }
 
 fn checkRedeclarationVisibility(mut inName: ArcStr, mut inType: ArcStr, mut inOriginalVisibility: SCode::Visibility, mut inNewVisibility: SCode::Visibility, mut inOriginInfo: SourceInfo, mut inNewInfo: SourceInfo) -> Result<bool> {
-    let mut isValid: bool = false;
+    let mut isValid: bool;
     isValid = (match (inOriginalVisibility.clone(), inNewVisibility.clone()) {
         (SCode::Visibility::PUBLIC { .. }, SCode::Visibility::PROTECTED { .. }) => {
             Error::addMultiSourceMessage(Error::INVALID_REDECLARE_AS.clone(), list![(literal!("public element")).clone(), (inName.clone()).clone(), (literal!("protected")).clone()], list![inNewInfo.clone(), inOriginInfo.clone()])?;
@@ -288,15 +288,15 @@ fn checkRedeclarationVisibility(mut inName: ArcStr, mut inType: ArcStr, mut inOr
 }
 
 pub fn checkDuplicateRedeclarations(mut inRedeclare: Arc<NFSCodeEnv::Redeclaration>, mut inRedeclarations: Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>>) -> Result<()> {
-    let mut el_name: ArcStr = arcstr::literal!("");
-    let mut el_info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
+    let mut el_name: ArcStr;
+    let mut el_info: SourceInfo;
     (el_name, el_info) = NFSCodeEnv::getRedeclarationNameInfo(inRedeclare.clone())?;
     let false = (checkDuplicateRedeclarations2((el_name.clone()).clone(), el_info.clone(), inRedeclarations.clone())?) else { bail!("pattern mismatch") };
     Ok(())
 }
 
 fn checkDuplicateRedeclarations2(mut inRedeclareName: ArcStr, mut inRedeclareInfo: SourceInfo, mut inRedeclarations: Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>>) -> Result<bool> {
-    let mut outIsDuplicate: bool = false;
+    let mut outIsDuplicate: bool;
     outIsDuplicate = 'mc: {
         let __mc_input = inRedeclarations.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -401,7 +401,7 @@ pub fn checkRecursiveComponentDeclaration(mut inComponentName: ArcStr, mut inCom
 }
 
 pub fn checkIdentNotEqTypeName(mut inIdent: ArcStr, mut inTypeName: Arc<Absyn::TypeSpec>, mut inInfo: SourceInfo) -> Result<bool> {
-    let mut outIsNotEq: bool = false;
+    let mut outIsNotEq: bool;
     outIsNotEq = 'mc: {
         let __mc_input = (inIdent.clone(), inTypeName.clone());
         if let Ok(__v) = (|| -> Result<_> {

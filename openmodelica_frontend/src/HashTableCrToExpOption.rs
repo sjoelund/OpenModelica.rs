@@ -86,7 +86,7 @@ pub fn emptyHashTableSized(mut size: i32) -> HashTable {
 }
 
 fn printExpOtionStr(mut expOpt: Option<Arc<DAE::Exp>>) -> Result<ArcStr> {
-    let mut outStr: ArcStr = arcstr::literal!("");
+    let mut outStr: ArcStr;
     outStr = ((::match_deref::match_deref! { match &(expOpt.clone()) {
         Some(exp) => {
             { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SOME(")); __mm_s.push_str(&*ExpressionBasics::printExpStr(exp.clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }

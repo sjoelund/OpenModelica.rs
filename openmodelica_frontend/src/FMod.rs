@@ -90,8 +90,8 @@ pub type Import = Absyn::Import;
 pub type ModScope = FCore::ModScope;
 
 pub fn merge(mut inParentRef: Ref, mut inOuterModRef: Ref, mut inInnerModRef: Ref, mut inGraph: Graph) -> (Graph, Ref) {
-    let mut outGraph: Graph = <FCore::Graph as ::std::default::Default>::default();
-    let mut outMergedModRef: Ref = Default::default();
+    let mut outGraph: Graph;
+    let mut outMergedModRef: Ref;
     (outGraph, outMergedModRef) = (match (inParentRef.clone(), inGraph.clone()) {
         (mut r, mut g) => {
             (g.clone(), r.clone())
@@ -101,8 +101,8 @@ pub fn merge(mut inParentRef: Ref, mut inOuterModRef: Ref, mut inInnerModRef: Re
 }
 
 pub fn apply(mut inTargetRef: Ref, mut inModRef: Ref, mut inGraph: Graph) -> (Graph, Ref) {
-    let mut outGraph: Graph = <FCore::Graph as ::std::default::Default>::default();
-    let mut outNodeRef: Ref = Default::default();
+    let mut outGraph: Graph;
+    let mut outNodeRef: Ref;
     (outGraph, outNodeRef) = (match (inTargetRef.clone(), inGraph.clone()) {
         (mut r, mut g) => {
             (g.clone(), r.clone())
@@ -112,18 +112,18 @@ pub fn apply(mut inTargetRef: Ref, mut inModRef: Ref, mut inGraph: Graph) -> (Gr
 }
 
 pub fn compactSubMods(mut inSubMods: Arc<metamodelica::List<Arc<SCode::SubMod>>>, mut inModScope: ModScope) -> Result<Arc<metamodelica::List<Arc<SCode::SubMod>>>> {
-    let mut outSubMods: Arc<metamodelica::List<Arc<SCode::SubMod>>> = metamodelica::nil();
-    let mut submods: Arc<metamodelica::List<Arc<SCode::SubMod>>> = metamodelica::nil();
+    let mut outSubMods: Arc<metamodelica::List<Arc<SCode::SubMod>>>;
+    let mut submods: Arc<metamodelica::List<Arc<SCode::SubMod>>>;
     submods = List::fold2(inSubMods.clone(), (std::sync::Arc::new(compactSubMod) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>, FCore::ModScope, Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<Arc<SCode::SubMod>>>) -> Result<Arc<metamodelica::List<Arc<SCode::SubMod>>>> + 'static>), inModScope.clone(), metamodelica::nil(), metamodelica::nil())?;
     outSubMods = submods.clone().reverse();
     Ok(outSubMods)
 }
 
 fn compactSubMod(mut inSubMod: Arc<SCode::SubMod>, mut inModScope: ModScope, mut inName: Arc<metamodelica::List<ArcStr>>, mut inAccumMods: Arc<metamodelica::List<Arc<SCode::SubMod>>>) -> Result<Arc<metamodelica::List<Arc<SCode::SubMod>>>> {
-    let mut outSubMods: Arc<metamodelica::List<Arc<SCode::SubMod>>> = metamodelica::nil();
-    let mut name: ArcStr = arcstr::literal!("");
-    let mut submods: Arc<metamodelica::List<Arc<SCode::SubMod>>> = metamodelica::nil();
-    let mut found: bool = false;
+    let mut outSubMods: Arc<metamodelica::List<Arc<SCode::SubMod>>>;
+    let mut name: ArcStr;
+    let mut submods: Arc<metamodelica::List<Arc<SCode::SubMod>>>;
+    let mut found: bool;
     let __pa0 = ::match_deref::match_deref! { match &(inSubMod.clone()) {
         Deref @ SCode::SubMod { ident: __pa0, r#mod: _ } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
@@ -135,8 +135,8 @@ fn compactSubMod(mut inSubMod: Arc<SCode::SubMod>, mut inModScope: ModScope, mut
 }
 
 fn compactSubMod2(mut inExistingMod: Arc<SCode::SubMod>, mut inNewMod: Arc<SCode::SubMod>, mut inModScope: ModScope, mut inName: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<SCode::SubMod>, bool)> {
-    let mut outMod: Arc<SCode::SubMod> = Arc::new(<SCode::SubMod as ::std::default::Default>::default());
-    let mut outFound: bool = false;
+    let mut outMod: Arc<SCode::SubMod>;
+    let mut outFound: bool;
     (outMod, outFound) = 'mc: {
         let __mc_input = (inExistingMod.clone(), inNewMod.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -164,7 +164,7 @@ fn compactSubMod2(mut inExistingMod: Arc<SCode::SubMod>, mut inNewMod: Arc<SCode
 }
 
 fn mergeSubModsInSameScope(mut inMod1: Arc<SCode::SubMod>, mut inMod2: Arc<SCode::SubMod>, mut inElementName: Arc<metamodelica::List<ArcStr>>, mut inModScope: ModScope) -> Result<Arc<SCode::SubMod>> {
-    let mut outMod: Arc<SCode::SubMod> = Arc::new(<SCode::SubMod as ::std::default::Default>::default());
+    let mut outMod: Arc<SCode::SubMod>;
     let mut scope: ArcStr = arcstr::literal!("");
     let mut name: ArcStr = arcstr::literal!("");
     let mut submods: Arc<metamodelica::List<Arc<SCode::SubMod>>> = metamodelica::nil();
@@ -195,7 +195,7 @@ fn mergeSubModsInSameScope(mut inMod1: Arc<SCode::SubMod>, mut inMod2: Arc<SCode
 }
 
 fn printModScope(mut inModScope: ModScope) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((match inModScope.clone() {
         FCore::ModScope::MS_COMPONENT { name: mut name } => {
             { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("component ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }

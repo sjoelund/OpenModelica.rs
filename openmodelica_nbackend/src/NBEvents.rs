@@ -172,7 +172,7 @@ pub mod EventInfo {
 
             type F2<T2: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T2) -> Result<ArcStr> + 'static>;
 
-            let mut r#str: ArcStr = arcstr::literal!("");
+            let mut r#str: ArcStr;
             let mut t1: T1;
             let mut t2: T2;
             (t1, t2) = tpl.clone();
@@ -181,9 +181,9 @@ pub mod EventInfo {
         }
 
         let mut r#str: ArcStr = literal!("");
-        let mut tev_lst: Arc<metamodelica::List<Arc<TimeEvent::TimeEvent>>> = metamodelica::nil();
-        let mut cev_lst: Arc<metamodelica::List<(Arc<Condition::Condition>, Arc<CompositeEvent::CompositeEvent>)>> = metamodelica::nil();
-        let mut sev_lst: Arc<metamodelica::List<(Arc<Condition::Condition>, Arc<StateEvent::StateEvent>)>> = metamodelica::nil();
+        let mut tev_lst: Arc<metamodelica::List<Arc<TimeEvent::TimeEvent>>>;
+        let mut cev_lst: Arc<metamodelica::List<(Arc<Condition::Condition>, Arc<CompositeEvent::CompositeEvent>)>>;
+        let mut sev_lst: Arc<metamodelica::List<(Arc<Condition::Condition>, Arc<StateEvent::StateEvent>)>>;
         if !(isEmpty(eventInfo.clone())) {
             (tev_lst, cev_lst, sev_lst) = toLists(eventInfo.clone())?;
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_2((literal!("Event Info")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
@@ -195,9 +195,9 @@ pub mod EventInfo {
     }
 
     pub fn toLists(mut eventInfo: Arc<EventInfo>) -> Result<(Arc<metamodelica::List<Arc<TimeEvent::TimeEvent>>>, Arc<metamodelica::List<(Arc<Condition::Condition>, Arc<CompositeEvent::CompositeEvent>)>>, Arc<metamodelica::List<(Arc<Condition::Condition>, Arc<StateEvent::StateEvent>)>>)> {
-        let mut tev_lst: Arc<metamodelica::List<Arc<TimeEvent::TimeEvent>>> = metamodelica::nil();
-        let mut cev_lst: Arc<metamodelica::List<(Arc<Condition::Condition>, Arc<CompositeEvent::CompositeEvent>)>> = metamodelica::nil();
-        let mut sev_lst: Arc<metamodelica::List<(Arc<Condition::Condition>, Arc<StateEvent::StateEvent>)>> = metamodelica::nil();
+        let mut tev_lst: Arc<metamodelica::List<Arc<TimeEvent::TimeEvent>>>;
+        let mut cev_lst: Arc<metamodelica::List<(Arc<Condition::Condition>, Arc<CompositeEvent::CompositeEvent>)>>;
+        let mut sev_lst: Arc<metamodelica::List<(Arc<Condition::Condition>, Arc<StateEvent::StateEvent>)>>;
         tev_lst = List::sort(UnorderedSet::toList(eventInfo.time_set.clone()), (std::sync::Arc::new(TimeEvent::indexGt) as std::sync::Arc<dyn ::std::ops::Fn(Arc<TimeEvent::TimeEvent>, Arc<TimeEvent::TimeEvent>) -> Result<bool> + 'static>))?;
         cev_lst = List::sort(UnorderedMap::toList(eventInfo.time_map.clone()), (std::sync::Arc::new(fnptr!(CompositeEvent::indexGt, (Arc<Condition::Condition>, Arc<CompositeEvent::CompositeEvent>), (Arc<Condition::Condition>, Arc<CompositeEvent::CompositeEvent>))) as std::sync::Arc<dyn ::std::ops::Fn((Arc<Condition::Condition>, Arc<CompositeEvent::CompositeEvent>), (Arc<Condition::Condition>, Arc<CompositeEvent::CompositeEvent>)) -> Result<bool> + 'static>))?;
         sev_lst = List::sort(UnorderedMap::toList(eventInfo.state_map.clone()), (std::sync::Arc::new(fnptr!(StateEvent::indexGt, (Arc<Condition::Condition>, Arc<StateEvent::StateEvent>), (Arc<Condition::Condition>, Arc<StateEvent::StateEvent>))) as std::sync::Arc<dyn ::std::ops::Fn((Arc<Condition::Condition>, Arc<StateEvent::StateEvent>), (Arc<Condition::Condition>, Arc<StateEvent::StateEvent>)) -> Result<bool> + 'static>))?;
@@ -205,12 +205,12 @@ pub mod EventInfo {
     }
 
     pub fn create(mut bucket: Arc<Bucket>, mut variables: Arc<VariablePointers::VariablePointers>, mut idx: Pointer::Pointer<i32>) -> Result<(Arc<EventInfo>, Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>, Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>)> {
-        let mut eventInfo: Arc<EventInfo> = Arc::new(<EventInfo as ::std::default::Default>::default());
+        let mut eventInfo: Arc<EventInfo>;
         let mut auxiliary_vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
         let mut auxiliary_eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
-        let mut cond: Arc<Condition::Condition> = Arc::new(<Condition::Condition as ::std::default::Default>::default());
-        let mut cev: Arc<CompositeEvent::CompositeEvent> = Arc::new(<CompositeEvent::CompositeEvent as ::std::default::Default>::default());
-        let mut sev: Arc<StateEvent::StateEvent> = Arc::new(<StateEvent::StateEvent as ::std::default::Default>::default());
+        let mut cond: Arc<Condition::Condition>;
+        let mut cev: Arc<CompositeEvent::CompositeEvent>;
+        let mut sev: Arc<StateEvent::StateEvent>;
         for mut tpl in &*UnorderedMap::toList(bucket.time_map.clone()) {
             let mut tpl = tpl.clone();
             (cond, cev) = tpl.clone();
@@ -232,7 +232,7 @@ pub mod EventInfo {
     pub fn createAux(mut cond: Arc<Condition::Condition>, mut aux_var: Pointer::Pointer<Arc<Variable::NFVariable>>, mut variables: Arc<VariablePointers::VariablePointers>, mut idx: Pointer::Pointer<i32>, mut auxiliary_vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>, mut auxiliary_eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>) -> Result<(Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>, Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>)> {
         let mut auxiliary_vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = auxiliary_vars;
         let mut auxiliary_eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = auxiliary_eqns;
-        let mut lhs_cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
+        let mut lhs_cref: Arc<ComponentRef::NFComponentRef>;
         let mut aux_eqn: Pointer::Pointer<Arc<Equation::Equation>>;
         if cond.stmt_index.clone() == 0 {
             lhs_cref = ComponentRef::mapSubscripts(BVariable::getVarName(aux_var.clone()), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = (std::sync::Arc::new({ let __pe_b1 = variables.clone(); let __pe_b2 = true; move |__pe_a0| BackendDAE::lowerComponentReferenceExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>); move |__pe_a0| Subscript::mapExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Subscript::NFSubscript>) -> Result<Arc<Subscript::NFSubscript>> + 'static>), false)?;
@@ -247,9 +247,9 @@ pub mod EventInfo {
     pub fn createAuxStatements(mut new_stmts: Arc<metamodelica::List<Arc<Statement::NFStatement>>>, mut bucket_ptr: Pointer::Pointer<Arc<Bucket>>, mut variables: Arc<VariablePointers::VariablePointers>) -> Result<Arc<metamodelica::List<Arc<Statement::NFStatement>>>> {
         let mut new_stmts: Arc<metamodelica::List<Arc<Statement::NFStatement>>> = new_stmts;
         let mut bucket: Arc<Bucket> = Pointer::access(bucket_ptr.clone());
-        let mut new_stmt: Arc<Statement::NFStatement> = Arc::new(<Statement::NFStatement as ::std::default::Default>::default());
-        let mut cond: Arc<Condition::Condition> = Arc::new(<Condition::Condition as ::std::default::Default>::default());
-        let mut aux: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
+        let mut new_stmt: Arc<Statement::NFStatement>;
+        let mut cond: Arc<Condition::Condition>;
+        let mut aux: Arc<ComponentRef::NFComponentRef>;
         if isSome(bucket.aux_stmts.clone()) {
             for mut tpl in &*Util::getOption(bucket.aux_stmts.clone())? {
                 let mut tpl = tpl.clone();
@@ -265,24 +265,24 @@ pub mod EventInfo {
     }
 
     pub fn empty() -> Arc<EventInfo> {
-        let mut eventInfo: Arc<EventInfo> = Arc::new(<EventInfo as ::std::default::Default>::default());
+        let mut eventInfo: Arc<EventInfo>;
         eventInfo = Arc::new(EventInfo { time_set: UnorderedSet::new((std::sync::Arc::new(TimeEvent::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<TimeEvent::TimeEvent>) -> Result<i32> + 'static>), (std::sync::Arc::new(TimeEvent::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<TimeEvent::TimeEvent>, Arc<TimeEvent::TimeEvent>) -> Result<bool> + 'static>), 13), time_map: UnorderedMap::new((std::sync::Arc::new(Condition::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Condition::Condition>) -> Result<i32> + 'static>), (std::sync::Arc::new(Condition::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Condition::Condition>, Arc<Condition::Condition>) -> Result<bool> + 'static>), 1), state_map: UnorderedMap::new((std::sync::Arc::new(Condition::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Condition::Condition>) -> Result<i32> + 'static>), (std::sync::Arc::new(Condition::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Condition::Condition>, Arc<Condition::Condition>) -> Result<bool> + 'static>), 1), numberMathEvents: 0 });
         eventInfo
     }
 
     pub fn isEmpty(mut eventInfo: Arc<EventInfo>) -> bool {
-        let mut b: bool = false;
+        let mut b: bool;
         b = UnorderedSet::isEmpty(eventInfo.time_set.clone()) && UnorderedMap::isEmpty(eventInfo.time_map.clone()) && UnorderedMap::isEmpty(eventInfo.state_map.clone()) && eventInfo.numberMathEvents.clone() == 0;
         b
     }
 
     pub fn convert(mut eventInfo: Arc<EventInfo>, mut equation_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Block::Block>>>) -> Result<(Arc<metamodelica::List<OldBackendDAE::ZeroCrossing>>, Arc<metamodelica::List<OldBackendDAE::ZeroCrossing>>, Arc<metamodelica::List<OldBackendDAE::TimeEvent>>)> {
-        let mut zeroCrossings: Arc<metamodelica::List<OldBackendDAE::ZeroCrossing>> = metamodelica::nil();
-        let mut relations: Arc<metamodelica::List<OldBackendDAE::ZeroCrossing>> = metamodelica::nil();
-        let mut timeEvents: Arc<metamodelica::List<OldBackendDAE::TimeEvent>> = metamodelica::nil();
-        let mut tev_lst: Arc<metamodelica::List<Arc<TimeEvent::TimeEvent>>> = metamodelica::nil();
-        let mut cev_lst: Arc<metamodelica::List<(Arc<Condition::Condition>, Arc<CompositeEvent::CompositeEvent>)>> = metamodelica::nil();
-        let mut sev_lst: Arc<metamodelica::List<(Arc<Condition::Condition>, Arc<StateEvent::StateEvent>)>> = metamodelica::nil();
+        let mut zeroCrossings: Arc<metamodelica::List<OldBackendDAE::ZeroCrossing>>;
+        let mut relations: Arc<metamodelica::List<OldBackendDAE::ZeroCrossing>>;
+        let mut timeEvents: Arc<metamodelica::List<OldBackendDAE::TimeEvent>>;
+        let mut tev_lst: Arc<metamodelica::List<Arc<TimeEvent::TimeEvent>>>;
+        let mut cev_lst: Arc<metamodelica::List<(Arc<Condition::Condition>, Arc<CompositeEvent::CompositeEvent>)>>;
+        let mut sev_lst: Arc<metamodelica::List<(Arc<Condition::Condition>, Arc<StateEvent::StateEvent>)>>;
         (tev_lst, cev_lst, sev_lst) = toLists(eventInfo.clone())?;
         zeroCrossings = ({
         let mut __acc: Arc<metamodelica::List<OldBackendDAE::ZeroCrossing>> = metamodelica::nil();
@@ -342,8 +342,8 @@ pub mod TimeEvent {
     }
     pub use self::TimeEvent::{SINGLE,SAMPLE};
     pub fn toString(mut timeEvent: Arc<TimeEvent>, mut printIndex: bool) -> Result<ArcStr> {
-        let mut r#str: ArcStr = arcstr::literal!("");
-        let mut iter: Arc<Iterator::Iterator> = Arc::new(Iterator::EMPTY);
+        let mut r#str: ArcStr;
+        let mut iter: Arc<Iterator::Iterator>;
         (r#str, iter) = (::match_deref::match_deref! { match &(timeEvent.clone()) {
         Deref @ SINGLE { .. } => ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("time > ")); __mm_s.push_str(&*Expression::toString(var_field!((*timeEvent).trigger, TimeEvent::SINGLE).clone())?); ArcStr::from(__mm_s) }, var_field!((*timeEvent).iter, TimeEvent::SINGLE).clone()),
         Deref @ SAMPLE { .. } => ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("sample(")); __mm_s.push_str(&*intString(var_field!((*timeEvent).index, TimeEvent::SAMPLE).clone())); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*Expression::toString(var_field!((*timeEvent).start, TimeEvent::SAMPLE).clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*Expression::toString(var_field!((*timeEvent).interval, TimeEvent::SAMPLE).clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }, var_field!((*timeEvent).iter, TimeEvent::SAMPLE).clone()),
@@ -363,7 +363,7 @@ pub mod TimeEvent {
     }
 
     pub fn toStringList(mut events_lst: Arc<metamodelica::List<Arc<TimeEvent>>>) -> Result<ArcStr> {
-        let mut r#str: ArcStr = arcstr::literal!("");
+        let mut r#str: ArcStr;
         r#str = (StringUtil::headline_4((literal!("Time Events")).clone())).clone();
         if events_lst.clone().is_empty() {
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\t<No Time Events>\n")); ArcStr::from(__mm_s) }).clone();
@@ -386,7 +386,7 @@ pub mod TimeEvent {
     }
 
     pub fn isEqual(mut tev1: Arc<TimeEvent>, mut tev2: Arc<TimeEvent>) -> Result<bool> {
-        let mut b: bool = false;
+        let mut b: bool;
         b = (::match_deref::match_deref! { match &((tev1.clone(), tev2.clone())) {
         (Deref @ SINGLE { .. }, Deref @ SINGLE { .. }) => Expression::isEqual(var_field!((*tev1).trigger, TimeEvent::SINGLE).clone(), var_field!((*tev2).trigger, TimeEvent::SINGLE).clone())?,
         (Deref @ SAMPLE { .. }, Deref @ SAMPLE { .. }) => Expression::isEqual(var_field!((*tev1).start, TimeEvent::SAMPLE).clone(), var_field!((*tev2).start, TimeEvent::SAMPLE).clone())? && Expression::isEqual(var_field!((*tev1).interval, TimeEvent::SAMPLE).clone(), var_field!((*tev2).interval, TimeEvent::SAMPLE).clone())?,
@@ -505,8 +505,8 @@ pub mod TimeEvent {
     pub fn createSample(mut call: Arc<Call::NFCall>, mut bucket: Arc<Bucket>, mut iter: Arc<Iterator::Iterator>) -> Result<(Arc<Call::NFCall>, Arc<Bucket>, bool, bool)> {
         let mut call: Arc<Call::NFCall> = call;
         let mut bucket: Arc<Bucket> = bucket;
-        let mut failed: bool = false;
-        let mut clocked: bool = false;
+        let mut failed: bool;
+        let mut clocked: bool;
         (failed, clocked) = (::match_deref::match_deref! { match &((AbsynUtil::pathLastIdent(Call::functionName(call.clone())?)?, Call::arguments(call.clone())?)) {
         (Deref @ "sample", Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: clock, tail: Deref @ metamodelica::List::Nil } }) if (Type::isClock(Expression::typeOf(clock.clone()))?) => {
             (false, true)
@@ -555,7 +555,7 @@ pub mod TimeEvent {
     }
 
     pub fn getIndex(mut timeEvent: Arc<TimeEvent>) -> Result<i32> {
-        let mut index: i32 = 0;
+        let mut index: i32;
         index = (::match_deref::match_deref! { match &(timeEvent.clone()) {
         Deref @ SINGLE { .. } => var_field!((*timeEvent).index, TimeEvent::SINGLE).clone(),
         Deref @ SAMPLE { .. } => var_field!((*timeEvent).index, TimeEvent::SAMPLE).clone(),
@@ -582,7 +582,7 @@ pub mod TimeEvent {
     }
 
     pub fn convert(mut timeEvent: Arc<TimeEvent>) -> Result<OldBackendDAE::TimeEvent> {
-        let mut oldTimeEvent: OldBackendDAE::TimeEvent = OldBackendDAE::TimeEvent::SIMPLE_TIME_EVENT;
+        let mut oldTimeEvent: OldBackendDAE::TimeEvent;
         oldTimeEvent = (::match_deref::match_deref! { match &(timeEvent.clone()) {
         Deref @ SINGLE { .. } => OldBackendDAE::TimeEvent::SAMPLE_TIME_EVENT { index: var_field!((*timeEvent).index, TimeEvent::SINGLE).clone(), startExp: Expression::toDAE(var_field!((*timeEvent).trigger, TimeEvent::SINGLE).clone(), false)?, intervalExp: Expression::toDAE(Expression::makeMaxValue(openmodelica_nf_frontend::NFType::interned_REAL())?, false)?, iter: convertEventIterator(var_field!((*timeEvent).iter, TimeEvent::SINGLE).clone())? },
         Deref @ SAMPLE { .. } => OldBackendDAE::TimeEvent::SAMPLE_TIME_EVENT { index: var_field!((*timeEvent).index, TimeEvent::SAMPLE).clone(), startExp: Expression::toDAE(var_field!((*timeEvent).start, TimeEvent::SAMPLE).clone(), false)?, intervalExp: Expression::toDAE(var_field!((*timeEvent).interval, TimeEvent::SAMPLE).clone(), false)?, iter: convertEventIterator(var_field!((*timeEvent).iter, TimeEvent::SAMPLE).clone())? },
@@ -627,7 +627,7 @@ pub mod StateEvent {
     }
 
     pub fn toStringList(mut events_lst: Arc<metamodelica::List<Arc<StateEvent>>>) -> Result<ArcStr> {
-        let mut r#str: ArcStr = arcstr::literal!("");
+        let mut r#str: ArcStr;
         r#str = (StringUtil::headline_4((literal!("State Events")).clone())).clone();
         if events_lst.clone().is_empty() {
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\t<No State Events>\n")); ArcStr::from(__mm_s) }).clone();
@@ -645,9 +645,9 @@ pub mod StateEvent {
     }
 
     pub fn indexGt(mut tpl1: (Arc<Condition::Condition>, Arc<StateEvent>), mut tpl2: (Arc<Condition::Condition>, Arc<StateEvent>)) -> bool {
-        let mut b: bool = false;
-        let mut sev1: Arc<StateEvent> = Arc::new(<StateEvent as ::std::default::Default>::default());
-        let mut sev2: Arc<StateEvent> = Arc::new(<StateEvent as ::std::default::Default>::default());
+        let mut b: bool;
+        let mut sev1: Arc<StateEvent>;
+        let mut sev2: Arc<StateEvent>;
         (_, sev1) = tpl1.clone();
         (_, sev2) = tpl2.clone();
         b = sev1.index.clone() > sev2.index.clone();
@@ -692,9 +692,9 @@ pub mod StateEvent {
     pub fn create(mut exp: Arc<Expression::NFExpression>, mut bucket: Arc<Bucket>, mut iter: Arc<Iterator::Iterator>, mut eqn: Pointer::Pointer<Arc<Equation::Equation>>, mut createEqn: bool) -> Result<(Arc<Expression::NFExpression>, Arc<Bucket>)> {
         let mut exp: Arc<Expression::NFExpression> = exp;
         let mut bucket: Arc<Bucket> = bucket;
-        let mut condition: Arc<Condition::Condition> = Arc::new(<Condition::Condition as ::std::default::Default>::default());
-        let mut sev_opt: Option<Arc<StateEvent>> = None;
-        let mut sev: Arc<StateEvent> = Arc::new(<StateEvent as ::std::default::Default>::default());
+        let mut condition: Arc<Condition::Condition>;
+        let mut sev_opt: Option<Arc<StateEvent>>;
+        let mut sev: Arc<StateEvent>;
         let mut aux_var: Pointer::Pointer<Arc<Variable::NFVariable>>;
         let mut aux_cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
         let mut clocked: Pointer::Pointer<bool> = Pointer::create(false);
@@ -730,12 +730,12 @@ pub mod StateEvent {
     }
 
     pub fn convert(mut sev_tpl: (Arc<Condition::Condition>, Arc<StateEvent>), mut equation_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Block::Block>>>) -> Result<OldBackendDAE::ZeroCrossing> {
-        let mut oldZc: OldBackendDAE::ZeroCrossing = <OldBackendDAE::ZeroCrossing as ::std::default::Default>::default();
-        let mut cond: Arc<Condition::Condition> = Arc::new(<Condition::Condition as ::std::default::Default>::default());
-        let mut sev: Arc<StateEvent> = Arc::new(<StateEvent as ::std::default::Default>::default());
-        let mut iter: Option<Arc<metamodelica::List<OldSimIterator>>> = None;
-        let mut eqn_names: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-        let mut eqn_indices: Arc<metamodelica::List<i32>> = metamodelica::nil();
+        let mut oldZc: OldBackendDAE::ZeroCrossing;
+        let mut cond: Arc<Condition::Condition>;
+        let mut sev: Arc<StateEvent>;
+        let mut iter: Option<Arc<metamodelica::List<OldSimIterator>>>;
+        let mut eqn_names: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
+        let mut eqn_indices: Arc<metamodelica::List<i32>>;
         (cond, sev) = sev_tpl.clone();
         iter = convertEventIterator(cond.iter.clone())?;
         eqn_names = ({
@@ -787,9 +787,9 @@ pub mod CompositeEvent {
     }
 
     pub fn indexGt(mut tpl1: (Arc<Condition::Condition>, Arc<CompositeEvent>), mut tpl2: (Arc<Condition::Condition>, Arc<CompositeEvent>)) -> bool {
-        let mut b: bool = false;
-        let mut cev1: Arc<CompositeEvent> = Arc::new(<CompositeEvent as ::std::default::Default>::default());
-        let mut cev2: Arc<CompositeEvent> = Arc::new(<CompositeEvent as ::std::default::Default>::default());
+        let mut b: bool;
+        let mut cev1: Arc<CompositeEvent>;
+        let mut cev2: Arc<CompositeEvent>;
         (_, cev1) = tpl1.clone();
         (_, cev2) = tpl2.clone();
         b = cev1.index.clone() > cev2.index.clone();
@@ -863,8 +863,8 @@ pub mod CompositeEvent {
         let mut call: Arc<Call::NFCall> = call;
         let mut exp: Arc<Expression::NFExpression> = exp;
         let mut bucket: Arc<Bucket> = bucket;
-        let mut failed: bool = false;
-        let mut failed2: bool = false;
+        let mut failed: bool;
+        let mut failed2: bool;
         (call, bucket, failed, _) = TimeEvent::createSample(call.clone(), bucket.clone(), iter.clone())?;
         if !(failed.clone()) {
             (exp, bucket, failed2) = create(exp.clone(), bucket.clone(), iter.clone(), createEqn.clone())?;
@@ -875,13 +875,13 @@ pub mod CompositeEvent {
     }
 
     pub fn add(mut cond: Arc<Expression::NFExpression>, mut iter: Arc<Iterator::Iterator>, mut bucket: Arc<Bucket>, mut createEqn: bool) -> Result<(Arc<Expression::NFExpression>, Arc<Bucket>)> {
-        let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+        let mut exp: Arc<Expression::NFExpression>;
         let mut bucket: Arc<Bucket> = bucket;
-        let mut condition: Arc<Condition::Condition> = Arc::new(<Condition::Condition as ::std::default::Default>::default());
-        let mut cev_opt: Option<Arc<CompositeEvent>> = None;
-        let mut cev: Arc<CompositeEvent> = Arc::new(<CompositeEvent as ::std::default::Default>::default());
+        let mut condition: Arc<Condition::Condition>;
+        let mut cev_opt: Option<Arc<CompositeEvent>>;
+        let mut cev: Arc<CompositeEvent>;
         let mut aux_var: Pointer::Pointer<Arc<Variable::NFVariable>>;
-        let mut aux_cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
+        let mut aux_cref: Arc<ComponentRef::NFComponentRef>;
         if createEqn.clone() {
             condition = Arc::new(Condition::Condition { exp: cond.clone(), iter: iter.clone(), stmt_index: 0 });
         } else {
@@ -933,7 +933,7 @@ pub mod Condition {
     pub type CONDITION = Condition;
 
     pub fn toString(mut cond: Arc<Condition>) -> Result<ArcStr> {
-        let mut r#str: ArcStr = arcstr::literal!("");
+        let mut r#str: ArcStr;
         r#str = (Expression::toString(cond.exp.clone())?).clone();
         if !(BEquation::Iterator::isEmpty(cond.iter.clone())) {
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!(" for {")); __mm_s.push_str(&*BEquation::Iterator::toString(cond.iter.clone())?); __mm_s.push_str(&*literal!("}")); ArcStr::from(__mm_s) }).clone();
@@ -978,7 +978,7 @@ pub mod Condition {
 }
 
 pub fn convertEventIterator(mut iter: Arc<Iterator::Iterator>) -> Result<Option<Arc<metamodelica::List<OldSimIterator>>>> {
-    let mut sim_iter: Option<Arc<metamodelica::List<OldSimIterator>>> = None;
+    let mut sim_iter: Option<Arc<metamodelica::List<OldSimIterator>>>;
     sim_iter = if (BEquation::Iterator::isEmpty(iter.clone())) {None} else {Some(({
         let mut __acc: Arc<metamodelica::List<OldSimIterator>> = metamodelica::nil();
         for mut it in (SimIterator::fromIterator(iter.clone())?).into_iter().cloned() {
@@ -1065,7 +1065,7 @@ fn collectEvents(mut eqn_ptr: Pointer::Pointer<Arc<Equation::Equation>>, mut buc
     let mut eqn_ptr: Pointer::Pointer<Arc<Equation::Equation>> = eqn_ptr;
     let mut eqn: Arc<Equation::Equation> = Pointer::access(eqn_ptr.clone());
     let mut body_eqn: Arc<Equation::Equation> = Arc::new(Equation::DUMMY_EQUATION);
-    let mut iter: Arc<Iterator::Iterator> = Arc::new(Iterator::EMPTY);
+    let mut iter: Arc<Iterator::Iterator>;
     let mut createEqn: bool = !(BEquation::Equation::isAlgorithm(eqn_ptr.clone()));
     let mut collector: BEquation::MapFuncExp;
     let mut alg: Arc<Algorithm::NFAlgorithm> = Arc::new(<Algorithm::NFAlgorithm as ::std::default::Default>::default());

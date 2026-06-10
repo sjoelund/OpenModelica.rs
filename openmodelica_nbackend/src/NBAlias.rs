@@ -200,7 +200,7 @@ pub mod AliasSet {
     pub type ALIAS_SET = AliasSet;
 
     pub fn toString(mut set: Arc<AliasSet>) -> Result<ArcStr> {
-        let mut r#str: ArcStr = arcstr::literal!("");
+        let mut r#str: ArcStr;
         if isSome(set.const_opt.clone()) {
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\tConstant/Parameter Binding: ")); __mm_s.push_str(&*BEquation::Equation::toString(Pointer::access(Util::getOption(set.const_opt.clone())?), (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
         } else {
@@ -337,10 +337,10 @@ fn checkReplacements(mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<Compon
     let mut newReplacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
     let mut auxEquations: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
     let mut exceptionMap: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, ExceptionKind>> = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
-    let mut cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut cref: Arc<ComponentRef::NFComponentRef>;
+    let mut exp: Arc<Expression::NFExpression>;
     let mut eqPtr: Pointer::Pointer<Arc<Equation::Equation>>;
-    let mut attr: Arc<EquationAttributes::EquationAttributes> = Arc::new(<EquationAttributes::EquationAttributes as ::std::default::Default>::default());
+    let mut attr: Arc<EquationAttributes::EquationAttributes>;
     BEquation::EqData::map(eqData.clone(), (std::sync::Arc::new({ let __pe_b1 = exceptionMap.clone(); move |__pe_a0| filterExceptionsEquation(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::Equation>) -> Result<Arc<Equation::Equation>> + 'static>))?;
     for mut keyValueTpl in &*UnorderedMap::toList(replacements.clone()) {
         let mut keyValueTpl = keyValueTpl.clone();
@@ -483,12 +483,12 @@ fn aliasClocks(mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqData::EqDat
 }
 
 fn aliasCausalize(mut variables: Arc<VariablePointers::VariablePointers>, mut equations: Arc<EquationPointers::EquationPointers>, mut kind: Partition::Kind, mut context: ArcStr) -> Result<(Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>, Arc<EquationPointers::EquationPointers>)> {
-    let mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> as ::std::default::Default>::default();
-    let mut newEquations: Arc<EquationPointers::EquationPointers> = Arc::new(<EquationPointers::EquationPointers as ::std::default::Default>::default());
-    let mut size: i32 = 0;
+    let mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>;
+    let mut newEquations: Arc<EquationPointers::EquationPointers>;
+    let mut size: i32;
     let mut setIdx: i32 = 1;
-    let mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Pointer::Pointer<Arc<AliasSet::AliasSet>>>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Pointer::Pointer<Arc<AliasSet::AliasSet>>>> as ::std::default::Default>::default();
-    let mut sets: Arc<metamodelica::List<Arc<AliasSet::AliasSet>>> = metamodelica::nil();
+    let mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Pointer::Pointer<Arc<AliasSet::AliasSet>>>>;
+    let mut sets: Arc<metamodelica::List<Arc<AliasSet::AliasSet>>>;
     size = BVariable::VariablePointers::size(variables.clone());
     map = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), size.clone());
     (newEquations, map) = BEquation::EquationPointers::foldRemovePtr(equations.clone(), (std::sync::Arc::new(findSimpleEquation) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>, Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Pointer::Pointer<Arc<AliasSet::AliasSet>>>>) -> Result<(Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Pointer::Pointer<Arc<AliasSet::AliasSet>>>>, bool)> + 'static>), map.clone())?;
@@ -516,7 +516,7 @@ fn aliasCausalize(mut variables: Arc<VariablePointers::VariablePointers>, mut eq
 fn findSimpleEquation(mut eq_ptr: Pointer::Pointer<Arc<Equation::Equation>>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Pointer::Pointer<Arc<AliasSet::AliasSet>>>>) -> Result<(Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Pointer::Pointer<Arc<AliasSet::AliasSet>>>>, bool)> {
     let mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Pointer::Pointer<Arc<AliasSet::AliasSet>>>> = map;
     let mut delete: bool = false;
-    let mut eq: Arc<Equation::Equation> = Arc::new(Equation::DUMMY_EQUATION);
+    let mut eq: Arc<Equation::Equation>;
     let mut crefTpl: CrefTpl = EMPTY_CREF_TPL().clone();
     eq = Pointer::access(eq_ptr.clone());
     crefTpl = (::match_deref::match_deref! { match &(eq.clone()) {
@@ -658,7 +658,7 @@ fn findCrefs(mut exp: Arc<Expression::NFExpression>, mut tpl: CrefTpl) -> Result
 }
 
 fn findCrefsFail(mut exp: Arc<Expression::NFExpression>) -> bool {
-    let mut cont: bool = false;
+    let mut cont: bool;
     cont = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CREF { .. } => true,
         Deref @ Expression::RELATION { .. } => true,
@@ -760,7 +760,7 @@ fn isSimpleExp(mut exp: Arc<Expression::NFExpression>, mut simple: bool) -> (boo
 }
 
 fn checkOp(mut op: Arc<Operator::NFOperator>, mut cref_num: i32) -> bool {
-    let mut b: bool = false;
+    let mut b: bool;
     b = (::match_deref::match_deref! { match &(op.clone()) {
         Deref @ Operator::OPERATOR { op: Operator::Op::ADD, .. } => true,
         Deref @ Operator::OPERATOR { op: Operator::Op::SUB, .. } => true,
@@ -777,10 +777,10 @@ fn checkOp(mut op: Arc<Operator::NFOperator>, mut cref_num: i32) -> bool {
 fn getSimpleSets(mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Pointer::Pointer<Arc<AliasSet::AliasSet>>>>, mut size: i32) -> Result<Arc<metamodelica::List<Arc<AliasSet::AliasSet>>>> {
     let mut sets: Arc<metamodelica::List<Arc<AliasSet::AliasSet>>> = metamodelica::nil();
     let mut cref_marks: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = UnorderedSet::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), size.clone());
-    let mut entry_lst: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Pointer::Pointer<Arc<AliasSet::AliasSet>>)>> = metamodelica::nil();
-    let mut simple_cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
+    let mut entry_lst: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Pointer::Pointer<Arc<AliasSet::AliasSet>>)>>;
+    let mut simple_cref: Arc<ComponentRef::NFComponentRef>;
     let mut set_ptr: SetPtr;
-    let mut set: Arc<AliasSet::AliasSet> = Arc::new(<AliasSet::AliasSet as ::std::default::Default>::default());
+    let mut set: Arc<AliasSet::AliasSet>;
     entry_lst = UnorderedMap::toList(map.clone());
     for mut entry in &*entry_lst.clone() {
         let mut entry = entry.clone();
@@ -878,15 +878,15 @@ fn createReplacementRules(mut set: Arc<AliasSet::AliasSet>, mut replacements: Ar
 }
 
 fn setNewAttributes(mut var_to_keep_ptr: Pointer::Pointer<Pointer::Pointer<Arc<Variable::NFVariable>>>, mut attrcollector: Arc<AttributeCollector::AttributeCollector>, mut set: Arc<AliasSet::AliasSet>) -> Result<()> {
-    let mut new_cref: Option<Arc<ComponentRef::NFComponentRef>> = None;
-    let mut new_min: Option<Arc<Expression::NFExpression>> = None;
-    let mut new_max: Option<Arc<Expression::NFExpression>> = None;
-    let mut new_start: Option<Arc<Expression::NFExpression>> = None;
-    let mut new_stateSelect: Option<StateSelect> = None;
-    let mut new_tearingSelect: Option<TearingSelect> = None;
+    let mut new_cref: Option<Arc<ComponentRef::NFComponentRef>>;
+    let mut new_min: Option<Arc<Expression::NFExpression>>;
+    let mut new_max: Option<Arc<Expression::NFExpression>>;
+    let mut new_start: Option<Arc<Expression::NFExpression>>;
+    let mut new_stateSelect: Option<StateSelect>;
+    let mut new_tearingSelect: Option<TearingSelect>;
     let mut fixed_var: Pointer::Pointer<Arc<Variable::NFVariable>>;
     let mut var_to_keep: Pointer::Pointer<Arc<Variable::NFVariable>> = Pointer::access(var_to_keep_ptr.clone());
-    let mut fixed_start_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> as ::std::default::Default>::default();
+    let mut fixed_start_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>;
     new_min = getMaximum(attrcollector.min_val_map.clone())?;
     if isSome(new_min.clone()) {
         Pointer::update(var_to_keep.clone(), BVariable::setMin(Pointer::access(var_to_keep.clone()), new_min.clone(), true)?);
@@ -931,9 +931,9 @@ fn chooseVariableToKeep(mut var_lst: Arc<metamodelica::List<Pointer::Pointer<Arc
     let mut acc: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
     let mut attrcollector: Arc<AttributeCollector::AttributeCollector> = Arc::new(AttributeCollector::AttributeCollector { min_val_map: UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1), max_val_map: UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1), start_map: UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1), fixed_map: UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1), nominal_map: UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1), stateSelect_map: UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1), tearingSelect_map: UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1) });
     let mut var: Pointer::Pointer<Arc<Variable::NFVariable>>;
-    let mut rest: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
-    let mut cur_rating: i32 = 0;
-    let mut max_rating: i32 = 0;
+    let mut rest: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>;
+    let mut cur_rating: i32;
+    let mut max_rating: i32;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(var_lst.clone()) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
@@ -957,12 +957,12 @@ fn chooseVariableToKeep(mut var_lst: Arc<metamodelica::List<Pointer::Pointer<Arc
 }
 
 fn getMaximum(mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>) -> Result<Option<Arc<Expression::NFExpression>>> {
-    let mut max_exp: Option<Arc<Expression::NFExpression>> = None;
-    let mut constants: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-    let mut rest: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
+    let mut max_exp: Option<Arc<Expression::NFExpression>>;
+    let mut constants: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
+    let mut rest: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
     let mut lst_values: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = UnorderedMap::valueList(map.clone());
-    let mut max_exp_val: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut max_val: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+    let mut max_exp_val: Arc<Expression::NFExpression>;
+    let mut max_val: metamodelica::Real;
     (constants, rest) = List::splitOnTrue(lst_values.clone(), (std::sync::Arc::new(fnptr!(Expression::isConstNumber, Arc<Expression::NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>))?;
     if !(constants.clone().is_empty()) {
         max_val = List::maxElement(({
@@ -987,12 +987,12 @@ fn getMaximum(mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFCompon
 }
 
 fn getMinimum(mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>) -> Result<Option<Arc<Expression::NFExpression>>> {
-    let mut min_exp: Option<Arc<Expression::NFExpression>> = None;
-    let mut constants: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-    let mut rest: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
+    let mut min_exp: Option<Arc<Expression::NFExpression>>;
+    let mut constants: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
+    let mut rest: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
     let mut lst_values: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = UnorderedMap::valueList(map.clone());
-    let mut min_exp_val: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut min_val: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+    let mut min_exp_val: Arc<Expression::NFExpression>;
+    let mut min_val: metamodelica::Real;
     (constants, rest) = List::splitOnTrue(lst_values.clone(), (std::sync::Arc::new(fnptr!(Expression::isConstNumber, Arc<Expression::NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>))?;
     if !(constants.clone().is_empty()) {
         min_val = List::minElement(({
@@ -1020,11 +1020,11 @@ fn setStartFixed(mut start_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef:
     let mut fixed_start_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
     let mut fixed_lst: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>)>> = UnorderedMap::toList(fixed_map.clone());
     let mut start_lst: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = UnorderedMap::valueList(start_map.clone());
-    let mut fixed_start_lst: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
+    let mut fixed_start_lst: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
     let mut count_fixed: i32 = 0;
-    let mut cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    let mut sval: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut fval: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut cref: Arc<ComponentRef::NFComponentRef>;
+    let mut sval: Arc<Expression::NFExpression>;
+    let mut fval: Arc<Expression::NFExpression>;
     for mut tpl in &*fixed_lst.clone() {
         let mut tpl = tpl.clone();
         (cref, fval) = tpl.clone();
@@ -1064,11 +1064,11 @@ fn setStartFixed(mut start_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef:
 }
 
 fn checkNominalThreshold(mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>, mut set: Arc<AliasSet::AliasSet>) -> Result<()> {
-    let mut current: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
+    let mut current: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
     let mut lst_values: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = UnorderedMap::valueList(map.clone());
-    let mut arr_iter: metamodelica::Array<Arc<ExpressionIterator::NFExpressionIterator>> = Default::default();
-    let mut iter: Arc<ExpressionIterator::NFExpressionIterator> = Arc::new(ExpressionIterator::NONE_ITERATOR);
-    let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut arr_iter: metamodelica::Array<Arc<ExpressionIterator::NFExpressionIterator>>;
+    let mut iter: Arc<ExpressionIterator::NFExpressionIterator>;
+    let mut exp: Arc<Expression::NFExpression>;
     let mut index: i32 = 1;
     if lst_values.clone().is_empty() {
         return Ok(());
@@ -1106,14 +1106,14 @@ fn checkNominalThreshold(mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRe
 }
 
 fn checkNominalThresholdSingle(mut lst_values: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>, mut set: Arc<AliasSet::AliasSet>, mut index: i32) -> Result<()> {
-    let mut constants: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-    let mut rest: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-    let mut zeroes: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-    let mut real_constants: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
-    let mut nom_min: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut nom_max: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut nom_quotient: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut constants: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
+    let mut rest: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
+    let mut zeroes: Arc<metamodelica::List<Arc<Expression::NFExpression>>>;
+    let mut real_constants: Arc<metamodelica::List<metamodelica::Real>>;
+    let mut nom_min: metamodelica::Real;
+    let mut nom_max: metamodelica::Real;
+    let mut nom_quotient: metamodelica::Real;
+    let mut r#str: ArcStr;
     (constants, rest) = List::splitOnTrue(lst_values.clone(), (std::sync::Arc::new(fnptr!(Expression::isConstNumber, Arc<Expression::NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>))?;
     (zeroes, constants) = List::splitOnTrue(constants.clone(), (std::sync::Arc::new(Expression::isZero) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>))?;
     if Flags::isSet(Flags::FAILTRACE.clone())? && !(rest.clone().is_empty()) {
@@ -1178,8 +1178,8 @@ fn stateSelectAlways(mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::N
 
 fn diffTearingSelect(mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, TearingSelect>>, mut set: Arc<AliasSet::AliasSet>) -> Result<()> {
     let mut lst_values: Arc<metamodelica::List<TearingSelect>> = UnorderedMap::valueList(map.clone());
-    let mut first: TearingSelect = TearingSelect::NEVER;
-    let mut rest: Arc<metamodelica::List<TearingSelect>> = metamodelica::nil();
+    let mut first: TearingSelect;
+    let mut rest: Arc<metamodelica::List<TearingSelect>>;
     let mut equal: bool = true;
     if !(lst_values.clone().is_empty()) {
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(lst_values.clone()) {
@@ -1207,13 +1207,13 @@ fn diffTearingSelect(mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::N
 }
 
 fn chooseStateSelect(mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, StateSelect>>) -> Result<(Option<Arc<ComponentRef::NFComponentRef>>, Option<StateSelect>)> {
-    let mut chosen_cref: Option<Arc<ComponentRef::NFComponentRef>> = None;
-    let mut chosen_val: Option<StateSelect> = None;
+    let mut chosen_cref: Option<Arc<ComponentRef::NFComponentRef>>;
+    let mut chosen_val: Option<StateSelect>;
     let mut lst_values: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, StateSelect)>> = UnorderedMap::toList(map.clone());
-    let mut sval: StateSelect = StateSelect::NEVER;
+    let mut sval: StateSelect;
     let mut state_select: StateSelect = StateSelect::NEVER.clone();
     let mut compref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    let mut cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
+    let mut cref: Arc<ComponentRef::NFComponentRef>;
     if lst_values.clone().is_empty() {
         chosen_val = None;
         chosen_cref = None;
@@ -1237,9 +1237,9 @@ fn chooseStateSelect(mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::N
 }
 
 fn chooseTearingSelect(mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, TearingSelect>>) -> Result<Option<TearingSelect>> {
-    let mut chosen_val: Option<TearingSelect> = None;
+    let mut chosen_val: Option<TearingSelect>;
     let mut lst_values: Arc<metamodelica::List<TearingSelect>> = UnorderedMap::valueList(map.clone());
-    let mut tearing_select: TearingSelect = TearingSelect::NEVER;
+    let mut tearing_select: TearingSelect;
     if lst_values.clone().is_empty() {
         chosen_val = None;
     } else if List::hasOneElement(lst_values.clone()) {
@@ -1258,8 +1258,8 @@ fn chooseTearingSelect(mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef:
 }
 
 fn mean(mut lst: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<metamodelica::Real> {
-    let mut mean_val: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut cur_sum: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+    let mut mean_val: metamodelica::Real;
+    let mut cur_sum: metamodelica::Real;
     cur_sum = ({
         let mut __acc: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
         for mut val in (lst.clone()).into_iter().cloned() {
@@ -1275,8 +1275,8 @@ fn mean(mut lst: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Resu
 
 fn optionMinMax(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut attr_min: Option<Arc<Expression::NFExpression>>, mut attr_max: Option<Arc<Expression::NFExpression>>, mut attrcollector: Arc<AttributeCollector::AttributeCollector>) -> Result<Arc<AttributeCollector::AttributeCollector>> {
     let mut attrcollector: Arc<AttributeCollector::AttributeCollector> = attrcollector;
-    let mut min_val: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut max_val: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut min_val: Arc<Expression::NFExpression>;
+    let mut max_val: Arc<Expression::NFExpression>;
     if isSome(attr_min.clone()) {
         min_val = Util::getOption(attr_min.clone())?;
         UnorderedMap::add(BVariable::getVarName(var_ptr.clone()), min_val.clone(), attrcollector.min_val_map.clone())?;
@@ -1290,8 +1290,8 @@ fn optionMinMax(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut at
 
 fn optionStartFixed(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut attr_start: Option<Arc<Expression::NFExpression>>, mut attr_fixed: Option<Arc<Expression::NFExpression>>, mut attrcollector: Arc<AttributeCollector::AttributeCollector>) -> Result<Arc<AttributeCollector::AttributeCollector>> {
     let mut attrcollector: Arc<AttributeCollector::AttributeCollector> = attrcollector;
-    let mut start_val: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut fixed_val: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut start_val: Arc<Expression::NFExpression>;
+    let mut fixed_val: Arc<Expression::NFExpression>;
     if isSome(attr_start.clone()) {
         start_val = Util::getOption(attr_start.clone())?;
         UnorderedMap::add(BVariable::getVarName(var_ptr.clone()), start_val.clone(), attrcollector.start_map.clone())?;
@@ -1304,9 +1304,9 @@ fn optionStartFixed(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mu
 }
 
 fn rateVar(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut attrcollector: Arc<AttributeCollector::AttributeCollector>) -> Result<(i32, Arc<AttributeCollector::AttributeCollector>)> {
-    let mut rating: i32 = 0;
+    let mut rating: i32;
     let mut attrcollector: Arc<AttributeCollector::AttributeCollector> = attrcollector;
-    let mut name: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
+    let mut name: Arc<ComponentRef::NFComponentRef>;
     let mut nominal_val: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut stateSelect_val: StateSelect = StateSelect::NEVER;
     let mut tearingSelect_val: TearingSelect = TearingSelect::NEVER;
@@ -1392,8 +1392,8 @@ pub mod AttributeCollector {
 
     pub fn toString(mut attrcollector: Arc<AttributeCollector>, mut r#str: ArcStr) -> Result<ArcStr> {
         let mut r#str: ArcStr = r#str;
-        let mut array_maps: metamodelica::Array<Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>> = Default::default();
-        let mut array_names: metamodelica::Array<ArcStr> = Default::default();
+        let mut array_maps: metamodelica::Array<Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>>;
+        let mut array_names: metamodelica::Array<ArcStr>;
         array_maps = metamodelica::arrayFromVec(list![attrcollector.min_val_map.clone(), attrcollector.max_val_map.clone(), attrcollector.start_map.clone(), attrcollector.fixed_map.clone(), attrcollector.nominal_map.clone()].into_iter().cloned().collect());
         array_names = metamodelica::arrayFromVec(list![(literal!("Min map")).clone(), (literal!("Max map")).clone(), (literal!("Start map")).clone(), (literal!("Fixed map")).clone(), (literal!("Nominal map")).clone()].into_iter().cloned().collect());
         for mut i in 1..=metamodelica::arrayLength(array_maps.clone()) {
@@ -1413,16 +1413,16 @@ pub mod AttributeCollector {
     pub fn fixValues(mut attrcollector: Arc<AttributeCollector>, mut var_cref: Arc<ComponentRef::NFComponentRef>, mut solved_eq: Arc<Equation::Equation>) -> Result<Arc<AttributeCollector>> {
         let mut attrcollector: Arc<AttributeCollector> = attrcollector;
         let mut repl: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
-        let mut rhs: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-        let mut new_rhs: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-        let mut diff_rhs: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-        let mut args: Arc<DifferentiationArguments::DifferentiationArguments> = Arc::new(<DifferentiationArguments::DifferentiationArguments as ::std::default::Default>::default());
-        let mut swap_min_max: bool = false;
+        let mut rhs: Arc<Expression::NFExpression>;
+        let mut new_rhs: Arc<Expression::NFExpression>;
+        let mut diff_rhs: Arc<Expression::NFExpression>;
+        let mut args: Arc<DifferentiationArguments::DifferentiationArguments>;
+        let mut swap_min_max: bool;
         let mut min_val_opt: Option<Arc<Expression::NFExpression>> = UnorderedMap::get(var_cref.clone(), attrcollector.min_val_map.clone())?;
         let mut max_val_opt: Option<Arc<Expression::NFExpression>> = UnorderedMap::get(var_cref.clone(), attrcollector.max_val_map.clone())?;
         let mut start_opt: Option<Arc<Expression::NFExpression>> = UnorderedMap::get(var_cref.clone(), attrcollector.start_map.clone())?;
         let mut nominal_opt: Option<Arc<Expression::NFExpression>> = UnorderedMap::get(var_cref.clone(), attrcollector.nominal_map.clone())?;
-        let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
+        let mut ty: Arc<Type::NFType>;
         let __pa0 = ::match_deref::match_deref! { match &(BEquation::Equation::getRHS(solved_eq.clone())?) {
             Some(__pa0) => __pa0.clone(),
             _ => bail!("pattern mismatch"),

@@ -58,8 +58,8 @@ use openmodelica_util::Error;
 use openmodelica_util::Util;
 
 pub fn isStructuralComponent(mut component: Arc<Component::NFComponent>, mut compAttrs: Arc<Attributes::NFAttributes>, mut compBinding: Arc<Binding::NFBinding>, mut compNode: Arc<InstNode::InstNode>, mut compEval: bool, mut parentEval: bool, mut context: i32) -> Result<bool> {
-    let mut isStructural: bool = false;
-    let mut binding: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);
+    let mut isStructural: bool;
+    let mut binding: Arc<Binding::NFBinding>;
     if compAttrs.variability.clone() != Variability::PARAMETER.clone() {
         isStructural = false;
     } else if compEval.clone() || parentEval.clone() {
@@ -85,7 +85,7 @@ pub fn isStructuralComponent(mut component: Arc<Component::NFComponent>, mut com
 }
 
 pub fn isBindingNotFixed(mut binding: Arc<Binding::NFBinding>, mut requireFinal: bool, mut maxDepth: i32) -> Result<bool> {
-    let mut isNotFixed: bool = false;
+    let mut isNotFixed: bool;
     if maxDepth.clone() == 0 {
         isNotFixed = true;
         return Ok(isNotFixed.clone());
@@ -100,8 +100,8 @@ pub fn isBindingNotFixed(mut binding: Arc<Binding::NFBinding>, mut requireFinal:
 
 pub fn isComponentBindingNotFixed(mut component: Arc<Component::NFComponent>, mut node: Arc<InstNode::InstNode>, mut requireFinal: bool, mut maxDepth: i32, mut isRecord: bool) -> Result<bool> {
     '__tco: loop {
-        let mut binding: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);
-        let mut parent: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
+        let mut binding: Arc<Binding::NFBinding>;
+        let mut parent: Arc<InstNode::InstNode>;
         binding = Component::getBinding(component.clone());
         if Binding::isUnbound(binding.clone()) {
             if isRecord.clone() || InstNode::isRecord(node.clone()) {
@@ -236,8 +236,8 @@ pub fn markSubscriptsInExp(mut exp: Arc<Expression::NFExpression>) -> Result<()>
 }
 
 pub fn markComponent(mut component: Arc<Component::NFComponent>, mut node: Arc<InstNode::InstNode>) -> Result<()> {
-    let mut comp: Arc<Component::NFComponent> = Arc::new(Component::WILD);
-    let mut binding: Option<Arc<Expression::NFExpression>> = None;
+    let mut comp: Arc<Component::NFComponent>;
+    let mut binding: Option<Arc<Expression::NFExpression>>;
     comp = Component::setVariability(Variability::STRUCTURAL_PARAMETER.clone(), component.clone());
     comp = Component::setFinal(comp.clone(), true);
     InstNode::updateComponent(comp.clone(), node.clone())?;

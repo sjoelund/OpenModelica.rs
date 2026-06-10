@@ -166,11 +166,11 @@ pub fn addSimple(mut comp: Arc<StrongComponent::NBStrongComponent>, mut replacem
 pub fn applySimple(mut eqData: Arc<EqData::EqData>, mut varData: Arc<VarData::VarData>, mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>) -> Result<(Arc<EqData::EqData>, Arc<VarData::VarData>)> {
     let mut eqData: Arc<EqData::EqData> = eqData;
     let mut varData: Arc<VarData::VarData> = varData;
-    let mut entries: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>)>> = metamodelica::nil();
-    let mut aliasCref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    let mut replacement: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut entries: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>)>>;
+    let mut aliasCref: Arc<ComponentRef::NFComponentRef>;
+    let mut replacement: Arc<Expression::NFExpression>;
     let mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>;
-    let mut var: Arc<Variable::NFVariable> = Arc::new(<Variable::NFVariable as ::std::default::Default>::default());
+    let mut var: Arc<Variable::NFVariable>;
     if UnorderedMap::isEmpty(replacements.clone()) {
         return Ok((eqData.clone(), varData.clone()));
     }
@@ -253,7 +253,7 @@ pub fn applySimpleVar(mut var: Arc<Variable::NFVariable>, mut replacements: Arc<
 
 pub fn replaceVarPtr(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>>>) -> Result<Pointer::Pointer<Arc<Variable::NFVariable>>> {
     let mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>> = var_ptr;
-    let mut cref: Option<Arc<ComponentRef::NFComponentRef>> = None;
+    let mut cref: Option<Arc<ComponentRef::NFComponentRef>>;
     cref = UnorderedMap::get(BVariable::getVarName(var_ptr.clone()), replacements.clone())?;
     if isSome(cref.clone()) {
         var_ptr = BVariable::getVarPointer(Util::getOption(cref.clone())?, metamodelica::sourceInfo!("NBackEnd/Util/NBReplacements.mo"))?;
@@ -263,12 +263,12 @@ pub fn replaceVarPtr(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, m
 
 pub fn simpleToString(mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>) -> Result<ArcStr> {
     let mut r#str: ArcStr = literal!("");
-    let mut entries: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>)>> = metamodelica::nil();
+    let mut entries: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>)>>;
     let mut constStr: ArcStr = literal!("");
     let mut aliasStr: ArcStr = literal!("");
     let mut nonTrivialStr: ArcStr = literal!("");
-    let mut key: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    let mut value: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut key: Arc<ComponentRef::NFComponentRef>;
+    let mut value: Arc<Expression::NFExpression>;
     entries = UnorderedMap::toList(replacements.clone());
     for mut entry in &*entries.clone() {
         let mut entry = entry.clone();
@@ -371,10 +371,10 @@ pub fn applyFuncExp(mut exp: Arc<Expression::NFExpression>, mut replacements: Ar
 }
 
 pub fn addInputArgTpl(mut tpl: (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>), mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>, mut lowered_lhs: bool) -> Result<()> {
-    let mut cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    let mut arg: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut cref: Arc<ComponentRef::NFComponentRef>;
+    let mut arg: Arc<Expression::NFExpression>;
     let mut children_args: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-    let mut children: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
+    let mut children: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
     let mut tmp: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
     let mut call: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
     let mut r#fn: Arc<Function::Function> = Arc::new(<Function::Function as ::std::default::Default>::default());

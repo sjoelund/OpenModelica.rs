@@ -134,7 +134,7 @@ fn detectStatesDefault(mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqDat
     let mut varData: Arc<VarData::VarData> = varData;
     let mut eqData: Arc<EqData::EqData> = eqData;
     let mut variables: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
-    let mut equations: Arc<EquationPointers::EquationPointers> = Arc::new(<EquationPointers::EquationPointers as ::std::default::Default>::default());
+    let mut equations: Arc<EquationPointers::EquationPointers>;
     let mut disc_eqns: Arc<EquationPointers::EquationPointers> = Arc::new(<EquationPointers::EquationPointers as ::std::default::Default>::default());
     let mut init_eqns: Arc<EquationPointers::EquationPointers> = Arc::new(<EquationPointers::EquationPointers as ::std::default::Default>::default());
     let mut unknowns: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
@@ -192,7 +192,7 @@ fn detectContinuousStatesDefault(mut variables: Arc<VariablePointers::VariablePo
     let mut states: Arc<VariablePointers::VariablePointers> = states;
     let mut derivatives: Arc<VariablePointers::VariablePointers> = derivatives;
     let mut algebraics: Arc<VariablePointers::VariablePointers> = algebraics;
-    let mut aux_eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
+    let mut aux_eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>;
     let mut acc_states: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>> = Pointer::create(metamodelica::nil());
     let mut acc_derivatives: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>> = Pointer::create(metamodelica::nil());
     let mut acc_aux_equations: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>> = Pointer::create(metamodelica::nil());
@@ -396,12 +396,12 @@ fn collectPreAndPrevious(mut exp: Arc<Expression::NFExpression>, mut acc_previou
 }
 
 fn preFromArgs(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut acc_previous: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>>, mut scalarized: bool, mut context: ArcStr) -> Result<(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>)> {
-    let mut new_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut new_exp: Arc<Expression::NFExpression>;
     let mut old_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut state_cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    let mut pre_cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
+    let mut pre_cref: Arc<ComponentRef::NFComponentRef>;
     let mut state_var: Pointer::Pointer<Arc<Variable::NFVariable>>;
-    let mut negated: bool = false;
+    let mut negated: bool;
     (state_var, old_exp, negated) = (::match_deref::match_deref! { match &(args.clone()) {
         Deref @ metamodelica::List::Cons { head: __esc_old_exp @ Deref @ Expression::CREF { cref: __esc_state_cref, .. }, tail: Deref @ metamodelica::List::Nil } => {
             old_exp = (*__esc_old_exp).clone();
@@ -520,7 +520,7 @@ fn collectDiscreteStatesFromWhenInIf(mut body: Arc<IfEquationBody::IfEquationBod
 }
 
 fn getPreVar(mut var_cref: Arc<ComponentRef::NFComponentRef>, mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut acc_previous: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>>, mut scalarized: bool) -> Result<Arc<ComponentRef::NFComponentRef>> {
-    let mut pre_cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
+    let mut pre_cref: Arc<ComponentRef::NFComponentRef>;
     let (mut pre, _): (Option<Pointer::Pointer<Arc<Variable::NFVariable>>>, ArcStr) = BVariable::getVarPre(var_ptr.clone());
     let mut pre_var: Pointer::Pointer<Arc<Variable::NFVariable>>;
     if isSome(pre.clone()) {

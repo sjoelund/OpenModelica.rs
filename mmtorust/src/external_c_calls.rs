@@ -641,6 +641,10 @@ fn registry() -> &'static BTreeMap<&'static str, Fallibility> {
         m.insert("intMaxLit", Infallible);
         m.insert("realMaxLit", Infallible);
 
+        // NFApi.mo
+        m.insert("ModelInstanceReference_store", Infallible);
+        m.insert("ModelInstanceReference_release", Infallible);
+
         m
     })
 }

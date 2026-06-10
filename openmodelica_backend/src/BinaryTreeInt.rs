@@ -111,19 +111,19 @@ pub static emptyBinTree: std::sync::LazyLock<Arc<BinTree>> = std::sync::LazyLock
   implementation
  **************************/
 fn keyCmp(mut keya: Key, mut keyb: Key) -> i32 {
-    let mut cmp: i32 = 0;
+    let mut cmp: i32;
     cmp = Util::intSign(keya.clone() - keyb.clone());
     cmp
 }
 
 pub fn treeGet(mut bt: Arc<BinTree>, mut key: Key) -> Result<Value> {
-    let mut v: Value = 0;
+    let mut v: Value;
     v = treeGet3(bt.clone(), key.clone(), treeGet2(bt.clone(), key.clone())?)?;
     Ok(v)
 }
 
 fn treeGet2(mut inBinTree: Arc<BinTree>, mut ikey: Key) -> Result<i32> {
-    let mut compResult: i32 = 0;
+    let mut compResult: i32;
     compResult = (::match_deref::match_deref! { match &(inBinTree.clone()) {
         Deref @ BinTree { value: Some(TreeValue { key, .. }), .. } => {
             keyCmp(key.clone(), ikey.clone())
@@ -172,7 +172,7 @@ pub fn treeAddList(mut inBinTree: Arc<BinTree>, mut inKeyLst: Arc<metamodelica::
 }
 
 pub fn treeAdd(mut inBinTree: Arc<BinTree>, mut inKey: Key, mut inValue: Value) -> Result<Arc<BinTree>> {
-    let mut outBinTree: Arc<BinTree> = Arc::new(<BinTree as ::std::default::Default>::default());
+    let mut outBinTree: Arc<BinTree>;
     outBinTree = 'mc: {
         let __mc_input = inBinTree.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -407,8 +407,8 @@ pub fn treeAdd(mut inBinTree: Arc<BinTree>, mut inKey: Key, mut inValue: Value) 
 //   end matchcontinue;
 // end bintreeDepth;
 pub fn bintreeToList(mut inBinTree: Arc<BinTree>) -> Result<(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)> {
-    let mut outKeyLst: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut outValueLst: Arc<metamodelica::List<i32>> = metamodelica::nil();
+    let mut outKeyLst: Arc<metamodelica::List<i32>>;
+    let mut outValueLst: Arc<metamodelica::List<i32>>;
     (outKeyLst, outValueLst) = 'mc: {
         let __mc_input = inBinTree.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -437,8 +437,8 @@ pub fn bintreeToList(mut inBinTree: Arc<BinTree>) -> Result<(Arc<metamodelica::L
 }
 
 fn bintreeToList2(mut inBinTree: Arc<BinTree>, mut inKeyLst: Arc<metamodelica::List<i32>>, mut inValueLst: Arc<metamodelica::List<i32>>) -> Result<(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)> {
-    let mut outKeyLst: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut outValueLst: Arc<metamodelica::List<i32>> = metamodelica::nil();
+    let mut outKeyLst: Arc<metamodelica::List<i32>>;
+    let mut outValueLst: Arc<metamodelica::List<i32>>;
     (outKeyLst, outValueLst) = 'mc: {
         let __mc_input = (inBinTree.clone(), inKeyLst.clone(), inValueLst.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -479,8 +479,8 @@ fn bintreeToList2(mut inBinTree: Arc<BinTree>, mut inKeyLst: Arc<metamodelica::L
 }
 
 fn bintreeToListOpt(mut inBinTreeOption: Option<Arc<BinTree>>, mut inKeyLst: Arc<metamodelica::List<i32>>, mut inValueLst: Arc<metamodelica::List<i32>>) -> Result<(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)> {
-    let mut outKeyLst: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut outValueLst: Arc<metamodelica::List<i32>> = metamodelica::nil();
+    let mut outKeyLst: Arc<metamodelica::List<i32>>;
+    let mut outValueLst: Arc<metamodelica::List<i32>>;
     (outKeyLst, outValueLst) = (::match_deref::match_deref! { match &((inBinTreeOption.clone(), inKeyLst.clone(), inValueLst.clone())) {
         (None, klst, vlst) => {
             (klst.clone(), vlst.clone())

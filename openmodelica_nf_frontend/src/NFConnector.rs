@@ -106,11 +106,11 @@ pub fn fromCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut ty: Arc<Type::N
 }
 
 pub fn fromFacedCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut ty: Arc<Type::NFType>, mut face: Face, mut source: Arc<DAE::ElementSource>) -> Result<Arc<NFConnector>> {
-    let mut conn: Arc<NFConnector> = Arc::new(<NFConnector as ::std::default::Default>::default());
+    let mut conn: Arc<NFConnector>;
     let mut node: Arc<InstNode::InstNode> = ComponentRef::node(cref.clone())?;
-    let mut comp: Arc<Component::NFComponent> = Arc::new(Component::WILD);
-    let mut cty: i32 = 0;
-    let mut res: Arc<Restriction::NFRestriction> = Arc::new(Restriction::BLOCK);
+    let mut comp: Arc<Component::NFComponent>;
+    let mut cty: i32;
+    let mut res: Arc<Restriction::NFRestriction>;
     if InstNode::isComponent(node.clone())? {
         comp = InstNode::component(node.clone())?;
         res = Class::restriction(InstNode::getClass(Component::classInstance(comp.clone()))?);
@@ -177,14 +177,14 @@ pub fn isNodeNameEqual(mut conn1: Arc<NFConnector>, mut conn2: Arc<NFConnector>)
 }
 
 pub fn isOutside(mut conn: Arc<NFConnector>) -> bool {
-    let mut isOutside: bool = false;
+    let mut isOutside: bool;
     let mut f: Face = conn.face.clone();
     isOutside = f.clone() == Face::OUTSIDE.clone();
     isOutside
 }
 
 pub fn isInside(mut conn: Arc<NFConnector>) -> bool {
-    let mut isInside: bool = false;
+    let mut isInside: bool;
     let mut f: Face = conn.face.clone();
     isInside = f.clone() == Face::INSIDE.clone();
     isInside
@@ -234,13 +234,13 @@ pub fn hash(mut conn: Arc<NFConnector>) -> Result<i32> {
 }
 
 pub fn hashNoSubs(mut conn: Arc<NFConnector>) -> Result<i32> {
-    let mut hash: i32 = 0;
+    let mut hash: i32;
     hash = ComponentRef::hashStrip(conn.name.clone())?;
     Ok(hash)
 }
 
 pub fn split(mut conn: Arc<NFConnector>) -> Result<Arc<metamodelica::List<Arc<NFConnector>>>> {
-    let mut connl: Arc<metamodelica::List<Arc<NFConnector>>> = metamodelica::nil();
+    let mut connl: Arc<metamodelica::List<Arc<NFConnector>>>;
     connl = splitImpl(conn.name.clone(), conn.ty.clone(), conn.face.clone(), conn.source.clone(), conn.cty.clone(), metamodelica::nil(), metamodelica::nil())?;
     connl = metamodelica::Dangerous::listReverseInPlace(connl.clone());
     Ok(connl)
@@ -248,12 +248,12 @@ pub fn split(mut conn: Arc<NFConnector>) -> Result<Arc<metamodelica::List<Arc<NF
 
 pub fn scalarize(mut conn: Arc<NFConnector>) -> Result<Arc<metamodelica::List<Arc<NFConnector>>>> {
     let mut connl: Arc<metamodelica::List<Arc<NFConnector>>> = metamodelica::nil();
-    let mut name: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut face: Face = Face::INSIDE;
-    let mut source: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
-    let mut cty: i32 = 0;
-    let mut names: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
+    let mut name: Arc<ComponentRef::NFComponentRef>;
+    let mut ty: Arc<Type::NFType>;
+    let mut face: Face;
+    let mut source: Arc<DAE::ElementSource>;
+    let mut cty: i32;
+    let mut names: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
     let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(conn.clone()) {
         Deref @ NFConnector { name: __pa0, ty: __pa1, face: __pa2, cty: __pa3, source: __pa4 } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
         _ => bail!("pattern mismatch"),
@@ -274,13 +274,13 @@ pub fn scalarize(mut conn: Arc<NFConnector>) -> Result<Arc<metamodelica::List<Ar
 
 pub fn scalarizePrefix(mut conn: Arc<NFConnector>) -> Result<Arc<metamodelica::List<Arc<NFConnector>>>> {
     let mut connl: Arc<metamodelica::List<Arc<NFConnector>>> = metamodelica::nil();
-    let mut name: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    let mut prefix: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut face: Face = Face::INSIDE;
-    let mut source: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
-    let mut cty: i32 = 0;
-    let mut prefixes: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
+    let mut name: Arc<ComponentRef::NFComponentRef>;
+    let mut prefix: Arc<ComponentRef::NFComponentRef>;
+    let mut ty: Arc<Type::NFType>;
+    let mut face: Face;
+    let mut source: Arc<DAE::ElementSource>;
+    let mut cty: i32;
+    let mut prefixes: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
     let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(conn.clone()) {
         Deref @ NFConnector { name: __pa0, ty: __pa1, face: __pa2, cty: __pa3, source: __pa4 } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
         _ => bail!("pattern mismatch"),
@@ -316,7 +316,7 @@ pub fn addSubscripts(mut subscripts: Arc<metamodelica::List<Arc<Subscript::NFSub
 }
 
 fn crefFace(mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<Face> {
-    let mut face: Face = Face::INSIDE;
+    let mut face: Face;
     face = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ ComponentRef::CREF { restCref: Deref @ ComponentRef::EMPTY, .. } => Face::OUTSIDE.clone(),
         _ => if (InstNode::isConnector(ComponentRef::node(ComponentRef::firstNonScope(cref.clone())?)?)?) {Face::OUTSIDE.clone()} else {Face::INSIDE.clone()},
@@ -352,10 +352,10 @@ fn splitImpl(mut name: Arc<ComponentRef::NFComponentRef>, mut ty: Arc<Type::NFTy
 
 fn splitImpl2(mut name: Arc<ComponentRef::NFComponentRef>, mut face: Face, mut source: Arc<DAE::ElementSource>, mut comps: Arc<metamodelica::List<Arc<InstNode::InstNode>>>, mut dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>>, mut conns: Arc<metamodelica::List<Arc<NFConnector>>>) -> Result<Arc<metamodelica::List<Arc<NFConnector>>>> {
     let mut conns: Arc<metamodelica::List<Arc<NFConnector>>> = conns;
-    let mut c: Arc<Component::NFComponent> = Arc::new(Component::WILD);
-    let mut cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut cty: i32 = 0;
+    let mut c: Arc<Component::NFComponent>;
+    let mut cref: Arc<ComponentRef::NFComponentRef>;
+    let mut ty: Arc<Type::NFType>;
+    let mut cty: i32;
     for mut comp in &*comps.clone() {
         let mut comp = comp.clone();
         c = InstNode::component(comp.clone())?;

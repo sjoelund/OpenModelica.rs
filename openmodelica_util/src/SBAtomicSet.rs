@@ -65,19 +65,19 @@ impl Default for SBAtomicSet {
 pub type ATOMIC_SET = SBAtomicSet;
 
 pub fn new(mut mi: Arc<SBMultiInterval::SBMultiInterval>) -> Arc<SBAtomicSet> {
-    let mut set: Arc<SBAtomicSet> = Arc::new(<SBAtomicSet as ::std::default::Default>::default());
+    let mut set: Arc<SBAtomicSet>;
     set = Arc::new(SBAtomicSet { aset: SBMultiInterval::copy(mi.clone()), ndim: mi.ndim.clone() });
     set
 }
 
 pub fn newEmpty() -> Arc<SBAtomicSet> {
-    let mut set: Arc<SBAtomicSet> = Arc::new(<SBAtomicSet as ::std::default::Default>::default());
+    let mut set: Arc<SBAtomicSet>;
     set = Arc::new(SBAtomicSet { aset: SBMultiInterval::newEmpty(), ndim: 0 });
     set
 }
 
 pub fn copy(mut set: Arc<SBAtomicSet>) -> Arc<SBAtomicSet> {
-    let mut outSet: Arc<SBAtomicSet> = Arc::new(<SBAtomicSet as ::std::default::Default>::default());
+    let mut outSet: Arc<SBAtomicSet>;
     outSet = Arc::new(SBAtomicSet { aset: SBMultiInterval::copy(set.aset.clone()), ndim: set.ndim.clone() });
     outSet
 }
@@ -98,14 +98,14 @@ pub fn contains(mut vals: metamodelica::Array<i32>, mut set: Arc<SBAtomicSet>) -
 }
 
 pub fn intersection(mut set1: Arc<SBAtomicSet>, mut set2: Arc<SBAtomicSet>) -> Result<Arc<SBAtomicSet>> {
-    let mut res: Arc<SBAtomicSet> = Arc::new(<SBAtomicSet as ::std::default::Default>::default());
+    let mut res: Arc<SBAtomicSet>;
     res = new(SBMultiInterval::intersection(set1.aset.clone(), set2.aset.clone())?);
     Ok(res)
 }
 
 pub fn complement(mut set1: Arc<SBAtomicSet>, mut set2: Arc<SBAtomicSet>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet>>>> {
-    let mut res: Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet>>> = <Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet>>> as ::std::default::Default>::default();
-    let mut diff: Arc<UnorderedSet::UnorderedSet<Arc<SBMultiInterval::SBMultiInterval>>> = <Arc<UnorderedSet::UnorderedSet<Arc<SBMultiInterval::SBMultiInterval>>> as ::std::default::Default>::default();
+    let mut res: Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet>>>;
+    let mut diff: Arc<UnorderedSet::UnorderedSet<Arc<SBMultiInterval::SBMultiInterval>>>;
     diff = SBMultiInterval::complement(set1.aset.clone(), set2.aset.clone())?;
     res = UnorderedSet::new((std::sync::Arc::new(fnptr!(hash, Arc<SBAtomicSet>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet>) -> Result<i32> + 'static>), (std::sync::Arc::new(isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet>, Arc<SBAtomicSet>) -> Result<bool> + 'static>), UnorderedSet::bucketCount(diff.clone()));
     if !(UnorderedSet::isEmpty(diff.clone())) {
@@ -118,7 +118,7 @@ pub fn complement(mut set1: Arc<SBAtomicSet>, mut set2: Arc<SBAtomicSet>) -> Res
 }
 
 pub fn crossProd(mut set1: Arc<SBAtomicSet>, mut set2: Arc<SBAtomicSet>) -> Result<Arc<SBAtomicSet>> {
-    let mut res: Arc<SBAtomicSet> = Arc::new(<SBAtomicSet as ::std::default::Default>::default());
+    let mut res: Arc<SBAtomicSet>;
     res = new(SBMultiInterval::crossProd(set1.aset.clone(), set2.aset.clone())?);
     Ok(res)
 }
@@ -140,7 +140,7 @@ pub fn minElem(mut set: Arc<SBAtomicSet>) -> Result<metamodelica::Array<i32>> {
 }
 
 pub fn replace(mut i: Arc<SBInterval::SBInterval>, mut dim: i32, mut set: Arc<SBAtomicSet>) -> Result<Arc<SBAtomicSet>> {
-    let mut res: Arc<SBAtomicSet> = Arc::new(<SBAtomicSet as ::std::default::Default>::default());
+    let mut res: Arc<SBAtomicSet>;
     res = new(SBMultiInterval::replace(i.clone(), dim.clone(), set.aset.clone())?);
     Ok(res)
 }

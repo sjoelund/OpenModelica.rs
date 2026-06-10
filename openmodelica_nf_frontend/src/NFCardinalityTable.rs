@@ -54,13 +54,13 @@ use openmodelica_util::Util;
 pub type Table = Arc<UnorderedMap::UnorderedMap<ArcStr, i32>>;
 
 pub fn emptyCardinalityTable(mut size: i32) -> Table {
-    let mut table: Table = <Arc<UnorderedMap::UnorderedMap<ArcStr, i32>> as ::std::default::Default>::default();
+    let mut table: Table;
     table = UnorderedMap::new((std::sync::Arc::new(fnptr!(stringHashDjb2, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), size.clone());
     table
 }
 
 pub fn fromConnections(mut conns: Arc<Connections::NFConnections>) -> Result<Table> {
-    let mut table: Table = <Arc<UnorderedMap::UnorderedMap<ArcStr, i32>> as ::std::default::Default>::default();
+    let mut table: Table;
     if System::getUsesCardinality() {
         table = emptyCardinalityTable(std::cmp::max(1, Util::nextPrime((conns.connections.clone().len() as i32))));
         for mut conn in &*conns.connections.clone() {
@@ -87,15 +87,15 @@ pub fn addConnector(mut conn: Arc<Connector::NFConnector>, mut table: Table) -> 
         outCount
     }
 
-    let mut conn_str: ArcStr = arcstr::literal!("");
+    let mut conn_str: ArcStr;
     conn_str = (Connector::toString(conn.clone())?).clone();
     UnorderedMap::addUpdate((conn_str.clone()).clone(), (std::sync::Arc::new(fnptr!(update, Option<i32>)) as std::sync::Arc<dyn ::std::ops::Fn(Option<i32>) -> Result<i32> + 'static>), table.clone())?;
     Ok(())
 }
 
 pub fn evaluateCardinality(mut arg: Arc<Expression::NFExpression>, mut table: Table) -> Result<Arc<Expression::NFExpression>> {
-    let mut res: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut count: i32 = 0;
+    let mut res: Arc<Expression::NFExpression>;
+    let mut count: i32;
     count = UnorderedMap::getOrDefault((Expression::toString(arg.clone())?).clone(), table.clone(), 0)?;
     res = Arc::new(Expression::NFExpression::INTEGER { value: count.clone() });
     Ok(res)

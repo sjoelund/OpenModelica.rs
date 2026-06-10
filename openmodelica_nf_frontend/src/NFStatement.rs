@@ -227,18 +227,18 @@ pub fn hash(mut stmt: Arc<NFStatement>) -> Result<i32> {
 
 pub fn isEqual(mut stmt1: Arc<NFStatement>, mut stmt2: Arc<NFStatement>) -> Result<bool> {
     fn branchEqual(mut branch1: (Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<NFStatement>>>), mut branch2: (Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<NFStatement>>>)) -> Result<bool> {
-        let mut b: bool = false;
-        let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-        let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-        let mut b1: Arc<metamodelica::List<Arc<NFStatement>>> = metamodelica::nil();
-        let mut b2: Arc<metamodelica::List<Arc<NFStatement>>> = metamodelica::nil();
+        let mut b: bool;
+        let mut e1: Arc<Expression::NFExpression>;
+        let mut e2: Arc<Expression::NFExpression>;
+        let mut b1: Arc<metamodelica::List<Arc<NFStatement>>>;
+        let mut b2: Arc<metamodelica::List<Arc<NFStatement>>>;
         (e1, b1) = branch1.clone();
         (e2, b2) = branch2.clone();
         b = Expression::isEqual(e1.clone(), e2.clone())? && List::isEqualOnTrue(b1.clone(), b2.clone(), (std::sync::Arc::new(isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFStatement>, Arc<NFStatement>) -> Result<bool> + 'static>))?;
         Ok(b)
     }
 
-    let mut b: bool = false;
+    let mut b: bool;
     b = (::match_deref::match_deref! { match &((stmt1.clone(), stmt2.clone())) {
         (Deref @ ASSIGNMENT { .. }, Deref @ ASSIGNMENT { .. }) => Expression::isEqual(var_field!((*stmt1).lhs, NFStatement::ASSIGNMENT).clone(), var_field!((*stmt2).lhs, NFStatement::ASSIGNMENT).clone())? && Expression::isEqual(var_field!((*stmt1).rhs, NFStatement::ASSIGNMENT).clone(), var_field!((*stmt2).rhs, NFStatement::ASSIGNMENT).clone())?,
         (Deref @ FUNCTION_ARRAY_INIT { .. }, Deref @ FUNCTION_ARRAY_INIT { .. }) => stringEqual((var_field!((*stmt1).name, NFStatement::FUNCTION_ARRAY_INIT).clone()).clone(), (var_field!((*stmt2).name, NFStatement::FUNCTION_ARRAY_INIT).clone()).clone()),
@@ -260,13 +260,13 @@ pub fn isEqual(mut stmt1: Arc<NFStatement>, mut stmt2: Arc<NFStatement>) -> Resu
 }
 
 pub fn makeAssignment(mut lhs: Arc<Expression::NFExpression>, mut rhs: Arc<Expression::NFExpression>, mut ty: Arc<Type::NFType>, mut src: Arc<DAE::ElementSource>) -> Arc<NFStatement> {
-    let mut stmt: Arc<NFStatement> = Arc::new(<NFStatement as ::std::default::Default>::default());
+    let mut stmt: Arc<NFStatement>;
     stmt = Arc::new(NFStatement::ASSIGNMENT { lhs: lhs.clone(), rhs: rhs.clone(), ty: ty.clone(), source: src.clone() });
     stmt
 }
 
 pub fn isAssignment(mut stmt: Arc<NFStatement>) -> bool {
-    let mut res: bool = false;
+    let mut res: bool;
     res = (::match_deref::match_deref! { match &(stmt.clone()) {
         Deref @ ASSIGNMENT { .. } => true,
         _ => false,
@@ -276,7 +276,7 @@ pub fn isAssignment(mut stmt: Arc<NFStatement>) -> bool {
 }
 
 pub fn isFor(mut stmt: Arc<NFStatement>) -> bool {
-    let mut res: bool = false;
+    let mut res: bool;
     res = (::match_deref::match_deref! { match &(stmt.clone()) {
         Deref @ FOR { .. } => true,
         _ => false,
@@ -286,7 +286,7 @@ pub fn isFor(mut stmt: Arc<NFStatement>) -> bool {
 }
 
 pub fn isReturn(mut stmt: Arc<NFStatement>) -> bool {
-    let mut res: bool = false;
+    let mut res: bool;
     res = (::match_deref::match_deref! { match &(stmt.clone()) {
         Deref @ RETURN { .. } => true,
         _ => false,
@@ -296,13 +296,13 @@ pub fn isReturn(mut stmt: Arc<NFStatement>) -> bool {
 }
 
 pub fn makeIf(mut branches: Arc<metamodelica::List<(Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<NFStatement>>>)>>, mut src: Arc<DAE::ElementSource>) -> Arc<NFStatement> {
-    let mut stmt: Arc<NFStatement> = Arc::new(<NFStatement as ::std::default::Default>::default());
+    let mut stmt: Arc<NFStatement>;
     stmt = Arc::new(NFStatement::IF { branches: branches.clone(), source: src.clone() });
     stmt
 }
 
 pub fn source(mut stmt: Arc<NFStatement>) -> Result<Arc<DAE::ElementSource>> {
-    let mut source: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
+    let mut source: Arc<DAE::ElementSource>;
     source = (::match_deref::match_deref! { match &(stmt.clone()) {
         Deref @ ASSIGNMENT { .. } => var_field!((*stmt).source, NFStatement::ASSIGNMENT).clone(),
         Deref @ FUNCTION_ARRAY_INIT { .. } => var_field!((*stmt).source, NFStatement::FUNCTION_ARRAY_INIT).clone(),
@@ -905,7 +905,7 @@ pub fn contains(mut stmt: Arc<NFStatement>, mut r#fn: Arc<dyn ::std::ops::Fn(Arc
 pub fn containsList(mut eql: Arc<metamodelica::List<Arc<NFStatement>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFStatement>) -> Result<bool> + 'static>) -> Result<bool> {
     pub type PredFn = std::sync::Arc<dyn ::std::ops::Fn(Arc<NFStatement>) -> Result<bool> + 'static>;
 
-    let mut res: bool = false;
+    let mut res: bool;
     for mut eq in &*eql.clone() {
         let mut eq = eq.clone();
         if contains(eq.clone(), func.clone())? {
@@ -924,8 +924,8 @@ pub fn replaceIteratorList(mut stmtl: Arc<metamodelica::List<Arc<NFStatement>>>,
 }
 
 pub fn toString(mut stmt: Arc<NFStatement>, mut indent: ArcStr) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
-    let mut s: IOStream::IOStream = <IOStream::IOStream as ::std::default::Default>::default();
+    let mut r#str: ArcStr;
+    let mut s: IOStream::IOStream;
     s = IOStream::create(literal!("NFStatement.toString"), openmodelica_util::IOStream::IOStreamType::LIST)?;
     s = toStream(stmt.clone(), (indent.clone()).clone(), s.clone())?;
     r#str = (IOStream::string(s.clone())?).clone();
@@ -934,8 +934,8 @@ pub fn toString(mut stmt: Arc<NFStatement>, mut indent: ArcStr) -> Result<ArcStr
 }
 
 pub fn toStringList(mut stmtl: Arc<metamodelica::List<Arc<NFStatement>>>, mut indent: ArcStr) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
-    let mut s: IOStream::IOStream = <IOStream::IOStream as ::std::default::Default>::default();
+    let mut r#str: ArcStr;
+    let mut s: IOStream::IOStream;
     s = IOStream::create(literal!("NFStatement.toStringList"), openmodelica_util::IOStream::IOStreamType::LIST)?;
     s = toStreamList(stmtl.clone(), (indent.clone()).clone(), s.clone())?;
     r#str = (IOStream::string(s.clone())?).clone();
@@ -1060,7 +1060,7 @@ pub fn toStream(mut stmt: Arc<NFStatement>, mut indent: ArcStr, mut s: IOStream:
 pub fn toStreamList(mut stmtl: Arc<metamodelica::List<Arc<NFStatement>>>, mut indent: ArcStr, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut s: IOStream::IOStream = s;
     let mut prev_multi_line: bool = false;
-    let mut multi_line: bool = false;
+    let mut multi_line: bool;
     let mut first: bool = true;
     for mut stmt in &*stmtl.clone() {
         let mut stmt = stmt.clone();
@@ -1195,7 +1195,7 @@ pub fn toFlatStream(mut stmt: Arc<NFStatement>, mut format: BaseModelica::Output
 pub fn toFlatStreamList(mut stmtl: Arc<metamodelica::List<Arc<NFStatement>>>, mut format: BaseModelica::OutputFormat, mut indent: ArcStr, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut s: IOStream::IOStream = s;
     let mut prev_multi_line: bool = false;
-    let mut multi_line: bool = false;
+    let mut multi_line: bool;
     let mut first: bool = true;
     for mut stmt in &*stmtl.clone() {
         let mut stmt = stmt.clone();
@@ -1213,7 +1213,7 @@ pub fn toFlatStreamList(mut stmtl: Arc<metamodelica::List<Arc<NFStatement>>>, mu
 }
 
 pub fn isMultiLine(mut stmt: Arc<NFStatement>) -> bool {
-    let mut multiLine: bool = false;
+    let mut multiLine: bool;
     multiLine = (::match_deref::match_deref! { match &(stmt.clone()) {
         Deref @ FOR { .. } => true,
         Deref @ IF { .. } => true,

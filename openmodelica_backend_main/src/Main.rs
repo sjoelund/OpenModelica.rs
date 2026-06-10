@@ -85,7 +85,7 @@ use openmodelica_util_datatypes_basic::GCExt;
 use openmodelica_util_datatypes_basic::List;
 
 fn makeDebugResult(mut inFlag: Flags::DebugFlag, mut res: ArcStr) -> Result<ArcStr> {
-    let mut res_1: ArcStr = arcstr::literal!("");
+    let mut res_1: ArcStr;
     res_1 = ('mc: {
         let __mc_input = inFlag.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -107,8 +107,8 @@ fn makeDebugResult(mut inFlag: Flags::DebugFlag, mut res: ArcStr) -> Result<ArcS
 }
 
 fn parseCommand(mut inCommand: ArcStr) -> Result<(Option<GlobalScript::Statements>, Option<Absyn::Program>)> {
-    let mut outStatements: Option<GlobalScript::Statements> = None;
-    let mut outProgram: Option<Absyn::Program> = None;
+    let mut outStatements: Option<GlobalScript::Statements>;
+    let mut outProgram: Option<Absyn::Program>;
     (outStatements, outProgram) = 'mc: {
         let __mc_input = inCommand.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -136,10 +136,10 @@ fn parseCommand(mut inCommand: ArcStr) -> Result<(Option<GlobalScript::Statement
 }
 
 pub fn handleCommand(mut inCommand: ArcStr) -> Result<(bool, ArcStr)> {
-    let mut outContinue: bool = false;
-    let mut outResult: ArcStr = arcstr::literal!("");
-    let mut stmts: Option<GlobalScript::Statements> = None;
-    let mut prog: Option<Absyn::Program> = None;
+    let mut outContinue: bool;
+    let mut outResult: ArcStr;
+    let mut stmts: Option<GlobalScript::Statements>;
+    let mut prog: Option<Absyn::Program>;
     Print::clearBuf();
     if Util::strncmp((literal!("quit()")).clone(), (inCommand.clone()).clone(), 6) {
         outContinue = false;
@@ -155,7 +155,7 @@ pub fn handleCommand(mut inCommand: ArcStr) -> Result<(bool, ArcStr)> {
 }
 
 fn handleCommand2(mut inStatements: Option<GlobalScript::Statements>, mut inProgram: Option<Absyn::Program>, mut inCommand: ArcStr) -> Result<ArcStr> {
-    let mut outResult: ArcStr = arcstr::literal!("");
+    let mut outResult: ArcStr;
     outResult = ('mc: {
         let __mc_input = (inStatements.clone(), inProgram.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -264,9 +264,9 @@ fn makeClassDefResult(mut p: Absyn::Program) -> Result<ArcStr> {
 }
 
 fn isModelicaFile(mut inFilename: ArcStr) -> Result<bool> {
-    let mut outIsModelicaFile: bool = false;
-    let mut lst: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut file_ext: ArcStr = arcstr::literal!("");
+    let mut outIsModelicaFile: bool;
+    let mut lst: Arc<metamodelica::List<ArcStr>>;
+    let mut file_ext: ArcStr;
     lst = System::strtok((inFilename.clone()).clone(), (literal!(".")).clone());
     if lst.clone().is_empty() {
         outIsModelicaFile = false;
@@ -292,8 +292,8 @@ fn isEmptyOrFirstIsModelicaFile(mut libs: Arc<metamodelica::List<ArcStr>>) -> Re
 }
 
 fn isFlatModelicaFile(mut filename: ArcStr) -> Result<()> {
-    let mut lst: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut last: ArcStr = arcstr::literal!("");
+    let mut lst: Arc<metamodelica::List<ArcStr>>;
+    let mut last: ArcStr;
     lst = System::strtok((filename.clone()).clone(), (literal!(".")).clone());
     let __pa0 = ::match_deref::match_deref! { match &(lst.clone().reverse()) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: _ } => __pa0.clone(),
@@ -305,8 +305,8 @@ fn isFlatModelicaFile(mut filename: ArcStr) -> Result<()> {
 }
 
 fn isModelicaScriptFile(mut filename: ArcStr) -> Result<()> {
-    let mut lst: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut last: ArcStr = arcstr::literal!("");
+    let mut lst: Arc<metamodelica::List<ArcStr>>;
+    let mut last: ArcStr;
     let true = (System::regularFileExists((filename.clone()).clone())) else { bail!("pattern mismatch") };
     lst = System::strtok((filename.clone()).clone(), (literal!(".")).clone());
     let __pa0 = ::match_deref::match_deref! { match &(lst.clone().reverse()) {
@@ -319,8 +319,8 @@ fn isModelicaScriptFile(mut filename: ArcStr) -> Result<()> {
 }
 
 fn isCodegenTemplateFile(mut filename: ArcStr) -> Result<()> {
-    let mut lst: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut last: ArcStr = arcstr::literal!("");
+    let mut lst: Arc<metamodelica::List<ArcStr>>;
+    let mut last: ArcStr;
     lst = System::strtok((filename.clone()).clone(), (literal!(".")).clone());
     let __pa0 = ::match_deref::match_deref! { match &(lst.clone().reverse()) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: _ } => __pa0.clone(),
@@ -348,7 +348,7 @@ fn showErrors(mut errorString: ArcStr, mut errorMessages: ArcStr) -> () {
 }
 
 fn loadLib(mut inLib: ArcStr) -> Result<()> {
-    let mut is_modelica_file: bool = false;
+    let mut is_modelica_file: bool;
     is_modelica_file = isModelicaFile((inLib.clone()).clone())?;
     let () = 'mc: {
         let __mc_input = is_modelica_file.clone();
@@ -498,10 +498,10 @@ fn translateFile(mut inStringLst: Arc<metamodelica::List<ArcStr>>) -> Result<()>
 }
 
 fn interactivemode() -> Result<()> {
-    let mut shandle: i32 = 0;
-    let mut b: bool = false;
-    let mut r#str: ArcStr = arcstr::literal!("");
-    let mut replystr: ArcStr = arcstr::literal!("");
+    let mut shandle: i32;
+    let mut b: bool;
+    let mut r#str: ArcStr;
+    let mut replystr: ArcStr;
     shandle = Socket::waitforconnect(29500);
     if shandle.clone() == -1 {
         bail!("fail");
@@ -538,11 +538,11 @@ fn interactivemodeCorba() -> Result<()> {
 }
 
 fn interactivemodeZMQ() -> Result<()> {
-    let mut zmqSocket: Option<i32> = None;
-    let mut b: bool = false;
-    let mut r#str: ArcStr = arcstr::literal!("");
-    let mut replystr: ArcStr = arcstr::literal!("");
-    let mut suffix: ArcStr = arcstr::literal!("");
+    let mut zmqSocket: Option<i32>;
+    let mut b: bool;
+    let mut r#str: ArcStr;
+    let mut replystr: ArcStr;
+    let mut suffix: ArcStr;
     suffix = (Flags::getConfigString(Flags::ZEROMQ_FILE_SUFFIX.clone())?).clone();
     zmqSocket = ZeroMQ::initialize((if (suffix.clone() == literal!("")) {literal!("")} else {{ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(".")); __mm_s.push_str(&*suffix.clone()); ArcStr::from(__mm_s) }}).clone(), Flags::isSet(Flags::ZMQ_LISTEN_TO_ALL.clone())?, Flags::getConfigInt(Flags::INTERACTIVE_PORT.clone())?);
     let false = (Some(0) == zmqSocket.clone()) else { bail!("pattern mismatch") };
@@ -565,9 +565,9 @@ fn interactivemodeZMQ() -> Result<()> {
 }
 
 fn serverLoopCorba() -> Result<()> {
-    let mut r#str: ArcStr = arcstr::literal!("");
-    let mut reply_str: ArcStr = arcstr::literal!("");
-    let mut cont: bool = false;
+    let mut r#str: ArcStr;
+    let mut reply_str: ArcStr;
+    let mut cont: bool;
     cont = true;
     loop {
         r#str = (Corba::waitForCommand()?).clone();
@@ -584,7 +584,7 @@ fn serverLoopCorba() -> Result<()> {
 }
 
 pub fn readSettings(mut inArguments: Arc<metamodelica::List<ArcStr>>) -> Result<()> {
-    let mut settings_file: ArcStr = arcstr::literal!("");
+    let mut settings_file: ArcStr;
     settings_file = (Util::flagValue((literal!("-s")).clone(), inArguments.clone())?).clone();
     if settings_file.clone() != literal!("") {
         settings_file = (System::trim((settings_file.clone()).clone(), (literal!(" \"")).clone())).clone();
@@ -594,7 +594,7 @@ pub fn readSettings(mut inArguments: Arc<metamodelica::List<ArcStr>>) -> Result<
 }
 
 fn readSettingsFile(mut filePath: ArcStr) -> Result<()> {
-    let mut command: ArcStr = arcstr::literal!("");
+    let mut command: ArcStr;
     if System::regularFileExists((filePath.clone()).clone()) {
         command = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("runScript(\"")); __mm_s.push_str(&*filePath.clone()); __mm_s.push_str(&*literal!("\")")); ArcStr::from(__mm_s) }).clone();
         handleCommand((command.clone()).clone())?;
@@ -659,7 +659,7 @@ fn setDefaultCC() -> () {
 }
 
 pub fn init(mut args: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<ArcStr>>> {
-    let mut args_1: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+    let mut args_1: Arc<metamodelica::List<ArcStr>>;
     System::setEnv((literal!("G_SLICE")).clone(), (literal!("always-malloc")).clone(), true);
     System::initGarbageCollector();
     if true {
@@ -680,8 +680,8 @@ pub fn init(mut args: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelic
 }
 
 pub fn main(mut args: Arc<metamodelica::List<ArcStr>>) -> Result<()> {
-    let mut args_1: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut seconds: i32 = 0;
+    let mut args_1: Arc<metamodelica::List<ArcStr>>;
+    let mut seconds: i32;
     execStatReset()?;
     match '__try0: {
         args_1 = unwrap_break_err!(init(args.clone()), '__try0);
@@ -717,7 +717,7 @@ pub fn main(mut args: Arc<metamodelica::List<ArcStr>>) -> Result<()> {
 }
 
 fn main2(mut args: Arc<metamodelica::List<ArcStr>>) -> Result<()> {
-    let mut interactiveMode: ArcStr = arcstr::literal!("");
+    let mut interactiveMode: ArcStr;
     if Config::versionRequest()? {
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*Settings::getVersionNr()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         return Ok(());

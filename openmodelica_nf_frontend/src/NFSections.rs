@@ -92,7 +92,7 @@ impl Default for NFSections {
 }
 pub use self::NFSections::{SECTIONS,EXTERNAL,EMPTY};
 pub fn new(mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>>, mut initialEquations: Arc<metamodelica::List<Arc<Equation::NFEquation>>>, mut algorithms: Arc<metamodelica::List<Arc<Algorithm::NFAlgorithm>>>, mut initialAlgorithms: Arc<metamodelica::List<Arc<Algorithm::NFAlgorithm>>>) -> Arc<NFSections> {
-    let mut sections: Arc<NFSections> = Arc::new(NFSections::EMPTY);
+    let mut sections: Arc<NFSections>;
     if equations.clone().is_empty() && initialEquations.clone().is_empty() && algorithms.clone().is_empty() && initialAlgorithms.clone().is_empty() {
         sections = crate::NFSections::interned_EMPTY();
     } else {
@@ -102,7 +102,7 @@ pub fn new(mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>>, mu
 }
 
 pub fn equations(mut sections: Arc<NFSections>) -> Arc<metamodelica::List<Arc<Equation::NFEquation>>> {
-    let mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = metamodelica::nil();
+    let mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>>;
     equations = (::match_deref::match_deref! { match &(sections.clone()) {
         Deref @ SECTIONS { .. } => var_field!((*sections).equations, NFSections::SECTIONS).clone(),
         _ => metamodelica::nil(),
@@ -174,7 +174,7 @@ pub fn append(mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>>,
 }
 
 pub fn join(mut sections1: Arc<NFSections>, mut sections2: Arc<NFSections>) -> Result<Arc<NFSections>> {
-    let mut sections: Arc<NFSections> = Arc::new(NFSections::EMPTY);
+    let mut sections: Arc<NFSections>;
     sections = (::match_deref::match_deref! { match &((sections1.clone(), sections2.clone())) {
         (Deref @ EMPTY { .. }, _) => sections2.clone(),
         (_, Deref @ EMPTY { .. }) => sections1.clone(),
@@ -384,7 +384,7 @@ pub fn apply(mut sections: Arc<NFSections>, mut eqFn: Arc<dyn ::std::ops::Fn(Arc
 }
 
 pub fn isEmpty(mut sections: Arc<NFSections>) -> bool {
-    let mut isEmpty: bool = false;
+    let mut isEmpty: bool;
     isEmpty = (::match_deref::match_deref! { match &(sections.clone()) {
         Deref @ EMPTY { .. } => true,
         _ => false,

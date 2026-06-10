@@ -131,7 +131,7 @@ pub fn hash(mut set: Arc<NBTearing>) -> Result<i32> {
 }
 
 pub fn isEqual(mut set1: Arc<NBTearing>, mut set2: Arc<NBTearing>) -> Result<bool> {
-    let mut b: bool = false;
+    let mut b: bool;
     b = UnorderedSet::equal_list(set1.residual_eqns.clone(), set2.residual_eqns.clone(), (std::sync::Arc::new({ let __pe_b1 = (std::sync::Arc::new(BEquation::Equation::hash) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<i32> + 'static>); move |__pe_a0| Slice::hash(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<i32> + 'static>), (std::sync::Arc::new({ let __pe_b2 = (std::sync::Arc::new(BEquation::Equation::isEqualPtr) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>, Pointer::Pointer<Arc<Equation::Equation>>) -> Result<bool> + 'static>); move |__pe_a0, __pe_a1| Slice::isEqual(__pe_a0, __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(_, _) -> Result<bool> + 'static>))?;
     b = if (b.clone()) {Array::isEqualOnTrue(set1.innerEquations.clone(), set2.innerEquations.clone(), (std::sync::Arc::new(StrongComponent::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<StrongComponent::NBStrongComponent>, Arc<StrongComponent::NBStrongComponent>) -> Result<bool> + 'static>))?} else {b.clone()};
     b = if (b.clone()) {UnorderedSet::equal_list(set1.iteration_vars.clone(), set2.iteration_vars.clone(), (std::sync::Arc::new({ let __pe_b1 = (std::sync::Arc::new(BVariable::hash) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<i32> + 'static>); move |__pe_a0| Slice::hash(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<i32> + 'static>), (std::sync::Arc::new({ let __pe_b2 = (std::sync::Arc::new(BVariable::equalName) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>); move |__pe_a0, __pe_a1| Slice::isEqual(__pe_a0, __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(_, _) -> Result<bool> + 'static>))?} else {b.clone()};
@@ -139,7 +139,7 @@ pub fn isEqual(mut set1: Arc<NBTearing>, mut set2: Arc<NBTearing>) -> Result<boo
 }
 
 pub fn size(mut set: Arc<NBTearing>, mut resize: bool) -> Result<i32> {
-    let mut s: i32 = 0;
+    let mut s: i32;
     s = ({
         let mut __acc: i32 = 0;
         for mut eq in (set.residual_eqns.clone()).into_iter().cloned() {
@@ -233,13 +233,13 @@ pub fn singleImplicit(mut var: Pointer::Pointer<Arc<Variable::NFVariable>>, mut 
 
 pub fn getModule() -> Result<Arc<metamodelica::List<Arc<dyn ::std::ops::Fn(Arc<StrongComponent::NBStrongComponent>, Arc<Adjacency::Matrix::Matrix>, Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, i32, Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>, Pointer::Pointer<i32>, Partition::Kind) -> Result<(Arc<StrongComponent::NBStrongComponent>, Arc<Adjacency::Matrix::Matrix>, i32)> + 'static>>>> {
     fn isNotGuruVar(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut init: bool) -> Result<bool> {
-        let mut b: bool = false;
+        let mut b: bool;
         let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
         b = BVariable::hasTearingSelect(var_ptr.clone(), NFBackendExtension::TearingSelect::PREFER.clone(), (std::sync::Arc::new(fnptr!(intLt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
         Ok(b)
     }
 
-    let mut funcs: Arc<metamodelica::List<Module::tearingInterface>> = metamodelica::nil();
+    let mut funcs: Arc<metamodelica::List<Module::tearingInterface>>;
     let mut flag: ArcStr = Flags::getConfigString(Flags::TEARING_METHOD.clone())?;
     funcs = (::match_deref::match_deref! { match &(flag.clone()) {
         Deref @ "minimalTearing" => list![(std::sync::Arc::new({ let __pe_b8: Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, bool) -> Result<bool> + 'static> = (std::sync::Arc::new(BVariable::isDiscontinuous) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, bool) -> Result<bool> + 'static>); let __pe_b9 = (std::sync::Arc::new(fnptr!(BEquation::Equation::isDiscontinuous, Pointer::Pointer<Arc<Equation::Equation>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<bool> + 'static>); move |__pe_a0, __pe_a1, __pe_a2, __pe_a3, __pe_a4, __pe_a5, __pe_a6, __pe_a7| initialize(__pe_a0, __pe_a1, __pe_a2, __pe_a3, __pe_a4, __pe_a5, __pe_a6, __pe_a7, __pe_b8.clone(), __pe_b9.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<StrongComponent::NBStrongComponent>, Arc<Adjacency::Matrix::Matrix>, Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, i32, Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>, Pointer::Pointer<i32>, Partition::Kind) -> Result<(Arc<StrongComponent::NBStrongComponent>, Arc<Adjacency::Matrix::Matrix>, i32)> + 'static>), (std::sync::Arc::new(minimal) as std::sync::Arc<dyn ::std::ops::Fn(Arc<StrongComponent::NBStrongComponent>, Arc<Adjacency::Matrix::Matrix>, Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, i32, Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>, Pointer::Pointer<i32>, Partition::Kind) -> Result<(Arc<StrongComponent::NBStrongComponent>, Arc<Adjacency::Matrix::Matrix>, i32)> + 'static>), (std::sync::Arc::new(finalize) as std::sync::Arc<dyn ::std::ops::Fn(Arc<StrongComponent::NBStrongComponent>, Arc<Adjacency::Matrix::Matrix>, Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, i32, Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>, Pointer::Pointer<i32>, Partition::Kind) -> Result<(Arc<StrongComponent::NBStrongComponent>, Arc<Adjacency::Matrix::Matrix>, i32)> + 'static>)],
@@ -253,7 +253,7 @@ pub fn getModule() -> Result<Arc<metamodelica::List<Arc<dyn ::std::ops::Fn(Arc<S
 }
 
 pub fn getVariables(mut tearing: Arc<NBTearing>) -> Result<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>> {
-    let mut variables: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
+    let mut variables: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>;
     variables = ({
         let mut __acc: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
         for mut var in (metamodelica::cons(({
@@ -323,10 +323,10 @@ pub fn setResidualEqns(mut tearing: Arc<NBTearing>, mut residuals: Arc<metamodel
 
 fn tearingTraverser(mut partitions: Arc<metamodelica::List<Arc<Partition::Partition::Partition>>>, mut funcs: Arc<metamodelica::List<Arc<dyn ::std::ops::Fn(Arc<StrongComponent::NBStrongComponent>, Arc<Adjacency::Matrix::Matrix>, Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, i32, Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>, Pointer::Pointer<i32>, Partition::Kind) -> Result<(Arc<StrongComponent::NBStrongComponent>, Arc<Adjacency::Matrix::Matrix>, i32)> + 'static>>>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, mut eq_index: Pointer::Pointer<i32>, mut kind: Partition::Kind) -> Result<Arc<metamodelica::List<Arc<Partition::Partition::Partition>>>> {
     let mut new_partitions: Arc<metamodelica::List<Arc<Partition::Partition::Partition>>> = metamodelica::nil();
-    let mut strongComponents: metamodelica::Array<Arc<StrongComponent::NBStrongComponent>> = Default::default();
-    let mut tmp: Arc<StrongComponent::NBStrongComponent> = Arc::new(<StrongComponent::NBStrongComponent as ::std::default::Default>::default());
+    let mut strongComponents: metamodelica::Array<Arc<StrongComponent::NBStrongComponent>>;
+    let mut tmp: Arc<StrongComponent::NBStrongComponent>;
     let mut idx: i32 = 0;
-    let mut full: Arc<Adjacency::Matrix::Matrix> = Arc::new(<Adjacency::Matrix::Matrix as ::std::default::Default>::default());
+    let mut full: Arc<Adjacency::Matrix::Matrix>;
     for mut part in &*partitions.clone() {
         let mut part = part.clone();
         if isSome(part.strongComponents.clone()) && isSome(part.adjacencyMatrix.clone()) {
@@ -362,14 +362,14 @@ fn tearingTraverser(mut partitions: Arc<metamodelica::List<Arc<Partition::Partit
 }
 
 fn noFilterVar(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut init: bool) -> bool {
-    let mut b: bool = false;
+    let mut b: bool;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = true;
     b
 }
 
 fn noFilterEqn(mut eqn_ptr: Pointer::Pointer<Arc<Equation::Equation>>) -> bool {
-    let mut b: bool = false;
+    let mut b: bool;
     b = true;
     b
 }
@@ -722,7 +722,7 @@ fn checkLinearity(mut full: Arc<Adjacency::Matrix::Matrix>, mut v: Arc<Unordered
         Ok(b)
     }
 
-    let mut linear: bool = false;
+    let mut linear: bool;
     linear = (::match_deref::match_deref! { match &(full.clone()) {
         Deref @ Adjacency::Matrix::FULL { .. } => UnorderedMap::all(e.clone(), (std::sync::Arc::new({ let __pe_b1 = var_field!((*full).occurrences, Adjacency::Matrix::Matrix::FULL).clone(); let __pe_b2 = var_field!((*full).solvabilities, Adjacency::Matrix::Matrix::FULL).clone(); let __pe_b3 = v.clone(); move |__pe_a0| eqnIsLinear(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?,
         _ => {
@@ -762,10 +762,10 @@ fn filterDiscreteVariables(mut vars_lst: Arc<metamodelica::List<Pointer::Pointer
         }
     }
 
-    let mut cont_vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
-    let mut disc_vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
+    let mut cont_vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>;
+    let mut disc_vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>;
     let mut discrete_records: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = UnorderedSet::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
-    let mut rec_disc_vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
+    let mut rec_disc_vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>;
     (cont_vars, disc_vars) = List::splitOnTrue(vars_lst.clone(), (std::sync::Arc::new({ let __pe_b1 = staticAsContinuous.clone(); move |__pe_a0| BVariable::isContinuous(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>))?;
     for mut var in &*disc_vars.clone() {
         let mut var = var.clone();
@@ -777,7 +777,7 @@ fn filterDiscreteVariables(mut vars_lst: Arc<metamodelica::List<Pointer::Pointer
 }
 
 fn getImpliedInnerVars(mut eqn: Pointer::Pointer<Arc<Equation::Equation>>) -> Result<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>> {
-    let mut vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
+    let mut vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>;
     vars = (::match_deref::match_deref! { match &(Pointer::access(eqn.clone())) {
         Deref @ BEquation::Equation::ALGORITHM { alg, .. } => {
             ({

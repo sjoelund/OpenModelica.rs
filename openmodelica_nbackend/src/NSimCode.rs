@@ -545,17 +545,17 @@ pub mod SimCode {
     }
 
     pub fn convert(mut simCode: Arc<SimCode>) -> Result<OldSimCode::SimCode> {
-        let mut oldSimCode: OldSimCode::SimCode = <OldSimCode::SimCode as ::std::default::Default>::default();
-        let mut modelInfo: OldSimCode::ModelInfo = <OldSimCode::ModelInfo as ::std::default::Default>::default();
+        let mut oldSimCode: OldSimCode::SimCode;
+        let mut modelInfo: OldSimCode::ModelInfo;
         let mut discreteModelVars: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
-        let mut zeroCrossings: Arc<metamodelica::List<OldBackendDAE::ZeroCrossing>> = metamodelica::nil();
-        let mut relations: Arc<metamodelica::List<OldBackendDAE::ZeroCrossing>> = metamodelica::nil();
-        let mut timeEvents: Arc<metamodelica::List<OldBackendDAE::TimeEvent>> = metamodelica::nil();
+        let mut zeroCrossings: Arc<metamodelica::List<OldBackendDAE::ZeroCrossing>>;
+        let mut relations: Arc<metamodelica::List<OldBackendDAE::ZeroCrossing>>;
+        let mut timeEvents: Arc<metamodelica::List<OldBackendDAE::TimeEvent>>;
         let mut varToArrayIndexMapping: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>))>>), i32, (HashTableCrIListArray::FuncHashCref, HashTableCrIListArray::FuncCrefEqual, HashTableCrIListArray::FuncCrefStr, HashTableCrIListArray::FuncExpStr));
         let mut varToIndexMapping: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<i32>>)>>), i32, (HashTableCrILst::FuncHashCref, HashTableCrILst::FuncCrefEqual, HashTableCrILst::FuncCrefStr, HashTableCrILst::FuncExpStr));
         let mut crefToSimVarHT: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, SimCodeVar::SimVar)>>), i32, (HashTableCrefSimVar::FuncHashCref, HashTableCrefSimVar::FuncCrefEqual, HashTableCrefSimVar::FuncCrefStr, HashTableCrefSimVar::FuncExpStr));
         let mut crefToClockIndexHT: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, i32)>>), i32, (HashTable::FuncHashCref, HashTable::FuncCrefEqual, HashTable::FuncCrefStr, HashTable::FuncExpStr));
-        let mut residualVars: Arc<metamodelica::List<Arc<SimVar::SimVar>>> = metamodelica::nil();
+        let mut residualVars: Arc<metamodelica::List<Arc<SimVar::SimVar>>>;
         modelInfo = ModelInfo::convert(simCode.modelInfo.clone())?;
         (zeroCrossings, relations, timeEvents) = EventInfo::convert(simCode.eventInfo.clone(), simCode.equation_map.clone())?;
         (varToArrayIndexMapping, varToIndexMapping) = SimCodeUtilShared::createVarToArrayIndexMapping(modelInfo.clone())?;
@@ -628,7 +628,7 @@ pub mod SimCode {
         let mut nonlinearLoops: Arc<metamodelica::List<Arc<SimStrongComponent::Block::Block>>> = metamodelica::nil();
         let mut jacobians: Arc<metamodelica::List<Arc<SimJacobian::SimJacobian>>> = metamodelica::nil();
         let mut simCodeIndices: SimCodeIndices = simCodeIndices;
-        let mut dae_mode_blcks: Arc<metamodelica::List<Arc<metamodelica::List<Arc<SimStrongComponent::Block::Block>>>>> = metamodelica::nil();
+        let mut dae_mode_blcks: Arc<metamodelica::List<Arc<metamodelica::List<Arc<SimStrongComponent::Block::Block>>>>>;
         (linearLoops, nonlinearLoops, jacobians, simCodeIndices) = SimStrongComponent::Block::collectAlgebraicLoops(list![init.clone(), init_0.clone()], linearLoops.clone(), nonlinearLoops.clone(), jacobians.clone(), simCodeIndices.clone(), simcode_map.clone())?;
         (linearLoops, nonlinearLoops, jacobians, simCodeIndices) = SimStrongComponent::Block::collectAlgebraicLoops(ode.clone(), linearLoops.clone(), nonlinearLoops.clone(), jacobians.clone(), simCodeIndices.clone(), simcode_map.clone())?;
         (linearLoops, nonlinearLoops, jacobians, simCodeIndices) = SimStrongComponent::Block::collectAlgebraicLoops(algebraic.clone(), linearLoops.clone(), nonlinearLoops.clone(), jacobians.clone(), simCodeIndices.clone(), simcode_map.clone())?;
@@ -702,15 +702,15 @@ pub mod ModelInfo {
     pub type MODEL_INFO = ModelInfo;
 
     pub fn toString(mut modelInfo: Arc<ModelInfo>) -> Result<ArcStr> {
-        let mut r#str: ArcStr = arcstr::literal!("");
+        let mut r#str: ArcStr;
         r#str = (SimVars::toString(modelInfo.vars.clone(), (literal!("")).clone())?).clone();
         Ok(r#str)
     }
 
     pub fn create(mut vars: Arc<SimVars::SimVars>, mut name: Arc<Absyn::Path>, mut fileName: ArcStr, mut directory: ArcStr, mut functions: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>>, mut linearLoops: Arc<metamodelica::List<Arc<SimStrongComponent::Block::Block>>>, mut nonlinearLoops: Arc<metamodelica::List<Arc<SimStrongComponent::Block::Block>>>, mut eventInfo: Arc<EventInfo::EventInfo>, mut clockedInfo: Arc<ClockedInfo::ClockedInfo>, mut simCodeIndices: SimCodeIndices) -> Result<(Arc<ModelInfo>, SimCodeIndices)> {
-        let mut modelInfo: Arc<ModelInfo> = Arc::new(<ModelInfo as ::std::default::Default>::default());
+        let mut modelInfo: Arc<ModelInfo>;
         let mut simCodeIndices: SimCodeIndices = simCodeIndices;
-        let mut info: Arc<VarInfo::VarInfo> = Arc::new(<VarInfo::VarInfo as ::std::default::Default>::default());
+        let mut info: Arc<VarInfo::VarInfo>;
         info = VarInfo::create(vars.clone(), eventInfo.clone(), simCodeIndices.clone())?;
         modelInfo = Arc::new(ModelInfo { name: name.clone(), description: (literal!("")).clone(), version: (literal!("")).clone(), author: (literal!("")).clone(), license: (literal!("")).clone(), copyright: (literal!("")).clone(), directory: (directory.clone()).clone(), fileName: (fileName.clone()).clone(), vars: vars.clone(), varInfo: info.clone(), functions: functions.clone(), labels: metamodelica::nil(), resourcePaths: metamodelica::nil(), sortedClasses: metamodelica::nil(), nClocks: ClockedInfo::baseClockCount(clockedInfo.clone(), false)?, nSubClocks: ClockedInfo::subClockCount(clockedInfo.clone()), nSpatialDistributions: 0, hasLargeLinearEquationSystems: true, linearLoops: linearLoops.clone(), nonlinearLoops: nonlinearLoops.clone() });
         Ok((modelInfo, simCodeIndices))
@@ -735,8 +735,8 @@ pub mod ModelInfo {
     }
 
     pub fn convert(mut modelInfo: Arc<ModelInfo>) -> Result<OldSimCode::ModelInfo> {
-        let mut oldModelInfo: OldSimCode::ModelInfo = <OldSimCode::ModelInfo as ::std::default::Default>::default();
-        let mut varInfo: OldSimCode::VarInfo = <OldSimCode::VarInfo as ::std::default::Default>::default();
+        let mut oldModelInfo: OldSimCode::ModelInfo;
+        let mut varInfo: OldSimCode::VarInfo;
         varInfo = VarInfo::convert(modelInfo.varInfo.clone());
         oldModelInfo = OldSimCode::ModelInfo { name: modelInfo.name.clone(), description: (modelInfo.description.clone()).clone(), version: (modelInfo.version.clone()).clone(), author: (modelInfo.author.clone()).clone(), license: (modelInfo.license.clone()).clone(), copyright: (modelInfo.copyright.clone()).clone(), directory: (modelInfo.directory.clone()).clone(), fileName: (modelInfo.fileName.clone()).clone(), varInfo: VarInfo::convert(modelInfo.varInfo.clone()), vars: SimVars::convert(modelInfo.vars.clone())?, functions: modelInfo.functions.clone(), labels: modelInfo.labels.clone(), resourcePaths: modelInfo.resourcePaths.clone(), sortedClasses: modelInfo.sortedClasses.clone(), nClocks: modelInfo.nClocks.clone(), nSubClocks: modelInfo.nSubClocks.clone(), nSpatialDistributions: modelInfo.nSpatialDistributions.clone(), hasLargeLinearEquationSystems: modelInfo.hasLargeLinearEquationSystems.clone(), linearSystems: SimStrongComponent::Block::convertList(modelInfo.linearLoops.clone())?, nonLinearSystems: SimStrongComponent::Block::convertList(modelInfo.nonlinearLoops.clone())?, unitDefinitions: metamodelica::nil() };
         Ok(oldModelInfo)
@@ -790,10 +790,10 @@ pub mod DaeModeData {
     }
 
     pub fn create(mut systems: Arc<metamodelica::List<Arc<Partition::Partition::Partition>>>, mut simCodeIndices: SimCodeIndices, mut simcode_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<SimVar::SimVar>>>, mut equation_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<SimStrongComponent::Block::Block>>>) -> Result<(Option<Arc<DaeModeData>>, SimCodeIndices)> {
-        let mut data: Option<Arc<DaeModeData>> = None;
+        let mut data: Option<Arc<DaeModeData>>;
         let mut simCodeIndices: SimCodeIndices = simCodeIndices;
-        let mut blcks: Arc<metamodelica::List<Arc<metamodelica::List<Arc<SimStrongComponent::Block::Block>>>>> = metamodelica::nil();
-        let mut residualVars: Arc<metamodelica::List<Arc<SimVar::SimVar>>> = metamodelica::nil();
+        let mut blcks: Arc<metamodelica::List<Arc<metamodelica::List<Arc<SimStrongComponent::Block::Block>>>>>;
+        let mut residualVars: Arc<metamodelica::List<Arc<SimVar::SimVar>>>;
         (blcks, residualVars, simCodeIndices) = SimStrongComponent::Block::createDAEModeBlocks(systems.clone(), simCodeIndices.clone(), simcode_map.clone(), equation_map.clone())?;
         data = Some(Arc::new(DaeModeData { blcks: blcks.clone(), sparsityPattern: None, residualVars: residualVars.clone(), algebraicVars: metamodelica::nil(), auxiliaryVars: metamodelica::nil(), modeCreated: DaeModeConfig::ALL.clone() }));
         Ok((data, simCodeIndices))
@@ -816,7 +816,7 @@ pub mod DaeModeData {
     }
 
     pub fn convert(mut data: Arc<DaeModeData>) -> Result<OldSimCode::DaeModeData> {
-        let mut oldData: OldSimCode::DaeModeData = <OldSimCode::DaeModeData as ::std::default::Default>::default();
+        let mut oldData: OldSimCode::DaeModeData;
         let mut simEqSystems: Arc<metamodelica::List<Arc<metamodelica::List<Arc<OldSimCode::SimEqSystem>>>>> = metamodelica::nil();
         simEqSystems = SimStrongComponent::Block::convertListList(data.blcks.clone())?;
         oldData = OldSimCode::DaeModeData { daeEquations: simEqSystems.clone(), sparsityPattern: Util::applyOption(data.sparsityPattern.clone(), (std::sync::Arc::new(SimJacobian::convert) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SimJacobian::SimJacobian>) -> Result<Arc<OldSimCode::JacobianMatrix>> + 'static>))?, residualVars: SimVar::convertList(data.residualVars.clone())?, algebraicVars: SimVar::convertList(data.algebraicVars.clone())?, auxiliaryVars: SimVar::convertList(data.auxiliaryVars.clone())?, modeCreated: convertMode(data.modeCreated.clone())? };
@@ -824,7 +824,7 @@ pub mod DaeModeData {
     }
 
     fn convertMode(mut mode: DaeModeConfig) -> Result<OldSimCode::DaeModeConfig> {
-        let mut oldMode: OldSimCode::DaeModeConfig = OldSimCode::DaeModeConfig::ALL_EQUATIONS;
+        let mut oldMode: OldSimCode::DaeModeConfig;
         oldMode = (match mode.clone() {
         DaeModeConfig::ALL => openmodelica_simcode_types::SimCode::DaeModeConfig::ALL_EQUATIONS,
         DaeModeConfig::DYNAMIC => openmodelica_simcode_types::SimCode::DaeModeConfig::DYNAMIC_EQUATIONS,
@@ -854,8 +854,8 @@ pub mod DaeModeData {
 
     fn rewriteAlgebraicVarsIdx(mut simulationAlgVars: Arc<metamodelica::List<Arc<SimVar::SimVar>>>, mut simcode_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<SimVar::SimVar>>>) -> Result<Arc<metamodelica::List<Arc<SimVar::SimVar>>>> {
         let mut daeModeAlgVars: Arc<metamodelica::List<Arc<SimVar::SimVar>>> = metamodelica::nil();
-        let mut seedCref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-        let mut cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
+        let mut seedCref: Arc<ComponentRef::NFComponentRef>;
+        let mut cref: Arc<ComponentRef::NFComponentRef>;
         seedCref = ComponentRef::fromNode(Arc::new(InstNode::InstNode::VAR_NODE { name: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*arcstr::literal!(BVariable::SEED_STR)); __mm_s.push_str(&*literal!("_A")); ArcStr::from(__mm_s) }).clone(), varPointer: Pointer::create(BVariable::DUMMY_VARIABLE().clone()) }), openmodelica_nf_frontend::NFType::interned_UNKNOWN(), metamodelica::nil(), ComponentRef::Origin::CREF.clone());
         for mut var in &*simulationAlgVars.clone().reverse() {
             let mut var = var.clone();
@@ -889,7 +889,7 @@ pub mod DaeModeData {
 
     fn replaceDerCref(mut exp: Arc<DAE::Exp>, mut i: i32) -> Result<(Arc<DAE::Exp>, bool, i32)> {
         let mut exp: Arc<DAE::Exp> = exp;
-        let mut b: bool = false;
+        let mut b: bool;
         let mut i: i32 = i;
         (exp, b) = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ DAE::Exp::CREF { componentRef: Deref @ DAE::ComponentRef::CREF_QUAL { ident: Deref @ "$DER", componentRef: cref, .. }, .. } => {

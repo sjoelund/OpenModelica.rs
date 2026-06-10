@@ -74,7 +74,7 @@ use openmodelica_util_datatypes_basic::List;
  *   semantic description.
  */
 pub fn subscriptString(mut subscript: Arc<DAE::Subscript>) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     r#str = ((::match_deref::match_deref! { match &(subscript.clone()) {
         Deref @ DAE::Subscript::INDEX { exp: Deref @ DAE::Exp::ICONST { integer: i } } => {
             let mut res: ArcStr = arcstr::literal!("");
@@ -92,13 +92,13 @@ pub fn subscriptString(mut subscript: Arc<DAE::Subscript>) -> Result<ArcStr> {
 }
 
 pub fn binopSymbol(mut inOperator: DAE::Operator) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = (if (Config::typeinfo()?) {binopSymbol2(inOperator.clone())?} else {binopSymbol1(inOperator.clone())}).clone();
     Ok(outString)
 }
 
 pub fn binopSymbol1(mut inOperator: DAE::Operator) -> ArcStr {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((match inOperator.clone() {
         DAE::Operator::ADD { .. } => literal!(" + "),
         DAE::Operator::SUB { .. } => literal!(" - "),
@@ -126,7 +126,7 @@ pub fn binopSymbol1(mut inOperator: DAE::Operator) -> ArcStr {
 }
 
 pub fn debugBinopSymbol(mut inOperator: DAE::Operator) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((match inOperator.clone() {
         DAE::Operator::ADD { .. } => literal!(" + "),
         DAE::Operator::SUB { .. } => literal!(" - "),
@@ -155,7 +155,7 @@ pub fn debugBinopSymbol(mut inOperator: DAE::Operator) -> Result<ArcStr> {
 }
 
 fn binopSymbol2(mut inOperator: DAE::Operator) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((match inOperator.clone() {
         DAE::Operator::ADD { ty: ref t } => {
             let mut ts: ArcStr = arcstr::literal!("");
@@ -251,7 +251,7 @@ fn binopSymbol2(mut inOperator: DAE::Operator) -> Result<ArcStr> {
 }
 
 pub fn unaryopSymbol(mut inOperator: DAE::Operator) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((match inOperator.clone() {
         DAE::Operator::UMINUS { .. } => if (Config::typeinfo()?) {literal!("-<UMINUS>")} else {literal!("-")},
         DAE::Operator::UMINUS_ARR { .. } => if (Config::typeinfo()?) {literal!("-<UMINUS_ARR>")} else {literal!("-")},
@@ -261,7 +261,7 @@ pub fn unaryopSymbol(mut inOperator: DAE::Operator) -> Result<ArcStr> {
 }
 
 pub fn lbinopSymbol(mut inOperator: DAE::Operator) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((match inOperator.clone() {
         DAE::Operator::AND { ty: _ } => literal!(" and "),
         DAE::Operator::OR { ty: _ } => literal!(" or "),
@@ -271,7 +271,7 @@ pub fn lbinopSymbol(mut inOperator: DAE::Operator) -> Result<ArcStr> {
 }
 
 pub fn lunaryopSymbol(mut inOperator: DAE::Operator) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((match inOperator.clone() {
         DAE::Operator::NOT { ty: _ } => literal!("not "),
         _ => bail!("match: no arm matched"),
@@ -280,7 +280,7 @@ pub fn lunaryopSymbol(mut inOperator: DAE::Operator) -> Result<ArcStr> {
 }
 
 pub fn relopSymbol(mut inOperator: DAE::Operator) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((match inOperator.clone() {
         DAE::Operator::LESS { .. } => literal!(" < "),
         DAE::Operator::LESSEQ { .. } => literal!(" <= "),
@@ -337,7 +337,7 @@ fn printRow(mut es_1: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<()> {
 }
 
 pub fn debugPrintSubscriptStr(mut inSubscript: Arc<DAE::Subscript>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(inSubscript.clone()) {
         Deref @ DAE::Subscript::WHOLEDIM { .. } => {
             literal!(":")
@@ -366,26 +366,26 @@ pub fn debugPrintSubscriptStr(mut inSubscript: Arc<DAE::Subscript>) -> Result<Ar
 }
 
 pub fn printSubscriptLstStr(mut inSubscriptLst: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = stringDelimitList(List::map(inSubscriptLst.clone(), (std::sync::Arc::new(ExpressionBasics::printSubscriptStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Subscript>) -> Result<ArcStr> + 'static>))?, (literal!(" , ")).clone());
     Ok(outString)
 }
 
 pub fn printExpListStr(mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<ArcStr> {
-    let mut res: ArcStr = arcstr::literal!("");
+    let mut res: ArcStr;
     res = stringDelimitList(List::map(expl.clone(), (std::sync::Arc::new(ExpressionBasics::printExpStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone());
     Ok(res)
 }
 
 // stefan
 pub fn printExpListStrNoSpace(mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<ArcStr> {
-    let mut res: ArcStr = arcstr::literal!("");
+    let mut res: ArcStr;
     res = stringAppendList(List::map(expl.clone(), (std::sync::Arc::new(ExpressionBasics::printExpStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>))?);
     Ok(res)
 }
 
 pub fn printOptExpStr(mut oexp: Option<Arc<DAE::Exp>>) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     r#str = ((::match_deref::match_deref! { match &(oexp.clone()) {
         Some(e) => {
             ExpressionBasics::printExpStr(e.clone())?
@@ -399,7 +399,7 @@ pub fn printOptExpStr(mut oexp: Option<Arc<DAE::Exp>>) -> Result<ArcStr> {
 }
 
 pub fn printCrefsFromExpStr(mut e: Arc<DAE::Exp>) -> Result<ArcStr> {
-    let mut s: ArcStr = arcstr::literal!("");
+    let mut s: ArcStr;
     s = (Tpl::tplString2((std::sync::Arc::new(ExpressionDumpTpl::dumpExpCrefs) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, Arc<DAE::Exp>, ArcStr) -> Result<Tpl::Text> + 'static>), e.clone(), (literal!("")).clone())?).clone();
     Ok(s)
 }
@@ -409,7 +409,7 @@ pub fn printExp2Str<Type_a: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut strin
 
     pub type printCallFunc<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArcStr, Option<(Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Type_a) -> Result<ArcStr> + 'static>, Type_a)>) -> Result<ArcStr> + 'static>;
 
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ('mc: {
         let __mc_input = (inExp.clone(), opcreffunc.clone(), opcallfunc.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -997,7 +997,7 @@ pub fn printExp2Str<Type_a: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut strin
 }
 
 fn printExpTypeStr(mut inExp: Arc<DAE::Exp>) -> ArcStr {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ DAE::Exp::ICONST { integer: _ } => literal!("ICONST"),
         Deref @ DAE::Exp::RCONST { real: _ } => literal!("RCONST"),
@@ -1057,7 +1057,7 @@ fn reductionIteratorStr(mut riter: Arc<DAE::ReductionIterator>) -> Result<ArcStr
 }
 
 fn printMatchType(mut ty: DAE::MatchType) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     r#str = ((::match_deref::match_deref! { match &(ty.clone()) {
         DAE::MatchType::MATCHCONTINUE { .. } => literal!("matchcontinue"),
         DAE::MatchType::MATCH { switch: None } => literal!("match"),
@@ -1068,7 +1068,7 @@ fn printMatchType(mut ty: DAE::MatchType) -> Result<ArcStr> {
 }
 
 fn printCase2Str(mut matchCase: Arc<DAE::MatchCase>) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     r#str = (::match_deref::match_deref! { match &(matchCase.clone()) {
         Deref @ DAE::MatchCase { patterns, body: Deref @ metamodelica::List::Nil, result: Some(result), .. } => {
             let mut resultStr: ArcStr = arcstr::literal!("");
@@ -1104,7 +1104,7 @@ fn printCase2Str(mut matchCase: Arc<DAE::MatchCase>) -> Result<ArcStr> {
 }
 
 pub fn expPriority(mut inExp: Arc<DAE::Exp>) -> i32 {
-    let mut outInteger: i32 = 0;
+    let mut outInteger: i32;
     outInteger = (::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ DAE::Exp::ICONST { integer: _ } => 0,
         Deref @ DAE::Exp::RCONST { real: _ } => 0,
@@ -1159,13 +1159,13 @@ pub fn expPriority(mut inExp: Arc<DAE::Exp>) -> i32 {
 }
 
 pub fn printRowStr(mut es_1: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut stringDelimiter: ArcStr) -> Result<ArcStr> {
-    let mut s: ArcStr = arcstr::literal!("");
+    let mut s: ArcStr;
     s = stringDelimitList(List::map3(es_1.clone(), (std::sync::Arc::new(printExp2Str::<()>) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArcStr, _, _) -> Result<ArcStr> + 'static>), (stringDelimiter.clone()).clone(), None, None)?, (literal!(",")).clone());
     Ok(s)
 }
 
 pub fn dumpExpGraphviz(mut inExp: Arc<DAE::Exp>) -> Result<Arc<Graphviz::Node>> {
-    let mut outNode: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
+    let mut outNode: Arc<Graphviz::Node>;
     outNode = 'mc: {
         let __mc_input = inExp.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -1456,7 +1456,7 @@ pub fn dumpExpGraphviz(mut inExp: Arc<DAE::Exp>) -> Result<Arc<Graphviz::Node>> 
 }
 
 pub fn dumpExpStr(mut inExp: Arc<DAE::Exp>, mut inInteger: i32) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ('mc: {
         let __mc_input = (inExp.clone(), inInteger.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -2043,7 +2043,7 @@ pub fn dumpExpStr(mut inExp: Arc<DAE::Exp>, mut inInteger: i32) -> Result<ArcStr
 }
 
 fn genStringNTime(mut inString: ArcStr, mut inInteger: i32) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ('mc: {
         let __mc_input = (inString.clone(), inInteger.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -2066,7 +2066,7 @@ fn genStringNTime(mut inString: ArcStr, mut inInteger: i32) -> Result<ArcStr> {
 }
 
 pub fn dumpExp(mut exp: Arc<DAE::Exp>) -> Result<()> {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     r#str = (dumpExpStr(exp.clone(), 0)?).clone();
     metamodelica::print((r#str.clone()).clone());
     metamodelica::print((literal!("--------------------\n")).clone());
@@ -2074,13 +2074,13 @@ pub fn dumpExp(mut exp: Arc<DAE::Exp>) -> Result<()> {
 }
 
 fn printExpIfDiff(mut e1: Arc<DAE::Exp>, mut e2: Arc<DAE::Exp>) -> Result<ArcStr> {
-    let mut s: ArcStr = arcstr::literal!("");
+    let mut s: ArcStr;
     s = (if (ExpressionBasics::expEqual(e1.clone(), e2.clone())?) {literal!("")} else {{ let mut __mm_s = String::new(); __mm_s.push_str(&*ExpressionBasics::printExpStr(e1.clone())?); __mm_s.push_str(&*literal!(" =!= ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e2.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }}).clone();
     Ok(s)
 }
 
 pub fn printArraySizes(mut inLst: Arc<metamodelica::List<Option<i32>>>) -> Result<ArcStr> {
-    let mut out: ArcStr = arcstr::literal!("");
+    let mut out: ArcStr;
     out = ('mc: {
         let __mc_input = inLst.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -2120,15 +2120,15 @@ pub fn printArraySizes(mut inLst: Arc<metamodelica::List<Option<i32>>>) -> Resul
 }
 
 pub fn typeOfString(mut inExp: Arc<DAE::Exp>) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
-    let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+    let mut r#str: ArcStr;
+    let mut ty: Arc<DAE::Type>;
     ty = Expression::r#typeof(inExp.clone())?;
     r#str = (TypesDump::unparseType(ty.clone())?).clone();
     Ok(r#str)
 }
 
 pub fn debugPrintComponentRefExp(mut inExp: Arc<DAE::Exp>) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     r#str = ('mc: {
         let __mc_input = inExp.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -2163,7 +2163,7 @@ pub fn debugPrintComponentRefExp(mut inExp: Arc<DAE::Exp>) -> Result<ArcStr> {
 }
 
 pub fn dimensionIntString(mut dim: Arc<DAE::Dimension>) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     r#str = ((::match_deref::match_deref! { match &(dim.clone()) {
         Deref @ DAE::Dimension::DIM_UNKNOWN { .. } => {
             literal!(":")
@@ -2188,7 +2188,7 @@ pub fn dimensionIntString(mut dim: Arc<DAE::Dimension>) -> Result<ArcStr> {
 }
 
 pub fn dumpExpWithTitle(mut title: ArcStr, mut exp: Arc<DAE::Exp>) -> Result<()> {
-    let mut r#str: ArcStr = arcstr::literal!("");
+    let mut r#str: ArcStr;
     r#str = (dumpExpStr(exp.clone(), 0)?).clone();
     metamodelica::print((title.clone()).clone());
     metamodelica::print((r#str.clone()).clone());
@@ -2226,7 +2226,7 @@ pub fn printExp(mut e: Arc<DAE::Exp>) -> Result<()> {
 }
 
 pub fn parenthesize(mut inString1: ArcStr, mut inInteger2: i32, mut inInteger3: i32, mut rightOpParenthesis: bool) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ('mc: {
         let __mc_input = (inString1.clone(), inInteger2.clone(), inInteger3.clone(), rightOpParenthesis.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -2253,7 +2253,7 @@ pub fn parenthesize(mut inString1: ArcStr, mut inInteger2: i32, mut inInteger3: 
 }
 
 pub fn clockKindString(mut inClockKind: Arc<DAE::ClockKind>) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
+    let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(inClockKind.clone()) {
         Deref @ DAE::ClockKind::INFERRED_CLOCK { .. } => {
             literal!("Clock()")
@@ -2276,9 +2276,9 @@ pub fn clockKindString(mut inClockKind: Arc<DAE::ClockKind>) -> Result<ArcStr> {
 }
 
 pub fn constraintDTtoString(mut con: Arc<DAE::Constraint>) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
-    let mut c: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut localCon: bool = false;
+    let mut r#str: ArcStr;
+    let mut c: Arc<DAE::Exp>;
+    let mut localCon: bool;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(con.clone()) {
         Deref @ DAE::Constraint::CONSTRAINT_DT { constraint: __pa0, localCon: __pa1 } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),

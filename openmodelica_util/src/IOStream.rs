@@ -110,7 +110,7 @@ pub const stdError: i32 = 2;
 pub static emptyStreamOfTypeList: std::sync::LazyLock<IOStream> = std::sync::LazyLock::new(|| { IOStream { name: (literal!("emptyStreamOfTypeList")).clone(), ty: crate::IOStream::IOStreamType::LIST, data: IOStreamData::LIST_DATA { data: metamodelica::nil() } } });
 
 pub fn create(mut streamName: ArcStr, mut streamType: IOStreamType) -> Result<IOStream> {
-    let mut outStream: IOStream = <IOStream as ::std::default::Default>::default();
+    let mut outStream: IOStream;
     outStream = (match streamType.clone() {
         IOStreamType::FILE { name: mut fileName } => {
             let mut fileID: i32 = 0;
@@ -130,7 +130,7 @@ pub fn create(mut streamName: ArcStr, mut streamType: IOStreamType) -> Result<IO
 }
 
 pub fn append(mut inStream: IOStream, mut inString: ArcStr) -> Result<IOStream> {
-    let mut outStream: IOStream = <IOStream as ::std::default::Default>::default();
+    let mut outStream: IOStream;
     outStream = (match inStream.clone() {
         ref fStream @ IOStream { data: IOStreamData::FILE_DATA { data: ref fileID }, .. } => {
             IOStreamExt::appendFile(fileID.clone(), (inString.clone()).clone())?;
@@ -149,7 +149,7 @@ pub fn append(mut inStream: IOStream, mut inString: ArcStr) -> Result<IOStream> 
 }
 
 pub fn appendList(mut inStream: IOStream, mut inStringList: Arc<metamodelica::List<ArcStr>>) -> Result<IOStream> {
-    let mut outStream: IOStream = <IOStream as ::std::default::Default>::default();
+    let mut outStream: IOStream;
     outStream = List::foldr(inStringList.clone(), (std::sync::Arc::new(append) as std::sync::Arc<dyn ::std::ops::Fn(IOStream, ArcStr) -> Result<IOStream> + 'static>), inStream.clone())?;
     Ok(outStream)
 }
@@ -186,7 +186,7 @@ pub fn appendListReverse(mut s: IOStream, mut data: Arc<metamodelica::List<ArcSt
 
 pub fn appendListStream(mut srcStream: IOStream, mut dstStream: IOStream) -> Result<IOStream> {
     let mut dstStream: IOStream = dstStream;
-    let mut data: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+    let mut data: Arc<metamodelica::List<ArcStr>>;
     let IOSTREAM { data: IOStreamData::LIST_DATA { data: __pa0 }, .. } = (srcStream.clone()) else { bail!("pattern mismatch") };
     data = __pa0.clone();
     dstStream = appendListReverse(dstStream.clone(), data.clone())?;
@@ -194,7 +194,7 @@ pub fn appendListStream(mut srcStream: IOStream, mut dstStream: IOStream) -> Res
 }
 
 pub fn close(mut inStream: IOStream) -> Result<IOStream> {
-    let mut outStream: IOStream = <IOStream as ::std::default::Default>::default();
+    let mut outStream: IOStream;
     outStream = 'mc: {
         let __mc_input = inStream.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -230,7 +230,7 @@ pub fn delete(mut inStream: IOStream) -> Result<()> {
 }
 
 pub fn clear(mut inStream: IOStream) -> Result<IOStream> {
-    let mut outStream: IOStream = <IOStream as ::std::default::Default>::default();
+    let mut outStream: IOStream;
     outStream = 'mc: {
         let __mc_input = inStream.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -253,7 +253,7 @@ pub fn clear(mut inStream: IOStream) -> Result<IOStream> {
 }
 
 pub fn empty(mut inStream: IOStream) -> Result<bool> {
-    let mut res: bool = false;
+    let mut res: bool;
     let mut data: IOStreamData = inStream.data.clone();
     res = (match data.clone() {
         IOStreamData::LIST_DATA { .. } => var_field!(data.data, IOStreamData::LIST_DATA).clone().is_empty(),
@@ -263,7 +263,7 @@ pub fn empty(mut inStream: IOStream) -> Result<bool> {
 }
 
 pub fn string(mut inStream: IOStream) -> Result<ArcStr> {
-    let mut string: ArcStr = arcstr::literal!("");
+    let mut string: ArcStr;
     string = ((match inStream.clone() {
         IOStream { data: IOStreamData::FILE_DATA { data: mut fileID }, .. } => {
             let mut r#str: ArcStr = arcstr::literal!("");

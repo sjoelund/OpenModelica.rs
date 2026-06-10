@@ -145,7 +145,7 @@ impl std::fmt::Debug for LoadFileStrategy {
 pub use self::LoadFileStrategy::{STRATEGY_HASHTABLE,STRATEGY_ON_DEMAND};
 
 pub fn loadClass(mut inPath: Arc<Absyn::Path>, mut priorityList: Arc<metamodelica::List<ArcStr>>, mut modelicaPath: ArcStr, mut encoding: Option<ArcStr>, mut requireExactVersion: bool, mut encrypted: bool) -> Result<Absyn::Program> {
-    let mut outProgram: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
+    let mut outProgram: Absyn::Program;
     outProgram = 'mc: {
         let __mc_input = (inPath.clone(), modelicaPath.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -194,15 +194,15 @@ pub fn loadClass(mut inPath: Arc<Absyn::Path>, mut priorityList: Arc<metamodelic
 }
 
 fn loadClassFromMps(mut id: ArcStr, mut prios: Arc<metamodelica::List<ArcStr>>, mut mps: Arc<metamodelica::List<ArcStr>>, mut encoding: Option<ArcStr>, mut requireExactVersion: bool, mut encrypted: bool) -> Result<Absyn::Program> {
-    let mut outProgram: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
-    let mut mp: ArcStr = arcstr::literal!("");
-    let mut name: ArcStr = arcstr::literal!("");
+    let mut outProgram: Absyn::Program;
+    let mut mp: ArcStr;
+    let mut name: ArcStr;
     let mut version: ArcStr = arcstr::literal!("");
-    let mut isDir: bool = false;
-    let mut cl: Option<Arc<Absyn::Class>> = None;
-    let mut versionsThatProvideTheWanted: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut commands: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut versions: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+    let mut isDir: bool;
+    let mut cl: Option<Arc<Absyn::Class>>;
+    let mut versionsThatProvideTheWanted: Arc<metamodelica::List<ArcStr>>;
+    let mut commands: Arc<metamodelica::List<ArcStr>>;
+    let mut versions: Arc<metamodelica::List<ArcStr>>;
     if !(requireExactVersion.clone()) {
         if prios.clone().is_empty() {
             versions = PackageManagement::versionsThatProvideTheWanted((id.clone()).clone(), (literal!("default")).clone(), false);
@@ -263,7 +263,7 @@ fn loadClassFromMps(mut id: ArcStr, mut prios: Arc<metamodelica::List<ArcStr>>, 
 }
 
 pub fn loadClassFromMp(mut id: ArcStr, mut path: ArcStr, mut name: ArcStr, mut isDir: bool, mut optEncoding: Option<ArcStr>, mut encrypted: bool) -> Result<Option<Arc<Absyn::Class>>> {
-    let mut outClass: Option<Arc<Absyn::Class>> = None;
+    let mut outClass: Option<Arc<Absyn::Class>>;
     outClass = (match isDir.clone() {
         false => {
             let mut pd: ArcStr = arcstr::literal!("");
@@ -315,8 +315,8 @@ pub fn loadClassFromMp(mut id: ArcStr, mut path: ArcStr, mut name: ArcStr, mut i
 }
 
 fn getAllFilesFromDirectory(mut dir: ArcStr, mut encrypted: bool, mut acc: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<ArcStr>>> {
-    let mut files: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut subdirs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+    let mut files: Arc<metamodelica::List<ArcStr>>;
+    let mut subdirs: Arc<metamodelica::List<ArcStr>>;
     let mut pd: ArcStr = arcstr::literal!(Autoconf::pathDelimiter);
     if encrypted.clone() {
         files = metamodelica::cons(({ let mut __mm_s = String::new(); __mm_s.push_str(&*dir.clone()); __mm_s.push_str(&*pd.clone()); __mm_s.push_str(&*literal!("package.moc")); ArcStr::from(__mm_s) }).clone(), listAppend(({
@@ -350,7 +350,7 @@ fn getAllFilesFromDirectory(mut dir: ArcStr, mut encrypted: bool, mut acc: Arc<m
 }
 
 fn loadCompletePackageFromMp(mut id: ArcStr, mut inIdent: ArcStr, mut inString: ArcStr, mut strategy: LoadFileStrategy, mut inWithin: Absyn::Within, mut numError: i32, mut encrypted: bool) -> Result<Option<Arc<Absyn::Class>>> {
-    let mut cl: Option<Arc<Absyn::Class>> = None;
+    let mut cl: Option<Arc<Absyn::Class>>;
     cl = 'mc: {
         let __mc_input = (inIdent.clone(), inString.clone(), inWithin.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -410,7 +410,7 @@ fn loadCompletePackageFromMp(mut id: ArcStr, mut inIdent: ArcStr, mut inString: 
 }
 
 fn mergeBefore(mut cp: Arc<Absyn::ClassPart>, mut cps: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Arc<metamodelica::List<Arc<Absyn::ClassPart>>> {
-    let mut ocp: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
+    let mut ocp: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>;
     ocp = (::match_deref::match_deref! { match &((cp.clone(), cps.clone())) {
         (Deref @ Absyn::ClassPart::PUBLIC { contents: ei1 }, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ClassPart::PUBLIC { contents: ei2 }, tail: rest }) => {
             let mut ei: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
@@ -484,17 +484,17 @@ fn loadCompletePackageFromMp2(mut po: PackageOrder, mut mp: ArcStr, mut strategy
 }
 
 pub fn parsePackageFile(mut name: ArcStr, mut strategy: LoadFileStrategy, mut expectPackage: bool, mut w1: Absyn::Within, mut pack: ArcStr, mut encrypted: bool) -> Result<Option<Arc<Absyn::Class>>> {
-    let mut cl: Option<Arc<Absyn::Class>> = None;
-    let mut class_: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
-    let mut cs: Arc<metamodelica::List<Arc<Absyn::Class>>> = metamodelica::nil();
-    let mut w2: Absyn::Within = Absyn::Within::TOP;
-    let mut classNames: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
-    let mut r#str: ArcStr = arcstr::literal!("");
-    let mut s1: ArcStr = arcstr::literal!("");
-    let mut s2: ArcStr = arcstr::literal!("");
-    let mut cname: ArcStr = arcstr::literal!("");
-    let mut body: Arc<Absyn::ClassDef> = Arc::new(<Absyn::ClassDef as ::std::default::Default>::default());
+    let mut cl: Option<Arc<Absyn::Class>>;
+    let mut class_: Arc<Absyn::Class>;
+    let mut cs: Arc<metamodelica::List<Arc<Absyn::Class>>>;
+    let mut w2: Absyn::Within;
+    let mut classNames: Arc<metamodelica::List<ArcStr>>;
+    let mut info: SourceInfo;
+    let mut r#str: ArcStr;
+    let mut s1: ArcStr;
+    let mut s2: ArcStr;
+    let mut cname: ArcStr;
+    let mut body: Arc<Absyn::ClassDef>;
     let Absyn::PROGRAM { classes: __pa0, within_: __pa1 } = (getProgramFromStrategy((name.clone()).clone(), strategy.clone())?) else { bail!("pattern mismatch") };
     cs = __pa0.clone();
     w2 = __pa1.clone();
@@ -543,7 +543,7 @@ pub fn parsePackageFile(mut name: ArcStr, mut strategy: LoadFileStrategy, mut ex
 }
 
 fn getBothPackageAndFilename(mut r#str: ArcStr, mut mp: ArcStr) -> Result<ArcStr> {
-    let mut out: ArcStr = arcstr::literal!("");
+    let mut out: ArcStr;
     out = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*Testsuite::friendly((System::realpath(({ let mut __mm_s = String::new(); __mm_s.push_str(&*mp.clone()); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!(".mo")); ArcStr::from(__mm_s) }).clone())?).clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*Testsuite::friendly((System::realpath(({ let mut __mm_s = String::new(); __mm_s.push_str(&*mp.clone()); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("/package.mo")); ArcStr::from(__mm_s) }).clone())?).clone())?); ArcStr::from(__mm_s) }).clone();
     Ok(out)
 }
@@ -634,19 +634,19 @@ fn getPackageContentNames(mut cl: Arc<Absyn::Class>, mut filename: ArcStr, mut m
 }
 
 fn makeClassPart(mut part: Arc<Absyn::ClassPart>) -> PackageOrder {
-    let mut po: PackageOrder = <PackageOrder as ::std::default::Default>::default();
+    let mut po: PackageOrder;
     po = PackageOrder::CLASSPART { cp: part.clone() };
     po
 }
 
 fn makeElement(mut el: Arc<Absyn::ElementItem>, mut r#pub: bool) -> PackageOrder {
-    let mut po: PackageOrder = <PackageOrder as ::std::default::Default>::default();
+    let mut po: PackageOrder;
     po = PackageOrder::ELEMENT { element: el.clone(), r#pub: r#pub.clone() };
     po
 }
 
 fn makeClassLoad(mut r#str: ArcStr) -> PackageOrder {
-    let mut po: PackageOrder = <PackageOrder as ::std::default::Default>::default();
+    let mut po: PackageOrder;
     po = PackageOrder::CLASSLOAD { cl: (r#str.clone()).clone() };
     po
 }
@@ -684,8 +684,8 @@ fn checkPackageOrderFilesExist(mut po: PackageOrder, mut mp: ArcStr, mut info: S
 }
 
 fn existPackage(mut name: ArcStr, mut mp: ArcStr, mut encrypted: bool) -> bool {
-    let mut b: bool = false;
-    let mut pd: ArcStr = arcstr::literal!("");
+    let mut b: bool;
+    let mut pd: ArcStr;
     pd = (arcstr::literal!(Autoconf::pathDelimiter)).clone();
     b = System::regularFileExists(({ let mut __mm_s = String::new(); __mm_s.push_str(&*mp.clone()); __mm_s.push_str(&*pd.clone()); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*pd.clone()); __mm_s.push_str(&*if (encrypted.clone()) {literal!("package.moc")} else {literal!("package.mo")}); ArcStr::from(__mm_s) }).clone());
     b
@@ -721,7 +721,7 @@ fn getPackageContentNamesinParts(mut inNamesToSort: Arc<metamodelica::List<ArcSt
 
 fn getPackageContentNamesinElts(mut inNamesToSort: Arc<metamodelica::List<ArcStr>>, mut inElts: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut po: Arc<metamodelica::List<PackageOrder>>, mut r#pub: bool) -> Result<(Arc<metamodelica::List<PackageOrder>>, Arc<metamodelica::List<ArcStr>>)> {
     let mut outOrder: Arc<metamodelica::List<PackageOrder>> = metamodelica::nil();
-    let mut outNames: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+    let mut outNames: Arc<metamodelica::List<ArcStr>>;
     (outOrder, outNames) = (::match_deref::match_deref! { match &((inNamesToSort.clone(), inElts.clone())) {
         (namesToSort, Deref @ metamodelica::List::Nil) => {
             (po.clone(), namesToSort.clone())
@@ -778,8 +778,8 @@ fn getPackageContentNamesinElts(mut inNamesToSort: Arc<metamodelica::List<ArcStr
 }
 
 fn matchCompNames(mut names: Arc<metamodelica::List<ArcStr>>, mut comps: Arc<metamodelica::List<ArcStr>>, mut info: SourceInfo) -> Result<(Arc<metamodelica::List<ArcStr>>, bool)> {
-    let mut outNames: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut matchedNames: bool = false;
+    let mut outNames: Arc<metamodelica::List<ArcStr>>;
+    let mut matchedNames: bool;
     (outNames, matchedNames) = (::match_deref::match_deref! { match &((names.clone(), comps.clone())) {
         (_, Deref @ metamodelica::List::Nil) => {
             (names.clone(), true)
@@ -815,7 +815,7 @@ fn packageOrderName(mut ord: PackageOrder) -> ArcStr {
 }
 
 pub fn checkOnLoadMessage(mut p1: Absyn::Program) -> Result<()> {
-    let mut classes: Arc<metamodelica::List<Arc<Absyn::Class>>> = metamodelica::nil();
+    let mut classes: Arc<metamodelica::List<Arc<Absyn::Class>>>;
     let Absyn::PROGRAM { classes: __pa0, .. } = (p1.clone()) else { bail!("pattern mismatch") };
     classes = __pa0.clone();
     List::map2(classes.clone(), (std::sync::Arc::new(AbsynUtil::getNamedAnnotationInClass) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Class>, Arc<Absyn::Path>, _) -> Result<_> + 'static>), Arc::new(Absyn::Path::IDENT { name: (literal!("__OpenModelica_messageOnLoad")).clone() }), (std::sync::Arc::new(checkOnLoadMessageWork) as std::sync::Arc<dyn ::std::ops::Fn(Option<Arc<Absyn::Modification>>) -> Result<i32> + 'static>))?;
@@ -823,7 +823,7 @@ pub fn checkOnLoadMessage(mut p1: Absyn::Program) -> Result<()> {
 }
 
 fn checkOnLoadMessageWork(mut r#mod: Option<Arc<Absyn::Modification>>) -> Result<i32> {
-    let mut dummy: i32 = 0;
+    let mut dummy: i32;
     dummy = (::match_deref::match_deref! { match &(r#mod.clone()) {
         Some(Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::EQMOD { info, exp: Deref @ Absyn::Exp::STRING { value: r#str } }, .. }) => {
             Error::addSourceMessage(Error::COMPILER_NOTIFICATION_SCRIPTING.clone(), list![(r#str.clone()).clone()], info.clone())?;
@@ -835,7 +835,7 @@ fn checkOnLoadMessageWork(mut r#mod: Option<Arc<Absyn::Modification>>) -> Result
 }
 
 fn getProgramFromStrategy(mut filename: ArcStr, mut strategy: LoadFileStrategy) -> Result<Absyn::Program> {
-    let mut program: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
+    let mut program: Absyn::Program;
     let mut f: ArcStr = filename.clone();
     program = (match strategy.clone() {
         LoadFileStrategy::STRATEGY_HASHTABLE { .. } => {

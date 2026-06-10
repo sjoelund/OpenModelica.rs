@@ -58,12 +58,12 @@ use openmodelica_util::Util;
 use openmodelica_util_datatypes_basic::List;
 
 pub fn parse(mut filename: ArcStr, mut encoding: ArcStr, mut libraryPath: ArcStr, mut lveInstance: Option<i32>, mut acceptedGram: i32, mut languageStandardInt: i32, mut strict: bool) -> Result<Absyn::Program> {
-    let mut outProgram: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
-    let mut classes: Arc<metamodelica::List<Arc<Absyn::Class>>> = metamodelica::nil();
-    let mut classes1: Arc<metamodelica::List<Arc<Absyn::Class>>> = metamodelica::nil();
-    let mut w: Absyn::Within = Absyn::Within::TOP;
+    let mut outProgram: Absyn::Program;
+    let mut classes: Arc<metamodelica::List<Arc<Absyn::Class>>>;
+    let mut classes1: Arc<metamodelica::List<Arc<Absyn::Class>>>;
+    let mut w: Absyn::Within;
     let mut cs: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
-    let mut realpath: ArcStr = arcstr::literal!("");
+    let mut realpath: ArcStr;
     realpath = (Util::replaceWindowsBackSlashWithPathDelimiter((System::realpath((filename.clone()).clone())?).clone())?).clone();
     outProgram = ParserExt::parse((realpath.clone()).clone(), (Testsuite::friendly((realpath.clone()).clone())?).clone(), acceptedGram.clone(), (encoding.clone()).clone(), languageStandardInt.clone(), strict.clone(), Testsuite::isRunning()?, (libraryPath.clone()).clone(), lveInstance.clone())?;
     if isSome(lveInstance.clone()) {
@@ -83,50 +83,50 @@ pub fn parse(mut filename: ArcStr, mut encoding: ArcStr, mut libraryPath: ArcStr
 }
 
 pub fn parseexp(mut filename: ArcStr) -> Result<GlobalScript::Statements> {
-    let mut outStatements: GlobalScript::Statements = <GlobalScript::Statements as ::std::default::Default>::default();
+    let mut outStatements: GlobalScript::Statements;
     outStatements = ParserExt::parseexp((System::realpath((filename.clone()).clone())?).clone(), (Testsuite::friendly((System::realpath((filename.clone()).clone())?).clone())?).clone(), Config::acceptedGrammar()?, Flags::getConfigEnum(Flags::LANGUAGE_STANDARD.clone())?, Testsuite::isRunning()?)?;
     Ok(outStatements)
 }
 
 pub fn parsestring(mut r#str: ArcStr, mut infoFilename: ArcStr, mut grammar: i32, mut languageStd: i32, mut strict: bool) -> Result<Absyn::Program> {
-    let mut outProgram: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
+    let mut outProgram: Absyn::Program;
     outProgram = ParserExt::parsestring((r#str.clone()).clone(), (infoFilename.clone()).clone(), grammar.clone(), languageStd.clone(), strict.clone(), Testsuite::isRunning()?)?;
     Ok(outProgram)
 }
 
 pub fn parsestringexp(mut r#str: ArcStr, mut infoFilename: ArcStr) -> Result<GlobalScript::Statements> {
-    let mut outStatements: GlobalScript::Statements = <GlobalScript::Statements as ::std::default::Default>::default();
+    let mut outStatements: GlobalScript::Statements;
     outStatements = ParserExt::parsestringexp((r#str.clone()).clone(), (infoFilename.clone()).clone(), Config::acceptedGrammar()?, Flags::getConfigEnum(Flags::LANGUAGE_STANDARD.clone())?, Testsuite::isRunning()?)?;
     Ok(outStatements)
 }
 
 pub fn stringPath(mut r#str: ArcStr) -> Result<Arc<Absyn::Path>> {
-    let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+    let mut path: Arc<Absyn::Path>;
     path = ParserExt::stringPath((r#str.clone()).clone(), (literal!("<internal>")).clone(), Config::acceptedGrammar()?, Flags::getConfigEnum(Flags::LANGUAGE_STANDARD.clone())?, Testsuite::isRunning()?)?;
     Ok(path)
 }
 
 pub fn stringCref(mut r#str: ArcStr) -> Result<Arc<Absyn::ComponentRef>> {
-    let mut cref: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
+    let mut cref: Arc<Absyn::ComponentRef>;
     cref = ParserExt::stringCref((r#str.clone()).clone(), (literal!("<internal>")).clone(), Config::acceptedGrammar()?, Flags::getConfigEnum(Flags::LANGUAGE_STANDARD.clone())?, Testsuite::isRunning()?)?;
     Ok(cref)
 }
 
 pub fn stringMod(mut r#str: ArcStr, mut filename: ArcStr) -> Result<Arc<Absyn::ElementArg>> {
-    let mut r#mod: Arc<Absyn::ElementArg> = Arc::new(<Absyn::ElementArg as ::std::default::Default>::default());
+    let mut r#mod: Arc<Absyn::ElementArg>;
     r#mod = ParserExt::stringMod((r#str.clone()).clone(), (filename.clone()).clone(), Config::acceptedGrammar()?, Flags::getConfigEnum(Flags::LANGUAGE_STANDARD.clone())?, Testsuite::isRunning()?)?;
     Ok(r#mod)
 }
 
 pub fn stringEq(mut r#str: ArcStr, mut filename: ArcStr) -> Result<Arc<Absyn::EquationItem>> {
-    let mut eq: Arc<Absyn::EquationItem> = Arc::new(<Absyn::EquationItem as ::std::default::Default>::default());
+    let mut eq: Arc<Absyn::EquationItem>;
     eq = ParserExt::stringEq((r#str.clone()).clone(), (filename.clone()).clone(), Config::acceptedGrammar()?, Flags::getConfigEnum(Flags::LANGUAGE_STANDARD.clone())?, Testsuite::isRunning()?)?;
     Ok(eq)
 }
 
 pub fn parallelParseFiles(mut filenames: Arc<metamodelica::List<ArcStr>>, mut encoding: ArcStr, mut numThreads: i32, mut libraryPath: ArcStr, mut lveInstance: Option<i32>) -> Result<(metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Absyn::Program)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Absyn::Program) -> Result<ArcStr> + 'static>))> {
     let mut ht: (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Absyn::Program)>>), i32, (HashTableStringToProgram::FuncHashCref, HashTableStringToProgram::FuncCrefEqual, HashTableStringToProgram::FuncCrefStr, HashTableStringToProgram::FuncExpStr));
-    let mut partialResults: Arc<metamodelica::List<ParserResult>> = metamodelica::nil();
+    let mut partialResults: Arc<metamodelica::List<ParserResult>>;
     partialResults = parallelParseFilesWork(filenames.clone(), (encoding.clone()).clone(), numThreads.clone(), (libraryPath.clone()).clone(), lveInstance.clone())?;
     ht = HashTableStringToProgram::emptyHashTableSized(Util::nextPrime((partialResults.clone().len() as i32)));
     for mut res in &*partialResults.clone() {
@@ -157,20 +157,20 @@ pub fn parallelParseFilesToProgramList(mut filenames: Arc<metamodelica::List<Arc
 }
 
 pub fn startLibraryVendorExecutable(mut lvePath: ArcStr) -> (bool, Option<i32>) {
-    let mut success: bool = false;
-    let mut lveInstance: Option<i32> = None;
+    let mut success: bool;
+    let mut lveInstance: Option<i32>;
     (success, lveInstance) = ParserExt::startLibraryVendorExecutable((lvePath.clone()).clone());
     (success, lveInstance)
 }
 
 pub fn checkLVEToolLicense(mut lveInstance: Option<i32>, mut packageName: ArcStr) -> bool {
-    let mut status: bool = false;
+    let mut status: bool;
     status = ParserExt::checkLVEToolLicense(lveInstance.clone(), (packageName.clone()).clone());
     status
 }
 
 pub fn checkLVEToolFeature(mut lveInstance: Option<i32>, mut feature: ArcStr) -> bool {
-    let mut status: bool = false;
+    let mut status: bool;
     status = ParserExt::checkLVEToolFeature(lveInstance.clone(), (feature.clone()).clone());
     status
 }
@@ -199,7 +199,7 @@ pub type PARSERRESULT = ParserResult;
 
 
 fn parallelParseFilesWork(mut filenames: Arc<metamodelica::List<ArcStr>>, mut encoding: ArcStr, mut numThreads: i32, mut libraryPath: ArcStr, mut lveInstance: Option<i32>) -> Result<Arc<metamodelica::List<ParserResult>>> {
-    let mut partialResults: Arc<metamodelica::List<ParserResult>> = metamodelica::nil();
+    let mut partialResults: Arc<metamodelica::List<ParserResult>>;
     let mut workList: Arc<metamodelica::List<(ArcStr, ArcStr, ArcStr, Option<i32>)>> = ({
         let mut __acc: Arc<metamodelica::List<(ArcStr, ArcStr, ArcStr, Option<i32>)>> = metamodelica::nil();
         for mut file in (filenames.clone()).into_iter().cloned() {
@@ -224,7 +224,7 @@ fn parallelParseFilesWork(mut filenames: Arc<metamodelica::List<ArcStr>>, mut en
 }
 
 fn loadFileThread(mut inFileEncoding: (ArcStr, ArcStr, ArcStr, Option<i32>)) -> Result<ParserResult> {
-    let mut result: ParserResult = <ParserResult as ::std::default::Default>::default();
+    let mut result: ParserResult;
     result = 'mc: {
         let __mc_input = inFileEncoding.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -244,9 +244,9 @@ fn loadFileThread(mut inFileEncoding: (ArcStr, ArcStr, ArcStr, Option<i32>)) -> 
 }
 
 pub fn checkLicenseAndFeatures(mut c1: Arc<Absyn::Class>, mut lveInstance: Option<i32>) -> Result<bool> {
-    let mut result: bool = false;
-    let mut orFeatures: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut andFeatures: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+    let mut result: bool;
+    let mut orFeatures: Arc<metamodelica::List<ArcStr>>;
+    let mut andFeatures: Arc<metamodelica::List<ArcStr>>;
     result = true;
     orFeatures = getFeaturesAnnotation(c1.clone())?;
     for mut orFeature in &*orFeatures.clone() {
@@ -268,15 +268,15 @@ pub fn checkLicenseAndFeatures(mut c1: Arc<Absyn::Class>, mut lveInstance: Optio
 }
 
 fn getLicenseAnnotation(mut className: Arc<Absyn::Class>) -> Result<(ArcStr, ArcStr)> {
-    let mut license: (ArcStr, ArcStr) = (arcstr::literal!(""), arcstr::literal!(""));
-    let mut opt_license: Option<(ArcStr, ArcStr)> = None;
+    let mut license: (ArcStr, ArcStr);
+    let mut opt_license: Option<(ArcStr, ArcStr)>;
     opt_license = AbsynUtil::getNamedAnnotationInClass(className.clone(), Arc::new(Absyn::Path::IDENT { name: (literal!("Protection")).clone() }), (std::sync::Arc::new(getLicenseAnnotationWork1) as std::sync::Arc<dyn ::std::ops::Fn(Option<Arc<Absyn::Modification>>) -> Result<(ArcStr, ArcStr)> + 'static>))?;
     license = Util::getOptionOrDefault(opt_license.clone(), (literal!(""), literal!("")));
     Ok(license)
 }
 
 fn getLicenseAnnotationWork1(mut r#mod: Option<Arc<Absyn::Modification>>) -> Result<(ArcStr, ArcStr)> {
-    let mut license: (ArcStr, ArcStr) = (arcstr::literal!(""), arcstr::literal!(""));
+    let mut license: (ArcStr, ArcStr);
     license = (::match_deref::match_deref! { match &(r#mod.clone()) {
         Some(Deref @ Absyn::Modification { elementArgLst: arglst, .. }) => {
             let mut libraryKey: ArcStr = arcstr::literal!("");
@@ -311,7 +311,7 @@ fn getLicenseAnnotationWork2(mut eltArgs: Arc<metamodelica::List<Arc<Absyn::Elem
 }
 
 fn getLicenseAnnotationTuple(mut r#mod: Option<Arc<Absyn::Modification>>) -> Result<(ArcStr, ArcStr)> {
-    let mut license: (ArcStr, ArcStr) = (arcstr::literal!(""), arcstr::literal!(""));
+    let mut license: (ArcStr, ArcStr);
     license = (::match_deref::match_deref! { match &(r#mod.clone()) {
         Some(Deref @ Absyn::Modification { elementArgLst: arglst, .. }) => {
             let mut libraryKey: ArcStr = arcstr::literal!("");
@@ -362,15 +362,15 @@ fn getLicenseAnnotationLicenseFile(mut eltArgs: Arc<metamodelica::List<Arc<Absyn
 }
 
 fn getFeaturesAnnotation(mut className: Arc<Absyn::Class>) -> Result<Arc<metamodelica::List<ArcStr>>> {
-    let mut features: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut opt_featuresList: Option<Arc<metamodelica::List<ArcStr>>> = None;
+    let mut features: Arc<metamodelica::List<ArcStr>>;
+    let mut opt_featuresList: Option<Arc<metamodelica::List<ArcStr>>>;
     opt_featuresList = AbsynUtil::getNamedAnnotationInClass(className.clone(), Arc::new(Absyn::Path::IDENT { name: (literal!("Protection")).clone() }), (std::sync::Arc::new(getFeaturesAnnotationList) as std::sync::Arc<dyn ::std::ops::Fn(Option<Arc<Absyn::Modification>>) -> Result<Arc<metamodelica::List<ArcStr>>> + 'static>))?;
     features = Util::getOptionOrDefault(opt_featuresList.clone(), metamodelica::nil());
     Ok(features)
 }
 
 fn getFeaturesAnnotationList(mut r#mod: Option<Arc<Absyn::Modification>>) -> Result<Arc<metamodelica::List<ArcStr>>> {
-    let mut features: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+    let mut features: Arc<metamodelica::List<ArcStr>>;
     features = (::match_deref::match_deref! { match &(r#mod.clone()) {
         Some(Deref @ Absyn::Modification { elementArgLst: arglst, .. }) => {
             getFeaturesAnnotationList2(arglst.clone())?
@@ -400,7 +400,7 @@ fn getFeaturesAnnotationList2(mut eltArgs: Arc<metamodelica::List<Arc<Absyn::Ele
 }
 
 fn expToString(mut inExp: Arc<Absyn::Exp>) -> ArcStr {
-    let mut outExp: ArcStr = arcstr::literal!("");
+    let mut outExp: ArcStr;
     outExp = ((::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ Absyn::Exp::STRING { value: r#str } => {
             r#str.clone()

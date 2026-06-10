@@ -81,19 +81,19 @@ pub fn execStat(mut name: ArcStr) -> Result<()> {
         r#str
     }
 
-    let mut t: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut total: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut timeStr: ArcStr = arcstr::literal!("");
-    let mut totalTimeStr: ArcStr = arcstr::literal!("");
-    let mut gcStr: ArcStr = arcstr::literal!("");
-    let mut memory: i32 = 0;
-    let mut oldMemory: i32 = 0;
-    let mut heapsize_full: i32 = 0;
-    let mut free_bytes_full: i32 = 0;
-    let mut since: i32 = 0;
-    let mut before: i32 = 0;
-    let mut stats: GCExt::ProfStats = <GCExt::ProfStats as ::std::default::Default>::default();
-    let mut oldStats: GCExt::ProfStats = <GCExt::ProfStats as ::std::default::Default>::default();
+    let mut t: metamodelica::Real;
+    let mut total: metamodelica::Real;
+    let mut timeStr: ArcStr;
+    let mut totalTimeStr: ArcStr;
+    let mut gcStr: ArcStr;
+    let mut memory: i32;
+    let mut oldMemory: i32;
+    let mut heapsize_full: i32;
+    let mut free_bytes_full: i32;
+    let mut since: i32;
+    let mut before: i32;
+    let mut stats: GCExt::ProfStats;
+    let mut oldStats: GCExt::ProfStats;
     if Flags::isSet(Flags::EXEC_STAT.clone())? {
         for mut i in &*if (Flags::isSet(Flags::EXEC_STAT_EXTRA_GC.clone())?) {list![1, 2]} else {list![1]} {
             let mut i = i.clone();

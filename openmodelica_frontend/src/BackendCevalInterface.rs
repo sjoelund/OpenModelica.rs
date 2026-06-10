@@ -107,9 +107,9 @@ pub fn initializeBackendInterface(mut inFunctions: BackendInterfaceFunctions) ->
 }
 
 pub fn cevalInteractiveFunctions(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<DAE::Exp>, mut inMsg: Absyn::Msg, mut inNumIter: i32) -> Result<(FCore::Cache, Arc<Values::Value>)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outValue: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
-    let mut functions: BackendInterfaceFunctions = <BackendInterfaceFunctions as ::std::default::Default>::default();
+    let mut outCache: FCore::Cache;
+    let mut outValue: Arc<Values::Value>;
+    let mut functions: BackendInterfaceFunctions;
     let mut func: partialCevalInteractiveFunctions;
     functions = crate::Globals::backendCevalInterface.with(|__root| __root.borrow().clone());
     func = functions.cevalInteractiveFunctions.clone();
@@ -118,9 +118,9 @@ pub fn cevalInteractiveFunctions(mut inCache: FCore::Cache, mut inEnv: FCore::Gr
 }
 
 pub fn cevalCallFunction(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<DAE::Exp>, mut inValues: Arc<metamodelica::List<Arc<Values::Value>>>, mut inImplInst: bool, mut inMsg: Absyn::Msg, mut inNumIter: i32) -> Result<(FCore::Cache, Arc<Values::Value>)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outValue: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
-    let mut functions: BackendInterfaceFunctions = <BackendInterfaceFunctions as ::std::default::Default>::default();
+    let mut outCache: FCore::Cache;
+    let mut outValue: Arc<Values::Value>;
+    let mut functions: BackendInterfaceFunctions;
     let mut func: partialCevalCallFunction;
     functions = crate::Globals::backendCevalInterface.with(|__root| __root.borrow().clone());
     func = functions.cevalCallFunction.clone();
@@ -129,10 +129,10 @@ pub fn cevalCallFunction(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut
 }
 
 pub fn elabCallInteractive(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inCref: Arc<Absyn::ComponentRef>, mut inExps: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inNamedArgs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inImplInst: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
-    let mut functions: BackendInterfaceFunctions = <BackendInterfaceFunctions as ::std::default::Default>::default();
+    let mut outCache: FCore::Cache;
+    let mut outExp: Arc<DAE::Exp>;
+    let mut outProperties: DAE::Properties;
+    let mut functions: BackendInterfaceFunctions;
     let mut func: partialElabCallInteractive;
     functions = crate::Globals::backendCevalInterface.with(|__root| __root.borrow().clone());
     func = functions.elabCallInteractive.clone();

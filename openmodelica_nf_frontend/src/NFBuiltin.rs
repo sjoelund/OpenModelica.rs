@@ -191,7 +191,7 @@ pub fn SUBST_CREF() -> Arc<ComponentRef::NFComponentRef> { __SUBST_CREF_TLS.with
 
 pub fn makeBuiltinLookupTree(mut name: ArcStr, mut components: Arc<metamodelica::List<ArcStr>>, mut classes: Arc<metamodelica::List<ArcStr>>) -> Result<()> {
     let mut ltree: Arc<LookupTree::Tree> = LookupTree::new();
-    let mut i: i32 = 0;
+    let mut i: i32;
     i = 1;
     for mut comp in &*components.clone() {
         let mut comp = comp.clone();

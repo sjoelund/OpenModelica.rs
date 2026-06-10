@@ -236,7 +236,7 @@ pub fn toString(mut bdae: Arc<NBackendDAE>, mut r#str: ArcStr) -> Result<ArcStr>
 }
 
 pub fn getVarData(mut bdae: Arc<NBackendDAE>) -> Result<Arc<VarData::VarData>> {
-    let mut varData: Arc<VarData::VarData> = Arc::new(VarData::VAR_DATA_EMPTY);
+    let mut varData: Arc<VarData::VarData>;
     varData = (::match_deref::match_deref! { match &(bdae.clone()) {
         Deref @ MAIN { .. } => var_field!((*bdae).varData, NBackendDAE::MAIN).clone(),
         Deref @ JACOBIAN { .. } => var_field!((*bdae).varData, NBackendDAE::JACOBIAN).clone(),
@@ -291,7 +291,7 @@ pub fn getIsAdjoint(mut bdae: Arc<NBackendDAE>) -> Result<bool> {
 }
 
 pub fn getFunctionMap(mut bdae: Arc<NBackendDAE>) -> Result<Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>> {
-    let mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>> = <Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>> as ::std::default::Default>::default();
+    let mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>;
     funcMap = (::match_deref::match_deref! { match &(bdae.clone()) {
         Deref @ MAIN { .. } => var_field!((*bdae).funcMap, NBackendDAE::MAIN).clone(),
         _ => {
@@ -304,8 +304,8 @@ pub fn getFunctionMap(mut bdae: Arc<NBackendDAE>) -> Result<Arc<UnorderedMap::Un
 }
 
 pub fn sizes(mut bdae: Arc<NBackendDAE>) -> Result<((i32, i32), (i32, i32))> {
-    let mut varSizes: (i32, i32) = (0, 0);
-    let mut eqnSizes: (i32, i32) = (0, 0);
+    let mut varSizes: (i32, i32);
+    let mut eqnSizes: (i32, i32);
     (varSizes, eqnSizes) = (::match_deref::match_deref! { match &(bdae.clone()) {
         Deref @ MAIN { .. } => ((BVariable::VarData::scalarSize(var_field!((*bdae).varData, NBackendDAE::MAIN).clone(), true)?, BVariable::VarData::size(var_field!((*bdae).varData, NBackendDAE::MAIN).clone())?), (BEquation::EqData::scalarSize(var_field!((*bdae).eqData, NBackendDAE::MAIN).clone(), true)?, BEquation::EqData::size(var_field!((*bdae).eqData, NBackendDAE::MAIN).clone())?)),
         _ => ((0, 0), (0, 0)),
@@ -315,9 +315,9 @@ pub fn sizes(mut bdae: Arc<NBackendDAE>) -> Result<((i32, i32), (i32, i32))> {
 }
 
 pub fn lower(mut flatModel: Arc<FlatModel::NFFlatModel>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>) -> Result<Arc<NBackendDAE>> {
-    let mut bdae: Arc<NBackendDAE> = Arc::new(<NBackendDAE as ::std::default::Default>::default());
-    let mut variableData: Arc<VarData::VarData> = Arc::new(VarData::VAR_DATA_EMPTY);
-    let mut equationData: Arc<EqData::EqData> = Arc::new(EqData::EQ_DATA_EMPTY);
+    let mut bdae: Arc<NBackendDAE>;
+    let mut variableData: Arc<VarData::VarData>;
+    let mut equationData: Arc<EqData::EqData>;
     let mut eventInfo: Arc<Events::EventInfo::EventInfo> = Events::EventInfo::empty();
     let mut clockedInfo: Arc<Partitioning::ClockedInfo::ClockedInfo> = Partitioning::ClockedInfo::new();
     variableData = lowerVariableData(flatModel.variables.clone())?;
@@ -328,16 +328,16 @@ pub fn lower(mut flatModel: Arc<FlatModel::NFFlatModel>, mut funcMap: Arc<Unorde
 
 pub fn main(mut bdae: Arc<NBackendDAE>) -> Result<Arc<NBackendDAE>> {
     let mut bdae: Arc<NBackendDAE> = bdae;
-    let mut preOptModules: Arc<metamodelica::List<(Module::wrapper, ArcStr)>> = metamodelica::nil();
-    let mut mainModules: Arc<metamodelica::List<(Module::wrapper, ArcStr)>> = metamodelica::nil();
-    let mut postOptModules: Arc<metamodelica::List<(Module::wrapper, ArcStr)>> = metamodelica::nil();
-    let mut preOptClocks: Arc<metamodelica::List<(ArcStr, metamodelica::Real)>> = metamodelica::nil();
-    let mut mainClocks: Arc<metamodelica::List<(ArcStr, metamodelica::Real)>> = metamodelica::nil();
-    let mut postOptClocks: Arc<metamodelica::List<(ArcStr, metamodelica::Real)>> = metamodelica::nil();
+    let mut preOptModules: Arc<metamodelica::List<(Module::wrapper, ArcStr)>>;
+    let mut mainModules: Arc<metamodelica::List<(Module::wrapper, ArcStr)>>;
+    let mut postOptModules: Arc<metamodelica::List<(Module::wrapper, ArcStr)>>;
+    let mut preOptClocks: Arc<metamodelica::List<(ArcStr, metamodelica::Real)>>;
+    let mut mainClocks: Arc<metamodelica::List<(ArcStr, metamodelica::Real)>>;
+    let mut postOptClocks: Arc<metamodelica::List<(ArcStr, metamodelica::Real)>>;
     let mut followEquations: Arc<metamodelica::List<ArcStr>> = Flags::getConfigStringList(Flags::DEBUG_FOLLOW_EQUATIONS.clone())?;
-    let mut eq_filter_opt: Option<Arc<UnorderedSet::UnorderedSet<ArcStr>>> = None;
+    let mut eq_filter_opt: Option<Arc<UnorderedSet::UnorderedSet<ArcStr>>>;
     let mut inline_types: Arc<metamodelica::List<DAE::InlineType>> = list![openmodelica_frontend_types::DAE::InlineType::NORM_INLINE, openmodelica_frontend_types::DAE::InlineType::BUILTIN_EARLY_INLINE, openmodelica_frontend_types::DAE::InlineType::EARLY_INLINE, openmodelica_frontend_types::DAE::InlineType::DEFAULT_INLINE];
-    let mut kind: NBPartition::Kind = NBPartition::Kind::ODE;
+    let mut kind: NBPartition::Kind;
     if followEquations.clone().is_empty() {
         eq_filter_opt = None;
     } else {
@@ -400,11 +400,11 @@ pub fn applyModules(mut bdae: Arc<NBackendDAE>, mut modules: Arc<metamodelica::L
     let mut bdae: Arc<NBackendDAE> = bdae;
     let mut module_clocks: Arc<metamodelica::List<(ArcStr, metamodelica::Real)>> = metamodelica::nil();
     let mut func: Module::wrapper;
-    let mut name: ArcStr = arcstr::literal!("");
+    let mut name: ArcStr;
     let mut debugStr: ArcStr = arcstr::literal!("");
-    let mut clock_time: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut varSizes: (i32, i32) = (0, 0);
-    let mut eqnSizes: (i32, i32) = (0, 0);
+    let mut clock_time: metamodelica::Real;
+    let mut varSizes: (i32, i32);
+    let mut eqnSizes: (i32, i32);
     for mut module in &*modules.clone() {
         let mut module = module.clone();
         (func, name) = module.clone();
@@ -575,9 +575,9 @@ pub fn getLoopResiduals(mut bdae: Arc<NBackendDAE>) -> Result<Arc<VariablePointe
 }
 
 fn lowerVariableData(mut varList: Arc<metamodelica::List<Arc<Variable::NFVariable>>>) -> Result<Arc<VarData::VarData>> {
-    let mut variableData: Arc<VarData::VarData> = Arc::new(VarData::VAR_DATA_EMPTY);
-    let mut lowVar: Arc<Variable::NFVariable> = Arc::new(<Variable::NFVariable as ::std::default::Default>::default());
-    let mut vars: Arc<metamodelica::List<Arc<Variable::NFVariable>>> = metamodelica::nil();
+    let mut variableData: Arc<VarData::VarData>;
+    let mut lowVar: Arc<Variable::NFVariable>;
+    let mut vars: Arc<metamodelica::List<Arc<Variable::NFVariable>>>;
     let mut lowVar_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>;
     let mut time_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>;
     let mut dummy_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>;
@@ -602,30 +602,30 @@ fn lowerVariableData(mut varList: Arc<metamodelica::List<Arc<Variable::NFVariabl
     let mut records_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
     let mut external_objects_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
     let mut artificials_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
-    let mut variables: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
-    let mut unknowns: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
-    let mut knowns: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
-    let mut initials: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
-    let mut auxiliaries: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
-    let mut aliasVars: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
-    let mut nonTrivialAlias: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
-    let mut states: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
-    let mut derivatives: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
-    let mut algebraics: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
-    let mut discretes: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
-    let mut discrete_states: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
-    let mut clocked_states: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
-    let mut previous: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
-    let mut clocks: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
-    let mut inputs: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
-    let mut resizables: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
-    let mut parameters: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
-    let mut constants: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
-    let mut records: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
-    let mut external_objects: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
-    let mut artificials: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
+    let mut variables: Arc<VariablePointers::VariablePointers>;
+    let mut unknowns: Arc<VariablePointers::VariablePointers>;
+    let mut knowns: Arc<VariablePointers::VariablePointers>;
+    let mut initials: Arc<VariablePointers::VariablePointers>;
+    let mut auxiliaries: Arc<VariablePointers::VariablePointers>;
+    let mut aliasVars: Arc<VariablePointers::VariablePointers>;
+    let mut nonTrivialAlias: Arc<VariablePointers::VariablePointers>;
+    let mut states: Arc<VariablePointers::VariablePointers>;
+    let mut derivatives: Arc<VariablePointers::VariablePointers>;
+    let mut algebraics: Arc<VariablePointers::VariablePointers>;
+    let mut discretes: Arc<VariablePointers::VariablePointers>;
+    let mut discrete_states: Arc<VariablePointers::VariablePointers>;
+    let mut clocked_states: Arc<VariablePointers::VariablePointers>;
+    let mut previous: Arc<VariablePointers::VariablePointers>;
+    let mut clocks: Arc<VariablePointers::VariablePointers>;
+    let mut inputs: Arc<VariablePointers::VariablePointers>;
+    let mut resizables: Arc<VariablePointers::VariablePointers>;
+    let mut parameters: Arc<VariablePointers::VariablePointers>;
+    let mut constants: Arc<VariablePointers::VariablePointers>;
+    let mut records: Arc<VariablePointers::VariablePointers>;
+    let mut external_objects: Arc<VariablePointers::VariablePointers>;
+    let mut artificials: Arc<VariablePointers::VariablePointers>;
     let mut binding_iter_set: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>> = UnorderedSet::new((std::sync::Arc::new(BVariable::hash) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<i32> + 'static>), (std::sync::Arc::new(BVariable::equalName) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), 13);
-    let mut binding_iter_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
+    let mut binding_iter_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>;
     let mut scalarized: bool = Flags::isSet(Flags::NF_SCALARIZE.clone())?;
     let mut forced_states: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
     vars = List::flatten(({
@@ -781,8 +781,8 @@ fn lowerVariableData(mut varList: Arc<metamodelica::List<Arc<Variable::NFVariabl
 fn lowerVariable(mut var: Arc<Variable::NFVariable>) -> Result<Pointer::Pointer<Arc<Variable::NFVariable>>> {
     let mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>;
     let mut varKind: Arc<VariableKind::VariableKind> = Arc::new(VariableKind::ALGEBRAIC);
-    let mut attributes: Arc<VariableAttributes::VariableAttributes> = Arc::new(<VariableAttributes::VariableAttributes as ::std::default::Default>::default());
-    let mut annotations: Arc<Annotations::Annotations> = Arc::new(<Annotations::Annotations as ::std::default::Default>::default());
+    let mut attributes: Arc<VariableAttributes::VariableAttributes>;
+    let mut annotations: Arc<Annotations::Annotations>;
     match '__try0: {
         attributes = unwrap_break_err!(VariableAttributes::create(var.typeAttributes.clone(), var.ty.clone(), var.attributes.clone(), var.children.clone(), var.comment.clone()), '__try0);
         annotations = Annotations::create(var.comment.clone(), var.attributes.clone());
@@ -818,8 +818,8 @@ fn lowerVariableKind(mut var: Arc<Variable::NFVariable>, mut attributes: Arc<Var
     fn lowerRecordKind(mut children: Arc<metamodelica::List<Arc<Variable::NFVariable>>>) -> (Prefixes::Variability, Prefixes::Variability) {
         let mut min_var: Prefixes::Variability = Prefixes::Variability::CONTINUOUS.clone();
         let mut max_var: Prefixes::Variability = Prefixes::Variability::CONSTANT.clone();
-        let mut tmp_min_var: Prefixes::Variability = Prefixes::Variability::CONSTANT;
-        let mut tmp_max_var: Prefixes::Variability = Prefixes::Variability::CONSTANT;
+        let mut tmp_min_var: Prefixes::Variability;
+        let mut tmp_max_var: Prefixes::Variability;
         for mut child in &*children.clone() {
             let mut child = child.clone();
             (tmp_min_var, tmp_max_var) = (::match_deref::match_deref! { match &(child.ty.clone()) {
@@ -834,7 +834,7 @@ fn lowerVariableKind(mut var: Arc<Variable::NFVariable>, mut attributes: Arc<Var
         (min_var, max_var)
     }
 
-    let mut varKind: Arc<VariableKind::VariableKind> = Arc::new(VariableKind::ALGEBRAIC);
+    let mut varKind: Arc<VariableKind::VariableKind>;
     let mut attributes: Arc<VariableAttributes::VariableAttributes> = attributes;
     let mut min_var: Prefixes::Variability = Prefixes::Variability::CONSTANT;
     let mut max_var: Prefixes::Variability = Prefixes::Variability::CONSTANT;
@@ -912,7 +912,7 @@ fn lowerVariableKind(mut var: Arc<Variable::NFVariable>, mut attributes: Arc<Var
 
 fn collectVariableBindingIterators(mut var: Arc<Variable::NFVariable>, mut variables: Arc<VariablePointers::VariablePointers>, mut set: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>>) -> Result<Arc<Variable::NFVariable>> {
     let mut var: Arc<Variable::NFVariable> = var;
-    let mut exp_opt: Option<Arc<Expression::NFExpression>> = None;
+    let mut exp_opt: Option<Arc<Expression::NFExpression>>;
     BackendInfo::map(var.backendinfo.clone(), (std::sync::Arc::new({ let __pe_b1 = variables.clone(); let __pe_b2 = set.clone(); move |__pe_a0| collectIterators(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
     exp_opt = Binding::typedExp(var.binding.clone());
     if isSome(exp_opt.clone()) {
@@ -957,18 +957,18 @@ pub fn lowerRecordChildren(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariabl
 }
 
 fn lowerEquationData(mut eq_lst: Arc<metamodelica::List<Arc<FEquation::NFEquation>>>, mut al_lst: Arc<metamodelica::List<Arc<Algorithm::NFAlgorithm>>>, mut init_eq_lst: Arc<metamodelica::List<Arc<FEquation::NFEquation>>>, mut init_al_lst: Arc<metamodelica::List<Arc<Algorithm::NFAlgorithm>>>, mut varData: Arc<VarData::VarData>) -> Result<(Arc<EqData::EqData>, Arc<VarData::VarData>)> {
-    let mut eqData: Arc<EqData::EqData> = Arc::new(EqData::EQ_DATA_EMPTY);
+    let mut eqData: Arc<EqData::EqData>;
     let mut varData: Arc<VarData::VarData> = varData;
     let mut set: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>> = UnorderedSet::new((std::sync::Arc::new(BVariable::hash) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<i32> + 'static>), (std::sync::Arc::new(BVariable::equalName) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), 13);
-    let mut equation_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
-    let mut continuous_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
-    let mut clocked_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
-    let mut discretes_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
-    let mut initials_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
-    let mut auxiliaries_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
-    let mut simulation_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
-    let mut removed_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
-    let mut equations: Arc<EquationPointers::EquationPointers> = Arc::new(<EquationPointers::EquationPointers as ::std::default::Default>::default());
+    let mut equation_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>;
+    let mut continuous_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>;
+    let mut clocked_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>;
+    let mut discretes_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>;
+    let mut initials_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>;
+    let mut auxiliaries_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>;
+    let mut simulation_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>;
+    let mut removed_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>;
+    let mut equations: Arc<EquationPointers::EquationPointers>;
     let mut idx: Pointer::Pointer<i32> = Pointer::create(0);
     equation_lst = lowerEquationsAndAlgorithms(eq_lst.clone(), al_lst.clone(), init_eq_lst.clone(), init_al_lst.clone())?;
     for mut eqn_ptr in &*equation_lst.clone() {
@@ -1171,7 +1171,7 @@ fn lowerIfEquation(mut frontend_equation: Arc<FEquation::NFEquation>, mut init: 
 }
 
 fn lowerIfEquationBody(mut branches: Arc<metamodelica::List<Arc<FEquation::Branch::Branch>>>, mut init: bool, mut allow_imbalance: bool) -> Result<Arc<IfEquationBody::IfEquationBody>> {
-    let mut ifEq: Arc<IfEquationBody::IfEquationBody> = Arc::new(<IfEquationBody::IfEquationBody as ::std::default::Default>::default());
+    let mut ifEq: Arc<IfEquationBody::IfEquationBody>;
     ifEq = (::match_deref::match_deref! { match &(branches.clone()) {
         Deref @ metamodelica::List::Cons { head: branch, tail: rest } => {
             let mut eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
@@ -1202,7 +1202,7 @@ fn lowerIfEquationBody(mut branches: Arc<metamodelica::List<Arc<FEquation::Branc
 
 fn lowerIfBranch(mut branch: Arc<FEquation::Branch::Branch>, mut init: bool) -> Result<(Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>, Arc<Expression::NFExpression>)> {
     let mut eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
-    let mut cond: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut cond: Arc<Expression::NFExpression>;
     (eqns, cond) = (::match_deref::match_deref! { match &(branch.clone()) {
         Deref @ FEquation::Branch::BRANCH { .. } => {
             if Expression::isFalse(var_field!((*branch).condition, FEquation::Branch::Branch::BRANCH).clone()) {
@@ -1240,7 +1240,7 @@ fn lowerIfBranchBody(mut body: Arc<metamodelica::List<Arc<FEquation::NFEquation>
 }
 
 fn lowerAssert(mut frontend_eq: Arc<FEquation::NFEquation>, mut init: bool) -> Result<Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>> {
-    let mut backend_equations: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
+    let mut backend_equations: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>;
     backend_equations = (::match_deref::match_deref! { match &(frontend_eq.clone()) {
         Deref @ FEquation::ASSERT { .. } => {
             let mut alg: Arc<Algorithm::NFAlgorithm> = Arc::new(<Algorithm::NFAlgorithm as ::std::default::Default>::default());
@@ -1260,7 +1260,7 @@ fn lowerAssert(mut frontend_eq: Arc<FEquation::NFEquation>, mut init: bool) -> R
 }
 
 fn lowerWhenEquation(mut frontend_eq: Arc<FEquation::NFEquation>, mut init: bool) -> Result<Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>> {
-    let mut backend_equations: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
+    let mut backend_equations: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>;
     backend_equations = (::match_deref::match_deref! { match &(frontend_eq.clone()) {
         Deref @ FEquation::WHEN { .. } => {
             let mut whenEqBody: Arc<BEquation::WhenEquationBody::WhenEquationBody> = Arc::new(<BEquation::WhenEquationBody::WhenEquationBody as ::std::default::Default>::default());
@@ -1290,7 +1290,7 @@ fn lowerWhenEquation(mut frontend_eq: Arc<FEquation::NFEquation>, mut init: bool
 }
 
 fn lowerWhenEquationBody(mut branches: Arc<metamodelica::List<Arc<FEquation::Branch::Branch>>>) -> Result<Option<Arc<BEquation::WhenEquationBody::WhenEquationBody>>> {
-    let mut whenEq: Option<Arc<BEquation::WhenEquationBody::WhenEquationBody>> = None;
+    let mut whenEq: Option<Arc<BEquation::WhenEquationBody::WhenEquationBody>>;
     whenEq = (::match_deref::match_deref! { match &(branches.clone()) {
         Deref @ metamodelica::List::Nil => {
             None
@@ -1311,8 +1311,8 @@ fn lowerWhenEquationBody(mut branches: Arc<metamodelica::List<Arc<FEquation::Bra
 }
 
 fn lowerWhenBranch(mut branch: Arc<FEquation::Branch::Branch>) -> Result<(Arc<metamodelica::List<Arc<BEquation::WhenStatement::WhenStatement>>>, Arc<Expression::NFExpression>)> {
-    let mut stmts: Arc<metamodelica::List<Arc<BEquation::WhenStatement::WhenStatement>>> = metamodelica::nil();
-    let mut cond: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+    let mut stmts: Arc<metamodelica::List<Arc<BEquation::WhenStatement::WhenStatement>>>;
+    let mut cond: Arc<Expression::NFExpression>;
     (stmts, cond) = (::match_deref::match_deref! { match &(branch.clone()) {
         Deref @ FEquation::Branch::BRANCH { condition, body, .. } => {
             (lowerWhenBranchBody(condition.clone(), body.clone(), metamodelica::nil())?, condition.clone())
@@ -1445,9 +1445,9 @@ fn lowerWhenBranchIf(mut branch: Arc<FEquation::Branch::Branch>, mut if_map: Arc
 
 pub fn lowerAlgorithm(mut alg: Arc<Algorithm::NFAlgorithm>, mut init: bool) -> Result<Pointer::Pointer<Arc<Equation::Equation>>> {
     let mut eq: Pointer::Pointer<Arc<Equation::Equation>>;
-    let mut size: i32 = 0;
-    let mut outputs: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-    let mut attr: Arc<EquationAttributes::EquationAttributes> = Arc::new(<EquationAttributes::EquationAttributes as ::std::default::Default>::default());
+    let mut size: i32;
+    let mut outputs: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
+    let mut attr: Arc<EquationAttributes::EquationAttributes>;
     size = ({
         let mut __acc: i32 = 0;
         for mut out in (alg.outputs.clone()).into_iter().cloned() {
@@ -1468,7 +1468,7 @@ pub fn lowerAlgorithm(mut alg: Arc<Algorithm::NFAlgorithm>, mut init: bool) -> R
 }
 
 pub fn lowerEquationAttributes(mut ty: Arc<Type::NFType>, mut init: bool) -> Result<Arc<EquationAttributes::EquationAttributes>> {
-    let mut attr: Arc<EquationAttributes::EquationAttributes> = Arc::new(<EquationAttributes::EquationAttributes as ::std::default::Default>::default());
+    let mut attr: Arc<EquationAttributes::EquationAttributes>;
     if Type::isClock(ty.clone())? {
         attr = BEquation::default(EquationKind::CLOCKED.clone(), init.clone(), Some(-1), None);
     } else if Type::isDiscrete(ty.clone())? {
@@ -1596,7 +1596,7 @@ fn collectIterators(mut exp: Arc<Expression::NFExpression>, mut variables: Arc<V
 }
 
 fn collectIterator(mut iterator: Arc<InstNode::InstNode>, mut variables: Arc<VariablePointers::VariablePointers>, mut set: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>>) -> Result<()> {
-    let mut cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
+    let mut cref: Arc<ComponentRef::NFComponentRef>;
     cref = ComponentRef::fromNode(iterator.clone(), InstNode::getType(iterator.clone())?, metamodelica::nil(), ComponentRef::Origin::ITERATOR.clone());
     cref = ComponentRef::stripSubscriptsAll(cref.clone());
     if !(BVariable::VariablePointers::containsCref(cref.clone(), variables.clone())?) {
@@ -1633,7 +1633,7 @@ pub fn lowerComponentReferenceInstNode(mut cref: Arc<ComponentRef::NFComponentRe
 pub fn lowerEquationIterators(mut eqn: Arc<Equation::Equation>, mut variables: Arc<VariablePointers::VariablePointers>, mut set: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>>) -> Result<Arc<Equation::Equation>> {
     let mut eqn: Arc<Equation::Equation> = eqn;
     let mut iter: Arc<Iterator::Iterator> = BEquation::Equation::getForIterator(eqn.clone());
-    let mut iterators: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
+    let mut iterators: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
     (iterators, _, _) = BEquation::Iterator::getFrames(iter.clone())?;
     for mut iter in &*iterators.clone() {
         let mut iter = iter.clone();
@@ -1742,10 +1742,10 @@ pub fn backenddaeinfo(mut bdae: Arc<NBackendDAE>) -> Result<()> {
 pub fn strongcomponentinfo(mut phase: ArcStr, mut systems: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Partition::Partition>>>>>) -> Result<()> {
     let mut c: CountCollector = CountCollector { single_scalar: 0, single_array: 0, single_record: 0, multi_algorithm: 0, multi_when: 0, multi_if: 0, multi_tpl: 0, resizable_for: 0, generic_for: 0, entwined_for: 0, loop_lin: 0, loop_nlin: 0 };
     let mut collector_ptr: Pointer::Pointer<CountCollector> = Pointer::create(c.clone());
-    let mut single_sc: ArcStr = arcstr::literal!("");
-    let mut multi_sc: ArcStr = arcstr::literal!("");
-    let mut for_sc: ArcStr = arcstr::literal!("");
-    let mut alg_sc: ArcStr = arcstr::literal!("");
+    let mut single_sc: ArcStr;
+    let mut multi_sc: ArcStr;
+    let mut for_sc: ArcStr;
+    let mut alg_sc: ArcStr;
     for mut lst in &*systems.clone() {
         let mut lst = lst.clone();
         for mut system in &*lst.clone() {

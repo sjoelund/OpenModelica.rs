@@ -559,7 +559,7 @@ pub fn readSimulationResultSize(mut filename: ArcStr) -> Result<i32> {
     }
 }
 
-pub fn close() -> () {
+pub fn close() {
     // C: SimulationResultsImpl__close(&simresglob) — drop the process-global
     // cached result-file handle so the next read (possibly of a re-run
     // simulation's fresh file) reopens it, and so the OS file handle is
@@ -854,7 +854,7 @@ fn cmp_data(
             // search event in reference forwards
             let mut refevent = false;
             let mut t_event = t + t * reltol * 0.1;
-            if i + 1 <= data_n {
+            if i < data_n {
                 t_event = if t_event > time[i] { time[i] } else { t_event };
             } else {
                 t_event = if t_event > time[i + 1] { time[i + 1] } else { t_event };
