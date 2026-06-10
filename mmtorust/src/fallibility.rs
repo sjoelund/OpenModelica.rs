@@ -271,6 +271,11 @@ pub struct FallibilityInfo {
     pub total_functions: usize,
     /// Number of distinct `external "C"` declarations encountered.
     pub external_functions: usize,
+    /// One human-readable diagnostic per `matchcontinue` whose every arm is
+    /// provably infallible — it can (and for clarity/efficiency should) be
+    /// rewritten as a plain `match` in the MetaModelica source. Ordered by
+    /// enclosing function FQN then source position. Printed by the caller.
+    pub matchcontinue_as_match: Vec<String>,
 }
 
 // ── Walk state ───────────────────────────────────────────────────────────────
@@ -321,6 +326,30 @@ struct Walk {
     /// the check is recorded here and evaluated in [`analyze`] (see
     /// [`mc_check_is_safe`]).
     mc_checks: Vec<McCheck>,
+    /// Deferred "this `matchcontinue` could be a plain `match`" diagnostics,
+    /// one per `matchcontinue` expression in the body. A `matchcontinue` and a
+    /// `match` over the same arms differ *only* when an arm's pattern+guard
+    /// succeed but the arm's guard/body/result then fails: `matchcontinue`
+    /// falls through to the next arm, whereas `match` propagates the failure.
+    /// So when *every* arm is infallible that distinction never materialises
+    /// and the construct is exactly a `match` — which is cheaper and clearer.
+    /// Whether each arm is infallible depends on the call-graph fixed point, so
+    /// (like [`McCheck`]) the verdict is recorded here and evaluated in
+    /// [`analyze`].
+    mc_lints: Vec<McLint>,
+}
+
+/// Deferred "rewrite `matchcontinue` as `match`" diagnostic for one
+/// `matchcontinue` expression: it is reportable iff *every* arm is infallible
+/// (see [`Walk::mc_lints`]). Unlike [`McCheck`], this records a sub-[`Walk`]
+/// for *all* arms — guarded and [`CoverKey::Other`]-patterned ones included —
+/// because the equivalence with `match` hinges on no arm being able to fail,
+/// regardless of whether the arm can contribute pattern coverage. `info` is the
+/// source location of the first arm, used to point the developer at the source.
+#[derive(Debug)]
+struct McLint {
+    info: Absyn::Info,
+    arms: Vec<Walk>,
 }
 
 /// Safety obligation for one `matchcontinue` expression: it cannot fail iff
@@ -609,6 +638,35 @@ impl Walk {
                         }
                     }
                     self.mc_checks.push(McCheck { candidates });
+
+                    // Build a parallel per-arm walk over *every* arm (guarded and
+                    // `Other`-patterned ones too) for the rewrite-as-`match` lint.
+                    // The guard is scanned here — unlike the coverage candidates,
+                    // which omit guarded arms entirely — so a fallible guard keeps
+                    // the arm fallible and suppresses the (then-unsound) suggestion.
+                    let mut lint_arms: Vec<Walk> = Vec::new();
+                    let mut lint_info: Option<Absyn::Info> = None;
+                    for case in &**cases {
+                        let (case_decls, guard, pattern, class_part, result, info) = match &**case {
+                            Absyn::Case::CASE { pattern, patternGuard, localDecls: case_decls, classPart, result, info, .. } =>
+                                (case_decls, patternGuard.as_deref(), Some(&**pattern), classPart, result, info),
+                            Absyn::Case::ELSE { localDecls: case_decls, classPart, result, info, .. } =>
+                                (case_decls, None, None, classPart, result, info),
+                        };
+                        if lint_info.is_none() { lint_info = Some(info.clone()); }
+                        let mut scope = match_scope.clone();
+                        collect_local_decl_names(case_decls, &mut scope);
+                        let mut sub = Walk { outer_scope: scope, ..Walk::default() };
+                        if let Some(g) = guard { sub.scan_exp(g); }
+                        if let Some(p) = pattern { sub.scan_exp(p); }
+                        sub.scan_local_decl_defaults(case_decls);
+                        sub.scan_class_part(class_part);
+                        sub.scan_exp(result);
+                        lint_arms.push(sub);
+                    }
+                    if let Some(info) = lint_info {
+                        self.mc_lints.push(McLint { info, arms: lint_arms });
+                    }
                 }
             }
             DOT { exp, index } => { self.scan_exp(exp); self.scan_exp(index); }
@@ -1093,10 +1151,28 @@ pub fn analyze(hier: &InstanceHierarchy<'_>) -> FallibilityInfo {
         if !changed { break; }
     }
 
+    // With the fixed point reached, flag every `matchcontinue` whose arms are
+    // all infallible: the fall-through-on-failure that distinguishes it from a
+    // `match` can never fire, so it is exactly a `match` (see [`McLint`]).
+    // `resolved` is a BTreeMap and each function's lints are in source order, so
+    // the result is already deterministically ordered by FQN then position.
+    let mut matchcontinue_as_match: Vec<String> = Vec::new();
+    for (qname, rs) in &resolved {
+        for lint in &rs.mc_lints {
+            if lint.arms.iter().all(|arm| !sources_fallible(arm, &fallible)) {
+                matchcontinue_as_match.push(format!(
+                    "warning: matchcontinue in `{qname}` ({}:{}:{}) has only infallible arms — rewrite it as `match`",
+                    lint.info.fileName, lint.info.lineNumberStart, lint.info.columnNumberStart,
+                ));
+            }
+        }
+    }
+
     FallibilityInfo {
         fallible_functions: fallible,
         total_functions: functions.len(),
         external_functions: external_count,
+        matchcontinue_as_match,
     }
 }
 
@@ -1116,12 +1192,22 @@ struct ResolvedSources {
     edges: BTreeSet<String>,
     /// Per-`matchcontinue` safety obligations (see [`McCheck`]).
     mc: Vec<ResolvedMcCheck>,
+    /// Per-`matchcontinue` rewrite-as-`match` diagnostics (see [`McLint`]).
+    /// Purely advisory — never consulted by [`sources_fallible`].
+    mc_lints: Vec<ResolvedMcLint>,
 }
 
 /// [`McCheck`] after callee-name resolution.
 #[derive(Debug, Default)]
 struct ResolvedMcCheck {
     candidates: Vec<(CoverKey, ResolvedSources)>,
+}
+
+/// [`McLint`] after callee-name resolution.
+#[derive(Debug)]
+struct ResolvedMcLint {
+    info: Absyn::Info,
+    arms: Vec<ResolvedSources>,
 }
 
 /// Resolve a [`Walk`]'s raw callee names (recursively through its
@@ -1175,6 +1261,14 @@ fn resolve_walk(
         rs.mc.push(ResolvedMcCheck {
             candidates: mc.candidates.iter()
                 .map(|(key, sub)| (*key, resolve_walk(sub, caller_qname, top_level, walks)))
+                .collect(),
+        });
+    }
+    for lint in &w.mc_lints {
+        rs.mc_lints.push(ResolvedMcLint {
+            info: lint.info.clone(),
+            arms: lint.arms.iter()
+                .map(|sub| resolve_walk(sub, caller_qname, top_level, walks))
                 .collect(),
         });
     }

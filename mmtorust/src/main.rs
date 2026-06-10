@@ -65,6 +65,18 @@ fn start_compilation(results: Vec<Absyn::Program>) {
         external_c_calls::registered_count(),
         t0.elapsed().as_secs_f64(),
     );
+    // Surface `matchcontinue`s that are provably equivalent to a `match` so the
+    // MetaModelica source can be simplified. Advisory only — does not affect
+    // codegen. Printed to stderr like the parser warnings above.
+    for w in &info.matchcontinue_as_match {
+        eprintln!("{w}");
+    }
+    if !info.matchcontinue_as_match.is_empty() {
+        println!(
+            "Fallibility analysis: {} matchcontinue expression(s) could be rewritten as `match`",
+            info.matchcontinue_as_match.len(),
+        );
+    }
 
     // PartialEq requirement analysis: for each user-defined function,
     // figure out which of its type parameters need a `+ PartialEq` bound
