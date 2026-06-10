@@ -27,8 +27,7 @@ use std::sync::Arc;
 use arcstr::ArcStr;
 use metamodelica::List;
 use openmodelica_util::Error;
-use openmodelica_util::ErrorTypes;
-use openmodelica_util::Gettext;
+use openmodelica_error::ErrorTypes;
 
 /// `c_add_message(NULL, -1, ErrorType_runtime, ErrorLevel_error, ...)`
 /// equivalent: an ad-hoc runtime error with no source location. Failures
@@ -44,7 +43,7 @@ fn add_error(template: &str, tokens: &[&str]) {
             id: -1,
             ty: ErrorTypes::MessageType::SIMULATION,
             severity: ErrorTypes::Severity::ERROR,
-            message: Gettext::TranslatableContent::notrans { r#str: ArcStr::from(template) },
+            message: ArcStr::from(template),
         },
         toks,
     );

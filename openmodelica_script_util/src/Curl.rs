@@ -38,8 +38,7 @@ use arcstr::ArcStr;
 use curl::easy::Easy;
 use metamodelica::List;
 use openmodelica_util::Error;
-use openmodelica_util::ErrorTypes;
-use openmodelica_util::Gettext;
+use openmodelica_error::ErrorTypes;
 
 /// One pending download: the remaining mirror URLs and the target file.
 struct WorkItem {
@@ -77,7 +76,7 @@ fn add_error(template: &str, tokens: Vec<ArcStr>) -> Result<()> {
             id: -1,
             ty: ErrorTypes::MessageType::SIMULATION,
             severity: ErrorTypes::Severity::ERROR,
-            message: Gettext::TranslatableContent::notrans { r#str: ArcStr::from(template) },
+            message: ArcStr::from(template),
         },
         toks,
     )

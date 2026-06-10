@@ -46,6 +46,7 @@ use arcstr::{ArcStr, literal, format};
 use crate::CevalScript;
 use crate::CevalScriptBackend;
 use openmodelica_ast::Absyn;
+use openmodelica_error::ErrorExt;
 use openmodelica_frontend::Ceval;
 use openmodelica_frontend::InteractiveTypes;
 use openmodelica_frontend::Static;
@@ -58,7 +59,6 @@ use openmodelica_frontend_types::ClassInf;
 use openmodelica_frontend_types::DAE;
 use openmodelica_frontend_types::Values;
 use openmodelica_util::Error;
-use openmodelica_util::ErrorExt;
 use openmodelica_util::Flags;
 
 pub type Ident = ArcStr;

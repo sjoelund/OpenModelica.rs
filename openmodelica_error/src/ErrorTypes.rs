@@ -43,8 +43,6 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::Gettext;
-
 /// severity of message
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Severity {
@@ -95,7 +93,7 @@ pub struct Message {
     pub id: ErrorID,
     pub ty: MessageType,
     pub severity: Severity,
-    pub message: Gettext::TranslatableContent,
+    pub message: ArcStr,
 }
 
 impl Default for Message {

@@ -68,7 +68,7 @@ use crate::NFSimplifyExp as SimplifyExp;
 use crate::NFStatement as Statement;
 use crate::NFType as Type;
 use crate::NFVariable as Variable;
-use openmodelica_util::ErrorExt;
+use openmodelica_error::ErrorExt;
 use openmodelica_util::ExecStat::execStat;
 use openmodelica_util::Flags;
 use openmodelica_util::Util;

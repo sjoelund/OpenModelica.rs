@@ -52,10 +52,10 @@ use crate::NFFlatModelicaUtil as FlatModelicaUtil;
 use crate::NFInstNode::InstNode;
 use crate::NFPrefixes::Variability;
 use crate::NFType as Type;
+use openmodelica_error::ErrorTypes;
 use openmodelica_frontend_dump::ElementSource;
 use openmodelica_frontend_types::DAE;
 use openmodelica_util::Error;
-use openmodelica_util::ErrorTypes;
 use openmodelica_util::IOStream;
 use openmodelica_util::Util;
 

@@ -67,10 +67,18 @@ fn select_grammar(acceptedGram: i32, languageStandardInt: i32) -> Grammar {
 /// Must run after every entry-point call, success or failure: a successful
 /// parse can still record warnings (e.g. the `der(cr) :=` compatibility
 /// warning).
+/// Mirror of `System.regularFileWritable`: true when `path` is an existing
+/// file that can be opened for writing. Classes parsed from a non-writable
+/// file are flagged read-only in their SOURCEINFO. Inlined here so the parser
+/// crate need not depend on the rest of the util crate.
+fn regular_file_writable(path: &str) -> bool {
+    std::fs::OpenOptions::new().write(true).open(path).is_ok()
+}
+
 fn report_syntax_messages(info_filename: &str) {
-    use openmodelica_util::ErrorTypes::{MessageType, Severity};
+    use openmodelica_error::ErrorTypes::{MessageType, Severity};
     for m in parser::take_syntax_messages() {
-        openmodelica_util::ErrorExt::addSourceMessage(
+        openmodelica_error::ErrorExt::addSourceMessage(
             // Error id used by the C parser for every syntax diagnostic
             // (the literal `2` in its c_add_source_message calls).
             2,
@@ -197,7 +205,7 @@ pub fn parse(
     // Like parseFile in Parser/parse.c: classes parsed from a file the user
     // cannot write to are flagged read-only in their SOURCEINFO, so the
     // interactive API refuses to modify them.
-    let readonly = !openmodelica_util::System::regularFileWritable(filename.clone());
+    let readonly = !regular_file_writable(filename.as_str());
     parser::set_non_utf8_source_bytes(orig_bytes);
     let result = run_parse(&src, filename.as_str(), infoFilename.as_str(), grammar, readonly, file_timestamp(filename.as_str()));
     parser::set_non_utf8_source_bytes(None);
@@ -236,7 +244,7 @@ pub fn parseexp(
     let (src, orig_bytes) = read_source_file(filename.as_str())
         .with_context(|| format!("ParserExt::parseexp: cannot read {filename}"))?;
     let grammar = select_grammar(acceptedGram, languageStandardInt);
-    let readonly = !openmodelica_util::System::regularFileWritable(filename.clone());
+    let readonly = !regular_file_writable(filename.as_str());
     parser::set_non_utf8_source_bytes(orig_bytes);
     let result = parser::parse_statements(&src, filename.as_str(), infoFilename.as_str(), grammar, readonly, file_timestamp(filename.as_str())).map_err(|e| anyhow!(e.to_string()));
     report_syntax_messages(infoFilename.as_str());

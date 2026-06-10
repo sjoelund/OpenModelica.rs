@@ -51,6 +51,7 @@ use openmodelica_ast::Absyn;
 use openmodelica_ast::GlobalScript;
 use openmodelica_backend::SymbolTable;
 use openmodelica_dump_extra::DumpGraphviz;
+use openmodelica_error::ErrorExt;
 use openmodelica_frontend::AbsynJLDumpTpl;
 use openmodelica_frontend::FGraph;
 use openmodelica_frontend::InteractiveTypes;
@@ -67,7 +68,6 @@ use openmodelica_util::Config;
 use openmodelica_util::Corba;
 use openmodelica_util::Debug;
 use openmodelica_util::Error;
-use openmodelica_util::ErrorExt;
 use openmodelica_util::ExecStat::execStat;
 use openmodelica_util::ExecStat::execStatReset;
 use openmodelica_util::Flags;
@@ -481,7 +481,7 @@ fn translateFile(mut inStringLst: Arc<metamodelica::List<ArcStr>>) -> Result<()>
                     if System::regularFileExists((f.clone()).clone()) {
                         metamodelica::print((literal!("Error processing file: ")).clone());
                     } else {
-                        metamodelica::print((System::gettext((literal!("File does not exist: ")).clone())).clone());
+                        metamodelica::print((literal!("File does not exist: ")).clone());
                     }
                     metamodelica::print((f.clone()).clone());
                     metamodelica::print((literal!("\n")).clone());
@@ -672,7 +672,6 @@ pub fn init(mut args: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelic
     ErrorExt::initAssertionFunctions();
     System::realtimeTick(ClockIndexes::RT_CLOCK_SIMULATE_TOTAL.clone())?;
     args_1 = FlagsUtil::new(args.clone())?;
-    System::gettextInit((if (Testsuite::isRunning()?) {literal!("C")} else {Flags::getConfigString(Flags::LOCALE_FLAG.clone())?}).clone());
     setDefaultCC();
     SymbolTable::reset()?;
     BackendInterfaceImplementation::initializeBackendInterface();

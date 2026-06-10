@@ -293,7 +293,7 @@ pub fn createInitialDAEFromSystem(mut inInitsyst: Arc<BackendDAE::EqSystem>, mut
     assign_field!(initdae.shared = BackendDAEUtil::setSharedGlobalKnownVars(initdae.shared.clone(), BackendVariable::emptyVars(BaseHashTable::bigBucketSize.clone())));
     b1 = !(dumpVars.clone().is_empty());
     b2 = !(removedEqns.clone().is_empty());
-    msg = (System::gettext((literal!("For more information set -d=initialization. In OMEdit Tools->Options->Simulation->Show additional information from the initialization process, in OMNotebook call setCommandLineOptions(\"-d=initialization\")")).clone())).clone();
+    msg = (literal!("For more information set -d=initialization. In OMEdit Tools->Options->Simulation->Show additional information from the initialization process, in OMNotebook call setCommandLineOptions(\"-d=initialization\")")).clone();
     if Flags::isSet(Flags::INITIALIZATION.clone())? {
         if b1.clone() {
             Error::addCompilerWarning(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Assuming fixed start value for the following ")); __mm_s.push_str(&*intString((dumpVars.clone().len() as i32))); __mm_s.push_str(&*literal!(" variables:\n")); __mm_s.push_str(&*warnAboutVars2(dumpVars.clone())?); ArcStr::from(__mm_s) }).clone())?;

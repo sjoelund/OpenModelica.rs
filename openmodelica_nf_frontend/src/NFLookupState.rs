@@ -428,15 +428,15 @@ pub mod LookupState {
         let mut r#str: ArcStr;
         r#str = ((::match_deref::match_deref! { match &(state.clone()) {
         Deref @ BEGIN { .. } => literal!("<begin>"),
-        Deref @ COMP { .. } => System::gettext((literal!("component")).clone()),
-        Deref @ CLASS_COMP { .. } => System::gettext((literal!("component")).clone()),
-        Deref @ COMP_CLASS { .. } => System::gettext((literal!("class")).clone()),
-        Deref @ COMP_FUNC { .. } => System::gettext((literal!("function")).clone()),
-        Deref @ PACKAGE { .. } => System::gettext((literal!("package")).clone()),
-        Deref @ CLASS { .. } => System::gettext((literal!("class")).clone()),
-        Deref @ FUNC { .. } => System::gettext((literal!("function")).clone()),
-        Deref @ PREDEF_COMP { .. } => System::gettext((literal!("component")).clone()),
-        Deref @ PREDEF_CLASS { .. } => System::gettext((literal!("class")).clone()),
+        Deref @ COMP { .. } => literal!("component"),
+        Deref @ CLASS_COMP { .. } => literal!("component"),
+        Deref @ COMP_CLASS { .. } => literal!("class"),
+        Deref @ COMP_FUNC { .. } => literal!("function"),
+        Deref @ PACKAGE { .. } => literal!("package"),
+        Deref @ CLASS { .. } => literal!("class"),
+        Deref @ FUNC { .. } => literal!("function"),
+        Deref @ PREDEF_COMP { .. } => literal!("component"),
+        Deref @ PREDEF_CLASS { .. } => literal!("class"),
         _ => bail!("match: no arm matched"),
     } })).clone();
         Ok(r#str)

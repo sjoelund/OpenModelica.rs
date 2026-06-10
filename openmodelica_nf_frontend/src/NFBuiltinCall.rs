@@ -76,7 +76,6 @@ use openmodelica_frontend_dump::AbsynUtil;
 use openmodelica_util::Config;
 use openmodelica_util::Error;
 use openmodelica_util::Flags;
-use openmodelica_util::Gettext;
 use openmodelica_util::Global;
 use openmodelica_util::System;
 use openmodelica_util::Util;
@@ -2167,7 +2166,7 @@ fn typePureCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: SourceI
             Arc::new(Expression::NFExpression::CALL { call: c.clone() })
         },
         _ => {
-            Error::addSourceMessage(Error::FUNCTION_ARGUMENT_MUST_BE.clone(), list![(literal!("pure")).clone(), (Gettext::translateContent(Error::FUNCTION_CALL_EXPRESSION.clone())?).clone()], info.clone())?;
+            Error::addSourceMessage(Error::FUNCTION_ARGUMENT_MUST_BE.clone(), list![(literal!("pure")).clone(), (arcstr::literal!(Error::FUNCTION_CALL_EXPRESSION)).clone()], info.clone())?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

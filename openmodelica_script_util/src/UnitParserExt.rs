@@ -32,7 +32,8 @@ use std::sync::Arc;
 use anyhow::{Result, bail};
 use arcstr::{ArcStr, literal};
 use metamodelica::{List, OrderedFloat, Real, cons, nil};
-use openmodelica_util::{Error, ErrorTypes, Gettext};
+use openmodelica_util::Error;
+use openmodelica_error::ErrorTypes;
 
 /// Signed integer matching the C++ `mmc_sint_t` used throughout the parser.
 type Sint = i64;
@@ -1034,7 +1035,7 @@ static ERROR_PARSING_UNIT: ErrorTypes::Message = ErrorTypes::Message {
     id: -1,
     ty: ErrorTypes::MessageType::SCRIPTING,
     severity: ErrorTypes::Severity::ERROR,
-    message: Gettext::TranslatableContent::gettext { msgid: literal!("Error parsing unit %s: %s") },
+    message: literal!("Error parsing unit %s: %s"),
 };
 
 pub fn initSIUnits() {

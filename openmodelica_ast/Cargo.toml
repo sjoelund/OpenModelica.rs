@@ -15,7 +15,7 @@ rayon.workspace = true
 list_comprehension_macro.workspace = true
 # ParserExt forwards parser diagnostics to the Error subsystem
 # (ErrorExt::addSourceMessage), like the C parser links against errorext.
-openmodelica_util.workspace = true
+openmodelica_error.workspace = true
 
 [dev-dependencies]
 backtrace-on-stack-overflow = "0.3.0"

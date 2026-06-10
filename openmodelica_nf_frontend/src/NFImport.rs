@@ -50,9 +50,9 @@ use crate::NFInstContext;
 use crate::NFInstNode::InstNode;
 use crate::NFLookup as Lookup;
 use openmodelica_ast::Absyn;
+use openmodelica_error::ErrorTypes;
 use openmodelica_frontend_dump::AbsynUtil;
 use openmodelica_util::Error;
-use openmodelica_util::ErrorTypes;
 
 #[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum NFImport {

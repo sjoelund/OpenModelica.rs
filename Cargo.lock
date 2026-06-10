@@ -397,7 +397,7 @@ dependencies = [
  "loop_unwrap",
  "match_deref",
  "metamodelica",
- "openmodelica_util",
+ "openmodelica_error",
  "rayon",
  "winnow",
 ]
@@ -432,6 +432,7 @@ dependencies = [
  "openmodelica_backend_types",
  "openmodelica_backend_util",
  "openmodelica_dump_extra",
+ "openmodelica_error",
  "openmodelica_frontend",
  "openmodelica_frontend_base",
  "openmodelica_frontend_dump",
@@ -472,6 +473,7 @@ dependencies = [
  "openmodelica_codegen_fmu_omsi",
  "openmodelica_codegen_xml",
  "openmodelica_dump_extra",
+ "openmodelica_error",
  "openmodelica_frontend",
  "openmodelica_frontend_base",
  "openmodelica_frontend_dump",
@@ -844,6 +846,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "openmodelica_error"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "arcstr",
+ "const-str",
+ "loop_unwrap",
+ "metamodelica",
+]
+
+[[package]]
 name = "openmodelica_frontend"
 version = "0.1.0"
 dependencies = [
@@ -855,6 +868,7 @@ dependencies = [
  "metamodelica",
  "openmodelica_ast",
  "openmodelica_ast_collections",
+ "openmodelica_error",
  "openmodelica_frontend_base",
  "openmodelica_frontend_dump",
  "openmodelica_frontend_inst",
@@ -877,6 +891,7 @@ dependencies = [
  "metamodelica",
  "openmodelica_ast",
  "openmodelica_ast_collections",
+ "openmodelica_error",
  "openmodelica_frontend_dump",
  "openmodelica_frontend_inst",
  "openmodelica_frontend_types",
@@ -972,6 +987,7 @@ dependencies = [
  "match_deref",
  "metamodelica",
  "openmodelica_ast",
+ "openmodelica_error",
  "openmodelica_frontend_dump",
  "openmodelica_frontend_types",
  "openmodelica_util",
@@ -1007,6 +1023,7 @@ dependencies = [
  "match_deref",
  "metamodelica",
  "openmodelica_ast",
+ "openmodelica_error",
  "openmodelica_frontend_dump",
  "openmodelica_frontend_types",
  "openmodelica_util",
@@ -1082,6 +1099,7 @@ dependencies = [
  "loop_unwrap",
  "match_deref",
  "metamodelica",
+ "openmodelica_error",
  "openmodelica_util_datatypes_basic",
  "roxmltree",
  "zip",

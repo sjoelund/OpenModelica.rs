@@ -54,11 +54,11 @@ use crate::NFPrefixes;
 use crate::NFSubscript as Subscript;
 use crate::NFType as Type;
 use openmodelica_ast::Absyn;
+use openmodelica_error::ErrorTypes;
 use openmodelica_frontend_dump::AbsynUtil;
 use openmodelica_frontend_dump::Dump;
 use openmodelica_frontend_types::DAE;
 use openmodelica_util::Error;
-use openmodelica_util::ErrorTypes;
 use openmodelica_util_datatypes_basic::Mutable;
 
 #[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]

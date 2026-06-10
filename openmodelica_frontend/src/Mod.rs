@@ -787,13 +787,13 @@ fn printModScope(mut inModScope: ModScope) -> Result<ArcStr> {
     let mut outString: ArcStr;
     outString = ((match inModScope.clone() {
         ModScope::COMPONENT { name: mut name } => {
-            { let mut __mm_s = String::new(); __mm_s.push_str(&*System::gettext((literal!("component ")).clone())); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }
+            { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("component ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }
         },
         ModScope::EXTENDS { path: mut path } => {
-            { let mut __mm_s = String::new(); __mm_s.push_str(&*System::gettext((literal!("extends ")).clone())); __mm_s.push_str(&*AbsynUtil::pathString(path.clone(), (literal!(".")).clone(), true, false)?); ArcStr::from(__mm_s) }
+            { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("extends ")); __mm_s.push_str(&*AbsynUtil::pathString(path.clone(), (literal!(".")).clone(), true, false)?); ArcStr::from(__mm_s) }
         },
         ModScope::DERIVED { path: mut path } => {
-            { let mut __mm_s = String::new(); __mm_s.push_str(&*System::gettext((literal!("inherited class ")).clone())); __mm_s.push_str(&*AbsynUtil::pathString(path.clone(), (literal!(".")).clone(), true, false)?); ArcStr::from(__mm_s) }
+            { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("inherited class ")); __mm_s.push_str(&*AbsynUtil::pathString(path.clone(), (literal!(".")).clone(), true, false)?); ArcStr::from(__mm_s) }
         },
     })).clone();
     Ok(outString)

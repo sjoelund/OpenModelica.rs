@@ -85,7 +85,7 @@ unsafe extern "C" {
 /// the function library's `DT_NEEDED` on `libOpenModelicaRuntimeC`); the C shim
 /// saves the originals (for the throw) and repoints them at its reporting shims.
 fn install_modelica_error_interception(lib: usize) {
-    if !crate::ErrorExt::modelicaFormatErrorRegistered() {
+    if !openmodelica_error::ErrorExt::modelicaFormatErrorRegistered() {
         return;
     }
     let err_slot = dlsym_addr(lib, "OpenModelica_ModelicaError");
@@ -106,7 +106,7 @@ fn install_modelica_error_interception(lib: usize) {
 /// current value is the runtime's clean, non-printing throw); the shim repoints
 /// `omc_assert` and uses `omc_throw` to throw after reporting the message.
 fn install_omc_assert_interception(lib: usize) {
-    if !crate::ErrorExt::assertFunctionsRegistered() {
+    if !openmodelica_error::ErrorExt::assertFunctionsRegistered() {
         return;
     }
     let assert_slot = dlsym_addr(lib, "omc_assert");

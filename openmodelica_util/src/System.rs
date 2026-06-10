@@ -1504,11 +1504,11 @@ fn decode_uri_component(src: &str) -> String {
 /// equivalent for the URI errors below.
 fn add_scripting_error(template: &str, token: &str) {
     let _ = crate::Error::addMessage(
-        crate::ErrorTypes::Message {
+        openmodelica_error::ErrorTypes::Message {
             id: -1,
-            ty: crate::ErrorTypes::MessageType::SCRIPTING,
-            severity: crate::ErrorTypes::Severity::ERROR,
-            message: crate::Gettext::TranslatableContent::notrans { r#str: ArcStr::from(template) },
+            ty: openmodelica_error::ErrorTypes::MessageType::SCRIPTING,
+            severity: openmodelica_error::ErrorTypes::Severity::ERROR,
+            message: ArcStr::from(template),
         },
         metamodelica::cons(ArcStr::from(token), metamodelica::nil()),
     );
@@ -1747,13 +1747,11 @@ pub fn iconv(string: ArcStr, from: ArcStr, to: ArcStr) -> ArcStr {
 /// best-effort ASCII view, like C's `SystemImpl__iconv__ascii`) so the user
 /// gets a hint of the offending content without us echoing raw bytes.
 fn iconv_failed(string: &str, from: &str, to: &str, reason: &str) -> ArcStr {
-    let msg = crate::ErrorTypes::Message {
+    let msg = openmodelica_error::ErrorTypes::Message {
         id: -1,
-        ty: crate::ErrorTypes::MessageType::SCRIPTING,
-        severity: crate::ErrorTypes::Severity::ERROR,
-        message: crate::Gettext::TranslatableContent::gettext {
-            msgid: literal!("iconv(\"%s\",from=\"%s\",to=\"%s\") failed: %s"),
-        },
+        ty: openmodelica_error::ErrorTypes::MessageType::SCRIPTING,
+        severity: openmodelica_error::ErrorTypes::Severity::ERROR,
+        message: literal!("iconv(\"%s\",from=\"%s\",to=\"%s\") failed: %s"),
     };
     let tokens = metamodelica::list![
         iconv_ascii_fallback(string),
@@ -1941,15 +1939,6 @@ pub fn intRandom(n: i32) -> i32 {
     // inclusive in the .mo doc (`Integer in {0,...,n-1}` is what callers
     // expect — same semantics).
     intRand(n)
-}
-
-// ───────────────────────────────── gettext (no-op) ───────────────────────────
-
-pub fn gettextInit(_locale: ArcStr) {}
-
-pub fn gettext(msgid: ArcStr) -> ArcStr {
-    // No translation catalog wired up; pass the English msgid through.
-    msgid
 }
 
 pub fn anyStringCode<Any: Clone + 'static>(_any: Any) -> ArcStr {

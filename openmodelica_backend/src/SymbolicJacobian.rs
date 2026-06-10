@@ -2982,7 +2982,7 @@ fn checkNonLinDependecies(mut inComp: Arc<BackendDAE::StrongComponent>, mut inEq
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         if existNonLin.clone() {
-            msg = (System::gettext((literal!("For more information set -d=initialization. In OMEdit Tools->Options->Simulation->Show additional information from the initialization process, in OMNotebook call setCommandLineOptions(\"-d=initialization\")")).clone())).clone();
+            msg = (literal!("For more information set -d=initialization. In OMEdit Tools->Options->Simulation->Show additional information from the initialization process, in OMNotebook call setCommandLineOptions(\"-d=initialization\")")).clone();
             Error::addMessage(Error::INITIALIZATION_ITERATION_VARIABLES.clone(), list![(name.clone()).clone(), (msg.clone()).clone()])?;
         }
     }

@@ -58,6 +58,7 @@ use crate::Sorting;
 use openmodelica_ast::Absyn;
 use openmodelica_backend_types::BackendDAE;
 use openmodelica_backend_util::BackendDAEEXT;
+use openmodelica_error::ErrorExt;
 use openmodelica_frontend::Ceval;
 use openmodelica_frontend::HashTableCrIntToExp;
 use openmodelica_frontend_base::ComponentReference;
@@ -77,7 +78,6 @@ use openmodelica_frontend_types::SCode;
 use openmodelica_util::BaseHashTable;
 use openmodelica_util::Config;
 use openmodelica_util::Error;
-use openmodelica_util::ErrorExt;
 use openmodelica_util::ExpandableArray;
 use openmodelica_util::Flags;
 use openmodelica_util::System;
@@ -2106,7 +2106,7 @@ fn forceStateSelectNever(mut vec_old1: metamodelica::Array<i32>, mut vec_old2: m
                 }
             }
             if !(neverVars.clone().is_empty()) {
-                msg = (System::gettext(({ let mut __mm_s = String::new(); __mm_s.push_str(&*BackendDump::varListStringShort(neverVars.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("They could not be forced to be statically selected as dummys, this could lead to errors during simulation, please use -d=bltdump for more information.\n")); ArcStr::from(__mm_s) }).clone())).clone();
+                msg = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*BackendDump::varListStringShort(neverVars.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("They could not be forced to be statically selected as dummys, this could lead to errors during simulation, please use -d=bltdump for more information.\n")); ArcStr::from(__mm_s) }).clone();
                 Error::addMessage(Error::STATE_STATESELECT_NEVER_FORCED.clone(), list![(msg.clone()).clone()])?;
             }
         }

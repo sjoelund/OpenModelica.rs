@@ -41,8 +41,6 @@ use arcstr::ArcStr;
 use metamodelica::{List, SourceInfo, nil, cons};
 
 use crate::ErrorTypes::{Message, Severity, MessageType, TotalMessage};
-use crate::Gettext::TranslatableContent;
-use crate::Gettext::TranslatableContent as Trans;
 
 /// One slot in the per-thread error queue.
 ///
@@ -63,15 +61,14 @@ impl QueuedMessage {
     /// `veryshort_msg`), not the raw `%s`/`%1` template.
     fn as_total(&self) -> TotalMessage {
         let mut msg = self.msg.clone();
-        msg.message =
-            Trans::notrans { r#str: ArcStr::from(self.substituted_body()) };
+        msg.message = ArcStr::from(self.substituted_body());
         TotalMessage { msg, info: self.info.clone() }
     }
 
     /// Mirrors `ErrorMessage::getShortMessage()` (`veryshort_msg`): the
     /// token-substituted message body without any position prefix.
     fn substituted_body(&self) -> String {
-        substitute_tokens(&content_text(&self.msg.message), &self.tokens)
+        substitute_tokens(&self.msg.message, &self.tokens)
     }
 
     /// Mirrors `ErrorMessage::getMessage_()`: the token-substituted text
@@ -122,13 +119,6 @@ impl QueuedMessage {
             severity_label(&self.msg.severity),
             self.msg.id,
         )
-    }
-}
-
-fn content_text(c: &TranslatableContent) -> ArcStr {
-    match c {
-        Trans::gettext { msgid } => msgid.clone(),
-        Trans::notrans { r#str } => r#str.clone(),
     }
 }
 
@@ -294,10 +284,8 @@ pub fn addSourceMessage(
             id,
             ty: msg_type,
             severity: msg_severity.clone(),
-            // The C++ side stores the rendered message verbatim, so we
-            // wrap the raw string in `notrans` rather than re-running it
-            // through gettext at every read.
-            message: Trans::notrans { r#str: msg.clone() },
+            // The C++ side stores the rendered message verbatim.
+            message: msg.clone(),
         },
         tokens,
         info: SourceInfo {

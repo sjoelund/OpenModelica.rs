@@ -6,6 +6,7 @@ edition = "2024"
 [dependencies]
 anyhow.workspace=true
 metamodelica.workspace=true
+openmodelica_error.workspace=true
 const-str.workspace=true
 encoding_rs.workspace=true
 loop_unwrap.workspace=true

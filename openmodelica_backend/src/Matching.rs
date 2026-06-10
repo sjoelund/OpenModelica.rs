@@ -5237,7 +5237,7 @@ fn sanityCheckArtificialStates(mut syst: Arc<BackendDAE::EqSystem>, mut shared: 
         if Flags::isSet(Flags::BLT_DUMP.clone())? {
             metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("----------------------------- INFO -----------------------------\n")); __mm_s.push_str(&*literal!(" Artificial states are those which do not naturally appear\n")); __mm_s.push_str(&*literal!(" differentiated in the system of DAEs, but have been forced\n")); __mm_s.push_str(&*literal!(" to be states with 'StateSelect.always' or 'StateSelect.prefer'.\n")); __mm_s.push_str(&*literal!(" The ones mentioned above will be treated as if they had \n")); __mm_s.push_str(&*literal!("'StateSelect.default'.\n")); __mm_s.push_str(&*literal!("----------------------------------------------------------------\n\n")); ArcStr::from(__mm_s) }).clone());
         }
-        msg = (System::gettext(({ let mut __mm_s = String::new(); __mm_s.push_str(&*BackendDump::varListStringShort(undiffable_artificial.clone(), (literal!("They will be treated as if they had stateSelect=StateSelect.default")).clone())?); __mm_s.push_str(&*literal!("Please use -d=bltdump for more information.\n")); ArcStr::from(__mm_s) }).clone())).clone();
+        msg = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*BackendDump::varListStringShort(undiffable_artificial.clone(), (literal!("They will be treated as if they had stateSelect=StateSelect.default")).clone())?); __mm_s.push_str(&*literal!("Please use -d=bltdump for more information.\n")); ArcStr::from(__mm_s) }).clone();
         Error::addMessage(Error::STATE_STATESELECT_PREFER_REVERT.clone(), list![(msg.clone()).clone()])?;
     }
     Ok((syst, eqns, ass1, ass2))

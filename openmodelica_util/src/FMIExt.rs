@@ -47,9 +47,8 @@ use arcstr::ArcStr;
 use metamodelica::List;
 
 use crate::Error;
-use crate::ErrorTypes;
+use openmodelica_error::ErrorTypes;
 use crate::FMI;
-use crate::Gettext;
 use crate::System;
 
 // Error templates from FMIImpl.c (gettext'd there; untranslated here).
@@ -70,7 +69,7 @@ fn add_scripting_error(template: &str, tokens: &[&str]) {
             id: -1,
             ty: ErrorTypes::MessageType::SCRIPTING,
             severity: ErrorTypes::Severity::ERROR,
-            message: Gettext::TranslatableContent::notrans { r#str: ArcStr::from(template) },
+            message: ArcStr::from(template),
         },
         toks,
     );

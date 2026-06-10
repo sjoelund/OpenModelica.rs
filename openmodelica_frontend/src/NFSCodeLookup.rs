@@ -49,13 +49,13 @@ use crate::NFSCodeEnv;
 use crate::NFSCodeFlattenImports;
 use crate::NFSCodeFlattenRedeclare;
 use openmodelica_ast::Absyn;
+use openmodelica_error::ErrorTypes;
 use openmodelica_frontend_dump::AbsynUtil;
 use openmodelica_frontend_inst::NFInstPrefix;
 use openmodelica_frontend_types::SCode;
 use openmodelica_util::Config;
 use openmodelica_util::Debug;
 use openmodelica_util::Error;
-use openmodelica_util::ErrorTypes;
 use openmodelica_util::Flags;
 use openmodelica_util_datatypes_basic::List;
 
