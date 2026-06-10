@@ -19764,7 +19764,7 @@ fn ever_assigned_for_fn(node: &NameNode<'_>, stmts: &[typedexp::TypedStmt]) -> s
     ever_assigned
 }
 
-fn collect_all_function_nodes<'a>(
+pub(crate) fn collect_all_function_nodes<'a>(
     nodes: &'a BTreeMap<String, NameNode<'a>>,
     prefix: &str,
     out: &mut Vec<(String, &'a NameNode<'a>)>,
@@ -19785,7 +19785,7 @@ fn collect_all_function_nodes<'a>(
 /// analysis only cares about the *expressions* in the body, not the
 /// exact set of declared locals, so the simpler env-from-children build
 /// is sufficient.
-fn typedexp_function_body_for_analysis<'a>(
+pub(crate) fn typedexp_function_body_for_analysis<'a>(
     fn_qname: &str,
     node: &NameNode<'_>,
     top_level: &'a BTreeMap<String, NameNode<'a>>,

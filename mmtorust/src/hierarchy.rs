@@ -2252,7 +2252,7 @@ pub fn detect_recursive_types(hier: &mut InstanceHierarchy<'_>) {
 /// Collect, for every user-defined struct/enum/uniontype `qname`, the resolved
 /// `Ty`s of all of its component fields (variant fields in the enum/uniontype
 /// case). Used as the input to the `Mutable`-containment fixed point.
-fn collect_struct_field_tys(
+pub(crate) fn collect_struct_field_tys(
     nodes: &BTreeMap<String, NameNode<'_>>,
     prefix: &str,
     out: &mut BTreeMap<String, Vec<Ty>>,
