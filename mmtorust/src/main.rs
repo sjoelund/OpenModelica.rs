@@ -9,6 +9,7 @@ mod typedexp;
 mod codegen;
 mod external_c_calls;
 mod fallibility;
+mod validate;
 mod dep_analysis;
 mod unused_functions;
 mod const_patterns;
@@ -39,6 +40,22 @@ fn start_compilation(results: Vec<Absyn::Program>) {
     println!("Hierarchy extends+resolve types: {:.2}s", t0.elapsed().as_secs_f64());
     for w in &warnings {
         eprintln!("{w}");
+    }
+
+    // Reject `match`/`matchcontinue` cases whose body is an `equation` section:
+    // the MetaModelica sources are migrating every case to `algorithm`, so an
+    // `equation` case is a migration miss and must be fixed at the source, not
+    // silently translated.
+    let equation_cases = validate::match_cases_with_equation_sections(&hier);
+    if !equation_cases.is_empty() {
+        eprintln!(
+            "error: {} match/matchcontinue case(s) use an `equation` section; rewrite them as `algorithm`:",
+            equation_cases.len(),
+        );
+        for c in &equation_cases {
+            eprintln!("  {c}");
+        }
+        std::process::exit(1);
     }
     let t0 = std::time::Instant::now();
     hierarchy::detect_recursive_types(&mut hier);
