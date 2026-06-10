@@ -45,6 +45,7 @@ use arcstr::{ArcStr, literal, format};
 
 use crate::CevalScriptBackend;
 use crate::Interactive;
+use crate::NFApi;
 use openmodelica_ast::Absyn;
 use openmodelica_backend::BackendDAECreate;
 use openmodelica_backend::BackendDAEUtil;
@@ -84,6 +85,7 @@ use openmodelica_frontend::HashTableExpToIndex;
 use openmodelica_frontend::StateMachineFlatten;
 use openmodelica_frontend_base::DAEDump;
 use openmodelica_frontend_base::DAEUtil;
+use openmodelica_frontend_base::ValuesUtil;
 use openmodelica_frontend_dump::AbsynUtil;
 use openmodelica_frontend_dump::AvlTreePathFunction;
 use openmodelica_frontend_dump::FCore;
@@ -901,6 +903,9 @@ fn callTargetTemplatesFMU(mut simCode: SimCode::SimCode, mut target: ArcStr, mut
                 Tpl::tplNoret3((std::sync::Arc::new(CodegenFMUCppHpcom::translateModel) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, SimCode::SimCode, ArcStr, ArcStr) -> Result<Tpl::Text> + 'static>), simCode.clone(), (FMUVersion.clone()).clone(), (FMUType.clone()).clone())?;
             } else {
                 Tpl::tplNoret((std::sync::Arc::new({ let __pe_b2 = (FMUVersion.clone()).clone(); let __pe_b3 = (FMUType.clone()).clone(); let __pe_b4 = metamodelica::nil(); move |__pe_a0, __pe_a1| CodegenFMUCpp::translateModel(__pe_a0, __pe_a1, __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, SimCode::SimCode) -> Result<Tpl::Text> + 'static>), simCode.clone())?;
+                if Flags::getConfigString(Flags::FMI_EXTRA_ANNOTATIONS.clone())? != literal!("") {
+                    System::writeFile(({ let mut __mm_s = String::new(); __mm_s.push_str(&*simCode.fileNamePrefix.clone()); __mm_s.push_str(&*literal!("_modelInstance.json")); ArcStr::from(__mm_s) }).clone(), (ValuesUtil::extractValueString(NFApi::getModelInstance(simCode.modelInfo.name.clone(), simCode.modelInfo.name.clone(), (literal!("")).clone(), true)?)?).clone())?;
+                }
             }
             ()
         },
